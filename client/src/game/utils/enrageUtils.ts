@@ -1,0 +1,134 @@
+import { CardInstance, GameState } from '../types';
+
+/**
+ * Check if a minion should be enraged (has less than max health but is still alive)
+ * @param minion The minion to check for enrage
+ * @returns True if the minion should be enraged
+ */
+export function shouldBeEnraged(minion: CardInstance): boolean {
+  if (!minion.currentHealth || !minion.card.health) return false;
+  
+  return (
+    minion.currentHealth > 0 && // Minion is alive
+    minion.currentHealth < minion.card.health && // Minion has taken damage
+    minion.card.keywords.includes('enrage') && // Minion has the enrage keyword
+    !minion.isSilenced // Minion isn't silenced
+  );
+}
+
+/**
+ * Apply enrage effects to a minion
+ * @param minion The minion to apply enrage effects to
+ * @returns The minion with enrage effects applied
+ */
+export function applyEnrageEffect(minion: CardInstance): CardInstance {
+  // Don't modify if already in correct state
+  if (minion.isEnraged === shouldBeEnraged(minion)) return minion;
+  
+  // Create a copy of the minion to modify
+  const modifiedMinion = { ...minion };
+  
+  // Check if the minion should be enraged
+  const shouldEnrage = shouldBeEnraged(minion);
+  
+  // Update the enrage status
+  modifiedMinion.isEnraged = shouldEnrage;
+  
+  // Apply card-specific enrage effects based on card names
+  if (shouldEnrage && modifiedMinion.card.attack !== undefined) {
+    // Only apply the bonus if not already applied
+    if (!minion.isEnraged) {
+      let attackBonus = 2; // Default bonus
+      let windfuryAdded = false;
+      
+      // Apply card-specific enrage effects
+      switch (modifiedMinion.card.name) {
+        case "Amani Berserker":
+          attackBonus = 3;
+          break;
+        case "Angry Chicken":
+          attackBonus = 5;
+          break;
+        case "Tauren Warrior":
+          attackBonus = 3;
+          break;
+        case "Raging Worgen":
+          attackBonus = 1;
+          windfuryAdded = true;
+          break;
+        case "Grommash Hellscream":
+          attackBonus = 6;
+          break;
+      }
+      
+      // Apply attack bonus
+      modifiedMinion.card.attack += attackBonus;
+      
+      // Apply windfury if needed
+      if (windfuryAdded && !modifiedMinion.card.keywords.includes('windfury')) {
+        modifiedMinion.card.keywords = [...modifiedMinion.card.keywords, 'windfury'];
+      }
+      
+      console.log(`${modifiedMinion.card.name} is ENRAGED (+${attackBonus} Attack${windfuryAdded ? ', +Windfury' : ''})`);
+    }
+  } else if (!shouldEnrage && minion.isEnraged && modifiedMinion.card.attack !== undefined) {
+    // Remove the enrage bonus when healed to full or silenced
+    let attackBonus = 2; // Default bonus
+    let windfuryRemoved = false;
+    
+    // Apply card-specific enrage removal
+    switch (modifiedMinion.card.name) {
+      case "Amani Berserker":
+        attackBonus = 3;
+        break;
+      case "Angry Chicken":
+        attackBonus = 5;
+        break;
+      case "Tauren Warrior":
+        attackBonus = 3;
+        break;
+      case "Raging Worgen":
+        attackBonus = 1;
+        windfuryRemoved = true;
+        break;
+      case "Grommash Hellscream":
+        attackBonus = 6;
+        break;
+    }
+    
+    // Remove attack bonus
+    modifiedMinion.card.attack -= attackBonus;
+    
+    // Remove windfury if it was added by enrage
+    if (windfuryRemoved && !minion.card.keywords.includes('windfury')) {
+      modifiedMinion.card.keywords = modifiedMinion.card.keywords.filter(
+        keyword => keyword !== 'windfury'
+      );
+    }
+    
+    console.log(`${modifiedMinion.card.name} is no longer enraged`);
+  }
+  
+  return modifiedMinion;
+}
+
+/**
+ * Check and update enrage status for all minions on the battlefield
+ * @param state Current game state
+ * @returns Updated game state with enrage effects applied
+ */
+export function updateEnrageEffects(state: GameState): GameState {
+  const newState = { ...state };
+  
+  // Check player's minions
+  newState.players.player.battlefield = newState.players.player.battlefield.map(minion => {
+    return applyEnrageEffect(minion);
+  });
+  
+  // Check opponent's minions
+  newState.players.opponent.battlefield = newState.players.opponent.battlefield.map(minion => {
+    return applyEnrageEffect(minion);
+  });
+  
+  return newState;
+}

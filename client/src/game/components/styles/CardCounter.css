@@ -1,0 +1,159 @@
+.card-counter {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  color: white;
+  width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  z-index: 10;
+  transition: all 0.3s ease;
+  /* CRITICAL FIX: Change from hidden to visible to prevent glow cutoff */
+  overflow: visible !important;
+}
+
+.card-counter.player {
+  right: 20px;
+  bottom: 60px;
+}
+
+.card-counter.opponent {
+  right: 20px;
+  top: 60px;
+}
+
+.card-counter.collapsed {
+  width: 120px;
+  height: 40px;
+}
+
+.card-counter-header {
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(40, 40, 80, 0.8);
+  cursor: pointer;
+}
+
+.card-counter-header:hover {
+  background-color: rgba(60, 60, 100, 0.8);
+}
+
+.card-counter-basic {
+  display: flex;
+  gap: 10px;
+}
+
+.deck-count, .hand-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.deck-count::before {
+  content: "🎴";
+}
+
+.hand-count::before {
+  content: "✋";
+}
+
+.card-counter-toggle {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.card-counter-details {
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.card-count-section {
+  margin-bottom: 15px;
+}
+
+.card-count-section h4 {
+  font-size: 14px;
+  color: #ffd700;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 3px;
+}
+
+.count-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-size: 13px;
+}
+
+.count-label {
+  color: #bbb;
+}
+
+.count-value {
+  font-weight: bold;
+}
+
+.card-history-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 5px;
+}
+
+.card-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.card-history-item {
+  display: flex;
+  padding: 4px 0;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-history-turn {
+  background-color: #444;
+  color: #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.card-history-text {
+  color: #ddd;
+}
+
+.card-history-empty {
+  font-style: italic;
+  color: #888;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Compact version for in-game HUD */
+.compact-card-counter {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  padding: 4px 8px;
+  color: white;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.compact-card-counter.player {
+  color: #a3d5ff;
+}
+
+.compact-card-counter.opponent {
+  color: #ffa3a3;
+}

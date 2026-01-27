@@ -1,0 +1,231 @@
+/**
+ * SimpleCard.tsx
+ * 
+ * A clean, elegant 2D card component inspired by Hearthstone.
+ * No 3D effects, no complex transforms - just clear, readable cards.
+ * Uses simple color-based backgrounds with rarity styling.
+ */
+
+import React from 'react';
+import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
+import './SimpleCard.css';
+
+export interface SimpleCardData {
+  id: number | string;
+  name: string;
+  manaCost: number;
+  attack?: number;
+  health?: number;
+  description?: string;
+  type: 'minion' | 'spell' | 'weapon';
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  tribe?: string;
+  cardClass?: string;
+  keywords?: string[]; // Explicit keywords array for icon display
+}
+
+interface SimpleCardProps {
+  card: SimpleCardData;
+  isPlayable?: boolean;
+  isHighlighted?: boolean;
+  onClick?: () => void;
+  onMouseEnter?: (e: React.MouseEvent) => void;
+  onMouseLeave?: (e: React.MouseEvent) => void;
+  size?: 'small' | 'medium' | 'large' | 'preview';
+  showDescription?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+const getRarityClass = (rarity?: string): string => {
+  switch (rarity) {
+    case 'legendary': return 'rarity-legendary';
+    case 'epic': return 'rarity-epic';
+    case 'rare': return 'rarity-rare';
+    default: return 'rarity-common';
+  }
+};
+
+const getCardTypeIcon = (type: string): string => {
+  switch (type) {
+    case 'spell': return '✨';
+    case 'weapon': return '⚔️';
+    default: return '👤';
+  }
+};
+
+const getClassColor = (cardClass?: string): string => {
+  const colors: Record<string, string> = {
+    warrior: '#C79C6E',
+    mage: '#69CCF0',
+    hunter: '#ABD473',
+    paladin: '#F58CBA',
+    priest: '#FFFFFF',
+    rogue: '#FFF569',
+    shaman: '#0070DE',
+    warlock: '#9482C9',
+    druid: '#FF7D0A',
+    demonhunter: '#A330C9',
+    deathknight: '#C41F3B'
+  };
+  return colors[cardClass?.toLowerCase() || ''] || '#4a5568';
+};
+
+/**
+ * Extract keyword icons from card - uses centralized KEYWORD_DEFINITIONS
+ * Checks both explicit keywords array and description text
+ */
+const getCardKeywordIcons = (description?: string, keywords?: string[]): { icon: string; color: string; keyword: string }[] => {
+  const icons: { icon: string; color: string; keyword: string }[] = [];
+  const addedKeywords = new Set<string>();
+  
+  // First, add icons from explicit keywords array
+  if (keywords && keywords.length > 0) {
+    for (const keyword of keywords) {
+      const key = keyword.toLowerCase();
+      const def = KEYWORD_DEFINITIONS[key];
+      if (def && !addedKeywords.has(key)) {
+        icons.push({ icon: def.icon, color: def.color, keyword: key });
+        addedKeywords.add(key);
+      }
+    }
+  }
+  
+  // Then, parse description for additional keywords
+  if (description) {
+    const desc = description.toLowerCase();
+    for (const [keyword, def] of Object.entries(KEYWORD_DEFINITIONS)) {
+      if (desc.includes(keyword) && !addedKeywords.has(keyword)) {
+        icons.push({ icon: def.icon, color: def.color, keyword });
+        addedKeywords.add(keyword);
+      }
+    }
+  }
+  
+  return icons.slice(0, 4); // Limit to 4 icons max
+};
+
+export const SimpleCard: React.FC<SimpleCardProps> = ({
+  card,
+  isPlayable = true,
+  isHighlighted = false,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  size = 'medium',
+  showDescription = false,
+  className = '',
+  style = {}
+}) => {
+  const isMinion = card.type === 'minion';
+  const isSpell = card.type === 'spell';
+  const isWeapon = card.type === 'weapon';
+  
+  const classColor = getClassColor(card.cardClass);
+  
+  const cardTypeClass = isSpell ? 'card-type-spell' : isWeapon ? 'card-type-weapon' : 'card-type-minion';
+  
+  return (
+    <div 
+      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${className}`}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={style}
+      data-card-id={card.id}
+      data-rarity={card.rarity}
+      data-card-type={card.type}
+    >
+      {/* Mana Cost */}
+      <div className="card-mana">
+        <span className="mana-value">{card.manaCost}</span>
+      </div>
+      
+      {/* Card Art Area - styled background with icon */}
+      <div className="card-art-container" style={{ background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}>
+        <div className="card-art-icon">
+          <span>{getCardTypeIcon(card.type)}</span>
+        </div>
+      </div>
+      
+      {/* Card Name */}
+      <div className="card-name-banner">
+        <span className="card-name">{card.name}</span>
+      </div>
+      
+      {/* Card Type/Tribe */}
+      {card.tribe && (
+        <div className="card-tribe">
+          <span>{card.tribe}</span>
+        </div>
+      )}
+      
+      {/* Description area - shows icons or text based on size and content */}
+      {(() => {
+        const effectIcons = getCardKeywordIcons(card.description, card.keywords);
+        const hasContent = card.description || effectIcons.length > 0;
+        
+        if (!hasContent) return null;
+        
+        return (
+          <div className="card-description">
+            {showDescription ? (
+              // Full text for large/preview cards
+              <span>{card.description}</span>
+            ) : (
+              // Icon-only for battlefield minions (Hearthstone style)
+              effectIcons.length > 0 ? (
+                <div className="keyword-icons-container">
+                  {effectIcons.map((effect, idx) => (
+                    <div
+                      key={idx}
+                      className="keyword-icon-badge"
+                      style={{
+                        borderColor: effect.color,
+                        boxShadow: `0 2px 8px rgba(0,0,0,0.6), 0 0 6px ${effect.color}88`,
+                      }}
+                      data-keyword={effect.keyword}
+                    >
+                      {effect.icon}
+                    </div>
+                  ))}
+                </div>
+              ) : card.description ? (
+                <span className="truncated-desc">{card.description.slice(0, 30)}...</span>
+              ) : null
+            )}
+          </div>
+        );
+      })()}
+      
+      {/* Stats (Attack/Health for minions, Attack/Durability for weapons) */}
+      {(isMinion || isWeapon) && (
+        <>
+          <div className="card-attack">
+            <span className="stat-value">{card.attack ?? 0}</span>
+          </div>
+          <div className="card-health">
+            <span className="stat-value">{card.health ?? 0}</span>
+          </div>
+        </>
+      )}
+      
+      {/* Foil overlay for Legendary cards - Gold foil */}
+      {card.rarity === 'legendary' && (
+        <div className="foil-overlay legendary-foil" />
+      )}
+      
+      {/* Foil overlay for Epic cards - Purple holographic */}
+      {card.rarity === 'epic' && (
+        <div className="foil-overlay epic-foil" />
+      )}
+      
+      {/* Foil overlay for Rare cards - Blue shimmer */}
+      {card.rarity === 'rare' && (
+        <div className="foil-overlay rare-foil" />
+      )}
+    </div>
+  );
+};
+
+export default SimpleCard;

@@ -1,0 +1,107 @@
+/**
+ * UnifiedBattlefieldAttackConnector.tsx
+ * 
+ * This component connects the battlefield UI with the attack system.
+ * It handles the logic of selecting cards for attack and initiating attacks.
+ */
+
+import React, { useEffect } from 'react';
+import { CardInstance } from '../types/CardTypes';
+import { Position } from '../types/Position';
+import { useAttackStore } from './attackStore';
+import { canCardAttack, isValidAttackTarget } from './attackUtils';
+import { useGameStore } from '../stores/gameStore';
+
+interface UnifiedBattlefieldAttackConnectorProps {
+  playerCards: CardInstance[];
+  opponentCards: CardInstance[];
+  isPlayerTurn: boolean;
+  cardPositions: Record<string, Position>;
+  onCardClick: (card: CardInstance) => void;
+  onOpponentCardClick: (card: CardInstance) => void;
+  onOpponentHeroClick: () => void;
+}
+
+const UnifiedBattlefieldAttackConnector: React.FC<UnifiedBattlefieldAttackConnectorProps> = ({
+  playerCards,
+  opponentCards,
+  isPlayerTurn,
+  cardPositions,
+  onCardClick,
+  onOpponentCardClick,
+  onOpponentHeroClick
+}) => {
+  const { attackingCard, isAttackMode, startAttackMode, endAttackMode, completeAttack } = useAttackStore();
+  const { gameState } = useGameStore();
+
+  // Reset attack mode when turn changes
+  useEffect(() => {
+    if (!isPlayerTurn && isAttackMode) {
+      console.log('[AttackConnector] Not player turn, ending attack mode');
+      endAttackMode();
+    }
+  }, [isPlayerTurn, isAttackMode, endAttackMode]);
+
+  // Handle click on player's card - potential attacker
+  useEffect(() => {
+    // Register handlers for player cards
+    const handlePlayerCardClick = (card: CardInstance) => {
+      console.log('[AttackConnector] Player card clicked:', card.instanceId);
+      
+      // Check if this card can attack
+      if (isPlayerTurn && canCardAttack(card, isPlayerTurn)) {
+        // If we're already in attack mode with this card, toggle it off
+        if (isAttackMode && attackingCard?.instanceId === card.instanceId) {
+          console.log('[AttackConnector] Canceling attack mode for card:', card.instanceId);
+          endAttackMode();
+        } else {
+          // Start attack mode with this card
+          console.log('[AttackConnector] Starting attack mode with card:', card.instanceId);
+          startAttackMode(card);
+        }
+      } else {
+        // If the card can't attack, just pass the click to the normal handler
+        console.log('[AttackConnector] Card cannot attack, passing to normal handler');
+        onCardClick(card);
+      }
+    };
+
+    // Register handlers for opponent cards (potential targets)
+    const handleOpponentCardClick = (card: CardInstance) => {
+      console.log('[AttackConnector] Opponent card clicked:', card.instanceId);
+      
+      if (isAttackMode && attackingCard) {
+        // Get taunt minions from opponent's battlefield for target validation
+        const opponentBattlefield = gameState?.players?.opponent?.battlefield || [];
+        const opponentTauntCards = opponentBattlefield.filter((c: any) => 
+          c.card?.keywords?.includes('taunt')
+        );
+        
+        // Check if this is a valid target
+        const isValid = isValidAttackTarget(attackingCard, card, opponentTauntCards);
+        
+        if (isValid) {
+          console.log('[AttackConnector] Valid target, completing attack');
+          // Complete the attack
+          completeAttack(card);
+          
+          // Call the attack handler from parent
+          onOpponentCardClick(card);
+        } else {
+          console.log('[AttackConnector] Invalid target, ignoring');
+        }
+      } else {
+        // Not in attack mode, pass the click to normal handler
+        onOpponentCardClick(card);
+      }
+    };
+
+    // Hook up to the battlefield by setting up event handlers
+    // This would be connected to the actual UI components in a full implementation
+  }, [isPlayerTurn, isAttackMode, attackingCard, gameState, onCardClick, onOpponentCardClick, startAttackMode, endAttackMode, completeAttack]);
+  
+  // This component is just a connector and doesn't render any UI
+  return null;
+};
+
+export default UnifiedBattlefieldAttackConnector;

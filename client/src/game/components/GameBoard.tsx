@@ -1,0 +1,2517 @@
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useGameStore } from '../stores/gameStore';
+import GameHUD from './GameHUD';
+import SimpleBattlefield from './SimpleBattlefield';
+import Hand from './Hand';
+import { Graveyard } from './Graveyard';
+import { DiscoveryModal } from './DiscoveryModal';
+import { MulliganScreen } from './MulliganScreen';
+import { GameLog } from './GameLog';
+import { CardInstance } from '../types/CardTypes';
+import { CardData } from '../types';
+import { CardInstanceWithCardData } from '../types/interfaceExtensions';
+import { adaptCardInstance, reverseAdaptCardInstance } from '../utils/cardInstanceAdapter';
+import { Position } from '../types/Position';
+import TargetingArrow from './TargetingArrow';
+import TargetHighlight from './TargetHighlight';
+import { useAudio } from '../../lib/stores/useAudio';
+import { useGameNotifications } from '../hooks/useGameNotifications';
+import { useCardPositions } from '../hooks/useCardPositions';
+import { AnimationLayer } from './AnimationLayer';
+import { useAnimations } from './AnimationContainer';
+import { useAIActionManager } from '../animations/AIActionManager';
+import { Button } from '../../components/ui/button';
+import { Toaster } from '../../components/ui/sonner';
+import DebugRenderCheck from './DebugRenderCheck';
+import ActionNotification from './ActionNotification';
+import AIAttackAnimationProcessor from './AIAttackAnimationProcessor';
+import CardDetailView from './CardDetailView';
+import ManaBar from './ManaBar';
+import GameAreaContainer from './GameAreaContainer';
+import { useCardDragAnimation } from '../hooks/useCardDragAnimation';
+import { CardDragLayer } from './CardDragLayer';
+import { useGraveyardTracking } from '../hooks/useGraveyardTracking';
+import TurnTransition from '../animations/TurnTransition';
+import EnvironmentalEffect from '../animations/EnvironmentalEffect';
+
+import LegendaryEntrance from '../animations/LegendaryEntrance';
+import DynamicAudioLayer from '../audio/DynamicAudioLayer';
+import HeroPower from './HeroPower';
+
+// Import professional styling enhancements
+import './styles/ProfessionalEnhancements.css';
+import './styles/NorseTheme.css';
+import NorseBackground from './NorseBackground';
+
+// Import our new attack system
+import { useAttackStore } from '../combat/attackStore';
+import UnifiedBattlefieldAttackConnector from '../combat/UnifiedBattlefieldAttackConnector';
+import SimpleAttackSystem from '../combat/SimpleAttackSystem';
+import AttackSystem from '../combat/AttackSystem';
+import { canCardAttack, isValidAttackTarget } from '../combat/attackUtils';
+import { createHandlePlayerCardClick, createHandleOpponentCardClick, createHandleOpponentHeroClick } from './GameBoardHandlers';
+// Ultimate CardWithDrag system handles all interactions now
+
+// CardWithDrag is now the ONLY card interaction system
+
+export const GameBoard: React.FC<{}> = () => {
+  const { 
+    gameState, 
+    playCard, 
+    endTurn, 
+    hoveredCard,
+    attackingCard,
+    selectedCard,
+    selectAttacker,
+    attackWithCard,
+    heroTargetMode,
+    toggleHeroTargetMode,
+    useHeroPower,
+    selectCard,
+    selectDiscoveryOption
+  } = useGameStore();
+  
+  // Mouse position tracking for targeting arrow
+  const [mousePosition, setMousePosition] = useState<Position>({ x: 0, y: 0 });
+  const [showTargetingArrow, setShowTargetingArrow] = useState(false);
+  const [arrowStartPosition, setArrowStartPosition] = useState<Position>({ x: 0, y: 0 });
+  const [validTargets, setValidTargets] = useState<string[]>([]);
+  
+  // Reference to the game container for effects like screen shake and spell flashes
+  const gameContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Reference to the battlefield container for card drop validation
+  const battlefieldRef = useRef<HTMLDivElement>(null);
+  
+  // State for card detail view
+  const [detailCard, setDetailCard] = useState<CardInstance | CardData | null>(null);
+  
+  // Track card positions for attack visualization
+  const [attackCardPositions, setAttackCardPositions] = useState<Record<string, Position>>({});
+  
+  // Function to get the center of the game board for attack visualization
+  const getBoardCenter = (): Position => {
+    if (battlefieldRef.current) {
+      const rect = battlefieldRef.current.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+    return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  };
+  
+  // Function to register a card's position for attack visualization
+  const registerAttackCardPosition = (cardId: string, position: Position) => {
+    setAttackCardPositions(prev => ({ ...prev, [cardId]: position }));
+  };
+  
+  // Function to get all card positions for the attack indicator
+  const getCardPositionsMap = useCallback((): Record<string, Position> => {
+    return attackCardPositions;
+  }, [attackCardPositions]);
+  
+  // State for animation enhancements
+  const [activeLegendaryCard, setActiveLegendaryCard] = useState<{ card: CardData, position: Position } | null>(null);
+  const [activeEnvironmentalEffect, setActiveEnvironmentalEffect] = useState<{ 
+    card: CardData, 
+    duration: number, 
+    intensity: 'low' | 'medium' | 'high' 
+  } | null>(null);
+  
+  // Reference to track turn changes for turn transition
+  const lastTurnRef = useRef<string | null>(null);
+  
+  const { 
+    players, 
+    currentTurn, 
+    turnNumber, 
+    gamePhase 
+  } = gameState;
+  
+  const { playSoundEffect } = useAudio();
+  const { showNotification, showBattlecryEffect, showAoEDamageEffect, showDeathrattleEffect } = useGameNotifications();
+  
+  // Handle viewing card details
+  const handleViewCardDetails = useCallback((card: CardInstance | CardData) => {
+    setDetailCard(card);
+    // Play a sound effect for user feedback
+    playSoundEffect('card_hover');
+  }, [playSoundEffect]);
+  
+  // Handle closing card details view
+  const handleCloseCardDetails = useCallback(() => {
+    setDetailCard(null);
+  }, []);
+  
+  // Convenience functions for common sound effects with enhanced gameplay feedback
+  const playHit = () => {
+    playSoundEffect('attack');
+    // Add screen shake effect for impact
+    if (gameContainerRef.current) {
+      gameContainerRef.current.classList.add('screen-shake-impact');
+      setTimeout(() => {
+        if (gameContainerRef.current) {
+          gameContainerRef.current.classList.remove('screen-shake-impact');
+        }
+      }, 500);
+    }
+  };
+  
+  const playSuccess = () => {
+    playSoundEffect('spell_cast');
+    // Add subtle flash effect for spell cast
+    if (gameContainerRef.current) {
+      gameContainerRef.current.classList.add('spell-cast-flash');
+      setTimeout(() => {
+        if (gameContainerRef.current) {
+          gameContainerRef.current.classList.remove('spell-cast-flash');
+        }
+      }, 300);
+    }
+  };
+  
+  // Card and entity position tracking
+  const { registerCardPosition, getCardPosition, getHeroPosition, registerHeroPosition } = useCardPositions();
+  
+  // Track mana position for animations without causing renders
+  const manaPositionRef = React.useRef<{x: number, y: number} | null>(null);
+  const registerManaPosition = React.useCallback((type: 'mana', position: {x: number, y: number}) => {
+    // Only update if position actually changed
+    if (
+      !manaPositionRef.current || 
+      Math.abs(manaPositionRef.current.x - position.x) > 1 || 
+      Math.abs(manaPositionRef.current.y - position.y) > 1
+    ) {
+      manaPositionRef.current = position;
+    }
+  }, []);
+  
+  // Card drag animation system
+  const { 
+    isDragging,
+    draggedCard,
+    startPosition,
+    targetPosition,
+    registerCardPosition: registerDragCardPosition,
+    getCardPosition: getDragCardPosition,
+    animateCard,
+    handleAnimationComplete
+  } = useCardDragAnimation();
+  
+  // Animation system
+  const { 
+    animations, 
+    removeAnimation, 
+    addAttackAnimation, 
+    addDamageEffect, 
+    addHealEffect, 
+    addBuffEffect, 
+    addShieldBreakEffect, 
+    addHeroPowerEffect,
+    addManaGainAnimation,
+    addManaUseAnimation,
+    addOverloadAnimation
+  } = useAnimations();
+  
+  // Mouse position tracking for targeting
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+  
+  // Handle right-click to cancel targeting (adding industry standard behavior)
+  useEffect(() => {
+    const handleRightClick = (e: MouseEvent) => {
+      // Cancel targeting when in spell target mode or battlecry target mode
+      if ((showTargetingArrow && selectedCard) || 
+          (selectedCard && selectedCard.card.type === 'spell' && selectedCard.card.spellEffect?.requiresTarget) ||
+          (selectedCard && selectedCard.card.type === 'minion' && selectedCard.card.battlecry?.requiresTarget)) {
+        
+        // Prevent default context menu
+        e.preventDefault();
+        
+        console.log('[TARGETING] Right-click detected, cancelling targeting mode');
+        
+        // Clear targeting state
+        selectCard(null);
+        setShowTargetingArrow(false);
+        setValidTargets([]);
+        
+        // Play a cancel sound
+        playSoundEffect('cancel');
+        
+        // Show a notification to indicate targeting was cancelled
+        showNotification({
+          title: 'Targeting Cancelled',
+          description: 'Spell targeting has been cancelled',
+          type: 'info',
+          duration: 1500
+        });
+      }
+    };
+    
+    // Add event listener for right-click (contextmenu)
+    document.addEventListener('contextmenu', handleRightClick);
+    
+    // Cleanup on unmount
+    return () => {
+      document.removeEventListener('contextmenu', handleRightClick);
+    };
+  }, [showTargetingArrow, selectedCard]); // Re-add listener when targeting state changes
+
+  // Handle clean Hearthstone-style card play events
+  useEffect(() => {
+    const handleHearthstoneCardPlay = (e: CustomEvent) => {
+      const { instanceId, position } = e.detail;
+      console.log('Hearthstone card play event received:', instanceId, 'at position:', position);
+      
+      // Find the card in player's hand
+      const player = gameState.players.find(p => p.id === 'player');
+      if (player && player.hand) {
+        const cardToPlay = player.hand.find(card => card.instanceId === instanceId);
+        if (cardToPlay) {
+          console.log('Playing card via clean interaction system:', cardToPlay.card.name);
+          
+          // Play the card using the existing game logic
+          playCard(instanceId, position);
+          
+          // Play a satisfying sound effect
+          playSoundEffect('card_play');
+        }
+      }
+    };
+
+    // Listen for our custom card play events
+    document.addEventListener('hearthstone-card-play', handleHearthstoneCardPlay as EventListener);
+
+    return () => {
+      document.removeEventListener('hearthstone-card-play', handleHearthstoneCardPlay as EventListener);
+    };
+  }, [gameState.players, playCard, playSoundEffect]);
+
+  // Handle click anywhere to cancel targeting
+  useEffect(() => {
+    const handleDocumentClick = (e: MouseEvent) => {
+      // Only do this if we're in targeting mode
+      if (showTargetingArrow && selectedCard) {
+        console.log('[TARGETING] Document click detected, checking if we should cancel targeting');
+        
+        // We should NOT cancel targeting when:
+        // 1. Clicking on a card (these are handled by their own click handlers)
+        // 2. Clicking on the selected card itself
+        // 3. Clicking on any valid target elements
+        // 4. Clicking on the game board elements that might contain our targets
+        
+        // Check if click was on a card element (more comprehensive selectors)
+        const clickedElement = e.target as Element;
+        const isClickOnCard = clickedElement?.closest('.card, .minion, .hero, .player-minion, .opponent-minion, .player-hero, .opponent-hero, .target-highlight');
+        
+        // Also check if click was on the targeting arrow or highlight or any battlefield element
+        const isClickOnTargetingUI = clickedElement?.closest('.targeting-arrow, .target-highlight, .battlefield, .player-battlefield, .opponent-battlefield');
+        
+        // Most important - check if the clicked element has a data-card-id attribute that matches a valid target
+        const cardElement = clickedElement?.closest('[data-card-id]');
+        const clickedCardId = cardElement?.getAttribute('data-card-id');
+        const isValidTargetCard = clickedCardId && validTargets.includes(clickedCardId);
+        
+        // Log more detailed information for debugging
+        if (isClickOnCard) {
+          console.log('[TARGETING] Click was detected on a card element:', clickedElement?.className);
+          if (clickedCardId) {
+            console.log('[TARGETING] Clicked card ID:', clickedCardId, 'Valid target?', isValidTargetCard);
+          }
+        }
+        if (isClickOnTargetingUI) {
+          console.log('[TARGETING] Click was detected on targeting UI or battlefield:', clickedElement?.className);
+        }
+        
+        // If the click is on a valid target, UI element, or any card-like element, don't cancel
+        if (isClickOnCard || isClickOnTargetingUI || isValidTargetCard) {
+          console.log('[TARGETING] Click was on a card, targeting UI, or battlefield - not canceling targeting');
+          return;
+        }
+        
+        // If we reach here, the click was outside valid targets
+        console.log('[TARGETING] Click was outside valid targets, canceling targeting');
+        setShowTargetingArrow(false);
+        selectCard(null);
+        
+        // Show notification to the user
+        showNotification({
+          title: `❌ Targeting Canceled`,
+          description: `Spell targeting has been canceled.`,
+          type: 'info',
+          duration: 2000
+        });
+      }
+    };
+    
+    // Add the event listener
+    document.addEventListener('click', handleDocumentClick);
+    
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, [showTargetingArrow, selectedCard]);
+  
+  // Reset targeting UI when selected card changes
+  useEffect(() => {
+    if (!selectedCard) {
+      setShowTargetingArrow(false);
+      setValidTargets([]);
+    }
+  }, [selectedCard]);
+  
+  // AI Action Manager to control AI turn spacing and animations
+  // Important note: We don't use the AI Action Manager for actual turns,
+  // since the GameUtils already handles AI turns synchronously.
+  // This component only handles the visual display and prevents interaction during AI turns.
+  const { 
+    isProcessing: isProcessingAIActions,
+    currentAction
+  } = useAIActionManager({
+    gameState,
+    // The AI turn doesn't actually need to be managed through this component
+    // The endTurn function in gameUtils already handles AI actions synchronously
+    isAITurn: false, // Disable automated AI turn management
+    onPlayCard: (card, targetId) => {
+      playCard(card.instanceId, targetId);
+    },
+    onAttack: (attackerId, defenderId) => {
+      attackWithCard(attackerId, defenderId);
+    },
+    onUseHeroPower: (targetId) => {
+      useHeroPower(targetId);
+    },
+    onEndTurn: () => {
+      endTurn();
+    }
+  });
+  
+  // Player's turn flag
+  const isPlayerTurn = currentTurn === 'player';
+  
+  const player = gameState.players.player;
+  const opponent = gameState.players.opponent;
+  
+  // Track minion deaths for the graveyard mechanics
+  useGraveyardTracking(gameState);
+  
+  // Handle discovery card selection
+  const handleDiscoverySelect = (selectedCard: CardData | null) => {
+    // Call the store action
+    selectDiscoveryOption(selectedCard);
+    
+    if (selectedCard) {
+      // Play a success sound when a card is selected
+      playSuccess();
+      
+      // Show a notification for the discovery selection
+      showNotification({
+        title: '✨ Discovered',
+        description: `You discovered ${selectedCard.name}!`,
+        type: 'success',
+        duration: 3000
+      });
+    }
+  };
+
+  // Reference to the registered animation system from above
+  // (Already initialized earlier in the component)
+  
+  // Function to get the center of the battlefield
+  const getBattlefieldCenter = useCallback((): Position => {
+    if (battlefieldRef.current) {
+      const rect = battlefieldRef.current.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+    // Fallback position if ref is not available
+    return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  }, []);
+  
+  // Handle playing a card
+  const handlePlayCard = (card: CardInstance, cardPosition?: Position) => {
+    console.log(`[CARD-DEBUG] Attempting to play card:`, card);
+    console.log(`[CARD-DEBUG] Card name: ${card?.card?.name}, ID: ${card?.instanceId}, ManaCost: ${card?.card?.manaCost}`);
+    
+    // Check if card is valid
+    if (!card || !card.card) {
+      console.error(`[CARD-ERROR] Invalid card object:`, card);
+      showNotification({
+        title: `❌ Card Error`,
+        description: `Unable to play this card. It appears to be invalid.`,
+        type: 'error',
+        duration: 2000
+      });
+      return;
+    }
+    
+    // Check if we have enough mana to play this card
+    const playerMana = player.mana?.current || 0;
+    console.log(`[MANA-DEBUG] Player has ${playerMana} mana. Card costs ${card.card.manaCost}.`);
+    
+    if (card.card.manaCost > playerMana) {
+      console.log(`[ERROR] Not enough mana. Card costs ${card.card.manaCost}, but player only has ${playerMana}`);
+      
+      // Show notification to the player
+      showNotification({
+        title: `❌ Not Enough Mana`,
+        description: `${card.card.name} costs ${card.card.manaCost} mana, but you only have ${playerMana}.`,
+        type: 'error',
+        duration: 2000
+      });
+      
+      return; // Don't proceed with playing the card
+    }
+    
+    // Check if it's a legendary card and show special entrance animation
+    if (card.card.rarity === 'legendary' && cardPosition) {
+      console.log(`[LEGENDARY-DEBUG] Triggering legendary entrance for ${card.card.name}`);
+      
+      // Set the legendary card to trigger the animation component
+      setActiveLegendaryCard({ 
+        card: card.card, 
+        position: cardPosition 
+      });
+      
+      // Play special legendary sound effect
+      playSoundEffect('legendary_entrance');
+    }
+      
+    // Check if it's a card that requires a battlecry target (like Dreadscale)
+    if (card.card.keywords?.includes('battlecry') && 
+        card.card.battlecry && 
+        card.card.battlecry.requiresTarget) {
+      console.log(`${card.card.name} requires a battlecry target`);
+      
+      // Store the card for targeting and update the game state
+      selectCard(card);
+      console.log(`Selected ${card.card.name} as the active card, waiting for battlecry target`);
+      
+      // Show a notification that user needs to select a target
+      showNotification({
+        title: `🎯 Select Battlecry Target`,
+        description: `${card.card.name} requires a target for its battlecry. Click on a minion on the battlefield.`,
+        type: 'info',
+        duration: 5000
+      });
+      
+      // Don't play the card yet - wait for target selection
+      return;
+    }
+    
+    // Calculate target position (center of battlefield)
+    const targetPos = getBattlefieldCenter();
+    
+    // Start drag animation if we have the card's position
+    if (cardPosition) {
+      console.log(`Starting card drag animation from:`, cardPosition, `to:`, targetPos);
+      animateCard(card, cardPosition, targetPos);
+      
+      // Play card placement sound
+      playSoundEffect('card_play');
+    }
+      
+    // Check if it's a spell card with discover keyword
+    if (card.card.type === 'spell' && card.card.keywords?.includes('discover') && card.card.spellEffect?.type === 'discover') {
+      // Play the card after a delay if animating, or immediately if not
+      if (cardPosition) {
+        setTimeout(() => {
+          playCard(card.instanceId);
+          
+          // Play success sound for discover spells
+          playSuccess();
+          
+          // Show notification about discovery
+          showNotification({
+            title: '🔮 Discover',
+            description: `Discovering options from ${card.card.spellEffect?.discoveryType || 'all'} cards`,
+            type: 'info',
+            duration: 2000
+          });
+        }, 400); // Delay to match animation
+      } else {
+        playCard(card.instanceId);
+        
+        // Play success sound for discover spells
+        playSuccess();
+        
+        // Show notification about discovery
+        showNotification({
+          title: '🔮 Discover',
+          description: `Discovering options from ${card.card.spellEffect?.discoveryType || 'all'} cards`,
+          type: 'info',
+          duration: 2000
+        });
+      }
+      
+      return;
+    }
+    
+    // For other spell cards
+    if (card.card.type === 'spell' && card.card.spellEffect) {
+      const spellEffect = card.card.spellEffect;
+      
+      // Check if the spell requires a target
+      if (spellEffect.requiresTarget) {
+        // Store the card for targeting
+        selectCard(card);
+        
+        // Initialize targeting UI components
+        setShowTargetingArrow(true);
+        console.log(`[TARGETING] Showing targeting arrow for ${card.card.name}. Target type: ${spellEffect.targetType}`);
+        
+        // Set the starting position of the arrow at the card's position
+        if (cardPosition) {
+          setArrowStartPosition(cardPosition);
+          console.log(`[TARGETING] Arrow start position set to:`, cardPosition);
+        }
+        
+        // Determine valid targets based on spell requirements
+        const validTargetIds: string[] = [];
+        
+        // Add player's minions if the spell can target friendly minions
+        if (spellEffect.targetType?.includes('friendly') || spellEffect.targetType === 'any') {
+          player.battlefield.forEach(minion => {
+            validTargetIds.push(minion.instanceId);
+          });
+        }
+        
+        // Add opponent's minions if the spell can target enemy minions
+        if (spellEffect.targetType?.includes('enemy') || spellEffect.targetType === 'any') {
+          opponent.battlefield.forEach(minion => {
+            validTargetIds.push(minion.instanceId);
+          });
+        }
+        
+        // Add heroes as valid targets if applicable
+        if (spellEffect.targetType?.includes('hero') || spellEffect.targetType === 'any') {
+          validTargetIds.push('player_hero');
+          validTargetIds.push('opponent_hero');
+        }
+        
+        setValidTargets(validTargetIds);
+        
+        // Show a notification that user needs to select a target
+        showNotification({
+          title: `🎯 Select Target`,
+          description: `${card.card.name} requires a target`,
+          type: 'info',
+          duration: 2000
+        });
+        
+        // Don't play the card yet - wait for target selection
+        return;
+      }
+      
+      // Handle different spell effect types
+      if (spellEffect.type === 'damage' || spellEffect.type === 'aoe_damage') {
+        playHit();
+        showNotification({
+          title: `🔥 ${card.card.name}`,
+          description: `Deal ${spellEffect.value || 0} damage`,
+          type: 'warning'
+        });
+      } else if (spellEffect.type === 'heal') {
+        playSuccess();
+        showNotification({
+          title: `✨ ${card.card.name}`,
+          description: `Restore ${spellEffect.value || 0} health`,
+          type: 'success'
+        });
+      } else if (spellEffect.type === 'draw') {
+        showNotification({
+          title: `📚 ${card.card.name}`,
+          description: `Draw ${spellEffect.value || 1} card${spellEffect.value !== 1 ? 's' : ''}`,
+          type: 'info'
+        });
+      } else if (spellEffect.type === 'buff') {
+        playSuccess();
+        const buffText = `+${spellEffect.buffAttack || 0}/+${spellEffect.buffHealth || 0}`;
+        showNotification({
+          title: `💪 ${card.card.name}`,
+          description: `Give a minion ${buffText}`,
+          type: 'success'
+        });
+      } else if (spellEffect.type === 'transform') {
+        playSuccess();
+        showNotification({
+          title: `🧙‍♂️ ${card.card.name}`,
+          description: `Transform a minion`,
+          type: 'info'
+        });
+      } else if (spellEffect.type === 'freeze') {
+        playHit();
+        showNotification({
+          title: `❄️ ${card.card.name}`,
+          description: `Freeze${spellEffect.targetType?.includes('all') ? ' all' : ''} ${spellEffect.targetType?.includes('enemy') ? 'enemy' : ''} minions`,
+          type: 'info'
+        });
+      } else if (spellEffect.type === 'summon') {
+        playSuccess();
+        showNotification({
+          title: `🧪 ${card.card.name}`,
+          description: `Summon a minion`,
+          type: 'success'
+        });
+      } else if (spellEffect.type === 'mana_crystal') {
+        playSuccess();
+        showNotification({
+          title: `✨ ${card.card.name}`,
+          description: `Gain ${spellEffect.value} mana crystal${spellEffect.value !== 1 ? 's' : ''}${spellEffect.isTemporaryMana ? ' this turn only' : ''}`,
+          type: 'success'
+        });
+      }
+    }
+    
+    // Delay the actual play to let the animation complete
+    // This creates the feeling of the card "flying" to the battlefield before taking effect
+    // For legendary cards, we use a longer delay to allow the legendary entrance animation to complete
+    const animationDelay = (card.card.rarity === 'legendary') ? 3000 : (cardPosition ? 400 : 0);
+    
+    setTimeout(() => {
+      // Regular play card (for minions or spells without special handling)
+      playCard(card.instanceId);
+      
+      // Add mana use animation if mana position is tracked
+      if (manaPositionRef.current) {
+        // The amount to subtract is the card's mana cost
+        addManaUseAnimation(manaPositionRef.current, card.card.manaCost);
+        
+        // If this card has Overload, show an overload animation too
+        if (card.card.keywords?.includes('overload') && card.card.overload) {
+          const overloadAmount = card.card.overload.amount;
+          
+          // Show special animation for overloaded mana crystals
+          if (overloadAmount > 0) {
+            addOverloadAnimation(manaPositionRef.current, overloadAmount);
+            
+            // Show notification for overload
+            showNotification({
+              title: '🔒 Overload',
+              description: `${overloadAmount} mana crystal${overloadAmount > 1 ? 's' : ''} will be locked next turn`,
+              type: 'warning',
+              duration: 3000
+            });
+          }
+        }
+      }
+      
+      // Check for battlecry effects, especially AoE effects
+      if (card.card.keywords?.includes('battlecry') && card.card.battlecry) {
+        const battlecry = card.card.battlecry;
+        
+        // Check for AoE damage effects
+        if (battlecry.type === 'aoe_damage' || (battlecry.type === 'damage' && battlecry.affectsAllEnemies)) {
+          playHit(); // Play damage sound effect
+          
+          // Show AoE notification
+          if (battlecry.value) {
+            // Fixed damage amount
+            showAoEDamageEffect(battlecry.value, opponent.battlefield.length);
+          } else if (battlecry.isBasedOnStats) {
+            // Damage based on stats (like minion's attack)
+            showBattlecryEffect(
+              card.card.name, 
+              'aoe_damage', 
+              card.card.attack, 
+              'all enemy minions'
+            );
+          }
+        } else if (battlecry.type === 'damage') {
+          // Single target damage
+          playHit();
+          showBattlecryEffect(card.card.name, 'damage', battlecry.value);
+        } else if (battlecry.type === 'heal') {
+          // Heal effect
+          playSuccess();
+          showBattlecryEffect(card.card.name, 'heal', battlecry.value);
+        } else if (battlecry.type === 'buff') {
+          // Buff effect
+          playSuccess();
+          const buffText = `+${battlecry.buffAttack || 0}/+${battlecry.buffHealth || 0}`;
+          showBattlecryEffect(card.card.name, 'buff', undefined, buffText);
+        } else if (battlecry.type === 'summon') {
+          // Summon effect
+          playSuccess();
+          showBattlecryEffect(card.card.name, 'summon', undefined, 'a minion');
+        } else if (battlecry.type === 'draw') {
+          // Draw effect
+          showBattlecryEffect(card.card.name, 'draw', battlecry.value);
+        } else if (battlecry.type === 'draw_both') {
+          // Draw for both players effect (Coldlight Oracle)
+          console.log(`Executing draw_both battlecry for ${card.card.name}: Each player draws ${battlecry.value || 2} cards`);
+          showBattlecryEffect(card.card.name, 'draw_both', battlecry.value || 2, 'cards for both players');
+        }
+      }
+    }, animationDelay); // Use our calculated animation delay
+  }
+  
+  
+  // Handle selecting a card to attack with or as a target for spells/battlecries
+  const handleCardSelect = (card: CardInstance | CardInstanceWithCardData) => {
+    // Convert the card to ensure it has the right format (CardInstance)
+    const adaptedCard = reverseAdaptCardInstance(adaptCardInstance(card));
+    
+    console.log(`[CARD SELECT] Card selected: ${adaptedCard.card.name}, type: ${adaptedCard.card.type}`);
+    console.log(`[CARD SELECT] Card can attack: ${adaptedCard.canAttack}, summoning sick: ${adaptedCard.isSummoningSick}, attacks performed: ${adaptedCard.attacksPerformed}`);
+    console.log(`[CARD SELECT] Current targeting state: showTargetingArrow=${showTargetingArrow}, selectedCard=${selectedCard?.card?.name || 'none'}, attackingCard=${attackingCard?.card?.name || 'none'}`);
+    
+    // Check if a minion with battlecry is currently selected (waiting for target)
+    if (selectedCard && 
+        selectedCard.card.type === 'minion' && 
+        selectedCard.card.keywords?.includes('battlecry') && 
+        selectedCard.card.battlecry && 
+        selectedCard.card.battlecry.requiresTarget) {
+      
+      console.log(`Selected ${adaptedCard.card.name} as battlecry target for ${selectedCard.card.name}`);
+      
+      // Check if this is a valid target for the battlecry
+      // We need to check based on the targetType in the battlecry
+      const targetType = selectedCard.card.battlecry.targetType;
+      let isValid = false;
+      
+      switch (targetType) {
+        case 'any':
+          // Can target any minion or hero
+          isValid = true;
+          break;
+        case 'any_minion':
+          isValid = card.card.type === 'minion'; // Can target any minion
+          break;
+        case 'friendly_minion':
+          isValid = player.battlefield.some(c => c.instanceId === card.instanceId);
+          break;
+        case 'enemy_minion':
+          isValid = opponent.battlefield.some(c => c.instanceId === card.instanceId);
+          break;
+        default:
+          // Special case for Faceless Manipulator (copy battlecry)
+          if (selectedCard.card.battlecry.type === 'copy') {
+            // Faceless should only copy minions on the battlefield
+            isValid = (player.battlefield.some(c => c.instanceId === card.instanceId) || 
+                      opponent.battlefield.some(c => c.instanceId === card.instanceId)) &&
+                      card.card.type === 'minion';
+            console.log(`Copy battlecry target validity for ${card.card.name}: ${isValid}`);
+          } else {
+            console.log(`Unsupported battlecry target type: ${targetType}`);
+            isValid = false;
+          }
+      }
+      
+      if (isValid) {
+        // Store the selected card info before clearing selection
+        const battlecryCard = selectedCard;
+        const battlecryType = battlecryCard.card.battlecry.type;
+        
+        // Clear the selectedCard state first to prevent confusion in state updates
+        selectCard(null);
+        
+        // Now play the card with the target
+        console.log(`Playing ${battlecryCard.card.name} with target ${card.card.name}`);
+        playCard(battlecryCard.instanceId, card.instanceId, 'minion');
+        
+        // Add mana use animation if mana position is tracked
+        if (manaPositionRef.current) {
+          // The amount to subtract is the card's mana cost
+          addManaUseAnimation(manaPositionRef.current, battlecryCard.card.manaCost);
+          
+          // If this card has Overload, show an overload animation too
+          if (battlecryCard.card.keywords?.includes('overload') && battlecryCard.card.overload) {
+            const overloadAmount = battlecryCard.card.overload.amount;
+            
+            // Show special animation for overloaded mana crystals
+            if (overloadAmount > 0) {
+              addOverloadAnimation(manaPositionRef.current, overloadAmount);
+              
+              // Show notification for overload
+              showNotification({
+                title: '🔒 Overload',
+                description: `${overloadAmount} mana crystal${overloadAmount > 1 ? 's' : ''} will be locked next turn`,
+                type: 'warning',
+                duration: 3000
+              });
+            }
+          }
+        }
+        
+        // Legendary-specific sound
+        if(battlecryCard.card.rarity === 'legendary') {
+          playSuccess();
+        } else {
+          // Play appropriate sound effect based on battlecry type
+          if (battlecryType === 'damage' || battlecryType === 'aoe_damage') {
+            playHit();
+            
+            // Get positions for visual effects
+            // For AoE, we'll just show an effect on the target card
+            const targetPosition = getCardPosition(card.instanceId);
+            if (targetPosition) {
+              // For damage based on stats, use the minion's attack value
+              const damageAmount = battlecryCard.card.battlecry.isBasedOnStats 
+                ? (battlecryCard.card.attack || 0) 
+                : (battlecryCard.card.battlecry.value || 0);
+                
+              if (damageAmount > 0) {
+                addDamageEffect(targetPosition, damageAmount);
+              }
+            }
+          }
+        }
+      } else {
+        // Not a valid target
+        showNotification({
+          title: `❌ Invalid Target`,
+          description: `${card.card.name} is not a valid target for ${selectedCard.card.name}'s battlecry`,
+          type: 'error',
+          duration: 2000
+        });
+      }
+    }
+    // Check if a spell card is currently selected (waiting for target)
+    else if (selectedCard && selectedCard.card.type === 'spell' && selectedCard.card.spellEffect?.requiresTarget) {
+      console.log(`Selected ${card.card.name} as target for ${selectedCard.card.name}`);
+      
+      // Check if this is a valid target for the spell
+      if (isValidTarget(selectedCard, card)) {
+        // Hide the targeting UI
+        setShowTargetingArrow(false);
+        setValidTargets([]);
+        
+        // Play the spell and target the selected card
+        playCard(selectedCard.instanceId, card.instanceId, 'minion');
+        
+        // Add mana use animation if mana position is tracked
+        if (manaPositionRef.current) {
+          // The amount to subtract is the spell's mana cost
+          addManaUseAnimation(manaPositionRef.current, selectedCard.card.manaCost);
+          
+          // If this spell has Overload, show an overload animation too
+          if (selectedCard.card.keywords?.includes('overload') && selectedCard.card.overload) {
+            const overloadAmount = selectedCard.card.overload.amount;
+            
+            // Show special animation for overloaded mana crystals
+            if (overloadAmount > 0) {
+              addOverloadAnimation(manaPositionRef.current, overloadAmount);
+              
+              // Show notification for overload
+              showNotification({
+                title: '🔒 Overload',
+                description: `${overloadAmount} mana crystal${overloadAmount > 1 ? 's' : ''} will be locked next turn`,
+                type: 'warning',
+                duration: 3000
+              });
+            }
+          }
+        }
+        
+        // Play appropriate sound effect
+        if (selectedCard.card.spellEffect.type === 'damage') {
+          playHit();
+          
+          // Get positions for visual effects
+          const targetPosition = getCardPosition(card.instanceId);
+          if (targetPosition && selectedCard.card.spellEffect.value) {
+            addDamageEffect(targetPosition, selectedCard.card.spellEffect.value);
+          }
+        } else if (selectedCard.card.spellEffect.type === 'heal') {
+          playSuccess();
+          
+          // Get positions for visual effects
+          const targetPosition = getCardPosition(card.instanceId);
+          if (targetPosition && selectedCard.card.spellEffect.value) {
+            addHealEffect(targetPosition, selectedCard.card.spellEffect.value);
+          }
+        } else if (selectedCard.card.spellEffect.type === 'buff') {
+          playSuccess();
+          
+          // Get positions for visual effects
+          const targetPosition = getCardPosition(card.instanceId);
+          if (targetPosition) {
+            addBuffEffect(
+              targetPosition, 
+              selectedCard.card.spellEffect.buffAttack || 0, 
+              selectedCard.card.spellEffect.buffHealth || 0
+            );
+          }
+        }
+        
+        // Clear selection after playing
+        selectCard(null);
+      } else {
+        // Not a valid target
+        showNotification({
+          title: `❌ Invalid Target`,
+          description: `${card.card.name} is not a valid target for ${selectedCard.card.name}`,
+          type: 'error',
+          duration: 2000
+        });
+      }
+    } 
+    // Otherwise, this is a regular card selection for attack
+    else if (isPlayerTurn && card.isPlayed && !card.isSummoningSick && card.canAttack) {
+      console.log(`Selected card to attack with: ${card.card.name}`);
+      console.log(`Card details: isPlayed=${card.isPlayed}, isSummoningSick=${card.isSummoningSick}, canAttack=${card.canAttack}, attacks performed=${card.attacksPerformed}`);
+      
+      // Toggle selection - if already selected, deselect it
+      if (attackingCard?.instanceId === card.instanceId) {
+        console.log(`Deselecting attacker: ${card.card.name}`);
+        selectAttacker(null);
+      } else {
+        console.log(`Selecting attacker: ${card.card.name}`);
+        // Clear any previous selected card
+        selectCard(null);
+        
+        // Set as attacking card - store a reference to the instance to ensure state consistency
+        console.log(`Before selectAttacker call - card type: ${typeof card}, has instanceId: ${!!card.instanceId}, has card prop: ${!!card.card}`);
+        
+        // Need to ensure the card data is properly converted for both types
+        const attackerCardWithChecks = {
+          ...card,
+          isSummoningSick: card.isSummoningSick ?? false,  // Ensure this property exists
+          canAttack: card.canAttack ?? true,               // Ensure this property exists
+          instanceId: card.instanceId                       // Ensure instanceId is preserved
+        };
+        
+        // Only proceed if card can actually attack
+        if (!attackerCardWithChecks.isSummoningSick && attackerCardWithChecks.canAttack) {
+          selectAttacker(attackerCardWithChecks);
+          console.log(`After selectAttacker call - attackingCard: ${!!attackingCard}, name: ${attackingCard?.card?.name || 'none'}`);
+          
+          // Show notification that card is selected for attack
+          showNotification({
+            title: `⚔️ Attacker Selected`,
+            description: `${card.card.name} is ready to attack. Select a target.`,
+            type: 'info',
+            duration: 2000
+          });
+        } else {
+          console.log(`Card ${card.card.name} attempted to attack but was blocked due to: ${card.isSummoningSick ? 'summoning sickness' : 'already attacked'}`);
+          showNotification({
+            title: `Cannot Attack`,
+            description: card.isSummoningSick 
+              ? `${card.card.name} has summoning sickness and cannot attack yet.`
+              : `${card.card.name} has already attacked this turn.`,
+            type: 'warning',
+            duration: 2000
+          });
+        }
+      }
+    } 
+    else if (card.isPlayed && card.isSummoningSick) {
+      // Show notification for summoning sickness
+      showNotification({
+        title: `Cannot Attack`,
+        description: `${card.card.name} has summoning sickness and cannot attack yet.`,
+        type: 'warning',
+        duration: 2000
+      });
+    } 
+    else if (card.isPlayed && !card.canAttack) {
+      // Show notification for already attacked
+      showNotification({
+        title: `Cannot Attack`,
+        description: `${card.card.name} has already attacked this turn.`,
+        type: 'warning',
+        duration: 2000
+      });
+    }
+  };
+  
+  // Helper to check if a card is a valid target for the selected spell or battlecry
+  const isValidTarget = (sourceCard: CardInstance, targetCard: CardInstance): boolean => {
+    // More detailed console logging for targeting debugging
+    console.log(`[TARGETING] Checking if ${targetCard.card.name} is a valid target for ${sourceCard.card.name}`);
+    console.log(`[TARGETING] Source card details:`, {
+      name: sourceCard.card.name,
+      type: sourceCard.card.type,
+      spellEffect: sourceCard.card.spellEffect
+    });
+    console.log(`[TARGETING] Target card details:`, {
+      name: targetCard.card.name,
+      type: targetCard.card.type,
+      instanceId: targetCard.instanceId,
+      keywords: targetCard.card.keywords
+    });
+    
+    // For spell cards
+    if (sourceCard.card.type === 'spell' && sourceCard.card.spellEffect) {
+      const spellEffect = sourceCard.card.spellEffect;
+      console.log(`[TARGETING] Spell requires target: ${spellEffect.requiresTarget}`);
+      
+      // Check if target is a minion
+      const isMinion = player.battlefield?.some(c => c.instanceId === targetCard.instanceId) || 
+                       opponent.battlefield?.some(c => c.instanceId === targetCard.instanceId);
+      
+      // Check if target is a hero
+      const isHero = (targetCard.card.type === 'hero');
+      
+      // Check if the hero belongs to player or opponent
+      const isPlayerHero = isHero && targetCard.card.heroClass === player.heroClass;
+      const isOpponentHero = isHero && targetCard.card.heroClass !== player.heroClass;
+      
+      // Check if target has taunt
+      const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+      
+      // Log for debugging
+      console.log(`[DEBUG] Checking target validity for ${sourceCard.card.name}:`, {
+        targetName: targetCard.card.name,
+        targetType: spellEffect.targetType,
+        conditionalTarget: spellEffect.conditionalTarget,
+        targetAttack: targetCard.card.attack,
+        isMinion,
+        isHero,
+        isPlayerHero,
+        isOpponentHero,
+        hasTaunt
+      });
+      
+      // Check conditionalTarget requirements first
+      if (spellEffect.conditionalTarget) {
+        if (isMinion) {
+          const targetAttack = targetCard.card.attack || 0;
+          const targetCurrentHealth = targetCard.currentHealth || 0;
+          const targetMaxHealth = targetCard.card.health || 0;
+          
+          // Handle attack-based conditional targets
+          switch (spellEffect.conditionalTarget) {
+            case 'attack_greater_than_5':
+              if (targetAttack < 5) {
+                console.log(`Target attack ${targetAttack} is less than 5, invalid for Shadow Word: Death`);
+                return false;
+              }
+              break;
+            case 'attack_less_than_3':
+              if (targetAttack > 3) {
+                console.log(`Target attack ${targetAttack} is greater than 3, invalid for Shadow Word: Pain`);
+                return false;
+              }
+              break;
+            case 'low_attack_minion':
+              if (targetAttack > 3) {
+                console.log(`Target attack ${targetAttack} is greater than 3, invalid for Shadow Word: Pain`);
+                return false;
+              }
+              break;
+            case 'damaged_minion':
+              if (targetCurrentHealth >= targetMaxHealth) {
+                console.log(`Target is not damaged (${targetCurrentHealth}/${targetMaxHealth}), invalid for Execute`);
+                return false;
+              }
+              break;
+            case 'undamaged_minion':
+              if (targetCurrentHealth < targetMaxHealth) {
+                console.log(`Target is damaged (${targetCurrentHealth}/${targetMaxHealth}), invalid for Backstab`);
+                return false;
+              }
+              break;
+            default:
+              console.warn(`Unknown conditional target: ${spellEffect.conditionalTarget}`);
+          }
+        } else {
+          // Most conditional targets only apply to minions
+          console.log('Conditional target only applies to minions, but target is not a minion');
+          return false;
+        }
+      }
+      
+      // Then check based on the target type
+      switch (spellEffect.targetType) {
+        case 'any':
+          // Can target any character (minion or hero)
+          
+          // If targeting opponent hero or minion, check for taunt rules
+          if (isOpponentHero || opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
+            // Check if the opponent has taunt minions
+            const opponentHasTaunt = opponent.battlefield.some(c => 
+              c.card.keywords?.includes('taunt')
+            );
+            
+            // If opponent has taunt minions, we can only target those unless the target itself has taunt
+            if (opponentHasTaunt && !hasTaunt && 
+                opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
+              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              return false;
+            }
+            
+            // If targeting opponent hero and there are taunt minions, cannot target hero
+            if (isOpponentHero && opponentHasTaunt) {
+              console.log('Cannot target opponent hero when there are taunt minions');
+              return false;
+            }
+          }
+          
+          // For 'any' type, both friendly and enemy targets are valid
+          return true;
+        case 'any_minion':
+          return isMinion; // Can target any minion, but not heroes
+        case 'friendly_minion':
+          return player.battlefield.some(c => c.instanceId === targetCard.instanceId);
+        case 'enemy_minion':
+          // Check if the opponent has taunt minions
+          const opponentHasTaunt = opponent.battlefield.some(c => 
+            c.card.keywords?.includes('taunt')
+          );
+          
+          // If the target is an opponent minion
+          if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
+            // If opponent has taunt minions, we can only target those unless the target itself has taunt
+            if (opponentHasTaunt && !hasTaunt) {
+              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              return false;
+            }
+            return true;
+          }
+          return false;
+        case 'enemy':
+          // Check if the opponent has taunt minions
+          const opponentHasTaunts = opponent.battlefield.some(c => 
+            c.card.keywords?.includes('taunt')
+          );
+          
+          // If targeting an opponent minion
+          if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
+            // If opponent has taunt minions, we can only target those unless the target itself has taunt
+            if (opponentHasTaunts && !hasTaunt) {
+              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              return false;
+            }
+            return true;
+          }
+          
+          // If targeting opponent hero and there are taunt minions, cannot target hero
+          if (isHero && isOpponentHero) {
+            if (opponentHasTaunts) {
+              console.log('Cannot target opponent hero when there are taunt minions');
+              return false;
+            }
+            return true;
+          }
+          
+          return false;
+        case 'friendly':
+          return player.battlefield.some(c => c.instanceId === targetCard.instanceId) || 
+                 (isHero && isPlayerHero);
+        default:
+          console.warn(`Unknown target type: ${spellEffect.targetType}`);
+          return false;
+      }
+    }
+    
+    // For minions with battlecry
+    if (sourceCard.card.type === 'minion' && 
+        sourceCard.card.keywords?.includes('battlecry') && 
+        sourceCard.card.battlecry) {
+      
+      const battlecry = sourceCard.card.battlecry;
+      
+      // If the battlecry doesn't require a target, any target is invalid
+      if (!battlecry.requiresTarget) {
+        return false;
+      }
+      
+      // Check based on the target type
+      switch (battlecry.targetType) {
+        case 'any':
+          // Can target any character (minion or hero), but check for taunt
+          // If targeting opponent hero or an opponent minion
+          const isOpponentHero = targetCard.card.type === 'hero' && targetCard.card.heroClass !== player.heroClass;
+          const isOpponentMinion = opponent.battlefield.some(c => c.instanceId === targetCard.instanceId);
+          
+          if (isOpponentHero || isOpponentMinion) {
+            // Check if the opponent has taunt minions
+            const opponentHasTaunt = opponent.battlefield.some(c => 
+              c.card.keywords?.includes('taunt')
+            );
+            
+            // If opponent has taunt minions, we can only target those unless the target itself has taunt
+            const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+            
+            if (opponentHasTaunt && !hasTaunt && isOpponentMinion) {
+              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              return false;
+            }
+            
+            // If targeting opponent hero and there are taunt minions, cannot target hero
+            if (isOpponentHero && opponentHasTaunt) {
+              console.log('Cannot target opponent hero when there are taunt minions');
+              return false;
+            }
+          }
+          return true;
+        case 'any_minion':
+          // Can target any minion, verify it's actually a minion
+          if (targetCard.card.type !== 'minion') {
+            return false;
+          }
+          
+          // If targeting an opponent minion, check for taunt
+          if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
+            // Check if the opponent has taunt minions
+            const opponentHasTaunt = opponent.battlefield.some(c => 
+              c.card.keywords?.includes('taunt')
+            );
+            
+            // If opponent has taunt minions, we can only target those unless the target itself has taunt
+            const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+            
+            if (opponentHasTaunt && !hasTaunt) {
+              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              return false;
+            }
+          }
+          return true;
+        case 'friendly_minion':
+          return player.battlefield.some(c => c.instanceId === targetCard.instanceId);
+        case 'enemy_minion':
+          // Check if it's actually an opponent minion
+          if (!opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
+            return false;
+          }
+          
+          // Check if the opponent has taunt minions
+          const opponentHasTaunt = opponent.battlefield.some(c => 
+            c.card.keywords?.includes('taunt')
+          );
+          
+          // If opponent has taunt minions, we can only target those unless the target itself has taunt
+          const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+          
+          if (opponentHasTaunt && !hasTaunt) {
+            console.log('Cannot target non-taunt minions when opponent has taunt minions');
+            return false;
+          }
+          return true;
+        default:
+          // Special case for Faceless Manipulator (copy battlecry)
+          if (battlecry.type === 'copy') {
+            // Faceless should only copy minions on the battlefield
+            return (player.battlefield.some(c => c.instanceId === targetCard.instanceId) || 
+                   opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) &&
+                   targetCard.card.type === 'minion';
+          }
+          return false;
+      }
+    }
+    
+    // If none of the above conditions are met, the target is invalid
+    return false;
+  };
+  
+  // Handle attacking an opponent's card
+  const handleAttackOpponentCard = (targetCard: CardInstance | CardInstanceWithCardData) => {
+    // Convert the card to ensure it has the right format (CardInstance)
+    const adaptedTargetCard = reverseAdaptCardInstance(adaptCardInstance(targetCard));
+    
+    console.log("[ATTACK_FLOW] Attack opponent card function called with target:", adaptedTargetCard.card.name);
+    console.log("[ATTACK_FLOW] Is player turn:", isPlayerTurn);
+    console.log("[ATTACK_FLOW] Target card zone:", opponent.battlefield.some(c => c.instanceId === adaptedTargetCard.instanceId) ? "opponent battlefield" : "unknown");
+    
+    if (attackingCard) {
+      console.log("[ATTACK_FLOW] Attacking card exists:", attackingCard.card.name);
+      console.log("[ATTACK_FLOW] Attacking card details:", {
+        canAttack: attackingCard.canAttack,
+        isSummoningSick: attackingCard.isSummoningSick,
+        attacksPerformed: attackingCard.attacksPerformed,
+        zone: player.battlefield.some(c => c.instanceId === attackingCard.instanceId) ? "player battlefield" : "unknown"
+      });
+      
+      // Check if the card can attack (not summoning sick and has not used its attacks)
+      if (attackingCard.isSummoningSick) {
+        console.log(`${attackingCard.card.name} can't attack - it has summoning sickness`);
+        showNotification({
+          title: "Can't Attack",
+          description: "This minion can't attack yet - it has summoning sickness.",
+          type: 'error',
+          duration: 2000
+        });
+        return;
+      }
+      
+      if (!attackingCard.canAttack) {
+        console.log(`${attackingCard.card.name} can't attack - it has already attacked this turn`);
+        showNotification({
+          title: "Can't Attack",
+          description: "This minion has already attacked this turn.",
+          type: 'error',
+          duration: 2000
+        });
+        return;
+      }
+      
+      // Check if opponent has taunt minions - if so, we can only attack those
+      const opponentHasTaunts = opponent.battlefield.some(c => 
+        c.card.keywords?.includes('taunt')
+      );
+      
+      // Only do Taunt validation when the target is NOT a Taunt
+      const targetHasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+      
+      if (opponentHasTaunts && !targetHasTaunt) {
+        console.log(`Can't attack non-taunt minion when opponent has taunt minions`);
+        showNotification({
+          title: "Can't Attack",
+          description: "You must attack minions with Taunt first.",
+          type: 'error',
+          duration: 2000
+        });
+        return;
+      }
+      
+      console.log(`Attacking ${targetCard.card.name} with ${attackingCard.card.name}`);
+      
+      // Play attack sound
+      playHit();
+      
+      // Get card positions for animation
+      const attackerPosition = getCardPosition(attackingCard.instanceId);
+      const defenderPosition = getCardPosition(targetCard.instanceId);
+      
+      // If we have valid positions, show an attack animation
+      if (attackerPosition && defenderPosition) {
+        // Add attack animation
+        addAttackAnimation(attackerPosition, defenderPosition);
+        
+        // Add damage effect on target card - ensure attack is defined
+        const attackerAttackValue = attackingCard.card.attack || 0;
+        addDamageEffect(defenderPosition, attackerAttackValue);
+        
+        // Check if the attacker will take damage from the defender
+        const defenderAttackValue = targetCard.card.attack || 0;
+        if (defenderAttackValue > 0) {
+          addDamageEffect(attackerPosition, defenderAttackValue);
+        }
+        
+        // Check if defending minion has Divine Shield
+        if (targetCard.hasDivineShield) {
+          addShieldBreakEffect(defenderPosition);
+        }
+      }
+      
+      // Check if the attack will kill the minion - ensure attack is defined
+      const attackerAttackValue = attackingCard.card.attack || 0;
+      const willKill = targetCard.currentHealth <= attackerAttackValue;
+      
+      // Check for deathrattle
+      if (willKill && targetCard.card.keywords?.includes('deathrattle') && targetCard.card.deathrattle) {
+        // Attack first
+        attackWithCard(attackingCard.instanceId, targetCard.instanceId);
+        
+        // Show deathrattle notification
+        const deathrattle = targetCard.card.deathrattle;
+        
+        // Get more descriptive targets based on targetType
+        let targetDescription = '';
+        switch (deathrattle.targetType) {
+          case 'all':
+            targetDescription = 'all minions';
+            break;
+          case 'all_friendly':
+            targetDescription = 'all friendly minions';
+            break;
+          case 'all_enemies':
+            targetDescription = 'all enemy minions';
+            break;
+          case 'friendly_hero':
+            targetDescription = 'your hero';
+            break;
+          case 'enemy_hero':
+            targetDescription = 'enemy hero';
+            break;
+          default:
+            targetDescription = 'targets';
+        }
+        
+        showDeathrattleEffect(
+          targetCard.card.name,
+          deathrattle.type,
+          deathrattle.value,
+          targetDescription
+        );
+      } else {
+        // Just perform the attack without notification
+        attackWithCard(attackingCard.instanceId, targetCard.instanceId);
+      }
+    }
+  };
+  
+  // Handle attacking the opponent's hero directly, using hero power, or targeting with battlecry or spell
+  const handleAttackOpponentHero = () => {
+    // CASE 1: If there's a spell card that needs a target
+    if (selectedCard && 
+        selectedCard.card.type === 'spell' && 
+        selectedCard.card.spellEffect?.requiresTarget) {
+      
+      console.log(`Selected opponent's hero as target for spell ${selectedCard.card.name}`);
+      
+      // Create a dummy hero card instance for the opponent's hero
+      const opponentHeroInstance: CardInstance = {
+        instanceId: 'opponent-hero',
+        card: {
+          id: -1,
+          name: opponent.hero?.name || 'Opponent Hero', // Add fallback for undefined hero
+          type: 'hero',
+          rarity: 'common',
+          manaCost: 0,
+          heroClass: opponent.heroClass
+        },
+        attacksPerformed: 0,
+        currentHealth: opponent.heroHealth || 30, // Fallback to 30 health if undefined
+        canAttack: false,
+        isSummoningSick: false
+      };
+      
+      // First, check if this is a valid target type for the spell
+      if (isValidTarget(selectedCard, opponentHeroInstance)) {
+        // Check if opponent has taunt minions - if so, we can't target the hero with spells either
+        const opponentHasTaunt = opponent.battlefield?.some(c => 
+          c.card.keywords?.includes('taunt')
+        ) || false;
+        
+        if (opponentHasTaunt) {
+          console.log(`Cannot target opponent's hero with spell when there are taunt minions on the battlefield`);
+          showNotification({
+            title: "Can't Target Hero",
+            description: "You must target taunt minions first.",
+            type: 'error',
+            duration: 2000
+          });
+          // Return early without playing the card
+          return;
+        }
+        // Store the selected card info before clearing selection
+        const spellCard = selectedCard;
+        const spellEffect = spellCard.card.spellEffect;
+        
+        // Clear the selectedCard state first to prevent confusion in state updates
+        selectCard(null);
+        
+        // Now play the card with the target
+        console.log(`Playing ${spellCard.card.name} targeting opponent's hero`);
+        playCard(spellCard.instanceId, 'opponent', 'hero');
+        
+        // Add mana use animation
+        if (manaPositionRef.current) {
+          addManaUseAnimation(manaPositionRef.current, spellCard.card.manaCost);
+          
+          // If this spell has Overload, show an overload animation too
+          if (spellCard.card.keywords?.includes('overload') && spellCard.card.overload) {
+            const overloadAmount = spellCard.card.overload.amount;
+            
+            // Show special animation for overloaded mana crystals
+            if (overloadAmount > 0) {
+              addOverloadAnimation(manaPositionRef.current, overloadAmount);
+              
+              // Show notification for overload
+              showNotification({
+                title: '🔒 Overload',
+                description: `${overloadAmount} mana crystal${overloadAmount > 1 ? 's' : ''} will be locked next turn`,
+                type: 'warning',
+                duration: 3000
+              });
+            }
+          }
+        }
+        
+        // Get the hero position for visual effects
+        const heroPos = getHeroPosition('opponent');
+        
+        // Show appropriate animations for the spell effect
+        if (heroPos) {
+          if (spellEffect.type === 'damage') {
+            const damageAmount = spellEffect.value || 0;
+            addDamageEffect(heroPos, damageAmount);
+            playHit();
+          } else {
+            // Generic spell effect
+            playSuccess();
+          }
+        }
+      } else {
+        // Not a valid target
+        showNotification({
+          title: `❌ Invalid Target`,
+          description: `Opponent's hero is not a valid target for ${selectedCard.card.name}`,
+          type: 'error',
+          duration: 2000
+        });
+      }
+    }
+    // CASE 2: If there's a battlecry card that needs a target
+    else if (selectedCard && 
+        selectedCard.card.type === 'minion' && 
+        selectedCard.card.keywords?.includes('battlecry') && 
+        selectedCard.card.battlecry && 
+        selectedCard.card.battlecry.requiresTarget) {
+      
+      console.log(`Selected opponent's hero as battlecry target for ${selectedCard.card.name}`);
+      
+      // Check if this is a valid target for the battlecry
+      const targetType = selectedCard.card.battlecry.targetType;
+      let isValid = false;
+      
+      // First, check if this is a valid target type for the battlecry
+      switch (targetType) {
+        case 'any':
+          isValid = true; // Can target any character (including heroes)
+          break;
+        case 'enemy_hero':
+          isValid = true; // Can target enemy hero specifically
+          break;
+        case 'any_hero':
+          isValid = true; // Can target any hero
+          break;
+        default:
+          isValid = false;
+      }
+      
+      // Now check if opponent has taunt minions - if so, we can't target the hero directly
+      if (isValid) {
+        // Check if opponent has taunt minions - if so, we can't target the hero
+        const opponentHasTaunt = opponent.battlefield?.some(c => 
+          c.card.keywords?.includes('taunt')
+        ) || false;
+        
+        if (opponentHasTaunt) {
+          console.log(`Can't target opponent's hero directly when there are taunt minions on the battlefield`);
+          showNotification({
+            title: "Can't Target Hero",
+            description: "You must target taunt minions first.",
+            type: 'error',
+            duration: 2000
+          });
+          isValid = false;
+        }
+      }
+      
+      if (isValid) {
+        // Store the selected card info before clearing selection
+        const battlecryCard = selectedCard;
+        const battlecryType = battlecryCard.card.battlecry.type;
+        
+        // Clear the selectedCard state first to prevent confusion in state updates
+        selectCard(null);
+        
+        // Now play the card with the target
+        console.log(`Playing ${battlecryCard.card.name} with target opponent's hero`);
+        playCard(battlecryCard.instanceId, 'opponent', 'hero');
+        
+        // Add mana use animation
+        if (manaPositionRef.current) {
+          addManaUseAnimation(manaPositionRef.current, battlecryCard.card.manaCost);
+        }
+        
+        // Get the hero position for visual effects
+        const heroPos = getHeroPosition('opponent');
+        
+        // Show appropriate animations for the battlecry effect
+        if (heroPos) {
+          if (battlecryType === 'damage') {
+            const damageAmount = battlecryCard.card.battlecry.value || 0;
+            addDamageEffect(heroPos, damageAmount);
+            playHit();
+          } else {
+            // Generic battlecry effect
+            playSuccess();
+          }
+        }
+      } else {
+        // Not a valid target
+        showNotification({
+          title: `❌ Invalid Target`,
+          description: `Opponent's hero is not a valid target for ${selectedCard.card.name}'s battlecry`,
+          type: 'error',
+          duration: 2000
+        });
+      }
+    }
+    // CASE 2: If in hero power target mode
+    else if (heroTargetMode) {
+      // If in hero power target mode and clicking on opponent's hero
+      console.log('Using hero power on opponent\'s hero');
+      
+      // For mage and hunter hero powers that target the opponent's hero, check for taunt minions
+      if (player.heroClass === 'mage' || player.heroClass === 'hunter') {
+        // Check if opponent has taunt minions - if so, we can't target the hero with hero power
+        const opponentHasTaunt = opponent.battlefield?.some(c => 
+          c.card.keywords?.includes('taunt')
+        ) || false;
+        
+        if (opponentHasTaunt) {
+          console.log(`Cannot target opponent's hero with hero power when there are taunt minions on the battlefield`);
+          showNotification({
+            title: "Can't Target Hero",
+            description: "You must target taunt minions first.",
+            type: 'error',
+            duration: 2000
+          });
+          // Return early without using hero power
+          return;
+        }
+      }
+      
+      // Get attacker position
+      const heroPos = getHeroPosition('opponent');
+      
+      // Create animations based on the hero class
+      if (heroPos) {
+        // First, show the class-specific hero power animation
+        if (player.heroClass === 'mage') {
+          // For Mage, add hero power animation at the target hero position
+          addHeroPowerEffect(heroPos);
+          // Then add damage effect
+          addDamageEffect(heroPos, 1);
+          playHit();
+        } else if (player.heroClass === 'hunter') {
+          // For Hunter, add hero power animation at the target hero position
+          addHeroPowerEffect(heroPos);
+          // Then add damage effect (2 damage)
+          addDamageEffect(heroPos, 2);
+          playHit();
+        } else if (player.heroClass === 'warrior') {
+          // For Warrior hero power, we target our own hero (armor up)
+          const playerHeroPos = getHeroPosition('player');
+          if (playerHeroPos) {
+            // Add hero power animation at player's hero position
+            addHeroPowerEffect(playerHeroPos);
+            // Show buff effect on player's hero
+            addBuffEffect(playerHeroPos, 0, 2); // 0 attack, 2 health buff for armor
+            playSuccess();
+          }
+        }
+      }
+      
+      // Execute the hero power
+      useHeroPower('opponent', 'hero');
+      
+      // Add mana use animation for hero power
+      if (manaPositionRef.current) {
+        // Hero power costs 2 mana
+        addManaUseAnimation(manaPositionRef.current, 2);
+      }
+    } 
+    // CASE 3: If a card is selected for attacking
+    else if (attackingCard) {
+      // Check if the card can attack (not summoning sick and has not used its attacks)
+      if (attackingCard.isSummoningSick) {
+        console.log(`${attackingCard.card.name} can't attack - it has summoning sickness`);
+        showNotification({
+          title: "Can't Attack",
+          description: "This minion can't attack yet - it has summoning sickness.",
+          type: 'error',
+          duration: 2000
+        });
+        return;
+      }
+      
+      if (!attackingCard.canAttack) {
+        console.log(`${attackingCard.card.name} can't attack - it has already attacked this turn`);
+        showNotification({
+          title: "Can't Attack",
+          description: "This minion has already attacked this turn.",
+          type: 'error',
+          duration: 2000
+        });
+        return;
+      }
+      
+      // Check if opponent has taunt minions - if so, we can't attack the hero
+      const opponentHasTaunt = opponent.battlefield?.some(c => 
+        c.card.keywords?.includes('taunt')
+      ) || false;
+      
+      if (opponentHasTaunt) {
+        console.log(`Can't attack hero directly when there are taunt minions on the battlefield`);
+        showNotification({
+          title: "Can't Attack Hero",
+          description: "You must attack taunt minions first.",
+          type: 'error',
+          duration: 2000
+        });
+        return;
+      }
+      
+      // Normal attack against hero
+      console.log(`Attacking opponent's hero with ${attackingCard.card.name}`);
+      
+      // Get card positions for animation
+      const attackerPosition = getCardPosition(attackingCard.instanceId);
+      const heroPos = getHeroPosition('opponent');
+      
+      // If we have valid positions, show an attack animation
+      if (attackerPosition && heroPos) {
+        // Add attack animation
+        addAttackAnimation(attackerPosition, heroPos);
+        
+        // Add damage effect on hero - ensure attack is defined
+        const attackValue = attackingCard.card.attack || 0;
+        addDamageEffect(heroPos, attackValue);
+      }
+      
+      // Perform the attack
+      attackWithCard(attackingCard.instanceId); // No target ID means attacking hero
+    } else {
+      // If clicked with no selection, do nothing but log for debugging
+      console.log('Clicked opponent hero without attack selection or hero power active');
+    }
+  };
+  
+  // Handle end turn
+  
+  const handleEndTurn = useCallback(() => {
+    // Prevent ending turn during mulligan phase
+    if (gamePhase === 'mulligan') {
+      showNotification({
+        title: '⚠️ Mulligan in Progress',
+        description: 'Please complete the mulligan phase before ending your turn.',
+        type: 'warning',
+        duration: 3000
+      });
+      return;
+    }
+    
+    // If it's the player's turn and about to end, show mana animation for the
+    // next turn's opponent (the current player) will get +1 max mana
+    if (isPlayerTurn && manaPositionRef.current && player.mana?.max < 10) {
+      // Add animation for gaining a mana crystal on the next turn
+      addManaGainAnimation(manaPositionRef.current, 1);
+    }
+    
+    // Display a "thinking" message if the player is ending their turn
+    if (isPlayerTurn) {
+      showNotification({
+        title: '💭 Opponent Thinking',
+        description: 'The opponent is planning their turn...',
+        type: 'info',
+        duration: 2000
+      });
+    }
+    
+    // End the turn (the AI action manager will handle opponent's turn)
+    endTurn();
+  }, [gamePhase, isPlayerTurn, player.mana?.max, endTurn, addManaGainAnimation, showNotification]);
+  
+  // Toggle hero power mode
+  const handleToggleHeroPower = () => {
+    toggleHeroTargetMode();
+  };
+  
+  // Handle using hero power on a minion
+  const handleHeroPowerOnMinion = (targetCard: CardInstance) => {
+    if (heroTargetMode) {
+      console.log(`Using hero power on ${targetCard.card.name}`);
+      
+      // Get the target position for animation
+      const targetPosition = getCardPosition(targetCard.instanceId);
+      
+      // Create animations based on the hero class
+      if (targetPosition) {
+        // Add hero power special effect animation
+        addHeroPowerEffect(targetPosition);
+        
+        // Add additional effect animations based on hero class
+        if (player.heroClass === 'mage') {
+          // For Mage hero power, show damage effect
+          addDamageEffect(targetPosition, 1);
+          playHit();
+        } else if (player.heroClass === 'paladin') {
+          // For Paladin, we don't need an effect on the target as it summons a minion
+          // But we could add a buff effect for visual feedback
+          addBuffEffect(targetPosition, 0, 0); // Update animation without buff
+          playSuccess();
+        }
+      }
+      
+      // Execute the hero power
+      useHeroPower(targetCard.instanceId, 'card');
+      
+      // Add mana use animation for hero power
+      if (manaPositionRef.current) {
+        // Hero power costs 2 mana
+        addManaUseAnimation(manaPositionRef.current, 2);
+      }
+    }
+  };
+  
+  // Handle player hero click (for targeting player's own hero with spells/battlecries)
+  const handlePlayerHeroClick = () => {
+    // Only allow interaction during player's turn
+    if (!isPlayerTurn || isProcessingAIActions) return;
+    
+    // CASE 1: If spell card is selected
+    if (selectedCard && selectedCard.card.type === 'spell' && selectedCard.card.spellEffect) {
+      // Create a dummy hero card instance for the player's hero
+      // First check if player.hero exists to avoid the "Cannot read properties of undefined" error
+      if (!player.hero) {
+        console.error('Player hero is undefined when clicking player hero portrait');
+        return;
+      }
+      
+      const playerHeroInstance: CardInstance = {
+        instanceId: 'player-hero',
+        card: {
+          id: -2,
+          name: player.hero.name || 'Player Hero', // Add fallback name
+          type: 'hero',
+          rarity: 'common',
+          manaCost: 0,
+          heroClass: player.heroClass || 'neutral' // Add fallback hero class
+        },
+        attacksPerformed: 0,
+        currentHealth: player.heroHealth || 30, // Fallback to 30 health if undefined
+        canAttack: false,
+        isSummoningSick: false
+      };
+      
+      // Check if valid target based on spell's targeting requirements
+      const spellEffect = selectedCard.card.spellEffect;
+      
+      // Log for debugging
+      console.log(`Selected player's hero as target for spell ${selectedCard.card.name}`);
+      console.log('Spell effect:', spellEffect);
+      
+      let isValid = false;
+      
+      if (spellEffect.targetType === 'any') {
+        isValid = true;
+      } else if (spellEffect.targetType === 'friendly_hero') {
+        isValid = true;
+      } else if (spellEffect.targetType === 'friendly_character') {
+        isValid = true;
+      } else if (spellEffect.targetType === 'any_hero') {
+        isValid = true;
+      }
+      
+      if (isValid) {
+        // Store the selected card info before clearing selection
+        const spellCard = selectedCard;
+        
+        // Clear the selectedCard state first to prevent confusion in state updates
+        selectCard(null);
+        
+        // Now play the card with the target
+        console.log(`Playing ${spellCard.card.name} targeting player's hero`);
+        playCard(spellCard.instanceId, 'player', 'hero');
+        
+        // Add mana use animation
+        if (manaPositionRef.current) {
+          addManaUseAnimation(manaPositionRef.current, spellCard.card.manaCost);
+          
+          // If this spell has Overload, show an overload animation too
+          if (spellCard.card.keywords?.includes('overload') && spellCard.card.overload) {
+            const overloadAmount = spellCard.card.overload.amount;
+            
+            // Show special animation for overloaded mana crystals
+            if (overloadAmount > 0) {
+              addOverloadAnimation(manaPositionRef.current, overloadAmount);
+              
+              // Show notification for overload
+              showNotification({
+                title: '🔒 Overload',
+                description: `${overloadAmount} mana crystal${overloadAmount > 1 ? 's' : ''} will be locked next turn`,
+                type: 'warning',
+                duration: 3000
+              });
+            }
+          }
+        }
+        
+        // Get the hero position for visual effects
+        const heroPos = getHeroPosition('player');
+        
+        // Show appropriate animations for the spell effect
+        if (heroPos) {
+          if (spellEffect.type === 'damage') {
+            const damageAmount = spellEffect.value || 0;
+            addDamageEffect(heroPos, damageAmount);
+            playHit();
+          } else if (spellEffect.type === 'heal') {
+            const healAmount = spellEffect.value || 0;
+            addHealEffect(heroPos, healAmount);
+            playSuccess();
+          } else {
+            // Generic spell effect
+            playSuccess();
+          }
+        }
+      } else {
+        // Not a valid target
+        showNotification({
+          title: `❌ Invalid Target`,
+          description: `Your hero is not a valid target for ${selectedCard.card.name}`,
+          type: 'error',
+          duration: 2000
+        });
+      }
+    }
+    // CASE 2: If there's a battlecry card that needs a target
+    else if (selectedCard && 
+        selectedCard.card.type === 'minion' && 
+        selectedCard.card.keywords?.includes('battlecry') && 
+        selectedCard.card.battlecry && 
+        selectedCard.card.battlecry.requiresTarget) {
+      
+      // First check if player.hero exists to avoid the "Cannot read properties of undefined" error
+      if (!player.hero) {
+        console.error('Player hero is undefined when selecting hero as battlecry target');
+        return;
+      }
+      
+      console.log(`Selected player's hero as battlecry target for ${selectedCard.card.name}`);
+      
+      // Check if this is a valid target for the battlecry
+      const targetType = selectedCard.card.battlecry.targetType;
+      let isValid = false;
+      
+      switch (targetType) {
+        case 'any':
+          isValid = true; // Can target any character (including heroes)
+          break;
+        case 'friendly_hero':
+          isValid = true; // Can target friendly hero specifically
+          break;
+        case 'any_hero':
+          isValid = true; // Can target any hero
+          break;
+        case 'self':
+          isValid = true; // Can target self (which includes the player's hero)
+          break;
+        default:
+          isValid = false;
+      }
+      
+      if (isValid) {
+        // Store the selected card info before clearing selection
+        const battlecryCard = selectedCard;
+        const battlecryType = battlecryCard.card.battlecry.type;
+        
+        // Clear the selectedCard state first to prevent confusion in state updates
+        selectCard(null);
+        
+        // Now play the card with the target
+        console.log(`Playing ${battlecryCard.card.name} with target player's hero`);
+        playCard(battlecryCard.instanceId, 'player', 'hero');
+        
+        // Add mana use animation
+        if (manaPositionRef.current) {
+          addManaUseAnimation(manaPositionRef.current, battlecryCard.card.manaCost);
+        }
+        
+        // Get the hero position for visual effects
+        const heroPos = getHeroPosition('player');
+        
+        // Show appropriate animations for the battlecry effect
+        if (heroPos) {
+          if (battlecryType === 'damage') {
+            const damageAmount = battlecryCard.card.battlecry.value || 0;
+            addDamageEffect(heroPos, damageAmount);
+            playHit();
+          } else if (battlecryType === 'heal') {
+            const healAmount = battlecryCard.card.battlecry.value || 0;
+            addHealEffect(heroPos, healAmount);
+            playSuccess();
+          } else {
+            // Generic battlecry effect
+            playSuccess();
+          }
+        }
+      } else {
+        // Not a valid target
+        showNotification({
+          title: `❌ Invalid Target`,
+          description: `Your hero is not a valid target for ${selectedCard.card.name}'s battlecry`,
+          type: 'error',
+          duration: 2000
+        });
+      }
+    }
+  };
+  
+  // Background music is now managed through the useAudio hook
+  // We'll initialize it on first mount only - with reference to prevent loops
+  const audioInitializedRef = React.useRef(false);
+  useEffect(() => {
+    // Only initialize once to prevent loops
+    if (!audioInitializedRef.current) {
+      audioInitializedRef.current = true;
+      const audio = useAudio.getState();
+      
+      // Initialize background music if not already playing
+      if (audio) {
+        audio.playBackgroundMusic('battle_theme');
+      }
+    }
+    
+    // No need for cleanup as the audio store manages state
+  }, []);
+  
+
+  
+  // Handle game over
+  if (gamePhase === 'game_over') {
+    const winner = gameState.winner === 'player' ? 'You Win!' : 'Opponent Wins!';
+    
+    return (
+      <div className="h-full flex flex-col items-center justify-center">
+        <div className="text-4xl font-bold mb-8">Game Over</div>
+        <div className="text-5xl font-bold text-yellow-400 mb-12">{winner}</div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="professional-game-button px-8 py-4 text-white font-bold rounded-lg text-xl"
+        >
+          Play Again
+        </button>
+      </div>
+    );
+  }
+  
+  return (
+    <NorseBackground>
+    <div className="virtual-canvas-scaler game-container game-board-enhanced h-full overflow-visible relative z-index-base" ref={gameContainerRef}>
+      {/* Debug 3D renderer to validate WebGL rendering */}
+      <DebugRenderCheck />
+      {/* Card drag animation layer */}
+      <CardDragLayer
+        card={draggedCard}
+        startPosition={startPosition}
+        targetPosition={targetPosition}
+        isAnimating={isDragging}
+        onAnimationComplete={handleAnimationComplete}
+      />
+      
+      {/* Spell targeting UI */}
+      {showTargetingArrow && (
+        <TargetingArrow 
+          from={arrowStartPosition} 
+          to={mousePosition} 
+          color="#ffcc00" 
+          animated={true}
+        />
+      )}
+      
+      {/* Turn transition animation - activated when turn changes */}
+      {lastTurnRef.current !== currentTurn && (
+        <TurnTransition 
+          isPlayerTurn={isPlayerTurn}
+          onComplete={() => {
+            lastTurnRef.current = currentTurn;
+            // Play turn-specific environmental effect
+            if (isPlayerTurn) {
+              // Only show environmental effect for the player's turn
+              // and only for higher-value cards (rare, epic, legendary)
+              const highValueCards = player.hand.filter(card => 
+                card.card.rarity && ['rare', 'epic', 'legendary'].includes(card.card.rarity.toLowerCase())
+              );
+              
+              if (highValueCards.length > 0) {
+                // Show effect for a random high-value card
+                const randomCard = highValueCards[Math.floor(Math.random() * highValueCards.length)];
+                if (randomCard && randomCard.card) {
+                  setActiveEnvironmentalEffect({
+                    card: randomCard.card,
+                    duration: 3,
+                    intensity: randomCard.card.rarity === 'legendary' ? 'high' : 'medium'
+                  });
+                }
+              }
+            }
+          }}
+        />
+      )}
+      
+      {/* Legendary card entrance animation for when legendaries are played */}
+      {activeLegendaryCard && (
+        <LegendaryEntrance
+          card={activeLegendaryCard.card}
+          position={activeLegendaryCard.position}
+          onComplete={() => setActiveLegendaryCard(null)}
+        />
+      )}
+      
+      {/* Environmental effect based on card type/class */}
+      {activeEnvironmentalEffect && (
+        <EnvironmentalEffect
+          card={activeEnvironmentalEffect.card}
+          duration={activeEnvironmentalEffect.duration}
+          intensity={activeEnvironmentalEffect.intensity}
+          onComplete={() => setActiveEnvironmentalEffect(null)}
+        />
+      )}
+      
+      {/* Animation layer for visual effects */}
+      <AnimationLayer />
+      
+      {/* Dynamic audio that responds to board state */}
+      <DynamicAudioLayer />
+      
+      {/* Card detail view */}
+      {detailCard && (
+        <CardDetailView 
+          card={detailCard} 
+          onClose={handleCloseCardDetails} 
+        />
+      )}
+      
+      {/* AI thinking overlay - show when AI is processing actions */}
+      {isProcessingAIActions && !isPlayerTurn && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-gray-900 bg-opacity-80 p-4 rounded-xl shadow-xl border border-yellow-600 max-w-md">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-yellow-400 mb-2">💭 Opponent's Turn</h3>
+              <p className="text-white text-sm">The opponent is thinking about their next move...</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Mulligan Screen - only show during mulligan phase */}
+      {gamePhase === 'mulligan' && gameState.mulligan && (
+        <MulliganScreen
+          mulligan={gameState.mulligan}
+          playerHand={player.hand}
+          onMulliganAction={() => {
+            // This is now handled directly by the store methods
+            // We leave this prop for compatibility, but don't need to do anything here
+          }}
+        />
+      )}
+      
+      {/* New Attack System integration */}
+      <AttackSystem 
+        isPlayerTurn={isPlayerTurn} 
+        cardPositions={getCardPositionsMap()}
+        getBoardCenter={() => ({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2
+        })}
+        onAttackComplete={() => {
+          console.log('[ATTACK] Attack completed successfully');
+        }}
+      />
+      
+      {/* Battlefield connector for the attack system */}
+      <UnifiedBattlefieldAttackConnector 
+        playerCards={player.battlefield}
+        opponentCards={opponent.battlefield}
+        isPlayerTurn={isPlayerTurn}
+        cardPositions={getCardPositionsMap()}
+        onCardClick={createHandlePlayerCardClick(isPlayerTurn, attackingCard, selectAttacker, handleCardSelect)}
+        onOpponentCardClick={createHandleOpponentCardClick(attackingCard, attackWithCard)}
+        onOpponentHeroClick={createHandleOpponentHeroClick(attackingCard, attackWithCard)}
+      />
+
+      {/* Toast notifications */}
+      <Toaster position="top-right" richColors />
+      
+      {/* AI Action notifications */}
+      <ActionNotification action={currentAction} />
+      
+      {/* AI Attack Animation Popup - shows when opponent minions attack */}
+      <AIAttackAnimationProcessor />
+      
+      {/* Hearthstone-style game board layout with strict proportional containers */}
+      <div className="game-grid-container w-full h-full">
+        {/* Top opponent area - fixed at 20% height */}
+        <GameAreaContainer areaType="opponent" className="z-index-base">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="mr-4">
+                {/* Enemy mana crystals - Enhanced 3D version */}
+                <ManaBar 
+                  currentMana={opponent.mana.current} 
+                  maxMana={opponent.mana.max} 
+                  overloadedMana={opponent.mana.overloaded} 
+                  pendingOverload={opponent.mana.pendingOverload}
+                />
+              </div>
+              
+              {/* Enemy deck count with card back - Norse themed */}
+              <div className="flex items-center">
+                <div className="norse-deck flex items-center justify-center mr-1">
+                  <div className="norse-card-count">{opponent.deck.length}</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Enemy hero portrait - Invisible but in DOM for position tracking */}
+            {/* Keep rendered for animation position tracking */}
+            <div 
+              className="opacity-0 pointer-events-none absolute w-16 h-16"
+              ref={ref => {
+                if (ref) {
+                  const rect = ref.getBoundingClientRect();
+                  registerHeroPosition && registerHeroPosition('opponent', {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2
+                  });
+                }
+              }}
+            />
+            
+            {/* Enemy hand count */}
+            <div className="flex items-center">
+              <div className="flex">
+                {opponent.hand.map((_, index) => (
+                  <div 
+                    key={index} 
+                    className="w-6 h-8 bg-gradient-to-br from-amber-700 to-amber-900 rounded border border-amber-600 -ml-2 first:ml-0"
+                  />
+                ))}
+                {opponent.hand.length > 0 && (
+                  <div className="ml-1 text-white text-xs font-bold">{opponent.hand.length}</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </GameAreaContainer>
+        
+        {/* Main battlefield area - fixed at 60% height */}
+        <GameAreaContainer areaType="battlefield" className="px-4" ref={battlefieldRef}>
+          {/* Add debugging logs for player battlefield */}
+          {console.log("DEBUG GameBoard - Player battlefield length:", player.battlefield?.length)}
+          {console.log("DEBUG GameBoard - Player battlefield data:", JSON.stringify(player.battlefield))}
+          {console.log("DEBUG GameBoard - Opponent battlefield length:", opponent.battlefield?.length)}
+          {console.log("DEBUG GameBoard - Battlefield ref exists:", !!battlefieldRef.current)}
+          
+          {/* Attack System is now integrated at the root level */}
+          
+          <SimpleBattlefield 
+            playerCards={player.battlefield}
+            opponentCards={opponent.battlefield}
+            isPlayerTurn={isPlayerTurn}
+            attackingCard={attackingCard}
+            onCardClick={(card) => {
+              if (isProcessingAIActions) return;
+              
+              // If right click or ctrl+click, view card details
+              if ((window.event as MouseEvent)?.ctrlKey) {
+                handleViewCardDetails(card);
+              } else {
+                // Otherwise, normal card selection
+                // Extract the essential properties to create a compatible CardInstance
+                const cardInstance = {
+                  instanceId: card.instanceId,
+                  card: card.card,
+                  currentHealth: card.currentHealth,
+                  canAttack: card.canAttack,
+                  isPlayed: card.isPlayed,
+                  isSummoningSick: card.isSummoningSick,
+                  hasDivineShield: card.hasDivineShield,
+                  attacksPerformed: card.attacksPerformed
+                };
+                handleCardSelect(cardInstance);
+              }
+            }}
+            onOpponentCardClick={
+              isProcessingAIActions ? undefined :
+              // If hero power is active, use hero power on target with proper type handling
+              heroTargetMode ? ((card) => {
+                // Extract the essential properties to create a compatible CardInstance
+                const cardInstance = {
+                  instanceId: card.instanceId,
+                  card: card.card,
+                  currentHealth: card.currentHealth,
+                  canAttack: card.canAttack,
+                  isPlayed: card.isPlayed,
+                  isSummoningSick: card.isSummoningSick,
+                  hasDivineShield: card.hasDivineShield,
+                  attacksPerformed: card.attacksPerformed
+                };
+                handleHeroPowerOnMinion(cardInstance);
+              }) : 
+              // If a card with battlecry requiring target is selected, handle that
+              (selectedCard && selectedCard.card.type === 'minion' && 
+               selectedCard.card.keywords?.includes('battlecry') && 
+               selectedCard.card.battlecry?.requiresTarget) ? 
+               ((card) => {
+                // Extract the essential properties to create a compatible CardInstance
+                const cardInstance = {
+                  instanceId: card.instanceId,
+                  card: card.card,
+                  currentHealth: card.currentHealth,
+                  canAttack: card.canAttack,
+                  isPlayed: card.isPlayed,
+                  isSummoningSick: card.isSummoningSick,
+                  hasDivineShield: card.hasDivineShield,
+                  attacksPerformed: card.attacksPerformed
+                };
+                handleCardSelect(cardInstance);
+               }) :
+              // Otherwise, regular attack - same approach for type compatibility
+              ((card) => {
+                console.log("Attack opponent card clicked:", card.card.name);
+                // Extract the essential properties to create a compatible CardInstance
+                const cardInstance = {
+                  instanceId: card.instanceId,
+                  card: card.card,
+                  currentHealth: card.currentHealth,
+                  canAttack: card.canAttack,
+                  isPlayed: card.isPlayed,
+                  isSummoningSick: card.isSummoningSick,
+                  hasDivineShield: card.hasDivineShield,
+                  attacksPerformed: card.attacksPerformed
+                };
+                handleAttackOpponentCard(cardInstance);
+              })
+            }
+            onOpponentHeroClick={isProcessingAIActions ? undefined : 
+              // If hero power is active, directly handle it without conversion
+              heroTargetMode ? handleHeroPowerOnHero :
+              // Otherwise, regular attack
+              handleAttackOpponentHero
+            }
+            registerCardPosition={registerCardPosition}
+            isInteractionDisabled={isProcessingAIActions}
+          />
+          
+          {/* Action buttons moved to unified control bar at bottom - removed to prevent duplicate */}
+        </GameAreaContainer>
+        
+        {/* Bottom player area - fixed at 20% height */}
+        <GameAreaContainer areaType="player" className="px-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              {/* Player deck count - Norse themed */}
+              <div className="flex items-center mr-4">
+                <div className="norse-deck flex items-center justify-center mr-1">
+                  <div className="norse-card-count">{player.deck.length}</div>
+                </div>
+              </div>
+              
+              {/* Player mana crystals - Enhanced 3D version */}
+              <div 
+                className="flex items-center"
+                ref={ref => {
+                  if (ref) {
+                    const rect = ref.getBoundingClientRect();
+                    registerManaPosition && registerManaPosition('mana', {
+                      x: rect.left + rect.width / 2,
+                      y: rect.top + rect.height / 2
+                    });
+                  }
+                }}
+              >
+                <ManaBar 
+                  currentMana={player.mana.current} 
+                  maxMana={player.mana.max} 
+                  overloadedMana={player.mana.overloaded} 
+                  pendingOverload={player.mana.pendingOverload}
+                  registerPosition={registerManaPosition}
+                />
+              </div>
+            </div>
+            
+            {/* Player hero portrait - Invisible but in DOM for position tracking */}
+            {/* Keep rendered for animation position tracking */}
+            <div 
+              className="opacity-0 pointer-events-none absolute w-16 h-16"
+              ref={ref => {
+                if (ref) {
+                  const rect = ref.getBoundingClientRect();
+                  registerHeroPosition && registerHeroPosition('player', {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2
+                  });
+                }
+              }}
+            />
+            
+            {/* Hero power button - using unified HeroPower component */}
+            <div className="flex items-center">
+              <HeroPower 
+                heroPower={player.heroPower}
+                currentMana={player.mana?.current || 0}
+                isPlayerTurn={isPlayerTurn && !isProcessingAIActions}
+                isTargetMode={heroTargetMode}
+                onUse={handleToggleHeroPower}
+                isInteractionDisabled={isProcessingAIActions}
+              />
+            </div>
+            
+            {/* Hand area - hidden during mulligan phase */}
+            {gamePhase !== 'mulligan' && (
+              <div className="mt-4 w-full">
+                <Hand 
+                  cards={player.hand}
+                  currentMana={player.mana.current}
+                  isPlayerTurn={isPlayerTurn}
+                  onCardPlay={(card, position) => {
+                    if (isProcessingAIActions) return;
+                    
+                    // If right click or ctrl+click, view card details
+                    if ((window.event as MouseEvent)?.ctrlKey) {
+                      handleViewCardDetails(card);
+                    } else {
+                      // Otherwise, normal card play with position for animation
+                      handlePlayCard(card, position);
+                    }
+                  }}
+                  isInteractionDisabled={isProcessingAIActions}
+                  registerCardPosition={registerCardPosition}
+                  battlefieldRef={battlefieldRef} // Pass the battlefield reference to Hand component
+                />
+              </div>
+            )}
+          </div>
+        </GameAreaContainer>
+      </div>
+      
+      {/* Game Log - Hidden when in Ragnarok Combat Arena */}
+      {/* <div className="fixed left-4 top-40 w-64 z-40 norse-game-log">
+        <GameLog log={gameState.gameLog || []} maxEntries={15} />
+      </div> */}
+      
+      {/* Graveyards - position in fixed locations */}
+      <div className="fixed left-4 bottom-6 flex flex-col space-y-2 z-40">
+        <Graveyard cards={player.graveyard || []} playerName="Your" />
+      </div>
+      
+      <div className="fixed right-4 bottom-6 flex flex-col space-y-2 z-40">
+        <Graveyard cards={opponent.graveyard || []} playerName="Opponent's" />
+      </div>
+      
+      {/* Card preview */}
+      {hoveredCard && (
+        <div className="fixed top-1/2 right-8 transform -translate-y-1/2 pointer-events-none z-50">
+          <div className="bg-gray-900 bg-opacity-90 p-4 rounded-lg shadow-xl border border-gray-700">
+            <h3 className="text-xl font-bold text-white mb-2">{hoveredCard.card.name}</h3>
+            <p className="text-sm text-gray-300 mb-3">{hoveredCard.card.description}</p>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>Mana Cost: <span className="text-blue-400 font-bold">{hoveredCard.card.manaCost}</span></div>
+              <div>Attack: <span className="text-red-400 font-bold">{hoveredCard.card.attack}</span></div>
+              <div>Health: <span className="text-green-400 font-bold">{hoveredCard.card.health}</span></div>
+              <div>Rarity: <span className="text-purple-400 font-bold">{hoveredCard.card.rarity}</span></div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Discovery Modal for card discovery */}
+      {gameState.discovery && gameState.discovery.active && (
+        <DiscoveryModal 
+          discoveryState={gameState.discovery}
+          onCardSelect={handleDiscoverySelect}
+        />
+      )}
+      
+      {/* Debug WebGL Diagnostics Panel */}
+      <DebugRenderCheck />
+      
+      {/* Ultimate CardWithDrag system handles all interactions - no competing systems */}
+    </div>
+    </NorseBackground>);
+};
+
+export default GameBoard;
