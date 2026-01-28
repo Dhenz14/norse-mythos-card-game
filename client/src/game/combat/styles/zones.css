@@ -1,0 +1,176 @@
+/**
+ * ZONE POSITIONING - Plug & Play Layout System
+ * =============================================
+ * All zone positions are controlled via CSS variables.
+ * To move any element, change ONLY the --zone-* variable values.
+ * 
+ * ZONE NAMING:
+ * --zone-[name]-[position]: value
+ * 
+ * Positions: left, right, top, bottom
+ * 
+ * HOW TO MOVE ELEMENTS:
+ * 1. Find the zone variable below
+ * 2. Change the value
+ * 3. That's it - no other files need editing
+ * 
+ * Example: To move community cards down 0.5 inch:
+ * Change --zone-community-top from 48% to 52%
+ */
+
+:root {
+  /* ========================================
+     PLAYER HERO ZONE
+     Bottom-left corner - the player's hero portrait
+     ======================================== */
+  --zone-player-hero-left: clamp(8px, 2%, 32px);
+  --zone-player-hero-bottom: clamp(8px, 3%, 24px);
+  --zone-player-hero-z: 30;
+  
+  /* ========================================
+     PLAYER MANA BAR
+     Below player hero card
+     ======================================== */
+  --zone-player-mana-left: clamp(8px, 2%, 32px);
+  --zone-player-mana-bottom: clamp(4px, 1%, 12px);
+  --zone-player-mana-width: clamp(80px, 10%, 160px);
+  --zone-player-mana-z: 30;
+  
+  /* ========================================
+     PLAYER HAND
+     Bottom-center - the player's playable cards
+     ======================================== */
+  --zone-player-hand-left: 50%;
+  --zone-player-hand-bottom: 0%;
+  --zone-player-hand-z: 40;
+  
+  /* ========================================
+     PLAYER MINION FIELD
+     Center-bottom area for player's minions
+     ======================================== */
+  --zone-player-field-left: 50%;
+  --zone-player-field-bottom: clamp(25%, 30%, 35%);
+  --zone-player-field-z: 20;
+  
+  /* ========================================
+     OPPONENT HERO ZONE
+     Top-left corner - opponent's hero portrait
+     ======================================== */
+  --zone-opponent-hero-left: clamp(8px, 2%, 32px);
+  --zone-opponent-hero-top: clamp(8px, 2%, 24px);
+  --zone-opponent-hero-z: 30;
+  
+  /* ========================================
+     OPPONENT MANA BAR
+     Below opponent hero card
+     ======================================== */
+  --zone-opponent-mana-left: clamp(8px, 2%, 32px);
+  --zone-opponent-mana-top: calc(clamp(8px, 2%, 24px) + 160px * 1.33 + 8px);
+  --zone-opponent-mana-width: clamp(80px, 10%, 160px);
+  --zone-opponent-mana-z: 30;
+  
+  /* ========================================
+     OPPONENT HAND
+     Top-center - opponent's hidden cards
+     ======================================== */
+  --zone-opponent-hand-left: 50%;
+  --zone-opponent-hand-top: 0%;
+  --zone-opponent-hand-z: 40;
+  
+  /* ========================================
+     OPPONENT MINION FIELD
+     Center-top area for opponent's minions
+     ======================================== */
+  --zone-opponent-field-left: 50%;
+  --zone-opponent-field-top: clamp(22%, 26%, 30%);
+  --zone-opponent-field-z: 20;
+  
+  /* ========================================
+     COMMUNITY CARDS (Flop/Turn/River)
+     Left side of battlefield - poker community cards
+     
+     TO MOVE: Just change these values!
+     Updated: Moved to 262px from left edge (162px + 100px)
+     ======================================== */
+  --zone-community-left: 262px;
+  --zone-community-top: 48%;
+  --zone-community-z: var(--token-z-community, 25);
+  
+  /* ========================================
+     POT DISPLAY / BETTING INFO (Pot, Foe, You)
+     Left side - vertically centered with community cards
+     ======================================== */
+  --zone-pot-left: 8px;
+  --zone-pot-top: 48%;
+  --zone-pot-z: var(--token-z-community, 25);
+  
+  /* ========================================
+     BETTING ACTIONS
+     Bottom-center - poker action buttons
+     ======================================== */
+  --zone-betting-left: 50%;
+  --zone-betting-bottom: 16%;
+  --zone-betting-z: var(--token-z-betting, 200);
+  
+  /* ========================================
+     TIMER
+     Top-center - turn/game timer display
+     ======================================== */
+  --zone-timer-left: 50%;
+  --zone-timer-top: 1%;
+  --zone-timer-z: var(--token-z-timer, 500);
+  
+  /* ========================================
+     ACTIVITY LOGS
+     Top-right - combat log and game events
+     ======================================== */
+  --zone-activity-right: 1%;
+  --zone-activity-top: 2%;
+  --zone-activity-z: var(--token-z-timer, 500);
+  
+  /* ========================================
+     HOLE CARDS (Player's Poker Cards)
+     Left side, near player hero
+     ======================================== */
+  --zone-hole-cards-offset-y: 36px;
+}
+
+/* ========================================
+   RESPONSIVE ZONE ADJUSTMENTS
+   Screen-size specific zone positioning
+   ======================================== */
+
+/* XL screens (1600px+): Slightly more left margin */
+@media (min-width: 1600px) {
+  :root {
+    --zone-community-left: 12px;
+  }
+}
+
+/* Tablet screens: Compact positioning */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --zone-community-left: 8px;
+  }
+}
+
+/* Mobile screens: Center community cards */
+@media (max-width: 767px) {
+  :root {
+    --zone-community-left: 50%;
+    --zone-community-top: 35%;
+  }
+}
+
+/* ========================================
+   NOTE: SELECTORS REMOVED FROM THIS FILE
+   
+   This file contains ONLY CSS variables.
+   All zone selectors (.zone-*) are defined in GameViewport.css
+   which consumes these variables.
+   
+   This separation ensures:
+   1. Single source of truth for position VALUES (this file)
+   2. Single source of truth for SELECTORS (GameViewport.css)
+   3. No cascade conflicts from duplicate selector definitions
+   ======================================== */

@@ -2,7 +2,14 @@
    AAA-QUALITY RESPONSIVE UI SYSTEM
    Viewport-aware safe zones, tiered z-index,
    and dynamic layout variables
+   
+   NOTE: Design tokens and zone positioning are now in:
+   - styles/tokens.css - All design tokens
+   - styles/zones.css - Zone positioning variables
+   Import styles/index.css to get both.
    ======================================== */
+
+@import './styles/index.css';
 
 :root {
   /* Viewport-aware zone heights (AAA technique: vh-based safe zones) */
@@ -13,6 +20,8 @@
   
   /* Responsive poker panel width */
   --poker-panel-width: clamp(280px, 35vw, 480px);
+  
+  /* Pot positioning - uses --pot-left from layoutConfig.ts for consistency */
   
   /* Hero card responsive sizing - height = width * 4/3 */
   --hero-card-width: clamp(120px, 15vw, 192px);
@@ -58,6 +67,39 @@
   --poker-panel-scale: 1;
   --poker-panel-gap: 8px;
   --poker-card-scale: 1;
+}
+
+/* ========================================
+   SMALL SCREEN WIDTH BREAKPOINTS
+   Prevents overlap on smaller screens
+   ======================================== */
+
+/* Small screens: compact all elements */
+@media (max-width: 1200px) {
+  :root {
+    --hand-card-width: clamp(80px, 12vw, 150px);
+    --hand-card-height: clamp(112px, 16.8vw, 210px);
+    --hero-card-width: clamp(80px, 12vw, 130px);
+    --poker-panel-width: clamp(200px, 30vw, 320px);
+  }
+}
+
+@media (max-width: 1000px) {
+  :root {
+    --hand-card-width: clamp(60px, 10vw, 120px);
+    --hand-card-height: clamp(84px, 14vw, 168px);
+    --hero-card-width: clamp(60px, 10vw, 100px);
+    --poker-panel-width: clamp(180px, 28vw, 280px);
+  }
+}
+
+@media (max-width: 800px) {
+  :root {
+    --hand-card-width: clamp(50px, 9vw, 100px);
+    --hand-card-height: clamp(70px, 12.6vw, 140px);
+    --hero-card-width: clamp(50px, 9vw, 80px);
+    --poker-panel-width: clamp(160px, 26vw, 240px);
+  }
 }
 
 /* Large screens: more generous spacing */
@@ -108,6 +150,79 @@
 
 /* ========================================
    WIDTH-BASED RESPONSIVE BREAKPOINTS
+   Prevents UI overlap on wide/ultrawide screens
+   ======================================== */
+
+/* Wide screens (1600px+): reduce card sizes to prevent overflow */
+@media (min-width: 1600px) {
+  :root {
+    --hand-card-width: clamp(100px, 10vw, 180px);
+    --hand-card-height: clamp(140px, 14vw, 252px);
+    --hero-card-width: clamp(100px, 10vw, 160px);
+    --battlefield-card-width: clamp(90px, 9vw, 160px);
+    --battlefield-card-height: clamp(126px, 12.6vw, 224px);
+  }
+}
+
+/* Full HD+ (1920px+): further reduce for ultrawide prevention */
+@media (min-width: 1920px) {
+  :root {
+    --hand-card-width: clamp(100px, 8vw, 160px);
+    --hand-card-height: clamp(140px, 11.2vw, 224px);
+    --hero-card-width: clamp(100px, 8vw, 140px);
+    --battlefield-card-width: clamp(85px, 7vw, 140px);
+    --battlefield-card-height: clamp(119px, 9.8vw, 196px);
+    --poker-panel-width: clamp(240px, 25vw, 400px);
+  }
+}
+
+/* 2K+ screens (2400px+): compact sizing for ultra-high res */
+@media (min-width: 2400px) {
+  :root {
+    --hand-card-width: clamp(100px, 6vw, 150px);
+    --hand-card-height: clamp(140px, 8.4vw, 210px);
+    --hero-card-width: clamp(90px, 6vw, 130px);
+    --battlefield-card-width: clamp(80px, 5.5vw, 130px);
+    --battlefield-card-height: clamp(112px, 7.7vw, 182px);
+    --poker-panel-width: clamp(220px, 20vw, 360px);
+  }
+}
+
+/* 4K screens (3440px+): ultra-compact for massive displays */
+@media (min-width: 3440px) {
+  :root {
+    --hand-card-width: clamp(90px, 4.5vw, 140px);
+    --hand-card-height: clamp(126px, 6.3vw, 196px);
+    --hero-card-width: clamp(85px, 4.5vw, 120px);
+    --battlefield-card-width: clamp(75px, 4vw, 120px);
+    --battlefield-card-height: clamp(105px, 5.6vw, 168px);
+    --poker-panel-width: clamp(200px, 16vw, 320px);
+  }
+}
+
+/* ========================================
+   ASPECT RATIO AWARE BREAKPOINTS
+   Adjusts for ultrawide aspect ratios (>21:9)
+   ======================================== */
+
+@media (min-aspect-ratio: 21/9) {
+  :root {
+    --hand-card-width: clamp(90px, 7vw, 150px);
+    --hero-card-width: clamp(85px, 6vw, 130px);
+    --poker-panel-width: clamp(200px, 18vw, 340px);
+  }
+}
+
+@media (min-aspect-ratio: 32/9) {
+  :root {
+    --hand-card-width: clamp(80px, 5vw, 130px);
+    --hero-card-width: clamp(75px, 4.5vw, 110px);
+    --poker-panel-width: clamp(180px, 14vw, 300px);
+  }
+}
+
+/* ========================================
+   MAX-WIDTH BREAKPOINTS (smaller screens)
    ======================================== */
 
 /* Medium screens: reduce panel width */
@@ -466,6 +581,7 @@
   padding: 8px 20px;
   position: relative;
   overflow: visible; /* Ensure cards aren't clipped */
+  margin-top: var(--card-poker-offset-y, 0px);
   
   /* Stone tablet background - layered gradients for depth */
   background: 
@@ -2452,13 +2568,14 @@
   position: relative;
 }
 
-/* Make the entire hero square clickable */
+/* Visual overlay for hero square - pointer-events: none so clicks pass through to portrait */
 .battlefield-hero-square::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 10;
   cursor: pointer;
+  pointer-events: none;
 }
 
 .battlefield-hero-square.clickable {
@@ -2754,6 +2871,12 @@
 @keyframes tooltip-fade-in {
   from { opacity: 0; transform: translateX(-50%) translateY(4px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Hero Portrait Tooltip Portal - renders via React Portal to escape overflow:hidden */
+.hero-portrait-tooltip-portal {
+  pointer-events: none;
+  z-index: 10000;
 }
 
 .portrait-tooltip-content {
@@ -5020,8 +5143,10 @@
   padding: 8px;
 }
 
+/* POSITIONING: Handled by GameViewport.css using zones.css variables */
+/* This file only handles non-positional styling (flex layout, padding, gap) */
 .unified-community {
-  grid-area: community;
+  /* NO positional properties here - see GameViewport.css .viewport-mode .unified-community */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -5038,13 +5163,16 @@
   align-items: center;
 }
 
+/* POSITIONING: Handled by GameViewport.css using zones.css variables */
 .unified-pot {
-  grid-area: pot-display;
+  /* NO positional properties here - see GameViewport.css .viewport-mode .unified-pot */
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
-  padding: 8px 16px;
-  margin-left: 16px;
+  justify-self: start;
+  padding: 8px 0;
+  padding-left: var(--pot-left);
+  margin-left: 0;
   background: none;
   border: none;
   border-radius: 0;
@@ -5956,6 +6084,70 @@
   .unified-hero-hand-row {
     flex-direction: column;
     align-items: center;
+  }
+  
+  /* Community cards center on mobile (stacked layout) */
+  .unified-community {
+    justify-self: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ========================================
+   COMMUNITY CARDS RESPONSIVE STYLING
+   Positioning via --community-left from layoutConfig.ts
+   This file only handles spacing/sizing adjustments
+   ======================================== */
+
+/* Medium screens (1024px-1280px): Compact spacing */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .unified-community .zone-community {
+    gap: 10px;
+  }
+}
+
+/* Tablet screens (768px-1024px): Compact layout */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .unified-community {
+    padding: 8px 12px;
+    gap: 12px;
+  }
+  
+  .unified-community .zone-community {
+    gap: 8px;
+  }
+}
+
+/* Small screens (<768px): Center community cards in stacked layout */
+@media (max-width: 767px) {
+  .unified-community {
+    justify-content: center;
+    justify-self: center;
+    width: 100%;
+    padding: 8px;
+    gap: 8px;
+  }
+  
+  .unified-community .zone-community {
+    justify-content: center;
+    gap: 6px;
+  }
+}
+
+/* Very small screens (<480px): Compact community cards */
+@media (max-width: 480px) {
+  .unified-community {
+    padding: 6px;
+    gap: 4px;
+  }
+  
+  .unified-community .zone-community {
+    gap: 4px;
+  }
+  
+  .unified-community .community-slot {
+    transform: scale(0.85);
   }
 }
 
