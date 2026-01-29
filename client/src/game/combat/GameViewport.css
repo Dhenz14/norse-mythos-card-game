@@ -39,12 +39,14 @@
 /* ========================================
    ZONE POSITIONING VARIABLES
    
-   NOTE: CSS variables are injected at runtime from layoutConfig.ts
-   via the useCombatLayout hook. This file uses those variables
-   but does NOT define them in :root to avoid duplication.
+   SINGLE SOURCE OF TRUTH: styles/zones.css
+   All zone positioning variables (--zone-*-left, --zone-*-top, etc.)
+   are defined in styles/zones.css including responsive overrides.
    
-   See layoutConfig.ts for the canonical variable definitions.
-   See RagnarokCombatArena.css for zone height and responsive variables.
+   This file CONSUMES those variables via selectors like:
+   .viewport-mode .unified-community { left: var(--zone-community-left); }
+   
+   DO NOT define zone variables in this file - edit zones.css instead.
    ======================================== */
 
 /* ========================================
@@ -183,19 +185,8 @@
   gap: 4px;
 }
 
-/* Betting Actions Zone */
-/* NOTE: Position now controlled by --zone-betting-* vars in styles/zones.css */
-.zone-betting {
-  position: absolute;
-  left: var(--zone-betting-left, 50%);
-  bottom: var(--zone-betting-bottom, 16%);
-  transform: translateX(-50%);
-  z-index: var(--zone-betting-z, 200);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
+/* Betting Actions Zone - REMOVED: Class is unused, betting uses .unified-betting-actions-container */
+/* Position controlled by --zone-betting-* vars in styles/zones.css */
 
 /* Timer Zone */
 /* NOTE: Position now controlled by --zone-timer-* vars in styles/zones.css */
@@ -271,6 +262,11 @@
   left: calc(var(--zone-pot-left, 8px) + 30%);
 }
 
+/* Betting buttons - shift right when poker sidebar is active */
+.has-poker-sidebar .unified-betting-actions-container {
+  left: calc(var(--zone-betting-left, 460px) + 15%);
+}
+
 /* ========================================
    RESPONSIVE ADJUSTMENTS
    Scale factor handles most responsiveness,
@@ -279,21 +275,7 @@
    NOTE: Position overrides now use --zone-* variables.
    See styles/zones.css for all zone positioning.
    ======================================== */
-@media (max-aspect-ratio: 4/3) {
-  :root {
-    --zone-player-hero-left: 3%;
-    --zone-opponent-hero-left: 3%;
-    --zone-pot-left: 8px;
-  }
-}
-
-@media (max-aspect-ratio: 1/1) {
-  :root {
-    --zone-player-hero-left: 5%;
-    --zone-opponent-hero-left: 5%;
-    --zone-betting-bottom: 20%;
-  }
-}
+/* All responsive zone overrides moved to styles/zones.css for single source of truth */
 
 /* ========================================
    CSS CONTAINER QUERIES (AAA-quality)
@@ -749,25 +731,31 @@
    BETTING BUTTONS - BELOW HAND CARDS
    ======================================== */
 
+/* BETTING BUTTONS - Position controlled by zones.css variables */
 .viewport-mode .unified-betting-actions-container {
   position: absolute;
-  left: calc(var(--zone-player-hero-left, 24px) + var(--token-size-hero-width, 160px) + var(--hand-zone-gap, 12px));
-  bottom: 8px; /* Restored to visible area */
-  z-index: var(--z-betting, 200);
+  left: var(--zone-betting-left, 460px);
+  bottom: var(--zone-betting-bottom, 8px);
+  z-index: var(--zone-betting-z, 200);
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 12px;
+  /* NO background or border - removed to avoid blocking mana crystals */
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 .viewport-mode .unified-betting-actions {
   display: flex;
   flex-direction: row;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  /* NO background box - removed to keep mana crystals visible */
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  border: none;
 }
 
 .viewport-mode .action-buttons-group {

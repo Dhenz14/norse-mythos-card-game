@@ -106,10 +106,12 @@
   
   /* ========================================
      BETTING ACTIONS
-     Bottom-center - poker action buttons
+     Bottom area - poker action buttons (Raise, Call, Fold, TTC)
+     Updated: Shifted right ~192px (~2 inches) to avoid blocking mana crystals
+     Uses clamp() for responsive behavior
      ======================================== */
-  --zone-betting-left: 50%;
-  --zone-betting-bottom: 16%;
+  --zone-betting-left: clamp(320px, 30vw, 500px);
+  --zone-betting-bottom: 8px;
   --zone-betting-z: var(--token-z-betting, 200);
   
   /* ========================================
@@ -159,6 +161,26 @@
   :root {
     --zone-community-left: 50%;
     --zone-community-top: 35%;
+    /* Betting buttons shift left on narrow screens */
+    --zone-betting-left: clamp(200px, 25vw, 350px);
+  }
+}
+
+/* 4:3 aspect ratio - compact hero positioning */
+@media (max-aspect-ratio: 4/3) {
+  :root {
+    --zone-player-hero-left: 3%;
+    --zone-opponent-hero-left: 3%;
+    --zone-pot-left: 8px;
+  }
+}
+
+/* Portrait/square aspect ratio - move betting buttons up */
+@media (max-aspect-ratio: 1/1) {
+  :root {
+    --zone-player-hero-left: 5%;
+    --zone-opponent-hero-left: 5%;
+    --zone-betting-bottom: 20%;
   }
 }
 

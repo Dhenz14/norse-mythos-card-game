@@ -75,6 +75,8 @@ Example: Move community cards down 0.5 inch:
 | `--zone-community-top` | `48%` | Community cards vertical position |
 | `--zone-pot-left` | `8px` | Pot/betting info left position |
 | `--zone-pot-top` | `48%` | Pot/betting info top position |
+| `--zone-betting-left` | `clamp(320px, 30vw, 500px)` | Betting buttons horizontal position |
+| `--zone-betting-bottom` | `8px` | Betting buttons vertical position |
 | `--zone-player-hero-left` | `clamp(8px, 2%, 32px)` | Player hero left position |
 | `--zone-hole-cards-offset-y` | `36px` | Hole cards vertical offset |
 

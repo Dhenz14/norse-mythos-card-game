@@ -5180,19 +5180,18 @@
   align-self: flex-start;
 }
 
+/* POSITIONING: Handled by GameViewport.css using zones.css variables */
+/* This file only handles non-positional styling (flex layout, gap) */
 .unified-betting-actions-container {
-  position: fixed;
-  bottom: 12px;
-  left: 268px;
+  /* NO positional properties here - see GameViewport.css .viewport-mode .unified-betting-actions-container */
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  gap: 4px;
-  padding: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  /* NO background/border - mana crystals must remain visible */
   background: transparent;
   border: none;
-  z-index: 100;
+  padding: 0;
 }
 
 .unified-betting-actions {
@@ -5201,6 +5200,9 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
+  /* NO background/border - mana crystals must remain visible */
+  background: transparent;
+  border: none;
 }
 
 .action-buttons-group {
