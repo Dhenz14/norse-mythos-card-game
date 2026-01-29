@@ -1,0 +1,2820 @@
+{
+  "summary": {
+    "totalCards": 936,
+    "cardsWithEffects": 482,
+    "percentWithEffects": 51,
+    "totalEffectTypes": 188,
+    "effectTypesByCategory": {
+      "battlecry": 107,
+      "deathrattle": 14,
+      "spellEffect": 66,
+      "aura": 0,
+      "onDeath": 0,
+      "onPlay": 0,
+      "endOfTurn": 0,
+      "startOfTurn": 0,
+      "combo": 1,
+      "outcast": 0,
+      "frenzy": 0,
+      "corrupt": 0,
+      "inspire": 0,
+      "discover": 0,
+      "magnetic": 0,
+      "custom": 0,
+      "other": 0
+    }
+  },
+  "effectTypes": {
+    "battlecry:transform": {
+      "count": 8,
+      "example": "Rustrot Viper (ID: 12001)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "conditionalTarget"
+      ]
+    },
+    "battlecry:discover": {
+      "count": 15,
+      "example": "Jeweled Scarab (ID: 32003)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "discoveryType",
+        "targetType",
+        "discoveryCount",
+        "replaceDeck",
+        "makeDuplicates",
+        "discoveryClass",
+        "discoveryPoolId"
+      ]
+    },
+    "battlecry:discover_triclass": {
+      "count": 1,
+      "example": "Kabal Courier (ID: 32004)",
+      "properties": [
+        "classes",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:return": {
+      "count": 2,
+      "example": "Youthful Brewmaster (ID: 32005)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:shuffle_special": {
+      "count": 2,
+      "example": "Elise the Trailblazer (ID: 32007)",
+      "properties": [
+        "cardName",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:opponent_summon_from_hand": {
+      "count": 1,
+      "example": "Dirty Rat (ID: 32011)",
+      "properties": [
+        "requiresTarget"
+      ]
+    },
+    "battlecry:damage": {
+      "count": 16,
+      "example": "Bomb Squad (ID: 32013)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "condition",
+        "conditionValue",
+        "freezeTarget"
+      ]
+    },
+    "battlecry:buff": {
+      "count": 18,
+      "example": "Militia Commander (ID: 17001)",
+      "properties": [
+        "buffAttack",
+        "targetType",
+        "requiresTarget",
+        "buffHealth",
+        "cardType",
+        "isRandom",
+        "temporaryEffect",
+        "adjacentOnly",
+        "grantTaunt",
+        "isBasedOnStats",
+        "value"
+      ]
+    },
+    "battlecry:summon": {
+      "count": 20,
+      "example": "Guild Recruiter (ID: 18004)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "value",
+        "summonCardId",
+        "summonForOpponent",
+        "summonCount",
+        "isRandom",
+        "fromGraveyard",
+        "conditionalTarget",
+        "newHeroPower"
+      ]
+    },
+    "battlecry:change_hero_power": {
+      "count": 2,
+      "example": "Sulfuras (ID: 15002)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "newHeroPower",
+        "name",
+        "description",
+        "cost",
+        "used",
+        "class",
+        "value"
+      ]
+    },
+    "battlecry:heal": {
+      "count": 6,
+      "example": "Amara, Warden of Hope (ID: 15004)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:weapon_attack_buff": {
+      "count": 1,
+      "example": "Bloodsail Raider (ID: 80003)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:weapon_durability_damage": {
+      "count": 1,
+      "example": "Bloodsail Corsair (ID: 80004)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:cthun_damage": {
+      "count": 1,
+      "example": "C'Thun (ID: 60001)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:buff_cthun": {
+      "count": 1,
+      "example": "Beckoner of Evil (ID: 60002)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    "battlecry:cthun_cultist_damage": {
+      "count": 1,
+      "example": "Disciple of C'Thun (ID: 60004)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "value",
+        "buffCthun",
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    "battlecry:conditional_self_buff": {
+      "count": 1,
+      "example": "Klaxxi Amber-Weaver (ID: 60007)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition",
+        "buffHealth"
+      ]
+    },
+    "battlecry:conditional_armor": {
+      "count": 1,
+      "example": "Ancient Shieldbearer (ID: 60008)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition",
+        "armorGain"
+      ]
+    },
+    "battlecry:resurrect_deathrattle": {
+      "count": 1,
+      "example": "N'Zoth, the Corruptor (ID: 60101)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:yogg_saron": {
+      "count": 1,
+      "example": "Yogg-Saron, Hope's End (ID: 60102)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:set_mana": {
+      "count": 1,
+      "example": "Mojomaster Zihi (ID: 31005)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:destroy": {
+      "count": 6,
+      "example": "Big Game Hunter (ID: 31007)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition",
+        "discardCount"
+      ]
+    },
+    "battlecry:destroy_spells": {
+      "count": 1,
+      "example": "Skulking Geist (ID: 31008)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:destroy_secrets": {
+      "count": 1,
+      "example": "Eater of Secrets (ID: 31009)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:destroy_tribe": {
+      "count": 2,
+      "example": "Hungry Crab (ID: 31010)",
+      "properties": [
+        "tribe",
+        "buffs",
+        "attack",
+        "health"
+      ]
+    },
+    "battlecry:mind_control_random": {
+      "count": 1,
+      "example": "Mind Control Tech (ID: 31015)",
+      "properties": [
+        "condition",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:destroy_weapon": {
+      "count": 1,
+      "example": "Acidic Swamp Ooze (ID: 30001)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:draw_both": {
+      "count": 1,
+      "example": "Coldlight Oracle (ID: 30007)",
+      "properties": [
+        "value",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:copy": {
+      "count": 1,
+      "example": "Faceless Manipulator (ID: 30008)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:health_per_card": {
+      "count": 1,
+      "example": "Twilight Drake (ID: 30013)",
+      "properties": [
+        "requiresTarget"
+      ]
+    },
+    "battlecry:adapt": {
+      "count": 1,
+      "example": "Gentle Megasaur (ID: 30016)",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:summon_from_spell_cost": {
+      "count": 1,
+      "example": "Spiteful Summoner (ID: 30017)",
+      "properties": [
+        "requiresTarget"
+      ]
+    },
+    "battlecry:destroy_and_store": {
+      "count": 1,
+      "example": "Carnivorous Cube (ID: 30019)",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:swap_stats": {
+      "count": 1,
+      "example": "Void Ripper (ID: 30020)",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:destroy_spells_by_cost": {
+      "count": 1,
+      "example": "Skulking Geist (ID: 30021)",
+      "properties": [
+        "value",
+        "targetType"
+      ]
+    },
+    "battlecry:limit_attack_target": {
+      "count": 1,
+      "example": "Charged Devilsaur (ID: 30024)",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:destroy_weapon_gain_armor": {
+      "count": 1,
+      "example": "Gluttonous Ooze (ID: 30025)",
+      "properties": [
+        "requiresTarget"
+      ]
+    },
+    "battlecry:divine_shield_gain": {
+      "count": 1,
+      "example": "Blood Knight (ID: 30027)",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:shuffle_card": {
+      "count": 3,
+      "example": "Ancient Shade (ID: 30028)",
+      "properties": [
+        "cardType",
+        "value",
+        "requiresTarget",
+        "targetType",
+        "cardName"
+      ]
+    },
+    "battlecry:conditional_damage": {
+      "count": 2,
+      "example": "Blazecaller (ID: 30030)",
+      "properties": [
+        "condition",
+        "value",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:conditional_discover": {
+      "count": 1,
+      "example": "Servant of Kalimos (ID: 30032)",
+      "properties": [
+        "condition",
+        "discoveryType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:conditional_draw": {
+      "count": 1,
+      "example": "Fight Promoter (ID: 30034)",
+      "properties": [
+        "condition",
+        "value",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:swap_stats_with_target": {
+      "count": 1,
+      "example": "Darkspeaker (ID: 30035)",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:transform_copy_from_deck": {
+      "count": 1,
+      "example": "Muckmorpher (ID: 30042)",
+      "properties": [
+        "requiresTarget",
+        "value"
+      ]
+    },
+    "battlecry:conditional_summon": {
+      "count": 1,
+      "example": "Windshear Stormcaller (ID: 30051)",
+      "properties": [
+        "condition",
+        "summonCardId",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:replay_spells": {
+      "count": 1,
+      "example": "Lynessa Sunsorrow (ID: 20800)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "targetSelf",
+        "condition"
+      ]
+    },
+    "battlecry:extra_turns": {
+      "count": 1,
+      "example": "Temporus (ID: 20801)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:draw_multiple": {
+      "count": 1,
+      "example": "Countess Ashmore (ID: 20805)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "drawConditions"
+      ]
+    },
+    "battlecry:add_card": {
+      "count": 3,
+      "example": "Face Collector (ID: 20807)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition",
+        "value",
+        "cardType",
+        "cardCount",
+        "costReduction",
+        "cardName"
+      ]
+    },
+    "battlecry:buff_weapon": {
+      "count": 3,
+      "example": "Hobart Grapplehammer (ID: 20300)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "buffAttack",
+        "location",
+        "buffDurability"
+      ]
+    },
+    "battlecry:draw_until": {
+      "count": 1,
+      "example": "Wrathion (ID: 20302)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "stopCondition"
+      ]
+    },
+    "battlecry:copy_to_hand": {
+      "count": 1,
+      "example": "Zola the Gorgon (ID: 20306)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "isGolden"
+      ]
+    },
+    "battlecry:draw_specific": {
+      "count": 1,
+      "example": "Kronx Dragonhoof (ID: 20310)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "cardName",
+        "alternateEffect"
+      ]
+    },
+    "battlecry:reorder_deck": {
+      "count": 1,
+      "example": "Lorekeeper Polkelt (ID: 20311)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "orderBy",
+        "direction"
+      ]
+    },
+    "battlecry:wheel_of_yogg": {
+      "count": 1,
+      "example": "Yogg-Saron, Master of Fate (ID: 20312)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition",
+        "conditionValue"
+      ]
+    },
+    "battlecry:eat_opponent_card": {
+      "count": 1,
+      "example": "Mutanus the Devourer (ID: 20313)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "cardType",
+        "isRandom"
+      ]
+    },
+    "battlecry:transform_deck": {
+      "count": 1,
+      "example": "Lady Prestor (ID: 20315)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "cardType",
+        "transformInto"
+      ]
+    },
+    "battlecry:transform_and_silence": {
+      "count": 1,
+      "example": "The Nameless One (ID: 20318)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:random_damage_and_buff": {
+      "count": 1,
+      "example": "Sire Denathrius (ID: 20320)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "isRandomSplit",
+        "damageSourceCounter",
+        "buffAttack"
+      ]
+    },
+    "battlecry:draw": {
+      "count": 8,
+      "example": "Novice Engineer (ID: 1006)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "conditionalTarget",
+        "cardType"
+      ]
+    },
+    "battlecry:silence": {
+      "count": 2,
+      "example": "Ironbeak Owl (ID: 40003)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:summon_jade_golem": {
+      "count": 1,
+      "example": "Jade Claws (ID: 85004)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:replay_battlecries": {
+      "count": 1,
+      "example": "Shudderwock (ID: 20102)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "isRandom"
+      ]
+    },
+    "battlecry:summon_copy_from_deck": {
+      "count": 1,
+      "example": "Barnes (ID: 20105)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "statOverride",
+        "attack",
+        "health"
+      ]
+    },
+    "battlecry:summon_copy": {
+      "count": 1,
+      "example": "Twin Emperor Vek'lor (ID: 20120)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition"
+      ]
+    },
+    "battlecry:draw_by_type": {
+      "count": 1,
+      "example": "The Curator (ID: 20121)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "drawTypes"
+      ]
+    },
+    "battlecry:equip_weapon": {
+      "count": 3,
+      "example": "Medivh, the Guardian (ID: 20122)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "summonCardId"
+      ]
+    },
+    "battlecry:fill_board": {
+      "count": 1,
+      "example": "Onyxia (ID: 20128)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "summonCardId"
+      ]
+    },
+    "battlecry:give_cards": {
+      "count": 5,
+      "example": "King Mukla (ID: 20135)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "cardCount",
+        "cardId",
+        "giveToOpponent",
+        "randomCardFromSet",
+        "isRandom"
+      ]
+    },
+    "battlecry:kazakus_potion": {
+      "count": 1,
+      "example": "Kazakus (ID: 70002)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition"
+      ]
+    },
+    "battlecry:conditional_next_spell_costs_zero": {
+      "count": 1,
+      "example": "Inkmaster Solia (ID: 70003)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition"
+      ]
+    },
+    "battlecry:conditional_free_hero_power": {
+      "count": 1,
+      "example": "Raza the Chained (ID: 70004)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition"
+      ]
+    },
+    "battlecry:conditional_summon_hand_demons": {
+      "count": 1,
+      "example": "Krul the Unshackled (ID: 70005)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition"
+      ]
+    },
+    "battlecry:swap_decks": {
+      "count": 1,
+      "example": "King Togwaggle (ID: 20603)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "giveRansom"
+      ]
+    },
+    "battlecry:transform_random": {
+      "count": 1,
+      "example": "Tinkmaster Overspark (ID: 20606)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "transformOptions"
+      ]
+    },
+    "battlecry:destroy_and_steal": {
+      "count": 1,
+      "example": "The Jailer (ID: 20400)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:persistent_effect": {
+      "count": 1,
+      "example": "Sylvanas, the Accused (ID: 20403)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "triggerCondition",
+        "effectType",
+        "damage",
+        "targetType2"
+      ]
+    },
+    "battlecry:set_stats": {
+      "count": 1,
+      "example": "Toy Captain Tarim (ID: 20406)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "setAttack",
+        "setHealth"
+      ]
+    },
+    "battlecry:transform_copy": {
+      "count": 1,
+      "example": "Prince Taldaram (ID: 20704)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition"
+      ]
+    },
+    "battlecry:buff_deck": {
+      "count": 1,
+      "example": "Prince Keleseth (ID: 20705)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition",
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    "battlecry:gain_keyword": {
+      "count": 1,
+      "example": "Prince Valanar (ID: 20706)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "condition",
+        "keywords"
+      ]
+    },
+    "battlecry:replace_spells": {
+      "count": 1,
+      "example": "Lilian Voss (ID: 20708)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "replaceWith"
+      ]
+    },
+    "battlecry:random_weapon": {
+      "count": 1,
+      "example": "Blingtron 3000 (ID: 20202)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "forBothPlayers"
+      ]
+    },
+    "battlecry:replace_hero_power": {
+      "count": 1,
+      "example": "Justicar Trueheart (ID: 20209)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:swap_with_deck": {
+      "count": 1,
+      "example": "Madam Goya (ID: 20215)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:buff_hand": {
+      "count": 1,
+      "example": "Don Han'Cho (ID: 20218)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "buffAttack",
+        "buffHealth",
+        "isRandom",
+        "cardType"
+      ]
+    },
+    "battlecry:summon_parts": {
+      "count": 1,
+      "example": "Neptulon the Tidehunter (ID: 3001)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:buff_tribe": {
+      "count": 1,
+      "example": "Coldlight Seer (ID: 91001)",
+      "properties": [
+        "tribe",
+        "buffs",
+        "health"
+      ]
+    },
+    "battlecry:damage_and_buff": {
+      "count": 1,
+      "example": "Card ID: 5009",
+      "properties": [
+        "value",
+        "buffAttack",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:give_divine_shield": {
+      "count": 1,
+      "example": "Card ID: 8020",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:equip_frostmourne": {
+      "count": 1,
+      "example": "Card ID: 3015",
+      "properties": [
+        "summonCardId"
+      ]
+    },
+    "battlecry:buff_and_taunt": {
+      "count": 1,
+      "example": "Card ID: 3029",
+      "properties": [
+        "buffAttack",
+        "buffHealth",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:grant_stealth": {
+      "count": 1,
+      "example": "Card ID: 12020",
+      "properties": [
+        "targetType",
+        "requiresTarget",
+        "duration"
+      ]
+    },
+    "battlecry:summon_random_minions": {
+      "count": 1,
+      "example": "Card ID: 9123",
+      "properties": [
+        "value",
+        "manaCost",
+        "upgradesInHand"
+      ]
+    },
+    "battlecry:consume_adjacent": {
+      "count": 1,
+      "example": "Card ID: 15007",
+      "properties": [
+        "gainStats"
+      ]
+    },
+    "battlecry:destroy_mana_crystal": {
+      "count": 1,
+      "example": "Card ID: 15010",
+      "properties": [
+        "value"
+      ]
+    },
+    "battlecry:resurrect_all": {
+      "count": 1,
+      "example": "Card ID: 15019",
+      "properties": [
+        "race",
+        "source"
+      ]
+    },
+    "battlecry:grant_persistent_effect": {
+      "count": 1,
+      "example": "Card ID: 16020",
+      "properties": [
+        "effect",
+        "targetType",
+        "permanent"
+      ]
+    },
+    "battlecry:summon_random": {
+      "count": 1,
+      "example": "Card ID: 5016",
+      "properties": [
+        "value",
+        "targetType"
+      ]
+    },
+    "battlecry:alter_mana": {
+      "count": 1,
+      "example": "Card ID: 5017",
+      "properties": [
+        "value",
+        "targetType",
+        "temporaryEffect"
+      ]
+    },
+    "battlecry:give_mana": {
+      "count": 1,
+      "example": "Card ID: 5024",
+      "properties": [
+        "value",
+        "targetType",
+        "permanent"
+      ]
+    },
+    "battlecry:buff_adjacent": {
+      "count": 1,
+      "example": "Card ID: 5038",
+      "properties": [
+        "buffType",
+        "value",
+        "targetType"
+      ]
+    },
+    "battlecry:freeze": {
+      "count": 1,
+      "example": "Card ID: 5062",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "battlecry:set_health": {
+      "count": 1,
+      "example": "Alexstrasza (ID: 20025)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:destroy_weapon_draw": {
+      "count": 1,
+      "example": "Harrison Jones (ID: 20042)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:cast_all_spells": {
+      "count": 1,
+      "example": "Zul'jin (ID: 20037)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "battlecry:debuff": {
+      "count": 1,
+      "example": "Aldor Peacekeeper (ID: 40005)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    "deathrattle:damage": {
+      "count": 9,
+      "example": "Leper Gnome (ID: 9601)",
+      "properties": [
+        "value",
+        "targetType",
+        "condition"
+      ]
+    },
+    "deathrattle:summon": {
+      "count": 22,
+      "example": "Silver Vanguard (ID: 18001)",
+      "properties": [
+        "targetType",
+        "summonCardId",
+        "isRandom",
+        "specificManaCost",
+        "fromHand",
+        "specificRace",
+        "value",
+        "condition",
+        "summonCount"
+      ]
+    },
+    "deathrattle:buff": {
+      "count": 2,
+      "example": "Grandmummy (ID: 19002)",
+      "properties": [
+        "buffAttack",
+        "buffHealth",
+        "targetType"
+      ]
+    },
+    "deathrattle:summon_random": {
+      "count": 1,
+      "example": "Piloted Reaper (ID: 30048)",
+      "properties": [
+        "targetType",
+        "specificManaCost"
+      ]
+    },
+    "deathrattle:add_to_hand": {
+      "count": 1,
+      "example": "Weaponized Piñata (ID: 30049)",
+      "properties": [
+        "targetType",
+        "value",
+        "specificRace"
+      ]
+    },
+    "deathrattle:split_damage": {
+      "count": 1,
+      "example": "Augmented Porcupine (ID: 30050)",
+      "properties": [
+        "targetType"
+      ]
+    },
+    "deathrattle:add_card": {
+      "count": 3,
+      "example": "Rhonin (ID: 20808)",
+      "properties": [
+        "targetType",
+        "condition",
+        "value"
+      ]
+    },
+    "deathrattle:draw": {
+      "count": 4,
+      "example": "Treasure Chest (ID: 20305)",
+      "properties": [
+        "targetType",
+        "value",
+        "condition",
+        "isSecret"
+      ]
+    },
+    "deathrattle:heal": {
+      "count": 3,
+      "example": "Khartut Defender (ID: 40018)",
+      "properties": [
+        "value",
+        "targetType"
+      ]
+    },
+    "deathrattle:summon_jade_golem": {
+      "count": 1,
+      "example": "Jade Swarmer (ID: 85005)",
+      "properties": []
+    },
+    "deathrattle:shuffle": {
+      "count": 1,
+      "example": "White Eyes (ID: 20126)",
+      "properties": [
+        "targetType",
+        "summonCardId"
+      ]
+    },
+    "deathrattle:destroy": {
+      "count": 1,
+      "example": "Mecha'thun (ID: 20601)",
+      "properties": [
+        "targetType",
+        "condition"
+      ]
+    },
+    "deathrattle:shuffle_card": {
+      "count": 1,
+      "example": "Hakkar, the Soulflayer (ID: 20602)",
+      "properties": [
+        "targetType",
+        "condition",
+        "value"
+      ]
+    },
+    "deathrattle:resurrect": {
+      "count": 1,
+      "example": "Hadronox (ID: 20703)",
+      "properties": [
+        "targetType",
+        "condition"
+      ]
+    },
+    "spellEffect:buff": {
+      "count": 29,
+      "example": "Heavy Plate (ID: 12002)",
+      "properties": [
+        "buffHealth",
+        "targetType",
+        "requiresTarget",
+        "buffAttack",
+        "temporaryEffect",
+        "drawCards",
+        "grantDeathrattle",
+        "value",
+        "grantKeywords",
+        "includeHeroes"
+      ]
+    },
+    "spellEffect:damage": {
+      "count": 38,
+      "example": "Fireball (ID: 30001)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "freezeTarget",
+        "conditionalTarget",
+        "conditionalValue",
+        "isRandom",
+        "targetsCount",
+        "splashDamage",
+        "discardCount",
+        "isSplit",
+        "delayedEffect",
+        "delayedTrigger",
+        "isCorruption",
+        "drawCards",
+        "secondaryEffect",
+        "condition",
+        "targetCount",
+        "minValue"
+      ]
+    },
+    "spellEffect:draw": {
+      "count": 10,
+      "example": "Arcane Intellect (ID: 4502)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "isBasedOnStats",
+        "temporaryEffect",
+        "delayedEffect",
+        "delayedTrigger"
+      ]
+    },
+    "spellEffect:aoe_damage": {
+      "count": 19,
+      "example": "Whirlwind (ID: 30006)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "healValue",
+        "includeHeroes",
+        "isRandom",
+        "isBasedOnWeaponAttack",
+        "destroyWeapon",
+        "freezeTarget",
+        "delayedEffect",
+        "drawCards",
+        "secondaryEffect",
+        "summonCardId"
+      ]
+    },
+    "spellEffect:heal": {
+      "count": 7,
+      "example": "Lay on Hands (ID: 30009)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "drawCards",
+        "includeHeroes"
+      ]
+    },
+    "spellEffect:mana_crystal": {
+      "count": 2,
+      "example": "Wild Growth (ID: 30013)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "isEmpty"
+      ]
+    },
+    "spellEffect:summon": {
+      "count": 13,
+      "example": "Force of Nature (ID: 30015)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "summonCount",
+        "isRandom",
+        "fromGraveyard",
+        "value",
+        "summonCardId"
+      ]
+    },
+    "spellEffect:transform": {
+      "count": 10,
+      "example": "Mind Control (ID: 30018)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "value",
+        "isRepeatable",
+        "summonCardId",
+        "returnToHand",
+        "manaReduction"
+      ]
+    },
+    "spellEffect:silence": {
+      "count": 5,
+      "example": "Mass Dispel (ID: 30049)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "drawCards",
+        "secondaryEffect",
+        "value"
+      ]
+    },
+    "spellEffect:mana_reduction": {
+      "count": 1,
+      "example": "Preparation (ID: 30067)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "temporaryEffect"
+      ]
+    },
+    "spellEffect:destroy": {
+      "count": 3,
+      "example": "Obliterate (ID: 30074)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "secondaryEffect",
+        "value",
+        "healValue"
+      ]
+    },
+    "spellEffect:discover": {
+      "count": 15,
+      "example": "Warrior's Arsenal (ID: 9505)",
+      "properties": [
+        "value",
+        "targetType",
+        "discoveryClass",
+        "discoveryCount",
+        "requiresTarget",
+        "discoveryType",
+        "discoveryPoolId",
+        "manaDiscount",
+        "conditionalTarget",
+        "discoveryManaCostRange",
+        "isRandom",
+        "manaReduction"
+      ]
+    },
+    "spellEffect:extra_turn": {
+      "count": 1,
+      "example": "Time Warp (ID: 15001)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "spellEffect:crystal_core": {
+      "count": 1,
+      "example": "Crystal Core (ID: 15003)",
+      "properties": [
+        "requiresTarget",
+        "targetType"
+      ]
+    },
+    "spellEffect:quest": {
+      "count": 6,
+      "example": "Open the Waygate (ID: 14001)",
+      "properties": [
+        "requiresTarget",
+        "targetType",
+        "questData",
+        "progress",
+        "target",
+        "completed",
+        "rewardCardId"
+      ]
+    },
+    "spellEffect:temp_mana": {
+      "count": 1,
+      "example": "The Coin (ID: 31001)",
+      "properties": [
+        "value"
+      ]
+    },
+    "spellEffect:custom": {
+      "count": 1,
+      "example": "Kazakus Potion (ID: 31003)",
+      "properties": [
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:transform_all": {
+      "count": 1,
+      "example": "Mass Polymorph (ID: 20409)",
+      "properties": [
+        "targetType",
+        "summonCardId"
+      ]
+    },
+    "spellEffect:draw_and_shuffle": {
+      "count": 1,
+      "example": "The First Seal (ID: 20410)",
+      "properties": [
+        "value",
+        "shuffleCardName"
+      ]
+    },
+    "spellEffect:damage_and_buff": {
+      "count": 1,
+      "example": "Card ID: 5013",
+      "properties": [
+        "value",
+        "buffAttack",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:commanding_shout": {
+      "count": 1,
+      "example": "Card ID: 5014",
+      "properties": [
+        "drawCards"
+      ]
+    },
+    "spellEffect:damage_draw_if_survives": {
+      "count": 1,
+      "example": "Card ID: 5018",
+      "properties": [
+        "value",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:damage_with_adjacent": {
+      "count": 2,
+      "example": "Card ID: 14020",
+      "properties": [
+        "value",
+        "adjacentDamage",
+        "targetType",
+        "requiresTarget",
+        "primaryDamage"
+      ]
+    },
+    "spellEffect:summon_random": {
+      "count": 1,
+      "example": "Card ID: 7001",
+      "properties": [
+        "options",
+        "value"
+      ]
+    },
+    "spellEffect:buff_and_immune": {
+      "count": 1,
+      "example": "Card ID: 7009",
+      "properties": [
+        "buffAttack",
+        "targetType",
+        "requiresTarget",
+        "duration",
+        "grantKeywords"
+      ]
+    },
+    "spellEffect:destroy_random": {
+      "count": 1,
+      "example": "Card ID: 7017",
+      "properties": [
+        "targetType"
+      ]
+    },
+    "spellEffect:set_health": {
+      "count": 3,
+      "example": "Card ID: 7020",
+      "properties": [
+        "value",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:discover_from_deck": {
+      "count": 1,
+      "example": "Card ID: 7022",
+      "properties": [
+        "count",
+        "drawCount"
+      ]
+    },
+    "spellEffect:draw_to_match_opponent": {
+      "count": 1,
+      "example": "Card ID: 8009",
+      "properties": [
+        "targetType"
+      ]
+    },
+    "spellEffect:buff_attack": {
+      "count": 2,
+      "example": "Card ID: 8012",
+      "properties": [
+        "value",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:enchant": {
+      "count": 1,
+      "example": "Card ID: 8013",
+      "properties": [
+        "targetType",
+        "requiresTarget",
+        "enchantEffect",
+        "value"
+      ]
+    },
+    "spellEffect:give_divine_shield": {
+      "count": 1,
+      "example": "Card ID: 8024",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:death_coil": {
+      "count": 1,
+      "example": "Card ID: 3001",
+      "properties": [
+        "value",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:freeze_and_damage": {
+      "count": 1,
+      "example": "Card ID: 3007",
+      "properties": [
+        "value",
+        "targetType"
+      ]
+    },
+    "spellEffect:kill_and_summon": {
+      "count": 1,
+      "example": "Card ID: 3008",
+      "properties": [
+        "value",
+        "summonCardId",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:damage_and_buff_weapon": {
+      "count": 1,
+      "example": "Card ID: 3010",
+      "properties": [
+        "value",
+        "buffWeaponAttack",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:aoe_with_on_kill": {
+      "count": 1,
+      "example": "Card ID: 3011",
+      "properties": [
+        "value",
+        "healValue",
+        "targetType"
+      ]
+    },
+    "spellEffect:gain_armor_and_immunity": {
+      "count": 1,
+      "example": "Card ID: 3013",
+      "properties": [
+        "value",
+        "targetType",
+        "duration"
+      ]
+    },
+    "spellEffect:mind_control_temporary": {
+      "count": 2,
+      "example": "Card ID: 3014",
+      "properties": [
+        "targetType",
+        "requiresTarget",
+        "condition",
+        "duration"
+      ]
+    },
+    "spellEffect:resurrect_random": {
+      "count": 1,
+      "example": "Card ID: 3017",
+      "properties": [
+        "value",
+        "targetType"
+      ]
+    },
+    "spellEffect:buff_and_enchant": {
+      "count": 1,
+      "example": "Card ID: 3018",
+      "properties": [
+        "buffHealth",
+        "targetType",
+        "requiresTarget",
+        "enchantEffect",
+        "summonCardId"
+      ]
+    },
+    "spellEffect:gain_armor_and_lifesteal": {
+      "count": 1,
+      "example": "Card ID: 3021",
+      "properties": [
+        "value",
+        "targetType",
+        "duration"
+      ]
+    },
+    "spellEffect:freeze_adjacent": {
+      "count": 1,
+      "example": "Card ID: 3022",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:buff_all_with_deathrattle": {
+      "count": 1,
+      "example": "Card ID: 3023",
+      "properties": [
+        "buffAttack",
+        "buffHealth",
+        "targetType",
+        "deathrattleEffect",
+        "value"
+      ]
+    },
+    "spellEffect:freeze_and_draw": {
+      "count": 1,
+      "example": "Card ID: 3025",
+      "properties": [
+        "targetType",
+        "requiresTarget",
+        "drawCards"
+      ]
+    },
+    "spellEffect:damage_based_on_missing_health": {
+      "count": 1,
+      "example": "Card ID: 3026",
+      "properties": [
+        "healValue",
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:double_health": {
+      "count": 1,
+      "example": "Card ID: 9008",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:copy_from_opponent": {
+      "count": 2,
+      "example": "Card ID: 9011",
+      "properties": [
+        "value",
+        "source"
+      ]
+    },
+    "spellEffect:attack_equals_health": {
+      "count": 1,
+      "example": "Card ID: 9016",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:damage_and_heal": {
+      "count": 1,
+      "example": "Card ID: 9022",
+      "properties": [
+        "value",
+        "targetType",
+        "healTarget",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:summon_copy_from_deck": {
+      "count": 1,
+      "example": "Card ID: 9023",
+      "properties": [
+        "value",
+        "statOverride",
+        "attack",
+        "health"
+      ]
+    },
+    "spellEffect:sacrifice_and_damage": {
+      "count": 1,
+      "example": "Card ID: 15021",
+      "properties": [
+        "targetType",
+        "damageTarget",
+        "damageSourceStat",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:destroy_deck_portion": {
+      "count": 1,
+      "example": "Card ID: 15022",
+      "properties": [
+        "value",
+        "targetType",
+        "randomSelection"
+      ]
+    },
+    "spellEffect:gain_mana": {
+      "count": 1,
+      "example": "Card ID: 11003",
+      "properties": [
+        "value",
+        "isTemporaryMana"
+      ]
+    },
+    "spellEffect:grant_deathrattle": {
+      "count": 1,
+      "example": "Card ID: 11016",
+      "properties": [
+        "targetType",
+        "deathrattle",
+        "value",
+        "summonCardId"
+      ]
+    },
+    "spellEffect:betrayal": {
+      "count": 1,
+      "example": "Card ID: 12018",
+      "properties": [
+        "targetType",
+        "requiresTarget"
+      ]
+    },
+    "spellEffect:return_all_minions_to_hand": {
+      "count": 1,
+      "example": "Card ID: 12019",
+      "properties": []
+    },
+    "spellEffect:copy_last_played_card": {
+      "count": 1,
+      "example": "Card ID: 12027",
+      "properties": []
+    },
+    "spellEffect:grant_immunity": {
+      "count": 1,
+      "example": "Card ID: 9102",
+      "properties": [
+        "targetType",
+        "duration"
+      ]
+    },
+    "spellEffect:swap_hero_power": {
+      "count": 1,
+      "example": "Card ID: 9113",
+      "properties": [
+        "heropower",
+        "usesBeforeSwapBack"
+      ]
+    },
+    "spellEffect:conditional_freeze_or_damage": {
+      "count": 1,
+      "example": "Card ID: 14013",
+      "properties": [
+        "value",
+        "targetType",
+        "requiresTarget",
+        "condition"
+      ]
+    },
+    "spellEffect:buff_then_destroy": {
+      "count": 1,
+      "example": "Card ID: 15011",
+      "properties": [
+        "buffAttack",
+        "buffHealth",
+        "targetType",
+        "requiresTarget",
+        "duration"
+      ]
+    },
+    "spellEffect:draw_specific": {
+      "count": 1,
+      "example": "Card ID: 15012",
+      "properties": [
+        "value",
+        "race"
+      ]
+    },
+    "spellEffect:next_spell_costs_health": {
+      "count": 1,
+      "example": "Card ID: 15020",
+      "properties": [
+        "duration"
+      ]
+    },
+    "spellEffect:copy_to_hand": {
+      "count": 1,
+      "example": "Card ID: 16017",
+      "properties": [
+        "targetType",
+        "condition",
+        "targetsAll"
+      ]
+    },
+    "spellEffect:armor": {
+      "count": 1,
+      "example": "Shield Block (ID: 31022)",
+      "properties": [
+        "value",
+        "requiresTarget",
+        "targetType",
+        "drawCards"
+      ]
+    },
+    "combo:buff_self": {
+      "count": 1,
+      "example": "Card ID: 12016",
+      "properties": [
+        "buffAttack"
+      ]
+    }
+  },
+  "invalidEffects": [],
+  "missingRequiredProps": [
+    {
+      "card": "Force of Nature (ID: 30015)",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "summonCardId",
+        "value"
+      ]
+    },
+    {
+      "card": "Resurrect (ID: 30053)",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "summonCardId",
+        "value"
+      ]
+    },
+    {
+      "card": "Militia Commander (ID: 17001)",
+      "effect": "battlecry:buff",
+      "missingProps": [
+        "buffHealth"
+      ]
+    },
+    {
+      "card": "Silver Vanguard (ID: 18001)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Gather Your Party (ID: 18002)",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "summonCardId",
+        "value"
+      ]
+    },
+    {
+      "card": "Guild Recruiter (ID: 18004)",
+      "effect": "battlecry:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Possessed Lackey (ID: 18006)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Call to Arms (ID: 18007)",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "summonCardId",
+        "value"
+      ]
+    },
+    {
+      "card": "To My Side! (ID: 18008)",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "value"
+      ]
+    },
+    {
+      "card": "Barnabus the Stomper (ID: 15006)",
+      "effect": "battlecry:buff",
+      "missingProps": [
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    {
+      "card": "Fel Guardians (ID: 50004)",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Devoted Maniac (ID: 40020)",
+      "effect": "battlecry:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Piloted Shredder (ID: 40025)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Mad Scientist (ID: 40027)",
+      "effect": "deathrattle:draw",
+      "missingProps": [
+        "value"
+      ]
+    },
+    {
+      "card": "Void Caller (ID: 40029)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Tirion Fordring (ID: 20006)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Highlord Darion Mograine (ID: 20018)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Xyrella, the Devout (ID: 20019)",
+      "effect": "battlecry:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Lady Liadrin (ID: 20023)",
+      "effect": "battlecry:draw",
+      "missingProps": [
+        "value"
+      ]
+    },
+    {
+      "card": "Loatheb (ID: 20026)",
+      "effect": "battlecry:buff",
+      "missingProps": [
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    {
+      "card": "Bloodreaver Gul'dan (ID: 20027)",
+      "effect": "battlecry:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Cho'gall (ID: 20118)",
+      "effect": "battlecry:buff",
+      "missingProps": [
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    {
+      "card": "Sneed's Old Shredder (ID: 20208)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Majordomo Executus (ID: 20211)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Wilderness Guardian (ID: 10015)",
+      "effect": "battlecry:buff",
+      "missingProps": [
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    {
+      "card": "Soul Devourer (ID: 10030)",
+      "effect": "battlecry:buff",
+      "missingProps": [
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    {
+      "card": "Unleash the Hounds (ID: 7001)",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "value"
+      ]
+    },
+    {
+      "card": "Animal Companion (ID: 7002)",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Card ID: 15016",
+      "effect": "spellEffect:summon",
+      "missingProps": [
+        "value"
+      ]
+    },
+    {
+      "card": "Leeroy Jenkins (ID: 20029)",
+      "effect": "battlecry:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    },
+    {
+      "card": "Valeera the Hollow (ID: 20033)",
+      "effect": "battlecry:buff",
+      "missingProps": [
+        "buffAttack",
+        "buffHealth"
+      ]
+    },
+    {
+      "card": "Savannah Highmane (ID: 40007)",
+      "effect": "deathrattle:summon",
+      "missingProps": [
+        "summonCardId"
+      ]
+    }
+  ],
+  "propertyUsage": {
+    "requiresTarget": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 134
+    },
+    "targetType": {
+      "types": [
+        "string",
+        "unknown"
+      ],
+      "occurrenceCount": 153
+    },
+    "buffHealth": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 13
+    },
+    "value": {
+      "types": [
+        "number",
+        "string",
+        "unknown"
+      ],
+      "occurrenceCount": 74
+    },
+    "freezeTarget": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 3
+    },
+    "conditionalTarget": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 5
+    },
+    "drawCards": {
+      "types": [
+        "number",
+        "unknown"
+      ],
+      "occurrenceCount": 8
+    },
+    "conditionalValue": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "isRandom": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 11
+    },
+    "targetsCount": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "isEmpty": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "splashDamage": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "summonCount": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 3
+    },
+    "healValue": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 4
+    },
+    "includeHeroes": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 3
+    },
+    "discardCount": {
+      "types": [
+        "number",
+        "unknown"
+      ],
+      "occurrenceCount": 2
+    },
+    "buffAttack": {
+      "types": [
+        "number",
+        "boolean",
+        "unknown"
+      ],
+      "occurrenceCount": 17
+    },
+    "temporaryEffect": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 5
+    },
+    "isSplit": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "delayedEffect": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 3
+    },
+    "delayedTrigger": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 2
+    },
+    "isCorruption": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "secondaryEffect": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 4
+    },
+    "isBasedOnWeaponAttack": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "destroyWeapon": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "fromGraveyard": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 2
+    },
+    "isBasedOnStats": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 2
+    },
+    "summonCardId": {
+      "types": [
+        "number",
+        "unknown"
+      ],
+      "occurrenceCount": 14
+    },
+    "condition": {
+      "types": [
+        "string",
+        "unknown"
+      ],
+      "occurrenceCount": 31
+    },
+    "grantDeathrattle": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "isRepeatable": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "classes": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "cardName": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 4
+    },
+    "discoveryClass": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 2
+    },
+    "discoveryCount": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 2
+    },
+    "cardType": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 7
+    },
+    "newHeroPower": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 2
+    },
+    "name": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "description": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "cost": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "used": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "class": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "questData": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "progress": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "target": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "completed": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "rewardCardId": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "targetCount": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "minValue": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "discoveryType": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 3
+    },
+    "buffCthun": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "armorGain": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "tribe": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 2
+    },
+    "buffs": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 2
+    },
+    "attack": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 3
+    },
+    "health": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 4
+    },
+    "specificManaCost": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 2
+    },
+    "specificRace": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 2
+    },
+    "targetSelf": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "drawConditions": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "location": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "stopCondition": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "summonForOpponent": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "isGolden": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "replaceDeck": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "makeDuplicates": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "cardCount": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 2
+    },
+    "costReduction": {
+      "types": [
+        "unknown",
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "alternateEffect": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "orderBy": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "direction": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "conditionValue": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 2
+    },
+    "transformInto": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "isRandomSplit": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "damageSourceCounter": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "adjacentOnly": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "grantTaunt": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "isSecret": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "fromHand": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "statOverride": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 2
+    },
+    "drawTypes": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "cardId": {
+      "types": [
+        "number",
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "giveToOpponent": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "buffDurability": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "randomCardFromSet": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "giveRansom": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "transformOptions": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "triggerCondition": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "effectType": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "damage": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "targetType2": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "setAttack": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "setHealth": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "shuffleCardName": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "keywords": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "replaceWith": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "forBothPlayers": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "discoveryPoolId": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 2
+    },
+    "manaDiscount": {
+      "types": [
+        "unknown",
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "adjacentDamage": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "discoveryManaCostRange": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "options": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "duration": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 8
+    },
+    "grantKeywords": {
+      "types": [
+        "array"
+      ],
+      "occurrenceCount": 2
+    },
+    "count": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "drawCount": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "primaryDamage": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "enchantEffect": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 2
+    },
+    "buffWeaponAttack": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "deathrattleEffect": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "source": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 2
+    },
+    "healTarget": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "damageTarget": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "damageSourceStat": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "randomSelection": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "isTemporaryMana": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "deathrattle": {
+      "types": [
+        "unknown"
+      ],
+      "occurrenceCount": 1
+    },
+    "heropower": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "usesBeforeSwapBack": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "manaCost": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 1
+    },
+    "upgradesInHand": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "gainStats": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "race": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 2
+    },
+    "targetsAll": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    },
+    "effect": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "permanent": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 2
+    },
+    "buffType": {
+      "types": [
+        "string"
+      ],
+      "occurrenceCount": 1
+    },
+    "manaReduction": {
+      "types": [
+        "number"
+      ],
+      "occurrenceCount": 2
+    },
+    "returnToHand": {
+      "types": [
+        "boolean"
+      ],
+      "occurrenceCount": 1
+    }
+  }
+}

@@ -102,15 +102,14 @@ export const additionalSpellCards: CardData[] = [
       type: "spell",
       rarity: "common",
       description: "Freeze all enemy minions.",
-      keywords: [],
+      keywords: ["freeze"],
       heroClass: "mage",
       class: "Mage",
       spellEffect: {
-        type: "aoe_damage",
+        type: "freeze",
         value: 0,
         requiresTarget: false,
-        targetType: "all_enemy_minions",
-        freezeTarget: true
+        targetType: "all_enemy_minions"
       },
       collectible: true
   },

@@ -1659,7 +1659,7 @@ export const   neutralMinions: CardData[] = [{
       class: "Neutral",
                   battlecry: {
         type: "buff",
-        targetType: BattlecryTargetType.MECH,
+        targetType: BattlecryTargetType.FRIENDLY_MECH,
         requiresTarget: true,
         buffAttack: 1,
         buffHealth: 1

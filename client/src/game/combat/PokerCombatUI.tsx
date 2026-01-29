@@ -219,20 +219,17 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
             foldDamage,
             'poker-fold'
           );
-          console.log(`[PokerCombatUI] Fold damage popup: -${foldDamage} for ${result.whoFolded}`);
         }
       }
     }
   }, [combatState?.phase, resolveCombat, resolution]);
 
   const handleAction = useCallback((action: CombatAction, hp?: number) => {
-    console.log('[PokerCombatUI] handleAction called:', { action, hp, phase: combatState?.phase });
     if (!combatState) return;
     performAction(combatState.player.playerId, action, hp);
     
     // If player folded, skip AI response - hand is already over
     if (action === CombatAction.BRACE) {
-      console.log('[PokerCombatUI] Player folded - skipping AI response');
       return;
     }
     
@@ -244,25 +241,21 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
       
       // Skip if AI already acted (isReady = true)
       if (freshState.opponent.isReady) {
-        console.log('[PokerCombatUI] AI already acted - skipping duplicate response');
         return;
       }
       
       // Skip if a fold already happened
       if (freshState.foldWinner) {
-        console.log('[PokerCombatUI] Fold already detected - skipping AI response');
         return;
       }
       
       // Skip if we're in resolution phase
       if (freshState.phase === CombatPhase.RESOLUTION) {
-        console.log('[PokerCombatUI] Already in resolution - skipping AI response');
         return;
       }
       
       // Use SmartAI for intelligent decision making
       const aiDecision = getSmartAIAction(freshState, false);
-      console.log(`[PokerCombatUI] AI decision: ${aiDecision.action} (${aiDecision.reasoning})`);
       
       performAction(freshState.opponent.playerId, aiDecision.action, aiDecision.betAmount);
     }, 1000);

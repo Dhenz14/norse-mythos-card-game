@@ -37,7 +37,6 @@ const UnifiedBattlefieldAttackConnector: React.FC<UnifiedBattlefieldAttackConnec
   // Reset attack mode when turn changes
   useEffect(() => {
     if (!isPlayerTurn && isAttackMode) {
-      console.log('[AttackConnector] Not player turn, ending attack mode');
       endAttackMode();
     }
   }, [isPlayerTurn, isAttackMode, endAttackMode]);
@@ -46,29 +45,24 @@ const UnifiedBattlefieldAttackConnector: React.FC<UnifiedBattlefieldAttackConnec
   useEffect(() => {
     // Register handlers for player cards
     const handlePlayerCardClick = (card: CardInstance) => {
-      console.log('[AttackConnector] Player card clicked:', card.instanceId);
       
       // Check if this card can attack
       if (isPlayerTurn && canCardAttack(card, isPlayerTurn)) {
         // If we're already in attack mode with this card, toggle it off
         if (isAttackMode && attackingCard?.instanceId === card.instanceId) {
-          console.log('[AttackConnector] Canceling attack mode for card:', card.instanceId);
           endAttackMode();
         } else {
           // Start attack mode with this card
-          console.log('[AttackConnector] Starting attack mode with card:', card.instanceId);
           startAttackMode(card);
         }
       } else {
         // If the card can't attack, just pass the click to the normal handler
-        console.log('[AttackConnector] Card cannot attack, passing to normal handler');
         onCardClick(card);
       }
     };
 
     // Register handlers for opponent cards (potential targets)
     const handleOpponentCardClick = (card: CardInstance) => {
-      console.log('[AttackConnector] Opponent card clicked:', card.instanceId);
       
       if (isAttackMode && attackingCard) {
         // Get taunt minions from opponent's battlefield for target validation
@@ -81,14 +75,12 @@ const UnifiedBattlefieldAttackConnector: React.FC<UnifiedBattlefieldAttackConnec
         const isValid = isValidAttackTarget(attackingCard, card, opponentTauntCards);
         
         if (isValid) {
-          console.log('[AttackConnector] Valid target, completing attack');
           // Complete the attack
           completeAttack(card);
           
           // Call the attack handler from parent
           onOpponentCardClick(card);
         } else {
-          console.log('[AttackConnector] Invalid target, ignoring');
         }
       } else {
         // Not in attack mode, pass the click to normal handler

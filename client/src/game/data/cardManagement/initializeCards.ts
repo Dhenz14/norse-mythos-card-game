@@ -19,6 +19,7 @@ import { registerWarriorCards } from '../cardSets/warriorCards';
 import { registerDeathKnightCards } from '../cardSets/deathknightCards';
 import { registerDemonHunterCards } from '../cardSets/demonhunterCards';
 import { registerNecromancerCards } from '../cardSets/necromancerCards';
+import { registerSuperMinionCards } from '../cardSets/superMinionCards';
 
 // Import other card sets as they are created
 // import { registerAllCardSets } from '../cardSets';
@@ -56,6 +57,7 @@ export function initializeCardDatabase(): void {
   registerDeathKnightCards();
   registerDemonHunterCards();
   registerNecromancerCards();
+  registerSuperMinionCards();
   
   // When the full card set index is available, use this instead:
   // registerAllCardSets();

@@ -889,3 +889,60 @@
   font-size: 1.1rem;
   font-weight: 600;
 }
+
+/* ========================================
+   SMALL SCREEN POKER CARD SCALING
+   Ensures community cards fit on smaller screens
+   ======================================== */
+
+@media (max-width: 1200px) {
+  .poker-panel .poker-card.norse {
+    width: clamp(55px, 5vw, 75px);
+    height: clamp(78px, 7.1vw, 106px);
+  }
+  
+  .poker-panel .poker-card.norse.small {
+    width: clamp(42px, 3.8vw, 56px);
+    height: clamp(60px, 5.4vw, 80px);
+  }
+}
+
+@media (max-width: 1000px) {
+  .poker-panel .poker-card.norse {
+    width: clamp(45px, 4.5vw, 65px);
+    height: clamp(64px, 6.4vw, 92px);
+  }
+  
+  .poker-panel .poker-card.norse.small {
+    width: clamp(34px, 3.4vw, 49px);
+    height: clamp(48px, 4.8vw, 69px);
+  }
+  
+  .community-section {
+    gap: 20px;
+  }
+  
+  .cards-container {
+    gap: 3px;
+  }
+}
+
+@media (max-width: 800px) {
+  .poker-panel .poker-card.norse {
+    width: clamp(38px, 4vw, 55px);
+    height: clamp(54px, 5.7vw, 78px);
+  }
+  
+  .poker-panel .poker-card.norse.small {
+    width: clamp(29px, 3vw, 41px);
+    height: clamp(41px, 4.3vw, 58px);
+  }
+  
+  .community-section {
+    gap: 12px;
+  }
+  
+  .cards-container {
+    gap: 2px;
+  }
+}

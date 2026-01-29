@@ -4,8 +4,6 @@ import { DeckInfo, HeroClass } from '../types';
 import useGame from '../../lib/stores/useGame';
 import { useGameStore } from '../stores/gameStore';
 import { getHeroDataByClass } from '../data/heroes';
-// DeckTester moved to archived_testing_waste - now using live game testing
-import AIGameSimulator from './AIGameSimulator';
 import { useNavigate } from 'react-router-dom';
 
 interface SavedDecksListProps {
@@ -15,9 +13,6 @@ interface SavedDecksListProps {
 
 const SavedDecksList: React.FC<SavedDecksListProps> = ({ onSelectDeck, onCreateNewDeck }) => {
   const { savedDecks } = useGame();
-  // DeckTester functionality moved to live game testing
-  const [showAISimulator, setShowAISimulator] = useState(false);
-  const [selectedDecks, setSelectedDecks] = useState<{deck1?: DeckInfo; deck2?: DeckInfo}>({});
   const navigate = useNavigate();
 
   // Ensure savedDecks is an array before processing
@@ -25,13 +20,13 @@ const SavedDecksList: React.FC<SavedDecksListProps> = ({ onSelectDeck, onCreateN
   
   // Group decks by class
   const decksByClass = validDecks.reduce((groups, deck) => {
-    // Make sure deck is an object and deck.class exists and is a string
+    // Make sure deck is an object and deck.heroClass exists and is a string
     if (!deck || typeof deck !== 'object') {
       console.warn("Invalid deck found:", deck);
       return groups;
     }
     
-    const className = deck.class || "Unknown";
+    const className = deck.heroClass || "Unknown";
     if (!groups[className]) {
       groups[className] = [];
     }
@@ -57,14 +52,6 @@ const SavedDecksList: React.FC<SavedDecksListProps> = ({ onSelectDeck, onCreateN
         </div>
         <div className="flex space-x-3">
           <button
-            className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-md text-white"
-            onClick={() => setShowAISimulator(true)}
-            disabled={validDecks.length < 2}
-            title={validDecks.length < 2 ? "You need at least 2 decks for AI play" : "Watch AI play a game with selected decks"}
-          >
-            AI Play
-          </button>
-          <button
             className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white"
             onClick={onCreateNewDeck}
           >
@@ -72,156 +59,6 @@ const SavedDecksList: React.FC<SavedDecksListProps> = ({ onSelectDeck, onCreateN
           </button>
         </div>
       </div>
-      
-      {/* Deck Tester Modal - functionality moved to live game testing */}
-      
-      {/* AI Game Simulator */}
-      <AnimatePresence>
-        {showAISimulator && selectedDecks.deck1 && selectedDecks.deck2 && (
-          <AIGameSimulator 
-            deck1={selectedDecks.deck1} 
-            deck2={selectedDecks.deck2} 
-            onBack={() => {
-              setShowAISimulator(false);
-              setSelectedDecks({});
-            }} 
-          />
-        )}
-      </AnimatePresence>
-      
-      {/* AI Deck Selection Modal */}
-      <AnimatePresence>
-        {showAISimulator && (!selectedDecks.deck1 || !selectedDecks.deck2) && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-gray-800 p-6 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-yellow-400">Select AI Decks</h2>
-                <button 
-                  onClick={() => {
-                    setShowAISimulator(false);
-                    setSelectedDecks({});
-                  }}
-                  className="text-gray-400 hover:text-white"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-bold mb-2">AI Deck 1: {selectedDecks.deck1?.name || "Not Selected"}</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {validDecks.slice(0, 6).map(deck => (
-                      <button
-                        key={deck.id}
-                        className={`deck-select-item w-full text-left p-3 rounded cursor-pointer border ${
-                          selectedDecks.deck1?.id === deck.id ? 'border-green-500 bg-green-900 bg-opacity-20' : 'border-gray-700 hover:border-blue-500'
-                        }`}
-                        onClick={() => setSelectedDecks(prev => ({ ...prev, deck1: deck }))}
-                      >
-                        <div className="font-semibold">{deck.name || "Unnamed"}</div>
-                        <div className="text-sm text-gray-400">{deck.class || "Unknown"}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="font-bold mb-2">AI Deck 2: {selectedDecks.deck2?.name || "Not Selected"}</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {validDecks.slice(0, 6).map(deck => (
-                      <button
-                        key={deck.id}
-                        className={`deck-select-item w-full text-left p-3 rounded cursor-pointer border ${
-                          selectedDecks.deck2?.id === deck.id ? 'border-green-500 bg-green-900 bg-opacity-20' : 'border-gray-700 hover:border-blue-500'
-                        }`}
-                        onClick={() => setSelectedDecks(prev => ({ ...prev, deck2: deck }))}
-                      >
-                        <div className="font-semibold">{deck.name || "Unnamed"}</div>
-                        <div className="text-sm text-gray-400">{deck.class || "Unknown"}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="flex justify-end space-x-3 mt-6">
-                  <button
-                    onClick={() => {
-                      setShowAISimulator(false);
-                      setSelectedDecks({});
-                    }}
-                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md text-white"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => {
-                      // Continue with simulation if both decks are selected
-                      if (selectedDecks.deck1 && selectedDecks.deck2) {
-                        console.log('[AI Debug] START BUTTON CLICKED with decks:', {
-                          deck1: selectedDecks.deck1.name, 
-                          deck2: selectedDecks.deck2.name
-                        });
-                        
-                        try {
-                          // Get the resetGameState function from the game store
-                          const { resetGameState } = useGameStore.getState();
-                          
-                          // First reset the game state completely to ensure a clean start
-                          console.log('[AI Debug] Resetting game state before starting AI game');
-                          resetGameState();
-                          
-                          // Store selected decks in localStorage
-                          localStorage.setItem('aiDeck1', JSON.stringify(selectedDecks.deck1));
-                          localStorage.setItem('aiDeck2', JSON.stringify(selectedDecks.deck2));
-                          
-                          // Close selection modal and start simulator directly
-                          console.log('[AI Debug] Setting showAISimulator to true');
-                          setShowAISimulator(true);
-                        } catch (err) {
-                          console.error('[AI Debug] Error starting AI game:', err);
-                          // Still show the simulator even if there was an error
-                          setShowAISimulator(true);
-                        }
-                      }
-                    }}
-                    disabled={!selectedDecks.deck1 || !selectedDecks.deck2}
-                    className={`px-4 py-2 rounded-md text-white flex items-center ${
-                      selectedDecks.deck1 && selectedDecks.deck2 
-                        ? 'bg-orange-600 hover:bg-orange-700' 
-                        : 'bg-gray-600 cursor-not-allowed'
-                    }`}
-                  >
-                    <span>Start AI Game</span>
-                    {selectedDecks.deck1 && selectedDecks.deck2 && (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    )}
-                    {(!selectedDecks.deck1 || !selectedDecks.deck2) && (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div className="deck-list-content deck-selection flex-1 overflow-y-auto p-6" style={{pointerEvents: 'auto'}}>
         {Object.keys(decksByClass).length === 0 ? (
@@ -269,9 +106,9 @@ const SavedDecksList: React.FC<SavedDecksListProps> = ({ onSelectDeck, onCreateN
                     }
                     
                     // Convert class name format to match hero data format
-                    const heroClass = (deck.class || "neutral").toLowerCase() as HeroClass;
-                    const heroData = getHeroDataByClass(heroClass);
-                    const heroName = heroData ? heroData.name : (deck.class || "Unknown Class");
+                    const heroClassValue = (deck.heroClass || "neutral").toLowerCase() as HeroClass;
+                    const heroData = getHeroDataByClass(heroClassValue);
+                    const heroName = heroData ? heroData.name : (deck.heroClass || "Unknown Class");
                     
                     // Safely calculate card count
                     let cardCount = 0;

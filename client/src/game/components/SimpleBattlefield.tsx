@@ -101,6 +101,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = ({
       const canAttack = side === 'player' && card && isPlayerTurn && 
                         !card.isSummoningSick && card.canAttack && !attackingCard;
       const isTarget = side === 'opponent' && card && isValidTarget(card, opponentCards);
+      const hasSuperBonus = card && (card as any).hasSuperMinionBonus;
 
       return (
         <div 
@@ -114,6 +115,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = ({
                 ${isAttacking ? 'attacking' : ''} 
                 ${canAttack ? 'can-attack' : ''} 
                 ${isTarget ? 'valid-target' : ''}
+                ${hasSuperBonus ? 'super-minion-bonus' : ''}
               `}
               onClick={() => !isInteractionDisabled && onClick?.(card)}
               onMouseEnter={(e) => handleCardMouseEnter(card, e)}

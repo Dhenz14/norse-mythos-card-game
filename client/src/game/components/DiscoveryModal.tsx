@@ -16,6 +16,9 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
 }) => {
   const { playSoundEffect } = useAudio();
   
+  console.log('[DiscoveryModal] Rendering with discoveryState:', discoveryState);
+  console.log('[DiscoveryModal] active:', discoveryState?.active, 'options:', discoveryState?.options?.length);
+  
   // Guard against invalid discovery state - handle case where game is over
   // but discovery UI is attempting to render
   if (!discoveryState || !discoveryState.options || !discoveryState.active) {
@@ -24,6 +27,8 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
     setTimeout(() => onCardSelect(null), 100);
     return null;
   }
+  
+  console.log('[DiscoveryModal] Valid discovery state, rendering', discoveryState.options.length, 'options');
   
   // Initialize filters from discovery state
   const [cardType, setCardType] = useState<CardType | 'any'>(

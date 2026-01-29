@@ -92,7 +92,6 @@ export const useAttackStore = create<AttackState>((set, get) => ({
     const gameStore = useGameStore.getState();
     
     // Call the game store's attackWithCard method to execute the attack
-    console.log(`[AttackStore] Performing attack with ${state.attackingCard.instanceId} on ${targetId} (${targetType})`);
     gameStore.attackWithCard(state.attackingCard.instanceId, targetId);
     
     // Reset the attack state after attack is performed

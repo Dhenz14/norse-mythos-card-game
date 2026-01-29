@@ -3,8 +3,10 @@
  * This is similar to how Hearthstone implements "discover a dragon" or "discover a deathrattle minion"
  */
 import { CardData } from '../types';
-// Get the card database directly to avoid circular dependencies
-import { fullCardDatabase } from './cards';
+// Use allCards as the single source of truth for card data (1300+ cards)
+import allCards from './allCards';
+// Alias for backward compatibility within this file
+const fullCardDatabase = allCards;
 // Import helpers from discoveryHelper to avoid circular dependencies
 import { DiscoverPoolOption, hasRace, getAllDiscoverPoolOptions } from './discoveryHelper';
 

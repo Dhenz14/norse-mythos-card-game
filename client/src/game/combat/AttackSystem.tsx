@@ -46,7 +46,6 @@ export type AttackResult = {
  */
 export function canCardAttack(card: CardInstance, isPlayerTurn: boolean): boolean {
   // Add comprehensive logging
-  console.log(`[ATTACK CHECK] Checking attack eligibility for ${card.card.name}:`, {
     instanceId: card.instanceId,
     isSummoningSick: card.isSummoningSick,
     canAttack: card.canAttack,
@@ -57,7 +56,6 @@ export function canCardAttack(card: CardInstance, isPlayerTurn: boolean): boolea
 
   // Core eligibility requirements
   if (!isPlayerTurn) {
-    console.log('[ATTACK CHECK] Cannot attack during opponent turn');
     return false;
   }
 
@@ -67,13 +65,11 @@ export function canCardAttack(card: CardInstance, isPlayerTurn: boolean): boolea
     const hasRush = card.card.keywords?.includes('rush');
 
     if (!hasCharge && !hasRush) {
-      console.log('[ATTACK CHECK] Card has summoning sickness and no charge/rush');
       return false;
     }
   }
 
   if (!card.canAttack) {
-    console.log('[ATTACK CHECK] Card canAttack flag is false');
     return false;
   }
 
@@ -83,11 +79,9 @@ export function canCardAttack(card: CardInstance, isPlayerTurn: boolean): boolea
   const maxAttacks = hasWindfury ? 2 : 1;
 
   if (attacksPerformed >= maxAttacks) {
-    console.log(`[ATTACK CHECK] Card already attacked ${attacksPerformed}/${maxAttacks} times this turn`);
     return false;
   }
 
-  console.log('[ATTACK CHECK] Card is eligible to attack');
   return true;
 }
 
@@ -107,7 +101,6 @@ export function isValidAttackTarget(
     const hasCharge = attacker.card.keywords?.includes('charge');
     
     if (attacker.isSummoningSick && hasRush && !hasCharge) {
-      console.log('[TARGET CHECK] Rush minion cannot attack hero on first turn');
       return false;
     }
 
@@ -117,7 +110,6 @@ export function isValidAttackTarget(
     );
 
     if (opponentHasTaunt) {
-      console.log('[TARGET CHECK] Cannot attack hero when taunt minions are present');
       return false;
     }
 
@@ -130,7 +122,6 @@ export function isValidAttackTarget(
   );
 
   if (!targetMinion) {
-    console.log(`[TARGET CHECK] Target minion with ID ${targetId} not found`);
     return false;
   }
 
@@ -140,7 +131,6 @@ export function isValidAttackTarget(
   );
 
   if (opponentHasTaunt && !targetMinion.card.keywords?.includes('taunt')) {
-    console.log('[TARGET CHECK] Must attack taunt minions first');
     return false;
   }
 
@@ -157,7 +147,6 @@ export function executeAttack(
   targetId?: string,
   targetType: 'minion' | 'hero' = 'hero'
 ): AttackResult {
-  console.log(`[ATTACK EXECUTION] Executing attack from ${attackerId} to ${targetId || 'opponent hero'}`);
 
   // Deep clone the state to avoid mutations
   let newState = JSON.parse(JSON.stringify(state)) as GameState;
@@ -198,7 +187,6 @@ export function executeAttack(
     }
 
     const attackValue = attacker.card.type === 'minion' ? (attacker.card.attack ?? 0) : 0;
-    console.log(`[ATTACK HERO] Attacking hero with ${attacker.card.name} for ${attackValue} damage`);
     
     // Record the animation
     animations.push({
@@ -249,7 +237,6 @@ export function executeAttack(
 
     const attackerAttack = attacker.card.type === 'minion' ? (attacker.card.attack ?? 0) : 0;
     const targetAttack = targetMinion.card.type === 'minion' ? (targetMinion.card.attack ?? 0) : 0;
-    console.log(`[ATTACK MINION] ${attacker.card.name} (${attackerAttack}/${attacker.currentHealth ?? 0}) attacking ${targetMinion.card.name} (${targetAttack}/${targetMinion.currentHealth ?? 0})`);
     
     // Record the attack animation
     animations.push({
@@ -265,7 +252,6 @@ export function executeAttack(
     // Attacker deals damage to target
     if (targetDivineShield) {
       // Divine shield absorbs the damage
-      console.log(`[DIVINE SHIELD] ${targetMinion.card.name}'s divine shield absorbs the damage`);
       targetMinion.hasDivineShield = false;
     } else {
       // Apply damage
@@ -280,13 +266,11 @@ export function executeAttack(
         targetId: targetId
       });
 
-      console.log(`[DAMAGE] ${attacker.card.name} deals ${attackerDamage} damage to ${targetMinion.card.name}`);
     }
 
     // Target deals damage to attacker
     if (attackerDivineShield) {
       // Divine shield absorbs the damage
-      console.log(`[DIVINE SHIELD] ${attacker.card.name}'s divine shield absorbs the damage`);
       attacker.hasDivineShield = false;
     } else {
       // Apply damage
@@ -301,12 +285,10 @@ export function executeAttack(
         targetId: attackerId
       });
 
-      console.log(`[DAMAGE] ${targetMinion.card.name} deals ${targetDamage} damage to ${attacker.card.name}`);
     }
 
     // Check if minions died from the attack
     if ((targetMinion.currentHealth ?? 0) <= 0) {
-      console.log(`[DEATH] ${targetMinion.card.name} has died`);
       targetDestroyed = true;
       
       animations.push({
@@ -317,7 +299,6 @@ export function executeAttack(
     }
 
     if ((attacker.currentHealth ?? 0) <= 0) {
-      console.log(`[DEATH] ${attacker.card.name} has died`);
       attackerDestroyed = true;
       
       animations.push({
@@ -370,7 +351,6 @@ export function executeAttack(
  * Destroy a minion and move it to the graveyard
  */
 function destroyMinion(state: GameState, minionId: string, playerId: 'player' | 'opponent'): GameState {
-  console.log(`[DESTROY] Destroying minion ${minionId} for ${playerId}`);
   return destroyCard(state, minionId, playerId);
 }
 
@@ -379,7 +359,6 @@ function destroyMinion(state: GameState, minionId: string, playerId: 'player' | 
  * Called at the beginning of each turn to reset attack counters
  */
 export function resetAttackStateForTurn(state: GameState, playerId: 'player' | 'opponent'): GameState {
-  console.log(`[ATTACK RESET] Resetting attack state for ${playerId}'s turn`);
   
   // Clone state to avoid mutations
   const newState = JSON.parse(JSON.stringify(state)) as GameState;
@@ -463,7 +442,6 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
    * Handle clicking on a player's minion (potential attacker)
    */
   const handleAttackerClick = (card: CardInstance | CardInstanceWithCardData) => {
-    console.log(`[ATTACK SYSTEM] Player card clicked: ${card.card.name}`);
     
     // We're in attack mode and clicked a different card - cancel current attack
     if (isAttackMode && attackingCard && attackingCard.instanceId !== card.instanceId) {
@@ -478,7 +456,6 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
    * Handle clicking on an opponent's minion (potential target)
    */
   const handleTargetClick = (card: CardInstance | CardInstanceWithCardData) => {
-    console.log(`[ATTACK SYSTEM] Opponent card clicked: ${card.card.name}`);
     
     // If we're not in attack mode or have no attacker, do nothing
     if (!isAttackMode || !attackingCard) {
@@ -487,7 +464,6 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
     
     // Check if this is a valid target
     if (!validTargets.includes(card.instanceId)) {
-      console.log(`[ATTACK SYSTEM] Invalid target: ${card.card.name}`);
       
       // Play error sound
       if (audioState.playSoundEffect) audioState.playSoundEffect('error');
@@ -512,7 +488,6 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
    * Handle clicking on the opponent's hero
    */
   const handleHeroClick = () => {
-    console.log(`[ATTACK SYSTEM] Opponent hero clicked`);
     
     // If we're not in attack mode or have no attacker, do nothing
     if (!isAttackMode || !attackingCard) {
@@ -521,7 +496,6 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
     
     // Check if hero is a valid target
     if (!validTargets.includes('opponent-hero')) {
-      console.log(`[ATTACK SYSTEM] Cannot attack hero`);
       
       // Play error sound
       if (audioState.playSoundEffect) audioState.playSoundEffect('error');

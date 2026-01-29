@@ -23,10 +23,10 @@ export const hunterCards: CardData[] = [
   {
       id: 7001,
 
-      name: "Release the Garmr",
+      name: "Unleash the Bound-Beast",
       manaCost: 3,
 
-      description: "For each enemy minion, summon a 1/1 Hound with Charge.",
+      description: "For each enemy minion, summon a 1/1 Howling Scavenger of Hel with Charge.",
       rarity: "common",
 
       type: "spell",
@@ -36,7 +36,7 @@ export const hunterCards: CardData[] = [
         type: "summon",
 
         targetType: "none", 
-      summonCardId: 7501 // Hound token
+      summonCardId: 7501 // Scavenger token
        },
       collectible: true,
       class: "Hunter"
@@ -44,10 +44,10 @@ export const hunterCards: CardData[] = [
   {
   id: 7002,
   
-  name: "Beast of Valhalla",
+  name: "Great-Beast's Call",
   manaCost: 3,
   
-  description: "Summon a random Beast Companion.",
+  description: "Summon a random Great-Beast companion.",
   rarity: "common",
   type: "spell",
   
@@ -68,7 +68,7 @@ export const hunterCards: CardData[] = [
   {
   id: 7003,
   
-  name: "Ullr's Bow",
+  name: "Eagle-Eye Longbow",
   manaCost: 3,
   
   attack: 3,
@@ -85,7 +85,7 @@ export const hunterCards: CardData[] = [
   {
   id: 7005,
   
-  name: "Artemis' Arrow",
+  name: "Lethal Precision",
   manaCost: 3,
   
   description: "Destroy a random enemy minion.",
@@ -133,7 +133,7 @@ export const paladinCards: CardData[] = [
   {
   id: 8003,
   
-  name: "Truesilver Champion",
+  name: "Sun-Forged Blade",
   manaCost: 4,
   
   attack: 4,
@@ -150,7 +150,7 @@ export const paladinCards: CardData[] = [
   {
       id: 8004,
 
-      name: "Blessing of Óðinn",
+      name: "Sovereign's Blessing",
       manaCost: 4,
 
       description: "Give a minion +4/+4.",
@@ -174,7 +174,7 @@ export const paladinCards: CardData[] = [
   {
       id: 8005,
 
-      name: "Balance of Themis",
+      name: "Primal Equity",
       manaCost: 2,
 
       description: "Change the Health of ALL minions to 1.",
@@ -199,7 +199,7 @@ export const classTokens: CardData[] = [
   {
   id: 7502,
   
-  name: "Hyena",
+  name: "Howling Scavenger of Hel",
   manaCost: 2,
   
   attack: 2,
@@ -216,13 +216,13 @@ export const classTokens: CardData[] = [
   {
   id: 7503,
   
-  name: "Misha",
+  name: "Ironwood Grizzly",
   manaCost: 3,
   
   attack: 4,
   health: 4,
   
-  description: "Taunt. Summoned by Beast of Valhalla.",
+  description: "Taunt. Summoned by Great-Beast's Call.",
   rarity: "common",
   
   type: "minion",
@@ -233,13 +233,13 @@ export const classTokens: CardData[] = [
   {
   id: 7504,
   
-  name: "Huffer",
+  name: "Muspelheim Razorback",
   manaCost: 3,
   
   attack: 4,
   health: 2,
   
-  description: "Charge. Summoned by Beast of Valhalla.",
+  description: "Charge. Summoned by Great-Beast's Call.",
   rarity: "common",
   
   type: "minion",
@@ -250,13 +250,13 @@ export const classTokens: CardData[] = [
   {
   id: 7505,
   
-  name: "Leokk",
+  name: "Storm-Winged Stallion",
   manaCost: 3,
   
   attack: 2,
   health: 4,
   
-  description: "Your other minions have +1 Attack. Summoned by Beast of Valhalla.",
+  description: "Your other minions have +1 Attack. Summoned by Great-Beast's Call.",
   rarity: "common",
   
   type: "minion",
@@ -268,13 +268,13 @@ export const classTokens: CardData[] = [
   {
   id: 8501,
   
-  name: "Ashbringer",
+  name: "World-Render's Edge",
   manaCost: 5,
   
   attack: 5,
   durability: 3,
   
-  description: "Legendary weapon wielded by Týr, Champion of Justice.",
+  description: "Legendary weapon wielded by the champion of justice.",
   rarity: "legendary",
   
   type: "weapon",
@@ -285,13 +285,13 @@ export const classTokens: CardData[] = [
   {
   id: 8502,
   
-  name: "Silver Hand Recruit",
+  name: "Valhalla Aspirant",
   manaCost: 1,
   
   attack: 1,
   health: 1,
   
-  description: "Summoned by the Paladin Hero Power.",
+  description: "Summoned by the Hero Power.",
   rarity: "common",
   
   type: "minion",

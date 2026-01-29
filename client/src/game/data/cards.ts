@@ -157,10 +157,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 3010,
-    name: 'Runesmith of Odin',
+    name: 'All-Seeing Runesmith',
   description: 'Battlecry: Swap the Attack and Health of a minion.',
   
-  flavorText: 'The runesmiths of Asgard weave fate with every inscription.',
+  flavorText: 'They weave fate with every inscription, seeing beyond the mortal realm.',
   type: 'minion',
   
   rarity: 'epic',
@@ -316,10 +316,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 5014,
-    name: 'Odin\'s War Cry',
-      description: 'Your minions can\'t be reduced below 1 Health this turn. Draw a card.',
+    name: "Sovereign's Rally",
+      description: "Your minions can't be reduced below 1 Health this turn. Draw a card.",
 
-      flavorText: 'When Odin\'s voice echoes across the battlefield, none may fall.',
+      flavorText: 'When the call echoes across the battlefield, none may fall.',
       type: 'spell',
 
       rarity: 'rare',
@@ -336,10 +336,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 5015,
-    name: 'Berserker of Thor',
+    name: 'Thunder-Forged Berserker',
   description: 'Charge',
   
-  flavorText: 'Warriors blessed by Thor strike with the fury of lightning.',
+  flavorText: 'Warriors struck by lightning gain the fury of the storm.',
   type: 'minion',
   
   rarity: 'common',
@@ -354,10 +354,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 5017,
-    name: 'Tyr\'s Bulwark',
+    name: 'Steadfast Bulwark',
   description: 'Taunt. Has +3 Attack while damaged.',
   
-  flavorText: 'Named for the god who sacrificed his hand to bind Fenrir.',
+  flavorText: 'A shield that grows stronger as the battle rages.',
   type: 'minion',
   
   rarity: 'common',
@@ -374,9 +374,9 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 5018,
-    name: 'Mjolnir Strike',
+    name: 'Thunderbolt Strike',
     description: 'Deal 2 damage to a minion. If it survives, draw a card.',
-    flavorText: 'Thor\'s hammer always returns to his hand.',
+    flavorText: 'The fury of the storm always returns with power.',
       type: 'spell',
 
       rarity: 'common',
@@ -398,10 +398,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 5101,
-    name: 'Tyr, God of War',
+    name: 'Legendary War-Sovereign',
       description: 'Battlecry: Equip a 4/2 Shadowmourne that also damages adjacent minions.',
 
-      flavorText: 'The one-handed god of courage and heroic glory.',
+      flavorText: 'A master of battle and heroic glory.',
       type: 'hero',
 
       rarity: 'legendary',
@@ -516,10 +516,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 7009,
-    name: 'Fury of Artemis',
+    name: 'Untamed Wild-Fury',
       description: 'Give a Beast +2 Attack and Immune this turn.',
 
-      flavorText: 'The huntress goddess protects her sacred animals.',
+      flavorText: 'The wild animals protect their own with primal intensity.',
       type: 'spell',
 
       rarity: 'epic',
@@ -604,10 +604,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 7017,
-    name: 'Arrow of Apollo',
+    name: 'Sun-Piercing Arrow',
       description: 'Destroy a random enemy minion.',
 
-      flavorText: 'The sun god\'s arrows never miss their mark.',
+      flavorText: 'An arrow that carries the heat of the sun never misses.',
       type: 'spell',
 
       rarity: 'common',
@@ -744,9 +744,9 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 7024,
-    name: 'Loki\'s Mischief',
+    name: "Chaos-Weaver's Trick",
     description: 'Secret: When an enemy attacks your hero, instead it attacks another random character.',
-      flavorText: 'The trickster god delights in chaos.',
+      flavorText: 'Chaos delights in the confusion of battle.',
 
       type: 'spell',
       rarity: 'rare',
@@ -817,10 +817,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8008,
-    name: 'Light of Baldur',
+    name: 'Radiant Dawn',
       description: 'Restore 6 Health.',
 
-      flavorText: 'Baldur, god of light and purity, shares his radiance.',
+      flavorText: 'The light of a new day brings hope and healing.',
       type: 'spell',
 
       rarity: 'common',
@@ -842,10 +842,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8009,
-    name: 'Freyja\'s Blessing',
+    name: "Golden Weaver's Blessing",
       description: 'Draw cards until you have as many in hand as your opponent.',
 
-      flavorText: 'The goddess of love and war bestows fortune upon the worthy.',
+      flavorText: 'Luck and fortune bestow favor upon the worthy.',
       type: 'spell',
 
       rarity: 'rare',
@@ -862,10 +862,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8012,
-    name: 'Blessing of Thor',
+    name: "Storm-Hammer's Blessing",
       description: 'Give a minion +3 Attack.',
 
-      flavorText: 'Thor grants the strength of thunder.',
+      flavorText: 'The strength of thunder grants immense power.',
       type: 'spell',
 
       rarity: 'common',
@@ -887,9 +887,9 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8013,
-    name: 'Wisdom of Athena',
+    name: "Tactic-Master's Insight",
     description: 'Choose a minion. Whenever it attacks, draw a card.',
-    flavorText: 'The goddess of wisdom shares her insight.',
+    flavorText: 'A strategic mind finds opportunity in every strike.',
       type: 'spell',
 
       rarity: 'common',
@@ -1110,10 +1110,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8024,
-    name: 'Aegis of Athena',
+    name: 'Divine-Metal Bulwark',
       description: 'Give a minion Divine Shield.',
 
-      flavorText: 'Athena\'s divine shield protects the worthy.',
+      flavorText: 'Divine metal protects the worthy.',
       type: 'spell',
 
       rarity: 'common',
@@ -2810,10 +2810,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 9108,
-    name: 'Chaos of Tartarus',
+    name: 'Abyssal Chaos-Burst',
       description: 'Deal 4 damage to all minions.',
 
-      flavorText: 'The abyss below the underworld unleashes its fury.',
+      flavorText: 'The deepest pit of the void unleashes its fury.',
       type: 'spell',
 
       rarity: 'rare',
@@ -2892,9 +2892,9 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 9112,
-    name: 'Hermes the Swift',
+    name: 'Swift-Winged Messenger-Fiend',
     description: 'After you play the left- or right-most card in your hand, deal 1 damage to all enemies.',
-      flavorText: 'The messenger god strikes from unexpected angles.',
+      flavorText: 'A blur of wings and malice striking from unexpected angles.',
 
       type: 'minion',
       rarity: 'legendary',
@@ -3225,10 +3225,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 15007,
-    name: 'Void Spawn of Tartarus',
+    name: 'Void Spawn of the Abyss',
       description: 'Battlecry: Destroy adjacent minions and gain their Attack and Health.',
 
-      flavorText: 'From the deepest pit of the underworld.',
+      flavorText: 'From the deepest pit of the void.',
       type: 'minion',
 
       rarity: 'rare',
@@ -3251,10 +3251,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 15010,
-    name: 'Guardian of Hades',
+    name: 'Guardian of the Void-Gate',
       description: 'Taunt. Battlecry: Destroy one of your Mana Crystals.',
 
-      flavorText: 'The gates of the underworld demand a price.',
+      flavorText: 'The gates of the void demand a price.',
       type: 'minion',
 
       rarity: 'rare',
@@ -3276,9 +3276,9 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 15011,
-    name: 'Hades\' Blessing',
+    name: 'Void-Soul Blessing',
     description: 'Give a friendly minion +4/+4 until end of turn. Then, it dies. Horribly.',
-      flavorText: 'The god of the dead grants power, but all must return to his realm.',
+      flavorText: 'The essence of the void grants power, but all must return to the dark.',
 
       type: 'spell',
       rarity: 'common',
@@ -3300,10 +3300,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 15012,
-    name: 'Call of the Underworld',
+    name: 'Call of the Deep-Dark',
       description: 'Draw 2 Demons from your deck.',
 
-      flavorText: 'Hades summons his servants from below.',
+      flavorText: 'The void summons its servants from below.',
       type: 'spell',
 
       rarity: 'common',
@@ -3326,7 +3326,7 @@ export const fullCardDatabase: CardData[] = [
     id: 15013,
     name: 'Shade Pack Leader',
     description: 'Whenever this minion takes damage, summon a 1/1 Shade.',
-    flavorText: 'The shades of Hades multiply endlessly.',
+    flavorText: 'The shades of the void multiply endlessly.',
       type: 'minion',
 
       rarity: 'common',
@@ -3347,10 +3347,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 15014,
-    name: 'Shade of Hades',
-  description: 'A spirit whisper from the underworld.',
+    name: 'Abyssal Shade-Fiend',
+  description: 'A spirit whisper from the void.',
   
-  flavorText: 'A whisper of the underworld.',
+  flavorText: 'A whisper of the void.',
   type: 'minion',
   
   rarity: 'common',
@@ -3420,10 +3420,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 15019,
-    name: 'Hades, Lord of the Dead',
+    name: 'Abyssal Soul-Reaper',
       description: 'Battlecry: Summon all friendly Demons that died this game.',
 
-      flavorText: 'Ruler of the underworld, he commands all departed souls.',
+      flavorText: 'Ruler of the depths, he commands all departed souls.',
       type: 'hero',
 
       rarity: 'legendary',
@@ -3728,10 +3728,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 5029,
-    name: 'Shadow Panther of Hades',
+    name: 'Ebony Abyss-Panther',
   description: 'Stealth',
   
-  flavorText: 'The shadow cats prowl the underworld\'s borders.',
+  flavorText: 'The shadow cats prowl the void\'s borders.',
   type: 'minion',
   
   rarity: 'common',
@@ -4269,10 +4269,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 5059,
-    name: 'Shadow Assassin of Hades',
+    name: 'Silent Abyss-Stalker',
   description: 'Stealth',
   
-  flavorText: 'Hades\' elite assassins strike from the shadows.',
+  flavorText: 'The elite assassins strike from the shadows of the void.',
   type: 'minion',
   
   rarity: 'rare',

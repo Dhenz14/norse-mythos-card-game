@@ -220,11 +220,12 @@ export const mageCards: CardData[] = [
     rarity: "common",
     class: "Mage",
     spellEffect: {
-      type: "aoe_damage",
+      type: "freeze",
       value: 0,
       targetType: "all_enemy_minions",
       requiresTarget: false
     },
+    keywords: ["freeze"],
     collectible: true,
     set: "core"
   },

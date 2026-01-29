@@ -18,6 +18,7 @@ import { allClassCards } from './sets/core/classes';
 import { heroCards } from './sets/core/heroes';
 import { norseMythologyCards } from './sets/norse';
 import { tokenCards } from './sets/tokens';
+import { heroSuperMinions } from '../sets/superMinions/heroSuperMinions';
 
 // Combine all sets into a single registry
 // Order matters: Norse cards take precedence over duplicates
@@ -28,6 +29,7 @@ const rawRegistry: CardData[] = [
   ...coreNeutralCards,
   ...heroCards,
   ...tokenCards,
+  ...heroSuperMinions,
 ];
 
 // Validate and deduplicate

@@ -39,6 +39,9 @@ import { neutralMinions } from './neutralMinions';
 import { neutralSpellsAndTech } from './neutralSpellsAndTech';
 import { specialEffectNeutrals } from './specialEffectNeutrals';
 
+// Import Super Minions (hero-linked legendary minions)
+import { heroSuperMinions } from './sets/superMinions/heroSuperMinions';
+
 // Import the base card sets
 import baseCards from './cards';
 
@@ -83,7 +86,9 @@ const allCards: CardData[] = [
   // Add our new neutral card collections
   ...neutralMinions,
   ...neutralSpellsAndTech,
-  ...specialEffectNeutrals
+  ...specialEffectNeutrals,
+  // Add Super Minions (hero-linked legendary minions with +2/+2 bonus)
+  ...heroSuperMinions
 ];
 
 // Find a card by ID

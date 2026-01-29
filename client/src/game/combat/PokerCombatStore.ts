@@ -69,7 +69,6 @@ const STAMINA_REGEN_PER_PHASE = 0;
  */
 function collectForcedBets(state: PokerCombatState): PokerCombatState {
   if (state.blindsPosted) {
-    console.log('[PokerCombat] Blinds already posted for this hand');
     return state;
   }
   
@@ -84,9 +83,6 @@ function collectForcedBets(state: PokerCombatState): PokerCombatState {
   const playerForced = (playerIsSB ? smallBlind : bigBlind) + ante;
   const opponentForced = (playerIsSB ? bigBlind : smallBlind) + ante;
   
-  console.log(`[PokerCombat] Collecting blinds/antes:`);
-  console.log(`  - Player (${playerPosition}): ${playerForced} HP (${playerIsSB ? smallBlind : bigBlind} + ${ante} ante)`);
-  console.log(`  - Opponent (${opponentPosition}): ${opponentForced} HP (${playerIsSB ? bigBlind : smallBlind} + ${ante} ante)`);
   
   // Create updated state with forced bets applied
   const newState = { ...state };
@@ -126,7 +122,6 @@ function collectForcedBets(state: PokerCombatState): PokerCombatState {
     }
   };
   
-  console.log(`[PokerCombat] HP deducted - Player: ${state.player.pet.stats.currentHealth} -> ${playerNewHP}, Opponent: ${state.opponent.pet.stats.currentHealth} -> ${opponentNewHP}`);
   
   // Set pot to total forced bets
   newState.pot = playerForced + opponentForced;
@@ -137,7 +132,6 @@ function collectForcedBets(state: PokerCombatState): PokerCombatState {
   // Mark blinds as posted
   newState.blindsPosted = true;
   
-  console.log(`[PokerCombat] Pot: ${newState.pot} HP, Current bet: ${newState.currentBet} HP`);
   
   return newState;
 }
@@ -186,24 +180,20 @@ function processStatusEffects(playerState: PlayerCombatState): {
       case 'poisoned':
         const poisonDmg = Math.floor(playerState.pet.stats.maxHealth * POISON_DAMAGE_PERCENT);
         damageDealt += poisonDmg;
-        console.log(`[PokerCombat] Poison deals ${poisonDmg} damage to ${playerState.playerName}`);
         break;
         
       case 'burning':
         const burnDmg = Math.floor(playerState.pet.stats.maxHealth * BURNING_DAMAGE_PERCENT);
         damageDealt += burnDmg;
-        console.log(`[PokerCombat] Burning deals ${burnDmg} damage to ${playerState.playerName}`);
         break;
         
       case 'blessed':
         const healAmount = Math.floor(playerState.pet.stats.maxHealth * BLESSED_HEAL_PERCENT);
         healingDone += healAmount;
-        console.log(`[PokerCombat] Blessed heals ${healAmount} HP for ${playerState.playerName}`);
         break;
         
       case 'frozen':
         isStunned = true;
-        console.log(`[PokerCombat] ${playerState.playerName} is frozen - skipping action`);
         break;
     }
     
@@ -212,7 +202,6 @@ function processStatusEffects(playerState: PlayerCombatState): {
     if (newDuration > 0) {
       updatedEffects.push({ ...effect, duration: newDuration });
     } else {
-      console.log(`[PokerCombat] ${effect.type} effect expired on ${playerState.playerName}`);
     }
   }
   
@@ -271,7 +260,6 @@ function applyDamageWithArmor(
   }
   
   if (armorAbsorbed > 0) {
-    console.log(`[PokerCombat] Armor absorbed ${armorAbsorbed} damage (${damage} total, ${hpLost} to HP)`);
   }
   
   return { newArmor, newHP, armorAbsorbed, hpLost };
@@ -312,7 +300,6 @@ function applyElementalPetBuffs(playerPet: PetData, opponentPet: PetData): {
     buffedPlayerPet.stats.maxHealth += ELEMENTAL_HEALTH_BUFF;
     buffedPlayerPet.stats.currentHealth += ELEMENTAL_HEALTH_BUFF;
     playerHeroArmor = ELEMENTAL_ARMOR_BONUS;
-    console.log(`[PokerCombat] Elemental advantage: ${playerElement} beats ${opponentElement} - Player pet gets +${ELEMENTAL_ATTACK_BUFF} attack, +${ELEMENTAL_HEALTH_BUFF} health, +${ELEMENTAL_ARMOR_BONUS} hero armor`);
   }
   
   // Apply FLAT +2/+2 buff to opponent if they have advantage + armor bonus
@@ -321,11 +308,9 @@ function applyElementalPetBuffs(playerPet: PetData, opponentPet: PetData): {
     buffedOpponentPet.stats.maxHealth += ELEMENTAL_HEALTH_BUFF;
     buffedOpponentPet.stats.currentHealth += ELEMENTAL_HEALTH_BUFF;
     opponentHeroArmor = ELEMENTAL_ARMOR_BONUS;
-    console.log(`[PokerCombat] Elemental advantage: ${opponentElement} beats ${playerElement} - Opponent pet gets +${ELEMENTAL_ATTACK_BUFF} attack, +${ELEMENTAL_HEALTH_BUFF} health, +${ELEMENTAL_ARMOR_BONUS} hero armor`);
   }
   
   if (playerAdvantage === 'neutral' && opponentAdvantage === 'neutral') {
-    console.log(`[PokerCombat] Elemental matchup: ${playerElement} vs ${opponentElement} - No advantage, no buffs applied`);
   }
   
   return { buffedPlayerPet, buffedOpponentPet, playerHeroArmor, opponentHeroArmor };
@@ -361,11 +346,9 @@ function applyKingPetBuffs(
     
     if (playerKingBuffs.enemyAttackDebuff > 0) {
       const newAttack = Math.max(0, buffedOpponentPet.stats.attack - playerKingBuffs.enemyAttackDebuff);
-      console.log(`[PokerCombat] King ${playerKingId} debuffs opponent attack by ${playerKingBuffs.enemyAttackDebuff}`);
       buffedOpponentPet.stats.attack = newAttack;
     }
     
-    console.log(`[PokerCombat] King ${playerKingId} buffs player: +${playerKingBuffs.attackBonus} atk, +${playerKingBuffs.healthBonus} hp, +${playerKingArmor} armor`);
   }
   
   if (opponentKingId) {
@@ -377,11 +360,9 @@ function applyKingPetBuffs(
     
     if (opponentKingBuffs.enemyAttackDebuff > 0) {
       const newAttack = Math.max(0, buffedPlayerPet.stats.attack - opponentKingBuffs.enemyAttackDebuff);
-      console.log(`[PokerCombat] King ${opponentKingId} debuffs player attack by ${opponentKingBuffs.enemyAttackDebuff}`);
       buffedPlayerPet.stats.attack = newAttack;
     }
     
-    console.log(`[PokerCombat] King ${opponentKingId} buffs opponent: +${opponentKingBuffs.attackBonus} atk, +${opponentKingBuffs.healthBonus} hp, +${opponentKingArmor} armor`);
   }
   
   return { buffedPlayerPet, buffedOpponentPet, playerKingArmor, opponentKingArmor };
@@ -539,7 +520,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
   initializeCombat: (playerId, playerName, playerPet, opponentId, opponentName, opponentPet, skipMulligan = false, playerKingId?: string, opponentKingId?: string) => {
     let deck = shuffleDeck(createPokerDeck());
     
-    console.log(`[PokerCombat] initializeCombat called - playerPet.norseHeroId=${playerPet.norseHeroId}, opponentPet.norseHeroId=${opponentPet.norseHeroId}`);
     
     // Initialize Norse context for King/Hero passive system
     // This enables the norseIntegration module to track active kings and heroes
@@ -549,13 +529,11 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       playerPet.norseHeroId || null,
       opponentPet.norseHeroId || null
     );
-    console.log(`[PokerCombat] Norse context initialized - Kings: ${playerKingId}/${opponentKingId}, Heroes: ${playerPet.norseHeroId}/${opponentPet.norseHeroId}`);
     
     // Apply elemental advantage buffs to pets at combat start
     // If a pet has elemental advantage, they get +2 attack, +2 health, and +20 hero armor
     // This replaces the old per-damage elemental modifier system
     const { buffedPlayerPet: elementBuffedPlayer, buffedOpponentPet: elementBuffedOpponent, playerHeroArmor, opponentHeroArmor } = applyElementalPetBuffs(playerPet, opponentPet);
-    console.log(`[PokerCombat] After elementalBuffs - elementBuffedPlayer.norseHeroId=${elementBuffedPlayer.norseHeroId}`);
     
     // Apply King passive aura buffs on top of elemental buffs
     // Kings provide army-wide stat bonuses to all their heroes
@@ -579,7 +557,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       // Mulligan already happened - deal poker cards immediately
       playerHoleCards = [deck.pop()!, deck.pop()!];
       opponentHoleCards = [deck.pop()!, deck.pop()!];
-      console.log('[PokerCombat] Mulligan already completed this game - dealing poker cards immediately');
     }
     
     const playerCombatState: PlayerCombatState = {
@@ -631,9 +608,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     const openerIsPlayer = playerPosition === 'small_blind';
     const minBet = DEFAULT_BLIND_CONFIG.bigBlind; // Min bet = BB (5 HP)
     
-    console.log(`[PokerCombat] Standard blinds: BB=${DEFAULT_BLIND_CONFIG.bigBlind}, SB=${DEFAULT_BLIND_CONFIG.smallBlind}, Ante=${DEFAULT_BLIND_CONFIG.ante} each`);
-    console.log(`[PokerCombat] CHESS RULE: Attacker acts first - Player=${playerPosition}, Opponent=${opponentPosition}`);
-    console.log(`[PokerCombat] ${openerIsPlayer ? 'Player' : 'Opponent'} (SB) acts first, positions rotate after each hand`);
     
     const combatState: PokerCombatState = {
       combatId: `combat_${Date.now()}`,
@@ -662,15 +636,12 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     let finalCombatState = combatState;
     if (skipMulligan) {
       finalCombatState = collectForcedBets(combatState);
-      console.log('[PokerCombat] Blinds collected immediately (mulligan skipped)');
     }
     
     set({ combatState: finalCombatState, deck, isActive: true, mulliganComplete: skipMulligan });
-    console.log(`[PokerCombat] Combat initialized in ${startingPhase} phase${skipMulligan ? ' (mulligan skipped - already done this game)' : ''}`);
     
     if (skipMulligan) {
       scheduleShuffleEffect(playerName, 10);
-      console.log(`[PokerCombat] Shuffle animation scheduled for ${playerName}'s 10 signature cards`);
     }
   },
   
@@ -679,12 +650,10 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     
     // Guard against double-calling
     if (mulliganComplete) {
-      console.log('[PokerCombat] completeMulligan called but mulligan already complete - skipping');
       return;
     }
     
     if (!combatState || combatState.phase !== CombatPhase.MULLIGAN) {
-      console.log('[PokerCombat] completeMulligan called but phase is not MULLIGAN');
       return;
     }
     
@@ -694,10 +663,7 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     const playerHoleCards = [newDeck.pop()!, newDeck.pop()!];
     const opponentHoleCards = [newDeck.pop()!, newDeck.pop()!];
     
-    console.log('[PokerCombat] Mulligan complete - dealing poker hole cards');
-    console.log('[PokerCombat] Player hole cards:', playerHoleCards.map(c => `${c.value}${c.suit}`));
     
-    console.log('[PokerCombat] Mulligan complete - hole cards dealt, entering SPELL_PET phase');
     
     // Build the new combat state with hole cards
     const newCombatState: PokerCombatState = {
@@ -723,7 +689,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     
     // Collect blinds immediately so SB can see "Call" option during SPELL_PET
     const stateWithBlinds = collectForcedBets(newCombatState);
-    console.log('[PokerCombat] Blinds collected at start of SPELL_PET phase');
     
     set({
       deck: newDeck,
@@ -732,7 +697,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     });
     
     scheduleShuffleEffect(combatState.player.playerName, 10);
-    console.log(`[PokerCombat] Shuffle animation scheduled for ${combatState.player.playerName}'s 10 signature cards after mulligan`);
   },
   
   performAction: (playerId, action, hpCommitment = 0) => {
@@ -752,10 +716,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     }
     
     // Log action being processed
-    console.log(`[PokerCombat] performAction: ${actor} performing ${action} with hpCommitment=${hpCommitment}`);
-    console.log(`[PokerCombat] - State: phase=${combatState.phase}, currentBet=${combatState.currentBet}`);
-    console.log(`[PokerCombat] - player.hpCommitted=${combatState.player.hpCommitted}, opponent.hpCommitted=${combatState.opponent.hpCommitted}`);
-    console.log(`[PokerCombat] - isReady: player=${combatState.player.isReady}, opponent=${combatState.opponent.isReady}`);
     
     const actionDetails: CombatActionDetails = {
       action,
@@ -791,7 +751,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             newState.pot += callAmount;
             // FIX: Must deduct HP when committing to pot
             playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - callAmount);
-            console.log(`[PokerCombat] ${actor} is stunned/frozen - auto-calling ${callAmount} HP`);
           } else {
             // No HP to call - forced fold with immediate resolution
             // HP was already deducted when committed - no additional deduction needed
@@ -802,11 +761,9 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             newState.phase = CombatPhase.RESOLUTION;
             newState.player.isReady = true;
             newState.opponent.isReady = true;
-            console.log(`[PokerCombat] ${actor} is stunned/frozen with no HP - forced fold, forfeits ${playerState.hpCommitted} HP in pot, foldWinner=${newState.foldWinner}`);
             return { ...state, combatState: newState };
           }
         } else {
-          console.log(`[PokerCombat] ${actor} is stunned/frozen - auto-defending (no bet to call)`);
         }
         playerState.currentAction = CombatAction.DEFEND;
         playerState.isReady = true;
@@ -828,7 +785,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       const currentHP = playerState.pet.stats.currentHealth;
       const staminaCapHP = playerState.pet.stats.currentStamina * 10;
       const availableHP = Math.min(currentHP, staminaCapHP);
-      console.log(`[PokerCombat] ${actor} betting cap: HP=${currentHP}, STA=${playerState.pet.stats.currentStamina}, staminaCap=${staminaCapHP}, availableHP=${availableHP}`);
       // Use blindPosted for call calculation (ante doesn't count toward bet)
       const toCall = Math.max(0, newState.currentBet - playerState.blindPosted);
       
@@ -856,7 +812,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           
           // VALIDATION: Can't raise if can't afford call + minimum raise
           if (availableHP < toCall + 1) {
-            console.log(`[PokerCombat] ${actor} cannot afford to raise (need ${toCall + 1}, have ${availableHP})`);
             // Force to just call/all-in instead
             if (availableHP > 0) {
               playerState.currentAction = CombatAction.ENGAGE;
@@ -867,7 +822,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
               // FIX: Must deduct HP when committing to pot
               playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - allInAmount);
               playerState.isReady = true;
-              console.log(`[PokerCombat] ${actor} forced to all-in call with ${allInAmount} HP instead of raise`);
               return { ...state, combatState: newState };
             } else {
               // No HP left - force fold with immediate resolution
@@ -879,7 +833,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
               newState.phase = CombatPhase.RESOLUTION;
               newState.player.isReady = true;
               newState.opponent.isReady = true;
-              console.log(`[PokerCombat] ${actor} forced to fold - no HP remaining, forfeits ${playerState.hpCommitted} HP in pot, foldWinner=${newState.foldWinner}`);
               return { ...state, combatState: newState };
             }
           }
@@ -888,7 +841,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           // Match current bet - clamp to available HP
           totalHpToCommit = Math.min(toCall, availableHP);
           if (totalHpToCommit < toCall) {
-            console.log(`[PokerCombat] ${actor} cannot afford full call (need ${toCall}, have ${availableHP}), going all-in`);
           }
           break;
         default:
@@ -915,7 +867,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       
       // Check if player has enough stamina
       if (playerState.pet.stats.currentStamina < staminaCost) {
-        console.log(`[PokerCombat] ${actor} has insufficient stamina (${playerState.pet.stats.currentStamina}/${staminaCost}) for ${action} (${totalHpToCommit} HP)`);
         // If there's a bet to call, must auto-call before defending (blind obligations)
         const toCallForced = Math.max(0, newState.currentBet - playerState.blindPosted);
         // HP is already deducted when committed, so availableHP = currentHealth capped by stamina
@@ -931,7 +882,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             newState.pot += callAmount;
             // FIX: Must deduct HP when committing to pot
             playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - callAmount);
-            console.log(`[PokerCombat] ${actor} forced to auto-call ${callAmount} HP before defending`);
           } else {
             // No HP to call - forced fold with immediate resolution
             // HP was already deducted when committed - no additional deduction needed
@@ -942,7 +892,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             newState.phase = CombatPhase.RESOLUTION;
             newState.player.isReady = true;
             newState.opponent.isReady = true;
-            console.log(`[PokerCombat] ${actor} forced to fold - no HP to call, forfeits ${playerState.hpCommitted} HP in pot, foldWinner=${newState.foldWinner}`);
             return { ...state, combatState: newState };
           }
         }
@@ -952,13 +901,11 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           playerState.pet.stats.maxStamina,
           playerState.pet.stats.currentStamina + 1
         );
-        console.log(`[PokerCombat] ${actor} forced to defend due to low stamina, +1 stamina`);
         playerState.isReady = true;
         return { ...state, combatState: newState };
       }
       
       playerState.pet.stats.currentStamina = Math.max(0, playerState.pet.stats.currentStamina - staminaCost);
-      console.log(`[PokerCombat] ${actor} used ${staminaCost} stamina for ${action} (${totalHpToCommit} HP), remaining: ${playerState.pet.stats.currentStamina}`);
       
       // Now execute the action
       switch (action) {
@@ -972,7 +919,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           if (attackAvailableHP < newState.minBet) {
             // Not enough HP to make minimum bet - force fold
             // HP was already deducted when committed - no additional deduction needed
-            console.log(`[PokerCombat] ${actor} cannot afford min bet (${newState.minBet}), forcing fold`);
             playerState.currentAction = CombatAction.BRACE;
             // NOTE: Folds do NOT cost stamina (not an aggressive action)
             const folderIsPlayerAttack = playerState.playerId === newState.player.playerId;
@@ -980,7 +926,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             newState.phase = CombatPhase.RESOLUTION;
             newState.player.isReady = true;
             newState.opponent.isReady = true;
-            console.log(`[PokerCombat] ${actor} forced fold, forfeits ${playerState.hpCommitted} HP in pot, foldWinner=${newState.foldWinner}`);
             break;
           }
           const betAmount = Math.min(Math.max(newState.minBet, hpCommitment), attackAvailableHP);
@@ -1003,11 +948,9 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             opponentState.isReady = false;
             // Reset turn timer for opponent to respond
             newState.turnTimer = newState.maxTurnTime;
-            console.log(`[PokerCombat] New bet made - currentBet now ${newTotalBet}, ${opponentState.playerName} must respond`);
           }
           // Mark that a bet has been made this preflop round
           newState.preflopBetMade = true;
-          console.log(`[PokerCombat] ${actor} bet ${betAmount} HP (total bet: ${newTotalBet}, min: ${newState.minBet})`);
           break;
           
         case CombatAction.COUNTER_ATTACK:
@@ -1027,14 +970,12 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             newState.pot += callClamped;
             // IMMEDIATELY deduct HP when calling (like real poker chips) with clamping
             playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - callClamped);
-            console.log(`[PokerCombat] ${actor} first matched current bet (+${callClamped} HP)`);
           }
           
           // Step 2: Add the raise amount on top (must be at least minBet), clamped to remaining HP
           const remainingAfterCall = playerState.pet.stats.currentHealth;
           if (remainingAfterCall < newState.minBet) {
             // Can only afford to call, not raise - treat as all-in call
-            console.log(`[PokerCombat] ${actor} went all-in on call, no HP left for raise`);
             break;
           }
           const raiseAmount = Math.min(Math.max(newState.minBet, hpCommitment), remainingAfterCall);
@@ -1051,9 +992,7 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           opponentStateRaise.isReady = false;
           // Reset turn timer for opponent to respond
           newState.turnTimer = newState.maxTurnTime;
-          console.log(`[PokerCombat] Raise made - ${opponentStateRaise.playerName} must respond, timer reset`);
           newState.preflopBetMade = true;
-          console.log(`[PokerCombat] ${actor} raised by ${raiseAmount} HP (total committed: ${playerState.hpCommitted})`);
           break;
           
         case CombatAction.ENGAGE:
@@ -1068,7 +1007,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             // FIX: Properly handle forced fold when no HP available to call
             // Must set foldWinner and phase = RESOLUTION like the BRACE case
             // HP was already deducted when committed - no additional deduction needed
-            console.log(`[PokerCombat] ${actor} has no HP to call with, forcing fold with proper resolution`);
             playerState.currentAction = CombatAction.BRACE;
             // NOTE: Folds do NOT cost stamina (not an aggressive action)
             const folderIsPlayerEngage = playerState.playerId === newState.player.playerId;
@@ -1076,7 +1014,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             newState.phase = CombatPhase.RESOLUTION;
             newState.player.isReady = true;
             newState.opponent.isReady = true;
-            console.log(`[PokerCombat] ENGAGE forced fold: ${actor} forfeits ${playerState.hpCommitted} HP in pot, foldWinner=${newState.foldWinner}`);
             return { ...state, combatState: newState };
           }
           playerState.hpCommitted += toMatch;
@@ -1085,9 +1022,7 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           // IMMEDIATELY deduct HP when calling (like real poker chips) with clamping
           playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - toMatch);
           if (toMatch < (newState.currentBet - playerState.blindPosted + toMatch)) {
-            console.log(`[PokerCombat] ${actor} going all-in with ${toMatch} HP (short call)`);
           } else {
-            console.log(`[PokerCombat] ${actor} called ${toMatch} HP`);
           }
           break;
           
@@ -1102,7 +1037,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           newState.foldWinner = folderIsPlayer ? 'opponent' : 'player';
           
           // Log the fold - HP was already deducted when committed, they just forfeit the pot
-          console.log(`[PokerCombat] FOLD: ${actor} folded, forfeits ${playerState.hpCommitted} HP already in pot`);
           
           // NO additional HP deduction - HP was deducted when committed
           // The winner will get the pot (their HP back + loser's HP) in resolution
@@ -1111,7 +1045,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           newState.phase = CombatPhase.RESOLUTION;
           newState.player.isReady = true;
           newState.opponent.isReady = true;
-          console.log(`[PokerCombat] FOLD: foldWinner=${newState.foldWinner}, phase set to RESOLUTION`);
           break;
           
         case CombatAction.DEFEND:
@@ -1121,8 +1054,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             playerState.pet.stats.maxStamina,
             playerState.pet.stats.currentStamina + 1
           );
-          console.log(`[PokerCombat] ${actor} checked in phase ${newState.phase}, +1 stamina`);
-          console.log(`[PokerCombat] - Check state: currentBet=${newState.currentBet}, player.hpCommitted=${newState.player.hpCommitted}, opponent.hpCommitted=${newState.opponent.hpCommitted}`);
           
           // CRITICAL: After a check, always check if round can close
           // Use a small timeout to allow state to settle if needed, or just let the caller handle it.
@@ -1131,7 +1062,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       }
       
       playerState.isReady = true;
-      console.log(`[PokerCombat] ${actor} isReady set to true - player.isReady=${newState.player.isReady}, opponent.isReady=${newState.opponent.isReady}`);
       
       // ALL-IN DETECTION: Check if both players have no HP left to bet after this action
       // This is more reliable than only checking in maybeCloseBettingRound
@@ -1140,7 +1070,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       const bothNowAllIn = playerRemainingHP <= 0 && opponentRemainingHP <= 0;
       
       if (bothNowAllIn && !newState.isAllInShowdown) {
-        console.log(`[PokerCombat] ALL-IN DETECTED in performAction - Player HP: ${playerRemainingHP}, Opponent HP: ${opponentRemainingHP}`);
         newState.isAllInShowdown = true;
       }
       
@@ -1183,7 +1112,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       
       // Mark this player as ready
       playerState.isReady = true;
-      console.log(`[PokerCombat] ${isPlayer ? 'Player' : 'Opponent'} marked as ready in ${newState.phase} phase`);
       
       // If AI opponent is not ready during SPELL_PET phase, auto-ready them after a short delay
       if (newState.phase === CombatPhase.SPELL_PET && isPlayer && !newState.opponent.isReady) {
@@ -1191,7 +1119,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
         setTimeout(() => {
           const store = usePokerCombatStore.getState();
           if (store.combatState && store.combatState.phase === CombatPhase.SPELL_PET && !store.combatState.opponent.isReady) {
-            console.log('[PokerCombat] AI opponent auto-ready in SPELL_PET phase');
             store.setPlayerReady(store.combatState.opponent.playerId);
           }
         }, 500);
@@ -1219,32 +1146,24 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     if (!combatState) return;
     
     // Enhanced debug logging
-    console.log(`[PokerCombat] maybeCloseBettingRound called - Phase: ${combatState.phase}`);
-    console.log(`[PokerCombat] - Player: ready=${combatState.player.isReady}, hpCommitted=${combatState.player.hpCommitted}, action=${combatState.player.currentAction}`);
-    console.log(`[PokerCombat] - Opponent: ready=${combatState.opponent.isReady}, hpCommitted=${combatState.opponent.hpCommitted}, action=${combatState.opponent.currentAction}`);
-    console.log(`[PokerCombat] - currentBet=${combatState.currentBet}, pot=${combatState.pot}, foldWinner=${combatState.foldWinner}`);
     
     // Don't close if already in resolution or there's a fold winner
     if (combatState.phase === CombatPhase.RESOLUTION) {
-      console.log('[PokerCombat] maybeCloseBettingRound: Already in RESOLUTION - no action needed');
       return;
     }
     
     if (combatState.foldWinner) {
-      console.log('[PokerCombat] maybeCloseBettingRound: Fold winner set - resolution handled by performAction');
       return;
     }
     
     // Check if both players are ready
     if (!combatState.player.isReady || !combatState.opponent.isReady) {
-      console.log(`[PokerCombat] maybeCloseBettingRound: Waiting for both players - player: ${combatState.player.isReady}, opponent: ${combatState.opponent.isReady}`);
       return;
     }
     
     // SPELL_PET phase: No bet settling required - just a "ready check"
     // Advance immediately when both players are ready
     if (combatState.phase === CombatPhase.SPELL_PET) {
-      console.log('[PokerCombat] maybeCloseBettingRound: SPELL_PET phase - both ready, advancing to FAITH');
       advancePhase();
       return;
     }
@@ -1284,14 +1203,8 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     const betsSettled = bothCheckedThisRound || betsMatched;
     
     // Debug: Log the betting analysis
-    console.log(`[PokerCombat] maybeCloseBettingRound analysis:`);
-    console.log(`  - bothCheckedThisRound=${bothCheckedThisRound} (currentBet===0)`);
-    console.log(`  - playerMatchedBet=${playerMatchedBet}, opponentMatchedBet=${opponentMatchedBet}`);
-    console.log(`  - betsMatched=${betsMatched}, betsSettled=${betsSettled}`);
-    console.log(`  - playerAllIn=${playerAllIn}, opponentAllIn=${opponentAllIn}`);
     
     if (!betsSettled) {
-      console.log(`[PokerCombat] maybeCloseBettingRound: Bets not settled - player: ${playerHP}, opponent: ${opponentHP}, currentBet: ${currentBet}`);
       return;
     }
     
@@ -1299,7 +1212,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     // This triggers auto-reveal of remaining community cards without further betting
     const bothAllIn = playerAllIn && opponentAllIn;
     if (bothAllIn && !combatState.isAllInShowdown) {
-      console.log(`[PokerCombat] ALL-IN SHOWDOWN DETECTED - Both players are all-in, auto-revealing cards`);
       set(state => {
         if (!state.combatState) return state;
         return {
@@ -1314,7 +1226,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     
     // All conditions met - advance to next phase using strict ordering
     const nextPhase = getNextPhase(combatState.phase);
-    console.log(`[PokerCombat] maybeCloseBettingRound: SUCCESS - Closing betting round in ${combatState.phase}, next phase will be: ${nextPhase}`);
     advancePhase();
   },
   
@@ -1324,7 +1235,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     
     // Check if someone folded (foldWinner set in performAction) - go straight to resolution
     if (combatState.foldWinner) {
-      console.log(`[PokerCombat] Fold detected - ${combatState.foldWinner} wins by forfeit, skipping to resolution`);
       set(state => {
         if (!state.combatState) return state;
         const newState = { ...state.combatState };
@@ -1336,23 +1246,19 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     
     // CRITICAL: Verify we're not already in RESOLUTION
     if (combatState.phase === CombatPhase.RESOLUTION) {
-      console.log('[PokerCombat] Already in RESOLUTION phase - ignoring advancePhase call');
       return;
     }
     
     // Use strict phase ordering
     const nextPhase = getNextPhase(combatState.phase);
     if (!nextPhase) {
-      console.log(`[PokerCombat] No next phase after ${combatState.phase}`);
       return;
     }
     
-    console.log(`[PokerCombat] advancePhase: Transitioning from ${combatState.phase} to ${nextPhase}`);
     
     // Check if deck needs reshuffling (need at least 5 cards for community cards)
     let newDeck = [...deck];
     if (newDeck.length < 10) {
-      console.log('[PokerCombat] Deck running low, reshuffling...');
       newDeck = shuffleDeck(createPokerDeck());
     }
     
@@ -1364,7 +1270,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       switch (newState.phase) {
         case CombatPhase.MULLIGAN:
           // Mulligan phase advance is handled by completeMulligan()
-          console.log('[PokerCombat] advancePhase called in MULLIGAN - use completeMulligan() instead');
           return state;
           
         case CombatPhase.SPELL_PET:
@@ -1376,7 +1281,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           const stateWithBlinds = collectForcedBets(newState);
           Object.assign(newState, stateWithBlinds);
           
-          console.log('[PokerCombat] Phase advanced to FAITH - dealt 3 community cards');
           // Consolidated phase notification - only log significant phases to reduce noise
           logActivity('poker_phase', 'system', `Faith (3 cards) - Pot: ${newState.pot} HP`, {});
           break;
@@ -1384,26 +1288,22 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
         case CombatPhase.FAITH:
           newState.communityCards.foresight = newDeck.pop();
           newState.phase = CombatPhase.FORESIGHT;
-          console.log('[PokerCombat] Phase advanced to FORESIGHT');
           // Skip log for intermediate phases - reduce toast noise
           break;
           
         case CombatPhase.FORESIGHT:
           newState.communityCards.destiny = newDeck.pop();
           newState.phase = CombatPhase.DESTINY;
-          console.log('[PokerCombat] Phase advanced to DESTINY');
           // Skip log for intermediate phases - reduce toast noise
           break;
           
         case CombatPhase.DESTINY:
           newState.phase = CombatPhase.RESOLUTION;
-          console.log('[PokerCombat] Phase advanced to RESOLUTION - ready for combat resolution');
           logActivity('poker_phase', 'system', 'Showdown!', {});
           break;
           
         case CombatPhase.RESOLUTION:
           // Already in resolution, nothing to do
-          console.log('[PokerCombat] Already in RESOLUTION phase');
           return state;
       }
       
@@ -1443,14 +1343,11 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
         newState.opponent.pet.stats.maxStamina, 
         newState.opponent.pet.stats.currentStamina + STAMINA_REGEN_PER_PHASE);
       
-      console.log(`[PokerCombat] Status effects processed - Player HP: ${newState.player.pet.stats.currentHealth}, Opponent HP: ${newState.opponent.pet.stats.currentHealth}`);
       
       // When transitioning TO RESOLUTION, keep isReady=true so resolution can trigger
       // For other phases, reset isReady for new betting round
       if (newState.phase !== CombatPhase.RESOLUTION) {
         // CRITICAL: Log state BEFORE reset for debugging
-        console.log(`[PokerCombat] PHASE TRANSITION: Resetting betting state for ${newState.phase}`);
-        console.log(`[PokerCombat] - BEFORE: currentBet=${newState.currentBet}, player.hpCommitted=${newState.player.hpCommitted}, opponent.hpCommitted=${newState.opponent.hpCommitted}`);
         
         newState.player.isReady = false;
         newState.opponent.isReady = false;
@@ -1466,7 +1363,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
         newState.preflopBetMade = false;
         
         // Log state AFTER reset
-        console.log(`[PokerCombat] - AFTER: currentBet=${newState.currentBet}, player.isReady=${newState.player.isReady}, opponent.isReady=${newState.opponent.isReady}`);
       }
       
       return { ...state, combatState: newState, deck: newDeck };
@@ -1534,7 +1430,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       const winnerState = winner === 'player' ? combatState.player : combatState.opponent;
       const foldPenalty = folderState.hpCommitted;
       const winnerGetsBack = winnerState.hpCommitted; // Winner gets ONLY their own bet back, not opponent's HP
-      console.log(`[PokerCombat] Resolving fold win - ${winner} wins by forfeit, gets back ${winnerGetsBack} HP, ${whoFolded} loses ${foldPenalty} HP`);
       
       // Folder takes damage (already applied), winner takes nothing
       const dummyCard: PokerCard = { suit: 'spades', value: 'A', numericValue: 14 };
@@ -1569,9 +1464,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       let playerFinalArmor = combatState.player.heroArmor;
       let opponentFinalArmor = combatState.opponent.heroArmor;
       
-      console.log('[PokerCombat] FOLD - MINION DAMAGE PERSISTENCE CHECK:');
-      console.log(`  Player: currentHP=${playerCurrentHP}, committed=${combatState.player.hpCommitted}, maxHP=${playerMaxHP}`);
-      console.log(`  Opponent: currentHP=${opponentCurrentHP}, committed=${combatState.opponent.hpCommitted}, maxHP=${opponentMaxHP}`);
       
       if (winner === 'player') {
         // Player wins - gets their bet back
@@ -1582,12 +1474,9 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           const armorRefund = Math.min(opponentFinalArmor, opponentLoss);
           opponentFinalArmor -= armorRefund;
           opponentFinalHP = Math.min(opponentCurrentHP + armorRefund, opponentMaxHP);
-          console.log(`[PokerCombat] Folder's armor refunds ${armorRefund} of ${opponentLoss} HP loss (armor remaining: ${opponentFinalArmor})`);
         } else {
           opponentFinalHP = opponentCurrentHP;
         }
-        console.log(`[PokerCombat] FOLD RESULT: Player ${playerCurrentHP} + ${combatState.player.hpCommitted} = ${playerFinalHP} HP (minion damage preserved: ${playerMaxHP - playerFinalHP} HP)`);
-        console.log(`[PokerCombat] FOLD RESULT: Opponent stays at ${opponentFinalHP} HP (minion damage preserved: ${opponentMaxHP - opponentFinalHP} HP)`);
       } else {
         // Opponent wins - gets their bet back
         opponentFinalHP = Math.min(opponentCurrentHP + combatState.opponent.hpCommitted, opponentMaxHP);
@@ -1597,12 +1486,9 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           const armorRefund = Math.min(playerFinalArmor, playerLoss);
           playerFinalArmor -= armorRefund;
           playerFinalHP = Math.min(playerCurrentHP + armorRefund, playerMaxHP);
-          console.log(`[PokerCombat] Folder's armor refunds ${armorRefund} of ${playerLoss} HP loss (armor remaining: ${playerFinalArmor})`);
         } else {
           playerFinalHP = playerCurrentHP;
         }
-        console.log(`[PokerCombat] FOLD RESULT: Opponent ${opponentCurrentHP} + ${combatState.opponent.hpCommitted} = ${opponentFinalHP} HP (minion damage preserved: ${opponentMaxHP - opponentFinalHP} HP)`);
-        console.log(`[PokerCombat] FOLD RESULT: Player stays at ${playerFinalHP} HP (minion damage preserved: ${playerMaxHP - playerFinalHP} HP)`);
       }
       
       const resolution: CombatResolution = {
@@ -1708,18 +1594,11 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       // These values will be selectively applied based on winner
       playerDamage = 2;
       opponentDamage = 2;
-      console.log('[PokerCombat] Check-through detected - minimal damage (2 HP to loser only)');
     } else {
       // Normal betting: each player's damage = their own hpCommitted
       // IMPORTANT: Each player loses ONLY what THEY bet, not what their opponent bet
       playerDamage = combatState.player.hpCommitted;
       opponentDamage = combatState.opponent.hpCommitted;
-      console.log(`[PokerCombat] Damage calculated:`);
-      console.log(`  - Player hpCommitted: ${combatState.player.hpCommitted} HP`);
-      console.log(`  - Opponent hpCommitted: ${combatState.opponent.hpCommitted} HP`);
-      console.log(`  - Pot total: ${combatState.pot} HP`);
-      console.log(`  - playerDamage (if loses): ${playerDamage} HP`);
-      console.log(`  - opponentDamage (if loses): ${opponentDamage} HP`);
     }
     
     let winner: 'player' | 'opponent' | 'draw';
@@ -1737,16 +1616,13 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
         const opponentTB = opponentHand.tieBreakers[i] || 0;
         if (playerTB > opponentTB) {
           winner = 'player';
-          console.log(`[PokerCombat] Player wins on tiebreaker ${i}: ${playerTB} > ${opponentTB}`);
           break;
         } else if (opponentTB > playerTB) {
           winner = 'opponent';
-          console.log(`[PokerCombat] Opponent wins on tiebreaker ${i}: ${opponentTB} > ${playerTB}`);
           break;
         }
       }
       if (winner === 'draw') {
-        console.log(`[PokerCombat] True draw - all tieBreakers equal: ${playerHand.tieBreakers.join(',')} vs ${opponentHand.tieBreakers.join(',')}`);
       }
     }
     
@@ -1782,9 +1658,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     //   committed = 10
     //   finalHP = min(85 + 10, 100) = 95 (minion damage persists!)
     
-    console.log('[PokerCombat] MINION DAMAGE PERSISTENCE CHECK:');
-    console.log(`  Player: currentHP=${playerCurrentHP}, committed=${playerCommitted}, maxHP=${playerMaxHP}`);
-    console.log(`  Opponent: currentHP=${opponentCurrentHP}, committed=${opponentCommitted}, maxHP=${opponentMaxHP}`);
     
     if (winner === 'player') {
       // Player wins - gets ONLY their own bet back (capped at max HP)
@@ -1797,13 +1670,9 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
         const armorRefund = Math.min(opponentFinalArmor, opponentLoss);
         opponentFinalArmor -= armorRefund;
         opponentFinalHealth = Math.min(opponentCurrentHP + armorRefund, opponentMaxHP);
-        console.log(`[PokerCombat] Opponent's armor refunds ${armorRefund} of ${opponentLoss} HP loss (armor remaining: ${opponentFinalArmor})`);
       } else {
         opponentFinalHealth = opponentCurrentHP; // Loser keeps HP lost (already deducted)
       }
-      console.log(`[PokerCombat] Player wins - gets back ${playerCommitted} HP (capped at ${playerMaxHP})`);
-      console.log(`[PokerCombat] RESULT: Player ${playerCurrentHP} + ${playerCommitted} = ${playerFinalHealth} HP (minion damage preserved: ${playerMaxHP - playerFinalHealth} HP)`);
-      console.log(`[PokerCombat] RESULT: Opponent stays at ${opponentFinalHealth} HP (minion damage preserved: ${opponentMaxHP - opponentFinalHealth} HP)`);
     } else if (winner === 'opponent') {
       // Opponent wins - gets ONLY their own bet back (capped at max HP)
       opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
@@ -1814,20 +1683,13 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
         const armorRefund = Math.min(playerFinalArmor, playerLoss);
         playerFinalArmor -= armorRefund;
         playerFinalHealth = Math.min(playerCurrentHP + armorRefund, playerMaxHP);
-        console.log(`[PokerCombat] Player's armor refunds ${armorRefund} of ${playerLoss} HP loss (armor remaining: ${playerFinalArmor})`);
       } else {
         playerFinalHealth = playerCurrentHP; // Loser keeps HP lost (already deducted)
       }
-      console.log(`[PokerCombat] Opponent wins - gets back ${opponentCommitted} HP (capped at ${opponentMaxHP})`);
-      console.log(`[PokerCombat] RESULT: Opponent ${opponentCurrentHP} + ${opponentCommitted} = ${opponentFinalHealth} HP (minion damage preserved: ${opponentMaxHP - opponentFinalHealth} HP)`);
-      console.log(`[PokerCombat] RESULT: Player stays at ${playerFinalHealth} HP (minion damage preserved: ${playerMaxHP - playerFinalHealth} HP)`);
     } else {
       // Draw - both get their own bets back (capped at max HP)
       playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
       opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
-      console.log('[PokerCombat] Draw - both get their bets back (capped at max HP)');
-      console.log(`[PokerCombat] RESULT: Player ${playerCurrentHP} + ${playerCommitted} = ${playerFinalHealth} HP (minion damage preserved: ${playerMaxHP - playerFinalHealth} HP)`);
-      console.log(`[PokerCombat] RESULT: Opponent ${opponentCurrentHP} + ${opponentCommitted} = ${opponentFinalHealth} HP (minion damage preserved: ${opponentMaxHP - opponentFinalHealth} HP)`);
     }
     
     const resolution: CombatResolution = {
@@ -1903,11 +1765,9 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     
     // Reset Norse context when combat ends
     resetNorseContext();
-    console.log('[PokerCombat] Norse context reset on combat end');
     
     // Reset shared deck store
     useSharedDeckStore.getState().reset();
-    console.log('[PokerCombat] Shared deck store reset on combat end');
     
     set({ combatState: null, deck: [], isActive: false, isTransitioningHand: false, transitionTimerId: null });
   },
@@ -1917,13 +1777,11 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     
     // Prevent re-entrant calls during transition
     if (isTransitioningHand) {
-      console.log('[PokerCombat] startNextHandDelayed: Already transitioning, skipping');
       return;
     }
     
     // Check if match is over using resolution HP (not combatState which may be stale)
     if (resolution.playerFinalHealth <= 0 || resolution.opponentFinalHealth <= 0) {
-      console.log('[PokerCombat] startNextHandDelayed: Match over - skipping');
       return;
     }
     
@@ -1932,11 +1790,9 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       clearTimeout(transitionTimerId);
     }
     
-    console.log('[PokerCombat] startNextHandDelayed: Setting transition flag, waiting 2s...');
     
     // Wait 2 seconds so winner declaration is visible before new hand
     const timerId = setTimeout(() => {
-      console.log('[PokerCombat] startNextHandDelayed: Delay complete, starting next hand');
       get().startNextHand(resolution);
       set({ isTransitioningHand: false, transitionTimerId: null });
     }, 2000);
@@ -1949,22 +1805,17 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     if (!combatState) return;
     
     // Debug: Log poker transition - gameStore battlefield is monitored via subscription in gameStore.ts
-    console.log('[PokerCombat] startNextHand - initiating poker hand transition');
     
     // Use resolution HP values if provided, otherwise fall back to current state
     // This is CRITICAL because Zustand batching may not have flushed resolveCombat's state update yet
     const playerFinalHP = resolution?.playerFinalHealth ?? combatState.player.pet.stats.currentHealth;
     const opponentFinalHP = resolution?.opponentFinalHealth ?? combatState.opponent.pet.stats.currentHealth;
     
-    console.log(`[PokerCombat] startNextHand called with resolution: ${resolution ? 'YES' : 'NO'}`);
-    console.log(`[PokerCombat] HP values - Player: ${playerFinalHP}, Opponent: ${opponentFinalHP}`);
     if (resolution) {
-      console.log(`[PokerCombat] Resolution winner: ${resolution.winner}, type: ${resolution.resolutionType}`);
     }
     
     // Check if combat should end (someone at 0 HP)
     if (playerFinalHP <= 0 || opponentFinalHP <= 0) {
-      console.log('[PokerCombat] Match over - a hero has 0 HP');
       return;
     }
     
@@ -1995,9 +1846,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
         freshState.opponent.pet.stats.currentStamina + STAMINA_REGEN_PER_HAND
       );
       
-      console.log('[PokerCombat] Starting next hand - HP persists, both players get +1 stamina');
-      console.log(`[PokerCombat] Player HP (from resolution): ${playerFinalHP}, Stamina: ${freshState.player.pet.stats.currentStamina} -> ${playerNewStamina}`);
-      console.log(`[PokerCombat] Opponent HP (from resolution): ${opponentFinalHP}, Stamina: ${freshState.opponent.pet.stats.currentStamina} -> ${opponentNewStamina}`);
       
       // STANDARD POKER ROTATION: Swap positions after each hand
       // This mirrors real poker where the button/blinds rotate clockwise each hand
@@ -2006,8 +1854,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       
       // SB always acts first in heads-up poker
       const newOpenerIsPlayer = newPlayerPosition === 'small_blind';
-      console.log(`[PokerCombat] Position rotation: Player ${freshState.playerPosition} -> ${newPlayerPosition}, Opponent ${freshState.opponentPosition} -> ${newOpponentPosition}`);
-      console.log(`[PokerCombat] New opener: ${newOpenerIsPlayer ? 'Player' : 'Opponent'} (SB acts first)`);
       
       // Build updated pets using resolution HP values (not stale state!)
       const updatedPlayerPet: PetData = {
@@ -2082,7 +1928,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       };
     });
     
-    console.log('[PokerCombat] startNextHand - poker hand transition complete');
   },
   
   updateTimer: (newTime) => {
@@ -2122,25 +1967,21 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     // Find the ability
     const ability = actor.pet.abilities.find(a => a.id === abilityId);
     if (!ability) {
-      console.log(`[PokerCombat] Ability ${abilityId} not found`);
       return false;
     }
     
     // Check if ability is on cooldown
     if (ability.currentCooldown && ability.currentCooldown > 0) {
-      console.log(`[PokerCombat] Ability ${ability.name} is on cooldown (${ability.currentCooldown} turns)`);
       return false;
     }
     
     // Check stamina cost for active abilities
     if (ability.type === 'active' && ability.staminaCost) {
       if (actor.pet.stats.currentStamina < ability.staminaCost) {
-        console.log(`[PokerCombat] Not enough stamina for ${ability.name} (need ${ability.staminaCost}, have ${actor.pet.stats.currentStamina})`);
         return false;
       }
     }
     
-    console.log(`[PokerCombat] ${actor.playerName} uses ${ability.name}`);
     
     set(state => {
       if (!state.combatState) return state;
@@ -2171,7 +2012,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
             const armorResult = applyDamageWithArmor(targetState.heroArmor, targetState.pet.stats.currentHealth, effect.value);
             targetState.heroArmor = armorResult.newArmor;
             targetState.pet.stats.currentHealth = armorResult.newHP;
-            console.log(`[PokerCombat] ${ability.name} deals ${effect.value} damage (${armorResult.armorAbsorbed} absorbed by armor, ${armorResult.hpLost} to HP)`);
           }
           break;
           
@@ -2179,21 +2019,18 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
           if (effect.value) {
             const healAmount = Math.min(effect.value, targetState.pet.stats.maxHealth - targetState.pet.stats.currentHealth);
             targetState.pet.stats.currentHealth += healAmount;
-            console.log(`[PokerCombat] ${ability.name} heals ${healAmount} HP`);
           }
           break;
           
         case 'buff':
           if (effect.statusEffect && effect.duration) {
             targetState.statusEffects = applyStatusEffect(targetState, effect.statusEffect, effect.duration, effect.value);
-            console.log(`[PokerCombat] ${ability.name} applies ${effect.statusEffect} for ${effect.duration} turns`);
           }
           break;
           
         case 'debuff':
           if (effect.statusEffect && effect.duration) {
             targetState.statusEffects = applyStatusEffect(targetState, effect.statusEffect, effect.duration, effect.value);
-            console.log(`[PokerCombat] ${ability.name} applies ${effect.statusEffect} for ${effect.duration} turns`);
           }
           break;
       }
@@ -2213,7 +2050,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       
       const updatedEffects = applyStatusEffect(targetState, effectType, duration, value);
       
-      console.log(`[PokerCombat] Applied ${effectType} to ${targetState.playerName} for ${duration} turns`);
       
       if (isPlayer) {
         return {
@@ -2256,12 +2092,6 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
       // 1. It's deducted from currentHealth immediately
       // 2. When poker resolves, winner only gets their BET back (not healing)
       // 3. The minion damage stays as reduced maxHealth potential
-      console.log(`[PokerCombat] === MINION/DIRECT DAMAGE (PERMANENT) ===`);
-      console.log(`[PokerCombat] Source: ${sourceDescription || 'minion attack'}`);
-      console.log(`[PokerCombat] Target: ${target.playerName} (${targetPlayerId})`);
-      console.log(`[PokerCombat] Damage: ${actualDamage} HP`);
-      console.log(`[PokerCombat] HP: ${target.pet.stats.currentHealth} -> ${newHealth} (max: ${target.pet.stats.maxHealth})`);
-      console.log(`[PokerCombat] This damage will persist regardless of poker outcome!`);
       
       // Log to activity feed
       logActivity('hero_damage', isPlayer ? 'opponent' : 'player', `${sourceDescription || 'Attack'} dealt ${actualDamage} damage`, {
@@ -2393,7 +2223,6 @@ export function getActionPermissions(
   
   // Debug: Log turn order state (only for player)
   if (isPlayer && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.MULLIGAN) {
-    console.log(`[TurnOrder] isPlayer: ${isPlayer}, isActorOpener: ${isActorOpener}, actorIsReady: ${actorIsReady}, opponentIsReady: ${opponentIsReady}, isMyTurnToAct: ${isMyTurnToAct}`);
   }
   
   // Button visibility rules - these determine IF buttons render (not if they're clickable)

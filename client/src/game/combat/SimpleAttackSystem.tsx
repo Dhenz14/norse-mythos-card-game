@@ -29,7 +29,6 @@ const SimpleAttackSystem: React.FC<SimpleAttackSystemProps> = ({
   // When an attack is completed, notify parent component
   useEffect(() => {
     if (attackTarget && isAttackMode && onAttackComplete) {
-      console.log("[SimpleAttackSystem] Attack completed, notifying parent");
       onAttackComplete();
     }
   }, [attackTarget, isAttackMode, onAttackComplete]);
