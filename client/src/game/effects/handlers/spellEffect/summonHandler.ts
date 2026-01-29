@@ -12,13 +12,6 @@ import { EffectResult } from '../../../types/EffectTypes';
  * @param context - The game context
  * @param effect - The effect data
  * @param sourceCard - The card that triggered the effect
-   * @param effect.0 - The 0 for the effect
-   * @param effect.1 - The 1 for the effect
-   * @param effect.2 - The 2 for the effect
-   * @param effect.3 - The 3 for the effect
-   * @param effect.4 - The 4 for the effect
-   * @param effect.5 - The 5 for the effect
-   * @param effect.6 - The 6 for the effect
  * @returns An object indicating success or failure and any additional data
  */
 export default function executeSummonSummon(
@@ -42,16 +35,8 @@ export default function executeSummonSummon(
     // Get effect properties with defaults
     const requiresTarget = effect.requiresTarget === true;
     const targetType = effect.targetType || 'none';
-    const prop0 = effect.0;
-    const prop1 = effect.1;
-    const prop2 = effect.2;
-    const prop3 = effect.3;
-    const prop4 = effect.4;
-    const prop5 = effect.5;
-    const prop6 = effect.6;
-    
-    // Implementation placeholder
-    console.log(`spellEffect:summon executed with properties: ${JSON.stringify(effect)}`);
+    const summonCardId = effect.summonCardId;
+    const count = effect.count || 1;
     
     // TODO: Implement the spellEffect:summon effect
     if (requiresTarget) {

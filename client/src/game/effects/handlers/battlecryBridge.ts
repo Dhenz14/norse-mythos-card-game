@@ -3,13 +3,17 @@
  * 
  * This file bridges the gap between the existing battlecryUtils.ts and the new EffectRegistry system.
  * It wraps the existing battlecry execution logic to use the registry when appropriate.
+ * 
+ * Type Safety: Uses type adapters to convert between legacy types (CardData.id: string|number)
+ * and effect system types (Card.id: number).
  */
-import { GameState, CardInstance } from '../types';
-import { BattlecryEffect } from '../types/CardTypes';
-import { EffectRegistry } from '../effects/EffectRegistry';
+import { GameState, CardInstance } from '../../types';
+import { BattlecryEffect } from '../../types/CardTypes';
+import { EffectRegistry } from '../EffectRegistry';
+import { createGameContextFromState, adaptCardDataToCard } from '../../utils/game/types';
 
 // Import the original battlecry execution function
-import { executeBattlecry as originalExecuteBattlecry } from '../utils/battlecryUtils';
+import { executeBattlecry as originalExecuteBattlecry } from '../../utils/battlecryUtils';
 
 /**
  * Enhanced executeBattlecry that uses the EffectRegistry for missing effect types
@@ -27,7 +31,7 @@ export function executeBattlecry(
   targetType?: 'minion' | 'hero'
 ): GameState {
   // First, check if we can find the card with the battlecry
-  const player = state.players[state.currentPlayerId];
+  const player = state.players[state.currentTurn];
   const battlefield = player.battlefield || [];
   
   // Find the card on the battlefield or in hand
@@ -54,7 +58,11 @@ export function executeBattlecry(
   }
   
   const cardInstance = cardInfo.card;
-  const battlecry = cardInstance.card.battlecry;
+  
+  // Check if this card type can have a battlecry (only minions have battlecry)
+  // Use type narrowing to safely access the battlecry property
+  const cardData = cardInstance.card;
+  const battlecry = 'battlecry' in cardData ? cardData.battlecry : undefined;
   
   // If no battlecry, just return the state
   if (!battlecry) {
@@ -65,15 +73,32 @@ export function executeBattlecry(
   if (EffectRegistry.hasHandler('battlecry', battlecry.type)) {
     // Use the registered handler from EffectRegistry
     try {
-      // Execute the battlecry using the registry
+      // Create a GameContext from the legacy GameState using type adapters
+      const gameContext = createGameContextFromState(state);
+      
+      // Adapt the card data to the effect system's Card type (EffectRegistry expects Card, not CardInstance)
+      const adaptedCard = adaptCardDataToCard(cardInstance.card);
+      
+      // Execute the battlecry using the registry with properly typed parameters
       const result = EffectRegistry.executeBattlecry(
-        state as any, // Cast to GameContext type expected by EffectRegistry
+        gameContext,
         battlecry as BattlecryEffect,
-        cardInstance as any // Cast to Card type expected by EffectRegistry
+        adaptedCard
       );
       
       if (result.success) {
-        return result.additionalData || state;
+        // EffectRegistry handlers may return updated state in additionalData
+        // If additionalData is provided and looks like a GameState, use it
+        // Otherwise, fall back to the original state (effect may have modified context in-place)
+        // NOTE: EffectRegistry handlers typically operate on GameContext, not GameState
+        // For full integration, handlers should return updated GameState in additionalData
+        if (result.additionalData && typeof result.additionalData === 'object' && 'players' in result.additionalData) {
+          return result.additionalData as GameState;
+        }
+        // If no additionalData with state structure, the effect worked but didn't modify state
+        // This is expected for effects that only log or have visual effects
+        console.log(`Battlecry ${battlecry.type} executed via registry (no state changes returned)`);
+        return state;
       } else {
         console.error(`Error executing battlecry via registry: ${result.error}`);
         return state;

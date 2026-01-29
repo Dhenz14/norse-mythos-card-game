@@ -2,19 +2,20 @@
  * BuffSelf Combo Handler
  * 
  * Implements the "buff_self" combo effect.
- * Example card: Card ID: 12016
+ * Buffs the card that triggered the combo with attack/health bonuses.
+ * Example card: Card ID: 12016 (Defias Ringleader, Edwin VanCleef, etc.)
  */
-import { GameState, CardInstance } from '../../types';
-import { ComboEffect } from '../../types/CardTypes';
+import { GameState, CardInstance, GameLogEvent } from '../../../types';
+import { ComboEffect } from '../../../types/CardTypes';
 
 /**
  * Execute a buff_self combo effect
  * 
  * @param state Current game state
- * @param effect The effect to execute
+ * @param effect The effect to execute (should have buffAttack and/or buffHealth)
  * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param targetId Optional target ID (unused for buff_self)
+ * @returns Updated game state with the source card buffed
  */
 export function executeBuffSelfBuffSelf(
   state: GameState,
@@ -22,34 +23,63 @@ export function executeBuffSelfBuffSelf(
   sourceCard: CardInstance,
   targetId?: string
 ): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+  // Get buff values with defaults
+  const buffAttack = effect.buffAttack ?? 0;
+  const buffHealth = effect.buffHealth ?? 0;
   
-  console.log(`Executing buff_self combo for ${sourceCard.card.name}`);
-  
-  // Check for required property: buffAttack
-  if (effect.buffAttack === undefined) {
-    console.warn(`BuffSelf effect missing buffAttack property`);
-    // Fall back to a default value or handle the missing property
+  if (buffAttack === 0 && buffHealth === 0) {
+    console.warn(`BuffSelf combo effect has no buff values (buffAttack: ${buffAttack}, buffHealth: ${buffHealth})`);
+    return state;
   }
   
-  // TODO: Implement the buff_self combo effect
-  // This is a template implementation - implement based on the effect's actual behavior
+  // Find and update the source card on the battlefield
+  const currentPlayerId = state.currentTurn;
+  const player = state.players[currentPlayerId];
   
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'combo',
-    text: `${sourceCard.card.name} triggered buff_self combo`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
+  const updatedBattlefield = player.battlefield.map(minion => {
+    if (minion.instanceId === sourceCard.instanceId) {
+      // Apply the buffs to the minion - use type-safe access
+      const cardData = minion.card as { attack?: number; health?: number };
+      const currentAttack = minion.currentAttack ?? cardData.attack ?? 0;
+      const currentHealth = minion.currentHealth ?? cardData.health ?? 0;
+      const existingMaxHealth = (minion as { maxHealth?: number }).maxHealth ?? cardData.health ?? 0;
+      
+      return {
+        ...minion,
+        currentAttack: currentAttack + buffAttack,
+        currentHealth: currentHealth + buffHealth,
+        maxHealth: existingMaxHealth + buffHealth
+      };
+    }
+    return minion;
   });
+  
+  // Create the log entry with correct type
+  const logEntry: GameLogEvent = {
+    id: Math.random().toString(36).substring(2, 15),
+    type: 'card_played',
+    player: currentPlayerId,
+    text: `${sourceCard.card.name} gains +${buffAttack}/+${buffHealth} from Combo!`,
+    timestamp: Date.now(),
+    turn: state.turnNumber,
+    cardId: String(sourceCard.card.id),
+    cardName: sourceCard.card.name
+  };
+  
+  // Create the new state with updated battlefield
+  const newState: GameState = {
+    ...state,
+    players: {
+      ...state.players,
+      [currentPlayerId]: {
+        ...player,
+        battlefield: updatedBattlefield
+      }
+    },
+    gameLog: [...(state.gameLog || []), logEntry]
+  };
+  
+  console.log(`Combo: ${sourceCard.card.name} gained +${buffAttack}/+${buffHealth}`);
   
   return newState;
 }

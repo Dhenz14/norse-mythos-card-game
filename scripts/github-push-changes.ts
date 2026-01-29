@@ -14,12 +14,36 @@ const BRANCH = 'main';
 
 // Files that were recently changed - add files here manually
 const CHANGED_FILES = [
+  // Config files
+  'tailwind.config.ts',
+  'vercel.json',
+  'replit.md',
+  
+  // CSS files
   'client/src/game/combat/RagnarokCombatArena.css',
   'client/src/game/combat/GameViewport.css',
   'client/src/game/combat/styles/zones.css',
   'client/src/game/combat/styles/tokens.css',
   'client/src/game/combat/styles/index.css',
-  'replit.md',
+  
+  // Effect handlers
+  'client/src/game/effects/handlers/battlecryBridge.ts',
+  'client/src/game/effects/handlers/combo/buffSelfHandler.ts',
+  'client/src/game/effects/handlers/spellEffect/armorHandler.ts',
+  'client/src/game/effects/handlers/spellEffect/summonHandler.ts',
+  
+  // Modular structure files
+  'client/src/game/utils/game/types.ts',
+  'client/src/game/utils/game/index.ts',
+  'client/src/game/utils/game/README.md',
+  'client/src/game/utils/battlecry/types.ts',
+  'client/src/game/utils/battlecry/index.ts',
+  'client/src/game/utils/battlecry/README.md',
+  'client/src/game/utils/spells/types.ts',
+  'client/src/game/utils/spells/index.ts',
+  'client/src/game/utils/spells/README.md',
+  
+  // Scripts
   'scripts/github-push.ts',
   'scripts/github-push-changes.ts'
 ];

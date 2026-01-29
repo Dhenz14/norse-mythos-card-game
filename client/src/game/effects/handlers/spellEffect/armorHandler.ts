@@ -2,19 +2,21 @@
  * Armor SpellEffect Handler
  * 
  * Implements the "armor" spellEffect effect.
- * Example card: Shield Block (ID: 31022)
+ * Grants armor to the player's hero. May also draw cards (like Shield Block).
+ * Example card: Shield Block (ID: 31022) - Gain 5 Armor. Draw a card.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameState, CardInstance, GameLogEvent } from '../../../types';
+import { SpellEffect } from '../../../types/CardTypes';
+import { drawCardFromDeck } from '../../../utils/zoneUtils';
 
 /**
- * Execute a armor spellEffect effect
+ * Execute an armor spellEffect effect
  * 
  * @param state Current game state
- * @param effect The effect to execute
+ * @param effect The effect to execute (should have value for armor amount, optionally drawCards)
  * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param targetId Optional target ID (unused for armor effect)
+ * @returns Updated game state with armor gained and cards drawn
  */
 export function executeArmorArmor(
   state: GameState,
@@ -22,40 +24,56 @@ export function executeArmorArmor(
   sourceCard: CardInstance,
   targetId?: string
 ): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+  // Get effect values with defaults
+  const armorValue = effect.value ?? 0;
+  const drawCount = effect.drawCards ?? 0;
   
-  console.log(`Executing armor spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`Armor effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  if (armorValue === 0 && drawCount === 0) {
+    console.warn(`Armor effect has no value or drawCards property`);
+    return state;
   }
-
-  // Check for required property: drawCards
-  if (effect.drawCards === undefined) {
-    console.warn(`Armor effect missing drawCards property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the armor spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
   
   // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
+  const currentPlayerId = state.currentTurn;
+  const player = state.players[currentPlayerId];
   
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
+  // Apply armor to the player
+  const currentArmor = player.armor ?? 0;
+  const newArmor = currentArmor + armorValue;
+  
+  // Create the log entry with correct type
+  const logEntry: GameLogEvent = {
     id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered armor spellEffect`,
+    type: 'spell_cast',
+    player: currentPlayerId,
+    text: armorValue > 0 ? `${sourceCard.card.name} grants ${armorValue} Armor` : '',
     timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
+    turn: state.turnNumber,
+    cardId: String(sourceCard.card.id),
+    cardName: sourceCard.card.name,
+    value: armorValue
+  };
+  
+  let newState: GameState = {
+    ...state,
+    players: {
+      ...state.players,
+      [currentPlayerId]: {
+        ...player,
+        armor: newArmor
+      }
+    },
+    gameLog: [...(state.gameLog || []), logEntry]
+  };
+  
+  // Draw cards if specified
+  if (drawCount > 0) {
+    for (let i = 0; i < drawCount; i++) {
+      newState = drawCardFromDeck(newState, currentPlayerId);
+    }
+  }
+  
+  console.log(`Armor effect: Gained ${armorValue} armor${drawCount > 0 ? `, drew ${drawCount} card(s)` : ''}`);
   
   return newState;
 }
