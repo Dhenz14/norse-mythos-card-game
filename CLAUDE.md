@@ -32,6 +32,8 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 
 ```
 client/src/
+├── core/                       # Pure game logic (migration in progress)
+│   └── index.ts                # Re-exports from game/ for future separation
 ├── game/
 │   ├── components/         # Card, combat, chess components
 │   ├── stores/             # Zustand state stores
@@ -150,6 +152,18 @@ client/src/game/combat/styles/tokens.css
 ### Highlander Support
 - `highlanderUtils.ts` implements deck duplicate checking
 - Supports Reno/Kazakus/Solia/Raza/Krul effects
+
+## Known Issues & Fixes
+
+### Poker Combat Freeze (Fixed)
+- **Problem**: Game froze after resolving poker hand
+- **Solution**: Added backup timer in `RagnarokCombatArena.tsx` (line ~1541)
+- **Details**: `showdownBackupTimerRef` ensures `handleCombatEnd` is called even if ShowdownCelebration unmounts
+
+### Type Adapter Placeholders
+- **File**: `client/src/game/utils/typeAdapters.ts`
+- **Issue**: `adaptLegacyPlayerToContextPlayer` has placeholder values for hero/heroPower
+- **Status**: Needs production mappings to proper state
 
 ## Deploy
 
