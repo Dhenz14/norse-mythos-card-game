@@ -1,107 +1,167 @@
 # Norse Mythos Card Game
 
-A sophisticated Norse mythology-themed digital card game that delivers an immersive strategic experience through advanced interactive design and dynamic rendering techniques. The game combines intricate gameplay mechanics with cutting-edge visual technologies, focusing on precise card interactions and mythological storytelling.
-
-## Special Feature: "Use Think Tools" Command
-
-This project includes a special trigger command for the Replit AI assistant. When you type `Use Think Tools` followed by a strategy question, the system will automatically run both sequential thinking and deck recommendation tools to give you comprehensive strategy analysis.
-
-For details on how to use this feature, see [REPLIT_CHAT_INTEGRATION.md](./REPLIT_CHAT_INTEGRATION.md).
+A strategic digital card game inspired by Norse mythology, featuring poker-style combat mechanics and Ragnarok Chess integration.
 
 ## Features
 
-- **Norse Mythology Theme**: Authentic Norse gods, creatures, and myths brought to life
-- **Advanced Holographic Effects**: Dynamic holographic cards with distinct effects for different rarities
-- **Optimized Card Designs**: Space-efficient card layouts that maximize visual appeal
-- **Responsive Card Transformations**: Cards transform from full size in hand to compact battlefield versions
-- **Interactive Mechanics**: Sophisticated dragability and interactive card animations
-- **Strategy Analysis Tools**: Advanced tools including sequential thinking and deck recommendation systems
-- **AI-Powered Assistance**: Special "Use Think Tools" command for AI-powered strategy recommendations
+- **76 Playable Heroes** across 12 classes, each with unique abilities
+- **1,300+ Cards** with battlecry, deathrattle, and spell effects
+- **4 Mythological Factions**: Norse, Greek, Japanese/Shinto, Egyptian
+- **Poker Combat System** - Texas Hold'em style betting integrated with card battles
+- **Ragnarok Chess** - Strategic 7x5 chess variant with card-based combat
+- **Premium Card Effects** - Holographic, legendary, and 3D card visuals
 
-## Technology Stack
-
-- **Frontend**: React with TypeScript for type-safe logic
-- **State Management**: Zustand for efficient state handling
-- **Styling**: Tailwind CSS for responsive design
-- **Animations**: Framer Motion for sophisticated animations
-- **3D Rendering**: React Three Fiber / WebGL for 3D card rendering
-- **Interactive Animations**: React Spring for card animations
-- **Asset Management**: Cloudinary for advanced image management
-- **Backend**: Express server with TypeScript
-- **Strategy Analysis**: Custom MCP (Model Controlled Program) server
-- **AI Integration**: Smithery AI for advanced strategy generation
-- **Chat Integration**: Special trigger commands for Replit AI assistant
-
-## Card Design
-
-- **Attack/Health Values**: Displayed in hexagonal badges at the top corners
-- **Card Rarity Effects**:
-  - **Legendary Cards**: Gold holographic effects with foil texture and shine-gold animation
-  - **Epic Cards**: Purple holographic effects with prismatic-shift animation
-- **Optimized Layout**: Professional sectioning with no wasted space, similar to Hearthstone's design
-
-## 📥 Downloading the Project
-
-This project contains over 1,500 files and 261MB of assets. For your convenience, we offer several download options:
-
-### Option 1: Automated Download (Recommended)
-
-The repository includes a GitHub workflow that automatically downloads all project files:
-
-1. Go to the Actions tab in the GitHub repository
-2. Select the "Download All Files Workflow"
-3. Click "Run workflow" and select your preferred download option:
-   - `all` - Complete project (261MB, all 1,568 files)
-   - `key_components` - Essential card components only (28KB)
-   - `source_only` - Source code without assets (131MB)
-4. Wait for the workflow to complete and download the artifact
-
-### Option 2: Direct Downloads
-
-You can directly download the archives from the [Releases page](https://github.com/Dhenz14/norse-mythos-card-game/releases):
-
-- `norse-mythos-everything-complete.tar.gz` (261MB) - Complete project with all 1,568 files
-- `norse-mythos-key-components.tar.gz` (28KB) - Essential card components only
-- `norse-mythos-archive.tar.gz` (131MB) - Source code archive
-
-### Option 3: Clone Repository (Partial Files Only)
+## Quick Start
 
 ```bash
-git clone https://github.com/Dhenz14/norse-mythos-card-game.git
+# Install dependencies
+npm install
+
+# Development server
+npm run dev
+
+# Production build
+npm run build
+
+# TypeScript check
+npm run check
 ```
 
-This option only includes files directly pushed to the repository, not the complete project. For the full project, use Options 1 or 2.
+## Tech Stack
 
-## Getting Started
+| Category | Technology |
+|----------|------------|
+| Framework | React 18 + TypeScript |
+| Build | Vite 5 |
+| State | Zustand 5 |
+| Styling | Tailwind CSS 3.4 |
+| 3D/Effects | React Three Fiber, Framer Motion, React Spring |
+| UI Components | Radix UI (shadcn/ui) |
+| Backend | Express + TypeScript |
+| Database | PostgreSQL + Drizzle ORM |
 
-1. Extract the downloaded archive
-2. Install dependencies with `npm install`
-3. Start the development server with `npm run dev`
-4. Open your browser and navigate to `http://localhost:5173`
+## Project Structure
 
-## Key Components
+```
+client/src/
+├── game/
+│   ├── components/     # Card, combat, chess components
+│   ├── stores/         # Zustand state management
+│   ├── data/           # Card definitions, heroes
+│   │   ├── allCards.ts     # 1,300+ cards (single source)
+│   │   ├── cardRegistry/   # Cards organized by ID range
+│   │   └── norseHeroes/    # 76 playable heroes
+│   ├── combat/         # Poker combat system
+│   │   ├── RagnarokCombatArena.tsx
+│   │   ├── PokerCombatStore.ts
+│   │   └── modules/    # Hand evaluator, betting
+│   ├── effects/        # Effect handlers (182 total)
+│   │   └── handlers/   # battlecry/, deathrattle/, spellEffect/
+│   └── types/          # TypeScript definitions
+├── components/ui/      # Shared UI components
+└── lib/                # Utilities and helpers
+```
 
-### Card System Components
+## Game Modes
 
-The most important files for understanding the holographic card system are:
+### Standard Play
+Classic card game with battlecries, deathrattles, and spell effects.
 
-- `client/src/components/CardFrame.tsx` - Main card component
-- `client/src/components/BattlefieldCardFrame.tsx` - Optimized battlefield cards
-- `client/src/game/components/HolographicCardEffect.tsx` - Base holographic effect
-- `client/src/game/components/LegendaryCardEffect.tsx` - Gold legendary effect
-- `client/src/game/hooks/useCardTransform.tsx` - Card transformation logic
+### Poker Combat
+Each round uses Texas Hold'em mechanics:
+- **Faith** (Flop) - 3 community cards revealed
+- **Foresight** (Turn) - 4th community card
+- **Destiny** (River) - 5th community card
+- Hand rankings determine damage multipliers
 
-### Strategy Analysis Components
+### Ragnarok Chess
+7x5 board where chess pieces represent heroes with card decks.
 
-Key files for the strategy analysis and AI integration:
+## Card System
 
-- `server/mcp/triggerCommand.ts` - "Use Think Tools" trigger command handler
-- `server/mcp/sequentialThinking.ts` - Sequential thinking analysis
-- `server/mcp/thinkTool.ts` - Deck recommendation tool
-- `server/mcp/combinedStrategy.ts` - Combined workflow implementation
-- `server/triggerThinkTools.js` - JavaScript helper for detecting trigger commands
-- `REPLIT_CHAT_INTEGRATION.md` - Detailed documentation on using the trigger command
+| ID Range | Type |
+|----------|------|
+| 1000-3999 | Neutral Cards |
+| 4000-8999 | Class Cards |
+| 9000-9999 | Tokens |
+| 20000-29999 | Norse Set |
+| 90000-99999 | Heroes |
+
+## Hero Classes
+
+- **Offensive**: Mage, Warrior, Hunter, Rogue, Demon Hunter
+- **Support**: Priest, Paladin, Druid
+- **Control**: Warlock, Shaman
+- **Special**: Death Knight, Necromancer
+
+## Card Effects
+
+### Battlecry (96 handlers)
+Effects triggered when a card is played from hand.
+
+### Deathrattle (16 handlers)
+Effects triggered when a minion dies.
+
+### Spell Effects (70 handlers)
+Immediate effects from spell cards.
+
+## Development
+
+### Key Files
+- `game/stores/gameStore.ts` - Main game state
+- `game/combat/RagnarokCombatArena.tsx` - Combat UI
+- `game/combat/PokerCombatStore.ts` - Poker mechanics
+- `game/effects/handlers/` - Effect implementations
+- `game/data/allCards.ts` - Card database (single source)
+
+### Coding Standards
+- Tabs for indentation
+- camelCase for functions/variables
+- PascalCase for components
+- Small functions (20-30 lines max)
+- Avoid magic strings; use constants
+
+For AI/Claude Code developers, see `CLAUDE.md` for detailed architecture documentation.
+
+## Deployment
+
+```bash
+# Build for production
+npm run build
+
+# Deploy to Vercel
+vercel --prod
+```
+
+### Bundle Sizes (gzip)
+| Chunk | Size |
+|-------|------|
+| Initial load | ~100KB |
+| React vendor | ~53KB |
+| UI vendor | ~28KB |
+| Animation vendor | ~38KB |
+| Three.js (lazy) | ~250KB |
+| Full game | ~286KB |
+
+## Roadmap
+
+### Phase 2 (Planned)
+- Hive Keychain authentication
+- NFT card ownership on Hive blockchain
+- Multiplayer via WebSocket/PartyKit
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Follow coding standards in `CLAUDE.md`
+4. Ensure `npm run build` passes
+5. Submit a pull request
+
+---
+
+Built with React, TypeScript, and Norse mythology.

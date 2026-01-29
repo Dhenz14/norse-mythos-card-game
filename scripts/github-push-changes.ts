@@ -1,7 +1,7 @@
 /**
- * GitHub API Push Script - Changed Files Only
+ * GitHub API Push Script
  * 
- * Pushes only recently modified files to GitHub.
+ * Pushes updated files to GitHub.
  * Usage: npx tsx scripts/github-push-changes.ts
  */
 
@@ -12,39 +12,10 @@ const OWNER = 'Dhenz14';
 const REPO = 'norse-mythos-card-game';
 const BRANCH = 'main';
 
-// Files that were recently changed - add files here manually
-const CHANGED_FILES = [
-  // Config files
-  'tailwind.config.ts',
-  'vercel.json',
+const UPDATED_FILES = [
+  'CLAUDE.md',
+  'README.md',
   'replit.md',
-  
-  // CSS files
-  'client/src/game/combat/RagnarokCombatArena.css',
-  'client/src/game/combat/GameViewport.css',
-  'client/src/game/combat/styles/zones.css',
-  'client/src/game/combat/styles/tokens.css',
-  'client/src/game/combat/styles/index.css',
-  
-  // Effect handlers
-  'client/src/game/effects/handlers/battlecryBridge.ts',
-  'client/src/game/effects/handlers/combo/buffSelfHandler.ts',
-  'client/src/game/effects/handlers/spellEffect/armorHandler.ts',
-  'client/src/game/effects/handlers/spellEffect/summonHandler.ts',
-  
-  // Modular structure files
-  'client/src/game/utils/game/types.ts',
-  'client/src/game/utils/game/index.ts',
-  'client/src/game/utils/game/README.md',
-  'client/src/game/utils/battlecry/types.ts',
-  'client/src/game/utils/battlecry/index.ts',
-  'client/src/game/utils/battlecry/README.md',
-  'client/src/game/utils/spells/types.ts',
-  'client/src/game/utils/spells/index.ts',
-  'client/src/game/utils/spells/README.md',
-  
-  // Scripts
-  'scripts/github-push.ts',
   'scripts/github-push-changes.ts'
 ];
 
@@ -102,7 +73,7 @@ async function createBlob(token: string, content: string, headers: any): Promise
 }
 
 async function pushToGitHub() {
-  console.log('🚀 Pushing changed files to GitHub...\n');
+  console.log('📄 Pushing documentation updates to GitHub...\n');
   
   const token = await getAccessToken();
   console.log('✅ Got GitHub access token');
@@ -113,7 +84,6 @@ async function pushToGitHub() {
     'Content-Type': 'application/json'
   };
   
-  // Get current branch ref
   const refRes = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`,
     { headers }
@@ -122,11 +92,10 @@ async function pushToGitHub() {
   const currentSha = refData.object.sha;
   console.log(`✅ Current ${BRANCH} SHA: ${currentSha}`);
   
-  // Create tree entries for changed files
   const treeEntries: any[] = [];
   const workspaceDir = '/home/runner/workspace';
   
-  for (const relativePath of CHANGED_FILES) {
+  for (const relativePath of UPDATED_FILES) {
     const fullPath = path.join(workspaceDir, relativePath);
     
     if (!fs.existsSync(fullPath)) {
@@ -154,7 +123,6 @@ async function pushToGitHub() {
   
   console.log(`\n✅ Uploaded ${treeEntries.length} files`);
   
-  // Create new tree
   const newTreeRes = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/git/trees`,
     {
@@ -174,8 +142,7 @@ async function pushToGitHub() {
   }
   console.log(`✅ Created new tree: ${newTreeData.sha}`);
   
-  // Create new commit
-  const commitMessage = `Update: ${new Date().toISOString().split('T')[0]} - CSS positioning fix for community cards`;
+  const commitMessage = 'Add CLAUDE.md and update README with cleaner documentation';
   const newCommitRes = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/git/commits`,
     {
@@ -196,7 +163,6 @@ async function pushToGitHub() {
   }
   console.log(`✅ Created new commit: ${newCommitData.sha}`);
   
-  // Update branch ref
   const updateRefRes = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/git/refs/heads/${BRANCH}`,
     {
@@ -215,8 +181,9 @@ async function pushToGitHub() {
     throw new Error('Failed to update branch ref');
   }
   
-  console.log(`\n🎉 SUCCESS! GitHub updated to: ${updateRefData.object.sha}`);
-  console.log(`📎 View at: https://github.com/${OWNER}/${REPO}`);
+  console.log(`\n🎉 SUCCESS! GitHub updated!`);
+  console.log(`📎 Commit: ${updateRefData.object.sha}`);
+  console.log(`🔗 View at: https://github.com/${OWNER}/${REPO}`);
 }
 
 pushToGitHub().catch(err => {
