@@ -16,6 +16,7 @@ const UPDATED_FILES = [
   'CLAUDE.md',
   'README.md',
   'replit.md',
+  'client/src/core/index.ts',
   'scripts/github-push-changes.ts'
 ];
 
@@ -142,7 +143,7 @@ async function pushToGitHub() {
   }
   console.log(`✅ Created new tree: ${newTreeData.sha}`);
   
-  const commitMessage = 'Add CLAUDE.md and update README with cleaner documentation';
+  const commitMessage = process.argv[2] || 'Update files via Replit';
   const newCommitRes = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/git/commits`,
     {
