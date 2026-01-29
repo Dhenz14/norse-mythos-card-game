@@ -440,7 +440,7 @@ When attacking with elemental advantage:
 
 ### Basic Rules
 
-- **30 cards** per deck
+- **9 cards** per hand (max)
 - Maximum **2 copies** of any card (except Legendaries)
 - Maximum **1 copy** of Legendary cards
 - Can include **class cards** and **neutral cards**
@@ -488,7 +488,7 @@ For Ragnarok Chess mode, select heroes for each piece slot:
 | **Debuff** | Negative stat modification (-Attack, -Health) |
 | **Face** | Attacking the enemy hero directly |
 | **Fatigue** | Damage taken when drawing from empty deck |
-| **Hand** | Cards currently held (max 10) |
+| **Hand** | Cards currently held (max 9) |
 | **Hole Cards** | Your 2 private poker cards |
 | **HP** | Health Points |
 | **Lethal** | Enough damage to kill the opponent |

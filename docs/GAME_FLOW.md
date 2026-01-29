@@ -234,7 +234,7 @@ Choose from 76 heroes across 12 classes.
 const DECK_SIZE = 30;
 const MAX_COPIES = 2;           // Per card
 const MAX_LEGENDARY_COPIES = 1; // Legendaries only
-const MAX_HAND_SIZE = 10;
+const MAX_HAND_SIZE = 9;
 const MAX_BOARD_SIZE = 7;
 ```
 
