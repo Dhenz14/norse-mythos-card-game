@@ -11,6 +11,14 @@ A strategic digital card game inspired by Norse mythology, featuring poker-style
 - **Ragnarok Chess** - Strategic 7x5 chess variant with card-based combat
 - **Premium Card Effects** - Holographic, legendary, and 3D card visuals
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [RULEBOOK.md](docs/RULEBOOK.md) | Complete game rules, card keywords, and mechanics |
+| [GAME_FLOW.md](docs/GAME_FLOW.md) | Game flow diagrams and state management |
+| [CLAUDE.md](CLAUDE.md) | Technical documentation for AI assistants |
+
 ## Quick Start
 
 ```bash

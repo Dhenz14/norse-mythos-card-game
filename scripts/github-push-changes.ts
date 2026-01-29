@@ -16,6 +16,8 @@ const UPDATED_FILES = [
   'CLAUDE.md',
   'README.md',
   'replit.md',
+  'docs/RULEBOOK.md',
+  'docs/GAME_FLOW.md',
   'client/src/core/index.ts',
   'scripts/github-push-changes.ts'
 ];

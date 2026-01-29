@@ -10,6 +10,11 @@ npm run build   # Production build
 npm run check   # TypeScript type checking
 ```
 
+## Documentation
+
+- **[RULEBOOK.md](docs/RULEBOOK.md)** - Complete game rules, mechanics, and keywords
+- **[GAME_FLOW.md](docs/GAME_FLOW.md)** - Game flow diagrams and state management
+
 ## Architecture Overview
 
 Norse Mythos Card Game is a multi-mythology digital collectible card game combining poker mechanics with Hearthstone-style card battling.
