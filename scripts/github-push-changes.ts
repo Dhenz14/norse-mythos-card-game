@@ -13,12 +13,8 @@ const REPO = 'norse-mythos-card-game';
 const BRANCH = 'main';
 
 const UPDATED_FILES = [
-  'CLAUDE.md',
-  'README.md',
   'replit.md',
-  'docs/RULEBOOK.md',
-  'docs/GAME_FLOW.md',
-  'client/src/core/index.ts',
+  'client/src/game/combat/RagnarokCombatArena.tsx',
   'scripts/github-push-changes.ts'
 ];
 

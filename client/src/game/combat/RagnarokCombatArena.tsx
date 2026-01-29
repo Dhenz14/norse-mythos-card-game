@@ -34,6 +34,7 @@ import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { executeNorseHeroPower, canUseHeroPower, getNorseHeroById } from '../utils/norseHeroPowerUtils';
 import { ShowdownCelebration } from './components/ShowdownCelebration';
 import { GameViewport } from './GameViewport';
+import { useCombatLayout } from '../hooks/useCombatLayout';
 
 interface HeroPowerTarget {
   isMinion: boolean;
@@ -47,6 +48,7 @@ function isValidTargetForHeroPower(targetType: string, target: HeroPowerTarget):
   switch (targetType) {
     // Minion-only targeting
     case 'friendly_minion':
+    case 'friendly_mech':
       return isMinion && isFriendly;
     case 'enemy_minion':
       return isMinion && !isFriendly;
@@ -135,7 +137,6 @@ const HeroDeathAnimation: React.FC<{
   
   // Animation timer - runs exactly once for 3 seconds
   useEffect(() => {
-    console.log('[HeroDeathAnimation] Starting 3-second death animation');
     
     const hitSound = new Howl({
       src: ['/sounds/hit.mp3'],
@@ -156,7 +157,6 @@ const HeroDeathAnimation: React.FC<{
     const completeTimer = setTimeout(() => {
       if (!hasCompletedRef.current) {
         hasCompletedRef.current = true;
-        console.log('[HeroDeathAnimation] Animation complete after 3 seconds');
         onCompleteRef.current();
       }
     }, 3000);
@@ -531,7 +531,6 @@ const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
     return 'neutral';
   }, [pet.norseHeroId, elementProp]);
   
-  console.log(`[BattlefieldHero] Render - pet.name: ${pet.name}, pet.norseHeroId: ${pet.norseHeroId}, element: ${heroElement}, mana: ${mana}, isOpponent: ${isOpponent}`);
   const currentHP = pet.stats.currentHealth;
   const maxHP = pet.stats.maxHealth;
   const armor = pet.stats.armor || 0;
@@ -552,6 +551,9 @@ const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
   const norseHero = pet.norseHeroId ? ALL_NORSE_HEROES[pet.norseHeroId] : null;
   const heroPower = norseHero?.heroPower;
   const weaponUpgrade = norseHero?.weaponUpgrade;
+  
+  // Debug: Log hero power state on every render
+  console.log(`[BattlefieldHero] ${isOpponent ? 'OPPONENT' : 'PLAYER'} pet.name=${pet.name}, pet.norseHeroId=${pet.norseHeroId}, norseHero=${norseHero?.name || 'NULL'}, heroPower=${heroPower?.name || 'NULL'}, mana=${mana}, onHeroPowerClick=${!!onHeroPowerClick}`);
   const WEAPON_COST = 5;
   const canAffordPower = heroPower ? mana >= heroPower.cost : false;
   const canAffordUpgrade = mana >= WEAPON_COST;
@@ -559,32 +561,22 @@ const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
   const isPowerDisabled = !canAffordPower || isOpponent;
   
   const handlePortraitClick = useCallback((e: React.MouseEvent) => {
-    if (isOpponent) return;
+    console.log('[handlePortraitClick] Called! isOpponent=', isOpponent, 'onHeroPowerClick=', !!onHeroPowerClick, 'heroPower=', heroPower?.name || 'NULL', 'norseHero=', norseHero?.name || 'NULL');
+    
+    if (isOpponent) {
+      console.log('[handlePortraitClick] Blocked: isOpponent');
+      return;
+    }
     e.stopPropagation();
     
-    const now = Date.now();
-    const timeSinceLastClick = now - lastClickRef.current;
-    
-    if (timeSinceLastClick < 300 && canUpgrade && onWeaponUpgradeClick) {
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-        clickTimeoutRef.current = null;
-      }
-      onWeaponUpgradeClick();
-      lastClickRef.current = 0;
+    // Always call onHeroPowerClick if available - let parent handler validate mana, used status, etc.
+    if (onHeroPowerClick) {
+      console.log('[handlePortraitClick] Calling onHeroPowerClick');
+      onHeroPowerClick();
     } else {
-      lastClickRef.current = now;
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-      }
-      clickTimeoutRef.current = setTimeout(() => {
-        if (!isPowerDisabled && onHeroPowerClick) {
-          onHeroPowerClick();
-        }
-        clickTimeoutRef.current = null;
-      }, 300);
+      console.log('[handlePortraitClick] No onHeroPowerClick callback provided');
     }
-  }, [isOpponent, canUpgrade, isPowerDisabled, onHeroPowerClick, onWeaponUpgradeClick]);
+  }, [isOpponent, onHeroPowerClick, heroPower, norseHero]);
   
   useEffect(() => {
     return () => {
@@ -635,12 +627,14 @@ const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
               backgroundImage: `url('/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center top',
-              cursor: !isOpponent && heroPower ? 'pointer' : 'default',
+              cursor: !isOpponent ? 'pointer' : 'default',
               pointerEvents: 'auto'
             }}
             onClick={(e) => {
+              console.log('[BattlefieldHero] Portrait clicked! heroPower=', heroPower?.name || 'NULL', 'isOpponent=', isOpponent, 'onHeroPowerClick=', !!onHeroPowerClick);
               e.stopPropagation();
-              if (heroPower) handlePortraitClick(e);
+              // Always call handlePortraitClick - let it handle validation and logging
+              handlePortraitClick(e);
             }}
             onMouseEnter={(e) => {
               e.stopPropagation();
@@ -872,9 +866,14 @@ interface UnifiedCombatArenaProps {
     active: boolean;
     norseHeroId: string;
     targetType: string;
-    heroPowerIndex: number;
-  };
-  executeHeroPowerEffect?: (target: any) => void;
+    effectType: string;
+    value: number;
+    secondaryValue?: number;
+    powerName: string;
+    heroName: string;
+    manaCost: number;
+  } | null;
+  executeHeroPowerEffect?: (norseHero: any, heroPower: any, target: any) => void;
   // Hand props
   handCards?: any[];
   handCurrentMana?: number;
@@ -1016,16 +1015,19 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const handlePlayerCardClick = useCallback((card: any) => {
     if (heroPowerTargeting?.active && executeHeroPowerEffect) {
       const targetType = heroPowerTargeting.targetType;
-      if (targetType === 'friendly_minion' || targetType === 'any_minion' || targetType === 'any') {
-        executeHeroPowerEffect(card);
+      if (targetType === 'friendly_minion' || targetType === 'friendly_mech' || targetType === 'any_minion' || targetType === 'any') {
+        const norseHero = ALL_NORSE_HEROES[heroPowerTargeting.norseHeroId];
+        if (norseHero) {
+          executeHeroPowerEffect(norseHero, norseHero.heroPower, card);
+        }
         return;
       }
     }
     
     if (selectedCard) {
-      const targetType = selectedCard.card?.spellEffect?.targetType || selectedCard.card?.battlecry?.targetType;
-      if (targetType === 'friendly_minion' || targetType === 'any_minion' || targetType === 'any') {
-        const cardId = selectedCard.instanceId || selectedCard.id;
+      const targetType = (selectedCard.card as any)?.spellEffect?.targetType || (selectedCard.card as any)?.battlecry?.targetType;
+      if (targetType === 'friendly_minion' || targetType === 'friendly_mech' || targetType === 'any_minion' || targetType === 'any') {
+        const cardId = selectedCard.instanceId || (selectedCard as any).id;
         playCard(cardId, card.instanceId);
         return;
       }
@@ -1047,15 +1049,18 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     if (heroPowerTargeting?.active && executeHeroPowerEffect) {
       const targetType = heroPowerTargeting.targetType;
       if (targetType === 'enemy_minion' || targetType === 'any_minion' || targetType === 'any') {
-        executeHeroPowerEffect(card);
+        const norseHero = ALL_NORSE_HEROES[heroPowerTargeting.norseHeroId];
+        if (norseHero) {
+          executeHeroPowerEffect(norseHero, norseHero.heroPower, card);
+        }
         return;
       }
     }
     
     if (selectedCard) {
-      const targetType = selectedCard.card?.spellEffect?.targetType || selectedCard.card?.battlecry?.targetType;
+      const targetType = (selectedCard.card as any)?.spellEffect?.targetType || (selectedCard.card as any)?.battlecry?.targetType;
       if (targetType === 'enemy_minion' || targetType === 'any_minion' || targetType === 'any' || targetType === 'enemy') {
-        const cardId = selectedCard.instanceId || selectedCard.id;
+        const cardId = selectedCard.instanceId || (selectedCard as any).id;
         playCard(cardId, card.instanceId);
         return;
       }
@@ -1071,8 +1076,12 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     if (!cardId) return;
     
     const spellEffect = card.card?.spellEffect;
-    const needsTarget = spellEffect?.requiresTarget || 
-      (spellEffect?.targetType && (
+    // Check if spell requires individual target selection
+    // "all_" prefixed targetTypes don't need individual targeting (they affect all targets automatically)
+    const targetType = spellEffect?.targetType || '';
+    const isAoE = targetType.startsWith('all_') || targetType === 'all' || targetType === 'none' || targetType === 'self';
+    const needsTarget = spellEffect?.requiresTarget === true || 
+      (!isAoE && spellEffect?.requiresTarget !== false && spellEffect?.targetType && (
         spellEffect.targetType.includes('minion') ||
         spellEffect.targetType.includes('character') ||
         spellEffect.targetType.includes('enemy') ||
@@ -1484,6 +1493,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 };
 
 export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onCombatEnd }) => {
+  useCombatLayout();
+  
   const { 
     combatState, 
     isActive,
@@ -1529,6 +1540,10 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   // Ref to track if all-in auto-advance is in progress (prevents multiple concurrent timers)
   const allInAdvanceInProgressRef = useRef(false);
   
+  // Backup timer to prevent combat freeze if ShowdownCelebration fails to call onComplete
+  // This ensures handleCombatEnd is called even if the animation unmounts prematurely
+  const showdownBackupTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
   // LIFTED UP: Battlefield ref shared between PokerPanel (for hand cards) and BattlefieldPanel
   const sharedBattlefieldRef = useRef<HTMLDivElement>(null);
   
@@ -1573,33 +1588,23 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   
   // LIFTED UP: Handle card play from hand (used by both PokerPanel and BattlefieldPanel)
   const sharedHandleCardPlay = useCallback((card: any, position?: { row?: number; col?: number }) => {
-    console.log('[sharedHandleCardPlay] Called with card:', { 
-      name: card?.card?.name, 
-      id: card?.card?.id,
-      instanceId: card?.instanceId 
-    });
-    
     if (!isPlayerTurn) {
-      console.log('[sharedHandleCardPlay] Rejected: Not player turn');
       return;
     }
     const cardId = card?.instanceId || card?.id || card?.card?.id;
     if (!cardId) {
-      console.log('[sharedHandleCardPlay] Rejected: No cardId found', { card });
+      return;
     }
-    console.log('[sharedHandleCardPlay] Playing card with ID:', cardId);
-    playCard(cardId, position?.row, position?.col);
+    playCard(cardId);
   }, [isPlayerTurn, playCard]);
   
   // Initialize combat event subscribers (professional event-driven architecture)
   // This connects all combat systems (poker HP, animations, sounds) via CombatEventBus
   useEffect(() => {
     initializeCombatEventSubscribers();
-    console.log('[RagnarokCombatArena] Combat event subscribers initialized');
     
     return () => {
       cleanupCombatEventSubscribers();
-      console.log('[RagnarokCombatArena] Combat event subscribers cleaned up');
     };
   }, []);
   
@@ -1608,20 +1613,17 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     // Check if hero power targeting is active and allows enemy hero targeting
     if (heroPowerTargeting?.active) {
       if (isValidTargetForHeroPower(heroPowerTargeting.targetType, { isMinion: false, isHero: true, isFriendly: false })) {
-        console.log('[HeroPower] Targeting opponent hero');
         const norseHero = ALL_NORSE_HEROES[heroPowerTargeting.norseHeroId];
         if (norseHero) {
           executeHeroPowerEffect(norseHero, norseHero.heroPower, { isHero: true, isOpponent: true });
         }
         return;
       } else {
-        console.log('[HeroPower] Cannot target opponent hero with this power');
         return;
       }
     }
     
     if (!isOpponentTargetable) return;
-    console.log('[RagnarokCombatArena] Opponent hero clicked');
     
     // Check if a spell is selected that can target enemy hero
     if (selectedCard && selectedCard.card.type === 'spell') {
@@ -1634,7 +1636,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         targetType.includes('hero') ||
         !targetType.includes('minion'); // If not minion-only, allow hero
       if (allowsEnemyHero) {
-        console.log(`[SpellTargeting] Playing ${selectedCard.card.name} targeting enemy hero`);
         playCard(selectedCard.instanceId, 'opponent-hero', 'hero');
         selectCard(null);
         return;
@@ -1651,7 +1652,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         targetType.includes('hero') ||
         !targetType.includes('minion');
       if (allowsEnemyHero) {
-        console.log(`[BattlecryTargeting] Playing ${selectedCard.card.name} targeting enemy hero`);
         playCard(selectedCard.instanceId, 'opponent-hero', 'hero');
         selectCard(null);
         return;
@@ -1660,7 +1660,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     
     // Default: minion attacking hero
     if (attackingCard) {
-      console.log(`[Attack] ${attackingCard.card.name} attacking opponent hero`);
       attackWithCard(attackingCard.instanceId, 'opponent-hero');
       selectAttacker(null);
     }
@@ -1671,20 +1670,17 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     // Check if hero power targeting is active and allows friendly hero targeting
     if (heroPowerTargeting?.active) {
       if (isValidTargetForHeroPower(heroPowerTargeting.targetType, { isMinion: false, isHero: true, isFriendly: true })) {
-        console.log('[HeroPower] Targeting player hero');
         const norseHero = ALL_NORSE_HEROES[heroPowerTargeting.norseHeroId];
         if (norseHero) {
           executeHeroPowerEffect(norseHero, norseHero.heroPower, { isHero: true, isOpponent: false });
         }
         return;
       } else {
-        console.log('[HeroPower] Cannot target player hero with this power');
         return;
       }
     }
     
     if (!isPlayerTargetable) return;
-    console.log('[RagnarokCombatArena] Player hero clicked - for self-targeting spells/battlecries');
     
     // Check if a spell is selected that can target friendly hero
     if (selectedCard && selectedCard.card.type === 'spell') {
@@ -1697,7 +1693,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         targetType.includes('hero') ||
         !targetType.includes('minion') && !targetType.includes('enemy');
       if (allowsFriendlyHero) {
-        console.log(`[SpellTargeting] Playing ${selectedCard.card.name} targeting player hero`);
         playCard(selectedCard.instanceId, 'player-hero', 'hero');
         selectCard(null);
         return;
@@ -1714,7 +1709,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         targetType.includes('hero') ||
         !targetType.includes('minion') && !targetType.includes('enemy');
       if (allowsFriendlyHero) {
-        console.log(`[BattlecryTargeting] Playing ${selectedCard.card.name} targeting player hero`);
         playCard(selectedCard.instanceId, 'player-hero', 'hero');
         selectCard(null);
         return;
@@ -1752,7 +1746,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   // - Minion effects: Use executeNorseHeroPower ONLY (updates gameStore)
   // - Never call both for the same effect
   const executeHeroPowerEffect = useCallback((norseHero: any, heroPower: any, target: any) => {
-    console.log(`[HeroPower] Executing ${norseHero.name}'s ${heroPower.name}`);
     
     // Deduct mana and mark hero power as used FIRST, regardless of execution path
     const heroPowerGameState = useGameStore.getState();
@@ -1779,14 +1772,12 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           }
         }
       }));
-      console.log(`[HeroPower] Deducted ${heroPower.cost} mana (${playerState.mana?.current} -> ${newMana}), marked used=true`);
     }
     
     const isHeroTarget = target?.isHero === true;
     const isOpponentHeroTarget = isHeroTarget && target?.isOpponent === true;
     const isPlayerHeroTarget = isHeroTarget && target?.isOpponent === false;
     const targetMinion = isHeroTarget ? null : target;
-    console.log(`[HeroPower] Effect type: ${heroPower.effectType}, value: ${heroPower.value}, target: ${isHeroTarget ? (isOpponentHeroTarget ? 'opponent hero' : 'player hero') : (targetMinion?.card?.name || 'none')}`);
     
     // Fire announcement
     const targetName = isHeroTarget 
@@ -1822,7 +1813,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           }
         } : null
       }));
-      console.log(`[HeroPower] Healed player hero for ${amount}`);
     };
     
     // Helper to heal opponent hero via PokerCombatStore  
@@ -1845,7 +1835,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           }
         } : null
       }));
-      console.log(`[HeroPower] Healed opponent hero for ${amount}`);
     };
     
     // CASE 1: Hero target - handle via PokerCombatStore ONLY
@@ -1855,10 +1844,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         case 'damage':
           if (isOpponentHeroTarget) {
             applyDirectDamage('opponent', effectValue, `${norseHero.name}'s ${heroPower.name}`);
-            console.log(`[HeroPower] Dealt ${effectValue} damage to opponent hero`);
           } else if (isPlayerHeroTarget) {
             applyDirectDamage('player', effectValue, `${norseHero.name}'s ${heroPower.name}`);
-            console.log(`[HeroPower] Dealt ${effectValue} damage to player hero`);
           }
           break;
         
@@ -1875,17 +1862,14 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           if (isOpponentHeroTarget) {
             applyDirectDamage('opponent', effectValue, `${norseHero.name}'s ${heroPower.name}`);
             healPlayerHero(secondaryValue || effectValue);
-            console.log(`[HeroPower] Dealt ${effectValue} damage to opponent and healed self for ${secondaryValue || effectValue}`);
           }
           break;
         
         case 'buff_single':
         case 'buff':
-          console.log(`[HeroPower] Buff effect on hero - no HP change needed`);
           break;
         
         default:
-          console.log(`[HeroPower] Unhandled hero effect type: ${effectType}`);
           break;
       }
       
@@ -1896,7 +1880,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         newState.players.player.heroPower = { used: true };
         useGameStore.setState(state => ({ ...state, gameState: newState }));
       }
-      console.log(`[HeroPower] Hero power executed successfully (hero target)`);
       return;
     }
     
@@ -1912,9 +1895,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           false
         );
         useGameStore.setState(state => ({ ...state, gameState: newGameState }));
-        console.log(`[HeroPower] Applied minion effect via centralized utility`);
       }
-      console.log(`[HeroPower] Hero power executed successfully (minion target)`);
       return;
     }
     
@@ -1936,7 +1917,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         false
       );
       useGameStore.setState(state => ({ ...state, gameState: newGameState }));
-      console.log(`[HeroPower] Applied minion effect via centralized utility`);
     } else if (currentGameState) {
       const newState = JSON.parse(JSON.stringify(currentGameState));
       newState.players.player.mana.current -= heroPower.cost;
@@ -1952,12 +1932,10 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       case 'damage_and_heal':
         applyDirectDamage('opponent', effectValue, `${norseHero.name}'s ${heroPower.name}`);
         healPlayerHero(secondaryValue || effectValue);
-        console.log(`[HeroPower] Dealt ${effectValue} damage and healed for ${secondaryValue || effectValue}`);
         break;
         
       case 'self_damage_and_summon':
         applyDirectDamage('player', heroPower.value || 0, `${norseHero.name}'s ${heroPower.name}`);
-        console.log(`[HeroPower] Self-damage: ${heroPower.value || 0}`);
         if (currentGameState) {
           const newGameState = executeNorseHeroPower(
             currentGameState,
@@ -1967,7 +1945,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             false
           );
           useGameStore.setState(state => ({ ...state, gameState: newGameState }));
-          console.log(`[HeroPower] Summoned minion via centralized utility`);
         }
         break;
         
@@ -1983,7 +1960,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           );
           useGameStore.setState(state => ({ ...state, gameState: newGameState }));
         }
-        console.log(`[HeroPower] Drew cards and took ${heroPower.selfDamage || heroPower.value || 0} damage`);
         break;
         
       case 'buff_hero':
@@ -1997,45 +1973,44 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             }
           } : null
         }));
-        console.log(`[HeroPower] Buffed hero with +${effectValue} attack, +${heroPower.armorValue || 0} armor`);
         break;
         
       case 'buff_single':
         if (secondaryValue > 0) {
           healPlayerHero(secondaryValue);
-          console.log(`[HeroPower] Also healed player for ${secondaryValue}`);
         }
         break;
     }
     
-    console.log(`[HeroPower] Hero power executed successfully`);
   }, [applyDirectDamage, setHeroPowerUsedThisTurn, setHeroPowerTargeting]);
   
   // Handle hero power click - check if targeting is needed, then execute or enter targeting mode
   const handleHeroPower = useCallback(() => {
+    console.log('[handleHeroPower] Called!');
+    
     // Check if hero power already used this turn (from gameStore)
     const currentGameState = useGameStore.getState();
     const playerHeroPower = currentGameState.gameState?.players?.player?.heroPower;
     if (playerHeroPower?.used) {
-      console.log('[HeroPower] Already used this turn (gameStore)');
+      console.log('[handleHeroPower] Blocked: Already used this turn (gameStore)');
       return;
     }
     
     // Get the player's pet norseHeroId
     const norseHeroId = combatState?.player?.pet?.norseHeroId;
     if (!norseHeroId) {
-      console.log('[HeroPower] No norseHeroId found on player pet');
+      console.log('[handleHeroPower] Blocked: No norseHeroId found');
       return;
     }
     
     if (!combatState) {
-      console.log('[HeroPower] No combat state available');
+      console.log('[handleHeroPower] Blocked: No combatState');
       return;
     }
     
     const norseHero = ALL_NORSE_HEROES[norseHeroId];
     if (!norseHero) {
-      console.log(`[HeroPower] Norse hero not found: ${norseHeroId}`);
+      console.log('[handleHeroPower] Blocked: norseHero not found for ID:', norseHeroId);
       return;
     }
     
@@ -2043,17 +2018,17 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     const manaCost = heroPower.cost;
     const currentMana = playerMana;
     
-    console.log(`[HeroPower] Checking mana: playerMana=${playerMana}, cost=${manaCost}`);
+    console.log('[handleHeroPower] Hero:', norseHero.name, 'Power:', heroPower.name, 'Cost:', manaCost, 'Current mana:', currentMana);
     
     // Check mana
     if (currentMana < manaCost) {
-      console.log(`[HeroPower] Not enough mana: ${currentMana}/${manaCost}`);
+      console.log('[handleHeroPower] Blocked: Not enough mana');
       return;
     }
     
     // Check if already used this turn
     if (heroPowerUsedThisTurn) {
-      console.log('[HeroPower] Hero power already used this turn');
+      console.log('[handleHeroPower] Blocked: heroPowerUsedThisTurn is true');
       return;
     }
     
@@ -2065,14 +2040,14 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     
     // EXPLICIT CHECK: Only enter targeting mode if NOT in noTargetTypes
     if (noTargetTypes.includes(targetType)) {
+      console.log('[handleHeroPower] Executing immediately (no target needed), targetType:', targetType);
       // Execute immediately WITHOUT creating heroPowerTargeting state
-      console.log(`[HeroPower] No targeting needed (${targetType}) - executing immediately`);
       executeHeroPowerEffect(norseHero, heroPower, null);
       return;
     }
     
+    console.log('[handleHeroPower] Entering targeting mode, targetType:', targetType);
     // Target IS required - enter targeting mode
-    console.log(`[HeroPower] Target type: ${targetType} - entering targeting mode`);
     setHeroPowerTargeting({
       active: true,
       norseHeroId,
@@ -2091,7 +2066,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   const cancelHeroPowerTargeting = useCallback(() => {
     if (heroPowerTargeting?.active) {
       setHeroPowerTargeting(null);
-      console.log('[HeroPower] Targeting cancelled');
     }
   }, [heroPowerTargeting]);
   
@@ -2099,18 +2073,15 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   const handleWeaponUpgrade = useCallback(() => {
     const norseHeroId = combatState?.player?.pet?.norseHeroId;
     if (!norseHeroId) {
-      console.log('[WeaponUpgrade] No norseHeroId found on player pet');
       return;
     }
     
     if (!combatState) {
-      console.log('[WeaponUpgrade] No combat state available');
       return;
     }
     
     const norseHero = ALL_NORSE_HEROES[norseHeroId];
     if (!norseHero) {
-      console.log(`[WeaponUpgrade] Norse hero not found: ${norseHeroId}`);
       return;
     }
     
@@ -2119,17 +2090,14 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     
     // Check mana
     if (currentMana < WEAPON_COST) {
-      console.log(`[WeaponUpgrade] Not enough mana: ${currentMana}/${WEAPON_COST}`);
       return;
     }
     
     // Check if already upgraded
     if (weaponUpgraded) {
-      console.log('[WeaponUpgrade] Weapon already upgraded this match');
       return;
     }
     
-    console.log(`[WeaponUpgrade] ${norseHero.name} equips ${norseHero.weaponUpgrade.name}`);
     
     // Fire announcement
     fireActionAnnouncement('spell', `${norseHero.name} equips ${norseHero.weaponUpgrade.name}!`, { duration: 2500 });
@@ -2160,14 +2128,12 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     
     // Execute immediate effect based on weapon upgrade definition
     const immediateEffect = norseHero.weaponUpgrade.immediateEffect;
-    console.log(`[WeaponUpgrade] Immediate effect: ${immediateEffect.description}`);
     
     // Handle immediate effect based on type
     if (immediateEffect.value) {
       switch (immediateEffect.type) {
         case 'damage':
           applyDirectDamage('opponent', immediateEffect.value, `${norseHero.weaponUpgrade.name}`);
-          console.log(`[WeaponUpgrade] Dealt ${immediateEffect.value} damage to opponent`);
           break;
         case 'heal':
           usePokerCombatStore.setState(state => ({
@@ -2188,7 +2154,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
               }
             } : null
           }));
-          console.log(`[WeaponUpgrade] Healed player for ${immediateEffect.value}`);
           break;
         case 'armor':
           usePokerCombatStore.setState(state => ({
@@ -2200,14 +2165,11 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
               }
             } : null
           }));
-          console.log(`[WeaponUpgrade] Gained ${immediateEffect.value} armor`);
           break;
         default:
-          console.log(`[WeaponUpgrade] Unhandled immediate effect type: ${immediateEffect.type}`);
       }
     }
     
-    console.log(`[WeaponUpgrade] Hero power permanently upgraded to: ${norseHero.upgradedHeroPower.name}`);
   }, [combatState, weaponUpgraded, applyDirectDamage, playerMana]);
   
   // Cancel targeting with ESC key or right-click
@@ -2216,7 +2178,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        console.log('[SpellTargeting] Targeting cancelled via ESC');
         selectCard(null);
       }
     };
@@ -2224,7 +2185,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     const handleRightClick = (e: MouseEvent) => {
       if (e.button === 2) {
         e.preventDefault();
-        console.log('[SpellTargeting] Targeting cancelled via right-click');
         selectCard(null);
       }
     };
@@ -2249,7 +2209,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   // Reset mulliganProcessed and armed state when a new combat starts (new combatId)
   useEffect(() => {
     if (combatState?.combatId) {
-      console.log('[RagnarokCombatArena] New combat detected, resetting mulligan tracking');
       setMulliganProcessed(false);
       setMulliganArmed(false);
       prevMulliganActiveRef.current = undefined;
@@ -2279,19 +2238,15 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     prevMulliganActiveRef.current = mulliganActive;
     
     // Log state for debugging
-    console.log(`[RagnarokCombatArena] Mulligan observer: wasActive=${wasActive}, isNowActive=${isNowActive}, isNowInactive=${isNowInactive}, armed=${mulliganArmed}`);
     
     // Step 1: Arm the observer when we see mulligan.active = true
     if (isNowActive && !mulliganArmed) {
-      console.log('[RagnarokCombatArena] Mulligan armed - waiting for completion');
       setMulliganArmed(true);
       return;
     }
     
     // Step 2: Fire completeMulligan when armed and mulligan transitions to false
     if (mulliganArmed && isNowInactive) {
-      console.log('[RagnarokCombatArena] GameStore mulligan completed (armed + now inactive)');
-      console.log('[RagnarokCombatArena] Calling completeMulligan to deal poker cards');
       setMulliganProcessed(true);
       completeMulligan();
     }
@@ -2330,15 +2285,12 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           // If there's a bet to call, we must call or fold - can't check
           if (permissions.canCall) {
             autoAction = CombatAction.ENGAGE; // Call
-            console.log('[RagnarokCombatArena] Timer expired - auto-calling');
             fireActionAnnouncement('poker_call', 'Call', { subtitle: 'Time expired - matched bet', duration: 1500 });
           } else {
             autoAction = CombatAction.BRACE; // Fold
-            console.log('[RagnarokCombatArena] Timer expired - auto-folding (can\'t afford call)');
             fireActionAnnouncement('poker_fold', 'Fold', { subtitle: 'Time expired', duration: 1500 });
           }
         } else {
-          console.log('[RagnarokCombatArena] Timer expired - auto-checking');
           fireActionAnnouncement('poker_check', 'Check', { subtitle: 'Time expired', duration: 1500 });
         }
         
@@ -2354,18 +2306,15 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           
           // FIX: Skip if phase has already advanced (betting round was closed)
           if (stateAfterAction.phase !== phaseBeforeAutoAction) {
-            console.log(`[RagnarokCombatArena] AI skipped after auto-action - phase already advanced from ${phaseBeforeAutoAction} to ${stateAfterAction.phase}`);
             return;
           }
           
           // FIX: Skip if already in RESOLUTION phase or foldWinner set
           if (stateAfterAction.phase === CombatPhase.RESOLUTION || stateAfterAction.foldWinner) {
-            console.log('[RagnarokCombatArena] AI skipped after auto-action - already in RESOLUTION or fold winner set');
             return;
           }
           
           const aiDecision = getSmartAIAction(stateAfterAction, false);
-          console.log(`[RagnarokCombatArena] AI decision after auto-action: ${aiDecision.action}`);
           performAction(stateAfterAction.opponent.playerId, aiDecision.action, aiDecision.betAmount);
         }, 500);
       }
@@ -2382,7 +2331,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     
     // Check if both players are ready - if so, advance immediately
     if (combatState.player.isReady && combatState.opponent.isReady) {
-      console.log('[RagnarokCombatArena] Both players ready in SPELL_PET - advancing to FAITH');
       advancePhase();
       return;
     }
@@ -2396,7 +2344,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       if (freshState && freshState.phase === CombatPhase.SPELL_PET) {
         // Only auto-ready AI if player is already ready (player clicked Ready first)
         if (freshState.player.isReady && !freshState.opponent.isReady) {
-          console.log('[RagnarokCombatArena] SPELL_PET - AI auto-ready (player already ready)');
           store.setPlayerReady(freshState.opponent.playerId);
         }
         // NOTE: We do NOT auto-ready the player - they must click "Ready to Battle"
@@ -2422,12 +2369,10 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     if (combatState.player.isReady) return;
     
     // Debug: Log openerIsPlayer value to trace position toggle persistence
-    console.log(`[RagnarokCombatArena] AI first-action check - openerIsPlayer: ${combatState.openerIsPlayer}, playerPosition: ${combatState.playerPosition}`);
     
     // CRITICAL: Only trigger if player is BIG BLIND (meaning AI is Small Blind and acts first)
     if (combatState.openerIsPlayer) return; // Player is SB, player acts first - don't trigger AI
     
-    console.log('[RagnarokCombatArena] AI is Small Blind - triggering AI to act first');
     
     // Small delay to allow state to settle after phase transition
     const aiFirstTimer = setTimeout(() => {
@@ -2438,9 +2383,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       if (freshState.openerIsPlayer) return; // Player is SB
       if (freshState.phase === CombatPhase.RESOLUTION || freshState.foldWinner) return;
       
-      console.log('[RagnarokCombatArena] AI (SB) making opening action');
       const aiDecision = getSmartAIAction(freshState, false);
-      console.log(`[RagnarokCombatArena] AI (SB) decision: ${aiDecision.action}, betAmount: ${aiDecision.betAmount}`);
       performAction(freshState.opponent.playerId, aiDecision.action, aiDecision.betAmount);
     }, 800);
     
@@ -2462,14 +2405,11 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       return;
     }
     
-    console.log(`[RagnarokCombatArena] Both players ready in ${combatState.phase} - checking round closure`);
     
     if (combatState.phase === CombatPhase.RESOLUTION) {
       // In RESOLUTION - resolve the combat
-      console.log('[RagnarokCombatArena] In RESOLUTION - resolving combat');
       const result = resolveCombat();
       if (result) {
-        console.log('[RagnarokCombatArena] Combat resolved:', result.winner);
         
         // Check if this is a match-ending resolution (hero death)
         const matchOver = result.playerFinalHealth <= 0 || result.opponentFinalHealth <= 0;
@@ -2481,7 +2421,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             ? (combatState?.player?.pet?.name || 'Hero')
             : (combatState?.opponent?.pet?.name || 'Enemy');
           
-          console.log(`[RagnarokCombatArena] Hero death detected immediately - ${deadHeroName} is dead`);
           
           setHeroDeathState({
             isAnimating: true,
@@ -2518,7 +2457,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       // 1. Both players ready
       // 2. Bets settled (same HP committed or one all-in)
       // 3. Strict sequential phase ordering
-      console.log(`[RagnarokCombatArena] Calling maybeCloseBettingRound for phase ${combatState.phase}`);
       maybeCloseBettingRound();
     }
   }, [combatState?.phase, combatState?.player?.isReady, combatState?.opponent?.isReady, maybeCloseBettingRound, resolveCombat]);
@@ -2536,11 +2474,9 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     
     // Prevent multiple concurrent auto-advance timers
     if (allInAdvanceInProgressRef.current) {
-      console.log(`[RagnarokCombatArena] ALL-IN: Skipping - auto-advance already in progress`);
       return;
     }
     
-    console.log(`[RagnarokCombatArena] ALL-IN SHOWDOWN - Auto-advancing from ${combatState.phase}`);
     allInAdvanceInProgressRef.current = true;
     
     // Auto-mark both players as ready since there's no more betting
@@ -2573,7 +2509,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       setTimeout(() => {
         const store = usePokerCombatStore.getState();
         if (store.combatState && store.combatState.isAllInShowdown) {
-          console.log(`[RagnarokCombatArena] ALL-IN: Advancing from ${store.combatState.phase}`);
           store.maybeCloseBettingRound();
         }
         allInAdvanceInProgressRef.current = false;
@@ -2596,7 +2531,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     // CRITICAL: Check fresh state to prevent double-clicking race condition
     const freshState = usePokerCombatStore.getState().combatState;
     if (!freshState || freshState.player.isReady) {
-      console.log('[RagnarokCombatArena] Action blocked - player already ready');
       return;
     }
     
@@ -2619,7 +2553,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     // This makes Fold function the same as End Turn for the card game
     // Note: endTurn already handles card draw, so we don't call grantPokerHandRewards here
     if (action === CombatAction.BRACE) {
-      console.log('[RagnarokCombatArena] Player folded - triggering card game end turn');
       endTurn();
     }
     
@@ -2631,36 +2564,29 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       // Get fresh state from store to avoid stale closure
       const freshState = usePokerCombatStore.getState().combatState;
       if (!freshState || freshState.opponent.isReady) {
-        console.log('[RagnarokCombatArena] AI skipped - opponent already ready or no state');
         return;
       }
       
       // FIX: Skip if phase has already advanced (betting round was closed)
       // This prevents AI from acting twice when maybeCloseBettingRound advances the phase
       if (freshState.phase !== phaseBeforeAction) {
-        console.log(`[RagnarokCombatArena] AI skipped - phase already advanced from ${phaseBeforeAction} to ${freshState.phase}`);
         return;
       }
       
       // FIX: Skip if already in RESOLUTION phase
       if (freshState.phase === CombatPhase.RESOLUTION) {
-        console.log('[RagnarokCombatArena] AI skipped - already in RESOLUTION phase');
         return;
       }
       
       // FIX: Skip if there's already a foldWinner (fold was processed)
       if (freshState.foldWinner) {
-        console.log(`[RagnarokCombatArena] AI skipped - fold winner already set: ${freshState.foldWinner}`);
         return;
       }
       
       // Log state before AI decision
-      console.log(`[RagnarokCombatArena] AI responding in phase: ${freshState.phase}, currentBet: ${freshState.currentBet}, pot: ${freshState.pot}`);
-      console.log(`[RagnarokCombatArena] AI hpCommitted: ${freshState.opponent.hpCommitted}, player hpCommitted: ${freshState.player.hpCommitted}`);
       
       // Use SmartAI for intelligent decision making
       const aiDecision = getSmartAIAction(freshState, false);
-      console.log(`[RagnarokCombatArena] AI decision: ${aiDecision.action} (${aiDecision.reasoning}), betAmount: ${aiDecision.betAmount}`);
       
       performAction(freshState.opponent.playerId, aiDecision.action, aiDecision.betAmount);
       
@@ -2672,7 +2598,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             storeAfterAI.combatState.player.isReady && 
             storeAfterAI.combatState.opponent.isReady &&
             storeAfterAI.combatState.phase !== CombatPhase.RESOLUTION) {
-          console.log('[RagnarokCombatArena] Both ready after AI action - calling maybeCloseBettingRound');
           storeAfterAI.maybeCloseBettingRound();
         }
       }, 100);
@@ -2684,7 +2609,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     
     // Normal hand completion - match continues
     // Note: Hero death is now handled at resolution time, not here
-    console.log('[RagnarokCombatArena] Hand complete - using centralized delayed transition');
     grantPokerHandRewards();
     
     // Use startNextHandDelayed from store which handles the 2s pause and prevents race conditions
@@ -2692,11 +2616,38 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     setResolution(null);
   }, [resolution, grantPokerHandRewards]);
   
+  // Backup timer for showdown celebration - prevents freeze if animation fails
+  // This ensures handleCombatEnd is called even if ShowdownCelebration unmounts prematurely
+  useEffect(() => {
+    if (showdownCelebration && !heroDeathState?.isAnimating) {
+      // Clear any existing timer
+      if (showdownBackupTimerRef.current) {
+        clearTimeout(showdownBackupTimerRef.current);
+      }
+      
+      // Set backup timer - 8 seconds should be enough for any animation
+      // If onComplete hasn't fired by then, force progress via same path as normal completion
+      showdownBackupTimerRef.current = setTimeout(() => {
+        console.warn('[RagnarokCombatArena] Showdown backup timer fired - forcing combat end', { hasResolution: !!resolution });
+        setShowdownCelebration(null);
+        // Use the same path as normal onComplete - call handleCombatEnd which properly
+        // handles all side effects including grantPokerHandRewards and startNextHandDelayed
+        handleCombatEnd();
+      }, 8000);
+    }
+    
+    return () => {
+      if (showdownBackupTimerRef.current) {
+        clearTimeout(showdownBackupTimerRef.current);
+        showdownBackupTimerRef.current = null;
+      }
+    };
+  }, [showdownCelebration, heroDeathState?.isAnimating, handleCombatEnd]);
+  
   // Handle hero death animation completion
   const handleHeroDeathComplete = useCallback(() => {
     if (!heroDeathState) return;
     
-    console.log('[RagnarokCombatArena] Hero death animation complete - ending combat');
     
     // Use pendingResolution.winner if available, otherwise derive from death state
     // Hero death always means someone won (no draws on death)
@@ -2722,7 +2673,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   const handleUnifiedEndTurn = useCallback(() => {
     if (!combatState) return;
     
-    console.log('[RagnarokCombatArena] End Turn clicked - processing poker round and card game turn');
     
     // If player hasn't taken a poker action yet, auto-defend (check)
     if (!combatState.player.isReady) {
@@ -2734,7 +2684,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     // Note: endTurn already handles card draw, so we don't call grantPokerHandRewards here
     endTurn();
     
-    console.log('[RagnarokCombatArena] End Turn complete - opponent has played their turn');
     
   }, [combatState, performAction, endTurn]);
 
@@ -2841,7 +2790,17 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             color: '#fbbf24',
             opacity: 0.9
           }}>
-            Click on an enemy minion or hero to cast {selectedCard.card.name}
+            {(() => {
+              const targetType = (selectedCard.card as any).battlecry?.targetType || (selectedCard.card as any).spellEffect?.targetType;
+              if (targetType === 'friendly_minion' || targetType === 'friendly_mech') {
+                return `Click on a friendly minion to cast ${selectedCard.card.name}`;
+              } else if (targetType === 'friendly_hero') {
+                return `Click on your hero to cast ${selectedCard.card.name}`;
+              } else if (targetType === 'any_minion' || targetType === 'any') {
+                return `Click on any minion to cast ${selectedCard.card.name}`;
+              }
+              return `Click on an enemy minion or hero to cast ${selectedCard.card.name}`;
+            })()}
           </div>
           <div style={{
             fontSize: '14px',
@@ -2951,6 +2910,11 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             whoFolded: resolution?.whoFolded || showdownCelebration.resolution.whoFolded
           }}
           onComplete={() => {
+            // Clear backup timer - animation completed normally
+            if (showdownBackupTimerRef.current) {
+              clearTimeout(showdownBackupTimerRef.current);
+              showdownBackupTimerRef.current = null;
+            }
             setShowdownCelebration(null);
             handleCombatEnd();
           }}

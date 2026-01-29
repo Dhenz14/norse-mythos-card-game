@@ -1,5 +1,13 @@
 # Norse Mythos Card Game - Ragnarok Integration
 
+## Architecture Tracking
+
+### Jan 29, 2026 - Fork Comparison (enrique89ve)
+- **Improvement**: Logic separation via `client/src/core/` (Engine/Entities/Effects).
+- **Improvement**: Specialized Zustand slices for better state management.
+- **Fix**: Poker combat freeze fixed with `showdownBackupTimerRef` backup timer.
+- **Preference**: Maintain alignment with enrique89ve fork for collaborative consistency.
+
 ## Overview
 A multi-mythology digital collectible card game, inspired by Hearthstone, integrating with the Ragnarok Play-to-Earn (P2E) strategy game system. The project aims to deliver an engaging and strategic card game experience through strategic deck building, card combat mechanics, AI opponents, and an advanced Pet Battle PvP system. It features 4 mythological factions (Norse, Greek, Japanese/Shinto, Egyptian), over 1000 collectible cards (neutral and class-specific), and 76 playable heroes across 12 classes, supporting diverse card effects like battlecry, deathrattle, spell, combo, aura, and passive abilities. The "Think Tools" AI assists with strategic analysis for deck recommendations and gameplay optimization.
 
