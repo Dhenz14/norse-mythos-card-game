@@ -1,0 +1,242 @@
+Below is a professional, best-practice approach for loading a fully rigged GLB model in React/Three.js, then driving the model’s built-in skeletal animations so you get proper wing flapping (or any other animation) when flying. This assumes your .glb file actually contains the animation data (e.g., a “fly” or “flap” clip). If the model has no embedded animation, you’ll need to add or bake animations in a DCC tool (Blender, Maya, Mixamo, etc.) or do a procedural approach.
+
+1. Verify the .glb Contains Animations
+Open the .glb in Blender or a viewer (e.g., gltf-viewer.donmccurdy.com) to ensure it has:
+
+A skeleton (armature)
+
+Animation clips (e.g., “Idle,” “Fly,” “Attack,” etc.)
+
+If no animation clips are present, you must create or import them in a 3D tool, then export again with animations.
+
+2. Basic Skeleton of the Wyvern Model Component
+Below is an example of a robust pattern using react-three-fiber and @react-three/drei to:
+
+Load the GLB
+
+Extract animation clips
+
+Initialize a THREE.AnimationMixer
+
+Play or transition between animations (including a “flying” animation)
+
+tsx
+Copy
+import React, { useRef, useEffect, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
+
+interface WyvernProps {
+  modelPath: string;
+  initialAnimation?: string;  // e.g., "Idle"
+  flyAnimation?: string;      // e.g., "Fly"
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: number;
+  autoFly?: boolean;          // If true, automatically play flying animation
+}
+
+export function WyvernModel({
+  modelPath,
+  initialAnimation = 'Idle',
+  flyAnimation = 'Fly',
+  position = [0, 0, 0],
+  rotation = [0, 0, 0],
+  scale = 1,
+  autoFly = false
+}: WyvernProps) {
+  // Load the GLB
+  const { scene, animations } = useGLTF(modelPath);
+
+  // References
+  const groupRef = useRef<THREE.Group>(null);
+  const mixerRef = useRef<THREE.AnimationMixer | null>(null);
+  const [currentAction, setCurrentAction] = useState<THREE.AnimationAction | null>(null);
+  const actionsRef = useRef<Record<string, THREE.AnimationAction>>({});
+
+  // Initialize mixer and actions once the model + animations are loaded
+  useEffect(() => {
+    if (!scene || animations.length === 0) {
+      console.warn('No animations found on model:', modelPath);
+      return;
+    }
+
+    // Create an AnimationMixer for the scene
+    const mixer = new THREE.AnimationMixer(scene);
+    mixerRef.current = mixer;
+
+    // Create an AnimationAction for each clip
+    const actions: Record<string, THREE.AnimationAction> = {};
+    animations.forEach((clip: THREE.AnimationClip) => {
+      // Example: Clip names might be "Idle", "Fly", "Attack", etc.
+      actions[clip.name] = mixer.clipAction(clip);
+    });
+    actionsRef.current = actions;
+
+    // Optionally, start with an idle or default animation
+    if (actions[initialAnimation]) {
+      actions[initialAnimation].play();
+      setCurrentAction(actions[initialAnimation]);
+    }
+
+    // Clean up on unmount
+    return () => {
+      mixer.stopAllAction();
+    };
+  }, [scene, animations, modelPath, initialAnimation]);
+
+  // Animate in the render loop
+  useFrame((_, delta) => {
+    if (mixerRef.current) {
+      mixerRef.current.update(delta);
+    }
+  });
+
+  // Watch for auto-fly changes
+  useEffect(() => {
+    if (!autoFly || !actionsRef.current || !mixerRef.current) return;
+    playAnimation(flyAnimation);
+  }, [autoFly]);
+
+  /**
+   * Helper to crossfade from the current animation to the next
+   */
+  function playAnimation(name: string, fadeDuration = 0.3) {
+    const nextAction = actionsRef.current[name];
+    if (!nextAction) {
+      console.warn('Animation not found:', name);
+      return;
+    }
+
+    if (currentAction !== nextAction) {
+      // Crossfade
+      currentAction?.fadeOut(fadeDuration);
+      nextAction.reset().fadeIn(fadeDuration).play();
+      setCurrentAction(nextAction);
+    }
+  }
+
+  return (
+    <group ref={groupRef} position={position} rotation={rotation} scale={scale}>
+      {/* Add the loaded scene to our group */}
+      <primitive object={scene} />
+    </group>
+  );
+}
+Key Points
+useGLTF(modelPath) loads the glTF/GLB file, returning its scene and animations.
+
+THREE.AnimationMixer is used to control animations on the loaded scene.
+
+mixerRef.current?.update(delta) in useFrame ensures animations update each frame.
+
+actionsRef.current[clip.name] = mixer.clipAction(clip) sets up each animation clip by name.
+
+playAnimation() with crossfading ensures smooth transitions from one animation to another.
+
+3. Using the Wyvern Model in an Example Scene
+tsx
+Copy
+// WyvernExample.tsx
+import React, { useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+import { WyvernModel } from '../models/WyvernModel';
+
+export function WyvernExample() {
+  const [autoFly, setAutoFly] = useState(false);
+
+  return (
+    <Canvas camera={{ position: [0, 5, 10], fov: 50 }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[10, 10, 5]} intensity={1} />
+
+      <WyvernModel
+        modelPath="/models/irval_wyvern.glb"
+        position={[0, 0, 0]}
+        scale={1}
+        autoFly={autoFly}
+        initialAnimation="Idle"
+        flyAnimation="Fly"
+      />
+
+      <OrbitControls />
+      <UIOverlay autoFly={autoFly} setAutoFly={setAutoFly} />
+    </Canvas>
+  );
+}
+
+function UIOverlay({ autoFly, setAutoFly }: any) {
+  return (
+    <div style={{ position: 'absolute', top: 20, left: 20 }}>
+      <button onClick={() => setAutoFly(!autoFly)}>
+        {autoFly ? 'Stop Flying' : 'Start Flying'}
+      </button>
+    </div>
+  );
+}
+We pass the autoFly boolean to the WyvernModel.
+
+When autoFly is true, we call playAnimation('Fly').
+
+An OrbitControls component from @react-three/drei is added for camera movement.
+
+4. Common Gotchas
+No Animation Clips in .GLB
+
+If you see a console warning “No animations found on model,” the .glb might not have any baked animations.
+
+Fix by exporting from Blender or Mixamo with animations. Alternatively, use a procedural approach or code-driven bone rotations (but that’s more manual).
+
+Clip Names Mismatch
+
+Sometimes the clip might be called fly_anim or Armature|Fly. Make sure you match the exact name in playAnimation().
+
+Use console.log(animations) to see actual clip names.
+
+Skeleton or Rig Issues
+
+If the model’s bones aren’t properly rigged or the skeleton doesn’t match the animation data, you’ll see distortion or no movement.
+
+Double-check the rig in a 3D tool.
+
+Crossfades Not Looking Right
+
+Tweak the fadeDuration parameter (0–0.5s).
+
+Some animations (like immediate attacks) might not need a crossfade.
+
+Performance
+
+For many characters, consider instancing or an optimization approach.
+
+If you have large textures or multiple animations, ensure you’re not blocking the main thread.
+
+5. Next-Level Features
+Animation State Machine
+
+Instead of one or two animations, create a small state machine: Idle → StartFly → Fly → Glide → Land → Attack, etc.
+
+Each transition triggers playAnimation("SomeClip") with crossfade durations set per transition.
+
+Procedural Add-ons (Secondary Motion, IK, etc.)
+
+For tails, wings, or cloth, you can add a physics-based or IK-based solution.
+
+Tools like react-three-ik or custom bone manipulations can provide more realistic movement.
+
+Motion Matching
+
+If you have a large library of animations, you can implement a motion-matching system, but it’s considerably more complex than a standard state machine.
+
+Final Thoughts
+Check the .glb to ensure it genuinely has a flying or flapping animation.
+
+Implement an AnimationMixer in React with useFrame to animate each frame.
+
+Crossfade between states for smooth transitions.
+
+If you still see “the dragon moves but does not flap wings,” it almost certainly indicates the model has no embedded animation or you’re referencing the wrong clip name.
+
+Once you confirm the model has the correct Fly or Flap clip, the code above will properly play that animation and you’ll see the wyvern’s wings flapping in-flight.

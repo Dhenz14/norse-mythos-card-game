@@ -1,0 +1,214 @@
+Below are some key strategies (and sample code) to address **two primary issues** you’re still experiencing:
+
+1. **Forcing “Battlecry” (or any keyword) and its subsequent text onto the same line**  
+2. **Ensuring the card layout (name banner, art, text box, etc.) is segmented like official Hearthstone, avoiding overlap**
+
+---
+
+## 1. Keep “Battlecry:” on the Same Line as Its Description
+
+### **Why Might “Battlecry:” Appear on Its Own Line?**  
+1. **Extra Whitespace / Newline Characters**: Sometimes your string data or your formatting function inserts `\n`, `<br>`, or extra spaces around “Battlecry:”.  
+2. **Display / CSS Rules**: If `.keyword-battlecry` is set to `display: block;` or if there’s a forced line-break in your markup.  
+3. **Container Sizing**: If the text container is too narrow or some property like `white-space: nowrap;` is conflicting with line wrapping.
+
+### **Checklist**  
+1. **Strip or Replace Unwanted Newlines**: Make sure your `formatCardText` or the server data doesn’t contain `\n` after “Battlecry:”.  
+2. **Ensure Keywords Are Inline**:
+   ```css
+   .keyword-battlecry,
+   .keyword-deathrattle,
+   .keyword-etc {
+     display: inline; /* or inline-block */
+     white-space: nowrap;
+     /* Additional styling for highlighting, etc. */
+   }
+   ```
+   This ensures the keyword text does **not** break apart from the following description if there’s enough space in the container.
+
+3. **Single String or Single Element**:
+   - If you’re generating “Battlecry: Summon a 2/2 Golem” as two separate elements (e.g., `<span>Battlecry:</span><span> Summon a 2/2 Golem...</span>`), confirm both are inline.  
+   - Or, ensure the entire text “Battlecry: Summon…” is in **one** element, so it only breaks on natural word wrap.
+
+4. **Check the Container’s Width**:
+   - If your card text box is extremely narrow, the browser may auto-wrap even if you’re using `white-space: nowrap;`.  
+   - Usually, Hearthstone does allow natural wrapping for longer lines—but they ensure that “Battlecry:” is always at the *start* of a line, not the end of one. If your container is narrower, the text might shift. You might consider a slightly wider or more flexible text area.
+
+#### Example: Simple Format Function
+```js
+export function formatCardText(description: string): React.ReactNode {
+  // 1) Remove unintended line breaks or trailing spaces
+  let cleanText = description.replace(/\s*\n\s*/g, ' ');
+
+  // 2) Replace keywords with inline spans
+  cleanText = cleanText
+    .replace(/\b(Battlecry):/gi, `<span class='keyword-battlecry'>$1:</span>`)
+    .replace(/\b(Deathrattle):/gi, `<span class='keyword-deathrattle'>$1:</span>`);
+
+  // 3) Convert to React via dangerouslySetInnerHTML
+  return <span dangerouslySetInnerHTML={{ __html: cleanText }} />;
+}
+```
+
+```css
+.keyword-battlecry {
+  display: inline; 
+  white-space: nowrap;
+  font-weight: 700;
+  color: #cba922; /* or whichever highlight color */
+  /* etc. */
+}
+```
+
+**Tip**: If you truly want *zero* line breaks inside “Battlecry: Summon a 2/2…”, you can do `white-space: nowrap;` on the entire `.card-description`, but typically you only do that for short text. For longer text, that might run off the edge of the card if it can’t wrap.
+
+---
+
+## 2. Hearthstone-Style Layout Separation (Avoid Overlap)
+
+Official Hearthstone cards have **clearly defined sections**:  
+1. **Name Banner (top)**  
+2. **Art Area (middle)**  
+3. **Text Box / Ability Description (lower middle)**  
+4. **Gem or Mana Cost** (top-left in official HS, or can be top-center in custom designs)  
+5. **Attack/Health** (bottom corners)
+
+### **Best Practices**  
+- **Segment the Card with Dedicated Containers** using relative positioning.  
+- Each container should have a well-defined `top`, `height`, or position in the flow so they don’t clash.
+
+#### Example Layout Structure
+
+```tsx
+<div className="card-frame relative w-[300px] h-[420px] overflow-hidden">
+
+  {/* Name Banner */}
+  <div 
+    className="name-banner absolute w-full"
+    style={{
+      top: 0,
+      left: 0,
+      height: '15%', // or a fixed '48px' etc.
+      zIndex: 5,
+    }}
+  >
+    {/* Title gradient, text, etc. */}
+  </div>
+
+  {/* Card Art */}
+  <div 
+    className="card-art absolute w-full"
+    style={{
+      top: '15%',    // start below the name banner
+      left: 0,
+      height: '40%', // total 55% used so far
+      zIndex: 3,
+    }}
+  >
+    {/* Hero or minion art */}
+  </div>
+
+  {/* Gem / Mana Cost */}
+  <div
+    className="card-gem absolute"
+    style={{
+      top: '3%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 10, 
+    }}
+  >
+    {/* Gem element */}
+  </div>
+
+  {/* Ability Text / Card Description */}
+  <div
+    className="card-text-box absolute w-full"
+    style={{
+      top: '55%',     // start right after the art
+      left: '5%',
+      right: '5%',
+      height: '35%',  // up to ~90% so we leave some padding at the bottom
+      zIndex: 4,
+      overflow: 'hidden',
+      textAlign: 'center',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '0.5rem'
+    }}
+  >
+    {/* Insert your .card-description with formatCardText here */}
+    <div className="card-description" style={getRarityTextStyle(cardData.rarity)}>
+      {formatCardText(cardData.description)}
+    </div>
+  </div>
+
+  {/* Attack/Health or Race Tag, etc. */}
+  <div
+    className="absolute bottom-2 left-2"
+    style={{ zIndex: 6 }}
+  >
+    {/* Attack */}
+  </div>
+  <div
+    className="absolute bottom-2 right-2"
+    style={{ zIndex: 6 }}
+  >
+    {/* Health */}
+  </div>
+</div>
+```
+
+### **What This Achieves**  
+- **Name Banner** is clearly at the top.  
+- **Card Art** is in the middle 40% chunk, ensuring no text or gem overlap.  
+- **Gem** is pinned near the top center (if that’s your chosen design), above the name or slightly overlapping it, but not interfering with the text because the text container starts below 55%.  
+- **Text Box** is in the bottom chunk, so “Battlecry:” lines up consistently below the art.  
+- **Attack/Health** in the corners to emulate official HS layout.
+
+If you’re still seeing overlaps, **increase or decrease** your top/height percentages until you get the exact spacing you want.
+
+---
+
+## 3. Balancing “Carved Metal” Visibility
+
+You mentioned you love the carved metal vibe but it’s **hard to see** in a dark background or with certain colors. A few final tweaks can help:
+
+1. **Add a Lighter Top Edge** in your text shadow:
+   ```css
+   .card-description {
+     color: #2e1d0f; /* a dark brown or blackish if needed */
+     text-shadow:
+       0 1px 1px rgba(255,255,255,0.3),  /* subtle highlight on top */
+       0 -1px 2px rgba(0,0,0,0.8);       /* deeper groove below */
+     -webkit-text-stroke: 0.8px rgba(255,255,255,0.15); 
+     /* If it's too dark, lighten stroke or add a subtle outer glow */
+   }
+   ```
+2. **Slight Outer Glow** (especially for Legendary gold text):
+   ```css
+   .legendary-text {
+     text-shadow:
+       0 1px 1px rgba(255,255,255,0.5),
+       0 0 6px rgba(255, 215, 0, 0.5); 
+     -webkit-text-stroke: 0.6px rgba(0,0,0,0.4);
+   }
+   ```
+3. **Contrast**: If your background is extremely dark near the text area, either lighten the background behind the text or push your highlight/shadow more so it’s visible.
+
+---
+
+## Summary of Next Steps
+
+1. **Remove unwanted line breaks** or forced `<br>` around “Battlecry:”.  
+2. **Ensure `.keyword-battlecry` is display: inline** (or inline-block) and not forcing breaks.  
+3. **Adopt a segment-based layout**: name banner up top, art in the middle, text box at the bottom, gem pinned near the top (or wherever you prefer) with explicit positions that prevent overlap.  
+4. **Refine your carved text**: Increase your lighter highlight or outer glow if it’s too dark.  
+
+Once you finalize these layout structures and inline keyword rules, you should see:
+- **No more line breaks** splitting “Battlecry” onto a separate line unnecessarily,  
+- **Clear separation** of name, art, gem, and text sections (like official Hearthstone),  
+- **Improved carved look** that remains legible over your card’s metallic backgrounds.  
+
+Good luck—tweak those exact top/height percentages to match your art’s dimensions, and you’ll get a professional, consistent layout across all rarities.

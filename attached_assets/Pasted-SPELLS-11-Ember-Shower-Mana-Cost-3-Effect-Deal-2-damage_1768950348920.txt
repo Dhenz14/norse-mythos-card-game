@@ -1,0 +1,68 @@
+SPELLS
+
+
+#### 11. Ember Shower 
+
+- **Mana Cost:** 3
+- **Effect:** Deal 2 damage to a minion and 1 damage to all adjacent minions.
+- **Flavor Text:** _"Sparks rain down, igniting the battlefield."_
+
+#### 12. Vine Snare
+
+- **Mana Cost:** 2
+- **Effect:** Freeze an enemy minion. If you discarded a Grass Energy this turn, it can’t attack next turn either.
+- **Flavor Text:** _"The wilds ensnare those who trespass."_
+
+#### 13. Thunderstrike
+
+- **Mana Cost:** 4
+- **Effect:** Deal 4 damage to an enemy minion. If it survives, deal 2 damage to your hero.
+- **Flavor Text:** _"A bolt from the sky, reckless and fierce."_
+
+#### 14. Spectral Howl 
+
+
+- **Mana Cost:** 2
+- **Effect:** Give a friendly minion +1 Attack and Stealth until your next turn.
+- **Flavor Text:** _"A cry from the void cloaks its allies in shadow."_
+
+#### 15. Rune of Renewal 
+
+
+- **Mana Cost:** 3
+- **Effect:** Restore 5 Health to a friendly minion. If you control a minion with Rune Activation, trigger its ability.
+- **Flavor Text:** _"Ancient symbols mend what time has broken."_
+
+### Spells
+
+#### 11. Tide’s Grace 
+
+- **Mana Cost:** 2
+- **Effect:** Restore 4 Health to a friendly minion. If you discarded a Water Energy this turn, restore 6 Health instead.
+- **Flavor Text:** _"The ocean’s embrace heals all wounds."_
+
+#### 12. Gleaming Aura
+
+
+- **Mana Cost:** 3
+- **Effect:** Give a friendly minion +2 Health and Divine Shield.
+- **Flavor Text:** _"A shimmering light guards the worthy."_
+
+#### 13. Ancient Insight 
+
+
+- **Mana Cost:** 2
+- **Effect:** Draw a card. If you control a minion with Rune Activation, trigger its ability.
+- **Flavor Text:** _"Whispers of the past guide the present."_
+
+#### 14. Ember Storm
+
+- **Mana Cost:** 5
+- **Effect:** Deal 3 damage to all enemy minions. Apply Burn to each.
+- **Flavor Text:** _"A tempest of flame sweeps the battlefield."_
+
+#### 15. Rune of Greed 
+
+- **Mana Cost:** 1
+- **Effect:** Gain 2 Mana Crystals this turn only.
+- **Flavor Text:** _"A sigil of avarice, tempting fate with fleeting power."_

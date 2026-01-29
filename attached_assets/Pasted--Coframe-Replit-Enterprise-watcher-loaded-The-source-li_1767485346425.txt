@@ -1,0 +1,1154 @@
+ [Coframe] Replit Enterprise watcher loaded
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+Ragnarok:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+Ragnarok:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+Ragnarok:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+ ✅ blakejs loaded successfully (self-contained version)
+   Available functions: Array(5)
+ 🛡️ Paywall Detector loaded - 100% client-side, no external dependencies
+ 🏛️ ArcHive Content Script Loaded
+ 🏛️ ArcHive Content Script Ready - 100% Decentralized
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+ Download the Apollo DevTools for a better development experience: https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm
+ [LaunchDarkly] LaunchDarkly client initialized
+ Cache data may be lost when replacing the dealContext field of a Org object.
+
+This could cause additional (usually avoidable) network requests to fetch data that were otherwise cached.
+
+To address this problem (which is not a bug in Apollo Client), either ensure all objects of type OrgDealContext have an ID or a custom merge function, or define a custom merge function for the Org.dealContext field, so InMemoryCache can safely merge these objects:
+
+  existing: {"__typename":"OrgDealContext","dealType":"default","salesContactEmail":null}
+  incoming: {"__typename":"OrgDealContext","dealType":"default"}
+
+For more information about these options, please refer to the documentation:
+
+  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers
+  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects
+
+(anonymous) @ d7f42d1428799a73.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 88d1957f-e5f9-4bbe-8b56-60edc458561a Object
+(anonymous) @ d7f42d1428799a73.js:2
+ Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'ambient-light-sensor'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'battery'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'execution-while-not-rendered'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'layout-animations'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'legacy-image-formats'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'navigation-override'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'oversized-images'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'publickey-credentials'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'speaker-selection'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'unoptimized-images'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'unsized-media'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'pointer-lock'.
+z @ ed1e693c96a75807.js:2
+ Allow attribute will take precedence over 'allowfullscreen'.
+z @ ed1e693c96a75807.js:2
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+z @ ed1e693c96a75807.js:2
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar1t%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension adccbcd2-c9d6-4778-b0cb-20e1bf289634 Object
+(anonymous) @ d7f42d1428799a73.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 71b9e9dd-9e9b-4615-8d28-3187422a5ba7 Object
+(anonymous) @ d7f42d1428799a73.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension d526fa49-4249-4a76-99b8-6a8e548e485f Object
+(anonymous) @ d7f42d1428799a73.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 7636883a-2637-421c-aa98-27ffc46d202b Object
+(anonymous) @ d7f42d1428799a73.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 857b2e2f-2c57-42be-8033-400c06d95624 Object
+(anonymous) @ d7f42d1428799a73.js:2
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_128,q_auto,w_256,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20201?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_128,q_auto,w_256,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20302?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_175,q_auto,w_250,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20803?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_128,q_auto,w_256,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20803?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_175,q_auto,w_250,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20201?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_175,q_auto,w_250,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20302?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_280,q_auto,w_400,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20803?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_280,q_auto,w_400,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20201?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_280,q_auto,w_400,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20302?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_128,q_auto,w_256,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20319?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_175,q_auto,w_250,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/30090?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_128,q_auto,w_256,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20137?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_128,q_auto,w_256,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20611?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_175,q_auto,w_250,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/30090?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_175,q_auto,w_250,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20006?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_175,q_auto,w_250,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20202?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+res.cloudinary.com/dtdz6aq5f/image/upload/c_fill,dpr_auto,f_auto,fl_progressive,g_auto,h_128,q_auto,w_256,z_1.05/e_sharpen:30/b_rgb:363636,g_north_west,h_48,l_text:Arial_1:%20,o_98,w_160,x_0,y_0/v1/cards/20001?_a=BAMAJaeA0:1  Failed to load resource: the server responded with a status of 401 ()
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (850, 579) - Battlefield %: (54%, 66%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (811, 617) - Battlefield %: (51%, 71%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ [CardTransformManager] Hover ON for 0d642f26-be58-4a8d-ab19-59f6c52769d8, source: direct, coordinates: Object
+ [CardTransformManager] Hover ON for 0d642f26-be58-4a8d-ab19-59f6c52769d8, source: direct, coordinates: Object
+ DEBUG HOVER - Position: (779, 632) - Battlefield %: (49%, 72%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (790, 604) - Battlefield %: (50%, 69%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (797, 583) - Battlefield %: (51%, 66%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (800, 572) - Battlefield %: (51%, 65%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (800, 572) - Battlefield %: (51%, 65%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (790, 575) - Battlefield %: (50%, 65%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (759, 607) - Battlefield %: (48%, 69%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ [CardTransformManager] Hover ON for 0d642f26-be58-4a8d-ab19-59f6c52769d8, source: direct, coordinates: Object
+ DEBUG HOVER - Position: (598, 736) - Battlefield %: (38%, 85%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ [CardTransformManager] Hover ON for 0fad7643-c472-45fc-8727-534e941fa7bd, source: direct, coordinates: Object
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ 🔍 Click detected on element: Object
+ ✅ Drag initiated from valid card area
+ 🔍 Click detected on element: Object
+ ✅ Drag initiated from valid card area
+ 🔍 Click detected on element: Object
+ ✅ Drag initiated from valid card area
+ DEBUG HOVER - Position: (499, 901) - Battlefield %: (31%, 106%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (510, 901) - Battlefield %: (32%, 106%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (514, 911) - Battlefield %: (32%, 107%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (493, 918) - Battlefield %: (31%, 108%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ 🔍 Click detected on element: Object
+ ✅ Drag initiated from valid card area
+ DEBUG HOVER - Position: (842, 499) - Battlefield %: (53%, 56%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (842, 516) - Battlefield %: (53%, 58%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (842, 533) - Battlefield %: (53%, 60%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (839, 554) - Battlefield %: (53%, 63%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (836, 561) - Battlefield %: (53%, 64%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (836, 568) - Battlefield %: (53%, 64%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (829, 586) - Battlefield %: (53%, 67%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (818, 600) - Battlefield %: (52%, 68%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (808, 617) - Battlefield %: (51%, 71%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (790, 638) - Battlefield %: (50%, 73%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ [CardTransformManager] Hover ON for 0d642f26-be58-4a8d-ab19-59f6c52769d8, source: direct, coordinates: Object
+ DEBUG HOVER - Position: (629, 764) - Battlefield %: (40%, 89%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ [CardTransformManager] Hover ON for 0fad7643-c472-45fc-8727-534e941fa7bd, source: direct, coordinates: Object
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ 🔍 Click detected on element: Object
+ ✅ Drag initiated from valid card area
+ 🧪 isValidDrop: Valid drop detected
+ Sound effect card_return not found.
+(anonymous) @ injected.js:37
+ DEBUG HOVER - Position: (773, 593) - Battlefield %: (49%, 68%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (769, 596) - Battlefield %: (49%, 68%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (759, 600) - Battlefield %: (48%, 68%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (748, 607) - Battlefield %: (47%, 69%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (734, 617) - Battlefield %: (46%, 71%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (706, 624) - Battlefield %: (45%, 71%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (675, 638) - Battlefield %: (43%, 73%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (626, 663) - Battlefield %: (39%, 76%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ [CardTransformManager] Hover ON for 0fad7643-c472-45fc-8727-534e941fa7bd, source: direct, coordinates: Object
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ [CardTransformManager] Hover ON for be69aa97-727e-4462-9646-ea6cf5dcb5f3, source: direct, coordinates: Object
+ DEBUG HOVER - Position: (237, 827) - Battlefield %: (14%, 96%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (171, 848) - Battlefield %: (10%, 99%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (129, 862) - Battlefield %: (7%, 101%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (94, 866) - Battlefield %: (5%, 101%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (66, 873) - Battlefield %: (3%, 102%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (34, 876) - Battlefield %: (1%, 102%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (3, 880) - Battlefield %: (-1%, 103%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (205, 149) - Battlefield %: (12%, 13%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (429, 128) - Battlefield %: (27%, 10%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (569, 107) - Battlefield %: (36%, 8%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (629, 96) - Battlefield %: (40%, 6%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (643, 93) - Battlefield %: (41%, 6%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (660, 93) - Battlefield %: (42%, 6%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (713, 120) - Battlefield %: (45%, 9%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (842, 197) - Battlefield %: (53%, 19%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1045, 320) - Battlefield %: (67%, 34%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1318, 460) - Battlefield %: (84%, 51%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1546, 485) - Battlefield %: (99%, 54%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1466, 471) - Battlefield %: (94%, 53%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1392, 453) - Battlefield %: (89%, 50%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1340, 446) - Battlefield %: (86%, 49%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1315, 446) - Battlefield %: (84%, 49%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1308, 443) - Battlefield %: (84%, 49%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1308, 443) - Battlefield %: (84%, 49%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1308, 446) - Battlefield %: (84%, 49%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1305, 453) - Battlefield %: (83%, 50%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1301, 456) - Battlefield %: (83%, 51%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1298, 463) - Battlefield %: (83%, 52%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1294, 470) - Battlefield %: (83%, 52%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1294, 474) - Battlefield %: (83%, 53%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ DEBUG HOVER - Position: (1294, 477) - Battlefield %: (83%, 53%) - Element: Object
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Player battlefield data: []
+ DEBUG GameBoard - Opponent battlefield length: 3
+ DEBUG GameBoard - Battlefield ref exists: true
+ 🎯 Hand component render: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+ Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 481) - Battlefield %: (83%, 54%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 484) - Battlefield %: (83%, 54%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 488) - Battlefield %: (83%, 55%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 491) - Battlefield %: (83%, 55%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 495) - Battlefield %: (83%, 55%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 502) - Battlefield %: (83%, 56%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 505) - Battlefield %: (83%, 57%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 509) - Battlefield %: (83%, 57%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 DEBUG HOVER - Position: (1294, 512) - Battlefield %: (83%, 58%) - Element: Object
+injected.js:37 DEBUG GameBoard - Player battlefield length: 0
+injected.js:37 DEBUG GameBoard - Player battlefield data: []
+injected.js:37 DEBUG GameBoard - Opponent battlefield length: 3
+injected.js:37 DEBUG GameBoard - Battlefield ref exists: true
+injected.js:37 🎯 Hand component render: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object
+injected.js:37 Debug playability: Object

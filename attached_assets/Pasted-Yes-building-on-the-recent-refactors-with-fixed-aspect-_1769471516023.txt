@@ -1,0 +1,14 @@
+Yes, building on the recent refactors with fixed aspect ratio viewport, absolute percentage positioning, modular React components, and Hearthstone-inspired practices, make this targeted adjustment: [“The minions are fixed. The poker community cards are running off the left side of the screen, and the bottom hero needs to be moved down slightly, and the top hero needs to be moved up slightly. ”]. Implement without any hacks, monkey patches, or shortcuts—preserve full UI responsiveness, robustness, and code integrity. No changes to core architecture; use only CSS variables or React props for positions/sizes to allow easy future tweaks without breaking other elements.
+
+Mandatory: follow these steps precisely, as a senior Hearthstone developer would approve:
+
+1. Analyze and Position Precisely: Use absolute positioning with percentages relative to the reference frame or parent container (e.g., left: 100%, top: 0%). Define or refine clear zones with modular components, ensuring natural flow, no clipping, and physical metaphors (e.g., subtle overlaps or fanning for cards).
+2. Layering and Visibility: Apply appropriate z-index for depth (higher for foreground elements), ensuring full visibility and immersion—mimic Hearthstone’s tangible layering with shadows or tilts if relevant, without performance hits.
+3. Eliminate Any Risks: Do not introduce transforms for positioning, overflow:hidden, rigid heights, or mixed strategies. Replace with min-height: auto and adaptive utilities (e.g., Tailwind clamp/min/max) where needed.
+4. Maintain Modularity: Structure affected elements as independent components with props/CSS vars (e.g., --minion-offset: 0%). Changes must be isolated—adjusting one thing doesn’t affect others, stopping any ‘fix one, break two’ issues.
+5. Incorporate Pro Best Practices: Based on Hearthstone’s approach: clear ‘homes’ for elements, immersive feedback (e.g., hover effects), and zoning without distortion. Reference open-source like EnginKARATAS’s clone for responsive utilities and media queries.
+6. Responsiveness and Testing: Ensure the UI remains resilient—everything visible, no cutoffs on any screen size. Test thoroughly on mobile, tablet, desktop, XL screens, and orientations. Provide before/after demos.
+7. Code Cleanup and Delivery: Audit for dead code or artifacts; keep the codebase pristine with comments on changes. Deliver updated code explaining the tweak.
+
+Implement step-by-step, and let me know if any clarifications are needed. This ensures AAA-quality without compromising existing work.
+

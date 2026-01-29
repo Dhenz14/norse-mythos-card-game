@@ -1,0 +1,17 @@
+Yes, please revise the plan to follow this game UI pattern—it's exactly what we need for a permanent fix. Proceed with the bigger refactor to make our UI professional, responsive, and easy to maintain. Here's how I want it done:
+
+1. **Adopt a Fixed Aspect Ratio Viewport**: Wrap the entire battle arena in a fixed 16:9 (or similar optimal ratio) reference container that scales to fit any viewport. Use a single scale() transform on the root container to handle all screen sizes automatically—ensuring no content gets cut off, whether on huge monitors or smaller devices. This should letterbox if needed to preserve proportions.
+
+2. **Switch to Absolute Positioning with Percentages**: Remove all CSS Grid usages in the combat arena and replace with absolute positioning (e.g., left: 50%, bottom: 10%) for zones, heroes, mana bars, and cards. Position everything relative to the reference frame so it flows naturally without overlaps or clipping. Define clear zones (e.g., hero corners, card hands, battlefield) with percentage-based values to avoid any room for overlapping—heroes always visible with stats, mana bars always in view.
+
+3. **Eliminate Hacks and Clean Up Code**: Completely remove all transform: translateY() hacks, overflow:hidden, max-height rigid constraints, and any mixed layout strategies. Replace with min-height: auto and height: auto where needed, letting zones grow naturally. Audit and delete all lingering dead code, duplicate grid definitions (like .battle-arena and .unified-combat-arena), and artifacts from previous refactors. The codebase should be pristine—no commented-out sections or unused variables.
+
+4. **Ensure Modularity for Easy Changes**: Structure components so UI elements are independent—changing one thing (e.g., moving a hero an 'inch' via a variable) doesn't break others. Use React props or CSS variables for positions/sizes, making tweaks simple without touching core logic. This stops the 'fix one, break two' cycle.
+
+5. **Incorporate Best Practices from Pros**: Base this on Hearthstone's approach—physicality in UI (e.g., subtle animations for cards/mana without performance hits), clear zoning (hero corners protected, mana/deck in logical 'past/future' flows), and immersive feedback (visual/audio cues). Compare with open-source like EnginKARATAS's Hearthstone clone (React + Tailwind): use Flexbox sparingly for internal zone layouts, Tailwind's responsive utilities (e.g., md:, lg: breakpoints), and media queries for XL screens. Also reference MTG Arena's condensed card stacking and LoR's minimalism to optimize space without sacrificing readability.
+
+6. **Responsiveness and Testing**: Make the UI fully resilient—everything always shows, no cutoffs on any screen size. Add Tailwind clamp/min/max for adaptive sizing if needed. Test thoroughly on mobile, tablet, desktop, and large screens, including orientation changes. Provide a demo showing before/after on different devices.
+
+7. **Focus on Gameplay**: Once done, this should free us to enhance fun elements without UI distractions. Deliver the refactored code with comments explaining the new architecture.
+
+Implement this step-by-step, and let me know if you need clarifications. This will save us money long-term by avoiding future refactors.

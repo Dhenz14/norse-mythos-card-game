@@ -1,0 +1,253 @@
+II. Primary Status Effects (Core Set)
+
+These are the foundational statuses every player should recognize.
+
+1. Poison ☠️
+
+Theme: Decay, attrition
+Common Elements: Water, Earth
+
+Effect:
+
+At the start of the poisoned champion’s controller’s turn, it takes 5 damage
+
+Rules:
+
+Damage bypasses shields but respects damage reduction
+
+Poison does not stack unless stated
+
+Removed if the champion is healed to full HP (optional rule toggle)
+
+2. Burn 🔥
+
+Theme: Destruction, volatility
+Common Elements: Fire, Thunder
+
+Effect:
+
+When the champion attacks, it takes 5 damage
+
+Burned champions deal +5 damage with attacks
+
+Rules:
+
+Triggered on each attack
+
+Burn is removed if the champion skips its attack phase
+
+3. Paralysis ⚡
+
+Theme: Control, disruption
+Common Elements: Thunder, Earth
+
+Effect:
+
+The champion has a 50% chance to fail when attempting to:
+
+Attack
+
+Activate abilities
+
+Retreat
+
+Rules:
+
+Check occurs each time the champion attempts an action
+
+On failure, the action is wasted
+
+Removed at the end of the champion’s next successful turn (i.e., when it acts successfully)
+
+4. Silence 🔇
+
+Theme: Suppression, denial
+Common Elements: Earth, Water
+
+Effect:
+
+The champion cannot use activated or triggered abilities
+
+Rules:
+
+Passive abilities remain active
+
+Silence does not prevent attacking
+
+Duration is always specified (commonly 1 turn)
+
+5. Freeze ❄️
+
+Theme: Control, stalling
+Common Elements: Water
+
+Effect:
+
+The champion cannot attack or retreat
+
+Rules:
+
+Abilities may still be used unless otherwise stated
+
+Removed at the end of the frozen champion’s next turn
+
+Freeze overrides Paralysis (Freeze takes priority)
+
+III. Advanced Status Effects (Expanded Play)
+
+These add depth and synergy without overwhelming new players.
+
+6. Bleed 🩸
+
+Theme: Physical damage, persistence
+Common Elements: Earth, Fire
+
+Effect:
+
+Whenever the champion takes damage, it takes +3 additional damage
+
+Rules:
+
+Triggers on any damage source
+
+Does not stack
+
+Removed when the champion is healed
+
+7. Weakened ⬇️
+
+Theme: Debuff, attrition
+Common Elements: Earth
+
+Effect:
+
+The champion has -10 Attack
+
+Rules:
+
+Flat modifier
+
+Does not stack
+
+Removed at end of controller’s next turn unless stated otherwise
+
+8. Vulnerable 🎯
+
+Theme: Exposure, burst damage
+Common Elements: Thunder, Fire
+
+Effect:
+
+The champion takes +5 damage from all sources
+
+Rules:
+
+Applies after damage calculation
+
+Does not stack
+
+Often paired with burst strategies
+
+9. Rooted 🌱
+
+Theme: Control, denial
+Common Elements: Earth
+
+Effect:
+
+The champion cannot retreat
+
+Rules:
+
+Attacking and abilities are unaffected
+
+Removed at the end of the opponent’s next turn
+
+10. Exhausted 💤
+
+Theme: Fatigue, tempo control
+Common Elements: Water, Earth
+
+Effect:
+
+The champion cannot attack next turn
+
+Rules:
+
+Abilities may still be used
+
+Often applied after powerful actions or retreats
+
+IV. Rare / High-Impact Status Effects (Legendary Tier)
+
+These should be used sparingly.
+
+11. Stunned 💥
+
+Theme: Total shutdown
+Common Elements: Thunder
+
+Effect:
+
+The champion cannot act at all during its next turn
+
+Rules:
+
+No attacks, abilities, or retreats
+
+Automatically removed after one skipped turn
+
+Stronger than Paralysis
+
+12. Marked 👁️
+
+Theme: Precision, focus fire
+Common Elements: Thunder, Earth
+
+Effect:
+
+The champion is always considered a valid target, ignoring protection or stealth
+
+Rules:
+
+Does not increase damage directly
+
+Removed when the marked champion is attacked
+
+V. Status Priority Rules (Important)
+
+If multiple statuses conflict:
+
+Stunned
+
+Freeze
+
+Paralysis
+
+Exhausted
+
+Rooted
+
+Higher priority overrides lower ones for that action.
+
+VI. Clean Rulebook Insert (Short Form)
+
+Here’s a compact version suitable for a quick-reference page:
+
+Status Effects are ongoing conditions applied to champions.
+They trigger at specific times such as the start of a turn, when attacking, or when attempting actions.
+Unless stated otherwise, status effects do not stack and are removed when a champion evolves or is knocked out.
+
+If you want next, I can:
+
+Balance exact damage numbers
+
+Tie statuses more tightly to each element
+
+Create status keyword icons
+
+Write templated card text for consistency
+
+Or integrate this directly into the full rulebook text
+
+Just tell me where you want to go next.

@@ -1,0 +1,789 @@
+### **Fire Legendary Creatures**
+
+_Theme: Fire burns with explosive damage and relentless aggression._
+
+#### **Surtr, the Fire Giant (Legendary Fire)**
+
+- **Type**: Fire
+- **Mana Cost**: 9
+- **Attack**: 7
+- **Health**: 7
+- **Retreat Cost**: 3
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: **Battlecry** - Deal 3 damage to all enemy minions.
+- **Passive Ability**: At the end of your turn, deal 1 damage to all enemy minions.
+- **Energy Ability**: Discard a Fire Energy: Surtr gains +2 Attack until the end of the turn and deals 2 damage to all enemy minions.
+- **Flavor Text**: "The fire giant whose flames will consume the world at Ragnarok."  
+    _Notes_: Surtr embodies Fire’s destructive power with consistent board-wide damage.
+
+#### **Cinderstorm Wyrm (Legendary Fire)**
+
+_(Updated to differentiate from Flameheart Behemoth)_
+
+- **Type**: Fire
+- **Mana Cost**: 8
+- **Attack**: 6
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Flying
+- **Passive Ability**: _Aerial Inferno_ - At the end of your turn, if this minion attacked this turn, deal 1 damage to all enemy minions.
+- **Energy Ability**: Discard a Fire Energy: Deal 2 damage to all enemies.
+- **Additional Ability**: Deathrattle - Summon a 3/3 Cinder Wyrmling with Flying.
+- **Flavor Text**: "A dragon of Muspelheim's core, its flames never fade."  
+    _Notes_: Changed from _Inferno's Fury_ to reward attacking, emphasizing its aerial dominance and differentiating it from Flameheart Behemoth.
+
+#### **Flameheart Behemoth (Legendary Fire)**
+
+_(Updated to differentiate from Cinderstorm Wyrm)_
+
+- **Type**: Fire
+- **Mana Cost**: 7
+- **Attack**: 6
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Rush
+- **Passive Ability**: _Molten Core_ - Whenever this minion takes damage, deal that much damage to the attacker.
+- **Energy Ability**: Discard a Fire Energy: Deal 3 damage to all enemy minions and summon a 2/2 Fire Elemental for each minion damaged.
+- **Flavor Text**: "A molten beast, its rage burns eternal."  
+    _Notes_: Changed from _Infernal Rage_ to a defensive retaliation effect, making it distinct with a ground-based, punishing presence.
+
+#### **Gullinbursti, the Golden Boar (Legendary Fire)**
+
+- **Type**: Fire
+- **Mana Cost**: 5
+- **Attack**: 4
+- **Health**: 6
+- **Retreat Cost**: 1
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: Radiant Defender - Whenever a friendly minion with Taunt is attacked, give it +1 Attack.
+- **Energy Ability**: Discard a Fire Energy: Give all friendly minions +1 Attack until the end of the turn.
+- **Flavor Text**: "Forged by dwarves, its bristles shine like the sun."  
+    _Notes_: Supports a defensive Fire strategy with synergy for Taunt minions.
+
+#### **Magma Leviathan (Legendary Fire)**
+
+- **Type**: Fire
+- **Mana Cost**: 8
+- **Attack**: 7
+- **Health**: 7
+- **Retreat Cost**: 3
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Rush
+- **Passive Ability**: Molten Defense - Whenever this minion is attacked, deal 2 damage to the attacker.
+- **Energy Ability**: Discard a Fire Energy: Deal 4 damage to all enemy minions and summon two 2/2 Fire Elementals.
+- **Flavor Text**: "A colossus of molten rock, its fury burns eternal."  
+    _Notes_: A tanky, aggressive minion that punishes attackers and clears boards.
+
+#### **Skoll, the Sun-Chaser (Legendary Fire)**
+
+- **Type**: Fire
+- **Mana Cost**: 6
+- **Attack**: 5
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Charge
+- **Passive Ability**: Solar Flare - Whenever a friendly minion with Charge attacks, deal 1 damage to a random enemy minion.
+- **Energy Ability**: Discard a Fire Energy: Deal 3 damage to a random enemy minion.
+- **Flavor Text**: "The wolf that hunts the sun, destined to catch it at Ragnarok."  
+    _Notes_: Synergizes with Charge for burst damage, fitting Fire’s aggressive theme.
+
+---
+
+### **Water Legendary Creatures**
+
+_Theme: Water controls with freezing, silencing, and manipulation._
+
+#### **Abyssal Kraken (Legendary Water)**
+
+- **Type**: Water
+- **Mana Cost**: 9
+- **Attack**: 7
+- **Health**: 7
+- **Retreat Cost**: 3
+- **Weakness**: Lightning (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: Abyssal Grip - At the end of your turn, reduce the Attack of all silenced enemy minions by 1.
+- **Energy Ability**: Discard a Water Energy: Silence all enemy minions and deal 2 damage to each.
+- **Flavor Text**: "A terror from the deep, its tentacles crush all hope."  
+    _Notes_: Strong control with silencing and weakening effects.
+
+#### **Frostfang Serpent (Legendary Water)**
+
+- **Type**: Water
+- **Mana Cost**: 7
+- **Attack**: 5
+- **Health**: 6
+- **Retreat Cost**: 2
+- **Weakness**: Lightning (+2 damage)
+- **Standard Ability**: Battlecry - Freeze all enemy minions.
+- **Passive Ability**: Chilling Grip - At the start of your turn, reduce the Attack of all Frozen enemy minions by 1.
+- **Energy Ability**: Discard a Water Energy: Deal 3 damage to a Frozen enemy minion and Freeze it again.
+- **Flavor Text**: "A chilling spawn of the Norse seas, its bite is winter's kiss."  
+    _Notes_: Freezing control with sustained suppression.
+
+#### **Jormungandr, the World Serpent (Legendary Water)**
+
+- **Type**: Water
+- **Mana Cost**: 9
+- **Attack**: 6
+- **Health**: 9
+- **Retreat Cost**: 3
+- **Weakness**: Lightning (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: Venomous Presence - At the end of each turn, apply Poison (deals 1 damage at the end of the next turn) to a random enemy minion.
+- **Energy Ability**: Discard a Water Energy: Deal 5 damage to all enemy minions.
+- **Flavor Text**: "Its coils encircle the world; its venom poisons the seas."  
+    _Notes_: Durable with poison and board-clearing potential.
+
+#### **Nokken (Legendary Water)**
+
+- **Type**: Water
+- **Mana Cost**: 6
+- **Attack**: 3
+- **Health**: 6
+- **Retreat Cost**: 1
+- **Weakness**: Lightning (+2 damage)
+- **Standard Ability**: Siren's Call - When this minion is played, force an enemy minion to attack one of its adjacent allies.
+- **Passive Ability**: Water's Deception - Swap the positions of two random enemy minions at the start of your turn.
+- **Energy Ability**: Discard a Water Energy: Give an enemy minion -3 Attack until the end of the turn and force it to attack a random enemy minion.
+- **Flavor Text**: "A whisper from the depths, dragging souls beneath the waves."  
+    _Notes_: Unique manipulation effects for Water’s control theme.
+
+#### **Nyk, the Water Horse (Legendary Water)**
+
+- **Type**: Water
+- **Mana Cost**: 3
+- **Attack**: 2
+- **Health**: 3
+- **Retreat Cost**: 1
+- **Weakness**: Lightning (+2 damage)
+- **Standard Ability**: Battlecry: Return a minion to its owner’s hand.
+- **Passive Ability**: Water's Deception - When this minion returns a minion to the hand, deal 1 damage to it.
+- **Energy Ability**: Discard a Water Energy: Return all enemy minions with 2 or less Attack to their owner's hand.
+- **Flavor Text**: "It lures the unwary into the deep."  
+    _Notes_: Early-game bounce control with a twist.
+
+---
+
+### **Grass Legendary Creatures**
+
+_Theme: Grass heals with nurturing and enduring effects._
+
+#### **Audhumla, the Primordial Cow (Legendary Grass)**
+
+_(Updated to differentiate from Verdant Behemoth and Leviathan)_
+
+- **Type**: Grass
+- **Mana Cost**: 8
+- **Attack**: 6
+- **Health**: 8
+- **Retreat Cost**: 3
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: _Primordial Milk_ - At the start of your turn, restore 2 Health to all friendly minions.
+- **Energy Ability**: Discard a Grass Energy: Restore 3 Health to all friendly minions.
+- **Flavor Text**: "The first being, whose milk nourished the gods and giants alike."  
+    _Notes_: Changed to a consistent healing source, distinct from healing-triggered effects.
+
+#### **Eikthyrnir, Stag of Yggdrasil (Legendary Grass)**
+
+- **Type**: Grass
+- **Mana Cost**: 6
+- **Attack**: 4
+- **Health**: 6
+- **Retreat Cost**: 2
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: Nurturing Presence - Whenever this minion restores health to a friendly minion, give that minion +1/+1.
+- **Energy Ability**: Discard a Grass Energy: Restore 3 Health to all friendly minions.
+- **Flavor Text**: "Its antlers drip with dew, nourishing the World Tree and all who dwell beneath it."  
+    _Notes_: Healing synergy with buffs, distinct from Audhumla’s passive healing.
+
+#### **Fafnir (Legendary Grass)**
+
+- **Type**: Grass
+- **Mana Cost**: 5
+- **Attack**: 4
+- **Health**: 8
+- **Retreat Cost**: 2
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: Hoard's Curse - Whenever an enemy minion attacks Fafnir, it takes 1 damage and loses 1 Attack permanently.
+- **Energy Ability**: Discard a Grass Energy: Gain +2 Attack and +2 Health for each minion you control with Taunt.
+- **Flavor Text**: "A dragon of greed, its scales defy the mightiest blow."  
+    _Notes_: Defensive with scaling potential, unique in Grass.
+
+#### **Rootbound Stag (Legendary Grass)**
+
+- **Type**: Grass
+- **Mana Cost**: 6
+- **Attack**: 4
+- **Health**: 8
+- **Retreat Cost**: 2
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: Yggdrasil's Blessing - Whenever a friendly minion is healed, summon a 1/1 Sprout with Taunt. If the healing was from a Grass Energy ability, summon a 2/2 Sprout instead.
+- **Energy Ability**: Discard a Grass Energy: Heal all friendly minions for 3 Health.
+- **Flavor Text**: "A majestic beast entwined with the World Tree's roots."  
+    _Notes_: Healing generates board presence, distinct and thematic.
+
+#### **Verdant Behemoth (Legendary Grass)**
+
+_(Updated to differentiate from Audhumla and Verdant Leviathan)_
+
+- **Type**: Grass
+- **Mana Cost**: 9
+- **Attack**: 6
+- **Health**: 8
+- **Retreat Cost**: 3
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: _Overgrowth_ - Whenever a friendly minion is healed, give it +1 Attack permanently.
+- **Energy Ability**: Discard a Grass Energy: Restore 4 Health to all friendly minions and give them +2 Attack until end of turn.
+- **Flavor Text**: "A titan of the forest, its roots anchor the earth."  
+    _Notes_: Changed to focus on attack growth, making it offensively distinct.
+
+#### **Verdant Leviathan (Legendary Grass)**
+
+_(Updated to differentiate from Audhumla and Verdant Behemoth)_
+
+- **Type**: Grass
+- **Mana Cost**: 8
+- **Attack**: 5
+- **Health**: 9
+- **Retreat Cost**: 3
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: _Unyielding Vitality_ - This minion has +1 Health for each other friendly minion.
+- **Energy Ability**: Discard a Grass Energy: Restore 4 Health to all friendly minions and give them +2 Attack until end of turn.
+- **Flavor Text**: "A colossus of the woods, nurturing life itself."  
+    _Notes_: Changed to scale durability, emphasizing its protective role.
+
+#### **Heidrun, the Mead Goat (Legendary Grass)**
+
+- **Type**: Grass
+- **Mana Cost**: 4
+- **Attack**: 3
+- **Health**: 4
+- **Retreat Cost**: 1
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: At the end of your turn, restore 2 Health to all friendly minions.
+- **Passive Ability**: Mead's Blessing - When a friendly minion is healed, it gains +1 Health permanently.
+- **Energy Ability**: Discard a Grass Energy: Restore 4 Health to a friendly minion.
+- **Flavor Text**: "Its milk is sweeter than the finest mead."  
+    _Notes_: Consistent healing with health buffs, distinct from others.
+
+#### **Duneyrr, the Roaring Stag (Legendary Grass)**
+
+- **Type**: Grass
+- **Mana Cost**: 5
+- **Attack**: 4
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: Battlecry: Deal 2 damage to all enemy minions.
+- **Passive Ability**: World Tree's Echo - When this minion deals damage to enemy minions, restore 1 Health to all friendly minions.
+- **Energy Ability**: Discard a Grass Energy: Deal 3 damage to all enemy minions.
+- **Flavor Text**: "Its roar shakes the World Tree."  
+    _Notes_: Combines damage and healing, unique in Grass.
+
+#### **Durathror, the Enduring Stag (Legendary Grass)**
+
+- **Type**: Grass
+- **Mana Cost**: 6
+- **Attack**: 5
+- **Health**: 6
+- **Retreat Cost**: 2
+- **Weakness**: Fire (+2 damage)
+- **Standard Ability**: Taunt. Can’t be targeted by spells or Hero Powers.
+- **Passive Ability**: Yggdrasil's Roots - At the start of your turn, gain +1 Health.
+- **Energy Ability**: Discard a Grass Energy: Give all friendly minions Taunt until end of turn.
+- **Flavor Text**: "It stands firm as the roots of Yggdrasil."  
+    _Notes_: Durable and protective, enhancing Grass’s tankiness.
+
+---
+
+### **Lightning Legendary Creatures**
+
+_Theme: Lightning blitzes with speed and burst damage._
+
+#### **Boltwing Falcon (Legendary Lightning)**
+
+- **Type**: Lightning
+- **Mana Cost**: 5
+- **Attack**: 4
+- **Health**: 3
+- **Retreat Cost**: 1
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Flying, Charge
+- **Passive Ability**: Storm's Vanguard - Boltwing Falcon has +1 Attack for each other friendly Lightning minion on the battlefield.
+- **Energy Ability**: Discard a Lightning Energy: When this minion attacks this turn, deal 2 damage to all enemy minions and give Boltwing Falcon +1 Attack permanently.
+- **Flavor Text**: "A bird of Thor's storms, striking with lightning's wrath."  
+    _Notes_: Scales with Lightning synergy, perfect for blitz.
+
+#### **Bygul, Freyja's Swiftclaw (Legendary Lightning)**
+
+- **Type**: Lightning
+- **Mana Cost**: 4
+- **Attack**: 5
+- **Health**: 3
+- **Retreat Cost**: 1
+- **Weakness**: Grass (+2 damage)
+- **Standard Ability**: Charge
+- **Passive Ability**: Swift Precision - Each time this minion attacks, it gains +1 Attack permanently.
+- **Energy Ability**: Discard a Lightning Energy: This minion can attack twice this turn, and each Attack deals +1 damage.
+- **Flavor Text**: "Bygul's speed is unmatched, striking twice before the enemy can blink."  
+    _Notes_: High-risk, high-reward speed attacker.
+
+#### **Hraesvelgr, the Wind-Bringer (Legendary Lightning)**
+
+- **Type**: Lightning
+- **Mana Cost**: 7
+- **Attack**: 5
+- **Health**: 6
+- **Retreat Cost**: 2
+- **Weakness**: Grass (+2 damage)
+- **Standard Ability**: Flying
+- **Passive Ability**: Wind's Favor - Friendly Flying minions have +1 Attack.
+- **Energy Ability**: Discard a Lightning Energy: Shift all enemy minions to the left or right (your choice), and any enemy minion adjacent to Hraesvelgr has its Attack reduced by 2 until the end of the turn.
+- **Flavor Text**: "The eagle whose wings whip the world into a frenzy."  
+    _Notes_: Supports Flying minions with positional control.
+
+#### **Stormcaller Wyvern (Legendary Lightning)**
+
+- **Type**: Lightning
+- **Mana Cost**: 7
+- **Attack**: 5
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Flying
+- **Passive Ability**: Storm's Wrath - Whenever this minion deals damage to two or more enemies, gain +1 Attack permanently.
+- **Battlecry**: Deal 3 damage to all enemy minions and stun them for one turn.
+- **Flavor Text**: "A dragon of the skies, its roar summons tempests."  
+    _Notes_: AOE burst with growth potential.
+
+#### **Tempest Raptor (Legendary Lightning)**
+
+- **Type**: Lightning
+- **Mana Cost**: 6
+- **Attack**: 5
+- **Health**: 4
+- **Retreat Cost**: 2
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Flying
+- **Passive Ability**: Storm's Swiftness - Each time this minion attacks, reduce the cost of your next Lightning Energy discard ability by 1.
+- **Energy Ability**: Discard a Lightning Energy: Deal 2 damage to all enemy minions and stun them for one turn.
+- **Flavor Text**: "A harbinger of storms, swift and merciless."  
+    _Notes_: Enables Lightning’s fast-paced energy plays.
+
+#### **Trjegul, Freyja's Stormpouncer (Legendary Lightning)**
+
+- **Type**: Lightning
+- **Mana Cost**: 4
+- **Attack**: 4
+- **Health**: 4
+- **Retreat Cost**: 1
+- **Weakness**: Grass (+2 damage)
+- **Standard Ability**: Charge
+- **Passive Ability**: Storm's Wrath - Whenever this minion's Attack is increased, deal two damage to all enemy minions.
+- **Energy Ability**: Discard a Lightning Energy: Give this minion +3 Attack until the end of the turn and deal 3 damage to all enemy minions.
+- **Flavor Text**: "Trjegul's strength surges like a tempest, overwhelming its foes."  
+    _Notes_: Burst damage tied to attack buffs.
+
+#### **Tanngrisnir, the Charging Goat (Legendary Lightning)**
+
+- **Type**: Lightning
+- **Mana Cost**: 4
+- **Attack**: 3
+- **Health**: 3
+- **Retreat Cost**: 1
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Charge
+- **Passive Ability**: Thunderous Charge - When this minion attacks, deal 1 damage to all enemy minions.
+- **Energy Ability**: Discard a Lightning Energy: Give this minion +2 Attack until end of turn.
+- **Flavor Text**: "Tanngrisnir charges into battle, its hooves sparking with lightning."  
+    _Notes_: Fast AOE burst, fits Lightning’s blitz theme.
+
+#### **Tanngnjostr, the Summoning Goat (Legendary Lightning)**
+
+- **Type**: Lightning
+- **Mana Cost**: 5
+- **Attack**: 2
+- **Health**: 4
+- **Retreat Cost**: 2
+- **Weakness**: Water (+2 damage)
+- **Standard Ability**: Battlecry: Summon a 2/2 Goat with Charge.
+- **Passive Ability**: Goat Herder - Whenever you summon a minion with Charge, give it +1 Health.
+- **Energy Ability**: Discard a Lightning Energy: Summon two 1/1 Goats with Charge.
+- **Flavor Text**: "Tanngnjostr calls upon its kin, bolstering the ranks with thunderous allies."  
+    _Notes_: Summons fast attackers, enhancing Lightning’s speed.
+
+---
+
+### **Dark Legendary Creatures**
+
+_Theme: Dark ambushes with stealth and destruction._
+
+#### **Fenrir, the Bound Wolf (Legendary Dark)**
+
+- **Type**: Dark
+- **Mana Cost**: 8
+- **Attack**: 7
+- **Health**: 7
+- **Retreat Cost**: 3
+- **Weakness**: Light (+2 damage)
+- **Standard Ability**: Rush
+- **Passive Ability**: Growing Rage - At the end of each turn, if Fenrir is still alive, gain +1 Attack.
+- **Energy Ability**: Discard a Dark Energy: Destroy an enemy minion.
+- **Flavor Text**: "The monstrous wolf, destined to break free and devour the gods."  
+    _Notes_: Scales into a devastating ambusher.
+
+#### **Garm, the Hellhound (Legendary Dark)**
+
+- **Type**: Dark
+- **Mana Cost**: 7
+- **Attack**: 5
+- **Health**: 6
+- **Retreat Cost**: 2
+- **Weakness**: Light (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: Gatekeeper’s Howl - When a friendly minion dies, summon a 2/2 Shadow Hound with Taunt.
+- **Energy Ability**: Discard a Dark Energy: Revive a friendly minion that died this game with +1/+1.
+- **Flavor Text**: "The ferocious guard dog of Hel’s gates, a fearsome beast tied to death and the underworld."  
+    _Notes_: Death synergy with revival, unique for Dark.
+
+#### **Hati, the Moon-Devourer (Legendary Dark)**
+
+- **Type**: Dark
+- **Mana Cost**: 6
+- **Attack**: 5
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Light (+2 damage)
+- **Standard Ability**: Stealth
+- **Passive Ability**: Lunar Veil - At the end of your turn, if Hati has Stealth, give another random friendly minion Stealth.
+- **Energy Ability**: Discard a Dark Energy: Deal 1 damage to all enemy minions.
+- **Flavor Text**: "The wolf that stalks the moon, bringing eternal night."  
+    _Notes_: Stealth synergy for ambushes.
+
+#### **Nidhogg, the Root-Gnawer (Legendary Dark)**
+
+- **Type**: Dark
+- **Mana Cost**: 10
+- **Attack**: 8
+- **Health**: 8
+- **Retreat Cost**: 3
+- **Weakness**: Light (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: Creeping Decay - At the end of each turn, deal 1 damage to all enemy minions.
+- **Energy Ability**: Discard a Dark Energy: Destroy all enemy minions with 2 or less Health.
+- **Flavor Text**: "The dragon that chews at Yggdrasil's roots, heralding decay."  
+    _Notes_: Slow, relentless board control.
+
+#### **Shadowmaw Alpha (Legendary Dark)**
+
+- **Type**: Dark
+- **Mana Cost**: 6
+- **Attack**: 4
+- **Health**: 4
+- **Retreat Cost**: 2
+- **Weakness**: Light (+2 damage)
+- **Standard Ability**: Stealth
+- **Passive Ability**: Pack Leader - Whenever you summon a Shadow Wolf, give it +1/+1 and Stealth.
+- **Battlecry**: Summon two 2/2 Shadow Wolves with Stealth.
+- **Flavor Text**: "The leader of the pack, its howl commands the night."  
+    _Notes_: Builds a stealthy wolf pack.
+
+#### **Shadowmaw Direwolf (Legendary Dark)**
+
+- **Type**: Dark
+- **Mana Cost**: 7
+- **Attack**: 6
+- **Health**: 6
+- **Retreat Cost**: 2
+- **Weakness**: Light (+2 damage)
+- **Standard Ability**: Stealth
+- **Passive Ability**: Alpha's Call - Whenever this minion destroys an enemy minion, summon a 1/1 Shadow Pup with Stealth.
+- **Energy Ability**: Discard a Dark Energy: Destroy an enemy minion with 4 or less Attack and summon a 3/3 Shadow Wolf in its place.
+- **Flavor Text**: "A pack leader of the night, its jaws claim the weak."  
+    _Notes_: Rewards destruction with summons.
+
+#### **Hrímfaxi, the Night Horse (Legendary Dark)**
+
+- **Type**: Dark
+- **Mana Cost**: 3
+- **Attack**: 2
+- **Health**: 3
+- **Retreat Cost**: 1
+- **Weakness**: Light (+2 damage)
+- **Standard Ability**: Battlecry: Give a minion Stealth until your next turn.
+- **Passive Ability**: Moonlit Path - At the end of your turn, if you have a minion with Stealth, draw a card.
+- **Energy Ability**: Discard a Dark Energy: Give all friendly minions Stealth until your next turn.
+- **Flavor Text**: "Pulling the moon, it drapes the night in shadow."  
+    _Notes_: Early-game stealth support.
+
+#### **Gullinkambi, the Ragnarok Rooster (Legendary Dark)**
+
+- **Type**: Dark
+- **Mana Cost**: 2
+- **Attack**: 1
+- **Health**: 1
+- **Retreat Cost**: 0
+- **Weakness**: Light (+2 damage)
+- **Standard Ability**: Deathrattle: If you have 7 minions, deal 5 damage to the enemy hero.
+- **Passive Ability**: Doomsday Crow - At the end of your turn, if you have 7 minions, deal 5 damage to the enemy hero. 
+- **Energy Ability**: Discard a Dark Energy: Deal 2 damage to the enemy hero.
+- **Flavor Text**: "Its crow signals the end of days."  
+    _Notes_: Adjusted passive damage to 1 for balance, still rewards a full board.
+
+---
+
+### **Light Legendary Creatures**
+
+_Theme: Light buffs with foresight and resilience._
+
+#### **Huginn, Raven of Thought (Legendary Light)**
+
+- **Type**: Light
+- **Mana Cost**: 5
+- **Attack**: 3
+- **Health**: 4
+- **Retreat Cost**: 1
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Flying, Battlecry - Draw a card when played.
+- **Passive Ability**: Odin's Insight - Whenever you draw a card, reveal it. If it's a minion, give it +1/+1 when played.
+- **Energy Ability**: Discard a Light Energy: Look at the top three cards of your deck and your opponent's deck, then rearrange them in any order.
+- **Flavor Text**: "Thought sees the path ahead, clear as day."  
+    _Notes_: Card draw with minion buffs, thematic for Light.
+
+#### **Muninn, Raven of Memory (Legendary Light)**
+
+- **Type**: Light
+- **Mana Cost**: 5
+- **Attack**: 2
+- **Health**: 5
+- **Retreat Cost**: 1
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Flying
+- **Passive Ability**: Memory's Strength - Minions returned from your graveyard gain +2/+2.
+- **Additional Ability**: Deathrattle - When this minion dies, return a random minion from your graveyard to the battlefield with +2/+2.
+- **Energy Ability**: Discard a Light Energy: Give all friendly minions +2 Health.
+- **Flavor Text**: "Memory preserves what was, strengthening the present."  
+    _Notes_: Revival synergy, unique for Light.
+
+#### **Gulltoppr, Heimdall's Horse (Legendary Light)**
+
+- **Type**: Light
+- **Mana Cost**: 5
+- **Attack**: 4
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Charge
+- **Passive Ability**: Vigilant Charge - When this minion attacks, deal 1 damage to all enemy minions.
+- **Energy Ability**: Discard a Light Energy: Give all friendly minions +1 Attack until end of turn.
+- **Flavor Text**: "Golden-maned, it gallops across the rainbow bridge."  
+    _Notes_: Buffs with AOE damage on attack.
+
+#### **Skinfaxi, the Day Horse (Legendary Light)**
+
+- **Type**: Light
+- **Mana Cost**: 3
+- **Attack**: 3
+- **Health**: 2
+- **Retreat Cost**: 1
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Battlecry: Give a minion +2 Attack until end of turn.
+- **Passive Ability**: Radiant Dawn - At the start of your turn, give a random friendly minion +1 Attack.
+- **Energy Ability**: Discard a Light Energy: Give all friendly minions +1 Attack until end of turn.
+- **Flavor Text**: "Its radiant mane heralds the dawn."  
+    _Notes_: Early-game buff support.
+
+#### **Einherjar's Mount (Legendary Light)**
+
+- **Type**: Light
+- **Mana Cost**: 6
+- **Attack**: 5
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Battlecry: If you have 7 minions, gain +3/+3.
+- **Passive Ability**: Valhalla's Call - At the end of your turn, if you have 7 minions, restore 2 Health to all friendly minions.
+- **Energy Ability**: Discard a Light Energy: Give all friendly minions +1/+1 until end of turn.
+- **Flavor Text**: "A noble steed for the warriors of the afterlife."  
+    _Notes_: Rewards a full board with buffs and healing.
+
+#### **Hildisvini, Freyja's Boar (Legendary Light)**
+
+- **Type**: Light
+- **Mana Cost**: 4
+- **Attack**: 3
+- **Health**: 4
+- **Retreat Cost**: 1
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Battlecry: Restore 5 Health to your hero.
+- **Passive Ability**: Freyja's Grace - When this minion restores health to your hero, give a random friendly minion +1/+1.
+- **Energy Ability**: Discard a Light Energy: Restore 2 Health to all friendly minions.
+- **Flavor Text**: "A loyal friend, it comforts those in need."  
+    _Notes_: Hero healing with minion buffs.
+
+#### **Dvalinn, the Delayed Stag (Legendary Light)**
+
+- **Type**: Light
+- **Mana Cost**: 4
+- **Attack**: 3
+- **Health**: 4
+- **Retreat Cost**: 1
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Battlecry: Silence a minion.
+- **Passive Ability**: Silent Watcher - When this minion silences an enemy minion, draw a card.
+- **Energy Ability**: Discard a Light Energy: Silence all enemy minions with 2 or less Attack.
+- **Flavor Text**: "Its calm gaze unravels enchantments."  
+    _Notes_: Silencing with card advantage.
+
+#### **Vedrfolnir, the Hawk of Yggdrasil (Legendary Light)**
+
+- **Type**: Light
+- **Mana Cost**: 4
+- **Attack**: 3
+- **Health**: 4
+- **Retreat Cost**: 1
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Battlecry: Look at the top 3 cards of your deck. Draw one.
+- **Passive Ability**: Eagle Eye - When you draw a card, give a random friendly minion +1 Attack.
+- **Energy Ability**: Discard a Light Energy: Draw two cards.
+- **Flavor Text**: "Its keen eyes pierce the mists."  
+    _Notes_: Card draw with buffs, enhancing Light’s foresight.
+
+---
+
+### **Neutral Legendary Creatures**
+
+_Theme: Neutral adapts with versatility and chaos._
+
+#### **Ratatoskr, the Mischievous Squirrel (Legendary Neutral)**
+
+- **Type**: Neutral
+- **Mana Cost**: 5
+- **Attack**: 3
+- **Health**: 4
+- **Retreat Cost**: 1
+- **Weakness**: None
+- **Standard Ability**: Chaos Chatter - At the end of each turn, swap the positions of two random minions on the board.
+- **Passive Ability**: Squirrelly Shenanigans - Each time a minion is swapped, there's a 25% chance to summon a 1/1 Squirrel token on your side.
+- **Energy Ability**: Discard a Neutral Energy: Redistribute all minions on the board to random positions.
+- **Flavor Text**: "The squirrel that stirs the pot, spreading chaos from root to crown."  
+    _Notes_: Chaos and adaptability, unique for Neutral.
+
+#### ## **Sleipnir, the Eight-Legged Steed (Legendary Neutral)**
+
+- **Type**: Neutral
+- **Mana Cost**: 7
+- **Attack**: 6
+- **Health**: 7
+- **Retreat Cost**: 1
+- **Weakness**: None
+- **Standard Ability**: _Charge_ - Sleipnir can attack immediately upon being played, reflecting its unmatched speed.
+- **Passive Ability**:
+    - **Realm Traveler**: Whenever you play a minion of a different element, give Sleipnir +1 Attack permanently and draw a card.
+    - _Description_: Sleipnir grows stronger as it traverses the realms, rewarding decks with diverse elements.
+- **Energy Ability**: Discard a Neutral Energy: Give all friendly minions +2 Attack and +1 Health until the end of the turn.
+- **Flavor Text**: "Odin’s swiftest steed, its eight legs carry it across realms and battlefields alike."
+
+#### **Blodughofi, Freyr's Horse (Legendary Neutral)**
+
+- **Type**: Neutral
+- **Mana Cost**: 4
+- **Attack**: 3
+- **Health**: 4
+- **Retreat Cost**: 1
+- **Weakness**: Dark (+2 damage)
+- **Standard Ability**: Charge
+- **Passive Ability**: Inspiring Charge - When this minion attacks, give all friendly minions +1 Attack until end of turn.
+- **Energy Ability**: Discard a Neutral Energy: Give this minion +2 Attack until end of turn.
+- **Flavor Text**: "Swift as the wind, it carries its rider into battle with grace."  
+    _Notes_: Buffs on attack, versatile for any deck.
+
+#### **Svadilfari, the Mighty Stallion (Legendary Neutral)**
+
+- **Type**: Neutral
+- **Mana Cost**: 7
+- **Attack**: 6
+- **Health**: 7
+- **Retreat Cost**: 3
+- **Weakness**: None
+- **Standard Ability**: Battlecry: If you have at least 3 Beasts, gain +2/+2 and Taunt.
+- **Passive Ability**: Beastmaster - Beasts you control have +1/+1.
+- **Energy Ability**: Discard a Neutral Energy: Summon two 2/2 Beasts with Taunt.
+- **Flavor Text**: "A tireless worker, its strength is unmatched."  
+    _Notes_: Beast synergy, adaptable to Beast-heavy decks.
+
+#### **Gullfaxi, Hrungnir's Horse (Legendary Neutral)**
+
+- **Type**: Neutral
+- **Mana Cost**: 4
+- **Attack**: 3
+- **Health**: 5
+- **Retreat Cost**: 1
+- **Weakness**: None
+- **Standard Ability**: Taunt
+- **Passive Ability**: Golden Resilience - When this minion survives damage, gain +1 Attack permanently.
+- **Energy Ability**: Discard a Neutral Energy: Give this minion +2 Health until end of turn.
+- **Flavor Text**: "Its golden hooves thunder across the plains."  
+    _Notes_: Grows stronger through survival, versatile durability.
+## **Fossegrim (Legendary Water)**
+
+- **Type**: Water
+- **Mana Cost**: 6
+- **Attack**: 4
+- **Health**: 5
+- **Retreat Cost**: 1
+- **Weakness**: Lightning (+2 damage)
+- **Standard Ability**: Taunt
+- **Passive Ability**: _Master Musician_ - When you play a water-type minion, give it +1 attack.
+- **Energy Ability**: Discard a Water Energy: Give this minion +3 attack until end of turn.
+- **Additional Ability**: At the end of your turn, if this minion didn’t attack, choose an enemy minion. It can’t attack next turn.
+- **Flavor Text**: "A water spirit whose violin enchants and ensnares."
+
+## Kraken (Legendary Water)
+
+- **Type**: Water
+- **Mana Cost**: 8
+- **Attack**: 8
+- **Health**: 8
+- **Retreat Cost**: 3
+- **Weakness**: Lightning (+2 damage)
+- **Standard Ability**: When this minion is played, choose an enemy minion. Return it to its owner’s hand and deal 3 damage to it.
+- **Passive Ability**: _Depths’ Pull_ - At the end of your turn, if this minion didn’t attack, choose an enemy minion. Return it to its owner’s hand and deal 2 damage to it. + this minion gains +2 attack and can’t be targeted by spells or abilities until it attacks again.
+- **Energy Ability**: _Tentacle Grasp_ - Discard a Water Energy: Choose an enemy minion. It can’t attack or use abilities next turn, and it takes 3 damage.
+- **Flavor Text**: "A monstrous squid, its tentacles drag ships to the depths."
+
+## Huldra (Legendary Grass)
+
+- **Type**: Grass
+- **Mana Cost**: 6
+- **Attack**: 4
+- **Health**: 5
+- **Retreat Cost**: 2
+- **Weakness**: Fire (+2 damage)
+
+### Abilities
+
+- **Standard Ability**: _Seductive Lure_  
+    When played, choose an enemy minion. It must attack an adjacent ally on its next turn.  
+    _This reflects Huldra’s ability to seduce and mislead, forcing an opponent’s minion to turn against its own side._
+- **Passive Ability**: _Hidden Tail_  
+    When an enemy minion attacks Huldra and survives, reduce its attack by 1 permanently. At the start of your turn, if Huldra was not attacked last turn, she gains +2 attack until end of turn. 
+    _The revelation of her cow’s tail shocks attackers, weakening their resolve as they glimpse her true nature._
+- **Energy Ability**: _Forest Deception_  
+    Discard a Grass Energy: All enemy minions have -1 attack until your next turn.  
+    _Huldra unveils her mystique, unsettling all foes across the board with a subtle but widespread effect._
+
+### Flavor Text
+
+_"A forest spirit, beautiful yet dangerous, with a cow’s tail hidden from view."_

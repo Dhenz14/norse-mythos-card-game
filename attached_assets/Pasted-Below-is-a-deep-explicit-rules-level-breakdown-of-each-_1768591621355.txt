@@ -1,0 +1,329 @@
+Below is a **deep, explicit, rules-level breakdown** of **each King’s passive**, written the way a designer, rules lawyer, or future developer would need it.
+This explains **exactly what changes in the game state**, **when it applies**, and **why it exists**.
+
+No buttons.
+No activations.
+No hidden costs.
+
+---
+
+# 👑 Kings (Summoners) — Passive Rule Modifiers
+
+## **Core Rule for All Kings**
+
+* A King is **always active** while in play.
+* A King’s effects:
+
+  * Apply **continuously**
+  * Do **not** stack with duplicate Kings
+  * Cannot be disabled unless explicitly stated by a card
+* Kings **do not count as minions**
+* Kings **do not attack or take damage**
+
+They reshape the battlefield simply by existing.
+
+---
+
+## **1. Ymir — The Primordial Frost Giant**
+
+### **Role:** Tempo Pressure / Attack Skew
+
+### **Passive Effect**
+
+* All **friendly minions** gain **+2 Attack**
+* All **enemy minions** suffer **–1 Attack**
+
+### **Rules Clarification**
+
+* These modifiers:
+
+  * Apply immediately when a minion enters play
+  * Update dynamically if control of a minion changes
+* If a minion’s Attack would drop below **0**, it is treated as **0**
+* This does **not** permanently modify base stats
+
+### **Gameplay Impact**
+
+* Early trades heavily favor the Ymir player
+* Small minions become lethal
+* Enemy boards struggle to stabilize
+
+### **Design Intent**
+
+Ymir **forces combat**.
+He compresses the game timeline and punishes slow setups.
+
+> If you hesitate, Ymir wins.
+
+---
+
+## **2. Buri — The First God**
+
+### **Role:** Attrition / Scaling Defense
+
+### **Passive Effect**
+
+* All friendly minions gain **+1 Armor**
+* At the **start of your turn**, all friendly minions gain **+1 Health**
+
+### **Rules Clarification**
+
+* Armor reduces incoming damage before Health
+* Start-of-turn Health gain:
+
+  * Can exceed original maximum Health
+  * Is **permanent**
+* Triggers before other start-of-turn effects
+
+### **Gameplay Impact**
+
+* Boards grow harder to clear over time
+* Chip damage becomes ineffective
+* Favors long, grinding games
+
+### **Design Intent**
+
+Buri rewards **patience and survival**.
+
+> You don’t win quickly.
+> You win by outlasting everything.
+
+---
+
+## **3. Surtr — The Fire Giant**
+
+### **Role:** Pressure / Board Erosion
+
+### **Passive Effect**
+
+* All friendly minions gain **+1 Attack**
+* At the **end of your turn**, deal **1 damage to all enemy minions**
+
+### **Rules Clarification**
+
+* End-of-turn damage:
+
+  * Occurs after all attacks and abilities
+  * Can destroy minions
+* Does **not** damage the enemy King
+
+### **Gameplay Impact**
+
+* Enemy boards slowly melt
+* Low-health units cannot remain idle
+* Forces opponents into bad trades
+
+### **Design Intent**
+
+Surtr makes **doing nothing lethal**.
+
+> If you don’t act, the fire will.
+
+---
+
+## **4. Borr — The Primordial Father**
+
+### **Role:** Death Value / Board Persistence
+
+### **Passive Effect**
+
+* All friendly minions gain **+1 Health**
+* When a friendly minion dies, summon a **1/1 Echo of Borr with Taunt** in its place
+
+### **Rules Clarification**
+
+* The Echo:
+
+  * Occupies the same board space
+  * Is a **new minion**
+  * Can be buffed or targeted
+* Does not trigger when tokens die (unless specified)
+
+### **Gameplay Impact**
+
+* Removing minions never fully clears the board
+* Trades become awkward and inefficient
+* Excellent against burst and AoE
+
+### **Design Intent**
+
+Borr **denies clean victories**.
+
+> Death is not an ending — it’s a delay.
+
+---
+
+## **5. Yggdrasil — The World Tree**
+
+### **Role:** Growth Engine / Scaling Power
+
+### **Passive Effect**
+
+* At the **start of your turn**, restore **2 Health** to all friendly minions
+* Whenever a friendly minion is healed, it gains **+1 Attack permanently**
+
+### **Rules Clarification**
+
+* Healing includes:
+
+  * Passive healing
+  * Triggered healing
+* Overhealing still counts as “healed”
+* Attack gain stacks without limit
+
+### **Gameplay Impact**
+
+* Minions scale every turn
+* Defensive boards become offensive threats
+* Opponents must disrupt early
+
+### **Design Intent**
+
+Yggdrasil converts **survival into dominance**.
+
+> Growth is inevitable if left unchecked.
+
+---
+
+## **6. Auðumbla — The Primordial Cow**
+
+### **Role:** Sustain / Board Stability
+
+### **Passive Effect**
+
+* All friendly minions gain **+1 Health**
+* Whenever you play a minion, restore **1 Health** to all friendly minions
+
+### **Rules Clarification**
+
+* Healing triggers immediately after a minion enters play
+* Multiple minions played trigger multiple heals
+* Does not heal the King
+
+### **Gameplay Impact**
+
+* Swarm strategies thrive
+* Boards recover rapidly after trades
+* Excellent against chip damage
+
+### **Design Intent**
+
+Auðumbla rewards **presence and numbers**.
+
+> Life feeds life.
+
+---
+
+## **7. Blainn — The Dark One**
+
+### **Role:** Control / Disruption
+
+### **Passive Effect**
+
+* All friendly minions gain **+1 Health**
+* At the **start of your turn**, Freeze a **random enemy minion**
+
+### **Rules Clarification**
+
+* Frozen minions:
+
+  * Cannot attack
+  * Cannot activate attack-based abilities
+* Random selection ignores Stealth
+
+### **Gameplay Impact**
+
+* Key enemy threats are delayed
+* Tempo swings without damage
+* Excellent against single-threat decks
+
+### **Design Intent**
+
+Blainn **wins by denial**, not force.
+
+> You don’t lose your army — you lose your momentum.
+
+---
+
+## **8. Brimir — The Bloody Moisture**
+
+### **Role:** Aggression Through Death
+
+### **Passive Effect**
+
+* All friendly minions gain **+1 Attack**
+* When a friendly minion dies, deal **1 damage to all enemy minions**
+
+### **Rules Clarification**
+
+* Triggers per death (multiple deaths = multiple triggers)
+* Damage resolves even if the board is empty
+* Can chain with death-trigger effects
+
+### **Gameplay Impact**
+
+* Sacrificial play becomes optimal
+* AoE builds up naturally
+* Opponents are punished for killing your units
+
+### **Design Intent**
+
+Brimir turns **loss into pressure**.
+
+> Blood spills both ways.
+
+---
+
+## **9. Ginnungagap — Primordial Chaos**
+
+### **Role:** Chaos / Variance / Adaptation
+
+### **Passive Effect**
+
+* At the **end of your turn**, summon a **1/1 Void Spawn** with a **random keyword**
+
+### **Rules Clarification**
+
+* Keywords are chosen from the standard keyword pool
+* Excludes King-exclusive effects
+* Void Spawns count as friendly minions
+
+### **Gameplay Impact**
+
+* Board state constantly mutates
+* Unpredictable threats emerge
+* High variance, high creativity
+
+### **Design Intent**
+
+Ginnungagap rewards **embracing uncertainty**.
+
+> Creation is chaos made solid.
+
+---
+
+# 🧠 Final Design Summary
+
+| King        | Core Axis   | How It Wins             |
+| ----------- | ----------- | ----------------------- |
+| Ymir        | Tempo       | Faster, deadlier trades |
+| Buri        | Attrition   | Outlasting removal      |
+| Surtr       | Pressure    | Passive board damage    |
+| Borr        | Persistence | Death doesn’t clear     |
+| Yggdrasil   | Scaling     | Healing becomes attack  |
+| Auðumbla    | Sustain     | Constant recovery       |
+| Blainn      | Control     | Delayed threats         |
+| Brimir      | Aggro       | Death fuels damage      |
+| Ginnungagap | Chaos       | Unpredictable advantage |
+
+---
+
+If you want next, I can:
+
+* Write **exact rulebook text**
+* Balance Kings against each other
+* Add **counter-Kings**
+* Design **anti-King tech cards**
+* Or formalize **King draft / ban rules**
+
+Just say the word.

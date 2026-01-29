@@ -1,0 +1,110 @@
+Below is a **step-by-step troubleshooting approach** to finding and removing that final “invisible border” or clipping issue—**without** guessing in the dark. This method ensures you identify the *exact* container or style property responsible, rather than changing everything at once.
+
+---
+
+## 1. Pinpoint the Clipping in DevTools
+
+1. **Open DevTools** in your browser (Chrome, Firefox, etc.).  
+2. **Right-click** on the problematic card text (where it’s clipped or the glow/light effect is cut off) and choose **Inspect**.  
+3. **Select** the outermost element you see for the card’s text in the DOM (e.g., `.card-description`, `.card-text-content`, etc.).  
+4. **Move Up** the DOM tree, element by element, checking the **Computed Styles** for each parent.  
+
+   Look specifically for:
+   - `overflow: hidden;`
+   - `clip-path: ...;`
+   - `mask: ...;`
+   - `box-shadow: inset ...;`
+   - `border-radius` (especially if combined with `overflow: hidden;`)
+   - Any **background** (even if it’s “transparent,” sometimes a leftover gradient can cause weird layering)
+
+5. In the **Styles** or **Computed** panel, **uncheck** these properties one by one (or add `overflow: visible;`) to see if your text’s glow (or “light effects”) suddenly becomes fully visible.
+
+This process lets you see precisely which parent container or style property is causing the bounding box or cutting off the glow.
+
+---
+
+## 2. Common Culprit: `overflow: hidden;` + Rounded Corners
+
+**Why?**  
+- Many card designs have rounded corners for the overall card shape, so the container is set to `overflow: hidden;` to prevent images from spilling out.  
+- Unfortunately, that also clips any text shadow or glow that extends beyond the container boundary.
+
+**Two Fix Options**  
+1. **Switch to `overflow: visible;`**: If you can safely remove `overflow: hidden;` without messing up your card shape, do it.  
+2. **Nested “Safe Zone”**: Keep the card’s outer container with `border-radius` + `overflow: hidden;`, but **nest** the text in a child container that is sized smaller or has extra padding so the glow isn’t clipped.  
+   - For instance:
+     ```css
+     .card-outer {
+       width: 300px;
+       height: 420px;
+       border-radius: 12px;
+       overflow: hidden;   /* keeps the card corners clean */
+       position: relative;
+     }
+     
+     .card-inner-text {
+       position: absolute;
+       top: 0; left: 0; right: 0; bottom: 0;
+       margin: 0.5rem;     /* or enough padding so glow has space */
+       overflow: visible;  /* text shadows can extend within this sub-container */
+     }
+     ```
+
+---
+
+## 3. Inspect for Any Leftover “Inset” Box-Shadow or Subtle Background
+
+Even if the background is set to “transparent,” you might have:
+- `box-shadow: inset 0 0 10px rgba(0,0,0,0.3);`
+- A “transparent” gradient leftover from older CSS.
+
+**How to Confirm**  
+- In DevTools, look for any `box-shadow` lines.  
+- Temporarily **uncheck** them. If your “invisible box” disappears, that was the culprit.
+
+**How to Fix**  
+- Remove or override the box-shadow property.  
+- Example override:
+  ```css
+  .card-description,
+  .card-text-content {
+    box-shadow: none !important;
+    background: none !important;
+  }
+  ```
+
+---
+
+## 4. Check for `clip-path` or `mask-image`
+
+If you’re using advanced shapes or animations around the card, a `clip-path` or `mask` can inadvertently cut off shadows.
+
+1. Search your CSS files for `clip-path:` or `mask:`.  
+2. Temporarily remove or comment them out.  
+3. See if the text glow is restored.
+
+---
+
+## 5. Confirm No Conflicting Classes
+
+If `.card-description` is defined in **multiple** CSS/SCSS files, it might have different rules that override or reintroduce backgrounds/overflow.
+
+**How to Confirm**  
+- In DevTools, find the final CSS rule that’s actually applied to `.card-description`.  
+- If it references a **different file** than you expect, that’s your culprit.  
+
+**Fix**  
+- Either remove that unwanted rule or override it using higher specificity or `!important` (as a last resort).
+
+---
+
+## 6. Final Tips
+
+- **Use “element.style”**: In DevTools, if you see something like `element.style { overflow: hidden; }`, that might be an inline style from your React component. Make sure it’s not re-applied in the code.  
+- **Spacing**: If you do want a small margin/padding around the text, ensure it’s not reintroducing a background or clipping region.  
+- **Test One Container at a Time**: Start from the text element itself, then parent 1, parent 2, etc., toggling off suspect properties. You’ll see exactly which container causes the clip or “box” effect.
+
+---
+
+### **Bottom Line**  
+You’ve already removed many backgrounds and borders, but there’s still at least **one** property or container (likely `overflow: hidden;` or a hidden `box-shadow`/`clip-path`) that’s silently clipping or bounding the text’s glow. Carefully **inspect** and **uncheck** each suspicious property in DevTools until the glow is free. Once you see it revert, you’ll know precisely which line of CSS to remove or override—and your card text will finally have that perfect, unobstructed, “carved into metal” look.

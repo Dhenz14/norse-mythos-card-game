@@ -1,0 +1,566 @@
+ [Coframe] Replit Enterprise watcher loaded
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+/t/ragnarok:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+/t/ragnarok:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+/t/ragnarok:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+ Download the Apollo DevTools for a better development experience: https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm
+ [ai-chat] Creating connection with chat proxy enabled
+(anonymous) @ 0759ecb6676892da.js:2
+ ✅ blakejs loaded successfully (self-contained version)
+   Available functions: Array(5)
+ 🛡️ Paywall Detector loaded - 100% client-side, no external dependencies
+ 🏛️ ArcHive Content Script Loaded
+ 🏛️ ArcHive Content Script Ready - 100% Decentralized
+ [LaunchDarkly] LaunchDarkly client initialized
+ [ai-chat] Creating connection with chat proxy enabled
+(anonymous) @ 0759ecb6676892da.js:2
+Ragnarok-1:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 88d1957f-e5f9-4bbe-8b56-60edc458561a Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension adccbcd2-c9d6-4778-b0cb-20e1bf289634 Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 71b9e9dd-9e9b-4615-8d28-3187422a5ba7 Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension d526fa49-4249-4a76-99b8-6a8e548e485f Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 7636883a-2637-421c-aa98-27ffc46d202b Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 857b2e2f-2c57-42be-8033-400c06d95624 Object
+(anonymous) @ 0759ecb6676892da.js:2
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ Unrecognized feature: 'ambient-light-sensor'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'battery'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'execution-while-not-rendered'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'layout-animations'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'legacy-image-formats'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'navigation-override'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'oversized-images'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'publickey-credentials'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'speaker-selection'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'unoptimized-images'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'unsized-media'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'pointer-lock'.
+z @ ed1e693c96a75807.js:2
+ Allow attribute will take precedence over 'allowfullscreen'.
+z @ ed1e693c96a75807.js:2
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+z @ ed1e693c96a75807.js:2
+ Cache data may be lost when replacing the currentUserReplAgentStatuses field of a Subscription object.
+
+This could cause additional (usually avoidable) network requests to fetch data that were otherwise cached.
+
+To address this problem (which is not a bug in Apollo Client), define a custom merge function for the Subscription.currentUserReplAgentStatuses field, so InMemoryCache can safely merge these objects:
+
+  existing: [{"__typename":"AgentStatusUpdate","replId":"37a7fb54-cf63-4cf6-8d9d-d11f4babec9c","statusV2":"PAUSED","label":"Waiting for you","updatedAt":"2026-01-18T19:33:36.050Z","appImageUrl":"https://storage.googleapis.com/screenshot-production-us-central1/37a7fb54-cf63-4cf6-8d9d-d11f4babec9c/d1fc3e58-4af4-48f8-bd7e-9e1d2a2318e7/w1wGWbQ"},{"__typename":"AgentStatusUpdate","replId":"db88b08f-2990-4d58-a782-930319b7a590","statusV2":"PAUSED","label":"Waiting for you","updatedAt":"2026-01-17T20:08:44.555Z","appImageUrl":"https://storage.googleapis.com/screenshot-production-us-central1/db88b08f-2990-4d58-a782-930319b7a590/a51e24de-dd2b-42ce-8800-c707a76cd764/NVHJgjo"}]
+  incoming: [{"__typename":"AgentStatusUpdate","replId":"37a7fb54-cf63-4cf6-8d9d-d11f4babec9c","statusV2":"RUNNING","label":"Working…","updatedAt":"2026-01-18T20:18:29.055Z","appImageUrl":"https://storage.googleapis.com/screenshot-production-us-central1/37a7fb54-cf63-4cf6-8d9d-d11f4babec9c/d1fc3e58-4af4-48f8-bd7e-9e1d2a2318e7/w1wGWbQ"}]
+
+For more information about these options, please refer to the documentation:
+
+  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers
+  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects
+
+(anonymous) @ 0759ecb6676892da.js:2
+ [Coframe] Mutation callback infinite loop protection triggered, disconnecting mutation observer Object
+(anonymous) @ 0759ecb6676892da.js:2
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Arkp%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+ [vite] connecting...
+ [vite] connected.
+ Registered card: Unleash the Hounds (ID: 7001)
+ Registered card: Animal Companion (ID: 7002)
+ Registered card: Eaglehorn Bow (ID: 7003)
+ Registered card: Deadly Shot (ID: 7005)
+ Registered card: Hound (ID: 7501)
+ Registered card: Misha (ID: 7503)
+ Registered card: Huffer (ID: 7504)
+ Registered card: Leokk (ID: 7505)
+ Registered card: Wilderness Scout (ID: 7010)
+ Registered card: Stealthy Jaguar (ID: 7011)
+ Registered card: Pack Alpha (ID: 7012)
+ Registered card: Venomfang Serpent (ID: 7013)
+ Registered card: Beastmaster Trainer (ID: 7014)
+ Registered card: Timber Wolf Alpha (ID: 7015)
+ Registered card: Jungle Stalker (ID: 7016)
+ Registered card: Spirit Tamer (ID: 7017)
+ Registered card: Hunting Falcon (ID: 7018)
+ Registered card: Savannah Guardian (ID: 7019)
+ Registered card: Fang Commander (ID: 7020)
+ Registered card: Beast Whisperer (ID: 7021)
+ Registered card: Ferocious Grizzly (ID: 7022)
+ Registered card: Swift Raptor (ID: 7023)
+ Registered card: Tracking Shot (ID: 7100)
+ Registered card: Explosive Trap (ID: 7101)
+ Registered card: Freezing Trap (ID: 7102)
+ Registered card: Multi-Shot (ID: 7103)
+ Registered card: Venomstrike (ID: 7104)
+ Registered card: Hunter's Mark (ID: 7105)
+ Registered card: Wild Growth (ID: 7106)
+ Registered card: Beast Command (ID: 7107)
+ Registered card: Call of the Wild (ID: 7108)
+ Registered card: Snipe (ID: 7109)
+ Registered card: Misdirection (ID: 7110)
+ Registered card: Hunting Crossbow (ID: 7200)
+ Registered card: Longbow (ID: 7201)
+ Registered card: Wildtamer's Whip (ID: 7202)
+ Registered card: Wolf Pup (ID: 7506)
+ Registered card: Bone Collector (ID: 4000)
+ Registered card: Grave Robber (ID: 4001)
+ Registered card: Skeletal Lord (ID: 4002)
+ Registered card: Death's Harvester (ID: 4003)
+ Registered card: Grave Pact (ID: 4004)
+ Registered card: Graveyard Guardian (ID: 4005)
+ Registered card: Skeletal Warrior (ID: 4006)
+ Registered card: Banshee (ID: 4007)
+ Registered card: Reanimated Dragon (ID: 4008)
+ Registered card: Lich Queen (ID: 4009)
+ Registered card: Death Knight (ID: 4010)
+ Registered card: Ghoul (ID: 4011)
+ Registered card: Tombstone (ID: 4012)
+ Registered card: Graveborn (ID: 4013)
+ Registered card: Necromancer's Apprentice (ID: 4014)
+ Registered card: Raise Dead (ID: 4100)
+ Registered card: Death's Toll (ID: 4101)
+ Registered card: Soul Harvest (ID: 4102)
+ Registered card: Graveyard Ritual (ID: 4103)
+ Registered card: Soul Drain (ID: 4105)
+ Registered card: Undead Horde (ID: 4106)
+ Registered card: Necrotic Plague (ID: 4107)
+ Registered card: Death's Embrace (ID: 4108)
+ Registered card: Dark Ritual (ID: 4109)
+ Registered card: Eternal Servitude (ID: 4110)
+ Registered card: Mass Resurrection (ID: 4111)
+ Registered card: Necromancer (ID: 4104)
+ Registered card: Soulbound Dagger (ID: 4200)
+ Registered card: Skeleton (ID: 4900)
+ Registered card: Zombie (ID: 4901)
+ Card Database Stats:
+- Total items before validation: 786
+- Valid cards after validation: 786
+- Final cards after deduplication: 745
+- Removed 41 invalid or duplicate entries
+
+ No deck selected. Using class-specific deck for mage.
+ Card Transformation Manager initialized
+ Card rendering system: Initializing CardRenderer as the primary renderer
+ Card rendering system: Enforcing CardRenderer as the primary renderer
+ Active renderer enforcement system initialized
+ Applied runtime import patches for card renderers
+ Health heart model path check: /models/health_heart_new.glb
+ HealthHeart component loaded: true
+ ThreeJSWrapper component loaded: true
+ Card Transform Bridge initialized - synchronizing legacy and context systems
+ Initializing Agent middleware for Think Tools integration
+ Setting up agent message interception
+ Agent message interception set up successfully
+ Bootstrapping Think Tools integration...
+ Think Tools guide reference injected
+ Think Tools bootstrap completed
+ CardTransformBridgeInitializer: Initializing bridge between legacy and context systems
+ Card Transform Bridge: Synchronized 0 cards from legacy to context system
+ ExactCardSlots - Applying precise card slot sizing
+ Found 0 card slots to fix
+ RemoveAllDebugVisualizations - Removing all debug elements from the game
+ UnifiedCardSystem - Initializing comprehensive card system overhaul
+ Found 3 competing style elements to remove
+ ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+(anonymous) @ injected.js:37
+ ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+(anonymous) @ injected.js:37
+ Card hover pointer-events fix applied globally
+ Root Cause Analysis system initialized
+ Initializing card database...
+ Registering basic mage cards...
+ Registered card: Apprentice Arcanist (ID: 10001)
+ Registered card: Frost Elemental (ID: 10002)
+ Registered card: Fireball (ID: 10003)
+ Registered card: Water Elemental (ID: 10004)
+ Registered card: Polymorph (ID: 10005)
+ Registered card: Sheep (ID: 10006)
+ Registered card: Flamestrike (ID: 10007)
+ Basic mage cards registered successfully.
+ Registering Mage cards...
+ Registered card: Mana Wyrm (ID: 14001)
+ Registered card: Sorcerer's Apprentice (ID: 14002)
+ Registered card: Kirin Tor Mage (ID: 14003)
+ Registered card: Ethereal Arcanist (ID: 14004)
+ Registered card: Archmage Antonidas (ID: 14005)
+ Registered card: Water Elemental (ID: 14006)
+ Registered card: Polymorph (ID: 14009)
+ Registered card: Sheep (ID: 14010)
+ Registered card: Vaporize (ID: 14012)
+ Registered card: Ice Lance (ID: 14013)
+ Registered card: Unstable Portal (ID: 31002)
+ Registered card: Ice Block (ID: 31004)
+ Registered card: Arcane Blast (ID: 32001)
+ Registered card: Arcane Missiles (ID: 32002)
+ Registered card: Frost Nova (ID: 32003)
+ Registered card: Flame Strike (ID: 32005)
+ Registered card: Arcane Intellect (ID: 32006)
+ Registered card: Mirror Image (ID: 32008)
+ Registered card: Blizzard (ID: 32009)
+ Registered card: Flamecannon (ID: 32010)
+ Registered card: Mirror Entity (ID: 32011)
+ Registered card: Mirror Image (ID: 32031)
+ Registered card: Spellbender (ID: 32032)
+ Registered card: Roaring Torch (ID: 32033)
+ Mage cards registered successfully.
+ Registering Norse mythology cards...
+ Registered card: Jormungandr (ID: 20620)
+ Registered card: Jormungandr's Coil (ID: 20621)
+ Norse mythology cards registered successfully.
+ Registering Hunter cards...
+ Registered 37 Hunter cards
+ Registering Paladin cards...
+ Registered card: Consecration (ID: 8002)
+ Registered card: Blessing of Kings (ID: 8004)
+ Registered card: Equality (ID: 8005)
+ Registered card: Truesilver Champion (ID: 8003)
+ Registered card: Ashbringer (ID: 8501)
+ Registered card: Silver Hand Recruit (ID: 8502)
+ Registered card: Tirion Fordring (ID: 8001)
+ Registered card: Lay on Hands (ID: 8006)
+ Registered card: Holy Light (ID: 8007)
+ Registered card: Divine Favor (ID: 8008)
+ Registered card: Hammer of Wrath (ID: 8009)
+ Registered card: Avenging Wrath (ID: 8010)
+ Registered card: Blessing of Might (ID: 8011)
+ Registered card: Hand of Protection (ID: 8012)
+ Registered card: Humility (ID: 8013)
+ Registered card: Repentance (ID: 8014)
+ Registered card: Redemption (ID: 8015)
+ Registered card: Noble Sacrifice (ID: 8016)
+ Paladin cards registered successfully.
+ Registering Rogue cards...
+ Registered card: Backstab (ID: 12101)
+ Registered card: Preparation (ID: 12102)
+ Registered card: Shadowstep (ID: 12103)
+ Registered card: Deadly Poison (ID: 12104)
+ Registered card: Sinister Strike (ID: 12105)
+ Registered card: Sap (ID: 12106)
+ Registered card: Eviscerate (ID: 12107)
+ Registered card: Fan of Knives (ID: 12108)
+ Registered card: Blade Flurry (ID: 12109)
+ Registered card: Assassinate (ID: 12110)
+ Registered card: Defias Ringleader (ID: 12201)
+ Registered card: SI:7 Agent (ID: 12202)
+ Registered card: Master of Disguise (ID: 12203)
+ Registered card: Kidnapper (ID: 12204)
+ Registered card: Edwin VanCleef (ID: 12404)
+ Registered card: Wicked Knife (ID: 12301)
+ Registered card: Assassin's Blade (ID: 12303)
+ Registered card: Perdition's Blade (ID: 12304)
+ Registered card: Defias Bandit (ID: 12501)
+ Rogue cards registered successfully.
+ Registering Warlock cards...
+ Registered card: Voidwalker (ID: 17001)
+ Registered card: Shadow Bolt (ID: 17002)
+ Registered card: Hellfire (ID: 17003)
+ Registered card: Doomguard (ID: 17004)
+ Registered card: Soulfire (ID: 17005)
+ Registered card: Siphon Soul (ID: 17006)
+ Registered card: Void Terror (ID: 17007)
+ Registered card: Darkshire Librarian (ID: 17008)
+ Registered card: Twisting Nether (ID: 17009)
+ Registered card: Flame Imp (ID: 17010)
+ Registered card: Lord Jaraxxus (ID: 17101)
+ Registered card: Sense Demons (ID: 17102)
+ Registered card: Sacrificial Pact (ID: 17103)
+ Registered card: Fist of Jaraxxus (ID: 17104)
+ Registered card: Shadowflame (ID: 17105)
+ Registered card: Infernal (ID: 17501)
+ Registered card: Soul Remnant (ID: 17502)
+ Registered card: Candle (ID: 17503)
+ Registered card: Broom (ID: 17504)
+ Registered card: Teapot (ID: 17505)
+ Registered card: Imp (ID: 17506)
+ Warlock cards registered successfully.
+injected.js:37 Registering Druid cards...
+injected.js:37 Registered card: Innervate (ID: 11003)
+injected.js:37 Registered card: Mark of the Wild (ID: 11015)
+injected.js:37 Registered card: Soul of the Forest (ID: 11016)
+injected.js:37 Registered card: Treant (ID: 11020)
+injected.js:37 Registered card: Rejuvenation (ID: 11040)
+injected.js:37 Registered card: Ancient Protector (ID: 11041)
+injected.js:37 Registered card: Wildgrowth Surge (ID: 11042)
+injected.js:37 Registered card: Feral Instinct (ID: 11043)
+injected.js:37 Registered card: Ironbark Ancient (ID: 11044)
+injected.js:37 Registered card: Overgrowth (ID: 11050)
+injected.js:37 Registered card: Flourish (ID: 11052)
+injected.js:37 Registered card: Force of Nature (ID: 11058)
+injected.js:37 Registered card: Treant (ID: 11059)
+injected.js:37 Registered card: Jade Blossom (ID: 85002)
+injected.js:37 Registered card: Nourish (ID: 33001)
+injected.js:37 Registered card: Keeper of the Grove (ID: 33002)
+injected.js:37 Registered card: Cenarius (ID: 33003)
+injected.js:37 Druid cards registered successfully.
+injected.js:37 Registering Priest cards...
+injected.js:37 Registered card: Lightspawn (ID: 9013)
+injected.js:37 Registered card: Auchenai Soulpriest (ID: 9014)
+injected.js:37 Registered card: Inner Fire (ID: 9016)
+injected.js:37 Registered card: Mind Vision (ID: 9017)
+injected.js:37 Registered card: Shadow Madness (ID: 9019)
+injected.js:37 Registered card: Lightwell (ID: 9021)
+injected.js:37 Registered card: Holy Fire (ID: 9022)
+injected.js:37 Registered card: Power Word: Replicate (ID: 6003)
+injected.js:37 Registered card: Power Infusion (ID: 6004)
+injected.js:37 Registered card: Renew (ID: 6005)
+injected.js:37 Registered card: Apotheosis (ID: 6006)
+injected.js:37 Registered card: Disciplinarian Gandling (ID: 5112)
+injected.js:37 Registered card: Mindflayer Kaahrj (ID: 5113)
+injected.js:37 Registered card: Murozond the Infinite (ID: 5114)
+injected.js:37 Registered card: Raza the Chained (ID: 70001)
+injected.js:37 Registered card: Failed Student (ID: 9501)
+injected.js:37 Priest cards registered successfully.
+injected.js:37 Registering Shaman cards...
+injected.js:37 Registered card: Lady Vashj (ID: 5115)
+injected.js:37 Registered card: The Lurker Below (ID: 5116)
+injected.js:37 Registered card: Al'Akir the Windlord (ID: 5117)
+injected.js:37 Registered card: Frog (ID: 4501)
+injected.js:37 Registered card: Vashj Prime (ID: 4502)
+injected.js:37 Shaman cards registered successfully.
+injected.js:37 Registering Warrior cards...
+injected.js:37 Registered card: Fiery War Axe (ID: 5001)
+injected.js:37 Registered card: Cruel Taskmaster (ID: 5009)
+injected.js:37 Registered card: Warsong Commander (ID: 5012)
+injected.js:37 Registered card: Inner Rage (ID: 5013)
+injected.js:37 Registered card: Commanding Shout (ID: 5014)
+injected.js:37 Registered card: Kor'kron Elite (ID: 5015)
+injected.js:37 Registered card: Arathi Weaponsmith (ID: 5016)
+injected.js:37 Registered card: Bloodhoof Brave (ID: 5017)
+injected.js:37 Registered card: Slam (ID: 5018)
+injected.js:37 Registered card: Battle Rage (ID: 5019)
+injected.js:37 Registered card: Garrosh Hellscream (ID: 5020)
+injected.js:37 Registered card: Shadowmourne (ID: 5021)
+injected.js:37 Registered card: Shield Slam (ID: 5022)
+injected.js:37 Registered card: Brawl (ID: 5023)
+injected.js:37 Registered card: Armorsmith (ID: 5024)
+injected.js:37 Registered card: Execute (ID: 5025)
+injected.js:37 Registered card: Shield Block (ID: 5026)
+injected.js:37 Registered card: Cleave (ID: 5029)
+injected.js:37 Registered card: Frothing Berserker (ID: 5030)
+injected.js:37 Registered card: Gorehowl (ID: 5031)
+injected.js:37 Registered card: Battle Axe (ID: 5919)
+injected.js:37 Warrior cards registered successfully.
+injected.js:37 Registering Death Knight cards...
+injected.js:37 Registered card: Death Coil (ID: 3001)
+injected.js:37 Registered card: Army of the Dead (ID: 3005)
+injected.js:37 Registered card: Remorseless Winter (ID: 3007)
+injected.js:37 Registered card: Frostmourne (ID: 3009)
+injected.js:37 Registered card: Blood Boil (ID: 3011)
+injected.js:37 Registered card: Runeforged Blade (ID: 3012)
+injected.js:37 Registered card: Icebound Fortitude (ID: 3013)
+injected.js:37 Registered card: Dark Command (ID: 3014)
+injected.js:37 Registered card: Arthas Menethil (ID: 3015)
+injected.js:37 Registered card: Death Gate (ID: 3017)
+injected.js:37 Registered card: Bone Shield (ID: 3018)
+injected.js:37 Registered card: Skeleton (ID: 3019)
+injected.js:37 Registered card: Blood Presence (ID: 3021)
+injected.js:37 Registered card: Frost Presence (ID: 3022)
+injected.js:37 Registered card: Unholy Presence (ID: 3023)
+injected.js:37 Registered card: Runeblade (ID: 3024)
+injected.js:37 Registered card: Chains of Ice (ID: 3025)
+injected.js:37 Registered card: Death Strike (ID: 3026)
+injected.js:37 Registered card: Death Knight Initiate (ID: 3027)
+injected.js:37 Registered card: Scourge Champion (ID: 3029)
+injected.js:37 Death Knight cards registered successfully.
+injected.js:37 Registering Demon Hunter cards...
+injected.js:37 Registered card: Chaos Strike (ID: 9101)
+injected.js:37 Registered card: Soul Cleave (ID: 9102)
+injected.js:37 Registered card: Blur (ID: 9103)
+injected.js:37 Registered card: Mana Burn (ID: 9104)
+injected.js:37 Registered card: Skull of Gul'dan (ID: 9105)
+injected.js:37 Registered card: Glaivebound Adept (ID: 9111)
+injected.js:37 Registered card: Altruis the Outcast (ID: 9112)
+injected.js:37 Registered card: Metamorphosis (ID: 9113)
+injected.js:37 Registered card: Demonic Blast (ID: 9114)
+injected.js:37 Registered card: Coordinated Strike (ID: 9116)
+injected.js:37 Registered card: Illidari Initiate (ID: 9117)
+injected.js:37 Registered card: Eye Beam (ID: 50001)
+injected.js:37 Registered card: Spectral Sight (ID: 50002)
+injected.js:37 Registered card: Flamereaper (ID: 10008)
+injected.js:37 Registered card: Imprisoned Antaen (ID: 10009)
+injected.js:37 Demon Hunter cards registered successfully.
+injected.js:37 Registering Necromancer cards...
+injected.js:37 Registered 30 Necromancer cards
+injected.js:37 Card database initialized with 252 cards.
+injected.js:37 [ArmySelection] Card registry has 252 cards
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 [Chess] Selected knight at (0, 0). Valid moves: 1, attacks: 0
+injected.js:37 [Chess] Selected knight at (0, 0). Valid moves: 1, attacks: 0
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 [AI] Moved knight to (4, 3)
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 [Chess] Selected knight at (2, 1). Valid moves: 4, attacks: 0
+injected.js:37 [Chess] Selected knight at (2, 1). Valid moves: 4, attacks: 0
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 [AI] Attacking with pawn against knight
+injected.js:37 Found 0 card slots to fix
+injected.js:37 Found 0 card slots to fix
+injected.js:37 [Chess] Selected knight at (4, 3). Valid moves: 4, attacks: 0
+injected.js:37 [Chess] Selected knight at (4, 3). Valid moves: 4, attacks: 0
+injected.js:37 Found 0 card slots to fix
+injected.js:37 [Chess] Selected pawn at (5, 3). Valid moves: 0, attacks: 1
+injected.js:37 [Chess] Selected pawn at (5, 3). Valid moves: 0, attacks: 1
+injected.js:37 Found 0 card slots to fix

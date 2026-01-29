@@ -1,0 +1,402 @@
+### Zeus - The Supreme Olympian
+
+- **Element:** Electric
+- **Weakness:** Grass (takes 1.5x damage from grass-based attacks)
+- **Starting Health:** 140
+- **Hero Power:** Thunderbolt Strike
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Deal 3 damage to an enemy minion and stun it (prevents it from attacking next turn).
+- **Weapon:** Zeus's Thunderbolt
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 4 damage to all enemy minions and stun them.
+    - **Permanent Upgrade:** Upgrades hero power to _Thunderbolt Strike+_: Deal 4 damage to an enemy minion and stun it.
+- **Passive Ability:** Olympian Authority
+    - **Effect:** Your minions have +1 attack.
+- **Description:** Zeus, the supreme Olympian, wields lightning to crush foes and leads with unmatched authority. His power falters against the earth’s might.
+- **Flavor Text:** "The sky’s fury knows no bounds, but even the gods fear the earth’s embrace."
+
+**Explanation:** Zeus’s electric element and _Thunderbolt Supreme_ move inspire a hero power and weapon focused on lightning damage and paralysis (stun). His weakness to Earth (Gaia) is represented as Grass, assuming Grass proxies for earth in the game’s elemental system. His leadership role is captured in the passive ability.
+
+---
+
+### Poseidon - God of the Seas
+
+- **Element:** Water
+- **Weakness:** Electric (takes 1.5x damage from electric-based attacks)
+- **Starting Health:** 135
+- **Hero Power:** Tsunami Surge
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Deal 2 damage to all enemy minions.
+- **Weapon:** Trident of the Seas
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 3 damage to all enemy minions and restore 3 health to your hero.
+    - **Permanent Upgrade:** Upgrades hero power to _Tsunami Surge+_: Deal 3 damage to all enemy minions.
+- **Passive Ability:** Ocean’s Wrath
+    - **Effect:** Your Water minions have +1 health.
+- **Description:** Poseidon, the ocean’s wrath, commands the seas to drown his enemies. His power wanes against lightning’s strike.
+- **Flavor Text:** "The sea’s fury is unmatched, but even waves fear the storm’s lightning."
+
+**Explanation:** Poseidon’s water element and _Trident Tsunami_ move suggest area damage, reflected in his hero power and weapon. His weakness to lightning (Zeus) fits an Electric vulnerability. The passive boosts Water minions, aligning with his oceanic domain.
+
+---
+
+### Hades - Lord of the Underworld
+
+- **Element:** Dark
+- **Weakness:** Light (takes 1.5x damage from light-based attacks)
+- **Starting Health:** 130
+- **Hero Power:** Underworld's Call
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Summon a 1/1 Shade with "Deathrattle: Deal 1 damage to a random enemy."
+- **Weapon:** Helm of Darkness
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Give all friendly minions Stealth until your next turn.
+    - **Permanent Upgrade:** Upgrades hero power to _Underworld's Call+_: Summon a 2/2 Shade with "Deathrattle: Deal 2 damage to a random enemy."
+- **Passive Ability:** Lord of the Dead
+    - **Effect:** Your Dark minions have +1 attack when they die (triggers on death).
+- **Description:** Hades, master of the underworld, commands the dead with dark power. His might falters against light’s purity.
+- **Flavor Text:** "Death claims all, but even the underworld fears light’s embrace."
+
+**Explanation:** Hades’s dark element and _Underworld Eclipse_ (fear, invisibility) inspire a hero power summoning shades and a weapon granting Stealth. His weakness to Light/Holy attacks is straightforward. The passive reflects his rule over the dead.
+
+---
+
+### Athena - Goddess of Wisdom
+
+- **Element:** Light
+- **Weakness:** Dark (takes 1.5x damage from dark-based attacks)
+- **Starting Health:** 125
+- **Hero Power:** Strategic Insight
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Look at the top two cards of your deck and put one into your hand.
+- **Weapon:** Aegis Shield
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Give all friendly minions +2 health and Taunt (must be attacked first).
+    - **Permanent Upgrade:** Upgrades hero power to _Strategic Insight+_: Look at the top three cards of your deck and put one into your hand.
+- **Passive Ability:** Tactical Genius
+    - **Effect:** Whenever you play a minion, give it +1 health.
+- **Description:** Athena, the supreme strategist, outmaneuvers foes with wisdom and skill. Her intellect shines, but darkness clouds her judgment.
+- **Flavor Text:** "Wisdom guides her, but even the wise fear the dark’s deceit."
+
+**Explanation:** Athena’s light element and _Aegis Assault_ (defensive stun + strike) suggest a strategic focus. Her hero power reflects wisdom, while her weapon provides defense (Taunt). Her weakness to lacking raw power is gameplay-based, with Dark as her elemental counter.
+
+---
+
+### Hyperion - Titan of Light
+
+- **Element:** Light
+- **Weakness:** Water (takes 1.5x damage from water-based attacks)
+- **Starting Health:** 130
+- **Hero Power:** Solar Flare
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Deal 2 damage to an enemy minion.
+- **Weapon:** Celestial Lance
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 4 damage to an enemy minion and 2 damage to adjacent minions.
+    - **Permanent Upgrade:** Upgrades hero power to _Solar Flare+_: Deal 3 damage to an enemy minion.
+- **Passive Ability:** Daylight's Brilliance
+    - **Effect:** Your Light minions have +1 attack during your turn.
+- **Description:** Hyperion, the titan of daylight, scorches foes with celestial fire. His brilliance fades in water’s embrace.
+- **Flavor Text:** "His light burns bright, but even the sun fears the sea’s depths."
+
+**Explanation:** Hyperion’s Light/Fire element is simplified to Light, with _Celestial Blaze_ inspiring a damaging hero power and weapon. His weakness to Water is explicit. The passive boosts Light minions, reflecting his daylight theme.
+
+---
+
+### Hera - Queen of the Gods
+
+- **Element:** Light
+- **Weakness:** Dark (takes 1.5x damage from dark-based attacks)
+- **Starting Health:** 120
+- **Hero Power:** Queen's Command
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Give a friendly minion +1 attack this turn.
+- **Weapon:** Starlight Scepter
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 3 damage to an enemy minion and give all friendly minions +1 attack.
+    - **Permanent Upgrade:** Upgrades hero power to _Queen's Command+_: Give a friendly minion +2 attack this turn.
+- **Passive Ability:** Divine Curse
+    - **Effect:** Whenever an enemy minion is played, reduce its attack by 1.
+- **Description:** Hera, the queen of the gods, wields authority and curses with divine magic. Her power falters against darkness’s shadow.
+- **Flavor Text:** "Her wrath is fierce, but even queens fear the dark’s embrace."
+
+**Explanation:** Hera’s light element and _Queen’s Wrath_ (starlight curses) suggest a support role. Her hero power and weapon boost allies, while her passive curses enemies. Her lack of combat power is a gameplay trait, with Dark as her elemental weakness.
+
+### 2. Gaia - Mother Earth (Greek)
+
+- **Element:** Grass
+- **Weakness:** Electric (takes 1.5x damage from electric-based attacks)
+- **Starting Health:** 140
+- **Hero Power:** Earth's Bounty
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Summon a 1/2 Plant with Taunt.
+- **Weapon:** Titan's Roots
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Summon three 2/3 Plants with Taunt.
+    - **Permanent Upgrade:** Upgrades hero power to Earth's Bounty+: Summon a 2/3 Plant with Taunt.
+- **Passive Ability:** Mother of All
+    - **Effect:** Your grass minions have +1 health.
+- **Description:** Gaia, the nurturing earth, births life and shields her children. Her roots run deep, but electric storms shake her foundations.
+- **Flavor Text:** "The earth endures, but even mountains tremble before the sky’s wrath."
+
+---
+
+### 3. Uranus - The Sky Father (Greek)
+
+- **Element:** Light
+- **Weakness:** Dark (takes 1.5x damage from dark-based attacks)
+- **Starting Health:** 135
+- **Hero Power:** Celestial Gaze
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Reveal a random card in your opponent’s hand.
+- **Weapon:** Dome of the Heavens
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Reveal the opponent’s hand and give all friendly minions +1 attack.
+    - **Permanent Upgrade:** Upgrades hero power to Celestial Gaze+: Reveal two random cards in your opponent’s hand.
+- **Passive Ability:** Sky’s Dominion
+    - **Effect:** Your light minions have +1 attack when attacking minions with Flying.
+- **Description:** Uranus, the boundless sky, watches all with celestial clarity. His light pierces the veil, but darkness can shroud his vision.
+- **Flavor Text:** "The sky sees all, but even the heavens fear the night’s embrace."
+
+ Tartarus - The Abyss Below (Greek)
+
+- **Element:** Dark
+- **Weakness:** Light (takes 1.5x damage from light-based attacks)
+- **Starting Health:** 140
+- **Hero Power:** Pit of Punishment
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Deal 2 damage to an enemy minion and reduce its attack by 1.
+- **Weapon:** Chains of the Abyss
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 3 damage to all enemy minions and reduce their attack by 2.
+    - **Permanent Upgrade:** Upgrades hero power to Pit of Punishment+: Deal 3 damage to an enemy minion and reduce its attack by 2.
+- **Passive Ability:** Eternal Darkness
+    - **Effect:** Enemy minions with reduced attack deal 1 less damage.
+- **Description:** Tartarus, the abyss of punishment, drags foes into darkness. His chains bind and weaken, but light pierces his depths.
+- **Flavor Text:** "The abyss swallows all, but even darkness fears the light’s judgment."
+
+---
+
+### Eros - The Procreator (Greek)
+
+- **Element:** Grass
+- **Weakness:** Fire (takes 1.5x damage from fire-based attacks)
+- **Starting Health:** 130
+- **Hero Power:** Arrow of Desire
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Give a friendly minion +1 attack and restore 2 health to it.
+- **Weapon:** Bow of Creation
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Give all friendly minions +2 attack and restore 4 health to them.
+    - **Permanent Upgrade:** Upgrades hero power to Arrow of Desire+: Give a friendly minion +2 attack and restore 3 health to it.
+- **Passive Ability:** Love’s Spark
+    - **Effect:** When a friendly minion is healed, it gains +1 health.
+- **Description:** Eros, the god of love, inspires creation and growth. His arrows nurture life, but fire’s passion can consume his gifts.
+- **Flavor Text:** "Love kindles life, but even desire fears the flame’s embrace."
+
+---
+
+### Nyx - Goddess of the Night (Greek)
+
+- **Element:** Dark
+- **Weakness:** Light (takes 1.5x damage from light-based attacks)
+- **Starting Health:** 135
+- **Hero Power:** Veil of Shadows
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Give a friendly minion Stealth until your next turn.
+- **Weapon:** Cloak of Midnight
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Give all friendly minions Stealth and +1 attack until your next turn.
+    - **Permanent Upgrade:** Upgrades hero power to Veil of Shadows+: Give a friendly minion Stealth and +1 attack until your next turn.
+- **Passive Ability:** Night’s Embrace
+    - **Effect:** Your dark minions deal +1 damage while they have Stealth.
+- **Description:** Nyx, the night incarnate, cloaks her allies in shadow. Her darkness conceals, but light’s dawn dispels her veil.
+- **Flavor Text:** "Night cloaks all, but even shadows fear the dawn’s light."
+
+---
+
+### Chronos - The Timekeeper (Greek)
+
+- **Element:** Light
+- **Weakness:** Dark (takes 1.5x damage from dark-based attacks)
+- **Starting Health:** 140
+- **Hero Power:** Temporal Shift
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Freeze an enemy minion until your next turn.
+- **Weapon:** Hourglass of Ages
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Freeze all enemy minions until your next turn and deal 2 damage to them.
+    - **Permanent Upgrade:** Upgrades hero power to Temporal Shift+: Freeze an enemy minion until your next turn and deal 1 damage to it.
+- **Passive Ability:** Flow of Time
+    - **Effect:** At the start of your turn, restore 1 health to all friendly minions.
+- **Description:** Chronos, the master of time, halts foes in their tracks. His light measures the ages, but darkness disrupts his flow.
+- **Flavor Text:** "Time heals all, but even eternity fears the void’s grasp."
+
+### Apollo - God of the Sun and Prophecy
+
+- **Element:** Fire (Sun ties to Fire, prophecy to fiery insight)
+- **Weakness:** Water (takes 1.5x damage from Water-based attacks)
+- **Starting Health:** 130
+- **Hero Power:** Healing Light
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Restore 2 health to a friendly minion.
+- **Weapon:** Bow of the Sun
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 3 damage to an enemy minion and reveal a random card in your opponent’s hand.
+    - **Permanent Upgrade:** Hero power becomes _Healing Light+_: Restore 3 health to a friendly minion.
+- **Passive Ability:** Solar Oracle
+    - **Effect:** At the start of your turn, look at the top card of your deck. You may put it on the bottom.
+- **Description:** Apollo wields the sun’s fiery radiance and prophetic vision, healing allies and striking foes with precision. Water dims his flames.
+- **Flavor Text:** "The sun’s gaze heals and reveals, but the sea’s touch blinds even prophecy."
+
+---
+
+### Artemis - Goddess of the Hunt
+
+- **Element:** Grass (Natural aligns with Grass, moonlight as a soft natural glow)
+- **Weakness:** Fire (takes 1.5x damage from Fire-based attacks)
+- **Starting Health:** 125
+- **Hero Power:** Moonlit Hunt
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Give a friendly minion +1 attack and Stealth until your next turn.
+- **Weapon:** Silver Bow
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 4 damage to an enemy minion.
+    - **Permanent Upgrade:** Hero power becomes _Moonlit Hunt+_: Give a friendly minion +2 attack and Stealth until your next turn.
+- **Passive Ability:** Moonlight Huntress
+    - **Effect:** Your minions gain +1 attack when they attack from Stealth.
+- **Description:** Artemis stalks the wild with grassy cunning, her arrows swift and silent. Fire threatens her untamed domain.
+- **Flavor Text:** "The moon guides her hunt, but flames devour the wild’s embrace."
+
+---
+
+### Ares - God of War
+
+- **Element:** Fire (War’s destructive power fits Fire)
+- **Weakness:** Water (takes 1.5x damage from Water-based attacks)
+- **Starting Health:** 135
+- **Hero Power:** War Cry
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Give a friendly minion +2 attack this turn.
+- **Weapon:** Spear of War
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 3 damage to an enemy minion and 1 damage to adjacent minions.
+    - **Permanent Upgrade:** Hero power becomes _War Cry+_: Give a friendly minion +3 attack this turn.
+- **Passive Ability:** Brutal Warfare
+    - **Effect:** Whenever a friendly minion attacks and kills an enemy minion, give it +1 attack permanently.
+- **Description:** Ares thrives in the fiery chaos of battle, his strength unmatched. Water quenches his fury.
+- **Flavor Text:** "War bends to his will, but water calms his savage heart."
+
+---
+
+### Demeter - Goddess of the Harvest
+
+- **Element:** Grass (Harvest and fertility are core to Grass)
+- **Weakness:** Fire (takes 1.5x damage from Fire-based attacks)
+- **Starting Health:** 130
+- **Hero Power:** Harvest’s Gift
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Restore 3 health to a friendly minion.
+- **Weapon:** Scythe of the Harvest
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 2 damage to all enemy minions and restore 2 health to all friendly minions.
+    - **Permanent Upgrade:** Hero power becomes _Harvest’s Gift+_: Restore 4 health to a friendly minion.
+- **Passive Ability:** Harvest’s Wrath
+    - **Effect:** At the end of your turn, deal 1 damage to all enemy minions if you restored health this turn.
+- **Description:** Demeter blesses the earth with grassy abundance, sustaining life. Fire scorches her fertile gifts.
+- **Flavor Text:** "Her bounty feeds the world, but flames reap only ash."
+
+---
+
+### Hephaestus - God of the Forge
+
+- **Element:** Fire (Forge and crafting are tied to Fire)
+- **Weakness:** Water (takes 1.5x damage from Water-based attacks)
+- **Starting Health:** 135
+- **Hero Power:** Forge Hammer
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Give a friendly minion +1/+1.
+- **Weapon:** Vulcan Forge
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Give all friendly minions +2/+2.
+    - **Permanent Upgrade:** Hero power becomes _Forge Hammer+_: Give a friendly minion +2/+2.
+- **Passive Ability:** Master Craftsman
+    - **Effect:** Your weapons cost 1 less mana.
+- **Description:** Hephaestus forges divine power into his fiery creations, his flames unyielding. Water douses his craft.
+- **Flavor Text:** "His hammer shapes gods, but water cools his fiery soul."
+
+---
+
+### Hermes - Messenger of the Gods
+
+- **Element:** Electric (Speed and travel align with Electric’s swiftness)
+- **Weakness:** Grass (takes 1.5x damage from Grass-based attacks)
+- **Starting Health:** 125
+- **Hero Power:** Swift Messenger
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Draw a card.
+- **Weapon:** Lightning Messenger
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Deal 2 damage to an enemy minion and draw two cards.
+    - **Permanent Upgrade:** Hero power becomes _Swift Messenger+_: Draw two cards.
+- **Passive Ability:** Clever Traveler
+    - **Effect:** Whenever you play a card from another class or element, reduce its cost by 1 next time you play it.
+- **Description:** Hermes darts across the battlefield with electric speed, his wit as sharp as his pace. Grass ensnares his swift feet.
+- **Flavor Text:** "No path slows him, but roots bind even the wind."
+
+---
+
+### Persephone - Queen of the Underworld
+
+- **Element:** Dark (Underworld ties to Dark)
+- **Weakness:** Light (takes 1.5x damage from Light-based attacks)
+- **Starting Health:** 130
+- **Hero Power:** Underworld Bloom
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Return a friendly minion to your hand.
+- **Weapon:** Pomegranate of Rebirth
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Summon a 3/3 Shade with "Deathrattle: Restore 3 health to your hero."
+    - **Permanent Upgrade:** Hero power becomes _Underworld Bloom+_: Return a friendly minion to your hand and give it +1/+1.
+- **Passive Ability:** Life and Death
+    - **Effect:** When a friendly minion dies, restore 1 health to your hero.
+- **Description:** Persephone rules life and death with dark power, her presence a cycle of renewal. Light banishes her shadows.
+- **Flavor Text:** "She blooms in darkness, but light reclaims her throne."
+
+---
+
+### Hestia - Goddess of the Hearth
+
+- **Element:** Fire (Hearth is tied to Fire)
+- **Weakness:** Water (takes 1.5x damage from Water-based attacks)
+- **Starting Health:** 120
+- **Hero Power:** Sacred Hearth
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Give a friendly minion Taunt and +1 health.
+- **Weapon:** Sacred Flame
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Restore 5 health to all friendly minions.
+    - **Permanent Upgrade:** Hero power becomes _Sacred Hearth+_: Give a friendly minion Taunt and +2 health.
+- **Passive Ability:** Hearth’s Protection
+    - **Effect:** While you control a minion with Taunt, enemy minions cannot attack your hero directly.
+- **Description:** Hestia guards the hearth with fiery peace, her flame a shield. Water smothers her light.
+- **Flavor Text:** "Her fire holds the home, but water douses her sacred flame."
+
+---
+
+### Dionysus - God of Wine and Ecstasy
+
+- **Element:** Grass (Wine and growth align with Grass)
+- **Weakness:** Fire (takes 1.5x damage from Fire-based attacks)
+- **Starting Health:** 125
+- **Hero Power:** Vine Frenzy
+    - **Cost:** 2 mana (usable once per turn)
+    - **Effect:** Transform a friendly minion into a random minion that costs 1 more.
+- **Weapon:** Thyrsus of Ecstasy
+    - **Type:** 5-mana spell
+    - **Immediate Effect:** Give all friendly minions +1 attack and "Can’t be targeted by spells."
+    - **Permanent Upgrade:** Hero power becomes _Vine Frenzy+_: Transform a friendly minion into a random minion that costs 2 more.
+- **Passive Ability:** Madness and Wine
+    - **Effect:** Whenever a friendly minion attacks, it has a 50% chance to gain +1 attack.
+- **Description:** Dionysus revels in grassy chaos, his wine fueling wild transformation. Fire burns his vines.
+- **Flavor Text:** "Ecstasy twists fate, but flames cut through the vines."

@@ -1,0 +1,174 @@
+🥇 Leviathanon, World-Drowner
+
+10 Mana | 8 Attack | 12 Health
+Legendary Minion
+
+Battlecry: Flood the battlefield. Deal 3 damage to ALL other minions.
+Aura: While Leviathanon is alive, your spells cost (1) less and enemy minions take 1 extra damage from all sources.
+
+Deathrattle: Deal 5 damage to all enemies.
+
+Flavor Text:
+“When it rises, coastlines vanish and history forgets itself.”
+
+🧠 Role: Game-ending board annihilator + spell-synergy finisher
+🌊 Identity: Absolute sea dominance
+
+🥈 Behemotitan, The Unmoving
+
+10 Mana | 10 Attack | 14 Health
+Legendary Minion – Taunt
+
+Can’t be Silenced.
+Passive: This minion cannot have its Attack reduced and takes 1 less damage from all sources.
+
+Whenever this minion attacks: Deal 3 damage to all other minions.
+
+Flavor Text:
+“Mountains learned how to walk. The world learned fear.”
+
+🧠 Role: Indestructible board anchor
+🛡️ Identity: The ultimate wall that still clears boards
+
+🥉 Tiamagon, Spawn of Chaos
+
+9 Mana | 8 Attack | 10 Health
+Legendary Minion
+
+Battlecry: Summon a Chaotic Storm — at the end of each turn, deal 2 damage to all characters.
+
+Passive: The first time this minion would take damage each turn, ignore it.
+
+Deathrattle: Deal 5 damage to all enemies.
+
+Flavor Text:
+“Creation recoils where chaos remembers its name.”
+
+🧠 Role: Board destabilizer + inevitability engine
+🌪️ Identity: Controlled apocalypse
+
+⚡ Apephis, Sun-Eater
+
+9 Mana | 9 Attack | 9 Health
+Legendary Minion – Lifesteal
+
+Battlecry: Plunge the board into darkness. Enemy minions have -2 Attack while Apephis lives.
+
+Whenever this minion deals damage: Restore that much Health to your hero.
+
+Flavor Text:
+“Every dawn is borrowed time.”
+
+🧠 Role: Control finisher + sustain
+🌑 Identity: Anti-aggro nightmare
+
+🐉 Orochiyama, Eightfold Terror
+
+8 Mana | 7 Attack | 10 Health
+Legendary Minion
+
+Whenever this minion attacks: It attacks twice.
+
+After this minion attacks: Give a random enemy minion Poisonous this turn.
+
+Flavor Text:
+“Cut one head down, and seven more remember your name.”
+
+🧠 Role: Single-target annihilator
+🐍 Identity: Relentless multi-strike monster
+
+🌋 Humbabaur, Forest Warden
+
+8 Mana | 6 Attack | 12 Health
+Legendary Minion – Taunt
+
+Aura: Enemy minions have -1 Attack.
+
+At the end of your turn: Gain +2 Health.
+
+Flavor Text:
+“The trees do not flee. They stand behind him.”
+
+🧠 Role: Defensive control pivot
+🌲 Identity: Territory denial
+
+🌑 Bakunawyrm, Moon Devourer
+
+9 Mana | 7 Attack | 11 Health
+Legendary Minion – Flying
+
+Battlecry: Disable all enemy minion abilities until your next turn.
+
+Whenever this minion deals damage: Restore 3 Health to itself.
+
+Flavor Text:
+“When the moon vanishes, something is feeding.”
+
+🧠 Role: Anti-combo / anti-synergy tech
+🌒 Identity: Silence-on-arrival god-beast
+
+🔥 Goryndra, Inferno Hydra
+
+8 Mana | 8 Attack | 8 Health
+Legendary Minion
+
+Whenever this minion attacks: Deal 2 damage to all enemies.
+
+After this minion survives damage: Give it +1 Attack.
+
+Flavor Text:
+“Fire learns from pain.”
+
+🧠 Role: Aggressive board cleanser
+🔥 Identity: Snowballing destruction
+
+🍃 Wendigloom, The Starving Curse
+
+7 Mana | 7 Attack | 7 Health
+Legendary Minion – Lifesteal
+
+Whenever a minion dies: Gain +1 Attack.
+
+After this minion kills a minion: Gain Stealth until your next turn.
+
+Flavor Text:
+“Hunger is not a need. It is a law.”
+
+🧠 Role: Assassin + scaling threat
+❄️ Identity: Predator that never stops growing
+
+🌊 Cipactilus, World Maw
+
+8 Mana | 6 Attack | 13 Health
+Legendary Minion – Taunt
+
+Whenever this minion takes damage: Restore 2 Health.
+
+Battlecry: Destroy a random enemy minion.
+
+Flavor Text:
+“The ocean learned how to bite back.”
+
+🧠 Role: Attrition monster
+🌊 Identity: Endless consumption
+
+🐍 Basiliox, Stone-Eyed Tyrant
+
+6 Mana | 6 Attack | 6 Health
+Legendary Minion
+
+At the end of your turn: Freeze a random enemy minion.
+
+Whenever this minion attacks a Frozen minion: Destroy it.
+
+Flavor Text:
+“Blink, and history hardens around you.”
+
+🧠 Role: Precision removal engine
+🗿 Identity: Soft-control executioner
+
+🧩 Summary (Design Intent)
+Tier	Power Fantasy
+1–3	Game-ending, board-warping legends
+4–7	Meta-defining control & disruption
+8–11	High-impact finishers & tech legendaries

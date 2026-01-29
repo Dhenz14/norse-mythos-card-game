@@ -1,0 +1,161 @@
+Tell your AI: "Redesign the deck builder UI to exactly replicate this image: [attach badass version]. Use stormy apocalyptic background with lightning/fire, runic borders on cards/sidebar, glowing Norse runes, 3D stone/metal frames for heroes, dynamic layout with hero grid in center, pieces sidebar left, decks right. Hero cards: portrait art, name/class badges, abilities below. Ensure immersive fantasy theme."
+
+Prompt for AI: "Generate HTML/CSS/JS code for Ragnarok TCG deck builder UI as exact replica of attached image. Include: top quick-start buttons, left pieces sidebar with chess icons/runes, central hero grid (3-4 columns, card frames with art, names, tags like HOLY/FIRE, descriptions, select buttons), right deck list with edit buttons, bottom start battle. Use dark palette, glowing effects via CSS (box-shadow, gradients), responsive flex/grid. Background: stormy sky URL('storm.jpg'). Add JS for hover/selection."
+
+Code refs: Base on my previous HTML snippet—extend with CSS for runes (use font like 'Runes' from Google Fonts), background-image, .hero-card { border-image: url(rune-frame.png); box-shadow: 0 0 10px #00ffcc; }, animations @keyframes glow. Use libraries like Bootstrap for grid if needed. To tell your AI agent (e.g. Claude, GPT, Cursor): "Generate clean, customizable HTML + CSS + JS code for a dark fantasy Norse/Greek TCG deck builder screen called Ragnarok. Include hero selection grid (like the first UI you made), pieces sidebar, deck list on right, stormy background, runic accents, responsive layout. Use placeholder data. Make it easy to edit hero cards, images, colors."
+
+I can't send raw files here. Here's basic starter code (single HTML file, copy-paste into .html, customize images/classes): <!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Ragnarok - Deck Builder</title>
+
+<style>
+
+  body {
+
+    margin:0; font-family:Arial,sans-serif; background:#0a0a1f url('https://images.unsplash.com/photo-1519681393784-d120267933ba') center/cover no-repeat fixed; color:#ddd;
+
+  }
+
+  #top { background:rgba(0,0,0,0.7); padding:10px; text-align:center; }
+
+  .btn { background:#1a3c34; color:#fff; border:none; padding:8px 16px; margin:5px; cursor:pointer; border-radius:4px; }
+
+  .btn:hover { background:#2a5c4c; }
+
+  .container { display:flex; height:calc(100vh - 60px); }
+
+  #sidebar { width:180px; background:rgba(20,20,40,0.8); padding:10px; overflow-y:auto; }
+
+  .piece { background:#111; margin:5px 0; padding:8px; border:1px solid #444; cursor:pointer; }
+
+  .piece.selected { background:#3a5c4c; }
+
+  #main { flex:1; padding:20px; overflow-y:auto; }
+
+  .hero-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:15px; }
+
+  .hero-card {
+
+    background:rgba(30,30,50,0.9); border:2px solid #444; border-radius:8px; overflow:hidden; text-align:center; cursor:pointer; transition:0.2s;
+
+  }
+
+  .hero-card:hover { transform:scale(1.05); border-color:#8b5; }
+
+  .hero-card img { width:100%; height:180px; object-fit:cover; }
+
+  .hero-card h3 { margin:8px; font-size:1.1em; }
+
+  .tag { font-size:0.8em; padding:2px 8px; border-radius:4px; margin:2px; }
+
+  .holy { background:#4169e1; } .shadow { background:#4b0082; } .fire { background:#b22222; }
+
+  #right { width:300px; background:rgba(10,10,30,0.9); padding:15px; overflow-y:auto; }
+
+  .deck-item { background:#222; margin:8px 0; padding:10px; border-radius:6px; display:flex; align-items:center; gap:10px; }
+
+  .deck-item img { width:50px; height:70px; object-fit:cover; border-radius:4px; }
+
+  #start { position:fixed; bottom:20px; right:20px; background:#8b0000; color:white; padding:15px 30px; font-size:1.2em; border:none; border-radius:8px; cursor:pointer; }
+
+</style>
+
+</head>
+
+<body>
+
+<div id="top">
+
+  <button class="btn">Random Mage Deck 30/30</button>
+
+  <button class="btn">Random Neutral Deck 60/60</button>
+
+  <!-- add more -->
+
+</div>
+
+<div class="container">
+
+  <div id="sidebar">
+
+    <h3>Pieces</h3>
+
+    <div class="piece">King ♛ Ymir</div>
+
+    <div class="piece selected">Queen ♕ Odin</div>
+
+    <div class="piece">Rook ♜ Thor</div>
+
+    <div class="piece">Bishop ♝ Freya</div>
+
+    <div class="piece">Knight ♞ Loki</div>
+
+  </div>
+
+  <div id="main">
+
+    <h2>Queen Heroes - Freyja's Domain</h2>
+
+    <div class="hero-grid">
+
+      <div class="hero-card">
+
+        <img src="https://via.placeholder.com/200x300/111/fff?text=Odin" alt="Odin">
+
+        <h3>Odin</h3>
+
+        <span class="tag holy">HOLY</span><span class="tag">Mage</span>
+
+        <p>The Allfather</p>
+
+      </div>
+
+      <div class="hero-card">
+
+        <img src="https://via.placeholder.com/200x300/222/aaa?text=Bragi" alt="Bragi">
+
+        <h3>Bragi</h3>
+
+        <span class="tag holy">HOLY</span><span class="tag">Mage</span>
+
+      </div>
+
+      <!-- Add more hero cards here -->
+
+      <div class="hero-card"><img src="https://via.placeholder.com/200x300?text=Sol" alt="Sol"><h3>Sol</h3><span class="tag fire">FIRE</span></div>
+
+    </div>
+
+  </div>
+
+  <div id="right">
+
+    <h3>Your Army & Decks</h3>
+
+    <div class="deck-item">
+
+      <img src="https://via.placeholder.com/50x70?text=Ymir" alt="Ymir">
+
+      <div>Ymir<br>No Deck</div>
+
+      <button class="btn">Edit Deck</button>
+
+    </div>
+
+    <!-- Add more deck items -->
+
+  </div>
+
+</div>
+
+<button id="start">Start Battle</button>
+
+</body>
+
+</html> Customize: Replace placeholder images/URLs, add JS for click events (select hero, edit deck), runic fonts via Google Fonts, more CSS for glows/lightning. For full interactivity, extend with event listeners.

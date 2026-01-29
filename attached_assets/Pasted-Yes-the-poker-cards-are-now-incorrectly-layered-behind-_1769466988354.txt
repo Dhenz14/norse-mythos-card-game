@@ -1,0 +1,17 @@
+Yes, the poker cards are now incorrectly layered behind the hero (lower z-index), causing only tips to peek out—reversing the physical layering. Senior Hearthstone developers prioritize tangible depth: elements like hand cards layer IN FRONT of heroes with higher z-index, fanning over the bottom edge for immersion without clipping visibility. Fix this precisely while preserving the fixed aspect ratio, absolute positioning, and modularity—no hacks, transforms for positioning, or responsiveness breaks.
+
+Step-by-step correction:
+
+1. **Layer Poker Cards IN FRONT of Hero**: Set z-index of poker cards (e.g., 8 and K) higher than hero portrait (e.g., z-index: 10 for cards, 5 for hero). Position absolutely relative to hero container with percentages (e.g., bottom: 20-30% of hero height, left: 10% for fanning), so cards overlap the BOTTOM edge of hero slightly—full cards visible, top 2/3rds prominently showing, bottom 1/3rd overlapping hero for depth illusion. Mimic Hearthstone hand fanning: natural arc, subtle shadows/offsets for "above" feel.
+
+2. **Maintain Exact Positioning from Desired Layout**: Match attached images—poker cards fanned directly over hero's bottom, fully legible. Use CSS variables (e.g., --poker-offset-y: 25%; --poker-fan-spread: 15%) for easy tweaks without code changes.
+
+3. **Verify Minions and Buttons**: Ensure 3 minion cards stay snug right of hero, betting buttons (Raise, Call, Fold) directly below minions—unchanged, higher z-index if needed for prominence.
+
+4. **Preserve Professional Architecture**: Keep root scale(), absolute % positioning, no overflow:hidden on zones, min-height:auto. Audit z-index stacking contexts—no conflicts causing unintended layering.
+
+5. **Hearthstone-Approved Polish**: Add subtle physicality—card tilt on hover, glow/shadow on overlap for tangibility. Test full visibility on all screens/devices.
+
+6. **Modularity and Testing**: Expose props/CSS vars for poker z-index/offset. Provide before/after demos, code comments on layering.
+
+Implement now, confirm with screenshots. This achieves AAA layering permanently.

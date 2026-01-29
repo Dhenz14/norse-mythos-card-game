@@ -1,0 +1,111 @@
+Below is a more **targeted, no-guesswork** method to **pinpoint exactly** which container or style rule is creating that lingering “invisible box.” Since you already added colored backgrounds and still see a box, the next diagnostic steps will let you **isolate** and **prove** the culprit—step by step.
+
+---
+
+## 1. Strip Down to a Minimal Reproduction
+
+1. **Create a new test component** (e.g., `MinimalCardTest.tsx`) that is **completely separate** from your existing card code.  
+2. Copy just the **bare-bones** layout (one or two divs, your text with the “carved” style, the same image or gradient you’re using).  
+3. **Remove all** other classes, keyword formatting, or fancy effects—just your text container and the background.  
+
+**Example** (pseudo-code):
+```jsx
+export default function MinimalCardTest() {
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: '300px',
+        height: '420px',
+        background: 'linear-gradient(to bottom, #444, #111)', 
+        // a dark metal-like gradient
+        overflow: 'visible', // or none
+        border: '2px solid magenta', // so we see container boundary
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          color: '#FFD700',
+          textShadow: '0 0 8px rgba(255,215,0,0.8)',
+          // your "carved" style
+          // ...
+        }}
+      >
+        Battlecry: Summon a 2/2 Golem
+      </div>
+    </div>
+  );
+}
+```
+
+4. **Render `MinimalCardTest`** somewhere in your app or a standalone test page. If, in this minimal scenario, the text glow is **not** clipped, you know your base styling is fine. That means the “invisible box” is definitely introduced by something else in your main Card codebase.
+
+---
+
+## 2. Incrementally Reintroduce Elements
+
+Start adding your actual card layers (title banner, gem, additional containers) **one at a time** into `MinimalCardTest`. After adding each piece, **check** if the “invisible box” reappears:
+
+- **Banner** container  
+- **Keyword** spans / formatting  
+- **Additional images or shapes**  
+- **Any top-level card wrappers**  
+
+The moment the clipping returns, you’ve found the **exact** container or property. This is the **fastest** guaranteed route when color-coding alone doesn’t reveal the culprit.
+
+---
+
+## 3. In DevTools, Turn Off Rules One by One
+
+While you do step #2, also use **Chrome DevTools** (or Firefox’s inspector) on the container that reintroduces the problem:
+
+1. In the **Styles** panel, **uncheck** each property: `overflow`, `border-radius`, `box-shadow`, `clip-path`, etc.  
+2. Watch the preview. The instant your text glow or carved effect is no longer clipped, that property is to blame.  
+3. If you can’t find any suspicious property, also check **parent** containers (the ones layering above or below your text).
+
+---
+
+## 4. Check for Overlapping Elements & Z-Indexes
+
+Sometimes the “box” isn’t from `overflow: hidden;` but from a sibling or parent element that’s overshadowing the text. For example:
+
+- A **hover overlay** or **card frame** might have partial transparency but still cut off or dull the glow.  
+- A sibling element with a **higher z-index** might be on top and cause the text’s glow to appear clipped.
+
+**In DevTools**:
+
+- Look at the “Layers” or “Layout” panel (Chrome: More Tools → Layers).  
+- See if a sibling is “above” your text.  
+- Try toggling the sibling’s `z-index` or `position` to see if your glow is freed.
+
+---
+
+## 5. Confirm No Hidden Mask, Filter, or Canvas Layer
+
+**Less common** but possible:
+
+- A **mask** or **filter** might be on a parent container (like a partial fade-out effect).  
+- If you see `filter: url(#someSVGFilter)`, `mask: url(...)`, or `clip-path: polygon(...)`, uncheck it or remove it to see if that fixes your text.
+
+---
+
+## 6. Final “Check” of Potential Offenders
+
+1. **`overflow: hidden;`** or `clip-path`  
+2. **`border-radius`** in combination with `overflow: hidden;` (for rounded corners)  
+3. **inset `box-shadow`** that’s still present from older code  
+4. **Sibling overlay** with partial transparency covering text’s glow  
+5. **Any transform / 3D parent** that changes stacking contexts (rare, but can happen)
+
+---
+
+### If All Else Fails
+
+- Double-check there isn’t a **component** that forcibly adds a background or an overlay you’re unaware of. Sometimes libraries (like a tooltip or effect library) might wrap your content.  
+- Make sure your new “debug” classes aren’t overshadowed by higher-specificity CSS rules or inline styles you didn’t see.
+
+**But** once you do the **Minimal Reproduction** approach and carefully reintroduce each piece, you’ll see precisely where it breaks. This is the sure-fire method—no guesswork required. You’ll definitely isolate the final container or property that’s causing the invisible clipping box, remove or modify it, and finally have that perfect, unobstructed “carved into metal” text.

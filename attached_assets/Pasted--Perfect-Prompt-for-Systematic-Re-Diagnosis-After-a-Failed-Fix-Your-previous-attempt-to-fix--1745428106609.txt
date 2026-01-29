@@ -1,0 +1,90 @@
+
+**Perfect Prompt for Systematic Re-Diagnosis After a Failed Fix**
+
+Your previous attempt to fix the user’s issue was unsuccessful. Now, you must carefully revisit the problem, systematically identify the true root cause, and develop a targeted, verified solution. Follow the protocol below step by step, using evidence-based reasoning and thorough investigation rather than relying on prior assumptions or guesses.
+
+---
+
+## Systematic Re-Diagnosis Protocol for Troubleshooting
+
+### 1. Step Back & Re-Scope
+1. Discard prior assumptions and diagnoses—your initial approach has proven insufficient.  
+2. Reassess the core functionality or system component(s) involved.  
+3. Broaden your view: consider adjacent systems or dependencies that might be at fault.  
+4. Focus on the user’s ultimate goal, not just the immediate technical request.
+
+### 2. Map the Relevant System Structure
+1. Use your available tools (e.g., `list_dir`, `file_search`, `codebase_search`, `read_file`) to gather information about configurations and entry points.  
+2. Develop a mental or written model of how these systems interact.  
+3. Trace data flows and note configuration loading points.  
+4. Aim for a “pyramid view” of the overall architecture before diving into details.
+
+### 3. Hypothesize Potential Root Causes
+Based on your system mapping, consider all plausible causes, including (but not limited to):  
+- Configuration errors or mismatches  
+- Incorrect API usage or logic flaws  
+- Data quality/format issues  
+- Dependency or version conflicts  
+- Infrastructure misconfigurations  
+- Permission/authentication problems  
+- Resource constraints or race conditions  
+
+### 4. Systematic Investigation & Evidence Gathering
+1. Prioritize these hypotheses, starting with the most likely.  
+2. Collect concrete evidence using targeted tool commands.  
+3. Document all findings to keep a clear record of what you have ruled out or confirmed.  
+4. Avoid confirmation bias—actively look for evidence that disproves each hypothesis.
+
+### 5. Validate Configurations
+1. Examine relevant configuration files in depth (`read_file`).  
+2. Compare environment-specific settings if multiple environments are involved.  
+3. Look for subtle mismatches like formatting, capitalization, or data types.  
+4. Ensure configuration values align exactly with code expectations.
+
+### 6. Trace Execution Flow
+1. Use `grep_search` or `codebase_search` to follow the code path for the failing functionality.  
+2. If needed, propose adding descriptive logging (with appropriate approval) to pinpoint the breakdown.  
+3. Identify precisely where the behavior deviates from what is expected.  
+4. Watch for silent failures or exception handling that obscures the real error.
+
+### 7. Check Dependencies & External Interactions
+1. Verify that dependent libraries, services, or APIs are compatible and functioning.  
+2. Confirm correct versions, network connectivity, and timeout settings.  
+3. Use safe diagnostic commands (with user approval if needed) to confirm external systems are available.  
+
+### 8. Examine Logs
+1. Guide the user to locate relevant logs if you cannot access them directly.  
+2. Analyze the logs for patterns, error codes, stack traces, or hidden warnings.  
+3. Note the timing of errors to see if they coincide with other system events.
+
+### 9. Identify the Confirmed Root Cause
+1. Narrow down the cause based solely on the gathered evidence—avoid speculation.  
+2. Clearly articulate how this cause leads to the observed problem.  
+3. If the cause remains unclear, document the progress made and what remains unknown.
+
+### 10. Propose a Targeted Solution
+1. Present a fix that directly addresses the specific root cause—no “band-aid” fixes.  
+2. Anticipate potential side effects or downstream impacts.  
+3. Keep the change as minimal as possible to correct the issue without introducing new ones.
+
+### 11. Plan Comprehensive Verification
+1. Outline both positive (normal operation) and negative (error handling) test cases.  
+2. Consider edge cases where the system might behave unexpectedly.  
+3. Include regression testing to ensure you haven’t broken other functionalities.  
+4. For performance-critical systems, ensure the fix does not degrade performance.
+
+### 12. Execute & Verify
+1. Use appropriate tools (e.g., `edit_file`, `run_terminal_cmd`) to apply the fix.  
+2. Obtain any necessary approvals before making changes.  
+3. Methodically execute your verification plan and record results at each step.
+
+### 13. Report Outcome
+1. Summarize the true root cause and why your previous attempt failed.  
+2. Describe the specific fix you applied and its rationale.  
+3. Present verification results that confirm the issue is resolved.  
+4. Offer any recommendations to prevent similar problems in the future.
+
+---
+
+**Your Mission:**  
+Adhere strictly to this protocol. Do not repeat the same attempted solution without gathering new evidence or refining your diagnosis. Remain humble, systematic, and evidence-driven. The objective is to identify and eliminate the true root cause so the user’s issue is resolved once and for all.

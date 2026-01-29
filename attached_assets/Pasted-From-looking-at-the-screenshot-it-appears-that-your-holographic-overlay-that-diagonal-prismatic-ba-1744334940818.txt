@@ -1,0 +1,102 @@
+From looking at the screenshot, it appears that your holographic overlay (that diagonal prismatic band cutting across the card) is also affecting the text layer. Instead of your text sitting cleanly on top, the card’s blending effects are “washing out” or recoloring the text. In a classic holographic Pokémon-style card, the foil shine usually sits **behind** all text elements, letting the text remain sharp and fully visible when viewed head-on.
+
+Here are the most common causes for that diagonal “slice” and the dull, obscured text:
+
+1. **Text Is in the Same Blending Context as the Holographic Effect**  
+   - If you’re using something like `mix-blend-mode: color-dodge;` (or overlay, screen, etc.) directly on the entire card (including the text), your text will get recolored whenever the diagonal shine passes underneath.  
+   - To fix this, move the holographic overlay into its own element (or pseudo-element) **behind** the text and remove it from the same blend context. A typical approach is:
+     ```html
+     <div class="card">
+       <div class="foil-overlay"></div> <!-- The prismatic layer -->
+       <div class="content">           <!-- Text, images, etc. -->
+         ...
+       </div>
+     </div>
+     ```
+     Then in your CSS, ensure the `.foil-overlay` is absolutely positioned **under** the `.content` with a lower z-index, or use `::before` / `::after` with the correct stacking order.
+
+2. **No `isolation: isolate;` on the Card Container**  
+   - Without isolation, blend modes can leak into (and alter) everything on the card, including text.  
+   - Setting `isolation: isolate;` on the `.card` container ensures the blend only affects the card’s background (e.g., the foil texture) and not the text. For example:
+     ```css
+     .card {
+       position: relative;
+       isolation: isolate;
+       /* other card CSS */
+     }
+     ```
+   - Combine that with the text on a higher z-index (or a child that doesn’t use a blend mode), so the foil effect stays behind.
+
+3. **Overlay or Gradient Is Too Opaque/Intense**  
+   - Even if your layers are correct, a very bold gradient plus blend modes can overwhelm text. Lowering the foil’s opacity (e.g., `opacity: 0.3–0.5`) keeps text clear when viewed head-on, but still allows dramatic “shifts” when the card is tilted or hovered. 
+   - You can ramp up the foil’s intensity only on tilt/hover via transitions or JavaScript-based tilt calculations.
+
+4. **Text Styling Not Optimized for Contrast**  
+   - If your text is a bright color (like yellow or pink) but the foil behind it is also bright and flashy, it’s easy to lose legibility. You can add a subtle `text-shadow` or a faint stroke around the letters to make them pop, e.g.:
+     ```css
+     .content h2 {
+       text-shadow: 0 0 3px rgba(0,0,0,0.4);
+     }
+     ```
+   - This ensures the text remains crisp even if the background is flashing rainbow colors.
+
+---
+
+### How to Fix It
+
+1. **Separate the Foil from the Text**  
+   ```html
+   <div class="card">
+     <div class="foil-overlay"></div>
+     <div class="card-content">
+       <h2>Odin's Wisdom</h2>
+       <!-- other text, images, etc. -->
+     </div>
+   </div>
+   ```
+
+2. **Card CSS with Isolation & Proper Stacking**  
+   ```css
+   .card {
+     position: relative;
+     width: 300px;
+     height: 420px;
+     background: #222;
+     border-radius: 10px;
+     overflow: hidden;
+     isolation: isolate; /* ensures blend mode doesn’t affect text */
+   }
+
+   .foil-overlay {
+     position: absolute;
+     inset: 0;
+     background: linear-gradient(
+       135deg,
+       #ff00ff 0%,
+       #00ffff 25%,
+       #ffff00 50%,
+       #ff0000 75%,
+       #00ff00 100%
+     );
+     mix-blend-mode: color-dodge; 
+     opacity: 0.4;              /* keep it subtle at rest */
+     pointer-events: none;      /* so it doesn’t block interactions */
+     /* optional animation or transform for tilt-based shine */
+   }
+
+   .card-content {
+     position: relative;
+     z-index: 1;          /* above the .foil-overlay */
+     padding: 1rem;
+     color: #fff;
+     /* add text-shadow or stroke for clarity if needed */
+   }
+   ```
+
+3. **Test at Different Angles**  
+   - If you’re using a mouse-follow or tilt script, watch how bright the overlay becomes at extreme angles. Dial it down (or up) as desired. The key is letting the text remain legible when the card is “flat” — just like old-school Pokémon cards.
+
+---
+
+#### TL;DR
+Your text is getting blended by the same diagonal gradient that’s meant to be behind it. Make sure the foil/holographic gradient sits on its own layer **under** the text, and apply `mix-blend-mode` so it blends with the card background **not** the text. Also, isolate the card’s blending (`isolation: isolate;`) and give the text a higher z-index or a separate stacking context so it stays clear. Once you isolate the foil from the text, you’ll see that “90s holographic” shine effect without losing readability.

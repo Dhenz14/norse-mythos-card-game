@@ -1,0 +1,1009 @@
+# Setting Up Custom MCP Servers in Replit
+
+This document provides step-by-step instructions for installing your custom Methodological Cognitive Pattern (MCP) servers to a Replit project.
+
+## Step 1: Create the Directory Structure
+
+First, create the necessary directory structure for your MCP servers:
+
+```bash
+# Log into your Replit account and open your project
+# Then in the Replit Shell, create the MCP server directory:
+mkdir -p server/mcp
+```
+
+## Step 2: Create the MCP Server Files
+
+Create the following files in the `server/mcp` directory:
+
+### 1. Main Router (index.ts)
+
+```typescript
+// File: server/mcp/index.ts
+import express from "express";
+import { sequentialThinking } from "./sequentialThinking";
+import { thinkTool } from "./thinkTool";
+import { codeMCP } from "./code";
+import { mermaidMCP } from "./mermaid";
+import { devMagic } from "./devMagic";
+
+const router = express.Router();
+
+// Register MCP endpoints
+router.post("/sequential-thinking", sequentialThinking);
+router.post("/think-tool", thinkTool);
+router.post("/code", codeMCP);
+router.post("/mermaid", mermaidMCP);
+router.post("/21st-devmagic", devMagic);
+
+export default router;
+```
+
+### 2. Sequential Thinking MCP (sequentialThinking.ts)
+
+```typescript
+// File: server/mcp/sequentialThinking.ts
+import { Request, Response } from "express";
+
+interface SequentialThinkingRequest {
+  task: string;
+  context: {
+    phases?: string[];
+    components?: string[];
+    dependencies?: Record<string, string[]>;
+    constraints?: Record<string, any>;
+    [key: string]: any;
+  };
+}
+
+interface SequentialThinkingResponse {
+  steps: Array<{
+    id: string;
+    name: string;
+    description: string;
+    dependencies: string[];
+    estimatedTime: string;
+  }>;
+  criticalPath: string[];
+  totalEstimatedTime: string;
+}
+
+export const sequentialThinking = async (req: Request, res: Response) => {
+  try {
+    const { task, context } = req.body as SequentialThinkingRequest;
+
+    if (!task) {
+      return res.status(400).json({ error: "Task is required" });
+    }
+
+    // Process the sequential thinking steps based on the task and context
+    // This is a simplified implementation - in a real system, this would have
+    // more sophisticated logic to break down tasks
+    const result: SequentialThinkingResponse = {
+      steps: [
+        {
+          id: "step-1",
+          name: "Analyze Requirements",
+          description: `Analyze the requirements for: ${task}`,
+          dependencies: [],
+          estimatedTime: "30m",
+        },
+        {
+          id: "step-2",
+          name: "Design Solution",
+          description: `Design a solution architecture for: ${task}`,
+          dependencies: ["step-1"],
+          estimatedTime: "45m",
+        },
+        {
+          id: "step-3",
+          name: "Implement Core Functionality",
+          description: `Implement the core functionality for: ${task}`,
+          dependencies: ["step-2"],
+          estimatedTime: "1h 30m",
+        },
+        {
+          id: "step-4",
+          name: "Write Tests",
+          description: `Create test cases for: ${task}`,
+          dependencies: ["step-3"],
+          estimatedTime: "1h",
+        },
+        {
+          id: "step-5",
+          name: "Review & Finalize",
+          description: `Review and finalize the implementation for: ${task}`,
+          dependencies: ["step-4"],
+          estimatedTime: "45m",
+        },
+      ],
+      criticalPath: ["step-1", "step-2", "step-3", "step-4", "step-5"],
+      totalEstimatedTime: "4h 30m",
+    };
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Sequential Thinking Error:", error);
+    res
+      .status(500)
+      .json({ error: "Error processing sequential thinking request" });
+  }
+};
+```
+
+### 3. Think Tool MCP (thinkTool.ts)
+
+```typescript
+// File: server/mcp/thinkTool.ts
+import { Request, Response } from "express";
+
+interface ThinkToolRequest {
+  task: string;
+  context: {
+    options?: string[];
+    requirements?: Record<string, string>;
+    tools?: Record<string, string[]>;
+    [key: string]: any;
+  };
+}
+
+interface ToolAnalysis {
+  name: string;
+  score: number;
+  strengths: string[];
+  weaknesses: string[];
+  suitability: number;
+}
+
+interface ThinkToolResponse {
+  recommendedTools: string[];
+  analysis: Record<string, ToolAnalysis>;
+  reasoning: string;
+}
+
+export const thinkTool = async (req: Request, res: Response) => {
+  try {
+    const { task, context } = req.body as ThinkToolRequest;
+
+    if (!task) {
+      return res.status(400).json({ error: "Task is required" });
+    }
+
+    // This is a simplified implementation
+    // In a real implementation, this would actually analyze the tools
+    const options = context.options || ["default-tool-1", "default-tool-2"];
+
+    const result: ThinkToolResponse = {
+      recommendedTools: [options[0]], // Just recommend the first tool for this demo
+      analysis: {},
+      reasoning: `Based on analysis of the task "${task}", ${options[0]} is recommended because it best matches the requirements.`,
+    };
+
+    // Generate analysis for each tool
+    options.forEach((tool) => {
+      result.analysis[tool] = {
+        name: tool,
+        score: tool === options[0] ? 0.9 : 0.7, // Higher score for the recommended tool
+        strengths: [`Good for ${task}`, "Easy to use"],
+        weaknesses: ["May require configuration"],
+        suitability: tool === options[0] ? 0.85 : 0.65,
+      };
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Think Tool Error:", error);
+    res.status(500).json({ error: "Error processing think tool request" });
+  }
+};
+```
+
+### 4. Code MCP (code.ts)
+
+```typescript
+// File: server/mcp/code.ts
+import { Request, Response } from "express";
+
+interface CodeMCPRequest {
+  task: string;
+  context: {
+    patterns?: string[];
+    codebase?: string;
+    performance?: Record<string, string | number>;
+    [key: string]: any;
+  };
+}
+
+interface CodePattern {
+  name: string;
+  description: string;
+  example: string;
+  usage: string;
+}
+
+interface CodeMCPResponse {
+  implementedPatterns: CodePattern[];
+  suggestedCode: string;
+  codeExplanation: string;
+}
+
+export const codeMCP = async (req: Request, res: Response) => {
+  try {
+    const { task, context } = req.body as CodeMCPRequest;
+
+    if (!task) {
+      return res.status(400).json({ error: "Task is required" });
+    }
+
+    const patterns = context.patterns || [];
+
+    // Create a response with implemented patterns and suggested code
+    // This is a simplified implementation
+    const result: CodeMCPResponse = {
+      implementedPatterns: patterns.map((pattern) => ({
+        name: pattern,
+        description: `Implementation of the ${pattern} pattern`,
+        example: getPatternExample(pattern),
+        usage: `Used for ${task}`,
+      })),
+      suggestedCode: generateSuggestedCode(task, patterns),
+      codeExplanation: `This code implements ${patterns.join(
+        ", "
+      )} patterns for ${task}`,
+    };
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Code MCP Error:", error);
+    res.status(500).json({ error: "Error processing code MCP request" });
+  }
+};
+
+function getPatternExample(pattern: string): string {
+  // Simple examples for common patterns
+  const examples: Record<string, string> = {
+    Repository: `
+class UserRepository {
+  async findById(id) {
+    // Implementation
+  }
+  
+  async save(user) {
+    // Implementation
+  }
+}`,
+    Service: `
+class AuthService {
+  constructor(userRepository) {
+    this.userRepository = userRepository;
+  }
+  
+  async authenticate(username, password) {
+    // Implementation
+  }
+}`,
+    Factory: `
+class CardFactory {
+  createCard(type, attributes) {
+    switch(type) {
+      case 'minion':
+        return new MinionCard(attributes);
+      case 'spell':
+        return new SpellCard(attributes);
+      default:
+        throw new Error('Unknown card type');
+    }
+  }
+}`,
+    Observer: `
+class EventBus {
+  constructor() {
+    this.subscribers = {};
+  }
+  
+  subscribe(event, callback) {
+    if (!this.subscribers[event]) {
+      this.subscribers[event] = [];
+    }
+    this.subscribers[event].push(callback);
+  }
+  
+  publish(event, data) {
+    if (this.subscribers[event]) {
+      this.subscribers[event].forEach(callback => callback(data));
+    }
+  }
+}`,
+    "State Machine": `
+class CardState {
+  constructor(card) {
+    this.card = card;
+  }
+  
+  play() { throw new Error('Not implemented'); }
+  discard() { throw new Error('Not implemented'); }
+}
+
+class HandCardState extends CardState {
+  play() {
+    // Implementation for playing from hand
+    this.card.setState(new InPlayCardState(this.card));
+  }
+}
+
+class InPlayCardState extends CardState {
+  discard() {
+    // Implementation for discarding from play
+    this.card.setState(new DiscardedCardState(this.card));
+  }
+}`,
+  };
+
+  return (
+    examples[pattern] || `// Example implementation for ${pattern} pattern`
+  );
+}
+
+function generateSuggestedCode(task: string, patterns: string[]): string {
+  // Generate a simple code snippet based on the task and patterns
+  // This is a simplified implementation
+  const taskLower = task.toLowerCase();
+
+  if (taskLower.includes("authentication")) {
+    return `
+// Authentication implementation using ${patterns.join(", ")} patterns
+class AuthenticationService {
+  constructor(userRepository) {
+    this.userRepository = userRepository;
+  }
+  
+  async login(username, password) {
+    const user = await this.userRepository.findByUsername(username);
+    if (!user || !await this.verifyPassword(password, user.passwordHash)) {
+      throw new Error('Invalid credentials');
+    }
+    return this.generateToken(user);
+  }
+  
+  async verifyPassword(password, hash) {
+    // Implementation
+    return true;
+  }
+  
+  generateToken(user) {
+    // Implementation
+    return { token: 'example-token' };
+  }
+}`;
+  }
+
+  if (taskLower.includes("card") || taskLower.includes("effect")) {
+    return `
+// Card effect implementation using ${patterns.join(", ")} patterns
+class CardEffectService {
+  constructor(gameState) {
+    this.gameState = gameState;
+    this.effectHandlers = {};
+  }
+  
+  registerEffectHandler(effectType, handler) {
+    this.effectHandlers[effectType] = handler;
+  }
+  
+  applyEffect(card, effectType, targets) {
+    const handler = this.effectHandlers[effectType];
+    if (!handler) {
+      throw new Error(\`No handler registered for effect type: \${effectType}\`);
+    }
+    return handler.apply(card, targets, this.gameState);
+  }
+}`;
+  }
+
+  // Default implementation
+  return `
+// Implementation for ${task} using ${patterns.join(", ")} patterns
+class Service {
+  constructor(dependencies) {
+    this.dependencies = dependencies;
+  }
+  
+  async execute(input) {
+    // Implementation
+    return { result: 'Success' };
+  }
+}`;
+}
+```
+
+### 5. Mermaid MCP (mermaid.ts)
+
+```typescript
+// File: server/mcp/mermaid.ts
+import { Request, Response } from "express";
+import fs from "fs";
+import path from "path";
+
+interface MermaidMCPRequest {
+  task: string;
+  context: {
+    diagrams?: string[];
+    output?: string;
+    [key: string]: any;
+  };
+}
+
+interface DiagramResult {
+  type: string;
+  markdown: string;
+  filepath?: string;
+}
+
+interface MermaidMCPResponse {
+  diagrams: DiagramResult[];
+  message: string;
+}
+
+export const mermaidMCP = async (req: Request, res: Response) => {
+  try {
+    const { task, context } = req.body as MermaidMCPRequest;
+
+    if (!task) {
+      return res.status(400).json({ error: "Task is required" });
+    }
+
+    const diagrams = context.diagrams || ["flow"];
+    const outputPath = context.output || "./docs/diagrams";
+
+    // Generate diagrams based on the task and requested diagram types
+    const result: MermaidMCPResponse = {
+      diagrams: diagrams.map((diagramType) =>
+        generateDiagram(task, diagramType, outputPath)
+      ),
+      message: `Generated ${diagrams.length} diagrams for task: ${task}`,
+    };
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Mermaid MCP Error:", error);
+    res.status(500).json({ error: "Error processing mermaid MCP request" });
+  }
+};
+
+function generateDiagram(
+  task: string,
+  diagramType: string,
+  outputPath: string
+): DiagramResult {
+  let markdown = "";
+
+  // Generate different diagram types based on the request
+  switch (diagramType) {
+    case "flow":
+    case "flowchart":
+      markdown = generateFlowchart(task);
+      break;
+    case "sequence":
+      markdown = generateSequenceDiagram(task);
+      break;
+    case "class":
+      markdown = generateClassDiagram(task);
+      break;
+    case "er":
+    case "entity-relationship":
+    case "data-model":
+      markdown = generateERDiagram(task);
+      break;
+    case "gantt":
+      markdown = generateGanttChart(task);
+      break;
+    case "state":
+    case "state-diagram":
+    case "state-flow":
+      markdown = generateStateDiagram(task);
+      break;
+    default:
+      markdown = generateFlowchart(task);
+  }
+
+  // In a real implementation, we would save the file here
+  // and return the filepath, but for this demo we'll just simulate it
+  const filename = `${diagramType}-${
+    new Date().toISOString().split("T")[0]
+  }.md`;
+  const filepath = path.join(outputPath, filename);
+
+  // Only write the file if the directory exists to avoid errors in the mock implementation
+  // In a real system, you'd want to create the directory if it doesn't exist
+  /* 
+  try {
+    if (!fs.existsSync(outputPath)) {
+      fs.mkdirSync(outputPath, { recursive: true });
+    }
+    fs.writeFileSync(filepath, markdown);
+  } catch (error) {
+    console.error(`Error writing diagram to ${filepath}:`, error);
+  }
+  */
+
+  return {
+    type: diagramType,
+    markdown,
+    filepath,
+  };
+}
+
+function generateFlowchart(task: string): string {
+  return `\`\`\`mermaid
+flowchart TD
+    A[Start] --> B{Analyze Task}
+    B -->|Requirements Clear| C[Design Solution]
+    B -->|Need More Info| D[Gather Requirements]
+    D --> B
+    C --> E[Implement Solution]
+    E --> F[Test Implementation]
+    F -->|Tests Pass| G[Deploy]
+    F -->|Tests Fail| E
+    G --> H[End]
+\`\`\``;
+}
+
+function generateSequenceDiagram(task: string): string {
+  return `\`\`\`mermaid
+sequenceDiagram
+    participant User
+    participant API
+    participant DB
+    User->>API: Request Action
+    API->>DB: Query Data
+    DB-->>API: Return Results
+    API-->>User: Response
+\`\`\``;
+}
+
+function generateClassDiagram(task: string): string {
+  return `\`\`\`mermaid
+classDiagram
+    class Card {
+        +String id
+        +String name
+        +int cost
+        +play()
+        +discard()
+    }
+    class MinionCard {
+        +int attack
+        +int health
+        +attack()
+        +takeDamage(int)
+    }
+    class SpellCard {
+        +String effect
+        +castSpell(target)
+    }
+    Card <|-- MinionCard
+    Card <|-- SpellCard
+\`\`\``;
+}
+
+function generateERDiagram(task: string): string {
+  return `\`\`\`mermaid
+erDiagram
+    PLAYER ||--o{ DECK : has
+    DECK ||--|{ CARD : contains
+    PLAYER {
+        string id
+        string name
+        int rank
+    }
+    DECK {
+        string id
+        string name
+        string class
+    }
+    CARD {
+        string id
+        string name
+        int cost
+        string type
+    }
+\`\`\``;
+}
+
+function generateGanttChart(task: string): string {
+  return `\`\`\`mermaid
+gantt
+    title ${task} Implementation Plan
+    dateFormat  YYYY-MM-DD
+    section Analysis
+    Requirements Analysis    :a1, 2025-04-01, 3d
+    Design                   :a2, after a1, 5d
+    section Implementation
+    Core Development         :i1, after a2, 10d
+    Testing                  :i2, after i1, 5d
+    section Deployment
+    Deployment Prep          :d1, after i2, 2d
+    Go Live                  :milestone, after d1, 0d
+\`\`\``;
+}
+
+function generateStateDiagram(task: string): string {
+  return `\`\`\`mermaid
+stateDiagram-v2
+    [*] --> InHand
+    InHand --> InPlay: Play Card
+    InHand --> Discarded: Discard
+    InPlay --> Discarded: Destroy
+    InPlay --> Transformed: Transform
+    Transformed --> Discarded: Destroy
+    Discarded --> [*]
+\`\`\``;
+}
+```
+
+### 6. 21st DevMagic MCP (devMagic.ts)
+
+```typescript
+// File: server/mcp/devMagic.ts
+import { Request, Response } from "express";
+
+interface DevMagicRequest {
+  task: string;
+  context: {
+    practices?: string[];
+    techniques?: string[];
+    optimization?: string;
+    security?: string;
+    [key: string]: any;
+  };
+}
+
+interface TechniqueImplementation {
+  name: string;
+  description: string;
+  code: string;
+  benefits: string[];
+}
+
+interface DevMagicResponse {
+  modernPractices: TechniqueImplementation[];
+  message: string;
+}
+
+export const devMagic = async (req: Request, res: Response) => {
+  try {
+    const { task, context } = req.body as DevMagicRequest;
+
+    if (!task) {
+      return res.status(400).json({ error: "Task is required" });
+    }
+
+    const practices = context.practices || [];
+    const techniques = context.techniques || [];
+
+    // Combine practices and techniques for implementation
+    const allTechniques = [...practices, ...techniques];
+
+    // Generate implementations for each technique/practice
+    const result: DevMagicResponse = {
+      modernPractices: allTechniques.map((technique) =>
+        implementTechnique(technique, task)
+      ),
+      message: `Applied ${allTechniques.length} modern development practices to ${task}`,
+    };
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("21st DevMagic Error:", error);
+    res.status(500).json({ error: "Error processing 21st DevMagic request" });
+  }
+};
+
+function implementTechnique(
+  techniqueName: string,
+  task: string
+): TechniqueImplementation {
+  // Implementation examples for various modern techniques
+  const implementations: Record<string, TechniqueImplementation> = {
+    "zero-trust": {
+      name: "Zero Trust Security Model",
+      description:
+        "Implementing zero trust principles means never trusting by default and always verifying.",
+      code: `
+// Zero Trust Implementation
+const authMiddleware = (req, res, next) => {
+  // Verify token on every request
+  const token = req.headers.authorization?.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+  
+  try {
+    // Verify token and set req.user
+    const decoded = verifyToken(token);
+    req.user = decoded;
+    
+    // Check permissions for this specific resource
+    if (!hasPermission(req.user, req.path, req.method)) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+    
+    // Check request context for anomalies
+    if (isAnomalousRequest(req)) {
+      return res.status(400).json({ error: 'Request flagged as potentially malicious' });
+    }
+    
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+};`,
+      benefits: [
+        "Enhanced security through continuous verification",
+        "Fine-grained access control",
+        "Reduced attack surface",
+        "Better anomaly detection",
+      ],
+    },
+    "edge-computing": {
+      name: "Edge Computing",
+      description:
+        "Processing data closer to where it's generated to reduce latency and bandwidth.",
+      code: `
+// Edge Computing Implementation for Game State
+const gameStateManager = {
+  // Local state cache
+  localState: {},
+  
+  // Update frequency in ms
+  syncInterval: 200,
+  
+  // Initialize edge state
+  init(initialState, syncInterval = 200) {
+    this.localState = { ...initialState };
+    this.syncInterval = syncInterval;
+    
+    // Start background sync process
+    this.startBackgroundSync();
+    
+    return this;
+  },
+  
+  // Process game actions locally first
+  processAction(action) {
+    // Apply action to local state immediately for low latency
+    this.localState = applyAction(this.localState, action);
+    
+    // Queue action for server synchronization
+    this.queueActionForSync(action);
+    
+    // Return updated local state immediately
+    return this.localState;
+  },
+  
+  // Background sync with server
+  startBackgroundSync() {
+    setInterval(() => {
+      this.syncWithServer();
+    }, this.syncInterval);
+  },
+  
+  // Handle conflict resolution if server state differs
+  handleConflict(serverState) {
+    // Implement resolution strategy
+  }
+};`,
+      benefits: [
+        "Reduced latency for user interactions",
+        "Lower bandwidth usage with delta updates",
+        "Improved offline capabilities",
+        "Better user experience with immediate feedback",
+      ],
+    },
+    // Additional implementations for other techniques...
+  };
+
+  // Return the implementation or a generic one if not found
+  return (
+    implementations[techniqueName] || {
+      name: techniqueName,
+      description: `Modern implementation of ${techniqueName}`,
+      code: `// Example implementation for ${techniqueName}\n\nclass ModernImplementation {\n  constructor() {\n    this.name = "${techniqueName}";\n  }\n  \n  execute() {\n    console.log("Implementing ${techniqueName} for ${task}");\n  }\n}`,
+      benefits: [
+        "Improved code quality",
+        "Better performance",
+        "Enhanced user experience",
+      ],
+    }
+  );
+}
+```
+
+### 7. README.md (Documentation)
+
+````markdown
+// File: server/mcp/README.md
+
+# MCP (Methodological Cognitive Pattern) Servers
+
+This directory contains the implementations of the MCP servers used for development assistance. These servers provide specialized functionality for various aspects of the development process.
+
+## Available MCP Servers
+
+1. **Sequential Thinking MCP**: Breaks down complex tasks into manageable steps with dependencies.
+2. **Think Tool MCP**: Analyzes and recommends optimal tools and approaches for specific development tasks.
+3. **Code MCP**: Provides implementation patterns and code examples for various development patterns.
+4. **Mermaid MCP**: Generates architectural diagrams and visualizations for system design.
+5. **21st DevMagic MCP**: Applies modern development practices and techniques to implementation.
+
+## API Endpoints
+
+All MCP servers are available under the `/api/mcp` base path:
+
+- `/api/mcp/sequential-thinking` - Task breakdown and planning
+- `/api/mcp/think-tool` - Tool analysis and selection
+- `/api/mcp/code` - Code pattern implementation
+- `/api/mcp/mermaid` - Diagram generation
+- `/api/mcp/21st-devmagic` - Modern development practices
+
+## Usage in Replit
+
+These MCP servers are fully integrated with the Replit environment and work out of the box. The servers are automatically started when you run the project.
+
+### Example Usage
+
+You can use the MCP servers by making POST requests to their respective endpoints. Here's an example using `fetch`:
+
+```javascript
+// Example: Using Sequential Thinking MCP
+async function planTask() {
+  const response = await fetch("/api/mcp/sequential-thinking", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      task: "Implement user authentication",
+      context: {
+        components: ["database", "auth", "api", "frontend"],
+        dependencies: {
+          database: ["schema"],
+          auth: ["logic", "tokens"],
+          api: ["endpoints"],
+          frontend: ["integration"],
+        },
+      },
+    }),
+  });
+
+  const result = await response.json();
+  console.log(result);
+}
+```
+````
+
+## Customization
+
+Each MCP server can be customized by modifying its implementation file:
+
+- `sequentialThinking.ts`
+- `thinkTool.ts`
+- `code.ts`
+- `mermaid.ts`
+- `devMagic.ts`
+
+## Adding New MCP Servers
+
+To add a new MCP server:
+
+1. Create a new implementation file (e.g., `newMcp.ts`)
+2. Export a handler function from the file
+3. Import and register the handler in `index.ts`
+4. Update this README to document the new MCP server
+
+````
+
+## Step 3: Update the Main Routes File
+
+Modify your `server/routes.ts` file to include the MCP router:
+
+```typescript
+// File: server/routes.ts
+import type { Express, Request, Response } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { CloudinaryService } from "./cloudinaryService";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import mcpRouter from "./mcp"; // Import the MCP router
+
+// Configure multer for handling multipart/form-data
+const upload = multer({
+  dest: "uploads/",
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+});
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // put application routes here
+  // prefix all routes with /api
+
+  // Register MCP router
+  app.use("/api/mcp", mcpRouter);
+
+  // Other existing routes...
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
+````
+
+## Step 4: Testing Your Implementation
+
+1. Push your changes to Replit or upload the files directly through the Replit file interface.
+
+2. Start your Replit server by clicking the "Run" button or using the command:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Test the MCP servers using a tool like Postman or make a fetch request in the browser console:
+
+```javascript
+// Example test request
+fetch("/api/mcp/sequential-thinking", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    task: "Implement user authentication",
+    context: {
+      components: ["database", "auth", "api", "frontend"],
+    },
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => console.log(data))
+  .catch((error) => console.error("Error:", error));
+```
+
+## Troubleshooting
+
+If you encounter any issues:
+
+1. **Module not found errors**: Make sure all the files are created with the correct path and file names.
+
+2. **Express not found**: Ensure express is installed in your Replit project.
+
+3. **Route not found errors**: Verify that the MCP router is correctly registered in your server/routes.ts file.
+
+4. **TypeScript errors**: You may need to add the following types to your tsconfig.json if they're not already included:
+
+   ```json
+   {
+     "compilerOptions": {
+       "target": "ESNext",
+       "module": "ESNext",
+       "moduleResolution": "node",
+       "esModuleInterop": true
+     }
+   }
+   ```
+
+5. **API endpoints not responding**: Check your server logs for any errors and ensure your server is running correctly.
+
+## Next Steps
+
+After successfully setting up your MCP servers, you can:
+
+1. Customize the implementations to better suit your specific needs
+2. Add more sophisticated logic to each MCP service
+3. Create a client-side utility to make it easier to call these services
+4. Add authentication to protect the MCP endpoints if needed
+
+---
+
+By following these steps, you will have a complete custom MCP server implementation running in your Replit project!

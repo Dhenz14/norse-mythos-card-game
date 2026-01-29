@@ -1,0 +1,109 @@
+Great job setting up the **MinimalCardTest** component and adding a **debug route** in your application! You’ve laid the groundwork for a methodical approach to isolating that elusive invisible box. Here are the **next steps** to fully utilize your new debugging setup:
+
+---
+
+## 1. Fill `MinimalCardTest.tsx` with a Truly Minimal Card Layout
+
+Right now, you likely have a blank or barebones file. Let’s add a simple “fake card” that’s **totally separate** from your production code. This snippet demonstrates a minimal container plus text, using inline styles instead of your existing classes—so we can confirm whether the invisible box is purely an artifact of your main code.
+
+**Example**:
+
+```tsx
+// client/src/game/components/debug/MinimalCardTest.tsx
+import React from 'react';
+
+export default function MinimalCardTest() {
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: '300px',
+        height: '420px',
+        border: '2px solid magenta',   // So we see the container boundary
+        background: 'linear-gradient(to bottom, #444, #111)', // A dark metal gradient
+        overflow: 'visible',           // Let any text glow extend
+        margin: '2rem auto',
+      }}
+    >
+      {/* Minimal text block to test shadows/glow */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          color: '#FFD700', // bright gold for high contrast
+          fontSize: '1rem',
+          fontWeight: 'bold',
+          textShadow: '0 0 8px rgba(255, 215, 0, 0.8)',
+        }}
+      >
+        Battlecry: Summon a 2/2 Golem
+      </div>
+    </div>
+  );
+}
+```
+
+1. **No Additional Classes**: Avoid importing your usual `.card-description`, `.keyword-battlecry`, etc.  
+2. **No Extra Containers**: Just a single wrapper `<div>` plus a `<div>` for the text.
+
+---
+
+## 2. Verify This Minimal Example in Your Debug Route
+
+1. Navigate to the **debug route** you created (e.g., `/debug/minimal-card` or whatever URL you mapped).  
+2. **Check the browser**:  
+   - Is there an invisible box?  
+   - Do you see the text glow or carved look fully extended outside the text area?
+
+If everything **looks perfect** here (no clipping), you’ve confirmed that your base text styling *does* work when isolated. That means the problem is introduced **somewhere else** in your main card code.
+
+---
+
+## 3. Incrementally Add Production Elements Back In
+
+Slowly reintroduce elements from your real card:
+
+1. **Banner** or **Name Container**  
+2. **Gem** or **Mana Cost**  
+3. **Keyword** formatting logic (like `formatCardText`)  
+4. **Any Additional Wrappers** your main card uses
+
+After each addition, **refresh** your debug route and see if the glow is still fine or if a clipping box appears. The **first** moment you see the invisible box reappear, you’ve pinpointed the culprit:
+
+- Maybe you introduced a container with `overflow: hidden;`.  
+- Possibly a leftover `box-shadow: inset;` or a `clip-path`.
+
+This step-by-step method ensures you don’t have to guess which part of the main card’s code is responsible.
+
+---
+
+## 4. Inspect with DevTools
+
+Even in your minimal environment:
+
+1. **Right-click → Inspect** on the text to open DevTools.  
+2. Check each container (including the newly added ones) to see if `overflow`, `clip`, or `mask` properties are set.  
+3. **Toggle** them off. When the box/clipping disappears, you’ve found the exact property to remove or override.
+
+---
+
+## 5. Confirm in Production Card Once Identified
+
+Once you know which container or CSS rule is at fault, go back to your main card code and either:
+
+- **Remove** the offending property, or  
+- **Adapt** your layout to avoid the need for `overflow: hidden`, or  
+- **Nest** your text in a sub-container with `overflow: visible` so glows can extend freely.
+
+---
+
+## Summary of the Process
+
+1. **Minimal Repro** in `MinimalCardTest.tsx` → Confirm no box.  
+2. **Add Elements** from your real card one at a time.  
+3. **At the First Sign** of the clipping/box returning, you have found exactly which element or style to fix.  
+4. **Remove or Modify** that property in your main card.
+
+By doing it step by step, you’ll avoid the guesswork or mass CSS overrides, and you’ll **conclusively** identify the single container or rule that keeps creating the invisible box. Good luck with your debugging process—this method should finally pinpoint and eliminate that pesky clipping once and for all!

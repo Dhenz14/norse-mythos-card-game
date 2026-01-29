@@ -1,0 +1,1186 @@
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+Ragnarok-1:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+Ragnarok-1:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+Ragnarok-1:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+ Download the Apollo DevTools for a better development experience: https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm
+ [LaunchDarkly] LaunchDarkly client initialized
+ [Coframe] Replit Enterprise watcher loaded
+ ✅ blakejs loaded successfully (self-contained version)
+   Available functions: Array(5)
+ 🛡️ Paywall Detector loaded - 100% client-side, no external dependencies
+ 🏛️ ArcHive Content Script Loaded
+ 🏛️ ArcHive Content Script Ready - 100% Decentralized
+ [ai-chat] Creating connection with chat proxy enabled
+(anonymous) @ 0759ecb6676892da.js:2
+Ragnarok-1:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+ Cache data may be lost when replacing the dealContext field of a Org object.
+
+This could cause additional (usually avoidable) network requests to fetch data that were otherwise cached.
+
+To address this problem (which is not a bug in Apollo Client), either ensure all objects of type OrgDealContext have an ID or a custom merge function, or define a custom merge function for the Org.dealContext field, so InMemoryCache can safely merge these objects:
+
+  existing: {"__typename":"OrgDealContext","dealType":"default","salesContactEmail":null}
+  incoming: {"__typename":"OrgDealContext","dealType":"default"}
+
+For more information about these options, please refer to the documentation:
+
+  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers
+  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects
+
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 88d1957f-e5f9-4bbe-8b56-60edc458561a Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension adccbcd2-c9d6-4778-b0cb-20e1bf289634 Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 71b9e9dd-9e9b-4615-8d28-3187422a5ba7 Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension d526fa49-4249-4a76-99b8-6a8e548e485f Object
+(anonymous) @ 0759ecb6676892da.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 7636883a-2637-421c-aa98-27ffc46d202b Object
+(anonymous) @ 0759ecb6676892da.js:2
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ Unrecognized feature: 'ambient-light-sensor'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'battery'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'execution-while-not-rendered'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'layout-animations'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'legacy-image-formats'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'navigation-override'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'oversized-images'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'publickey-credentials'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'speaker-selection'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'unoptimized-images'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'unsized-media'.
+z @ ed1e693c96a75807.js:2
+ Unrecognized feature: 'pointer-lock'.
+z @ ed1e693c96a75807.js:2
+ Allow attribute will take precedence over 'allowfullscreen'.
+z @ ed1e693c96a75807.js:2
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+z @ ed1e693c96a75807.js:2
+ Extension Error: An error occurred while loading the extension manifest: Manifest does not exist for extension 857b2e2f-2c57-42be-8033-400c06d95624 Object
+(anonymous) @ 0759ecb6676892da.js:2
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Arbq%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+ Found 0 card slots to fix
+ RemoveAllDebugVisualizations - Removing all debug elements from the game
+ UnifiedCardSystem - Initializing comprehensive card system overhaul
+ Found 3 competing style elements to remove
+ ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+(anonymous) @ injected.js:37
+ ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+(anonymous) @ injected.js:37
+ Card hover pointer-events fix applied globally
+ Root Cause Analysis system initialized
+ Initializing card database...
+ Registering basic mage cards...
+ Registered card: Apprentice Arcanist (ID: 10001)
+ Registered card: Frost Elemental (ID: 10002)
+ Registered card: Fireball (ID: 10003)
+ Registered card: Water Elemental (ID: 10004)
+ Registered card: Polymorph (ID: 10005)
+ Registered card: Sheep (ID: 10006)
+ Registered card: Flamestrike (ID: 10007)
+ Basic mage cards registered successfully.
+ Registering Mage cards...
+ Registered card: Mana Wyrm (ID: 14001)
+ Registered card: Sorcerer's Apprentice (ID: 14002)
+ Registered card: Kirin Tor Mage (ID: 14003)
+ Registered card: Ethereal Arcanist (ID: 14004)
+ Registered card: Archmage Antonidas (ID: 14005)
+ Registered card: Water Elemental (ID: 14006)
+ Registered card: Polymorph (ID: 14009)
+ Registered card: Sheep (ID: 14010)
+ Registered card: Vaporize (ID: 14012)
+ Registered card: Ice Lance (ID: 14013)
+ Registered card: Unstable Portal (ID: 31002)
+ Registered card: Ice Block (ID: 31004)
+ Registered card: Arcane Blast (ID: 32001)
+ Registered card: Arcane Missiles (ID: 32002)
+ Registered card: Frost Nova (ID: 32003)
+ Registered card: Flame Strike (ID: 32005)
+ Registered card: Arcane Intellect (ID: 32006)
+ Registered card: Mirror Image (ID: 32008)
+ Registered card: Blizzard (ID: 32009)
+ Registered card: Flamecannon (ID: 32010)
+ Registered card: Mirror Entity (ID: 32011)
+ Registered card: Mirror Image (ID: 32031)
+ Registered card: Spellbender (ID: 32032)
+ Registered card: Roaring Torch (ID: 32033)
+ Mage cards registered successfully.
+ Registering Norse mythology cards...
+ Registered card: Jormungandr (ID: 20620)
+ Registered card: Jormungandr's Coil (ID: 20621)
+ Norse mythology cards registered successfully.
+ Registering Hunter cards...
+ Registered 37 Hunter cards
+ Registering Paladin cards...
+ Registered card: Consecration (ID: 8002)
+ Registered card: Blessing of Kings (ID: 8004)
+ Registered card: Equality (ID: 8005)
+ Registered card: Truesilver Champion (ID: 8003)
+ Registered card: Ashbringer (ID: 8501)
+ Registered card: Silver Hand Recruit (ID: 8502)
+ Registered card: Tirion Fordring (ID: 8001)
+ Registered card: Lay on Hands (ID: 8006)
+ Registered card: Holy Light (ID: 8007)
+ Registered card: Divine Favor (ID: 8008)
+ Registered card: Hammer of Wrath (ID: 8009)
+ Registered card: Avenging Wrath (ID: 8010)
+ Registered card: Blessing of Might (ID: 8011)
+ Registered card: Hand of Protection (ID: 8012)
+ Registered card: Humility (ID: 8013)
+ Registered card: Repentance (ID: 8014)
+ Registered card: Redemption (ID: 8015)
+ Registered card: Noble Sacrifice (ID: 8016)
+ Paladin cards registered successfully.
+ Registering Rogue cards...
+ Registered card: Backstab (ID: 12101)
+ Registered card: Preparation (ID: 12102)
+ Registered card: Shadowstep (ID: 12103)
+ Registered card: Deadly Poison (ID: 12104)
+ Registered card: Sinister Strike (ID: 12105)
+ Registered card: Sap (ID: 12106)
+ Registered card: Eviscerate (ID: 12107)
+ Registered card: Fan of Knives (ID: 12108)
+ Registered card: Blade Flurry (ID: 12109)
+ Registered card: Assassinate (ID: 12110)
+ Registered card: Defias Ringleader (ID: 12201)
+ Registered card: SI:7 Agent (ID: 12202)
+ Registered card: Master of Disguise (ID: 12203)
+ Registered card: Kidnapper (ID: 12204)
+ Registered card: Edwin VanCleef (ID: 12404)
+ Registered card: Wicked Knife (ID: 12301)
+ Registered card: Assassin's Blade (ID: 12303)
+ Registered card: Perdition's Blade (ID: 12304)
+ Registered card: Defias Bandit (ID: 12501)
+ Rogue cards registered successfully.
+ Registering Warlock cards...
+ Registered card: Voidwalker (ID: 17001)
+ Registered card: Shadow Bolt (ID: 17002)
+ Registered card: Hellfire (ID: 17003)
+ Registered card: Doomguard (ID: 17004)
+ Registered card: Soulfire (ID: 17005)
+ Registered card: Siphon Soul (ID: 17006)
+ Registered card: Void Terror (ID: 17007)
+ Registered card: Darkshire Librarian (ID: 17008)
+ Registered card: Twisting Nether (ID: 17009)
+ Registered card: Flame Imp (ID: 17010)
+ Registered card: Lord Jaraxxus (ID: 17101)
+ Registered card: Sense Demons (ID: 17102)
+ Registered card: Sacrificial Pact (ID: 17103)
+ Registered card: Fist of Jaraxxus (ID: 17104)
+ Registered card: Shadowflame (ID: 17105)
+ Registered card: Infernal (ID: 17501)
+ Registered card: Soul Remnant (ID: 17502)
+ Registered card: Candle (ID: 17503)
+ Registered card: Broom (ID: 17504)
+ Registered card: Teapot (ID: 17505)
+ Registered card: Imp (ID: 17506)
+ Warlock cards registered successfully.
+ Registering Druid cards...
+ Registered card: Innervate (ID: 11003)
+ Registered card: Mark of the Wild (ID: 11015)
+ Registered card: Soul of the Forest (ID: 11016)
+ Registered card: Treant (ID: 11020)
+ Registered card: Rejuvenation (ID: 11040)
+ Registered card: Ancient Protector (ID: 11041)
+ Registered card: Wildgrowth Surge (ID: 11042)
+ Registered card: Feral Instinct (ID: 11043)
+ Registered card: Ironbark Ancient (ID: 11044)
+ Registered card: Overgrowth (ID: 11050)
+ Registered card: Flourish (ID: 11052)
+ Registered card: Force of Nature (ID: 11058)
+ Registered card: Treant (ID: 11059)
+ Registered card: Jade Blossom (ID: 85002)
+ Registered card: Nourish (ID: 33001)
+ Registered card: Keeper of the Grove (ID: 33002)
+ Registered card: Cenarius (ID: 33003)
+ Druid cards registered successfully.
+ Registering Priest cards...
+ Registered card: Lightspawn (ID: 9013)
+ Registered card: Auchenai Soulpriest (ID: 9014)
+ Registered card: Inner Fire (ID: 9016)
+ Registered card: Mind Vision (ID: 9017)
+ Registered card: Shadow Madness (ID: 9019)
+ Registered card: Lightwell (ID: 9021)
+ Registered card: Holy Fire (ID: 9022)
+ Registered card: Power Word: Replicate (ID: 6003)
+ Registered card: Power Infusion (ID: 6004)
+ Registered card: Renew (ID: 6005)
+ Registered card: Apotheosis (ID: 6006)
+ Registered card: Disciplinarian Gandling (ID: 5112)
+ Registered card: Mindflayer Kaahrj (ID: 5113)
+ Registered card: Murozond the Infinite (ID: 5114)
+ Registered card: Raza the Chained (ID: 70001)
+ Registered card: Failed Student (ID: 9501)
+ Priest cards registered successfully.
+ Registering Shaman cards...
+ Registered card: Lady Vashj (ID: 5115)
+ Registered card: The Lurker Below (ID: 5116)
+ Registered card: Al'Akir the Windlord (ID: 5117)
+ Registered card: Frog (ID: 4501)
+ Registered card: Vashj Prime (ID: 4502)
+ Shaman cards registered successfully.
+ Registering Warrior cards...
+ Registered card: Fiery War Axe (ID: 5001)
+ Registered card: Cruel Taskmaster (ID: 5009)
+ Registered card: Warsong Commander (ID: 5012)
+ Registered card: Inner Rage (ID: 5013)
+ Registered card: Commanding Shout (ID: 5014)
+ Registered card: Kor'kron Elite (ID: 5015)
+ Registered card: Arathi Weaponsmith (ID: 5016)
+ Registered card: Bloodhoof Brave (ID: 5017)
+ Registered card: Slam (ID: 5018)
+ Registered card: Battle Rage (ID: 5019)
+ Registered card: Garrosh Hellscream (ID: 5020)
+ Registered card: Shadowmourne (ID: 5021)
+ Registered card: Shield Slam (ID: 5022)
+ Registered card: Brawl (ID: 5023)
+ Registered card: Armorsmith (ID: 5024)
+ Registered card: Execute (ID: 5025)
+ Registered card: Shield Block (ID: 5026)
+ Registered card: Cleave (ID: 5029)
+ Registered card: Frothing Berserker (ID: 5030)
+ Registered card: Gorehowl (ID: 5031)
+ Registered card: Battle Axe (ID: 5919)
+ Warrior cards registered successfully.
+ Registering Death Knight cards...
+ Registered card: Death Coil (ID: 3001)
+ Registered card: Army of the Dead (ID: 3005)
+ Registered card: Remorseless Winter (ID: 3007)
+ Registered card: Frostmourne (ID: 3009)
+ Registered card: Blood Boil (ID: 3011)
+ Registered card: Runeforged Blade (ID: 3012)
+ Registered card: Icebound Fortitude (ID: 3013)
+ Registered card: Dark Command (ID: 3014)
+ Registered card: Arthas Menethil (ID: 3015)
+ Registered card: Death Gate (ID: 3017)
+ Registered card: Bone Shield (ID: 3018)
+ Registered card: Skeleton (ID: 3019)
+ Registered card: Blood Presence (ID: 3021)
+ Registered card: Frost Presence (ID: 3022)
+ Registered card: Unholy Presence (ID: 3023)
+ Registered card: Runeblade (ID: 3024)
+ Registered card: Chains of Ice (ID: 3025)
+ Registered card: Death Strike (ID: 3026)
+ Registered card: Death Knight Initiate (ID: 3027)
+ Registered card: Scourge Champion (ID: 3029)
+ Death Knight cards registered successfully.
+ Registering Demon Hunter cards...
+ Registered card: Chaos Strike (ID: 9101)
+ Registered card: Soul Cleave (ID: 9102)
+ Registered card: Blur (ID: 9103)
+ Registered card: Mana Burn (ID: 9104)
+ Registered card: Skull of Gul'dan (ID: 9105)
+ Registered card: Glaivebound Adept (ID: 9111)
+ Registered card: Altruis the Outcast (ID: 9112)
+ Registered card: Metamorphosis (ID: 9113)
+ Registered card: Demonic Blast (ID: 9114)
+ Registered card: Coordinated Strike (ID: 9116)
+ Registered card: Illidari Initiate (ID: 9117)
+ Registered card: Eye Beam (ID: 50001)
+ Registered card: Spectral Sight (ID: 50002)
+ Registered card: Flamereaper (ID: 10008)
+ Registered card: Imprisoned Antaen (ID: 10009)
+ Demon Hunter cards registered successfully.
+ Registering Necromancer cards...
+ Registered 30 Necromancer cards
+ Card database initialized with 252 cards.
+ [ArmySelection] Card registry has 252 cards
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ [Chess] Selected knight at (0, 0). Valid moves: 1, attacks: 0
+ [Chess] Selected knight at (0, 0). Valid moves: 1, attacks: 0
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ [AI] Moved knight to (3, 3)
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ [Chess] Selected knight at (2, 1). Valid moves: 1, attacks: 3
+ [Chess] Selected knight at (2, 1). Valid moves: 1, attacks: 3
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ [Chess] Selected knight at (2, 1). Valid moves: 1, attacks: 3
+ [Chess] Selected knight at (2, 1). Valid moves: 1, attacks: 3
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ [Combat Init] Attacker knight (player): HP=130, Stamina=13
+ [Combat Init] Defender knight (opponent): HP=130, Stamina=13
+ [createPetFromChessPiece] piece.type=knight, heroData.name=Loki, heroData.norseHeroId=hero-loki
+ [createPetFromChessPiece] piece.type=knight, heroData.name=Loki, heroData.norseHeroId=hero-loki
+ [Combat Init] AttackerPet stamina: 13/13
+ [Combat Init] DefenderPet stamina: 13/13
+ [PokerCombat] initializeCombat called - playerPet.norseHeroId=hero-loki, opponentPet.norseHeroId=hero-loki
+ [PokerCombat] Elemental matchup: neutral vs neutral - No advantage, no buffs applied
+ [PokerCombat] After elementalBuffs - elementBuffedPlayer.norseHeroId=hero-loki
+ [KING BUFFS] Ymir provides: +2 Attack, +0 Health, +0 Armor, -1 enemy Attack
+ [PokerCombat] King king-ymir debuffs opponent attack by 1
+ [PokerCombat] King king-ymir buffs player: +2 atk, +0 hp, +0 armor
+ [KING BUFFS] Ymir provides: +2 Attack, +0 Health, +0 Armor, -1 enemy Attack
+ [PokerCombat] King king-ymir debuffs player attack by 1
+ [PokerCombat] King king-ymir buffs opponent: +2 atk, +0 hp, +0 armor
+ [PokerCombat] Mulligan already completed this game - dealing poker cards immediately
+ [PokerCombat] Standard blinds: BB=5, SB=2.5, Ante=0.2 each
+ [PokerCombat] Positions: Player=big_blind, Opponent=small_blind
+ [PokerCombat] Opponent (SB) acts first
+ [PokerCombat] Collecting blinds/antes:
+   - Player (big_blind): 5.2 HP (5 + 0.2 ante)
+   - Opponent (small_blind): 2.7 HP (2.5 + 0.2 ante)
+ [PokerCombat] HP deducted - Player: 130 -> 124.8, Opponent: 130 -> 127.3
+ [PokerCombat] Pot: 7.9 HP, Current bet: 5 HP
+ [PokerCombat] Blinds collected immediately (mulligan skipped)
+ [PokerCombat] Combat initialized in spell_pet phase (mulligan skipped - already done this game)
+ [PokerCombat] Shuffle animation scheduled for Loki's 10 signature cards
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Card rendering system: Enforcing CardRenderer as the primary renderer
+ Active renderer enforcement system initialized
+ Applied runtime import patches for card renderers
+ Card rendering system: Enforcing CardRenderer as the primary renderer
+ Active renderer enforcement system initialized
+ Applied runtime import patches for card renderers
+ Card rendering system: Enforcing CardRenderer as the primary renderer
+ Active renderer enforcement system initialized
+ Applied runtime import patches for card renderers
+ [AI-ATTACK-ANIM-PROC] pendingAttacks changed - count: 0
+ [AI-ATTACK-ANIM-PROC] useEffect triggered: pendingAttacks=0, isAnimating=false
+ [CombatEventSubscribers] Initializing combat event subscribers...
+ [CombatEventSubscribers] Initialized 3 subscribers
+ [RagnarokCombatArena] Combat event subscribers initialized
+ [RagnarokCombatArena] New combat detected, resetting mulligan tracking
+ [RagnarokCombatArena] AI first-action check - openerIsPlayer: false, playerPosition: big_blind
+ [RagnarokCombatArena] AI is Small Blind - triggering AI to act first
+ Found 0 card slots to fix
+ [RagnarokCombatArena] AI (SB) making opening action
+ [SmartAI] Phase: spell_pet, Hand strength: 25.0%, Pot odds: 76.0%
+ [SmartAI] Position: small_blind, firstBettingRound: true, hasBetToCall: true, toCall: 2.5
+ [SmartAI] availableHP: 127.3, currentBet: 5, actorHpCommitted: 2.7
+ [RagnarokCombatArena] AI (SB) decision: brace, betAmount: 0
+ [PokerCombat] performAction: opponent performing brace with hpCommitment=0
+ [PokerCombat] - State: phase=spell_pet, currentBet=5
+ [PokerCombat] - player.hpCommitted=5.2, opponent.hpCommitted=2.7
+ [PokerCombat] - isReady: player=false, opponent=false
+ [PokerCombat] opponent used 1 stamina for brace (0 HP), remaining: 12
+ [PokerCombat] FOLD: opponent folded, forfeits 2.7 HP already in pot
+ [PokerCombat] FOLD: foldWinner=player, phase set to RESOLUTION
+ [PokerCombat] opponent isReady set to true - player.isReady=true, opponent.isReady=true
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: true, opponentIsReady: true, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: true, opponentIsReady: true, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [RagnarokCombatArena] Both players ready in resolution - checking round closure
+ [RagnarokCombatArena] In RESOLUTION - resolving combat
+ [PokerCombat] Resolving fold win - player wins by forfeit, gets back 5.2 HP, opponent loses 2.7 HP
+ [RagnarokCombatArena] Combat resolved: player
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Found 0 card slots to fix
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Found 0 card slots to fix
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Found 0 card slots to fix
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Found 0 card slots to fix
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Mulligan confirmed, replacing selected cards
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Found 0 card slots to fix
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [RagnarokCombatArena] Hand complete - using centralized delayed transition
+ [PokerRewards] Granting poker hand rewards - card draw only (mana handled by endTurn)
+ [PokerRewards] Player drew card: Unknown
+ [PokerRewards] Opponent drew card: Unknown
+ [PokerRewards] Card draw complete
+ [PokerCombat] startNextHandDelayed: Setting transition flag, waiting 2s...
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [CARD-ADAPTER] Adapting card instance {"name":"Baron Geddon"}
+ [CARD-ADAPTER] Adapted from CardInstance format {"instanceId":"1a91b54a-e5d4-439e-a88a-7f386549e43f","name":"Baron Geddon","canAttack":false,"isSummoningSick":true}
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Card rendering system: Enforcing CardRenderer as the primary renderer
+ Active renderer enforcement system initialized
+ Applied runtime import patches for card renderers
+ Found 0 card slots to fix
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: false, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [TurnOrder] isPlayer: true, isActorOpener: true, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: true, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [PokerCombat] startNextHandDelayed: Delay complete, starting next hand
+ [PokerCombat] startNextHand called with resolution: YES
+ [PokerCombat] HP values - Player: 130, Opponent: 127.3
+ [PokerCombat] Resolution winner: player, type: fold
+ [PokerCombat] Starting next hand - HP persists, both players get +1 stamina
+ [PokerCombat] Player HP (from resolution): 130, Stamina: 13 -> 13
+ [PokerCombat] Opponent HP (from resolution): 127.3, Stamina: 12 -> 13
+ [PokerCombat] Positions - playerPosition: small_blind, openerIsPlayer: true (recomputed)
+ [PokerCombat] Collecting blinds/antes:
+   - Player (small_blind): 2.7 HP (2.5 + 0.2 ante)
+   - Opponent (big_blind): 5.2 HP (5 + 0.2 ante)
+ [PokerCombat] HP deducted - Player: 130 -> 127.3, Opponent: 127.3 -> 122.1
+ [PokerCombat] Pot: 7.9 HP, Current bet: 5 HP
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 1, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 1, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: false, isDisabled: true
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [RagnarokCombatArena] AI first-action check - openerIsPlayer: true, playerPosition: small_blind
+ Found 0 card slots to fix
+ [PokerCombat] performAction: player performing brace with hpCommitment=0
+ [PokerCombat] - State: phase=spell_pet, currentBet=5
+ [PokerCombat] - player.hpCommitted=2.7, opponent.hpCommitted=5.2
+ [PokerCombat] - isReady: player=false, opponent=false
+ [PokerCombat] player used 1 stamina for brace (0 HP), remaining: 12
+ [PokerCombat] FOLD: player folded, forfeits 2.7 HP already in pot
+ [PokerCombat] FOLD: foldWinner=opponent, phase set to RESOLUTION
+ [PokerCombat] player isReady set to true - player.isReady=true, opponent.isReady=true
+ [RagnarokCombatArena] Player folded - triggering card game end turn
+ [END-TURN] Player ending turn - starting auto-attack phase
+ [PLAYER-AUTO-ATTACK] Starting player minion attack phase
+ [PLAYER-AUTO-ATTACK] Checking minion attack states:
+ [PLAYER-AUTO-ATTACK] Found 0 minions that can attack: Array(0)
+ [PLAYER-AUTO-ATTACK] Player minion attack phase complete
+ [RESET DEBUG] Resetting minions for opponent's turn
+ [RESET DEBUG] Battlefield before reset: Array(0)
+ [RESET DEBUG] Battlefield after reset: Array(0)
+ Drawing card for opponent
+ [OPPONENT-AI] Starting opponent turn simulation
+ [OPPONENT-AI] Opponent hand size: 5
+ [OPPONENT-AI] Opponent mana: 2 / 2
+ [OPPONENT-AI] Opponent battlefield size: 0
+ AI simulation error: TypeError: Cannot read properties of undefined (reading 'manaCost')
+    at 37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/src/game/utils/gameUtils.ts:640:50
+    at Array.sort (<anonymous>)
+    at simulateOpponentTurn (37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/src/game/utils/gameUtils.ts:639:43)
+    at endTurn (37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/src/game/utils/gameUtils.ts:520:18)
+    at endTurn (37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/src/game/stores/gameStore.ts:237:24)
+    at 37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/src/game/combat/RagnarokCombatArena.tsx:2857:7
+    at onClick (37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/src/game/combat/RagnarokCombatArena.tsx:1343:32)
+    at HTMLUnknownElement.callCallback2 (37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=dae52593:3674:22)
+    at Object.invokeGuardedCallbackDev (37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=dae52593:3699:24)
+    at invokeGuardedCallback (37a7fb54-cf63-4cf6-8d9d-d11f4babec9c-00-2nowgv01q18he.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-276SZO74.js?v=dae52593:3733:39)
+(anonymous) @ injected.js:37
+ Drawing card for player
+ [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+ [TurnOrder] isPlayer: true, isActorOpener: true, actorIsReady: true, opponentIsReady: true, isMyTurnToAct: false
+ [PokerCombat] performAction: player performing brace with hpCommitment=0
+ [PokerCombat] - State: phase=resolution, currentBet=5
+ [PokerCombat] - player.hpCommitted=2.7, opponent.hpCommitted=5.2
+ [PokerCombat] - isReady: player=true, opponent=true
+ [PokerCombat] player used 1 stamina for brace (0 HP), remaining: 11
+ [PokerCombat] FOLD: player folded, forfeits 2.7 HP already in pot
+ [PokerCombat] FOLD: foldWinner=opponent, phase set to RESOLUTION
+ [PokerCombat] player isReady set to true - player.isReady=true, opponent.isReady=true
+ [PokerCombat] Resolving fold win - opponent wins by forfeit, gets back 5.2 HP, player loses 2.7 HP
+ [PokerCombat] startNextHandDelayed: Setting transition flag, waiting 2s...
+ [TurnOrder] isPlayer: true, isActorOpener: true, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: true, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 2, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [CARD-ADAPTER] Adapting card instance {"name":"Baron Geddon"}
+ [CARD-ADAPTER] Adapted from CardInstance format {"instanceId":"3559fded-03b8-41ab-b93e-c0ba0f0d5310","name":"Baron Geddon","canAttack":false,"isSummoningSick":true}
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 2, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Card rendering system: Enforcing CardRenderer as the primary renderer
+ Active renderer enforcement system initialized
+ Applied runtime import patches for card renderers
+ Card rendering system: Enforcing CardRenderer as the primary renderer
+ Active renderer enforcement system initialized
+ Applied runtime import patches for card renderers
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ [RagnarokCombatArena] AI skipped - phase already advanced from spell_pet to resolution
+ [TurnOrder] isPlayer: true, isActorOpener: true, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [TurnOrder] isPlayer: true, isActorOpener: true, actorIsReady: false, opponentIsReady: false, isMyTurnToAct: false
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 2, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 2, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ Found 0 card slots to fix
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ Found 0 card slots to fix
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ Found 0 card slots to fix
+ [PokerCombat] startNextHandDelayed: Delay complete, starting next hand
+ [PokerCombat] startNextHand called with resolution: YES
+ [PokerCombat] HP values - Player: 127.3, Opponent: 127.3
+ [PokerCombat] Resolution winner: opponent, type: fold
+ [PokerCombat] Starting next hand - HP persists, both players get +1 stamina
+ [PokerCombat] Player HP (from resolution): 127.3, Stamina: 11 -> 12
+ [PokerCombat] Opponent HP (from resolution): 127.3, Stamina: 13 -> 13
+ [PokerCombat] Positions - playerPosition: small_blind, openerIsPlayer: true (recomputed)
+ [PokerCombat] Collecting blinds/antes:
+   - Player (small_blind): 2.7 HP (2.5 + 0.2 ante)
+   - Opponent (big_blind): 5.2 HP (5 + 0.2 ante)
+ [PokerCombat] HP deducted - Player: 127.3 -> 124.6, Opponent: 127.3 -> 122.1
+ [PokerCombat] Pot: 7.9 HP, Current bet: 5 HP
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 2, isOpponent: true
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: true, hasOnClick: false
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: true
+ DEBUG GameBoard - Player battlefield length: 0
+ DEBUG GameBoard - Opponent battlefield length: 0
+ 🎯 Hand component render: Object
+ [BattlefieldHero] Render - pet.name: Loki, pet.norseHeroId: hero-loki, mana: 2, isOpponent: false
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ UnifiedBattlefield - Applying battlefield optimizations
+ UnifiedBattlefield - Applying battlefield optimizations
+ [RagnarokCombatArena] AI first-action check - openerIsPlayer: true, playerPosition: small_blind
+ Found 0 card slots to fix
+ Found 0 card slots to fix
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ Found 0 card slots to fix
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ Found 0 card slots to fix
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ Found 0 card slots to fix
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ Found 0 card slots to fix
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ Found 0 card slots to fix
+ [HeroPowerButton] CLICKED! isDisabled: false, hasOnClick: true
+ [HeroPower] Not enough mana: 1/2
+ [HeroPowerButton] CLICKED! isDisabled: false, hasOnClick: true
+ [HeroPower] Not enough mana: 1/2
+ [HeroPowerButton] CLICKED! isDisabled: false, hasOnClick: true
+ [HeroPower] Not enough mana: 1/2
+ [HeroPowerButton] CLICKED! isDisabled: false, hasOnClick: true
+ [HeroPower] Not enough mana: 1/2
+ [HeroPowerButton] CLICKED! isDisabled: false, hasOnClick: true
+ [HeroPower] Not enough mana: 1/2
+ [HeroPowerButton] CLICKED! isDisabled: false, hasOnClick: true
+ [HeroPower] Not enough mana: 1/2
+ [HeroPowerButton] CLICKED! isDisabled: false, hasOnClick: true
+ [HeroPower] Not enough mana: 1/2
+ [HeroPowerButton] Render - norseHeroId: hero-loki, mana: 2, isOpponent: false, hasOnClick: true
+ [HeroPowerButton] Deceptive Grasp - cost: 2, canAfford: true, isDisabled: false
+ Found 0 card slots to fix

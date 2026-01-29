@@ -1,0 +1,14 @@
+Yes, building on the recent refactors with fixed aspect ratio viewport, absolute percentage positioning, modular React components, and Hearthstone-inspired practices, make this targeted adjustment: [“The minion/spell cards have lost their icons, and descriptions. Every single card that has an ability needs an icon, and when you hover over that icon, it tells you exactly what it does. All spells need descriptions when hovered over. Look for this logic in our existing code and make sure that you connect it back, no fragmenting the codebase.” Implement without any hacks, monkey patches, or shortcuts—preserve full UI responsiveness, robustness, and code integrity. No changes to core architecture; use only CSS variables or React props for positions/sizes to allow easy future tweaks without breaking other elements.
+
+Mandatory: follow these steps precisely, as a senior Hearthstone developer would approve:
+
+1. Analyze and position elements precisely. Use absolute positioning with percentages relative to the reference frame or parent container, such as left: 100%, top: 0%. Define or refine clear zones in modular components. Make sure there is a natural flow, no clipping, and preserve physical metaphors, such as subtle overlaps or fanning for cards.
+2. Set appropriate z-index for depth, using higher values for foreground elements. This ensures full visibility and immersion. Mimic Hearthstone’s layering with shadows or tilts if relevant, but avoid performance hits.
+3. Avoid transforms for positioning, overflow: hidden, rigid heights, or mixed strategies. Use min-height: auto and adaptive utilities, such as Tailwind clamp, min, or max, when needed.
+4. Keep affected elements as independent, modular components with props or CSS vars, like --minion-offset: 0%. Isolate changes so that adjusting one thing doesn’t affect others. Prevent ‘fix one, break two’ issues.
+5. Follow Hearthstone’s best practices. Give elements clear ‘homes.’ Add immersive feedback, like hover effects, and zone elements without distortion. Reference open-source work, such as EnginKARATAS’s clone, for responsive utilities and media queries.
+6. Keep the UI resilient. Make sure everything stays visible, with no cutoffs on any screen size. Test thoroughly on mobile, tablet, desktop, XL screens, and all orientations. Provide before and after demos.
+7. Audit for dead code or artifacts. Keep the codebase clean and add comments on changes. Deliver updated code and explain the tweak.
+
+Work step by step, and ask for any needed clarifications. This ensures top quality without hurting other work.
+
