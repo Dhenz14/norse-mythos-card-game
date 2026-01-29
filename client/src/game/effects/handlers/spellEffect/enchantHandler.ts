@@ -2,62 +2,90 @@
  * Enchant SpellEffect Handler
  * 
  * Implements the "enchant" spellEffect effect.
- * Example card: Card ID: 8013
+ * Applies an enchantment to target cards that modifies their stats or abilities.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a enchant spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeEnchantEnchant(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing enchant spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: enchantEffect
-  if (effect.enchantEffect === undefined) {
-    console.warn(`Enchant effect missing enchantEffect property`);
-    // Fall back to a default value or handle the missing property
+export default function executeEnchant(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:enchant for ${sourceCard.name}`);
+    
+    const enchantEffect = effect.enchantEffect || {};
+    const buffAttack = enchantEffect.buffAttack || effect.buffAttack || 0;
+    const buffHealth = enchantEffect.buffHealth || effect.buffHealth || 0;
+    const grantKeywords = enchantEffect.keywords || effect.grantKeywords || [];
+    const targetType = effect.targetType || 'friendly_minion';
+    const requiresTarget = effect.requiresTarget !== false;
+    
+    const sourceCardInstance: any = {
+      instanceId: 'temp-' + Date.now(),
+      card: sourceCard,
+      canAttack: false,
+      isPlayed: true
+    };
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0 && requiresTarget) {
+      context.logGameEvent(`No valid targets for enchant effect`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    let enchantedCount = 0;
+    
+    targets.forEach(target => {
+      if (target.card.type === 'minion') {
+        if (buffAttack !== 0) {
+          target.card.attack = (target.card.attack || 0) + buffAttack;
+          context.logGameEvent(`Enchanted ${target.card.name}: +${buffAttack} attack`);
+        }
+        
+        if (buffHealth !== 0) {
+          target.card.health = (target.card.health || 0) + buffHealth;
+          if (target.currentHealth !== undefined) {
+            target.currentHealth += buffHealth;
+          }
+          context.logGameEvent(`Enchanted ${target.card.name}: +${buffHealth} health`);
+        }
+        
+        if (grantKeywords.length > 0) {
+          target.card.keywords = target.card.keywords || [];
+          grantKeywords.forEach((keyword: string) => {
+            if (!target.card.keywords.includes(keyword)) {
+              target.card.keywords.push(keyword);
+              context.logGameEvent(`Enchanted ${target.card.name} with ${keyword}`);
+            }
+          });
+        }
+        
+        const targetWithEnchants = target as any;
+        targetWithEnchants.enchantments = targetWithEnchants.enchantments || [];
+        targetWithEnchants.enchantments.push({
+          source: sourceCard.name,
+          buffAttack,
+          buffHealth,
+          keywords: grantKeywords
+        });
+        
+        enchantedCount++;
+      }
+    });
+    
+    return { 
+      success: true,
+      additionalData: { enchantedCount }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:enchant:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:enchant: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`Enchant effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the enchant spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered enchant spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeEnchantEnchant;

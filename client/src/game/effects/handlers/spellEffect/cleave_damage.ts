@@ -30,7 +30,6 @@ export default function executeCleaveDamage(
     const value = effect.value;
     
     // Implementation placeholder
-    console.log(`spellEffect:cleave_damage executed with properties: ${JSON.stringify(effect)}`);
     
     // TODO: Implement the spellEffect:cleave_damage effect
     if (requiresTarget) {

@@ -2,56 +2,78 @@
  * DestroySpellsByCost Battlecry Handler
  * 
  * Implements the "destroy_spells_by_cost" battlecry effect.
- * Example card: Skulking Geist (ID: 30021)
+ * Destroys all spells of a specific mana cost from both players' hands and decks.
+ * Example card: Skulking Geist (ID: 30021) - destroys 1-cost spells
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a destroy_spells_by_cost battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data (effect.value is the mana cost to target)
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeDestroySpellsByCostDestroySpellsByCost(
-  state: GameState,
+export default function executeDestroySpellsByCost(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing destroy_spells_by_cost battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DestroySpellsByCost effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:destroy_spells_by_cost for ${sourceCard.name}`);
+    
+    const targetCost = effect.value ?? 1;
+    let totalDestroyed = 0;
+    const destroyedCards: string[] = [];
+    
+    const destroySpellsFromLocation = (cards: any[], location: string, owner: string) => {
+      const toRemove: number[] = [];
+      
+      cards.forEach((card, index) => {
+        const cardData = card.card || card;
+        if (cardData.type === 'spell' && cardData.manaCost === targetCost) {
+          toRemove.push(index);
+          destroyedCards.push(`${cardData.name} (${owner}'s ${location})`);
+        }
+      });
+      
+      for (let i = toRemove.length - 1; i >= 0; i--) {
+        cards.splice(toRemove[i], 1);
+        totalDestroyed++;
+      }
+    };
+    
+    destroySpellsFromLocation(context.currentPlayer.hand, 'hand', 'your');
+    destroySpellsFromLocation(context.opponentPlayer.hand, 'hand', "opponent's");
+    
+    destroySpellsFromLocation(context.currentPlayer.deck, 'deck', 'your');
+    destroySpellsFromLocation(context.opponentPlayer.deck, 'deck', "opponent's");
+    
+    if (totalDestroyed === 0) {
+      context.logGameEvent(`No ${targetCost}-cost spells found to destroy`);
+    } else {
+      context.logGameEvent(`${sourceCard.name} destroyed ${totalDestroyed} ${targetCost}-cost spell(s)`);
+      destroyedCards.forEach(cardInfo => {
+        context.logGameEvent(`  Destroyed: ${cardInfo}`);
+      });
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        spellsDestroyed: totalDestroyed,
+        targetCost,
+        destroyedCards
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:destroy_spells_by_cost:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:destroy_spells_by_cost: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the destroy_spells_by_cost battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered destroy_spells_by_cost battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDestroySpellsByCostDestroySpellsByCost;

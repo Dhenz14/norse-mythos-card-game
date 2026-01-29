@@ -1,69 +1,89 @@
 /**
- * BuffThenDestroy SpellEffect Handler
+ * Buff Then Destroy Effect Handler
  * 
- * Implements the "buff_then_destroy" spellEffect effect.
- * Example card: Card ID: 15011
+ * This handler implements the spellEffect:buff_then_destroy effect.
+ * Buffs a minion and then destroys it after a duration.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a buff_then_destroy spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeBuffThenDestroyBuffThenDestroy(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+export default function executeBuffThenDestroy(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
   
-  console.log(`Executing buff_then_destroy spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: buffAttack
-  if (effect.buffAttack === undefined) {
-    console.warn(`BuffThenDestroy effect missing buffAttack property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing spellEffect:buff_then_destroy for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'friendly_minion';
+    const buffAttack = effect.buffAttack || 0;
+    const buffHealth = effect.buffHealth || 0;
+    const duration = effect.duration || 1;
+    const destroyImmediately = duration === 0;
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for buff_then_destroy`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    
+    if (target.card.type !== 'minion') {
+      return { success: false, error: 'Target must be a minion' };
+    }
+    
+    if (buffAttack > 0 && target.card.attack !== undefined) {
+      target.card.attack += buffAttack;
+    }
+    
+    if (buffHealth > 0) {
+      if (target.currentHealth !== undefined) {
+        target.currentHealth += buffHealth;
+      }
+      if (target.card.health !== undefined) {
+        target.card.health += buffHealth;
+      }
+    }
+    
+    context.logGameEvent(`${target.card.name} buffed by +${buffAttack}/+${buffHealth}`);
+    
+    if (destroyImmediately) {
+      if (target.currentHealth !== undefined) {
+        target.currentHealth = 0;
+      }
+      context.logGameEvent(`${target.card.name} is destroyed immediately`);
+    } else {
+      (target as any).destroyAfterTurns = duration;
+      context.logGameEvent(`${target.card.name} will be destroyed after ${duration} turn(s)`);
+    }
+    
+    return { 
+      success: true,
+      additionalData: {
+        targetName: target.card.name,
+        buffAttack,
+        buffHealth,
+        destroyedImmediately: destroyImmediately,
+        destroyAfterTurns: destroyImmediately ? 0 : duration
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:buff_then_destroy:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:buff_then_destroy: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: buffHealth
-  if (effect.buffHealth === undefined) {
-    console.warn(`BuffThenDestroy effect missing buffHealth property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: duration
-  if (effect.duration === undefined) {
-    console.warn(`BuffThenDestroy effect missing duration property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the buff_then_destroy spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered buff_then_destroy spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeBuffThenDestroyBuffThenDestroy;

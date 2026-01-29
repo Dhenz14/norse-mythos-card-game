@@ -315,24 +315,22 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         }
         
         // Check if the card has a spell effect that triggers discovery
+        // NOTE: Discovery is now handled inside executeDiscoverSpell() in spellUtils.ts
+        // which uses the full allCards database. We just need to use the newState which
+        // already has discovery.active = true if it was a discover spell.
         if (cardInstance.card.type === 'spell' && 
-            cardInstance.card.spellEffect?.type === 'discover') {
-          
-          // Process the discovery effect
-          const discoveryState = processDiscovery(
-            newState, 
-            cardInstance.card.spellEffect, 
-            cardId
-          );
+            cardInstance.card.spellEffect?.type === 'discover' &&
+            newState.discovery?.active) {
           
           // Play sound effect
           if (audioStore && typeof audioStore.playSoundEffect === 'function') {
             audioStore.playSoundEffect('discover');
           }
           
-          // Update state with discovery options
+          // Use the newState directly - it already has discovery set up from executeDiscoverSpell()
+          console.log('[GameStore] Discovery spell played, discovery options:', newState.discovery?.options?.length);
           set({ 
-            gameState: discoveryState,
+            gameState: newState,
             selectedCard: null
           });
           

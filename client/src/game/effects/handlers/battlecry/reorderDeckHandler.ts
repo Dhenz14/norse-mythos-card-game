@@ -1,63 +1,75 @@
 /**
  * ReorderDeck Battlecry Handler
  * 
- * Implements the "reorder_deck" battlecry effect.
+ * Reorders cards in the deck based on mana cost.
  * Example card: Lorekeeper Polkelt (ID: 20311)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a reorder_deck battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeReorderDeckReorderDeck(
-  state: GameState,
+export default function executeReorderDeck(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing reorder_deck battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: orderBy
-  if (effect.orderBy === undefined) {
-    console.warn(`ReorderDeck effect missing orderBy property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing reorder_deck battlecry for ${sourceCard.name}`);
+    
+    const orderBy = effect.orderBy || 'manaCost';
+    const direction = effect.direction || 'descending';
+    
+    if (context.currentPlayer.deck.length === 0) {
+      context.logGameEvent('Deck is empty, nothing to reorder.');
+      return { success: true, additionalData: { deckSize: 0 } };
+    }
+    
+    const originalOrder = context.currentPlayer.deck.map(c => c.card.name).join(', ');
+    
+    context.currentPlayer.deck.sort((a, b) => {
+      let valueA: number;
+      let valueB: number;
+      
+      switch (orderBy) {
+        case 'manaCost':
+          valueA = a.card.manaCost || 0;
+          valueB = b.card.manaCost || 0;
+          break;
+        case 'attack':
+          valueA = a.card.attack || 0;
+          valueB = b.card.attack || 0;
+          break;
+        case 'health':
+          valueA = a.card.health || 0;
+          valueB = b.card.health || 0;
+          break;
+        case 'name':
+          return direction === 'ascending' 
+            ? a.card.name.localeCompare(b.card.name)
+            : b.card.name.localeCompare(a.card.name);
+        default:
+          valueA = a.card.manaCost || 0;
+          valueB = b.card.manaCost || 0;
+      }
+      
+      return direction === 'ascending' ? valueA - valueB : valueB - valueA;
+    });
+    
+    const newOrder = context.currentPlayer.deck.map(c => c.card.name).join(', ');
+    
+    context.logGameEvent(`Reordered deck by ${orderBy} (${direction}). Next draw will be highest cost card.`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        deckSize: context.currentPlayer.deck.length,
+        orderBy,
+        direction,
+        topCard: context.currentPlayer.deck[0]?.card.name
+      }
+    };
+  } catch (error) {
+    console.error('Error executing reorder_deck:', error);
+    return { success: false, error: `Failed to execute reorder_deck: ${error}` };
   }
-
-  // Check for required property: direction
-  if (effect.direction === undefined) {
-    console.warn(`ReorderDeck effect missing direction property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the reorder_deck battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered reorder_deck battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeReorderDeckReorderDeck;

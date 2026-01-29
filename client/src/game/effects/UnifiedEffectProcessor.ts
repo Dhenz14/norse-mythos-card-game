@@ -48,7 +48,6 @@ export class UnifiedEffectProcessor {
     try {
       // Check if we have a registered handler in the new system
       if (EffectRegistry.hasHandler('battlecry', sourceCard.card.battlecry.type)) {
-        console.log(`Using registry handler for battlecry: ${sourceCard.card.battlecry.type}`);
         
         // Use the new registry system
         const result = EffectRegistry.executeBattlecry(
@@ -67,7 +66,6 @@ export class UnifiedEffectProcessor {
           throw new Error(result.error);
         }
       } else {
-        console.log(`Using fallback handler for battlecry: ${sourceCard.card.battlecry.type}`);
         
         // Fall back to original implementation
         const newState = originalExecuteBattlecry(state, sourceCard.instanceId || '', targetId, targetType);
@@ -96,7 +94,6 @@ export class UnifiedEffectProcessor {
     try {
       // Check if we have a registered handler in the new system
       if (EffectRegistry.hasHandler('deathrattle', sourceCard.card.deathrattle.type)) {
-        console.log(`Using registry handler for deathrattle: ${sourceCard.card.deathrattle.type}`);
         
         // Use the new registry system
         const result = EffectRegistry.executeDeathrattle(
@@ -115,7 +112,6 @@ export class UnifiedEffectProcessor {
           throw new Error(result.error);
         }
       } else {
-        console.log(`Using fallback handler for deathrattle: ${sourceCard.card.deathrattle.type}`);
         
         // Fall back to original implementation
         const newState = originalExecuteDeathrattle(state, sourceCard, playerId);
@@ -144,7 +140,6 @@ export class UnifiedEffectProcessor {
     try {
       // Check if we have a registered handler in the new system
       if (EffectRegistry.hasHandler('spellEffect', sourceCard.card.spellEffect.type)) {
-        console.log(`Using registry handler for spell: ${sourceCard.card.spellEffect.type}`);
         
         // Use the new registry system
         const result = EffectRegistry.executeSpellEffect(
@@ -163,7 +158,6 @@ export class UnifiedEffectProcessor {
           throw new Error(result.error);
         }
       } else {
-        console.log(`Using fallback handler for spell: ${sourceCard.card.spellEffect.type}`);
         
         // Fall back to original implementation
         const newState = originalExecuteSpell(state, sourceCard, targetId, targetType);
@@ -192,7 +186,6 @@ export class UnifiedEffectProcessor {
     try {
       // Check if we have a registered combo handler
       if (EffectRegistry.hasHandler('combo', sourceCard.card.battlecry.type)) {
-        console.log(`Using registry handler for combo: ${sourceCard.card.battlecry.type}`);
         
         // Use the new registry system
         const result = EffectRegistry.executeCombo(
@@ -211,7 +204,6 @@ export class UnifiedEffectProcessor {
           throw new Error(result.error);
         }
       } else {
-        console.log(`Using fallback handler for combo: ${sourceCard.card.battlecry.type}`);
         
         // Fall back to original implementation
         const newState = originalExecuteCombo(state, sourceCard.instanceId, targetId, targetType);

@@ -265,7 +265,6 @@ export function logCardRendering(card: UnifiedCard, renderer: string): void {
   if (process.env.NODE_ENV !== 'production') {
     try {
       const cardData = extractCardData(card);
-      console.log(
         `Rendering card ${cardData.name} (ID: ${cardData.id}) with ${renderer} renderer`
       );
     } catch (err) {

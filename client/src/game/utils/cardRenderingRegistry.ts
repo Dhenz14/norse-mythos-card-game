@@ -310,7 +310,6 @@ export function getRendererForCard(
  * Initialize the card rendering system
  */
 export function initializeCardRendering(): void {
-  console.log(`Card rendering system: Initializing ${ACTIVE_CARD_RENDERER} as the primary renderer`);
   
   // Update the active state in the registry
   Object.keys(CARD_RENDERERS).forEach(key => {

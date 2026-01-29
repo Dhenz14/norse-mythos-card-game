@@ -2,92 +2,63 @@
  * ChangeHeroPower Battlecry Handler
  * 
  * Implements the "change_hero_power" battlecry effect.
+ * Replaces the hero power with effect.newHeroPower.
  * Example card: Sulfuras (ID: 15002)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a change_hero_power battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeChangeHeroPowerChangeHeroPower(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing change_hero_power battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: newHeroPower
-  if (effect.newHeroPower === undefined) {
-    console.warn(`ChangeHeroPower effect missing newHeroPower property`);
-    // Fall back to a default value or handle the missing property
+export default function executeChangeHeroPower(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:change_hero_power for ${sourceCard.name}`);
+    
+    if (!effect.newHeroPower) {
+      context.logGameEvent(`ChangeHeroPower effect missing newHeroPower property`);
+      return { success: false, error: 'No new hero power specified' };
+    }
+    
+    const newHeroPower: CardInstance = {
+      instanceId: 'hero-power-' + Date.now(),
+      card: {
+        id: effect.newHeroPower.id || 99999,
+        name: effect.newHeroPower.name || effect.name || 'New Hero Power',
+        description: effect.newHeroPower.description || effect.description || '',
+        manaCost: effect.newHeroPower.cost !== undefined ? effect.newHeroPower.cost : (effect.cost !== undefined ? effect.cost : 2),
+        type: 'hero_power',
+        rarity: 'basic',
+        heroClass: effect.newHeroPower.class || effect.class || 'neutral',
+        spellEffect: effect.newHeroPower.effect || effect.newHeroPower
+      },
+      canAttack: false,
+      isPlayed: false,
+      isSummoningSick: false,
+      attacksPerformed: 0
+    };
+    
+    const oldHeroPower = context.currentPlayer.heroPower;
+    const oldHeroPowerName = oldHeroPower?.card?.name || 'unknown';
+    
+    context.currentPlayer.heroPower = newHeroPower;
+    
+    context.logGameEvent(`${sourceCard.name} changed hero power from ${oldHeroPowerName} to ${newHeroPower.card.name}`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        oldHeroPower: oldHeroPowerName,
+        newHeroPower: newHeroPower.card.name
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:change_hero_power:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:change_hero_power: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: name
-  if (effect.name === undefined) {
-    console.warn(`ChangeHeroPower effect missing name property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: description
-  if (effect.description === undefined) {
-    console.warn(`ChangeHeroPower effect missing description property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: cost
-  if (effect.cost === undefined) {
-    console.warn(`ChangeHeroPower effect missing cost property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: used
-  if (effect.used === undefined) {
-    console.warn(`ChangeHeroPower effect missing used property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: class
-  if (effect.class === undefined) {
-    console.warn(`ChangeHeroPower effect missing class property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`ChangeHeroPower effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the change_hero_power battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered change_hero_power battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeChangeHeroPowerChangeHeroPower;

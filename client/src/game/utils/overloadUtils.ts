@@ -46,7 +46,6 @@ export function applyOverload(
   const player = state.players[playerType];
   const currentPendingOverload = player.mana.pendingOverload || 0;
   
-  console.log(`Adding ${overloadAmount} overload for ${playerType} (currently pending: ${currentPendingOverload})`);
   
   // Update pending overload (will become active on next turn)
   return {

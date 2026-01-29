@@ -179,6 +179,11 @@ export interface MinionCardData extends BaseCardData {
   passive?: PassiveEffect;
   cantBeSilenced?: boolean;
   categories?: string[];
+  triggeredEffect?: TriggeredEffect;
+  linkedHeroId?: string;
+  isSuperMinion?: boolean;
+  overload?: { amount: number };
+  comboEffect?: any;
 }
 
 /**
@@ -187,6 +192,8 @@ export interface MinionCardData extends BaseCardData {
 export interface SpellCardData extends BaseCardData {
   type: 'spell';
   spellEffect?: SpellEffect;
+  overload?: { amount: number };
+  comboEffect?: any;
 }
 
 /**
@@ -196,6 +203,7 @@ export interface WeaponCardData extends BaseCardData {
   type: 'weapon';
   attack?: number;
   durability?: number;
+  overload?: { amount: number };
 }
 
 /**
@@ -205,6 +213,7 @@ export interface HeroCardData extends BaseCardData {
   type: 'hero';
   armor?: number;
   health?: number;
+  overload?: { amount: number };
 }
 
 /**
@@ -212,6 +221,7 @@ export interface HeroCardData extends BaseCardData {
  */
 export interface SecretCardData extends BaseCardData {
   type: 'secret';
+  overload?: { amount: number };
 }
 
 /**
@@ -220,6 +230,7 @@ export interface SecretCardData extends BaseCardData {
 export interface LocationCardData extends BaseCardData {
   type: 'location';
   durability?: number;
+  overload?: { amount: number };
 }
 
 /**
@@ -318,7 +329,8 @@ export type CardAnimationType =
   | 'enhance' 
   | 'damage' 
   | 'heal' 
-  | 'transform';
+  | 'transform'
+  | 'deathrattle';
 
 /**
  * Battlecry target type enum for accessing as properties
@@ -334,6 +346,7 @@ export enum BattlecryTargetType {
   HERO = 'hero',
   ALL = 'all',
   MECH = 'mech',
+  FRIENDLY_MECH = 'friendly_mech',
   ANY_HERO = 'any_hero',
   ALL_MINIONS = 'all_minions',
   ALL_ENEMY_MINIONS = 'all_enemy_minions'
@@ -410,6 +423,7 @@ export interface HeroPower {
   effect?: string;
   description?: string;
   class?: HeroClass;
+  isUpgraded?: boolean;
 }
 
 /**
@@ -428,6 +442,7 @@ export interface CardInstance {
   isStealth?: boolean;
   isTaunt?: boolean;
   isRush?: boolean;
+  hasRush?: boolean;
   hasCharge?: boolean;
   hasWindfury?: boolean;
   hasLifesteal?: boolean;
@@ -436,8 +451,10 @@ export interface CardInstance {
   silenced?: boolean;
   buffs?: any[];
   isPlayed?: boolean;
+  hasSuperMinionBonus?: boolean;
   attacksPerformed?: number;
   isPlayerOwned?: boolean;
+  isBurning?: boolean;
 }
 
 /**
@@ -453,6 +470,7 @@ export interface EquippedWeapon {
  * Hero state for a player
  */
 export interface HeroState {
+  id?: string;
   isFrozen?: boolean;
   isImmune?: boolean;
 }
@@ -480,6 +498,11 @@ export interface Player {
   attacksPerformedThisTurn: number;
   hero?: HeroState;
   deckSize?: number;
+  heroId?: string;
+  tempStats?: {
+    attack?: number;
+    armor?: number;
+  };
 }
 
 /**
@@ -563,27 +586,44 @@ export interface CardEventHandlers {
  */
 export type GameLogEventType = 
   | 'card_played' 
+  | 'play_card'
   | 'minion_attack' 
+  | 'attack'
   | 'spell_cast' 
   | 'hero_damage'
   | 'minion_death'
+  | 'death'
   | 'turn_start'
   | 'turn_end'
   | 'quest_progress'
   | 'quest_completed'
   | 'secret_triggered'
-  | 'hero_power_used';
+  | 'hero_power_used'
+  | 'hero_power'
+  | 'draw'
+  | 'fatigue'
+  | 'burn'
+  | 'mulligan'
+  | 'summon'
+  | 'heal'
+  | 'damage'
+  | 'buff'
+  | 'discover'
+  | 'deathrattle'
+  | 'effect';
 
 /**
  * Animation parameters for card animations
  */
 export interface AnimationParams {
-  type: 'play' | 'attack' | 'damage' | 'heal' | 'death' | 'draw';
+  type: 'play' | 'attack' | 'damage' | 'heal' | 'death' | 'draw' | 'deathrattle';
   sourceId?: string | number;
   targetId?: string | number;
   position?: { x: number; y: number };
   duration?: number;
   value?: number;
+  damage?: number;
+  healing?: number;
 }
 
 /**

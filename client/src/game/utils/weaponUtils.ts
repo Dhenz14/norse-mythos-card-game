@@ -21,7 +21,6 @@ export function equipWeapon(
   playerType: 'player' | 'opponent',
   weaponCard: CardInstance
 ): GameState {
-  console.log(`${playerType} is equipping weapon: ${weaponCard.card.name}`);
   
   // Make a deep copy of the state to avoid mutations
   const newState = JSON.parse(JSON.stringify(state)) as GameState;
@@ -31,7 +30,6 @@ export function equipWeapon(
     // Destroy the current weapon (send to graveyard)
     const oldWeapon = newState.players[playerType].weapon;
     if (oldWeapon) {
-      console.log(`Replacing old weapon: ${oldWeapon.card.name}`);
       
       // Add to graveyard if it doesn't exist yet
       if (!newState.players[playerType].graveyard) {
@@ -109,7 +107,6 @@ export function attackWithWeapon(
   
   // If no targetId is specified, attack the enemy hero directly
   if (!targetId || targetType === 'hero') {
-    console.log(`${attackingPlayerType} attacks ${defendingPlayerType} hero with ${weapon.card.name} for ${attackDamage} damage`);
     
     // Apply damage to enemy hero
     newState.players[defendingPlayerType].health -= attackDamage;
@@ -118,7 +115,6 @@ export function attackWithWeapon(
     if (newState.players[defendingPlayerType].health <= 0) {
       newState.gamePhase = "game_over";
       newState.winner = attackingPlayerType;
-      console.log(`${attackingPlayerType} wins by lethal weapon damage!`);
     }
   } else if (targetType === 'minion') {
     // Find the target minion
@@ -133,11 +129,9 @@ export function attackWithWeapon(
     
     const targetMinion = newState.players[defendingPlayerType].battlefield[targetIndex];
     
-    console.log(`${attackingPlayerType} attacks ${targetMinion.card.name} with ${weapon.card.name} (${attackDamage} damage)`);
     
     // Check for Divine Shield
     if (targetMinion.hasDivineShield) {
-      console.log(`${targetMinion.card.name}'s Divine Shield absorbed the attack`);
       newState.players[defendingPlayerType].battlefield[targetIndex].hasDivineShield = false;
     } else {
       // Apply damage to minion
@@ -146,7 +140,6 @@ export function attackWithWeapon(
       
       // Check if the minion was killed
       if ((newState.players[defendingPlayerType].battlefield[targetIndex].currentHealth || 0) <= 0) {
-        console.log(`${targetMinion.card.name} was destroyed`);
         
         // Add to graveyard if it doesn't exist yet
         if (!newState.players[defendingPlayerType].graveyard) {
@@ -168,7 +161,6 @@ export function attackWithWeapon(
     if (newState.players[attackingPlayerType].health <= 0) {
       newState.gamePhase = "game_over";
       newState.winner = defendingPlayerType;
-      console.log(`${defendingPlayerType} wins after ${attackingPlayerType} died while attacking!`);
     }
   }
   
@@ -178,7 +170,6 @@ export function attackWithWeapon(
     
     // Check if weapon broke
     if (weapon.currentDurability <= 0) {
-      console.log(`${weapon.card.name} broke after the attack`);
       
       // Add to game log
       const breakEvent: GameLogEvent = {
@@ -376,7 +367,6 @@ export function buffWeapon(
     currentDurability: buffedDurability
   };
   
-  console.log(`${playerType}'s weapon buffed: ${originalAttack}/${originalDurability} → ${buffedAttack}/${buffedDurability}`);
   
   return newState;
 }

@@ -25,7 +25,6 @@ export function executeSetHealthSetHealth(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing set_health spellEffect for ${sourceCard.card.name}`);
   
   // Check for required property: value
   if (effect.value === undefined) {

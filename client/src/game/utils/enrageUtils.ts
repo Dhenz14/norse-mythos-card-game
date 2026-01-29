@@ -69,7 +69,6 @@ export function applyEnrageEffect(minion: CardInstance): CardInstance {
         modifiedMinion.card.keywords = [...modifiedMinion.card.keywords, 'windfury'];
       }
       
-      console.log(`${modifiedMinion.card.name} is ENRAGED (+${attackBonus} Attack${windfuryAdded ? ', +Windfury' : ''})`);
     }
   } else if (!shouldEnrage && minion.isEnraged && modifiedMinion.card.attack !== undefined) {
     // Remove the enrage bonus when healed to full or silenced
@@ -106,7 +105,6 @@ export function applyEnrageEffect(minion: CardInstance): CardInstance {
       );
     }
     
-    console.log(`${modifiedMinion.card.name} is no longer enraged`);
   }
   
   return modifiedMinion;

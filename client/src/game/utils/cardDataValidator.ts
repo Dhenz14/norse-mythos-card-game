@@ -176,7 +176,6 @@ export function sanitizeCardArray(cards: any[], normalizeCards: boolean = true):
   let validCards = cards.filter(isValidCard);
   
   if (validCards.length !== originalLength) {
-    console.log(`Card validation: Filtered out ${originalLength - validCards.length} invalid entries from card array`);
   }
   
   // Optionally normalize the cards to ensure schema consistency
@@ -195,7 +194,6 @@ export function sanitizeCardArray(cards: any[], normalizeCards: boolean = true):
       }
       
       if (normalizeFailures > 0) {
-        console.log(`Card validation: Failed to normalize ${normalizeFailures} cards`);
       }
       
       validCards = normalizedResult;

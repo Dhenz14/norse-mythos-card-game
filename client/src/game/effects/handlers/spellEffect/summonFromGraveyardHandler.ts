@@ -21,7 +21,6 @@ function executeSummonFromGraveyardSummonFromGraveyard(
 ): EffectResult {
   // Check if graveyard is empty
   if (getGraveyard().length === 0) {
-    console.log('Cannot summon from empty graveyard');
     return { 
       success: false, 
       error: 'The graveyard is empty - no minions have died yet' 

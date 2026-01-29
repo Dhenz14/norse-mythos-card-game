@@ -2,68 +2,92 @@
  * BuffDeck Battlecry Handler
  * 
  * Implements the "buff_deck" battlecry effect.
+ * Buffs all minions in the player's deck.
  * Example card: Prince Keleseth (ID: 20705)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a buff_deck battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeBuffDeckBuffDeck(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing buff_deck battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: condition
-  if (effect.condition === undefined) {
-    console.warn(`BuffDeck effect missing condition property`);
-    // Fall back to a default value or handle the missing property
+export default function executeBuffDeck(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:buff_deck for ${sourceCard.name}`);
+    
+    const buffAttack = effect.buffAttack || 0;
+    const buffHealth = effect.buffHealth || 0;
+    const condition = effect.condition;
+    
+    if (buffAttack === 0 && buffHealth === 0) {
+      context.logGameEvent(`BuffDeck effect has no buffs specified`);
+      return { success: true };
+    }
+    
+    if (condition) {
+      const conditionMet = checkCondition(context, condition);
+      if (!conditionMet) {
+        context.logGameEvent(`Condition "${condition}" not met for buff_deck`);
+        return { success: true };
+      }
+    }
+    
+    const deck = context.currentPlayer.deck;
+    
+    if (deck.length === 0) {
+      context.logGameEvent(`Deck is empty, no minions to buff`);
+      return { success: true };
+    }
+    
+    let buffedCount = 0;
+    
+    deck.forEach(cardInstance => {
+      if (cardInstance.card.type === 'minion') {
+        if (buffAttack !== 0) {
+          cardInstance.card.attack = (cardInstance.card.attack || 0) + buffAttack;
+        }
+        
+        if (buffHealth !== 0) {
+          cardInstance.card.health = (cardInstance.card.health || 0) + buffHealth;
+        }
+        
+        buffedCount++;
+      }
+    });
+    
+    context.logGameEvent(`${sourceCard.name} buffed ${buffedCount} minions in deck by +${buffAttack}/+${buffHealth}`);
+    
+    return { success: true, additionalData: { buffedCount } };
+  } catch (error) {
+    console.error(`Error executing battlecry:buff_deck:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:buff_deck: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: buffAttack
-  if (effect.buffAttack === undefined) {
-    console.warn(`BuffDeck effect missing buffAttack property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: buffHealth
-  if (effect.buffHealth === undefined) {
-    console.warn(`BuffDeck effect missing buffHealth property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the buff_deck battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered buff_deck battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
 
-export default executeBuffDeckBuffDeck;
+function checkCondition(context: GameContext, condition: string): boolean {
+  switch (condition) {
+    case 'no_2_cost_cards':
+      return !context.currentPlayer.deck.some(c => c.card.manaCost === 2);
+    case 'no_duplicates':
+      const cardIds = context.currentPlayer.deck.map(c => c.card.id);
+      return cardIds.length === new Set(cardIds).size;
+    case 'hand_empty':
+      return context.currentPlayer.hand.length === 0;
+    case 'board_empty':
+      return context.currentPlayer.board.length === 0;
+    default:
+      return true;
+  }
+}

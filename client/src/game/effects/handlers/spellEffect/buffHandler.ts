@@ -12,16 +12,6 @@ import { EffectResult } from '../../../types/EffectTypes';
  * @param context - The game context
  * @param effect - The effect data
  * @param sourceCard - The card that triggered the effect
-   * @param effect.0 - The 0 for the effect
-   * @param effect.1 - The 1 for the effect
-   * @param effect.2 - The 2 for the effect
-   * @param effect.3 - The 3 for the effect
-   * @param effect.4 - The 4 for the effect
-   * @param effect.5 - The 5 for the effect
-   * @param effect.6 - The 6 for the effect
-   * @param effect.7 - The 7 for the effect
-   * @param effect.8 - The 8 for the effect
-   * @param effect.9 - The 9 for the effect
  * @returns An object indicating success or failure and any additional data
  */
 export default function executeBuffBuff(
@@ -44,23 +34,14 @@ export default function executeBuffBuff(
     
     // Get effect properties with defaults
     const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const prop0 = effect.0;
-    const prop1 = effect.1;
-    const prop2 = effect.2;
-    const prop3 = effect.3;
-    const prop4 = effect.4;
-    const prop5 = effect.5;
-    const prop6 = effect.6;
-    const prop7 = effect.7;
-    const prop8 = effect.8;
-    const prop9 = effect.9;
+    const targetType = effect.targetType || 'friendly_minion';
+    const buffAttack = effect.buffAttack || 0;
+    const buffHealth = effect.buffHealth || 0;
+    const grantKeywords = effect.grantKeywords || [];
+    const temporaryEffect = effect.temporaryEffect === true;
     
-    // Implementation placeholder
-    console.log(`spellEffect:buff executed with properties: ${JSON.stringify(effect)}`);
-    
-    // TODO: Implement the spellEffect:buff effect
-    if (requiresTarget) {
+    // Implementation
+    if (requiresTarget || targetType !== 'none') {
       // Get targets based on targetType
       const targets = context.getTargets(targetType, sourceCardInstance);
       
@@ -69,18 +50,46 @@ export default function executeBuffBuff(
         return { success: false, error: 'No valid targets' };
       }
       
-      // Example implementation for target-based effect
+      let buffedCount = 0;
+      
       targets.forEach(target => {
-        context.logGameEvent(`Buff effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
+        if (target.card.type === 'minion') {
+          // Apply attack buff
+          if (buffAttack !== 0) {
+            target.card.attack = (target.card.attack || 0) + buffAttack;
+          }
+          
+          // Apply health buff
+          if (buffHealth !== 0) {
+            target.card.health = (target.card.health || 0) + buffHealth;
+            if (target.currentHealth !== undefined) {
+              target.currentHealth += buffHealth;
+            }
+          }
+          
+          // Grant keywords
+          if (grantKeywords.length > 0) {
+            target.card.keywords = target.card.keywords || [];
+            grantKeywords.forEach((keyword: string) => {
+              if (!target.card.keywords!.includes(keyword)) {
+                target.card.keywords!.push(keyword);
+              }
+            });
+          }
+          
+          buffedCount++;
+          context.logGameEvent(`Buff effect applied to ${target.card.name}: +${buffAttack}/+${buffHealth}`);
+        }
       });
+      
+      return { 
+        success: true,
+        additionalData: { buffedCount, buffAttack, buffHealth }
+      };
     } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Buff effect applied`);
-      // TODO: Apply effect without target
+      context.logGameEvent(`Buff effect applied with no targets`);
+      return { success: true };
     }
-    
-    return { success: true };
   } catch (error) {
     console.error(`Error executing spellEffect:buff:`, error);
     return { 

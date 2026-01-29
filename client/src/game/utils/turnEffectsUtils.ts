@@ -5,10 +5,28 @@
  * start-of-turn and end-of-turn effects.
  */
 
-import { GameState, CardInstance } from '../types';
+import { GameState, CardInstance, MinionCardData, GameLogEvent } from '../types';
 import { drawCard } from './drawUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { processTurnStartEffects as processStatusTurnStart, clearEndOfTurnEffects } from './statusEffectUtils';
+
+// Helper to create type-safe game log entries for effects
+function createEffectLogEntry(
+  text: string,
+  player: 'player' | 'opponent',
+  turnNumber: number,
+  cardId?: number | string
+): GameLogEvent {
+  return {
+    id: uuidv4(),
+    type: 'card_played', // Use 'card_played' as closest valid type for effects
+    player,
+    text,
+    timestamp: Date.now(),
+    turn: turnNumber,
+    cardId: cardId !== undefined ? String(cardId) : undefined
+  };
+}
 
 /**
  * Process start of turn effects for a player
@@ -17,7 +35,7 @@ import { processTurnStartEffects as processStatusTurnStart, clearEndOfTurnEffect
  */
 export function processStartOfTurnEffects(state: GameState): GameState {
   let newState = { ...state };
-  const currentPlayer = state.currentTurn || 'player';
+  const currentPlayer: 'player' | 'opponent' = state.currentTurn || 'player';
   
   // Process minion start-of-turn effects for the current player
   const battlefield = newState.players[currentPlayer]?.battlefield || [];
@@ -25,18 +43,25 @@ export function processStartOfTurnEffects(state: GameState): GameState {
   for (const minion of battlefield) {
     // Handle specific card effects by ID
     switch (minion.card.id) {
-      // Nat Pagle (ID: 20607)
+      // Fishing Master (ID: 20607)
       case 20607:
-        newState = processNatPagleEffect(newState, minion);
+        newState = processFishingMasterEffect(newState, minion, currentPlayer);
+        break;
+      
+      // Clockwork Automaton (ID: 5103) - Swap with random minion in hand
+      case 5103:
+        newState = processClockworkAutomatonEffect(newState, minion, currentPlayer);
         break;
         
       // Add any other start-of-turn effects here as needed
       
       default:
-        // Process generic start-of-turn effects
-        if (minion.card.startOfTurn) {
-          // Implement generic start of turn effect processing
-          console.log(`Processing generic start of turn effect for ${minion.card.name}`);
+        // Process generic start-of-turn effects (only for minion cards)
+        if (minion.card.type === 'minion') {
+          const minionCard = minion.card as MinionCardData;
+          if (minionCard.startOfTurn) {
+            // Implement generic start of turn effect processing
+          }
         }
     }
   }
@@ -44,18 +69,20 @@ export function processStartOfTurnEffects(state: GameState): GameState {
   // Process status effects for all minions using centralized utility
   for (let i = 0; i < battlefield.length; i++) {
     const minion = newState.players[currentPlayer].battlefield[i];
-    const { damage, effects } = processStatusTurnStart(minion);
+    const { damage } = processStatusTurnStart(minion as any);
     
     if (damage > 0) {
-      const currentHealth = minion.currentHealth ?? minion.card.health ?? 0;
+      // Type guard for health access
+      const cardHealth = minion.card.type === 'minion' 
+        ? (minion.card as MinionCardData).health 
+        : 0;
+      const currentHealth = minion.currentHealth ?? cardHealth ?? 0;
       const newHealth = currentHealth - damage;
       
       newState.players[currentPlayer].battlefield[i] = {
         ...minion,
         currentHealth: newHealth
       };
-      
-      effects.forEach(effect => console.log(`[STATUS] ${effect}`));
     }
   }
   
@@ -63,62 +90,162 @@ export function processStartOfTurnEffects(state: GameState): GameState {
 }
 
 /**
- * Process Nat Pagle's effect (50% chance to draw a card at start of turn)
+ * Process Fishing Master's effect (50% chance to draw a card at start of turn)
  * @param state Current game state
- * @param minion Nat Pagle card instance
+ * @param minion Fishing Master card instance
+ * @param currentPlayer The current player
  * @returns Updated game state
  */
-function processNatPagleEffect(state: GameState, minion: CardInstance): GameState {
-  const currentPlayer = state.currentTurn || 'player';
-  
-  // Log that the effect is being processed
-  console.log(`Processing Nat Pagle effect for ${currentPlayer}`);
-  
+function processFishingMasterEffect(
+  state: GameState, 
+  minion: CardInstance,
+  currentPlayer: 'player' | 'opponent'
+): GameState {
   // 50% chance to draw an extra card
   const shouldDraw = Math.random() >= 0.5;
   
   if (shouldDraw) {
-    console.log(`Nat Pagle triggered! Drawing an extra card for ${currentPlayer}`);
-    
     // Add a game log entry
     const newState = {
       ...state,
       gameLog: [
         ...(state.gameLog || []),
-        {
-          id: uuidv4(),
-          type: 'effect',
-          text: `Nat Pagle fished an extra card for ${currentPlayer === 'player' ? 'you' : 'opponent'}!`,
-          timestamp: Date.now(),
-          turn: state.turnNumber || 1,
-          source: minion.card.name,
-          cardId: minion.card.id
-        }
+        createEffectLogEntry(
+          `Fishing Master caught an extra card for ${currentPlayer === 'player' ? 'you' : 'opponent'}!`,
+          currentPlayer,
+          state.turnNumber || 1,
+          minion.card.id
+        )
       ]
     };
     
     // Draw the card - use the core drawCard function without a second parameter
     return drawCard(newState);
   } else {
-    console.log(`Nat Pagle didn't catch anything this turn`);
-    
     // Add a game log entry for the failed draw
     return {
       ...state,
       gameLog: [
         ...(state.gameLog || []),
-        {
-          id: uuidv4(),
-          type: 'effect',
-          text: `Nat Pagle didn't catch anything this turn.`,
-          timestamp: Date.now(),
-          turn: state.turnNumber || 1,
-          source: minion.card.name,
-          cardId: minion.card.id
-        }
+        createEffectLogEntry(
+          `Fishing Master didn't catch anything this turn.`,
+          currentPlayer,
+          state.turnNumber || 1,
+          minion.card.id
+        )
       ]
     };
   }
+}
+
+/**
+ * Process Clockwork Automaton effect (swap with random minion in hand at start of turn)
+ * @param state Current game state
+ * @param minion Automaton card instance
+ * @param currentPlayer The current player
+ * @returns Updated game state
+ */
+function processClockworkAutomatonEffect(
+  state: GameState, 
+  minion: CardInstance, 
+  currentPlayer: 'player' | 'opponent'
+): GameState {
+  const hand = state.players[currentPlayer]?.hand || [];
+  const battlefield = state.players[currentPlayer]?.battlefield || [];
+  
+  // Find minions in hand (cards with attack and health properties, type 'minion')
+  const minionsInHand = hand.filter(card => 
+    card.card.type === 'minion' && 
+    typeof card.card.attack === 'number' && 
+    typeof (card.card as MinionCardData).health === 'number'
+  );
+  
+  if (minionsInHand.length === 0) {
+    console.log('[Clockwork Automaton] No minions in hand to swap with');
+    return {
+      ...state,
+      gameLog: [
+        ...(state.gameLog || []),
+        createEffectLogEntry(
+          `Clockwork Automaton tried to swap but found no minions in hand.`,
+          currentPlayer,
+          state.turnNumber || 1,
+          minion.card.id
+        )
+      ]
+    };
+  }
+  
+  // Pick a random minion from hand
+  const randomIndex = Math.floor(Math.random() * minionsInHand.length);
+  const handMinion = minionsInHand[randomIndex];
+  
+  // Find the indices
+  const automatonIndex = battlefield.findIndex(m => m.instanceId === minion.instanceId);
+  const handMinionIndex = hand.findIndex(c => c.instanceId === handMinion.instanceId);
+  
+  if (automatonIndex === -1 || handMinionIndex === -1) {
+    console.error('[Clockwork Automaton] Could not find cards to swap');
+    return state;
+  }
+  
+  // Create new arrays for the swap
+  const newBattlefield = [...battlefield];
+  const newHand = [...hand];
+  
+  // Swap: Put automaton in hand, put hand minion on battlefield
+  const automatonFromField = newBattlefield[automatonIndex];
+  const minionFromHand = newHand[handMinionIndex];
+  
+  // The automaton goes to hand (reset its played state)
+  const automatonToHand: CardInstance = {
+    ...automatonFromField,
+    isPlayed: false,
+    canAttack: false,
+    isSummoningSick: true,
+    attacksPerformed: 0
+  };
+  
+  // Get the health from the minion card (type guard for MinionCardData)
+  const minionCard = minionFromHand.card;
+  const minionHealth = minionCard.type === 'minion' ? (minionCard as MinionCardData).health : undefined;
+  
+  // The hand minion goes to battlefield (mark as summoning sick)
+  const minionToBattlefield: CardInstance = {
+    ...minionFromHand,
+    isPlayed: true,
+    canAttack: false,
+    isSummoningSick: true,
+    attacksPerformed: 0,
+    currentHealth: minionHealth
+  };
+  
+  // Perform the swap
+  newBattlefield[automatonIndex] = minionToBattlefield;
+  newHand[handMinionIndex] = automatonToHand;
+  
+  console.log(`[Clockwork Automaton] Swapped with ${handMinion.card.name} from hand`);
+  
+  return {
+    ...state,
+    players: {
+      ...state.players,
+      [currentPlayer]: {
+        ...state.players[currentPlayer],
+        battlefield: newBattlefield,
+        hand: newHand
+      }
+    },
+    gameLog: [
+      ...(state.gameLog || []),
+      createEffectLogEntry(
+        `Clockwork Automaton swapped places with ${handMinion.card.name}!`,
+        currentPlayer,
+        state.turnNumber || 1,
+        minion.card.id
+      )
+    ]
+  };
 }
 
 /**
@@ -128,8 +255,8 @@ function processNatPagleEffect(state: GameState, minion: CardInstance): GameStat
  */
 export function processEndOfTurnEffects(state: GameState): GameState {
   let newState = { ...state };
-  const currentPlayer = state.currentTurn || 'player';
-  const opponentPlayer = currentPlayer === 'player' ? 'opponent' : 'player';
+  const currentPlayer: 'player' | 'opponent' = state.currentTurn || 'player';
+  const opponentPlayer: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
   
   // Process minion end-of-turn effects for the current player
   const battlefield = newState.players[currentPlayer]?.battlefield || [];
@@ -143,13 +270,10 @@ export function processEndOfTurnEffects(state: GameState): GameState {
         break;
       
       default:
-        // Process generic end-of-turn effects
-        if (minion.card.endOfTurn) {
-          // Implement generic end of turn effect processing
-          console.log(`Processing generic end of turn effect for ${minion.card.name}`);
-          
-          // If the card has a custom endOfTurn property, process it
-          if ('endOfTurn' in minion.card) {
+        // Process generic end-of-turn effects (only for minion cards)
+        if (minion.card.type === 'minion') {
+          const minionCard = minion.card as MinionCardData;
+          if (minionCard.endOfTurn) {
             newState = processCustomEndOfTurnEffect(newState, minion, opponentPlayer);
           }
         }
@@ -159,7 +283,7 @@ export function processEndOfTurnEffects(state: GameState): GameState {
   // Clear temporary status effects using centralized utility
   for (let i = 0; i < newState.players[currentPlayer].battlefield.length; i++) {
     const minion = newState.players[currentPlayer].battlefield[i];
-    newState.players[currentPlayer].battlefield[i] = clearEndOfTurnEffects(minion);
+    newState.players[currentPlayer].battlefield[i] = clearEndOfTurnEffects(minion as any) as CardInstance;
   }
   
   return newState;
@@ -172,40 +296,40 @@ export function processEndOfTurnEffects(state: GameState): GameState {
  * @param opponentPlayer The opponent player id
  * @returns Updated game state
  */
-function processJormungandrCoilEffect(state: GameState, minion: CardInstance, opponentPlayer: string): GameState {
-  console.log(`Processing Jormungandr's Coil effect`);
-  
+function processJormungandrCoilEffect(
+  state: GameState, 
+  minion: CardInstance, 
+  opponentPlayer: 'player' | 'opponent'
+): GameState {
+  const currentPlayer: 'player' | 'opponent' = opponentPlayer === 'player' ? 'opponent' : 'player';
   let newState = { ...state };
   const enemyMinions = newState.players[opponentPlayer]?.battlefield || [];
   
   if (enemyMinions.length === 0) {
-    console.log(`No enemy minions to damage`);
-    
     // Add a game log entry for the effect even if there are no targets
     return {
       ...newState,
       gameLog: [
         ...(newState.gameLog || []),
-        {
-          id: uuidv4(),
-          type: 'effect',
-          text: `Jormungandr's Coil tried to deal damage, but found no enemy minions.`,
-          timestamp: Date.now(),
-          turn: newState.turnNumber || 1,
-          source: minion.card.name,
-          cardId: minion.card.id
-        }
+        createEffectLogEntry(
+          `Jormungandr's Coil tried to deal damage, but found no enemy minions.`,
+          currentPlayer,
+          newState.turnNumber || 1,
+          minion.card.id
+        )
       ]
     };
   }
   
   // Apply 1 damage to all enemy minions
   const updatedEnemyMinions = enemyMinions.map(enemyMinion => {
-    // Safely get the current health with default values
-    const currentCardHealth = enemyMinion.card && enemyMinion.card.health ? enemyMinion.card.health : 0;
+    // Safely get the current health with default values (type guard for MinionCardData)
+    const cardHealth = enemyMinion.card.type === 'minion' 
+      ? (enemyMinion.card as MinionCardData).health 
+      : 0;
+    const currentCardHealth = cardHealth ?? 0;
     const currentHealth = typeof enemyMinion.currentHealth !== 'undefined' ? enemyMinion.currentHealth : currentCardHealth;
     const updatedHealth = currentHealth - 1;
-    console.log(`Dealing 1 damage to ${enemyMinion.card.name}, health: ${currentHealth} -> ${updatedHealth}`);
     
     return {
       ...enemyMinion,
@@ -225,15 +349,12 @@ function processJormungandrCoilEffect(state: GameState, minion: CardInstance, op
     },
     gameLog: [
       ...(newState.gameLog || []),
-      {
-        id: uuidv4(),
-        type: 'effect',
-        text: `Jormungandr's Coil dealt 1 damage to all enemy minions.`,
-        timestamp: Date.now(),
-        turn: newState.turnNumber || 1,
-        source: minion.card.name,
-        cardId: minion.card.id
-      }
+      createEffectLogEntry(
+        `Jormungandr's Coil dealt 1 damage to all enemy minions.`,
+        currentPlayer,
+        newState.turnNumber || 1,
+        minion.card.id
+      )
     ]
   };
   
@@ -247,10 +368,19 @@ function processJormungandrCoilEffect(state: GameState, minion: CardInstance, op
  * @param opponentPlayer The opponent player id
  * @returns Updated game state
  */
-function processCustomEndOfTurnEffect(state: GameState, minion: CardInstance, opponentPlayer: string): GameState {
-  console.log(`Processing custom end of turn effect for ${minion.card.name}`);
+function processCustomEndOfTurnEffect(
+  state: GameState, 
+  minion: CardInstance, 
+  opponentPlayer: 'player' | 'opponent'
+): GameState {
+  const currentPlayer: 'player' | 'opponent' = opponentPlayer === 'player' ? 'opponent' : 'player';
   
-  const effect = minion.card.endOfTurn;
+  // Type guard: this function is only called for minion cards with endOfTurn
+  if (minion.card.type !== 'minion') {
+    return state;
+  }
+  const minionCard = minion.card as MinionCardData;
+  const effect = minionCard.endOfTurn;
   if (!effect) {
     return state;
   }
@@ -265,18 +395,19 @@ function processCustomEndOfTurnEffect(state: GameState, minion: CardInstance, op
         const enemyMinions = newState.players[opponentPlayer]?.battlefield || [];
         
         if (enemyMinions.length === 0) {
-          console.log(`No enemy minions to damage`);
           return newState;
         }
         
         // Apply damage to all enemy minions
-        const damageValue = effect.value || 1;
+        const damageValue = typeof effect.value === 'number' ? effect.value : 1;
         const updatedEnemyMinions = enemyMinions.map(enemyMinion => {
-          // Safely get the current health with default values
-          const currentCardHealth = enemyMinion.card && enemyMinion.card.health ? enemyMinion.card.health : 0;
+          // Safely get the current health with default values (type guard for MinionCardData)
+          const cardHealth = enemyMinion.card.type === 'minion' 
+            ? (enemyMinion.card as MinionCardData).health 
+            : 0;
+          const currentCardHealth = cardHealth ?? 0;
           const currentHealth = typeof enemyMinion.currentHealth !== 'undefined' ? enemyMinion.currentHealth : currentCardHealth;
           const updatedHealth = currentHealth - damageValue;
-          console.log(`Dealing ${damageValue} damage to ${enemyMinion.card.name}, health: ${currentHealth} -> ${updatedHealth}`);
           
           return {
             ...enemyMinion,
@@ -296,15 +427,12 @@ function processCustomEndOfTurnEffect(state: GameState, minion: CardInstance, op
           },
           gameLog: [
             ...(newState.gameLog || []),
-            {
-              id: uuidv4(),
-              type: 'effect',
-              text: `${minion.card.name} dealt ${damageValue} damage to all enemy minions.`,
-              timestamp: Date.now(),
-              turn: newState.turnNumber || 1,
-              source: minion.card.name,
-              cardId: minion.card.id
-            }
+            createEffectLogEntry(
+              `${minion.card.name} dealt ${damageValue} damage to all enemy minions.`,
+              currentPlayer,
+              newState.turnNumber || 1,
+              minion.card.id
+            )
           ]
         };
       }
@@ -313,7 +441,6 @@ function processCustomEndOfTurnEffect(state: GameState, minion: CardInstance, op
     // Add more effect types as needed
     
     default:
-      console.log(`Unknown end of turn effect type: ${effect.type}`);
   }
   
   return newState;

@@ -1,53 +1,79 @@
 /**
  * OpponentSummonFromHand Battlecry Handler
  * 
- * Implements the "opponent_summon_from_hand" battlecry effect.
+ * Forces the opponent to summon a random minion from their hand.
  * Example card: Dirty Rat (ID: 32011)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a opponent_summon_from_hand battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeOpponentSummonFromHandOpponentSummonFromHand(
-  state: GameState,
+export default function executeOpponentSummonFromHand(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing opponent_summon_from_hand battlecry for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the opponent_summon_from_hand battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered opponent_summon_from_hand battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing opponent_summon_from_hand battlecry for ${sourceCard.name}`);
+    
+    const cardType = effect.cardType || 'minion';
+    const count = effect.count || 1;
+    
+    const minionsInHand = context.opponentPlayer.hand.filter(
+      card => card.card.type === cardType
+    );
+    
+    if (minionsInHand.length === 0) {
+      context.logGameEvent(`Opponent has no ${cardType}s in hand.`);
+      return { success: true, additionalData: { summonedMinions: [] } };
+    }
+    
+    if (context.opponentPlayer.board.length >= 7) {
+      context.logGameEvent("Opponent's board is full.");
+      return { success: true, additionalData: { summonedMinions: [], boardFull: true } };
+    }
+    
+    const summonedMinions: CardInstance[] = [];
+    
+    for (let i = 0; i < count && minionsInHand.length > 0; i++) {
+      if (context.opponentPlayer.board.length >= 7) break;
+      
+      const randomIndex = Math.floor(Math.random() * minionsInHand.length);
+      const minionToSummon = minionsInHand[randomIndex];
+      
+      const handIndex = context.opponentPlayer.hand.indexOf(minionToSummon);
+      if (handIndex !== -1) {
+        context.opponentPlayer.hand.splice(handIndex, 1);
+      }
+      
+      const summonedMinion: CardInstance = {
+        ...minionToSummon,
+        instanceId: `forced-summon-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        currentHealth: minionToSummon.card.health,
+        currentAttack: minionToSummon.card.attack,
+        canAttack: false,
+        isPlayed: true,
+        isSummoningSick: true,
+        attacksPerformed: 0
+      };
+      
+      context.opponentPlayer.board.push(summonedMinion);
+      summonedMinions.push(summonedMinion);
+      
+      minionsInHand.splice(randomIndex, 1);
+      
+      context.logGameEvent(`Forced opponent to summon ${minionToSummon.card.name}.`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        summonedMinions,
+        count: summonedMinions.length
+      }
+    };
+  } catch (error) {
+    console.error('Error executing opponent_summon_from_hand:', error);
+    return { success: false, error: `Failed to execute opponent_summon_from_hand: ${error}` };
+  }
 }
-
-export default executeOpponentSummonFromHandOpponentSummonFromHand;

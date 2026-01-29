@@ -1,8 +1,10 @@
-import { HeroClass, HeroPower, GameState, CardInstance, Position, CardData, CardRarity, CardType, CardKeyword } from '../types';
+import { HeroClass, HeroPower, GameState, CardInstance, Position, CardData, CardRarity, CardType, EquippedWeapon } from '../types';
+import { NorseHero, NorseHeroPower } from '../types/NorseTypes';
 import { updateEnrageEffects } from './enrageUtils';
 import { destroyCard } from './zoneUtils';
-import { drawCard } from './deckUtils';
+import { drawCard, addCardToHand } from './deckUtils';
 import { handleInspireEffects } from './mechanicsUtils';
+import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { NORSE_HEROES } from '../data/norseHeroes/heroDefinitions';
 
 // Type for animation callback function
@@ -272,10 +274,9 @@ export function executeHeroPower(
   
   // SPECIAL HANDLING: If the current hero has a custom Norse Hero definition, use it
   const heroId = player.hero?.id;
-  const norseHero = heroId ? NORSE_HEROES[heroId] : null;
+  const norseHero = heroId ? ALL_NORSE_HEROES[heroId] : null;
 
   if (norseHero) {
-    console.log(`[HERO-POWER] Executing Norse Hero Power for ${norseHero.name}: ${norseHero.heroPower.name}`);
     updatedState = executeNorseHeroPower(newState, playerType, norseHero, targetId, targetType);
   } else {
     // Execute the appropriate default hero power based on class
@@ -317,14 +318,14 @@ export function executeHeroPower(
   }
   
   // Process any Inspire effects after hero power execution
-  console.log(`[INSPIRE] Processing Inspire effects after ${playerType} used hero power`);
   updatedState = handleInspireEffects(updatedState, playerType);
   
   return updatedState;
 }
 
 /**
- * Execute custom Norse hero powers (like Odin's Wisdom of the Ravens)
+ * Execute custom Norse hero powers based on effectType
+ * Handles all 76 Norse hero powers with their unique effects
  */
 function executeNorseHeroPower(
   state: GameState,
@@ -334,10 +335,12 @@ function executeNorseHeroPower(
   targetType?: 'card' | 'hero'
 ): GameState {
   const player = state.players[playerType];
-  const power = player.heroPower.isUpgraded ? hero.upgradedHeroPower : hero.heroPower;
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+  const power = player.heroPower.isUpgraded && hero.upgradedHeroPower ? hero.upgradedHeroPower : hero.heroPower;
   
   if (!power) {
-    console.error('Norse hero power not found');
+    console.error(`[Hero Power] Norse hero power not found for ${hero.name}`);
     return state;
   }
 
@@ -345,36 +348,797 @@ function executeNorseHeroPower(
   player.mana.current -= player.heroPower.cost;
   player.heroPower.used = true;
 
-  // Execute based on effectType
-  // Simplified implementation for Odin's Wisdom of the Ravens (Draw + Reveal)
-  if (hero.id === 'hero-odin') {
-    const drawCount = power.value || 1;
-    console.log(`[ODIN-POWER] Wisdom of the Ravens: Drawing ${drawCount} card(s)`);
-    for (let i = 0; i < drawCount; i++) {
-      state = drawCard(state, playerType);
-    }
-    // Reveal logic would be implemented here in a more complex state management system
-    return state;
-  }
+  console.log(`[Hero Power] ${hero.name} used ${power.name}: ${power.description}`);
 
-  // Fallback to class default if effectType is not explicitly handled for this hero
-  switch (player.heroClass) {
-    case 'mage': return executeMagePower(state, playerType, targetId, targetType);
-    case 'warrior': return executeWarriorPower(state, playerType);
-    case 'paladin': return executePaladinPower(state, playerType);
-    case 'hunter': return executeHunterPower(state, playerType);
-    case 'druid': return executeDruidPower(state, playerType);
-    case 'priest': return executePriestPower(state, playerType, targetId, targetType);
-    case 'warlock': return executeWarlockPower(state, playerType);
-    case 'shaman': return executeShamanPower(state, playerType);
-    case 'rogue': return executeRoguePower(state, playerType);
-    case 'demonhunter': return executeDemonHunterPower(state, playerType);
-    default: return state;
+  // Execute based on effectType
+  switch (power.effectType) {
+    // ==================== DRAW EFFECTS ====================
+    case 'draw': {
+      const drawCount = power.value || 1;
+      for (let i = 0; i < drawCount; i++) {
+        state = drawCard(state, playerType);
+      }
+      // Handle reveal if secondaryValue exists (like Odin)
+      if (power.secondaryValue && opponent.hand.length > 0) {
+        const revealCount = Math.min(power.secondaryValue, opponent.hand.length);
+        const revealedCards = opponent.hand.slice(0, revealCount);
+        console.log(`[Hero Power] Revealed ${revealCount} cards from opponent's hand:`, revealedCards.map(c => c.card.name));
+        // Mark cards as revealed (visual indicator)
+        for (let i = 0; i < revealCount; i++) {
+          if (opponent.hand[i]) {
+            (opponent.hand[i] as any).isRevealed = true;
+          }
+        }
+      }
+      return state;
+    }
+
+    case 'reveal': {
+      const revealCount = power.value || 1;
+      if (opponent.hand.length > 0) {
+        const actualReveal = Math.min(revealCount, opponent.hand.length);
+        for (let i = 0; i < actualReveal; i++) {
+          const randomIdx = Math.floor(Math.random() * opponent.hand.length);
+          (opponent.hand[randomIdx] as any).isRevealed = true;
+          console.log(`[Hero Power] Revealed: ${opponent.hand[randomIdx].card.name}`);
+        }
+      }
+      return state;
+    }
+
+    // ==================== DAMAGE EFFECTS ====================
+    case 'damage_aoe': {
+      const damage = power.value || 1;
+      // Deal damage to all enemy minions
+      for (const minion of opponent.battlefield) {
+        minion.currentHealth -= damage;
+        console.log(`[Hero Power] Dealt ${damage} damage to ${minion.card.name}`);
+      }
+      // Check for deaths
+      state = updateEnrageEffects(state);
+      const deadMinions = opponent.battlefield.filter(m => m.currentHealth <= 0);
+      for (const dead of deadMinions) {
+        state = destroyCard(state, dead.instanceId, opponentType);
+      }
+      return state;
+    }
+
+    case 'damage_single': {
+      const damage = power.value || 1;
+      if (!targetId) {
+        console.error('[Hero Power] damage_single requires a target');
+        return state;
+      }
+      
+      if (targetType === 'hero') {
+        opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
+        console.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
+        if (opponent.heroHealth <= 0) {
+          state.gamePhase = "game_over";
+          state.winner = playerType;
+        }
+      } else {
+        // Find target minion
+        const allBattlefields = [...player.battlefield, ...opponent.battlefield];
+        const targetMinion = allBattlefields.find(m => m.instanceId === targetId);
+        if (targetMinion) {
+          targetMinion.currentHealth -= damage;
+          console.log(`[Hero Power] Dealt ${damage} damage to ${targetMinion.card.name}`);
+          
+          // Apply secondary effects (freeze, debuff, etc.)
+          if (power.grantKeyword === 'frozen') {
+            (targetMinion as any).isFrozen = true;
+            console.log(`[Hero Power] Froze ${targetMinion.card.name}`);
+          }
+          
+          state = updateEnrageEffects(state);
+          if (targetMinion.currentHealth <= 0) {
+            const isEnemy = opponent.battlefield.includes(targetMinion);
+            state = destroyCard(state, targetMinion.instanceId, isEnemy ? opponentType : playerType);
+          }
+        }
+      }
+      
+      // Handle secondaryValue for armor gain (like Tyr)
+      if (power.secondaryValue) {
+        player.heroArmor = (player.heroArmor || 0) + power.secondaryValue;
+        console.log(`[Hero Power] Gained ${power.secondaryValue} armor`);
+      }
+      return state;
+    }
+
+    case 'damage_random': {
+      const damage = power.value || 1;
+      if (opponent.battlefield.length === 0) {
+        console.log('[Hero Power] No enemy minions to damage');
+        return state;
+      }
+      const randomIdx = Math.floor(Math.random() * opponent.battlefield.length);
+      const target = opponent.battlefield[randomIdx];
+      target.currentHealth -= damage;
+      console.log(`[Hero Power] Dealt ${damage} random damage to ${target.card.name}`);
+      
+      // Handle splash damage (secondaryValue)
+      if (power.secondaryValue) {
+        for (let i = 0; i < opponent.battlefield.length; i++) {
+          if (i !== randomIdx) {
+            opponent.battlefield[i].currentHealth -= power.secondaryValue;
+          }
+        }
+      }
+      
+      state = updateEnrageEffects(state);
+      const deadMinions = opponent.battlefield.filter(m => m.currentHealth <= 0);
+      for (const dead of deadMinions) {
+        state = destroyCard(state, dead.instanceId, opponentType);
+      }
+      return state;
+    }
+
+    case 'damage_hero': {
+      const damage = power.value || 2;
+      opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
+      console.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
+      if (opponent.heroHealth <= 0) {
+        state.gamePhase = "game_over";
+        state.winner = playerType;
+      }
+      return state;
+    }
+
+    // ==================== BUFF EFFECTS ====================
+    case 'buff_single': {
+      const value = power.value || 1;
+      const healthValue = power.secondaryValue ?? value;
+      
+      if (!targetId && power.targetType === 'random_friendly' && player.battlefield.length > 0) {
+        const randomIdx = Math.floor(Math.random() * player.battlefield.length);
+        const target = player.battlefield[randomIdx];
+        target.card.attack = (target.card.attack || 0) + value;
+        if (power.duration !== 'this_turn') {
+          target.currentHealth += healthValue;
+          target.card.health = (target.card.health || 0) + healthValue;
+        }
+        console.log(`[Hero Power] Buffed ${target.card.name} +${value}/+${healthValue}`);
+        
+        if (power.grantKeyword) {
+          applyKeywordToMinion(target, power.grantKeyword);
+        }
+      } else if (targetId) {
+        const target = player.battlefield.find(m => m.instanceId === targetId);
+        if (target) {
+          target.card.attack = (target.card.attack || 0) + value;
+          if (power.duration !== 'this_turn') {
+            target.currentHealth += healthValue;
+            target.card.health = (target.card.health || 0) + healthValue;
+          }
+          console.log(`[Hero Power] Buffed ${target.card.name} +${value}/+${healthValue}`);
+          
+          if (power.grantKeyword) {
+            applyKeywordToMinion(target, power.grantKeyword);
+          }
+        }
+      }
+      
+      // Heal hero if secondaryValue specified for that purpose (like Freya)
+      if (power.secondaryValue && hero.id === 'hero-freya') {
+        player.heroHealth = Math.min((player.heroHealth || 30) + power.secondaryValue, 30);
+        console.log(`[Hero Power] Restored ${power.secondaryValue} health to hero`);
+      }
+      return state;
+    }
+
+    case 'buff':
+    case 'buff_aoe': {
+      const value = power.value || 1;
+      for (const minion of player.battlefield) {
+        minion.card.attack = (minion.card.attack || 0) + value;
+        minion.currentHealth += value;
+        minion.card.health = (minion.card.health || 0) + value;
+      }
+      console.log(`[Hero Power] Buffed all friendly minions +${value}/+${value}`);
+      return state;
+    }
+
+    case 'buff_hero': {
+      const attackValue = power.value || 1;
+      const armorValue = power.armorValue || 1;
+      if (!player.tempStats) player.tempStats = { attack: 0 };
+      player.tempStats.attack = (player.tempStats.attack || 0) + attackValue;
+      player.heroArmor = (player.heroArmor || 0) + armorValue;
+      console.log(`[Hero Power] Hero gained +${attackValue} attack and +${armorValue} armor`);
+      return state;
+    }
+
+    // ==================== HEAL EFFECTS ====================
+    case 'heal':
+    case 'heal_single': {
+      const healAmount = power.value || 2;
+      if (!targetId) {
+        console.error('[Hero Power] heal requires a target');
+        return state;
+      }
+      
+      if (targetType === 'hero' || targetId === 'player' || targetId === 'opponent') {
+        const targetPlayer = targetId === 'opponent' ? opponent : player;
+        targetPlayer.heroHealth = Math.min((targetPlayer.heroHealth || 30) + healAmount, 30);
+        console.log(`[Hero Power] Restored ${healAmount} health to hero`);
+      } else {
+        const allMinions = [...player.battlefield, ...opponent.battlefield];
+        const target = allMinions.find(m => m.instanceId === targetId);
+        if (target) {
+          const maxHealth = target.card.health || 1;
+          target.currentHealth = Math.min(target.currentHealth + healAmount, maxHealth);
+          console.log(`[Hero Power] Restored ${healAmount} health to ${target.card.name}`);
+        }
+      }
+      return state;
+    }
+
+    case 'heal_aoe':
+    case 'heal_all_friendly': {
+      const healAmount = power.value || 1;
+      for (const minion of player.battlefield) {
+        const maxHealth = minion.card.health || 1;
+        minion.currentHealth = Math.min(minion.currentHealth + healAmount, maxHealth);
+      }
+      console.log(`[Hero Power] Restored ${healAmount} health to all friendly minions`);
+      return state;
+    }
+
+    case 'heal_and_buff': {
+      const healAmount = power.value || 2;
+      const buffAmount = power.secondaryValue || 1;
+      if (targetId) {
+        const target = player.battlefield.find(m => m.instanceId === targetId);
+        if (target) {
+          const maxHealth = target.card.health || 1;
+          target.currentHealth = Math.min(target.currentHealth + healAmount, maxHealth);
+          target.card.attack = (target.card.attack || 0) + buffAmount;
+          console.log(`[Hero Power] Healed ${target.card.name} for ${healAmount} and gave +${buffAmount} attack`);
+        }
+      }
+      return state;
+    }
+
+    // ==================== COPY EFFECTS ====================
+    case 'copy': {
+      const copyCount = power.value || 1;
+      if (opponent.hand.length === 0) {
+        console.log('[Hero Power] No cards to copy from opponent');
+        return state;
+      }
+      
+      for (let i = 0; i < copyCount && opponent.hand.length > 0; i++) {
+        const randomIdx = Math.floor(Math.random() * opponent.hand.length);
+        const cardToCopy = opponent.hand[randomIdx].card;
+        state = addCardToHand(state, playerType, { ...cardToCopy });
+        console.log(`[Hero Power] Copied ${cardToCopy.name} from opponent's hand`);
+      }
+      return state;
+    }
+
+    // ==================== SUMMON EFFECTS ====================
+    case 'summon': {
+      if (player.battlefield.length >= 7) {
+        console.log('[Hero Power] Battlefield is full');
+        return state;
+      }
+      
+      const summonData = power.summonData;
+      if (!summonData) {
+        console.error('[Hero Power] No summon data provided');
+        return state;
+      }
+      
+      const summonedMinion: CardInstance = {
+        instanceId: `${playerType}_summon_${Date.now()}`,
+        card: {
+          id: 99000 + Math.floor(Math.random() * 1000),
+          name: summonData.name,
+          manaCost: 1,
+          attack: summonData.attack,
+          health: summonData.health,
+          description: summonData.keywords?.join(', ') || '',
+          rarity: 'common' as CardRarity,
+          type: 'minion' as CardType,
+          keywords: summonData.keywords || []
+        },
+        currentHealth: summonData.health,
+        canAttack: summonData.keywords?.includes('charge') || false,
+        isPlayed: true,
+        isSummoningSick: !summonData.keywords?.includes('charge') && !summonData.keywords?.includes('rush'),
+        attacksPerformed: 0,
+        hasDivineShield: summonData.keywords?.includes('divine_shield') || false
+      };
+      
+      // Handle Rush
+      if (summonData.keywords?.includes('rush')) {
+        (summonedMinion as any).hasRush = true;
+        summonedMinion.canAttack = true;
+      }
+      
+      player.battlefield.push(summonedMinion);
+      console.log(`[Hero Power] Summoned ${summonData.name} (${summonData.attack}/${summonData.health})`);
+      return state;
+    }
+
+    case 'summon_random': {
+      if (player.battlefield.length >= 7) {
+        console.log('[Hero Power] Battlefield is full');
+        return state;
+      }
+      
+      const summonPool = power.summonPool || ['healing_totem', 'searing_totem', 'stoneclaw_totem', 'wrath_of_air_totem'];
+      const totemDefinitions: Record<string, { name: string; attack: number; health: number; keywords: string[] }> = {
+        'healing_totem': { name: 'Healing Totem', attack: 0, health: 2, keywords: [] },
+        'searing_totem': { name: 'Searing Totem', attack: 1, health: 1, keywords: [] },
+        'stoneclaw_totem': { name: 'Stoneclaw Totem', attack: 0, health: 2, keywords: ['taunt'] },
+        'wrath_of_air_totem': { name: 'Wrath of Air Totem', attack: 0, health: 2, keywords: ['spell_damage'] }
+      };
+      
+      const existingTotems = player.battlefield
+        .filter(m => m.card.name.includes('Totem'))
+        .map(m => m.card.name);
+      
+      const availablePool = summonPool.filter(t => !existingTotems.includes(totemDefinitions[t]?.name));
+      if (availablePool.length === 0) {
+        console.log('[Hero Power] All totems already summoned');
+        return state;
+      }
+      
+      const selected = availablePool[Math.floor(Math.random() * availablePool.length)];
+      const totemData = totemDefinitions[selected] || { name: 'Totem', attack: 0, health: 2, keywords: [] };
+      
+      const bonusStats = power.bonusStats || { attack: 0, health: 0 };
+      
+      const totem: CardInstance = {
+        instanceId: `${playerType}_totem_${Date.now()}`,
+        card: {
+          id: 99100 + Math.floor(Math.random() * 100),
+          name: totemData.name,
+          manaCost: 1,
+          attack: totemData.attack + bonusStats.attack,
+          health: totemData.health + bonusStats.health,
+          description: totemData.keywords.join(', '),
+          rarity: 'common' as CardRarity,
+          type: 'minion' as CardType,
+          keywords: totemData.keywords,
+          race: 'totem'
+        } as CardData,
+        currentHealth: totemData.health + bonusStats.health,
+        canAttack: false,
+        isPlayed: true,
+        isSummoningSick: true,
+        attacksPerformed: 0,
+        hasDivineShield: false
+      };
+      
+      player.battlefield.push(totem);
+      console.log(`[Hero Power] Summoned ${totemData.name}`);
+      return state;
+    }
+
+    case 'self_damage_and_summon': {
+      const selfDamage = power.value || 2;
+      player.heroHealth = Math.max(0, (player.heroHealth || 30) - selfDamage);
+      console.log(`[Hero Power] Took ${selfDamage} damage`);
+      
+      if (player.heroHealth <= 0) {
+        state.gamePhase = "game_over";
+        state.winner = opponentType;
+        return state;
+      }
+      
+      if (player.battlefield.length >= 7) {
+        console.log('[Hero Power] Battlefield is full');
+        return state;
+      }
+      
+      const summonData = power.summonData;
+      if (summonData) {
+        const minion: CardInstance = {
+          instanceId: `${playerType}_summon_${Date.now()}`,
+          card: {
+            id: 99200 + Math.floor(Math.random() * 100),
+            name: summonData.name,
+            manaCost: 1,
+            attack: summonData.attack,
+            health: summonData.health,
+            description: '',
+            rarity: 'common' as CardRarity,
+            type: 'minion' as CardType,
+            keywords: summonData.keywords || []
+          },
+          currentHealth: summonData.health,
+          canAttack: summonData.keywords?.includes('rush') || summonData.keywords?.includes('charge') || false,
+          isPlayed: true,
+          isSummoningSick: !summonData.keywords?.includes('charge'),
+          attacksPerformed: 0,
+          hasDivineShield: false
+        };
+        
+        if (summonData.keywords?.includes('rush')) {
+          (minion as any).hasRush = true;
+        }
+        
+        player.battlefield.push(minion);
+        console.log(`[Hero Power] Summoned ${summonData.name}`);
+      }
+      return state;
+    }
+
+    // ==================== KEYWORD EFFECTS ====================
+    case 'grant_keyword':
+    case 'grant_divine_shield': {
+      if (!targetId) {
+        console.error('[Hero Power] grant_keyword requires a target');
+        return state;
+      }
+      
+      const target = player.battlefield.find(m => m.instanceId === targetId);
+      if (target) {
+        const keyword = power.grantKeyword || 'divine_shield';
+        applyKeywordToMinion(target, keyword);
+        console.log(`[Hero Power] Granted ${keyword} to ${target.card.name}`);
+        
+        // Handle stat bonuses with keyword
+        if (power.value) {
+          target.card.attack = (target.card.attack || 0) + power.value;
+          console.log(`[Hero Power] Also gave +${power.value} attack`);
+        }
+        if (power.secondaryValue) {
+          target.currentHealth += power.secondaryValue;
+          target.card.health = (target.card.health || 0) + power.secondaryValue;
+          console.log(`[Hero Power] Also gave +${power.secondaryValue} health`);
+        }
+      }
+      return state;
+    }
+
+    case 'stealth': {
+      if (!targetId) {
+        console.error('[Hero Power] stealth requires a target');
+        return state;
+      }
+      
+      const target = player.battlefield.find(m => m.instanceId === targetId);
+      if (target) {
+        (target as any).hasStealth = true;
+        if (!target.card.keywords) target.card.keywords = [];
+        if (!target.card.keywords.includes('stealth')) {
+          target.card.keywords.push('stealth');
+        }
+        console.log(`[Hero Power] Granted Stealth to ${target.card.name}`);
+      }
+      return state;
+    }
+
+    case 'silence': {
+      if (!targetId) {
+        console.error('[Hero Power] silence requires a target');
+        return state;
+      }
+      
+      const allMinions = [...player.battlefield, ...opponent.battlefield];
+      const target = allMinions.find(m => m.instanceId === targetId);
+      if (target) {
+        // Remove all keywords and effects
+        target.card.keywords = [];
+        target.card.battlecry = undefined;
+        target.card.deathrattle = undefined;
+        (target as any).hasDivineShield = false;
+        (target as any).hasTaunt = false;
+        (target as any).hasStealth = false;
+        (target as any).isSilenced = true;
+        console.log(`[Hero Power] Silenced ${target.card.name}`);
+        
+        // Deal damage if upgraded (Hoenir+)
+        if (power.value) {
+          target.currentHealth -= power.value;
+          state = updateEnrageEffects(state);
+          if (target.currentHealth <= 0) {
+            const isEnemy = opponent.battlefield.includes(target);
+            state = destroyCard(state, target.instanceId, isEnemy ? opponentType : playerType);
+          }
+        }
+      }
+      return state;
+    }
+
+    case 'freeze': {
+      if (!targetId) {
+        console.error('[Hero Power] freeze requires a target');
+        return state;
+      }
+      
+      const target = opponent.battlefield.find(m => m.instanceId === targetId);
+      if (target) {
+        (target as any).isFrozen = true;
+        target.canAttack = false;
+        console.log(`[Hero Power] Froze ${target.card.name}`);
+      }
+      return state;
+    }
+
+    // ==================== UTILITY EFFECTS ====================
+    case 'scry': {
+      const scryCount = power.value || 1;
+      if (player.deck.length === 0) {
+        console.log('[Hero Power] Deck is empty');
+        return state;
+      }
+      
+      // Look at top cards
+      const topCards = player.deck.slice(0, scryCount);
+      console.log(`[Hero Power] Scrying top ${scryCount} card(s):`, topCards.map(c => c.name));
+      
+      // For now, just draw the first card (simplified scry)
+      state = drawCard(state, playerType);
+      return state;
+    }
+
+    case 'debuff_single': {
+      const debuffAmount = power.value || 2;
+      if (!targetId) {
+        console.error('[Hero Power] debuff_single requires a target');
+        return state;
+      }
+      
+      const target = opponent.battlefield.find(m => m.instanceId === targetId);
+      if (target) {
+        target.card.attack = Math.max(0, (target.card.attack || 0) - debuffAmount);
+        console.log(`[Hero Power] Reduced ${target.card.name}'s attack by ${debuffAmount}`);
+      }
+      return state;
+    }
+
+    case 'equip_weapon': {
+      const weaponData = power.weaponData;
+      if (!weaponData) {
+        console.error('[Hero Power] No weapon data provided');
+        return state;
+      }
+      
+      const weapon: EquippedWeapon = {
+        card: {
+          id: 99300 + Math.floor(Math.random() * 100),
+          name: weaponData.name || 'Wicked Knife',
+          manaCost: power.weaponCost || 1,
+          attack: weaponData.attack,
+          durability: weaponData.durability,
+          description: '',
+          rarity: 'common' as CardRarity,
+          type: 'weapon' as CardType,
+          keywords: weaponData.keywords || []
+        } as CardData,
+        durability: weaponData.durability,
+        attack: weaponData.attack
+      };
+      
+      player.weapon = weapon;
+      console.log(`[Hero Power] Equipped ${weaponData.name || 'Wicked Knife'} (${weaponData.attack}/${weaponData.durability})`);
+      return state;
+    }
+
+    // ==================== SPECIAL EFFECTS ====================
+    case 'conditional_destroy': {
+      if (!targetId) {
+        console.error('[Hero Power] conditional_destroy requires a target');
+        return state;
+      }
+      
+      const target = opponent.battlefield.find(m => m.instanceId === targetId);
+      if (target && power.condition) {
+        const maxAttack = power.condition.maxAttack ?? Infinity;
+        if ((target.card.attack || 0) <= maxAttack) {
+          state = destroyCard(state, target.instanceId, opponentType);
+          console.log(`[Hero Power] Destroyed ${target.card.name}`);
+        } else {
+          console.log(`[Hero Power] ${target.card.name} doesn't meet condition (attack > ${maxAttack})`);
+        }
+      }
+      return state;
+    }
+
+    case 'set_stats': {
+      if (!targetId) {
+        console.error('[Hero Power] set_stats requires a target');
+        return state;
+      }
+      
+      const value = power.value || 2;
+      const allMinions = [...player.battlefield, ...opponent.battlefield];
+      const target = allMinions.find(m => m.instanceId === targetId);
+      if (target) {
+        target.card.attack = value;
+        target.card.health = value;
+        target.currentHealth = value;
+        console.log(`[Hero Power] Set ${target.card.name}'s stats to ${value}/${value}`);
+      }
+      return state;
+    }
+
+    case 'bounce_to_hand':
+    case 'bounce': {
+      if (!targetId) {
+        console.error('[Hero Power] bounce requires a target');
+        return state;
+      }
+      
+      const targetIdx = opponent.battlefield.findIndex(m => m.instanceId === targetId);
+      if (targetIdx !== -1) {
+        const target = opponent.battlefield[targetIdx];
+        opponent.battlefield.splice(targetIdx, 1);
+        
+        // Return to hand (reset stats)
+        const cardData = { ...target.card };
+        state = addCardToHand(state, opponentType, cardData);
+        console.log(`[Hero Power] Returned ${cardData.name} to opponent's hand`);
+      }
+      return state;
+    }
+
+    case 'bounce_and_damage_hero':
+    case 'bounce_damage': {
+      if (!targetId) {
+        console.error('[Hero Power] bounce_and_damage requires a target');
+        return state;
+      }
+      
+      const targetIdx = opponent.battlefield.findIndex(m => m.instanceId === targetId);
+      if (targetIdx !== -1) {
+        const target = opponent.battlefield[targetIdx];
+        opponent.battlefield.splice(targetIdx, 1);
+        
+        const cardData = { ...target.card };
+        state = addCardToHand(state, opponentType, cardData);
+        console.log(`[Hero Power] Returned ${cardData.name} to opponent's hand`);
+        
+        // Deal damage to hero
+        const damage = power.value || 2;
+        opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
+        console.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
+        
+        if (opponent.heroHealth <= 0) {
+          state.gamePhase = "game_over";
+          state.winner = playerType;
+        }
+      }
+      return state;
+    }
+
+    case 'sacrifice_summon': {
+      if (!targetId) {
+        console.error('[Hero Power] sacrifice_summon requires a target');
+        return state;
+      }
+      
+      const targetIdx = player.battlefield.findIndex(m => m.instanceId === targetId);
+      if (targetIdx !== -1) {
+        const target = player.battlefield[targetIdx];
+        console.log(`[Hero Power] Sacrificed ${target.card.name}`);
+        player.battlefield.splice(targetIdx, 1);
+        
+        // Summon replacement
+        const summonData = power.summonData;
+        if (summonData && player.battlefield.length < 7) {
+          const minion: CardInstance = {
+            instanceId: `${playerType}_shade_${Date.now()}`,
+            card: {
+              id: 99400 + Math.floor(Math.random() * 100),
+              name: summonData.name,
+              manaCost: 1,
+              attack: summonData.attack,
+              health: summonData.health,
+              description: '',
+              rarity: 'common' as CardRarity,
+              type: 'minion' as CardType,
+              keywords: summonData.keywords || []
+            },
+            currentHealth: summonData.health,
+            canAttack: false,
+            isPlayed: true,
+            isSummoningSick: true,
+            attacksPerformed: 0,
+            hasDivineShield: false
+          };
+          
+          player.battlefield.push(minion);
+          console.log(`[Hero Power] Summoned ${summonData.name}`);
+        }
+      }
+      return state;
+    }
+
+    case 'damage_and_poison': {
+      const damage = power.value || 1;
+      if (!targetId) {
+        console.error('[Hero Power] damage_and_poison requires a target');
+        return state;
+      }
+      
+      const target = opponent.battlefield.find(m => m.instanceId === targetId);
+      if (target) {
+        target.currentHealth -= damage;
+        (target as any).isPoisoned = true;
+        console.log(`[Hero Power] Dealt ${damage} damage to ${target.card.name} and applied Poison`);
+        
+        state = updateEnrageEffects(state);
+        if (target.currentHealth <= 0) {
+          state = destroyCard(state, target.instanceId, opponentType);
+        }
+      }
+      return state;
+    }
+
+    // ==================== DEFAULT FALLBACK ====================
+    default:
+      console.warn(`[Hero Power] Unhandled effectType: ${power.effectType} for ${hero.name}`);
+      // Fallback to class-based power
+      switch (player.heroClass) {
+        case 'mage': return executeMagePower(state, playerType, targetId, targetType);
+        case 'warrior': return executeWarriorPower(state, playerType);
+        case 'paladin': return executePaladinPower(state, playerType);
+        case 'hunter': return executeHunterPower(state, playerType);
+        case 'druid': return executeDruidPower(state, playerType);
+        case 'priest': return executePriestPower(state, playerType, targetId, targetType);
+        case 'warlock': return executeWarlockPower(state, playerType);
+        case 'shaman': return executeShamanPower(state, playerType);
+        case 'rogue': return executeRoguePower(state, playerType);
+        case 'demonhunter': return executeDemonHunterPower(state, playerType);
+        default: return state;
+      }
+  }
+}
+
+/**
+ * Helper function to apply keywords to minions
+ */
+function applyKeywordToMinion(minion: CardInstance, keyword: string): void {
+  if (!minion.card.keywords) minion.card.keywords = [];
+  
+  switch (keyword) {
+    case 'divine_shield':
+      minion.hasDivineShield = true;
+      if (!minion.card.keywords.includes('divine_shield')) {
+        minion.card.keywords.push('divine_shield');
+      }
+      break;
+    case 'taunt':
+      (minion as any).hasTaunt = true;
+      if (!minion.card.keywords.includes('taunt')) {
+        minion.card.keywords.push('taunt');
+      }
+      break;
+    case 'stealth':
+      (minion as any).hasStealth = true;
+      if (!minion.card.keywords.includes('stealth')) {
+        minion.card.keywords.push('stealth');
+      }
+      break;
+    case 'frozen':
+      (minion as any).isFrozen = true;
+      minion.canAttack = false;
+      break;
+    case 'poisonous':
+    case 'poisonous_temp':
+      (minion as any).hasPoisonous = true;
+      if (!minion.card.keywords.includes('poisonous')) {
+        minion.card.keywords.push('poisonous');
+      }
+      break;
+    default:
+      if (!minion.card.keywords.includes(keyword)) {
+        minion.card.keywords.push(keyword);
+      }
+      break;
   }
 }
 
 /**
  * Mage hero power: Deal 1 damage to any target
+ * (Default Hearthstone Fireblast - used when no Norse hero is active)
  */
 function executeMagePower(
   state: GameState, 
@@ -386,34 +1150,6 @@ function executeMagePower(
   const opponentType = playerType === 'player' ? 'opponent' : 'player';
   const opponent = state.players[opponentType];
   
-  // SPECIAL HANDLING: Odin's Wisdom of the Ravens (Mage Class but no target needed)
-  if (player.hero?.id === 'hero-odin') {
-    // Check if hero power can be used
-    if (player.heroPower.used) {
-      console.error('Hero power already used this turn');
-      return state;
-    }
-    
-    // Check if player has enough mana
-    if (player.mana.current < player.heroPower.cost) {
-      console.error(`Not enough mana. Need ${player.heroPower.cost} but only have ${player.mana.current}`);
-      return state;
-    }
-
-    // Apply cost
-    player.mana.current -= player.heroPower.cost;
-    player.heroPower.used = true;
-    
-    // Odin's effect: Draw a card (Reveal logic would go here)
-    const drawCount = player.heroPower.isUpgraded ? 2 : 1;
-    console.log(`[ODIN-POWER] Executing for ${playerType}: Drawing ${drawCount} cards`);
-    let updatedState = state;
-    for (let i = 0; i < drawCount; i++) {
-      updatedState = drawCard(updatedState, playerType);
-    }
-    return updatedState;
-  }
-
   // Mage power requires a target
   if (!targetId || !targetType) {
     console.error('Mage power requires a target');
@@ -428,13 +1164,11 @@ function executeMagePower(
   if (targetType === 'hero') {
     // Damage the opponent's hero using the proper heroHealth property
     opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - 1);
-    console.log(`Mage hero power deals 1 damage to ${opponentType}`);
     
     // Check for game over
     if (opponent.heroHealth <= 0) {
       state.gamePhase = "game_over";
       state.winner = playerType;
-      console.log(`Game over - ${playerType} wins!`);
     }
   } else {
     // Find the target card
@@ -458,7 +1192,6 @@ function executeMagePower(
     
     // Deal 1 damage
     targetCard.currentHealth -= 1;
-    console.log(`Mage hero power deals 1 damage to ${targetCard.card.name}`);
     
     // Apply enrage effects
     state = updateEnrageEffects(state);
@@ -469,7 +1202,6 @@ function executeMagePower(
       const cardId = targetCard.instanceId;
       const targetPlayerType = targetId.startsWith(playerType) ? playerType : opponentType;
       
-      console.log(`${cardName} is destroyed by hero power`);
       
       // Use the imported destroyCard function
       state = destroyCard(state, cardId, targetPlayerType);
@@ -493,7 +1225,6 @@ function executeWarriorPower(state: GameState, playerType: 'player' | 'opponent'
   
   // Gain 2 health (simplified version of armor)
   player.heroHealth = Math.min((player.heroHealth || 30) + 2, 30);
-  console.log(`Warrior hero power adds 2 health to ${playerType}`);
   
   return state;
 }
@@ -538,7 +1269,6 @@ function executePaladinPower(state: GameState, playerType: 'player' | 'opponent'
   
   // Add the recruit to the battlefield
   player.battlefield.push(recruit);
-  console.log(`Paladin hero power summons a 1/1 Silver Hand Recruit`);
   
   return state;
 }
@@ -557,13 +1287,11 @@ function executeHunterPower(state: GameState, playerType: 'player' | 'opponent')
   
   // Deal 2 damage to enemy hero using the proper heroHealth property
   opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - 2);
-  console.log(`Hunter hero power deals 2 damage to ${opponentType}`);
   
   // Check for game over
   if (opponent.heroHealth <= 0) {
     state.gamePhase = "game_over";
     state.winner = playerType;
-    console.log(`Game over - ${playerType} wins!`);
   }
   
   return state;
@@ -588,7 +1316,6 @@ function executeDruidPower(state: GameState, playerType: 'player' | 'opponent'):
   // Gain 1 armor 
   player.heroArmor = (player.heroArmor || 0) + 1;
   
-  console.log(`Druid hero power gives ${playerType} +1 Attack this turn and +1 Armor`);
   
   return state;
 }
@@ -622,7 +1349,6 @@ function executePriestPower(
     
     // Heal the hero
     targetHero.heroHealth = Math.min((targetHero.heroHealth || 30) + 2, 30); // Cap at 30 health
-    console.log(`Priest hero power heals ${targetId} for 2 health`);
   } else {
     // Find the target card
     const targetField = targetId.startsWith(playerType) 
@@ -642,11 +1368,10 @@ function executePriestPower(
       return state;
     }
     
-    const maxHealth = targetCard.card.health || 1;
+    const maxHealth = (targetCard.card as any).health || 1;
     
     // Heal the card
     targetCard.currentHealth = Math.min(targetCard.currentHealth + 2, maxHealth);
-    console.log(`Priest hero power heals ${targetCard.card.name} for 2 health`);
   }
   
   return state;
@@ -664,19 +1389,16 @@ function executeWarlockPower(state: GameState, playerType: 'player' | 'opponent'
   
   // Take 2 damage
   player.heroHealth = Math.max(0, (player.heroHealth || 30) - 2);
-  console.log(`Warlock hero power causes ${playerType} to take 2 damage`);
   
   // Check for game over (unlikely but possible if at 2 health)
   if (player.heroHealth <= 0) {
     state.gamePhase = "game_over";
     state.winner = playerType === 'player' ? 'opponent' : 'player';
-    console.log(`Game over - ${state.winner} wins!`);
     return state;
   }
   
   // Draw a card
   state = drawCard(state, playerType);
-  console.log(`Warlock hero power draws a card for ${playerType}`);
   
   return state;
 }
@@ -758,7 +1480,6 @@ function executeShamanPower(state: GameState, playerType: 'player' | 'opponent')
   
   // If all totems are already summoned, return
   if (availableTotems.length === 0) {
-    console.log(`All basic totems are already summoned!`);
     return state;
   }
   
@@ -769,7 +1490,7 @@ function executeShamanPower(state: GameState, playerType: 'player' | 'opponent')
   const totem: CardInstance = {
     instanceId: `${playerType}_totem_${Date.now()}`,
     card: selectedTotem,
-    currentHealth: selectedTotem.health,
+    currentHealth: (selectedTotem as any).health,
     canAttack: false, // Cannot attack on the turn it's summoned
     isPlayed: true,
     isSummoningSick: true,
@@ -779,7 +1500,6 @@ function executeShamanPower(state: GameState, playerType: 'player' | 'opponent')
   
   // Add the totem to the battlefield
   player.battlefield.push(totem);
-  console.log(`Shaman hero power summons a ${selectedTotem.name}`);
   
   return state;
 }
@@ -795,8 +1515,7 @@ function executeRoguePower(state: GameState, playerType: 'player' | 'opponent'):
   player.heroPower.used = true;
   
   // Define the dagger weapon
-  const dagger: CardInstance = {
-    instanceId: `${playerType}_weapon_${Date.now()}`,
+  const dagger: EquippedWeapon = {
     card: {
       id: 9005,
       name: 'Wicked Knife',
@@ -806,22 +1525,18 @@ function executeRoguePower(state: GameState, playerType: 'player' | 'opponent'):
       description: '',
       rarity: 'common',
       type: 'weapon',
-      keywords: []  // Required by CardData type
+      keywords: []
     } as CardData,
-    currentDurability: 2,
-    canAttack: true,
-    isPlayed: true,
-    attacksPerformed: 0
+    durability: 2,
+    attack: 1
   };
   
   // If player already has a weapon, destroy it
   if (player.weapon) {
-    console.log(`${playerType}'s ${player.weapon.card.name} is destroyed`);
   }
   
   // Equip the dagger
   player.weapon = dagger;
-  console.log(`Rogue hero power equips a 1/2 Wicked Knife`);
   
   return state;
 }
@@ -842,7 +1557,6 @@ function executeDemonHunterPower(state: GameState, playerType: 'player' | 'oppon
   }
   player.tempStats.attack = (player.tempStats.attack || 0) + 1;
   
-  console.log(`Demon Hunter hero power gives ${playerType} +1 Attack this turn`);
   
   return state;
 }

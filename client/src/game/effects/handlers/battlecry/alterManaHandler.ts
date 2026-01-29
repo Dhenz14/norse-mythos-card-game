@@ -2,62 +2,75 @@
  * AlterMana Battlecry Handler
  * 
  * Implements the "alter_mana" battlecry effect.
- * Example card: Card ID: 5017
+ * Increases or decreases mana crystals (permanently or temporarily).
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
- * Execute a alter_mana battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * Execute an alter_mana battlecry effect
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeAlterManaAlterMana(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing alter_mana battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`AlterMana effect missing value property`);
-    // Fall back to a default value or handle the missing property
+export default function executeAlterMana(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:alter_mana for ${sourceCard.name}`);
+    
+    const value = effect.value || 0;
+    const temporaryEffect = effect.temporaryEffect === true;
+    const affectOpponent = effect.affectOpponent === true;
+    const affectEmpty = effect.affectEmpty === true;
+    
+    if (value === 0) {
+      context.logGameEvent(`AlterMana effect has value of 0, no change needed`);
+      return { success: true };
+    }
+    
+    const targetPlayer = affectOpponent ? context.opponentPlayer : context.currentPlayer;
+    const previousMaxMana = targetPlayer.mana.max;
+    const previousCurrentMana = targetPlayer.mana.current;
+    
+    if (temporaryEffect) {
+      targetPlayer.mana.current = Math.max(0, Math.min(10, targetPlayer.mana.current + value));
+      context.logGameEvent(`${sourceCard.name} ${value > 0 ? 'added' : 'removed'} ${Math.abs(value)} mana temporarily. Current mana: ${targetPlayer.mana.current}`);
+    } else {
+      if (affectEmpty) {
+        targetPlayer.mana.max = Math.max(0, Math.min(10, targetPlayer.mana.max + value));
+        context.logGameEvent(`${sourceCard.name} ${value > 0 ? 'gained' : 'destroyed'} ${Math.abs(value)} empty mana crystal(s). Max mana: ${targetPlayer.mana.max}`);
+      } else {
+        targetPlayer.mana.max = Math.max(0, Math.min(10, targetPlayer.mana.max + value));
+        if (value > 0) {
+          targetPlayer.mana.current = Math.min(targetPlayer.mana.max, targetPlayer.mana.current + value);
+        } else {
+          targetPlayer.mana.current = Math.min(targetPlayer.mana.max, targetPlayer.mana.current);
+        }
+        context.logGameEvent(`${sourceCard.name} ${value > 0 ? 'gained' : 'destroyed'} ${Math.abs(value)} mana crystal(s). Mana: ${targetPlayer.mana.current}/${targetPlayer.mana.max}`);
+      }
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        value,
+        temporaryEffect,
+        previousMaxMana,
+        previousCurrentMana,
+        newMaxMana: targetPlayer.mana.max,
+        newCurrentMana: targetPlayer.mana.current
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:alter_mana:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:alter_mana: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: temporaryEffect
-  if (effect.temporaryEffect === undefined) {
-    console.warn(`AlterMana effect missing temporaryEffect property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the alter_mana battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered alter_mana battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeAlterManaAlterMana;

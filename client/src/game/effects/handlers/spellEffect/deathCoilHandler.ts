@@ -1,57 +1,88 @@
 /**
- * DeathCoil SpellEffect Handler
+ * Death Coil Effect Handler
  * 
- * Implements the "death_coil" spellEffect effect.
- * Example card: Card ID: 3001
+ * This handler implements the spellEffect:death_coil effect.
+ * Deals damage to an enemy OR heals a friendly undead/character.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a death_coil spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeDeathCoilDeathCoil(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+export default function executeDeathCoil(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
   
-  console.log(`Executing death_coil spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DeathCoil effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing spellEffect:death_coil for ${sourceCard.name}`);
+    
+    const damageValue = effect.value || 5;
+    const healValue = effect.healValue || effect.value || 5;
+    const targetType = effect.targetType || 'any';
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for death_coil`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    
+    const isEnemy = context.opponentPlayer.board.includes(target) || 
+                    target === context.opponentPlayer.hero;
+    
+    const isFriendly = context.currentPlayer.board.includes(target) || 
+                       target === context.currentPlayer.hero;
+    
+    if (isEnemy) {
+      context.dealDamage(target, damageValue);
+      context.logGameEvent(`Death Coil dealt ${damageValue} damage to enemy ${target.card.name}`);
+      
+      return { 
+        success: true,
+        additionalData: {
+          action: 'damage',
+          value: damageValue,
+          targetName: target.card.name
+        }
+      };
+    } else if (isFriendly) {
+      const isUndead = (target.card.race as string) === 'undead' || 
+                       (target.card.keywords && target.card.keywords.includes('undead'));
+      
+      context.healTarget(target, healValue);
+      context.logGameEvent(`Death Coil healed friendly ${target.card.name} for ${healValue}`);
+      
+      return { 
+        success: true,
+        additionalData: {
+          action: 'heal',
+          value: healValue,
+          targetName: target.card.name,
+          isUndead
+        }
+      };
+    }
+    
+    return { 
+      success: false, 
+      error: 'Target is neither enemy nor friendly'
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:death_coil:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:death_coil: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the death_coil spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered death_coil spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDeathCoilDeathCoil;

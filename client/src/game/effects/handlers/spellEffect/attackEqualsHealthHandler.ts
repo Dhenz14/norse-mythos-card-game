@@ -1,53 +1,64 @@
 /**
- * AttackEqualsHealth SpellEffect Handler
+ * Attack Equals Health Effect Handler
  * 
- * Implements the "attack_equals_health" spellEffect effect.
- * Example card: Card ID: 9016
+ * This handler implements the spellEffect:attack_equals_health effect.
+ * Sets a minion's attack equal to its current health.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a attack_equals_health spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeAttackEqualsHealthAttackEqualsHealth(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+export default function executeAttackEqualsHealth(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
   
-  console.log(`Executing attack_equals_health spellEffect for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the attack_equals_health spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered attack_equals_health spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  try {
+    context.logGameEvent(`Executing spellEffect:attack_equals_health for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'any_minion';
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for attack_equals_health`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    
+    if (target.card.type !== 'minion') {
+      return { success: false, error: 'Target must be a minion' };
+    }
+    
+    const currentHealth = target.currentHealth !== undefined ? target.currentHealth : (target.card.health || 0);
+    const previousAttack = target.card.attack || 0;
+    
+    target.card.attack = currentHealth;
+    
+    context.logGameEvent(`${target.card.name}'s attack set from ${previousAttack} to ${currentHealth} (equal to its health)`);
+    
+    return { 
+      success: true,
+      additionalData: {
+        previousAttack,
+        newAttack: currentHealth,
+        targetName: target.card.name
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:attack_equals_health:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:attack_equals_health: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeAttackEqualsHealthAttackEqualsHealth;

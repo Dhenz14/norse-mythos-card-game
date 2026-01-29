@@ -24,7 +24,6 @@ function executeSummonHighestCostFromGraveyardSummonHighestCostFromGraveyard(
   
   // Check if graveyard is empty
   if (graveyard.length === 0) {
-    console.log('Cannot summon from empty graveyard');
     return { 
       success: true, 
       info: 'No minion summoned - graveyard is empty' 

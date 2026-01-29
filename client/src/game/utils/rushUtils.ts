@@ -15,10 +15,6 @@ export function hasRush(card: CardInstance): boolean {
   const hasRushKeyword = card.card.keywords.includes('rush');
   const hasRushProperty = card.isRush === true || card.hasRush === true;
   
-  console.log(`hasRush check for ${card.card.name}:`);
-  console.log(`- Rush keyword: ${hasRushKeyword}`);
-  console.log(`- Rush property: ${hasRushProperty}`);
-  console.log(`- Silenced: ${card.isSilenced}`);
   
   // Either the card must have the rush keyword or rush property set
   return (hasRushKeyword || hasRushProperty) && !card.isSilenced;
@@ -49,16 +45,9 @@ export function initializeRushEffect(card: CardInstance): CardInstance {
  */
 export function isValidRushTarget(attackerCard: CardInstance, targetType: 'minion' | 'hero'): boolean {
   // Debug logging
-  console.log(`isValidRushTarget check for ${attackerCard.card.name}:`);
-  console.log(`- hasRush(card): ${hasRush(attackerCard)}`);
-  console.log(`- isRush property: ${attackerCard.isRush}`);
-  console.log(`- hasRush property: ${attackerCard.hasRush}`);
-  console.log(`- targetType: ${targetType}`);
-  console.log(`- Rush keyword from card data: ${attackerCard.card.keywords.includes('rush')}`);
   
   // For minion targets, always allow the attack (Rush minions CAN attack other minions)
   if (targetType === 'minion') {
-    console.log(`Rush minion ${attackerCard.card.name} CAN attack another minion`);
     return true;
   }
   
@@ -66,13 +55,11 @@ export function isValidRushTarget(attackerCard: CardInstance, targetType: 'minio
   const isRushCardOnFirstTurn = hasRush(attackerCard) && (attackerCard.isRush === true || attackerCard.hasRush === true);
   
   if (isRushCardOnFirstTurn && targetType === 'hero') {
-    console.log(`Rush minion ${attackerCard.card.name} cannot attack hero on the first turn it's played!`);
     return false;
   }
   
   // If it's not a Rush minion or it's a Rush minion that's been on the field for more than a turn,
   // it's allowed to attack heroes
-  console.log(`Target validation passed for ${attackerCard.card.name} targeting ${targetType}`);
   return true;
 }
 
@@ -99,7 +86,6 @@ export function processRushAtTurnEnd(state: GameState): GameState {
       minion.hasRush = false;
       
       // Log for debugging
-      console.log(`Rush restriction removed from ${minion.card.name} at end of turn. Can now attack heroes.`);
     }
   });
   

@@ -18,7 +18,6 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
     
     logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
     
-    console.log(`[CardBurn] ${playerId}'s hand is full! ${cardName} was destroyed!`);
   } catch (error) {
     console.error('[CardBurn] Failed to queue animation:', error);
   }
@@ -47,13 +46,11 @@ export function drawCard(state: GameState, playerType: 'player' | 'opponent'): G
     
     // Apply fatigue damage
     player.health -= fatigueDamage;
-    console.log(`${playerType} takes ${fatigueDamage} fatigue damage!`);
     
     // Check for game over
     if (player.health <= 0) {
       newState.gamePhase = "game_over";
       newState.winner = playerType === 'player' ? 'opponent' : 'player';
-      console.log(`Game over - ${newState.winner} wins by fatigue!`);
     }
     
     return newState;
@@ -62,7 +59,6 @@ export function drawCard(state: GameState, playerType: 'player' | 'opponent'): G
   // Check if the hand is full (max 9 cards like Hearthstone)
   if (player.hand.length >= MAX_HAND_SIZE) {
     const burnedCard = player.deck[0];
-    console.log(`${playerType}'s hand is full, burning card: ${burnedCard.name}`);
     queueCardBurnAnimation(burnedCard.name, playerType);
     player.deck.shift();
     return newState;
@@ -84,7 +80,6 @@ export function drawCard(state: GameState, playerType: 'player' | 'opponent'): G
   };
   
   player.hand.push(cardInstance);
-  console.log(`${playerType} draws ${drawnCard.name}`);
   
   return newState;
 }
@@ -98,7 +93,6 @@ export function addCardToHand(state: GameState, playerType: 'player' | 'opponent
   
   // Check if the hand is full (max 9 cards like Hearthstone)
   if (player.hand.length >= MAX_HAND_SIZE) {
-    console.log(`${playerType}'s hand is full, cannot add: ${cardData.name}`);
     queueCardBurnAnimation(cardData.name, playerType);
     return newState;
   }
@@ -116,7 +110,6 @@ export function addCardToHand(state: GameState, playerType: 'player' | 'opponent
   };
   
   player.hand.push(cardInstance);
-  console.log(`${cardData.name} added to ${playerType}'s hand`);
   
   return newState;
 }
@@ -130,7 +123,6 @@ export function addCardToDeck(state: GameState, playerType: 'player' | 'opponent
   
   // Add card to the deck
   player.deck.push(cardData);
-  console.log(`${cardData.name} added to ${playerType}'s deck`);
   
   return newState;
 }
@@ -148,7 +140,6 @@ export function shuffleDeck(state: GameState, playerType: 'player' | 'opponent')
     [player.deck[i], player.deck[j]] = [player.deck[j], player.deck[i]];
   }
   
-  console.log(`${playerType}'s deck has been shuffled`);
   return newState;
 }
 

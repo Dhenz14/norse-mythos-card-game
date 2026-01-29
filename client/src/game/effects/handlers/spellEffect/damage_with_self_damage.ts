@@ -2,60 +2,58 @@
  * Damage With Self Damage Effect Handler
  * 
  * This handler implements the spellEffect:damage_with_self_damage effect.
+ * Deals damage to a target and also damages your own hero.
  */
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a Damage With Self Damage effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.value - The value for the effect
-   * @param effect.selfDamage - The self damage for the effect
- * @returns An object indicating success or failure and any additional data
- */
 export default function executeDamageWithSelfDamage(
   context: GameContext, 
   effect: SpellEffect, 
   sourceCard: Card
 ): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
+  
   try {
-    // Log the effect execution
     context.logGameEvent(`Executing spellEffect:damage_with_self_damage for ${sourceCard.name}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const value = effect.value;
-    const selfDamage = effect.selfDamage;
+    const damageValue = effect.value || 1;
+    const selfDamage = effect.selfDamage || 0;
+    const targetType = effect.targetType || 'any';
     
-    // Implementation placeholder
-    console.log(`spellEffect:damage_with_self_damage executed with properties: ${JSON.stringify(effect)}`);
+    const targets = context.getTargets(targetType, sourceCardInstance);
     
-    // TODO: Implement the spellEffect:damage_with_self_damage effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCard);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for spellEffect:damage_with_self_damage`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Damage With Self Damage effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Damage With Self Damage effect applied`);
-      // TODO: Apply effect without target
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage_with_self_damage`);
+      return { success: false, error: 'No valid targets' };
     }
     
-    return { success: true };
+    const target = targets[0];
+    
+    context.dealDamage(target, damageValue);
+    context.logGameEvent(`Dealt ${damageValue} damage to ${target.card.name}`);
+    
+    if (selfDamage > 0) {
+      context.dealDamage(context.currentPlayer.hero, selfDamage);
+      context.logGameEvent(`Dealt ${selfDamage} damage to self as cost`);
+    }
+    
+    return { 
+      success: true,
+      additionalData: {
+        damageDealt: damageValue,
+        targetName: target.card.name,
+        selfDamageDealt: selfDamage
+      }
+    };
   } catch (error) {
     console.error(`Error executing spellEffect:damage_with_self_damage:`, error);
     return { 

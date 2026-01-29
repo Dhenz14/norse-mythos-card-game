@@ -2,52 +2,63 @@
  * DrawToMatchOpponent SpellEffect Handler
  * 
  * Implements the "draw_to_match_opponent" spellEffect effect.
- * Example card: Card ID: 8009
+ * Draws cards until the player's hand size matches the opponent's.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a draw_to_match_opponent spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeDrawToMatchOpponentDrawToMatchOpponent(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing draw_to_match_opponent spellEffect for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the draw_to_match_opponent spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered draw_to_match_opponent spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+export default function executeDrawToMatchOpponent(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:draw_to_match_opponent for ${sourceCard.name}`);
+    
+    const currentPlayer = context.currentPlayer;
+    const opponentPlayer = context.opponentPlayer;
+    
+    const currentHandSize = currentPlayer.hand.length;
+    const opponentHandSize = opponentPlayer.hand.length;
+    
+    if (currentHandSize >= opponentHandSize) {
+      context.logGameEvent(`Player's hand size (${currentHandSize}) already matches or exceeds opponent's (${opponentHandSize})`);
+      return { 
+        success: true,
+        additionalData: { cardsDrawn: 0 }
+      };
+    }
+    
+    const cardsToDraw = opponentHandSize - currentHandSize;
+    let cardsDrawn = 0;
+    
+    for (let i = 0; i < cardsToDraw; i++) {
+      if (currentPlayer.deck.length === 0) {
+        context.logGameEvent(`Deck is empty, cannot draw more cards`);
+        break;
+      }
+      
+      if (currentPlayer.hand.length >= 10) {
+        context.logGameEvent(`Hand is full, cannot draw more cards`);
+        break;
+      }
+      
+      context.drawCards(1);
+      cardsDrawn++;
+    }
+    
+    context.logGameEvent(`Drew ${cardsDrawn} cards to match opponent's hand size`);
+    
+    return { 
+      success: true,
+      additionalData: { cardsDrawn }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:draw_to_match_opponent:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:draw_to_match_opponent: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeDrawToMatchOpponentDrawToMatchOpponent;

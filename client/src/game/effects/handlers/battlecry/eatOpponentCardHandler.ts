@@ -1,63 +1,80 @@
 /**
  * EatOpponentCard Battlecry Handler
  * 
- * Implements the "eat_opponent_card" battlecry effect.
+ * Steals/eats a card from opponent's hand and gains its stats.
  * Example card: Mutanus the Devourer (ID: 20313)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a eat_opponent_card battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeEatOpponentCardEatOpponentCard(
-  state: GameState,
+export default function executeEatOpponentCard(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing eat_opponent_card battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: cardType
-  if (effect.cardType === undefined) {
-    console.warn(`EatOpponentCard effect missing cardType property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing eat_opponent_card battlecry for ${sourceCard.name}`);
+    
+    const cardType = effect.cardType || 'minion';
+    const gainStats = effect.gainStats ?? true;
+    const fromHand = effect.fromHand ?? true;
+    const fromDeck = effect.fromDeck ?? false;
+    
+    let targetPool: CardInstance[] = [];
+    
+    if (fromHand) {
+      targetPool = context.opponentPlayer.hand.filter(
+        card => card.card.type === cardType
+      );
+    } else if (fromDeck) {
+      targetPool = context.opponentPlayer.deck.filter(
+        card => card.card.type === cardType
+      );
+    }
+    
+    if (targetPool.length === 0) {
+      context.logGameEvent(`No ${cardType}s in opponent's ${fromHand ? 'hand' : 'deck'} to eat.`);
+      return { success: true, additionalData: { eatenCard: null } };
+    }
+    
+    const randomIndex = Math.floor(Math.random() * targetPool.length);
+    const eatenCard = targetPool[randomIndex];
+    
+    const sourceLocation = fromHand ? context.opponentPlayer.hand : context.opponentPlayer.deck;
+    const cardIndex = sourceLocation.indexOf(eatenCard);
+    if (cardIndex !== -1) {
+      sourceLocation.splice(cardIndex, 1);
+    }
+    
+    context.logGameEvent(`Ate ${eatenCard.card.name} from opponent's ${fromHand ? 'hand' : 'deck'}.`);
+    
+    if (gainStats && eatenCard.card.type === 'minion') {
+      const sourceOnBoard = context.currentPlayer.board.find(
+        m => m.card.id === sourceCard.id
+      );
+      
+      if (sourceOnBoard) {
+        const attackGain = eatenCard.card.attack || 0;
+        const healthGain = eatenCard.card.health || 0;
+        
+        sourceOnBoard.currentAttack = (sourceOnBoard.currentAttack || sourceCard.attack || 0) + attackGain;
+        sourceOnBoard.currentHealth = (sourceOnBoard.currentHealth || sourceCard.health || 0) + healthGain;
+        
+        context.logGameEvent(`${sourceCard.name} gained +${attackGain}/+${healthGain}.`);
+      }
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        eatenCard: eatenCard.card,
+        attackGained: eatenCard.card.attack || 0,
+        healthGained: eatenCard.card.health || 0
+      }
+    };
+  } catch (error) {
+    console.error('Error executing eat_opponent_card:', error);
+    return { success: false, error: `Failed to execute eat_opponent_card: ${error}` };
   }
-
-  // Check for required property: isRandom
-  if (effect.isRandom === undefined) {
-    console.warn(`EatOpponentCard effect missing isRandom property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the eat_opponent_card battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered eat_opponent_card battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeEatOpponentCardEatOpponentCard;

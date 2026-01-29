@@ -1,63 +1,68 @@
 /**
- * DestroyDeckPortion SpellEffect Handler
+ * Destroy Deck Portion Effect Handler
  * 
- * Implements the "destroy_deck_portion" spellEffect effect.
- * Example card: Card ID: 15022
+ * This handler implements the spellEffect:destroy_deck_portion effect.
+ * Destroys a number of cards from the target player's deck.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a destroy_deck_portion spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeDestroyDeckPortionDestroyDeckPortion(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing destroy_deck_portion spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DestroyDeckPortion effect missing value property`);
-    // Fall back to a default value or handle the missing property
+export default function executeDestroyDeckPortion(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:destroy_deck_portion for ${sourceCard.name}`);
+    
+    const cardsToDestroy = effect.value || 1;
+    const randomSelection = effect.randomSelection !== false;
+    const targetOpponent = effect.targetOpponent !== false;
+    
+    const targetPlayer = targetOpponent ? context.opponentPlayer : context.currentPlayer;
+    const deck = targetPlayer.deck;
+    
+    if (deck.length === 0) {
+      context.logGameEvent(`Target deck is empty, no cards to destroy`);
+      return { 
+        success: true,
+        additionalData: { cardsDestroyed: 0 }
+      };
+    }
+    
+    const actualCardsToDestroy = Math.min(cardsToDestroy, deck.length);
+    const destroyedCards: string[] = [];
+    
+    if (randomSelection) {
+      for (let i = 0; i < actualCardsToDestroy; i++) {
+        const randomIndex = Math.floor(Math.random() * deck.length);
+        const destroyed = deck.splice(randomIndex, 1)[0];
+        destroyedCards.push(destroyed.card.name);
+      }
+    } else {
+      for (let i = 0; i < actualCardsToDestroy; i++) {
+        const destroyed = deck.shift();
+        if (destroyed) {
+          destroyedCards.push(destroyed.card.name);
+        }
+      }
+    }
+    
+    context.logGameEvent(`Destroyed ${destroyedCards.length} cards from ${targetOpponent ? "opponent's" : "your"} deck: ${destroyedCards.join(', ')}`);
+    
+    return { 
+      success: true,
+      additionalData: {
+        cardsDestroyed: destroyedCards.length,
+        cardNames: destroyedCards
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:destroy_deck_portion:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:destroy_deck_portion: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: randomSelection
-  if (effect.randomSelection === undefined) {
-    console.warn(`DestroyDeckPortion effect missing randomSelection property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the destroy_deck_portion spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered destroy_deck_portion spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDestroyDeckPortionDestroyDeckPortion;

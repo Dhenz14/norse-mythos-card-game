@@ -2,62 +2,194 @@
  * ConditionalDraw Battlecry Handler
  * 
  * Implements the "conditional_draw" battlecry effect.
- * Example card: Fight Promoter (ID: 30034)
+ * Checks a condition before drawing cards.
+ * Example card: Fight Promoter (ID: 30034) - If you control a minion with 6+ Health, draw 2 cards
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
+
+const MAX_HAND_SIZE = 10;
+
+/**
+ * Check if the draw condition is met
+ */
+function checkCondition(
+  context: GameContext,
+  condition: string,
+  value?: number
+): boolean {
+  switch (condition) {
+    case 'combo':
+      return context.currentPlayer.cardsPlayedThisTurn > 0;
+      
+    case 'holding_dragon':
+      return context.currentPlayer.hand.some(ci => ci.card.race === 'dragon');
+      
+    case 'holding_spell':
+      return context.currentPlayer.hand.some(ci => ci.card.type === 'spell');
+      
+    case 'holding_minion':
+      return context.currentPlayer.hand.some(ci => ci.card.type === 'minion');
+      
+    case 'minion_health_6_plus':
+    case 'control_minion_health_6':
+      return context.currentPlayer.board.some(
+        ci => (ci.currentHealth || ci.card.health || 0) >= 6
+      );
+      
+    case 'minion_attack_6_plus':
+    case 'control_minion_attack_6':
+      return context.currentPlayer.board.some(
+        ci => (ci.currentAttack || ci.card.attack || 0) >= 6
+      );
+      
+    case 'board_has_minion':
+      return context.currentPlayer.board.length > 0;
+      
+    case 'board_empty':
+      return context.currentPlayer.board.length === 0;
+      
+    case 'opponent_board_empty':
+      return context.opponentPlayer.board.length === 0;
+      
+    case 'hand_size_less_than':
+      return context.currentPlayer.hand.length < (value || 3);
+      
+    case 'hand_empty':
+      return context.currentPlayer.hand.length === 0;
+      
+    case 'deck_has_cards':
+      return context.currentPlayer.deck.length > 0;
+      
+    case 'health_below':
+      return context.currentPlayer.health < (value || 15);
+      
+    case 'enemy_health_below':
+      return context.opponentPlayer.health < (value || 15);
+      
+    case 'mana_crystals':
+      return context.currentPlayer.mana.max >= (value || 10);
+      
+    case 'played_spell_this_turn':
+      return context.currentPlayer.cardsPlayedThisTurn > 0;
+      
+    case 'minions_died_this_game':
+      return (context.currentPlayer.graveyard?.length || 0) >= (value || 1);
+      
+    case 'holding_weapon':
+      return context.currentPlayer.hand.some(ci => ci.card.type === 'weapon');
+      
+    case 'has_weapon_equipped':
+      return context.currentPlayer.hand.some(
+        ci => ci.card.type === 'weapon' && ci.isPlayed
+      );
+      
+    case 'overloaded':
+      return (context.currentPlayer.mana.overloaded || 0) > 0;
+      
+    case 'control_elemental':
+      return context.currentPlayer.board.some(ci => ci.card.race === 'elemental');
+      
+    case 'control_beast':
+      return context.currentPlayer.board.some(ci => ci.card.race === 'beast');
+      
+    case 'control_mech':
+      return context.currentPlayer.board.some(ci => ci.card.race === 'mech');
+      
+    case 'control_demon':
+      return context.currentPlayer.board.some(ci => ci.card.race === 'demon');
+      
+    case 'control_murloc':
+      return context.currentPlayer.board.some(ci => ci.card.race === 'murloc');
+      
+    case 'control_pirate':
+      return context.currentPlayer.board.some(ci => ci.card.race === 'pirate');
+      
+    case 'control_totem':
+      return context.currentPlayer.board.some(ci => ci.card.race === 'totem');
+      
+    default:
+      console.warn(`Unknown condition: ${condition}`);
+      return true;
+  }
+}
 
 /**
  * Execute a conditional_draw battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data containing condition and value properties
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeConditionalDrawConditionalDraw(
-  state: GameState,
+export default function executeConditionalDraw(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing conditional_draw battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: condition
-  if (effect.condition === undefined) {
-    console.warn(`ConditionalDraw effect missing condition property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    const condition = effect.condition || 'always';
+    const conditionValue = effect.conditionValue;
+    const drawCount = effect.value || effect.count || 1;
+    
+    context.logGameEvent(`${sourceCard.name} battlecry: Conditional draw (${condition})`);
+    
+    const conditionMet = checkCondition(context, condition, conditionValue);
+    
+    if (!conditionMet) {
+      context.logGameEvent(`Condition '${condition}' not met - no cards drawn`);
+      return {
+        success: true,
+        additionalData: {
+          conditionMet: false,
+          drawnCards: [],
+          totalDrawn: 0
+        }
+      };
+    }
+    
+    context.logGameEvent(`Condition '${condition}' met - drawing ${drawCount} card(s)`);
+    
+    const drawnCards: Card[] = [];
+    const burnedCards: Card[] = [];
+    
+    for (let i = 0; i < drawCount; i++) {
+      if (context.currentPlayer.deck.length === 0) {
+        context.logGameEvent(`Deck is empty - no more cards to draw`);
+        break;
+      }
+      
+      const cardInstance = context.currentPlayer.deck.shift();
+      if (!cardInstance) continue;
+      
+      if (context.currentPlayer.hand.length < MAX_HAND_SIZE) {
+        context.currentPlayer.hand.push(cardInstance);
+        drawnCards.push(cardInstance.card);
+        context.logGameEvent(`Drew ${cardInstance.card.name}`);
+      } else {
+        burnedCards.push(cardInstance.card);
+        context.logGameEvent(`Hand is full! ${cardInstance.card.name} was burned`);
+      }
+    }
+    
+    context.currentPlayer.cardsDrawnThisTurn += drawnCards.length;
+    
+    return {
+      success: true,
+      additionalData: {
+        conditionMet: true,
+        drawnCards,
+        burnedCards,
+        totalDrawn: drawnCards.length,
+        totalBurned: burnedCards.length
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing conditional_draw:`, error);
+    return {
+      success: false,
+      error: `Error executing conditional_draw: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`ConditionalDraw effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the conditional_draw battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered conditional_draw battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeConditionalDrawConditionalDraw;

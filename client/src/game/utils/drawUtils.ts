@@ -19,7 +19,6 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
     
     logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
     
-    console.log(`[CardBurn] ${playerId}'s hand is full! ${cardName} was destroyed!`);
   } catch (error) {
     console.error('[CardBurn] Failed to queue animation:', error);
   }
@@ -48,13 +47,11 @@ export function drawCardFromDeck(
     const currentFatigue = newState.fatigueCount[playerId] || 0;
     const newFatigue = currentFatigue + 1;
     
-    console.log(`FATIGUE: ${playerId} takes ${newFatigue} fatigue damage`);
     
     player.health -= newFatigue;
     newState.fatigueCount[playerId] = newFatigue;
     
     if (player.health <= 0) {
-      console.log(`${playerId} died from fatigue!`);
       newState.gamePhase = "game_over";
       newState.winner = playerId === 'player' ? 'opponent' : 'player';
     }
@@ -82,7 +79,6 @@ export function drawCardFromDeck(
   
   player.hand.push(cardInstance);
   
-  console.log(`${playerId} drew card: ${cardData.name} (hand: ${player.hand.length}/${MAX_HAND_SIZE})`);
   
   return newState;
 }

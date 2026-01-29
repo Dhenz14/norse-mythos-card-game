@@ -1,87 +1,70 @@
 /**
  * AddCard Battlecry Handler
  * 
- * Implements the "add_card" battlecry effect.
+ * Adds a specific card to the player's hand by cardId.
  * Example card: Face Collector (ID: 20807)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a add_card battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeAddCardAddCard(
-  state: GameState,
+export default function executeAddCard(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing add_card battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: condition
-  if (effect.condition === undefined) {
-    console.warn(`AddCard effect missing condition property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing add_card battlecry for ${sourceCard.name}`);
+    
+    const cardId = effect.cardId || effect.value;
+    const cardCount = effect.cardCount || effect.count || 1;
+    const costReduction = effect.costReduction || 0;
+    
+    if (!cardId) {
+      return { success: false, error: 'No cardId specified for add_card effect' };
+    }
+    
+    const addedCards: CardInstance[] = [];
+    
+    for (let i = 0; i < cardCount; i++) {
+      if (context.currentPlayer.hand.length >= 10) {
+        context.logGameEvent(`Hand is full, cannot add more cards.`);
+        break;
+      }
+      
+      const baseCost = effect.manaCost ?? 0;
+      const finalCost = Math.max(0, baseCost - costReduction);
+      
+      const newCardInstance: CardInstance = {
+        instanceId: `added-${cardId}-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
+        card: {
+          id: typeof cardId === 'number' ? cardId : parseInt(cardId, 10),
+          name: effect.cardName || `Card ${cardId}`,
+          description: effect.cardDescription || '',
+          manaCost: finalCost,
+          type: effect.cardType || 'minion',
+          rarity: effect.rarity || 'common',
+          heroClass: effect.heroClass || 'neutral',
+          attack: effect.attack,
+          health: effect.health
+        } as Card,
+        canAttack: false,
+        isPlayed: false,
+        isSummoningSick: false,
+        attacksPerformed: 0
+      };
+      
+      context.currentPlayer.hand.push(newCardInstance);
+      addedCards.push(newCardInstance);
+      context.logGameEvent(`Added ${newCardInstance.card.name} to hand.`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { addedCards, count: addedCards.length }
+    };
+  } catch (error) {
+    console.error('Error executing add_card:', error);
+    return { success: false, error: `Failed to execute add_card: ${error}` };
   }
-
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`AddCard effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: cardType
-  if (effect.cardType === undefined) {
-    console.warn(`AddCard effect missing cardType property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: cardCount
-  if (effect.cardCount === undefined) {
-    console.warn(`AddCard effect missing cardCount property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: costReduction
-  if (effect.costReduction === undefined) {
-    console.warn(`AddCard effect missing costReduction property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: cardName
-  if (effect.cardName === undefined) {
-    console.warn(`AddCard effect missing cardName property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the add_card battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered add_card battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeAddCardAddCard;

@@ -1,63 +1,77 @@
 /**
- * DamageAndBuffWeapon SpellEffect Handler
+ * Damage And Buff Weapon Effect Handler
  * 
- * Implements the "damage_and_buff_weapon" spellEffect effect.
- * Example card: Card ID: 3010
+ * This handler implements the spellEffect:damage_and_buff_weapon effect.
+ * Deals damage to a target and buffs the player's equipped weapon.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a damage_and_buff_weapon spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeDamageAndBuffWeaponDamageAndBuffWeapon(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+export default function executeDamageAndBuffWeapon(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
   
-  console.log(`Executing damage_and_buff_weapon spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DamageAndBuffWeapon effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing spellEffect:damage_and_buff_weapon for ${sourceCard.name}`);
+    
+    const damageValue = effect.value || 1;
+    const targetType = effect.targetType || 'any';
+    const buffWeaponAttack = effect.buffWeaponAttack || 1;
+    const buffWeaponDurability = effect.buffWeaponDurability || 0;
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage_and_buff_weapon`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    context.dealDamage(target, damageValue);
+    context.logGameEvent(`Dealt ${damageValue} damage to ${target.card.name}`);
+    
+    const weapon = (context.currentPlayer as any).weapon;
+    
+    if (weapon) {
+      if (weapon.card.attack !== undefined) {
+        weapon.card.attack += buffWeaponAttack;
+        context.logGameEvent(`Weapon attack increased by ${buffWeaponAttack} (now ${weapon.card.attack})`);
+      }
+      
+      if (buffWeaponDurability > 0 && weapon.card.durability !== undefined) {
+        weapon.card.durability += buffWeaponDurability;
+        context.logGameEvent(`Weapon durability increased by ${buffWeaponDurability}`);
+      }
+    } else {
+      context.logGameEvent(`No weapon equipped to buff`);
+    }
+    
+    return { 
+      success: true,
+      additionalData: {
+        damageDealt: damageValue,
+        targetName: target.card.name,
+        weaponBuffed: weapon !== undefined,
+        buffWeaponAttack,
+        buffWeaponDurability
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:damage_and_buff_weapon:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:damage_and_buff_weapon: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: buffWeaponAttack
-  if (effect.buffWeaponAttack === undefined) {
-    console.warn(`DamageAndBuffWeapon effect missing buffWeaponAttack property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the damage_and_buff_weapon spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered damage_and_buff_weapon spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDamageAndBuffWeaponDamageAndBuffWeapon;

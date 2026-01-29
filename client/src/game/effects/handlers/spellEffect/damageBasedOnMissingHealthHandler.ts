@@ -25,7 +25,6 @@ export function executeDamageBasedOnMissingHealthDamageBasedOnMissingHealth(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing damage_based_on_missing_health spellEffect for ${sourceCard.card.name}`);
   
   // Check for required property: healValue
   if (effect.healValue === undefined) {

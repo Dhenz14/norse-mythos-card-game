@@ -17,7 +17,6 @@ import { executeSpell } from './handlers/spellBridge';
  * This should be called once when the game starts
  */
 export function initEffectSystem() {
-  console.log('Initializing card effect system...');
   
   // Register all effect handlers with the EffectRegistry
   registerAllEffectHandlers();
@@ -28,7 +27,6 @@ export function initEffectSystem() {
   // Override the global functions with our bridged versions
   // This is done by exporting them from this module
   
-  console.log('Card effect system initialized');
 }
 
 // Export the bridge functions to replace the original ones

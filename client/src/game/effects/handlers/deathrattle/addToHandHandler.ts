@@ -2,62 +2,56 @@
  * AddToHand Deathrattle Handler
  * 
  * Implements the "add_to_hand" deathrattle effect.
- * Example card: Weaponized Piñata (ID: 30049)
+ * Returns the minion back to the player's hand on death.
+ * Example: Anub'arak (returns itself to hand)
  */
-import { GameState, CardInstance } from '../../types';
-import { DeathrattleEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, CardInstance } from '../../../types/CardTypes';
+import { DeathrattleEffect } from '../../../types';
+import { EffectResult } from '../../../types/EffectTypes';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
- * Execute a add_to_hand deathrattle effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * Execute an add_to_hand deathrattle effect
  */
-export function executeAddToHandAddToHand(
-  state: GameState,
+export default function executeAddToHandAddToHand(
+  context: GameContext,
   effect: DeathrattleEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing add_to_hand deathrattle for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`AddToHand effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card | CardInstance
+): EffectResult {
+  try {
+    const card = 'card' in sourceCard ? sourceCard.card : sourceCard;
+    const cardName = card.name;
+    
+    context.logGameEvent(`Executing deathrattle:add_to_hand for ${cardName}`);
+    
+    if (context.currentPlayer.hand.length >= 10) {
+      context.logGameEvent(`Hand is full, ${cardName} was not returned to hand`);
+      return { success: true, additionalData: { burned: true } };
+    }
+    
+    const newCardInstance: CardInstance = {
+      instanceId: uuidv4(),
+      card: card,
+      currentHealth: card.health,
+      canAttack: false,
+      isPlayed: false,
+      isSummoningSick: false,
+      attacksPerformed: 0
+    };
+    
+    context.currentPlayer.hand.push(newCardInstance);
+    context.logGameEvent(`${cardName} returned to hand`);
+    
+    return {
+      success: true,
+      additionalData: { returnedCard: newCardInstance }
+    };
+  } catch (error) {
+    console.error(`Error executing deathrattle:add_to_hand:`, error);
+    return {
+      success: false,
+      error: `Error executing deathrattle:add_to_hand: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: specificRace
-  if (effect.specificRace === undefined) {
-    console.warn(`AddToHand effect missing specificRace property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the add_to_hand deathrattle effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'deathrattle',
-    text: `${sourceCard.card.name} triggered add_to_hand deathrattle`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeAddToHandAddToHand;

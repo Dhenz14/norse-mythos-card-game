@@ -32,7 +32,6 @@ export default function executeBuffDamagedMinions(
     const buffHealth = effect.buffHealth;
     
     // Implementation placeholder
-    console.log(`spellEffect:buff_damaged_minions executed with properties: ${JSON.stringify(effect)}`);
     
     // TODO: Implement the spellEffect:buff_damaged_minions effect
     if (requiresTarget) {

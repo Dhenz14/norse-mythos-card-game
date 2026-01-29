@@ -2,52 +2,60 @@
  * GiveDivineShield SpellEffect Handler
  * 
  * Implements the "give_divine_shield" spellEffect effect.
- * Example card: Card ID: 8024
+ * Grants Divine Shield to target minions.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a give_divine_shield spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeGiveDivineShieldGiveDivineShield(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing give_divine_shield spellEffect for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the give_divine_shield spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered give_divine_shield spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+export default function executeGiveDivineShield(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:give_divine_shield for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'friendly_minions';
+    const requiresTarget = effect.requiresTarget !== false;
+    
+    const sourceCardInstance: any = {
+      instanceId: 'temp-' + Date.now(),
+      card: sourceCard,
+      canAttack: false,
+      isPlayed: true
+    };
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0 && requiresTarget) {
+      context.logGameEvent(`No valid targets for give_divine_shield effect`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    let shieldsGranted = 0;
+    
+    targets.forEach(target => {
+      if (target.card.type === 'minion') {
+        (target as any).hasDivineShield = true;
+        target.card.keywords = target.card.keywords || [];
+        if (!target.card.keywords.includes('divine_shield')) {
+          target.card.keywords.push('divine_shield');
+        }
+        shieldsGranted++;
+        context.logGameEvent(`${target.card.name} gained Divine Shield`);
+      }
+    });
+    
+    return { 
+      success: true,
+      additionalData: { shieldsGranted }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:give_divine_shield:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:give_divine_shield: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeGiveDivineShieldGiveDivineShield;

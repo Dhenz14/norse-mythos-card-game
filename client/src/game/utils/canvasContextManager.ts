@@ -405,7 +405,6 @@ class CanvasContextManager {
               // If we can retry, do so after a delay
               if (entry.retryCount < 3) {
                 setTimeout(() => {
-                  console.log(`Retrying texture load for ${url}, attempt ${entry.retryCount + 1}`);
                   this.loadTexture(url, priority)
                     .then(resolve)
                     .catch(reject);

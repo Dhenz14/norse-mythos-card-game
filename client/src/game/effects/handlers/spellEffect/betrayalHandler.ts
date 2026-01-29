@@ -1,53 +1,75 @@
 /**
- * Betrayal SpellEffect Handler
+ * Betrayal Effect Handler
  * 
- * Implements the "betrayal" spellEffect effect.
- * Example card: Card ID: 12018
+ * This handler implements the spellEffect:betrayal effect.
+ * Forces an enemy minion to deal its attack damage to adjacent minions.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a betrayal spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeBetrayalBetrayal(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+export default function executeBetrayal(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
   
-  console.log(`Executing betrayal spellEffect for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the betrayal spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered betrayal spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  try {
+    context.logGameEvent(`Executing spellEffect:betrayal for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'enemy_minion';
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for betrayal`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    
+    if (target.card.type !== 'minion') {
+      return { success: false, error: 'Target must be a minion' };
+    }
+    
+    const attackValue = target.card.attack || 0;
+    const adjacentMinions = context.getAdjacentMinions(target);
+    
+    if (adjacentMinions.length === 0) {
+      context.logGameEvent(`${target.card.name} has no adjacent minions to betray`);
+      return { 
+        success: true,
+        additionalData: {
+          adjacentDamaged: 0
+        }
+      };
+    }
+    
+    adjacentMinions.forEach(adjacent => {
+      context.logGameEvent(`${target.card.name} deals ${attackValue} damage to ${adjacent.card.name} (Betrayal)`);
+      context.dealDamage(adjacent, attackValue);
+    });
+    
+    return { 
+      success: true,
+      additionalData: {
+        attackerName: target.card.name,
+        attackValue,
+        adjacentDamaged: adjacentMinions.length
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:betrayal:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:betrayal: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeBetrayalBetrayal;

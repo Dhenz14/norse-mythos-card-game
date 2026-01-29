@@ -77,7 +77,6 @@ export function applyMagnetization(
     return state;
   }
   
-  console.log(`Magnetizing ${magneticCard.card.name} to ${targetCard.card.name}`);
   
   // Apply stat buffs from magnetic card to target
   const attackBonus = (magneticCard.card.attack || 0);
@@ -88,8 +87,6 @@ export function applyMagnetization(
   targetCard.card.health = (targetCard.card.health || 0) + healthBonus;
   targetCard.currentHealth = (targetCard.currentHealth || targetCard.card.health || 0) + healthBonus;
   
-  console.log(`Magnetic boost applied: +${attackBonus} attack, +${healthBonus} health`);
-  console.log(`New stats: ${targetCard.card.attack} attack, ${targetCard.currentHealth} health`);
   
   // Transfer keywords from magnetic card to target (excluding 'magnetic' itself)
   magneticCard.card.keywords.forEach(keyword => {
@@ -114,7 +111,6 @@ export function applyMagnetization(
     isAttached: true
   });
   
-  console.log(`Added ${magneticCard.card.name} to ${targetCard.card.name}'s attachments. Now has ${targetCard.mechAttachments.length} attachments.`);
   
   // If magnetic card has battlecry, it is NOT transferred (as per Hearthstone rules)
   
@@ -127,7 +123,6 @@ export function applyMagnetization(
   // Handle pending overload for overload cards
   if (magneticCard.card.keywords.includes('overload') && magneticCard.card.overload) {
     player.mana.pendingOverload = (player.mana.pendingOverload || 0) + magneticCard.card.overload.amount;
-    console.log(`MAGNETIC OVERLOAD: ${magneticCard.card.overload.amount} mana crystals will be locked next turn`);
   }
   
   return newState;

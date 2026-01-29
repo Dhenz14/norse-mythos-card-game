@@ -34,7 +34,6 @@ function executeSummonSkeletonsBasedOnGraveyardSummonSkeletonsBasedOnGraveyard(
   );
   
   if (skeletonsToSummon <= 0) {
-    console.log('No skeletons to summon (empty graveyard or full board)');
     return { 
       success: true, 
       info: 'No skeletons summoned - graveyard is empty or board is full' 

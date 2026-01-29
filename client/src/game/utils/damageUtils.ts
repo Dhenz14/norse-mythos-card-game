@@ -29,11 +29,9 @@ export function dealDamage(
   
   if (targetType === 'hero') {
     // Damage to hero - handle armor
-    console.log(`Dealing ${amount} damage to ${targetPlayerId}'s hero`);
     return dealDamageToHero(newState, targetPlayerId, amount, sourceCardId, sourcePlayerId);
   } else if (targetInstanceId) {
     // Damage to minion
-    console.log(`Dealing ${amount} damage to ${targetPlayerId}'s minion ${targetInstanceId}`);
     return dealDamageToMinion(newState, targetPlayerId, targetInstanceId, amount, sourceCardId, sourcePlayerId);
   } else {
     console.error('Invalid target for damage: missing targetInstanceId for minion');
@@ -136,11 +134,9 @@ export function dealDamageToMinion(
   let modifiedAmount = amount;
   if (targetCard.isVulnerable) {
     modifiedAmount += 3;
-    console.log(`[STATUS] 🎯 Vulnerable: ${targetCard.card.name} takes +3 damage`);
   }
   if (targetCard.isBleeding) {
     modifiedAmount += 3;
-    console.log(`[STATUS] 🩸 Bleed: ${targetCard.card.name} takes +3 damage`);
   }
   amount = modifiedAmount;
   
@@ -181,7 +177,6 @@ export function dealDamageToMinion(
     battlefield[targetIndex] = targetCard;
     
     // Debug log
-    console.log(`Applied ${amount} damage to ${targetCard.card.name} (${targetCard.instanceId}). Health: ${oldHealth} -> ${newHealth}`);
   }
   
   // Add to game log
@@ -649,7 +644,6 @@ export function healMinion(
     message: `${targetCard.card.name} was healed for ${actualHealing} (${oldHealth} -> ${targetCard.currentHealth})`
   });
   
-  console.log(`Healed ${targetCard.card.name} for ${actualHealing}. Health: ${oldHealth} -> ${targetCard.currentHealth}`);
   
   return newState;
 }

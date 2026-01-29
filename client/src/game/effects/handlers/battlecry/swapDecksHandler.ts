@@ -2,56 +2,74 @@
  * SwapDecks Battlecry Handler
  * 
  * Implements the "swap_decks" battlecry effect.
+ * Swaps your deck with your opponent's deck.
  * Example card: King Togwaggle (ID: 20603)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a swap_decks battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeSwapDecksSwapDecks(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing swap_decks battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: giveRansom
-  if (effect.giveRansom === undefined) {
-    console.warn(`SwapDecks effect missing giveRansom property`);
-    // Fall back to a default value or handle the missing property
+export default function executeSwapDecks(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:swap_decks for ${sourceCard.name}`);
+    
+    const playerDeckSize = context.currentPlayer.deck.length;
+    const opponentDeckSize = context.opponentPlayer.deck.length;
+    
+    const playerDeck = [...context.currentPlayer.deck];
+    const opponentDeck = [...context.opponentPlayer.deck];
+    
+    context.currentPlayer.deck = opponentDeck;
+    context.opponentPlayer.deck = playerDeck;
+    
+    context.logGameEvent(`${sourceCard.name} swapped decks! You now have ${opponentDeckSize} cards, opponent has ${playerDeckSize} cards.`);
+    
+    if (effect.giveRansom) {
+      const ransomCard: CardInstance = {
+        instanceId: 'ransom-' + Date.now(),
+        card: {
+          id: effect.ransomCardId || 99998,
+          name: effect.ransomCardName || "King's Ransom",
+          description: "Swap decks with your opponent.",
+          manaCost: effect.ransomCost || 5,
+          type: 'spell',
+          rarity: 'legendary',
+          heroClass: 'neutral',
+          spellEffect: {
+            type: 'swap_decks'
+          }
+        },
+        canAttack: false,
+        isPlayed: false,
+        isSummoningSick: false,
+        attacksPerformed: 0
+      };
+      
+      if (context.opponentPlayer.hand.length < 10) {
+        context.opponentPlayer.hand.push(ransomCard);
+        context.logGameEvent(`Opponent received ${ransomCard.card.name} to swap decks back`);
+      } else {
+        context.logGameEvent(`Opponent's hand is full, ${ransomCard.card.name} was burned`);
+      }
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        yourNewDeckSize: opponentDeckSize,
+        opponentNewDeckSize: playerDeckSize,
+        ransomGiven: effect.giveRansom || false
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:swap_decks:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:swap_decks: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the swap_decks battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered swap_decks battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeSwapDecksSwapDecks;

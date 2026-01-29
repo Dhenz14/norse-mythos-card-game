@@ -1,7 +1,8 @@
 /**
  * Gain Armor Conditional Draw Effect Handler
  * 
- * This handler implements the battlecry:gain_armor_conditional_draw effect.
+ * Implements the battlecry:gain_armor_conditional_draw effect.
+ * Hero gains armor, then draws if a condition is met.
  */
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
@@ -12,7 +13,6 @@ import { EffectResult } from '../../../types/EffectTypes';
  * @param context - The game context
  * @param effect - The effect data
  * @param sourceCard - The card that triggered the effect
-   * @param effect.value - The value for the effect
  * @returns An object indicating success or failure and any additional data
  */
 export default function executeGainArmorConditionalDraw(
@@ -21,39 +21,66 @@ export default function executeGainArmorConditionalDraw(
   sourceCard: Card
 ): EffectResult {
   try {
-    // Log the effect execution
     context.logGameEvent(`Executing battlecry:gain_armor_conditional_draw for ${sourceCard.name}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const value = effect.value;
+    const armorValue = effect.value || effect.armorValue || 0;
+    const drawCount = effect.drawCount || 1;
+    const condition = effect.condition || 'always';
+    const armorThreshold = effect.armorThreshold || 0;
     
-    // Implementation placeholder
-    console.log(`battlecry:gain_armor_conditional_draw executed with properties: ${JSON.stringify(effect)}`);
+    const previousArmor = context.currentPlayer.armor;
+    context.currentPlayer.armor += armorValue;
     
-    // TODO: Implement the battlecry:gain_armor_conditional_draw effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCard);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for battlecry:gain_armor_conditional_draw`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Gain Armor Conditional Draw effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Gain Armor Conditional Draw effect applied`);
-      // TODO: Apply effect without target
+    context.logGameEvent(`${sourceCard.name} gained ${armorValue} armor. Total: ${context.currentPlayer.armor}`);
+    
+    let conditionMet = false;
+    
+    switch (condition) {
+      case 'always':
+        conditionMet = true;
+        break;
+      case 'has_armor':
+        conditionMet = previousArmor > 0;
+        break;
+      case 'armor_threshold':
+        conditionMet = context.currentPlayer.armor >= armorThreshold;
+        break;
+      case 'damaged_hero':
+        conditionMet = context.currentPlayer.health < context.currentPlayer.maxHealth;
+        break;
+      case 'full_hand':
+        conditionMet = context.currentPlayer.hand.length >= 7;
+        break;
+      case 'empty_board':
+        conditionMet = context.currentPlayer.board.length === 0;
+        break;
+      case 'has_weapon':
+        conditionMet = (context.currentPlayer.hero as any)?.weapon !== undefined;
+        break;
+      default:
+        conditionMet = true;
     }
     
-    return { success: true };
+    let cardsDrawn = 0;
+    
+    if (conditionMet) {
+      const drawnCards = context.drawCards(drawCount);
+      cardsDrawn = drawnCards.length;
+      context.logGameEvent(`Condition "${condition}" met. Drew ${cardsDrawn} card(s).`);
+    } else {
+      context.logGameEvent(`Condition "${condition}" not met. No cards drawn.`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        armorGained: armorValue,
+        previousArmor,
+        newArmor: context.currentPlayer.armor,
+        conditionMet,
+        cardsDrawn
+      } 
+    };
   } catch (error) {
     console.error(`Error executing battlecry:gain_armor_conditional_draw:`, error);
     return { 

@@ -2,68 +2,82 @@
  * GrantDeathrattle SpellEffect Handler
  * 
  * Implements the "grant_deathrattle" spellEffect effect.
- * Example card: Card ID: 11016
+ * Grants a deathrattle effect to target minions.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a grant_deathrattle spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeGrantDeathrattleGrantDeathrattle(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing grant_deathrattle spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: deathrattle
-  if (effect.deathrattle === undefined) {
-    console.warn(`GrantDeathrattle effect missing deathrattle property`);
-    // Fall back to a default value or handle the missing property
+export default function executeGrantDeathrattle(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:grant_deathrattle for ${sourceCard.name}`);
+    
+    const deathrattleEffect = effect.deathrattle || effect.grantedDeathrattle || {
+      type: 'damage',
+      value: effect.value || 2,
+      targetType: 'random_enemy_minion'
+    };
+    const summonCardId = effect.summonCardId;
+    const targetType = effect.targetType || 'friendly_minion';
+    
+    const sourceCardInstance: any = {
+      instanceId: 'temp-' + Date.now(),
+      card: sourceCard,
+      canAttack: false,
+      isPlayed: true
+    };
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for grant_deathrattle effect`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    let deathrattlesGranted = 0;
+    
+    targets.forEach(target => {
+      if (target.card.type === 'minion') {
+        let finalDeathrattle = deathrattleEffect;
+        
+        if (summonCardId) {
+          finalDeathrattle = {
+            type: 'summon',
+            summonCardId: summonCardId,
+            value: effect.value || 1
+          };
+        }
+        
+        const targetAny = target as any;
+        targetAny.grantedDeathrattles = targetAny.grantedDeathrattles || [];
+        targetAny.grantedDeathrattles.push({
+          source: sourceCard.name,
+          effect: finalDeathrattle
+        });
+        
+        target.card.keywords = target.card.keywords || [];
+        if (!target.card.keywords.includes('deathrattle')) {
+          target.card.keywords.push('deathrattle');
+        }
+        
+        deathrattlesGranted++;
+        context.logGameEvent(`${target.card.name} gained Deathrattle from ${sourceCard.name}`);
+      }
+    });
+    
+    return { 
+      success: true,
+      additionalData: { deathrattlesGranted }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:grant_deathrattle:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:grant_deathrattle: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`GrantDeathrattle effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: summonCardId
-  if (effect.summonCardId === undefined) {
-    console.warn(`GrantDeathrattle effect missing summonCardId property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the grant_deathrattle spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered grant_deathrattle spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeGrantDeathrattleGrantDeathrattle;

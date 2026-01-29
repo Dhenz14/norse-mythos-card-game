@@ -2,52 +2,99 @@
  * DestroyAndSteal Battlecry Handler
  * 
  * Implements the "destroy_and_steal" battlecry effect.
+ * Destroys a minion and adds a copy of it to the current player's hand.
  * Example card: The Jailer (ID: 20400)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a destroy_and_steal battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeDestroyAndStealDestroyAndSteal(
-  state: GameState,
+export default function executeDestroyAndSteal(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing destroy_and_steal battlecry for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the destroy_and_steal battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered destroy_and_steal battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:destroy_and_steal for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'enemy_minion';
+    
+    let targetMinions: CardInstance[] = [];
+    
+    if (targetType === 'enemy_minion') {
+      targetMinions = context.getEnemyMinions();
+    } else if (targetType === 'friendly_minion') {
+      targetMinions = context.getFriendlyMinions().filter(m => m.card.id !== sourceCard.id);
+    } else if (targetType === 'any_minion') {
+      targetMinions = context.getAllMinions().filter(m => m.card.id !== sourceCard.id);
+    }
+    
+    if (targetMinions.length === 0) {
+      context.logGameEvent(`No valid minions to destroy and steal`);
+      return { success: true, additionalData: { minionDestroyed: false } };
+    }
+    
+    const targetMinion = targetMinions[0];
+    
+    const isFriendly = context.getFriendlyMinions().includes(targetMinion);
+    const board = isFriendly 
+      ? context.currentPlayer.board 
+      : context.opponentPlayer.board;
+    
+    const index = board.indexOf(targetMinion);
+    if (index === -1) {
+      context.logGameEvent(`Target minion not found on board`);
+      return { success: false, error: 'Target not found' };
+    }
+    
+    board.splice(index, 1);
+    
+    const graveyard = isFriendly 
+      ? context.currentPlayer.graveyard 
+      : context.opponentPlayer.graveyard;
+    graveyard.push(targetMinion);
+    
+    context.logGameEvent(`${sourceCard.name} destroyed ${targetMinion.card.name}`);
+    
+    const cardCopy: CardInstance = {
+      instanceId: 'stolen-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9),
+      card: { ...targetMinion.card },
+      canAttack: false,
+      isPlayed: false,
+      isSummoningSick: false,
+      attacksPerformed: 0,
+      currentHealth: targetMinion.card.health,
+      currentAttack: targetMinion.card.attack
+    };
+    
+    if (context.currentPlayer.hand.length < 10) {
+      context.currentPlayer.hand.push(cardCopy);
+      context.logGameEvent(`${sourceCard.name} added a copy of ${targetMinion.card.name} to your hand`);
+    } else {
+      context.logGameEvent(`Hand is full, could not add copy of ${targetMinion.card.name}`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        minionDestroyed: true,
+        destroyedMinion: targetMinion.card.name,
+        copyAdded: context.currentPlayer.hand.length < 10
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:destroy_and_steal:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:destroy_and_steal: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeDestroyAndStealDestroyAndSteal;

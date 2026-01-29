@@ -25,7 +25,6 @@ export class CardTransformBridge {
    */
   private constructor() {
     this.legacyManager = cardTransformManager;
-    console.log('Card Transform Bridge initialized - synchronizing legacy and context systems');
   }
   
   /**
@@ -67,7 +66,6 @@ export class CardTransformBridge {
       }
     });
     
-    console.log(`Card Transform Bridge: Synchronized ${allCardIds.length} cards from legacy to context system`);
   }
   
   /**

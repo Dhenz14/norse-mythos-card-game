@@ -2,56 +2,66 @@
  * SetMana Battlecry Handler
  * 
  * Implements the "set_mana" battlecry effect.
- * Example card: Mojomaster Zihi (ID: 31005)
+ * Sets mana crystals to a specific value for one or both players.
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a set_mana battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeSetManaSetMana(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing set_mana battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`SetMana effect missing value property`);
-    // Fall back to a default value or handle the missing property
+export default function executeSetMana(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:set_mana for ${sourceCard.name}`);
+    
+    const value = effect.value;
+    const affectBothPlayers = effect.affectBothPlayers !== false;
+    const affectOpponent = effect.affectOpponent === true;
+    
+    if (value === undefined) {
+      context.logGameEvent(`SetMana effect missing value property`);
+      return { success: false, error: 'No mana value specified' };
+    }
+    
+    const manaValue = Math.max(0, Math.min(10, value));
+    
+    const previousCurrentMana = context.currentPlayer.mana.max;
+    const previousOpponentMana = context.opponentPlayer.mana.max;
+    
+    if (!affectOpponent || affectBothPlayers) {
+      context.currentPlayer.mana.max = manaValue;
+      context.currentPlayer.mana.current = Math.min(context.currentPlayer.mana.current, manaValue);
+      context.logGameEvent(`${sourceCard.name} set your mana crystals to ${manaValue} (was ${previousCurrentMana})`);
+    }
+    
+    if (affectOpponent || affectBothPlayers) {
+      context.opponentPlayer.mana.max = manaValue;
+      context.opponentPlayer.mana.current = Math.min(context.opponentPlayer.mana.current, manaValue);
+      context.logGameEvent(`${sourceCard.name} set opponent's mana crystals to ${manaValue} (was ${previousOpponentMana})`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        manaValue,
+        previousCurrentMana,
+        previousOpponentMana
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:set_mana:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:set_mana: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the set_mana battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered set_mana battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeSetManaSetMana;

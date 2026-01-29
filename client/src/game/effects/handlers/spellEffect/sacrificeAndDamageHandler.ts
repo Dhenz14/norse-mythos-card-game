@@ -2,62 +2,74 @@
  * SacrificeAndDamage SpellEffect Handler
  * 
  * Implements the "sacrifice_and_damage" spellEffect effect.
- * Example card: Card ID: 15021
+ * Sacrifices a friendly minion and deals damage based on its stats.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a sacrifice_and_damage spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeSacrificeAndDamageSacrificeAndDamage(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing sacrifice_and_damage spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: damageTarget
-  if (effect.damageTarget === undefined) {
-    console.warn(`SacrificeAndDamage effect missing damageTarget property`);
-    // Fall back to a default value or handle the missing property
+export default function executeSacrificeAndDamage(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:sacrifice_and_damage for ${sourceCard.name}`);
+    
+    const damageTarget = effect.damageTarget || 'enemy_character';
+    const damageSourceStat = effect.damageSourceStat || 'attack';
+    const sacrificeTargetType = effect.sacrificeTargetType || 'friendly_minion';
+    
+    const sourceCardInstance: any = {
+      instanceId: 'temp-' + Date.now(),
+      card: sourceCard,
+      canAttack: false,
+      isPlayed: true
+    };
+    
+    const sacrificeTargets = context.getTargets(sacrificeTargetType, sourceCardInstance);
+    
+    if (sacrificeTargets.length === 0) {
+      context.logGameEvent(`No valid targets to sacrifice`);
+      return { success: false, error: 'No valid sacrifice target' };
+    }
+    
+    const sacrificedMinion = sacrificeTargets[0];
+    let damageValue = 0;
+    
+    if (damageSourceStat === 'attack') {
+      damageValue = sacrificedMinion.card.attack || 0;
+    } else if (damageSourceStat === 'health') {
+      damageValue = sacrificedMinion.currentHealth || sacrificedMinion.card.health || 0;
+    } else if (damageSourceStat === 'both') {
+      damageValue = (sacrificedMinion.card.attack || 0) + (sacrificedMinion.currentHealth || sacrificedMinion.card.health || 0);
+    }
+    
+    const contextAny = context as any;
+    context.logGameEvent(`Sacrificing ${sacrificedMinion.card.name} (${damageSourceStat}: ${damageValue})`);
+    contextAny.destroyMinion(sacrificedMinion);
+    
+    const damageTargets = context.getTargets(damageTarget, sourceCardInstance);
+    let totalDamageDealt = 0;
+    
+    damageTargets.forEach(target => {
+      contextAny.dealDamage(target, damageValue);
+      totalDamageDealt += damageValue;
+      context.logGameEvent(`Dealt ${damageValue} damage to ${target.card.name}`);
+    });
+    
+    return { 
+      success: true,
+      additionalData: { 
+        sacrificedMinion: sacrificedMinion.card.name,
+        damageDealt: totalDamageDealt
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:sacrifice_and_damage:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:sacrifice_and_damage: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: damageSourceStat
-  if (effect.damageSourceStat === undefined) {
-    console.warn(`SacrificeAndDamage effect missing damageSourceStat property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the sacrifice_and_damage spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered sacrifice_and_damage spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeSacrificeAndDamageSacrificeAndDamage;

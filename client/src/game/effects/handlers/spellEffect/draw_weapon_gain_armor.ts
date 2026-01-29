@@ -30,7 +30,6 @@ export default function executeDrawWeaponGainArmor(
 
     
     // Implementation placeholder
-    console.log(`spellEffect:draw_weapon_gain_armor executed with properties: ${JSON.stringify(effect)}`);
     
     // TODO: Implement the spellEffect:draw_weapon_gain_armor effect
     if (requiresTarget) {

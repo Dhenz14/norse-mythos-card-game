@@ -1,57 +1,61 @@
 /**
  * EquipFrostmourne Battlecry Handler
  * 
- * Implements the "equip_frostmourne" battlecry effect.
- * Example card: Card ID: 3015
+ * Equips the legendary Frostmourne weapon.
+ * Example card: The Lich King (ID: 3015)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a equip_frostmourne battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeEquipFrostmourneEquipFrostmourne(
-  state: GameState,
+export default function executeEquipFrostmourne(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing equip_frostmourne battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: summonCardId
-  if (effect.summonCardId === undefined) {
-    console.warn(`EquipFrostmourne effect missing summonCardId property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing equip_frostmourne battlecry for ${sourceCard.name}`);
+    
+    const weaponAttack = effect.weaponAttack || 5;
+    const weaponDurability = effect.weaponDurability || 3;
+    const summonOnDestroy = effect.summonCardId;
+    const summonCount = effect.summonCount || 0;
+    
+    const frostmourne: CardInstance = {
+      instanceId: `frostmourne-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      card: {
+        id: effect.weaponId || 3016,
+        name: 'Frostmourne',
+        description: 'Deathrattle: Summon every minion killed by this weapon.',
+        manaCost: 7,
+        type: 'weapon',
+        rarity: 'legendary',
+        heroClass: 'deathknight',
+        attack: weaponAttack,
+        durability: weaponDurability,
+        deathrattle: summonOnDestroy ? {
+          type: 'summon',
+          summonCardId: summonOnDestroy,
+          summonCount: summonCount
+        } : undefined
+      } as Card,
+      currentAttack: weaponAttack,
+      canAttack: true,
+      isPlayed: true,
+      isSummoningSick: false,
+      attacksPerformed: 0
+    };
+    
+    (context.currentPlayer as any).weapon = frostmourne;
+    
+    context.logGameEvent(`Equipped Frostmourne (${weaponAttack}/${weaponDurability}).`);
+    
+    return { 
+      success: true, 
+      additionalData: { equippedWeapon: frostmourne }
+    };
+  } catch (error) {
+    console.error('Error executing equip_frostmourne:', error);
+    return { success: false, error: `Failed to execute equip_frostmourne: ${error}` };
   }
-  
-  // TODO: Implement the equip_frostmourne battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered equip_frostmourne battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeEquipFrostmourneEquipFrostmourne;

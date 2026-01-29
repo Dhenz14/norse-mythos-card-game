@@ -1,57 +1,86 @@
 /**
  * TransformRandom Battlecry Handler
  * 
- * Implements the "transform_random" battlecry effect.
+ * Transforms a minion into a random minion.
  * Example card: Tinkmaster Overspark (ID: 20606)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a transform_random battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeTransformRandomTransformRandom(
-  state: GameState,
+export default function executeTransformRandom(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing transform_random battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: transformOptions
-  if (effect.transformOptions === undefined) {
-    console.warn(`TransformRandom effect missing transformOptions property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing transform_random battlecry for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'any_minion';
+    const transformOptions = effect.transformOptions || [
+      { name: 'Squirrel', attack: 1, health: 1 },
+      { name: 'Devilsaur', attack: 5, health: 5 }
+    ];
+    
+    const sourceCardInstance: CardInstance = {
+      instanceId: 'temp-' + Date.now(),
+      card: sourceCard,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: false,
+      attacksPerformed: 0
+    };
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent('No valid targets for transform_random');
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    const board = context.currentPlayer.board.includes(target) 
+      ? context.currentPlayer.board 
+      : context.opponentPlayer.board;
+    const index = board.indexOf(target);
+    
+    if (index === -1) {
+      return { success: false, error: 'Target not found on board' };
+    }
+    
+    const randomOption = transformOptions[Math.floor(Math.random() * transformOptions.length)];
+    
+    const transformedMinion: CardInstance = {
+      instanceId: `transformed-random-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      card: {
+        id: randomOption.id || 99995,
+        name: randomOption.name || 'Random Creature',
+        description: randomOption.description || '',
+        manaCost: randomOption.manaCost || 1,
+        type: 'minion',
+        rarity: randomOption.rarity || 'common',
+        heroClass: 'neutral',
+        attack: randomOption.attack || 1,
+        health: randomOption.health || 1
+      } as Card,
+      currentHealth: randomOption.health || 1,
+      currentAttack: randomOption.attack || 1,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    
+    board[index] = transformedMinion;
+    
+    context.logGameEvent(`Transformed ${target.card.name} into ${transformedMinion.card.name}.`);
+    
+    return { 
+      success: true, 
+      additionalData: { originalTarget: target, transformedMinion, selectedOption: randomOption }
+    };
+  } catch (error) {
+    console.error('Error executing transform_random:', error);
+    return { success: false, error: `Failed to execute transform_random: ${error}` };
   }
-  
-  // TODO: Implement the transform_random battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered transform_random battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeTransformRandomTransformRandom;

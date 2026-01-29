@@ -25,7 +25,6 @@ export function executeDoubleHealthDoubleHealth(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing double_health spellEffect for ${sourceCard.card.name}`);
   
 
   

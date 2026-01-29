@@ -2,56 +2,75 @@
  * MindControlRandom Battlecry Handler
  * 
  * Implements the "mind_control_random" battlecry effect.
+ * Takes control of a random enemy minion.
  * Example card: Mind Control Tech (ID: 31015)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a mind_control_random battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeMindControlRandomMindControlRandom(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing mind_control_random battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: condition
-  if (effect.condition === undefined) {
-    console.warn(`MindControlRandom effect missing condition property`);
-    // Fall back to a default value or handle the missing property
+export default function executeMindControlRandom(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:mind_control_random for ${sourceCard.name}`);
+    
+    const condition = effect.condition;
+    const conditionValue = effect.conditionValue || 4;
+    
+    const enemyMinions = context.getEnemyMinions();
+    
+    if (condition === 'enemy_minion_count') {
+      if (enemyMinions.length < conditionValue) {
+        context.logGameEvent(`Mind control condition not met: enemy has ${enemyMinions.length} minions, needs ${conditionValue}`);
+        return { success: true, additionalData: { conditionNotMet: true, reason: 'Not enough enemy minions' } };
+      }
+    }
+    
+    if (enemyMinions.length === 0) {
+      context.logGameEvent(`No enemy minions to mind control`);
+      return { success: true, additionalData: { noTargets: true } };
+    }
+    
+    if (context.currentPlayer.board.length >= 7) {
+      context.logGameEvent(`Cannot mind control: board is full`);
+      return { success: false, error: 'Board is full' };
+    }
+    
+    const randomIndex = Math.floor(Math.random() * enemyMinions.length);
+    const stolenMinion = enemyMinions[randomIndex];
+    
+    const opponentBoardIndex = context.opponentPlayer.board.findIndex(
+      m => m.instanceId === stolenMinion.instanceId
+    );
+    
+    if (opponentBoardIndex !== -1) {
+      context.opponentPlayer.board.splice(opponentBoardIndex, 1);
+      
+      stolenMinion.isPlayerOwned = true;
+      stolenMinion.canAttack = false;
+      stolenMinion.isSummoningSick = true;
+      
+      context.currentPlayer.board.push(stolenMinion);
+      
+      context.logGameEvent(`${sourceCard.name} took control of ${stolenMinion.card.name}!`);
+      
+      return { 
+        success: true, 
+        additionalData: { 
+          stolenMinion: stolenMinion.card.name
+        } 
+      };
+    }
+    
+    return { success: false, error: 'Failed to find minion on opponent board' };
+  } catch (error) {
+    console.error(`Error executing battlecry:mind_control_random:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:mind_control_random: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the mind_control_random battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered mind_control_random battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeMindControlRandomMindControlRandom;

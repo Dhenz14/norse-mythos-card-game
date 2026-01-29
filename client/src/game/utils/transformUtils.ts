@@ -1,7 +1,7 @@
 import { CardInstance, GameState, CardData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { findCardInstance, createCardInstance } from './cardUtils';
-import { fullCardDatabase } from '../data/cards';
+import allCards from '../data/allCards';
 
 /**
  * Transform a minion into another minion
@@ -32,7 +32,7 @@ export function transformMinion(
   }
   
   // Find the card to transform into
-  const transformToCard = fullCardDatabase.find(card => card.id === transformToCardId);
+  const transformToCard = allCards.find(card => card.id === transformToCardId);
   
   if (!transformToCard) {
     console.error(`Card with ID ${transformToCardId} not found for transformation target`);
@@ -48,7 +48,6 @@ export function transformMinion(
   // Replace the old minion with the new one at the same position
   newState.players[targetPlayer].battlefield[targetInfo.index] = newCardInstance;
   
-  console.log(`Transformed ${targetInfo.card.card.name} into ${transformToCard.name}`);
   
   return newState;
 }
@@ -111,7 +110,6 @@ export function silenceMinion(
   // Replace the minion with its silenced version
   newState.players[targetPlayer].battlefield[targetIndex] = silencedMinion;
   
-  console.log(`Silenced ${originalCard.name}`);
   
   return newState;
 }

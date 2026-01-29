@@ -1,69 +1,90 @@
 /**
- * Destroy SpellEffect Handler
+ * Destroy Effect Handler
  * 
- * Implements the "destroy" spellEffect effect.
- * Example card: Obliterate (ID: 30074)
+ * This handler implements the spellEffect:destroy effect.
+ * Destroys a target minion.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a destroy spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeDestroyDestroy(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+export default function executeDestroy(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
   
-  console.log(`Executing destroy spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: secondaryEffect
-  if (effect.secondaryEffect === undefined) {
-    console.warn(`Destroy effect missing secondaryEffect property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing spellEffect:destroy for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'any_minion';
+    const secondaryEffect = effect.secondaryEffect;
+    const healValue = effect.healValue || 0;
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for destroy`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    
+    if (target.card.type !== 'minion') {
+      return { success: false, error: 'Can only destroy minions' };
+    }
+    
+    const targetName = target.card.name;
+    const targetHealth = target.currentHealth || target.card.health || 0;
+    
+    target.currentHealth = 0;
+    context.logGameEvent(`Destroyed ${targetName}`);
+    
+    const isOnCurrentBoard = context.currentPlayer.board.includes(target);
+    if (isOnCurrentBoard) {
+      const index = context.currentPlayer.board.indexOf(target);
+      if (index !== -1) {
+        const removed = context.currentPlayer.board.splice(index, 1)[0];
+        context.currentPlayer.graveyard.push(removed);
+      }
+    } else {
+      const index = context.opponentPlayer.board.indexOf(target);
+      if (index !== -1) {
+        const removed = context.opponentPlayer.board.splice(index, 1)[0];
+        context.opponentPlayer.graveyard.push(removed);
+      }
+    }
+    
+    if (secondaryEffect === 'heal_hero' && healValue > 0) {
+      context.healTarget(context.currentPlayer.hero, healValue);
+      context.logGameEvent(`Healed hero for ${healValue}`);
+    }
+    
+    if (secondaryEffect === 'gain_armor' && effect.value) {
+      context.currentPlayer.armor += effect.value;
+      context.logGameEvent(`Gained ${effect.value} armor`);
+    }
+    
+    return { 
+      success: true,
+      additionalData: {
+        destroyedMinion: targetName,
+        destroyedHealth: targetHealth
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:destroy:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:destroy: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`Destroy effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: healValue
-  if (effect.healValue === undefined) {
-    console.warn(`Destroy effect missing healValue property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the destroy spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered destroy spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDestroyDestroy;

@@ -2,62 +2,105 @@
  * DamageAndBuff Battlecry Handler
  * 
  * Implements the "damage_and_buff" battlecry effect.
+ * Deals damage to target AND buffs the source minion with effect.buffAttack/effect.buffHealth.
  * Example card: Card ID: 5009
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a damage_and_buff battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeDamageAndBuffDamageAndBuff(
-  state: GameState,
+export default function executeDamageAndBuff(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing damage_and_buff battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DamageAndBuff effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
 
-  // Check for required property: buffAttack
-  if (effect.buffAttack === undefined) {
-    console.warn(`DamageAndBuff effect missing buffAttack property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing battlecry:damage_and_buff for ${sourceCard.name}`);
+    
+    const damageValue = effect.value || 0;
+    const buffAttack = effect.buffAttack || 0;
+    const buffHealth = effect.buffHealth || 0;
+    const requiresTarget = effect.requiresTarget === true;
+    const targetType = effect.targetType || 'enemy_character';
+    
+    if (damageValue <= 0) {
+      context.logGameEvent(`DamageAndBuff effect has no damage value`);
+      return { success: false, error: 'No damage value specified' };
+    }
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (requiresTarget && targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage_and_buff`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    let totalDamageDealt = 0;
+    
+    if (targets.length > 0) {
+      targets.forEach(target => {
+        context.dealDamage(target, damageValue);
+        totalDamageDealt += damageValue;
+        context.logGameEvent(`${sourceCard.name} dealt ${damageValue} damage to ${target.card.name}`);
+      });
+      
+      context.currentPlayer.damageDealtThisTurn += totalDamageDealt;
+    }
+    
+    const sourceOnBoard = context.currentPlayer.board.find(
+      minion => minion.card.id === sourceCard.id
+    );
+    
+    if (sourceOnBoard) {
+      if (buffAttack > 0) {
+        sourceOnBoard.currentAttack = (sourceOnBoard.currentAttack || sourceOnBoard.card.attack || 0) + buffAttack;
+        context.logGameEvent(`${sourceCard.name} gained +${buffAttack} Attack`);
+      }
+      
+      if (buffHealth > 0) {
+        sourceOnBoard.currentHealth = (sourceOnBoard.currentHealth || sourceOnBoard.card.health || 0) + buffHealth;
+        if (sourceOnBoard.card.health !== undefined) {
+          sourceOnBoard.card.health += buffHealth;
+        }
+        context.logGameEvent(`${sourceCard.name} gained +${buffHealth} Health`);
+      }
+      
+      if (buffAttack > 0 || buffHealth > 0) {
+        context.logGameEvent(`${sourceCard.name} is now ${sourceOnBoard.currentAttack}/${sourceOnBoard.currentHealth}`);
+      }
+    } else {
+      context.logGameEvent(`Could not find ${sourceCard.name} on board to apply buff`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        totalDamageDealt, 
+        buffApplied: { attack: buffAttack, health: buffHealth } 
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:damage_and_buff:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:damage_and_buff: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the damage_and_buff battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered damage_and_buff battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDamageAndBuffDamageAndBuff;

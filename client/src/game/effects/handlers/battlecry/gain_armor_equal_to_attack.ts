@@ -1,7 +1,8 @@
 /**
  * Gain Armor Equal To Attack Effect Handler
  * 
- * This handler implements the battlecry:gain_armor_equal_to_attack effect.
+ * Implements the battlecry:gain_armor_equal_to_attack effect.
+ * Hero gains armor equal to a minion's attack value.
  */
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
@@ -12,7 +13,6 @@ import { EffectResult } from '../../../types/EffectTypes';
  * @param context - The game context
  * @param effect - The effect data
  * @param sourceCard - The card that triggered the effect
-
  * @returns An object indicating success or failure and any additional data
  */
 export default function executeGainArmorEqualToAttack(
@@ -20,40 +20,57 @@ export default function executeGainArmorEqualToAttack(
   effect: BattlecryEffect, 
   sourceCard: Card
 ): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0,
+    currentAttack: sourceCard.attack || 0
+  };
+
   try {
-    // Log the effect execution
     context.logGameEvent(`Executing battlecry:gain_armor_equal_to_attack for ${sourceCard.name}`);
     
-    // Get effect properties with defaults
     const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-
+    const targetType = effect.targetType || 'self';
+    const multiplier = effect.multiplier || 1;
     
-    // Implementation placeholder
-    console.log(`battlecry:gain_armor_equal_to_attack executed with properties: ${JSON.stringify(effect)}`);
+    let attackValue = 0;
     
-    // TODO: Implement the battlecry:gain_armor_equal_to_attack effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCard);
+    if (requiresTarget && targetType !== 'self') {
+      const targets = context.getTargets(targetType, sourceCardInstance);
       
       if (targets.length === 0) {
         context.logGameEvent(`No valid targets for battlecry:gain_armor_equal_to_attack`);
         return { success: false, error: 'No valid targets' };
       }
       
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Gain Armor Equal To Attack effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
+      const target = targets[0];
+      attackValue = target.currentAttack || target.card.attack || 0;
+      context.logGameEvent(`Using ${target.card.name}'s attack value: ${attackValue}`);
     } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Gain Armor Equal To Attack effect applied`);
-      // TODO: Apply effect without target
+      attackValue = sourceCard.attack || 0;
+      context.logGameEvent(`Using source card's attack value: ${attackValue}`);
     }
     
-    return { success: true };
+    const armorGain = Math.max(0, attackValue * multiplier);
+    const previousArmor = context.currentPlayer.armor;
+    
+    context.currentPlayer.armor += armorGain;
+    
+    context.logGameEvent(`${sourceCard.name} granted ${armorGain} armor (from ${attackValue} attack). Total armor: ${context.currentPlayer.armor}`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        armorGain,
+        attackValue,
+        previousArmor,
+        newArmor: context.currentPlayer.armor
+      } 
+    };
   } catch (error) {
     console.error(`Error executing battlecry:gain_armor_equal_to_attack:`, error);
     return { 

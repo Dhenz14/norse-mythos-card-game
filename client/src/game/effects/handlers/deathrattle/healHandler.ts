@@ -1,74 +1,92 @@
 /**
- * Heal Effect Handler
+ * Heal Deathrattle Handler
  * 
- * This handler implements the deathrattle:heal effect.
+ * Implements the "heal" deathrattle effect.
+ * Heals targets when the minion dies.
+ * Example: Zombie Chow (heals enemy hero for 5)
  */
 import { GameContext } from '../../../GameContext';
-import { Card, DeathrattleEffect } from '../../../types/CardTypes';
+import { Card, CardInstance } from '../../../types/CardTypes';
+import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
 
 /**
- * Execute a Heal effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.0 - The 0 for the effect
-   * @param effect.1 - The 1 for the effect
- * @returns An object indicating success or failure and any additional data
+ * Execute a heal deathrattle effect
  */
 export default function executeHealHeal(
-  context: GameContext, 
-  effect: DeathrattleEffect, 
-  sourceCard: Card
+  context: GameContext,
+  effect: DeathrattleEffect,
+  sourceCard: Card | CardInstance
 ): EffectResult {
-  // Create a temporary CardInstance for targeting purposes
-  const sourceCardInstance: any = {
-    instanceId: 'temp-' + Date.now(),
-    card: sourceCard,
-    canAttack: false,
-    isPlayed: true,
-    isSummoningSick: false,
-    attacksPerformed: 0
-  };
   try {
-    // Log the effect execution
-    context.logGameEvent(`Executing deathrattle:heal for ${sourceCard.name}`);
+    const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
+    context.logGameEvent(`Executing deathrattle:heal for ${cardName}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const prop0 = effect.0;
-    const prop1 = effect.1;
+    const healAmount = effect.value || effect.heal || 1;
+    const targetType = effect.targetType || 'friendly_hero';
     
-    // Implementation placeholder
-    console.log(`deathrattle:heal executed with properties: ${JSON.stringify(effect)}`);
+    let targets: CardInstance[] = [];
     
-    // TODO: Implement the deathrattle:heal effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for deathrattle:heal`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Heal effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Heal effect applied`);
-      // TODO: Apply effect without target
+    switch (targetType) {
+      case 'friendly_hero':
+        targets = [context.currentPlayer.hero];
+        break;
+      case 'enemy_hero':
+        targets = [context.opponentPlayer.hero];
+        break;
+      case 'all_friendly':
+        targets = [context.currentPlayer.hero, ...context.getFriendlyMinions()];
+        break;
+      case 'all_enemy':
+        targets = [context.opponentPlayer.hero, ...context.getEnemyMinions()];
+        break;
+      case 'friendly_minions':
+        targets = context.getFriendlyMinions();
+        break;
+      case 'all_minions':
+        targets = context.getAllMinions();
+        break;
+      case 'all':
+        targets = [
+          context.currentPlayer.hero,
+          context.opponentPlayer.hero,
+          ...context.getAllMinions()
+        ];
+        break;
+      case 'random_friendly_minion':
+        const friendly = context.getFriendlyMinions();
+        if (friendly.length > 0) {
+          targets = [friendly[Math.floor(Math.random() * friendly.length)]];
+        }
+        break;
+      default:
+        targets = [context.currentPlayer.hero];
     }
     
-    return { success: true };
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for heal deathrattle`);
+      return { success: true, additionalData: { healedCount: 0 } };
+    }
+    
+    let healedCount = 0;
+    let totalHealed = 0;
+    
+    targets.forEach(target => {
+      context.healTarget(target, healAmount);
+      healedCount++;
+      totalHealed += healAmount;
+    });
+    
+    context.logGameEvent(`${cardName}'s deathrattle healed ${healedCount} target(s) for ${healAmount} each`);
+    
+    return {
+      success: true,
+      additionalData: { healedCount, totalHealed }
+    };
   } catch (error) {
     console.error(`Error executing deathrattle:heal:`, error);
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: `Error executing deathrattle:heal: ${error instanceof Error ? error.message : String(error)}`
     };
   }

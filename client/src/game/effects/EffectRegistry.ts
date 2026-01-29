@@ -26,22 +26,18 @@ export class EffectRegistry {
   // Handler registration methods
   static registerBattlecryHandler(type: string, handler: BattlecryHandler): void {
     this.battlecryHandlers[type] = handler;
-    console.log(`Registered battlecry handler for type: ${type}`);
   }
   
   static registerDeathrattleHandler(type: string, handler: DeathrattleHandler): void {
     this.deathrattleHandlers[type] = handler;
-    console.log(`Registered deathrattle handler for type: ${type}`);
   }
   
   static registerSpellEffectHandler(type: string, handler: SpellEffectHandler): void {
     this.spellEffectHandlers[type] = handler;
-    console.log(`Registered spell effect handler for type: ${type}`);
   }
   
   static registerComboHandler(type: string, handler: BattlecryHandler): void {
     this.comboHandlers[type] = handler;
-    console.log(`Registered combo handler for type: ${type}`);
   }
   
   // Effect execution methods

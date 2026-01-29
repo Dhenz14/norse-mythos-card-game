@@ -5,7 +5,7 @@
  * Handles all hero power execution, weapon upgrades, and hero passives.
  */
 
-import { GameState, CardInstance, CardData } from '../types';
+import { GameState, CardInstance, CardData, EquippedWeapon } from '../types';
 import { NorseHero, NorseHeroPower, HeroPassiveTrigger, NorseHeroPassive } from '../types/NorseTypes';
 import { ALL_NORSE_HEROES, getAnyHeroById } from '../data/norseHeroes';
 
@@ -72,11 +72,10 @@ export function executeNorseHeroPower(
   const opponentType = playerType === 'player' ? 'opponent' : 'player';
   const opponent = newState.players[opponentType];
 
-  // Deduct mana
-  player.mana.current -= power.cost;
-  player.heroPower.used = true;
+  // NOTE: Mana deduction and hero power marking is handled by the caller (UI's executeHeroPowerEffect)
+  // Do NOT deduct mana here to avoid double-deduction
 
-  console.log(`[NORSE HERO POWER] ${hero.name} uses ${power.name}`);
+  console.log(`[Hero Power] ${hero.name} used ${power.name}: ${power.description}`);
 
   // Execute based on effect type
   switch (power.effectType) {
@@ -131,6 +130,81 @@ export function executeNorseHeroPower(
     case 'grant_keyword':
       newState = executeGrantKeyword(newState, playerType, targetId, power);
       break;
+    case 'heal':
+      newState = executeHeal(newState, playerType, targetId, power);
+      break;
+    case 'damage_hero':
+      newState = executeDamageHero(newState, playerType, power);
+      break;
+    case 'summon_random':
+      newState = executeSummonRandom(newState, playerType, power);
+      break;
+    case 'silence':
+      newState = executeSilence(newState, playerType, targetId, power);
+      break;
+    case 'set_stats':
+      newState = executeSetStats(newState, playerType, targetId, power);
+      break;
+    case 'self_damage_and_summon':
+      newState = executeSelfDamageAndSummon(newState, playerType, power);
+      break;
+    case 'sacrifice_summon':
+      newState = executeSacrificeSummon(newState, playerType, targetId, power);
+      break;
+    case 'heal_and_buff':
+      newState = executeHealAndBuff(newState, playerType, targetId, power);
+      break;
+    case 'grant_divine_shield':
+      newState = executeGrantDivineShield(newState, playerType, targetId, power);
+      break;
+    case 'generate_enemy_class_card':
+      newState = executeGenerateEnemyClassCard(newState, playerType, power);
+      break;
+    case 'equip_weapon':
+      newState = executeEquipWeapon(newState, playerType, power);
+      break;
+    case 'equip_random_weapon':
+      newState = executeEquipRandomWeapon(newState, playerType, power);
+      break;
+    case 'discover':
+      newState = executeDiscover(newState, playerType, power);
+      break;
+    case 'damage_and_poison':
+      newState = executeDamageAndPoison(newState, playerType, targetId, power);
+      break;
+    case 'damage_all':
+      newState = executeDamageAll(newState, playerType, power);
+      break;
+    case 'conditional_destroy':
+      newState = executeConditionalDestroy(newState, playerType, targetId, power);
+      break;
+    case 'bounce':
+      newState = executeBounce(newState, playerType, targetId, power);
+      break;
+    case 'bounce_damage':
+      newState = executeBounceDamage(newState, playerType, targetId, power);
+      break;
+    case 'bounce_to_hand':
+      newState = executeBounceToHand(newState, playerType, targetId, power);
+      break;
+    case 'bounce_and_damage_hero':
+      newState = executeBounceAndDamageHero(newState, playerType, targetId, power);
+      break;
+    case 'heal_all_friendly':
+      newState = executeHealAllFriendly(newState, playerType, power);
+      break;
+    case 'gain_armor':
+      newState = executeGainArmor(newState, playerType, power);
+      break;
+    case 'chain_damage':
+      newState = executeChainDamage(newState, playerType, targetId, power);
+      break;
+    case 'draw_and_damage':
+      newState = executeDrawAndDamage(newState, playerType, power);
+      break;
+    case 'buff_hero':
+      newState = executeBuffHero(newState, playerType, power);
+      break;
     default:
       console.warn(`[HERO POWER] Unknown effect type: ${power.effectType}`);
   }
@@ -138,7 +212,6 @@ export function executeNorseHeroPower(
   // Handle secondary effects (e.g., heal hero after buff)
   if (power.secondaryValue && power.effectType === 'buff_single') {
     player.heroHealth = Math.min((player.heroHealth || 30) + power.secondaryValue, 30);
-    console.log(`  - Hero healed for ${power.secondaryValue}`);
   }
 
   return newState;
@@ -160,7 +233,6 @@ function executeDamageSingle(
   const targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
   if (targetMinion) {
     targetMinion.currentHealth = (targetMinion.currentHealth || getCardHealth(targetMinion.card)) - (power.value || 0);
-    console.log(`  - Dealt ${power.value} damage to ${targetMinion.card.name}`);
 
     // Remove dead minions
     opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
@@ -184,7 +256,6 @@ function executeDamageAoE(
 
   opponent.battlefield.forEach(minion => {
     minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) - (power.value || 0);
-    console.log(`  - Dealt ${power.value} damage to ${minion.card.name}`);
   });
 
   opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
@@ -204,7 +275,6 @@ function executeDamageRandom(
     const randomIndex = Math.floor(Math.random() * opponent.battlefield.length);
     const target = opponent.battlefield[randomIndex];
     target.currentHealth = (target.currentHealth || getCardHealth(target.card)) - (power.value || 0);
-    console.log(`  - Dealt ${power.value} damage to random target ${target.card.name}`);
 
     opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
   }
@@ -222,7 +292,6 @@ function executeHealSingle(
 
   if (targetId === 'hero') {
     player.heroHealth = Math.min((player.heroHealth || 30) + (power.value || 0), 30);
-    console.log(`  - Healed hero for ${power.value}`);
   } else if (targetId) {
     const targetMinion = player.battlefield.find(m => m.instanceId === targetId);
     if (targetMinion) {
@@ -231,7 +300,6 @@ function executeHealSingle(
         (targetMinion.currentHealth || maxHealth) + (power.value || 0),
         maxHealth
       );
-      console.log(`  - Healed ${targetMinion.card.name} for ${power.value}`);
     }
   }
 
@@ -251,7 +319,6 @@ function executeHealAoE(
       (minion.currentHealth || maxHealth) + (power.value || 0),
       maxHealth
     );
-    console.log(`  - Healed ${minion.card.name} for ${power.value}`);
   });
 
   return state;
@@ -272,14 +339,12 @@ function executeBuffSingle(
       const target = player.battlefield[randomIndex];
       target.currentAttack = (target.currentAttack || getCardAttack(target.card)) + (power.value || 0);
       target.currentHealth = (target.currentHealth || getCardHealth(target.card)) + (power.value || 0);
-      console.log(`  - Buffed random minion ${target.card.name} by +${power.value}/+${power.value}`);
     }
   } else {
     const targetMinion = player.battlefield.find(m => m.instanceId === targetId);
     if (targetMinion) {
       targetMinion.currentAttack = (targetMinion.currentAttack || getCardAttack(targetMinion.card)) + (power.value || 0);
       targetMinion.currentHealth = (targetMinion.currentHealth || getCardHealth(targetMinion.card)) + (power.value || 0);
-      console.log(`  - Buffed ${targetMinion.card.name} by +${power.value}/+${power.value}`);
 
       // Grant keyword if present
       if (power.grantKeyword) {
@@ -301,7 +366,6 @@ function executeBuffAoE(
   player.battlefield.forEach(minion => {
     minion.currentAttack = (minion.currentAttack || getCardAttack(minion.card)) + (power.value || 0);
     minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) + (power.value || 0);
-    console.log(`  - Buffed ${minion.card.name} by +${power.value}/+${power.value}`);
   });
 
   return state;
@@ -322,7 +386,6 @@ function executeDebuffSingle(
   if (targetMinion) {
     const newAttack = (targetMinion.currentAttack || getCardAttack(targetMinion.card)) - (power.value || 0);
     targetMinion.currentAttack = Math.max(0, newAttack);
-    console.log(`  - Reduced ${targetMinion.card.name}'s Attack by ${power.value}`);
   }
 
   return state;
@@ -339,7 +402,6 @@ function executeDebuffAoE(
   opponent.battlefield.forEach(minion => {
     const newAttack = (minion.currentAttack || getCardAttack(minion.card)) - (power.value || 0);
     minion.currentAttack = Math.max(0, newAttack);
-    console.log(`  - Reduced ${minion.card.name}'s Attack by ${power.value}`);
   });
 
   return state;
@@ -362,7 +424,6 @@ function executeReveal(
       revealed.push(card.card.name);
       (card as any).isRevealed = true;
     }
-    console.log(`  - Revealed opponent cards: ${revealed.join(', ')}`);
   }
 
   return state;
@@ -401,7 +462,6 @@ function executeSummon(
   };
 
   player.battlefield.push(token);
-  console.log(`  - Summoned ${power.summonData.name} (${power.summonData.attack}/${power.summonData.health})`);
 
   return state;
 }
@@ -420,12 +480,10 @@ function executeFreeze(
   const targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
   if (targetMinion) {
     targetMinion.isFrozen = true;
-    console.log(`  - Froze ${targetMinion.card.name}`);
 
     // Deal damage if upgraded
     if (power.value) {
       targetMinion.currentHealth = (targetMinion.currentHealth || getCardHealth(targetMinion.card)) - power.value;
-      console.log(`  - Dealt ${power.value} damage to ${targetMinion.card.name}`);
       opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
     }
   }
@@ -446,7 +504,6 @@ function executeStealth(
   const targetMinion = player.battlefield.find(m => m.instanceId === targetId);
   if (targetMinion) {
     (targetMinion as any).hasStealth = true;
-    console.log(`  - Gave Stealth to ${targetMinion.card.name}`);
 
     // Apply attack buff if present
     if (power.value) {
@@ -482,7 +539,6 @@ function executeDraw(
           attacksPerformed: 0
         };
         player.hand.push(cardInstance);
-        console.log(`  - Drew a card`);
       }
     }
   }
@@ -514,7 +570,6 @@ function executeCopy(
       const copiedCard = { ...opponent.hand[randomIndex] };
       copiedCard.instanceId = `${playerType}_copy_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       player.hand.push(copiedCard);
-      console.log(`  - Copied ${copiedCard.card.name} from opponent's hand`);
     }
   }
 
@@ -529,7 +584,6 @@ function executeScry(
   const player = state.players[playerType];
 
   const scryCount = power.value || 1;
-  console.log(`  - Looking at top ${scryCount} card(s) of deck`);
   // Note: Actual scry UI would need to be handled by the game UI
 
   return state;
@@ -548,7 +602,6 @@ function executeGrantKeyword(
 
   if (targetMinion) {
     applyKeyword(targetMinion, power.grantKeyword);
-    console.log(`  - Granted ${power.grantKeyword} to ${targetMinion.card.name}`);
   }
 
   return state;
@@ -584,6 +637,980 @@ function applyKeyword(minion: CardInstance, keyword: string): void {
   }
 }
 
+// ==================== NEW EFFECT EXECUTORS ====================
+
+/**
+ * Heal - Restore health to target minion or hero
+ */
+function executeHeal(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+  const healAmount = power.value || 0;
+
+  if (!targetId) return state;
+
+  if (targetId === 'hero' || targetId === 'friendly_hero') {
+    player.heroHealth = Math.min((player.heroHealth || 30) + healAmount, 30);
+  } else if (targetId === 'enemy_hero') {
+    opponent.heroHealth = Math.min((opponent.heroHealth || 30) + healAmount, 30);
+  } else {
+    const friendlyMinion = player.battlefield.find(m => m.instanceId === targetId);
+    if (friendlyMinion) {
+      const maxHealth = getCardHealth(friendlyMinion.card);
+      friendlyMinion.currentHealth = Math.min(
+        (friendlyMinion.currentHealth || maxHealth) + healAmount,
+        maxHealth
+      );
+    } else {
+      const enemyMinion = opponent.battlefield.find(m => m.instanceId === targetId);
+      if (enemyMinion) {
+        const maxHealth = getCardHealth(enemyMinion.card);
+        enemyMinion.currentHealth = Math.min(
+          (enemyMinion.currentHealth || maxHealth) + healAmount,
+          maxHealth
+        );
+      }
+    }
+  }
+
+  return state;
+}
+
+/**
+ * Damage Hero - Deal direct damage to enemy hero
+ */
+function executeDamageHero(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+  const damageAmount = power.value || 0;
+
+  const armorAmount = opponent.heroArmor || 0;
+  let remainingDamage = damageAmount;
+
+  if (armorAmount > 0) {
+    if (armorAmount >= remainingDamage) {
+      opponent.heroArmor = armorAmount - remainingDamage;
+      remainingDamage = 0;
+    } else {
+      opponent.heroArmor = 0;
+      remainingDamage = remainingDamage - armorAmount;
+    }
+  }
+
+  if (remainingDamage > 0) {
+    opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - remainingDamage);
+  }
+
+  return state;
+}
+
+/**
+ * Summon Random - Summon a random minion from summonPool
+ */
+function executeSummonRandom(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+
+  if (!power.summonPool || power.summonPool.length === 0 || player.battlefield.length >= 7) {
+    return state;
+  }
+
+  const randomIndex = Math.floor(Math.random() * power.summonPool.length);
+  const summonName = power.summonPool[randomIndex];
+
+  const bonusAttack = power.bonusStats?.attack || 0;
+  const bonusHealth = power.bonusStats?.health || 0;
+
+  const baseAttack = 1;
+  const baseHealth = 1;
+
+  const token: CardInstance = {
+    instanceId: `${playerType}_random_summon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    card: {
+      id: 99997,
+      name: summonName,
+      manaCost: 0,
+      attack: baseAttack + bonusAttack,
+      health: baseHealth + bonusHealth,
+      description: '',
+      rarity: 'token' as any,
+      type: 'minion',
+      keywords: []
+    },
+    currentHealth: baseHealth + bonusHealth,
+    currentAttack: baseAttack + bonusAttack,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: true,
+    attacksPerformed: 0,
+    hasDivineShield: false,
+    isFrozen: false
+  };
+
+  player.battlefield.push(token);
+
+  return state;
+}
+
+/**
+ * Silence - Remove all text/buffs from target minion
+ */
+function executeSilence(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+
+  let targetMinion = player.battlefield.find(m => m.instanceId === targetId);
+  if (!targetMinion) {
+    targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
+  }
+
+  if (targetMinion) {
+    targetMinion.currentAttack = getCardAttack(targetMinion.card);
+    targetMinion.currentHealth = Math.min(
+      targetMinion.currentHealth || getCardHealth(targetMinion.card),
+      getCardHealth(targetMinion.card)
+    );
+
+    targetMinion.hasDivineShield = false;
+    targetMinion.isTaunt = false;
+    targetMinion.hasLifesteal = false;
+    targetMinion.hasPoisonous = false;
+    targetMinion.isFrozen = false;
+    (targetMinion as any).hasStealth = false;
+    targetMinion.isRush = false;
+    targetMinion.hasCharge = false;
+
+    targetMinion.card.keywords = [];
+    (targetMinion.card as any).battlecry = undefined;
+    (targetMinion.card as any).deathrattle = undefined;
+    (targetMinion.card as any).aura = undefined;
+    (targetMinion.card as any).passive = undefined;
+
+    (targetMinion as any).isSilenced = true;
+
+  }
+
+  return state;
+}
+
+/**
+ * Set Stats - Set a minion's attack and health to specific values
+ */
+function executeSetStats(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+
+  let targetMinion = player.battlefield.find(m => m.instanceId === targetId);
+  if (!targetMinion) {
+    targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
+  }
+
+  if (targetMinion) {
+    const newAttack = power.value || 0;
+    const newHealth = power.secondaryValue || power.value || 0;
+
+    targetMinion.currentAttack = newAttack;
+    targetMinion.currentHealth = newHealth;
+
+  }
+
+  return state;
+}
+
+/**
+ * Self Damage and Summon - Take self-damage and summon a minion
+ */
+function executeSelfDamageAndSummon(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const selfDamageAmount = power.selfDamage || 0;
+
+  if (selfDamageAmount > 0) {
+    player.heroHealth = Math.max(0, (player.heroHealth || 30) - selfDamageAmount);
+  }
+
+  if (power.summonData && player.battlefield.length < 7) {
+    const token: CardInstance = {
+      instanceId: `${playerType}_selfdmg_summon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      card: {
+        id: 99996,
+        name: power.summonData.name,
+        manaCost: 0,
+        attack: power.summonData.attack,
+        health: power.summonData.health,
+        description: power.summonData.keywords?.join(', ') || '',
+        rarity: 'token' as any,
+        type: 'minion',
+        keywords: power.summonData.keywords || []
+      },
+      currentHealth: power.summonData.health,
+      currentAttack: power.summonData.attack,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0,
+      hasDivineShield: power.summonData.keywords?.includes('divine_shield') || false,
+      isFrozen: false
+    };
+
+    player.battlefield.push(token);
+  }
+
+  return state;
+}
+
+/**
+ * Sacrifice Summon - Destroy a friendly minion to summon something
+ */
+function executeSacrificeSummon(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+
+  if (!targetId) {
+    if (player.battlefield.length === 0) return state;
+    const randomIndex = Math.floor(Math.random() * player.battlefield.length);
+    const sacrificed = player.battlefield[randomIndex];
+    player.battlefield.splice(randomIndex, 1);
+  } else {
+    const targetIndex = player.battlefield.findIndex(m => m.instanceId === targetId);
+    if (targetIndex === -1) return state;
+    const sacrificed = player.battlefield[targetIndex];
+    player.battlefield.splice(targetIndex, 1);
+  }
+
+  if (power.summonData && player.battlefield.length < 7) {
+    const token: CardInstance = {
+      instanceId: `${playerType}_sacrifice_summon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      card: {
+        id: 99995,
+        name: power.summonData.name,
+        manaCost: 0,
+        attack: power.summonData.attack,
+        health: power.summonData.health,
+        description: power.summonData.keywords?.join(', ') || '',
+        rarity: 'token' as any,
+        type: 'minion',
+        keywords: power.summonData.keywords || []
+      },
+      currentHealth: power.summonData.health,
+      currentAttack: power.summonData.attack,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0,
+      hasDivineShield: power.summonData.keywords?.includes('divine_shield') || false,
+      isFrozen: false
+    };
+
+    player.battlefield.push(token);
+  }
+
+  return state;
+}
+
+// ==================== NEW EFFECT HANDLERS ====================
+
+/**
+ * Heal and Buff - Heal a target AND give stat buffs
+ * Parameters: healValue (or value), attack buff, health buff (via secondaryValue or bonusStats)
+ */
+function executeHealAndBuff(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const player = state.players[playerType];
+  const targetMinion = player.battlefield.find(m => m.instanceId === targetId);
+
+  if (targetMinion) {
+    const healAmount = (power as any).healValue || power.value || 0;
+    const attackBuff = (power as any).attack || power.bonusStats?.attack || 0;
+    const healthBuff = (power as any).health || power.bonusStats?.health || power.secondaryValue || 0;
+
+    const maxHealth = getCardHealth(targetMinion.card);
+    targetMinion.currentHealth = Math.min(
+      (targetMinion.currentHealth || maxHealth) + healAmount,
+      maxHealth + healthBuff
+    );
+    targetMinion.currentAttack = (targetMinion.currentAttack || getCardAttack(targetMinion.card)) + attackBuff;
+    if (healthBuff > 0) {
+      targetMinion.currentHealth = (targetMinion.currentHealth || maxHealth) + healthBuff;
+    }
+
+  }
+
+  return state;
+}
+
+/**
+ * Grant Divine Shield - Give a friendly minion Divine Shield keyword
+ */
+function executeGrantDivineShield(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const player = state.players[playerType];
+  const targetMinion = player.battlefield.find(m => m.instanceId === targetId);
+
+  if (targetMinion) {
+    targetMinion.hasDivineShield = true;
+    if (!targetMinion.card.keywords) {
+      targetMinion.card.keywords = [];
+    }
+    if (!targetMinion.card.keywords.includes('divine_shield')) {
+      targetMinion.card.keywords.push('divine_shield');
+    }
+  }
+
+  return state;
+}
+
+/**
+ * Generate Enemy Class Card - Add a random card from enemy's class to hand
+ */
+function executeGenerateEnemyClassCard(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+
+  if (player.hand.length >= 10) {
+    return state;
+  }
+
+  const enemyClass = opponent.heroClass || (opponent as any).class || 'neutral';
+  
+  const generatedCard: CardInstance = {
+    instanceId: `${playerType}_generated_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    card: {
+      id: 99990,
+      name: `${enemyClass} Card`,
+      manaCost: Math.floor(Math.random() * 5) + 1,
+      description: `Generated from ${enemyClass} class`,
+      rarity: 'common' as any,
+      type: 'spell',
+      class: enemyClass
+    },
+    canAttack: false,
+    isPlayed: false,
+    isSummoningSick: true,
+    attacksPerformed: 0
+  };
+
+  player.hand.push(generatedCard);
+
+  return state;
+}
+
+/**
+ * Equip Weapon - Equip a specific weapon to the hero
+ * Parameters: weaponData or weaponId
+ */
+function executeEquipWeapon(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+
+  const weaponData = power.weaponData;
+  if (!weaponData) {
+    console.warn(`  - No weapon data provided for equip_weapon`);
+    return state;
+  }
+
+  const weapon: EquippedWeapon = {
+    attack: weaponData.attack,
+    durability: weaponData.durability,
+    card: {
+      id: 99991,
+      name: weaponData.name || 'Hero Weapon',
+      manaCost: power.weaponCost || 0,
+      attack: weaponData.attack,
+      durability: weaponData.durability,
+      description: weaponData.keywords?.join(', ') || '',
+      rarity: 'common' as any,
+      type: 'weapon',
+      keywords: weaponData.keywords || []
+    }
+  };
+
+  player.weapon = weapon;
+
+  return state;
+}
+
+/**
+ * Equip Random Weapon - Equip a random weapon from a pool
+ * Uses weaponPool or summonPool for weapon names
+ */
+function executeEquipRandomWeapon(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+
+  const weaponPool = (power as any).weaponPool || power.summonPool || ['Random Axe', 'Random Sword', 'Random Mace'];
+  const randomIndex = Math.floor(Math.random() * weaponPool.length);
+  const weaponName = weaponPool[randomIndex];
+
+  const baseAttack = power.weaponData?.attack || 2;
+  const baseDurability = power.weaponData?.durability || 2;
+
+  const weapon: EquippedWeapon = {
+    attack: baseAttack,
+    durability: baseDurability,
+    card: {
+      id: 99992,
+      name: weaponName,
+      manaCost: power.weaponCost || 0,
+      attack: baseAttack,
+      durability: baseDurability,
+      description: '',
+      rarity: 'common' as any,
+      type: 'weapon',
+      keywords: power.weaponData?.keywords || []
+    }
+  };
+
+  player.weapon = weapon;
+
+  return state;
+}
+
+/**
+ * Discover - Show 3 random cards from pool, player picks one
+ * Parameters: discoverPool or discoverType
+ * Note: Full UI interaction would need to be handled by the game UI layer
+ */
+function executeDiscover(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+
+  if (player.hand.length >= 10) {
+    return state;
+  }
+
+  const discoverPool = (power as any).discoverPool || power.summonPool || ['Discovered Card'];
+  
+  const choices: string[] = [];
+  for (let i = 0; i < 3 && i < discoverPool.length; i++) {
+    const randomIndex = Math.floor(Math.random() * discoverPool.length);
+    choices.push(discoverPool[randomIndex]);
+  }
+
+  const selectedCard = choices[Math.floor(Math.random() * choices.length)];
+
+  const costReduction = power.costReduction || 0;
+  const baseCost = Math.max(0, Math.floor(Math.random() * 5) + 1 - costReduction);
+
+  const discoveredCard: CardInstance = {
+    instanceId: `${playerType}_discover_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    card: {
+      id: 99993,
+      name: selectedCard,
+      manaCost: baseCost,
+      description: `Discovered card${costReduction > 0 ? ` (cost reduced by ${costReduction})` : ''}`,
+      rarity: 'rare' as any,
+      type: 'spell',
+      keywords: []
+    },
+    canAttack: false,
+    isPlayed: false,
+    isSummoningSick: true,
+    attacksPerformed: 0
+  };
+
+  player.hand.push(discoveredCard);
+
+  (player as any).pendingDiscover = {
+    choices,
+    selected: selectedCard,
+    resolved: true
+  };
+
+  return state;
+}
+
+/**
+ * Damage and Poison - Deal damage AND apply Poison status effect
+ * Parameters: value (damage amount)
+ */
+function executeDamageAndPoison(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+
+  const targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
+  if (targetMinion) {
+    const damageAmount = power.value || 1;
+    
+    targetMinion.currentHealth = (targetMinion.currentHealth || getCardHealth(targetMinion.card)) - damageAmount;
+
+    targetMinion.hasPoisonous = true;
+    (targetMinion as any).isPoisoned = true;
+    if (!targetMinion.card.keywords) {
+      targetMinion.card.keywords = [];
+    }
+    if (!targetMinion.card.keywords.includes('poisoned')) {
+      targetMinion.card.keywords.push('poisoned');
+    }
+
+    opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
+  }
+
+  return state;
+}
+
+// ==================== NEW MISSING EFFECT HANDLERS ====================
+
+/**
+ * Damage All - Deal damage to ALL minions on the board (both friendly and enemy)
+ * Parameters: value (damage amount)
+ */
+function executeDamageAll(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+  const damageAmount = power.value || 0;
+
+  opponent.battlefield.forEach(minion => {
+    minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) - damageAmount;
+  });
+
+  player.battlefield.forEach(minion => {
+    minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) - damageAmount;
+  });
+
+  opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
+  player.battlefield = player.battlefield.filter(m => (m.currentHealth || 0) > 0);
+
+  return state;
+}
+
+/**
+ * Conditional Destroy - Destroy target minion if it meets a condition
+ * Parameters: condition (e.g., "damaged", "cost_less_than_3", maxAttack, etc.)
+ */
+function executeConditionalDestroy(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+
+  let targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
+  let targetOwner = opponent;
+  if (!targetMinion) {
+    targetMinion = player.battlefield.find(m => m.instanceId === targetId);
+    targetOwner = player;
+  }
+
+  if (!targetMinion) return state;
+
+  let shouldDestroy = false;
+  const condition = power.condition;
+
+  if (condition) {
+    if (condition.maxAttack !== undefined) {
+      const minionAttack = targetMinion.currentAttack || getCardAttack(targetMinion.card);
+      shouldDestroy = minionAttack <= condition.maxAttack;
+    }
+    if (condition.minAttack !== undefined) {
+      const minionAttack = targetMinion.currentAttack || getCardAttack(targetMinion.card);
+      shouldDestroy = shouldDestroy || minionAttack >= condition.minAttack;
+    }
+    if (condition.maxHealth !== undefined) {
+      const minionHealth = targetMinion.currentHealth || getCardHealth(targetMinion.card);
+      shouldDestroy = shouldDestroy || minionHealth <= condition.maxHealth;
+    }
+    if (condition.hasKeyword) {
+      shouldDestroy = shouldDestroy || (targetMinion.card.keywords?.includes(condition.hasKeyword) || false);
+    }
+  } else {
+    const maxHealth = getCardHealth(targetMinion.card);
+    const currentHealth = targetMinion.currentHealth || maxHealth;
+    shouldDestroy = currentHealth < maxHealth;
+  }
+
+  if (shouldDestroy) {
+    targetOwner.battlefield = targetOwner.battlefield.filter(m => m.instanceId !== targetId);
+  } else {
+  }
+
+  return state;
+}
+
+/**
+ * Bounce - Return a minion to its owner's hand
+ */
+function executeBounce(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+
+  let targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
+  let targetOwner = opponent;
+
+  if (!targetMinion) {
+    targetMinion = player.battlefield.find(m => m.instanceId === targetId);
+    targetOwner = player;
+  }
+
+  if (targetMinion && targetOwner.hand.length < 10) {
+    targetOwner.battlefield = targetOwner.battlefield.filter(m => m.instanceId !== targetId);
+
+    const returnedCard: CardInstance = {
+      ...targetMinion,
+      instanceId: `${targetOwner === player ? playerType : opponentType}_bounced_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      currentHealth: getCardHealth(targetMinion.card),
+      currentAttack: getCardAttack(targetMinion.card),
+      isPlayed: false,
+      canAttack: false,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    targetOwner.hand.push(returnedCard);
+  }
+
+  return state;
+}
+
+/**
+ * Bounce Damage - Return minion to hand AND deal damage to it (or its controller)
+ * Parameters: damageValue (or value)
+ */
+function executeBounceDamage(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+  const damageValue = (power as any).damageValue || power.value || 0;
+
+  let targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
+  let targetOwner = opponent;
+
+  if (!targetMinion) {
+    targetMinion = player.battlefield.find(m => m.instanceId === targetId);
+    targetOwner = player;
+  }
+
+  if (targetMinion) {
+    targetMinion.currentHealth = (targetMinion.currentHealth || getCardHealth(targetMinion.card)) - damageValue;
+
+    if ((targetMinion.currentHealth || 0) > 0 && targetOwner.hand.length < 10) {
+      targetOwner.battlefield = targetOwner.battlefield.filter(m => m.instanceId !== targetId);
+
+      const returnedCard: CardInstance = {
+        ...targetMinion,
+        instanceId: `bounced_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        currentHealth: getCardHealth(targetMinion.card),
+        currentAttack: getCardAttack(targetMinion.card),
+        isPlayed: false,
+        canAttack: false,
+        isSummoningSick: true,
+        attacksPerformed: 0
+      };
+      targetOwner.hand.push(returnedCard);
+    } else if ((targetMinion.currentHealth || 0) <= 0) {
+      targetOwner.battlefield = targetOwner.battlefield.filter(m => (m.currentHealth || 0) > 0);
+    }
+  }
+
+  return state;
+}
+
+/**
+ * Bounce To Hand - Return any minion to its owner's hand (alias for bounce)
+ */
+function executeBounceToHand(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  return executeBounce(state, playerType, targetId, power);
+}
+
+/**
+ * Bounce And Damage Hero - Return minion to hand AND damage the enemy hero
+ */
+function executeBounceAndDamageHero(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const player = state.players[playerType];
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+  const damageValue = (power as any).damageValue || power.value || 0;
+
+  let targetMinion = opponent.battlefield.find(m => m.instanceId === targetId);
+  let targetOwner = opponent;
+
+  if (!targetMinion) {
+    targetMinion = player.battlefield.find(m => m.instanceId === targetId);
+    targetOwner = player;
+  }
+
+  if (targetMinion && targetOwner.hand.length < 10) {
+    targetOwner.battlefield = targetOwner.battlefield.filter(m => m.instanceId !== targetId);
+
+    const returnedCard: CardInstance = {
+      ...targetMinion,
+      instanceId: `bounced_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      currentHealth: getCardHealth(targetMinion.card),
+      currentAttack: getCardAttack(targetMinion.card),
+      isPlayed: false,
+      canAttack: false,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    targetOwner.hand.push(returnedCard);
+  }
+
+  const armorAmount = opponent.heroArmor || 0;
+  let remainingDamage = damageValue;
+
+  if (armorAmount > 0) {
+    if (armorAmount >= remainingDamage) {
+      opponent.heroArmor = armorAmount - remainingDamage;
+      remainingDamage = 0;
+    } else {
+      opponent.heroArmor = 0;
+      remainingDamage = remainingDamage - armorAmount;
+    }
+  }
+
+  if (remainingDamage > 0) {
+    opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - remainingDamage);
+  }
+
+  return state;
+}
+
+/**
+ * Heal All Friendly - Heal all friendly characters (hero + minions)
+ * Parameters: value (heal amount)
+ */
+function executeHealAllFriendly(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const healAmount = power.value || 0;
+
+  player.heroHealth = Math.min((player.heroHealth || 30) + healAmount, 30);
+
+  player.battlefield.forEach(minion => {
+    const maxHealth = getCardHealth(minion.card);
+    minion.currentHealth = Math.min(
+      (minion.currentHealth || maxHealth) + healAmount,
+      maxHealth
+    );
+  });
+
+  return state;
+}
+
+/**
+ * Gain Armor - Add armor to the hero
+ * Parameters: value (armor amount)
+ */
+function executeGainArmor(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const armorAmount = power.armorValue || power.value || 0;
+
+  player.heroArmor = (player.heroArmor || 0) + armorAmount;
+
+  return state;
+}
+
+/**
+ * Chain Damage - Deal damage to a target and adjacent minions
+ * Parameters: value (damage amount)
+ */
+function executeChainDamage(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  if (!targetId) return state;
+
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+  const damageAmount = power.value || 0;
+
+  const targetIndex = opponent.battlefield.findIndex(m => m.instanceId === targetId);
+  if (targetIndex === -1) return state;
+
+  const indicesToDamage = [targetIndex];
+  if (targetIndex > 0) indicesToDamage.push(targetIndex - 1);
+  if (targetIndex < opponent.battlefield.length - 1) indicesToDamage.push(targetIndex + 1);
+
+  indicesToDamage.forEach(idx => {
+    const minion = opponent.battlefield[idx];
+    if (minion) {
+      minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) - damageAmount;
+    }
+  });
+
+  opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
+
+  return state;
+}
+
+/**
+ * Draw And Damage - Draw cards AND take self damage
+ * Parameters: drawCount (or value), damageValue (or selfDamage)
+ */
+function executeDrawAndDamage(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const drawCount = (power as any).drawCount || power.value || 1;
+  const damageValue = (power as any).damageValue || power.selfDamage || 0;
+
+  player.heroHealth = Math.max(0, (player.heroHealth || 30) - damageValue);
+
+  for (let i = 0; i < drawCount; i++) {
+    if (player.deck.length > 0 && player.hand.length < 10) {
+      const drawnCardData = player.deck.shift();
+      if (drawnCardData) {
+        const cardInstance: CardInstance = {
+          instanceId: `${playerType}_draw_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          card: drawnCardData,
+          currentHealth: getCardHealth(drawnCardData),
+          currentAttack: getCardAttack(drawnCardData),
+          canAttack: false,
+          isPlayed: false,
+          isSummoningSick: true,
+          attacksPerformed: 0
+        };
+        player.hand.push(cardInstance);
+      }
+    }
+  }
+
+  return state;
+}
+
+/**
+ * Buff Hero - Give the hero a temporary attack buff (and optionally armor)
+ * Parameters: attack (attack value), armorValue (optional)
+ */
+function executeBuffHero(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const attackBuff = (power as any).attack || power.value || 0;
+  const armorBuff = power.armorValue || 0;
+
+  // Initialize tempStats if it doesn't exist
+  if (!player.tempStats) {
+    player.tempStats = {};
+  }
+  
+  player.tempStats.attack = (player.tempStats.attack || 0) + attackBuff;
+
+  if (armorBuff > 0) {
+    player.heroArmor = (player.heroArmor || 0) + armorBuff;
+  }
+
+  return state;
+}
+
 // ==================== WEAPON UPGRADE ====================
 
 /**
@@ -606,10 +1633,8 @@ export function applyWeaponUpgrade(
   // Deduct mana
   player.mana.current -= 5;
 
-  console.log(`[WEAPON UPGRADE] ${hero.name} equips ${hero.weaponUpgrade.name}`);
 
   // Execute immediate effect (simplified - would need full effect system)
-  console.log(`  - Immediate: ${hero.weaponUpgrade.immediateEffect.description}`);
 
   // Upgrade the hero power
   player.heroPower = {
@@ -622,7 +1647,6 @@ export function applyWeaponUpgrade(
   (player as any).heroPowerUpgraded = true;
   (player as any).upgradedHeroId = heroId;
 
-  console.log(`  - Hero power upgraded to: ${hero.upgradedHeroPower.name}`);
 
   return newState;
 }
@@ -666,7 +1690,6 @@ export function executeHeroPassive(
   const owner = newState.players[ownerType];
   const opponent = newState.players[ownerType === 'player' ? 'opponent' : 'player'];
 
-  console.log(`[HERO PASSIVE] ${hero.name}: ${passive.name} triggered (${trigger})`);
 
   // Helper to check minion eligibility based on conditions
   const isEligible = (minion: CardInstance): boolean => {
@@ -696,7 +1719,6 @@ export function executeHeroPassive(
       owner.battlefield.forEach(minion => {
         if (isEligible(minion)) {
           minion.currentAttack = (minion.currentAttack || getCardAttack(minion.card)) + (passive.value || 0);
-          console.log(`  - ${minion.card.name} gains +${passive.value} Attack`);
         }
       });
       break;
@@ -704,7 +1726,6 @@ export function executeHeroPassive(
       owner.battlefield.forEach(minion => {
         if (isEligible(minion)) {
           minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) + (passive.value || 0);
-          console.log(`  - ${minion.card.name} gains +${passive.value} Health`);
         }
       });
       break;
@@ -713,7 +1734,6 @@ export function executeHeroPassive(
         if (isEligible(minion)) {
           minion.currentAttack = (minion.currentAttack || getCardAttack(minion.card)) + (passive.value || 0);
           minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) + (passive.value || 0);
-          console.log(`  - ${minion.card.name} gains +${passive.value}/+${passive.value}`);
         }
       });
       break;
@@ -721,7 +1741,6 @@ export function executeHeroPassive(
       owner.battlefield.forEach(minion => {
         if (isEligible(minion)) {
           (minion as any).bonusDamage = ((minion as any).bonusDamage || 0) + (passive.value || 0);
-          console.log(`  - ${minion.card.name} deals +${passive.value} damage`);
         }
       });
       break;
@@ -729,13 +1748,11 @@ export function executeHeroPassive(
       owner.battlefield.forEach(minion => {
         if (isEligible(minion)) {
           (minion as any).damageReduction = ((minion as any).damageReduction || 0) + (passive.value || 0);
-          console.log(`  - ${minion.card.name} takes ${passive.value} less damage`);
         }
       });
       break;
     case 'damage_hero':
       opponent.heroHealth = (opponent.heroHealth || 30) - (passive.value || 0);
-      console.log(`  - Dealt ${passive.value} damage to enemy hero`);
       break;
     case 'cost_reduction':
       owner.hand.forEach(card => {
@@ -743,14 +1760,12 @@ export function executeHeroPassive(
           (card as any).costReduction = ((card as any).costReduction || 0) + (passive.value || 0);
         }
       });
-      console.log(`  - Reduced cost of eligible cards by ${passive.value}`);
       break;
     case 'grant_keyword':
       const keywordToGrant = passive.grantKeyword || 'poisonous';
       owner.battlefield.forEach(minion => {
         if (isEligible(minion)) {
           applyKeyword(minion, keywordToGrant);
-          console.log(`  - ${minion.card.name} gains ${keywordToGrant}`);
         }
       });
       break;
@@ -762,21 +1777,18 @@ export function executeHeroPassive(
             (minion.currentHealth || maxHealth) + (passive.value || 0),
             maxHealth
           );
-          console.log(`  - ${minion.card.name} healed for ${passive.value}`);
         }
       });
       break;
     case 'debuff_attack':
       opponent.battlefield.forEach(minion => {
         minion.currentAttack = Math.max(0, (minion.currentAttack || getCardAttack(minion.card)) - (passive.value || 0));
-        console.log(`  - ${minion.card.name} loses ${passive.value} Attack`);
       });
       break;
     case 'reveal':
       if (opponent.hand.length > 0) {
         const randomIndex = Math.floor(Math.random() * opponent.hand.length);
         (opponent.hand[randomIndex] as any).isRevealed = true;
-        console.log(`  - Revealed ${opponent.hand[randomIndex].card.name} from opponent's hand`);
       }
       break;
     case 'copy':
@@ -794,7 +1806,6 @@ export function executeHeroPassive(
           attacksPerformed: 0
         };
         owner.hand.push(copiedCardInstance);
-        console.log(`  - Copied a card from opponent's deck`);
       }
       break;
     default:

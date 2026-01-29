@@ -2,68 +2,83 @@
  * BuffWeapon Battlecry Handler
  * 
  * Implements the "buff_weapon" battlecry effect.
+ * Adds attack and/or durability to the player's equipped weapon.
  * Example card: Hobart Grapplehammer (ID: 20300)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a buff_weapon battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeBuffWeaponBuffWeapon(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing buff_weapon battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: buffAttack
-  if (effect.buffAttack === undefined) {
-    console.warn(`BuffWeapon effect missing buffAttack property`);
-    // Fall back to a default value or handle the missing property
+export default function executeBuffWeapon(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:buff_weapon for ${sourceCard.name}`);
+    
+    const buffAttack = effect.buffAttack || 0;
+    const buffDurability = effect.buffDurability || 0;
+    const location = effect.location || 'equipped';
+    
+    if (buffAttack === 0 && buffDurability === 0) {
+      context.logGameEvent(`BuffWeapon effect has no buffs specified`);
+      return { success: true };
+    }
+    
+    if (location === 'equipped') {
+      const weapon = (context.currentPlayer as any).weapon;
+      
+      if (!weapon) {
+        context.logGameEvent(`No weapon equipped, cannot buff`);
+        return { success: false, error: 'No weapon equipped' };
+      }
+      
+      if (buffAttack !== 0) {
+        weapon.card.attack = (weapon.card.attack || 0) + buffAttack;
+        weapon.currentAttack = (weapon.currentAttack || weapon.card.attack || 0) + buffAttack;
+      }
+      
+      if (buffDurability !== 0) {
+        weapon.card.durability = (weapon.card.durability || 0) + buffDurability;
+        weapon.currentDurability = (weapon.currentDurability || weapon.card.durability || 0) + buffDurability;
+      }
+      
+      context.logGameEvent(`${sourceCard.name} buffed equipped weapon by +${buffAttack} attack and +${buffDurability} durability`);
+    } else if (location === 'hand' || location === 'deck') {
+      const collection = location === 'hand' ? context.currentPlayer.hand : context.currentPlayer.deck;
+      
+      let buffedCount = 0;
+      collection.forEach(cardInstance => {
+        if (cardInstance.card.type === 'weapon') {
+          if (buffAttack !== 0) {
+            cardInstance.card.attack = (cardInstance.card.attack || 0) + buffAttack;
+          }
+          
+          if (buffDurability !== 0) {
+            cardInstance.card.durability = (cardInstance.card.durability || 0) + buffDurability;
+          }
+          
+          buffedCount++;
+        }
+      });
+      
+      context.logGameEvent(`${sourceCard.name} buffed ${buffedCount} weapons in ${location} by +${buffAttack}/+${buffDurability}`);
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error(`Error executing battlecry:buff_weapon:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:buff_weapon: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: location
-  if (effect.location === undefined) {
-    console.warn(`BuffWeapon effect missing location property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: buffDurability
-  if (effect.buffDurability === undefined) {
-    console.warn(`BuffWeapon effect missing buffDurability property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the buff_weapon battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered buff_weapon battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeBuffWeaponBuffWeapon;

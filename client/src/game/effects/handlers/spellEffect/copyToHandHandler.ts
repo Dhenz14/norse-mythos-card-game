@@ -1,63 +1,97 @@
 /**
- * CopyToHand SpellEffect Handler
+ * Copy To Hand Effect Handler
  * 
- * Implements the "copy_to_hand" spellEffect effect.
- * Example card: Card ID: 16017
+ * This handler implements the spellEffect:copy_to_hand effect.
+ * Copies a minion or card to the player's hand.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a copy_to_hand spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeCopyToHandCopyToHand(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+export default function executeCopyToHand(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
   
-  console.log(`Executing copy_to_hand spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: condition
-  if (effect.condition === undefined) {
-    console.warn(`CopyToHand effect missing condition property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing spellEffect:copy_to_hand for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'friendly_minion';
+    const targetsAll = effect.targetsAll || false;
+    const condition = effect.condition;
+    
+    let targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (condition) {
+      targets = targets.filter(target => {
+        if (condition === 'damaged' && target.card.type === 'minion') {
+          const currentHealth = target.currentHealth || target.card.health || 0;
+          const maxHealth = target.card.health || 0;
+          return currentHealth < maxHealth;
+        }
+        if (condition === 'deathrattle') {
+          return target.card.deathrattle !== undefined;
+        }
+        if (condition === 'battlecry') {
+          return target.card.battlecry !== undefined;
+        }
+        return true;
+      });
+    }
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for copy_to_hand`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    if (!targetsAll) {
+      targets = [targets[0]];
+    }
+    
+    const copiedCards: string[] = [];
+    
+    targets.forEach(target => {
+      if (context.currentPlayer.hand.length >= 10) {
+        context.logGameEvent(`Hand is full, couldn't copy ${target.card.name}`);
+        return;
+      }
+      
+      const copy = {
+        instanceId: 'copy-' + Date.now() + '-' + Math.random().toString(36).substring(7),
+        card: { ...target.card },
+        canAttack: false,
+        isPlayed: false,
+        isSummoningSick: true,
+        attacksPerformed: 0,
+        currentHealth: target.card.health
+      };
+      
+      context.currentPlayer.hand.push(copy as any);
+      copiedCards.push(target.card.name);
+      context.logGameEvent(`Copied ${target.card.name} to hand`);
+    });
+    
+    return { 
+      success: true,
+      additionalData: {
+        copiedCount: copiedCards.length,
+        cardNames: copiedCards
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:copy_to_hand:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:copy_to_hand: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: targetsAll
-  if (effect.targetsAll === undefined) {
-    console.warn(`CopyToHand effect missing targetsAll property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the copy_to_hand spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered copy_to_hand spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeCopyToHandCopyToHand;

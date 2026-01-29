@@ -1,76 +1,100 @@
 /**
- * Buff Effect Handler
+ * Buff Deathrattle Handler
  * 
- * This handler implements the deathrattle:buff effect.
+ * Implements the "buff" deathrattle effect.
+ * Buffs other minions when this minion dies.
+ * Example: Spawn of N'Zoth (gives all friendly minions +1/+1)
  */
 import { GameContext } from '../../../GameContext';
-import { Card, DeathrattleEffect } from '../../../types/CardTypes';
+import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
 
 /**
- * Execute a Buff effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.0 - The 0 for the effect
-   * @param effect.1 - The 1 for the effect
-   * @param effect.2 - The 2 for the effect
- * @returns An object indicating success or failure and any additional data
+ * Execute a buff deathrattle effect
  */
 export default function executeBuffBuff(
-  context: GameContext, 
-  effect: DeathrattleEffect, 
-  sourceCard: Card
+  context: GameContext,
+  effect: DeathrattleEffect,
+  sourceCard: CardData | CardInstance
 ): EffectResult {
-  // Create a temporary CardInstance for targeting purposes
-  const sourceCardInstance: any = {
-    instanceId: 'temp-' + Date.now(),
-    card: sourceCard,
-    canAttack: false,
-    isPlayed: true,
-    isSummoningSick: false,
-    attacksPerformed: 0
-  };
   try {
-    // Log the effect execution
-    context.logGameEvent(`Executing deathrattle:buff for ${sourceCard.name}`);
+    const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
+    context.logGameEvent(`Executing deathrattle:buff for ${cardName}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const prop0 = effect.0;
-    const prop1 = effect.1;
-    const prop2 = effect.2;
+    const attackBuff = effect.buffAttack || effect.attack || 0;
+    const healthBuff = effect.buffHealth || effect.health || 0;
+    const targetType = effect.targetType || 'friendly_minion';
     
-    // Implementation placeholder
-    console.log(`deathrattle:buff executed with properties: ${JSON.stringify(effect)}`);
+    let targets: CardInstance[] = [];
     
-    // TODO: Implement the deathrattle:buff effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for deathrattle:buff`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Buff effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Buff effect applied`);
-      // TODO: Apply effect without target
+    switch (targetType) {
+      case 'friendly_minion':
+      case 'friendly_minions':
+        targets = context.getFriendlyMinions() as any;
+        break;
+      case 'enemy_minion':
+      case 'enemy_minions':
+        targets = context.getEnemyMinions() as any;
+        break;
+      case 'all_minions':
+      case 'any_minion':
+        targets = context.getAllMinions() as any;
+        break;
+      case 'random_friendly_minion':
+        const friendly = context.getFriendlyMinions();
+        if (friendly.length > 0) {
+          targets = [friendly[Math.floor(Math.random() * friendly.length)] as any];
+        }
+        break;
+      case 'random_enemy_minion':
+        const enemies = context.getEnemyMinions();
+        if (enemies.length > 0) {
+          targets = [enemies[Math.floor(Math.random() * enemies.length)] as any];
+        }
+        break;
+      default:
+        targets = context.getFriendlyMinions() as any;
     }
     
-    return { success: true };
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for buff deathrattle`);
+      return { success: true, additionalData: { buffedCount: 0 } };
+    }
+    
+    let buffedCount = 0;
+    targets.forEach(target => {
+      if ('attack' in target.card && target.card.attack !== undefined) {
+        (target.card as any).attack = target.card.attack + attackBuff;
+      }
+      if (target.currentHealth !== undefined && 'health' in target.card && target.card.health !== undefined) {
+        target.currentHealth += healthBuff;
+        (target.card as any).health = target.card.health + healthBuff;
+      }
+      
+      if (effect.grantKeywords && Array.isArray(effect.grantKeywords)) {
+        if (!target.card.keywords) target.card.keywords = [];
+        effect.grantKeywords.forEach((keyword: string) => {
+          if (!target.card.keywords!.includes(keyword)) {
+            target.card.keywords!.push(keyword);
+            if (keyword === 'taunt') (target as any).isTaunt = true;
+            if (keyword === 'divine_shield') target.hasDivineShield = true;
+            if (keyword === 'rush') (target as any).hasRush = true;
+          }
+        });
+      }
+      
+      buffedCount++;
+      context.logGameEvent(`${target.card.name} received +${attackBuff}/+${healthBuff} buff from ${cardName}`);
+    });
+    
+    return {
+      success: true,
+      additionalData: { buffedCount, attackBuff, healthBuff }
+    };
   } catch (error) {
     console.error(`Error executing deathrattle:buff:`, error);
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: `Error executing deathrattle:buff: ${error instanceof Error ? error.message : String(error)}`
     };
   }

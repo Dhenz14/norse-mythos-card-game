@@ -2,56 +2,101 @@
  * Destroy Deathrattle Handler
  * 
  * Implements the "destroy" deathrattle effect.
- * Example card: Mecha'thun (ID: 20601)
+ * Destroys other minions when this minion dies.
+ * Example: Mecha'thun (destroys enemy hero if conditions met)
  */
-import { GameState, CardInstance } from '../../types';
-import { DeathrattleEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, CardInstance } from '../../../types/CardTypes';
+import { DeathrattleEffect } from '../../../types';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a destroy deathrattle effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
  */
-export function executeDestroyDestroy(
-  state: GameState,
+export default function executeDestroyDestroy(
+  context: GameContext,
   effect: DeathrattleEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing destroy deathrattle for ${sourceCard.card.name}`);
-  
-  // Check for required property: condition
-  if (effect.condition === undefined) {
-    console.warn(`Destroy effect missing condition property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card | CardInstance
+): EffectResult {
+  try {
+    const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
+    context.logGameEvent(`Executing deathrattle:destroy for ${cardName}`);
+    
+    const targetType = effect.targetType || 'random_enemy_minion';
+    
+    if (effect.condition) {
+      const conditionMet = checkDestroyCondition(context, effect.condition);
+      if (!conditionMet) {
+        context.logGameEvent(`Destroy condition not met for ${cardName}`);
+        return { success: true, additionalData: { conditionMet: false } };
+      }
+    }
+    
+    let targets: CardInstance[] = [];
+    
+    switch (targetType) {
+      case 'all_minions':
+        targets = context.getAllMinions();
+        break;
+      case 'enemy_minions':
+        targets = context.getEnemyMinions();
+        break;
+      case 'friendly_minions':
+        targets = context.getFriendlyMinions();
+        break;
+      case 'random_enemy_minion':
+        const enemies = context.getEnemyMinions();
+        if (enemies.length > 0) {
+          targets = [enemies[Math.floor(Math.random() * enemies.length)]];
+        }
+        break;
+      case 'enemy_hero':
+        context.opponentPlayer.health = 0;
+        context.logGameEvent(`${cardName}'s deathrattle destroyed the enemy hero!`);
+        return { success: true, additionalData: { destroyedHero: true } };
+      default:
+        targets = [];
+    }
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for destroy deathrattle`);
+      return { success: true, additionalData: { destroyedCount: 0 } };
+    }
+    
+    let destroyedCount = 0;
+    targets.forEach(target => {
+      if (target.currentHealth !== undefined) {
+        target.currentHealth = 0;
+        context.logGameEvent(`${target.card.name} was destroyed by ${cardName}'s deathrattle`);
+        destroyedCount++;
+      }
+    });
+    
+    return {
+      success: true,
+      additionalData: { destroyedCount }
+    };
+  } catch (error) {
+    console.error(`Error executing deathrattle:destroy:`, error);
+    return {
+      success: false,
+      error: `Error executing deathrattle:destroy: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the destroy deathrattle effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'deathrattle',
-    text: `${sourceCard.card.name} triggered destroy deathrattle`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
 
-export default executeDestroyDestroy;
+function checkDestroyCondition(context: GameContext, condition: string): boolean {
+  switch (condition) {
+    case 'empty_hand':
+      return context.currentPlayer.hand.length === 0;
+    case 'empty_deck':
+      return context.currentPlayer.deck.length === 0;
+    case 'empty_board':
+      return context.currentPlayer.board.length === 0;
+    case 'mecha_thun':
+      return context.currentPlayer.hand.length === 0 && 
+             context.currentPlayer.deck.length === 0;
+    default:
+      return true;
+  }
+}

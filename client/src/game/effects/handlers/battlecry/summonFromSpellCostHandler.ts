@@ -2,52 +2,124 @@
  * SummonFromSpellCost Battlecry Handler
  * 
  * Implements the "summon_from_spell_cost" battlecry effect.
+ * Reveals a spell from the deck and summons a random minion with cost equal to the spell's cost.
  * Example card: Spiteful Summoner (ID: 30017)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
+import cardDatabase from '../../../services/cardDatabase';
+import { v4 as uuidv4 } from 'uuid';
+
+const MAX_BOARD_SIZE = 7;
 
 /**
  * Execute a summon_from_spell_cost battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeSummonFromSpellCostSummonFromSpellCost(
-  state: GameState,
+export default function executeSummonFromSpellCost(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing summon_from_spell_cost battlecry for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the summon_from_spell_cost battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered summon_from_spell_cost battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing summon_from_spell_cost battlecry for ${sourceCard.name}`);
+    
+    const currentBoardSize = context.currentPlayer.board.length;
+    const availableSlots = MAX_BOARD_SIZE - currentBoardSize;
+    
+    if (availableSlots <= 0) {
+      context.logGameEvent(`Board is full, cannot summon minion`);
+      return { success: true, additionalData: { summonedCount: 0 } };
+    }
+    
+    const spellsInDeck = context.currentPlayer.deck.filter(
+      cardInstance => cardInstance.card.type === 'spell'
+    );
+    
+    if (spellsInDeck.length === 0) {
+      context.logGameEvent(`No spells in deck to reveal`);
+      return { success: true, additionalData: { noSpellsInDeck: true, summonedCount: 0 } };
+    }
+    
+    const randomIndex = Math.floor(Math.random() * spellsInDeck.length);
+    const revealedSpell = spellsInDeck[randomIndex];
+    const spellCost = revealedSpell.card.manaCost;
+    
+    context.logGameEvent(`Revealed ${revealedSpell.card.name} (Cost: ${spellCost})`);
+    
+    const deckIndex = context.currentPlayer.deck.findIndex(
+      c => c.instanceId === revealedSpell.instanceId
+    );
+    if (deckIndex !== -1) {
+      context.currentPlayer.deck.splice(deckIndex, 1);
+      context.currentPlayer.graveyard.push(revealedSpell);
+    }
+    
+    const minionsWithCost = cardDatabase.getCardsByType('minion').filter(
+      card => card.manaCost === spellCost
+    );
+    
+    if (minionsWithCost.length === 0) {
+      context.logGameEvent(`No minions found with cost ${spellCost}`);
+      return { 
+        success: true, 
+        additionalData: { 
+          revealedSpell: revealedSpell.card.name,
+          spellCost,
+          noMinionsAtCost: true,
+          summonedCount: 0 
+        } 
+      };
+    }
+    
+    const randomMinionIndex = Math.floor(Math.random() * minionsWithCost.length);
+    const selectedMinion = minionsWithCost[randomMinionIndex];
+    
+    const minionInstance: CardInstance = {
+      instanceId: uuidv4(),
+      card: {
+        id: selectedMinion.id,
+        name: selectedMinion.name,
+        description: selectedMinion.description || '',
+        manaCost: selectedMinion.manaCost || 0,
+        type: 'minion',
+        rarity: selectedMinion.rarity || 'common',
+        heroClass: selectedMinion.heroClass || (selectedMinion as any).class || 'neutral',
+        attack: selectedMinion.attack || 1,
+        health: selectedMinion.health || 1,
+        keywords: selectedMinion.keywords || []
+      },
+      currentHealth: selectedMinion.health || 1,
+      currentAttack: selectedMinion.attack || 1,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    
+    context.currentPlayer.board.push(minionInstance);
+    
+    context.logGameEvent(`Summoned ${selectedMinion.name} (${selectedMinion.attack}/${selectedMinion.health}) - Cost ${spellCost}`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        revealedSpell: revealedSpell.card.name,
+        spellCost,
+        summonedCount: 1,
+        summonedMinion: minionInstance
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing summon_from_spell_cost:`, error);
+    return { 
+      success: false, 
+      error: `Error executing summon_from_spell_cost: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeSummonFromSpellCostSummonFromSpellCost;

@@ -2,83 +2,102 @@
  * Discover Effect Handler
  * 
  * This handler implements the battlecry:discover effect.
+ * Presents 3 random cards matching criteria for the player to pick and add to hand.
  */
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { getRandomCardsFromPool } from '../../../data/discoverPools';
+import { getDiscoveryOptions, filterCards } from '../../../utils/discoveryUtils';
+import allCards from '../../../data/allCards';
 
 /**
  * Execute a Discover effect
  * @param context - The game context
- * @param effect - The effect data
+ * @param effect - The effect data with discoverType, pool, discoveryCount, etc.
  * @param sourceCard - The card that triggered the effect
-   * @param effect.0 - The 0 for the effect
-   * @param effect.1 - The 1 for the effect
-   * @param effect.2 - The 2 for the effect
-   * @param effect.3 - The 3 for the effect
-   * @param effect.4 - The 4 for the effect
-   * @param effect.5 - The 5 for the effect
-   * @param effect.6 - The 6 for the effect
-   * @param effect.7 - The 7 for the effect
-   * @param effect.8 - The 8 for the effect
- * @returns An object indicating success or failure and any additional data
+ * @returns An object indicating success and containing the discovery state
  */
-export default function executeDiscoverDiscover(
+export default function executeDiscover(
   context: GameContext, 
   effect: BattlecryEffect, 
   sourceCard: Card
 ): EffectResult {
-  // Create a temporary CardInstance for targeting purposes
-  const sourceCardInstance: any = {
-    instanceId: 'temp-' + Date.now(),
-    card: sourceCard,
-    canAttack: false,
-    isPlayed: true,
-    isSummoningSick: false,
-    attacksPerformed: 0
-  };
   try {
-    // Log the effect execution
     context.logGameEvent(`Executing battlecry:discover for ${sourceCard.name}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const prop0 = effect.0;
-    const prop1 = effect.1;
-    const prop2 = effect.2;
-    const prop3 = effect.3;
-    const prop4 = effect.4;
-    const prop5 = effect.5;
-    const prop6 = effect.6;
-    const prop7 = effect.7;
-    const prop8 = effect.8;
+    const discoveryCount = effect.discoveryCount || effect.count || 3;
+    const discoverType = effect.discoverType || effect.discoveryType || 'any';
+    const pool = effect.pool || effect.discoverPool;
+    const discoverClass = effect.discoveryClass || effect.class || sourceCard.heroClass || 'any';
+    const discoverRarity = effect.discoveryRarity || 'any';
+    const manaDiscount = effect.manaDiscount || effect.manaReduction || 0;
     
-    // Implementation placeholder
-    console.log(`battlecry:discover executed with properties: ${JSON.stringify(effect)}`);
+    let discoveryOptions: any[] = [];
     
-    // TODO: Implement the battlecry:discover effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for battlecry:discover`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Discover effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
+    if (pool) {
+      discoveryOptions = getRandomCardsFromPool(pool, discoveryCount);
+      context.logGameEvent(`Discovering from pool: ${pool}`);
+    } else if (discoverType && discoverType !== 'any') {
+      discoveryOptions = getRandomCardsFromPool(discoverType, discoveryCount);
+      context.logGameEvent(`Discovering ${discoverType} cards`);
     } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Discover effect applied`);
-      // TODO: Apply effect without target
+      discoveryOptions = getDiscoveryOptions(
+        discoveryCount,
+        discoverType as any,
+        discoverClass as string,
+        discoverRarity as any
+      );
+      context.logGameEvent(`Discovering from general pool`);
     }
     
-    return { success: true };
+    if (discoveryOptions.length === 0) {
+      // Use allCards (1300+ cards) as fallback instead of smaller fullCardDatabase
+      const filteredCards = filterCards(allCards as any[], {
+        type: discoverType !== 'any' ? discoverType as any : undefined,
+        heroClass: discoverClass !== 'any' ? discoverClass as any : undefined,
+        rarity: discoverRarity !== 'any' ? discoverRarity as any : undefined
+      });
+      
+      if (filteredCards.length > 0) {
+        const shuffled = [...filteredCards].sort(() => Math.random() - 0.5);
+        discoveryOptions = shuffled.slice(0, discoveryCount);
+      }
+    }
+    
+    if (discoveryOptions.length === 0) {
+      context.logGameEvent(`No cards available for discovery`);
+      return { 
+        success: false, 
+        error: 'No cards available for discovery' 
+      };
+    }
+    
+    if (manaDiscount > 0) {
+      discoveryOptions = discoveryOptions.map(card => ({
+        ...card,
+        manaCost: Math.max(0, (card.manaCost || 0) - manaDiscount)
+      }));
+      context.logGameEvent(`Applied mana discount of ${manaDiscount} to discovered cards`);
+    }
+    
+    context.logGameEvent(`Presenting ${discoveryOptions.length} discovery options to player`);
+    
+    return { 
+      success: true,
+      additionalData: {
+        discoveryState: {
+          active: true,
+          options: discoveryOptions,
+          sourceCardId: String(sourceCard.id),
+          sourceCardName: sourceCard.name,
+          discoverType: discoverType,
+          pool: pool,
+          manaDiscount: manaDiscount,
+          addToHand: effect.addToHand !== false
+        }
+      }
+    };
   } catch (error) {
     console.error(`Error executing battlecry:discover:`, error);
     return { 

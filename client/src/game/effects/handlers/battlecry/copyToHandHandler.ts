@@ -1,57 +1,77 @@
 /**
  * CopyToHand Battlecry Handler
  * 
- * Implements the "copy_to_hand" battlecry effect.
+ * Copies a minion and adds it to the player's hand.
  * Example card: Zola the Gorgon (ID: 20306)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a copy_to_hand battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeCopyToHandCopyToHand(
-  state: GameState,
+export default function executeCopyToHand(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing copy_to_hand battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: isGolden
-  if (effect.isGolden === undefined) {
-    console.warn(`CopyToHand effect missing isGolden property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing copy_to_hand battlecry for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'friendly_minion';
+    const isGolden = effect.isGolden || false;
+    
+    const sourceCardInstance: CardInstance = {
+      instanceId: 'temp-' + Date.now(),
+      card: sourceCard,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: false,
+      attacksPerformed: 0
+    };
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent('No valid targets for copy_to_hand');
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    
+    if (context.currentPlayer.hand.length >= 10) {
+      context.logGameEvent('Hand is full, cannot add copied card.');
+      return { success: false, error: 'Hand is full' };
+    }
+    
+    const copiedCard: CardInstance = {
+      instanceId: `copy-${target.card.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      card: { ...target.card },
+      currentHealth: target.card.health,
+      currentAttack: target.card.attack,
+      canAttack: false,
+      isPlayed: false,
+      isSummoningSick: false,
+      attacksPerformed: 0,
+      hasDivineShield: target.hasDivineShield,
+      isPoisonous: target.isPoisonous,
+      hasLifesteal: target.hasLifesteal
+    };
+    
+    if (isGolden) {
+      if (copiedCard.card.attack) copiedCard.card.attack *= 2;
+      if (copiedCard.card.health) copiedCard.card.health *= 2;
+      copiedCard.currentAttack = copiedCard.card.attack;
+      copiedCard.currentHealth = copiedCard.card.health;
+    }
+    
+    context.currentPlayer.hand.push(copiedCard);
+    context.logGameEvent(`Copied ${target.card.name} to hand${isGolden ? ' (Golden)' : ''}.`);
+    
+    return { 
+      success: true, 
+      additionalData: { copiedCard, originalTarget: target }
+    };
+  } catch (error) {
+    console.error('Error executing copy_to_hand:', error);
+    return { success: false, error: `Failed to execute copy_to_hand: ${error}` };
   }
-  
-  // TODO: Implement the copy_to_hand battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered copy_to_hand battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeCopyToHandCopyToHand;

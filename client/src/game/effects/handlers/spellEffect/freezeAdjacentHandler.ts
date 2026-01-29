@@ -2,52 +2,62 @@
  * FreezeAdjacent SpellEffect Handler
  * 
  * Implements the "freeze_adjacent" spellEffect effect.
- * Example card: Card ID: 3022
+ * Freezes minions adjacent to the target.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a freeze_adjacent spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeFreezeAdjacentFreezeAdjacent(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing freeze_adjacent spellEffect for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the freeze_adjacent spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered freeze_adjacent spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+export default function executeFreezeAdjacent(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:freeze_adjacent for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'any_minion';
+    const includeTarget = effect.includeTarget !== false;
+    
+    const sourceCardInstance: any = {
+      instanceId: 'temp-' + Date.now(),
+      card: sourceCard,
+      canAttack: false,
+      isPlayed: true
+    };
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for freeze_adjacent effect`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    let frozenCount = 0;
+    const target = targets[0];
+    
+    if (includeTarget && target.card.type === 'minion') {
+      (target as any).isFrozen = true;
+      context.logGameEvent(`${target.card.name} is frozen`);
+      frozenCount++;
+    }
+    
+    const adjacentMinions = context.getAdjacentMinions(target);
+    adjacentMinions.forEach(adjacentMinion => {
+      (adjacentMinion as any).isFrozen = true;
+      context.logGameEvent(`${adjacentMinion.card.name} (adjacent) is frozen`);
+      frozenCount++;
+    });
+    
+    return { 
+      success: true,
+      additionalData: { frozenCount }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:freeze_adjacent:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:freeze_adjacent: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeFreezeAdjacentFreezeAdjacent;

@@ -40,7 +40,6 @@ function handlerNameToEffectType(handlerName: string): string {
  * Initialize all effect handlers by registering them with the EffectRegistry
  */
 export function initializeEffectHandlers(): void {
-  console.log('Initializing effect handlers...');
   
   // Register battlecry handlers
   Object.entries(battlecryHandlers).forEach(([handlerName, handler]) => {
@@ -66,7 +65,6 @@ export function initializeEffectHandlers(): void {
     }
   });
   
-  console.log('Effect handlers initialization complete.');
 }
 
 /**
@@ -74,7 +72,6 @@ export function initializeEffectHandlers(): void {
  * This would typically use webpack's require.context or similar in a real project
  */
 export async function registerEffectHandlersAsync(): Promise<void> {
-  console.log('Dynamically registering effect handlers...');
   
   try {
     // This is a simplified example - in a real project you would use
@@ -100,7 +97,6 @@ export async function registerEffectHandlersAsync(): Promise<void> {
     });
     */
     
-    console.log('Dynamic effect handlers registration complete.');
   } catch (error) {
     console.error('Error during dynamic effect handler registration:', error);
   }

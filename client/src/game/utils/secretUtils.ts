@@ -103,7 +103,6 @@ export function playSecret(gameState: any, cardInstanceId: string): any {
   const currentPlayer = newState.currentTurn;
   const player = newState.players[currentPlayer];
   
-  console.log(`[SECRET-DEBUG] Playing secret, current player: ${currentPlayer}`);
   
   // Find the card in player's hand
   const cardIndex = player.hand.findIndex((card: any) => 
@@ -118,7 +117,6 @@ export function playSecret(gameState: any, cardInstanceId: string): any {
   // Get the card data
   const secretCard = player.hand[cardIndex];
   
-  console.log(`[SECRET-DEBUG] Found secret card: ${secretCard.card.name}`);
   
   // Remove the card from hand
   player.hand.splice(cardIndex, 1);
@@ -158,7 +156,6 @@ export function playSecret(gameState: any, cardInstanceId: string): any {
     cardId: secretCard.card.id
   });
   
-  console.log(`[SECRET-DEBUG] Secret ${secretCard.card.name} successfully played by ${currentPlayer}`);
   
   return newState;
 }

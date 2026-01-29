@@ -2,56 +2,74 @@
  * DestroyManaCrystal Battlecry Handler
  * 
  * Implements the "destroy_mana_crystal" battlecry effect.
- * Example card: Card ID: 15010
+ * Destroys mana crystal(s) from either opponent or self.
+ * Example card: Felguard - destroys one of your own mana crystals
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a destroy_mana_crystal battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data (effect.value is number of crystals, effect.targetType determines whose)
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeDestroyManaCrystalDestroyManaCrystal(
-  state: GameState,
+export default function executeDestroyManaCrystal(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing destroy_mana_crystal battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DestroyManaCrystal effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:destroy_mana_crystal for ${sourceCard.name}`);
+    
+    const crystalsToDestroy = effect.value ?? 1;
+    const targetType = effect.targetType || 'self';
+    
+    let targetPlayer: any;
+    let ownerDescription: string;
+    
+    if (targetType === 'enemy' || targetType === 'opponent' || targetType === 'enemy_hero') {
+      targetPlayer = context.opponentPlayer;
+      ownerDescription = "opponent's";
+    } else {
+      targetPlayer = context.currentPlayer;
+      ownerDescription = 'your';
+    }
+    
+    const currentMax = targetPlayer.mana?.max ?? 10;
+    const currentCurrent = targetPlayer.mana?.current ?? 0;
+    
+    if (currentMax <= 0) {
+      context.logGameEvent(`No mana crystals to destroy`);
+      return { success: true, additionalData: { crystalsDestroyed: 0 } };
+    }
+    
+    const actualDestroyed = Math.min(crystalsToDestroy, currentMax);
+    
+    if (targetPlayer.mana) {
+      targetPlayer.mana.max = Math.max(0, currentMax - actualDestroyed);
+      targetPlayer.mana.current = Math.min(targetPlayer.mana.current, targetPlayer.mana.max);
+    }
+    
+    context.logGameEvent(`${sourceCard.name} destroyed ${actualDestroyed} of ${ownerDescription} mana crystal(s)`);
+    context.logGameEvent(`${ownerDescription.charAt(0).toUpperCase() + ownerDescription.slice(1)} max mana is now ${targetPlayer.mana?.max ?? 0}`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        crystalsDestroyed: actualDestroyed,
+        targetPlayer: targetType,
+        newMaxMana: targetPlayer.mana?.max ?? 0
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:destroy_mana_crystal:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:destroy_mana_crystal: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the destroy_mana_crystal battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered destroy_mana_crystal battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDestroyManaCrystalDestroyManaCrystal;

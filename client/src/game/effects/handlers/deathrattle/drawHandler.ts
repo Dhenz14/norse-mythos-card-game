@@ -1,78 +1,66 @@
 /**
- * Draw Effect Handler
+ * Draw Deathrattle Handler
  * 
- * This handler implements the deathrattle:draw effect.
+ * Implements the "draw" deathrattle effect.
+ * Draws cards when the minion dies.
+ * Example: Loot Hoarder (draw 1 card)
  */
 import { GameContext } from '../../../GameContext';
-import { Card, DeathrattleEffect } from '../../../types/CardTypes';
+import { Card, CardInstance } from '../../../types/CardTypes';
+import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
 
 /**
- * Execute a Draw effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.0 - The 0 for the effect
-   * @param effect.1 - The 1 for the effect
-   * @param effect.2 - The 2 for the effect
-   * @param effect.3 - The 3 for the effect
- * @returns An object indicating success or failure and any additional data
+ * Execute a draw deathrattle effect
  */
 export default function executeDrawDraw(
-  context: GameContext, 
-  effect: DeathrattleEffect, 
-  sourceCard: Card
+  context: GameContext,
+  effect: DeathrattleEffect,
+  sourceCard: Card | CardInstance
 ): EffectResult {
-  // Create a temporary CardInstance for targeting purposes
-  const sourceCardInstance: any = {
-    instanceId: 'temp-' + Date.now(),
-    card: sourceCard,
-    canAttack: false,
-    isPlayed: true,
-    isSummoningSick: false,
-    attacksPerformed: 0
-  };
   try {
-    // Log the effect execution
-    context.logGameEvent(`Executing deathrattle:draw for ${sourceCard.name}`);
+    const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
+    context.logGameEvent(`Executing deathrattle:draw for ${cardName}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const prop0 = effect.0;
-    const prop1 = effect.1;
-    const prop2 = effect.2;
-    const prop3 = effect.3;
+    const drawCount = effect.value || effect.count || 1;
+    const cardType = effect.cardType;
+    const specificRace = effect.specificRace;
     
-    // Implementation placeholder
-    console.log(`deathrattle:draw executed with properties: ${JSON.stringify(effect)}`);
+    let drawnCards: CardInstance[] = [];
     
-    // TODO: Implement the deathrattle:draw effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for deathrattle:draw`);
-        return { success: false, error: 'No valid targets' };
+    if (cardType || specificRace) {
+      for (let i = 0; i < drawCount; i++) {
+        const validCardIndex = context.currentPlayer.deck.findIndex(card => {
+          if (cardType && card.card.type !== cardType) return false;
+          if (specificRace && card.card.race !== specificRace) return false;
+          return true;
+        });
+        
+        if (validCardIndex !== -1) {
+          const [drawnCard] = context.currentPlayer.deck.splice(validCardIndex, 1);
+          if (context.currentPlayer.hand.length < 10) {
+            context.currentPlayer.hand.push(drawnCard);
+            drawnCards.push(drawnCard);
+            context.logGameEvent(`Drew ${drawnCard.card.name} from ${cardName}'s deathrattle`);
+          } else {
+            context.logGameEvent(`Hand is full, ${drawnCard.card.name} was burned`);
+          }
+        } else {
+          context.logGameEvent(`No matching card found in deck for ${cardName}'s deathrattle`);
+        }
       }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Draw effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
     } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Draw effect applied`);
-      // TODO: Apply effect without target
+      drawnCards = context.drawCards(drawCount);
     }
     
-    return { success: true };
+    return {
+      success: true,
+      additionalData: { drawnCards, count: drawnCards.length }
+    };
   } catch (error) {
     console.error(`Error executing deathrattle:draw:`, error);
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: `Error executing deathrattle:draw: ${error instanceof Error ? error.message : String(error)}`
     };
   }

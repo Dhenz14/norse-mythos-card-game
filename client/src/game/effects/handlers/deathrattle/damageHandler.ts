@@ -1,76 +1,92 @@
 /**
- * Damage Effect Handler
+ * Damage Deathrattle Handler
  * 
- * This handler implements the deathrattle:damage effect.
+ * Implements the "damage" deathrattle effect.
+ * Deals damage to targets when the minion dies.
+ * Example: Abomination (deals 2 damage to all characters)
  */
 import { GameContext } from '../../../GameContext';
-import { Card, DeathrattleEffect } from '../../../types/CardTypes';
+import { Card, CardInstance } from '../../../types/CardTypes';
+import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
 
 /**
- * Execute a Damage effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.0 - The 0 for the effect
-   * @param effect.1 - The 1 for the effect
-   * @param effect.2 - The 2 for the effect
- * @returns An object indicating success or failure and any additional data
+ * Execute a damage deathrattle effect
  */
 export default function executeDamageDamage(
-  context: GameContext, 
-  effect: DeathrattleEffect, 
-  sourceCard: Card
+  context: GameContext,
+  effect: DeathrattleEffect,
+  sourceCard: Card | CardInstance
 ): EffectResult {
-  // Create a temporary CardInstance for targeting purposes
-  const sourceCardInstance: any = {
-    instanceId: 'temp-' + Date.now(),
-    card: sourceCard,
-    canAttack: false,
-    isPlayed: true,
-    isSummoningSick: false,
-    attacksPerformed: 0
-  };
   try {
-    // Log the effect execution
-    context.logGameEvent(`Executing deathrattle:damage for ${sourceCard.name}`);
+    const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
+    context.logGameEvent(`Executing deathrattle:damage for ${cardName}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const prop0 = effect.0;
-    const prop1 = effect.1;
-    const prop2 = effect.2;
+    const damageAmount = effect.value || effect.damage || 1;
+    const targetType = effect.targetType || 'all';
     
-    // Implementation placeholder
-    console.log(`deathrattle:damage executed with properties: ${JSON.stringify(effect)}`);
+    let targets: CardInstance[] = [];
     
-    // TODO: Implement the deathrattle:damage effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for deathrattle:damage`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Damage effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Damage effect applied`);
-      // TODO: Apply effect without target
+    switch (targetType) {
+      case 'all':
+        targets = [
+          context.currentPlayer.hero,
+          context.opponentPlayer.hero,
+          ...context.getAllMinions()
+        ];
+        break;
+      case 'all_minions':
+        targets = context.getAllMinions();
+        break;
+      case 'enemy_minions':
+        targets = context.getEnemyMinions();
+        break;
+      case 'friendly_minions':
+        targets = context.getFriendlyMinions();
+        break;
+      case 'enemy_hero':
+        targets = [context.opponentPlayer.hero];
+        break;
+      case 'friendly_hero':
+        targets = [context.currentPlayer.hero];
+        break;
+      case 'random_enemy_minion':
+        const enemies = context.getEnemyMinions();
+        if (enemies.length > 0) {
+          targets = [enemies[Math.floor(Math.random() * enemies.length)]];
+        }
+        break;
+      case 'random_enemy':
+        const enemyTargets = [context.opponentPlayer.hero, ...context.getEnemyMinions()];
+        if (enemyTargets.length > 0) {
+          targets = [enemyTargets[Math.floor(Math.random() * enemyTargets.length)]];
+        }
+        break;
+      default:
+        targets = context.getAllMinions();
     }
     
-    return { success: true };
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage deathrattle`);
+      return { success: true, additionalData: { damagedCount: 0 } };
+    }
+    
+    let damagedCount = 0;
+    targets.forEach(target => {
+      context.dealDamage(target, damageAmount);
+      damagedCount++;
+    });
+    
+    context.logGameEvent(`${cardName}'s deathrattle dealt ${damageAmount} damage to ${damagedCount} target(s)`);
+    
+    return {
+      success: true,
+      additionalData: { damagedCount, damageDealt: damageAmount }
+    };
   } catch (error) {
     console.error(`Error executing deathrattle:damage:`, error);
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: `Error executing deathrattle:damage: ${error instanceof Error ? error.message : String(error)}`
     };
   }

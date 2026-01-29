@@ -42,7 +42,6 @@ export function applyFreezeEffect(
         ...newState.players.player.battlefield.slice(playerIndex + 1)
       ];
       
-      console.log(`${target.card.name} was frozen!`);
       return newState;
     }
     
@@ -64,7 +63,6 @@ export function applyFreezeEffect(
         ...newState.players.opponent.battlefield.slice(opponentIndex + 1)
       ];
       
-      console.log(`${target.card.name} was frozen!`);
       return newState;
     }
     
@@ -79,10 +77,8 @@ export function applyFreezeEffect(
     if (targetId === 'player') {
       // In a real implementation, we would modify the player's hero to prevent attacking
       // with weapons until their next turn
-      console.log(`Player's hero was frozen!`);
     } else if (targetId === 'opponent') {
       // In a real implementation, we would modify the opponent's hero
-      console.log(`Opponent's hero was frozen!`);
     }
   }
   
@@ -121,7 +117,6 @@ export function applyAoEFreeze(
       })
     );
     
-    console.log('All minions have been frozen!');
   } else if (targets === 'all_enemy_minions') {
     // Freeze only enemy minions
     if (currentPlayer === 'player') {
@@ -133,7 +128,6 @@ export function applyAoEFreeze(
           canAttack: false
         })
       );
-      console.log('All enemy minions have been frozen!');
     } else {
       // Opponent's turn, freeze player's minions
       newState.players.player.battlefield = newState.players.player.battlefield.map(
@@ -143,7 +137,6 @@ export function applyAoEFreeze(
           canAttack: false
         })
       );
-      console.log('All enemy minions have been frozen!');
     }
   } else if (targets === 'all_friendly_minions') {
     // Freeze only friendly minions (rare, but possible)
@@ -156,7 +149,6 @@ export function applyAoEFreeze(
           canAttack: false
         })
       );
-      console.log('All friendly minions have been frozen!');
     } else {
       // Opponent's turn, freeze opponent's minions
       newState.players.opponent.battlefield = newState.players.opponent.battlefield.map(
@@ -166,7 +158,6 @@ export function applyAoEFreeze(
           canAttack: false
         })
       );
-      console.log('All friendly minions have been frozen!');
     }
   }
   

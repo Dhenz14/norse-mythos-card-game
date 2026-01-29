@@ -2,56 +2,70 @@
  * DrawMultiple Battlecry Handler
  * 
  * Implements the "draw_multiple" battlecry effect.
+ * Draws multiple cards from the deck.
  * Example card: Countess Ashmore (ID: 20805)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
+
+const MAX_HAND_SIZE = 10;
 
 /**
  * Execute a draw_multiple battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data containing count property
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeDrawMultipleDrawMultiple(
-  state: GameState,
+export default function executeDrawMultiple(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing draw_multiple battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: drawConditions
-  if (effect.drawConditions === undefined) {
-    console.warn(`DrawMultiple effect missing drawConditions property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    const count = effect.count || effect.value || 1;
+    context.logGameEvent(`${sourceCard.name} battlecry: Draw ${count} card(s)`);
+    
+    const drawnCards: Card[] = [];
+    const burnedCards: Card[] = [];
+    
+    for (let i = 0; i < count; i++) {
+      if (context.currentPlayer.deck.length === 0) {
+        context.logGameEvent(`Deck is empty - no more cards to draw`);
+        break;
+      }
+      
+      const cardInstance = context.currentPlayer.deck.shift();
+      if (!cardInstance) continue;
+      
+      if (context.currentPlayer.hand.length < MAX_HAND_SIZE) {
+        context.currentPlayer.hand.push(cardInstance);
+        drawnCards.push(cardInstance.card);
+        context.logGameEvent(`Drew ${cardInstance.card.name}`);
+      } else {
+        burnedCards.push(cardInstance.card);
+        context.logGameEvent(`Hand is full! ${cardInstance.card.name} was burned`);
+      }
+    }
+    
+    context.currentPlayer.cardsDrawnThisTurn += drawnCards.length;
+    
+    return {
+      success: true,
+      additionalData: {
+        drawnCards,
+        burnedCards,
+        totalDrawn: drawnCards.length,
+        totalBurned: burnedCards.length
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing draw_multiple:`, error);
+    return {
+      success: false,
+      error: `Error executing draw_multiple: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the draw_multiple battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered draw_multiple battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDrawMultipleDrawMultiple;

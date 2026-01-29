@@ -1,63 +1,89 @@
 /**
  * ResurrectAll Battlecry Handler
  * 
- * Implements the "resurrect_all" battlecry effect.
- * Example card: Card ID: 15019
+ * Resurrects all friendly minions that died this game.
+ * Example card: N'Zoth, the Corruptor (ID: 15019)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a resurrect_all battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeResurrectAllResurrectAll(
-  state: GameState,
+export default function executeResurrectAll(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing resurrect_all battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: race
-  if (effect.race === undefined) {
-    console.warn(`ResurrectAll effect missing race property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing resurrect_all battlecry for ${sourceCard.name}`);
+    
+    const race = effect.race;
+    const hasDeathrattle = effect.hasDeathrattle ?? false;
+    const maxCount = effect.maxCount || 7;
+    const source = effect.source || 'graveyard';
+    
+    let deadMinions = [...context.currentPlayer.graveyard].filter(
+      card => card.card.type === 'minion'
+    );
+    
+    if (race && race !== 'all') {
+      deadMinions = deadMinions.filter(card => card.card.race === race);
+    }
+    
+    if (hasDeathrattle) {
+      deadMinions = deadMinions.filter(card => card.card.deathrattle !== undefined);
+    }
+    
+    if (deadMinions.length === 0) {
+      context.logGameEvent('No valid minions to resurrect.');
+      return { success: true, additionalData: { resurrectedCount: 0 } };
+    }
+    
+    const resurrectedMinions: CardInstance[] = [];
+    const availableSlots = 7 - context.currentPlayer.board.length;
+    const countToResurrect = Math.min(deadMinions.length, maxCount, availableSlots);
+    
+    const uniqueMinions = new Map<number, CardInstance>();
+    for (const minion of deadMinions) {
+      if (!uniqueMinions.has(minion.card.id)) {
+        uniqueMinions.set(minion.card.id, minion);
+      }
+    }
+    
+    const minionsToResurrect = Array.from(uniqueMinions.values()).slice(0, countToResurrect);
+    
+    for (const deadMinion of minionsToResurrect) {
+      if (context.currentPlayer.board.length >= 7) break;
+      
+      const resurrectedMinion: CardInstance = {
+        instanceId: `resurrected-${deadMinion.card.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        card: { ...deadMinion.card },
+        currentHealth: deadMinion.card.health,
+        currentAttack: deadMinion.card.attack,
+        canAttack: false,
+        isPlayed: true,
+        isSummoningSick: true,
+        attacksPerformed: 0,
+        hasDivineShield: deadMinion.card.keywords?.includes('divine_shield'),
+        isPoisonous: deadMinion.card.keywords?.includes('poisonous'),
+        hasLifesteal: deadMinion.card.keywords?.includes('lifesteal')
+      };
+      
+      context.currentPlayer.board.push(resurrectedMinion);
+      resurrectedMinions.push(resurrectedMinion);
+      
+      context.logGameEvent(`Resurrected ${deadMinion.card.name}.`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        resurrectedMinions,
+        resurrectedCount: resurrectedMinions.length,
+        filterUsed: { race, hasDeathrattle }
+      }
+    };
+  } catch (error) {
+    console.error('Error executing resurrect_all:', error);
+    return { success: false, error: `Failed to execute resurrect_all: ${error}` };
   }
-
-  // Check for required property: source
-  if (effect.source === undefined) {
-    console.warn(`ResurrectAll effect missing source property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the resurrect_all battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered resurrect_all battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeResurrectAllResurrectAll;

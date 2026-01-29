@@ -3,187 +3,241 @@
  * 
  * This file exports all battlecry handlers for registration with the EffectRegistry
  */
-import executeDiscoverTriclassDiscoverTriclass from './discover_triclassHandler';
-import executeReturnReturn from './returnHandler';
-import executeShuffleSpecialShuffleSpecial from './shuffle_specialHandler';
-import executeOpponentSummonFromHandOpponentSummonFromHand from './opponent_summon_from_handHandler';
-import executeChangeHeroPowerChangeHeroPower from './change_hero_powerHandler';
-import executeWeaponAttackBuffWeaponAttackBuff from './weapon_attack_buffHandler';
-import executeWeaponDurabilityDamageWeaponDurabilityDamage from './weapon_durability_damageHandler';
-import executeSetManaSetMana from './set_manaHandler';
-import executeDestroySpellsDestroySpells from './destroy_spellsHandler';
-import executeDestroySecretsDestroySecrets from './destroy_secretsHandler';
-import executeDestroyTribeDestroyTribe from './destroy_tribeHandler';
-import executeMindControlRandomMindControlRandom from './mind_control_randomHandler';
-import executeDestroyWeaponDestroyWeapon from './destroy_weaponHandler';
-import executeHealthPerCardHealthPerCard from './health_per_cardHandler';
-import executeAdaptAdapt from './adaptHandler';
-import executeSummonFromSpellCostSummonFromSpellCost from './summon_from_spell_costHandler';
-import executeDestroyAndStoreDestroyAndStore from './destroy_and_storeHandler';
-import executeSwapStatsSwapStats from './swap_statsHandler';
-import executeDestroySpellsByCostDestroySpellsByCost from './destroy_spells_by_costHandler';
-import executeLimitAttackTargetLimitAttackTarget from './limit_attack_targetHandler';
-import executeDestroyWeaponGainArmorDestroyWeaponGainArmor from './destroy_weapon_gain_armorHandler';
-import executeDivineShieldGainDivineShieldGain from './divine_shield_gainHandler';
-import executeShuffleCardShuffleCard from './shuffle_cardHandler';
-import executeConditionalDamageConditionalDamage from './conditional_damageHandler';
-import executeConditionalDiscoverConditionalDiscover from './conditional_discoverHandler';
-import executeConditionalDrawConditionalDraw from './conditional_drawHandler';
-import executeSwapStatsWithTargetSwapStatsWithTarget from './swap_stats_with_targetHandler';
-import executeTransformCopyFromDeckTransformCopyFromDeck from './transform_copy_from_deckHandler';
-import executeReplaySpellsReplaySpells from './replay_spellsHandler';
-import executeExtraTurnsExtraTurns from './extra_turnsHandler';
-import executeDrawMultipleDrawMultiple from './draw_multipleHandler';
-import executeAddCardAddCard from './add_cardHandler';
-import executeBuffWeaponBuffWeapon from './buff_weaponHandler';
-import executeDrawUntilDrawUntil from './draw_untilHandler';
-import executeCopyToHandCopyToHand from './copy_to_handHandler';
-import executeDrawSpecificDrawSpecific from './draw_specificHandler';
-import executeReorderDeckReorderDeck from './reorder_deckHandler';
-import executeWheelOfYoggWheelOfYogg from './wheel_of_yoggHandler';
-import executeEatOpponentCardEatOpponentCard from './eat_opponent_cardHandler';
-import executeTransformDeckTransformDeck from './transform_deckHandler';
-import executeTransformAndSilenceTransformAndSilence from './transform_and_silenceHandler';
-import executeRandomDamageAndBuffRandomDamageAndBuff from './random_damage_and_buffHandler';
-import executeSummonJadeGolemSummonJadeGolem from './summon_jade_golemHandler';
-import executeReplayBattlecriesReplayBattlecries from './replay_battlecriesHandler';
-import executeSummonCopyFromDeckSummonCopyFromDeck from './summon_copy_from_deckHandler';
-import executeSummonCopySummonCopy from './summon_copyHandler';
-import executeDrawByTypeDrawByType from './draw_by_typeHandler';
-import executeFillBoardFillBoard from './fill_boardHandler';
-import executeGiveCardsGiveCards from './give_cardsHandler';
-import executeSwapDecksSwapDecks from './swap_decksHandler';
-import executeTransformRandomTransformRandom from './transform_randomHandler';
-import executeDestroyAndStealDestroyAndSteal from './destroy_and_stealHandler';
-import executePersistentEffectPersistentEffect from './persistent_effectHandler';
-import executeSetStatsSetStats from './set_statsHandler';
-import executeTransformCopyTransformCopy from './transform_copyHandler';
-import executeBuffDeckBuffDeck from './buff_deckHandler';
-import executeGainKeywordGainKeyword from './gain_keywordHandler';
-import executeReplaceSpellsReplaceSpells from './replace_spellsHandler';
-import executeRandomWeaponRandomWeapon from './random_weaponHandler';
-import executeReplaceHeroPowerReplaceHeroPower from './replace_hero_powerHandler';
-import executeSwapWithDeckSwapWithDeck from './swap_with_deckHandler';
-import executeBuffHandBuffHand from './buff_handHandler';
-import executeDamageAndBuffDamageAndBuff from './damage_and_buffHandler';
-import executeGiveDivineShieldGiveDivineShield from './give_divine_shieldHandler';
-import executeEquipFrostmourneEquipFrostmourne from './equip_frostmourneHandler';
-import executeBuffAndTauntBuffAndTaunt from './buff_and_tauntHandler';
-import executeGrantStealthGrantStealth from './grant_stealthHandler';
-import executeSummonRandomMinionsSummonRandomMinions from './summon_random_minionsHandler';
-import executeConsumeAdjacentConsumeAdjacent from './consume_adjacentHandler';
-import executeDestroyManaCrystalDestroyManaCrystal from './destroy_mana_crystalHandler';
-import executeResurrectAllResurrectAll from './resurrect_allHandler';
-import executeGrantPersistentEffectGrantPersistentEffect from './grant_persistent_effectHandler';
-import executeSummonRandomSummonRandom from './summon_randomHandler';
-import executeAlterManaAlterMana from './alter_manaHandler';
-import executeGiveManaGiveMana from './give_manaHandler';
-import executeBuffAdjacentBuffAdjacent from './buff_adjacentHandler';
-import executeDestroyWeaponDrawDestroyWeaponDraw from './destroy_weapon_drawHandler';
-import executeSummonSummon from './summonHandler';
-import executeBuffBuff from './buffHandler';
-import executeDamageDamage from './damageHandler';
-import executeDiscoverDiscover from './discoverHandler';
-import executeTransformTransform from './transformHandler';
-import executeSetHealthSetHealth from './set_healthHandler';
-import executeTransformCopyTransformCopy from './transform_copyHandler';
-import executeShuffleCardShuffleCard from './shuffle_cardHandler';
+
+// Damage handlers
+import executeDamage from './damageHandler';
+import executeConditionalDamage from './conditionalDamageHandler';
+import executeDamageAndBuff from './damageAndBuffHandler';
+import executeRandomDamageAndBuff from './randomDamageAndBuffHandler';
+
+// Buff handlers
+import executeBuff from './buffHandler';
+import executeBuffAdjacent from './buffAdjacentHandler';
+import executeBuffAndTaunt from './buffAndTauntHandler';
+import executeBuffDeck from './buffDeckHandler';
+import executeBuffHand from './buffHandHandler';
+import executeBuffWeapon from './buffWeaponHandler';
+import executeConditionalBuff from './conditional_buff';
+
+// Draw handlers
+import executeDrawMultiple from './drawMultipleHandler';
+import executeDrawByType from './drawByTypeHandler';
+import executeDrawSpecific from './drawSpecificHandler';
+import executeDrawUntil from './drawUntilHandler';
+import executeConditionalDraw from './conditionalDrawHandler';
+
+// Destroy handlers
+import executeDestroySecrets from './destroySecretsHandler';
+import executeDestroySpells from './destroySpellsHandler';
+import executeDestroySpellsByCost from './destroySpellsByCostHandler';
+import executeDestroyTribe from './destroyTribeHandler';
+import executeDestroyWeapon from './destroyWeaponHandler';
+import executeDestroyWeaponDraw from './destroyWeaponDrawHandler';
+import executeDestroyWeaponGainArmor from './destroyWeaponGainArmorHandler';
+import executeDestroyAndSteal from './destroyAndStealHandler';
+import executeDestroyAndStore from './destroyAndStoreHandler';
+import executeDestroyManaCrystal from './destroyManaCrystalHandler';
+
+// Summon handlers
+import executeSummon from './summonHandler';
+import executeSummonRandom from './summonRandomHandler';
+import executeSummonRandomMinions from './summonRandomMinionsHandler';
+import executeSummonCopy from './summonCopyHandler';
+import executeSummonCopyFromDeck from './summonCopyFromDeckHandler';
+import executeSummonFromSpellCost from './summonFromSpellCostHandler';
+import executeSummonJadeGolem from './summonJadeGolemHandler';
+import executeFillBoard from './fillBoardHandler';
+
+// Discover handlers
+import executeDiscover from './discoverHandler';
+import executeDiscoverTriclass from './discoverTriclassHandler';
+import executeConditionalDiscover from './conditionalDiscoverHandler';
+import executeDiscoverFromGraveyard from './discoverFromGraveyardHandler';
+
+// Transform handlers
+import executeTransform from './transformHandler';
+import executeTransformRandom from './transformRandomHandler';
+import executeTransformCopy from './transformCopyHandler';
+import executeTransformCopyFromDeck from './transformCopyFromDeckHandler';
+import executeTransformDeck from './transformDeckHandler';
+import executeTransformAndSilence from './transformAndSilenceHandler';
+
+// Stat/Keyword handlers
+import executeDivineShieldGain from './divineShieldGainHandler';
+import executeGainKeyword from './gainKeywordHandler';
+import executeHealthPerCard from './healthPerCardHandler';
+import executeSetMana from './setManaHandler';
+import executeSetStats from './setStatsHandler';
+import executeAlterMana from './alterManaHandler';
+import executeGiveMana from './giveManaHandler';
+import executeGainArmorEqualToAttack from './gain_armor_equal_to_attack';
+import executeGainArmorConditionalDraw from './gain_armor_conditional_draw';
+import executeGrantPersistentEffect from './grantPersistentEffectHandler';
+import executeGrantStealth from './grantStealthHandler';
+import executePersistentEffect from './persistentEffectHandler';
+import executeGiveDivineShield from './giveDivineShieldHandler';
+
+// Special mechanics handlers
+import executeAdapt from './adaptHandler';
+import executeChangeHeroPower from './changeHeroPowerHandler';
+import executeExtraTurns from './extraTurnsHandler';
+import executeMindControlRandom from './mindControlRandomHandler';
+import executeSwapStats from './swapStatsHandler';
+import executeSwapStatsWithTarget from './swapStatsWithTargetHandler';
+import executeSwapDecks from './swapDecksHandler';
+import executeSwapWithDeck from './swapWithDeckHandler';
+import executeReplaceHeroPower from './replaceHeroPowerHandler';
+import executeReplayBattlecries from './replayBattlecriesHandler';
+import executeReplaySpells from './replaySpellsHandler';
+import executeWheelOfYogg from './wheelOfYoggHandler';
+
+// Card manipulation handlers
+import executeAddCard from './addCardHandler';
+import executeCopyToHand from './copyToHandHandler';
+import executeGiveCards from './giveCardsHandler';
+import executeShuffleCard from './shuffleCardHandler';
+import executeShuffleSpecial from './shuffleSpecialHandler';
+import executeReturn from './returnHandler';
+import executeReorderDeck from './reorderDeckHandler';
+import executeReplaceSpells from './replaceSpellsHandler';
+import executeResurrectAll from './resurrectAllHandler';
+
+// Weapon handlers
+import executeEquipFrostmourne from './equipFrostmourneHandler';
+import executeEquipWeaponFromDeckGainArmor from './equip_weapon_from_deck_gain_armor';
+import executeRandomWeapon from './randomWeaponHandler';
+import executeWeaponAttackBuff from './weaponAttackBuffHandler';
+import executeWeaponDurabilityDamage from './weaponDurabilityDamageHandler';
+
+// Misc handlers
+import executeConsumeAdjacent from './consumeAdjacentHandler';
+import executeEatOpponentCard from './eatOpponentCardHandler';
+import executeLimitAttackTarget from './limitAttackTargetHandler';
+import executeOpponentSummonFromHand from './opponentSummonFromHandHandler';
+import executeFreeze from './freezeHandler';
 
 // Necromancer specific handlers
-import executeBuffFromGraveyardCountBuffFromGraveyardCount from './buffFromGraveyardCountHandler';
-import executeDiscoverFromGraveyardDiscoverFromGraveyard from './discoverFromGraveyardHandler';
-import executeSummonSkeletonsBasedOnGraveyardSummonSkeletonsBasedOnGraveyard from './summonSkeletonsBasedOnGraveyardHandler';
+import executeBuffFromGraveyardCount from './buffFromGraveyardCountHandler';
+import executeSummonSkeletonsBasedOnGraveyard from './summonSkeletonsBasedOnGraveyardHandler';
 
 // Map of all battlecry handlers
-const battlecryHandlers = {
-  'discover_triclass': executeDiscoverTriclassDiscoverTriclass,
-  'return': executeReturnReturn,
-  'shuffle_special': executeShuffleSpecialShuffleSpecial,
-  'opponent_summon_from_hand': executeOpponentSummonFromHandOpponentSummonFromHand,
-  'change_hero_power': executeChangeHeroPowerChangeHeroPower,
-  'weapon_attack_buff': executeWeaponAttackBuffWeaponAttackBuff,
-  'weapon_durability_damage': executeWeaponDurabilityDamageWeaponDurabilityDamage,
-  'set_mana': executeSetManaSetMana,
-  'destroy_spells': executeDestroySpellsDestroySpells,
-  'destroy_secrets': executeDestroySecretsDestroySecrets,
-  'destroy_tribe': executeDestroyTribeDestroyTribe,
-  'mind_control_random': executeMindControlRandomMindControlRandom,
-  'destroy_weapon': executeDestroyWeaponDestroyWeapon,
-  'health_per_card': executeHealthPerCardHealthPerCard,
-  'adapt': executeAdaptAdapt,
-  'summon_from_spell_cost': executeSummonFromSpellCostSummonFromSpellCost,
-  'destroy_and_store': executeDestroyAndStoreDestroyAndStore,
-  'swap_stats': executeSwapStatsSwapStats,
-  'destroy_spells_by_cost': executeDestroySpellsByCostDestroySpellsByCost,
-  'limit_attack_target': executeLimitAttackTargetLimitAttackTarget,
-  'destroy_weapon_gain_armor': executeDestroyWeaponGainArmorDestroyWeaponGainArmor,
-  'divine_shield_gain': executeDivineShieldGainDivineShieldGain,
-  'shuffle_card': executeShuffleCardShuffleCard,
-  'conditional_damage': executeConditionalDamageConditionalDamage,
-  'conditional_discover': executeConditionalDiscoverConditionalDiscover,
-  'conditional_draw': executeConditionalDrawConditionalDraw,
-  'swap_stats_with_target': executeSwapStatsWithTargetSwapStatsWithTarget,
-  'transform_copy_from_deck': executeTransformCopyFromDeckTransformCopyFromDeck,
-  'replay_spells': executeReplaySpellsReplaySpells,
-  'extra_turns': executeExtraTurnsExtraTurns,
-  'draw_multiple': executeDrawMultipleDrawMultiple,
-  'add_card': executeAddCardAddCard,
-  'buff_weapon': executeBuffWeaponBuffWeapon,
-  'draw_until': executeDrawUntilDrawUntil,
-  'copy_to_hand': executeCopyToHandCopyToHand,
-  'draw_specific': executeDrawSpecificDrawSpecific,
-  'reorder_deck': executeReorderDeckReorderDeck,
-  'wheel_of_yogg': executeWheelOfYoggWheelOfYogg,
-  'eat_opponent_card': executeEatOpponentCardEatOpponentCard,
-  'transform_deck': executeTransformDeckTransformDeck,
-  'transform_and_silence': executeTransformAndSilenceTransformAndSilence,
-  'random_damage_and_buff': executeRandomDamageAndBuffRandomDamageAndBuff,
-  'summon_jade_golem': executeSummonJadeGolemSummonJadeGolem,
-  'replay_battlecries': executeReplayBattlecriesReplayBattlecries,
-  'summon_copy_from_deck': executeSummonCopyFromDeckSummonCopyFromDeck,
-  'summon_copy': executeSummonCopySummonCopy,
-  'draw_by_type': executeDrawByTypeDrawByType,
-  'fill_board': executeFillBoardFillBoard,
-  'give_cards': executeGiveCardsGiveCards,
-  'swap_decks': executeSwapDecksSwapDecks,
-  'transform_random': executeTransformRandomTransformRandom,
-  'destroy_and_steal': executeDestroyAndStealDestroyAndSteal,
-  'persistent_effect': executePersistentEffectPersistentEffect,
-  'set_stats': executeSetStatsSetStats,
-  'buff_deck': executeBuffDeckBuffDeck,
-  'gain_keyword': executeGainKeywordGainKeyword,
-  'replace_spells': executeReplaceSpellsReplaceSpells,
-  'random_weapon': executeRandomWeaponRandomWeapon,
-  'replace_hero_power': executeReplaceHeroPowerReplaceHeroPower,
-  'swap_with_deck': executeSwapWithDeckSwapWithDeck,
-  'buff_hand': executeBuffHandBuffHand,
-  'damage_and_buff': executeDamageAndBuffDamageAndBuff,
-  'give_divine_shield': executeGiveDivineShieldGiveDivineShield,
-  'equip_frostmourne': executeEquipFrostmourneEquipFrostmourne,
-  'buff_and_taunt': executeBuffAndTauntBuffAndTaunt,
-  'grant_stealth': executeGrantStealthGrantStealth,
-  'summon_random_minions': executeSummonRandomMinionsSummonRandomMinions,
-  'consume_adjacent': executeConsumeAdjacentConsumeAdjacent,
-  'destroy_mana_crystal': executeDestroyManaCrystalDestroyManaCrystal,
-  'resurrect_all': executeResurrectAllResurrectAll,
-  'grant_persistent_effect': executeGrantPersistentEffectGrantPersistentEffect,
-  'summon_random': executeSummonRandomSummonRandom,
-  'alter_mana': executeAlterManaAlterMana,
-  'give_mana': executeGiveManaGiveMana,
-  'buff_adjacent': executeBuffAdjacentBuffAdjacent,
-  'destroy_weapon_draw': executeDestroyWeaponDrawDestroyWeaponDraw,
-  'summon': executeSummonSummon,
-  'buff': executeBuffBuff,
-  'damage': executeDamageDamage,
-  'discover': executeDiscoverDiscover,
-  'transform': executeTransformTransform,
-  'set_health': executeSetHealthSetHealth,
-  'transform_copy': executeTransformCopyTransformCopy,
+const battlecryHandlers: Record<string, Function> = {
+  // Damage
+  'damage': executeDamage,
+  'conditional_damage': executeConditionalDamage,
+  'damage_and_buff': executeDamageAndBuff,
+  'random_damage_and_buff': executeRandomDamageAndBuff,
   
-  // Necromancer specific handlers
-  'buff_from_graveyard_count': executeBuffFromGraveyardCountBuffFromGraveyardCount,
-  'discover_from_graveyard': executeDiscoverFromGraveyardDiscoverFromGraveyard,
-  'summon_skeletons_based_on_graveyard': executeSummonSkeletonsBasedOnGraveyardSummonSkeletonsBasedOnGraveyard,
+  // Buff
+  'buff': executeBuff,
+  'buff_adjacent': executeBuffAdjacent,
+  'buff_and_taunt': executeBuffAndTaunt,
+  'buff_deck': executeBuffDeck,
+  'buff_hand': executeBuffHand,
+  'buff_weapon': executeBuffWeapon,
+  'conditional_buff': executeConditionalBuff,
+  
+  // Draw
+  'draw': executeDrawMultiple,
+  'draw_multiple': executeDrawMultiple,
+  'draw_by_type': executeDrawByType,
+  'draw_specific': executeDrawSpecific,
+  'draw_until': executeDrawUntil,
+  'conditional_draw': executeConditionalDraw,
+  
+  // Destroy
+  'destroy_secrets': executeDestroySecrets,
+  'destroy_spells': executeDestroySpells,
+  'destroy_spells_by_cost': executeDestroySpellsByCost,
+  'destroy_tribe': executeDestroyTribe,
+  'destroy_weapon': executeDestroyWeapon,
+  'destroy_weapon_draw': executeDestroyWeaponDraw,
+  'destroy_weapon_gain_armor': executeDestroyWeaponGainArmor,
+  'destroy_and_steal': executeDestroyAndSteal,
+  'destroy_and_store': executeDestroyAndStore,
+  'destroy_mana_crystal': executeDestroyManaCrystal,
+  
+  // Summon
+  'summon': executeSummon,
+  'summon_random': executeSummonRandom,
+  'summon_random_minions': executeSummonRandomMinions,
+  'summon_copy': executeSummonCopy,
+  'summon_copy_from_deck': executeSummonCopyFromDeck,
+  'summon_from_spell_cost': executeSummonFromSpellCost,
+  'summon_jade_golem': executeSummonJadeGolem,
+  'fill_board': executeFillBoard,
+  
+  // Discover
+  'discover': executeDiscover,
+  'discover_triclass': executeDiscoverTriclass,
+  'conditional_discover': executeConditionalDiscover,
+  'discover_from_graveyard': executeDiscoverFromGraveyard,
+  
+  // Transform
+  'transform': executeTransform,
+  'transform_random': executeTransformRandom,
+  'transform_copy': executeTransformCopy,
+  'transform_copy_from_deck': executeTransformCopyFromDeck,
+  'transform_deck': executeTransformDeck,
+  'transform_and_silence': executeTransformAndSilence,
+  
+  // Stats/Keywords
+  'divine_shield_gain': executeDivineShieldGain,
+  'gain_keyword': executeGainKeyword,
+  'health_per_card': executeHealthPerCard,
+  'set_mana': executeSetMana,
+  'set_stats': executeSetStats,
+  'alter_mana': executeAlterMana,
+  'give_mana': executeGiveMana,
+  'gain_armor_equal_to_attack': executeGainArmorEqualToAttack,
+  'gain_armor_conditional_draw': executeGainArmorConditionalDraw,
+  'grant_persistent_effect': executeGrantPersistentEffect,
+  'grant_stealth': executeGrantStealth,
+  'persistent_effect': executePersistentEffect,
+  'give_divine_shield': executeGiveDivineShield,
+  
+  // Special mechanics
+  'adapt': executeAdapt,
+  'change_hero_power': executeChangeHeroPower,
+  'extra_turns': executeExtraTurns,
+  'mind_control_random': executeMindControlRandom,
+  'swap_stats': executeSwapStats,
+  'swap_stats_with_target': executeSwapStatsWithTarget,
+  'swap_decks': executeSwapDecks,
+  'swap_with_deck': executeSwapWithDeck,
+  'replace_hero_power': executeReplaceHeroPower,
+  'replay_battlecries': executeReplayBattlecries,
+  'replay_spells': executeReplaySpells,
+  'wheel_of_yogg': executeWheelOfYogg,
+  
+  // Card manipulation
+  'add_card': executeAddCard,
+  'copy_to_hand': executeCopyToHand,
+  'give_cards': executeGiveCards,
+  'shuffle_card': executeShuffleCard,
+  'shuffle_special': executeShuffleSpecial,
+  'return': executeReturn,
+  'reorder_deck': executeReorderDeck,
+  'replace_spells': executeReplaceSpells,
+  'resurrect_all': executeResurrectAll,
+  
+  // Weapon
+  'equip_frostmourne': executeEquipFrostmourne,
+  'equip_weapon_from_deck_gain_armor': executeEquipWeaponFromDeckGainArmor,
+  'random_weapon': executeRandomWeapon,
+  'weapon_attack_buff': executeWeaponAttackBuff,
+  'weapon_durability_damage': executeWeaponDurabilityDamage,
+  
+  // Misc
+  'consume_adjacent': executeConsumeAdjacent,
+  'eat_opponent_card': executeEatOpponentCard,
+  'limit_attack_target': executeLimitAttackTarget,
+  'opponent_summon_from_hand': executeOpponentSummonFromHand,
+  'freeze': executeFreeze,
+  
+  // Necromancer specific
+  'buff_from_graveyard_count': executeBuffFromGraveyardCount,
+  'summon_skeletons_based_on_graveyard': executeSummonSkeletonsBasedOnGraveyard,
 };
 
 export default battlecryHandlers;

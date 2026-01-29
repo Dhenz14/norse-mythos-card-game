@@ -1,8 +1,8 @@
-import { CardInstance, GameState, CardData, DeathrattleEffect, AnimationType, GameLogEvent } from '../types';
+import { CardInstance, GameState, CardData, DeathrattleEffect, CardAnimationType, GameLogEvent, AnimationParams, MinionCardData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { createCardInstance } from './cardUtils';
 import { drawCardFromDeck } from './zoneUtils';
-import { fullCardDatabase } from '../data/cards';
+import allCards from '../data/allCards';
 
 /**
  * Execute deathrattle effects for a card
@@ -12,21 +12,45 @@ export function executeDeathrattle(
   card: CardInstance,
   playerId: 'player' | 'opponent'
 ): GameState {
-  // If the card doesn't have a deathrattle keyword or effect, return the original state
-  if (!card.card.keywords?.includes('deathrattle') || !card.card.deathrattle) {
+  // If the card is not a minion, return the original state
+  if (card.card.type !== 'minion') {
+    console.log(`[Deathrattle] Skipped: ${card.card.name} is not a minion`);
     return state;
   }
+  
+  // Get the deathrattle from the minion card
+  const minionCard = card.card as MinionCardData;
+  
+  // Check for deathrattle keyword OR deathrattle effect (some cards may have one without the other)
+  const hasDeathrattleKeyword = minionCard.keywords?.includes('deathrattle') === true;
+  const hasDeathrattleEffect = minionCard.deathrattle !== undefined;
+  
+  if (!hasDeathrattleKeyword && !hasDeathrattleEffect) {
+    return state;
+  }
+  
+  // If keyword exists but no effect, log warning
+  if (hasDeathrattleKeyword && !hasDeathrattleEffect) {
+    console.warn(`[Deathrattle] Card ${card.card.name} has deathrattle keyword but no effect defined!`);
+    return state;
+  }
+  
+  // If effect exists but no keyword, still execute but log for debugging
+  if (!hasDeathrattleKeyword && hasDeathrattleEffect) {
+    console.warn(`[Deathrattle] Card ${card.card.name} has deathrattle effect but no keyword - executing anyway`);
+  }
+  
+  console.log(`[Deathrattle] Triggered: ${card.card.name} (ID: ${card.card.id}) - Effect: ${minionCard.deathrattle!.type}`, minionCard.deathrattle);
 
-  console.log(`Executing deathrattle for ${card.card.name}`);
 
   // Create a deep copy of the state to safely modify
   const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Process the deathrattle based on its type
-  const deathrattle = card.card.deathrattle;
+  const deathrattle = minionCard.deathrattle!;
   
   // Add deathrattle animation to the queue if animations are supported
-  if (newState.animations) {
+  if ((newState as any).animations) {
     // Create a properly typed animation object that matches the AnimationParams interface
     const deathrattleAnimation: AnimationParams & {
       id: string;
@@ -38,8 +62,8 @@ export function executeDeathrattle(
       healthBuff?: number;
     } = {
       id: `deathrattle_${card.instanceId}_${Date.now()}`,
-      type: 'deathrattle' as AnimationType,
-      sourceId: card.card.id,
+      type: 'deathrattle' as const,
+      sourceId: card.card.id.toString(),
       position: { x: 0, y: 0 }, // In a real implementation, this would be the card's position
       value: deathrattle.value,
       startTime: Date.now(),
@@ -60,7 +84,7 @@ export function executeDeathrattle(
     }
     
     // Add the animation to the state
-    newState.animations.push(deathrattleAnimation);
+    (newState as any).animations.push(deathrattleAnimation);
   }
   
   // Add to game log if it exists
@@ -68,11 +92,11 @@ export function executeDeathrattle(
     newState.gameLog.push({
       id: uuidv4(),
       type: 'deathrattle',
+      player: playerId,
       text: `${card.card.name} triggered its deathrattle: ${deathrattle.type}`,
       timestamp: Date.now(),
       turn: newState.turnNumber,
-      source: card.card.name,
-      cardId: card.card.id
+      cardId: card.card.id.toString()
     });
   }
   
@@ -115,7 +139,7 @@ function executeSummonDeathrattle(
     return state;
   }
   
-  const cardToSummon = fullCardDatabase.find(card => card.id === deathrattle.summonCardId);
+  const cardToSummon = allCards.find(card => card.id === deathrattle.summonCardId);
   
   if (!cardToSummon) {
     console.error(`Card with ID ${deathrattle.summonCardId} not found in the database`);
@@ -126,7 +150,6 @@ function executeSummonDeathrattle(
   
   // Check if there's room on the battlefield (max 7 minions)
   if (player.battlefield.length >= 7) {
-    console.log(`${playerId}'s battlefield is full, cannot summon ${cardToSummon.name}`);
     return newState;
   }
   
@@ -137,7 +160,6 @@ function executeSummonDeathrattle(
   for (let i = 0; i < summonCount; i++) {
     // Check battlefield space again on each iteration
     if (player.battlefield.length >= 7) {
-      console.log(`${playerId}'s battlefield is now full, stopping summons after ${i} copies`);
       break;
     }
     
@@ -147,7 +169,6 @@ function executeSummonDeathrattle(
     // Add the summoned card to the battlefield
     player.battlefield.push(summonedCard);
     
-    console.log(`Deathrattle: Summoned ${cardToSummon.name} (${i+1}/${summonCount}) for ${playerId}`);
   }
   
   return newState;
@@ -166,13 +187,11 @@ function executeDrawDeathrattle(
   // Default to 1 card if no value is specified
   const cardsToDraw = deathrattle.value || 1;
   
-  console.log(`Deathrattle: Drawing ${cardsToDraw} card(s) for ${playerId}`);
   
   // Check if player has enough cards in deck
   const player = newState.players[playerId];
   
   if (player.deck.length === 0) {
-    console.log(`${playerId} has no cards left in deck for deathrattle draw effect`);
     // In Hearthstone, drawing from an empty deck causes fatigue damage
     // For simplicity, we'll just skip the draw without causing fatigue damage
     return newState;
@@ -183,7 +202,6 @@ function executeDrawDeathrattle(
     if (player.deck.length > 0) {
       newState = drawCardFromDeck(newState, playerId);
     } else {
-      console.log(`${playerId}'s deck is empty, stopping draw effect`);
       break;
     }
   }
@@ -215,16 +233,14 @@ function executeDamageDeathrattle(
       // Handle divine shield
       if (minion.hasDivineShield) {
         minion.hasDivineShield = false;
-        console.log(`Deathrattle: Divine shield absorbed damage on ${minion.card.name}`);
       } else {
-        minion.currentHealth -= damageAmount;
-        console.log(`Deathrattle: Dealt ${damageAmount} damage to ${minion.card.name}`);
+        const currentHealth = minion.currentHealth ?? (minion.card.type === 'minion' ? minion.card.health : 0) ?? 0;
+        minion.currentHealth = currentHealth - damageAmount;
       }
     });
     
     // Deal damage to enemy hero
     enemyPlayer.health -= damageAmount;
-    console.log(`Deathrattle: Dealt ${damageAmount} damage to ${enemyId} hero`);
   } else if (targets === 'all') {
     // Deal damage to all minions on both sides
     for (const playerKey of ['player', 'opponent'] as const) {
@@ -232,10 +248,9 @@ function executeDamageDeathrattle(
         // Handle divine shield
         if (minion.hasDivineShield) {
           minion.hasDivineShield = false;
-          console.log(`Deathrattle: Divine shield absorbed damage on ${minion.card.name}`);
         } else {
-          minion.currentHealth -= damageAmount;
-          console.log(`Deathrattle: Dealt ${damageAmount} damage to ${minion.card.name}`);
+          const currentHealth = minion.currentHealth ?? (minion.card.type === 'minion' ? minion.card.health : 0) ?? 0;
+          minion.currentHealth = currentHealth - damageAmount;
         }
       });
     }
@@ -243,19 +258,23 @@ function executeDamageDeathrattle(
     // Deal damage to enemy hero only
     const enemyId = playerId === 'player' ? 'opponent' : 'player';
     newState.players[enemyId].health -= damageAmount;
-    console.log(`Deathrattle: Dealt ${damageAmount} damage to ${enemyId} hero`);
   }
   
   // Check if any minions died as a result of the deathrattle damage
+  // Note: Chained deathrattles from AOE damage are NOT processed here to prevent infinite loops.
+  // The game uses a sequential resolution model where deaths from deathrattles are moved to graveyard
+  // but their deathrattles are deferred until the next combat phase check.
+  // This matches Hearthstone's behavior where simultaneous deaths resolve together.
+  
   for (const playerKey of ['player', 'opponent'] as const) {
-    const deadMinions = newState.players[playerKey].battlefield.filter(minion => minion.currentHealth <= 0);
+    const deadMinions = newState.players[playerKey].battlefield.filter(minion => (minion.currentHealth ?? 0) <= 0);
     if (deadMinions.length > 0) {
       // Remove dead minions from the battlefield
       newState.players[playerKey].battlefield = newState.players[playerKey].battlefield.filter(
-        minion => minion.currentHealth > 0
+        minion => (minion.currentHealth ?? 0) > 0
       );
       
-      // Add them to the graveyard (but don't trigger more deathrattles to avoid loops)
+      // Add them to the graveyard
       if (!newState.players[playerKey].graveyard) {
         newState.players[playerKey].graveyard = [];
       }
@@ -264,7 +283,21 @@ function executeDamageDeathrattle(
         ...deadMinions
       ];
       
-      console.log(`Deathrattle: ${deadMinions.length} minions died from deathrattle damage`);
+      // Log deaths with deathrattles for debugging - these will be handled by the combat resolution phase
+      for (const minion of deadMinions) {
+        if (shouldTriggerDeathrattle(minion)) {
+          console.log(`[Deathrattle] Minion ${minion.card.name} died from AOE damage - deathrattle queued for combat resolution`);
+          // Mark on the state that there are pending deathrattles to process
+          if (!(newState as any).pendingDeathrattles) {
+            (newState as any).pendingDeathrattles = [];
+          }
+          (newState as any).pendingDeathrattles.push({ 
+            minion, 
+            playerId: playerKey,
+            source: 'aoe_damage'
+          });
+        }
+      }
     }
   }
   
@@ -272,14 +305,14 @@ function executeDamageDeathrattle(
   if (newState.players.player.health <= 0) {
     newState.gamePhase = "game_over";
     newState.winner = 'opponent';
-    console.log('Game over: Player died from deathrattle damage');
   } else if (newState.players.opponent.health <= 0) {
     newState.gamePhase = "game_over";
     newState.winner = 'player';
-    console.log('Game over: Opponent died from deathrattle damage');
   }
   
-  return newState;
+  // Process pending deathrattles now (since we bypassed destroyCard for AOE deaths)
+  // This is safe because processPendingDeathrattles handles the iteration itself
+  return processPendingDeathrattles(newState);
 }
 
 /**
@@ -301,28 +334,27 @@ function executeHealDeathrattle(
     
     // Heal all friendly minions
     currentPlayer.battlefield.forEach(minion => {
-      minion.currentHealth = Math.min(minion.currentHealth + healAmount, minion.card.health);
-      console.log(`Deathrattle: Healed ${minion.card.name} for ${healAmount}`);
+      const currentHealth = minion.currentHealth ?? (minion.card.type === 'minion' ? minion.card.health : 0) ?? 0;
+      const maxHealth = minion.card.type === 'minion' ? (minion.card.health ?? 0) : 0;
+      minion.currentHealth = Math.min(currentHealth + healAmount, maxHealth);
     });
     
     // Heal friendly hero
     currentPlayer.health = Math.min(currentPlayer.health + healAmount, 30); // 30 is max health
-    console.log(`Deathrattle: Healed ${playerId} hero for ${healAmount}`);
   } else if (targets === 'all') {
     // Heal all minions and heroes
     for (const playerKey of ['player', 'opponent'] as const) {
       newState.players[playerKey].battlefield.forEach(minion => {
-        minion.currentHealth = Math.min(minion.currentHealth + healAmount, minion.card.health);
-        console.log(`Deathrattle: Healed ${minion.card.name} for ${healAmount}`);
+        const currentHealth = minion.currentHealth ?? (minion.card.type === 'minion' ? minion.card.health : 0) ?? 0;
+        const maxHealth = minion.card.type === 'minion' ? (minion.card.health ?? 0) : 0;
+        minion.currentHealth = Math.min(currentHealth + healAmount, maxHealth);
       });
       
       newState.players[playerKey].health = Math.min(newState.players[playerKey].health + healAmount, 30);
-      console.log(`Deathrattle: Healed ${playerKey} hero for ${healAmount}`);
     }
   } else if (targets === 'friendly_hero') {
     // Heal friendly hero only
     newState.players[playerId].health = Math.min(newState.players[playerId].health + healAmount, 30);
-    console.log(`Deathrattle: Healed ${playerId} hero for ${healAmount}`);
   }
   
   return newState;
@@ -351,18 +383,19 @@ function executeBuffDeathrattle(
   
   // Apply buff to all friendly minions
   player.battlefield.forEach(minion => {
-    // Increase attack
-    if (attackBuff !== 0) {
-      minion.card.attack += attackBuff;
+    if (minion.card.type === 'minion') {
+      const minionCard = minion.card as MinionCardData;
+      // Increase attack
+      if (attackBuff !== 0) {
+        minionCard.attack = (minionCard.attack ?? 0) + attackBuff;
+      }
+      
+      // Increase max health and current health
+      if (healthBuff !== 0) {
+        minionCard.health = (minionCard.health ?? 0) + healthBuff;
+        minion.currentHealth = (minion.currentHealth ?? minionCard.health ?? 0) + healthBuff;
+      }
     }
-    
-    // Increase max health and current health
-    if (healthBuff !== 0) {
-      minion.card.health += healthBuff;
-      minion.currentHealth += healthBuff;
-    }
-    
-    console.log(`Deathrattle: Buffed ${minion.card.name} with +${attackBuff}/+${healthBuff}`);
   });
   
   return newState;
@@ -388,7 +421,6 @@ function executeGiveDivineShieldDeathrattle(
     if (currentPlayer.battlefield) {
       currentPlayer.battlefield.forEach(minion => {
         minion.hasDivineShield = true;
-        console.log(`Deathrattle: Gave divine shield to ${minion.card.name}`);
       });
     }
   } else if (targetType === 'all_minions') {
@@ -399,7 +431,6 @@ function executeGiveDivineShieldDeathrattle(
       if (playerState.battlefield) {
         playerState.battlefield.forEach(minion => {
           minion.hasDivineShield = true;
-          console.log(`Deathrattle: Gave divine shield to ${minion.card.name}`);
         });
       }
     }
@@ -412,7 +443,6 @@ function executeGiveDivineShieldDeathrattle(
       const targetMinion = currentPlayer.battlefield[randomIndex];
       
       targetMinion.hasDivineShield = true;
-      console.log(`Deathrattle: Gave divine shield to ${targetMinion.card.name} (random friendly minion)`);
     }
   }
   
@@ -442,13 +472,11 @@ function executeMindControlDeathrattle(
   if (targetType === 'random_enemy_minion') {
     // Check if opponent has any minions
     if (!opponentPlayer.battlefield || opponentPlayer.battlefield.length === 0) {
-      console.log('No enemy minions to mind control');
       return newState;
     }
     
     // Check if current player has room for a new minion
     if (currentPlayer.battlefield && currentPlayer.battlefield.length >= 7) {
-      console.log(`${playerId}'s battlefield is full, cannot mind control`);
       return newState;
     }
     
@@ -469,7 +497,6 @@ function executeMindControlDeathrattle(
     targetMinion.canAttack = false;
     targetMinion.isSummoningSick = true;
     
-    console.log(`Deathrattle: Mind controlled ${targetMinion.card.name} from ${opponentId} to ${playerId}`);
   }
   
   return newState;
@@ -499,7 +526,13 @@ function updateHealth(currentHealth: number | undefined, change: number, maxHeal
 
 // Helper function to safely check for undefined current health
 function safeCurrentHealth(minion: CardInstance): number {
-  return minion.currentHealth !== undefined ? minion.currentHealth : (minion.card.health || 1);
+  if (minion.currentHealth !== undefined) {
+    return minion.currentHealth;
+  }
+  if (minion.card.type === 'minion') {
+    return (minion.card as MinionCardData).health ?? 1;
+  }
+  return 1;
 }
 
 // Helper function to safely set divine shield
@@ -509,10 +542,68 @@ function setDivineShield(minion: CardInstance, value: boolean): void {
 
 /**
  * Check if a card should trigger its deathrattle
+ * Only returns true if the card has a deathrattle effect defined (not just keyword)
  */
 export function shouldTriggerDeathrattle(card: CardInstance): boolean {
-  return (
-    card.card.keywords?.includes('deathrattle') === true && 
-    card.card.deathrattle !== undefined
-  );
+  if (card.card.type !== 'minion') {
+    return false;
+  }
+  
+  const minionCard = card.card as MinionCardData;
+  const hasDeathrattleEffect = minionCard.deathrattle !== undefined;
+  
+  // Only trigger if effect exists - keyword-only cards are data errors
+  if (!hasDeathrattleEffect) {
+    const hasDeathrattleKeyword = minionCard.keywords?.includes('deathrattle') === true;
+    if (hasDeathrattleKeyword) {
+      console.warn(`[Deathrattle] Card ${card.card.name} has deathrattle keyword but no effect defined - data error`);
+    }
+  }
+  
+  return hasDeathrattleEffect;
+}
+
+/**
+ * Process any pending deathrattles in the game state
+ * This should be called at the end of combat resolution phases
+ * Returns the updated state with pending deathrattles cleared
+ */
+export function processPendingDeathrattles(state: GameState): GameState {
+  const pendingDeathrattles = (state as any).pendingDeathrattles as Array<{
+    minion: CardInstance;
+    playerId: 'player' | 'opponent';
+    source: string;
+  }> | undefined;
+  
+  if (!pendingDeathrattles || pendingDeathrattles.length === 0) {
+    return state;
+  }
+  
+  console.log(`[Deathrattle] Processing ${pendingDeathrattles.length} pending deathrattles`);
+  
+  let currentState = state;
+  const MAX_ITERATIONS = 30; // Safety limit
+  let iterations = 0;
+  
+  // Process pending deathrattles - each may create new ones
+  while ((currentState as any).pendingDeathrattles?.length > 0 && iterations < MAX_ITERATIONS) {
+    const queue = [...(currentState as any).pendingDeathrattles];
+    (currentState as any).pendingDeathrattles = [];
+    
+    for (const { minion, playerId } of queue) {
+      console.log(`[Deathrattle] Processing pending: ${minion.card.name} for ${playerId}`);
+      currentState = executeDeathrattle(currentState, minion, playerId);
+    }
+    
+    iterations++;
+  }
+  
+  if (iterations >= MAX_ITERATIONS) {
+    console.warn('[Deathrattle] Maximum iterations reached while processing pending deathrattles');
+  }
+  
+  // Clear any remaining pending deathrattles
+  delete (currentState as any).pendingDeathrattles;
+  
+  return currentState;
 }

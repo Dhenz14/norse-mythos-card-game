@@ -32,7 +32,6 @@ export default function executeBuffWeapon(
     const buffDurability = effect.buffDurability;
     
     // Implementation placeholder
-    console.log(`spellEffect:buff_weapon executed with properties: ${JSON.stringify(effect)}`);
     
     // TODO: Implement the spellEffect:buff_weapon effect
     if (requiresTarget) {

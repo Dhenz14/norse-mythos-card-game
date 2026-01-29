@@ -1,57 +1,51 @@
 /**
- * CommandingShout SpellEffect Handler
+ * Commanding Shout Effect Handler
  * 
- * Implements the "commanding_shout" spellEffect effect.
- * Example card: Card ID: 5014
+ * This handler implements the spellEffect:commanding_shout effect.
+ * Prevents friendly minions from dropping below 1 health this turn.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a commanding_shout spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeCommandingShoutCommandingShout(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing commanding_shout spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: drawCards
-  if (effect.drawCards === undefined) {
-    console.warn(`CommandingShout effect missing drawCards property`);
-    // Fall back to a default value or handle the missing property
+export default function executeCommandingShout(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:commanding_shout for ${sourceCard.name}`);
+    
+    const drawCards = effect.drawCards || 0;
+    const duration = effect.duration || 1;
+    
+    const friendlyMinions = context.getFriendlyMinions();
+    
+    friendlyMinions.forEach(minion => {
+      (minion as any).cantDropBelowOne = true;
+      (minion as any).cantDropBelowOneDuration = duration;
+      context.logGameEvent(`${minion.card.name} can't be reduced below 1 health this turn`);
+    });
+    
+    if (drawCards > 0) {
+      context.drawCards(drawCards);
+      context.logGameEvent(`Drew ${drawCards} card(s)`);
+    }
+    
+    context.logGameEvent(`Commanding Shout: ${friendlyMinions.length} minions protected`);
+    
+    return { 
+      success: true,
+      additionalData: {
+        protectedMinions: friendlyMinions.length,
+        drawnCards: drawCards
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:commanding_shout:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:commanding_shout: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the commanding_shout spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered commanding_shout spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeCommandingShoutCommandingShout;

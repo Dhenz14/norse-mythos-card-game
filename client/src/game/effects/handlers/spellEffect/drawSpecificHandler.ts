@@ -1,63 +1,100 @@
 /**
- * DrawSpecific SpellEffect Handler
+ * Draw Specific Effect Handler
  * 
- * Implements the "draw_specific" spellEffect effect.
- * Example card: Card ID: 15012
+ * This handler implements the spellEffect:draw_specific effect.
+ * Draws a specific type of card from the deck.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a draw_specific spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeDrawSpecificDrawSpecific(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing draw_specific spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DrawSpecific effect missing value property`);
-    // Fall back to a default value or handle the missing property
+export default function executeDrawSpecific(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:draw_specific for ${sourceCard.name}`);
+    
+    const drawCount = effect.value || 1;
+    const cardType = effect.cardType;
+    const race = effect.race;
+    const minManaCost = effect.minManaCost;
+    const maxManaCost = effect.maxManaCost;
+    const keyword = effect.keyword;
+    
+    let eligibleCards = [...context.currentPlayer.deck];
+    
+    if (cardType) {
+      eligibleCards = eligibleCards.filter(c => c.card.type === cardType);
+    }
+    
+    if (race) {
+      eligibleCards = eligibleCards.filter(c => c.card.race === race);
+    }
+    
+    if (minManaCost !== undefined) {
+      eligibleCards = eligibleCards.filter(c => c.card.manaCost >= minManaCost);
+    }
+    
+    if (maxManaCost !== undefined) {
+      eligibleCards = eligibleCards.filter(c => c.card.manaCost <= maxManaCost);
+    }
+    
+    if (keyword) {
+      eligibleCards = eligibleCards.filter(c => 
+        c.card.keywords && c.card.keywords.includes(keyword)
+      );
+    }
+    
+    if (eligibleCards.length === 0) {
+      context.logGameEvent(`No matching cards in deck to draw`);
+      return { 
+        success: true,
+        additionalData: { cardsDrawn: 0 }
+      };
+    }
+    
+    const drawnCards: string[] = [];
+    const actualDrawCount = Math.min(drawCount, eligibleCards.length);
+    
+    for (let i = 0; i < actualDrawCount; i++) {
+      if (context.currentPlayer.hand.length >= 10) {
+        context.logGameEvent(`Hand is full, can't draw more cards`);
+        break;
+      }
+      
+      const randomIndex = Math.floor(Math.random() * eligibleCards.length);
+      const cardToDraw = eligibleCards.splice(randomIndex, 1)[0];
+      
+      const deckIndex = context.currentPlayer.deck.indexOf(cardToDraw);
+      if (deckIndex !== -1) {
+        context.currentPlayer.deck.splice(deckIndex, 1);
+        context.currentPlayer.hand.push(cardToDraw);
+        drawnCards.push(cardToDraw.card.name);
+        context.logGameEvent(`Drew ${cardToDraw.card.name}`);
+      }
+    }
+    
+    return { 
+      success: true,
+      additionalData: {
+        cardsDrawn: drawnCards.length,
+        cardNames: drawnCards,
+        filterCriteria: {
+          cardType,
+          race,
+          minManaCost,
+          maxManaCost,
+          keyword
+        }
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:draw_specific:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:draw_specific: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: race
-  if (effect.race === undefined) {
-    console.warn(`DrawSpecific effect missing race property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the draw_specific spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered draw_specific spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDrawSpecificDrawSpecific;

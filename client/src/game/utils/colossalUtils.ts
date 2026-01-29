@@ -84,7 +84,6 @@ export function summonColossalParts(
   const partIds = getColossalParts(mainMinion.card.id);
   
   if (partIds.length === 0) {
-    console.log(`No parts defined for colossal minion ${mainMinion.card.name}`);
     return newState;
   }
   
@@ -98,7 +97,6 @@ export function summonColossalParts(
   
   // If this is a special colossal minion with a 3D model, trigger the animation
   if (Object.values(SPECIAL_COLOSSAL_IDS).includes(mainMinion.card.id)) {
-    console.log(`Triggering special 3D animation for colossal minion: ${mainMinion.card.name} (ID: ${mainMinion.card.id})`);
     
     // Add animation event to the game state to be processed by the Animation Manager
     // Note: In a real implementation, we might want a more robust way to trigger animations
@@ -122,13 +120,11 @@ export function summonColossalParts(
   
   // If no space, we can't summon parts
   if (availableSpace <= 0) {
-    console.log(`No space on battlefield to summon parts for ${mainMinion.card.name}`);
     return newState;
   }
   
   // Determine how many parts we can summon based on available space
   const partsToSummon = Math.min(partIds.length, availableSpace);
-  console.log(`Summoning ${partsToSummon} parts for ${mainMinion.card.name}`);
   
   // References to track the summoned parts
   const summonedParts: CardInstance[] = [];

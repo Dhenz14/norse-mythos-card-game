@@ -28,7 +28,6 @@ import executeEquipSpecialWeapon from './handlers/spellEffect/equip_special_weap
  * Register all Warrior card effect handlers
  */
 export function registerWarriorHandlers(): void {
-  console.log('Registering Warrior card effect handlers...');
   
   // Register battlecry handlers
   EffectRegistry.registerBattlecryHandler('conditional_buff', executeConditionalBuff);
@@ -50,5 +49,4 @@ export function registerWarriorHandlers(): void {
   EffectRegistry.registerSpellEffectHandler('armor_based_on_missing_health', executeArmorBasedOnMissingHealth);
   EffectRegistry.registerSpellEffectHandler('equip_special_weapon', executeEquipSpecialWeapon);
   
-  console.log('Warrior card effect handlers registered successfully.');
 }

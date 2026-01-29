@@ -1,57 +1,71 @@
 /**
  * TransformCopyFromDeck Battlecry Handler
  * 
- * Implements the "transform_copy_from_deck" battlecry effect.
+ * Transforms the source minion into a copy of a minion from the deck.
  * Example card: Muckmorpher (ID: 30042)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a transform_copy_from_deck battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeTransformCopyFromDeckTransformCopyFromDeck(
-  state: GameState,
+export default function executeTransformCopyFromDeck(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing transform_copy_from_deck battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`TransformCopyFromDeck effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing transform_copy_from_deck battlecry for ${sourceCard.name}`);
+    
+    const setHealth = effect.value || effect.setHealth;
+    const setAttack = effect.setAttack;
+    const cardType = effect.cardType || 'minion';
+    
+    const minionsInDeck = context.currentPlayer.deck.filter(
+      card => card.card.type === cardType
+    );
+    
+    if (minionsInDeck.length === 0) {
+      context.logGameEvent('No minions in deck to copy from');
+      return { success: false, error: 'No minions in deck' };
+    }
+    
+    const randomMinion = minionsInDeck[Math.floor(Math.random() * minionsInDeck.length)];
+    
+    const sourceOnBoard = context.currentPlayer.board.find(
+      m => m.card.id === sourceCard.id
+    );
+    
+    if (!sourceOnBoard) {
+      return { success: false, error: 'Source minion not found on board' };
+    }
+    
+    const boardIndex = context.currentPlayer.board.indexOf(sourceOnBoard);
+    
+    const transformedMinion: CardInstance = {
+      instanceId: `deck-copy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      card: { ...randomMinion.card },
+      currentHealth: setHealth ?? (randomMinion.card.health || 1),
+      currentAttack: setAttack ?? (randomMinion.card.attack || 1),
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    
+    context.currentPlayer.board[boardIndex] = transformedMinion;
+    
+    context.logGameEvent(`${sourceCard.name} transformed into a copy of ${randomMinion.card.name} from deck.`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        originalSource: sourceCard, 
+        copiedFrom: randomMinion.card, 
+        result: transformedMinion 
+      }
+    };
+  } catch (error) {
+    console.error('Error executing transform_copy_from_deck:', error);
+    return { success: false, error: `Failed to execute transform_copy_from_deck: ${error}` };
   }
-  
-  // TODO: Implement the transform_copy_from_deck battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered transform_copy_from_deck battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeTransformCopyFromDeckTransformCopyFromDeck;

@@ -2,56 +2,78 @@
  * TransformAll SpellEffect Handler
  * 
  * Implements the "transform_all" spellEffect effect.
- * Example card: Mass Polymorph (ID: 20409)
+ * Transforms all minions into a specified minion type.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a transform_all spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeTransformAllTransformAll(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing transform_all spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: summonCardId
-  if (effect.summonCardId === undefined) {
-    console.warn(`TransformAll effect missing summonCardId property`);
-    // Fall back to a default value or handle the missing property
+export default function executeTransformAll(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:transform_all for ${sourceCard.name}`);
+    
+    const transformCardId = effect.summonCardId || effect.transformInto;
+    const includeFriendly = effect.includeFriendly !== false;
+    const includeEnemy = effect.includeEnemy !== false;
+    
+    if (!transformCardId) {
+      context.logGameEvent(`No transform target specified`);
+      return { success: false, error: 'No transform target specified' };
+    }
+    
+    let transformedCount = 0;
+    
+    const transformMinion = (minion: any, player: any) => {
+      const contextAny = context as any;
+      const transformedCard = contextAny.getCardById ? contextAny.getCardById(transformCardId) : null;
+      
+      if (transformedCard) {
+        const originalName = minion.card.name;
+        
+        minion.card = { ...transformedCard };
+        minion.currentHealth = transformedCard.health || 1;
+        minion.card.attack = transformedCard.attack || 1;
+        
+        delete minion.enchantments;
+        delete minion.grantedDeathrattles;
+        delete minion.temporaryEffects;
+        minion.isSilenced = false;
+        (minion as any).isFrozen = false;
+        (minion as any).hasDivineShield = false;
+        
+        context.logGameEvent(`${originalName} transformed into ${transformedCard.name}`);
+        transformedCount++;
+      }
+    };
+    
+    if (includeFriendly) {
+      [...context.currentPlayer.board].forEach(minion => {
+        transformMinion(minion, context.currentPlayer);
+      });
+    }
+    
+    if (includeEnemy) {
+      [...context.opponentPlayer.board].forEach(minion => {
+        transformMinion(minion, context.opponentPlayer);
+      });
+    }
+    
+    return { 
+      success: true,
+      additionalData: { 
+        transformedCount,
+        transformedInto: transformCardId
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:transform_all:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:transform_all: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the transform_all spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered transform_all spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeTransformAllTransformAll;

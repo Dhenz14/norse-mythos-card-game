@@ -1,61 +1,48 @@
 /**
  * Gain Armor Reduce Cost Effect Handler
  * 
- * This handler implements the spellEffect:gain_armor_reduce_cost effect.
+ * Implements the "gain_armor_reduce_cost" spellEffect effect.
+ * Gains armor and reduces cost of cards based on certain conditions.
  */
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a Gain Armor Reduce Cost effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.value - The value for the effect
-   * @param effect.costReduction - The cost reduction for the effect
- * @returns An object indicating success or failure and any additional data
- */
 export default function executeGainArmorReduceCost(
   context: GameContext, 
   effect: SpellEffect, 
   sourceCard: Card
 ): EffectResult {
   try {
-    // Log the effect execution
     context.logGameEvent(`Executing spellEffect:gain_armor_reduce_cost for ${sourceCard.name}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const value = effect.value;
-    const costReduction = effect.costReduction;
+    const armorValue = effect.value || 5;
+    const costReduction = effect.costReduction || 1;
+    const targetCardType = effect.targetCardType || 'all';
     
-    // Implementation placeholder
-    console.log(`spellEffect:gain_armor_reduce_cost executed with properties: ${JSON.stringify(effect)}`);
+    const currentPlayer = context.currentPlayer as any;
     
-    // TODO: Implement the spellEffect:gain_armor_reduce_cost effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCard);
+    currentPlayer.hero.armor = (currentPlayer.hero.armor || 0) + armorValue;
+    context.logGameEvent(`Gained ${armorValue} armor`);
+    
+    let cardsReduced = 0;
+    currentPlayer.hand.forEach((cardInstance: any) => {
+      const card = cardInstance.card;
+      const matchesType = targetCardType === 'all' || card.type === targetCardType;
       
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for spellEffect:gain_armor_reduce_cost`);
-        return { success: false, error: 'No valid targets' };
+      if (matchesType && card.manaCost !== undefined && card.manaCost > 0) {
+        const reduction = Math.min(costReduction, card.manaCost);
+        card.manaCost -= reduction;
+        cardInstance.costModifier = (cardInstance.costModifier || 0) - reduction;
+        cardsReduced++;
+        context.logGameEvent(`Reduced cost of ${card.name} by ${reduction}`);
       }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Gain Armor Reduce Cost effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Gain Armor Reduce Cost effect applied`);
-      // TODO: Apply effect without target
-    }
+    });
     
-    return { success: true };
+    return { 
+      success: true,
+      additionalData: { armorGained: armorValue, cardsReduced }
+    };
   } catch (error) {
     console.error(`Error executing spellEffect:gain_armor_reduce_cost:`, error);
     return { 

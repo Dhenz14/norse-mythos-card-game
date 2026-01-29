@@ -87,7 +87,6 @@ export function executeFrenzyEffect(
   }
   
   // Log the frenzy activation
-  console.log(`Executing Frenzy effect for ${card.card.name}`);
   
   // Add to the game log
   updatedState.gameLog = [
@@ -122,7 +121,6 @@ export function executeFrenzyEffect(
           // We can safely use our applyDamage function from earlier
           newState = applyDamage(newState, enemyPlayerId, minion.instanceId, damageAmount);
         }
-        console.log(`Frenzy dealt ${damageAmount} damage to all enemy minions`);
         return newState;
       }
       return updatedState;
@@ -135,7 +133,6 @@ export function executeFrenzyEffect(
           30, // Max health in Hearthstone
           updatedState.players[playerId].health + healAmount
         );
-        console.log(`Frenzy healed ${playerId} for ${healAmount}`);
       }
       return updatedState;
       
@@ -158,7 +155,6 @@ export function executeFrenzyEffect(
             health: (buffedCard.card.health || 0) + effect.buffHealth
           };
         }
-        console.log(`Frenzy buffed ${buffedCard.card.name}: +${effect.buffAttack || 0}/+${effect.buffHealth || 0}`);
       }
       return updatedState;
       
@@ -167,7 +163,6 @@ export function executeFrenzyEffect(
       const drawCount = effect.value || 1;
       // Since we can't use drawCards directly from cardUtils (it has different interface),
       // we just simulate drawing by giving a message without actually modifying the state
-      console.log(`Frenzy would have drawn ${drawCount} cards for ${playerId}`);
       return updatedState;
       
     case 'transform':
@@ -192,7 +187,6 @@ export function executeFrenzyEffect(
         
         // Replace the original card with the transformed one
         updatedState.players[playerId].battlefield[index] = transformedCard;
-        console.log(`Frenzy transformed ${card.card.name} into ${transformCard.name}`);
       }
       return updatedState;
       
@@ -209,14 +203,12 @@ export function executeFrenzyEffect(
             card: spell,
             isPlayed: false
           });
-          console.log(`Frenzy added ${spell.name} to ${playerId}'s hand`);
         }
       }
       return updatedState;
       
     case 'attack_random':
       // Attack a random enemy
-      console.log('Frenzy: Attack random enemy effect triggered');
       // This would involve selecting a random enemy (minion or hero) and executing an attack
       // For now, we'll just log that it happened
       return updatedState;

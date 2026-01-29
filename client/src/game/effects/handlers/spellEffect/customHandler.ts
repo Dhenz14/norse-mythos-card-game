@@ -1,53 +1,93 @@
 /**
- * Custom SpellEffect Handler
+ * Custom Effect Handler
  * 
- * Implements the "custom" spellEffect effect.
- * Example card: Kazakus Potion (ID: 31003)
+ * This handler implements the spellEffect:custom effect.
+ * Executes a generic custom effect based on the customAction property.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a custom spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeCustomCustom(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing custom spellEffect for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the custom spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered custom spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+export default function executeCustom(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:custom for ${sourceCard.name}`);
+    
+    const customAction = effect.customAction || effect.action;
+    const value = effect.value || 0;
+    
+    if (!customAction) {
+      context.logGameEvent(`Custom effect with no action specified`);
+      return { 
+        success: true,
+        additionalData: { message: 'No custom action specified' }
+      };
+    }
+    
+    switch (customAction) {
+      case 'gain_armor':
+        context.currentPlayer.armor += value;
+        context.logGameEvent(`Gained ${value} armor`);
+        break;
+        
+      case 'gain_mana':
+        context.currentPlayer.mana.current += value;
+        if (context.currentPlayer.mana.current > context.currentPlayer.mana.max) {
+          context.currentPlayer.mana.current = context.currentPlayer.mana.max;
+        }
+        context.logGameEvent(`Gained ${value} mana`);
+        break;
+        
+      case 'draw_cards':
+        context.drawCards(value);
+        break;
+        
+      case 'restore_health':
+        context.healTarget(context.currentPlayer.hero, value);
+        break;
+        
+      case 'shuffle_hand':
+        const handCards = [...context.currentPlayer.hand];
+        context.currentPlayer.deck.push(...handCards);
+        context.currentPlayer.hand = [];
+        context.currentPlayer.deck.sort(() => Math.random() - 0.5);
+        context.logGameEvent(`Shuffled hand into deck`);
+        break;
+        
+      case 'discard_random':
+        if (context.currentPlayer.hand.length > 0) {
+          const randomIndex = Math.floor(Math.random() * context.currentPlayer.hand.length);
+          const discarded = context.currentPlayer.hand.splice(randomIndex, 1)[0];
+          context.logGameEvent(`Discarded ${discarded.card.name}`);
+        }
+        break;
+        
+      default:
+        context.logGameEvent(`Unknown custom action: ${customAction}`);
+        return { 
+          success: true,
+          additionalData: { 
+            message: `Unknown custom action: ${customAction}`,
+            effectData: effect
+          }
+        };
+    }
+    
+    return { 
+      success: true,
+      additionalData: {
+        action: customAction,
+        value
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:custom:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:custom: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeCustomCustom;

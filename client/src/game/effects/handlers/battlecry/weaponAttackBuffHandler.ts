@@ -1,53 +1,58 @@
 /**
  * WeaponAttackBuff Battlecry Handler
  * 
- * Implements the "weapon_attack_buff" battlecry effect.
+ * Buffs the minion's attack based on the player's weapon attack.
  * Example card: Bloodsail Raider (ID: 80003)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a weapon_attack_buff battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeWeaponAttackBuffWeaponAttackBuff(
-  state: GameState,
+export default function executeWeaponAttackBuff(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing weapon_attack_buff battlecry for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the weapon_attack_buff battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered weapon_attack_buff battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing weapon_attack_buff battlecry for ${sourceCard.name}`);
+    
+    const weapon = (context.currentPlayer as any).weapon as CardInstance | undefined;
+    
+    if (!weapon) {
+      context.logGameEvent('No weapon equipped, no buff applied.');
+      return { 
+        success: true, 
+        additionalData: { buffAmount: 0, hasWeapon: false }
+      };
+    }
+    
+    const weaponAttack = weapon.currentAttack || weapon.card.attack || 0;
+    const multiplier = effect.multiplier || 1;
+    const buffAmount = weaponAttack * multiplier;
+    
+    const sourceOnBoard = context.currentPlayer.board.find(
+      m => m.card.id === sourceCard.id
+    );
+    
+    if (!sourceOnBoard) {
+      return { success: false, error: 'Source minion not found on board' };
+    }
+    
+    sourceOnBoard.currentAttack = (sourceOnBoard.currentAttack || sourceCard.attack || 0) + buffAmount;
+    
+    context.logGameEvent(`${sourceCard.name} gained +${buffAmount} Attack from ${weapon.card.name}.`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        buffAmount, 
+        hasWeapon: true, 
+        weaponName: weapon.card.name,
+        newAttack: sourceOnBoard.currentAttack
+      }
+    };
+  } catch (error) {
+    console.error('Error executing weapon_attack_buff:', error);
+    return { success: false, error: `Failed to execute weapon_attack_buff: ${error}` };
+  }
 }
-
-export default executeWeaponAttackBuffWeaponAttackBuff;

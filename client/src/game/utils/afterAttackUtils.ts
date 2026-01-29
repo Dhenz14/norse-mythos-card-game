@@ -34,7 +34,6 @@ export function processAfterHeroAttackEffects(
       newState.players[playerType].battlefield[index].card.attack = newAttack;
       
       // Log the buff
-      console.log(`Battlefiend gained +1 Attack (${oldAttack} → ${newAttack}) after hero attack`);
       
       // Create a log entry
       const logEntry = {
@@ -59,7 +58,6 @@ export function processAfterHeroAttackEffects(
   });
   
   if (battlefiendBuffCount > 0) {
-    console.log(`Applied Battlefiend after-hero-attack buff to ${battlefiendBuffCount} minions`);
   }
   
   return newState;
@@ -91,7 +89,6 @@ export function processAfterAttackEffects(
     // If attacker is no longer on the battlefield (destroyed in combat), just return the state
     // This prevents the "Attacker not found" error
     if (!attackerInfo) {
-      console.log(`Attacker ${attackerId} not found on ${attackingPlayerType}'s battlefield - likely destroyed in combat`);
       return newState;
     }
     
@@ -111,7 +108,6 @@ export function processAfterAttackEffects(
       // Update attack value
       attackerField[attackerInfo.index].card.attack = newAttack;
       
-      console.log(`Gurubashi Berserker gained +3 Attack (${oldAttack} → ${newAttack}) after taking damage`);
       
       // Create a log entry for the buff (converting attackerId string to numeric ID for logging)
       const numericId = parseInt(attackerId, 10) || 0; // Convert to number or use 0 as fallback

@@ -29,16 +29,13 @@ function executeBuffFromGraveyardCountBuffFromGraveyardCount(
     if (effect.condition.check === 'graveyard_count' && effect.condition.race) {
       // Count minions of a specific race
       minionCount = countGraveyardByRace(effect.condition.race);
-      console.log(`Found ${minionCount} ${effect.condition.race} minions in graveyard`);
     } else {
       // Count all minions in graveyard
       minionCount = getGraveyard().length;
-      console.log(`Found ${minionCount} total minions in graveyard`);
     }
     
     // Check if we meet the minimum requirement
     if (effect.condition.minimum && minionCount < effect.condition.minimum) {
-      console.log(`Not enough minions in graveyard (${minionCount} < ${effect.condition.minimum})`);
       return { success: true, info: `No buff applied - not enough minions in graveyard` };
     }
   } else {

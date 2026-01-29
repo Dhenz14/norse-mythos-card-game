@@ -25,7 +25,6 @@ export function executeMindControlTemporaryMindControlTemporary(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing mind_control_temporary spellEffect for ${sourceCard.card.name}`);
   
   // Check for required property: condition
   if (effect.condition === undefined) {

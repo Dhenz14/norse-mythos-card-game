@@ -33,7 +33,6 @@ export function registerAllEffectHandlers() {
     EffectRegistry.registerComboHandler(type, handler);
   });
   
-  console.log('All effect handlers registered');
 }
 
 export default registerAllEffectHandlers;

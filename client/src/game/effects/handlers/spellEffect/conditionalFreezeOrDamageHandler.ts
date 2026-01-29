@@ -32,7 +32,6 @@ export function executeConditionalFreezeOrDamageConditionalFreezeOrDamage(
   // Create a new state to avoid mutating the original
   let newState = { ...state };
   
-  console.log(`Executing conditional_freeze_or_damage spellEffect for ${sourceCard.card.name}`);
   
   // Check for required properties
   if (effect.value === undefined) {
@@ -120,7 +119,6 @@ export function executeConditionalFreezeOrDamageConditionalFreezeOrDamage(
       currentPlayerId
     );
     
-    console.log(`${sourceCard.card.name} dealt ${damageAmount} damage to frozen target ${targetId}`);
   } else {
     // If the target is not frozen, apply freeze effect
     newState.gameLog.push({
@@ -134,7 +132,6 @@ export function executeConditionalFreezeOrDamageConditionalFreezeOrDamage(
     });
     
     newState = applyFreezeEffect(newState, targetId, targetType);
-    console.log(`${sourceCard.card.name} froze target ${targetId}`);
   }
   
   return newState;

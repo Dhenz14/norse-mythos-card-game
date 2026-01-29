@@ -34,11 +34,6 @@ export function registerAllHandlers(): void {
   // Currently we don't have any combo handlers
   
   // Log registration status
-  console.log('[Effect Registry] Registration complete:');
-  console.log(` - Battlecry handlers: ${EffectRegistry.getRegisteredHandlers('battlecry').length}`);
-  console.log(` - Deathrattle handlers: ${EffectRegistry.getRegisteredHandlers('deathrattle').length}`);
-  console.log(` - Spell effect handlers: ${EffectRegistry.getRegisteredHandlers('spellEffect').length}`);
-  console.log(` - Combo handlers: ${EffectRegistry.getRegisteredHandlers('combo').length}`);
 }
 
 // Export default function for convenience

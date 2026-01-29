@@ -25,7 +25,6 @@ export function executeResurrectRandomResurrectRandom(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing resurrect_random spellEffect for ${sourceCard.card.name}`);
   
   // Check for required property: value
   if (effect.value === undefined) {

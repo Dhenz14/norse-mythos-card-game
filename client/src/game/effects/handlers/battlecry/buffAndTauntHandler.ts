@@ -2,62 +2,86 @@
  * BuffAndTaunt Battlecry Handler
  * 
  * Implements the "buff_and_taunt" battlecry effect.
- * Example card: Card ID: 3029
+ * Buffs target minion and gives it Taunt.
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a buff_and_taunt battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeBuffAndTauntBuffAndTaunt(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing buff_and_taunt battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: buffAttack
-  if (effect.buffAttack === undefined) {
-    console.warn(`BuffAndTaunt effect missing buffAttack property`);
-    // Fall back to a default value or handle the missing property
-  }
+export default function executeBuffAndTaunt(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
 
-  // Check for required property: buffHealth
-  if (effect.buffHealth === undefined) {
-    console.warn(`BuffAndTaunt effect missing buffHealth property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing battlecry:buff_and_taunt for ${sourceCard.name}`);
+    
+    const requiresTarget = effect.requiresTarget !== false;
+    const targetType = effect.targetType || 'friendly_minion';
+    const buffAttack = effect.buffAttack || 0;
+    const buffHealth = effect.buffHealth || 0;
+    
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (requiresTarget && targets.length === 0) {
+      context.logGameEvent(`No valid targets for battlecry:buff_and_taunt`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No targets available for buff_and_taunt effect`);
+      return { success: true };
+    }
+    
+    let buffedCount = 0;
+    
+    targets.forEach(target => {
+      if (target.card.type === 'minion') {
+        if (buffAttack !== 0) {
+          target.currentAttack = (target.currentAttack || target.card.attack || 0) + buffAttack;
+          target.card.attack = (target.card.attack || 0) + buffAttack;
+        }
+        
+        if (buffHealth !== 0) {
+          target.currentHealth = (target.currentHealth || target.card.health || 0) + buffHealth;
+          target.card.health = (target.card.health || 0) + buffHealth;
+        }
+        
+        if (!target.card.keywords) {
+          target.card.keywords = [];
+        }
+        if (!target.card.keywords.includes('taunt')) {
+          target.card.keywords.push('taunt');
+        }
+        (target as any).hasTaunt = true;
+        
+        buffedCount++;
+        context.logGameEvent(`${sourceCard.name} gave ${target.card.name} +${buffAttack}/+${buffHealth} and Taunt`);
+      }
+    });
+    
+    return { success: true, additionalData: { buffedCount } };
+  } catch (error) {
+    console.error(`Error executing battlecry:buff_and_taunt:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:buff_and_taunt: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the buff_and_taunt battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered buff_and_taunt battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeBuffAndTauntBuffAndTaunt;

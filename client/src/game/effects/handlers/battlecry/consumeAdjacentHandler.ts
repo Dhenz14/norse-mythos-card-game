@@ -1,57 +1,81 @@
 /**
  * ConsumeAdjacent Battlecry Handler
  * 
- * Implements the "consume_adjacent" battlecry effect.
- * Example card: Card ID: 15007
+ * Destroys adjacent minions and gains their stats.
+ * Example card: Void Terror (ID: 15007)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a consume_adjacent battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeConsumeAdjacentConsumeAdjacent(
-  state: GameState,
+export default function executeConsumeAdjacent(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing consume_adjacent battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: gainStats
-  if (effect.gainStats === undefined) {
-    console.warn(`ConsumeAdjacent effect missing gainStats property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing consume_adjacent battlecry for ${sourceCard.name}`);
+    
+    const gainStats = effect.gainStats ?? true;
+    
+    const sourceOnBoard = context.currentPlayer.board.find(
+      m => m.card.id === sourceCard.id
+    );
+    
+    if (!sourceOnBoard) {
+      return { success: false, error: 'Source minion not found on board' };
+    }
+    
+    const sourceIndex = context.currentPlayer.board.indexOf(sourceOnBoard);
+    const adjacentMinions = context.getAdjacentMinions(sourceOnBoard);
+    
+    if (adjacentMinions.length === 0) {
+      context.logGameEvent('No adjacent minions to consume.');
+      return { success: true, additionalData: { consumedCount: 0 } };
+    }
+    
+    let totalAttackGain = 0;
+    let totalHealthGain = 0;
+    const consumedMinions: CardInstance[] = [];
+    
+    for (const adjacent of adjacentMinions) {
+      const attackGain = adjacent.currentAttack || adjacent.card.attack || 0;
+      const healthGain = adjacent.currentHealth || adjacent.card.health || 0;
+      
+      if (gainStats) {
+        totalAttackGain += attackGain;
+        totalHealthGain += healthGain;
+      }
+      
+      consumedMinions.push(adjacent);
+      
+      const index = context.currentPlayer.board.indexOf(adjacent);
+      if (index !== -1) {
+        context.currentPlayer.board.splice(index, 1);
+        context.currentPlayer.graveyard.push(adjacent);
+      }
+      
+      context.logGameEvent(`Consumed ${adjacent.card.name} (${attackGain}/${healthGain}).`);
+    }
+    
+    if (gainStats) {
+      sourceOnBoard.currentAttack = (sourceOnBoard.currentAttack || sourceCard.attack || 0) + totalAttackGain;
+      sourceOnBoard.currentHealth = (sourceOnBoard.currentHealth || sourceCard.health || 0) + totalHealthGain;
+      
+      context.logGameEvent(`${sourceCard.name} gained +${totalAttackGain}/+${totalHealthGain}.`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        consumedMinions, 
+        consumedCount: consumedMinions.length,
+        attackGained: totalAttackGain,
+        healthGained: totalHealthGain
+      }
+    };
+  } catch (error) {
+    console.error('Error executing consume_adjacent:', error);
+    return { success: false, error: `Failed to execute consume_adjacent: ${error}` };
   }
-  
-  // TODO: Implement the consume_adjacent battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered consume_adjacent battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeConsumeAdjacentConsumeAdjacent;

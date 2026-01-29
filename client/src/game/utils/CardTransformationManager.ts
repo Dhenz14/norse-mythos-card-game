@@ -100,7 +100,6 @@ export class CardTransformationManager {
    */
   private constructor() {
     // Initialize and attach any global event listeners if needed
-    console.log('Card Transformation Manager initialized');
   }
   
   /**
@@ -197,17 +196,11 @@ export class CardTransformationManager {
     if (existingState.isOnBoard && isHovering) {
       // Skip hover for indirect hover sources or coordinates outside boundary
       if (hoverSource === 'indirect' || hoverCoordinates?.outsideBoundary) {
-        console.log(`[CardTransformManager] Rejecting hover for ${cardId} - indirect or outside boundary`);
         return;
       }
     }
     
-    // PRECISE HOVER DEBUG - Log hover information 
-    if (hoverCoordinates) {
-      console.log(`[CardTransformManager] Hover ${isHovering ? 'ON' : 'OFF'} for ${cardId}, source: ${hoverSource}, coordinates:`, 
-                 hoverCoordinates);
-    }
-    
+        
     // Set basic hover with small scale and z-index change only
     // No rotation or other complex transforms that cause flickering
     this.updateCardState(cardId, {

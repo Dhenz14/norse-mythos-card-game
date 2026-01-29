@@ -2,58 +2,67 @@
  * Damage Based On Armor Effect Handler
  * 
  * This handler implements the spellEffect:damage_based_on_armor effect.
+ * Deals damage equal to the player's armor amount.
  */
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a Damage Based On Armor effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.minimumDamage - The minimum damage for the effect
- * @returns An object indicating success or failure and any additional data
- */
 export default function executeDamageBasedOnArmor(
   context: GameContext, 
   effect: SpellEffect, 
   sourceCard: Card
 ): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
+  
   try {
-    // Log the effect execution
     context.logGameEvent(`Executing spellEffect:damage_based_on_armor for ${sourceCard.name}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const minimumDamage = effect.minimumDamage;
+    const targetType = effect.targetType || 'any';
+    const minimumDamage = effect.minimumDamage || 0;
+    const removeArmor = effect.removeArmor !== false;
+    const multiplier = effect.multiplier || 1;
     
-    // Implementation placeholder
-    console.log(`spellEffect:damage_based_on_armor executed with properties: ${JSON.stringify(effect)}`);
+    const armorAmount = context.currentPlayer.armor || 0;
+    let damageValue = Math.floor(armorAmount * multiplier);
     
-    // TODO: Implement the spellEffect:damage_based_on_armor effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCard);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for spellEffect:damage_based_on_armor`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Damage Based On Armor effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Damage Based On Armor effect applied`);
-      // TODO: Apply effect without target
+    if (damageValue < minimumDamage) {
+      damageValue = minimumDamage;
     }
     
-    return { success: true };
+    const targets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage_based_on_armor`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = targets[0];
+    
+    context.logGameEvent(`Dealing ${damageValue} damage based on ${armorAmount} armor`);
+    context.dealDamage(target, damageValue);
+    
+    if (removeArmor) {
+      context.currentPlayer.armor = 0;
+      context.logGameEvent(`Armor consumed`);
+    }
+    
+    return { 
+      success: true,
+      additionalData: {
+        armorAmount,
+        damageDealt: damageValue,
+        targetName: target.card.name,
+        armorRemoved: removeArmor
+      }
+    };
   } catch (error) {
     console.error(`Error executing spellEffect:damage_based_on_armor:`, error);
     return { 

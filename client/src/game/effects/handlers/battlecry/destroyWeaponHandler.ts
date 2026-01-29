@@ -2,52 +2,59 @@
  * DestroyWeapon Battlecry Handler
  * 
  * Implements the "destroy_weapon" battlecry effect.
+ * Destroys the enemy hero's equipped weapon.
  * Example card: Acidic Swamp Ooze (ID: 30001)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
 /**
  * Execute a destroy_weapon battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeDestroyWeaponDestroyWeapon(
-  state: GameState,
+export default function executeDestroyWeapon(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing destroy_weapon battlecry for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the destroy_weapon battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered destroy_weapon battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing battlecry:destroy_weapon for ${sourceCard.name}`);
+    
+    const opponent = context.opponentPlayer as any;
+    const opponentWeapon = opponent.weapon;
+    
+    if (!opponentWeapon) {
+      context.logGameEvent(`No enemy weapon to destroy`);
+      return { success: true, additionalData: { weaponDestroyed: false } };
+    }
+    
+    const weaponName = opponentWeapon.card?.name || opponentWeapon.name || 'weapon';
+    const weaponAttack = opponentWeapon.attack || opponentWeapon.card?.attack || 0;
+    const weaponDurability = opponentWeapon.durability || opponentWeapon.card?.durability || 0;
+    
+    opponent.weapon = null;
+    
+    context.logGameEvent(`${sourceCard.name} destroyed ${weaponName} (${weaponAttack}/${weaponDurability})`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        weaponDestroyed: true,
+        weaponName,
+        weaponAttack,
+        weaponDurability
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:destroy_weapon:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:destroy_weapon: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeDestroyWeaponDestroyWeapon;

@@ -1,63 +1,78 @@
 /**
- * DamageAndHeal SpellEffect Handler
+ * Damage And Heal Effect Handler
  * 
- * Implements the "damage_and_heal" spellEffect effect.
- * Example card: Card ID: 9022
+ * This handler implements the spellEffect:damage_and_heal effect.
+ * Deals damage to a target and heals another target.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a damage_and_heal spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeDamageAndHealDamageAndHeal(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
+export default function executeDamageAndHeal(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
   
-  console.log(`Executing damage_and_heal spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DamageAndHeal effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing spellEffect:damage_and_heal for ${sourceCard.name}`);
+    
+    const damageValue = effect.value || 1;
+    const healValue = effect.healValue || effect.value || 1;
+    const targetType = effect.targetType || 'any';
+    const healTarget = effect.healTarget || 'friendly_hero';
+    
+    const damageTargets = context.getTargets(targetType, sourceCardInstance);
+    
+    if (damageTargets.length === 0) {
+      context.logGameEvent(`No valid damage targets for damage_and_heal`);
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const target = damageTargets[0];
+    context.dealDamage(target, damageValue);
+    context.logGameEvent(`Dealt ${damageValue} damage to ${target.card.name}`);
+    
+    let healTargetInstance = null;
+    
+    if (healTarget === 'friendly_hero' || healTarget === 'self') {
+      healTargetInstance = context.currentPlayer.hero;
+    } else if (healTarget === 'enemy_hero') {
+      healTargetInstance = context.opponentPlayer.hero;
+    } else {
+      const healTargets = context.getTargets(healTarget, sourceCardInstance);
+      if (healTargets.length > 0) {
+        healTargetInstance = healTargets[0];
+      }
+    }
+    
+    if (healTargetInstance) {
+      context.healTarget(healTargetInstance, healValue);
+      context.logGameEvent(`Healed ${healTargetInstance.card.name} for ${healValue}`);
+    }
+    
+    return { 
+      success: true,
+      additionalData: {
+        damageDealt: damageValue,
+        damageTargetName: target.card.name,
+        healAmount: healValue,
+        healTargetName: healTargetInstance ? healTargetInstance.card.name : null
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:damage_and_heal:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:damage_and_heal: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: healTarget
-  if (effect.healTarget === undefined) {
-    console.warn(`DamageAndHeal effect missing healTarget property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the damage_and_heal spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered damage_and_heal spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDamageAndHealDamageAndHeal;

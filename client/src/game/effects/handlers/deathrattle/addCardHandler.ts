@@ -2,62 +2,71 @@
  * AddCard Deathrattle Handler
  * 
  * Implements the "add_card" deathrattle effect.
- * Example card: Rhonin (ID: 20808)
+ * Adds a specific card to the player's hand when the minion dies.
+ * Example card: Rhonin (adds 3 Arcane Missiles to hand)
  */
-import { GameState, CardInstance } from '../../types';
-import { DeathrattleEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
+import { EffectResult } from '../../../types/EffectTypes';
+import { getCardById } from '../../../data/cardManagement/cardRegistry';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
- * Execute a add_card deathrattle effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * Execute an add_card deathrattle effect
  */
-export function executeAddCardAddCard(
-  state: GameState,
+export default function executeAddCardAddCard(
+  context: GameContext,
   effect: DeathrattleEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing add_card deathrattle for ${sourceCard.card.name}`);
-  
-  // Check for required property: condition
-  if (effect.condition === undefined) {
-    console.warn(`AddCard effect missing condition property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: CardData | CardInstance
+): EffectResult {
+  try {
+    const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
+    context.logGameEvent(`Executing deathrattle:add_card for ${cardName}`);
+    
+    const cardId = effect.cardId || effect.summonCardId;
+    const count = effect.value || effect.count || 1;
+    
+    if (!cardId) {
+      return { success: false, error: 'No cardId specified for add_card effect' };
+    }
+    
+    const cardToAdd = getCardById(Number(cardId));
+    if (!cardToAdd) {
+      return { success: false, error: `Card with ID ${cardId} not found` };
+    }
+    
+    const addedCards: CardInstance[] = [];
+    
+    for (let i = 0; i < count; i++) {
+      if (context.currentPlayer.hand.length >= 10) {
+        context.logGameEvent(`Hand is full, cannot add more cards`);
+        break;
+      }
+      
+      const newCardInstance: CardInstance = {
+        instanceId: uuidv4(),
+        card: cardToAdd,
+        currentHealth: 'health' in cardToAdd ? (cardToAdd.health ?? 0) : 0,
+        canAttack: false,
+        isPlayed: false,
+        isSummoningSick: false,
+        attacksPerformed: 0
+      };
+      
+      context.currentPlayer.hand.push(newCardInstance as any);
+      addedCards.push(newCardInstance);
+      context.logGameEvent(`Added ${cardToAdd.name} to hand from ${cardName}'s deathrattle`);
+    }
+    
+    return {
+      success: true,
+      additionalData: { addedCards }
+    };
+  } catch (error) {
+    console.error(`Error executing deathrattle:add_card:`, error);
+    return {
+      success: false,
+      error: `Error executing deathrattle:add_card: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`AddCard effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the add_card deathrattle effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'deathrattle',
-    text: `${sourceCard.card.name} triggered add_card deathrattle`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeAddCardAddCard;

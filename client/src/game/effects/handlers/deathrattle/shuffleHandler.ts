@@ -2,56 +2,78 @@
  * Shuffle Deathrattle Handler
  * 
  * Implements the "shuffle" deathrattle effect.
- * Example card: White Eyes (ID: 20126)
+ * Shuffles something (typically this minion or a related card) into the deck.
+ * Example: White Eyes (shuffles The Storm Guardian into your deck)
  */
-import { GameState, CardInstance } from '../../types';
-import { DeathrattleEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, CardInstance } from '../../../types/CardTypes';
+import { DeathrattleEffect } from '../../../types';
+import { EffectResult } from '../../../types/EffectTypes';
+import { getCardById } from '../../../data/cardManagement/cardRegistry';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Execute a shuffle deathrattle effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
  */
-export function executeShuffleShuffle(
-  state: GameState,
+export default function executeShuffleShuffle(
+  context: GameContext,
   effect: DeathrattleEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing shuffle deathrattle for ${sourceCard.card.name}`);
-  
-  // Check for required property: summonCardId
-  if (effect.summonCardId === undefined) {
-    console.warn(`Shuffle effect missing summonCardId property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card | CardInstance
+): EffectResult {
+  try {
+    const card = 'card' in sourceCard ? sourceCard.card : sourceCard;
+    const cardName = card.name;
+    
+    context.logGameEvent(`Executing deathrattle:shuffle for ${cardName}`);
+    
+    const summonCardId = effect.summonCardId || effect.cardId;
+    const shuffleSelf = effect.shuffleSelf || !summonCardId;
+    const count = effect.value || effect.count || 1;
+    
+    let cardToShuffle: any;
+    
+    if (shuffleSelf) {
+      cardToShuffle = card;
+    } else if (summonCardId) {
+      cardToShuffle = getCardById(Number(summonCardId));
+      if (!cardToShuffle) {
+        return { success: false, error: `Card with ID ${summonCardId} not found` };
+      }
+    } else {
+      cardToShuffle = card;
+    }
+    
+    let shuffledCount = 0;
+    
+    for (let i = 0; i < count; i++) {
+      const newCardInstance: CardInstance = {
+        instanceId: uuidv4(),
+        card: cardToShuffle,
+        currentHealth: cardToShuffle.health,
+        canAttack: false,
+        isPlayed: false,
+        isSummoningSick: false,
+        attacksPerformed: 0
+      };
+      
+      const randomIndex = Math.floor(Math.random() * (context.currentPlayer.deck.length + 1));
+      context.currentPlayer.deck.splice(randomIndex, 0, newCardInstance);
+      shuffledCount++;
+      context.logGameEvent(`Shuffled ${cardToShuffle.name} into your deck from ${cardName}'s deathrattle`);
+    }
+    
+    return {
+      success: true,
+      additionalData: { 
+        shuffledCount, 
+        shuffledCardName: cardToShuffle.name
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing deathrattle:shuffle:`, error);
+    return {
+      success: false,
+      error: `Error executing deathrattle:shuffle: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the shuffle deathrattle effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'deathrattle',
-    text: `${sourceCard.card.name} triggered shuffle deathrattle`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeShuffleShuffle;

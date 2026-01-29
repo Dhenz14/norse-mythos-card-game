@@ -48,7 +48,6 @@ export function applyStatusEffect(minion: CardInstance, effect: StatusEffectType
     case 'burn': updated.isBurning = true; break;
   }
   
-  console.log(`[STATUS] Applied ${STATUS_EFFECTS[effect].icon} ${STATUS_EFFECTS[effect].name} to ${minion.card.name}`);
   return updated;
 }
 
@@ -67,7 +66,6 @@ export function removeStatusEffect(minion: CardInstance, effect: StatusEffectTyp
     case 'burn': updated.isBurning = false; break;
   }
   
-  console.log(`[STATUS] Removed ${STATUS_EFFECTS[effect].name} from ${minion.card.name}`);
   return updated;
 }
 
@@ -185,7 +183,6 @@ export function clearEndOfTurnEffects(minion: CardInstance): CardInstance {
   // Frozen is cleared after the turn (minion thaws after skipping one turn)
   if (updated.isFrozen) {
     updated.isFrozen = false;
-    console.log(`[STATUS] Frozen cleared from ${minion.card.name}`);
   }
   
   return updated;

@@ -19,8 +19,6 @@ export function resetMinionsForTurn(state: GameState): GameState {
   // Get player object based on whose turn it is
   const player = newState.players[currentPlayer];
   
-  console.log(`[RESET DEBUG] Resetting minions for ${currentPlayer}'s turn`);
-  console.log(`[RESET DEBUG] Battlefield before reset:`, player.battlefield);
   
   // Update each minion on the battlefield
   player.battlefield = player.battlefield.map(minion => {
@@ -35,26 +33,10 @@ export function resetMinionsForTurn(state: GameState): GameState {
       canAttack: !minion.isFrozen
     };
     
-    // Log each minion's state change
-    console.log(`[RESET DEBUG] Minion reset - ${minion.card.name}:`, {
-      before: {
-        isSummoningSick: minion.isSummoningSick,
-        attacksPerformed: minion.attacksPerformed || 0,
-        canAttack: minion.canAttack,
-        isFrozen: minion.isFrozen
-      },
-      after: {
-        isSummoningSick: updatedMinion.isSummoningSick,
-        attacksPerformed: updatedMinion.attacksPerformed,
-        canAttack: updatedMinion.canAttack,
-        isFrozen: updatedMinion.isFrozen
-      }
-    });
-    
+        
     return updatedMinion;
   });
   
-  console.log(`[RESET DEBUG] Battlefield after reset:`, player.battlefield);
   
   return newState;
 }

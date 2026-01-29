@@ -2,52 +2,75 @@
  * SwapStats Battlecry Handler
  * 
  * Implements the "swap_stats" battlecry effect.
+ * Swaps attack and health of target minion(s).
  * Example card: Void Ripper (ID: 30020)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a swap_stats battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeSwapStatsSwapStats(
-  state: GameState,
-  effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing swap_stats battlecry for ${sourceCard.card.name}`);
-  
+export default function executeSwapStats(
+  context: GameContext, 
+  effect: BattlecryEffect, 
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: CardInstance = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
 
-  
-  // TODO: Implement the swap_stats battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered swap_stats battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  try {
+    context.logGameEvent(`Executing battlecry:swap_stats for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'all_minions';
+    let targets: CardInstance[];
+    
+    if (targetType === 'all_minions') {
+      targets = context.getAllMinions();
+    } else {
+      targets = context.getTargets(targetType, sourceCardInstance);
+    }
+    
+    if (targets.length === 0) {
+      context.logGameEvent(`No targets for swap_stats`);
+      return { success: true, additionalData: { noTargets: true } };
+    }
+    
+    const swappedMinions: string[] = [];
+    
+    for (const minion of targets) {
+      if (minion.card.type !== 'minion') continue;
+      
+      const currentAttack = minion.currentAttack !== undefined ? minion.currentAttack : (minion.card.attack || 0);
+      const currentHealth = minion.currentHealth !== undefined ? minion.currentHealth : (minion.card.health || 0);
+      
+      minion.currentAttack = currentHealth;
+      minion.currentHealth = currentAttack;
+      
+      if (minion.currentHealth <= 0) {
+        context.logGameEvent(`${minion.card.name} died from swap_stats (new health: ${minion.currentHealth})`);
+      }
+      
+      swappedMinions.push(`${minion.card.name}: ${currentAttack}/${currentHealth} -> ${minion.currentAttack}/${minion.currentHealth}`);
+      context.logGameEvent(`Swapped ${minion.card.name}'s stats: ${currentAttack}/${currentHealth} -> ${minion.currentAttack}/${minion.currentHealth}`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        swappedMinions,
+        count: swappedMinions.length
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing battlecry:swap_stats:`, error);
+    return { 
+      success: false, 
+      error: `Error executing battlecry:swap_stats: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeSwapStatsSwapStats;

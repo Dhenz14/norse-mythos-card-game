@@ -19,6 +19,5 @@ export function processOnAttackStatusEffect(
     return target;
   }
   
-  console.log(`[STATUS] ${attacker.card.name} applies ${statusEffect} to ${target.card.name}`);
   return applyStatusEffect(target, statusEffect);
 }

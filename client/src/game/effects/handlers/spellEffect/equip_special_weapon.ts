@@ -34,7 +34,6 @@ export default function executeEquipSpecialWeapon(
     const armorPerAttack = effect.armorPerAttack;
     
     // Implementation placeholder
-    console.log(`spellEffect:equip_special_weapon executed with properties: ${JSON.stringify(effect)}`);
     
     // TODO: Implement the spellEffect:equip_special_weapon effect
     if (requiresTarget) {

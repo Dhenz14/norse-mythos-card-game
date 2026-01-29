@@ -63,7 +63,6 @@ export function initializeNorseContext(
     opponentHeroId,
     isInitialized: true
   };
-  console.log('[NorseIntegration] Context initialized:', norseContext);
 }
 
 /**
@@ -77,7 +76,6 @@ export function resetNorseContext(): void {
     opponentHeroId: null,
     isInitialized: false
   };
-  console.log('[NorseIntegration] Context reset');
 }
 
 /**
@@ -109,7 +107,6 @@ export function processKingStartOfTurn(
   const kingId = playerType === 'player' ? norseContext.playerKingId : norseContext.opponentKingId;
   if (!kingId) return state;
   
-  console.log(`[NorseIntegration] Processing King start-of-turn for ${playerType}: ${kingId}`);
   return executeStartOfTurnKingPassives(state, playerType, kingId);
 }
 
@@ -126,7 +123,6 @@ export function processKingEndOfTurn(
   const kingId = playerType === 'player' ? norseContext.playerKingId : norseContext.opponentKingId;
   if (!kingId) return state;
   
-  console.log(`[NorseIntegration] Processing King end-of-turn for ${playerType}: ${kingId}`);
   return executeEndOfTurnKingPassives(state, playerType, kingId);
 }
 
@@ -144,7 +140,6 @@ export function processKingOnMinionPlay(
   const kingId = playerType === 'player' ? norseContext.playerKingId : norseContext.opponentKingId;
   if (!kingId) return state;
   
-  console.log(`[NorseIntegration] Processing King on-minion-play for ${playerType}: ${kingId}`);
   return executeOnMinionPlayKingPassives(state, playerType, kingId, minionInstanceId);
 }
 
@@ -162,7 +157,6 @@ export function processKingOnMinionDeath(
   const kingId = ownerType === 'player' ? norseContext.playerKingId : norseContext.opponentKingId;
   if (!kingId) return state;
   
-  console.log(`[NorseIntegration] Processing King on-minion-death for ${ownerType}: ${kingId}`);
   return executeOnMinionDeathKingPassives(state, ownerType, kingId, diedMinionInstanceId);
 }
 
@@ -180,7 +174,6 @@ export function processKingOnHeal(
   const kingId = playerType === 'player' ? norseContext.playerKingId : norseContext.opponentKingId;
   if (!kingId) return state;
   
-  console.log(`[NorseIntegration] Processing King on-heal for ${playerType}: ${kingId}`);
   return executeOnHealKingPassives(state, playerType, kingId, healedMinionIds);
 }
 
@@ -223,7 +216,6 @@ export function processHeroPassive(
   const heroId = playerType === 'player' ? norseContext.playerHeroId : norseContext.opponentHeroId;
   if (!heroId) return state;
   
-  console.log(`[NorseIntegration] Processing Hero passive for ${playerType}: ${heroId}, trigger: ${trigger}`);
   return executeHeroPassive(state, heroId, playerType, trigger, context);
 }
 
@@ -436,7 +428,6 @@ export function playWeaponUpgrade(
   const heroId = playerType === 'player' ? norseContext.playerHeroId : norseContext.opponentHeroId;
   if (!heroId) return state;
   
-  console.log(`[NorseIntegration] Playing weapon upgrade for ${playerType}: ${heroId}`);
   return applyWeaponUpgrade(state, playerType, heroId);
 }
 
@@ -483,7 +474,6 @@ export function executeHeroPower(
   const heroId = playerType === 'player' ? norseContext.playerHeroId : norseContext.opponentHeroId;
   if (!heroId) return state;
   
-  console.log(`[NorseIntegration] Executing hero power for ${playerType}: ${heroId}`);
   return executeNorseHeroPower(state, playerType, heroId, targetId, isUpgraded);
 }
 

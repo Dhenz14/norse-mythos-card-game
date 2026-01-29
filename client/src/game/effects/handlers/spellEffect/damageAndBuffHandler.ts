@@ -25,7 +25,6 @@ export function executeDamageAndBuffDamageAndBuff(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing damage_and_buff spellEffect for ${sourceCard.card.name}`);
   
   // Check for required property: value
   if (effect.value === undefined) {

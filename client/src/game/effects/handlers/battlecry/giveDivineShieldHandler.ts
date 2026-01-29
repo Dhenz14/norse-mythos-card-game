@@ -1,53 +1,64 @@
 /**
  * GiveDivineShield Battlecry Handler
  * 
- * Implements the "give_divine_shield" battlecry effect.
- * Example card: Card ID: 8020
+ * Gives Divine Shield to target minions.
+ * Example card: Argent Protector (ID: 8020)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a give_divine_shield battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeGiveDivineShieldGiveDivineShield(
-  state: GameState,
+export default function executeGiveDivineShield(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing give_divine_shield battlecry for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the give_divine_shield battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered give_divine_shield battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing give_divine_shield battlecry for ${sourceCard.name}`);
+    
+    const targetType = effect.targetType || 'friendly_minion';
+    const affectAll = effect.affectAll || false;
+    
+    const sourceCardInstance: CardInstance = {
+      instanceId: 'temp-' + Date.now(),
+      card: sourceCard,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: false,
+      attacksPerformed: 0
+    };
+    
+    let targets = context.getTargets(targetType, sourceCardInstance);
+    
+    targets = targets.filter(t => t.card.id !== sourceCard.id);
+    
+    if (targets.length === 0) {
+      context.logGameEvent('No valid targets for give_divine_shield');
+      return { success: false, error: 'No valid targets' };
+    }
+    
+    const affectedMinions: CardInstance[] = [];
+    const minionsToAffect = affectAll ? targets : [targets[0]];
+    
+    for (const target of minionsToAffect) {
+      if (!target.hasDivineShield) {
+        target.hasDivineShield = true;
+        affectedMinions.push(target);
+        context.logGameEvent(`Gave Divine Shield to ${target.card.name}.`);
+      } else {
+        context.logGameEvent(`${target.card.name} already has Divine Shield.`);
+      }
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        affectedMinions,
+        count: affectedMinions.length
+      }
+    };
+  } catch (error) {
+    console.error('Error executing give_divine_shield:', error);
+    return { success: false, error: `Failed to execute give_divine_shield: ${error}` };
+  }
 }
-
-export default executeGiveDivineShieldGiveDivineShield;

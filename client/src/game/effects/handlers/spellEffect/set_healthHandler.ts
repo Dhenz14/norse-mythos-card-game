@@ -52,7 +52,6 @@ export default function executeSetHealthSetHealth(
         const oldHealth = target.currentHealth;
         // Set the health value but keep the minion's max health the same
         target.currentHealth = effect.value;
-        console.log(`Set ${target.card.name}'s health from ${oldHealth} to ${effect.value}`);
       }
       
       break;
@@ -72,7 +71,6 @@ export default function executeSetHealthSetHealth(
           const oldHealth = target.currentHealth;
           // Set the health value but keep the minion's max health the same
           target.currentHealth = effect.value;
-          console.log(`Set ${target.card.name}'s health from ${oldHealth} to ${effect.value}`);
         }
         
         break;

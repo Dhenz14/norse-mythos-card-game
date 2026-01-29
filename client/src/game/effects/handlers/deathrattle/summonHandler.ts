@@ -1,88 +1,93 @@
 /**
- * Summon Effect Handler
+ * Summon Deathrattle Handler
  * 
- * This handler implements the deathrattle:summon effect.
+ * Implements the "summon" deathrattle effect.
+ * Summons specific minions when this minion dies.
+ * Example: Savannah Highmane (summons two 2/2 Hyenas)
  */
 import { GameContext } from '../../../GameContext';
-import { Card, DeathrattleEffect } from '../../../types/CardTypes';
+import { Card, CardInstance } from '../../../types/CardTypes';
+import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
+import { getCardById } from '../../../data/cardManagement/cardRegistry';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
- * Execute a Summon effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.0 - The 0 for the effect
-   * @param effect.1 - The 1 for the effect
-   * @param effect.2 - The 2 for the effect
-   * @param effect.3 - The 3 for the effect
-   * @param effect.4 - The 4 for the effect
-   * @param effect.5 - The 5 for the effect
-   * @param effect.6 - The 6 for the effect
-   * @param effect.7 - The 7 for the effect
-   * @param effect.8 - The 8 for the effect
- * @returns An object indicating success or failure and any additional data
+ * Execute a summon deathrattle effect
  */
 export default function executeSummonSummon(
-  context: GameContext, 
-  effect: DeathrattleEffect, 
-  sourceCard: Card
+  context: GameContext,
+  effect: DeathrattleEffect,
+  sourceCard: Card | CardInstance
 ): EffectResult {
-  // Create a temporary CardInstance for targeting purposes
-  const sourceCardInstance: any = {
-    instanceId: 'temp-' + Date.now(),
-    card: sourceCard,
-    canAttack: false,
-    isPlayed: true,
-    isSummoningSick: false,
-    attacksPerformed: 0
-  };
   try {
-    // Log the effect execution
-    context.logGameEvent(`Executing deathrattle:summon for ${sourceCard.name}`);
+    const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
+    context.logGameEvent(`Executing deathrattle:summon for ${cardName}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const prop0 = effect.0;
-    const prop1 = effect.1;
-    const prop2 = effect.2;
-    const prop3 = effect.3;
-    const prop4 = effect.4;
-    const prop5 = effect.5;
-    const prop6 = effect.6;
-    const prop7 = effect.7;
-    const prop8 = effect.8;
+    const summonCardId = effect.summonCardId || effect.cardId;
+    const summonCount = effect.summonCount || effect.count || effect.value || 1;
+    const summonForOpponent = effect.summonForOpponent || false;
     
-    // Implementation placeholder
-    console.log(`deathrattle:summon executed with properties: ${JSON.stringify(effect)}`);
-    
-    // TODO: Implement the deathrattle:summon effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for deathrattle:summon`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Summon effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Summon effect applied`);
-      // TODO: Apply effect without target
+    if (!summonCardId) {
+      return { success: false, error: 'No summonCardId specified for summon effect' };
     }
     
-    return { success: true };
+    const cardToSummon = getCardById(Number(summonCardId));
+    if (!cardToSummon) {
+      return { success: false, error: `Card with ID ${summonCardId} not found` };
+    }
+    
+    const board = summonForOpponent ? context.opponentPlayer.board : context.currentPlayer.board;
+    const summonedMinions: CardInstance[] = [];
+    
+    for (let i = 0; i < summonCount; i++) {
+      if (board.length >= 7) {
+        context.logGameEvent(`Board is full, cannot summon more minions`);
+        break;
+      }
+      
+      const newMinion: CardInstance = {
+        instanceId: uuidv4(),
+        card: { ...cardToSummon },
+        currentHealth: cardToSummon.health,
+        canAttack: false,
+        isPlayed: true,
+        isSummoningSick: true,
+        attacksPerformed: 0
+      };
+      
+      if (cardToSummon.keywords?.includes('taunt')) {
+        newMinion.isTaunt = true;
+      }
+      if (cardToSummon.keywords?.includes('divine_shield')) {
+        newMinion.hasDivineShield = true;
+      }
+      if (cardToSummon.keywords?.includes('rush')) {
+        newMinion.hasRush = true;
+        newMinion.canAttack = true;
+      }
+      if (cardToSummon.keywords?.includes('charge')) {
+        newMinion.hasCharge = true;
+        newMinion.canAttack = true;
+        newMinion.isSummoningSick = false;
+      }
+      
+      board.push(newMinion);
+      summonedMinions.push(newMinion);
+      context.logGameEvent(`Summoned ${cardToSummon.name} from ${cardName}'s deathrattle`);
+    }
+    
+    return {
+      success: true,
+      additionalData: { 
+        summonedCount: summonedMinions.length,
+        summonedMinions
+      }
+    };
   } catch (error) {
     console.error(`Error executing deathrattle:summon:`, error);
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: `Error executing deathrattle:summon: ${error instanceof Error ? error.message : String(error)}`
     };
   }

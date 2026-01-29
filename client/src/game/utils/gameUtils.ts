@@ -23,7 +23,7 @@ import { hasEcho, createEchoCopy, expireEchoCardsAtEndOfTurn } from './echoUtils
 import { processAfterAttackEffects, processAfterHeroAttackEffects } from './afterAttackUtils';
 import { dealDamage } from './damageUtils';
 import { canMagnetize, applyMagnetization, isValidMagneticTarget } from './magneticUtils';
-import { fullCardDatabase as allCards } from '../data/cards';
+import allCards from '../data/allCards';
 import { 
   logCardPlay, 
   logAttack, 
@@ -46,6 +46,7 @@ import {
 } from './norseIntegration';
 import { processOnAttackStatusEffect } from '../effects/handlers/onAttackStatusHandler';
 import { getModifiedAttack, canMinionAct } from './statusEffectUtils';
+import { isSuperMinion, shouldGetHeroBonus } from '../data/sets/superMinions/heroSuperMinions';
 
 /**
  * Initialize a new game state
@@ -80,7 +81,6 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
       });
       
       playerClass = selectedHeroClass;
-      console.log(`Using player's selected deck: ${selectedDeck.name} (${playerDeck.length} cards)`);
     } else {
       // Fallback to random deck if saved deck not found
       playerDeck = createStartingDeck(30);
@@ -91,7 +91,6 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
     // Fallback to random class deck with no test cards
     playerClass = 'mage';
     playerDeck = createClassDeck(playerClass, 30);
-    console.log(`No deck selected. Using class-specific deck for ${playerClass}.`);
   }
   
   // Create opponent deck
@@ -150,8 +149,8 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
     },
     health: 30,
     heroHealth: 30,
-    heroArmor: opponentClass === 'warrior' ? 5 : 0, // Warriors start with armor
-    armor: opponentClass === 'warrior' ? 5 : 0, // Alternative property for armor
+    heroArmor: (opponentClass as string) === 'warrior' ? 5 : 0, // Warriors start with armor
+    armor: (opponentClass as string) === 'warrior' ? 5 : 0, // Alternative property for armor
     heroClass: opponentClass,
     heroPower: getDefaultHeroPower(opponentClass),
     cardsPlayedThisTurn: 0, // Initialize cards played counter
@@ -210,11 +209,10 @@ export function drawCard(state: GameState): GameState {
     }
     
     // Increment fatigue counter for this player
-    const currentFatigue = state.fatigueCount[currentPlayer] || 0;
+    const currentFatigue = state.fatigueCount![currentPlayer] || 0;
     const newFatigue = currentFatigue + 1;
     
     // Log fatigue damage
-    console.log(`FATIGUE: ${currentPlayer} takes ${newFatigue} fatigue damage (draw ${newFatigue})`);
     
     // Apply fatigue damage (increasing with each empty draw)
     let updatedState = {
@@ -233,28 +231,31 @@ export function drawCard(state: GameState): GameState {
     };
     
     // Make sure fatigueCount is defined in the state
-    const stateWithFatigue = {
+    const stateWithFatigue: GameState = {
       ...updatedState,
-      fatigueCount: updatedState.fatigueCount || { player: 0, opponent: 0 }
+      fatigueCount: {
+        player: updatedState.fatigueCount?.player ?? 0,
+        opponent: updatedState.fatigueCount?.opponent ?? 0
+      }
     };
     
     // Add to game log
     updatedState = logCardDraw(
       stateWithFatigue, 
       currentPlayer,
-      undefined, 
-      true, // fatigue
-      newFatigue
+      undefined, // cardId
+      false, // isBurned
+      true, // isFatigue
+      newFatigue // fatigueDamage
     );
     
     // Check for game over due to fatigue
     if (updatedState.players[currentPlayer].health <= 0) {
-      console.log(`${currentPlayer} died from fatigue!`);
       updatedState.gamePhase = "game_over";
       updatedState.winner = currentPlayer === 'player' ? 'opponent' : 'player';
     }
     
-    return updatedState;
+    return updatedState as GameState;
   }
   
   // Use the drawCardFromDeck utility to draw a card from deck to hand
@@ -284,8 +285,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   const originalCardData = JSON.parse(JSON.stringify(card.card));
   
   // Check if player has enough mana to play the card
-  if (card.card.manaCost > player.mana.current) {
-    console.log(`Not enough mana to play ${card.card.name}`);
+  if ((card.card.manaCost || 0) > player.mana.current) {
     return state;
   }
   
@@ -298,7 +298,6 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
                         cardKeywords.includes('combo');
   
   if (isComboActive) {
-    console.log(`COMBO ACTIVATED: ${card.card.name} (${updatedCardsPlayedThisTurn} cards played this turn)`);
   }
   
   // Handle pending overload if card has overload keyword
@@ -307,13 +306,11 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
       cardKeywords.includes('overload') && 
       card.card.overload) {
     pendingOverload += card.card.overload.amount;
-    console.log(`OVERLOAD: ${card.card.overload.amount} mana crystals will be locked next turn`);
   }
   
   // Handle different card types
   // 1. Handle Secret cards
   if (card.card.type === 'secret') {
-    console.log(`Playing secret card: ${card.card.name}`);
     // Update state with combo/overload before passing to playSecret
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
     player.mana.pendingOverload = pendingOverload;
@@ -323,14 +320,13 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // 2. Handle Weapon cards
   if (card.card.type === 'weapon') {
-    console.log(`Playing weapon card: ${card.card.name}`);
     
     // Remove card from hand
     player.hand.splice(index, 1);
     
     // Update player state
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-    player.mana.current -= card.card.manaCost;
+    player.mana.current -= (card.card.manaCost || 0);
     player.mana.pendingOverload = pendingOverload;
     
     // Create weapon card instance
@@ -341,7 +337,6 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   if (card.card.type === 'spell') {
     // Check if the spell requires a target
     if (requiresSpellTarget(card.card) && !targetId) {
-      console.log('This spell requires a target');
       // Don't play the card yet, wait for target selection
       return state;
     }
@@ -351,21 +346,18 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     
     // Update player state
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-    player.mana.current -= card.card.manaCost;
+    player.mana.current -= (card.card.manaCost || 0);
     player.mana.pendingOverload = pendingOverload;
     
     // Execute the spell effect
-    console.log(`Executing spell effect for ${card.card.name}`);
     
     // Process Norse Hero on-spell-cast passives (Ragnarok Poker integration)
     if (isNorseActive()) {
-      console.log(`[SPELL-CAST] Processing Norse on-spell-cast effects for ${card.card.name}`);
       newState = processHeroOnSpellCast(newState, currentPlayer);
     }
     
     // If combo is active and the card has a combo effect, execute that instead
     if (isComboActive && card.card.comboEffect) {
-      console.log(`Executing COMBO effect for ${card.card.name}`);
       return executeComboSpellEffect(newState, cardInstanceId, targetId, targetType);
     }
     
@@ -441,6 +433,23 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     playedCard = initializeRushEffect(playedCard);
   }
   
+  // Apply Super Minion hero bonus (+2/+2 when played by linked hero)
+  const cardId = typeof playedCard.card.id === 'number' ? playedCard.card.id : parseInt(playedCard.card.id as string);
+  // Check heroId on player, or fallback to hero.id if available
+  const currentHeroId = player.heroId || (player.hero as any)?.id || player.id;
+  if (isSuperMinion(cardId) && currentHeroId && shouldGetHeroBonus(cardId, currentHeroId)) {
+    const baseAttack = (playedCard.card as any).attack || 0;
+    const baseHealth = (playedCard.card as any).health || 0;
+    const bonusAttack = baseAttack + 2;
+    const bonusHealth = baseHealth + 2;
+    playedCard = {
+      ...playedCard,
+      currentAttack: bonusAttack,
+      currentHealth: bonusHealth,
+      hasSuperMinionBonus: true
+    };
+  }
+  
   // Check if battlefield is full (Hearthstone has a limit of 7 minions)
   if (player.battlefield.length >= 7) {
     console.error(`Cannot play ${card.card.name}: Battlefield is full (7 minions maximum)`);
@@ -452,13 +461,12 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // Update player state
   player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-  player.mana.current -= card.card.manaCost;
+  player.mana.current -= (card.card.manaCost || 0);
   player.mana.pendingOverload = pendingOverload;
   
   // Process Norse King/Hero on-minion-play effects (Ragnarok Poker integration)
   if (isNorseActive()) {
     const minionElement = (playedCard.card as any).element;
-    console.log(`[MINION-PLAY] Processing Norse on-minion-play effects for ${playedCard.card.name}`);
     newState = processAllOnMinionPlayEffects(newState, currentPlayer, playedCard.instanceId, minionElement);
   }
   
@@ -498,7 +506,6 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // Handle Combo effects (takes precedence over battlecry when active)
   if (hasComboEffect && shouldActivateCombo(newState, currentPlayer)) {
-    console.log(`Executing COMBO effect for ${originalCardData.name}`);
     return executeComboEffect(newState, fieldCardId, targetId, targetType);
   }
   
@@ -512,11 +519,11 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
       if (targetType === 'minion' && targetId) {
         // Find target minion
         let targetMinion;
-        let targetIndex;
-        let targetPlayer;
+        let targetIndex: number;
+        let targetPlayer: 'player' | 'opponent';
         
         // Check opponent battlefield first
-        const opponentPlayer = currentPlayer === 'player' ? 'opponent' : 'player';
+        const opponentPlayer: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
         const targetInfo = findCardInstance(newState.players[opponentPlayer].battlefield, targetId);
         
         if (targetInfo) {
@@ -529,21 +536,18 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
           
           // Check for Divine Shield
           if (targetMinion.hasDivineShield) {
-            console.log(`Battlecry: Divine Shield on ${targetMinion.card.name} absorbed the damage`);
             newState.players[targetPlayer].battlefield[targetIndex].hasDivineShield = false;
           } else {
             // Ensure currentHealth exists
             if (!targetMinion.currentHealth) {
-              targetMinion.currentHealth = targetMinion.card.health || 1;
+              targetMinion.currentHealth = (targetMinion.card as any).health || 1;
             }
             
             // Apply damage
-            newState.players[targetPlayer].battlefield[targetIndex].currentHealth -= damage;
-            console.log(`Battlecry: Dealt ${damage} damage to ${targetMinion.card.name}`);
+            newState.players[targetPlayer].battlefield[targetIndex].currentHealth! -= damage;
             
             // Check if minion is destroyed
             if ((newState.players[targetPlayer].battlefield[targetIndex].currentHealth || 0) <= 0) {
-              console.log(`${targetMinion.card.name} was destroyed by battlecry damage`);
               newState.players[targetPlayer].battlefield.splice(targetIndex, 1);
             }
           }
@@ -560,21 +564,18 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
             
             // Check for Divine Shield
             if (targetMinion.hasDivineShield) {
-              console.log(`Battlecry: Divine Shield on ${targetMinion.card.name} absorbed the damage`);
               newState.players[currentPlayer].battlefield[targetIndex].hasDivineShield = false;
             } else {
               // Ensure currentHealth exists
               if (!targetMinion.currentHealth) {
-                targetMinion.currentHealth = targetMinion.card.health || 1;
+                targetMinion.currentHealth = (targetMinion.card as any).health || 1;
               }
               
               // Apply damage
-              newState.players[currentPlayer].battlefield[targetIndex].currentHealth -= damage;
-              console.log(`Battlecry: Dealt ${damage} damage to friendly ${targetMinion.card.name}`);
+              newState.players[currentPlayer].battlefield[targetIndex].currentHealth! -= damage;
               
               // Check if minion is destroyed
               if ((newState.players[currentPlayer].battlefield[targetIndex].currentHealth || 0) <= 0) {
-                console.log(`${targetMinion.card.name} was destroyed by battlecry damage`);
                 newState.players[currentPlayer].battlefield.splice(targetIndex, 1);
               }
             }
@@ -589,24 +590,20 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
         if (targetId === 'opponent') {
           // Damage opponent hero
           newState.players.opponent.health -= damage;
-          console.log(`Battlecry: Dealt ${damage} damage to opponent hero`);
           
           // Check for lethal damage
           if (newState.players.opponent.health <= 0) {
             newState.gamePhase = "game_over";
             newState.winner = 'player';
-            console.log('Game over - player wins!');
           }
         } else {
           // Damage player hero (self-damage effects)
           newState.players.player.health -= damage;
-          console.log(`Battlecry: Dealt ${damage} damage to player hero`);
           
           // Check for lethal damage
           if (newState.players.player.health <= 0) {
             newState.gamePhase = "game_over";
             newState.winner = 'opponent';
-            console.log('Game over - opponent wins!');
           }
         }
       }
@@ -658,11 +655,11 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
           } else {
             // Ensure currentHealth exists
             if (!minion.currentHealth) {
-              minion.currentHealth = minion.card.health || 1;
+              minion.currentHealth = (minion.card as any).health || 1;
             }
             
             // Apply damage
-            newState.players[enemyPlayer].battlefield[i].currentHealth -= damageAmount;
+            newState.players[enemyPlayer].battlefield[i].currentHealth! -= damageAmount;
             // Apply AoE damage to the minion
             
             // Check if the minion is destroyed
@@ -681,7 +678,6 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     } 
     // For any other battlecry types, call the executeBattlecry function from battlecryUtils.ts
     else {
-      console.log(`Handling ${originalCardData.battlecry.type} battlecry with executeBattlecry`);
       newState = executeBattlecry(newState, fieldCardId, targetId, targetType);
     }
   }
@@ -707,6 +703,42 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
  * 4. Draw a card for the new active player
  * 5. Reset summoning sickness and allow cards to attack
  */
+
+/**
+ * Apply the standard turn-start pipeline for a player
+ * This ensures consistent ordering: start-of-turn effects → resets → draw
+ * @param state Current game state (with currentTurn already set to the player)
+ * @param player The player whose turn is starting
+ * @returns Updated game state after turn-start processing
+ */
+function applyTurnStartPipeline(state: GameState, player: 'player' | 'opponent'): GameState {
+  let newState = state;
+  
+  // Validation: ensure currentTurn matches the player we're processing
+  if (newState.currentTurn !== player) {
+    console.warn(`[applyTurnStartPipeline] currentTurn mismatch: expected ${player}, got ${newState.currentTurn}`);
+  }
+  
+  // 1. Log the turn start first (so logs show before effects)
+  newState = logTurnStart(newState, player);
+  
+  // 2. Process start-of-turn effects for minions
+  newState = processStartOfTurnEffects(newState);
+  
+  // 3. Process Norse King/Hero start-of-turn effects (Ragnarok Poker integration)
+  if (isNorseActive()) {
+    newState = processAllStartOfTurnEffects(newState, player);
+  }
+  
+  // 4. Reset minions for the turn (clears summoning sickness, attack counters, etc.)
+  newState = performTurnStartResets(newState);
+  
+  // 5. Draw a card for the player
+  newState = drawCard(newState);
+  
+  return newState;
+}
+
 export function endTurn(state: GameState): GameState {
   // Begin turn transition
   const currentPlayer = state.currentTurn;
@@ -714,7 +746,6 @@ export function endTurn(state: GameState): GameState {
   
   // If player is ending their turn, auto-attack with their minions first
   if (currentPlayer === 'player') {
-    console.log('[END-TURN] Player ending turn - starting auto-attack phase');
     state = simulatePlayerMinionAttacks(state);
   }
   
@@ -726,7 +757,6 @@ export function endTurn(state: GameState): GameState {
   
   // Process Norse King/Hero end-of-turn effects (Ragnarok Poker integration)
   if (isNorseActive()) {
-    console.log(`[END-TURN] Processing Norse end-of-turn effects for ${currentPlayer}`);
     state = processAllEndOfTurnEffects(state, currentPlayer);
   }
   
@@ -807,20 +837,8 @@ export function endTurn(state: GameState): GameState {
     }
   };
   
-  // Apply start of turn effects
-  newState = processStartOfTurnEffects(newState);
-  
-  // Process Norse King/Hero start-of-turn effects (Ragnarok Poker integration)
-  if (isNorseActive()) {
-    console.log(`[START-TURN] Processing Norse start-of-turn effects for ${typedNextPlayer}`);
-    newState = processAllStartOfTurnEffects(newState, typedNextPlayer);
-  }
-  
-  // Reset minions and other things at the start of a turn
-  newState = performTurnStartResets(newState);
-  
-  // Draw a card for the next player
-  newState = drawCard(newState);
+  // Apply standard turn-start pipeline for the next player
+  newState = applyTurnStartPipeline(newState, typedNextPlayer);
   
   // If next player is AI (opponent), simulate their turn
   if (typedNextPlayer === 'opponent') {
@@ -834,28 +852,14 @@ export function endTurn(state: GameState): GameState {
       
       // End AI turn immediately and return to player
       
-      // Set up player's next turn
+      // Set up player's next turn - prepare base state, then apply standard pipeline
       const playerState = newState.players.player;
-      
-      // Draw a card for the player using standard card drawing mechanism
-      let tempState = {
-        ...newState,
-        currentTurn: 'player'
-      };
-      tempState = drawCard(tempState);
-      
-      // Get updated player state after card draw
-      const updatedPlayerState = tempState.players.player;
-      const updatedPlayerHand = updatedPlayerState.hand;
-      const remainingDeck = updatedPlayerState.deck;
-        
-      // Calculate mana for next turn
       const newTurnNumber = newState.turnNumber + 1;
       const newPlayerMaxMana = Math.min(playerState.mana.max + 1, 10);
       const playerOverloaded = playerState.mana.overloaded || 0;
       const availableMana = Math.max(0, newPlayerMaxMana - playerOverloaded);
       
-      // Update state for player's turn
+      // Set up base state for player's turn
       newState = {
         ...newState,
         currentTurn: 'player',
@@ -864,50 +868,34 @@ export function endTurn(state: GameState): GameState {
           ...newState.players,
           player: {
             ...playerState,
-            hand: updatedPlayerHand,
-            deck: remainingDeck,
             mana: {
               current: availableMana,
               max: newPlayerMaxMana,
               overloaded: playerOverloaded,
               pendingOverload: 0
             },
-            // Let the performTurnStartResets handle the battlefield card state resets consistently
-            battlefield: playerState.battlefield,
             heroPower: {
               ...playerState.heroPower,
               used: false
             },
             cardsPlayedThisTurn: 0
           }
-        },
-        gameLog: newState.gameLog ? [...newState.gameLog, logTurnStart('player', newTurnNumber)] : 
-          [logTurnStart('player', newTurnNumber)]
+        }
       };
+      
+      // Apply standard turn-start pipeline for player (effects → resets → draw → log)
+      newState = applyTurnStartPipeline(newState, 'player');
       
     } catch (error) {
       console.error("Error during opponent's turn:", error);
       
-      // Error recovery - ensure turn transitions back to player to prevent game freezing
+      // Error recovery - set up base state and use standard pipeline
       const playerState = newState.players.player;
       const newTurnNumber = newState.turnNumber + 1;
-      
-      // Setup recovery state with proper card drawing
-      let tempState = {
-        ...newState,
-        currentTurn: 'player'
-      };
+      const newPlayerMaxMana = Math.min(playerState.mana.max + 1, 10);
       
       try {
-        // Use standard card drawing mechanism for consistency
-        tempState = drawCard(tempState);
-        
-        // Extract updated player state after card draw
-        const updatedPlayerState = tempState.players.player;
-        const updatedPlayerHand = updatedPlayerState.hand;
-        const remainingDeck = updatedPlayerState.deck;
-        
-        // Build complete recovery state
+        // Set up base state for player's turn
         newState = {
           ...newState,
           currentTurn: 'player',
@@ -916,46 +904,27 @@ export function endTurn(state: GameState): GameState {
             ...newState.players,
             player: {
               ...playerState,
-              hand: updatedPlayerHand,
-              deck: remainingDeck,
               mana: {
-                current: Math.min(playerState.mana.max + 1, 10),
-                max: Math.min(playerState.mana.max + 1, 10),
+                current: newPlayerMaxMana,
+                max: newPlayerMaxMana,
                 overloaded: 0,
                 pendingOverload: 0
               },
-              cardsPlayedThisTurn: 0,
-              // Use the original battlefield state and let performTurnStartResets handle the state consistently
-              battlefield: playerState.battlefield,
               heroPower: {
                 ...playerState.heroPower,
                 used: false
-              }
-            }
-          },
-          gameLog: newState.gameLog ? [...newState.gameLog, logTurnStart('player', newTurnNumber)] : 
-            [logTurnStart('player', newTurnNumber)]
-        };
-      } catch (drawError) {
-        // Minimal recovery as last resort
-        newState = {
-          ...newState,
-          currentTurn: 'player',
-          turnNumber: newTurnNumber,
-          players: {
-            ...newState.players,
-            player: {
-              ...playerState,
-              mana: {
-                current: Math.min(playerState.mana.max + 1, 10),
-                max: Math.min(playerState.mana.max + 1, 10),
-                overloaded: 0,
-                pendingOverload: 0
               },
               cardsPlayedThisTurn: 0
             }
           }
         };
+        
+        // Apply standard turn-start pipeline for error recovery
+        newState = applyTurnStartPipeline(newState, 'player');
+      } catch (recoveryError) {
+        // Minimal recovery as last resort - just reset minions
+        console.error("Error in recovery path:", recoveryError);
+        newState = performTurnStartResets(newState);
       }
     }
   }
@@ -970,7 +939,6 @@ export function endTurn(state: GameState): GameState {
  * Enhanced AI logic for opponent's turn - plays cards and attacks
  */
 function simulateOpponentTurn(state: GameState): GameState {
-  console.log('[OPPONENT-AI] Starting opponent turn simulation');
   try {
     // Safety check to ensure we received a valid state object
     if (!state || !state.players || !state.players.opponent) {
@@ -981,9 +949,6 @@ function simulateOpponentTurn(state: GameState): GameState {
     let currentState = JSON.parse(JSON.stringify(state)) as GameState;
     const opponent = currentState.players.opponent;
     
-    console.log('[OPPONENT-AI] Opponent hand size:', opponent.hand.length);
-    console.log('[OPPONENT-AI] Opponent mana:', opponent.mana.current, '/', opponent.mana.max);
-    console.log('[OPPONENT-AI] Opponent battlefield size:', opponent.battlefield.length);
     
     // Phase 1: Play cards from hand (highest cost first)
     const sortedHand = [...opponent.hand].sort(
@@ -993,7 +958,7 @@ function simulateOpponentTurn(state: GameState): GameState {
     // Try to play cards until no more can be played
     for (const card of sortedHand) {
       // Skip if not enough mana
-      if (card.card.manaCost > currentState.players.opponent.mana.current) {
+      if ((card.card.manaCost || 0) > currentState.players.opponent.mana.current) {
         continue;
       }
       
@@ -1017,7 +982,7 @@ function simulateOpponentTurn(state: GameState): GameState {
             if (playerMinions.length > 0) {
               // Target minion with highest attack first
               const targetMinion = playerMinions.sort((a, b) => 
-                (b.card.attack || 0) - (a.card.attack || 0)
+                ((b.card as any).attack || 0) - ((a.card as any).attack || 0)
               )[0];
               targetId = targetMinion.instanceId;
             } else {
@@ -1029,14 +994,14 @@ function simulateOpponentTurn(state: GameState): GameState {
           else if (spellEffect?.type === 'heal') {
             // AI's own minions, prioritize damaged ones
             const aiMinions = currentState.players.opponent.battlefield.filter(m => 
-              m.currentHealth < (m.card.health || 0)
+              (m.currentHealth || 0) < ((m.card as any).health || 0)
             );
             
             if (aiMinions.length > 0) {
               // Target most damaged minion
               const targetMinion = aiMinions.sort((a, b) => 
-                ((a.card.health || 0) - (a.currentHealth || 0)) - 
-                ((b.card.health || 0) - (b.currentHealth || 0))
+                (((a.card as any).health || 0) - (a.currentHealth || 0)) - 
+                (((b.card as any).health || 0) - (b.currentHealth || 0))
               )[0];
               targetId = targetMinion.instanceId;
             } else {
@@ -1051,7 +1016,7 @@ function simulateOpponentTurn(state: GameState): GameState {
             if (aiMinions.length > 0) {
               // Target highest health minion for buffs
               const targetMinion = aiMinions.sort((a, b) => 
-                (b.card.health || 0) - (a.card.health || 0)
+                ((b.card as any).health || 0) - ((a.card as any).health || 0)
               )[0];
               targetId = targetMinion.instanceId;
             } else {
@@ -1081,7 +1046,7 @@ function simulateOpponentTurn(state: GameState): GameState {
             if (playerMinions.length > 0) {
               // Target minion with highest attack first for damage battlecries
               const targetMinion = playerMinions.sort((a, b) => 
-                (b.card.attack || 0) - (a.card.attack || 0)
+                ((b.card as any).attack || 0) - ((a.card as any).attack || 0)
               )[0];
               targetId = targetMinion.instanceId;
             } else {
@@ -1099,7 +1064,7 @@ function simulateOpponentTurn(state: GameState): GameState {
             if (aiMinions.length > 0) {
               // Target highest health minion for buffs
               const targetMinion = aiMinions.sort((a, b) => 
-                (b.card.health || 0) - (a.card.health || 0)
+                ((b.card as any).health || 0) - ((a.card as any).health || 0)
               )[0];
               targetId = targetMinion.instanceId;
             } else {
@@ -1123,32 +1088,22 @@ function simulateOpponentTurn(state: GameState): GameState {
       } else {
         // Non-targeted card, play normally
         try {
-          console.log(`[OPPONENT-AI] Playing non-targeted card: ${card.card.name} (cost: ${card.card.manaCost})`);
           currentState = playCard(currentState, card.instanceId);
-          console.log(`[OPPONENT-AI] Card played successfully - battlefield now has ${currentState.players.opponent.battlefield.length} minions`);
         } catch (error) {
           console.error(`Error playing card ${card.card.name}:`, error);
         }
       }
     }
     
-    console.log('[OPPONENT-AI] After playing cards - opponent battlefield:', currentState.players.opponent.battlefield.map(c => c.card.name));
   
   // Phase 2: Attack with minions (similar to autoAttackWithAllCards but for opponent)
-  
-  // Log minion states before filtering
-  console.log('[OPPONENT-AI] Checking minion attack states:');
-  currentState.players.opponent.battlefield.forEach(card => {
-    console.log(`[OPPONENT-AI] - ${card.card.name}: canAttack=${card.canAttack}, isSummoningSick=${card.isSummoningSick}, attack=${card.card.attack}`);
-  });
   
   // Get all cards that can attack
   // Sort by HP (currentHealth) - highest HP attacks first per game rules
   const attackableCards = currentState.players.opponent.battlefield
     .filter(card => !card.isSummoningSick && card.canAttack)
-    .sort((a, b) => b.currentHealth - a.currentHealth); // Sort by HP (highest first)
+    .sort((a, b) => (b.currentHealth || 0) - (a.currentHealth || 0)); // Sort by HP (highest first)
   
-  console.log(`[OPPONENT-AI] Found ${attackableCards.length} minions that can attack:`, attackableCards.map(c => c.card.name));
   
   if (attackableCards.length > 0) {
     // For each card that can attack, find optimal targets (player minions or hero)
@@ -1160,7 +1115,7 @@ function simulateOpponentTurn(state: GameState): GameState {
         const playerHasTaunts = hasTauntMinions(playerField);
         
         // If we can kill player, do it! (But only if there are no Taunts)
-        if (!playerHasTaunts && attackerCard.card.attack >= playerHealth) {
+        if (!playerHasTaunts && ((attackerCard.card as any).attack || 0) >= playerHealth) {
           // Attack player's hero directly
           currentState = processAttackForOpponent(
             currentState, 
@@ -1183,17 +1138,17 @@ function simulateOpponentTurn(state: GameState): GameState {
             let score = 0;
             
             // Can we kill it?
-            if (attackerCard.card.attack >= defenderCard.currentHealth) {
+            if (((attackerCard.card as any).attack || 0) >= (defenderCard.currentHealth || 0)) {
               score += 150; // Higher priority - we need to clear Taunts
               
               // Will our minion survive?
-              if (defenderCard.card.attack < attackerCard.currentHealth) {
+              if (((defenderCard.card as any).attack || 0) < (attackerCard.currentHealth || 0)) {
                 score += 100;
               }
               
               // Prioritize higher attack/cost cards
-              score += defenderCard.card.attack * 5;
-              score += defenderCard.card.manaCost * 3;
+              score += ((defenderCard.card as any).attack || 0) * 5;
+              score += (defenderCard.card.manaCost || 0) * 3;
               
               if (score > bestTargetScore) {
                 bestTarget = defenderCard;
@@ -1204,7 +1159,7 @@ function simulateOpponentTurn(state: GameState): GameState {
               score += 50;
               
               // Will our minion survive?
-              if (defenderCard.card.attack < attackerCard.currentHealth) {
+              if (((defenderCard.card as any).attack || 0) < (attackerCard.currentHealth || 0)) {
                 score += 30;
               }
               
@@ -1241,8 +1196,8 @@ function simulateOpponentTurn(state: GameState): GameState {
           }
           
           // Target lowest HP minion
-          if (defenderCard.currentHealth < lowestHP) {
-            lowestHP = defenderCard.currentHealth;
+          if ((defenderCard.currentHealth || 0) < lowestHP) {
+            lowestHP = defenderCard.currentHealth || 0;
             bestTarget = defenderCard;
           }
         });
@@ -1325,7 +1280,6 @@ function processAttackForOpponent(
     // Check if minion can act (Frozen/Paralysis check)
     const actionCheck = canMinionAct(attacker);
     if (!actionCheck.canAct) {
-      console.log(`[STATUS] ${attacker.card.name} cannot attack: ${actionCheck.reason}`);
       return state;
     }
     
@@ -1345,7 +1299,6 @@ function processAttackForOpponent(
       }
       
       const attackDamage = getModifiedAttack(attacker);
-      console.log(`[AI-ATTACK] ${attacker.card.name} (${attackDamage} ATK) attacks player hero for ${attackDamage} damage!`);
       
       // Queue animation with full combat data for deferred damage
       queueAIAttackAnimation(
@@ -1372,7 +1325,6 @@ function processAttackForOpponent(
         if (attackerIdx !== -1) {
           const currentHealth = newState.players.opponent.battlefield[attackerIdx].currentHealth ?? 0;
           newState.players.opponent.battlefield[attackerIdx].currentHealth = currentHealth - burnDamage;
-          console.log(`[STATUS] 🔥 Burn deals ${burnDamage} self-damage to ${attacker.card.name}`);
         }
       }
       
@@ -1386,7 +1338,7 @@ function processAttackForOpponent(
       
       if (updatedAttackerIndex !== -1) {
         // Track attacks performed for Windfury
-        newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed += 1;
+        newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
         
         // For non-Windfury cards, or Windfury cards that have performed their maximum attacks (2), disable attacking
         // Ensure keywords array exists before checking
@@ -1394,7 +1346,7 @@ function processAttackForOpponent(
         const hasWindfury = attackerKeywords.includes('windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
         
-        if (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed >= maxAttacksAllowed) {
+        if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
           // Mark the attacker as having used all its attacks this turn
           newState.players.opponent.battlefield[updatedAttackerIndex].canAttack = false;
         }
@@ -1404,7 +1356,6 @@ function processAttackForOpponent(
       if (newState.players.player.health <= 0) {
         newState.gamePhase = "game_over";
         newState.winner = 'opponent';
-        console.log('Game over - opponent wins!');
       }
       
       return newState;
@@ -1422,7 +1373,6 @@ function processAttackForOpponent(
     const defender = playerField[defenderIndex];
     
     const attackDamage = getModifiedAttack(attacker);
-    console.log(`[AI-ATTACK] ${attacker.card.name} (${attackDamage}/${attacker.currentHealth}) attacks ${defender.card.name} (${defender.card.attack}/${defender.currentHealth})`);
     
     // Check for Divine Shield on attacker and defender
     const attackerHasDivineShield = attacker.hasDivineShield || false;
@@ -1436,7 +1386,7 @@ function processAttackForOpponent(
       defender.instanceId,
       'minion',
       attackDamage,
-      defender.card.attack, // counterDamage
+      (defender.card as any).attack || 0, // counterDamage
       attackerHasDivineShield,
       defenderHasDivineShield
     );
@@ -1454,9 +1404,9 @@ function processAttackForOpponent(
         const hasWindfury = attackerKeywords.includes('windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
         
-        newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed += 1;
+        newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
         
-        if (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed >= maxAttacksAllowed) {
+        if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
           newState.players.opponent.battlefield[updatedAttackerIndex].canAttack = false;
         }
       }
@@ -1475,7 +1425,7 @@ function processAttackForOpponent(
     } else {
       // Normal damage application - use modified attack for status effects
       if (attackDamage && attackDamage > 0) {
-        newState.players.player.battlefield[defenderIndex].currentHealth -= attackDamage;
+        newState.players.player.battlefield[defenderIndex].currentHealth = (newState.players.player.battlefield[defenderIndex].currentHealth || 0) - attackDamage;
         
         // Track this minion as damaged for Frenzy effect
         damagedMinionIds.push(defender.instanceId);
@@ -1490,8 +1440,9 @@ function processAttackForOpponent(
       newState.players.opponent.battlefield[attackerIndex].hasDivineShield = false;
     } else {
       // Normal damage application
-      if (defender.card.attack && defender.card.attack > 0) {
-        newState.players.opponent.battlefield[attackerIndex].currentHealth -= defender.card.attack;
+      const defenderAttack = (defender.card as any).attack || 0;
+      if (defenderAttack > 0) {
+        newState.players.opponent.battlefield[attackerIndex].currentHealth = (newState.players.opponent.battlefield[attackerIndex].currentHealth || 0) - defenderAttack;
         
         // Track this minion as damaged for Frenzy effect
         damagedMinionIds.push(attacker.instanceId);
@@ -1506,7 +1457,7 @@ function processAttackForOpponent(
     const defenderId = defender.instanceId;
     
     // Check for defeated defender minion (0 or less health)
-    if (newState.players.player.battlefield[defenderIndex].currentHealth <= 0) {
+    if ((newState.players.player.battlefield[defenderIndex].currentHealth || 0) <= 0) {
       // Move the defender from the battlefield to the graveyard
       newState = destroyCard(newState, defenderId, 'player');
     }
@@ -1518,7 +1469,7 @@ function processAttackForOpponent(
     
     // Only check attacker health if it's still on the battlefield
     if (updatedAttackerIndex !== -1 && 
-        newState.players.opponent.battlefield[updatedAttackerIndex].currentHealth <= 0) {
+        (newState.players.opponent.battlefield[updatedAttackerIndex].currentHealth || 0) <= 0) {
       // Move the attacker from the battlefield to the graveyard
       newState = destroyCard(newState, attackerId, 'opponent');
     } else if (updatedAttackerIndex !== -1) {
@@ -1528,9 +1479,9 @@ function processAttackForOpponent(
       const hasWindfury = attackerKeywords.includes('windfury');
       const maxAttacksAllowed = hasWindfury ? 2 : 1;
       
-      newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed += 1;
+      newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
       
-      if (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed >= maxAttacksAllowed) {
+      if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
         // Mark the attacker as having used all its attacks this turn
         newState.players.opponent.battlefield[updatedAttackerIndex].canAttack = false;
       }
@@ -1568,7 +1519,6 @@ function processAttackForOpponent(
       if (burnAttackerIdx !== -1) {
         const currentHealth = newState.players.opponent.battlefield[burnAttackerIdx].currentHealth ?? 0;
         newState.players.opponent.battlefield[burnAttackerIdx].currentHealth = currentHealth - burnDamage;
-        console.log(`[STATUS] 🔥 Burn deals ${burnDamage} self-damage to ${attacker.card.name}`);
       }
     }
     
@@ -1607,7 +1557,6 @@ function processAttackForPlayer(
     // Check if minion can act (Frozen/Paralysis check)
     const actionCheck = canMinionAct(attacker);
     if (!actionCheck.canAct) {
-      console.log(`[STATUS] ${attacker.card.name} cannot attack: ${actionCheck.reason}`);
       return state;
     }
     
@@ -1626,7 +1575,6 @@ function processAttackForPlayer(
       }
       
       const attackDamage = getModifiedAttack(attacker);
-      console.log(`[PLAYER-AUTO-ATTACK] ${attacker.card.name} (${attackDamage} ATK) attacks opponent hero for ${attackDamage} damage!`);
       
       // Queue animation with full combat data for deferred damage
       queueAIAttackAnimation(
@@ -1654,7 +1602,6 @@ function processAttackForPlayer(
         if (attackerIdx !== -1) {
           const currentHealth = newState.players.player.battlefield[attackerIdx].currentHealth ?? 0;
           newState.players.player.battlefield[attackerIdx].currentHealth = currentHealth - burnDamage;
-          console.log(`[STATUS] 🔥 Burn deals ${burnDamage} self-damage to ${attacker.card.name}`);
         }
       }
       
@@ -1683,7 +1630,6 @@ function processAttackForPlayer(
       if (newState.players.opponent.health <= 0) {
         newState.gamePhase = "game_over";
         newState.winner = 'player';
-        console.log('Game over - player wins!');
       }
       
       return newState;
@@ -1701,7 +1647,6 @@ function processAttackForPlayer(
     const defender = opponentField[defenderIndex];
     
     const attackDamage = getModifiedAttack(attacker);
-    console.log(`[PLAYER-AUTO-ATTACK] ${attacker.card.name} (${attackDamage}/${attacker.currentHealth}) attacks ${defender.card.name} (${defender.card.attack}/${defender.currentHealth})`);
     
     // Check for Divine Shield
     const attackerHasDivineShield = attacker.hasDivineShield || false;
@@ -1715,7 +1660,7 @@ function processAttackForPlayer(
       defender.instanceId,
       'minion',
       attackDamage,
-      defender.card.attack, // counterDamage
+      (defender.card as any).attack || 0, // counterDamage
       attackerHasDivineShield,
       defenderHasDivineShield,
       'player' // attackerSide - this is a player minion attacking
@@ -1733,9 +1678,9 @@ function processAttackForPlayer(
         const hasWindfury = attackerKeywords.includes('windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
         
-        newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed += 1;
+        newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
         
-        if (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed >= maxAttacksAllowed) {
+        if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
           newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
         }
       }
@@ -1751,7 +1696,7 @@ function processAttackForPlayer(
     } else {
       // Normal damage application - use modified attack for status effects
       if (attackDamage && attackDamage > 0) {
-        newState.players.opponent.battlefield[defenderIndex].currentHealth -= attackDamage;
+        newState.players.opponent.battlefield[defenderIndex].currentHealth = (newState.players.opponent.battlefield[defenderIndex].currentHealth || 0) - attackDamage;
         damagedMinionIds.push(defender.instanceId);
       }
       newState = updateEnrageEffects(newState);
@@ -1760,8 +1705,9 @@ function processAttackForPlayer(
     if (attackerHasDivineShield) {
       newState.players.player.battlefield[attackerIndex].hasDivineShield = false;
     } else {
-      if (defender.card.attack && defender.card.attack > 0) {
-        newState.players.player.battlefield[attackerIndex].currentHealth -= defender.card.attack;
+      const defenderAttack = (defender.card as any).attack || 0;
+      if (defenderAttack > 0) {
+        newState.players.player.battlefield[attackerIndex].currentHealth = (newState.players.player.battlefield[attackerIndex].currentHealth || 0) - defenderAttack;
         damagedMinionIds.push(attacker.instanceId);
       }
       newState = updateEnrageEffects(newState);
@@ -1770,7 +1716,7 @@ function processAttackForPlayer(
     const attackerId = attacker.instanceId;
     const defenderId = defender.instanceId;
     
-    if (newState.players.opponent.battlefield[defenderIndex].currentHealth <= 0) {
+    if ((newState.players.opponent.battlefield[defenderIndex]?.currentHealth || 0) <= 0) {
       newState = destroyCard(newState, defenderId, 'opponent');
     }
     
@@ -1779,16 +1725,16 @@ function processAttackForPlayer(
     );
     
     if (updatedAttackerIndex !== -1 && 
-        newState.players.player.battlefield[updatedAttackerIndex].currentHealth <= 0) {
+        (newState.players.player.battlefield[updatedAttackerIndex].currentHealth || 0) <= 0) {
       newState = destroyCard(newState, attackerId, 'player');
     } else if (updatedAttackerIndex !== -1) {
       const attackerKeywords = attacker.card.keywords || [];
       const hasWindfury = attackerKeywords.includes('windfury');
       const maxAttacksAllowed = hasWindfury ? 2 : 1;
       
-      newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed += 1;
+      newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
       
-      if (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed >= maxAttacksAllowed) {
+      if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
         newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
       }
     }
@@ -1821,7 +1767,6 @@ function processAttackForPlayer(
       if (burnAttackerIdx !== -1) {
         const currentHealth = newState.players.player.battlefield[burnAttackerIdx].currentHealth ?? 0;
         newState.players.player.battlefield[burnAttackerIdx].currentHealth = currentHealth - burnDamage;
-        console.log(`[STATUS] 🔥 Burn deals ${burnDamage} self-damage to ${attacker.card.name}`);
       }
     }
     
@@ -1837,23 +1782,19 @@ function processAttackForPlayer(
  * Player minions auto-attack based on HP (highest HP attacks first)
  */
 function simulatePlayerMinionAttacks(state: GameState): GameState {
-  console.log('[PLAYER-AUTO-ATTACK] Starting player minion attack phase');
   
   let currentState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Log minion states before filtering
-  console.log('[PLAYER-AUTO-ATTACK] Checking minion attack states:');
   currentState.players.player.battlefield.forEach(card => {
-    console.log(`[PLAYER-AUTO-ATTACK] - ${card.card.name}: canAttack=${card.canAttack}, isSummoningSick=${card.isSummoningSick}, attack=${card.card.attack}`);
   });
   
   // Get all cards that can attack
   // Sort by HP (currentHealth) - highest HP attacks first per game rules
   const attackableCards = currentState.players.player.battlefield
     .filter(card => !card.isSummoningSick && card.canAttack)
-    .sort((a, b) => b.currentHealth - a.currentHealth); // Sort by HP (highest first)
+    .sort((a, b) => (b.currentHealth || 0) - (a.currentHealth || 0)); // Sort by HP (highest first)
   
-  console.log(`[PLAYER-AUTO-ATTACK] Found ${attackableCards.length} minions that can attack:`, attackableCards.map(c => c.card.name));
   
   if (attackableCards.length > 0) {
     attackableCards.forEach(attackerCard => {
@@ -1863,7 +1804,7 @@ function simulatePlayerMinionAttacks(state: GameState): GameState {
         const opponentHasTaunts = hasTauntMinions(opponentField);
         
         // If we can kill opponent, do it! (But only if there are no Taunts)
-        if (!opponentHasTaunts && attackerCard.card.attack >= opponentHealth) {
+        if (!opponentHasTaunts && ((attackerCard.card as any).attack || 0) >= opponentHealth) {
           currentState = processAttackForPlayer(
             currentState, 
             attackerCard.instanceId
@@ -1880,13 +1821,13 @@ function simulatePlayerMinionAttacks(state: GameState): GameState {
           tauntMinions.forEach(defenderCard => {
             let score = 0;
             
-            if (attackerCard.card.attack >= defenderCard.currentHealth) {
+            if (((attackerCard.card as any).attack || 0) >= (defenderCard.currentHealth || 0)) {
               score += 150;
-              if (defenderCard.card.attack < attackerCard.currentHealth) {
+              if (((defenderCard.card as any).attack || 0) < (attackerCard.currentHealth || 0)) {
                 score += 100;
               }
-              score += defenderCard.card.attack * 5;
-              score += defenderCard.card.manaCost * 3;
+              score += ((defenderCard.card as any).attack || 0) * 5;
+              score += (defenderCard.card.manaCost || 0) * 3;
               
               if (score > bestTargetScore) {
                 bestTarget = defenderCard;
@@ -1894,7 +1835,7 @@ function simulatePlayerMinionAttacks(state: GameState): GameState {
               }
             } else {
               score += 50;
-              if (defenderCard.card.attack < attackerCard.currentHealth) {
+              if (((defenderCard.card as any).attack || 0) < (attackerCard.currentHealth || 0)) {
                 score += 30;
               }
               if (score > bestTargetScore) {
@@ -1925,8 +1866,8 @@ function simulatePlayerMinionAttacks(state: GameState): GameState {
             return;
           }
           
-          if (defenderCard.currentHealth < lowestHP) {
-            lowestHP = defenderCard.currentHealth;
+          if ((defenderCard.currentHealth || 0) < lowestHP) {
+            lowestHP = defenderCard.currentHealth || 0;
             bestTarget = defenderCard;
           }
         });
@@ -1951,7 +1892,6 @@ function simulatePlayerMinionAttacks(state: GameState): GameState {
     });
   }
   
-  console.log('[PLAYER-AUTO-ATTACK] Player minion attack phase complete');
   return currentState;
 }
 
@@ -1993,7 +1933,6 @@ export function processAttack(
   defenderInstanceId?: string // If undefined, attack is directed at the opponent's hero
 ): GameState {
   // Add comprehensive logging
-  console.log(`[ATTACK] Processing attack from ${attackerInstanceId} to ${defenderInstanceId || 'opponent hero'}`);
   
   // Deep clone the state to avoid mutation
   let newState = JSON.parse(JSON.stringify(state)) as GameState;
@@ -2015,21 +1954,12 @@ export function processAttack(
   if (attackerIndex === -1) {
     console.error(`[ATTACK ERROR] Attacker card with ID ${attackerInstanceId} not found on the battlefield`);
     // Additional diagnostic info
-    console.log(`[ATTACK DEBUG] Available cards on battlefield: ${playerField.map(c => c.instanceId).join(', ')}`);
     return state;
   }
   
   const attacker = playerField[attackerIndex];
   
-  // Log attacker state for debugging
-  console.log(`[ATTACK] Attacker card: ${attacker.card.name}`, {
-    instanceId: attacker.instanceId,
-    canAttack: attacker.canAttack,
-    isSummoningSick: attacker.isSummoningSick,
-    attacksPerformed: attacker.attacksPerformed || 0,
-    keywords: attacker.card.keywords
-  });
-  
+    
   // Check if the card can attack
   if (attacker.isSummoningSick) {
     console.error(`[ATTACK ERROR] Card ${attacker.card.name} cannot attack due to summoning sickness`);
@@ -2073,9 +2003,9 @@ export function processAttack(
     
     // Deal damage to opponent's hero using the dealDamage function instead of direct modification
     // This ensures armor is properly handled
-    if (attacker.card.attack !== undefined && attacker.card.attack > 0) {
-      console.log(`Attacking hero with ${attacker.card.name} for ${attacker.card.attack} damage`);
-      newState = dealDamage(newState, 'opponent', 'hero', attacker.card.attack, undefined, attacker.card.id, 'player');
+    const attackerAttackVal = (attacker.card as any).attack;
+    if (attackerAttackVal !== undefined && attackerAttackVal > 0) {
+      newState = dealDamage(newState, 'opponent', 'hero', attackerAttackVal, undefined, attacker.card.id as number | undefined, 'player');
     }
     
     // Store the original attacker ID
@@ -2088,14 +2018,14 @@ export function processAttack(
     
     if (updatedAttackerIndex !== -1) {
       // Track attacks performed for Windfury
-      newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed += 1;
+      newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
       
       // For non-Windfury cards, or Windfury cards that have performed their maximum attacks (2), disable attacking
       const attackerKeywords = attacker.card.keywords || [];
       const hasWindfury = attackerKeywords.includes('windfury');
       const maxAttacksAllowed = hasWindfury ? 2 : 1;
       
-      if (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed >= maxAttacksAllowed) {
+      if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
         // Mark the attacker as having used all its attacks this turn
         newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
       }
@@ -2105,7 +2035,6 @@ export function processAttack(
     if (newState.players.opponent.health <= 0) {
       newState.gamePhase = "game_over";
       newState.winner = 'player';
-      console.log('Game over - player wins!');
     }
     
     return newState;
@@ -2142,8 +2071,9 @@ export function processAttack(
     newState.players.opponent.battlefield[defenderIndex].hasDivineShield = false;
   } else {
     // Normal damage application
-    if (attacker.card.attack && attacker.card.attack > 0) {
-      newState.players.opponent.battlefield[defenderIndex].currentHealth -= attacker.card.attack;
+    const attackerAtk = (attacker.card as any).attack || 0;
+    if (attackerAtk > 0) {
+      newState.players.opponent.battlefield[defenderIndex].currentHealth = (newState.players.opponent.battlefield[defenderIndex].currentHealth || 0) - attackerAtk;
       
       // Track this minion as damaged for Frenzy effect
       damagedMinionIds.push(defender.instanceId);
@@ -2158,8 +2088,9 @@ export function processAttack(
     newState.players.player.battlefield[attackerIndex].hasDivineShield = false;
   } else {
     // Normal damage application
-    if (defender.card.attack && defender.card.attack > 0) {
-      newState.players.player.battlefield[attackerIndex].currentHealth -= defender.card.attack;
+    const defenderAtk = (defender.card as any).attack || 0;
+    if (defenderAtk > 0) {
+      newState.players.player.battlefield[attackerIndex].currentHealth = (newState.players.player.battlefield[attackerIndex].currentHealth || 0) - defenderAtk;
       
       // Track this minion as damaged for Frenzy effect
       damagedMinionIds.push(attacker.instanceId);
@@ -2174,7 +2105,7 @@ export function processAttack(
   const defenderId = defender.instanceId;
   
   // Check for defeated defender minion (0 or less health)
-  if (newState.players.opponent.battlefield[defenderIndex].currentHealth <= 0) {
+  if ((newState.players.opponent.battlefield[defenderIndex]?.currentHealth || 0) <= 0) {
     // Move the defender from the battlefield to the graveyard
     newState = destroyCard(newState, defenderId, 'opponent');
   }
@@ -2186,7 +2117,7 @@ export function processAttack(
   
   // Only check attacker health if it's still on the battlefield
   if (updatedAttackerIndex !== -1 && 
-      newState.players.player.battlefield[updatedAttackerIndex].currentHealth <= 0) {
+      (newState.players.player.battlefield[updatedAttackerIndex].currentHealth || 0) <= 0) {
     // Move the attacker from the battlefield to the graveyard
     newState = destroyCard(newState, attackerId, 'player');
   } else if (updatedAttackerIndex !== -1) {
@@ -2196,9 +2127,9 @@ export function processAttack(
     const hasWindfury = attackerKeywords.includes('windfury');
     const maxAttacksAllowed = hasWindfury ? 2 : 1;
     
-    newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed += 1;
+    newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
     
-    if (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed >= maxAttacksAllowed) {
+    if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
       // Mark the attacker as having used all its attacks this turn
       newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
     }
@@ -2283,7 +2214,7 @@ export function findOptimalAttackTargets(
     return []; // Card can't attack
   }
   
-  const attackerAttack = attacker.card.attack;
+  const attackerAttack = (attacker.card as any).attack || 0;
   const opponentField = state.players.opponent.battlefield;
   const opponentHeroHealth = state.players.opponent.health;
   
@@ -2300,25 +2231,27 @@ export function findOptimalAttackTargets(
     // Strategy 1 with Taunts: Value trades against Taunt minions
     tauntMinions.forEach(defenderCard => {
       // Can kill without dying
-      if (attackerAttack >= defenderCard.currentHealth && defenderCard.card.attack < attacker.currentHealth) {
+      const defAtk = (defenderCard.card as any).attack || 0;
+      if (attackerAttack >= (defenderCard.currentHealth || 0) && defAtk < (attacker.currentHealth || 0)) {
         targets.push({ 
           defenderId: defenderCard.instanceId, 
           type: 'minion', 
-          priority: 500 + defenderCard.card.attack // High priority - we must deal with Taunts
+          priority: 500 + defAtk // High priority - we must deal with Taunts
         });
       }
     });
     
     // Strategy 2 with Taunts: Equal trades against Taunt minions
     tauntMinions.forEach(defenderCard => {
+      const defAtk = (defenderCard.card as any).attack || 0;
       // Equal value trade (we both die or high value target)
-      if (attackerAttack >= defenderCard.currentHealth && 
-          (defenderCard.card.attack >= attacker.currentHealth || 
-           defenderCard.card.attack > attackerAttack)) {
+      if (attackerAttack >= (defenderCard.currentHealth || 0) && 
+          (defAtk >= (attacker.currentHealth || 0) || 
+           defAtk > attackerAttack)) {
         targets.push({ 
           defenderId: defenderCard.instanceId, 
           type: 'minion', 
-          priority: 400 + defenderCard.card.attack 
+          priority: 400 + defAtk 
         });
       }
     });
@@ -2326,10 +2259,11 @@ export function findOptimalAttackTargets(
     // Strategy 3 with Taunts: Attack any Taunt minion (if no good trades found)
     if (targets.length === 0) {
       tauntMinions.forEach(defenderCard => {
+        const defAtk = (defenderCard.card as any).attack || 0;
         targets.push({ 
           defenderId: defenderCard.instanceId, 
           type: 'minion', 
-          priority: 300 + defenderCard.card.attack // Priority on higher attack Taunts
+          priority: 300 + defAtk // Priority on higher attack Taunts
         });
       });
     }
@@ -2363,12 +2297,13 @@ export function findOptimalAttackTargets(
       return;
     }
     
+    const defAtk = (defenderCard.card as any).attack || 0;
     // Can kill without dying
-    if (attackerAttack >= defenderCard.currentHealth && defenderCard.card.attack < attacker.currentHealth) {
+    if (attackerAttack >= (defenderCard.currentHealth || 0) && defAtk < (attacker.currentHealth || 0)) {
       targets.push({ 
         defenderId: defenderCard.instanceId, 
         type: 'minion', 
-        priority: 100 + defenderCard.card.attack // Prioritize killing higher attack minions
+        priority: 100 + defAtk // Prioritize killing higher attack minions
       });
     }
   });
@@ -2381,14 +2316,15 @@ export function findOptimalAttackTargets(
       return;
     }
     
+    const defAtk = (defenderCard.card as any).attack || 0;
     // Equal value trade (we both die or high value target)
-    if (attackerAttack >= defenderCard.currentHealth && 
-        (defenderCard.card.attack >= attacker.currentHealth || 
-         defenderCard.card.attack > attackerAttack)) {
+    if (attackerAttack >= (defenderCard.currentHealth || 0) && 
+        (defAtk >= (attacker.currentHealth || 0) || 
+         defAtk > attackerAttack)) {
       targets.push({ 
         defenderId: defenderCard.instanceId, 
         type: 'minion', 
-        priority: 50 + defenderCard.card.attack 
+        priority: 50 + defAtk 
       });
     }
   });
@@ -2405,10 +2341,11 @@ export function findOptimalAttackTargets(
         return;
       }
       
+      const defAtk = (defenderCard.card as any).attack || 0;
       targets.push({ 
         defenderId: defenderCard.instanceId, 
         type: 'minion', 
-        priority: defenderCard.card.attack // Prioritize attacking high attack threats
+        priority: defAtk // Prioritize attacking high attack threats
       });
     });
   }
@@ -2486,21 +2423,20 @@ export function autoAttackOnPlace(
     // Find the attacker
     const attackerIndex = attackerField.findIndex(c => c.instanceId === attackerInstanceId);
     if (attackerIndex === -1) {
-      console.log(`[AutoAttackOnPlace] Attacker ${attackerInstanceId} not found on battlefield`);
       return state;
     }
     
     const attacker = attackerField[attackerIndex];
     
     // Check if attacker can attack (bypass summoning sickness for auto-attack)
-    if (!attacker.card.attack || attacker.card.attack <= 0) {
-      console.log(`[AutoAttackOnPlace] ${attacker.card.name} has no attack power`);
+    const attackerAtkVal = (attacker.card as any).attack || 0;
+    if (attackerAtkVal <= 0) {
       return state;
     }
     
     // Check for Taunt minions first - must attack them if present
     const tauntMinions = defenderField.filter(m => 
-      (m.card.keywords || []).includes('taunt') && !m.isSilenced
+      (m.card.keywords || []).includes('taunt') && !m.silenced
     );
     
     let targetId: string | undefined;
@@ -2509,25 +2445,22 @@ export function autoAttackOnPlace(
     if (tauntMinions.length > 0) {
       // Must attack lowest health taunt
       const lowestHealthTaunt = tauntMinions.reduce((lowest, current) => 
-        (current.currentHealth || current.card.health || 999) < (lowest.currentHealth || lowest.card.health || 999) 
+        (current.currentHealth || (current.card as any).health || 999) < (lowest.currentHealth || (lowest.card as any).health || 999) 
           ? current : lowest
       );
       targetId = lowestHealthTaunt.instanceId;
       targetName = lowestHealthTaunt.card.name;
-      console.log(`[AutoAttackOnPlace] ${attacker.card.name} attacks taunt ${targetName} (lowest health taunt)`);
     } else if (defenderField.length > 0) {
       // Attack lowest health minion
       const lowestHealthMinion = defenderField.reduce((lowest, current) => 
-        (current.currentHealth || current.card.health || 999) < (lowest.currentHealth || lowest.card.health || 999) 
+        (current.currentHealth || (current.card as any).health || 999) < (lowest.currentHealth || (lowest.card as any).health || 999) 
           ? current : lowest
       );
       targetId = lowestHealthMinion.instanceId;
       targetName = lowestHealthMinion.card.name;
-      console.log(`[AutoAttackOnPlace] ${attacker.card.name} attacks ${targetName} (lowest health minion)`);
     } else {
       // No minions - attack hero directly
       targetId = undefined;
-      console.log(`[AutoAttackOnPlace] ${attacker.card.name} attacks hero directly (no enemy minions)`);
     }
     
     // Temporarily enable attack by removing summoning sickness
@@ -2539,7 +2472,6 @@ export function autoAttackOnPlace(
     // Execute the attack
     newState = processAttack(newState, attackerInstanceId, targetId);
     
-    console.log(`[AutoAttackOnPlace] Attack executed: ${attacker.card.name} -> ${targetName}`);
     
     return newState;
   } catch (error) {
@@ -2569,7 +2501,6 @@ export function applyDamage(
   if (targetId === 'hero') {
     // Use the dealDamage function to handle armor properly with source info
     const sourcePlayerID = playerId === 'player' ? 'opponent' : 'player';
-    console.log(`Applying ${damageAmount} damage to ${playerId} hero from ${sourcePlayerID}`);
     return dealDamage(updatedState, playerId, 'hero', damageAmount, undefined, undefined, sourcePlayerID);
   }
   

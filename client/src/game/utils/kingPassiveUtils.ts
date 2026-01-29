@@ -108,14 +108,12 @@ export function executeKingPassive(
   for (const passive of king.passives) {
     if (passive.trigger !== trigger) continue;
 
-    console.log(`[KING PASSIVE] ${king.name}: ${passive.name} triggered (${trigger})`);
 
     switch (passive.effectType) {
       case 'buff_health':
         if (trigger === 'start_of_turn') {
           owner.battlefield.forEach(minion => {
             minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) + passive.value;
-            console.log(`  - ${minion.card.name} gains +${passive.value} Health (now ${minion.currentHealth})`);
           });
         }
         break;
@@ -123,7 +121,6 @@ export function executeKingPassive(
       case 'damage_all_enemies':
         opponent.battlefield.forEach(minion => {
           minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) - passive.value;
-          console.log(`  - ${minion.card.name} takes ${passive.value} damage (now ${minion.currentHealth})`);
         });
         opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
         break;
@@ -134,7 +131,6 @@ export function executeKingPassive(
           const currentHealth = minion.currentHealth || maxHealth;
           const newHealth = Math.min(currentHealth + passive.value, maxHealth);
           minion.currentHealth = newHealth;
-          console.log(`  - ${minion.card.name} healed for ${passive.value} (now ${minion.currentHealth})`);
         });
         break;
 
@@ -143,7 +139,6 @@ export function executeKingPassive(
           const randomIndex = Math.floor(Math.random() * opponent.battlefield.length);
           const targetMinion = opponent.battlefield[randomIndex];
           targetMinion.isFrozen = true;
-          console.log(`  - ${targetMinion.card.name} is Frozen!`);
         }
         break;
 
@@ -177,7 +172,6 @@ export function executeKingPassive(
           };
           
           owner.battlefield.push(token);
-          console.log(`  - Summoned ${passive.summonData.name} (${passive.summonData.attack}/${passive.summonData.health}) with ${keywords.join(', ')}`);
         }
         break;
 
@@ -187,7 +181,6 @@ export function executeKingPassive(
             const minion = owner.battlefield.find(m => m.instanceId === minionId);
             if (minion) {
               minion.currentAttack = (minion.currentAttack || getCardAttack(minion.card)) + passive.value;
-              console.log(`  - ${minion.card.name} gains +${passive.value} Attack from healing (now ${minion.currentAttack})`);
             }
           });
         }
@@ -335,6 +328,5 @@ export function getKingPetBuffs(kingId: string): PetStatModifiers {
     }
   }
 
-  console.log(`[KING BUFFS] ${king.name} provides: +${modifiers.attackBonus} Attack, +${modifiers.healthBonus} Health, +${modifiers.armorBonus} Armor, -${modifiers.enemyAttackDebuff} enemy Attack`);
   return modifiers;
 }

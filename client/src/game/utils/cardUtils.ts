@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CardData, CardInstance } from '../types';
-import { fullCardDatabase as baseCards } from '../data/cards';
 import allCards from '../data/allCards';
-import { spellCards } from '../data/spellCards';
 import { colossalMinionCards } from '../data/colossalCards';
 import { initializeSpellPower } from './spellPowerUtils';
 import { initializePoisonousEffect } from './poisonousUtils';
@@ -139,17 +137,16 @@ export function createStartingDeck(size: number = 20): CardData[] {
   // Make sure we include several overload cards for testing
   const numOverloadCards = Math.min(4, overloadCards.length);
   const selectedOverloadCards = overloadCards.slice(0, numOverloadCards);
-  console.log(`Adding ${numOverloadCards} overload cards to test deck`);
   
   // Get mana manipulation cards for testing (The Coin and Innervate)
-  const manaCards = spellCards.filter(card => 
-    card.spellEffect?.type === 'mana_crystal'
+  // Use allCards (1300+ cards) instead of tiny spellCards database
+  const manaCards = allCards.filter(card => 
+    card.type === 'spell' && card.spellEffect?.type === 'mana_crystal'
   );
   
   // Make sure we include these mana cards for testing
   const numManaCards = Math.min(2, manaCards.length);
   const selectedManaCards = manaCards.slice(0, numManaCards);
-  console.log(`Adding ${numManaCards} mana manipulation cards to test deck`);
   
   // Get frenzy cards for testing
   const frenzyCards = allCards.filter((card: CardData) => 
@@ -161,7 +158,6 @@ export function createStartingDeck(size: number = 20): CardData[] {
   const selectedFrenzyCards = frenzyCards
     .sort(() => 0.5 - Math.random())
     .slice(0, numFrenzyCards);
-  console.log(`Adding ${numFrenzyCards} frenzy cards to test deck`);
   
   // Get colossal minions for testing - use imported array of colossal minions
   // The colossalMinionCards is imported from data/colossalCards.ts
@@ -171,7 +167,6 @@ export function createStartingDeck(size: number = 20): CardData[] {
   const selectedColossalCards = colossalMinionCards
     .sort(() => 0.5 - Math.random())
     .slice(0, numColossalCards);
-  console.log(`Adding ${numColossalCards} colossal minions to test deck`);
   
   // Get Murloc cards for testing Giga-Fin's battlecry
   const murlocCards = allCards.filter((card: CardData) => 
@@ -183,7 +178,6 @@ export function createStartingDeck(size: number = 20): CardData[] {
   const selectedMurlocCards = murlocCards
     .sort(() => 0.5 - Math.random())
     .slice(0, numMurlocCards);
-  console.log(`Adding ${numMurlocCards} murloc cards to test deck for Giga-Fin`);
   
   // Get random cards for the rest of the deck
   const specialCardIds = [

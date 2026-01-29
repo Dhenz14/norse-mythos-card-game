@@ -2,62 +2,66 @@
  * ManaReduction SpellEffect Handler
  * 
  * Implements the "mana_reduction" spellEffect effect.
- * Example card: Preparation (ID: 30067)
+ * Reduces the mana cost of cards in hand or the next spell.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a mana_reduction spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeManaReductionManaReduction(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing mana_reduction spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`ManaReduction effect missing value property`);
-    // Fall back to a default value or handle the missing property
+export default function executeManaReduction(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:mana_reduction for ${sourceCard.name}`);
+    
+    const reductionValue = effect.value || 3;
+    const isTemporary = effect.temporaryEffect === true;
+    const targetCardType = effect.targetCardType || 'spell';
+    const applyToNextOnly = effect.applyToNextOnly !== false;
+    
+    const currentPlayer = context.currentPlayer as any;
+    let cardsReduced = 0;
+    
+    if (applyToNextOnly) {
+      currentPlayer.nextSpellCostReduction = (currentPlayer.nextSpellCostReduction || 0) + reductionValue;
+      context.logGameEvent(`Next ${targetCardType} costs ${reductionValue} less`);
+      
+      currentPlayer.temporaryEffects = currentPlayer.temporaryEffects || [];
+      currentPlayer.temporaryEffects.push({
+        type: 'mana_reduction',
+        value: reductionValue,
+        targetCardType: targetCardType,
+        isTemporary: isTemporary,
+        source: sourceCard.name
+      });
+      
+      cardsReduced = 1;
+    } else {
+      currentPlayer.hand.forEach((cardInstance: any) => {
+        const card = cardInstance.card;
+        const matchesType = targetCardType === 'all' || card.type === targetCardType;
+        
+        if (matchesType && card.manaCost !== undefined && card.manaCost > 0) {
+          const reduction = Math.min(reductionValue, card.manaCost);
+          card.manaCost -= reduction;
+          cardInstance.costModifier = (cardInstance.costModifier || 0) - reduction;
+          cardsReduced++;
+          context.logGameEvent(`Reduced cost of ${card.name} by ${reduction}`);
+        }
+      });
+    }
+    
+    return { 
+      success: true,
+      additionalData: { cardsReduced, reductionValue }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:mana_reduction:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:mana_reduction: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: temporaryEffect
-  if (effect.temporaryEffect === undefined) {
-    console.warn(`ManaReduction effect missing temporaryEffect property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the mana_reduction spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered mana_reduction spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeManaReductionManaReduction;

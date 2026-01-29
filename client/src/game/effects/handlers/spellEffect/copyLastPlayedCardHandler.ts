@@ -1,53 +1,92 @@
 /**
- * CopyLastPlayedCard SpellEffect Handler
+ * Copy Last Played Card Effect Handler
  * 
- * Implements the "copy_last_played_card" spellEffect effect.
- * Example card: Card ID: 12027
+ * This handler implements the spellEffect:copy_last_played_card effect.
+ * Copies the last card played by either player to your hand.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a copy_last_played_card spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeCopyLastPlayedCardCopyLastPlayedCard(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing copy_last_played_card spellEffect for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the copy_last_played_card spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered copy_last_played_card spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+export default function executeCopyLastPlayedCard(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:copy_last_played_card for ${sourceCard.name}`);
+    
+    const fromOpponent = effect.fromOpponent !== false;
+    const cardType = effect.cardType;
+    
+    let lastPlayedCard: any = null;
+    
+    if ((context as any).lastPlayedCard) {
+      lastPlayedCard = (context as any).lastPlayedCard;
+    } else if ((context as any).gameHistory && (context as any).gameHistory.length > 0) {
+      const history = (context as any).gameHistory;
+      for (let i = history.length - 1; i >= 0; i--) {
+        const entry = history[i];
+        if (entry.type === 'card_played') {
+          if (fromOpponent && entry.playerId !== context.currentPlayer.id) {
+            lastPlayedCard = entry.card;
+            break;
+          } else if (!fromOpponent) {
+            lastPlayedCard = entry.card;
+            break;
+          }
+        }
+      }
+    }
+    
+    if (!lastPlayedCard) {
+      context.logGameEvent(`No last played card found to copy`);
+      return { 
+        success: true,
+        additionalData: { copied: false }
+      };
+    }
+    
+    if (cardType && lastPlayedCard.type !== cardType) {
+      context.logGameEvent(`Last played card (${lastPlayedCard.name}) is not of type ${cardType}`);
+      return { 
+        success: true,
+        additionalData: { copied: false }
+      };
+    }
+    
+    if (context.currentPlayer.hand.length >= 10) {
+      context.logGameEvent(`Hand is full, couldn't copy ${lastPlayedCard.name}`);
+      return { 
+        success: true,
+        additionalData: { copied: false, reason: 'hand_full' }
+      };
+    }
+    
+    const copy = {
+      instanceId: 'copy-' + Date.now() + '-' + Math.random().toString(36).substring(7),
+      card: { ...lastPlayedCard },
+      canAttack: false,
+      isPlayed: false,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    
+    context.currentPlayer.hand.push(copy as any);
+    context.logGameEvent(`Copied ${lastPlayedCard.name} to hand`);
+    
+    return { 
+      success: true,
+      additionalData: {
+        copied: true,
+        cardName: lastPlayedCard.name
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:copy_last_played_card:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:copy_last_played_card: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeCopyLastPlayedCardCopyLastPlayedCard;

@@ -1,64 +1,64 @@
 /**
- * Equip Weapon From Deck Gain Armor Effect Handler
+ * Equip Weapon From Deck Gain Armor Battlecry Handler
  * 
- * This handler implements the battlecry:equip_weapon_from_deck_gain_armor effect.
+ * Equips a weapon from the deck and gains armor.
  */
 import { GameContext } from '../../../GameContext';
-import { Card, BattlecryEffect } from '../../../types/CardTypes';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a Equip Weapon From Deck Gain Armor effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-
- * @returns An object indicating success or failure and any additional data
- */
 export default function executeEquipWeaponFromDeckGainArmor(
-  context: GameContext, 
-  effect: BattlecryEffect, 
+  context: GameContext,
+  effect: BattlecryEffect,
   sourceCard: Card
 ): EffectResult {
   try {
-    // Log the effect execution
-    context.logGameEvent(`Executing battlecry:equip_weapon_from_deck_gain_armor for ${sourceCard.name}`);
+    context.logGameEvent(`Executing equip_weapon_from_deck_gain_armor for ${sourceCard.name}`);
     
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-
+    const armorGain = effect.armorGain || effect.value || 5;
     
-    // Implementation placeholder
-    console.log(`battlecry:equip_weapon_from_deck_gain_armor executed with properties: ${JSON.stringify(effect)}`);
+    const weaponsInDeck = context.currentPlayer.deck.filter(
+      card => card.card.type === 'weapon'
+    );
     
-    // TODO: Implement the battlecry:equip_weapon_from_deck_gain_armor effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCard);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for battlecry:equip_weapon_from_deck_gain_armor`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Equip Weapon From Deck Gain Armor effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Equip Weapon From Deck Gain Armor effect applied`);
-      // TODO: Apply effect without target
+    context.currentPlayer.armor += armorGain;
+    context.logGameEvent(`Gained ${armorGain} armor.`);
+    
+    if (weaponsInDeck.length === 0) {
+      context.logGameEvent('No weapons in deck to equip.');
+      return { 
+        success: true, 
+        additionalData: { armorGained: armorGain, weaponEquipped: false }
+      };
     }
     
-    return { success: true };
-  } catch (error) {
-    console.error(`Error executing battlecry:equip_weapon_from_deck_gain_armor:`, error);
-    return { 
-      success: false, 
-      error: `Error executing battlecry:equip_weapon_from_deck_gain_armor: ${error instanceof Error ? error.message : String(error)}`
+    const weaponIndex = context.currentPlayer.deck.indexOf(weaponsInDeck[0]);
+    const [weapon] = context.currentPlayer.deck.splice(weaponIndex, 1);
+    
+    const equippedWeapon: CardInstance = {
+      ...weapon,
+      instanceId: `equipped-${weapon.card.id}-${Date.now()}`,
+      currentAttack: weapon.card.attack,
+      canAttack: true,
+      isPlayed: true,
+      isSummoningSick: false,
+      attacksPerformed: 0
     };
+    
+    (context.currentPlayer as any).weapon = equippedWeapon;
+    
+    context.logGameEvent(`Equipped ${weapon.card.name} from deck.`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        armorGained: armorGain, 
+        weaponEquipped: true, 
+        equippedWeapon 
+      }
+    };
+  } catch (error) {
+    console.error('Error executing equip_weapon_from_deck_gain_armor:', error);
+    return { success: false, error: `Failed to execute equip_weapon_from_deck_gain_armor: ${error}` };
   }
 }

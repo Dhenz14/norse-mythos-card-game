@@ -2,62 +2,74 @@
  * SwapHeroPower SpellEffect Handler
  * 
  * Implements the "swap_hero_power" spellEffect effect.
- * Example card: Card ID: 9113
+ * Swaps the player's hero power with the opponent's or replaces it.
  */
-import { GameState, CardInstance } from '../../types';
-import { SpellEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a swap_hero_power spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeSwapHeroPowerSwapHeroPower(
-  state: GameState,
-  effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing swap_hero_power spellEffect for ${sourceCard.card.name}`);
-  
-  // Check for required property: heropower
-  if (effect.heropower === undefined) {
-    console.warn(`SwapHeroPower effect missing heropower property`);
-    // Fall back to a default value or handle the missing property
+export default function executeSwapHeroPower(
+  context: GameContext, 
+  effect: SpellEffect, 
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:swap_hero_power for ${sourceCard.name}`);
+    
+    const newHeroPower = effect.heropower || effect.newHeroPower;
+    const usesBeforeSwapBack = effect.usesBeforeSwapBack || 0;
+    const swapWithOpponent = effect.swapWithOpponent === true;
+    
+    const currentPlayer = context.currentPlayer as any;
+    const opponentPlayer = context.opponentPlayer as any;
+    
+    const originalHeroPower = { ...currentPlayer.hero.heroPower };
+    
+    if (swapWithOpponent) {
+      const opponentHeroPower = { ...opponentPlayer.hero.heroPower };
+      
+      currentPlayer.hero.heroPower = opponentHeroPower;
+      opponentPlayer.hero.heroPower = originalHeroPower;
+      
+      context.logGameEvent(`Swapped hero powers with opponent`);
+    } else if (newHeroPower) {
+      currentPlayer.hero.originalHeroPower = originalHeroPower;
+      currentPlayer.hero.heroPower = {
+        id: newHeroPower.id || newHeroPower,
+        name: newHeroPower.name || 'New Hero Power',
+        cost: newHeroPower.cost !== undefined ? newHeroPower.cost : 2,
+        effect: newHeroPower.effect || newHeroPower,
+        usesRemaining: usesBeforeSwapBack > 0 ? usesBeforeSwapBack : undefined
+      };
+      
+      context.logGameEvent(`Replaced hero power with ${currentPlayer.hero.heroPower.name}`);
+    }
+    
+    if (usesBeforeSwapBack > 0) {
+      currentPlayer.temporaryEffects = currentPlayer.temporaryEffects || [];
+      currentPlayer.temporaryEffects.push({
+        type: 'hero_power_swap',
+        usesRemaining: usesBeforeSwapBack,
+        originalHeroPower: originalHeroPower,
+        source: sourceCard.name
+      });
+      
+      context.logGameEvent(`Hero power will revert after ${usesBeforeSwapBack} uses`);
+    }
+    
+    return { 
+      success: true,
+      additionalData: { 
+        originalHeroPower: originalHeroPower.name,
+        newHeroPower: currentPlayer.hero.heroPower.name,
+        usesBeforeSwapBack
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:swap_hero_power:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:swap_hero_power: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-
-  // Check for required property: usesBeforeSwapBack
-  if (effect.usesBeforeSwapBack === undefined) {
-    console.warn(`SwapHeroPower effect missing usesBeforeSwapBack property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the swap_hero_power spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'spellEffect',
-    text: `${sourceCard.card.name} triggered swap_hero_power spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeSwapHeroPowerSwapHeroPower;

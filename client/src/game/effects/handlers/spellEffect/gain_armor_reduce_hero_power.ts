@@ -32,7 +32,6 @@ export default function executeGainArmorReduceHeroPower(
     const heroReduction = effect.heroReduction;
     
     // Implementation placeholder
-    console.log(`spellEffect:gain_armor_reduce_hero_power executed with properties: ${JSON.stringify(effect)}`);
     
     // TODO: Implement the spellEffect:gain_armor_reduce_hero_power effect
     if (requiresTarget) {

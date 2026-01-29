@@ -25,7 +25,6 @@ export function executeReturnReturn(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing return battlecry for ${sourceCard.card.name}`);
   
   // If no target is provided, we can't return anything
   if (!targetId) {
@@ -55,7 +54,6 @@ export function executeReturnReturn(
   
   // Check if hand is full (max 9 cards like Hearthstone)
   if (currentPlayer.hand.length >= 9) {
-    console.log(`Player's hand is full, cannot return minion to hand`);
     
     // Log the effect for debugging
     newState.gameLog = newState.gameLog || [];

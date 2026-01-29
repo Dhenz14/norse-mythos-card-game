@@ -17,7 +17,6 @@ import { ACTIVE_CARD_RENDERER, CardRendererType, getActiveRenderer } from './car
  * Fix card rendering issues by addressing common problems
  */
 export function fixCardRenderingIssues(): void {
-  console.log(`Card rendering system: Enforcing ${ACTIVE_CARD_RENDERER} as the primary renderer`);
   
   // Apply any necessary global fixes to the DOM
   applyGlobalStyleFixes();
@@ -35,7 +34,6 @@ export function fixCardRenderingIssues(): void {
  * CSS styles are now loaded via static import (cardRenderingSystem.css)
  */
 function applyGlobalStyleFixes(): void {
-  console.log('Card rendering styles loaded via CSS import');
 }
 
 /**
@@ -73,7 +71,6 @@ function disableCompetingRenderers(): void {
       // Add a class to mark this as disabled
       canvas.classList.add('disabled-renderer');
       
-      console.log(`Disabled competing renderer canvas: ${renderer}`);
     });
   }
   
@@ -116,7 +113,6 @@ function disableCompetingRenderers(): void {
   const cleanupInterval = setInterval(disableCompetingCanvases, 200);
   setTimeout(() => clearInterval(cleanupInterval), 5000);
   
-  console.log('Active renderer enforcement system initialized');
 }
 
 /**
@@ -132,7 +128,6 @@ function patchComponentImports(): void {
   (window as any).__PATCHED_MODULES__ = (window as any).__PATCHED_MODULES__ || {};
   
   // We'll use a special debug flag to track these patches
-  console.log('Applied runtime import patches for card renderers');
 }
 
 /**

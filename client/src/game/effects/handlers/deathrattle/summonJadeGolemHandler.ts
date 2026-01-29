@@ -2,52 +2,87 @@
  * SummonJadeGolem Deathrattle Handler
  * 
  * Implements the "summon_jade_golem" deathrattle effect.
- * Example card: Jade Swarmer (ID: 85005)
+ * Summons a Jade Golem with stats based on jade counter.
+ * Example: Jade Swarmer (deathrattle: summon a Jade Golem)
  */
-import { GameState, CardInstance } from '../../types';
-import { DeathrattleEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, CardInstance } from '../../../types/CardTypes';
+import { DeathrattleEffect } from '../../../types';
+import { EffectResult } from '../../../types/EffectTypes';
+import { v4 as uuidv4 } from 'uuid';
+
+let jadeGolemCounter = 1;
+
+export function resetJadeGolemCounter(): void {
+  jadeGolemCounter = 1;
+}
+
+export function getJadeGolemCounter(): number {
+  return jadeGolemCounter;
+}
 
 /**
  * Execute a summon_jade_golem deathrattle effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
  */
-export function executeSummonJadeGolemSummonJadeGolem(
-  state: GameState,
+export default function executeSummonJadeGolemSummonJadeGolem(
+  context: GameContext,
   effect: DeathrattleEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing summon_jade_golem deathrattle for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the summon_jade_golem deathrattle effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'deathrattle',
-    text: `${sourceCard.card.name} triggered summon_jade_golem deathrattle`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  sourceCard: Card | CardInstance
+): EffectResult {
+  try {
+    const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
+    context.logGameEvent(`Executing deathrattle:summon_jade_golem for ${cardName}`);
+    
+    if (context.currentPlayer.board.length >= 7) {
+      context.logGameEvent(`Board is full, cannot summon Jade Golem`);
+      return { success: false, error: 'Board is full' };
+    }
+    
+    const currentJadeStats = Math.min(jadeGolemCounter, 30);
+    
+    const jadeGolemCard: Card = {
+      id: 85000 + jadeGolemCounter,
+      name: 'Jade Golem',
+      type: 'minion',
+      manaCost: currentJadeStats,
+      attack: currentJadeStats,
+      health: currentJadeStats,
+      rarity: 'common',
+      heroClass: 'neutral',
+      keywords: [],
+      description: '',
+      collectible: false,
+      race: 'elemental'
+    };
+    
+    const jadeGolemInstance: CardInstance = {
+      instanceId: uuidv4(),
+      card: jadeGolemCard,
+      currentHealth: currentJadeStats,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    
+    context.currentPlayer.board.push(jadeGolemInstance);
+    context.logGameEvent(`Summoned a ${currentJadeStats}/${currentJadeStats} Jade Golem from ${cardName}'s deathrattle`);
+    
+    jadeGolemCounter++;
+    
+    return {
+      success: true,
+      additionalData: { 
+        jadeGolemStats: currentJadeStats,
+        nextJadeStats: Math.min(jadeGolemCounter, 30),
+        summonedMinion: jadeGolemInstance
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing deathrattle:summon_jade_golem:`, error);
+    return {
+      success: false,
+      error: `Error executing deathrattle:summon_jade_golem: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
 }
-
-export default executeSummonJadeGolemSummonJadeGolem;

@@ -30,7 +30,7 @@ export function deckHasNoDuplicates(
   
   // Count each card in the deck
   for (const card of deck) {
-    const cardId = card.id;
+    const cardId = typeof card.id === 'number' ? card.id : parseInt(card.id as string, 10);
     const currentCount = cardCounts.get(cardId) || 0;
     cardCounts.set(cardId, currentCount + 1);
   }
@@ -48,10 +48,10 @@ export function deckHasNoDuplicates(
 }
 
 /**
- * Execute Reno Jackson's battlecry (full heal if deck has no duplicates)
+ * Execute The Wanderer's battlecry (full heal if deck has no duplicates)
  * @param state Current game state
- * @param playerType Player who played Reno
- * @returns Updated game state after Reno's battlecry
+ * @param playerType Player who played The Wanderer
+ * @returns Updated game state after The Wanderer's battlecry
  */
 export function executeRenoJacksonBattlecry(
   state: GameState,
@@ -69,8 +69,8 @@ export function executeRenoJacksonBattlecry(
       newState, 
       'play_card' as GameLogEventType,
       playerType,
-      `Reno Jackson attempts to fully heal ${playerType}.`,
-      { cardId: '70001' } // Reno Jackson's ID
+      `The Wanderer attempts to fully heal ${playerType}.`,
+      { cardId: '70001' } // The Wanderer's ID
     )
   );
   
@@ -82,7 +82,7 @@ export function executeRenoJacksonBattlecry(
         'play_card' as GameLogEventType,
         playerType,
         `The effect fails because ${playerType}'s deck has duplicates.`,
-        { cardId: '70001' } // Reno Jackson's ID
+        { cardId: '70001' } // The Wanderer's ID
       )
     );
     
@@ -113,7 +113,7 @@ export function executeRenoJacksonBattlecry(
       newState,
       'heal' as GameLogEventType,
       playerType,
-      `Reno Jackson fully heals ${playerType} for ${healAmount} health.`,
+      `The Wanderer fully heals ${playerType} for ${healAmount} health.`,
       {
         targetId: `${playerType}_hero`,
         value: healAmount
@@ -162,10 +162,10 @@ const potionEffects: Record<number, PotionEffect[]> = {
 };
 
 /**
- * Execute Kazakus's battlecry (create a custom spell if deck has no duplicates)
+ * Execute Alchemist's battlecry (create a custom spell if deck has no duplicates)
  * @param state Current game state
- * @param playerType Player who played Kazakus
- * @returns Updated game state after Kazakus's battlecry
+ * @param playerType Player who played Alchemist
+ * @returns Updated game state after Alchemist's battlecry
  */
 export function executeKazakusBattlecry(
   state: GameState,
@@ -183,8 +183,8 @@ export function executeKazakusBattlecry(
       newState,
       'play_card' as GameLogEventType,
       playerType,
-      `Kazakus attempts to create a custom spell.`,
-      { cardId: '70002' } // Kazakus's ID
+      `Alchemist attempts to create a custom spell.`,
+      { cardId: '70002' } // Alchemist's ID
     )
   );
   
@@ -196,7 +196,7 @@ export function executeKazakusBattlecry(
         'play_card' as GameLogEventType, 
         playerType,
         `The effect fails because ${playerType}'s deck has duplicates.`,
-        { cardId: '70002' } // Kazakus's ID
+        { cardId: '70002' } // Alchemist's ID
       )
     );
     
@@ -204,7 +204,7 @@ export function executeKazakusBattlecry(
     const animationStore = useAnimationStore.getState();
     animationStore.addAnnouncement({
       type: 'condition_not_met',
-      title: 'Kazakus Effect Failed!',
+      title: 'Alchemist Effect Failed!',
       subtitle: 'Deck contains duplicate cards',
       icon: '⚠️',
       duration: 2000
@@ -241,20 +241,19 @@ export function executeKazakusBattlecry(
   
   // Create the custom potion card
   const customPotion: CardInstance = {
-    instanceId: `${playerType}_kazakus_potion_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+    instanceId: `${playerType}_custom_potion_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
     card: {
       id: potionId,
-      name: `Kazakus Potion (${potionCost}-Cost)`,
+      name: `Custom Potion (${potionCost}-Cost)`,
       manaCost: potionCost,
-      type: "spell",
+      type: "spell" as const,
       rarity: "epic",
       description: potionDescription,
       keywords: [],
       heroClass: "neutral",
-      multiClassCard: ["mage", "priest", "warlock"],
       kazakusEffects: [firstEffect.id, secondEffect.id],
       potionCost: potionCost
-    },
+    } as any,
     isPlayed: false
   };
   
@@ -267,7 +266,7 @@ export function executeKazakusBattlecry(
       newState,
       'kazakus_potion_created' as GameLogEventType,
       playerType,
-      `Kazakus creates a ${potionCost}-cost potion: ${potionDescription}`,
+      `Alchemist creates a ${potionCost}-cost potion: ${potionDescription}`,
       { cardId: potionId.toString() }
     )
   );
@@ -276,10 +275,10 @@ export function executeKazakusBattlecry(
 }
 
 /**
- * Execute Inkmaster Solia's battlecry (next spell costs 0 if deck has no duplicates)
+ * Execute Arcane-Master's battlecry (next spell costs 0 if deck has no duplicates)
  * @param state Current game state
- * @param playerType Player who played Solia
- * @returns Updated game state after Solia's battlecry
+ * @param playerType Player who played Arcane-Master
+ * @returns Updated game state after Arcane-Master's battlecry
  */
 export function executeSoliaBattlecry(
   state: GameState,
@@ -297,8 +296,8 @@ export function executeSoliaBattlecry(
       newState,
       'play_card' as GameLogEventType,
       playerType,
-      `Inkmaster Solia attempts to make your next spell cost (0).`,
-      { cardId: '70003' } // Solia's ID
+      `Arcane-Master attempts to make your next spell cost (0).`,
+      { cardId: '70003' } // Arcane-Master's ID
     )
   );
   
@@ -310,7 +309,7 @@ export function executeSoliaBattlecry(
         'play_card' as GameLogEventType,
         playerType,
         `The effect fails because ${playerType}'s deck has duplicates.`,
-        { cardId: '70003' } // Solia's ID
+        { cardId: '70003' } // Arcane-Master's ID
       )
     );
     
@@ -318,7 +317,7 @@ export function executeSoliaBattlecry(
     const animationStore = useAnimationStore.getState();
     animationStore.addAnnouncement({
       type: 'condition_not_met',
-      title: 'Inkmaster Solia Effect Failed!',
+      title: 'Arcane-Master Effect Failed!',
       subtitle: 'Deck contains duplicate cards',
       icon: '⚠️',
       duration: 2000
@@ -332,22 +331,23 @@ export function executeSoliaBattlecry(
   
   // Log the effect
   newState.gameLog.push(
-    createGameLogEvent({
-      type: 'effect_applied' as GameLogEventType,
-      player: playerType,
-      text: `Inkmaster Solia makes ${playerType}'s next spell this turn cost (0).`,
-      cardId: '70003' // Solia's ID
-    })
+    createGameLogEvent(
+      newState,
+      'effect_applied' as GameLogEventType,
+      playerType,
+      `Arcane-Master makes ${playerType}'s next spell this turn cost (0).`,
+      { cardId: '70003' } // Arcane-Master's ID
+    )
   );
   
   return newState;
 }
 
 /**
- * Execute Raza the Chained's battlecry (hero power costs 0 if deck has no duplicates)
+ * Execute Bound-Spirit's battlecry (hero power costs 0 if deck has no duplicates)
  * @param state Current game state
- * @param playerType Player who played Raza
- * @returns Updated game state after Raza's battlecry
+ * @param playerType Player who played Bound-Spirit
+ * @returns Updated game state after Bound-Spirit's battlecry
  */
 export function executeRazaBattlecry(
   state: GameState,
@@ -365,8 +365,8 @@ export function executeRazaBattlecry(
       newState,
       'raza_battlecry' as GameLogEventType,
       playerType,
-      `Raza the Chained attempts to make your Hero Power cost (0).`,
-      { cardId: 70004 }
+      `Bound-Spirit attempts to make your Hero Power cost (0).`,
+      { cardId: '70004' }
     )
   );
   
@@ -378,7 +378,7 @@ export function executeRazaBattlecry(
         'play_card' as GameLogEventType,
         playerType,
         `The effect fails because ${playerType}'s deck has duplicates.`,
-        { cardId: '70004' } // Raza's ID
+        { cardId: '70004' } // Bound-Spirit's ID
       )
     );
     
@@ -386,7 +386,7 @@ export function executeRazaBattlecry(
     const animationStore = useAnimationStore.getState();
     animationStore.addAnnouncement({
       type: 'condition_not_met',
-      title: 'Raza Effect Failed!',
+      title: 'Bound-Spirit Effect Failed!',
       subtitle: 'Deck contains duplicate cards',
       icon: '⚠️',
       duration: 2000
@@ -400,22 +400,23 @@ export function executeRazaBattlecry(
   
   // Log the effect
   newState.gameLog.push(
-    createGameLogEvent({
-      type: 'effect_applied' as GameLogEventType,
-      player: playerType,
-      text: `Raza the Chained makes ${playerType}'s Hero Power cost (0) for the rest of the game.`,
-      cardId: '70004' // Raza's ID
-    })
+    createGameLogEvent(
+      newState,
+      'effect_applied' as GameLogEventType,
+      playerType,
+      `Bound-Spirit makes ${playerType}'s Hero Power cost (0) for the rest of the game.`,
+      { cardId: '70004' } // Bound-Spirit's ID
+    )
   );
   
   return newState;
 }
 
 /**
- * Execute Krul the Unshackled's battlecry (summon all demons from hand if deck has no duplicates)
+ * Execute The Unshackled's battlecry (summon all demons from hand if deck has no duplicates)
  * @param state Current game state
- * @param playerType Player who played Krul
- * @returns Updated game state after Krul's battlecry
+ * @param playerType Player who played The Unshackled
+ * @returns Updated game state after The Unshackled's battlecry
  */
 export function executeKrulBattlecry(
   state: GameState,
@@ -433,8 +434,8 @@ export function executeKrulBattlecry(
       newState,
       'krul_battlecry' as GameLogEventType,
       playerType,
-      `Krul the Unshackled attempts to summon all demons from your hand.`,
-      { cardId: 70005 }
+      `The Unshackled attempts to summon all demons from your hand.`,
+      { cardId: '70005' }
     )
   );
   
@@ -446,7 +447,7 @@ export function executeKrulBattlecry(
         'play_card' as GameLogEventType,
         playerType,
         `The effect fails because ${playerType}'s deck has duplicates.`,
-        { cardId: '70005' } // Krul's ID
+        { cardId: '70005' } // The Unshackled's ID
       )
     );
     
@@ -454,7 +455,7 @@ export function executeKrulBattlecry(
     const animationStore = useAnimationStore.getState();
     animationStore.addAnnouncement({
       type: 'condition_not_met',
-      title: 'Krul Effect Failed!',
+      title: 'The Unshackled Effect Failed!',
       subtitle: 'Deck contains duplicate cards',
       icon: '⚠️',
       duration: 2000
@@ -466,7 +467,7 @@ export function executeKrulBattlecry(
   // Find all demons in hand
   const hand = newState.players[playerType].hand;
   const demonsInHand = hand.filter((card: CardInstance) => 
-    card.card.type === 'minion' && card.card.tribe === 'demon'
+    card.card.type === 'minion' && (card.card as any).race === 'demon'
   );
   
   // If no demons in hand, return unchanged state
@@ -476,8 +477,8 @@ export function executeKrulBattlecry(
       newState,
       'krul_no_demons' as GameLogEventType,
       playerType,
-      `Krul the Unshackled found no demons to summon from your hand.`,
-      { cardId: 70005 }
+      `The Unshackled found no demons to summon from your hand.`,
+      { cardId: '70005' }
     )
     );
     return newState;
@@ -515,7 +516,7 @@ export function executeKrulBattlecry(
       newState,
       'summon' as GameLogEventType,
       playerType,
-      `Krul the Unshackled summons ${demon.card.name} from your hand.`,
+      `The Unshackled summons ${demon.card.name} from your hand.`,
       { cardId: demon.card.id.toString() }
     )
     );
@@ -525,9 +526,9 @@ export function executeKrulBattlecry(
 }
 
 /**
- * Cast a Kazakus potion (using its random effects)
+ * Cast a custom potion (using its random effects)
  * @param state Current game state
- * @param potionInstanceId ID of the Kazakus potion
+ * @param potionInstanceId ID of the custom potion
  * @param playerType Player who cast the potion
  * @returns Updated game state after potion effects
  */

@@ -279,7 +279,6 @@ export function normalizeCardArray(cards: any[]): CardData[] {
   }
 
   if (invalidCount > 0) {
-    console.log(`Normalization: Filtered out ${invalidCount} invalid or unnormalizable cards`);
   }
 
   return result;

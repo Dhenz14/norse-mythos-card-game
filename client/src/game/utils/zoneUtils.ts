@@ -1,6 +1,8 @@
 import { CardInstance, GameState, ZoneType } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { executeDeathrattle, shouldTriggerDeathrattle } from './deathrattleUtils';
+import { shouldTriggerDeathrattle, processPendingDeathrattles } from './deathrattleUtils';
+// Use the bridge for enhanced deathrattle handling with EffectRegistry support
+import { executeDeathrattle } from '../effects/handlers/deathrattleBridge';
 import { logCardDraw, logCardDeath } from './gameLogUtils';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';
@@ -22,7 +24,6 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
     
     logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
     
-    console.log(`[CardBurn] ${playerId}'s hand is full! ${cardName} was destroyed!`);
   } catch (error) {
     console.error('[CardBurn] Failed to queue animation:', error);
   }
@@ -173,7 +174,6 @@ export function drawCardFromDeck(
   
   // Check if there are cards left in the deck
   if (player.deck.length === 0) {
-    console.log(`No more cards in ${playerId}'s deck.`);
     // In real Hearthstone, taking fatigue damage would happen here
     return newState;
   }
@@ -221,7 +221,6 @@ export function drawCardFromDeck(
   // Add the card to the hand if there's room
   player.hand.push(cardInstance);
   
-  console.log(`Drawing card for ${playerId}`);
   
   // Add to game log
   const updatedState = logCardDraw(
@@ -278,7 +277,6 @@ export function destroyCard(
     
     // For non-browser environments or tests, we need to continue without animation
     if (typeof window === 'undefined') {
-      console.log('Non-browser environment detected, skipping animation delay');
     }
   }
   
@@ -287,22 +285,22 @@ export function destroyCard(
   let newState = result.newState;
   
   if (result.movedCard) {
-    console.log(`${result.movedCard.card.name} was destroyed and sent to the graveyard.`);
     
     // Add to game log
     newState = logCardDeath(newState, playerId, result.movedCard);
     
     // Check if the card has a deathrattle effect and trigger it
     if (cardToDestroy && shouldTriggerDeathrattle(cardToDestroy)) {
-      console.log(`${cardToDestroy.card.name} has a deathrattle effect - triggering it`);
       newState = executeDeathrattle(newState, cardToDestroy, playerId);
     }
     
     // Trigger Norse on-minion-death passives (King and Hero passives)
     if (isNorseActive()) {
-      console.log(`[NorseIntegration] Processing on-minion-death for ${playerId}: ${cardId}`);
       newState = processAllOnMinionDeathEffects(newState, playerId, cardId);
     }
+    
+    // Process any pending deathrattles that were queued (from AOE damage deaths, etc.)
+    newState = processPendingDeathrattles(newState);
   }
   
   return newState;

@@ -1,81 +1,81 @@
 /**
  * GiveCards Battlecry Handler
  * 
- * Implements the "give_cards" battlecry effect.
+ * Gives cards to a player (from effect.cards array).
  * Example card: King Mukla (ID: 20135)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a give_cards battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeGiveCardsGiveCards(
-  state: GameState,
+export default function executeGiveCards(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing give_cards battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: cardCount
-  if (effect.cardCount === undefined) {
-    console.warn(`GiveCards effect missing cardCount property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing give_cards battlecry for ${sourceCard.name}`);
+    
+    const cardCount = effect.cardCount || effect.count || 1;
+    const cardId = effect.cardId;
+    const giveToOpponent = effect.giveToOpponent ?? true;
+    const cards = effect.cards || [];
+    
+    const targetPlayer = giveToOpponent ? context.opponentPlayer : context.currentPlayer;
+    const givenCards: CardInstance[] = [];
+    
+    for (let i = 0; i < cardCount; i++) {
+      if (targetPlayer.hand.length >= 10) {
+        context.logGameEvent(`${giveToOpponent ? 'Opponent' : 'Your'} hand is full.`);
+        break;
+      }
+      
+      let cardToGive: Card;
+      
+      if (cards.length > 0) {
+        cardToGive = cards[i % cards.length];
+      } else if (cardId) {
+        cardToGive = {
+          id: typeof cardId === 'number' ? cardId : parseInt(cardId, 10),
+          name: effect.cardName || 'Banana',
+          description: effect.cardDescription || '',
+          manaCost: effect.manaCost || 1,
+          type: effect.cardType || 'spell',
+          rarity: 'common',
+          heroClass: 'neutral'
+        } as Card;
+      } else {
+        cardToGive = {
+          id: 99999,
+          name: 'Banana',
+          description: 'Give a minion +1/+1.',
+          manaCost: 1,
+          type: 'spell',
+          rarity: 'common',
+          heroClass: 'neutral'
+        } as Card;
+      }
+      
+      const newCardInstance: CardInstance = {
+        instanceId: `given-${cardToGive.id}-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
+        card: cardToGive,
+        canAttack: false,
+        isPlayed: false,
+        isSummoningSick: false,
+        attacksPerformed: 0
+      };
+      
+      targetPlayer.hand.push(newCardInstance);
+      givenCards.push(newCardInstance);
+      context.logGameEvent(`Gave ${cardToGive.name} to ${giveToOpponent ? 'opponent' : 'player'}.`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { givenCards, count: givenCards.length, giveToOpponent }
+    };
+  } catch (error) {
+    console.error('Error executing give_cards:', error);
+    return { success: false, error: `Failed to execute give_cards: ${error}` };
   }
-
-  // Check for required property: cardId
-  if (effect.cardId === undefined) {
-    console.warn(`GiveCards effect missing cardId property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: giveToOpponent
-  if (effect.giveToOpponent === undefined) {
-    console.warn(`GiveCards effect missing giveToOpponent property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: randomCardFromSet
-  if (effect.randomCardFromSet === undefined) {
-    console.warn(`GiveCards effect missing randomCardFromSet property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: isRandom
-  if (effect.isRandom === undefined) {
-    console.warn(`GiveCards effect missing isRandom property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the give_cards battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered give_cards battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeGiveCardsGiveCards;

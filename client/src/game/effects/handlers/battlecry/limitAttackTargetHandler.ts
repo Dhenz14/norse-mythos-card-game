@@ -1,53 +1,59 @@
 /**
  * LimitAttackTarget Battlecry Handler
  * 
- * Implements the "limit_attack_target" battlecry effect.
+ * Limits what the minion can attack (e.g., can't attack heroes this turn).
  * Example card: Charged Devilsaur (ID: 30024)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a limit_attack_target battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeLimitAttackTargetLimitAttackTarget(
-  state: GameState,
+export default function executeLimitAttackTarget(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing limit_attack_target battlecry for ${sourceCard.card.name}`);
-  
-
-  
-  // TODO: Implement the limit_attack_target battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered limit_attack_target battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing limit_attack_target battlecry for ${sourceCard.name}`);
+    
+    const canAttackHeroes = effect.canAttackHeroes ?? false;
+    const canOnlyAttackMinions = effect.canOnlyAttackMinions ?? true;
+    const duration = effect.duration || 'this_turn';
+    
+    const sourceOnBoard = context.currentPlayer.board.find(
+      m => m.card.id === sourceCard.id
+    );
+    
+    if (!sourceOnBoard) {
+      return { success: false, error: 'Source minion not found on board' };
+    }
+    
+    (sourceOnBoard as any).canAttackHeroes = canAttackHeroes;
+    (sourceOnBoard as any).canOnlyAttackMinions = canOnlyAttackMinions;
+    (sourceOnBoard as any).attackRestrictionDuration = duration;
+    
+    if (canOnlyAttackMinions) {
+      sourceOnBoard.canAttack = true;
+      sourceOnBoard.isSummoningSick = false;
+    }
+    
+    const restrictionText = canOnlyAttackMinions 
+      ? 'Can only attack minions this turn' 
+      : (canAttackHeroes ? 'Can attack heroes' : 'Cannot attack heroes');
+    
+    context.logGameEvent(`${sourceCard.name}: ${restrictionText}.`);
+    
+    return { 
+      success: true, 
+      additionalData: { 
+        canAttackHeroes,
+        canOnlyAttackMinions,
+        duration,
+        hasRush: canOnlyAttackMinions
+      }
+    };
+  } catch (error) {
+    console.error('Error executing limit_attack_target:', error);
+    return { success: false, error: `Failed to execute limit_attack_target: ${error}` };
+  }
 }
-
-export default executeLimitAttackTargetLimitAttackTarget;

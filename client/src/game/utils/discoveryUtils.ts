@@ -1,6 +1,5 @@
 import { CardData, SpellEffect, GameState, DiscoveryState, CardRarity, CardType, HeroClass } from '../types';
-import { spellCards } from '../data/spellCards';
-import { fullCardDatabase } from '../data/cards';
+import allCards from '../data/allCards';
 import { useGameStore } from '../stores/gameStore';
 
 /**
@@ -61,18 +60,18 @@ export function getDiscoveryOptions(
   manaCost: number | 'any' = 'any',
   manaCostRange: [number, number] | 'any' = 'any'
 ): CardData[] {
-  // Choose source database based on type
+  // Use the aggregated allCards database (1300+ cards) for all discovery types
   let sourceCards: CardData[] = [];
   if (type === 'spell') {
-    sourceCards = spellCards;
+    sourceCards = allCards.filter(card => card.type === 'spell');
   } else if (type === 'minion') {
-    sourceCards = fullCardDatabase.filter(card => card.type === 'minion');
+    sourceCards = allCards.filter(card => card.type === 'minion');
   } else if (type === 'weapon') {
-    sourceCards = fullCardDatabase.filter(card => card.type === 'weapon');
+    sourceCards = allCards.filter(card => card.type === 'weapon');
   } else if (type === 'secret') {
-    sourceCards = fullCardDatabase.filter(card => card.type === 'secret');
+    sourceCards = allCards.filter(card => card.type === 'secret');
   } else {
-    sourceCards = fullCardDatabase;
+    sourceCards = allCards;
   }
 
   // Apply additional filters
@@ -175,14 +174,11 @@ export function createDiscoveryFromSpell(
           };
           
           // Log the selection
-          console.log(`[DISCOVERY] Selected card ${selectedCard.name}, adding to player's hand`);
           
           // Add the selected card to the player's hand if there's room
           if (updatedState.players.player.hand.length < 10) {
             updatedState.players.player.hand.push(cardInstance);
-            console.log(`[DISCOVERY] Added ${selectedCard.name} to hand. Hand size: ${updatedState.players.player.hand.length}`);
           } else {
-            console.log(`[DISCOVERY] Hand is full, cannot add ${selectedCard.name}`);
           }
           
           // Clear the discovery state
@@ -191,7 +187,6 @@ export function createDiscoveryFromSpell(
           return updatedState;
         } else {
           // If no card was selected, just clear the discovery state
-          console.log('[DISCOVERY] No card selected, clearing discovery state');
           updatedState.discovery = undefined;
           return updatedState;
         }
@@ -219,20 +214,17 @@ export function processDiscovery(
 ): GameState {
   // First check if the game is over - don't process discovery for game over states
   if (state.gamePhase === 'game_over') {
-    console.log("Skipping discovery effect - game is already over");
     return state;
   }
   
   // Store the source card ID in a more reliable way - it's not needed to be in the hand anymore
   // since the card has already been played and removed from hand
-  console.log(`Processing discovery effect for card ID: ${sourceCardId}`);
   
   // Create the discovery state
   const discoveryState = createDiscoveryFromSpell(state, spellEffect, sourceCardId);
   
   // Special handling for opponent's turn - AI should auto-select a card instead of showing the discovery UI
   if (state.currentTurn === 'opponent') {
-    console.log("AI opponent's discovery effect - auto-selecting a card");
     
     // If no options are available, return the state unchanged
     if (discoveryState.options.length === 0) {
@@ -256,7 +248,6 @@ export function processDiscovery(
     
     const selectedCard = discoveryState.options[bestCardIndex];
     
-    console.log(`AI selected: ${selectedCard.name} from discovery options (value: ${bestCardValue})`);
     
     // Add the selected card to the opponent's hand
     const createCardInstance = (card: CardData) => {

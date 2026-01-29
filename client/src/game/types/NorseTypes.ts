@@ -123,6 +123,8 @@ export type HeroPowerEffectType =
   | 'heal_single'             // Heal single target
   | 'heal_aoe'                // Heal all friendlies
   | 'heal'                    // Heal any target
+  | 'heal_and_buff'           // Heal a target AND give stat buffs
+  | 'heal_all_friendly'       // Heal all friendly minions
   | 'buff_single'             // Buff a single minion
   | 'buff_aoe'                // Buff all friendly minions
   | 'buff_hero'               // Buff hero (attack + armor)
@@ -145,12 +147,15 @@ export type HeroPowerEffectType =
   | 'equip_weapon'            // Equip a weapon
   | 'equip_random_weapon'     // Equip random weapon
   | 'generate_enemy_class_card' // Generate card from enemy class
+  | 'gain_armor'              // Gain armor
   // Egyptian-specific effect types
   | 'conditional_destroy'     // Destroy target if condition met (Ammit)
   | 'set_stats'               // Set attack and health to specific value (Ma'at)
   | 'damage_and_poison'       // Deal damage and apply poison (Serqet)
   | 'bounce_to_hand'          // Return minion to hand (Shu)
   | 'bounce_and_damage_hero'  // Return to hand and damage hero (Shu+)
+  | 'bounce'                  // Return minion to board/hand (generic bounce)
+  | 'bounce_damage'           // Bounce minion and deal damage
   // Japanese-specific effect types
   | 'sacrifice_summon'        // Destroy friendly and summon (Izanami)
   | 'mana_ramp'               // Gain mana crystals (Inari)

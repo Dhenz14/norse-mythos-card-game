@@ -30,7 +30,6 @@ export default function executeArmorBasedOnMissingHealth(
 
     
     // Implementation placeholder
-    console.log(`spellEffect:armor_based_on_missing_health executed with properties: ${JSON.stringify(effect)}`);
     
     // TODO: Implement the spellEffect:armor_based_on_missing_health effect
     if (requiresTarget) {

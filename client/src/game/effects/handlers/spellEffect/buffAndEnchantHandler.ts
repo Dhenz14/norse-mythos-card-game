@@ -25,7 +25,6 @@ export function executeBuffAndEnchantBuffAndEnchant(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing buff_and_enchant spellEffect for ${sourceCard.card.name}`);
   
   // Check for required property: buffHealth
   if (effect.buffHealth === undefined) {

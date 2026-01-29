@@ -117,7 +117,6 @@ export function awakeDormantMinion(
   minion.isSummoningSick = true; // Still can't attack this turn
   
   // Log the awakening
-  console.log(`${minion.card.name} has awakened!`);
   
   // Add to game log
   updatedState.gameLog = [
@@ -166,7 +165,6 @@ function processAwakeningEffect(
     return updatedState;
   }
   
-  console.log(`Executing awakening effect for ${minion.card.name}`);
   
   // Process different types of awakening effects
   switch (awakenEffect.type) {
@@ -254,7 +252,6 @@ function processAwakeningEffect(
           const discount = awakenEffect.value || 0;
           randomMinion.card.manaCost = Math.max(0, (randomMinion.card.manaCost || 0) - discount);
           
-          console.log(`Applied ${discount} mana discount to ${randomMinion.card.name}`);
         }
       }
       return updatedState;
@@ -278,7 +275,6 @@ function processAwakeningEffect(
           }
         }
         
-        console.log(`Buffed all minions in hand by +${awakenEffect.buffAttack || 0}/+${awakenEffect.buffHealth || 0}`);
       }
       return updatedState;
       
@@ -287,7 +283,6 @@ function processAwakeningEffect(
       if (awakenEffect.equipWeaponId) {
         // Logic to equip weapon would go here
         // This would typically involve looking up the weapon by ID and adding it to the player's equipment
-        console.log(`Would equip weapon with ID ${awakenEffect.equipWeaponId}`);
       }
       return updatedState;
       

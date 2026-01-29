@@ -2,56 +2,143 @@
  * DrawUntil Battlecry Handler
  * 
  * Implements the "draw_until" battlecry effect.
- * Example card: Wrathion (ID: 20302)
+ * Draws cards until a condition is met.
+ * Example card: Wrathion (ID: 20302) - Draw cards until you draw a non-Dragon
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
+
+const MAX_HAND_SIZE = 10;
+const MAX_DRAW_LIMIT = 20;
 
 /**
  * Execute a draw_until battlecry effect
  * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
+ * @param context - The game context
+ * @param effect - The effect data containing stopCondition property
+ * @param sourceCard - The card that triggered the effect
+ * @returns An object indicating success or failure and any additional data
  */
-export function executeDrawUntilDrawUntil(
-  state: GameState,
+export default function executeDrawUntil(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing draw_until battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: stopCondition
-  if (effect.stopCondition === undefined) {
-    console.warn(`DrawUntil effect missing stopCondition property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    const stopCondition = effect.stopCondition || effect.condition;
+    const targetCost = effect.targetCost || effect.untilCardCost;
+    const targetRace = effect.targetRace || effect.race;
+    const targetType = effect.targetType || effect.cardType;
+    const handSize = effect.handSize || MAX_HAND_SIZE;
+    
+    context.logGameEvent(`${sourceCard.name} battlecry: Draw until condition met`);
+    
+    const drawnCards: Card[] = [];
+    const burnedCards: Card[] = [];
+    let drawCount = 0;
+    let conditionMet = false;
+    
+    while (!conditionMet && drawCount < MAX_DRAW_LIMIT) {
+      if (context.currentPlayer.deck.length === 0) {
+        context.logGameEvent(`Deck is empty - stopping draw`);
+        break;
+      }
+      
+      if (stopCondition === 'until_hand_full' && context.currentPlayer.hand.length >= handSize) {
+        context.logGameEvent(`Hand is full - stopping draw`);
+        conditionMet = true;
+        break;
+      }
+      
+      const cardInstance = context.currentPlayer.deck.shift();
+      if (!cardInstance) break;
+      
+      drawCount++;
+      
+      if (context.currentPlayer.hand.length < MAX_HAND_SIZE) {
+        context.currentPlayer.hand.push(cardInstance);
+        drawnCards.push(cardInstance.card);
+        context.logGameEvent(`Drew ${cardInstance.card.name}`);
+      } else {
+        burnedCards.push(cardInstance.card);
+        context.logGameEvent(`Hand is full! ${cardInstance.card.name} was burned`);
+      }
+      
+      switch (stopCondition) {
+        case 'until_card_cost':
+          if (cardInstance.card.manaCost === targetCost) {
+            context.logGameEvent(`Drew a ${targetCost}-cost card - stopping`);
+            conditionMet = true;
+          }
+          break;
+          
+        case 'until_non_race':
+        case 'until_not_race':
+          if (cardInstance.card.race !== targetRace) {
+            context.logGameEvent(`Drew a non-${targetRace} card - stopping`);
+            conditionMet = true;
+          }
+          break;
+          
+        case 'until_race':
+          if (cardInstance.card.race === targetRace) {
+            context.logGameEvent(`Drew a ${targetRace} - stopping`);
+            conditionMet = true;
+          }
+          break;
+          
+        case 'until_type':
+          if (cardInstance.card.type === targetType) {
+            context.logGameEvent(`Drew a ${targetType} - stopping`);
+            conditionMet = true;
+          }
+          break;
+          
+        case 'until_non_type':
+          if (cardInstance.card.type !== targetType) {
+            context.logGameEvent(`Drew a non-${targetType} - stopping`);
+            conditionMet = true;
+          }
+          break;
+          
+        case 'until_minion':
+          if (cardInstance.card.type === 'minion') {
+            context.logGameEvent(`Drew a minion - stopping`);
+            conditionMet = true;
+          }
+          break;
+          
+        case 'until_spell':
+          if (cardInstance.card.type === 'spell') {
+            context.logGameEvent(`Drew a spell - stopping`);
+            conditionMet = true;
+          }
+          break;
+          
+        default:
+          conditionMet = true;
+          break;
+      }
+    }
+    
+    context.currentPlayer.cardsDrawnThisTurn += drawnCards.length;
+    
+    return {
+      success: true,
+      additionalData: {
+        drawnCards,
+        burnedCards,
+        totalDrawn: drawnCards.length,
+        totalBurned: burnedCards.length,
+        conditionMet
+      }
+    };
+  } catch (error) {
+    console.error(`Error executing draw_until:`, error);
+    return {
+      success: false,
+      error: `Error executing draw_until: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the draw_until battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered draw_until battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeDrawUntilDrawUntil;

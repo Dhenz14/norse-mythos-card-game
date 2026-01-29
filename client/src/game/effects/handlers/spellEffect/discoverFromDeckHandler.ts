@@ -25,7 +25,6 @@ export function executeDiscoverFromDeckDiscoverFromDeck(
   // Create a new state to avoid mutating the original
   const newState = { ...state };
   
-  console.log(`Executing discover_from_deck spellEffect for ${sourceCard.card.name}`);
   
   // Check for required property: count
   if (effect.count === undefined) {

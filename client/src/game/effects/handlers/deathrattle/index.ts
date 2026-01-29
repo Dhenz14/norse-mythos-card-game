@@ -3,14 +3,14 @@
  * 
  * This file exports all deathrattle handlers for registration with the EffectRegistry
  */
-import executeSummonRandomSummonRandom from './summon_randomHandler';
-import executeAddToHandAddToHand from './add_to_handHandler';
-import executeSplitDamageSplitDamage from './split_damageHandler';
-import executeAddCardAddCard from './add_cardHandler';
-import executeSummonJadeGolemSummonJadeGolem from './summon_jade_golemHandler';
+import executeSummonRandomSummonRandom from './summonRandomHandler';
+import executeAddToHandAddToHand from './addToHandHandler';
+import executeSplitDamageSplitDamage from './splitDamageHandler';
+import executeAddCardAddCard from './addCardHandler';
+import executeSummonJadeGolemSummonJadeGolem from './summonJadeGolemHandler';
 import executeShuffleShuffle from './shuffleHandler';
 import executeDestroyDestroy from './destroyHandler';
-import executeShuffleCardShuffleCard from './shuffle_cardHandler';
+import executeShuffleCardShuffleCard from './shuffleCardHandler';
 import executeResurrectResurrect from './resurrectHandler';
 import executeSummonSummon from './summonHandler';
 import executeDamageDamage from './damageHandler';

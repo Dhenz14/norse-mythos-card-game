@@ -1,69 +1,66 @@
 /**
  * ShuffleCard Battlecry Handler
  * 
- * Implements the "shuffle_card" battlecry effect.
+ * Shuffles a card into the player's deck.
  * Example card: Ancient Shade (ID: 30028)
  */
-import { GameState, CardInstance } from '../../types';
-import { BattlecryEffect } from '../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a shuffle_card battlecry effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
-export function executeShuffleCardShuffleCard(
-  state: GameState,
+export default function executeShuffleCard(
+  context: GameContext,
   effect: BattlecryEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  console.log(`Executing shuffle_card battlecry for ${sourceCard.card.name}`);
-  
-  // Check for required property: cardType
-  if (effect.cardType === undefined) {
-    console.warn(`ShuffleCard effect missing cardType property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing shuffle_card battlecry for ${sourceCard.name}`);
+    
+    const cardId = effect.cardId || effect.value;
+    const cardName = effect.cardName || 'Shuffled Card';
+    const count = effect.count || effect.value || 1;
+    const shuffleIntoOpponentDeck = effect.shuffleIntoOpponentDeck || false;
+    
+    const targetDeck = shuffleIntoOpponentDeck 
+      ? context.opponentPlayer.deck 
+      : context.currentPlayer.deck;
+    
+    const shuffledCards: CardInstance[] = [];
+    
+    for (let i = 0; i < count; i++) {
+      const newCard: CardInstance = {
+        instanceId: `shuffled-${cardId || 'custom'}-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
+        card: {
+          id: typeof cardId === 'number' ? cardId : (cardId ? parseInt(cardId, 10) : 99998),
+          name: cardName,
+          description: effect.cardDescription || '',
+          manaCost: effect.manaCost || 0,
+          type: effect.cardType || 'spell',
+          rarity: effect.rarity || 'common',
+          heroClass: effect.heroClass || 'neutral',
+          attack: effect.attack,
+          health: effect.health,
+          deathrattle: effect.deathrattle
+        } as Card,
+        canAttack: false,
+        isPlayed: false,
+        isSummoningSick: false,
+        attacksPerformed: 0
+      };
+      
+      const randomIndex = Math.floor(Math.random() * (targetDeck.length + 1));
+      targetDeck.splice(randomIndex, 0, newCard);
+      shuffledCards.push(newCard);
+      
+      context.logGameEvent(`Shuffled ${cardName} into ${shuffleIntoOpponentDeck ? "opponent's" : 'your'} deck.`);
+    }
+    
+    return { 
+      success: true, 
+      additionalData: { shuffledCards, count: shuffledCards.length }
+    };
+  } catch (error) {
+    console.error('Error executing shuffle_card:', error);
+    return { success: false, error: `Failed to execute shuffle_card: ${error}` };
   }
-
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`ShuffleCard effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
-
-  // Check for required property: cardName
-  if (effect.cardName === undefined) {
-    console.warn(`ShuffleCard effect missing cardName property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the shuffle_card battlecry effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Get the current player
-  const currentPlayerId = newState.currentPlayerId;
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'battlecry',
-    text: `${sourceCard.card.name} triggered shuffle_card battlecry`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    source: sourceCard.card.name,
-    cardId: sourceCard.card.id
-  });
-  
-  return newState;
 }
-
-export default executeShuffleCardShuffleCard;

@@ -14,15 +14,18 @@ import { CardInstance } from '../types/CardTypes';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { Position } from '../types/Position';
 
-// Debug logging utility
-const debugCardAdapter = (message: string, card?: any) => {
-  console.log(`[CARD-ADAPTER] ${message}`, card ? JSON.stringify({
-    instanceId: card.instanceId,
-    name: card.card?.name || card.name,
-    canAttack: card.canAttack,
-    isSummoningSick: card.isSummoningSick
-  }) : '');
-};
+/**
+ * Debug logging helper for card adapter operations
+ * Set DEBUG_CARD_ADAPTER = true to enable debug logging
+ */
+const DEBUG_CARD_ADAPTER = false;
+
+function debugCardAdapter(message: string, data?: any): void {
+  if (DEBUG_CARD_ADAPTER) {
+    console.log(`[CardAdapter] ${message}`, data);
+  }
+}
+
 
 /**
  * Converts a CardInstance to a CardInstanceWithCardData format
@@ -86,45 +89,48 @@ export function adaptCardInstance(
   }
   
   // Otherwise, adapt the legacy CardInstance format with default values for missing fields
+  // Type assert to CardInstance since we've already handled CardInstanceWithCardData above
+  const legacyCard = card as CardInstance;
+  
   const adaptedCard = {
-    instanceId: card.instanceId || uuidv4(),
+    instanceId: legacyCard.instanceId || uuidv4(),
     card: {
-      id: card.id || 0,
-      name: card.name || "Unknown Card",
-      type: card.type || "minion",
-      class: card.class || card.heroClass || "Neutral",
-      rarity: card.rarity || "common",
-      manaCost: card.manaCost ?? card.cost ?? 0,
-      attack: card.attack,
-      health: card.health,
-      durability: card.durability,
-      description: card.text || card.description || "",
-      flavorText: card.flavor || "",
-      collectible: card.collectible ?? true,
-      keywords: card.keywords || [],
+      id: (legacyCard as any).id || 0,
+      name: (legacyCard as any).name || "Unknown Card",
+      type: (legacyCard as any).type || "minion",
+      class: (legacyCard as any).class || (legacyCard as any).heroClass || "Neutral",
+      rarity: (legacyCard as any).rarity || "common",
+      manaCost: (legacyCard as any).manaCost ?? (legacyCard as any).cost ?? 0,
+      attack: (legacyCard as any).attack,
+      health: (legacyCard as any).health,
+      durability: (legacyCard as any).durability,
+      description: (legacyCard as any).text || (legacyCard as any).description || "",
+      flavorText: (legacyCard as any).flavor || "",
+      collectible: (legacyCard as any).collectible ?? true,
+      keywords: (legacyCard as any).keywords || [],
       // Copy any other properties that might be needed
-      battlecry: card.battlecry,
-      deathrattle: card.deathrattle,
-      spellEffect: (card as any).spellEffect, // Type assertion needed for special properties
+      battlecry: (legacyCard as any).battlecry,
+      deathrattle: (legacyCard as any).deathrattle,
+      spellEffect: (legacyCard as any).spellEffect, // Type assertion needed for special properties
     },
-    currentHealth: card.currentHealth ?? card.health,
-    currentAttack: (card as any).currentAttack ?? card.attack,
-    canAttack: card.canAttack ?? false,
-    isPlayed: card.isPlayed ?? false,
-    isSummoningSick: card.isSummoningSick ?? true,
-    hasDivineShield: card.hasDivineShield ?? false,
-    attacksPerformed: card.attacksPerformed ?? 0,
-    isPoisonous: card.isPoisonous ?? false,
-    hasLifesteal: card.hasLifesteal ?? false,
-    isRush: card.isRush ?? false,
-    isMagnetic: card.isMagnetic ?? false,
-    isFrozen: card.isFrozen ?? false,
+    currentHealth: legacyCard.currentHealth ?? (legacyCard as any).health,
+    currentAttack: (legacyCard as any).currentAttack ?? (legacyCard as any).attack,
+    canAttack: legacyCard.canAttack ?? false,
+    isPlayed: legacyCard.isPlayed ?? false,
+    isSummoningSick: legacyCard.isSummoningSick ?? true,
+    hasDivineShield: legacyCard.hasDivineShield ?? false,
+    attacksPerformed: legacyCard.attacksPerformed ?? 0,
+    isPoisonous: legacyCard.isPoisonous ?? false,
+    hasLifesteal: legacyCard.hasLifesteal ?? false,
+    isRush: legacyCard.isRush ?? false,
+    isMagnetic: legacyCard.isMagnetic ?? false,
+    isFrozen: legacyCard.isFrozen ?? false,
     // Ensure animationPosition is properly converted from old format to new
-    animationPosition: card.animationPosition ? {
-      x: card.animationPosition.x || 0,
-      y: card.animationPosition.y || 0
+    animationPosition: (legacyCard as any).animationPosition ? {
+      x: (legacyCard as any).animationPosition.x || 0,
+      y: (legacyCard as any).animationPosition.y || 0
     } : undefined,
-    mechAttachments: card.mechAttachments || []
+    mechAttachments: legacyCard.mechAttachments || []
   };
   
   debugCardAdapter("Adapted from CardInstance format", adaptedCard);
@@ -230,9 +236,16 @@ export function reverseAdaptCardInstance(
   }
   
   // Create a standard CardInstance format that matches the CardTypes.ts definition
+  // Sanitize card data to ensure it matches the Card type
+  const sanitizedCardData = card.card ? { ...(card.card as any) } : {};
+  // Remove any 'class' property that might not exist in Card type
+  if ('class' in sanitizedCardData && !('heroClass' in sanitizedCardData)) {
+    (sanitizedCardData as any).heroClass = (sanitizedCardData as any).class;
+  }
+  
   const standardCard: CardInstance = {
     instanceId: card.instanceId,
-    card: { ...card.card }, // Copy the card data
+    card: sanitizedCardData as any,
     currentHealth: card.currentHealth,
     canAttack: card.canAttack ?? false,
     isPlayed: card.isPlayed ?? false, 
@@ -321,10 +334,9 @@ function createFallbackStandardCardInstance(): CardInstance {
       health: 1,
       description: "This card was created as a fallback.",
       heroClass: "neutral",
-      class: "Neutral",
       collectible: false,
       keywords: []
-    },
+    } as any,
     currentHealth: 1,
     canAttack: false,
     isPlayed: false,
