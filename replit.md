@@ -9,6 +9,21 @@
 - **Preference**: Maintain alignment with enrique89ve fork for collaborative consistency.
 - **Maintenance**: Full GitHub sync completed (5761 files). Future updates should be incremental.
 
+### Jan 30, 2026 - Modularization Refactor
+- **New**: `client/src/game/combat/modules/` with pure TypeScript logic (no React):
+  - `BettingEngine.ts` - Poker betting logic (calculateMinBet, processBettingAction, etc.)
+  - `CombatResolver.ts` - Combat resolution (showdown, fold, damage calculation)
+  - `PhaseManager.ts` - Combat phase state machine (FAITH/FORESIGHT/DESTINY)
+  - `HandEvaluator.ts` - Poker hand evaluation (existing)
+  - `SmartAI.ts` - AI decision making (existing)
+- **New**: `client/src/game/combat/components/` with extracted UI components:
+  - `PlayingCard.tsx` - Norse-themed poker card
+  - `DamageIndicator.tsx` - Floating damage numbers
+  - `HeroDeathAnimation.tsx` - Hero death crumble effect
+  - `BattlefieldHero.tsx` - Hero display component
+  - `ShowdownCelebration.tsx` - Poker showdown UI (existing)
+- **Status**: RagnarokCombatArena.tsx still at 2900+ lines, further decomposition recommended
+
 ## Overview
 A multi-mythology digital collectible card game, inspired by Hearthstone, integrating with the Ragnarok Play-to-Earn (P2E) strategy game system. The project aims to deliver an engaging and strategic card game experience through strategic deck building, card combat mechanics, AI opponents, and an advanced Pet Battle PvP system. It features 4 mythological factions (Norse, Greek, Japanese/Shinto, Egyptian), over 1000 collectible cards (neutral and class-specific), and 76 playable heroes across 12 classes, supporting diverse card effects like battlecry, deathrattle, spell, combo, aura, and passive abilities. The "Think Tools" AI assists with strategic analysis for deck recommendations and gameplay optimization.
 

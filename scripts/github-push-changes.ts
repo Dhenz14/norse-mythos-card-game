@@ -14,10 +14,15 @@ const BRANCH = 'main';
 
 const UPDATED_FILES = [
   'replit.md',
-  'client/src/game/combat/PokerCombatStore.ts',
-  'client/src/game/types/PokerCombatTypes.ts',
-  'client/src/game/components/chess/ChessPiece.tsx',
-  'client/src/game/components/ArmySelection.tsx',
+  'client/src/game/combat/modules/BettingEngine.ts',
+  'client/src/game/combat/modules/CombatResolver.ts',
+  'client/src/game/combat/modules/PhaseManager.ts',
+  'client/src/game/combat/modules/index.ts',
+  'client/src/game/combat/components/PlayingCard.tsx',
+  'client/src/game/combat/components/DamageIndicator.tsx',
+  'client/src/game/combat/components/HeroDeathAnimation.tsx',
+  'client/src/game/combat/components/BattlefieldHero.tsx',
+  'client/src/game/combat/components/index.ts',
   'scripts/github-push-changes.ts'
 ];
 
