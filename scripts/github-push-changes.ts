@@ -14,15 +14,13 @@ const BRANCH = 'main';
 
 const UPDATED_FILES = [
   'replit.md',
-  'client/src/game/combat/modules/BettingEngine.ts',
-  'client/src/game/combat/modules/CombatResolver.ts',
-  'client/src/game/combat/modules/PhaseManager.ts',
-  'client/src/game/combat/modules/index.ts',
-  'client/src/game/combat/components/PlayingCard.tsx',
-  'client/src/game/combat/components/DamageIndicator.tsx',
-  'client/src/game/combat/components/HeroDeathAnimation.tsx',
-  'client/src/game/combat/components/BattlefieldHero.tsx',
-  'client/src/game/combat/components/index.ts',
+  'client/src/data/index.ts',
+  'client/src/data/HiveDataLayer.ts',
+  'client/src/data/HiveSync.ts',
+  'client/src/data/HiveEvents.ts',
+  'client/src/data/schemas/index.ts',
+  'client/src/data/schemas/HiveTypes.ts',
+  'client/src/data/schemas/LocalTypes.ts',
   'scripts/github-push-changes.ts'
 ];
 
