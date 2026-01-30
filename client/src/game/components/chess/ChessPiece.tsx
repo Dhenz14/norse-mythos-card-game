@@ -103,7 +103,8 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
   const isPlayer = piece.owner === 'player';
   const canSelect = isPlayerTurn && isPlayer;
   const isPawn = piece.type === 'pawn';
-  const healthPercent = isPawn ? 100 : (piece.health / piece.maxHealth) * 100;
+  const isKing = piece.type === 'king';
+  const healthPercent = (isPawn || isKing) ? 100 : (piece.health / piece.maxHealth) * 100;
   const elementGlow = piece.element ? ELEMENT_GLOW[piece.element] : ELEMENT_GLOW.neutral;
   const hasElement = piece.element && piece.element !== 'neutral';
   const elementImage = piece.element ? ELEMENT_IMAGES[piece.element] : null;
@@ -194,7 +195,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
                   <span style={{ color: ELEMENT_COLORS[piece.element!] }}>{ELEMENT_NAMES[piece.element!]} Element</span>
                 </div>
               )}
-              {!isPawn && (
+              {(!isPawn && !isKing) && (
                 <div className="mt-2 text-xs text-gray-400 flex justify-between">
                   <span>HP: {piece.health}/{piece.maxHealth}</span>
                   {piece.stamina > 0 && <span>STA: {piece.stamina}</span>}
@@ -229,7 +230,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
         <div className={`element-effect-layer element-effect-${piece.element}`} />
       )}
       
-      {!isPawn && (
+      {(!isPawn && !isKing) && (
         <div className="absolute top-0 left-0 right-0 h-2 bg-gray-900/80 rounded-t-xl overflow-hidden z-30">
           <div 
             className={`h-full transition-all ${healthPercent > 50 ? 'bg-gradient-to-r from-green-400 to-green-500' : healthPercent > 25 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' : 'bg-gradient-to-r from-red-400 to-red-500'}`}
@@ -254,7 +255,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
         {piece.heroName.split(' ')[0]}
       </div>
 
-      {!isPawn && (
+      {(!isPawn && !isKing) && (
         <div className="absolute bottom-0 left-0 right-0 flex justify-between px-1.5 pb-1 text-xs z-30">
           <span className="text-red-300 font-bold drop-shadow-lg bg-black/40 px-1 rounded">{piece.health}</span>
           {piece.stamina > 0 && (

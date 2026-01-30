@@ -14,7 +14,10 @@ const BRANCH = 'main';
 
 const UPDATED_FILES = [
   'replit.md',
-  'client/src/game/combat/RagnarokCombatArena.tsx',
+  'client/src/game/combat/PokerCombatStore.ts',
+  'client/src/game/types/PokerCombatTypes.ts',
+  'client/src/game/components/chess/ChessPiece.tsx',
+  'client/src/game/components/ArmySelection.tsx',
   'scripts/github-push-changes.ts'
 ];
 

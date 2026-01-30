@@ -315,11 +315,11 @@ export type PokerPosition = 'small_blind' | 'big_blind';
 
 /**
  * Blind configuration for standard poker
- * BB = 5, SB = 2.5, Ante = 0.5 each
+ * BB = 10, SB = 5, Ante = 0.5 each
  */
 export interface BlindConfig {
-  bigBlind: number;        // 5 HP
-  smallBlind: number;      // 2.5 HP
+  bigBlind: number;        // 10 HP
+  smallBlind: number;      // 5 HP
   ante: number;            // 0.5 HP per player
 }
 
@@ -327,9 +327,9 @@ export interface BlindConfig {
  * Default blind configuration
  */
 export const DEFAULT_BLIND_CONFIG: BlindConfig = {
-  bigBlind: 5,
-  smallBlind: 2.5,
-  ante: 0.2
+  bigBlind: 10,
+  smallBlind: 5,
+  ante: 0.5
 };
 
 /**

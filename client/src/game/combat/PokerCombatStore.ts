@@ -58,14 +58,14 @@ const STAMINA_REGEN_PER_PHASE = 0;
  * Called by initializeCombat (when skipMulligan=true) or completeMulligan.
  * 
  * Standard poker structure:
- * - BB: 5 HP
- * - SB: 2.5 HP  
- * - Ante: 0.2 HP from each player
+ * - BB: 10 HP
+ * - SB: 5 HP  
+ * - Ante: 0.5 HP from each player
  * 
- * SB total forced = 2.7 HP (2.5 + 0.2)
- * BB total forced = 5.2 HP (5 + 0.2)
- * Pot starts at 7.9 HP
- * Current bet = 5 (the big blind - what SB must call to)
+ * SB total forced = 5.5 HP (5 + 0.5)
+ * BB total forced = 10.5 HP (10 + 0.5)
+ * Pot starts at 16 HP
+ * Current bet = 10 (the big blind - what SB must call to)
  */
 function collectForcedBets(state: PokerCombatState): PokerCombatState {
   if (state.blindsPosted) {
@@ -606,7 +606,7 @@ export const usePokerCombatStore = create<PokerCombatStore>((set, get) => ({
     
     // Single source of truth: SB always acts first, derive opener from position
     const openerIsPlayer = playerPosition === 'small_blind';
-    const minBet = DEFAULT_BLIND_CONFIG.bigBlind; // Min bet = BB (5 HP)
+    const minBet = DEFAULT_BLIND_CONFIG.bigBlind; // Min bet = BB (10 HP)
     
     
     const combatState: PokerCombatState = {

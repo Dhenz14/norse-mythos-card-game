@@ -282,8 +282,12 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                 
                 <div className="norse-hero-info-panel">
                   <div className="norse-hero-stats">
-                    <span className="norse-stat-hp">❤ 100</span>
-                    <span className="norse-stat-sta">⚡ 10</span>
+                    {selectedPieceType !== 'king' && (
+                      <>
+                        <span className="norse-stat-hp">❤ 100</span>
+                        <span className="norse-stat-sta">⚡ 10</span>
+                      </>
+                    )}
                     {hero.element && hero.element.toLowerCase() !== 'neutral' && (
                       <span className={`norse-element-badge element-${hero.element.toLowerCase()}`}>
                         {hero.element}
@@ -344,7 +348,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                   )}
                 </div>
                 
-                {isMajorPiece && hero && (
+                {isMajorPiece && hero && pieceType !== 'king' && (
                   <button
                     onClick={() => handleOpenDeckBuilder(pieceType as PieceType)}
                     className="norse-edit-deck-btn"
