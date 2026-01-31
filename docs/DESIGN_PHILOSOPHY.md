@@ -43,22 +43,45 @@ Design tokens are the foundational building blocks. They provide semantic meanin
 - **Motion**: duration-fast, duration-normal, easing-standard
 - **Shape**: radius-none, radius-sm, radius-md, radius-full
 
-### 2. Component Architecture
+### 2. Component Architecture (Feature-First)
 
-Components should follow a strict layered structure:
+**Modularize Without Overkill** - This is our AAA standard approach.
+
+Complex features should be isolated into their own module folder, but NOT fragmented into dozens of tiny files. The goal is separation from unrelated code, not maximum file count.
+
+**Correct Structure (4-5 files max per feature):**
 
 ```
-Component/
-├── index.ts              # Public exports
-├── Component.tsx         # Main presentation component
-├── Component.styles.css  # Scoped styles using tokens
-├── Component.types.ts    # TypeScript interfaces
-├── useComponent.ts       # Custom hook for logic
-└── subcomponents/        # Internal sub-components
-    ├── Header.tsx
-    ├── Body.tsx
-    └── Footer.tsx
+deckbuilder/
+├── index.ts           # Public exports
+├── useDeckBuilder.ts  # Hook with ALL state and logic
+├── utils.ts           # Pure functions (no React)
+└── tokens.css         # Design tokens (optional)
 ```
+
+**Wrong Structure (OCD overkill):**
+
+```
+deckbuilder/
+├── components/
+│   ├── CardTile.tsx
+│   ├── CardGrid.tsx
+│   ├── CardFilters.tsx
+│   ├── DeckSidebar.tsx
+│   └── DeckHeader.tsx
+├── hooks/
+│   └── useDeckBuilder.ts
+├── utils/
+│   └── deckBuilderUtils.ts
+└── styles/
+    └── tokens.css
+```
+
+**The Principle:**
+- Group all related code for a feature together
+- Keep sub-components inline in the main file (or as simple functions at bottom)
+- One hook, one utils file, one component
+- Easy to navigate, hard to break paths
 
 ### 3. Separation of Concerns Pattern (MANDATORY)
 
