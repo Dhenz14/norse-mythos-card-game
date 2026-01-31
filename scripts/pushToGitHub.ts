@@ -4,6 +4,11 @@
  * 
  * Uses Replit's GitHub connector for authentication
  * 
+ * MANDATORY: This script reads replit.md before pushing.
+ * replit.md is the project memory - it contains architecture decisions,
+ * user preferences, and project state. It should NEVER be pushed to GitHub
+ * but MUST be consulted before any push operation.
+ * 
  * SECURITY: This script validates files against forbidden patterns
  * before pushing. See docs/GITHUB_SECURITY_GUIDE.md for details.
  */
@@ -11,6 +16,52 @@
 import { Octokit } from '@octokit/rest';
 import * as fs from 'fs';
 import * as path from 'path';
+
+// ============================================
+// MANDATORY: Read project memory before push
+// ============================================
+function readProjectMemory(): void {
+  const replitMdPath = path.join(process.cwd(), 'replit.md');
+  
+  if (fs.existsSync(replitMdPath)) {
+    const content = fs.readFileSync(replitMdPath, 'utf-8');
+    
+    // Extract key sections for display
+    const lines = content.split('\n');
+    const overviewStart = lines.findIndex(l => l.includes('## Overview') || l.includes('# Norse'));
+    const recentChangesStart = lines.findIndex(l => l.includes('## Recent Changes'));
+    
+    console.log('');
+    console.log('📖 PROJECT MEMORY (replit.md):');
+    console.log('─'.repeat(50));
+    
+    // Show project title
+    const titleLine = lines.find(l => l.startsWith('# '));
+    if (titleLine) {
+      console.log(`   ${titleLine.replace('# ', '')}`);
+    }
+    
+    // Show recent changes section (first 5 lines)
+    if (recentChangesStart > -1) {
+      console.log('   Recent Changes:');
+      for (let i = recentChangesStart + 1; i < Math.min(recentChangesStart + 6, lines.length); i++) {
+        if (lines[i].startsWith('## ')) break;
+        if (lines[i].trim()) {
+          console.log(`   ${lines[i].trim().substring(0, 60)}...`);
+        }
+      }
+    }
+    
+    console.log('─'.repeat(50));
+    console.log('   ⚠️  replit.md is LOCAL ONLY - never push to GitHub');
+    console.log('');
+  } else {
+    console.log('');
+    console.log('⚠️  WARNING: replit.md not found!');
+    console.log('   This file contains project memory and should exist.');
+    console.log('');
+  }
+}
 
 // ============================================
 // SECURITY: Files that should NEVER be pushed
@@ -122,6 +173,9 @@ async function pushFiles() {
   const repo = 'norse-mythos-card-game';
   const branch = 'main';
   const commitMessage = process.argv[2] || 'Update from Replit';
+
+  // MANDATORY: Read project memory before any push operation
+  readProjectMemory();
 
   console.log('🚀 Pushing to GitHub...');
   console.log(`   Repository: ${owner}/${repo}`);

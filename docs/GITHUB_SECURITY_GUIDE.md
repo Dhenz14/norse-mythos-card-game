@@ -4,6 +4,27 @@
 
 ---
 
+## MANDATORY: replit.md is Project Memory
+
+**`replit.md` is the project's internal documentation and memory.**
+
+It contains:
+- Project architecture and design decisions
+- User preferences and coding style
+- Recent changes and project state
+- Technical documentation for the AI agent
+
+### Rules for replit.md
+
+1. **NEVER push to GitHub** - It's in `.gitignore` and blocked by the push script
+2. **ALWAYS read before pushing** - The push script displays it automatically
+3. **ALWAYS consult when starting work** - Contains context about the project
+4. **Keep updated** - Document architecture changes and user preferences
+
+The push script (`scripts/pushToGitHub.ts`) automatically reads and displays `replit.md` content before every push to ensure you're aware of the project context.
+
+---
+
 ## How to Remove Files from GitHub
 
 ### The Process (Step by Step)
