@@ -79,6 +79,12 @@ Follows a pattern of TSX Components → Pure TS Modules → Zustand Stores.
   - `index.css`: Import aggregator
 - **Norse Aesthetic**: Gold accents, dark atmospheric backgrounds, runic styling elements
 
+## Documentation
+- **[DESIGN_PHILOSOPHY.md](docs/DESIGN_PHILOSOPHY.md)** - AAA-quality design system standards inspired by Material Design 3 Expressive
+- **[DECK_BUILDER_AUDIT.md](docs/DECK_BUILDER_AUDIT.md)** - Code audit and improvement recommendations for deck builder
+- **[RULEBOOK.md](docs/RULEBOOK.md)** - Complete game rules, mechanics, and keywords
+- **[GAME_FLOW.md](docs/GAME_FLOW.md)** - Game flow diagrams and state management
+
 ## Recent Changes (Jan 31, 2026)
 - **Enrique Fork Integration**: Audited and integrated all changes from https://github.com/enrique89ve/norse-mythos-card-game
 - **Dead Code Cleanup**: Removed ~4000 lines of orphaned code (AIGameSimulator, ThinkTools, RootCause, etc.)
