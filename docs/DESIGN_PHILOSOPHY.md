@@ -461,9 +461,131 @@ When building a new feature:
 
 ---
 
+## Advanced Design System Standards
+
+### Layered Token Architecture (Thumbprint Model)
+
+Design systems work best with **three layers** that trade granularity for quality:
+
+```
+┌─────────────────────────────────────────┐
+│  Layer 3: Components                    │  ← Pre-built UI patterns (Button, Modal)
+│  - Highest abstraction, least flexible  │
+│  - Accessible solutions for common UIs  │
+└─────────────────────────────────────────┘
+                    ▲
+┌─────────────────────────────────────────┐
+│  Layer 2: Atomic CSS                    │  ← Utility classes (spacing, layout)
+│  - Build UIs without custom CSS         │
+│  - Escape hatch when components break   │
+└─────────────────────────────────────────┘
+                    ▲
+┌─────────────────────────────────────────┐
+│  Layer 1: Design Tokens                 │  ← Raw values (colors, spacing, radii)
+│  - Most granular and flexible           │
+│  - Foundation for everything above      │
+└─────────────────────────────────────────┘
+```
+
+**The Pit of Success Principle**: Make it easy to do the right thing, and annoying (but not impossible) to do the wrong thing.
+
+- If a component doesn't fit, use Atomic CSS as an escape hatch
+- If Atomic doesn't fit, use raw tokens
+- Track workarounds and build them into components when patterns emerge
+
+### 8pt Spatial System
+
+Use an **8pt base grid** with **4pt half-steps** for consistent visual rhythm:
+
+```css
+:root {
+  /* 8pt scale for elements and major spacing */
+  --space-1: 8px;   /* sm */
+  --space-2: 16px;  /* md */
+  --space-3: 24px;  /* lg */
+  --space-4: 32px;  /* xl */
+  --space-5: 40px;  /* 2xl */
+  
+  /* 4pt half-step for fine adjustments (icons, text blocks) */
+  --space-half: 4px;
+  --space-1-half: 12px;  /* 8 + 4 */
+}
+```
+
+**Sizing Strategy:**
+- **Element-First**: Prioritize strict element sizes (buttons, inputs) for visual rhythm
+- **Content-First**: Prioritize strict padding when content is unpredictable (tables, cards)
+
+**Border Placement**: Use `box-sizing: border-box` universally (web standard).
+
+### Purpose-Driven Component Definitions
+
+Every component needs a **Design Rationale** - a clear statement of its purpose that drives all decisions:
+
+```typescript
+/**
+ * Modal Component
+ * 
+ * PURPOSE: Ask the user for confirmation before a destructive action.
+ * 
+ * USE WHEN:
+ * - User must confirm deletion, logout, or irreversible changes
+ * - User must acknowledge important information before proceeding
+ * 
+ * DO NOT USE FOR:
+ * - Displaying informational content (use Popover instead)
+ * - Non-blocking notifications (use Toast instead)
+ * - Detailed help content (use Tooltip instead)
+ */
+```
+
+**Benefits of Purpose-Driven Design:**
+1. Prevents component misuse (Modal vs Popover vs Tooltip confusion)
+2. Enables maintainers to update components without breaking consumers
+3. Creates clear contribution guidelines (does this fit the purpose?)
+4. Removes ambiguous documentation language (avoid "sometimes", "mostly", "in general")
+
+### Semantic Token Naming
+
+Token names should describe **intent**, not implementation:
+
+```css
+/* BAD: Implementation-based names */
+--blue-500: #3b82f6;
+--padding-16: 16px;
+
+/* GOOD: Intent-based names */
+--color-action-primary: #3b82f6;
+--spacing-component-padding: 16px;
+
+/* BEST: Layered semantic tokens (Spectrum model) */
+--button-cta-background: var(--color-action-primary);
+--color-action-primary: var(--blue-500);
+--blue-500: #3b82f6;
+```
+
+This creates a **three-layer reference chain** that allows global changes at any level.
+
+### Icon System Standards
+
+**Core Rules:**
+- **One size**: Build all icons at a single base size (24x24 recommended)
+- **One color**: Product icons use a single fill color (black/white)
+- **One style**: Either stroked OR filled, never mixed in a set
+- **Pixel-aligned**: All anchor points on the pixel grid
+
+**Stroke vs Fill Decision:**
+- Stroked icons: Better for fine details, smaller sizes
+- Filled icons: Higher recognizability, better at a glance
+
+---
+
 ## References
 
 - [designsystems.com](https://www.designsystems.com/) - Design system patterns and case studies
 - [Material Design 3 Expressive](https://m3.material.io/blog/building-with-m3-expressive) - Expressive component guidelines
 - [Spotify Design System](https://www.designsystems.com/how-spotifys-design-system-goes-beyond-platforms/) - Cross-platform patterns
-- [Thumbprint Design System](https://www.designsystems.com/how-thumbtack-structures-their-design-system/) - Structure and flexibility
+- [Thumbprint Design System](https://www.designsystems.com/how-thumbtack-structures-their-design-system/) - Layered architecture model
+- [Space, Grids, and Layouts](https://www.designsystems.com/space-grids-and-layouts/) - 8pt grid system guide
+- [Iconography Guide](https://www.designsystems.com/iconography-guide/) - Icon creation standards
+- [Collaborative Component Definitions](https://www.designsystems.com/a-collaborative-approach-to-defining-components-and-their-features/) - Purpose-driven design
