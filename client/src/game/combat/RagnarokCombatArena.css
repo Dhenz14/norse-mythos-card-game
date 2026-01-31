@@ -1,113 +1,47 @@
 /* ========================================
-   AAA-QUALITY RESPONSIVE UI SYSTEM
-   Viewport-aware safe zones, tiered z-index,
-   and dynamic layout variables
+   RAGNAROK COMBAT ARENA STYLES
+   ========================================
    
-   NOTE: Design tokens and zone positioning are now in:
-   - styles/tokens.css - All design tokens
+   DEPRECATION NOTICE:
+   This file is being deprecated in favor of the modular CSS system.
+   CSS variables (design tokens) are now defined in:
+   - styles/tokens.css - All design tokens (single source of truth)
    - styles/zones.css - Zone positioning variables
-   Import styles/index.css to get both.
+   
+   Import styles/index.css to get all tokens and zone variables.
+   
+   DO NOT add new CSS variables to this file.
+   All new variables should be added to tokens.css.
+   
+   This file now contains only:
+   - Component-specific styles for the combat arena
+   - Legacy variables not yet migrated to tokens.css
    ======================================== */
 
 @import './styles/index.css';
 
 :root {
-  /* Viewport-aware zone heights (AAA technique: vh-based safe zones) */
-  --opponent-zone-height: clamp(140px, 18vh, 200px);
-  --player-zone-height: clamp(120px, 16vh, 180px);
-  --hand-zone-height: clamp(140px, 18vh, 200px);
-  --field-zone-height: clamp(120px, 18vh, 200px);
-  
-  /* Responsive poker panel width */
-  --poker-panel-width: clamp(280px, 35vw, 480px);
-  
-  /* Pot positioning - uses --pot-left from layoutConfig.ts for consistency */
-  
-  /* Hero card responsive sizing - height = width * 4/3 */
-  --hero-card-width: clamp(120px, 15vw, 192px);
-  /* Hero zone must fit: card height (~width * 1.33) + mana bar (40px) + padding */
-  --hero-zone-height: clamp(220px, calc(var(--hero-card-width) * 1.4 + 60px), 340px);
-  
-  /* Hover clearance buffer (AAA technique: animation-aware padding) */
-  --hover-lift-distance: 50px;
-  --hover-scale-factor: 1.2;
-  --hover-safe-zone: calc(var(--hover-lift-distance) + 20px);
+  /* ========================================
+     LEGACY VARIABLES - Pending Migration
+     These variables are unique to this file and not yet in tokens.css.
+     TODO: Migrate these to tokens.css in a future cleanup.
+     ======================================== */
   
   /* Active minion safe margin (prevents battlefield/hand overlap) */
   --active-minion-safe-margin: 80px;
   
-  /* Tiered z-index system (AAA technique: layered z-index policy) */
-  --z-base: 1;
-  --z-battlefield: 10;
-  --z-cards: 20;
-  --z-active-minion: 30;
-  --z-hero: 40;
-  --z-hand: 50;
-  --z-hover: 500;
-  --z-drag: 600;
-  --z-popup: 700;
-  --z-modal: 800;
-  --z-hud: 900;
-  --z-tooltip: 9000;
-  --z-overlay: 9500;
-  
-  /* Card dimensions with responsive clamps - RESTORED working sizes */
-  --hand-card-width: clamp(120px, 14vw, 220px);
-  --hand-card-height: clamp(168px, 19.6vw, 308px);
-  --battlefield-card-width: clamp(100px, 12vw, 180px);
-  --battlefield-card-height: clamp(140px, 16.8vw, 252px);
-  
-  /* Hand layout - Hearthstone-style overlapping fan */
-  --hand-overlap: -100px;
-  --hand-max-fan-angle: 5deg;
-  --hand-hover-lift: -60px;
-  --hand-hover-scale: 1.35;
-  
-  /* Poker panel responsive scale (scales down on short viewports) */
-  --poker-panel-scale: 1;
-  --poker-panel-gap: 8px;
+  /* Poker card responsive scale (scales down on short viewports) */
   --poker-card-scale: 1;
 }
 
 /* ========================================
-   SMALL SCREEN WIDTH BREAKPOINTS
-   Prevents overlap on smaller screens
+   RESPONSIVE LEGACY VARIABLE OVERRIDES
+   These override the legacy variables above for different screen sizes.
    ======================================== */
-
-/* Small screens: compact all elements */
-@media (max-width: 1200px) {
-  :root {
-    --hand-card-width: clamp(80px, 12vw, 150px);
-    --hand-card-height: clamp(112px, 16.8vw, 210px);
-    --hero-card-width: clamp(80px, 12vw, 130px);
-    --poker-panel-width: clamp(200px, 30vw, 320px);
-  }
-}
-
-@media (max-width: 1000px) {
-  :root {
-    --hand-card-width: clamp(60px, 10vw, 120px);
-    --hand-card-height: clamp(84px, 14vw, 168px);
-    --hero-card-width: clamp(60px, 10vw, 100px);
-    --poker-panel-width: clamp(180px, 28vw, 280px);
-  }
-}
-
-@media (max-width: 800px) {
-  :root {
-    --hand-card-width: clamp(50px, 9vw, 100px);
-    --hand-card-height: clamp(70px, 12.6vw, 140px);
-    --hero-card-width: clamp(50px, 9vw, 80px);
-    --poker-panel-width: clamp(160px, 26vw, 240px);
-  }
-}
 
 /* Large screens: more generous spacing */
 @media (min-height: 900px) {
   :root {
-    --opponent-zone-height: 22vh;
-    --player-zone-height: 24vh;
-    --hand-zone-height: 26vh;
     --active-minion-safe-margin: 100px;
   }
 }
@@ -115,157 +49,40 @@
 /* Short screens: compact mode */
 @media (max-height: 700px) {
   :root {
-    --opponent-zone-height: 16vh;
-    --player-zone-height: 18vh;
-    --hand-zone-height: 20vh;
-    --hover-lift-distance: 35px;
     --active-minion-safe-margin: 60px;
   }
 }
 
-/* Poker panel responsive scaling for shorter viewports */
+/* Poker card scaling for shorter viewports */
 @media (max-height: 820px) {
   :root {
-    --poker-panel-scale: 0.92;
-    --poker-panel-gap: 6px;
     --poker-card-scale: 0.9;
   }
 }
 
 @media (max-height: 740px) {
   :root {
-    --poker-panel-scale: 0.85;
-    --poker-panel-gap: 4px;
     --poker-card-scale: 0.82;
   }
 }
 
 @media (max-height: 650px) {
   :root {
-    --poker-panel-scale: 0.75;
-    --poker-panel-gap: 3px;
     --poker-card-scale: 0.72;
   }
 }
 
 /* ========================================
-   WIDTH-BASED RESPONSIVE BREAKPOINTS
-   Prevents UI overlap on wide/ultrawide screens
+   RESPONSIVE LAYOUT BREAKPOINTS
+   Component-specific responsive styles (not CSS variables)
    ======================================== */
-
-/* Wide screens (1600px+): reduce card sizes to prevent overflow */
-@media (min-width: 1600px) {
-  :root {
-    --hand-card-width: clamp(100px, 10vw, 180px);
-    --hand-card-height: clamp(140px, 14vw, 252px);
-    --hero-card-width: clamp(100px, 10vw, 160px);
-    --battlefield-card-width: clamp(90px, 9vw, 160px);
-    --battlefield-card-height: clamp(126px, 12.6vw, 224px);
-  }
-}
-
-/* Full HD+ (1920px+): further reduce for ultrawide prevention */
-@media (min-width: 1920px) {
-  :root {
-    --hand-card-width: clamp(100px, 8vw, 160px);
-    --hand-card-height: clamp(140px, 11.2vw, 224px);
-    --hero-card-width: clamp(100px, 8vw, 140px);
-    --battlefield-card-width: clamp(85px, 7vw, 140px);
-    --battlefield-card-height: clamp(119px, 9.8vw, 196px);
-    --poker-panel-width: clamp(240px, 25vw, 400px);
-  }
-}
-
-/* 2K+ screens (2400px+): compact sizing for ultra-high res */
-@media (min-width: 2400px) {
-  :root {
-    --hand-card-width: clamp(100px, 6vw, 150px);
-    --hand-card-height: clamp(140px, 8.4vw, 210px);
-    --hero-card-width: clamp(90px, 6vw, 130px);
-    --battlefield-card-width: clamp(80px, 5.5vw, 130px);
-    --battlefield-card-height: clamp(112px, 7.7vw, 182px);
-    --poker-panel-width: clamp(220px, 20vw, 360px);
-  }
-}
-
-/* 4K screens (3440px+): ultra-compact for massive displays */
-@media (min-width: 3440px) {
-  :root {
-    --hand-card-width: clamp(90px, 4.5vw, 140px);
-    --hand-card-height: clamp(126px, 6.3vw, 196px);
-    --hero-card-width: clamp(85px, 4.5vw, 120px);
-    --battlefield-card-width: clamp(75px, 4vw, 120px);
-    --battlefield-card-height: clamp(105px, 5.6vw, 168px);
-    --poker-panel-width: clamp(200px, 16vw, 320px);
-  }
-}
-
-/* ========================================
-   ASPECT RATIO AWARE BREAKPOINTS
-   Adjusts for ultrawide aspect ratios (>21:9)
-   ======================================== */
-
-@media (min-aspect-ratio: 21/9) {
-  :root {
-    --hand-card-width: clamp(90px, 7vw, 150px);
-    --hero-card-width: clamp(85px, 6vw, 130px);
-    --poker-panel-width: clamp(200px, 18vw, 340px);
-  }
-}
-
-@media (min-aspect-ratio: 32/9) {
-  :root {
-    --hand-card-width: clamp(80px, 5vw, 130px);
-    --hero-card-width: clamp(75px, 4.5vw, 110px);
-    --poker-panel-width: clamp(180px, 14vw, 300px);
-  }
-}
-
-/* ========================================
-   MAX-WIDTH BREAKPOINTS (smaller screens)
-   ======================================== */
-
-/* Medium screens: reduce panel width */
-@media (max-width: 1280px) {
-  :root {
-    --poker-panel-width: clamp(260px, 32vw, 400px);
-    --hero-card-width: clamp(100px, 14vw, 160px);
-    --hand-card-width: clamp(90px, 11vw, 150px);
-    --hand-card-height: clamp(126px, 15vw, 210px);
-    --battlefield-card-width: clamp(90px, 10vw, 140px);
-    --battlefield-card-height: clamp(126px, 14vw, 196px);
-  }
-}
-
-/* Tablet/small desktop: narrower layout */
-@media (max-width: 1024px) {
-  :root {
-    --poker-panel-width: clamp(240px, 30vw, 320px);
-    --hero-card-width: clamp(90px, 12vw, 140px);
-    --hero-zone-height: clamp(180px, 26vh, 280px);
-    --opponent-zone-height: clamp(120px, 16vh, 180px);
-    --field-zone-height: clamp(100px, 15vh, 160px);
-  }
-}
 
 /* Small screens: switch to stacked layout */
 @media (max-width: 768px) {
-  :root {
-    --poker-panel-width: 100%;
-    --hero-card-width: clamp(80px, 22vw, 140px);
-    --hero-zone-height: clamp(160px, 24vh, 240px);
-    --opponent-zone-height: clamp(100px, 14vh, 160px);
-    --field-zone-height: clamp(80px, 12vh, 120px);
-    --hand-card-width: clamp(80px, 16vw, 130px);
-    --hand-card-height: clamp(112px, 22vw, 182px);
-    --battlefield-card-width: clamp(70px, 16vw, 110px);
-    --battlefield-card-height: clamp(98px, 22vw, 154px);
-  }
-  
   .arena-content {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
-    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
   }
   
@@ -283,18 +100,6 @@
 
 /* Very small/mobile screens */
 @media (max-width: 480px) {
-  :root {
-    --hero-card-width: clamp(70px, 25vw, 120px);
-    --hero-zone-height: clamp(140px, 22vh, 200px);
-    --opponent-zone-height: clamp(90px, 12vh, 140px);
-    --field-zone-height: clamp(70px, 10vh, 100px);
-    --hand-card-width: clamp(40px, 18vw, 70px);
-    --hand-card-height: clamp(56px, 25vw, 98px);
-    --battlefield-card-width: clamp(40px, 18vw, 70px);
-    --battlefield-card-height: clamp(56px, 25vw, 98px);
-    --poker-panel-scale: 0.7;
-  }
-  
   .poker-panel {
     max-height: 30vh;
     padding: 4px 6px;
@@ -324,17 +129,15 @@
 
 .ragnarok-combat-arena {
   /* Fluid layout - fills entire viewport without scrollbars or letterboxing */
-  width: 100vw;
-  height: 100vh;
+  /* Using inset: 0 to fill all available space, works with Replit preview header */
+  position: fixed;
+  inset: 0;
   min-width: 0;
   min-height: 0;
   background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
   z-index: var(--z-base);
 }
 
@@ -3677,12 +3480,13 @@
   }
 }
 
-/* Target shake effect */
+/* Target shake effect - Uses detailed shake with rotation for combat feedback
+   Duration uses CSS variable for easy tweaking without breaking other elements */
 .damage-shake {
-  animation: damageShake 0.3s ease-out;
+  animation: damage-shake-detailed var(--anim-damage-shake-duration, 0.3s) ease-out;
 }
 
-@keyframes damageShake {
+@keyframes damage-shake-detailed {
   0%, 100% { transform: translateX(0); }
   10% { transform: translateX(-4px) rotate(-1deg); }
   20% { transform: translateX(4px) rotate(1deg); }
@@ -3694,9 +3498,9 @@
   80% { transform: translateX(1px); }
 }
 
-/* Target flash/hit effect */
+/* Target flash/hit effect - Duration uses CSS variable for easy tweaking */
 .damage-flash {
-  animation: damageFlash 0.3s ease-out;
+  animation: damageFlash var(--anim-damage-flash-duration, 0.3s) ease-out;
 }
 
 @keyframes damageFlash {
@@ -3903,7 +3707,26 @@
 }
 
 /* ========================================
+   ANIMATION ARCHITECTURE NOTES
+   ========================================
+   
+   HYBRID APPROACH:
+   - Simple animations: Use Tailwind utilities (animate-pulse, animate-bounce, etc.)
+   - Complex animations: Custom CSS keyframes in this file and styles/effects/
+   
+   MODULAR SYSTEM:
+   - Core keyframes defined in styles/effects/ (showdown.css, hero-death.css, etc.)
+   - This file imports styles/index.css which loads the modular system
+   - Keyframes below may duplicate modular versions for backward compatibility
+   
+   CSS VARIABLE TIMING:
+   - Use --anim-* tokens from tokens.css to tweak animation durations
+   - Example: --anim-damage-shake-duration, --anim-tooltip-fade-duration
+   ======================================== */
+
+/* ========================================
    All-In Showdown Message
+   Keyframes: allInPulse, titleGlow, revealPulse (also in styles/effects/showdown.css)
    ======================================== */
 .all-in-showdown-message {
   display: flex;
@@ -3955,6 +3778,7 @@
 
 /* ========================================
    Hero Death Animation
+   Keyframes: defeatPulse, hero-death-particle (also in styles/effects/hero-death.css)
    ======================================== */
 .hero-death-overlay {
   position: fixed;
@@ -4370,6 +4194,12 @@
   border-radius: 50%;
   opacity: 0;
 }
+
+/* ========================================
+   ELEMENTAL AURA EFFECTS
+   All element keyframes also defined in styles/effects/elemental-glows.css
+   Keep these here for backward compatibility - both files are loaded
+   ======================================== */
 
 /* ========================================
    FIRE ELEMENT - Orange/Red flames
@@ -4860,13 +4690,8 @@
   50% { transform: translateX(-50%) translateY(-10px); }
 }
 
-@keyframes damageShake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-3px); }
-  40% { transform: translateX(3px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
-}
+/* NOTE: damageShake keyframes removed - now defined in styles/effects/showdown.css
+   to avoid duplicate keyframe definitions. Use .damage-shake class for combat feedback. */
 
 /* Enhanced winning card glow for celebration mode */
 .winning-card-glow.celebration {
