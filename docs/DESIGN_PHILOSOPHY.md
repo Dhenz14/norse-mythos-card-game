@@ -60,7 +60,7 @@ Component/
     └── Footer.tsx
 ```
 
-### 3. Separation of Concerns Pattern
+### 3. Separation of Concerns Pattern (MANDATORY)
 
 **TSX → Hooks → Stores → Utils**
 
@@ -80,6 +80,167 @@ Component/
 ┌────────▼────────┐
 │  Pure Utilities │  ← Business logic (how to compute)
 └─────────────────┘
+```
+
+### Extraction Rules (Where to Put Code)
+
+**1. Extract to `utils/` - Pure functions with NO React dependencies**
+
+```typescript
+// utils/cardFilters.ts
+export function filterByClass(cards: CardData[], heroClass: string): CardData[] {
+  return cards.filter(card => {
+    const cardClass = (card.class || 'neutral').toLowerCase();
+    return cardClass === 'neutral' || cardClass === heroClass.toLowerCase();
+  });
+}
+
+export function sortByManaCost(cards: CardData[]): CardData[] {
+  return [...cards].sort((a, b) => (a.manaCost ?? 0) - (b.manaCost ?? 0));
+}
+```
+
+**2. Extract to `hooks/` - React logic with useState, useEffect, useMemo**
+
+```typescript
+// hooks/useDeckBuilder.ts
+import { useState, useMemo, useCallback } from 'react';
+import { filterByClass, sortByManaCost } from '../utils/cardFilters';
+import { useHeroDeckStore } from '../stores/heroDeckStore';
+
+export function useDeckBuilder(heroClass: string) {
+  const { getDeck, setDeck } = useHeroDeckStore();
+  const [filters, setFilters] = useState<DeckFilters>({});
+  
+  const filteredCards = useMemo(() => {
+    let cards = filterByClass(allCards, heroClass);
+    return sortByManaCost(cards);
+  }, [heroClass, filters]);
+  
+  const addCard = useCallback((card: CardData) => {
+    // Add card logic
+  }, []);
+  
+  return { filteredCards, filters, setFilters, addCard };
+}
+```
+
+**3. Extract to `stores/` - Global state with Zustand**
+
+```typescript
+// stores/deckBuilderStore.ts
+import { create } from 'zustand';
+
+interface DeckBuilderState {
+  deckCardIds: number[];
+  addCard: (cardId: number) => void;
+  removeCard: (cardId: number) => void;
+}
+
+export const useDeckBuilderStore = create<DeckBuilderState>((set) => ({
+  deckCardIds: [],
+  addCard: (cardId) => set((state) => ({ 
+    deckCardIds: [...state.deckCardIds, cardId] 
+  })),
+  removeCard: (cardId) => set((state) => ({
+    deckCardIds: state.deckCardIds.filter(id => id !== cardId)
+  })),
+}));
+```
+
+**4. Extract to `lib/` - Shared utilities across ALL features**
+
+```typescript
+// lib/validation.ts
+export function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// lib/formatting.ts
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', { 
+    style: 'currency', 
+    currency: 'USD' 
+  }).format(amount);
+}
+```
+
+### Import Order After Separation
+
+Always import in this order (top to bottom):
+
+```typescript
+// 1. External libraries
+import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
+
+// 2. Internal stores
+import { useDeckBuilderStore } from '../stores/deckBuilderStore';
+import { useGameStore } from '../stores/gameStore';
+
+// 3. Internal hooks
+import { useDeckBuilder } from '../hooks/useDeckBuilder';
+import { useCardFilters } from '../hooks/useCardFilters';
+
+// 4. Internal utilities
+import { filterByClass, sortByManaCost } from '../utils/cardFilters';
+import { validateDeck } from '../utils/deckValidation';
+
+// 5. Internal components
+import { CardGrid } from './CardGrid';
+import { DeckSidebar } from './DeckSidebar';
+
+// 6. Types
+import type { CardData, DeckFilters } from '../types';
+
+// 7. Styles
+import './DeckBuilder.css';
+```
+
+### Before/After Example
+
+**BEFORE: Monolithic component (BAD)**
+```tsx
+function DeckBuilder({ heroClass }) {
+  const [cards, setCards] = useState([]);
+  const [filters, setFilters] = useState({});
+  
+  // 50 lines of filtering logic embedded here
+  // 30 lines of sorting logic embedded here
+  // 40 lines of validation logic embedded here
+  
+  return (
+    // 400 lines of JSX with inline logic
+  );
+}
+```
+
+**AFTER: Clean separated component (GOOD)**
+```tsx
+// DeckBuilder.tsx - ~50 lines max
+import { useDeckBuilder } from '../hooks/useDeckBuilder';
+import { CardFilters } from './CardFilters';
+import { CardGrid } from './CardGrid';
+import { DeckSidebar } from './DeckSidebar';
+
+function DeckBuilder({ heroClass }: DeckBuilderProps) {
+  const { 
+    filteredCards, 
+    deckCards, 
+    filters, 
+    setFilters, 
+    addCard, 
+    removeCard 
+  } = useDeckBuilder(heroClass);
+  
+  return (
+    <div className="deck-builder">
+      <CardFilters filters={filters} onChange={setFilters} />
+      <CardGrid cards={filteredCards} onSelect={addCard} />
+      <DeckSidebar cards={deckCards} onRemove={removeCard} />
+    </div>
+  );
+}
 ```
 
 ---

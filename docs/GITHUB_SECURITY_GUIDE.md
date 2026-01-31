@@ -4,6 +4,47 @@
 
 ---
 
+## How to Remove Files from GitHub
+
+### The Process (Step by Step)
+
+When files that shouldn't be in GitHub are already there, use the cleanup script:
+
+```bash
+npx tsx scripts/cleanupGitHub.ts
+```
+
+**What this script does:**
+1. Connects to GitHub using Replit's GitHub connector (GITHUB_TOKEN)
+2. Gets the full file tree from the repository
+3. Identifies files matching forbidden patterns
+4. Deletes each file one by one using the GitHub API
+5. Creates individual commits for each deletion
+
+**How it works technically:**
+- Uses `@octokit/rest` library for GitHub API access
+- Gets access token from `REPLIT_CONNECTORS_HOSTNAME` endpoint
+- Uses `octokit.repos.deleteFile()` to remove each file
+- Includes rate limiting (100ms delay between deletions) to avoid API limits
+
+### When to Run Cleanup
+
+Run the cleanup script when:
+- After initial repository setup
+- If you accidentally pushed sensitive files
+- Periodically as a security audit
+- When the script reports "No files to remove" - the repo is clean
+
+### Script Location
+
+```
+scripts/
+├── pushToGitHub.ts      # Push files with security validation
+└── cleanupGitHub.ts     # Remove forbidden files from GitHub
+```
+
+---
+
 ## Critical: Files to NEVER Push to GitHub
 
 ### Replit Internal Files
@@ -142,3 +183,57 @@ Before every push to GitHub:
 - Files with hardcoded secrets
 - Database files or exports
 - Replit-specific configuration
+
+---
+
+## Script Reference
+
+### pushToGitHub.ts
+
+**Purpose:** Push specific files to GitHub with security validation
+
+**Usage:**
+```bash
+npx tsx scripts/pushToGitHub.ts "Your commit message"
+```
+
+**Security Features:**
+- Blocks forbidden files (shows `⛔ BLOCKED`)
+- Scans content for sensitive patterns (DATABASE_URL, API_KEY, etc.)
+- Shows warnings for potential secrets
+
+**To push new files:** Edit the `filesToPush` array in the script.
+
+### cleanupGitHub.ts
+
+**Purpose:** Remove forbidden files already in GitHub
+
+**Usage:**
+```bash
+npx tsx scripts/cleanupGitHub.ts
+```
+
+**What it removes:**
+- `.replit`, `replit.nix`, `.replit-rules.json`, `replit.md`
+- All `*.cjs` and `*.js` test scripts in root (keeps config files)
+- Database files (`*.db`, `*.sqlite`)
+- Attached assets with Replit logs (`Pasted--Coframe-*`)
+
+**Safe to run multiple times:** If repo is clean, shows "No files to remove"
+
+---
+
+## Troubleshooting
+
+### "GitHub not connected" Error
+- Ensure GitHub integration is set up in Replit
+- Check that GITHUB_TOKEN secret exists
+
+### Script Times Out
+- The cleanup script deletes files one by one
+- For large cleanups, run the script multiple times
+- Each run continues where the last left off
+
+### 502 Server Error
+- GitHub API rate limit or large request
+- The individual-file approach handles this automatically
