@@ -7,14 +7,12 @@ import {
   playCard, 
   endTurn, 
   processAttack, 
-  autoAttackWithCard,
-  autoAttackWithAllCards,
   autoAttackOnPlace
 } from '../utils/gameUtils';
 import { executeHeroPower } from '../utils/heroPowerUtils';
 import { processDiscovery } from '../utils/discoveryUtils';
 import { toggleCardSelection, confirmMulligan, skipMulligan } from '../utils/mulliganUtils';
-import { CardInstance, GameState, AnimationParams } from '../types';
+import { CardInstance, GameState, AnimationParams, CardData } from '../types';
 import { Position } from '../types/Position';
 import { reverseAdaptCardInstance } from '../utils/cardInstanceAdapter';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
@@ -22,16 +20,16 @@ import { useAudio } from '../../lib/stores/useAudio';
 import useGame from '../../lib/stores/useGame';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { useAnimationStore as useAnnouncementStore, fireActionAnnouncement } from './animationStore';
-import { isAISimulationMode, debug } from '../config/debugConfig';
-import { usePokerCombatStore } from '../combat/PokerCombatStore';
-import { CombatAction } from '../types/PokerCombatTypes';
+import { isAISimulationMode, debug, getDebugConfig } from '../config/debugConfig';
+import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
+import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
 import { useTargetingStore, predictAttackOutcome } from './targetingStore';
 import { logActivity } from './activityLogStore';
 import { CombatEventBus } from '../services/CombatEventBus';
 
 // ============== BATTLEFIELD DEBUG MONITOR ==============
 // Track battlefield changes with stack traces to identify root cause of minion disappearance
-let battlefieldDebugEnabled = true;
+// Controlled by debugConfig.logBattlefieldChanges (default: false)
 let prevBattlefieldSnapshot: { player: string[], opponent: string[] } = { player: [], opponent: [] };
 
 function captureStackTrace(): string {
@@ -45,7 +43,7 @@ function logBattlefieldChange(
   newCards: string[],
   stack: string
 ) {
-  if (!battlefieldDebugEnabled) return;
+  if (!getDebugConfig().logBattlefieldChanges) return;
   
   const removed = prevCards.filter(c => !newCards.includes(c));
   const added = newCards.filter(c => !prevCards.includes(c));
@@ -65,7 +63,9 @@ function logBattlefieldChange(
   }
 }
 
-// Helper function to show spell notification
+// DEPRECATED: Use GameEventBus.emitNotification() instead
+// These functions will be removed once event-driven architecture migration is complete
+// See: client/src/game/subscribers/NotificationSubscriber.ts
 function showSpellNotification(cardName: string, effectType?: string, value?: number) {
   const effectEmoji = {
     'damage': '🔥',
@@ -105,7 +105,8 @@ function showSpellNotification(cardName: string, effectType?: string, value?: nu
   toast.info(`${effectEmoji} ${cardName}`, { description, duration: 2500 });
 }
 
-// Helper function to show minion notification
+// DEPRECATED: Use GameEventBus.emitMinionSummoned() instead
+// The NotificationSubscriber handles minion summoned notifications
 function showMinionNotification(cardName: string, attack?: number, health?: number) {
   const description = attack !== undefined && health !== undefined 
     ? `${attack}/${health} minion summoned to battle!`
@@ -143,12 +144,6 @@ interface GameStore {
   confirmMulligan: () => void;
   skipMulligan: () => void;
   
-  // Auto-attack functionality
-  /** @deprecated Use manual attack system (attackStore.ts + AttackSystem.tsx) instead */
-  autoAttackWithCard: (cardId: string) => void;
-  /** @deprecated Use manual attack system (attackStore.ts + AttackSystem.tsx) instead */
-  autoAttackAll: () => void;
-  
   // Poker hand rewards - give mana crystal and draw a card
   grantPokerHandRewards: () => void;
   
@@ -171,9 +166,13 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   initGame: () => {
     // Get selectedDeck and selectedHero from useGame store
     const { selectedDeck, selectedHero, selectedHeroId } = useGame.getState();
+    // Convert null to undefined for function compatibility
+    const deckId = selectedDeck === null ? undefined : selectedDeck;
+    const hero = selectedHero === null ? undefined : selectedHero;
+    const heroId = selectedHeroId === null ? undefined : selectedHeroId;
     
     set({ 
-      gameState: initializeGame(selectedDeck, selectedHero ?? undefined, selectedHeroId ?? undefined),
+      gameState: initializeGame(deckId, hero, heroId),
       selectedCard: null,
       hoveredCard: null,
       attackingCard: null,
@@ -315,12 +314,11 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         }
         
         // Check if the card has a spell effect that triggers discovery
-        // NOTE: Discovery is now handled inside executeDiscoverSpell() in spellUtils.ts
-        // which uses the full allCards database. We just need to use the newState which
-        // already has discovery.active = true if it was a discover spell.
         if (cardInstance.card.type === 'spell' && 
-            cardInstance.card.spellEffect?.type === 'discover' &&
+            (cardInstance.card.spellEffect?.type === 'discover' || cardInstance.card.keywords?.includes('discover')) &&
             newState.discovery?.active) {
+          
+          console.log('[GameStore] Discovery triggered, state active:', newState.discovery.active);
           
           // Play sound effect
           if (audioStore && typeof audioStore.playSoundEffect === 'function') {
@@ -447,24 +445,25 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       }
       
       // End Turn = Fold in poker, deal new cards
-      const pokerStore = usePokerCombatStore.getState();
-      if (pokerStore.isActive && pokerStore.combatState) {
-        const phase = pokerStore.combatState.phase;
-        const playerId = pokerStore.combatState.player.playerId;
+      // Using unified store via adapter (no more legacy PokerCombatStore)
+      const pokerAdapter = getPokerCombatAdapterState();
+      if (pokerAdapter.isActive && pokerAdapter.combatState) {
+        const phase = pokerAdapter.combatState.phase;
+        const playerId = pokerAdapter.combatState.player.playerId;
         
         // Skip mulligan phase - that's handled separately
-        if (phase !== 'mulligan') {
+        if (phase !== CombatPhase.MULLIGAN) {
           debug.log('[UnifiedEndTurn] End Turn = Fold - starting new poker hand');
           
           // Perform fold action (BRACE)
-          pokerStore.performAction(playerId, CombatAction.BRACE);
+          pokerAdapter.performAction(playerId, CombatAction.BRACE);
           
           // Get the resolution after fold for HP restoration
-          const resolution = pokerStore.resolveCombat();
+          const resolution = pokerAdapter.resolveCombat();
           
           // Use centralized delayed transition to avoid race conditions
           if (resolution) {
-            pokerStore.startNextHandDelayed(resolution);
+            pokerAdapter.startNextHandDelayed(resolution);
           }
         } else {
           debug.log('[UnifiedEndTurn] Skipping mulligan phase');
@@ -931,9 +930,10 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       }
 
       // Show action announcement for the hero power
-      if (announcementStore && announcementStore.addAnnouncement) {
-        announcementStore.addAnnouncement({
-          type: 'hero_power' as any,
+      const announcementStoreState = useAnnouncementStore.getState();
+      if (announcementStoreState && announcementStoreState.addAnnouncement) {
+        announcementStoreState.addAnnouncement({
+          type: 'action' as any,
           title: player.heroPower.name,
           subtitle: player.heroPower.description,
           icon: '✨',
@@ -947,7 +947,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       }
       
       // Log to saga feed
-      logActivity('hero_power', 'player', `Used ${player.heroPower.name}`);
+      logActivity('buff', 'player', `Used ${player.heroPower.name}`);
 
       // Update game state
       set({
@@ -985,151 +985,6 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       debug.log(`Hero power ${player.heroPower.name} used successfully`);
     } catch (error) {
       console.error('Error using hero power:', error);
-    }
-  },
-  
-  /**
-   * Auto-attack with a single card
-   * @deprecated Use manual attack system (attackStore.ts + AttackSystem.tsx) instead.
-   * This auto-attack action is kept for backwards compatibility only.
-   */
-  autoAttackWithCard: (cardId: string) => {
-    const { gameState } = get();
-    const audioStore = useAudio.getState();
-    
-    try {
-      // Check if it's player's turn - add exception for AI simulation
-      if (gameState.currentTurn !== 'player' && !isAISimulationMode()) {
-        throw new Error('Not your turn');
-      }
-      
-      // Get attacker info before attack for event emission
-      const attackerCard = gameState.players.player.battlefield.find(c => c.instanceId === cardId);
-      
-      // Execute auto-attack
-      const newState = autoAttackWithCard(gameState, cardId);
-      
-      // If the state changed, it means the attack was successful
-      if (newState !== gameState) {
-        // Play hit sound effect
-        if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-          audioStore.playSoundEffect('attack');
-        }
-        
-        // PROFESSIONAL EVENT-DRIVEN DAMAGE: Emit IMPACT_PHASE for auto-attacks
-        // This ensures poker HP syncs even for auto-attack actions
-        if (attackerCard) {
-          const damage = ('attack' in attackerCard.card ? attackerCard.card.attack : 0) || 0;
-          CombatEventBus.emitImpactPhase({
-            attackerId: cardId,
-            targetId: 'opponent-hero',
-            damageToTarget: damage,
-            damageToAttacker: 0
-          });
-        }
-        
-        // Update game state and clear selections
-        set({
-          gameState: newState,
-          attackingCard: null,
-          selectedCard: null
-        });
-        
-        // Show visual feedback for the auto-attack
-        const autoAttackEffect = document.createElement('div');
-        autoAttackEffect.className = 'fixed inset-0 pointer-events-none z-50 flex items-center justify-center';
-        autoAttackEffect.innerHTML = `
-          <div class="w-32 h-32 flex items-center justify-center rounded-full bg-red-600 bg-opacity-30 animate-ping">
-            <div class="text-4xl">🎯</div>
-          </div>
-        `;
-        document.body.appendChild(autoAttackEffect);
-        
-        // Remove the effect after animation
-        setTimeout(() => {
-          document.body.removeChild(autoAttackEffect);
-        }, 800);
-        
-        debug.log('Auto-attack completed successfully');
-      }
-    } catch (error) {
-      console.error('Auto-attack error:', error);
-    }
-  },
-  
-  /**
-   * Auto-attack with all available cards
-   * @deprecated Use manual attack system (attackStore.ts + AttackSystem.tsx) instead.
-   * This auto-attack action is kept for backwards compatibility only.
-   */
-  autoAttackAll: () => {
-    const { gameState } = get();
-    const audioStore = useAudio.getState();
-    
-    try {
-      // Check if it's player's turn - add exception for AI simulation
-      if (gameState.currentTurn !== 'player' && !isAISimulationMode()) {
-        throw new Error('Not your turn');
-      }
-      
-      // Collect all attacking minions before the attack for event emission
-      const attackingMinions = gameState.players.player.battlefield.filter(c => 
-        c.canAttack && !c.isSummoningSick && (('attack' in c.card ? c.card.attack : 0) || 0) > 0
-      );
-      
-      // Execute auto-attack with all cards
-      const newState = autoAttackWithAllCards(gameState);
-      
-      // If the state changed, it means at least one attack was successful
-      if (JSON.stringify(newState) !== JSON.stringify(gameState)) {
-        // Play hit sound effect
-        if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-          audioStore.playSoundEffect('attack');
-        }
-        
-        // PROFESSIONAL EVENT-DRIVEN DAMAGE: Emit IMPACT_PHASE for each auto-attack
-        // This ensures poker HP syncs for all auto-attack actions
-        let totalDamage = 0;
-        for (const minion of attackingMinions) {
-          const damage = ('attack' in minion.card ? minion.card.attack : 0) || 0;
-          totalDamage += damage;
-          CombatEventBus.emitImpactPhase({
-            attackerId: minion.instanceId,
-            targetId: 'opponent-hero',
-            damageToTarget: damage,
-            damageToAttacker: 0
-          });
-        }
-        debug.log(`[AutoAttackAll] Emitted ${attackingMinions.length} IMPACT_PHASE events, total damage: ${totalDamage}`);
-        
-        // Update game state and clear selections
-        set({
-          gameState: newState,
-          attackingCard: null,
-          selectedCard: null
-        });
-        
-        // Show visual feedback for the auto-attack
-        const autoAttackAllEffect = document.createElement('div');
-        autoAttackAllEffect.className = 'fixed inset-0 pointer-events-none z-50 flex items-center justify-center';
-        autoAttackAllEffect.innerHTML = `
-          <div class="w-40 h-40 flex items-center justify-center rounded-full bg-red-600 bg-opacity-30 animate-ping">
-            <div class="text-5xl">⚔️</div>
-          </div>
-        `;
-        document.body.appendChild(autoAttackAllEffect);
-        
-        // Remove the effect after animation
-        setTimeout(() => {
-          document.body.removeChild(autoAttackAllEffect);
-        }, 1000);
-        
-        debug.log('Auto-attack all completed successfully');
-      } else {
-        debug.log('No valid attacks available');
-      }
-    } catch (error) {
-      console.error('Auto-attack all error:', error);
     }
   },
   
