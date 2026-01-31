@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePokerCombatStore, getActionPermissions } from './PokerCombatStore';
+import { usePokerCombatAdapter, getActionPermissions, getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { useGameStore } from '../stores/gameStore';
 import {
   CombatPhase,
@@ -28,64 +28,25 @@ import { MinionActivityLog, PokerActivityLog } from '../components/ActivityLog';
 import { LastActionLog } from '../components/LastActionLog';
 import AIAttackAnimationProcessor from '../components/AIAttackAnimationProcessor';
 import { AnimationOverlay } from '../components/AnimationOverlay';
-import { initializeCombatEventSubscribers, cleanupCombatEventSubscribers } from '../services/CombatEventSubscribers';
 import { Howl } from 'howler';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { executeNorseHeroPower, canUseHeroPower, getNorseHeroById } from '../utils/norseHeroPowerUtils';
 import { ShowdownCelebration } from './components/ShowdownCelebration';
+import { TargetingPrompt } from './components/TargetingPrompt';
+import { HeroPowerPrompt } from './components/HeroPowerPrompt';
+import { DamageIndicator } from './components/DamageIndicator';
+import { HeroDeathAnimation } from './components/HeroDeathAnimation';
+import { ArenaPokerHand } from './components/ArenaPokerHand';
+import { PlayingCard } from './components/PlayingCard';
 import { GameViewport } from './GameViewport';
+import { isValidTargetForHeroPower, getNorseRune, getNorseSymbol, getSuitColor, getNorseValue } from '../utils/combatUtils';
+import type { HeroPowerTarget } from '../utils/combatUtils';
 import { useCombatLayout } from '../hooks/useCombatLayout';
-
-interface HeroPowerTarget {
-  isMinion: boolean;
-  isHero: boolean;
-  isFriendly: boolean;
-}
-
-function isValidTargetForHeroPower(targetType: string, target: HeroPowerTarget): boolean {
-  const { isMinion, isHero, isFriendly } = target;
-  
-  switch (targetType) {
-    // Minion-only targeting
-    case 'friendly_minion':
-    case 'friendly_mech':
-      return isMinion && isFriendly;
-    case 'enemy_minion':
-      return isMinion && !isFriendly;
-    case 'any_minion':
-    case 'minion':
-      return isMinion;
-    
-    // Hero-only targeting
-    case 'friendly_hero':
-      return isHero && isFriendly;
-    case 'enemy_hero':
-      return isHero && !isFriendly;
-    
-    // Character targeting (minions or heroes)
-    case 'friendly_character':
-      return (isMinion || isHero) && isFriendly;
-    case 'enemy_character':
-    case 'enemy':
-      return (isMinion || isHero) && !isFriendly;
-    case 'any':
-    case 'any_character':
-      return isMinion || isHero;
-    
-    // No targeting required - should not reach here
-    case 'none':
-    case 'self':
-    case 'all_enemies':
-    case 'all_friendly':
-    case 'random_enemy':
-    case 'random_friendly':
-      return false;
-    
-    default:
-      console.warn(`[isValidTargetForHeroPower] Unknown targetType: ${targetType}`);
-      return false;
-  }
-}
+import { usePokerAI } from './hooks/usePokerAI';
+import { usePokerPhases } from './hooks/usePokerPhases';
+import { useCombatTimer } from './hooks/useCombatTimer';
+import { useCombatEvents, ShowdownCelebration as ShowdownCelebrationState, HeroDeathState } from './hooks/useCombatEvents';
+import { useTurnOrchestrator } from './hooks/useTurnOrchestrator';
 
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
@@ -99,275 +60,6 @@ interface DamageAnimation {
   y: number;
   timestamp: number;
 }
-
-const DamageIndicator: React.FC<{ 
-  damage: number; 
-  x: number; 
-  y: number; 
-  onComplete: () => void;
-}> = ({ damage, x, y, onComplete }) => {
-  useEffect(() => {
-    const timer = setTimeout(onComplete, 1000);
-    return () => clearTimeout(timer);
-  }, [onComplete]);
-
-  return (
-    <div 
-      className="damage-indicator"
-      style={{ left: x, top: y }}
-    >
-      -{damage}
-    </div>
-  );
-};
-
-const HeroDeathAnimation: React.FC<{
-  heroName: string;
-  isPlayer: boolean;
-  onComplete: () => void;
-}> = ({ heroName, isPlayer, onComplete }) => {
-  const particlesRef = useRef<HTMLDivElement>(null);
-  const onCompleteRef = useRef(onComplete);
-  const hasCompletedRef = useRef(false);
-  
-  // Keep ref in sync but don't trigger re-renders
-  useEffect(() => {
-    onCompleteRef.current = onComplete;
-  }, [onComplete]);
-  
-  // Animation timer - runs exactly once for 3 seconds
-  useEffect(() => {
-    
-    const hitSound = new Howl({
-      src: ['/sounds/hit.mp3'],
-      volume: 0.8,
-      rate: 0.6,
-    });
-    
-    const impactSound = new Howl({
-      src: ['/sounds/hit.mp3'],
-      volume: 0.6,
-      rate: 0.4,
-    });
-    
-    hitSound.play();
-    const impactTimer = setTimeout(() => impactSound.play(), 300);
-    
-    // Complete animation after exactly 3 seconds
-    const completeTimer = setTimeout(() => {
-      if (!hasCompletedRef.current) {
-        hasCompletedRef.current = true;
-        onCompleteRef.current();
-      }
-    }, 3000);
-    
-    return () => {
-      clearTimeout(impactTimer);
-      clearTimeout(completeTimer);
-      hitSound.stop();
-      hitSound.unload();
-      impactSound.stop();
-      impactSound.unload();
-    };
-  }, []); // Empty deps - runs exactly once
-  
-  useEffect(() => {
-    if (!particlesRef.current) return;
-    
-    const container = particlesRef.current;
-    container.innerHTML = '';
-    
-    for (let i = 0; i < 60; i++) {
-      const particle = document.createElement('div');
-      const size = Math.random() * 8 + 3;
-      
-      particle.style.position = 'absolute';
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      
-      const colors = [
-        `rgba(139, 0, 0, ${Math.random() * 0.8 + 0.2})`,
-        `rgba(178, 34, 34, ${Math.random() * 0.8 + 0.2})`,
-        `rgba(220, 20, 60, ${Math.random() * 0.8 + 0.2})`,
-        `rgba(255, 69, 0, ${Math.random() * 0.8 + 0.2})`,
-      ];
-      particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      particle.style.borderRadius = '50%';
-      particle.style.left = `50%`;
-      particle.style.top = `50%`;
-      particle.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.8)';
-      
-      const animDuration = Math.random() * 1 + 0.8; // 0.8-1.8s for faster particles
-      const delay = Math.random() * 0.3; // Max 0.3s delay
-      const angle = Math.random() * Math.PI * 2;
-      const distance = 50 + Math.random() * 100;
-      const endX = Math.cos(angle) * distance;
-      const endY = Math.sin(angle) * distance;
-      
-      particle.style.setProperty('--end-x', `${endX}px`);
-      particle.style.setProperty('--end-y', `${endY}px`);
-      particle.style.animation = `hero-death-particle ${animDuration}s ease-out ${delay}s forwards`;
-      
-      container.appendChild(particle);
-    }
-  }, []);
-  
-  return (
-    <motion.div
-      className={`hero-death-overlay ${isPlayer ? 'player' : 'opponent'}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <motion.div 
-        className="hero-death-container"
-        initial={{ scale: 1, opacity: 1 }}
-        animate={{ 
-          scale: [1, 1.1, 0.8, 0],
-          opacity: [1, 1, 0.5, 0],
-          filter: ['blur(0px)', 'blur(2px)', 'blur(8px)', 'blur(20px)'],
-          rotateZ: [0, -5, 5, -10],
-        }}
-        transition={{ duration: 2.5, ease: "easeOut" }}
-      >
-        <div className="hero-death-card">
-          <div className="hero-death-avatar">{heroName.charAt(0)}</div>
-          <div className="hero-death-name">{heroName}</div>
-          <div className="hero-death-text">DEFEATED</div>
-        </div>
-        <div className="hero-death-particles" ref={particlesRef} />
-      </motion.div>
-      
-      <motion.div
-        className="hero-death-flash"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0.8, 0] }}
-        transition={{ duration: 0.5, times: [0, 0.1, 1] }}
-      />
-    </motion.div>
-  );
-};
-
-const getNorseRune = (suit: CardSuit): string => {
-  switch (suit) {
-    case 'spades': return 'ᛏ';
-    case 'hearts': return 'ᛉ';
-    case 'diamonds': return 'ᛟ';
-    case 'clubs': return 'ᚦ';
-  }
-};
-
-const getNorseSymbol = (suit: CardSuit): string => {
-  switch (suit) {
-    case 'spades': return '⚔';
-    case 'hearts': return '❂';
-    case 'diamonds': return '◆';
-    case 'clubs': return '⚒';
-  }
-};
-
-const getSuitColor = (suit: CardSuit): string => {
-  switch (suit) {
-    case 'spades': return '#2d4a3d';
-    case 'hearts': return '#8b3a3a';
-    case 'diamonds': return '#5c4a2a';
-    case 'clubs': return '#3a4a5c';
-  }
-};
-
-const getNorseValue = (value: string): string => {
-  // Keep standard poker values (K, Q, J, A, 2-10) for clarity
-  // Norse theme is in the suit symbols and visual design
-  return value;
-};
-
-const ArenaPokerHand: React.FC<{
-  cards: any[];
-  currentMana?: number;
-  isPlayerTurn?: boolean;
-  isOpponent?: boolean;
-  onCardPlay?: (card: any, pos?: any) => void;
-  isInteractionDisabled?: boolean;
-}> = ({ cards, currentMana = 0, isPlayerTurn = false, isOpponent = false, onCardPlay, isInteractionDisabled = false }) => {
-  return (
-    <div className={`zone-poker-cards ${isOpponent ? 'opponent-poker-hand' : 'player-poker-hand'}`}>
-      {cards.map((card, idx) => {
-        const adapted = adaptCardInstance(card);
-        const isRevealed = isOpponent && (card.isRevealed || (card as any).revealed);
-        
-        return (
-          <div key={adapted.instanceId || idx} className="poker-card-slot occupied">
-            <PlayingCard 
-              card={isRevealed || !isOpponent ? { 
-                suit: (adapted.card as any).suit || 'spades', 
-                value: (adapted.card as any).pokerValue || 'A',
-                numericValue: (adapted.card as any).numericValue || 14
-              } : { suit: 'spades', value: 'A', numericValue: 14 }} 
-              faceDown={isOpponent && !isRevealed} 
-            />
-            {isRevealed && <div className="revealed-indicator">Revealed</div>}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const PlayingCard: React.FC<{ card: PokerCard; faceDown?: boolean; large?: boolean }> = ({ 
-  card, 
-  faceDown = false,
-  large = false 
-}) => {
-  if (faceDown) {
-    return (
-      <div className={`arena-poker-card norse face-down ${large ? 'large' : ''}`}>
-        <div className="card-back">
-          <div className="norse-pattern">
-            <div className="valknut">᛭</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const suitColor = getSuitColor(card.suit);
-  const runeSymbol = getNorseRune(card.suit);
-  const norseSymbol = getNorseSymbol(card.suit);
-  const displayValue = getNorseValue(card.value);
-  const isFaceCard = ['K', 'Q', 'J', 'A'].includes(card.value);
-
-  return (
-    <div className={`arena-poker-card norse ${card.suit} ${large ? 'large' : ''}`}>
-      <div className="norse-border">
-        <div className="corner-rune top-left">ᚱ</div>
-        <div className="corner-rune top-right">ᚱ</div>
-        <div className="corner-rune bottom-left">ᚱ</div>
-        <div className="corner-rune bottom-right">ᚱ</div>
-      </div>
-      <div className="card-inner" style={{ color: suitColor }}>
-        <div className="card-corner top-left">
-          <span className="card-value">{displayValue}</span>
-          <span className="card-rune">{runeSymbol}</span>
-        </div>
-        <div className="card-center">
-          {isFaceCard ? (
-            <div className="face-card-symbol">
-              <span className="norse-symbol-large">{norseSymbol}</span>
-              <span className="face-rune">{runeSymbol}</span>
-            </div>
-          ) : (
-            <span className="norse-symbol-large">{norseSymbol}</span>
-          )}
-        </div>
-        <div className="card-corner bottom-right">
-          <span className="card-value">{displayValue}</span>
-          <span className="card-rune">{runeSymbol}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const PetGodCard: React.FC<{ 
   pet: any; 
@@ -427,17 +119,6 @@ const PetGodCard: React.FC<{
     </div>
   );
 };
-
-interface ShowdownCelebrationState {
-  resolution: {
-    winner: 'player' | 'opponent' | 'draw';
-    resolutionType: 'showdown' | 'fold';
-    playerHand: { rank: number; cards: PokerCard[] };
-    opponentHand: { rank: number; cards: PokerCard[] };
-    whoFolded?: 'player' | 'opponent';
-  };
-  winningCards: PokerCard[];
-}
 
 const isCardInWinningHand = (card: PokerCard, winningCards: PokerCard[]): boolean => {
   return winningCards.some(wc => wc.suit === card.suit && wc.numericValue === card.numericValue);
@@ -894,9 +575,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   handCards = [], handCurrentMana = 0, handIsPlayerTurn = false,
   onCardPlay, registerCardPosition, battlefieldRef: externalBattlefieldRef
 }) => {
-  // Subscribe directly to store for reactive updates
-  const combatState = usePokerCombatStore(state => state.combatState);
-  const { applyDirectDamage } = usePokerCombatStore();
+  // Subscribe directly to adapter for reactive updates
+  const { combatState, applyDirectDamage } = usePokerCombatAdapter();
   
   // Game state for battlefield
   const { 
@@ -933,7 +613,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           e.target instanceof HTMLTextAreaElement ||
           (e.target as HTMLElement)?.isContentEditable) return;
       
-      const currentState = usePokerCombatStore.getState().combatState;
+      const currentState = getPokerCombatAdapterState().combatState;
       if (!currentState || currentState.player.isReady || currentState.phase === CombatPhase.MULLIGAN) return;
       
       const permissions = getActionPermissions(currentState, true);
@@ -1267,20 +947,20 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       </div>
       
-      {/* Pot Display */}
-      <div className={`unified-pot poker-pot-slot ${isMulligan ? 'hidden' : ''}`}>
-        <div className="poker-pot-display">
-          <div className="pot-risk opponent">
-            <span className="risk-label">Foe ({combatState.opponentPosition === 'small_blind' ? 'SB' : 'BB'})</span>
-            <span className="risk-value">{combatState.opponent.hpCommitted} HP</span>
+      {/* Pot Display - Norse Themed */}
+      <div className={`pot-container ${isMulligan ? 'hidden' : ''}`}>
+        <div className="pot-display-norse">
+          <div className="pot-section pot-section-foe">
+            <span className="pot-label">FOE ({combatState.opponentPosition === 'small_blind' ? 'SB' : 'BB'})</span>
+            <span className="pot-value">{combatState.opponent.hpCommitted} HP</span>
           </div>
-          <div className="pot-total">
-            <span className="pot-total-label">POT</span>
-            <span className="pot-total-value">{combatState.pot || (combatState.opponent.hpCommitted + combatState.player.hpCommitted)}</span>
+          <div className="pot-section pot-section-total">
+            <span className="pot-label">POT</span>
+            <span className="pot-value">{combatState.pot || (combatState.opponent.hpCommitted + combatState.player.hpCommitted)}</span>
           </div>
-          <div className="pot-risk player">
-            <span className="risk-label">You ({combatState.playerPosition === 'small_blind' ? 'SB' : 'BB'})</span>
-            <span className="risk-value">{combatState.player.hpCommitted} HP</span>
+          <div className="pot-section pot-section-you">
+            <span className="pot-label">YOU ({combatState.playerPosition === 'small_blind' ? 'SB' : 'BB'})</span>
+            <span className="pot-value">{combatState.player.hpCommitted} HP</span>
           </div>
         </div>
       </div>
@@ -1508,7 +1188,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     updateTimer,
     endCombat,
     applyDirectDamage
-  } = usePokerCombatStore();
+  } = usePokerCombatAdapter();
   
   const [resolution, setResolution] = useState<any>(null);
   const [betAmount, setBetAmount] = useState(10);
@@ -1537,8 +1217,40 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     manaCost: number;
   } | null>(null);
   
-  // Ref to track if all-in auto-advance is in progress (prevents multiple concurrent timers)
-  const allInAdvanceInProgressRef = useRef(false);
+  // Ref to track if AI response is in progress (prevents double AI actions from timeout + effect)
+  const aiResponseInProgressRef = useRef(false);
+  
+  // AI response logic extracted to custom hook
+  usePokerAI({ combatState, isActive, aiResponseInProgressRef });
+  
+  // Poker phase transition logic extracted to custom hook
+  usePokerPhases({ combatState, isActive });
+  
+  // Combat timer logic extracted to custom hook
+  useCombatTimer({ combatState, isActive, updateTimer });
+  
+  // Combat events logic extracted to custom hook (handles event bus subscriptions, showdown, hero death)
+  useCombatEvents({
+    combatState,
+    isActive,
+    onShowdownCelebration: setShowdownCelebration,
+    onHeroDeath: setHeroDeathState,
+    resolveCombat,
+    setResolution
+  });
+  
+  // Turn orchestrator for phase coordination (Poker → Minion → End-of-Turn sequencing)
+  // This is a thin coordination layer that tracks phases without duplicating combat logic
+  const { 
+    currentPhase: turnPhase, 
+    turnNumber: orchestratorTurn,
+    completePhase: advanceTurnPhase,
+    startTurn: startOrchestratorTurn
+  } = useTurnOrchestrator({
+    onPhaseChange: (from, to, context) => {
+      console.log(`[TurnOrchestrator] Phase: ${from} → ${to} (Turn ${context.turnNumber})`);
+    }
+  });
   
   // Backup timer to prevent combat freeze if ShowdownCelebration fails to call onComplete
   // This ensures handleCombatEnd is called even if the animation unmounts prematurely
@@ -1597,16 +1309,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     }
     playCard(cardId);
   }, [isPlayerTurn, playCard]);
-  
-  // Initialize combat event subscribers (professional event-driven architecture)
-  // This connects all combat systems (poker HP, animations, sounds) via CombatEventBus
-  useEffect(() => {
-    initializeCombatEventSubscribers();
-    
-    return () => {
-      cleanupCombatEventSubscribers();
-    };
-  }, []);
   
   // Click handlers for hero attacks - delegate to gameStore
   const handleOpponentHeroClick = useCallback(() => {
@@ -1793,48 +1495,14 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     const secondaryValue = heroPower.secondaryValue || 0;
     const effectType = heroPower.effectType as string;
     
-    // Helper to heal player hero via PokerCombatStore
+    // Helper to heal player hero via adapter
     const healPlayerHero = (amount: number) => {
-      usePokerCombatStore.setState(state => ({
-        combatState: state.combatState ? {
-          ...state.combatState,
-          player: {
-            ...state.combatState.player,
-            pet: {
-              ...state.combatState.player.pet,
-              stats: {
-                ...state.combatState.player.pet.stats,
-                currentHealth: Math.min(
-                  state.combatState.player.pet.stats.maxHealth,
-                  state.combatState.player.pet.stats.currentHealth + amount
-                )
-              }
-            }
-          }
-        } : null
-      }));
+      getPokerCombatAdapterState().healPlayerHero(amount);
     };
     
-    // Helper to heal opponent hero via PokerCombatStore  
+    // Helper to heal opponent hero via adapter
     const healOpponentHero = (amount: number) => {
-      usePokerCombatStore.setState(state => ({
-        combatState: state.combatState ? {
-          ...state.combatState,
-          opponent: {
-            ...state.combatState.opponent,
-            pet: {
-              ...state.combatState.opponent.pet,
-              stats: {
-                ...state.combatState.opponent.pet.stats,
-                currentHealth: Math.min(
-                  state.combatState.opponent.pet.stats.maxHealth,
-                  state.combatState.opponent.pet.stats.currentHealth + amount
-                )
-              }
-            }
-          }
-        } : null
-      }));
+      getPokerCombatAdapterState().healOpponentHero(amount);
     };
     
     // CASE 1: Hero target - handle via PokerCombatStore ONLY
@@ -1963,16 +1631,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         break;
         
       case 'buff_hero':
-        usePokerCombatStore.setState(state => ({
-          combatState: state.combatState ? {
-            ...state.combatState,
-            player: {
-              ...state.combatState.player,
-              heroAttack: ((state.combatState.player as any).heroAttack || 0) + effectValue,
-              heroArmor: ((state.combatState.player as any).heroArmor || 0) + (heroPower.armorValue || 0)
-            }
-          } : null
-        }));
+        getPokerCombatAdapterState().setPlayerHeroBuffs(effectValue, heroPower.armorValue || 0);
         break;
         
       case 'buff_single':
@@ -2136,35 +1795,10 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           applyDirectDamage('opponent', immediateEffect.value, `${norseHero.weaponUpgrade.name}`);
           break;
         case 'heal':
-          usePokerCombatStore.setState(state => ({
-            combatState: state.combatState ? {
-              ...state.combatState,
-              player: {
-                ...state.combatState.player,
-                pet: {
-                  ...state.combatState.player.pet,
-                  stats: {
-                    ...state.combatState.player.pet.stats,
-                    currentHealth: Math.min(
-                      state.combatState.player.pet.stats.maxHealth,
-                      state.combatState.player.pet.stats.currentHealth + (immediateEffect.value || 0)
-                    )
-                  }
-                }
-              }
-            } : null
-          }));
+          getPokerCombatAdapterState().healPlayerHero(immediateEffect.value || 0);
           break;
         case 'armor':
-          usePokerCombatStore.setState(state => ({
-            combatState: state.combatState ? {
-              ...state.combatState,
-              player: {
-                ...state.combatState.player,
-                heroArmor: (state.combatState.player.heroArmor || 0) + (immediateEffect.value || 0)
-              }
-            } : null
-          }));
+          getPokerCombatAdapterState().addPlayerArmor(immediateEffect.value || 0);
           break;
         default:
       }
@@ -2251,276 +1885,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       completeMulligan();
     }
   }, [mulliganActive, combatState?.phase, completeMulligan, mulliganProcessed, mulliganArmed, mulliganComplete]);
-
-  // Timer for turns (only active when not in MULLIGAN or SPELL_PET phase)
-  // CRITICAL: Must use fresh state from store to avoid stale closure issues
-  useEffect(() => {
-    if (!combatState || !isActive) return;
-    if (combatState.phase === CombatPhase.MULLIGAN) return;
-    if (combatState.phase === CombatPhase.SPELL_PET) return;
-    
-    // Don't run timer if player already acted (isReady = true)
-    if (combatState.player.isReady) return;
-    
-    const timer = setInterval(() => {
-      // Get fresh state to avoid stale closure
-      const freshState = usePokerCombatStore.getState().combatState;
-      if (!freshState) return;
-      
-      // Skip if phase changed or player already ready
-      if (freshState.phase === CombatPhase.MULLIGAN || 
-          freshState.phase === CombatPhase.SPELL_PET ||
-          freshState.player.isReady) {
-        return;
-      }
-      
-      if (freshState.turnTimer > 0) {
-        updateTimer(freshState.turnTimer - 1);
-      } else {
-        // Timer expired - choose appropriate action based on game state
-        const permissions = getActionPermissions(freshState, true);
-        
-        let autoAction = CombatAction.DEFEND; // Default to check
-        if (permissions?.hasBetToCall) {
-          // If there's a bet to call, we must call or fold - can't check
-          if (permissions.canCall) {
-            autoAction = CombatAction.ENGAGE; // Call
-            fireActionAnnouncement('poker_call', 'Call', { subtitle: 'Time expired - matched bet', duration: 1500 });
-          } else {
-            autoAction = CombatAction.BRACE; // Fold
-            fireActionAnnouncement('poker_fold', 'Fold', { subtitle: 'Time expired', duration: 1500 });
-          }
-        } else {
-          fireActionAnnouncement('poker_check', 'Check', { subtitle: 'Time expired', duration: 1500 });
-        }
-        
-        // Capture phase before auto-action to detect phase changes
-        const phaseBeforeAutoAction = freshState.phase;
-        
-        performAction(freshState.player.playerId, autoAction);
-        
-        // Trigger AI response after player auto-action
-        setTimeout(() => {
-          const stateAfterAction = usePokerCombatStore.getState().combatState;
-          if (!stateAfterAction || stateAfterAction.opponent.isReady) return;
-          
-          // FIX: Skip if phase has already advanced (betting round was closed)
-          if (stateAfterAction.phase !== phaseBeforeAutoAction) {
-            return;
-          }
-          
-          // FIX: Skip if already in RESOLUTION phase or foldWinner set
-          if (stateAfterAction.phase === CombatPhase.RESOLUTION || stateAfterAction.foldWinner) {
-            return;
-          }
-          
-          const aiDecision = getSmartAIAction(stateAfterAction, false);
-          performAction(stateAfterAction.opponent.playerId, aiDecision.action, aiDecision.betAmount);
-        }, 500);
-      }
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [combatState?.phase, combatState?.player?.isReady, isActive, updateTimer, performAction]);
   
-  // Handle SPELL_PET phase - advance when both players are ready or after timeout
-  // Uses proper readiness logic instead of a blind timeout
-  useEffect(() => {
-    if (!combatState || !isActive) return;
-    if (combatState.phase !== CombatPhase.SPELL_PET) return;
-    
-    // Check if both players are ready - if so, advance immediately
-    if (combatState.player.isReady && combatState.opponent.isReady) {
-      advancePhase();
-      return;
-    }
-    
-    // Auto-ready AI opponent after a short delay if player is already ready
-    // The PLAYER must explicitly click "Ready to Battle" - no auto-advancing without player consent
-    // This ensures the flop doesn't appear without the player deliberately starting poker combat
-    const aiReadyTimer = setTimeout(() => {
-      const store = usePokerCombatStore.getState();
-      const freshState = store.combatState;
-      if (freshState && freshState.phase === CombatPhase.SPELL_PET) {
-        // Only auto-ready AI if player is already ready (player clicked Ready first)
-        if (freshState.player.isReady && !freshState.opponent.isReady) {
-          store.setPlayerReady(freshState.opponent.playerId);
-        }
-        // NOTE: We do NOT auto-ready the player - they must click "Ready to Battle"
-      }
-    }, 2000);
-    
-    return () => clearTimeout(aiReadyTimer);
-  }, [combatState?.phase, combatState?.player?.isReady, combatState?.opponent?.isReady, isActive, advancePhase]);
-
-  // CRITICAL: Trigger AI to act first when player is Big Blind (AI is Small Blind)
-  // In poker, Small Blind acts first preflop - if AI is SB, it must open the betting
-  // Now also includes SPELL_PET phase since blinds are collected at combat start
-  useEffect(() => {
-    if (!combatState || !isActive) return;
-    // Only trigger in betting phases (not MULLIGAN or RESOLUTION)
-    if (combatState.phase === CombatPhase.MULLIGAN || 
-        combatState.phase === CombatPhase.RESOLUTION) return;
-    // Only trigger if blinds are posted (betting round has started)
-    if (!combatState.blindsPosted) return;
-    // Only trigger if opponent (AI) hasn't acted yet
-    if (combatState.opponent.isReady) return;
-    // Only trigger if player (BB) hasn't acted yet - we want AI to go first
-    if (combatState.player.isReady) return;
-    
-    // Debug: Log openerIsPlayer value to trace position toggle persistence
-    
-    // CRITICAL: Only trigger if player is BIG BLIND (meaning AI is Small Blind and acts first)
-    if (combatState.openerIsPlayer) return; // Player is SB, player acts first - don't trigger AI
-    
-    
-    // Small delay to allow state to settle after phase transition
-    const aiFirstTimer = setTimeout(() => {
-      const freshState = usePokerCombatStore.getState().combatState;
-      if (!freshState) return;
-      // Double-check conditions in fresh state
-      if (freshState.opponent.isReady || freshState.player.isReady) return;
-      if (freshState.openerIsPlayer) return; // Player is SB
-      if (freshState.phase === CombatPhase.RESOLUTION || freshState.foldWinner) return;
-      
-      const aiDecision = getSmartAIAction(freshState, false);
-      performAction(freshState.opponent.playerId, aiDecision.action, aiDecision.betAmount);
-    }, 800);
-    
-    return () => clearTimeout(aiFirstTimer);
-  }, [combatState?.phase, combatState?.blindsPosted, combatState?.openerIsPlayer, 
-      combatState?.opponent?.isReady, combatState?.player?.isReady, isActive, performAction]);
-
-  // Handle phase transitions when BOTH players are ready
-  // This effect delegates to the store's maybeCloseBettingRound helper which
-  // enforces strict sequential phase progression: SPELL_PET → FAITH → FORESIGHT → DESTINY → RESOLUTION
-  useEffect(() => {
-    if (!combatState) return;
-    if (combatState.phase === CombatPhase.MULLIGAN) return;
-    // NOTE: SPELL_PET is no longer skipped - betting actions in SPELL_PET should trigger phase advancement
-    // via maybeCloseBettingRound() just like other betting phases
-    
-    // Only check for round closure when BOTH players are ready
-    if (!combatState.player.isReady || !combatState.opponent.isReady) {
-      return;
-    }
-    
-    
-    if (combatState.phase === CombatPhase.RESOLUTION) {
-      // In RESOLUTION - resolve the combat
-      const result = resolveCombat();
-      if (result) {
-        
-        // Check if this is a match-ending resolution (hero death)
-        const matchOver = result.playerFinalHealth <= 0 || result.opponentFinalHealth <= 0;
-        
-        if (matchOver) {
-          // Hero death - trigger death animation FIRST, don't show popup yet
-          const isPlayerDead = result.playerFinalHealth <= 0;
-          const deadHeroName = isPlayerDead 
-            ? (combatState?.player?.pet?.name || 'Hero')
-            : (combatState?.opponent?.pet?.name || 'Enemy');
-          
-          
-          setHeroDeathState({
-            isAnimating: true,
-            deadHeroName,
-            isPlayerDead,
-            pendingResolution: result
-          });
-          // Don't set resolution - will be handled after animation completes
-        } else {
-          // Normal hand resolution - use non-blocking visual celebration
-          setResolution(result);
-          
-          // Determine winning cards for glow effect - for draws, highlight both hands
-          const winningCards = result.winner === 'draw'
-            ? [...(result.playerHand?.cards || []), ...(result.opponentHand?.cards || [])]
-            : result.winner === 'player'
-              ? result.playerHand?.cards || []
-              : result.opponentHand?.cards || [];
-          
-          setShowdownCelebration({
-            resolution: {
-              winner: result.winner,
-              resolutionType: result.resolutionType,
-              playerHand: result.playerHand,
-              opponentHand: result.opponentHand,
-              whoFolded: result.whoFolded
-            },
-            winningCards
-          });
-        }
-      }
-    } else {
-      // Use the store's maybeCloseBettingRound helper which enforces:
-      // 1. Both players ready
-      // 2. Bets settled (same HP committed or one all-in)
-      // 3. Strict sequential phase ordering
-      maybeCloseBettingRound();
-    }
-  }, [combatState?.phase, combatState?.player?.isReady, combatState?.opponent?.isReady, maybeCloseBettingRound, resolveCombat]);
-
-  // ALL-IN SHOWDOWN: Auto-advance through remaining phases with dramatic delays
-  // When both players are all-in, we reveal remaining community cards one by one without further betting
-  useEffect(() => {
-    if (!combatState || !isActive) return;
-    if (!combatState.isAllInShowdown) return;
-    
-    // Only auto-advance during betting phases (not RESOLUTION)
-    if (combatState.phase === CombatPhase.RESOLUTION) return;
-    if (combatState.phase === CombatPhase.MULLIGAN) return;
-    if (combatState.phase === CombatPhase.SPELL_PET) return;
-    
-    // Prevent multiple concurrent auto-advance timers
-    if (allInAdvanceInProgressRef.current) {
-      return;
-    }
-    
-    allInAdvanceInProgressRef.current = true;
-    
-    // Auto-mark both players as ready since there's no more betting
-    const currentPhase = combatState.phase;
-    const autoAdvanceTimer = setTimeout(() => {
-      const freshState = usePokerCombatStore.getState().combatState;
-      if (!freshState || freshState.phase !== currentPhase) {
-        allInAdvanceInProgressRef.current = false;
-        return;
-      }
-      if (!freshState.isAllInShowdown) {
-        allInAdvanceInProgressRef.current = false;
-        return;
-      }
-      
-      // Mark both players ready to trigger phase advance
-      usePokerCombatStore.setState(state => {
-        if (!state.combatState) return state;
-        return {
-          ...state,
-          combatState: {
-            ...state.combatState,
-            player: { ...state.combatState.player, isReady: true },
-            opponent: { ...state.combatState.opponent, isReady: true }
-          }
-        };
-      });
-      
-      // After marking ready, call maybeCloseBettingRound to advance
-      setTimeout(() => {
-        const store = usePokerCombatStore.getState();
-        if (store.combatState && store.combatState.isAllInShowdown) {
-          store.maybeCloseBettingRound();
-        }
-        allInAdvanceInProgressRef.current = false;
-      }, 100);
-    }, 1500); // 1.5 second delay for dramatic effect between card reveals
-    
-    return () => {
-      clearTimeout(autoAdvanceTimer);
-      allInAdvanceInProgressRef.current = false;
-    };
-  }, [combatState?.phase, combatState?.isAllInShowdown, isActive]);
-
   // Get endTurn and grantPokerHandRewards from gameStore early so they can be used in handleAction
   const endTurn = useGameStore(state => state.endTurn);
   const grantPokerHandRewards = useGameStore(state => state.grantPokerHandRewards);
@@ -2529,7 +1894,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     if (!combatState) return;
     
     // CRITICAL: Check fresh state to prevent double-clicking race condition
-    const freshState = usePokerCombatStore.getState().combatState;
+    const freshState = getPokerCombatAdapterState().combatState;
     if (!freshState || freshState.player.isReady) {
       return;
     }
@@ -2556,65 +1921,113 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       endTurn();
     }
     
-    // AI responds after delay - read fresh state to avoid stale data issues
-    // CRITICAL: Capture the phase BEFORE the setTimeout to detect phase changes
+    // FALLBACK AI Response: The primary AI response logic is in usePokerAI hook.
+    // This callback-based response serves as a defensive fallback in case React's
+    // useEffect batching or other edge cases prevent the hook from firing.
+    // The aiResponseInProgressRef prevents double-triggering between hook and callback.
     const phaseBeforeAction = combatState.phase;
     
     setTimeout(() => {
-      // Get fresh state from store to avoid stale closure
-      const freshState = usePokerCombatStore.getState().combatState;
-      if (!freshState || freshState.opponent.isReady) {
-        return;
-      }
-      
-      // FIX: Skip if phase has already advanced (betting round was closed)
-      // This prevents AI from acting twice when maybeCloseBettingRound advances the phase
-      if (freshState.phase !== phaseBeforeAction) {
-        return;
-      }
-      
-      // FIX: Skip if already in RESOLUTION phase
-      if (freshState.phase === CombatPhase.RESOLUTION) {
-        return;
-      }
-      
-      // FIX: Skip if there's already a foldWinner (fold was processed)
-      if (freshState.foldWinner) {
-        return;
-      }
-      
-      // Log state before AI decision
-      
-      // Use SmartAI for intelligent decision making
-      const aiDecision = getSmartAIAction(freshState, false);
-      
-      performAction(freshState.opponent.playerId, aiDecision.action, aiDecision.betAmount);
-      
-      // CRITICAL FIX: After AI action, explicitly check if betting round should close
-      // This ensures phase advances even if React's useEffect doesn't fire immediately
-      setTimeout(() => {
-        const storeAfterAI = usePokerCombatStore.getState();
-        if (storeAfterAI.combatState && 
-            storeAfterAI.combatState.player.isReady && 
-            storeAfterAI.combatState.opponent.isReady &&
-            storeAfterAI.combatState.phase !== CombatPhase.RESOLUTION) {
-          storeAfterAI.maybeCloseBettingRound();
+      try {
+        // Guard: Check if usePokerAI hook already triggered AI response
+        if (aiResponseInProgressRef.current) {
+          console.log('[AI Response handleAction] SKIP: AI action already in progress from usePokerAI hook');
+          return;
         }
-      }, 100);
+        
+        // Get fresh state from adapter to avoid stale closure
+        const adapterState = getPokerCombatAdapterState();
+        const freshStateAfterAction = adapterState.combatState;
+        
+        console.log('[AI Response handleAction] Checking if AI should respond...', {
+          hasFreshState: !!freshStateAfterAction,
+          opponentReady: freshStateAfterAction?.opponent?.isReady,
+          playerReady: freshStateAfterAction?.player?.isReady,
+          phase: freshStateAfterAction?.phase,
+          phaseBeforeAction,
+          foldWinner: freshStateAfterAction?.foldWinner,
+          isAllInShowdown: freshStateAfterAction?.isAllInShowdown,
+          playerHP: freshStateAfterAction?.player?.pet?.stats?.currentHealth,
+          opponentHP: freshStateAfterAction?.opponent?.pet?.stats?.currentHealth
+        });
+        
+        if (!freshStateAfterAction || freshStateAfterAction.opponent.isReady) {
+          console.log('[AI Response handleAction] SKIP: No fresh state or opponent already ready');
+          return;
+        }
+        
+        // FIX: Skip if phase has already advanced (betting round was closed)
+        // This prevents AI from acting twice when maybeCloseBettingRound advances the phase
+        if (freshStateAfterAction.phase !== phaseBeforeAction) {
+          console.log('[AI Response handleAction] SKIP: Phase has advanced');
+          return;
+        }
+        
+        // FIX: Skip if already in RESOLUTION phase
+        if (freshStateAfterAction.phase === CombatPhase.RESOLUTION) {
+          console.log('[AI Response handleAction] SKIP: Already in RESOLUTION');
+          return;
+        }
+        
+        // FIX: Skip if there's already a foldWinner (fold was processed)
+        if (freshStateAfterAction.foldWinner) {
+          console.log('[AI Response handleAction] SKIP: Fold winner already set');
+          return;
+        }
+        
+        // FIX: Skip if all-in showdown is active - the all-in useEffect handles phase advancement
+        if (freshStateAfterAction.isAllInShowdown) {
+          console.log('[AI Response handleAction] SKIP: All-in showdown - auto-advance useEffect handles phases');
+          return;
+        }
+        
+        // Set in-progress flag to prevent useEffect from double-triggering
+        aiResponseInProgressRef.current = true;
+        
+        // Log state before AI decision
+        console.log('[AI Response handleAction] AI will respond now');
+        
+        // Use SmartAI for intelligent decision making
+        const aiDecision = getSmartAIAction(freshStateAfterAction, false);
+        console.log('[AI Response handleAction] AI decision:', aiDecision);
+        
+        // Use direct store access to avoid stale closure issues
+        getPokerCombatAdapterState().performAction(freshStateAfterAction.opponent.playerId, aiDecision.action, aiDecision.betAmount);
+        
+        // CRITICAL FIX: After AI action, explicitly check if betting round should close
+        // This ensures phase advances even if React's useEffect doesn't fire immediately
+        setTimeout(() => {
+          const adapterAfterAI = getPokerCombatAdapterState();
+          if (adapterAfterAI.combatState && 
+              adapterAfterAI.combatState.player.isReady && 
+              adapterAfterAI.combatState.opponent.isReady &&
+              adapterAfterAI.combatState.phase !== CombatPhase.RESOLUTION) {
+            adapterAfterAI.maybeCloseBettingRound();
+          }
+          aiResponseInProgressRef.current = false;
+        }, 100);
+      } catch (error) {
+        console.error('[AI Response handleAction] ERROR:', error);
+        aiResponseInProgressRef.current = false;
+      }
     }, 1000);
   }, [combatState, performAction, endTurn]);
   
   const handleCombatEnd = useCallback(() => {
     if (!resolution) return;
     
+    // Advance turn orchestrator: POKER_RESOLUTION → MINION_COMBAT
+    // This signals that poker phase is complete and minion combat can begin
+    advanceTurnPhase();
+    
     // Normal hand completion - match continues
     // Note: Hero death is now handled at resolution time, not here
     grantPokerHandRewards();
     
-    // Use startNextHandDelayed from store which handles the 2s pause and prevents race conditions
-    usePokerCombatStore.getState().startNextHandDelayed(resolution);
+    // Use startNextHandDelayed from adapter which handles the 2s pause and prevents race conditions
+    getPokerCombatAdapterState().startNextHandDelayed(resolution);
     setResolution(null);
-  }, [resolution, grantPokerHandRewards]);
+  }, [resolution, grantPokerHandRewards, advanceTurnPhase]);
   
   // Backup timer for showdown celebration - prevents freeze if animation fails
   // This ensures handleCombatEnd is called even if ShowdownCelebration unmounts prematurely
@@ -2760,131 +2173,10 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       <AnimationOverlay />
       
       {/* Spell/Battlecry Targeting Prompt */}
-      {selectedCard && (
-        <div className="targeting-prompt" style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 10000,
-          background: 'linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(40,0,60,0.9) 100%)',
-          border: '3px solid #f59e0b',
-          borderRadius: '12px',
-          padding: '20px 40px',
-          boxShadow: '0 0 40px rgba(245,158,11,0.5), inset 0 0 20px rgba(245,158,11,0.2)',
-          textAlign: 'center',
-          pointerEvents: 'none',
-          animation: 'pulse-glow 1.5s ease-in-out infinite'
-        }}>
-          <div style={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: '#f59e0b',
-            textShadow: '0 0 10px rgba(245,158,11,0.8)',
-            marginBottom: '8px'
-          }}>
-            {selectedCard.card.type === 'spell' ? '✨ Select a Target ✨' : '⚔️ Select a Target ⚔️'}
-          </div>
-          <div style={{
-            fontSize: '16px',
-            color: '#fbbf24',
-            opacity: 0.9
-          }}>
-            {(() => {
-              const targetType = (selectedCard.card as any).battlecry?.targetType || (selectedCard.card as any).spellEffect?.targetType;
-              if (targetType === 'friendly_minion' || targetType === 'friendly_mech') {
-                return `Click on a friendly minion to cast ${selectedCard.card.name}`;
-              } else if (targetType === 'friendly_hero') {
-                return `Click on your hero to cast ${selectedCard.card.name}`;
-              } else if (targetType === 'any_minion' || targetType === 'any') {
-                return `Click on any minion to cast ${selectedCard.card.name}`;
-              }
-              return `Click on an enemy minion or hero to cast ${selectedCard.card.name}`;
-            })()}
-          </div>
-          <div style={{
-            fontSize: '14px',
-            color: '#9ca3af',
-            marginTop: '12px'
-          }}>
-            (Right-click or press ESC to cancel)
-          </div>
-        </div>
-      )}
+      <TargetingPrompt card={selectedCard} />
       
       {/* Hero Power Targeting Prompt */}
-      {heroPowerTargeting?.active && (
-        <div className="targeting-prompt hero-power-targeting" style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 10000,
-          background: 'linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(60,20,80,0.9) 100%)',
-          border: '3px solid #a855f7',
-          borderRadius: '12px',
-          padding: '20px 40px',
-          boxShadow: '0 0 40px rgba(168,85,247,0.5), inset 0 0 20px rgba(168,85,247,0.2)',
-          textAlign: 'center',
-          pointerEvents: 'auto',
-          animation: 'pulse-glow 1.5s ease-in-out infinite'
-        }}>
-          <div style={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: '#a855f7',
-            textShadow: '0 0 10px rgba(168,85,247,0.8)',
-            marginBottom: '8px'
-          }}>
-            ⚡ {heroPowerTargeting.powerName} ⚡
-          </div>
-          <div style={{
-            fontSize: '16px',
-            color: '#c084fc',
-            opacity: 0.9
-          }}>
-            {(() => {
-              const tt = heroPowerTargeting.targetType;
-              // Check if heroes can be targeted
-              const canTargetHero = tt === 'friendly_character' || tt === 'enemy_character' || 
-                tt === 'any_character' || tt === 'any' || tt === 'enemy' || tt === 'enemy_hero';
-              // Check target side
-              const isFriendly = tt.includes('friendly');
-              const isEnemy = tt.includes('enemy');
-              
-              if (isFriendly && canTargetHero) {
-                return 'Click on a friendly minion or your hero';
-              } else if (isFriendly) {
-                return 'Click on a friendly minion to buff';
-              } else if (isEnemy && canTargetHero) {
-                return 'Click on an enemy minion or enemy hero';
-              } else if (isEnemy) {
-                return 'Click on an enemy minion to target';
-              } else if (canTargetHero) {
-                return 'Click on any minion or hero to target';
-              } else {
-                return 'Click on any minion to target';
-              }
-            })()}
-          </div>
-          <button 
-            onClick={cancelHeroPowerTargeting}
-            style={{
-              marginTop: '16px',
-              padding: '8px 24px',
-              background: 'rgba(239,68,68,0.8)',
-              border: 'none',
-              borderRadius: '6px',
-              color: 'white',
-              fontSize: '14px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-      )}
+      <HeroPowerPrompt targeting={heroPowerTargeting} onCancel={cancelHeroPowerTargeting} />
 
       {/* Mulligan Screen - rendered as overlay when mulligan is active */}
       {mulliganActive && gameStateMulligan && (
