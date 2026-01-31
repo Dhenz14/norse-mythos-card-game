@@ -3,10 +3,10 @@
  * ========================================
  * All spacing, sizing, colors, and z-index values for the combat UI.
  * Import this file FIRST in any CSS to ensure tokens are available.
- * 
+ *
  * NAMING CONVENTION:
  * --token-[category]-[variant]: value
- * 
+ *
  * Categories: spacing, size, color, z, shadow, radius, duration
  */
 
@@ -23,12 +23,12 @@
   --token-spacing-xl: 32px;
   --token-spacing-2xl: 48px;
   --token-spacing-3xl: 64px;
-  
+
   /* Physical measurements (at 96dpi) */
   --token-spacing-quarter-inch: 24px;
   --token-spacing-half-inch: 48px;
   --token-spacing-inch: 96px;
-  
+
   /* ========================================
      Z-INDEX TIERS
      Organized hierarchy prevents z-fighting
@@ -49,7 +49,7 @@
   --token-z-hud: 950;
   --token-z-tooltip: 9000;
   --token-z-overlay: 9500;
-  
+
   /* Legacy z-index aliases for backward compatibility */
   --z-base: var(--token-z-base);
   --z-battlefield: var(--token-z-battlefield);
@@ -59,39 +59,39 @@
   --z-hand: var(--token-z-hand);
   --z-betting: var(--token-z-betting);
   --z-overlays: var(--token-z-timer);
-  
+
   /* ========================================
      SIZE TOKENS
      Responsive sizes using clamp() for fluidity
      ======================================== */
-  
+
   /* Hero card sizing */
   --token-size-hero-width: clamp(120px, 15vw, 192px);
   --token-size-hero-height: calc(var(--token-size-hero-width) * 1.33);
-  
+
   /* Hand card sizing */
   --token-size-hand-card-width: clamp(120px, 14vw, 220px);
   --token-size-hand-card-height: clamp(168px, 19.6vw, 308px);
-  
+
   /* Battlefield minion sizing */
   --token-size-battlefield-card-width: clamp(100px, 12vw, 180px);
   --token-size-battlefield-card-height: clamp(140px, 16.8vw, 252px);
-  
+
   /* Poker card sizing */
   --token-size-poker-card: 6%;
-  
+
   /* Zone heights */
   --token-size-opponent-zone: clamp(140px, 18vh, 200px);
   --token-size-player-zone: clamp(120px, 16vh, 180px);
   --token-size-hand-zone: clamp(140px, 18vh, 200px);
   --token-size-field-zone: clamp(120px, 18vh, 200px);
   --token-size-hero-zone: clamp(220px, calc(var(--token-size-hero-width) * 1.4 + 60px), 340px);
-  
+
   /* Poker panel */
   --token-size-poker-panel-width: clamp(280px, 35vw, 480px);
   --token-size-poker-panel-scale: 1;
   --token-size-poker-panel-gap: 8px;
-  
+
   /* ========================================
      COLOR TOKENS
      Game theme colors
@@ -99,18 +99,38 @@
   --token-color-gold: #d4af37;
   --token-color-gold-bright: #ffd700;
   --token-color-gold-dark: #b8860b;
-  
+
   --token-color-bg-dark: #0f172a;
   --token-color-bg-medium: #1e293b;
   --token-color-bg-light: #334155;
-  
+
   --token-color-player: #60a5fa;
   --token-color-opponent: #f87171;
-  
+
   --token-color-success: #22c55e;
   --token-color-warning: #f59e0b;
   --token-color-danger: #ef4444;
-  
+
+  /* Norse metallic colors */
+  --token-color-bronze: #8b5a2b;
+  --token-color-bronze-light: #a06b35;
+
+  /* ========================================
+     POT DISPLAY TOKENS - Norse Theme (Compact)
+     ======================================== */
+  --token-pot-min-width: 70px;
+  --token-pot-max-width: 85px;
+
+  /* Norse background gradients */
+  --token-pot-bg-start: rgba(15, 23, 41, 0.95);
+  --token-pot-bg-mid: rgba(30, 41, 59, 0.90);
+  --token-pot-bg-end: rgba(10, 18, 32, 0.98);
+
+  /* Section backgrounds */
+  --token-pot-foe-bg: rgba(248, 113, 113, 0.08);
+  --token-pot-you-bg: rgba(96, 165, 250, 0.08);
+  --token-pot-total-bg: rgba(218, 165, 32, 0.12);
+
   /* ========================================
      SHADOW TOKENS
      Depth and elevation effects
@@ -122,7 +142,7 @@
   --token-shadow-glow-gold: 0 0 20px rgba(218, 165, 32, 0.4);
   --token-shadow-glow-player: 0 0 15px rgba(96, 165, 250, 0.5);
   --token-shadow-glow-opponent: 0 0 15px rgba(248, 113, 113, 0.5);
-  
+
   /* ========================================
      RADIUS TOKENS
      Border radius consistency
@@ -132,7 +152,7 @@
   --token-radius-lg: 12px;
   --token-radius-xl: 16px;
   --token-radius-full: 9999px;
-  
+
   /* ========================================
      DURATION TOKENS
      Animation timing
@@ -141,7 +161,19 @@
   --token-duration-normal: 250ms;
   --token-duration-slow: 400ms;
   --token-duration-slower: 600ms;
-  
+
+  /* ========================================
+     ANIMATION TOKENS
+     Timing for specific effects - use these to tweak animations
+     without editing keyframes or breaking other elements
+     ======================================== */
+  --anim-damage-shake-duration: 0.3s;
+  --anim-damage-flash-duration: 0.3s;
+  --anim-tooltip-fade-duration: 0.15s;
+  --anim-card-hover-duration: 0.2s;
+  --anim-glow-pulse-duration: 1.5s;
+  --anim-showdown-pulse-duration: 1.5s;
+
   /* ========================================
      HOVER BEHAVIOR TOKENS
      Card interaction settings
@@ -149,12 +181,66 @@
   --token-hover-lift: 50px;
   --token-hover-scale: 1.2;
   --token-hover-safe-zone: calc(var(--token-hover-lift) + 20px);
-  
+
   /* Hand card hover */
   --token-hand-overlap: -100px;
   --token-hand-fan-angle: 5deg;
   --token-hand-hover-lift: -60px;
   --token-hand-hover-scale: 1.35;
+
+  /* ========================================
+     LEGACY ALIASES - Backward Compatibility
+     Maps old variable names to token variables.
+     DO NOT USE these in new code - use --token-* instead.
+     ======================================== */
+
+  /* Card size aliases */
+  --hand-card-width: var(--token-size-hand-card-width);
+  --hand-card-height: var(--token-size-hand-card-height);
+  --hero-card-width: var(--token-size-hero-width);
+  --battlefield-card-width: var(--token-size-battlefield-card-width);
+  --battlefield-card-height: var(--token-size-battlefield-card-height);
+
+  /* Z-index aliases */
+  --z-base: var(--token-z-base);
+  --z-battlefield: var(--token-z-battlefield);
+  --z-cards: var(--token-z-community);
+  --z-minions: var(--token-z-minions);
+  --z-hero: var(--token-z-hero);
+  --z-heroes: var(--token-z-hero);
+  --z-hand: var(--token-z-hand);
+  --z-active-card: var(--token-z-active-card);
+  --z-active-minion: var(--token-z-hero);
+  --z-hover: var(--token-z-hover);
+  --z-drag: var(--token-z-drag);
+  --z-popup: var(--token-z-popup);
+  --z-modal: var(--token-z-modal);
+  --z-hud: var(--token-z-hud);
+  --z-tooltip: var(--token-z-tooltip);
+  --z-overlay: var(--token-z-overlay);
+  --z-betting: var(--token-z-betting);
+  --z-overlays: var(--token-z-timer);
+
+  /* Hover behavior aliases */
+  --hover-lift-distance: var(--token-hover-lift);
+  --hover-scale-factor: var(--token-hover-scale);
+  --hover-safe-zone: var(--token-hover-safe-zone);
+  --hand-overlap: var(--token-hand-overlap);
+  --hand-max-fan-angle: var(--token-hand-fan-angle);
+  --hand-hover-lift: var(--token-hand-hover-lift);
+  --hand-hover-scale: var(--token-hand-hover-scale);
+
+  /* Zone height aliases */
+  --opponent-zone-height: var(--token-size-opponent-zone);
+  --player-zone-height: var(--token-size-player-zone);
+  --hand-zone-height: var(--token-size-hand-zone);
+  --field-zone-height: var(--token-size-field-zone);
+  --hero-zone-height: var(--token-size-hero-zone);
+
+  /* Poker panel aliases */
+  --poker-panel-width: var(--token-size-poker-panel-width);
+  --poker-panel-scale: var(--token-size-poker-panel-scale);
+  --poker-panel-gap: var(--token-size-poker-panel-gap);
 }
 
 /* ========================================
