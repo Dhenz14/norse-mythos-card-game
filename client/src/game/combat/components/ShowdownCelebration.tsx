@@ -14,6 +14,7 @@ interface ShowdownCelebrationProps {
     playerFinalHealth: number;
     opponentFinalHealth: number;
     whoFolded?: 'player' | 'opponent';
+    foldPenalty?: number;
   };
   onComplete: () => void;
 }
@@ -55,10 +56,12 @@ export const ShowdownCelebration: React.FC<ShowdownCelebrationProps> = ({
   const getDamageText = () => {
     if (resolution.winner === 'draw') return '';
     if (resolution.resolutionType === 'fold') {
-      const damage = resolution.whoFolded === 'player' 
-        ? resolution.playerDamage 
-        : resolution.opponentDamage;
-      return `-${damage} HP`;
+      const hpLost = resolution.foldPenalty ?? 0;
+      if (hpLost > 0) {
+        const loserName = resolution.whoFolded === 'player' ? 'You' : 'Opponent';
+        return `${loserName} lost ${hpLost} HP`;
+      }
+      return '';
     }
     const damage = resolution.winner === 'player' 
       ? resolution.opponentDamage 

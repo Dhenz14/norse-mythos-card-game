@@ -539,18 +539,16 @@ export const createPokerCombatSlice: StateCreator<
       const winner = combatState.foldWinner;
       const loser = winner === 'player' ? 'opponent' : 'player';
       
-      const foldPenalty = BLINDS.ANTE + 5;
-      
       let playerFinalHealth = playerCurrentHP;
       let opponentFinalHealth = opponentCurrentHP;
       
       if (winner === 'player') {
         playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
-        opponentFinalHealth = Math.max(0, opponentCurrentHP - foldPenalty);
       } else {
         opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
-        playerFinalHealth = Math.max(0, playerCurrentHP - foldPenalty);
       }
+      
+      const loserCommitted = winner === 'player' ? opponentCommitted : playerCommitted;
       
       const emptyHand: EvaluatedHand = {
         rank: PokerHandRank.HIGH_CARD,
@@ -566,11 +564,11 @@ export const createPokerCombatSlice: StateCreator<
         resolutionType: 'fold',
         playerHand: emptyHand,
         opponentHand: emptyHand,
-        playerDamage: winner === 'opponent' ? foldPenalty : 0,
-        opponentDamage: winner === 'player' ? foldPenalty : 0,
+        playerDamage: 0,
+        opponentDamage: 0,
         playerFinalHealth: Math.max(0, playerFinalHealth),
         opponentFinalHealth: Math.max(0, opponentFinalHealth),
-        foldPenalty,
+        foldPenalty: loserCommitted,
         whoFolded: loser
       };
       
@@ -617,7 +615,7 @@ export const createPokerCombatSlice: StateCreator<
         id: `poker_fold_${Date.now()}`,
         timestamp: Date.now(),
         type: 'poker',
-        message: `${loser} folded - ${winner} wins pot (${foldPenalty} HP penalty)`
+        message: `${loser} folded - ${winner} recovers HP (${loserCommitted} HP lost by ${loser})`
       });
       
       return resolution;

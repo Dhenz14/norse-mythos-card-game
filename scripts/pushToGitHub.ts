@@ -216,6 +216,8 @@ async function pushFiles() {
       'client/src/game/combat/utils/combatArenaUtils.ts',
       'client/src/game/combat/RagnarokCombatArena.tsx',
       'client/src/game/combat/debugConfig.ts',
+      // Combat UI components
+      'client/src/game/combat/components/ShowdownCelebration.tsx',
       // Documentation
       'docs/DESIGN_PHILOSOPHY.md',
       'docs/DECK_BUILDER_AUDIT.md',
