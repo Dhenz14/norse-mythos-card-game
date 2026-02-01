@@ -107,6 +107,15 @@ attached_assets/*Replit*
 Thumbs.db
 
 # ========================================
+# STALE COMPILED FILES - BUILD ARTIFACTS
+# ========================================
+# Prevent stale .js files from accumulating in source directories
+# These can cause Vite module resolution issues
+
+client/src/**/*.js
+!client/src/vite-env.d.ts
+
+# ========================================
 # DOCUMENTATION GUIDELINES
 # ========================================
 # When pushing to GitHub:
