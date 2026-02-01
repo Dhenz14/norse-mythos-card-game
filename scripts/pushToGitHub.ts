@@ -203,6 +203,20 @@ async function pushFiles() {
 
     // Files to push - SECURITY: Never include Replit internal files
     const filesToPush = [
+      // Combat store slices (new modular architecture)
+      'client/src/game/stores/combat/types.ts',
+      'client/src/game/stores/combat/sharedCombatSlice.ts',
+      'client/src/game/stores/combat/pokerCombatSlice.ts',
+      'client/src/game/stores/combat/chessCombatSlice.ts',
+      'client/src/game/stores/combat/minionBattleSlice.ts',
+      'client/src/game/stores/combat/index.ts',
+      'client/src/game/stores/unifiedCombatStore.ts',
+      // Combat hooks and utils
+      'client/src/game/combat/hooks/useRagnarokCombatController.ts',
+      'client/src/game/combat/utils/combatArenaUtils.ts',
+      'client/src/game/combat/RagnarokCombatArena.tsx',
+      'client/src/game/combat/debugConfig.ts',
+      // Documentation
       'docs/DESIGN_PHILOSOPHY.md',
       'docs/DECK_BUILDER_AUDIT.md',
       'docs/GITHUB_SECURITY_GUIDE.md',
