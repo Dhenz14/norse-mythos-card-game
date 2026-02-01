@@ -23,7 +23,7 @@
 
 Ragnarok Combat Arena is a multi-mythology digital collectible card game featuring:
 
-- **1,300+ collectible cards** across 4 mythological factions (Norse, Greek, Japanese/Shinto, Egyptian)
+- **1,300+ collectible cards** across 2 mythological factions (Norse, Greek)
 - **76 playable heroes** across 12 classes
 - **Two distinct game modes**: Ragnarok Chess and Standard Match
 - **Poker-inspired combat** with Texas Hold'em mechanics
@@ -88,8 +88,6 @@ Each hero has three unique abilities:
 
 - **Norse**: Odin, Thor, Loki, Freya, Baldur, Hel, Fenrir, and more
 - **Greek**: Zeus, Athena, Hades, Poseidon, Ares, Apollo, Artemis
-- **Japanese (Shinto)**: Amaterasu, Susanoo, Tsukuyomi, Raijin, Fujin
-- **Egyptian**: Ra, Anubis, Osiris, Isis, Set, Horus, Thoth
 
 ---
 

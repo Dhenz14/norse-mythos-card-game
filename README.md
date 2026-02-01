@@ -20,7 +20,7 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game featur
 
 - **76 Playable Heroes** across 12 classes, each with unique Hero Powers
 - **1,300+ Collectible Cards** with battlecry, deathrattle, combo, and spell effects
-- **4 Mythological Factions**: Norse, Greek, Japanese/Shinto, Egyptian
+- **2 Mythological Factions**: Norse, Greek
 - **Poker Combat System**: Texas Hold'em inspired betting using HP as stakes
 - **Ragnarok Chess**: Strategic 7x5 chess variant where piece collisions trigger poker combat
 - **Premium Card Effects**: Holographic, legendary, and 3D card visuals
@@ -312,8 +312,6 @@ Each hero has three unique abilities:
 
 - **Norse**: Odin, Thor, Loki, Freya, Baldur, Hel, Fenrir, Tyr, Heimdall
 - **Greek**: Zeus, Athena, Hades, Poseidon, Ares, Apollo, Artemis, Hermes
-- **Japanese (Shinto)**: Amaterasu, Susanoo, Tsukuyomi, Raijin, Fujin
-- **Egyptian**: Ra, Anubis, Osiris, Isis, Set, Horus, Thoth
 
 ---
 
