@@ -219,6 +219,8 @@ async function pushFiles() {
       // Combat UI components
       'client/src/game/combat/components/ShowdownCelebration.tsx',
       // Documentation
+      'README.md',
+      'docs/RULEBOOK.md',
       'docs/DESIGN_PHILOSOPHY.md',
       'docs/DECK_BUILDER_AUDIT.md',
       'docs/GITHUB_SECURITY_GUIDE.md',

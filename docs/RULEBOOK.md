@@ -246,26 +246,52 @@ When major pieces collide in Ragnarok Chess, combat is resolved through a Texas 
 
 ### Blind Structure
 
-- **Big Blind**: 5 HP
-- **Small Blind**: 2.5 HP
-- **Ante**: 0.2 HP per player
+- **Small Blind (SB)**: 5 HP
+- **Big Blind (BB)**: 10 HP
+- **Ante**: 0.5 HP per player
 
-**Starting Pot**: ~7.9 HP (SB 2.7 + BB 5.2)
+**Starting Pot**: 16 HP (SB 5 + BB 10 + Ante 0.5 × 2)
 
-### Combat Resolution
+> **Source of Truth**: `client/src/game/combat/modules/BettingEngine.ts` - BLINDS constant
 
-1. Both players reveal their best 5-card hand (2 hole cards + 5 community cards)
-2. Higher-ranked hand wins
-3. Winner deals damage based on pot × hand multiplier
-4. Loser takes the damage to their piece's HP
-5. If piece HP reaches 0, the piece is eliminated
+### Combat Resolution (Option A Rules)
+
+This game uses a **survival-based poker system** where HP is deducted during betting:
+
+1. **HP is deducted during betting** - When you commit HP to the pot, it's immediately subtracted from your health
+2. Both players reveal their best 5-card hand (2 hole cards + 5 community cards)
+3. Higher-ranked hand wins
+4. **Winner heals** - Recovers only their own committed HP (not the opponent's)
+5. **Loser keeps loss** - Does not recover their committed HP
+6. If piece HP reaches 0, the piece is eliminated
+
+**Example Showdown:**
+```
+Player commits 30 HP → Player HP: 100 → 70
+AI commits 20 HP → AI HP: 100 → 80
+
+Player wins with Odin's Eye (Flush):
+- Player heals 30 HP → Player HP: 70 → 100
+- AI keeps loss → AI HP: 80 (lost 20 HP permanently)
+```
 
 ### Fold Penalty
 
 Folding (Brace) results in:
-- Immediate loss of the hand
-- 3 HP penalty damage
-- Opponent wins the pot
+- **Already committed HP is lost** - No recovery for the folder
+- **Winner heals** - Recovers their own committed HP
+- **Stamina Penalty**: -1 STA
+- Armor absorbs damage first, then remaining damage applies to HP
+
+**Example Fold:**
+```
+Player commits 20 HP, then folds:
+- Player HP: 100 → 80 (20 HP lost permanently)
+- Opponent recovers their committed HP
+- Player loses 1 STA
+```
+
+> **Source of Truth**: `client/src/game/stores/combat/pokerCombatSlice.ts` - resolvePokerShowdown function
 
 ---
 
