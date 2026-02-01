@@ -845,7 +845,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             opponentDamage: resolution?.opponentDamage || 0,
             playerFinalHealth: resolution?.playerFinalHealth || 0,
             opponentFinalHealth: resolution?.opponentFinalHealth || 0,
-            whoFolded: resolution?.whoFolded || showdownCelebration.resolution.whoFolded
+            whoFolded: resolution?.whoFolded || showdownCelebration.resolution.whoFolded,
+            foldPenalty: resolution?.foldPenalty || showdownCelebration.resolution.foldPenalty
           }}
           onComplete={() => {
             // Clear backup timer - animation completed normally
