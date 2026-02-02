@@ -224,8 +224,16 @@ async function pushFiles() {
       'client/src/game/stores/combat/pokerCombatSlice.ts',
       'client/src/game/stores/combat/chessCombatSlice.ts',
       'client/src/game/stores/combat/minionBattleSlice.ts',
+      'client/src/game/stores/combat/kingAbilitySlice.ts',
+      'client/src/game/stores/combat/pokerSpellSlice.ts',
       'client/src/game/stores/combat/index.ts',
       'client/src/game/stores/unifiedCombatStore.ts',
+      // Poker Spells system
+      'client/src/game/types/CardTypes.ts',
+      'client/src/game/data/pokerSpellCards.ts',
+      'client/src/game/utils/poker/pokerSpellUtils.ts',
+      'client/src/game/hooks/usePokerSpells.ts',
+      'client/src/game/data/cardRegistry/ID_RANGES.md',
       // Combat hooks and utils
       'client/src/game/combat/hooks/useRagnarokCombatController.ts',
       'client/src/game/combat/utils/combatArenaUtils.ts',

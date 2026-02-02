@@ -13,7 +13,9 @@ import {
   createSharedCombatSlice, 
   createPokerCombatSlice, 
   createChessCombatSlice, 
-  createMinionBattleSlice, 
+  createMinionBattleSlice,
+  createKingAbilitySlice,
+  createPokerSpellSlice,
   turnManager,
   initialBoardState,
   UnifiedCombatStore,
@@ -44,6 +46,8 @@ export const useUnifiedCombatStore = create<UnifiedCombatStore>()((set, get, api
   ...createPokerCombatSlice(set, get, api),
   ...createChessCombatSlice(set, get, api),
   ...createMinionBattleSlice(set, get, api),
+  ...createKingAbilitySlice(set, get, api),
+  ...createPokerSpellSlice(set, get, api),
   
   reset: () => {
     turnManager.reset();
@@ -68,6 +72,16 @@ export const useUnifiedCombatStore = create<UnifiedCombatStore>()((set, get, api
       pokerIsActive: false,
       mulliganComplete: false,
       isTransitioningHand: false,
+      playerKingAbility: null,
+      opponentKingAbility: null,
+      allActiveMines: [],
+      minePlacementMode: false,
+      selectedMineDirection: null,
+      lastMineTriggered: null,
+      pokerSpellState: null,
+      pendingPokerSpells: [],
+      isSpellPetPhase: false,
+      destinyOverrideOptions: [],
     });
   },
 }));

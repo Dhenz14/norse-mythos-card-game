@@ -9,7 +9,9 @@
 3. [Heroes & Classes](#heroes--classes)
 4. [Card System](#card-system)
 5. [Ragnarok Chess](#ragnarok-chess)
+   - [King Divine Command System](#king-divine-command-system)
 6. [Poker Combat System](#poker-combat-system)
+   - [Poker Spells](#poker-spells)
 7. [Standard Match Rules](#standard-match-rules)
 8. [Keywords & Abilities](#keywords--abilities)
 9. [Status Effects](#status-effects)
@@ -195,6 +197,43 @@ When a piece moves to a square occupied by an enemy piece:
 - **Checkmate**: King cannot escape check = Game Over
 - Kings cannot attack (they can only be captured via instant kill)
 
+### King Divine Command System
+
+Each of the 9 Primordial Norse Kings possesses a unique **Divine Command** ability - the power to place hidden landmine traps on the battlefield that drain enemy Stamina when triggered.
+
+#### Core Mechanics
+
+| Rule | Value |
+|------|-------|
+| **Uses Per Game** | 5 mines maximum |
+| **Uses Per Turn** | 1 mine maximum |
+| **Mine Duration** | 2 turns (expires if not triggered) |
+| **STA Penalty** | 2-3 STA when enemy lands on affected tile |
+| **Visibility** | Only visible to the placing player |
+
+#### The 9 Primordial Kings
+
+| King | Mine Shape | Description |
+|------|------------|-------------|
+| **Ymir** | Single Tile | Giant Reach: Place a trap on any single tile. -2 STA if triggered. |
+| **Buri** | 4-Tile Line | Ice Emergence: 4-tile line trap (choose direction). -2 STA per tile landed. |
+| **Surtr** | 3×3 Area | Flame Burst: 3×3 area trap centered on chosen tile. -2 STA center, -1 STA edges. |
+| **Borr** | Full Rank/File | Ancestral Path: Full rank or file trap (7 tiles). -2 STA if triggered. |
+| **Yggdrasil** | Cross Pattern | Root Spread: Cross-shaped trap (5 tiles). -2 STA if triggered. |
+| **Auðumbla** | L-Shape | Primal Flow: L-shaped trap pattern. -2 STA if triggered. |
+| **Blainn** | Diagonal Line | Shadow Forge: 4-tile diagonal line trap. -2 STA if triggered. |
+| **Brimir** | Circle Pattern | Ocean Ring: Circular trap pattern around center. -2 STA if triggered. |
+| **Ginnungagap** | Random Scatter | Void Whisper: Random tile scatter (unpredictable). -3 STA if triggered. |
+
+#### Strategic Considerations
+
+- Mines do NOT trigger on friendly pieces
+- Mines are invisible to opponents until triggered
+- Place mines on likely movement paths (center columns, advancement routes)
+- Kings with larger patterns (Surtr, Borr) offer area denial
+- Kings with precise patterns (Ymir, Blainn) offer tactical placement
+- Triggered mines apply STA penalty before any combat resolution
+
 ### Victory Conditions
 
 - Capture the enemy King (checkmate)
@@ -300,6 +339,66 @@ Player commits 20 HP, then folds:
 ```
 
 > **Source of Truth**: `client/src/game/stores/combat/pokerCombatSlice.ts` - resolvePokerShowdown function
+
+### Poker Spells
+
+Poker Spells are a special card type that affects the psychological and informational aspects of poker combat **without changing pot odds or damage calculations**. They add strategic depth through bluffing, information asymmetry, and variance control.
+
+#### Casting Timing
+
+Poker Spells are cast during the **Spell/Pet Phase** (before the Faith phase). Each spell has a timing property:
+
+| Timing | When Effect Applies |
+|--------|---------------------|
+| **pre_deal** | During Spell/Pet phase, before community cards |
+| **on_bet** | When a betting action occurs |
+| **on_fold** | When a player folds |
+| **on_all_in** | When all-in is declared |
+| **on_river** | During the Destiny (River) phase |
+
+#### Spell Effects by Class
+
+**Neutral Spells** (All Classes):
+
+| Card | Mana | Effect |
+|------|------|--------|
+| **Bluff Rune** | 2 | Gain a Bluff token. Spend it to fake a raise - opponent sees increased pot but your actual commitment is unchanged |
+| **Fate Peek** | 1 | Reveal 1 of opponent's hole cards for this combat |
+| **Stamina Shield** | 1 | Your next fold costs 1 less STA |
+
+**Rogue Spells** (Deception):
+
+| Card | Mana | Effect |
+|------|------|--------|
+| **Hole Swap** | 2 | Swap 1 of your hole cards with 1 of opponent's (random) |
+| **Echo Bet** | 2 | Your next bet action is repeated for free |
+| **Shadow Fold** | 1 | If you fold, your hand stays hidden |
+
+**Mage Spells** (Variance Control):
+
+| Card | Mana | Effect |
+|------|------|--------|
+| **Run It Twice** | 3 | If all-in occurs, deal community cards twice and average hand strength |
+| **River Rewrite** | 4 | After River is revealed, reroll it once |
+| **Norns' Glimpse** | 2 | Peek at the next community card before it's revealed |
+
+**Warlock Spells** (Punishment):
+
+| Card | Mana | Effect |
+|------|------|--------|
+| **Fold Curse** | 3 | If opponent folds, they lose 1 additional STA |
+| **Blood Bet** | 2 | Pay 1 STA: Force opponent to match your bet or fold immediately |
+| **Void Stare** | 2 | Nullify opponent's next Bluff token |
+
+**Legendary Spells** (Game Changers):
+
+| Card | Mana | Effect |
+|------|------|--------|
+| **All-In Aura** | 5 | Your next all-in gains +0.1× damage multiplier |
+| **Ragnarok Gambit** | 4 | Reveal all hole cards for both players. Skip remaining betting, go to showdown |
+| **Destiny Override** | 5 | Choose the River card from 3 random options |
+
+> **Source of Truth**: `client/src/game/data/pokerSpellCards.ts` - ID range 9100-9149
 
 ---
 

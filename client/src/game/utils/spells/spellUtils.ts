@@ -4537,18 +4537,18 @@ function executeTransformRandomInHandSpell(
   const randomIdx = Math.floor(Math.random() * playerState.hand.length);
   const cardToTransform = playerState.hand[randomIdx];
   
-  // Create a transformation card
-  const transformCard: CardData = {
+  // Create a transformation card - use type assertion for discriminated union
+  const transformCard = {
     id: 9998,
     name: "Transformed Card",
-    type: cardToTransform.card.type,
+    type: 'minion' as const,
     manaCost: effect.transformManaCost || 1,
     attack: effect.transformAttack || 1,
     health: effect.transformHealth || 1,
     description: "This card was transformed.",
-    rarity: 'common',
+    rarity: 'common' as const,
     keywords: []
-  };
+  } satisfies CardData;
   
   // Replace the card
   cardToTransform.card = transformCard;

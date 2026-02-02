@@ -225,7 +225,18 @@ export const createChessCombatSlice: StateCreator<
     
     state.incrementAllStamina();
     
-    const movedPiece = updatedPieces.find(p => p.id === piece.id);
+    // Check for mine trigger (King Divine Command System)
+    const mineResult = state.checkAndTriggerMine(to, piece.owner, piece.id);
+    if (mineResult && mineResult.triggered) {
+      console.log(`[Chess] Mine triggered! ${piece.owner} loses ${mineResult.staPenalty} STA`);
+      const movedPieceForMine = get().boardState.pieces.find(p => p.id === piece.id);
+      if (movedPieceForMine) {
+        const newStamina = Math.max(0, movedPieceForMine.stamina - mineResult.staPenalty);
+        state.updatePieceStamina(piece.id, newStamina);
+      }
+    }
+    
+    const movedPiece = get().boardState.pieces.find(p => p.id === piece.id);
     if (movedPiece && state.checkPawnPromotion(movedPiece)) {
       console.log(`[Chess] Pawn promoted to Queen at (${to.row}, ${to.col})`);
       state.promotePawn(movedPiece.id, 'queen');
@@ -735,13 +746,19 @@ export const createChessCombatSlice: StateCreator<
   },
 
   nextTurn: () => {
-    const currentBoardState = get().boardState;
+    const state = get();
+    const currentBoardState = state.boardState;
+    const newTurn = currentBoardState.currentTurn === 'player' ? 'opponent' : 'player';
+    
     set({
       boardState: {
         ...currentBoardState,
-        currentTurn: currentBoardState.currentTurn === 'player' ? 'opponent' : 'player'
+        currentTurn: newTurn
       }
     });
+    
+    // Clear expired mines at end of turn (King Divine Command System)
+    state.clearExpiredMines(currentBoardState.moveCount);
   },
 
   checkWinCondition: (): ChessGameStatus => {

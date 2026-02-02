@@ -240,11 +240,87 @@ export interface MinionBattleSliceActions {
 
 export type MinionBattleSlice = MinionBattleSliceState & MinionBattleSliceActions;
 
+// ==================== KING ABILITY SLICE ====================
+
+import { 
+  ActiveMine, 
+  KingChessAbilityConfig,
+  KingDivineCommandState 
+} from '../../types/ChessTypes';
+import { MineDirection } from '../../utils/chess/kingAbilityUtils';
+
+export interface KingAbilitySliceState {
+  playerKingAbility: KingDivineCommandState | null;
+  opponentKingAbility: KingDivineCommandState | null;
+  allActiveMines: ActiveMine[];
+  minePlacementMode: boolean;
+  selectedMineDirection: MineDirection | null;
+  lastMineTriggered: { mine: ActiveMine; targetPieceId: string } | null;
+}
+
+export interface KingAbilitySliceActions {
+  initializeKingAbilities: (playerKingId: string, opponentKingId: string) => void;
+  placeMine: (
+    owner: 'player' | 'opponent',
+    centerPosition: ChessBoardPosition,
+    direction?: MineDirection
+  ) => boolean;
+  checkAndTriggerMine: (
+    landingPosition: ChessBoardPosition,
+    movingPieceOwner: 'player' | 'opponent',
+    movingPieceId: string
+  ) => { triggered: boolean; staPenalty: number } | null;
+  clearExpiredMines: (currentTurn: number) => void;
+  setMinePlacementMode: (enabled: boolean) => void;
+  setSelectedMineDirection: (direction: MineDirection | null) => void;
+  resetKingAbilities: () => void;
+  canPlaceMine: (owner: 'player' | 'opponent') => boolean;
+  getMinesForOwner: (owner: 'player' | 'opponent') => ActiveMine[];
+  getVisibleMines: (viewerSide: 'player' | 'opponent') => ActiveMine[];
+}
+
+export type KingAbilitySlice = KingAbilitySliceState & KingAbilitySliceActions;
+
+// ==================== POKER SPELL SLICE ====================
+
+import { 
+  PokerSpellState, 
+  ActivePokerSpell,
+  SpellCastResult 
+} from '../../utils/poker/pokerSpellUtils';
+import { PokerSpellCard } from '../../types/CardTypes';
+
+export interface PokerSpellSliceState {
+  pokerSpellState: PokerSpellState | null;
+  pendingPokerSpells: PokerSpellCard[];
+  isSpellPetPhase: boolean;
+  destinyOverrideOptions: string[];
+}
+
+export interface PokerSpellSliceActions {
+  initializePokerSpells: () => void;
+  canCastPokerSpell: (spell: PokerSpellCard, casterMana: number) => { canCast: boolean; reason?: string };
+  castPokerSpell: (spell: PokerSpellCard, caster: 'player' | 'opponent') => SpellCastResult;
+  queuePokerSpell: (spell: PokerSpellCard) => void;
+  clearPokerSpellQueue: () => void;
+  consumeBluffToken: (owner: 'player' | 'opponent') => { success: boolean; message: string };
+  applyStaminaShield: (owner: 'player' | 'opponent', penalty: number) => number;
+  getExtraFoldPenalty: (foldingPlayer: 'player' | 'opponent') => number;
+  setSpellPetPhase: (active: boolean) => void;
+  setDestinyOverrideOptions: (options: string[]) => void;
+  selectDestinyOverride: (cardKey: string) => void;
+  resetPokerSpells: () => void;
+}
+
+export type PokerSpellSlice = PokerSpellSliceState & PokerSpellSliceActions;
+
 export type UnifiedCombatStore = 
   SharedCombatSlice & 
   PokerCombatSlice & 
   ChessCombatSlice & 
-  MinionBattleSlice & {
+  MinionBattleSlice & 
+  KingAbilitySlice & 
+  PokerSpellSlice & {
     reset: () => void;
   };
 

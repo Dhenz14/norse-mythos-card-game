@@ -655,7 +655,7 @@ function executeNorseHeroPower(
           health: summonData.health,
           description: summonData.keywords?.join(', ') || '',
           rarity: 'common' as CardRarity,
-          type: 'minion' as CardType,
+          type: 'minion' as const,
           keywords: summonData.keywords || []
         },
         currentHealth: summonData.health,
@@ -767,7 +767,7 @@ function executeNorseHeroPower(
             health: summonData.health,
             description: '',
             rarity: 'common' as CardRarity,
-            type: 'minion' as CardType,
+            type: 'minion' as const,
             keywords: summonData.keywords || []
           },
           currentHealth: summonData.health,
@@ -1059,7 +1059,7 @@ function executeNorseHeroPower(
               health: summonData.health,
               description: '',
               rarity: 'common' as CardRarity,
-              type: 'minion' as CardType,
+              type: 'minion' as const,
               keywords: summonData.keywords || []
             },
             currentHealth: summonData.health,

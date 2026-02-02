@@ -485,6 +485,24 @@ When attacking with elemental advantage:
 | Bishop | Priest or Druid |
 | Knight | Rogue or Hunter |
 
+### King Divine Command System
+
+Each of the 9 Primordial Norse Kings possesses a unique **Divine Command** - the power to place hidden landmine traps that drain enemy Stamina.
+
+| King | Mine Shape | STA Penalty |
+|------|------------|-------------|
+| **Ymir** | Single Tile | -2 STA |
+| **Buri** | 4-Tile Line | -2 STA |
+| **Surtr** | 3×3 Area | -2 center, -1 edges |
+| **Borr** | Full Rank/File | -2 STA |
+| **Yggdrasil** | Cross Pattern | -2 STA |
+| **Auðumbla** | L-Shape | -2 STA |
+| **Blainn** | Diagonal Line | -2 STA |
+| **Brimir** | Circle Pattern | -2 STA |
+| **Ginnungagap** | Random Scatter | -3 STA |
+
+**Rules:** 5 uses per game, 1 per turn, mines expire after 2 turns if not triggered, invisible to opponents.
+
 ---
 
 ## Tech Stack

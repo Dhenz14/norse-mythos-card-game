@@ -5,7 +5,7 @@
  */
 import { CardEffect } from './EffectTypes';
 
-export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'hero_power';
+export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'hero_power' | 'poker_spell';
 export type CardRarity = 'common' | 'rare' | 'epic' | 'legendary' | 'token' | 'basic' | 'free';
 export type HeroClass = 
   | 'neutral' 
@@ -24,14 +24,22 @@ export type HeroClass =
 export type MinionRace = 
   | 'none' 
   | 'beast' 
-  | 'demon' 
   | 'dragon' 
   | 'elemental' 
-  | 'mech' 
-  | 'murloc' 
-  | 'pirate' 
-  | 'totem' 
-  | 'all';
+  | 'undead'
+  | 'giant'
+  | 'automaton'
+  | 'titan'
+  | 'naga'
+  | 'einherjar'
+  | 'spirit'
+  | 'treant'
+  | 'all'
+  | 'demon'
+  | 'mech'
+  | 'murloc'
+  | 'pirate'
+  | 'totem';
 
 // Battlecry effect interface
 export interface BattlecryEffect {
@@ -60,6 +68,36 @@ export interface SpellEffect {
   [key: string]: any;
 }
 
+// ==================== POKER SPELL TYPES ====================
+
+export type PokerSpellEffectType = 
+  | 'bluff_rune'           // Fake raise token - opponent sees pot increase, actual unchanged
+  | 'fate_peek'            // Reveal 1 opponent hole card
+  | 'stamina_shield'       // Absorb 1 STA on fold penalty
+  | 'hole_swap'            // Swap 1 your/1 opp hole card
+  | 'echo_bet'             // Repeat last bet action free
+  | 'shadow_fold'          // Fold without revealing hand
+  | 'run_twice'            // Dual boards on all-in, average hands
+  | 'river_rewrite'        // Reroll River card once
+  | 'norns_glimpse'        // Peek at next community card
+  | 'fold_curse'           // Next opp fold: -1 extra STA
+  | 'blood_bet'            // Pay 1 STA: Force opponent to match or fold
+  | 'void_stare'           // Nullify opponent's bluff token
+  | 'all_in_aura'          // Next all-in: +0.1× hand multiplier
+  | 'ragnarok_gambit'      // Reveal all cards, skip remaining betting
+  | 'destiny_override';    // Choose River card from 3 options
+
+export type PokerSpellTiming = 'pre_deal' | 'on_bet' | 'on_fold' | 'on_all_in' | 'on_river';
+
+export interface PokerSpellEffect {
+  effectType: PokerSpellEffectType;
+  timing: PokerSpellTiming;
+  duration?: 'instant' | 'this_combat' | 'next_action';
+  targetSelf?: boolean;
+  targetOpponent?: boolean;
+  value?: number;
+}
+
 // Combo effect interface
 export interface ComboEffect {
   type: string;
@@ -83,6 +121,7 @@ export interface Card {
   battlecry?: BattlecryEffect;
   deathrattle?: DeathrattleEffect;
   spellEffect?: SpellEffect;
+  pokerSpellEffect?: PokerSpellEffect;
   combo?: ComboEffect;
   aura?: any;
   onDeath?: any;
@@ -136,6 +175,12 @@ export interface HeroCard extends Card {
 export interface HeroPowerCard extends Card {
   type: 'hero_power';
   spellEffect: SpellEffect;
+}
+
+// Poker spell card interface - spells that affect poker combat
+export interface PokerSpellCard extends Card {
+  type: 'poker_spell';
+  pokerSpellEffect: PokerSpellEffect;
 }
 
 // Card instance with game state
