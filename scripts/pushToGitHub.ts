@@ -234,6 +234,16 @@ async function pushFiles() {
       'client/src/game/utils/poker/pokerSpellUtils.ts',
       'client/src/game/hooks/usePokerSpells.ts',
       'client/src/game/data/cardRegistry/ID_RANGES.md',
+      // Art Management system
+      'client/src/game/utils/art/types.ts',
+      'client/src/game/utils/art/artUtils.ts',
+      'client/src/game/utils/art/index.ts',
+      'client/src/game/hooks/useArtManager.ts',
+      'client/src/game/components/art/ArtCard.tsx',
+      'client/src/game/components/art/ArtGallery.tsx',
+      'client/src/game/components/art/index.ts',
+      'client/src/game/components/HeroDeckBuilder.tsx',
+      'client/public/art/metadata.json',
       // Combat hooks and utils
       'client/src/game/combat/hooks/useRagnarokCombatController.ts',
       'client/src/game/combat/utils/combatArenaUtils.ts',
