@@ -22,6 +22,7 @@ export const createMinionBattleSlice: StateCreator<
 > = (set, get) => ({
   battlefield: null,
   sharedDeck: null,
+  pendingElementalBuffNotification: null,
 
   initializeSharedDeck: (cardIds: string[]) => {
     set({
@@ -67,20 +68,49 @@ export const createMinionBattleSlice: StateCreator<
 
   spawnMinion: (minion) => {
     const battlefield = get().battlefield;
+    const pokerCombatState = get().pokerCombatState;
     if (!battlefield) return;
+
+    const buffedMinion = { ...minion };
+    
+    const ownerState = minion.ownerId === 'player' 
+      ? pokerCombatState?.player 
+      : pokerCombatState?.opponent;
+    
+    if (ownerState?.elementBuff?.hasAdvantage) {
+      const attackBonus = ownerState.elementBuff.attackBonus || 0;
+      const healthBonus = ownerState.elementBuff.healthBonus || 0;
+      buffedMinion.attack = (buffedMinion.attack || 0) + attackBonus;
+      buffedMinion.health = (buffedMinion.health || 0) + healthBonus;
+      buffedMinion.maxHealth = (buffedMinion.maxHealth || buffedMinion.health || 0) + healthBonus;
+      (buffedMinion as any).hasElementalBuff = true;
+      (buffedMinion as any).elementalBuffAmount = { attack: attackBonus, health: healthBonus };
+      
+      set({
+        pendingElementalBuffNotification: {
+          minionId: buffedMinion.instanceId,
+          minionName: buffedMinion.name,
+          attackBonus,
+          healthBonus,
+          element: ownerState.pet?.stats?.element || 'neutral',
+          owner: minion.ownerId as 'player' | 'opponent',
+          timestamp: Date.now()
+        }
+      });
+    }
 
     if (minion.ownerId === 'player') {
       set({
         battlefield: {
           ...battlefield,
-          playerMinions: [...battlefield.playerMinions, minion],
+          playerMinions: [...battlefield.playerMinions, buffedMinion],
         },
       });
     } else {
       set({
         battlefield: {
           ...battlefield,
-          opponentMinions: [...battlefield.opponentMinions, minion],
+          opponentMinions: [...battlefield.opponentMinions, buffedMinion],
         },
       });
     }
@@ -164,6 +194,10 @@ export const createMinionBattleSlice: StateCreator<
     });
 
     return result;
+  },
+
+  clearElementalBuffNotification: () => {
+    set({ pendingElementalBuffNotification: null });
   },
 });
 

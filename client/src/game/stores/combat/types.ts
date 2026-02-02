@@ -142,8 +142,10 @@ export interface PokerCombatSliceActions {
     opponentPet: PetData,
     skipMulligan?: boolean,
     playerKingId?: string,
-    opponentKingId?: string
+    opponentKingId?: string,
+    firstStrikeTarget?: 'player' | 'opponent'
   ) => void;
+  completeFirstStrike: () => void;
   completeMulligan: () => void;
   performPokerAction: (playerId: string, action: CombatAction, hpCommitment?: number) => void;
   advancePokerPhase: () => void;
@@ -210,9 +212,20 @@ export interface ChessCombatSliceActions {
 
 export type ChessCombatSlice = ChessCombatSliceState & ChessCombatSliceActions;
 
+export interface ElementalBuffNotification {
+  minionId: string;
+  minionName: string;
+  attackBonus: number;
+  healthBonus: number;
+  element: string;
+  owner: 'player' | 'opponent';
+  timestamp: number;
+}
+
 export interface MinionBattleSliceState {
   battlefield: BattlefieldState | null;
   sharedDeck: SharedDeckState | null;
+  pendingElementalBuffNotification: ElementalBuffNotification | null;
 }
 
 export interface MinionBattleSliceActions {
@@ -222,6 +235,7 @@ export interface MinionBattleSliceActions {
   initializeSharedDeck: (cardIds: string[]) => void;
   burnCard: (cardId: string) => void;
   dealCardToPlayer: (player: 'player' | 'opponent', cardId: string) => void;
+  clearElementalBuffNotification: () => void;
 }
 
 export type MinionBattleSlice = MinionBattleSliceState & MinionBattleSliceActions;

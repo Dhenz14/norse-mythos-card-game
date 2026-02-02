@@ -1,11 +1,13 @@
 import { HeroClass, HeroPower, GameState, CardInstance, Position, CardData, CardRarity, CardType, EquippedWeapon } from '../types';
 import { NorseHero, NorseHeroPower } from '../types/NorseTypes';
-import { updateEnrageEffects } from './enrageUtils';
+import { updateEnrageEffects } from './mechanics/enrageUtils';
 import { destroyCard } from './zoneUtils';
 import { drawCard, addCardToHand } from './deckUtils';
 import { handleInspireEffects } from './mechanicsUtils';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { NORSE_HEROES } from '../data/norseHeroes/heroDefinitions';
+import { isMinion, isWeapon, isSpell, isHero, getAttack, getHealth, getDurability } from './cards/typeGuards';
+import { trackQuestProgress } from './quests/questProgress';
 
 // Type for animation callback function
 // Used to trigger animations when hero power is used
@@ -391,12 +393,14 @@ function executeNorseHeroPower(
       const damage = power.value || 1;
       // Deal damage to all enemy minions
       for (const minion of opponent.battlefield) {
-        minion.currentHealth -= damage;
-        console.log(`[Hero Power] Dealt ${damage} damage to ${minion.card.name}`);
+        if (minion.currentHealth !== undefined) {
+          minion.currentHealth -= damage;
+          console.log(`[Hero Power] Dealt ${damage} damage to ${minion.card.name}`);
+        }
       }
       // Check for deaths
       state = updateEnrageEffects(state);
-      const deadMinions = opponent.battlefield.filter(m => m.currentHealth <= 0);
+      const deadMinions = opponent.battlefield.filter(m => (m.currentHealth ?? 0) <= 0);
       for (const dead of deadMinions) {
         state = destroyCard(state, dead.instanceId, opponentType);
       }
@@ -421,7 +425,7 @@ function executeNorseHeroPower(
         // Find target minion
         const allBattlefields = [...player.battlefield, ...opponent.battlefield];
         const targetMinion = allBattlefields.find(m => m.instanceId === targetId);
-        if (targetMinion) {
+        if (targetMinion && targetMinion.currentHealth !== undefined) {
           targetMinion.currentHealth -= damage;
           console.log(`[Hero Power] Dealt ${damage} damage to ${targetMinion.card.name}`);
           
@@ -455,20 +459,24 @@ function executeNorseHeroPower(
       }
       const randomIdx = Math.floor(Math.random() * opponent.battlefield.length);
       const target = opponent.battlefield[randomIdx];
-      target.currentHealth -= damage;
-      console.log(`[Hero Power] Dealt ${damage} random damage to ${target.card.name}`);
+      if (target.currentHealth !== undefined) {
+        target.currentHealth -= damage;
+        console.log(`[Hero Power] Dealt ${damage} random damage to ${target.card.name}`);
+      }
       
       // Handle splash damage (secondaryValue)
-      if (power.secondaryValue) {
+      const splashDamageAmount = (power as NorseHeroPower).secondaryValue ?? 0;
+      if (splashDamageAmount > 0) {
         for (let i = 0; i < opponent.battlefield.length; i++) {
-          if (i !== randomIdx) {
-            opponent.battlefield[i].currentHealth -= power.secondaryValue;
+          const minion = opponent.battlefield[i];
+          if (i !== randomIdx && minion && minion.currentHealth !== undefined) {
+            minion.currentHealth -= splashDamageAmount;
           }
         }
       }
       
       state = updateEnrageEffects(state);
-      const deadMinions = opponent.battlefield.filter(m => m.currentHealth <= 0);
+      const deadMinions = opponent.battlefield.filter(m => (m.currentHealth ?? 0) <= 0);
       for (const dead of deadMinions) {
         state = destroyCard(state, dead.instanceId, opponentType);
       }
@@ -494,10 +502,12 @@ function executeNorseHeroPower(
       if (!targetId && power.targetType === 'random_friendly' && player.battlefield.length > 0) {
         const randomIdx = Math.floor(Math.random() * player.battlefield.length);
         const target = player.battlefield[randomIdx];
-        target.card.attack = (target.card.attack || 0) + value;
-        if (power.duration !== 'this_turn') {
-          target.currentHealth += healthValue;
-          target.card.health = (target.card.health || 0) + healthValue;
+        if (isMinion(target.card)) {
+          target.card.attack = (target.card.attack ?? 0) + value;
+          if (power.duration !== 'this_turn' && target.currentHealth !== undefined) {
+            target.currentHealth += healthValue;
+            target.card.health = (target.card.health ?? 0) + healthValue;
+          }
         }
         console.log(`[Hero Power] Buffed ${target.card.name} +${value}/+${healthValue}`);
         
@@ -506,11 +516,11 @@ function executeNorseHeroPower(
         }
       } else if (targetId) {
         const target = player.battlefield.find(m => m.instanceId === targetId);
-        if (target) {
-          target.card.attack = (target.card.attack || 0) + value;
-          if (power.duration !== 'this_turn') {
+        if (target && isMinion(target.card)) {
+          target.card.attack = (target.card.attack ?? 0) + value;
+          if (power.duration !== 'this_turn' && target.currentHealth !== undefined) {
             target.currentHealth += healthValue;
-            target.card.health = (target.card.health || 0) + healthValue;
+            target.card.health = (target.card.health ?? 0) + healthValue;
           }
           console.log(`[Hero Power] Buffed ${target.card.name} +${value}/+${healthValue}`);
           
@@ -528,13 +538,15 @@ function executeNorseHeroPower(
       return state;
     }
 
-    case 'buff':
+    case 'buff' as any:
     case 'buff_aoe': {
       const value = power.value || 1;
       for (const minion of player.battlefield) {
-        minion.card.attack = (minion.card.attack || 0) + value;
-        minion.currentHealth += value;
-        minion.card.health = (minion.card.health || 0) + value;
+        if (isMinion(minion.card) && minion.currentHealth !== undefined) {
+          minion.card.attack = (minion.card.attack ?? 0) + value;
+          minion.currentHealth += value;
+          minion.card.health = (minion.card.health ?? 0) + value;
+        }
       }
       console.log(`[Hero Power] Buffed all friendly minions +${value}/+${value}`);
       return state;
@@ -566,8 +578,8 @@ function executeNorseHeroPower(
       } else {
         const allMinions = [...player.battlefield, ...opponent.battlefield];
         const target = allMinions.find(m => m.instanceId === targetId);
-        if (target) {
-          const maxHealth = target.card.health || 1;
+        if (target && target.currentHealth !== undefined) {
+          const maxHealth = getHealth(target.card) || 1;
           target.currentHealth = Math.min(target.currentHealth + healAmount, maxHealth);
           console.log(`[Hero Power] Restored ${healAmount} health to ${target.card.name}`);
         }
@@ -579,8 +591,10 @@ function executeNorseHeroPower(
     case 'heal_all_friendly': {
       const healAmount = power.value || 1;
       for (const minion of player.battlefield) {
-        const maxHealth = minion.card.health || 1;
-        minion.currentHealth = Math.min(minion.currentHealth + healAmount, maxHealth);
+        if (minion.currentHealth !== undefined) {
+          const maxHealth = getHealth(minion.card) || 1;
+          minion.currentHealth = Math.min(minion.currentHealth + healAmount, maxHealth);
+        }
       }
       console.log(`[Hero Power] Restored ${healAmount} health to all friendly minions`);
       return state;
@@ -591,10 +605,10 @@ function executeNorseHeroPower(
       const buffAmount = power.secondaryValue || 1;
       if (targetId) {
         const target = player.battlefield.find(m => m.instanceId === targetId);
-        if (target) {
-          const maxHealth = target.card.health || 1;
+        if (target && isMinion(target.card) && target.currentHealth !== undefined) {
+          const maxHealth = getHealth(target.card) || 1;
           target.currentHealth = Math.min(target.currentHealth + healAmount, maxHealth);
-          target.card.attack = (target.card.attack || 0) + buffAmount;
+          target.card.attack = (target.card.attack ?? 0) + buffAmount;
           console.log(`[Hero Power] Healed ${target.card.name} for ${healAmount} and gave +${buffAmount} attack`);
         }
       }
@@ -660,6 +674,9 @@ function executeNorseHeroPower(
       
       player.battlefield.push(summonedMinion);
       console.log(`[Hero Power] Summoned ${summonData.name} (${summonData.attack}/${summonData.health})`);
+      
+      // Track quest progress for summoned minion
+      trackQuestProgress(playerType, 'summon_minion', summonedMinion.card);
       return state;
     }
 
@@ -704,7 +721,7 @@ function executeNorseHeroPower(
           rarity: 'common' as CardRarity,
           type: 'minion' as CardType,
           keywords: totemData.keywords,
-          race: 'totem'
+          race: 'spirit'
         } as CardData,
         currentHealth: totemData.health + bonusStats.health,
         canAttack: false,
@@ -716,6 +733,9 @@ function executeNorseHeroPower(
       
       player.battlefield.push(totem);
       console.log(`[Hero Power] Summoned ${totemData.name}`);
+      
+      // Track quest progress for summoned totem
+      trackQuestProgress(playerType, 'summon_minion', totem.card);
       return state;
     }
 
@@ -764,6 +784,9 @@ function executeNorseHeroPower(
         
         player.battlefield.push(minion);
         console.log(`[Hero Power] Summoned ${summonData.name}`);
+        
+        // Track quest progress for summoned minion
+        trackQuestProgress(playerType, 'summon_minion', minion.card);
       }
       return state;
     }
@@ -777,19 +800,19 @@ function executeNorseHeroPower(
       }
       
       const target = player.battlefield.find(m => m.instanceId === targetId);
-      if (target) {
+      if (target && isMinion(target.card)) {
         const keyword = power.grantKeyword || 'divine_shield';
         applyKeywordToMinion(target, keyword);
         console.log(`[Hero Power] Granted ${keyword} to ${target.card.name}`);
         
         // Handle stat bonuses with keyword
         if (power.value) {
-          target.card.attack = (target.card.attack || 0) + power.value;
+          target.card.attack = (target.card.attack ?? 0) + power.value;
           console.log(`[Hero Power] Also gave +${power.value} attack`);
         }
-        if (power.secondaryValue) {
+        if (power.secondaryValue && target.currentHealth !== undefined) {
           target.currentHealth += power.secondaryValue;
-          target.card.health = (target.card.health || 0) + power.secondaryValue;
+          target.card.health = (target.card.health ?? 0) + power.secondaryValue;
           console.log(`[Hero Power] Also gave +${power.secondaryValue} health`);
         }
       }
@@ -803,7 +826,7 @@ function executeNorseHeroPower(
       }
       
       const target = player.battlefield.find(m => m.instanceId === targetId);
-      if (target) {
+      if (target && isMinion(target.card)) {
         (target as any).hasStealth = true;
         if (!target.card.keywords) target.card.keywords = [];
         if (!target.card.keywords.includes('stealth')) {
@@ -822,7 +845,7 @@ function executeNorseHeroPower(
       
       const allMinions = [...player.battlefield, ...opponent.battlefield];
       const target = allMinions.find(m => m.instanceId === targetId);
-      if (target) {
+      if (target && isMinion(target.card)) {
         // Remove all keywords and effects
         target.card.keywords = [];
         target.card.battlecry = undefined;
@@ -834,7 +857,7 @@ function executeNorseHeroPower(
         console.log(`[Hero Power] Silenced ${target.card.name}`);
         
         // Deal damage if upgraded (Hoenir+)
-        if (power.value) {
+        if (power.value && target.currentHealth !== undefined) {
           target.currentHealth -= power.value;
           state = updateEnrageEffects(state);
           if (target.currentHealth <= 0) {
@@ -886,8 +909,8 @@ function executeNorseHeroPower(
       }
       
       const target = opponent.battlefield.find(m => m.instanceId === targetId);
-      if (target) {
-        target.card.attack = Math.max(0, (target.card.attack || 0) - debuffAmount);
+      if (target && isMinion(target.card)) {
+        target.card.attack = Math.max(0, getAttack(target.card) - debuffAmount);
         console.log(`[Hero Power] Reduced ${target.card.name}'s attack by ${debuffAmount}`);
       }
       return state;
@@ -916,7 +939,7 @@ function executeNorseHeroPower(
         attack: weaponData.attack
       };
       
-      player.weapon = weapon;
+      player.weapon = weapon as any;
       console.log(`[Hero Power] Equipped ${weaponData.name || 'Wicked Knife'} (${weaponData.attack}/${weaponData.durability})`);
       return state;
     }
@@ -931,7 +954,8 @@ function executeNorseHeroPower(
       const target = opponent.battlefield.find(m => m.instanceId === targetId);
       if (target && power.condition) {
         const maxAttack = power.condition.maxAttack ?? Infinity;
-        if ((target.card.attack || 0) <= maxAttack) {
+        const attack = getAttack(target.card);
+        if (attack <= maxAttack) {
           state = destroyCard(state, target.instanceId, opponentType);
           console.log(`[Hero Power] Destroyed ${target.card.name}`);
         } else {
@@ -950,10 +974,12 @@ function executeNorseHeroPower(
       const value = power.value || 2;
       const allMinions = [...player.battlefield, ...opponent.battlefield];
       const target = allMinions.find(m => m.instanceId === targetId);
-      if (target) {
-        target.card.attack = value;
-        target.card.health = value;
-        target.currentHealth = value;
+      if (target && isMinion(target.card)) {
+        (target.card as any).attack = value;
+        (target.card as any).health = value;
+        if (target.currentHealth !== undefined) {
+          target.currentHealth = value;
+        }
         console.log(`[Hero Power] Set ${target.card.name}'s stats to ${value}/${value}`);
       }
       return state;
@@ -1046,6 +1072,9 @@ function executeNorseHeroPower(
           
           player.battlefield.push(minion);
           console.log(`[Hero Power] Summoned ${summonData.name}`);
+          
+          // Track quest progress for summoned minion
+          trackQuestProgress(playerType, 'summon_minion', minion.card);
         }
       }
       return state;
@@ -1059,7 +1088,7 @@ function executeNorseHeroPower(
       }
       
       const target = opponent.battlefield.find(m => m.instanceId === targetId);
-      if (target) {
+      if (target && target.currentHealth !== undefined) {
         target.currentHealth -= damage;
         (target as any).isPoisoned = true;
         console.log(`[Hero Power] Dealt ${damage} damage to ${target.card.name} and applied Poison`);
@@ -1270,6 +1299,9 @@ function executePaladinPower(state: GameState, playerType: 'player' | 'opponent'
   // Add the recruit to the battlefield
   player.battlefield.push(recruit);
   
+  // Track quest progress for summoned recruit
+  trackQuestProgress(playerType, 'summon_minion', recruit.card);
+  
   return state;
 }
 
@@ -1368,7 +1400,7 @@ function executePriestPower(
       return state;
     }
     
-    const maxHealth = (targetCard.card as any).health || 1;
+    const maxHealth = getHealth(targetCard.card) || 1;
     
     // Heal the card
     targetCard.currentHealth = Math.min(targetCard.currentHealth + 2, maxHealth);
@@ -1490,7 +1522,7 @@ function executeShamanPower(state: GameState, playerType: 'player' | 'opponent')
   const totem: CardInstance = {
     instanceId: `${playerType}_totem_${Date.now()}`,
     card: selectedTotem,
-    currentHealth: (selectedTotem as any).health,
+    currentHealth: getHealth(selectedTotem) || 1,
     canAttack: false, // Cannot attack on the turn it's summoned
     isPlayed: true,
     isSummoningSick: true,
@@ -1500,6 +1532,9 @@ function executeShamanPower(state: GameState, playerType: 'player' | 'opponent')
   
   // Add the totem to the battlefield
   player.battlefield.push(totem);
+  
+  // Track quest progress for summoned totem
+  trackQuestProgress(playerType, 'summon_minion', totem.card);
   
   return state;
 }
@@ -1536,7 +1571,7 @@ function executeRoguePower(state: GameState, playerType: 'player' | 'opponent'):
   }
   
   // Equip the dagger
-  player.weapon = dagger;
+  player.weapon = dagger as any;
   
   return state;
 }

@@ -203,6 +203,21 @@ async function pushFiles() {
 
     // Files to push - SECURITY: Never include Replit internal files
     const filesToPush = [
+      // Quest system - types, utilities, store, hooks, components
+      'client/src/game/utils/quests/types.ts',
+      'client/src/game/utils/quests/questUtils.ts',
+      'client/src/game/utils/quests/questProgress.ts',
+      'client/src/game/utils/quests/index.ts',
+      'client/src/game/stores/questStore.ts',
+      'client/src/game/hooks/useQuestTracker.ts',
+      'client/src/game/components/quest/QuestTracker.tsx',
+      // Game utils with quest integration
+      'client/src/game/utils/gameUtils.ts',
+      'client/src/game/utils/deathrattleUtils.ts',
+      'client/src/game/utils/battlecryUtils.ts',
+      'client/src/game/utils/heroPowerUtils.ts',
+      'client/src/game/utils/spells/spellUtils.ts',
+      'client/src/game/utils/mechanics/colossalUtils.ts',
       // Combat store slices (new modular architecture)
       'client/src/game/stores/combat/types.ts',
       'client/src/game/stores/combat/sharedCombatSlice.ts',

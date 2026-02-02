@@ -10,6 +10,7 @@ import {
   MinionCardData,
   WeaponCardData
 } from '../types';
+import { trackQuestProgress } from './quests/questProgress';
 import { useAnimationStore } from '../animations/AnimationManager';
 import allCards from '../data/allCards';
 import { 
@@ -20,11 +21,11 @@ import {
   isMurlocCard,
   instanceToCardData,
   getCardKeywords
-} from './cardUtils';
+} from './cards/cardUtils';
 import { transformMinion, silenceMinion } from './transformUtils';
-import { dealDamage } from './damageUtils';
-import { healTarget } from './effectUtils';
-import { setHeroHealth } from './healthModifierUtils';
+import { dealDamage } from './effects/damageUtils';
+import { healTarget } from './effects/effectUtils';
+import { setHeroHealth } from './effects/healthModifierUtils';
 import { getCardsFromPool } from '../data/discoverPools';
 import { getDiscoveryOptions, createDiscoveryFromSpell } from './discoveryUtils';
 import { 
@@ -34,7 +35,7 @@ import {
   executeRazaBattlecry,
   executeKrulBattlecry 
 } from './highlanderUtils';
-import { summonColossalParts } from './colossalUtils';
+import { summonColossalParts } from './mechanics/colossalUtils';
 import executeReturnReturn from '../effects/handlers/battlecry/returnHandler';
 
 /**
@@ -814,6 +815,8 @@ function executeSummonBattlecry(
   }
   state.players.player.battlefield.push(summonedCard);
   
+  // Track quest progress for summoned minion
+  trackQuestProgress('player', 'summon_minion', summonedCard.card);
   
   return state;
 }
@@ -1577,9 +1580,13 @@ function executeEquipWeaponBattlecry(
   // Create and equip the new weapon
   const weaponCardData = weaponCard as WeaponCardData;
   state.players.player.weapon = {
+    instanceId: uuidv4(),
     card: weaponCardData,
-    durability: weaponCardData.durability || 1,
-    attack: weaponCardData.attack || 1
+    currentHealth: weaponCardData.durability || 1,
+    canAttack: true,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
   };
   
   

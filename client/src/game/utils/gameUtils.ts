@@ -1,29 +1,32 @@
 import { GameState, CardInstance, Player, HeroClass, CardData } from '../types';
-import { createStartingDeck, createClassDeck, drawCards, findCardInstance } from './cardUtils';
+import { createStartingDeck, createClassDeck, drawCards, findCardInstance } from './cards/cardUtils';
+import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { getDefaultHeroPower, resetHeroPower } from './heroPowerUtils';
 import { requiresBattlecryTarget, executeBattlecry } from './battlecryUtils';
 import { equipWeapon } from './weaponUtils';
-import { moveCard, drawCardFromDeck, destroyCard } from './zoneUtils';
+import { moveCard, drawCardFromDeck, destroyCard, removeDeadMinions } from './zoneUtils';
 import { playSecret } from './secretUtils';
-import { executeSpell, requiresSpellTarget } from './spellUtils';
-import { updateEnrageEffects } from './enrageUtils';
+import { executeSpell, requiresSpellTarget } from './spells/spellUtils';
+import { updateEnrageEffects } from './mechanics/enrageUtils';
 import { executeComboEffect, shouldActivateCombo } from './comboUtils';
-import { executeComboSpellEffect } from './comboSpellUtils';
+import { executeComboSpellEffect } from './spells/comboSpellUtils';
 import { applyOverload, getOverloadAmount, hasOverload } from './overloadUtils';
-import { processFrozenEffectsAtTurnEnd } from './freezeUtils';
+import { processFrozenEffectsAtTurnEnd } from './mechanics/freezeUtils';
 import { processWeaponsAtTurnEnd } from './weaponUtils';
 import { processDormantEffects } from './dormantUtils';
-import { processRushAtTurnEnd, isValidRushTarget, initializeRushEffect } from './rushUtils';
-import { processStartOfTurnEffects, processEndOfTurnEffects } from './turnEffectsUtils';
+import { processRushAtTurnEnd, isValidRushTarget, initializeRushEffect } from './mechanics/rushUtils';
+import { processStartOfTurnEffects, processEndOfTurnEffects } from './effects/turnEffectsUtils';
 // Import frenzy utilities but only use processFrenzyEffects to avoid circular dependency
-import { processFrenzyEffects } from './frenzyUtils';
-import { summonColossalParts } from './colossalUtils';
+import { processFrenzyEffects } from './mechanics/frenzyUtils';
+import { summonColossalParts } from './mechanics/colossalUtils';
 import { performTurnStartResets } from './resetUtils';
-import { hasEcho, createEchoCopy, expireEchoCardsAtEndOfTurn } from './echoUtils';
-import { processAfterAttackEffects, processAfterHeroAttackEffects } from './afterAttackUtils';
-import { dealDamage } from './damageUtils';
-import { canMagnetize, applyMagnetization, isValidMagneticTarget } from './magneticUtils';
+import { hasEcho, createEchoCopy, expireEchoCardsAtEndOfTurn } from './mechanics/echoUtils';
+import { processAfterAttackEffects, processAfterHeroAttackEffects } from './mechanics/afterAttackUtils';
+import { dealDamage } from './effects/damageUtils';
+import { canMagnetize, applyMagnetization, isValidMagneticTarget } from './mechanics/magneticUtils';
 import allCards from '../data/allCards';
+import { trackQuestProgress, activateQuest } from './quests/questProgress';
+import { isQuestCard, extractQuestData } from './quests/questUtils';
 import { 
   logCardPlay, 
   logAttack, 
@@ -45,7 +48,6 @@ import {
   isNorseActive
 } from './norseIntegration';
 import { processOnAttackStatusEffect } from '../effects/handlers/onAttackStatusHandler';
-import { getModifiedAttack, canMinionAct } from './statusEffectUtils';
 import { isSuperMinion, shouldGetHeroBonus } from '../data/sets/superMinions/heroSuperMinions';
 
 /**
@@ -215,7 +217,7 @@ export function drawCard(state: GameState): GameState {
     // Log fatigue damage
     
     // Apply fatigue damage (increasing with each empty draw)
-    let updatedState = {
+    let updatedState: GameState = {
       ...state,
       fatigueCount: {
         ...state.fatigueCount,
@@ -228,7 +230,7 @@ export function drawCard(state: GameState): GameState {
           health: player.health - newFatigue
         }
       }
-    };
+    } as GameState;
     
     // Make sure fatigueCount is defined in the state
     const stateWithFatigue: GameState = {
@@ -242,7 +244,7 @@ export function drawCard(state: GameState): GameState {
     // Add to game log
     updatedState = logCardDraw(
       stateWithFatigue, 
-      currentPlayer,
+      currentPlayer as 'player' | 'opponent',
       undefined, // cardId
       false, // isBurned
       true, // isFatigue
@@ -341,6 +343,26 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
       return state;
     }
     
+    // Check if this is a quest card - activate the quest instead of normal spell effect
+    if (isQuestCard(card.card)) {
+      // Remove card from hand
+      player.hand.splice(index, 1);
+      
+      // Update player state
+      player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
+      player.mana.current -= (card.card.manaCost || 0);
+      player.mana.pendingOverload = pendingOverload;
+      
+      // Activate the quest via utility layer
+      const questData = extractQuestData(card.card);
+      if (questData) {
+        const questOwner = currentPlayer === 'player' ? 'player' : 'opponent';
+        activateQuest(questOwner, questData);
+      }
+      
+      return newState;
+    }
+    
     // Remove card from hand
     player.hand.splice(index, 1);
     
@@ -348,6 +370,10 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
     player.mana.current -= (card.card.manaCost || 0);
     player.mana.pendingOverload = pendingOverload;
+    
+    // Track quest progress for spell casts
+    const spellQuestOwner = currentPlayer === 'player' ? 'player' : 'opponent';
+    trackQuestProgress(spellQuestOwner, 'cast_spell', card.card);
     
     // Execute the spell effect
     
@@ -464,6 +490,10 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   player.mana.current -= (card.card.manaCost || 0);
   player.mana.pendingOverload = pendingOverload;
   
+  // Track quest progress for minion plays
+  const questOwner = currentPlayer === 'player' ? 'player' : 'opponent';
+  trackQuestProgress(questOwner, 'play_minion', playedCard.card);
+  
   // Process Norse King/Hero on-minion-play effects (Ragnarok Poker integration)
   if (isNorseActive()) {
     const minionElement = (playedCard.card as any).element;
@@ -506,7 +536,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // Handle Combo effects (takes precedence over battlecry when active)
   if (hasComboEffect && shouldActivateCombo(newState, currentPlayer)) {
-    return executeComboEffect(newState, fieldCardId, targetId, targetType);
+    return executeComboEffect(newState, currentPlayer, fieldCardId, targetId);
   }
   
   // Execute battlecry effect if the card has one and has the battlecry keyword
@@ -744,10 +774,9 @@ export function endTurn(state: GameState): GameState {
   const currentPlayer = state.currentTurn;
   const nextPlayer = currentPlayer === 'player' ? 'opponent' : 'player';
   
-  // If player is ending their turn, auto-attack with their minions first
-  if (currentPlayer === 'player') {
-    state = simulatePlayerMinionAttacks(state);
-  }
+  // NOTE: Player minion attacks are now MANUAL (Hearthstone-style)
+  // Auto-attack was removed as it caused opponent minions to die unexpectedly
+  // Players must click on their minions and select targets during their turn
   
   // Process various end-of-turn mechanics
   state = processFrozenEffectsAtTurnEnd(state);
@@ -837,6 +866,49 @@ export function endTurn(state: GameState): GameState {
     }
   };
   
+  // Handle return of temporary mind-controlled minions
+  for (const pid of ['player', 'opponent'] as const) {
+    const p = newState.players[pid];
+    const otherPid = pid === 'player' ? 'opponent' : 'player';
+    const minionsToReturn = p.battlefield.filter(m => m.returnToOwnerAtEndOfTurn && m.originalOwner === otherPid);
+    
+    if (minionsToReturn.length > 0) {
+      // Update state to remove them from current battlefield
+      newState = {
+        ...newState,
+        players: {
+          ...newState.players,
+          [pid]: {
+            ...p,
+            battlefield: p.battlefield.filter(m => !m.returnToOwnerAtEndOfTurn || m.originalOwner !== otherPid)
+          }
+        }
+      };
+      
+      // Add to original owner's battlefield
+      const targetPlayer = newState.players[otherPid];
+      const returnedMinions = minionsToReturn.map(m => ({
+        ...m,
+        returnToOwnerAtEndOfTurn: false,
+        originalOwner: undefined,
+        isSummoningSick: true,
+        canAttack: false,
+        isPlayerOwned: otherPid === 'player'
+      })).filter((_, i) => (targetPlayer.battlefield.length + i) < 7);
+
+      newState = {
+        ...newState,
+        players: {
+          ...newState.players,
+          [otherPid]: {
+            ...targetPlayer,
+            battlefield: [...targetPlayer.battlefield, ...returnedMinions]
+          }
+        }
+      };
+    }
+  }
+
   // Apply standard turn-start pipeline for the next player
   newState = applyTurnStartPipeline(newState, typedNextPlayer);
   
@@ -1278,8 +1350,10 @@ function processAttackForOpponent(
     const attacker = opponentField[attackerIndex];
     
     // Check if minion can act (Frozen/Paralysis check)
-    const actionCheck = canMinionAct(attacker);
-    if (!actionCheck.canAct) {
+    if (attacker.isFrozen) {
+      return state;
+    }
+    if (attacker.isParalyzed && Math.random() < 0.5) {
       return state;
     }
     
@@ -1298,7 +1372,10 @@ function processAttackForOpponent(
         return state;
       }
       
-      const attackDamage = getModifiedAttack(attacker);
+      // Calculate attack with status effects using type guard
+      let attackDamage = attacker.currentAttack ?? getAttack(attacker.card);
+      if (attacker.isWeakened) attackDamage = Math.max(0, attackDamage - 3);
+      if (attacker.isBurning) attackDamage += 3;
       
       // Queue animation with full combat data for deferred damage
       queueAIAttackAnimation(
@@ -1372,7 +1449,10 @@ function processAttackForOpponent(
     
     const defender = playerField[defenderIndex];
     
-    const attackDamage = getModifiedAttack(attacker);
+    // Calculate attack with status effects using type guard
+    let attackDamage = attacker.currentAttack ?? getAttack(attacker.card);
+    if (attacker.isWeakened) attackDamage = Math.max(0, attackDamage - 3);
+    if (attacker.isBurning) attackDamage += 3;
     
     // Check for Divine Shield on attacker and defender
     const attackerHasDivineShield = attacker.hasDivineShield || false;
@@ -1504,10 +1584,10 @@ function processAttackForOpponent(
     if (updatedAttacker && (updatedAttacker.card as any)?.onAttack?.type === 'apply_status') {
       const targetMinion = newState.players.player.battlefield.find(m => m.instanceId === defenderId);
       if (targetMinion) {
-        const updatedTarget = processOnAttackStatusEffect(updatedAttacker, targetMinion);
+        const updatedTarget = processOnAttackStatusEffect(updatedAttacker as any, targetMinion as any);
         const targetIndex = newState.players.player.battlefield.findIndex(m => m.instanceId === defenderId);
         if (targetIndex !== -1) {
-          newState.players.player.battlefield[targetIndex] = updatedTarget;
+          newState.players.player.battlefield[targetIndex] = updatedTarget as any;
         }
       }
     }
@@ -1555,8 +1635,10 @@ function processAttackForPlayer(
     const attacker = playerField[attackerIndex];
     
     // Check if minion can act (Frozen/Paralysis check)
-    const actionCheck = canMinionAct(attacker);
-    if (!actionCheck.canAct) {
+    if (attacker.isFrozen) {
+      return state;
+    }
+    if (attacker.isParalyzed && Math.random() < 0.5) {
       return state;
     }
     
@@ -1574,7 +1656,10 @@ function processAttackForPlayer(
         return state;
       }
       
-      const attackDamage = getModifiedAttack(attacker);
+      // Calculate attack with status effects using type guard
+      let attackDamage = attacker.currentAttack ?? getAttack(attacker.card);
+      if (attacker.isWeakened) attackDamage = Math.max(0, attackDamage - 3);
+      if (attacker.isBurning) attackDamage += 3;
       
       // Queue animation with full combat data for deferred damage
       queueAIAttackAnimation(
@@ -1615,14 +1700,16 @@ function processAttackForPlayer(
       
       if (updatedAttackerIndex !== -1) {
         // Track attacks performed for Windfury
-        newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed += 1;
+        const currentCard = newState.players.player.battlefield[updatedAttackerIndex];
+        const currentAttacks = currentCard.attacksPerformed ?? 0;
+        currentCard.attacksPerformed = currentAttacks + 1;
         
         const attackerKeywords = attacker.card.keywords || [];
         const hasWindfury = attackerKeywords.includes('windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
         
-        if (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed >= maxAttacksAllowed) {
-          newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
+        if ((currentCard.attacksPerformed ?? 0) >= maxAttacksAllowed) {
+          currentCard.canAttack = false;
         }
       }
       
@@ -1646,7 +1733,10 @@ function processAttackForPlayer(
     
     const defender = opponentField[defenderIndex];
     
-    const attackDamage = getModifiedAttack(attacker);
+    // Calculate attack with status effects using type guard
+    let attackDamage = attacker.currentAttack ?? getAttack(attacker.card);
+    if (attacker.isWeakened) attackDamage = Math.max(0, attackDamage - 3);
+    if (attacker.isBurning) attackDamage += 3;
     
     // Check for Divine Shield
     const attackerHasDivineShield = attacker.hasDivineShield || false;
@@ -1752,10 +1842,10 @@ function processAttackForPlayer(
     if (updatedAttacker && (updatedAttacker.card as any)?.onAttack?.type === 'apply_status') {
       const targetMinion = newState.players.opponent.battlefield.find(m => m.instanceId === defenderId);
       if (targetMinion) {
-        const updatedTarget = processOnAttackStatusEffect(updatedAttacker, targetMinion);
+        const updatedTarget = processOnAttackStatusEffect(updatedAttacker as any, targetMinion as any);
         const targetIndex = newState.players.opponent.battlefield.findIndex(m => m.instanceId === defenderId);
         if (targetIndex !== -1) {
-          newState.players.opponent.battlefield[targetIndex] = updatedTarget;
+          newState.players.opponent.battlefield[targetIndex] = updatedTarget as any;
         }
       }
     }
@@ -2157,6 +2247,10 @@ export function processAttack(
     newState = processAfterAttackEffects(newState, 'minion', attacker.instanceId, 'player');
   }
   
+  // CRITICAL: Clean up any dead minions that weren't caught by explicit death checks
+  // This ensures consistent state and prevents minions from lingering at 0 health
+  newState = removeDeadMinions(newState);
+  
   return checkGameOver(newState);
 }
 
@@ -2553,7 +2647,7 @@ export function autoAttackWithAllCards(state: GameState): GameState {
     // Get all cards that can attack
     const attackableCards = state.players.player.battlefield
       .filter(card => !card.isSummoningSick && card.canAttack)
-      .sort((a, b) => b.card.attack - a.card.attack); // Sort by attack power (highest first)
+      .sort((a, b) => getAttack(b.card) - getAttack(a.card)); // Sort by attack power (highest first)
     
     // No cards can attack
     if (attackableCards.length === 0) {

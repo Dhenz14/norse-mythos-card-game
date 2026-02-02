@@ -32,6 +32,9 @@ import { DamageIndicator } from './components/DamageIndicator';
 import { HeroDeathAnimation } from './components/HeroDeathAnimation';
 import { PlayingCard } from './components/PlayingCard';
 import { BattlefieldHero } from './components/BattlefieldHero';
+import { ElementBuffPopup } from './components/ElementBuffPopup';
+import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
+import { useElementalBuff } from './hooks/useElementalBuff';
 import { GameViewport } from './GameViewport';
 import { useCombatLayout } from '../hooks/useCombatLayout';
 import { useRagnarokCombatController } from './hooks/useRagnarokCombatController';
@@ -763,6 +766,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     handleUnifiedEndTurn,
   } = useRagnarokCombatController({ onCombatEnd });
 
+  const elementalBuff = useElementalBuff();
+
   if (!combatState || !isActive) {
     return null;
   }
@@ -817,6 +822,33 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       <ActionAnnouncement />
       <AIAttackAnimationProcessor />
       <AnimationOverlay />
+      
+      {/* First Strike Animation - plays when attacker deals initial damage */}
+      {combatState.firstStrike && !combatState.firstStrike.completed ? (
+        <>
+          {console.log('[CombatArena] Rendering FirstStrikeAnimation, phase:', combatState.phase, 'target:', combatState.firstStrike.target)}
+          <FirstStrikeAnimation
+            onComplete={() => {
+              console.log('[CombatArena] FirstStrikeAnimation onComplete called');
+              getPokerCombatAdapterState().completeFirstStrike();
+            }}
+          />
+        </>
+      ) : combatState.firstStrike ? (
+        <>{console.log('[CombatArena] FirstStrike completed, not showing animation')}</>
+      ) : null}
+      
+      {/* Minion Elemental Buff Popup */}
+      {elementalBuff.pendingMinionBuff && (
+        <ElementBuffPopup
+          show={!!elementalBuff.pendingMinionBuff}
+          attackBonus={elementalBuff.pendingMinionBuff.attackBonus}
+          healthBonus={elementalBuff.pendingMinionBuff.healthBonus}
+          element={elementalBuff.pendingMinionBuff.element as any}
+          position={elementalBuff.pendingMinionBuff.owner === 'player' ? 'left' : 'right'}
+          onComplete={elementalBuff.clearMinionBuffNotification}
+        />
+      )}
       
       {/* Spell/Battlecry Targeting Prompt */}
       <TargetingPrompt card={selectedCard} />

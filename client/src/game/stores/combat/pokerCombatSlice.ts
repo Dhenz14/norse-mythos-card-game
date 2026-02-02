@@ -20,7 +20,8 @@ import {
   PokerPosition,
   PokerHandRank,
   HAND_DAMAGE_MULTIPLIERS,
-  HAND_RANK_NAMES
+  HAND_RANK_NAMES,
+  ElementBuff
 } from '../../types/PokerCombatTypes';
 import { BLINDS } from '../../combat/modules/BettingEngine';
 import { 
@@ -30,6 +31,7 @@ import {
   PokerCombatSlice,
   UnifiedCombatStore
 } from './types';
+import { getElementAdvantage } from '../../utils/elements';
 
 function getCombinations<T>(arr: T[], size: number): T[][] {
   const result: T[][] = [];
@@ -282,7 +284,8 @@ export const createPokerCombatSlice: StateCreator<
     opponentPet: PetData,
     skipMulligan = false,
     playerKingId?: string,
-    opponentKingId?: string
+    opponentKingId?: string,
+    firstStrikeTarget?: 'player' | 'opponent'
   ) => {
     let deck = shuffleDeck(createPokerDeck());
     
@@ -298,36 +301,66 @@ export const createPokerCombatSlice: StateCreator<
     const opponentPosition: PokerPosition = 'big_blind';
     const openerIsPlayer = playerPosition === 'small_blind';
     const minBet = DEFAULT_BLIND_CONFIG.bigBlind;
-    const startingPhase = skipMulligan ? PokerCombatPhase.SPELL_PET : PokerCombatPhase.MULLIGAN;
+    
+    const FIRST_STRIKE_DAMAGE = 15;
+    let startingPhase = skipMulligan ? PokerCombatPhase.SPELL_PET : PokerCombatPhase.MULLIGAN;
+    if (firstStrikeTarget) {
+      startingPhase = PokerCombatPhase.FIRST_STRIKE;
+    }
+    
+    const playerElement = playerPet.stats.element;
+    const opponentElement = opponentPet.stats.element;
+    
+    const playerAdvantage = getElementAdvantage(playerElement, opponentElement);
+    const opponentAdvantage = getElementAdvantage(opponentElement, playerElement);
+    
+    const playerElementBuff: ElementBuff = {
+      hasAdvantage: playerAdvantage.hasAdvantage,
+      attackBonus: playerAdvantage.attackBonus,
+      healthBonus: playerAdvantage.healthBonus,
+      armorBonus: playerAdvantage.armorBonus
+    };
+    
+    const opponentElementBuff: ElementBuff = {
+      hasAdvantage: opponentAdvantage.hasAdvantage,
+      attackBonus: opponentAdvantage.attackBonus,
+      healthBonus: opponentAdvantage.healthBonus,
+      armorBonus: opponentAdvantage.armorBonus
+    };
+    
+    const playerPetCopy = JSON.parse(JSON.stringify(playerPet));
+    const opponentPetCopy = JSON.parse(JSON.stringify(opponentPet));
     
     const playerCombatState: PlayerCombatState = {
       playerId,
       playerName,
-      pet: JSON.parse(JSON.stringify(playerPet)),
+      pet: playerPetCopy,
       holeCards: playerHoleCards,
       hpCommitted: 0,
       blindPosted: 0,
-      preBlindHealth: playerPet.stats.currentHealth,
-      heroArmor: 0,
+      preBlindHealth: playerPetCopy.stats.currentHealth,
+      heroArmor: playerAdvantage.hasAdvantage ? playerAdvantage.armorBonus : 0,
       statusEffects: [],
       mana: 1,
       maxMana: 9,
-      isReady: false
+      isReady: false,
+      elementBuff: playerElementBuff
     };
     
     const opponentCombatState: PlayerCombatState = {
       playerId: opponentId,
       playerName: opponentName,
-      pet: JSON.parse(JSON.stringify(opponentPet)),
+      pet: opponentPetCopy,
       holeCards: opponentHoleCards,
       hpCommitted: 0,
       blindPosted: 0,
-      preBlindHealth: opponentPet.stats.currentHealth,
-      heroArmor: 0,
+      preBlindHealth: opponentPetCopy.stats.currentHealth,
+      heroArmor: opponentAdvantage.hasAdvantage ? opponentAdvantage.armorBonus : 0,
       statusEffects: [],
       mana: 1,
       maxMana: 9,
-      isReady: false
+      isReady: false,
+      elementBuff: opponentElementBuff
     };
     
     const combatState: PokerCombatState = {
@@ -348,7 +381,12 @@ export const createPokerCombatSlice: StateCreator<
       playerPosition,
       opponentPosition,
       blindsPosted: false,
-      isAllInShowdown: false
+      isAllInShowdown: false,
+      firstStrike: firstStrikeTarget ? {
+        damage: FIRST_STRIKE_DAMAGE,
+        target: firstStrikeTarget,
+        completed: false
+      } : undefined
     };
     
     set({
@@ -365,6 +403,59 @@ export const createPokerCombatSlice: StateCreator<
       timestamp: Date.now(),
       type: 'poker',
       message: `Poker combat initialized: ${playerName} vs ${opponentName}`
+    });
+  },
+
+  completeFirstStrike: () => {
+    console.log('[PokerCombatSlice] completeFirstStrike called');
+    const state = get();
+    if (!state.pokerCombatState || !state.pokerCombatState.firstStrike) {
+      console.log('[PokerCombatSlice] No firstStrike state, returning early');
+      return;
+    }
+    if (state.pokerCombatState.firstStrike.completed) {
+      console.log('[PokerCombatSlice] FirstStrike already completed, returning early');
+      return;
+    }
+    
+    const { damage, target } = state.pokerCombatState.firstStrike;
+    const targetState = target === 'player' ? state.pokerCombatState.player : state.pokerCombatState.opponent;
+    
+    const newHealth = Math.max(1, targetState.pet.stats.currentHealth - damage);
+    
+    const updatedTargetState = {
+      ...targetState,
+      pet: {
+        ...targetState.pet,
+        stats: {
+          ...targetState.pet.stats,
+          currentHealth: newHealth
+        }
+      },
+      preBlindHealth: newHealth
+    };
+    
+    const nextPhase = state.mulliganComplete ? PokerCombatPhase.SPELL_PET : PokerCombatPhase.MULLIGAN;
+    console.log(`[PokerCombatSlice] First strike damage ${damage} applied to ${target}, transitioning to phase: ${nextPhase}`);
+    
+    set({
+      pokerCombatState: {
+        ...state.pokerCombatState,
+        phase: nextPhase,
+        player: target === 'player' ? updatedTargetState : state.pokerCombatState.player,
+        opponent: target === 'opponent' ? updatedTargetState : state.pokerCombatState.opponent,
+        firstStrike: {
+          ...state.pokerCombatState.firstStrike,
+          completed: true
+        }
+      }
+    });
+    
+    get().addLogEntry({
+      id: `first_strike_${Date.now()}`,
+      timestamp: Date.now(),
+      type: 'attack',
+      message: `First strike! ${target === 'player' ? 'Player' : 'Opponent'} takes ${damage} damage`
     });
   },
 
@@ -415,6 +506,9 @@ export const createPokerCombatSlice: StateCreator<
           newState.pot += actualBet;
           newState.currentBet = Math.max(newState.currentBet, playerState.hpCommitted);
           newState.preflopBetMade = true;
+          if (!newState.blindsPosted) {
+            newState.blindsPosted = true;
+          }
         }
         break;
         
@@ -425,6 +519,9 @@ export const createPokerCombatSlice: StateCreator<
           playerState.blindPosted += toMatch;
           playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - toMatch);
           newState.pot += toMatch;
+        }
+        if (!newState.blindsPosted) {
+          newState.blindsPosted = true;
         }
         break;
         

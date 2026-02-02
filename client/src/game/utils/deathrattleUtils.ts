@@ -1,8 +1,9 @@
 import { CardInstance, GameState, CardData, DeathrattleEffect, CardAnimationType, GameLogEvent, AnimationParams, MinionCardData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { createCardInstance } from './cardUtils';
+import { createCardInstance } from './cards/cardUtils';
 import { drawCardFromDeck } from './zoneUtils';
 import allCards from '../data/allCards';
+import { trackQuestProgress } from './quests/questProgress';
 
 /**
  * Execute deathrattle effects for a card
@@ -169,6 +170,8 @@ function executeSummonDeathrattle(
     // Add the summoned card to the battlefield
     player.battlefield.push(summonedCard);
     
+    // Track quest progress for summoned minion
+    trackQuestProgress(playerId, 'summon_minion', summonedCard.card);
   }
   
   return newState;
