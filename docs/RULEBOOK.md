@@ -206,10 +206,20 @@ When a piece moves to a square occupied by an enemy piece:
 
 When major pieces collide in Ragnarok Chess, combat is resolved through a Texas Hold'em inspired system.
 
+### First Strike
+
+The attacking piece deals **15 damage** before poker betting begins:
+
+- Occurs at the start of combat, before Mulligan phase
+- Represents the tactical advantage of initiating combat
+- Cannot be blocked or reduced by armor
+- Applied to defender's HP immediately
+
 ### Combat Phases
 
 | Phase | Poker Equivalent | Description |
 |-------|------------------|-------------|
+| **First Strike** | - | Attacker deals 15 damage to defender |
 | **Mulligan** | - | Replace cards from hand (optional) |
 | **Spell/Pet** | Pre-deal | Cast spells, activate abilities |
 | **Faith** | Flop | 3 community cards revealed |
@@ -297,7 +307,7 @@ Player commits 20 HP, then folds:
 
 ### Setup
 
-1. Each player starts with 30 HP
+1. Each player starts with 100 HP
 2. Draw 3 cards (going first) or 4 cards + The Coin (going second)
 3. Mulligan phase: Replace unwanted cards
 

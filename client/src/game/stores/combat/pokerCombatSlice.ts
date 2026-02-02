@@ -32,26 +32,24 @@ import {
   UnifiedCombatStore
 } from './types';
 import { getElementAdvantage } from '../../utils/elements';
+import { getCachedHandEvaluation, clearHandCache } from '../../utils/poker/handCache';
+import { compareHands } from '../../combat/modules/HandEvaluator';
 
-function getCombinations<T>(arr: T[], size: number): T[][] {
-  const result: T[][] = [];
-  
-  function combine(start: number, current: T[]) {
-    if (current.length === size) {
-      result.push([...current]);
-      return;
-    }
-    for (let i = start; i < arr.length; i++) {
-      current.push(arr[i]);
-      combine(i + 1, current);
-      current.pop();
-    }
-  }
-  
-  combine(0, []);
-  return result;
-}
+/**
+ * Evaluate poker hand with caching for performance.
+ * Delegates to HandEvaluator.ts via the cache utility.
+ * 
+ * Changed: Removed duplicate hand evaluation logic (was 140 lines).
+ * Now uses centralized HandEvaluator.ts with caching layer.
+ */
+export const evaluatePokerHand = (holeCards: PokerCard[], communityCards: PokerCard[]): EvaluatedHand => {
+  return getCachedHandEvaluation(holeCards, communityCards);
+};
 
+/**
+ * Compare tiebreakers between two hands.
+ * Returns positive if a > b, negative if a < b, 0 if equal.
+ */
 function compareTieBreakers(a: number[], b: number[]): number {
   const maxLen = Math.max(a.length, b.length);
   for (let i = 0; i < maxLen; i++) {
@@ -62,116 +60,6 @@ function compareTieBreakers(a: number[], b: number[]): number {
   }
   return 0;
 }
-
-function evaluateFiveCardHand(cards: PokerCard[]): EvaluatedHand {
-  const sorted = [...cards].sort((a, b) => b.numericValue - a.numericValue);
-  
-  const isFlush = cards.every(c => c.suit === cards[0].suit);
-  
-  const values = sorted.map(c => c.numericValue);
-  
-  const isRegularStraight = values.every((v, i) => i === 0 || values[i - 1] - v === 1);
-  
-  const isWheelStraight = values[0] === 14 && 
-    values[1] === 5 && 
-    values[2] === 4 && 
-    values[3] === 3 && 
-    values[4] === 2;
-  
-  const isStraight = isRegularStraight || isWheelStraight;
-  
-  const valueCounts: Record<number, number> = {};
-  for (const card of cards) {
-    valueCounts[card.numericValue] = (valueCounts[card.numericValue] || 0) + 1;
-  }
-  const counts = Object.values(valueCounts).sort((a, b) => b - a);
-  
-  const valuesByCount = Object.entries(valueCounts)
-    .map(([val, cnt]) => ({ value: parseInt(val), count: cnt }))
-    .sort((a, b) => b.count - a.count || b.value - a.value);
-  
-  let rank: PokerHandRank;
-  let tieBreakers: number[] = [];
-  
-  if (isFlush && isStraight && values[0] === 14 && values[4] === 10) {
-    rank = PokerHandRank.RAGNAROK;
-    tieBreakers = [14];
-  } else if (isFlush && isStraight) {
-    rank = PokerHandRank.DIVINE_ALIGNMENT;
-    tieBreakers = [isWheelStraight ? 5 : values[0]];
-  } else if (counts[0] === 4) {
-    rank = PokerHandRank.GODLY_POWER;
-    const quadVal = valuesByCount[0].value;
-    const kicker = valuesByCount[1].value;
-    tieBreakers = [quadVal, kicker];
-  } else if (counts[0] === 3 && counts[1] === 2) {
-    rank = PokerHandRank.VALHALLAS_BLESSING;
-    const tripVal = valuesByCount[0].value;
-    const pairVal = valuesByCount[1].value;
-    tieBreakers = [tripVal, pairVal];
-  } else if (isFlush) {
-    rank = PokerHandRank.ODINS_EYE;
-    tieBreakers = values;
-  } else if (isStraight) {
-    rank = PokerHandRank.FATES_PATH;
-    tieBreakers = [isWheelStraight ? 5 : values[0]];
-  } else if (counts[0] === 3) {
-    rank = PokerHandRank.THORS_HAMMER;
-    const tripVal = valuesByCount[0].value;
-    const kickers = valuesByCount.slice(1).map(v => v.value).sort((a, b) => b - a);
-    tieBreakers = [tripVal, ...kickers];
-  } else if (counts[0] === 2 && counts[1] === 2) {
-    rank = PokerHandRank.DUAL_RUNES;
-    const pairs = valuesByCount.filter(v => v.count === 2).map(v => v.value).sort((a, b) => b - a);
-    const kicker = valuesByCount.find(v => v.count === 1)?.value || 0;
-    tieBreakers = [pairs[0], pairs[1], kicker];
-  } else if (counts[0] === 2) {
-    rank = PokerHandRank.RUNE_MARK;
-    const pairVal = valuesByCount[0].value;
-    const kickers = valuesByCount.slice(1).map(v => v.value).sort((a, b) => b - a);
-    tieBreakers = [pairVal, ...kickers];
-  } else {
-    rank = PokerHandRank.HIGH_CARD;
-    tieBreakers = values;
-  }
-  
-  return {
-    rank,
-    cards: sorted,
-    highCard: sorted[0],
-    multiplier: HAND_DAMAGE_MULTIPLIERS[rank],
-    displayName: HAND_RANK_NAMES[rank],
-    tieBreakers
-  };
-}
-
-export const evaluatePokerHand = (holeCards: PokerCard[], communityCards: PokerCard[]): EvaluatedHand => {
-  const allCards = [...holeCards, ...communityCards];
-  
-  if (allCards.length < 5) {
-    return {
-      rank: PokerHandRank.HIGH_CARD,
-      cards: allCards,
-      highCard: allCards[0] || { suit: 'spades', value: 'A', numericValue: 14 },
-      multiplier: HAND_DAMAGE_MULTIPLIERS[PokerHandRank.HIGH_CARD],
-      displayName: HAND_RANK_NAMES[PokerHandRank.HIGH_CARD],
-      tieBreakers: allCards.map(c => c.numericValue).sort((a, b) => b - a)
-    };
-  }
-  
-  let bestHand: EvaluatedHand | null = null;
-  
-  const combinations = getCombinations(allCards, 5);
-  for (const combo of combinations) {
-    const evaluated = evaluateFiveCardHand(combo);
-    if (!bestHand || evaluated.rank > bestHand.rank ||
-        (evaluated.rank === bestHand.rank && compareTieBreakers(evaluated.tieBreakers, bestHand.tieBreakers) > 0)) {
-      bestHand = evaluated;
-    }
-  }
-  
-  return bestHand!;
-};
 
 export const createPokerCombatSlice: StateCreator<
   UnifiedCombatStore,
@@ -287,6 +175,7 @@ export const createPokerCombatSlice: StateCreator<
     opponentKingId?: string,
     firstStrikeTarget?: 'player' | 'opponent'
   ) => {
+    clearHandCache();
     let deck = shuffleDeck(createPokerDeck());
     
     let playerHoleCards: PokerCard[] = [];

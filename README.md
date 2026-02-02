@@ -100,7 +100,7 @@ Main Menu → Mode Selection → Standard Match → Hero Selection → Deck Buil
 
 #### Setup
 
-1. Each player starts with **30 HP**
+1. Each player starts with **100 HP**
 2. Draw **3 cards** (going first) or **4 cards + The Coin** (going second)
 3. **Mulligan phase**: Replace unwanted cards
 
@@ -183,10 +183,19 @@ Row 6: Rook  | Bishop| King | Queen  | Knight
 
 When major pieces collide in Ragnarok Chess, combat is resolved through a Texas Hold'em inspired system where **HP is your betting currency**.
 
+### First Strike
+
+When a piece attacks in Ragnarok Chess, the **attacker deals 15 damage** before poker betting begins. This represents the tactical advantage of striking first.
+
+- First Strike damage is dealt at the start of combat
+- Applies before any poker betting or showdown
+- Cannot be blocked or reduced
+
 ### Combat Phases
 
 | Phase | Poker Equivalent | Description |
 |-------|------------------|-------------|
+| **First Strike** | - | Attacker deals 15 damage |
 | **Mulligan** | Pre-game | Replace hole cards (optional) |
 | **Blinds** | Blinds | Forced bets posted |
 | **Faith** | Flop | 3 community cards revealed |

@@ -103,14 +103,3 @@ export function getProgressingQuests(
   return quests.filter(quest => shouldIncrementQuest(quest, actionType, cardData, metadata));
 }
 
-/**
- * Alias for trackQuestProgress for backward compatibility
- * @deprecated Use trackQuestProgress instead
- */
-export function checkQuestProgressForCard(
-  owner: QuestOwner,
-  actionType: QuestActionType,
-  card: CardData
-): void {
-  trackQuestProgress(owner, actionType, card);
-}
