@@ -256,6 +256,7 @@ export interface KingAbilitySliceState {
   minePlacementMode: boolean;
   selectedMineDirection: MineDirection | null;
   lastMineTriggered: { mine: ActiveMine; targetPieceId: string } | null;
+  pendingManaBoost: { player: number; opponent: number };
 }
 
 export interface KingAbilitySliceActions {
@@ -268,8 +269,9 @@ export interface KingAbilitySliceActions {
   checkAndTriggerMine: (
     landingPosition: ChessBoardPosition,
     movingPieceOwner: 'player' | 'opponent',
-    movingPieceId: string
-  ) => { triggered: boolean; staPenalty: number } | null;
+    movingPieceId: string,
+    movingPieceType: string
+  ) => { triggered: boolean; staPenalty: number; manaBoost: number } | null;
   clearExpiredMines: (currentTurn: number) => void;
   setMinePlacementMode: (enabled: boolean) => void;
   setSelectedMineDirection: (direction: MineDirection | null) => void;
@@ -277,6 +279,8 @@ export interface KingAbilitySliceActions {
   canPlaceMine: (owner: 'player' | 'opponent') => boolean;
   getMinesForOwner: (owner: 'player' | 'opponent') => ActiveMine[];
   getVisibleMines: (viewerSide: 'player' | 'opponent') => ActiveMine[];
+  clearMineTriggered: () => void;
+  consumePendingManaBoost: (side: 'player' | 'opponent') => number;
 }
 
 export type KingAbilitySlice = KingAbilitySliceState & KingAbilitySliceActions;

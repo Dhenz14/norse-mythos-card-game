@@ -3,7 +3,12 @@
  * 
  * This file defines the type interfaces for cards in the game.
  */
-import { CardEffect } from './EffectTypes';
+import { 
+  CardEffect,
+  BattlecryEffectType,
+  SpellEffectTypeString,
+  DeathrattleEffectType 
+} from './EffectTypes';
 
 export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'hero_power' | 'poker_spell';
 export type CardRarity = 'common' | 'rare' | 'epic' | 'legendary' | 'token' | 'basic' | 'free';
@@ -41,15 +46,15 @@ export type MinionRace =
   | 'pirate'
   | 'totem';
 
-// Battlecry effect interface
+// Battlecry effect interface with typed effect type
 export interface BattlecryEffect {
-  type: string;
+  type: BattlecryEffectType | string;
   [key: string]: any;
 }
 
-// Deathrattle effect interface
+// Deathrattle effect interface with typed effect type
 export interface DeathrattleEffect {
-  type: string;
+  type: DeathrattleEffectType | string;
   targetType?: string;
   value?: number;
   condition?: string;
@@ -59,12 +64,12 @@ export interface DeathrattleEffect {
   cardId?: string;
   targetFromBattlecry?: boolean;
   count?: number;
-  [key: string]: any; // Keep this to maintain backward compatibility
+  [key: string]: any;
 }
 
-// Spell effect interface
+// Spell effect interface with typed effect type
 export interface SpellEffect {
-  type: string;
+  type: SpellEffectTypeString | string;
   [key: string]: any;
 }
 

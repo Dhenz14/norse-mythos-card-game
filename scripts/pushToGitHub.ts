@@ -226,6 +226,13 @@ async function pushFiles() {
       'client/src/game/stores/combat/minionBattleSlice.ts',
       'client/src/game/stores/combat/kingAbilitySlice.ts',
       'client/src/game/stores/combat/pokerSpellSlice.ts',
+      // King Divine Command display system
+      'client/src/game/utils/chess/kingAbilityUtils.ts',
+      'client/src/game/utils/chess/kingAbilityDisplayUtils.ts',
+      'client/src/game/hooks/useKingChessAbility.ts',
+      'client/src/game/hooks/useKingDivineCommandDisplay.ts',
+      'client/src/game/types/ChessTypes.ts',
+      'client/src/game/components/HeroDetailPopup.tsx',
       'client/src/game/stores/combat/index.ts',
       'client/src/game/stores/unifiedCombatStore.ts',
       // Poker Spells system

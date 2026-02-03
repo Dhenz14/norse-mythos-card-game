@@ -6,6 +6,7 @@ import { NorseHero, NorseKing } from '../types/NorseTypes';
 import { ChessPieceHero } from '../types/ChessTypes';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { NORSE_KINGS } from '../data/norseKings/kingDefinitions';
+import { useKingDivineCommandDisplay } from '../hooks/useKingDivineCommandDisplay';
 
 interface HeroDetailPopupProps {
   hero: ChessPieceHero | null;
@@ -42,41 +43,33 @@ const styles = `
   .hero-popup-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.85);
   }
   
   .hero-popup-container {
     position: absolute;
     inset: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     overflow: hidden;
   }
   
   .hero-popup-portrait {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
+    position: relative;
+    flex: 0 0 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1614 0%, #0c0a08 100%);
+    overflow: hidden;
   }
   
   .hero-popup-portrait img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .hero-popup-portrait::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 35%,
-      rgba(12, 10, 8, 0.5) 50%,
-      rgba(12, 10, 8, 0.85) 65%,
-      rgb(12, 10, 8) 80%
-    );
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
   }
   
   .hero-popup-close {
@@ -103,17 +96,18 @@ const styles = `
   }
   
   .hero-popup-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    flex: 0 0 50%;
+    display: flex;
+    flex-direction: column;
     z-index: 10;
-    padding: 0 24px 32px;
+    padding: 32px 24px;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #1a1614 0%, #0c0a08 100%);
   }
   
   .hero-popup-inner {
     max-width: 560px;
-    margin: 0 auto;
+    width: 100%;
   }
   
   /* Stone Panel Frame - Exact match to reference */
@@ -283,6 +277,92 @@ const styles = `
     line-height: 1.45;
   }
   
+  /* Divine Command Section */
+  .divine-command-section {
+    margin-top: 20px;
+  }
+  
+  .divine-command-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 14px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .divine-command-card {
+    position: relative;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    
+    border: 4px solid;
+    border-color: #5a4a3a #3a302a #3a302a #5a4a3a;
+    
+    box-shadow:
+      0 3px 8px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      inset 2px 0 4px rgba(0, 0, 0, 0.25),
+      inset -2px 0 4px rgba(0, 0, 0, 0.25),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .divine-command-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .divine-command-name {
+    font-size: 16px;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  
+  .divine-command-rarity {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .divine-command-description {
+    font-size: 14px;
+    color: #c8c0b8;
+    line-height: 1.45;
+    margin-bottom: 12px;
+  }
+  
+  .divine-command-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+  }
+  
+  .divine-command-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .stat-icon {
+    font-size: 14px;
+  }
+  
+  .stat-label {
+    color: #9ca3af;
+  }
+  
+  .stat-value {
+    font-weight: 600;
+  }
+  
   /* Ornate Select Button */
   .ornate-btn-container {
     position: relative;
@@ -389,6 +469,8 @@ const styles = `
 
 export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailPopupProps) {
   const [mounted, setMounted] = useState(false);
+  
+  const { isKingWithAbility, abilityInfo } = useKingDivineCommandDisplay(hero?.id);
   
   useEffect(() => {
     setMounted(true);
@@ -517,6 +599,75 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
                       </div>
                     )}
                   </>
+                )}
+                
+                {isKingWithAbility && abilityInfo && (
+                  <div className="divine-command-section">
+                    <div className="divine-command-title">Divine Command - Chess Ability</div>
+                    <div 
+                      className="divine-command-card"
+                      style={{
+                        background: `linear-gradient(180deg, ${abilityInfo.rarityColor}15 0%, #322e28 30%, #282420 100%)`
+                      }}
+                    >
+                      <div className="panel-content">
+                        <div className="divine-command-header">
+                          <span 
+                            className="divine-command-name"
+                            style={{ color: abilityInfo.rarityColor }}
+                          >
+                            {abilityInfo.abilityName}
+                          </span>
+                          <span 
+                            className="divine-command-rarity"
+                            style={{ 
+                              backgroundColor: `${abilityInfo.rarityColor}30`,
+                              color: abilityInfo.rarityColor,
+                              border: `1px solid ${abilityInfo.rarityColor}50`
+                            }}
+                          >
+                            {abilityInfo.rarityLabel}
+                          </span>
+                        </div>
+                        <p className="divine-command-description">{abilityInfo.description}</p>
+                        <div className="divine-command-stats">
+                          <div className="divine-command-stat">
+                            <span className="stat-icon">⏱️</span>
+                            <span className="stat-label">Duration:</span>
+                            <span className="stat-value" style={{ color: '#22d3ee' }}>
+                              {abilityInfo.turnDuration} turn{abilityInfo.turnDuration > 1 ? 's' : ''}
+                            </span>
+                          </div>
+                          <div className="divine-command-stat">
+                            <span className="stat-icon">✨</span>
+                            <span className="stat-label">Mana Reward:</span>
+                            <span className="stat-value" style={{ color: '#22d3ee' }}>
+                              +{abilityInfo.manaBoost}
+                            </span>
+                          </div>
+                          <div className="divine-command-stat">
+                            <span className="stat-icon">💀</span>
+                            <span className="stat-label">STA Penalty:</span>
+                            <span className="stat-value" style={{ color: '#ef4444' }}>
+                              -{abilityInfo.staPenalty}
+                            </span>
+                          </div>
+                          <div className="divine-command-stat">
+                            <span className="stat-icon">🎯</span>
+                            <span className="stat-label">Shape:</span>
+                            <span className="stat-value" style={{ color: '#fbbf24' }}>
+                              {abilityInfo.shapeName}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="rune-column">
+                        {getRunesForText(abilityInfo.abilityName, 3).map((rune, i) => (
+                          <div key={i} className="rune-tablet">{rune}</div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 )}
                 
                 {onSelect && (

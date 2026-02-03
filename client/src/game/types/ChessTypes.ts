@@ -6,65 +6,26 @@
  */
 
 import { HeroClass, CardData } from '../types';
+import type { ElementType as ElementTypeImport } from '../utils/elements';
 
 /**
- * Element types for the weakness system
- * Core cycle: Fire → Earth → Wind → Water → Fire
- * Special: Holy beats Shadow/Undead, Shadow beats Holy
+ * Element types and utilities - imported from utils/elements for consistency
+ * Re-exported here for backward compatibility
  */
-export type ElementType = 'fire' | 'water' | 'wind' | 'earth' | 'holy' | 'shadow' | 'neutral';
+export {
+  type ElementType,
+  type ElementAdvantageResult,
+  ELEMENT_STRENGTHS,
+  ELEMENT_COLORS,
+  ELEMENT_ICONS,
+  ELEMENT_LABELS,
+  getElementAdvantage,
+  hasElementAdvantage,
+  getElementColor,
+  getElementIcon
+} from '../utils/elements';
 
-/**
- * Element weakness chart - which element is STRONG against which
- * Key element beats Value elements
- */
-export const ELEMENT_STRENGTHS: Record<ElementType, ElementType[]> = {
-  fire: ['earth'],      // Fire burns Earth
-  water: ['fire'],      // Water extinguishes Fire
-  wind: ['water'],      // Wind evaporates Water  
-  earth: ['wind'],      // Earth grounds Wind
-  holy: ['shadow'],     // Holy vanquishes Shadow
-  shadow: ['holy'],     // Shadow corrupts Holy
-  neutral: []           // Neutral has no advantages
-};
-
-/**
- * Get element advantage buff if attacker is strong vs defender
- * Returns +2 attack and +2 health buff values
- */
-export const getElementAdvantage = (attackerElement: ElementType, defenderElement: ElementType): { attackBonus: number; healthBonus: number } => {
-  const strengths = ELEMENT_STRENGTHS[attackerElement];
-  if (strengths.includes(defenderElement)) {
-    return { attackBonus: 2, healthBonus: 2 };
-  }
-  return { attackBonus: 0, healthBonus: 0 };
-};
-
-/**
- * Element colors for visual display
- */
-export const ELEMENT_COLORS: Record<ElementType, string> = {
-  fire: '#ff6b35',    // Orange-red
-  water: '#4fc3f7',   // Light blue
-  wind: '#81c784',    // Light green
-  earth: '#a1887f',   // Brown
-  holy: '#ffd54f',    // Gold
-  shadow: '#9c27b0',  // Purple
-  neutral: '#9e9e9e'  // Gray
-};
-
-/**
- * Element icons/emojis for display
- */
-export const ELEMENT_ICONS: Record<ElementType, string> = {
-  fire: '🔥',
-  water: '💧',
-  wind: '🌪️',
-  earth: '🌍',
-  holy: '✨',
-  shadow: '🌑',
-  neutral: '⚪'
-};
+type ElementType = ElementTypeImport;
 
 /**
  * Chess piece types (10 pieces per player: 5 pawns + 5 main pieces)
@@ -303,6 +264,7 @@ export interface ChessPieceHero {
   passiveEffect?: string; // For King pieces with army-wide passive abilities
   element?: string; // Norse element type (fire, water, ice, grass, light, dark, electric)
   norseHeroId?: string; // Links to NorseHero definition for heroPower/weaponUpgrade/passive
+  chessAbility?: string; // King Divine Command: reference to ability config in kingAbilityUtils
 }
 
 /**
@@ -323,4 +285,79 @@ export interface CombatResult {
   winner: ChessPiece;
   loser: ChessPiece;
   winnerNewHealth: number;
+}
+
+// ==================== KING DIVINE COMMAND SYSTEM ====================
+
+/**
+ * King chess ability types - each of the 9 primordial kings has a unique board ability
+ * Kings can place hidden "landmines" that drain opponent STA when triggered
+ */
+export type KingChessAbilityType =
+  | 'ymir_giant_reach'      // Any single tile on board
+  | 'buri_ice_emergence'    // Straight line (4 tiles) horizontal/vertical
+  | 'surtr_flame_burst'     // 3x3 circle centered on chosen tile
+  | 'borr_ancestral_path'   // Full rank or file (7 tiles)
+  | 'yggdrasil_root_spread' // Cross pattern (5 tiles)
+  | 'audumbla_nourish_trap' // 2x2 square
+  | 'blainn_shadow_snare'   // L-shape like knight movement
+  | 'brimir_tidal_wave'     // Wave pattern (diagonal sweep)
+  | 'ginnungagap_void_rift'; // Random 3 scattered tiles
+
+/**
+ * King rarity tiers affect STA penalty and coverage
+ */
+export type KingRarity = 'standard' | 'rare' | 'epic' | 'super_rare';
+
+/**
+ * Mine shape configuration - defines the pattern of tiles affected
+ */
+export interface MineShape {
+  type: KingChessAbilityType;
+  relativeTiles: ChessBoardPosition[]; // Offsets from center/origin
+  requiresDirection?: boolean; // For line shapes that need orientation
+  isRandom?: boolean; // For Ginnungagap's scattered tiles
+}
+
+/**
+ * Active mine placed on the board
+ */
+export interface ActiveMine {
+  id: string;
+  owner: ChessPlayerSide;
+  kingId: string;
+  centerPosition: ChessBoardPosition;
+  affectedTiles: ChessBoardPosition[]; // Actual board positions after calculation
+  staPenalty: number; // STA drained when triggered (2 for standard, 3 for super rare)
+  manaBoost: number; // Mana bonus granted to owner in next PvP (+1 rare/epic, +2 super_rare)
+  placedOnTurn: number; // Turn number when placed
+  expiresOnTurn: number; // Turn number when it disappears (based on turnDuration)
+  triggered: boolean;
+}
+
+/**
+ * King chess ability configuration - defines behavior per king
+ */
+export interface KingChessAbilityConfig {
+  kingId: string;
+  abilityType: KingChessAbilityType;
+  rarity: KingRarity;
+  maxUsesPerGame: number; // Default 5, some kings may differ
+  staPenalty: number; // 2 for standard/epic, 3 for super rare
+  turnDuration: number; // 1 for rare, 2 for epic/super_rare - how many opponent turns mine lasts
+  manaBoost: number; // +1 for rare/epic, +2 for super_rare - bonus mana in next PvP
+  shape: MineShape;
+  description: string;
+}
+
+/**
+ * King Divine Command state for a single player
+ */
+export interface KingDivineCommandState {
+  kingId: string;
+  abilityConfig: KingChessAbilityConfig | null;
+  minesRemaining: number;
+  activeMines: ActiveMine[];
+  canPlaceThisTurn: boolean;
+  hasPlacedThisTurn: boolean;
 }

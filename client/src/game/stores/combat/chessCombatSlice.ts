@@ -226,7 +226,9 @@ export const createChessCombatSlice: StateCreator<
     state.incrementAllStamina();
     
     // Check for mine trigger (King Divine Command System)
-    const mineResult = state.checkAndTriggerMine(to, piece.owner, piece.id);
+    // Note: Only hero pieces (Queen, Rook, Bishop, Knight) can trigger mines.
+    // Pawns and Kings use instant-kill resolution and bypass the mine system.
+    const mineResult = state.checkAndTriggerMine(to, piece.owner, piece.id, piece.type);
     if (mineResult && mineResult.triggered) {
       console.log(`[Chess] Mine triggered! ${piece.owner} loses ${mineResult.staPenalty} STA`);
       const movedPieceForMine = get().boardState.pieces.find(p => p.id === piece.id);

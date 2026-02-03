@@ -220,6 +220,9 @@ export const createPokerCombatSlice: StateCreator<
     const playerPetCopy = JSON.parse(JSON.stringify(playerPet));
     const opponentPetCopy = JSON.parse(JSON.stringify(opponentPet));
     
+    const playerManaBoost = get().consumePendingManaBoost('player');
+    const opponentManaBoost = get().consumePendingManaBoost('opponent');
+    
     const playerCombatState: PlayerCombatState = {
       playerId,
       playerName,
@@ -230,7 +233,7 @@ export const createPokerCombatSlice: StateCreator<
       preBlindHealth: playerPetCopy.stats.currentHealth,
       heroArmor: playerAdvantage.hasAdvantage ? playerAdvantage.armorBonus : 0,
       statusEffects: [],
-      mana: 1,
+      mana: 1 + playerManaBoost,
       maxMana: 9,
       isReady: false,
       elementBuff: playerElementBuff
@@ -246,11 +249,15 @@ export const createPokerCombatSlice: StateCreator<
       preBlindHealth: opponentPetCopy.stats.currentHealth,
       heroArmor: opponentAdvantage.hasAdvantage ? opponentAdvantage.armorBonus : 0,
       statusEffects: [],
-      mana: 1,
+      mana: 1 + opponentManaBoost,
       maxMana: 9,
       isReady: false,
       elementBuff: opponentElementBuff
     };
+    
+    if (playerManaBoost > 0 || opponentManaBoost > 0) {
+      console.log('[PokerCombat] Applied mana boosts from Divine Command:', { playerManaBoost, opponentManaBoost });
+    }
     
     const combatState: PokerCombatState = {
       combatId: `combat_${Date.now()}`,

@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PieceType } from '../stores/heroDeckStore';
 import { useDeckBuilder, DECK_SIZE, isClassCard, getMaxCopies } from './deckbuilder';
 import { ArtGallery } from './art';
+import { getCardArtPath } from '../utils/art/artMapping';
 import './deckbuilder/tokens.css';
 
 type ViewTab = 'cards' | 'art';
@@ -195,6 +196,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
                   const rarityBg = RARITY_BG[rarityKey] || RARITY_BG.common;
                   const isMinion = card.type === 'minion';
                   const maxCopies = getMaxCopies(card);
+                  const cardArtPath = getCardArtPath(card.name);
 
                   return (
                     <motion.div
@@ -204,8 +206,20 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
                       onClick={() => canAdd && db.handleAddCard(card)}
                       onContextMenu={e => { e.preventDefault(); db.setSelectedCard(card); }}
                       className={`relative rounded-lg overflow-hidden cursor-pointer transition-all border-2 ${rarityBg} ${canAdd ? 'opacity-100' : 'opacity-50'} ${rarityColor}`}
-                      style={{ minHeight: '140px' }}
+                      style={{ minHeight: '160px' }}
                     >
+                      {cardArtPath && (
+                        <div className="absolute inset-0">
+                          <img 
+                            src={cardArtPath} 
+                            alt="" 
+                            className="w-full h-full"
+                            style={{ objectFit: 'contain' }}
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                        </div>
+                      )}
                       <div className="absolute top-1 left-1 w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm border border-blue-400 z-10">
                         {card.manaCost ?? 0}
                       </div>
@@ -214,22 +228,17 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
                           {inDeckCount}
                         </div>
                       )}
-                      <div className="pt-9 px-2 pb-1">
-                        <p className="text-white font-semibold text-xs leading-tight truncate text-center" title={card.name}>
+                      <div className={`absolute bottom-0 left-0 right-0 p-2 ${cardArtPath ? '' : 'pt-9'}`}>
+                        <p className="text-white font-semibold text-xs leading-tight truncate text-center drop-shadow-lg" title={card.name}>
                           {card.name}
                         </p>
                         <div className="flex items-center justify-center gap-1 mt-0.5">
-                          <span className="text-xs text-gray-400 capitalize">{card.type}</span>
+                          <span className="text-xs text-gray-300 capitalize drop-shadow">{card.type}</span>
                           {isClassCard(card) && <span className="text-xs text-yellow-500">★</span>}
                         </div>
-                        {card.description && (
-                          <p className="text-gray-400 text-xs mt-1 text-center leading-tight break-words">
-                            {card.description}
-                          </p>
-                        )}
                       </div>
                       {isMinion && (
-                        <div className="absolute bottom-1 left-0 right-0 flex justify-between px-2">
+                        <div className="absolute bottom-8 left-0 right-0 flex justify-between px-2">
                           <div className="w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center text-white font-bold text-xs border border-yellow-400">
                             {(card as any).attack ?? 0}
                           </div>
@@ -239,7 +248,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
                         </div>
                       )}
                       {!canAdd && inDeckCount >= maxCopies && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
                           <span className="text-xs text-gray-300 font-bold">MAX</span>
                         </div>
                       )}

@@ -52,6 +52,7 @@ export const createKingAbilitySlice: StateCreator<
   minePlacementMode: false,
   selectedMineDirection: null,
   lastMineTriggered: null,
+  pendingManaBoost: { player: 0, opponent: 0 },
 
   initializeKingAbilities: (playerKingId: string, opponentKingId: string) => {
     const playerState = createInitialKingState(playerKingId);
@@ -162,13 +163,16 @@ export const createKingAbilitySlice: StateCreator<
   checkAndTriggerMine: (
     landingPosition: ChessBoardPosition,
     movingPieceOwner: 'player' | 'opponent',
-    movingPieceId: string
+    movingPieceId: string,
+    movingPieceType: string
   ) => {
     const state = get();
+    // Pass piece type to checkMineTrigger - only hero pieces trigger mines
     const triggeredMine = checkMineTrigger(
       landingPosition,
       state.allActiveMines,
-      movingPieceOwner
+      movingPieceOwner,
+      movingPieceType
     );
 
     if (!triggeredMine) {
@@ -176,6 +180,7 @@ export const createKingAbilitySlice: StateCreator<
     }
 
     const staPenalty = calculateMinePenalty(triggeredMine, landingPosition);
+    const manaBoost = triggeredMine.manaBoost;
 
     const updatedMines = state.allActiveMines.map(mine =>
       mine.id === triggeredMine.id
@@ -203,15 +208,20 @@ export const createKingAbilitySlice: StateCreator<
       });
     }
 
+    const updatedPendingManaBoost = { ...state.pendingManaBoost };
+    updatedPendingManaBoost[triggeredMine.owner] += manaBoost;
+
     set({
       allActiveMines: updatedMines,
-      lastMineTriggered: { mine: triggeredMine, targetPieceId: movingPieceId }
+      lastMineTriggered: { mine: triggeredMine, targetPieceId: movingPieceId },
+      pendingManaBoost: updatedPendingManaBoost
     });
 
     console.log('[KingAbility] Mine triggered!', {
       mineOwner: triggeredMine.owner,
       victim: movingPieceOwner,
       staPenalty,
+      manaBoost,
       position: landingPosition
     });
 
@@ -219,10 +229,10 @@ export const createKingAbilitySlice: StateCreator<
       id: `mine_triggered_${Date.now()}`,
       timestamp: Date.now(),
       type: 'ability',
-      message: `Divine Command trap triggered! ${movingPieceOwner === 'player' ? 'Player' : 'Opponent'} loses ${staPenalty} STA`
+      message: `Divine Command trap triggered! ${movingPieceOwner === 'player' ? 'Player' : 'Opponent'} loses ${staPenalty} STA. ${triggeredMine.owner === 'player' ? 'Player' : 'Opponent'} gains +${manaBoost} mana next PvP!`
     });
 
-    return { triggered: true, staPenalty };
+    return { triggered: true, staPenalty, manaBoost };
   },
 
   clearExpiredMines: (currentTurn: number) => {
@@ -272,7 +282,8 @@ export const createKingAbilitySlice: StateCreator<
       allActiveMines: [],
       minePlacementMode: false,
       selectedMineDirection: null,
-      lastMineTriggered: null
+      lastMineTriggered: null,
+      pendingManaBoost: { player: 0, opponent: 0 }
     });
   },
 
@@ -298,5 +309,25 @@ export const createKingAbilitySlice: StateCreator<
   getVisibleMines: (viewerSide: 'player' | 'opponent'): ActiveMine[] => {
     const state = get();
     return state.allActiveMines.filter(m => m.owner === viewerSide && !m.triggered);
+  },
+
+  clearMineTriggered: () => {
+    set({ lastMineTriggered: null });
+  },
+
+  consumePendingManaBoost: (side: 'player' | 'opponent'): number => {
+    const state = get();
+    const boost = state.pendingManaBoost[side];
+    
+    if (boost > 0) {
+      const updatedBoost = { ...state.pendingManaBoost };
+      updatedBoost[side] = 0;
+      
+      set({ pendingManaBoost: updatedBoost });
+      
+      console.log('[KingAbility] Consumed mana boost:', { side, boost });
+    }
+    
+    return boost;
   }
 });
