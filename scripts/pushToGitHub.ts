@@ -168,29 +168,6 @@ async function getGitHubClient() {
   return new Octokit({ auth: accessToken });
 }
 
-function getAllFiles(dirPath: string, arrayOfFiles: string[] = []): string[] {
-  const files = fs.readdirSync(dirPath);
-
-  files.forEach((file) => {
-    const fullPath = path.join(dirPath, file);
-    const relativePath = path.relative(process.cwd(), fullPath);
-
-    if (fs.statSync(fullPath).isDirectory()) {
-      // Skip forbidden directories
-      if (!['node_modules', '.git', '.config', '.cache', '.replit_db', '.local', '.upm', 'dist', 'build', 'attached_assets'].includes(file)) {
-        getAllFiles(fullPath, arrayOfFiles);
-      }
-    } else {
-      const forbiddenCheck = isForbiddenFile(relativePath);
-      if (!forbiddenCheck.forbidden) {
-        arrayOfFiles.push(relativePath);
-      }
-    }
-  });
-
-  return arrayOfFiles;
-}
-
 async function pushFiles() {
   const owner = 'Dhenz14';
   const repo = 'norse-mythos-card-game';
@@ -224,13 +201,109 @@ async function pushFiles() {
     });
     const treeSha = commitData.tree.sha;
 
-    // Files to push - Dynamically scan for all project files
-    const filesToPush = getAllFiles(process.cwd());
+    // Files to push - SECURITY: Never include Replit internal files
+    const filesToPush = [
+      // Essential build configuration files
+      'package.json',
+      'package-lock.json',
+      'vite.config.ts',
+      'vite.config.local.ts',
+      'vite.config.local.js',
+      'tsconfig.json',
+      'tsconfig.node.json',
+      'drizzle.config.ts',
+      'tailwind.config.js',
+      'postcss.config.js',
+      // Client entry files
+      'client/index.html',
+      'client/src/main.tsx',
+      'client/src/App.tsx',
+      'client/src/index.css',
+      // Server entry files
+      'server/index.ts',
+      'server/routes.ts',
+      'server/db.ts',
+      'server/database.ts',
+      // Shared types (if exists)
+      'shared/schema.ts',
+      // Quest system - types, utilities, store, hooks, components
+      'client/src/game/utils/quests/types.ts',
+      'client/src/game/utils/quests/questUtils.ts',
+      'client/src/game/utils/quests/questProgress.ts',
+      'client/src/game/utils/quests/index.ts',
+      'client/src/game/stores/questStore.ts',
+      'client/src/game/hooks/useQuestTracker.ts',
+      'client/src/game/components/quest/QuestTracker.tsx',
+      // Game utils with quest integration
+      'client/src/game/utils/gameUtils.ts',
+      'client/src/game/utils/deathrattleUtils.ts',
+      'client/src/game/utils/battlecryUtils.ts',
+      'client/src/game/utils/heroPowerUtils.ts',
+      'client/src/game/utils/spells/spellUtils.ts',
+      'client/src/game/utils/mechanics/colossalUtils.ts',
+      // Combat store slices (new modular architecture)
+      'client/src/game/stores/combat/types.ts',
+      'client/src/game/stores/combat/sharedCombatSlice.ts',
+      'client/src/game/stores/combat/pokerCombatSlice.ts',
+      'client/src/game/stores/combat/activePlayerUtils.ts',
+      'client/src/game/stores/combat/chessCombatSlice.ts',
+      'client/src/game/stores/combat/minionBattleSlice.ts',
+      'client/src/game/stores/combat/kingAbilitySlice.ts',
+      'client/src/game/stores/combat/pokerSpellSlice.ts',
+      // King Divine Command display system
+      'client/src/game/utils/chess/kingAbilityUtils.ts',
+      'client/src/game/utils/chess/kingAbilityDisplayUtils.ts',
+      'client/src/game/hooks/useKingChessAbility.ts',
+      'client/src/game/hooks/useKingDivineCommandDisplay.ts',
+      'client/src/game/types/ChessTypes.ts',
+      'client/src/game/components/HeroDetailPopup.tsx',
+      'client/src/game/stores/combat/index.ts',
+      'client/src/game/stores/unifiedCombatStore.ts',
+      // Poker Spells system
+      'client/src/game/types/CardTypes.ts',
+      'client/src/game/data/pokerSpellCards.ts',
+      'client/src/game/utils/poker/pokerSpellUtils.ts',
+      'client/src/game/hooks/usePokerSpells.ts',
+      'client/src/game/data/cardRegistry/ID_RANGES.md',
+      // Art Management system
+      'client/src/game/utils/art/types.ts',
+      'client/src/game/utils/art/artUtils.ts',
+      'client/src/game/utils/art/index.ts',
+      'client/src/game/hooks/useArtManager.ts',
+      'client/src/game/components/art/ArtCard.tsx',
+      'client/src/game/components/art/ArtGallery.tsx',
+      'client/src/game/components/art/index.ts',
+      'client/src/game/components/HeroDeckBuilder.tsx',
+      'client/public/art/metadata.json',
+      // Combat hooks and utils
+      'client/src/game/combat/hooks/useRagnarokCombatController.ts',
+      'client/src/game/combat/utils/combatArenaUtils.ts',
+      'client/src/game/combat/RagnarokCombatArena.tsx',
+      'client/src/game/combat/debugConfig.ts',
+      // Combat UI components
+      'client/src/game/combat/components/ShowdownCelebration.tsx',
+      // Documentation
+      'README.md',
+      'docs/RULEBOOK.md',
+      'docs/DESIGN_PHILOSOPHY.md',
+      'docs/DECK_BUILDER_AUDIT.md',
+      'docs/GITHUB_SECURITY_GUIDE.md',
+      'scripts/pushToGitHub.ts',
+      'scripts/cleanupGitHub.ts',
+      '.gitignore',
+    ];
 
     const treeItems: any[] = [];
     const securityWarnings: string[] = [];
 
     for (const filePath of filesToPush) {
+      // Security check: forbidden file
+      const forbiddenCheck = isForbiddenFile(filePath);
+      if (forbiddenCheck.forbidden) {
+        console.log(`   ⛔ BLOCKED: ${forbiddenCheck.reason}`);
+        continue;
+      }
+
       const fullPath = path.join(process.cwd(), filePath);
       if (fs.existsSync(fullPath)) {
         const content = fs.readFileSync(fullPath, 'utf-8');

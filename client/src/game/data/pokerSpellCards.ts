@@ -9,8 +9,8 @@
  * 
  * Distribution:
  * - Neutral (9100-9109): Core poker utility spells anyone can use
- * - Rogue (9110-9119): Deception and trickery (Loki, Hermes archetype)
- * - Mage (9120-9129): Variance control and foresight (Odin, Zeus archetype)
+ * - Rogue (9110-9119): Deception and trickery (Trickster archetype)
+ * - Mage (9120-9129): Variance control and foresight (Foresight archetype)
  * - Warlock (9130-9139): Punishing and debuffs (Hel, Hades archetype)
  * - Legendary (9140-9149): High-impact game changers (Neutral)
  */
@@ -48,7 +48,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
     rarity: 'common',
     heroClass: 'neutral',
     keywords: ['poker_spell'],
-    flavorText: 'Odin\'s ravens see all.',
+    flavorText: 'The Allfather\'s ravens see all.',
     collectible: true,
     pokerSpellEffect: {
       effectType: 'fate_peek',
@@ -69,7 +69,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
     rarity: 'common',
     heroClass: 'neutral',
     keywords: ['poker_spell'],
-    flavorText: 'Tyr\'s oath protects even in retreat.',
+    flavorText: 'The shield-bearer\'s oath protects even in retreat.',
     collectible: true,
     pokerSpellEffect: {
       effectType: 'stamina_shield',
@@ -91,7 +91,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
     rarity: 'epic',
     heroClass: 'rogue',
     keywords: ['poker_spell'],
-    flavorText: 'Hermes moves faster than the eye can follow.',
+    flavorText: 'The swift one moves faster than the eye can follow.',
     collectible: true,
     pokerSpellEffect: {
       effectType: 'hole_swap',
@@ -274,7 +274,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
     rarity: 'legendary',
     heroClass: 'neutral',
     keywords: ['poker_spell'],
-    flavorText: 'Surtr\'s flames burn brightest in the final gambit.',
+    flavorText: 'Muspelheim\'s flames burn brightest in the final gambit.',
     collectible: true,
     pokerSpellEffect: {
       effectType: 'all_in_aura',

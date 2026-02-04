@@ -23,6 +23,11 @@ import {
   HAND_RANK_NAMES,
   ElementBuff
 } from '../../types/PokerCombatTypes';
+import {
+  getActivePlayerForPhase,
+  validateActivePlayer,
+  type ActivePlayerContext
+} from './activePlayerUtils';
 import { BLINDS } from '../../combat/modules/BettingEngine';
 import { 
   PokerState, 
@@ -224,6 +229,20 @@ export const createPokerCombatSlice: StateCreator<
     const playerManaBoost = get().consumePendingManaBoost('player');
     const opponentManaBoost = get().consumePendingManaBoost('opponent');
     
+    // Check for auto-all-in if a player cannot afford the big blind
+    const bigBlind = DEFAULT_BLIND_CONFIG.bigBlind;
+    const playerHealth = playerPetCopy.stats.currentHealth;
+    const opponentHealth = opponentPetCopy.stats.currentHealth;
+    let isAllInShowdown = false;
+
+    if (playerHealth < bigBlind || opponentHealth < bigBlind) {
+      console.log('[PokerCombat] Auto-all-in triggered due to low health:', { playerHealth, opponentHealth, bigBlind });
+      isAllInShowdown = true;
+      // Flip cards immediately
+      skipMulligan = true;
+      startingPhase = PokerCombatPhase.SPELL_PET;
+    }
+
     // All starting phases (MULLIGAN, SPELL_PET, FIRST_STRIKE) begin with isReady: false
     // SPELL_PET has a timing window managed by usePokerPhases, not immediate advancement
     const playerCombatState: PlayerCombatState = {
@@ -262,8 +281,10 @@ export const createPokerCombatSlice: StateCreator<
       console.log('[PokerCombat] Applied mana boosts from Divine Command:', { playerManaBoost, opponentManaBoost });
     }
     
-    // Initial activePlayerId is null for starting phases (MULLIGAN, SPELL_PET, FIRST_STRIKE)
-    // advancePokerPhase() sets the correct activePlayerId when transitioning to FAITH
+    // Use centralized utility for activePlayerId initialization
+    const activePlayerCtx: ActivePlayerContext = { playerPosition, playerId, opponentId };
+    const initialActivePlayerId = getActivePlayerForPhase(startingPhase, activePlayerCtx);
+    validateActivePlayer(startingPhase, initialActivePlayerId, 'initializePokerCombat');
     
     const combatState: PokerCombatState = {
       combatId: `combat_${Date.now()}`,
@@ -283,8 +304,8 @@ export const createPokerCombatSlice: StateCreator<
       playerPosition,
       opponentPosition,
       blindsPosted: false,
-      isAllInShowdown: false,
-      activePlayerId: null,
+      isAllInShowdown: isAllInShowdown,
+      activePlayerId: initialActivePlayerId,
       actionsThisRound: 0,
       firstStrike: firstStrikeTarget ? {
         damage: FIRST_STRIKE_DAMAGE,
@@ -350,11 +371,22 @@ export const createPokerCombatSlice: StateCreator<
     const playerState = target === 'player' ? updatedTargetState : state.pokerCombatState.player;
     const opponentState = target === 'opponent' ? updatedTargetState : state.pokerCombatState.opponent;
     
+    // Use centralized utility for activePlayerId
+    const ctx: ActivePlayerContext = {
+      playerPosition: state.pokerCombatState.playerPosition,
+      playerId: state.pokerCombatState.player.playerId,
+      opponentId: state.pokerCombatState.opponent.playerId
+    };
+    const newActivePlayerId = getActivePlayerForPhase(nextPhase, ctx);
+    validateActivePlayer(nextPhase, newActivePlayerId, 'completeFirstStrike');
+    
     set({
       pokerCombatState: {
         ...state.pokerCombatState,
         phase: nextPhase,
         spellPetPhaseStartTime: nextPhase === PokerCombatPhase.SPELL_PET ? Date.now() : undefined,
+        activePlayerId: newActivePlayerId,
+        actionsThisRound: 0,
         player: {
           ...playerState,
           isReady: false
@@ -386,6 +418,15 @@ export const createPokerCombatSlice: StateCreator<
     const playerHoleCards = [deck.pop()!, deck.pop()!];
     const opponentHoleCards = [deck.pop()!, deck.pop()!];
     
+    // Use centralized utility for activePlayerId
+    const ctx: ActivePlayerContext = {
+      playerPosition: state.pokerCombatState.playerPosition,
+      playerId: state.pokerCombatState.player.playerId,
+      opponentId: state.pokerCombatState.opponent.playerId
+    };
+    const newActivePlayerId = getActivePlayerForPhase(PokerCombatPhase.SPELL_PET, ctx);
+    validateActivePlayer(PokerCombatPhase.SPELL_PET, newActivePlayerId, 'completeMulligan');
+    
     // Enter SPELL_PET phase with isReady: false
     // SPELL_PET is a timed phase where players can play cards/spells
     // usePokerPhases will auto-advance to FAITH after the timing window
@@ -394,6 +435,8 @@ export const createPokerCombatSlice: StateCreator<
         ...state.pokerCombatState,
         phase: PokerCombatPhase.SPELL_PET,
         spellPetPhaseStartTime: Date.now(),
+        activePlayerId: newActivePlayerId,
+        actionsThisRound: 0,
         player: {
           ...state.pokerCombatState.player,
           holeCards: playerHoleCards,
@@ -456,6 +499,7 @@ export const createPokerCombatSlice: StateCreator<
         newState.phase = PokerCombatPhase.RESOLUTION;
         newState.player.isReady = true;
         newState.opponent.isReady = true;
+        newState.activePlayerId = null; // Ensure no active player during resolution
         break;
         
       case CombatAction.DEFEND:
@@ -498,13 +542,10 @@ export const createPokerCombatSlice: StateCreator<
       if (bothActed && (betsMatch || playerAllIn || opponentAllIn)) {
         // Round complete, will advance phase
         newState.activePlayerId = null;
-      } else if (!bothActed) {
+      } else {
         // Other player needs to act
         const otherPlayerId = isPlayer ? newState.opponent.playerId : newState.player.playerId;
         newState.activePlayerId = otherPlayerId;
-      } else {
-        // Edge case: both acted but bets don't match (shouldn't happen with proper logic)
-        newState.activePlayerId = null;
       }
     }
     
@@ -527,6 +568,16 @@ export const createPokerCombatSlice: StateCreator<
     if (!state.pokerCombatState) return;
     
     const combatState = state.pokerCombatState;
+    
+    // Prevent advancement from SPELL_PET to FAITH if a player is currently acting
+    // or if it's the start of the game and no action has been taken yet
+    if (combatState.phase === PokerCombatPhase.SPELL_PET && 
+        combatState.activePlayerId !== null && 
+        combatState.actionsThisRound === 0) {
+      console.log('[advancePokerPhase] Blocking auto-advance: waiting for first action');
+      return;
+    }
+
     let newPhase = combatState.phase;
     let newCommunityCards = { ...combatState.communityCards };
     let deck = [...state.pokerDeck];
@@ -572,24 +623,14 @@ export const createPokerCombatSlice: StateCreator<
       currentAction: undefined 
     };
     
-    // Determine active player for the new phase
-    // Pre-flop (FAITH): Small blind acts first
-    // Post-flop (FORESIGHT, DESTINY): Big blind acts first (out of position)
-    let newActivePlayerId: string | null = null;
-    if (newPhase !== PokerCombatPhase.RESOLUTION && newPhase !== PokerCombatPhase.SPELL_PET && newPhase !== PokerCombatPhase.MULLIGAN) {
-      const isPreFlop = newPhase === PokerCombatPhase.FAITH;
-      if (isPreFlop) {
-        // Pre-flop: SB acts first
-        newActivePlayerId = combatState.playerPosition === 'small_blind' 
-          ? combatState.player.playerId 
-          : combatState.opponent.playerId;
-      } else {
-        // Post-flop: BB acts first (first to act out of position)
-        newActivePlayerId = combatState.playerPosition === 'big_blind'
-          ? combatState.player.playerId
-          : combatState.opponent.playerId;
-      }
-    }
+    // Use centralized utility for activePlayerId
+    const ctx: ActivePlayerContext = {
+      playerPosition: combatState.playerPosition,
+      playerId: combatState.player.playerId,
+      opponentId: combatState.opponent.playerId
+    };
+    const newActivePlayerId = getActivePlayerForPhase(newPhase, ctx);
+    validateActivePlayer(newPhase, newActivePlayerId, 'advancePokerPhase');
     
     if (COMBAT_DEBUG.PHASES) {
       console.log('[advancePokerPhase] Phase transition:', {
@@ -1094,12 +1135,22 @@ export const createPokerCombatSlice: StateCreator<
     const newOpponentPosition: PokerPosition = state.pokerCombatState.opponentPosition === 'small_blind' ? 'big_blind' : 'small_blind';
     const newOpenerIsPlayer = newPlayerPosition === 'small_blind';
     
+    // Use centralized utility for activePlayerId with NEW positions
+    const ctx: ActivePlayerContext = {
+      playerPosition: newPlayerPosition,
+      playerId: state.pokerCombatState.player.playerId,
+      opponentId: state.pokerCombatState.opponent.playerId
+    };
+    const newActivePlayerId = getActivePlayerForPhase(PokerCombatPhase.SPELL_PET, ctx);
+    validateActivePlayer(PokerCombatPhase.SPELL_PET, newActivePlayerId, 'startNextHand');
+    
     set({
       pokerDeck: newDeck,
       isTransitioningHand: false,
       pokerCombatState: {
         ...state.pokerCombatState,
         phase: PokerCombatPhase.SPELL_PET,
+        spellPetPhaseStartTime: Date.now(),
         pot: 0,
         currentBet: 0,
         turnTimer: state.pokerCombatState.maxTurnTime,
@@ -1113,7 +1164,7 @@ export const createPokerCombatSlice: StateCreator<
         playerPosition: newPlayerPosition,
         opponentPosition: newOpponentPosition,
         openerIsPlayer: newOpenerIsPlayer,
-        activePlayerId: null,
+        activePlayerId: newActivePlayerId,
         actionsThisRound: 0,
         player: {
           ...state.pokerCombatState.player,
@@ -1174,7 +1225,9 @@ export const createPokerCombatSlice: StateCreator<
       return;
     }
     
+    // Auto-advance if fold occurred
     if (combatState.foldWinner) {
+      state.advancePokerPhase();
       return;
     }
     
