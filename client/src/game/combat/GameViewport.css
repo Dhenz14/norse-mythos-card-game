@@ -1,0 +1,859 @@
+/* Import all combat styles - order matters: tokens → zones → pot-display */
+@import "./styles/index.css";
+
+/* ========================================
+   GAME VIEWPORT - 16:9 Fixed Aspect Container
+   Professional game UI architecture
+   ======================================== */
+
+/* ========================================
+   16:9 ASPECT RATIO LOCK SYSTEM
+   Prevents stretching on ultrawide monitors
+   Letterboxes content to maintain proportions
+   ======================================== */
+
+.game-viewport-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0a0f;
+  overflow: hidden;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-viewport {
+  width: 100%;
+  height: 100%;
+  max-width: calc(100vh * 16 / 9);
+  max-height: calc(100vw * 9 / 16);
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  container-type: inline-size;
+  container-name: game-viewport;
+}
+
+/* ========================================
+   ZONE POSITIONING VARIABLES
+   
+   SINGLE SOURCE OF TRUTH: styles/zones.css
+   All zone positioning variables (--zone-*-left, --zone-*-top, etc.)
+   are defined in styles/zones.css including responsive overrides.
+   
+   This file CONSUMES those variables via selectors like:
+   .viewport-mode .unified-community { left: var(--zone-community-left); }
+   
+   DO NOT define zone variables in this file - edit zones.css instead.
+   ======================================== */
+
+/* ========================================
+   ABSOLUTE POSITIONED ZONES
+   Each zone is independently positioned
+   ======================================== */
+
+/* ========================================
+   PLAYER ZONES
+   Position controlled by --zone-* vars in styles/zones.css
+   ======================================== */
+
+/* Player Hero Zone */
+.zone-player-hero {
+  position: absolute;
+  left: var(--zone-player-hero-left, 8px);
+  bottom: var(--zone-player-hero-bottom, 24px);
+  z-index: var(--zone-player-hero-z, 30);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Player Mana Bar */
+.zone-player-mana {
+  position: absolute;
+  left: var(--zone-player-mana-left, 8px);
+  bottom: var(--zone-player-mana-bottom, 4px);
+  z-index: var(--zone-player-mana-z, 30);
+  width: var(--zone-player-mana-width, 120px);
+}
+
+/* Player Hand Zone */
+.zone-player-hand {
+  position: absolute;
+  left: var(--zone-player-hand-left, 50%);
+  bottom: var(--zone-player-hand-bottom, 0%);
+  transform: translateX(-50%);
+  z-index: var(--zone-player-hand-z, 40);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  max-width: calc(100% - 300px);
+  overflow: visible;
+}
+
+/* Player Battlefield */
+.zone-player-field {
+  position: absolute;
+  left: var(--zone-player-field-left, 50%);
+  bottom: var(--zone-player-field-bottom, 30%);
+  transform: translateX(-50%);
+  z-index: var(--zone-player-field-z, 20);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ========================================
+   OPPONENT ZONES
+   Position controlled by --zone-* vars in styles/zones.css
+   ======================================== */
+
+/* Opponent Hero Zone */
+.zone-opponent-hero {
+  position: absolute;
+  left: var(--zone-opponent-hero-left, 8px);
+  top: var(--zone-opponent-hero-top, 8px);
+  z-index: var(--zone-opponent-hero-z, 30);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Opponent Mana Bar */
+.zone-opponent-mana {
+  position: absolute;
+  left: var(--zone-opponent-mana-left, 8px);
+  top: var(--zone-opponent-mana-top, 220px);
+  z-index: var(--zone-opponent-mana-z, 30);
+  width: var(--zone-opponent-mana-width, 120px);
+}
+
+/* Opponent Hand Zone */
+.zone-opponent-hand {
+  position: absolute;
+  left: var(--zone-opponent-hand-left, 50%);
+  top: var(--zone-opponent-hand-top, 0%);
+  transform: translateX(-50%);
+  z-index: var(--zone-opponent-hand-z, 40);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Opponent Battlefield */
+.zone-opponent-field {
+  position: absolute;
+  left: var(--zone-opponent-field-left, 50%);
+  top: var(--zone-opponent-field-top, 26%);
+  transform: translateX(-50%);
+  z-index: var(--zone-opponent-field-z, 20);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Community Cards Zone - Left-aligned to avoid minion battlefield overlap */
+/* NOTE: Position controlled by --zone-community-* vars in styles/zones.css */
+.zone-community {
+  position: absolute;
+  left: var(--zone-community-left, 60px);
+  top: var(--zone-community-top, 48%);
+  transform: translateY(-50%);
+  z-index: var(--zone-community-z, 25);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Pot Display Zone */
+/* NOTE: Position now controlled by --zone-pot-* vars in styles/zones.css */
+.zone-pot {
+  position: absolute;
+  left: var(--zone-pot-left, 8px);
+  top: var(--zone-pot-top, 32%);
+  z-index: var(--zone-pot-z, 25);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+/* Betting Actions Zone - REMOVED: Class is unused, betting uses .unified-betting-actions-container */
+/* Position controlled by --zone-betting-* vars in styles/zones.css */
+
+/* Timer Zone */
+/* NOTE: Position now controlled by --zone-timer-* vars in styles/zones.css */
+.zone-timer {
+  position: absolute;
+  left: var(--zone-timer-left, 50%);
+  top: var(--zone-timer-top, 1%);
+  transform: translateX(-50%);
+  z-index: var(--zone-timer-z, 500);
+}
+
+/* Activity Logs Zone */
+/* NOTE: Position now controlled by --zone-activity-* vars in styles/zones.css */
+.zone-activity-logs {
+  position: absolute;
+  right: var(--zone-activity-right, 1%);
+  top: var(--zone-activity-top, 2%);
+  z-index: var(--zone-activity-z, 500);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 240px;
+}
+
+/* ========================================
+   HERO CARD STYLING
+   ======================================== */
+.viewport-hero-card {
+  width: 180px;
+  aspect-ratio: 3/4;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.viewport-hero-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+}
+
+/* ========================================
+   OPPONENT POKER AREA (left sidebar)
+   ======================================== */
+.zone-poker-sidebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 320px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(20, 30, 48, 0.92) 100%
+  );
+  border-right: 2px solid rgba(245, 158, 11, 0.3);
+  z-index: var(--z-cards);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+}
+
+/* Adjust other zones when poker sidebar is present */
+.has-poker-sidebar .zone-player-hero,
+.has-poker-sidebar .zone-opponent-hero {
+  left: calc(var(--zone-player-hero-left, 8px) + 17%);
+}
+
+.has-poker-sidebar .zone-player-mana,
+.has-poker-sidebar .zone-opponent-mana {
+  left: calc(var(--zone-player-mana-left, 8px) + 17%);
+}
+
+.has-poker-sidebar .zone-pot {
+  left: calc(var(--zone-pot-left, 8px) + 30%);
+}
+
+/* Betting buttons - shift right when poker sidebar is active */
+.has-poker-sidebar .unified-betting-actions-container {
+  left: calc(var(--zone-betting-left, 460px) + 15%);
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   Scale factor handles most responsiveness,
+   but we can adjust positioning for edge cases
+   
+   NOTE: Position overrides now use --zone-* variables.
+   See styles/zones.css for all zone positioning.
+   ======================================== */
+/* All responsive zone overrides moved to styles/zones.css for single source of truth */
+
+/* ========================================
+   CSS CONTAINER QUERIES (AAA-quality)
+   Cards size relative to game-viewport container
+   instead of viewport units for better consistency
+   ======================================== */
+
+/* Container query for cards within the game viewport */
+@container game-viewport (max-width: 1200px) {
+  .viewport-hero-card {
+    width: clamp(100px, 14cqw, 160px);
+  }
+
+  .unified-player-field .battlefield-card,
+  .unified-opponent-field .battlefield-card {
+    width: clamp(80px, 10cqw, 140px);
+  }
+}
+
+@container game-viewport (max-width: 900px) {
+  .viewport-hero-card {
+    width: clamp(80px, 16cqw, 140px);
+  }
+
+  .unified-player-field .battlefield-card,
+  .unified-opponent-field .battlefield-card {
+    width: clamp(60px, 12cqw, 120px);
+  }
+}
+
+@container game-viewport (min-width: 1600px) {
+  .viewport-hero-card {
+    width: clamp(120px, 10cqw, 180px);
+  }
+
+  .unified-player-field .battlefield-card,
+  .unified-opponent-field .battlefield-card {
+    width: clamp(100px, 8cqw, 160px);
+  }
+}
+
+/* ========================================
+   VIEWPORT MODE OVERRIDES
+   When .viewport-mode is applied, switch 
+   from CSS Grid to absolute positioning
+   ======================================== */
+
+.ragnarok-combat-arena.viewport-mode {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+.viewport-mode .arena-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.viewport-mode .unified-combat-arena {
+  /* Viewport mode uses absolute positioning for fine control */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: transparent;
+}
+
+/* Activity logs - top right */
+.viewport-mode .activity-logs-dock {
+  position: absolute;
+  right: 16px;
+  top: 48px;
+  z-index: var(--z-overlays, 500);
+}
+
+/* Opponent Hero Zone - see OPPONENT ZONES section at end of file */
+
+.viewport-mode .unified-opponent-hero .opponent-hero-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Opponent Hand - top center */
+.viewport-mode .unified-opponent-hand {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  z-index: var(--z-hand, 40);
+}
+
+/* ========================================
+   ZONE LAYOUT - Hearthstone-inspired clear zones
+   
+   VERTICAL LAYOUT (top to bottom):
+   - Opponent Hero: top 8px
+   - Opponent Minions: top 22%
+   - Community Poker Cards: center (45%) - LEFT side
+   - Player Minions: bottom 28%
+   - Player Hero: bottom 8px
+   ======================================== */
+
+/* Community Poker Cards - positioned INSIDE their grid lane
+   Absolute positioning allowed here because:
+   1. Community cards live in their own dedicated grid column
+   2. They don't compete with battlefield for space
+   3. Absolute is used for fanning/stacking WITHIN the lane */
+.viewport-mode .unified-community {
+  position: absolute;
+  left: var(--zone-community-left, 60px);
+  top: var(--zone-community-top, 48%);
+  transform: translateY(-50%);
+  z-index: var(--zone-community-z, 25);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+/* Pot Display - Norse themed panel (see styles/pot-display.css) */
+/* Positioning is handled in pot-display.css .pot-container */
+
+/* Opponent Minion Field - RIGHT SIDE to avoid poker card overlap
+   Shifted right from center (was 50%, now 60%) */
+.viewport-mode .unified-opponent-field {
+  position: absolute;
+  left: var(--zone-opponent-field-left, 60%);
+  top: var(--zone-opponent-field-top, 26%);
+  transform: translateX(-50%);
+  z-index: var(--z-battlefield, 10);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 120px;
+}
+
+.viewport-mode .unified-opponent-field .simple-battlefield {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Player Field */
+/* NOTE: Player field moved to Hearthstone-style layout section below */
+
+/* Info Row with End Turn button */
+.viewport-mode .unified-info-row {
+  position: absolute;
+  right: 0;
+  top: 45%;
+  transform: translateY(-50%);
+  z-index: var(--z-betting, 200);
+}
+
+/* Player Area - bottom left */
+.viewport-mode .unified-player-area {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: var(--z-heroes, 30);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.viewport-mode .unified-hero-hand-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 24px;
+  width: 100%;
+  padding: 16px 24px;
+}
+
+/* Player Hero Section */
+.viewport-mode .unified-hero-section {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.viewport-mode .poker-hero-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Player Mana - visible below hero */
+.viewport-mode .player-mana-display {
+  width: 180px;
+  margin-top: 8px;
+}
+
+/* NOTE: Hand section and betting actions moved to Hearthstone-style layout section below */
+
+/* Hero card constraints - ensure visibility */
+.viewport-mode .battlefield-hero-square {
+  width: 180px;
+  aspect-ratio: 3/4;
+  max-width: none;
+  max-height: none;
+  transform: none !important;
+}
+
+/* Remove transform hacks from hero card */
+.viewport-mode .battlefield-hero-square:hover {
+  transform: scale(1.02) !important;
+}
+
+/* Ensure mana bar is always visible */
+.viewport-mode .mana-bar-container {
+  transform: none !important;
+}
+
+/* ========================================
+   HEARTHSTONE-STYLE PLAYER ZONE LAYOUT
+   Physical layering: cards behind heroes,
+   zones have clear "homes"
+   ======================================== */
+
+/* ========================================
+   LOCAL LAYOUT VARIABLES (Component-specific)
+   
+   These are GameViewport-specific styling variables.
+   Core tokens are in client/src/styles/design-tokens.css
+   Zone positions are in styles/zones.css.
+   ======================================== */
+:root {
+  /* Poker hole cards layout */
+  --poker-offset-top: -30%;
+  --poker-fan-spread: 24px;
+  --poker-card-tilt: 4deg;
+  --poker-z-index: 100;
+  --hero-z-index: 50;
+
+  /* Hand zone gap */
+  --hand-zone-gap: 12px;
+  --hand-minion-card-spacing: -24px;
+
+  /* Betting zone bottom (not a position - just a local modifier) */
+  --betting-zone-bottom: 8px;
+}
+
+/* Player Zone Container - absolute positioned at bottom-left */
+/* Override purple background from RagnarokCombatArena.css */
+.viewport-mode .unified-player-area {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: auto;
+  min-height: 300px;
+  z-index: var(--z-heroes, 30);
+  pointer-events: none; /* Allow click-through, children have pointer-events */
+  /* Remove purple bar background */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important; /* Remove translateY override */
+}
+
+.viewport-mode .unified-player-area > * {
+  pointer-events: auto;
+}
+
+/* Hero Hand Row - flex container for hero and hand cards side by side */
+.viewport-mode .unified-hero-hand-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Align items to top */
+  padding: 0 var(--zone-player-hero-left, 24px)
+    var(--zone-player-hero-bottom, 0);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+/* Hero Section - contains hero, mana, and hole cards layered */
+.viewport-mode .unified-hero-section {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 50; /* Hero above hole cards */
+}
+
+.viewport-mode .poker-hero-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hero card itself - lower z-index so poker cards can fan over it */
+.viewport-mode .poker-hero-container .battlefield-hero-square {
+  position: relative;
+  z-index: var(--hero-z-index);
+  width: var(--token-size-hero-width, 160px);
+  aspect-ratio: 3/4;
+  transform: none !important;
+}
+
+/* Poker Hole Cards - ABOVE hero, bottom overlaps TOP of hero */
+.viewport-mode .hero-hole-cards-overlay {
+  position: absolute;
+  left: 50%;
+  top: var(--poker-offset-top); /* Position ABOVE hero portrait */
+  transform: translateX(-50%);
+  z-index: var(--poker-z-index); /* IN FRONT of hero */
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+/* Individual poker card slots with fanning effect */
+.viewport-mode .hero-hole-cards-overlay .poker-card-slot {
+  flex-shrink: 0;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Left card - slight tilt for natural fan */
+.viewport-mode .hero-hole-cards-overlay .poker-card-slot:first-child {
+  transform: rotate(calc(var(--poker-card-tilt) * -1))
+    translateX(calc(var(--poker-fan-spread) * -0.5));
+}
+
+/* Right card - opposite tilt */
+.viewport-mode .hero-hole-cards-overlay .poker-card-slot:last-child {
+  transform: rotate(var(--poker-card-tilt))
+    translateX(calc(var(--poker-fan-spread) * 0.5));
+}
+
+.viewport-mode .hero-hole-cards-overlay .playing-card {
+  transform: scale(0.75);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+
+/* Hover effect - lift card and glow */
+.viewport-mode .hero-hole-cards-overlay .poker-card-slot:hover .playing-card {
+  transform: scale(0.85) translateY(-6px);
+  box-shadow:
+    0 10px 28px rgba(255, 215, 0, 0.5),
+    0 6px 16px rgba(0, 0, 0, 0.7);
+}
+
+/* Depth shadow under cards where they overlap hero */
+.viewport-mode .hero-hole-cards-overlay::after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  left: -10px;
+  right: -10px;
+  height: 25px;
+  background: linear-gradient(to top, transparent, rgba(0, 0, 0, 0.25));
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Mana bar below hero */
+.viewport-mode .player-mana-display {
+  position: relative;
+  z-index: 25;
+  width: var(--token-size-hero-width, 160px);
+  margin-top: 4px;
+}
+
+/* ========================================
+   BATTLEFIELD MINION ZONE - CENTER OF SCREEN
+   (Active minions on the battlefield)
+   Hearthstone-style: minions face each other in center
+   ======================================== */
+
+/* Player Minion Field - RIGHT SIDE to avoid poker card overlap
+   Shifted right from center (was 50%, now 60%) */
+.viewport-mode .unified-player-field {
+  position: absolute;
+  left: var(--zone-player-field-left, 60%);
+  bottom: var(--zone-player-field-bottom, 30%);
+  transform: translateX(-50%);
+  z-index: var(--z-battlefield, 10);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 120px;
+}
+
+.viewport-mode .unified-player-field .simple-battlefield {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Minion cards subtle hover tilt for physicality */
+.viewport-mode .unified-player-field .battlefield-card {
+  transition: transform 0.15s ease;
+}
+
+.viewport-mode .unified-player-field .battlefield-card:hover {
+  transform: translateY(-6px) rotate(-2deg);
+}
+
+/* ========================================
+   HAND CARDS ZONE - SNUG RIGHT OF HERO
+   Aligned to hero's TOP edge, flex child
+   ======================================== */
+
+.viewport-mode .unified-hand-section {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Align to TOP of hero */
+  align-self: flex-start; /* Don't stretch to container bottom */
+  margin-left: var(--hand-zone-gap);
+  margin-top: 60px; /* Offset to align with hero portrait (below poker cards) */
+  z-index: var(--z-hand, 40);
+  min-width: 240px;
+}
+
+.viewport-mode .poker-hand-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: var(--hand-minion-card-spacing);
+  padding: 0;
+}
+
+/* Hand cards have slight overlap and tilt for natural fan */
+.viewport-mode .poker-hand-container .hand-card-wrapper {
+  transition:
+    transform 0.2s ease,
+    z-index 0.1s;
+}
+
+.viewport-mode .poker-hand-container .hand-card-wrapper:hover {
+  transform: translateY(-12px) scale(1.05);
+  z-index: 100;
+}
+
+/* ========================================
+   BETTING BUTTONS - BELOW HAND CARDS
+   ======================================== */
+
+/* BETTING BUTTONS - Position controlled by zones.css variables */
+.viewport-mode .unified-betting-actions-container {
+  position: absolute;
+  left: var(--zone-betting-left, 460px);
+  bottom: var(--zone-betting-bottom, 8px);
+  z-index: var(--zone-betting-z, 200);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  /* NO background or border - removed to avoid blocking mana crystals */
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.viewport-mode .unified-betting-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  /* NO background box - removed to keep mana crystals visible */
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+}
+
+.viewport-mode .action-buttons-group {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+/* Betting button glow effects */
+.viewport-mode .poker-btn {
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.viewport-mode .poker-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+}
+
+/* ========================================
+   OPPONENT ZONES - Mirror layout at top
+   ======================================== */
+
+.viewport-mode .unified-opponent-hero {
+  position: absolute;
+  left: var(--zone-opponent-hero-left, 24px);
+  top: var(--zone-opponent-hero-top, 0);
+  z-index: var(--z-heroes, 30);
+  /* Override RagnarokCombatArena.css padding */
+  padding: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* REMOVED DUPLICATE: opponent-field is now defined in the zone layout section above */
+
+/* ========================================
+   VIEWPORT MODE RESPONSIVE COMMUNITY CARDS
+   
+   NOTE: Community card positioning now uses CSS variables from:
+   - styles/zones.css: --zone-community-left, --zone-community-top
+   
+   To move community cards:
+   1. Edit the variables in styles/zones.css
+   2. No other files need to be changed
+   
+   Responsive adjustments are handled via media queries in zones.css
+   ======================================== */
+
+/* Community cards positioning handled via --zone-community-* variables in zones.css */
+/* Spacing adjustments only below */
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .zone-community,
+  .viewport-mode .unified-community {
+    gap: 5px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .zone-community,
+  .viewport-mode .unified-community {
+    gap: 4px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 767px) {
+  .zone-community,
+  .viewport-mode .unified-community {
+    gap: 4px;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .zone-community,
+  .viewport-mode .unified-community {
+    gap: 3px;
+    padding: 4px 6px;
+  }
+
+  .viewport-mode .unified-community .community-slot {
+    transform: scale(0.8);
+  }
+}

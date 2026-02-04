@@ -1,0 +1,674 @@
+/* Betting Controls - Poker action buttons and sliders */
+
+/* ========================================
+   POKER ACTIONS CONTAINER
+   ======================================== */
+.poker-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--poker-panel-gap);
+  padding: calc(8px * var(--poker-panel-scale));
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+}
+
+.poker-actions .waiting-for-opponent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(100, 100, 100, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.poker-actions .waiting-for-opponent .waiting-icon {
+  animation: waiting-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes waiting-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ========================================
+   BET CONTROLS
+   ======================================== */
+.bet-controls {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6px * var(--poker-panel-scale));
+  padding: calc(6px * var(--poker-panel-scale)) calc(8px * var(--poker-panel-scale));
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   BET PRESETS
+   ======================================== */
+.bet-presets {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.preset-btn {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(180deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 6px;
+  color: #e2e8f0;
+  cursor: pointer;
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+  min-width: 48px;
+  text-align: center;
+}
+
+.preset-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(71, 85, 105, 0.9) 0%, rgba(51, 65, 85, 0.95) 100%);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+}
+
+.preset-btn.active {
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.8) 0%, rgba(109, 40, 217, 0.9) 100%);
+  border-color: rgba(167, 139, 250, 0.6);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+.preset-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   BET SLIDER ROW
+   ======================================== */
+.bet-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  padding: 0;
+}
+
+.bet-label {
+  font-size: 0.85rem;
+  color: #a0aec0;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bet-slider {
+  flex: 1;
+  height: 5px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #4a5568;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.bet-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #48bb78;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.bet-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #48bb78;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.bet-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   BET INPUT
+   ======================================== */
+.bet-input {
+  width: 55px;
+  padding: 5px 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: #1a202c;
+  border: 1px solid #4a5568;
+  border-radius: 4px;
+  color: #48bb78;
+  text-align: center;
+}
+
+.bet-input:focus {
+  outline: none;
+  border-color: #48bb78;
+}
+
+.bet-input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bet-unit {
+  color: #a0aec0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.bet-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #48bb78;
+  min-width: 35px;
+  text-align: center;
+  text-shadow: 0 0 8px rgba(72, 187, 120, 0.4);
+}
+
+/* ========================================
+   ACTION BUTTONS
+   ======================================== */
+.action-buttons {
+  display: flex;
+  gap: calc(8px * var(--poker-panel-scale));
+  justify-content: center;
+}
+
+.action-btn {
+  padding: calc(10px * var(--poker-panel-scale)) calc(14px * var(--poker-panel-scale));
+  font-size: calc(0.7rem * var(--poker-panel-scale) + 0.1rem);
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.action-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.action-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.action-btn.attack,
+.action-btn-fold {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+}
+
+.action-btn.attack:hover:not(:disabled),
+.action-btn-fold:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f87171, #ef4444);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+}
+
+.action-btn.brace {
+  background: linear-gradient(180deg, #eab308 0%, #ca8a04 100%);
+  color: #1f2937;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+}
+
+.action-btn.brace:hover:not(:disabled) {
+  background: linear-gradient(180deg, #facc15, #eab308);
+  box-shadow: 0 6px 16px rgba(234, 179, 8, 0.5);
+}
+
+.action-btn.defend,
+.poker-action-btn {
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
+  border: 1px solid rgba(147, 197, 253, 0.5);
+}
+
+.action-btn.defend:hover:not(:disabled),
+.poker-action-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #60a5fa, #3b82f6);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+}
+
+.action-btn.engage,
+.action-btn-call {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  color: #fff;
+  border: 1px solid rgba(74, 222, 128, 0.5);
+}
+
+.action-btn.engage:hover:not(:disabled),
+.action-btn-call:hover:not(:disabled) {
+  background: linear-gradient(180deg, #4ade80, #22c55e);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.5);
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(30%);
+}
+
+/* ========================================
+   POKER-SPECIFIC ACTION BUTTONS
+   ======================================== */
+.action-btn.raise-btn {
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+  color: #fff;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+  min-width: 100px;
+}
+
+.action-btn.raise-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.action-btn.call-btn {
+  background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+  color: #fff;
+  border: 1px solid rgba(74, 222, 128, 0.5);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+  min-width: 80px;
+}
+
+.action-btn.call-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+}
+
+.action-btn.check-btn {
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #fff;
+  border: 1px solid rgba(147, 197, 253, 0.5);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+  min-width: 80px;
+}
+
+.action-btn.check-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.action-btn.fold-btn {
+  background: linear-gradient(180deg, #eab308 0%, #a16207 100%);
+  color: #1f2937;
+  border: 1px solid rgba(253, 224, 71, 0.5);
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.3);
+  min-width: 80px;
+}
+
+.action-btn.fold-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #facc15 0%, #eab308 100%);
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.5);
+}
+
+/* ========================================
+   BETTING CONTROLS BAR - Poker Style
+   Horizontal bar at bottom with beveled buttons
+   ======================================== */
+.betting-controls-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  position: relative;
+  margin-left: 240px;
+}
+
+.betting-inner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.betting-controls-bar .all-in-showdown-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 24px;
+}
+
+.betting-controls-bar .showdown-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+}
+
+/* ========================================
+   POKER ACTION BUTTONS CONTAINER
+   ======================================== */
+.poker-action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ========================================
+   BEVELED POKER BUTTONS
+   ======================================== */
+.poker-btn {
+  position: relative;
+  min-width: 70px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  overflow: hidden;
+}
+
+.poker-btn .btn-text {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.poker-btn.raise-btn {
+  background: linear-gradient(180deg,
+    #e85a4f 0%,
+    #c94a40 25%,
+    #b03a30 50%,
+    #a02820 75%,
+    #8a1810 100%
+  );
+  border: 2px solid #ff6b5b;
+  border-bottom: 3px solid #6a1810;
+  color: #ffffff;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,200,180,0.4),
+    inset 0 -2px 4px rgba(0,0,0,0.3),
+    0 4px 8px rgba(180,60,40,0.4);
+}
+
+.poker-btn.raise-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg,
+    #f06a5f 0%,
+    #d95a50 25%,
+    #c04a40 50%,
+    #b03830 75%,
+    #9a2820 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255,200,180,0.5),
+    inset 0 -2px 4px rgba(0,0,0,0.3),
+    0 6px 12px rgba(180,60,40,0.5);
+}
+
+.poker-btn.call-btn {
+  background: linear-gradient(180deg,
+    #e8c547 0%,
+    #d4a82a 25%,
+    #c49520 50%,
+    #b08518 75%,
+    #9a7510 100%
+  );
+  border: 2px solid #f5d560;
+  border-bottom: 3px solid #6a5010;
+  color: #3a2800;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,240,180,0.5),
+    inset 0 -2px 4px rgba(0,0,0,0.2),
+    0 4px 8px rgba(180,140,40,0.4);
+}
+
+.poker-btn.call-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg,
+    #f0d057 0%,
+    #e4b83a 25%,
+    #d4a530 50%,
+    #c09528 75%,
+    #aa8520 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255,240,180,0.6),
+    inset 0 -2px 4px rgba(0,0,0,0.2),
+    0 6px 12px rgba(180,140,40,0.5);
+}
+
+.poker-btn.fold-btn {
+  background: linear-gradient(180deg,
+    #5a6070 0%,
+    #4a5060 25%,
+    #3a4050 50%,
+    #303845 75%,
+    #252a35 100%
+  );
+  border: 2px solid #6a7080;
+  border-bottom: 3px solid #1a1e28;
+  color: #c0c8d8;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    inset 0 -2px 4px rgba(0,0,0,0.3),
+    0 4px 8px rgba(40,50,70,0.4);
+}
+
+.poker-btn.fold-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg,
+    #6a7080 0%,
+    #5a6070 25%,
+    #4a5060 50%,
+    #404855 75%,
+    #353a45 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -2px 4px rgba(0,0,0,0.3),
+    0 6px 12px rgba(40,50,70,0.5);
+}
+
+.poker-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ========================================
+   POKER SLIDER ROW
+   ======================================== */
+.poker-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: auto;
+  min-width: 300px;
+  padding: 4px 0;
+}
+
+.poker-slider-row .slider-label {
+  font-size: 0.75rem;
+  color: rgba(180, 200, 220, 0.8);
+  font-weight: 500;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.poker-slider-row .poker-slider {
+  flex: 1;
+  height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(90deg,
+    #1a5a30 0%,
+    #2a8a50 50%,
+    #3ab060 100%
+  );
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 
+    inset 0 1px 2px rgba(0,0,0,0.3),
+    0 1px 0 rgba(255,255,255,0.1);
+}
+
+.poker-slider-row .poker-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(180deg, #50d080 0%, #30a050 50%, #208040 100%);
+  border: 2px solid #70f0a0;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 
+    0 2px 6px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.poker-slider-row .poker-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(180deg, #50d080 0%, #30a050 50%, #208040 100%);
+  border: 2px solid #70f0a0;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 
+    0 2px 6px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.poker-slider-row .slider-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #50d080;
+  min-width: 36px;
+  text-align: right;
+  text-shadow: 0 0 8px rgba(80, 208, 128, 0.5);
+}
+
+/* ========================================
+   UNIFIED BETTING ACTIONS
+   ======================================== */
+.unified-betting-actions .bet-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 360px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.unified-betting-actions .bet-slider {
+  flex: 1;
+  max-width: 280px;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(71, 85, 105, 0.5);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.unified-betting-actions .action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+
+.unified-betting-actions .action-btn {
+  background: #2a2d3e;
+  border: 2px solid #4a4d5e;
+  border-radius: 10px;
+  color: white;
+  padding: 14px 32px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  box-shadow: 0 4px 0 #1a1d2e;
+  min-width: 100px;
+}
+
+.unified-betting-actions .action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #1a1d2e;
+}
+
+.unified-betting-actions .action-btn.raise-btn {
+  border-color: #d4af37;
+  color: #d4af37;
+}
+
+.unified-betting-actions .action-btn.call-btn {
+  border-color: #4a4d5e;
+}
+
+.unified-betting-actions .action-btn.fold-btn {
+  border-color: #4a4d5e;
+}
+
+.unified-betting-actions .bet-label {
+  font-size: 0.85rem;
+  color: rgba(148, 163, 184, 0.9);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.unified-betting-actions .bet-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.unified-betting-actions .bet-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #22c55e;
+  min-width: 30px;
+  text-align: left;
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}

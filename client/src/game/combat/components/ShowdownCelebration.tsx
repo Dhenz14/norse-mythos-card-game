@@ -24,7 +24,7 @@ export const ShowdownCelebration: React.FC<ShowdownCelebrationProps> = ({
   onComplete
 }) => {
   const isShowdown = resolution.resolutionType === 'showdown';
-  const celebrationDuration = isShowdown ? 2000 : 1200; // Fast auto-dismiss
+  const celebrationDuration = isShowdown ? 3000 : 2500; // Extended duration for readability
   
   // Use ref to avoid callback identity changes resetting the timer
   const onCompleteRef = useRef(onComplete);

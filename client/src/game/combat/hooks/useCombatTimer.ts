@@ -1,0 +1,93 @@
+import { useEffect, useRef } from 'react';
+import { CombatPhase, CombatAction, PokerCombatState } from '../../types/PokerCombatTypes';
+import { getPokerCombatAdapterState, getActionPermissions } from '../../hooks/usePokerCombatAdapter';
+import { getSmartAIAction } from '../modules/SmartAI';
+import { fireActionAnnouncement } from '../../stores/animationStore';
+import { COMBAT_DEBUG } from '../debugConfig';
+
+interface UseCombatTimerOptions {
+  combatState: PokerCombatState | null;
+  isActive: boolean;
+  updateTimer: (newTime: number) => void;
+}
+
+export function useCombatTimer(options: UseCombatTimerOptions): void {
+  const { combatState, isActive, updateTimer } = options;
+  const nestedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!combatState || !isActive) return;
+    if (combatState.phase === CombatPhase.MULLIGAN) return;
+    if (combatState.phase === CombatPhase.SPELL_PET) return;
+    
+    if (combatState.player.isReady) {
+      if (COMBAT_DEBUG.TIMER) console.log('[Timer] SKIP: Player already ready (isReady=true)');
+      return;
+    }
+    
+    if (combatState.isAllInShowdown) {
+      if (COMBAT_DEBUG.TIMER) console.log('[Timer] SKIP: All-in showdown in progress - auto-advance handles phases');
+      return;
+    }
+    
+    const timer = setInterval(() => {
+      const freshState = getPokerCombatAdapterState().combatState;
+      if (!freshState) return;
+      
+      if (freshState.phase === CombatPhase.MULLIGAN || 
+          freshState.phase === CombatPhase.SPELL_PET ||
+          freshState.player.isReady ||
+          freshState.isAllInShowdown) {
+        if (COMBAT_DEBUG.TIMER) console.log('[Timer] SKIP in interval: phase=', freshState.phase, 'playerReady=', freshState.player.isReady, 'allIn=', freshState.isAllInShowdown);
+        return;
+      }
+      
+      if (freshState.turnTimer > 0) {
+        updateTimer(freshState.turnTimer - 1);
+      } else {
+        const permissions = getActionPermissions(freshState, true);
+        
+        let autoAction = CombatAction.DEFEND;
+        if (permissions?.hasBetToCall) {
+          if (permissions.canCall) {
+            autoAction = CombatAction.ENGAGE;
+            fireActionAnnouncement('poker_call', 'Call', { subtitle: 'Time expired - matched bet', duration: 1500 });
+          } else {
+            autoAction = CombatAction.BRACE;
+            fireActionAnnouncement('poker_fold', 'Fold', { subtitle: 'Time expired', duration: 1500 });
+          }
+        } else {
+          fireActionAnnouncement('poker_check', 'Check', { subtitle: 'Time expired', duration: 1500 });
+        }
+        
+        const phaseBeforeAutoAction = freshState.phase;
+        
+        getPokerCombatAdapterState().performAction(freshState.player.playerId, autoAction);
+        
+        nestedTimerRef.current = setTimeout(() => {
+          const stateAfterAction = getPokerCombatAdapterState().combatState;
+          if (!stateAfterAction || stateAfterAction.opponent.isReady) return;
+          
+          if (stateAfterAction.phase !== phaseBeforeAutoAction) {
+            return;
+          }
+          
+          if (stateAfterAction.phase === CombatPhase.RESOLUTION || stateAfterAction.foldWinner) {
+            return;
+          }
+          
+          const aiDecision = getSmartAIAction(stateAfterAction, false);
+          getPokerCombatAdapterState().performAction(stateAfterAction.opponent.playerId, aiDecision.action, aiDecision.betAmount);
+        }, 500);
+      }
+    }, 1000);
+    
+    return () => {
+      clearInterval(timer);
+      if (nestedTimerRef.current) {
+        clearTimeout(nestedTimerRef.current);
+        nestedTimerRef.current = null;
+      }
+    };
+  }, [combatState?.phase, combatState?.player?.isReady, combatState?.isAllInShowdown, isActive, updateTimer]);
+}

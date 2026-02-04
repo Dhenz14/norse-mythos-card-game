@@ -1,0 +1,61 @@
+/* Arena Grid Layout - Main structure */
+/* ========================================
+   Main arena header and content layout
+   Provides the foundational grid/flex structure
+   for the combat arena interface.
+   ======================================== */
+
+.arena-header {
+  height: 8px;
+  background: linear-gradient(90deg, 
+    #1a1a2e 0%, 
+    #2d3748 20%, 
+    #4a5568 50%, 
+    #2d3748 80%, 
+    #1a1a2e 100%
+  );
+  position: relative;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.fire-border {
+  position: absolute;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(180deg, 
+    rgba(245, 158, 11, 0.6) 0%, 
+    rgba(234, 88, 12, 0.4) 50%,
+    transparent 100%
+  );
+  animation: emberGlow 2s ease-in-out infinite;
+}
+
+.fire-border.left { left: 0; }
+.fire-border.right { right: 0; }
+
+@keyframes emberGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 40px rgba(245,158,11,0.5), inset 0 0 20px rgba(245,158,11,0.2);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 60px rgba(245,158,11,0.8), inset 0 0 30px rgba(245,158,11,0.3);
+    transform: translate(-50%, -50%) scale(1.02);
+  }
+}
+
+.arena-content {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  gap: 0;
+}

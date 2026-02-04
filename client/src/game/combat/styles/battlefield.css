@@ -1,0 +1,107 @@
+/* Battlefield Layout - Combat zone structure */
+/* ========================================
+   AAA-QUALITY BATTLEFIELD LAYERING SYSTEM
+   Professional z-index hierarchy ensuring minions
+   always render above field backgrounds.
+   
+   Layer Order (bottom to top):
+   1. Field background/gradients (z-index: 0-5)
+   2. Field decorative elements (z-index: 10)
+   3. Minion slots container (z-index: 20)
+   4. Individual minions (z-index: 30-40)
+   5. Hovered minion (z-index: 100)
+   6. Attacking minion (z-index: 150)
+   7. Effects/animations (z-index: 200)
+   ======================================== */
+
+/* ----------------------------------------
+   Opponent Field Zone
+   ---------------------------------------- */
+.opponent-field-zone {
+  grid-area: opponent-field;
+  position: relative;
+  z-index: 20;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: 12px 16px;
+  isolation: isolate; /* Creates new stacking context */
+}
+
+/* Field background as pseudo-element - guaranteed below content */
+.opponent-field-zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, 
+    rgba(139, 69, 19, 0.08) 0%, 
+    rgba(101, 67, 33, 0.12) 50%,
+    rgba(139, 69, 19, 0.08) 100%
+  );
+  border-bottom: 2px solid rgba(139, 69, 19, 0.3);
+  pointer-events: none;
+}
+
+/* NOTE: .player-field-zone rules removed - using .unified-player-field instead (single source of truth) */
+
+/* Ensure all content inside field zones renders above background */
+.opponent-field-zone > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ----------------------------------------
+   Field Zone Labels
+   ---------------------------------------- */
+.enemy-field-label,
+.your-field-label,
+.opponent-field-label,
+.player-field-label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: rgba(218, 165, 32, 0.7);
+  text-shadow: 0 0 10px rgba(218, 165, 32, 0.4), 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ----------------------------------------
+   Opponent Hand Zone (Face-down cards)
+   Hearthstone-style card backs showing card count
+   ---------------------------------------- */
+.opponent-hand-zone {
+  grid-area: opponent-hand;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4px 16px 0;
+  min-height: 60px;
+  z-index: 15;
+  overflow: visible;
+}
+
+.opponent-hand-display {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  position: relative;
+  padding-top: 4px;
+}
+
+.opponent-card-back {
+  width: clamp(32px, 4vw, 48px);
+  height: clamp(48px, 6vw, 72px);
+  background: linear-gradient(145deg, #2a3a2a 0%, #1a2a1a 50%, #0f1a0f 100%);
+  border: 2px solid #4d6a4d;
+  border-radius: 6px;
+  position: relative;
+  margin-left: clamp(-18px, -2vw, -12px);
+  transition: transform 0.2s ease, margin 0.2s ease;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 0 15px rgba(107, 139, 107, 0.15);
+}
