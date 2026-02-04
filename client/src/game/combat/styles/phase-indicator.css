@@ -1,0 +1,182 @@
+/* Phase Indicator - Current poker phase display */
+
+/* ========================================
+   Phase Label (Standalone)
+   ======================================== */
+.phase-label {
+  font-size: 0.65rem;
+  color: rgba(148, 163, 184, 0.7);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+}
+
+.phase-label.active {
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+/* ========================================
+   Phase Progress Bar
+   ======================================== */
+.phase-progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, rgba(30, 30, 40, 0.85), rgba(20, 20, 30, 0.9));
+  border: 1px solid rgba(100, 100, 120, 0.3);
+  border-radius: 20px;
+}
+
+.phase-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.phase-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(100, 100, 120, 0.5);
+  border: 2px solid rgba(100, 100, 120, 0.6);
+  transition: all 0.3s ease;
+}
+
+.phase-node.active .phase-dot {
+  background: #fbbf24;
+  border-color: #f59e0b;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+}
+
+.phase-node.complete .phase-dot {
+  background: #22c55e;
+  border-color: #16a34a;
+}
+
+/* Phase label within node */
+.phase-node .phase-label {
+  font-size: 10px;
+  color: rgba(148, 163, 184, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.phase-node.active .phase-label {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.phase-node.complete .phase-label {
+  color: #22c55e;
+}
+
+.phase-connector {
+  width: 24px;
+  height: 2px;
+  background: rgba(100, 100, 120, 0.4);
+  margin: 0 4px;
+  margin-bottom: 14px;
+}
+
+.phase-connector.complete {
+  background: #22c55e;
+}
+
+/* ========================================
+   Poker Info Row (Phase + Hand Strength)
+   ======================================== */
+.poker-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+/* ========================================
+   Phase Names
+   ======================================== */
+.phase-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.phase-name.preflop { color: #94a3b8; }
+.phase-name.flop { color: #60a5fa; }
+.phase-name.turn { color: #fbbf24; }
+.phase-name.river { color: #f87171; }
+.phase-name.showdown { color: #a78bfa; }
+
+/* ========================================
+   Phase Badge
+   ======================================== */
+.phase-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(100, 100, 120, 0.3);
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.phase-badge.active {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+}
+
+.phase-badge .phase-icon {
+  font-size: 0.8rem;
+}
+
+/* ========================================
+   Compact Phase Display
+   ======================================== */
+.phase-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.phase-compact .phase-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.phase-compact .mini-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(100, 100, 120, 0.5);
+}
+
+.phase-compact .mini-dot.complete {
+  background: #22c55e;
+}
+
+.phase-compact .mini-dot.active {
+  background: #fbbf24;
+  box-shadow: 0 0 4px rgba(251, 191, 36, 0.5);
+}
+
+.phase-compact .current-phase {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fbbf24;
+  text-transform: uppercase;
+}

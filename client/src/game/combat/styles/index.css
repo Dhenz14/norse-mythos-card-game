@@ -1,0 +1,45 @@
+/**
+ * Combat Styles Aggregator
+ * 
+ * Following "Feature-First / Modularize Without Overkill"
+ * Flattened structure for robustness and simpler pathing.
+ */
+
+@import './reset.css';
+@import './responsive.css';
+
+/* Layout */
+@import './arena-grid.css';
+@import './battlefield.css';
+@import './zones.css';
+@import './poker-panel.css';
+
+/* Components */
+@import './hero-portrait.css';
+@import './hp-bar.css';
+@import './sta-bar.css';
+@import './weapon-slots.css';
+@import './timer.css';
+@import './phase-indicator.css';
+@import './activity-log.css';
+@import './targeting-prompts.css';
+
+/* Card Elements */
+@import './card-frame.css';
+@import './card-highlight.css';
+@import './face-down.css';
+@import './hole-cards.css';
+@import './community-cards.css';
+@import './hand-strength.css';
+
+/* Combat Specific */
+@import './betting-controls.css';
+@import './blind-toggle.css';
+@import './pot-display.css';
+@import './end-turn-button.css';
+
+/* Effects */
+@import './glow-effects.css';
+@import './elemental-glows.css';
+@import './hero-death.css';
+@import './showdown.css';

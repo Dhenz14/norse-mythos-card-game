@@ -1,0 +1,28 @@
+/* Arena Reset - Base styles and scrollbar hiding */
+
+/* Global scrollbar removal for all combat arena elements */
+.ragnarok-combat-arena,
+.ragnarok-combat-arena * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ragnarok-combat-arena::-webkit-scrollbar,
+.ragnarok-combat-arena *::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.ragnarok-combat-arena {
+  /* Fluid layout - fills entire viewport without scrollbars or letterboxing */
+  /* Using inset: 0 to fill all available space, works with Replit preview header */
+  position: fixed;
+  inset: 0;
+  min-width: 0;
+  min-height: 0;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: var(--z-base);
+}

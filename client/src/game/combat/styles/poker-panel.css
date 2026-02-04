@@ -1,0 +1,248 @@
+/* Poker Panel Layout - Left sidebar structure */
+/* ========================================
+   Poker panel layout and section containers
+   Handles the left sidebar poker game area
+   including player/opponent card zones.
+   ======================================== */
+
+/* ----------------------------------------
+   Main Poker Panel Container
+   ---------------------------------------- */
+.poker-panel {
+  background: linear-gradient(180deg, 
+    rgba(15, 23, 42, 0.95) 0%, 
+    rgba(20, 30, 48, 0.92) 100%
+  );
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  padding: calc(10px * var(--poker-panel-scale)) calc(12px * var(--poker-panel-scale));
+  gap: var(--poker-panel-gap);
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+.poker-top-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--poker-panel-gap);
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.poker-bottom-section {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--poker-panel-gap);
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.poker-saga-feed {
+  margin-top: auto;
+  padding-top: 8px;
+  flex-shrink: 0;
+}
+
+/* ----------------------------------------
+   Dual Saga Feeds (Activity Logs)
+   ---------------------------------------- */
+.dual-saga-feeds {
+  display: flex;
+  flex-direction: column;
+  gap: var(--poker-panel-gap);
+  margin-top: auto;
+  padding-top: var(--poker-panel-gap);
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: calc(180px * var(--poker-panel-scale));
+  overflow: hidden;
+}
+
+.dual-saga-feeds .activity-log {
+  flex: 1;
+  min-height: 0;
+  max-height: calc(80px * var(--poker-panel-scale));
+  font-size: calc(0.75rem * var(--poker-panel-scale) + 0.1rem);
+}
+
+.dual-saga-feeds .activity-log-content {
+  max-height: calc(55px * var(--poker-panel-scale));
+  overflow: hidden;
+}
+
+.dual-saga-feeds .activity-log-header {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.dual-saga-feeds .activity-log-poker {
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.dual-saga-feeds .activity-log-minion {
+  border-color: rgba(96, 165, 250, 0.4);
+}
+
+/* ----------------------------------------
+   Poker Panel Footer
+   ---------------------------------------- */
+.poker-panel-footer {
+  padding: 10px 0 0 0;
+  background: transparent;
+  border-top: 1px solid rgba(251, 191, 36, 0.3);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.poker-footer-mana {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.end-turn-btn-large {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: linear-gradient(145deg, #22c55e, #16a34a);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 
+    0 4px 16px rgba(34, 197, 94, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.end-turn-btn-large:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, #4ade80, #22c55e);
+  box-shadow: 
+    0 6px 20px rgba(34, 197, 94, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.end-turn-btn-large:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(145deg, #6b7280, #4b5563);
+  box-shadow: none;
+}
+
+/* Poker panel glowing edge */
+.poker-panel::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 10%;
+  bottom: 10%;
+  width: 2px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(245, 158, 11, 0.6) 20%,
+    rgba(245, 158, 11, 0.8) 50%,
+    rgba(245, 158, 11, 0.6) 80%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+/* ----------------------------------------
+   Opponent & Player Poker Areas
+   Stone tablet style card containers
+   ---------------------------------------- */
+.opponent-poker-area,
+.player-poker-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0; /* No gap - bars overlay cards */
+  padding: 8px 20px;
+  position: relative;
+  overflow: visible; /* Ensure cards aren't clipped */
+  margin-top: var(--card-poker-offset-y, 0px);
+  
+  /* Stone tablet background - layered gradients for depth */
+  background: 
+    /* Surface texture - subtle noise effect */
+    repeating-linear-gradient(
+      45deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    /* Stone color gradient */
+    linear-gradient(180deg,
+      #5a5a5a 0%,
+      #4a4a4a 15%,
+      #3d3d3d 50%,
+      #4a4a4a 85%,
+      #5a5a5a 100%
+    );
+  
+  /* Chiseled stone edge effect */
+  border-radius: 8px;
+  border: 3px solid #6b6b6b;
+  box-shadow: 
+    /* Inner highlight - top edge catch light */
+    inset 0 2px 4px rgba(255, 255, 255, 0.15),
+    /* Inner shadow - bottom depth */
+    inset 0 -3px 6px rgba(0, 0, 0, 0.4),
+    /* Carved inset look */
+    inset 2px 2px 4px rgba(0, 0, 0, 0.3),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.05),
+    /* Outer drop shadow */
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    /* Subtle golden glow for godly effect */
+    0 0 20px rgba(218, 165, 32, 0.15);
+}
+
+/* Stone tablet runic border decorations */
+.player-poker-area::before {
+  content: 'ᚱ ᚨ ᚷ ᚾ ᚨ ᚱ ᛟ ᚲ';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Noto Sans Runic', 'Segoe UI Symbol', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 4px;
+  color: rgba(218, 165, 32, 0.4);
+  text-shadow: 0 0 4px rgba(218, 165, 32, 0.3);
+  pointer-events: none;
+}
+
+.opponent-poker-area::before {
+  content: 'ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Noto Sans Runic', 'Segoe UI Symbol', sans-serif;
+  font-size: 0.5rem;
+  letter-spacing: 3px;
+  color: rgba(239, 68, 68, 0.3);
+  text-shadow: 0 0 4px rgba(239, 68, 68, 0.2);
+  pointer-events: none;
+}
+
+/* Extra top padding for opponent area to prevent card clipping */
+.opponent-poker-area {
+  padding-top: 30px;
+  margin-top: 10px; /* Extra margin above the stone tablet */
+}

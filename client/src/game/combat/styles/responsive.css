@@ -1,0 +1,272 @@
+/**
+ * AAA Responsive System - Viewport-aware breakpoints
+ * 
+ * NOTE: Base tokens are now centralized in client/src/styles/design-tokens.css
+ * This file contains ONLY responsive overrides for combat-specific breakpoints.
+ * 
+ * The base values for zone heights, card dimensions, z-index, etc. are inherited
+ * from design-tokens.css. This file overrides them at specific breakpoints.
+ */
+
+:root {
+  /* Combat-specific responsive variables (not in design-tokens) */
+  --hover-lift-distance: 50px;
+  --hover-scale-factor: 1.2;
+  --hover-safe-zone: calc(var(--hover-lift-distance) + 20px);
+  --active-minion-safe-margin: 80px;
+  
+  /* Hand layout - Hearthstone-style overlapping fan */
+  --hand-overlap: -100px;
+  --hand-max-fan-angle: 5deg;
+  --hand-hover-lift: -60px;
+  --hand-hover-scale: 1.35;
+  
+  /* Hero card default width (used by zones.css for pot positioning) */
+  --hero-card-width: 130px;
+  
+  /* Hero zone calculation */
+  --hero-zone-height: clamp(220px, calc(var(--hero-card-width) * 1.4 + 60px), 340px);
+  
+  /* Poker card scale (for animations) */
+  --poker-card-scale: 1;
+}
+
+/* ========================================
+   SMALL SCREEN WIDTH BREAKPOINTS
+   Prevents overlap on smaller screens
+   ======================================== */
+
+/* Small screens: compact all elements */
+@media (max-width: 1200px) {
+  :root {
+    --hand-card-width: clamp(80px, 12vw, 150px);
+    --hand-card-height: clamp(112px, 16.8vw, 210px);
+    --hero-card-width: clamp(80px, 12vw, 130px);
+    --poker-panel-width: clamp(200px, 30vw, 320px);
+  }
+}
+
+@media (max-width: 1000px) {
+  :root {
+    --hand-card-width: clamp(60px, 10vw, 120px);
+    --hand-card-height: clamp(84px, 14vw, 168px);
+    --hero-card-width: clamp(60px, 10vw, 100px);
+    --poker-panel-width: clamp(180px, 28vw, 280px);
+  }
+}
+
+@media (max-width: 800px) {
+  :root {
+    --hand-card-width: clamp(50px, 9vw, 100px);
+    --hand-card-height: clamp(70px, 12.6vw, 140px);
+    --hero-card-width: clamp(50px, 9vw, 80px);
+    --poker-panel-width: clamp(160px, 26vw, 240px);
+  }
+}
+
+/* Large screens: more generous spacing */
+@media (min-height: 900px) {
+  :root {
+    --opponent-zone-height: 22vh;
+    --player-zone-height: 24vh;
+    --hand-zone-height: 26vh;
+    --active-minion-safe-margin: 100px;
+  }
+}
+
+/* Short screens: compact mode */
+@media (max-height: 700px) {
+  :root {
+    --opponent-zone-height: 16vh;
+    --player-zone-height: 18vh;
+    --hand-zone-height: 20vh;
+    --hover-lift-distance: 35px;
+    --active-minion-safe-margin: 60px;
+  }
+}
+
+/* Poker panel responsive scaling for shorter viewports */
+@media (max-height: 820px) {
+  :root {
+    --poker-panel-scale: 0.92;
+    --poker-panel-gap: 6px;
+    --poker-card-scale: 0.9;
+  }
+}
+
+@media (max-height: 740px) {
+  :root {
+    --poker-panel-scale: 0.85;
+    --poker-panel-gap: 4px;
+    --poker-card-scale: 0.82;
+  }
+}
+
+@media (max-height: 650px) {
+  :root {
+    --poker-panel-scale: 0.75;
+    --poker-panel-gap: 3px;
+    --poker-card-scale: 0.72;
+  }
+}
+
+/* ========================================
+   WIDTH-BASED RESPONSIVE BREAKPOINTS
+   Prevents UI overlap on wide/ultrawide screens
+   ======================================== */
+
+/* Wide screens (1600px+): reduce card sizes to prevent overflow */
+@media (min-width: 1600px) {
+  :root {
+    --hand-card-width: clamp(100px, 10vw, 180px);
+    --hand-card-height: clamp(140px, 14vw, 252px);
+    --hero-card-width: clamp(100px, 10vw, 160px);
+    --battlefield-card-width: clamp(90px, 9vw, 160px);
+    --battlefield-card-height: clamp(126px, 12.6vw, 224px);
+  }
+}
+
+/* Full HD+ (1920px+): further reduce for ultrawide prevention */
+@media (min-width: 1920px) {
+  :root {
+    --hand-card-width: clamp(100px, 8vw, 160px);
+    --hand-card-height: clamp(140px, 11.2vw, 224px);
+    --hero-card-width: clamp(100px, 8vw, 140px);
+    --battlefield-card-width: clamp(85px, 7vw, 140px);
+    --battlefield-card-height: clamp(119px, 9.8vw, 196px);
+    --poker-panel-width: clamp(240px, 25vw, 400px);
+  }
+}
+
+/* 2K+ screens (2400px+): compact sizing for ultra-high res */
+@media (min-width: 2400px) {
+  :root {
+    --hand-card-width: clamp(100px, 6vw, 150px);
+    --hand-card-height: clamp(140px, 8.4vw, 210px);
+    --hero-card-width: clamp(90px, 6vw, 130px);
+    --battlefield-card-width: clamp(80px, 5.5vw, 130px);
+    --battlefield-card-height: clamp(112px, 7.7vw, 182px);
+    --poker-panel-width: clamp(220px, 20vw, 360px);
+  }
+}
+
+/* 4K screens (3440px+): ultra-compact for massive displays */
+@media (min-width: 3440px) {
+  :root {
+    --hand-card-width: clamp(90px, 4.5vw, 140px);
+    --hand-card-height: clamp(126px, 6.3vw, 196px);
+    --hero-card-width: clamp(85px, 4.5vw, 120px);
+    --battlefield-card-width: clamp(75px, 4vw, 120px);
+    --battlefield-card-height: clamp(105px, 5.6vw, 168px);
+    --poker-panel-width: clamp(200px, 16vw, 320px);
+  }
+}
+
+/* ========================================
+   ASPECT RATIO AWARE BREAKPOINTS
+   Adjusts for ultrawide aspect ratios (>21:9)
+   ======================================== */
+
+@media (min-aspect-ratio: 21/9) {
+  :root {
+    --hand-card-width: clamp(90px, 7vw, 150px);
+    --hero-card-width: clamp(85px, 6vw, 130px);
+    --poker-panel-width: clamp(200px, 18vw, 340px);
+  }
+}
+
+@media (min-aspect-ratio: 32/9) {
+  :root {
+    --hand-card-width: clamp(80px, 5vw, 130px);
+    --hero-card-width: clamp(75px, 4.5vw, 110px);
+    --poker-panel-width: clamp(180px, 14vw, 300px);
+  }
+}
+
+/* ========================================
+   MAX-WIDTH BREAKPOINTS (smaller screens)
+   ======================================== */
+
+/* Medium screens: reduce panel width */
+@media (max-width: 1280px) {
+  :root {
+    --poker-panel-width: clamp(260px, 32vw, 400px);
+    --hero-card-width: clamp(100px, 14vw, 160px);
+    --hand-card-width: clamp(90px, 11vw, 150px);
+    --hand-card-height: clamp(126px, 15vw, 210px);
+    --battlefield-card-width: clamp(90px, 10vw, 140px);
+    --battlefield-card-height: clamp(126px, 14vw, 196px);
+  }
+}
+
+/* Tablet/small desktop: narrower layout */
+@media (max-width: 1024px) {
+  :root {
+    --poker-panel-width: clamp(240px, 30vw, 320px);
+    --hero-card-width: clamp(90px, 12vw, 140px);
+    --hero-zone-height: clamp(180px, 26vh, 280px);
+    --opponent-zone-height: clamp(120px, 16vh, 180px);
+    --field-zone-height: clamp(100px, 15vh, 160px);
+  }
+}
+
+/* Small screens: switch to stacked layout */
+@media (max-width: 768px) {
+  :root {
+    --poker-panel-width: 100%;
+    --hero-card-width: clamp(80px, 22vw, 140px);
+    --hero-zone-height: clamp(160px, 24vh, 240px);
+    --opponent-zone-height: clamp(100px, 14vh, 160px);
+    --field-zone-height: clamp(80px, 12vh, 120px);
+    --hand-card-width: clamp(80px, 16vw, 130px);
+    --hand-card-height: clamp(112px, 22vw, 182px);
+    --battlefield-card-width: clamp(70px, 16vw, 110px);
+    --battlefield-card-height: clamp(98px, 22vw, 154px);
+  }
+  
+  .arena-content {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  
+  .poker-panel {
+    max-height: 35vh;
+    overflow: hidden;
+    border-right: none;
+    border-bottom: 1px solid rgba(100, 116, 139, 0.3);
+  }
+  
+  .battle-arena {
+    grid-template-columns: clamp(100px, 20vw, 160px) 1fr;
+  }
+}
+
+/* Very small/mobile screens */
+@media (max-width: 480px) {
+  :root {
+    --hero-card-width: clamp(70px, 25vw, 120px);
+    --hero-zone-height: clamp(140px, 22vh, 200px);
+    --opponent-zone-height: clamp(90px, 12vh, 140px);
+    --field-zone-height: clamp(70px, 10vh, 100px);
+    --hand-card-width: clamp(40px, 18vw, 70px);
+    --hand-card-height: clamp(56px, 25vw, 98px);
+    --battlefield-card-width: clamp(40px, 18vw, 70px);
+    --battlefield-card-height: clamp(56px, 25vw, 98px);
+    --poker-panel-scale: 0.7;
+  }
+  
+  .poker-panel {
+    max-height: 30vh;
+    padding: 4px 6px;
+  }
+  
+  .battle-arena {
+    grid-template-columns: clamp(80px, 22vw, 120px) 1fr;
+  }
+  
+  .battlefield-hero-square {
+    max-width: 120px;
+  }
+}

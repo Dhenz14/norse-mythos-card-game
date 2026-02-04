@@ -1,0 +1,66 @@
+/* Pointer Events Hierarchy - Click handling layers */
+
+/* ========================================
+   POINTER-EVENTS HIERARCHY (Best Practices)
+   ========================================
+   
+   This section defines a clean, CSS-only approach
+   to pointer-events management. No JavaScript DOM
+   manipulation needed.
+   
+   Hierarchy:
+   1. Container zones: pointer-events: none (background)
+   2. Interactive elements: pointer-events: auto (cards, buttons)
+   3. Decorative overlays: pointer-events: none (effects, particles)
+   ======================================== */
+
+/* Battlefield zones - disable pointer-events on empty space */
+.player-battlefield-zone,
+.opponent-battlefield-zone {
+  pointer-events: none;
+}
+
+/* Re-enable pointer-events on interactive elements within battlefield */
+.player-battlefield-zone .card-with-drag,
+.player-battlefield-zone .battlefield-card,
+.opponent-battlefield-zone .card-with-drag,
+.opponent-battlefield-zone .battlefield-card {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Hero zones - must be clickable */
+.player-hero-zone,
+.opponent-hero-zone {
+  pointer-events: auto;
+}
+
+/* Hero squares - fully clickable with explicit z-index above overlays */
+.battlefield-hero-square {
+  pointer-events: auto;
+  cursor: pointer;
+  position: relative;
+  z-index: 50;
+}
+
+/* Hero card elements - clickable */
+.hero-card-wrapper,
+.hero-card-frame,
+.hero-portrait {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Decorative elements - never block clicks */
+.hero-elemental-aura,
+.hero-particles,
+.hero-particles .particle {
+  pointer-events: none;
+}
+
+/* Hand cards - always clickable */
+.hand-container .card-with-drag,
+.player-hand .card-with-drag {
+  pointer-events: auto;
+  cursor: pointer;
+}

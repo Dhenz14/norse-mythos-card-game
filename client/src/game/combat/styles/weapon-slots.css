@@ -1,0 +1,12 @@
+/* Weapon Slots - Hero weapon and secret display */
+
+/* ========================================
+   WEAPON/SECRET SLOTS
+   ======================================== */
+
+.weapon-slot:empty,
+.secret-slot:empty {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.4) 100%);
+  border: 1px dashed rgba(100, 116, 139, 0.3);
+  opacity: 0.5;
+}

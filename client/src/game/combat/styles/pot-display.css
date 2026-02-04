@@ -1,0 +1,407 @@
+/**
+ * POT DISPLAY COMPONENT - Norse/Mythological Theme
+ * =================================================
+ * Visual styling for FOE/POT/YOU poker information panel.
+ * Uses tokens from tokens.css and positions from zones.css.
+ */
+
+/* ========================================
+   POT INFO CONTAINERS - Split Layout
+   Foe HP near opponent hero (top-left)
+   You HP + Pot near player hero (bottom-left)
+   ======================================== */
+
+/* Foe HP Info - Near opponent hero */
+.pot-info-foe {
+        position: absolute;
+        left: var(--zone-pot-foe-left, 170px);
+        top: var(--zone-pot-foe-top, 8px);
+        z-index: var(--zone-pot-z, 25);
+}
+
+.pot-info-foe.hidden {
+        display: none;
+}
+
+/* Player HP + Pot Info - Near player hero */
+.pot-info-player {
+        position: absolute;
+        left: var(--zone-pot-player-left, 170px);
+        bottom: var(--zone-pot-player-bottom, 180px);
+        z-index: var(--zone-pot-z, 25);
+}
+
+.pot-info-player.hidden {
+        display: none;
+}
+
+/* Compact wrapper for split pot info - shares Norse styling */
+.pot-info-compact {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        min-width: fit-content;
+        max-width: 160px;
+        background: linear-gradient(
+                180deg,
+                rgba(15, 23, 41, 0.90) 0%,
+                rgba(30, 41, 59, 0.85) 100%
+        );
+        border: 1px solid rgba(212, 175, 55, 0.4);
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.pot-info-compact .pot-section {
+        width: auto;
+        padding: 2px 6px;
+}
+
+/* Legacy pot-container - deprecated, kept for compatibility */
+.pot-container {
+        position: absolute;
+        left: var(--zone-pot-left, 8px);
+        top: var(--zone-pot-top, 48%);
+        transform: translateY(-50%);
+        z-index: var(--zone-pot-z, 25);
+        width: var(--zone-pot-width, 80px);
+}
+
+.pot-container.hidden {
+        display: none;
+}
+
+/* ========================================
+   POT DISPLAY NORSE - Main Panel
+   Compact runic frame with metallic Norse aesthetic
+   Reduced to ~40% of original size
+   ======================================== */
+.pot-display-norse {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 4px;
+        min-width: 70px;
+        max-width: 85px;
+
+        /* Norse metallic background */
+        background:
+                radial-gradient(
+                        ellipse at top,
+                        rgba(139, 90, 43, 0.08) 0%,
+                        transparent 50%
+                ),
+                linear-gradient(
+                        180deg,
+                        var(--token-pot-bg-start, rgba(15, 23, 41, 0.95)) 0%,
+                        var(--token-pot-bg-mid, rgba(30, 41, 59, 0.90)) 50%,
+                        var(--token-pot-bg-end, rgba(10, 18, 32, 0.98)) 100%
+                );
+
+        /* Runic border frame - golden gradient (compact) */
+        border: 1px solid transparent;
+        border-image: linear-gradient(
+                180deg,
+                var(--token-color-gold, #d4af37) 0%,
+                var(--token-color-bronze, #8b5a2b) 50%,
+                var(--token-color-gold, #d4af37) 100%
+        ) 1;
+        border-radius: 8px;
+
+        /* Outer glow effect (subtle) */
+        box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.5),
+                0 0 12px rgba(218, 165, 32, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+        /* Texture overlay container */
+        position: relative;
+        overflow: hidden;
+}
+
+/* Metallic texture overlay */
+.pot-display-norse::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L40 20L20 40L0 20z' fill='rgba(139,90,43,0.03)'/%3E%3C/svg%3E");
+        pointer-events: none;
+        opacity: 0.4;
+}
+
+/* ========================================
+   POT SECTIONS - Shared Styles (Compact)
+   ======================================== */
+.pot-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px;
+        padding: 2px 4px;
+        border-radius: 3px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+}
+
+.pot-label {
+        font-family: 'Cinzel', 'Georgia', serif;
+        font-size: 0.45rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.1;
+}
+
+.pot-value {
+        font-family: 'Inter', 'Arial', sans-serif;
+        font-weight: 800;
+        font-size: 0.85rem;
+        line-height: 1;
+}
+
+/* ========================================
+   FOE SECTION - Opponent HP Committed
+   Red themed (compact)
+   ======================================== */
+.pot-section-foe {
+        background: var(--token-pot-foe-bg, rgba(248, 113, 113, 0.08));
+        border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+.pot-section-foe .pot-label {
+        color: rgba(248, 113, 113, 0.9);
+        text-shadow: 0 0 4px rgba(248, 113, 113, 0.4);
+}
+
+.pot-section-foe .pot-value {
+        font-size: 0.85rem;
+        color: var(--token-color-opponent, #f87171);
+        text-shadow:
+                0 0 6px rgba(248, 113, 113, 0.8),
+                0 0 12px rgba(248, 113, 113, 0.4);
+}
+
+/* ========================================
+   POT TOTAL SECTION - Center
+   Gold themed - most prominent (compact)
+   ======================================== */
+.pot-section-total {
+        background: linear-gradient(
+                135deg,
+                rgba(218, 165, 32, 0.15) 0%,
+                var(--token-pot-total-bg, rgba(251, 191, 36, 0.1)) 50%,
+                rgba(218, 165, 32, 0.15) 100%
+        );
+        border: 1px solid rgba(218, 165, 32, 0.4);
+        padding: 3px 6px;
+}
+
+/* Decorative divider lines */
+.pot-section-total::before,
+.pot-section-total::after {
+        content: '';
+        position: absolute;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(218, 165, 32, 0.6) 50%,
+                transparent 100%
+        );
+}
+
+.pot-section-total::before {
+        top: -3px;
+}
+
+.pot-section-total::after {
+        bottom: -3px;
+}
+
+.pot-section-total .pot-label {
+        font-size: 0.5rem;
+        color: var(--token-color-gold, #d4af37);
+        letter-spacing: 1px;
+        text-shadow: 0 0 6px rgba(218, 165, 32, 0.6);
+}
+
+.pot-section-total .pot-value {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--token-color-gold-bright, #ffd700);
+        text-shadow:
+                0 0 8px rgba(251, 191, 36, 0.9),
+                0 0 16px rgba(251, 191, 36, 0.5),
+                0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   YOU SECTION - Player HP Committed
+   Blue themed (compact)
+   ======================================== */
+.pot-section-you {
+        background: var(--token-pot-you-bg, rgba(96, 165, 250, 0.08));
+        border: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+.pot-section-you .pot-label {
+        color: rgba(96, 165, 250, 0.9);
+        text-shadow: 0 0 4px rgba(96, 165, 250, 0.4);
+}
+
+.pot-section-you .pot-value {
+        font-size: 0.85rem;
+        color: var(--token-color-player, #60a5fa);
+        text-shadow:
+                0 0 6px rgba(96, 165, 250, 0.8),
+                0 0 12px rgba(96, 165, 250, 0.4);
+}
+
+/* ========================================
+   HOVER STATE - Subtle elevation (compact)
+   ======================================== */
+.pot-display-norse:hover {
+        border-image: linear-gradient(
+                180deg,
+                var(--token-color-gold-bright, #ffd700) 0%,
+                var(--token-color-gold, #d4af37) 50%,
+                var(--token-color-gold-bright, #ffd700) 100%
+        ) 1;
+        box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.6),
+                0 0 16px rgba(218, 165, 32, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition: all 200ms ease-out;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS (Already compact)
+   ======================================== */
+
+/* Tablet screens */
+@media (max-width: 1200px) {
+        .pot-container {
+                width: 75px;
+        }
+
+        .pot-display-norse {
+                min-width: 65px;
+                padding: 5px 3px;
+        }
+
+        .pot-section-total .pot-value {
+                font-size: 1rem;
+        }
+
+        .pot-section-foe .pot-value,
+        .pot-section-you .pot-value {
+                font-size: 0.75rem;
+        }
+}
+
+/* Small tablets */
+@media (max-width: 1000px) {
+        .pot-container {
+                width: 70px;
+        }
+
+        .pot-display-norse {
+                min-width: 60px;
+                gap: 3px;
+        }
+
+        .pot-section-total .pot-value {
+                font-size: 0.9rem;
+        }
+
+        .pot-section-foe .pot-value,
+        .pot-section-you .pot-value {
+                font-size: 0.7rem;
+        }
+
+        .pot-label {
+                font-size: 0.4rem;
+        }
+}
+
+/* Mobile screens */
+@media (max-width: 800px) {
+        .pot-container {
+                width: 60px;
+        }
+
+        .pot-display-norse {
+                min-width: 55px;
+                padding: 4px 2px;
+        }
+
+        .pot-section-total .pot-value {
+                font-size: 0.8rem;
+        }
+
+        .pot-section-foe .pot-value,
+        .pot-section-you .pot-value {
+                font-size: 0.65rem;
+        }
+
+        .pot-section-total .pot-label,
+        .pot-section-foe .pot-label,
+        .pot-section-you .pot-label {
+                font-size: 0.35rem;
+                letter-spacing: 0.3px;
+        }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+        .pot-container {
+                width: 55px;
+        }
+
+        .pot-display-norse {
+                min-width: 50px;
+                gap: 2px;
+        }
+
+        .pot-section-total .pot-value {
+                font-size: 0.7rem;
+        }
+
+        .pot-section-foe .pot-value,
+        .pot-section-you .pot-value {
+                font-size: 0.6rem;
+        }
+}
+
+/* ========================================
+   SPLIT POT INFO - Responsive Adjustments
+   Uses --hero-card-width from responsive.css for consistency
+   ======================================== */
+
+@media (max-width: 1200px) {
+        .pot-info-compact {
+                padding: 3px 6px;
+                gap: 6px;
+        }
+}
+
+@media (max-width: 1000px) {
+        .pot-info-compact {
+                padding: 2px 4px;
+                gap: 4px;
+                font-size: 0.9em;
+        }
+}
+
+@media (max-width: 800px) {
+        .pot-info-foe,
+        .pot-info-player {
+                display: none;
+        }
+}

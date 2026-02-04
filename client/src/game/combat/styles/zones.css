@@ -1,0 +1,298 @@
+/**
+ * ZONE POSITIONING - CSS Grid Layout System
+ * ==========================================
+ * Uses CSS Grid with named template areas for easy visualization.
+ * Open browser DevTools → Layout tab to see grid overlay.
+ * 
+ * GRID STRUCTURE (3-column layout):
+ * ┌─────────────────┬─────────────────────────┬────────────┐
+ * │   poker-col     │      battle-col         │  info-col  │
+ * ├─────────────────┼─────────────────────────┼────────────┤
+ * │ opponent-hero   │ opponent-hand           │  logs      │
+ * │ community       │ opponent-field          │  .         │
+ * │ pot             │ player-field            │  .         │
+ * │ player-hero     │ player-hand             │  .         │
+ * │ betting         │ betting                 │  .         │
+ * └─────────────────┴─────────────────────────┴────────────┘
+ * 
+ * HOW TO MOVE ELEMENTS:
+ * 1. Change --zone-grid-areas template to reposition zones
+ * 2. Adjust column/row sizes via --zone-*-width variables
+ * 3. Use browser DevTools to visualize changes in real-time
+ * 
+ * COLUMN WIDTH VARIABLES:
+ * --zone-poker-col-width: Width of poker/community column
+ * --zone-info-col-width: Width of activity logs column
+ * --zone-battle-col-width: Auto-fills remaining space
+ */
+
+:root {
+  /* ========================================
+     GRID COLUMN WIDTHS
+     Adjust these to resize columns
+     ======================================== */
+  --zone-poker-col-width: clamp(400px, 32vw, 550px);
+  --zone-info-col-width: clamp(180px, 15vw, 260px);
+  --zone-battle-col-width: 1fr;
+
+  /* ========================================
+     GRID ROW HEIGHTS
+     Adjust these to resize rows
+     ======================================== */
+  --zone-row-opponent-hero: auto;
+  --zone-row-opponent-field: minmax(120px, 1fr);
+  --zone-row-player-field: minmax(120px, 1fr);
+  --zone-row-player-area: auto;
+  --zone-row-betting: auto;
+
+  /* ========================================
+     GRID TEMPLATE AREAS - Single Source of Truth
+     Named areas for easy DevTools visualization
+     
+     5-row layout:
+     Row 1: Opponent hero (left) | Opponent hand (center) | Logs (right)
+     Row 2: Community cards (left) | Opponent field (center) | Logs (right)
+     Row 3: Pot display (left) | Player field (center) | Logs (right)
+     Row 4: Player hero (left) | Player area (center) | Logs (right)
+     Row 5: Betting (spans all columns)
+     ======================================== */
+  --zone-grid-areas:
+    "opp-hero       opp-hand       logs"
+    "community      opp-field      logs"
+    "pot            player-field   logs"
+    "player-hero    player-area    logs"
+    "betting        betting        betting";
+
+  /* ========================================
+     PLAYER HERO ZONE
+     Bottom-left corner - the player's hero portrait
+     ======================================== */
+  --zone-player-hero-left: clamp(8px, 2%, 32px);
+  --zone-player-hero-bottom: clamp(8px, 3%, 24px);
+  --zone-player-hero-z: 30;
+
+  /* ========================================
+     PLAYER MANA BAR
+     Below player hero card
+     ======================================== */
+  --zone-player-mana-left: clamp(8px, 2%, 32px);
+  --zone-player-mana-bottom: clamp(4px, 1%, 12px);
+  --zone-player-mana-width: clamp(80px, 10%, 160px);
+  --zone-player-mana-z: 30;
+
+  /* ========================================
+     PLAYER HAND
+     Bottom-center - the player's playable cards
+     ======================================== */
+  --zone-player-hand-left: 50%;
+  --zone-player-hand-bottom: 0%;
+  --zone-player-hand-z: 40;
+
+  /* ========================================
+     PLAYER MINION FIELD
+     RIGHT SIDE of battlefield (shifted from 50% to 60%)
+     Avoids poker card overlap on the left
+     ======================================== */
+  --zone-player-field-left: 60%;
+  --zone-player-field-bottom: clamp(25%, 30%, 35%);
+  --zone-player-field-z: 20;
+
+  /* ========================================
+     OPPONENT HERO ZONE
+     Top-left corner - opponent's hero portrait
+     ======================================== */
+  --zone-opponent-hero-left: clamp(8px, 2%, 32px);
+  --zone-opponent-hero-top: clamp(8px, 2%, 24px);
+  --zone-opponent-hero-z: 30;
+
+  /* ========================================
+     OPPONENT MANA BAR
+     Below opponent hero card
+     ======================================== */
+  --zone-opponent-mana-left: clamp(8px, 2%, 32px);
+  --zone-opponent-mana-top: calc(clamp(8px, 2%, 24px) + 160px * 1.33 + 8px);
+  --zone-opponent-mana-width: clamp(80px, 10%, 160px);
+  --zone-opponent-mana-z: 30;
+
+  /* ========================================
+     OPPONENT HAND
+     Top-center - opponent's hidden cards
+     ======================================== */
+  --zone-opponent-hand-left: 50%;
+  --zone-opponent-hand-top: 0%;
+  --zone-opponent-hand-z: 40;
+
+  /* ========================================
+     OPPONENT MINION FIELD
+     RIGHT SIDE of battlefield (shifted from 50% to 60%)
+     Avoids poker card overlap on the left
+     ======================================== */
+  --zone-opponent-field-left: 60%;
+  --zone-opponent-field-top: clamp(22%, 26%, 30%);
+  --zone-opponent-field-z: 20;
+
+  /* ========================================
+     POT INFO - SPLIT LAYOUT
+     Foe HP: just below opponent hero (snug, 6px gap)
+     You HP + Pot: top-right of player hero (snug to hero's right edge, aligned with top)
+     
+     Hero height = --hero-card-width × 1.4
+     ======================================== */
+  --hero-card-height: calc(var(--hero-card-width, 130px) * 1.4);
+  
+  /* Foe pot: just below opponent hero, aligned to hero's left edge */
+  --zone-pot-foe-left: var(--zone-opponent-hero-left, clamp(8px, 2%, 32px));
+  --zone-pot-foe-top: calc(var(--zone-opponent-hero-top, clamp(8px, 2%, 24px)) + var(--hero-card-height) + 6px);
+  
+  /* Player pot: snug to right of player hero, aligned with hero's top edge */
+  --zone-pot-player-left: calc(var(--zone-player-hero-left, clamp(8px, 2%, 32px)) + var(--hero-card-width, 130px) + 6px);
+  --zone-pot-player-bottom: calc(var(--zone-player-hero-bottom, clamp(8px, 3%, 24px)) + var(--hero-card-height) - 30px);
+  
+  --zone-pot-z: var(--token-z-community, 25);
+
+  /* Legacy pot container (deprecated) */
+  --zone-pot-left: 10px;
+  --zone-pot-top: 48%;
+  --zone-pot-width: 80px;
+  --zone-pot-margin-right: 2px;
+
+  /* ========================================
+     COMMUNITY CARDS (Flop/Turn/River)
+     FAR LEFT of screen - snapped to edge
+     No pot blocking since pot moved to hero areas
+     ======================================== */
+  --zone-community-left: 10px;
+  --zone-community-top: 48%;
+  --zone-community-z: var(--token-z-community, 25);
+
+  /* ========================================
+     BETTING ACTIONS
+     Bottom area - poker action buttons (Raise, Call, Fold, TTC)
+     Updated: Shifted right ~192px (~2 inches) to avoid blocking mana crystals
+     Uses clamp() for responsive behavior
+     ======================================== */
+  --zone-betting-left: clamp(320px, 30vw, 500px);
+  --zone-betting-bottom: 8px;
+  --zone-betting-z: var(--token-z-betting, 200);
+
+  /* ========================================
+     TIMER
+     Top-center - turn/game timer display
+     ======================================== */
+  --zone-timer-left: 50%;
+  --zone-timer-top: 1%;
+  --zone-timer-z: var(--token-z-timer, 500);
+
+  /* ========================================
+     ACTIVITY LOGS
+     Top-right - combat log and game events
+     ======================================== */
+  --zone-activity-right: 1%;
+  --zone-activity-top: 2%;
+  --zone-activity-z: var(--token-z-timer, 500);
+
+  /* ========================================
+     HOLE CARDS (Player's Poker Cards)
+     Left side, near player hero
+     ======================================== */
+  --zone-hole-cards-offset-y: 36px;
+}
+
+/* ========================================
+   RESPONSIVE ZONE ADJUSTMENTS
+   Screen-size specific zone positioning
+   ======================================== */
+
+/* XL screens (1600px+): Wider poker column */
+@media (min-width: 1600px) {
+  :root {
+    --zone-poker-col-width: clamp(450px, 30vw, 600px);
+    --zone-info-col-width: clamp(200px, 14vw, 280px);
+  }
+}
+
+/* Large screens (1280px-1600px): Standard layout */
+@media (min-width: 1280px) and (max-width: 1599px) {
+  :root {
+    --zone-poker-col-width: clamp(380px, 30vw, 520px);
+    --zone-info-col-width: clamp(180px, 14vw, 240px);
+  }
+}
+
+/* Tablet screens (768px-1279px): Compact poker column */
+@media (min-width: 768px) and (max-width: 1279px) {
+  :root {
+    --zone-poker-col-width: clamp(320px, 35vw, 420px);
+    --zone-info-col-width: clamp(140px, 15vw, 200px);
+  }
+}
+
+/* Mobile screens (<768px): Single column stacked layout */
+@media (max-width: 767px) {
+  :root {
+    --zone-poker-col-width: 1fr;
+    --zone-info-col-width: 0px;
+    --zone-battle-col-width: 1fr;
+    
+    /* Row heights for 7-row mobile layout
+       Each row maps to one grid area in order */
+    --zone-row-1-opp-hero: auto;
+    --zone-row-2-opp-hand: auto;
+    --zone-row-3-community: auto;
+    --zone-row-4-opp-field: auto;
+    --zone-row-5-player-field: 1fr;
+    --zone-row-6-player-area: auto;
+    --zone-row-7-betting: auto;
+    
+    /* Combined mobile row template for convenience */
+    --zone-mobile-rows:
+      var(--zone-row-1-opp-hero)
+      var(--zone-row-2-opp-hand)
+      var(--zone-row-3-community)
+      var(--zone-row-4-opp-field)
+      var(--zone-row-5-player-field)
+      var(--zone-row-6-player-area)
+      var(--zone-row-7-betting);
+    
+    /* Stacked vertical grid for mobile (7 areas) */
+    --zone-grid-areas:
+      "opp-hero"
+      "opp-hand"
+      "community"
+      "opp-field"
+      "player-field"
+      "player-area"
+      "betting";
+  }
+}
+
+/* 4:3 aspect ratio - compact hero positioning */
+@media (max-aspect-ratio: 4/3) {
+  :root {
+    --zone-player-hero-left: 3%;
+    --zone-opponent-hero-left: 3%;
+    --zone-pot-left: 8px;
+  }
+}
+
+/* Portrait/square aspect ratio - move betting buttons up */
+@media (max-aspect-ratio: 1/1) {
+  :root {
+    --zone-player-hero-left: 5%;
+    --zone-opponent-hero-left: 5%;
+    --zone-betting-bottom: 20%;
+  }
+}
+
+/* ========================================
+   NOTE: SELECTORS REMOVED FROM THIS FILE
+   
+   This file contains ONLY CSS variables.
+   All zone selectors (.zone-*) are defined in GameViewport.css
+   which consumes these variables.
+   
+   This separation ensures:
+   1. Single source of truth for position VALUES (this file)
+   2. Single source of truth for SELECTORS (GameViewport.css)
+   3. No cascade conflicts from duplicate selector definitions
+   ======================================== */
