@@ -1,0 +1,688 @@
+ [vite] connecting...
+ [vite] connected.
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ Registered card: Freya's Pack (ID: 7001)
+ Registered card: Beast of Freya (ID: 7002)
+ Registered card: Diana's Bow (ID: 7003)
+ Registered card: Artemis' Arrow (ID: 7005)
+ Registered card: Hound (ID: 7501)
+ Registered card: Misha (ID: 7503)
+ Registered card: Huffer (ID: 7504)
+ Registered card: Leokk (ID: 7505)
+ Registered card: Wilderness Scout (ID: 7010)
+ Registered card: Stealthy Jaguar (ID: 7011)
+ Registered card: Pack Alpha (ID: 7012)
+ Registered card: Venomfang Serpent (ID: 7013)
+ Registered card: Beastmaster Trainer (ID: 7014)
+ Registered card: Timber Wolf Alpha (ID: 7015)
+ Registered card: Jungle Stalker (ID: 7016)
+ Registered card: Spirit Tamer (ID: 7017)
+ Registered card: Hunting Falcon (ID: 7018)
+ Registered card: Savannah Guardian (ID: 7019)
+ Registered card: Fang Commander (ID: 7020)
+ Registered card: Beast Whisperer (ID: 7021)
+ Registered card: Ferocious Grizzly (ID: 7022)
+ Registered card: Swift Raptor (ID: 7023)
+ Registered card: Tracking Shot (ID: 7100)
+ Registered card: Heimdall's Trap (ID: 7101)
+ Registered card: Ymir's Freeze (ID: 7102)
+ Registered card: Apollo's Volley (ID: 7103)
+ Registered card: Venomstrike (ID: 7104)
+ Registered card: Skadi's Mark (ID: 7105)
+ Registered card: Wild Growth (ID: 7106)
+ Registered card: Beast Command (ID: 7107)
+ Registered card: Call of Fenrir (ID: 7108)
+ Registered card: Apollo's Snipe (ID: 7109)
+ Registered card: Hermes' Trick (ID: 7110)
+ Registered card: Diana's Crossbow (ID: 7200)
+ Registered card: Apollo's Bow (ID: 7201)
+ Registered card: Wildtamer's Whip (ID: 7202)
+ Registered card: Wolf Pup (ID: 7506)
+ Registered card: Bone Collector (ID: 4000)
+ Registered card: Grave Robber (ID: 4001)
+ Registered card: Skeletal Lord (ID: 4002)
+ Registered card: Death's Harvester (ID: 4003)
+ Registered card: Grave Pact (ID: 4004)
+ Registered card: Graveyard Guardian (ID: 4005)
+ Registered card: Skeletal Warrior (ID: 4006)
+ Registered card: Banshee (ID: 4007)
+ Registered card: Reanimated Dragon (ID: 4008)
+ Registered card: Lich Queen (ID: 4009)
+ Registered card: Death Knight (ID: 4010)
+ Registered card: Ghoul (ID: 4011)
+ Registered card: Tombstone (ID: 4012)
+ Registered card: Graveborn (ID: 4013)
+ Registered card: Necromancer's Apprentice (ID: 4014)
+ Registered card: Raise Dead (ID: 4100)
+ Registered card: Death's Toll (ID: 4101)
+ Registered card: Soul Harvest (ID: 4102)
+ Registered card: Graveyard Ritual (ID: 4103)
+ Registered card: Soul Drain (ID: 4105)
+ Registered card: Undead Horde (ID: 4106)
+ Registered card: Necrotic Plague (ID: 4107)
+ Registered card: Death's Embrace (ID: 4108)
+ Registered card: Dark Ritual (ID: 4109)
+ Registered card: Eternal Servitude (ID: 4110)
+ Registered card: Mass Resurrection (ID: 4111)
+ Registered card: Necromancer (ID: 4104)
+ Registered card: Soulbound Dagger (ID: 4200)
+ Registered card: Skeleton (ID: 4900)
+ Registered card: Zombie (ID: 4901)
+ [CardRegistry] 15 validation errors found
+validateCardRegistry @ validation.ts:69
+ [CardRegistry] Loaded 1370 valid cards (0 duplicates skipped)
+ ✅ blakejs loaded successfully (self-contained version)
+   Available functions: Array(5)
+ 🛡️ Paywall Detector loaded - 100% client-side, no external dependencies
+ 🏛️ ArcHive Content Script Loaded
+ 🏛️ ArcHive Content Script Ready - 100% Decentralized
+ CardTransformBridgeInitializer: Initializing bridge between legacy and context systems
+ [HeroDeck] Loaded decks from storage
+ Initializing card database...
+ Registering basic mage cards...
+ Registered card: Runecaster's Apprentice (ID: 10001)
+ Registered card: Frost Elemental (ID: 10002)
+ Registered card: Surtr's Wrath (ID: 10003)
+ Registered card: Niflheim Sprite (ID: 10004)
+ Registered card: Circe's Curse (ID: 10005)
+ Registered card: Sheep (ID: 10006)
+ Registered card: Muspelheim's Fury (ID: 10007)
+ Basic mage cards registered successfully.
+ Registering Mage cards...
+ Registered card: Eitr Serpent (ID: 14001)
+ Registered card: Runecaster's Pupil (ID: 14002)
+ Registered card: Völva of the Arcane (ID: 14003)
+ Registered card: Aether Völva (ID: 14004)
+ Registered card: Prometheus the Firebringer (ID: 14005)
+ Registered card: Frostweaver Spirit (ID: 14006)
+ Registered card: Circe's Curse (ID: 14009)
+ Registered card: Sheep (ID: 14010)
+ Registered card: Mist Vaporization (ID: 14012)
+ Registered card: Skadi's Lance (ID: 14013)
+ Registered card: Bifrost Gateway (ID: 31002)
+ Registered card: Frozen Bastion (ID: 31004)
+ Registered card: Rune Blast (ID: 32001)
+ Registered card: Runic Barrage (ID: 32002)
+ Registered card: Surtr's Wrath (ID: 32003)
+ Registered card: Jötunheim Freeze (ID: 32004)
+ Registered card: Skadi's Arrow (ID: 32005)
+ Registered card: Athena's Wisdom (ID: 32006)
+ Registered card: Circe's Curse (ID: 32007)
+ Registered card: Gemini Illusion (ID: 32008)
+ Registered card: Niflheim's Embrace (ID: 32009)
+ Registered card: Muspelheim's Fury (ID: 32010)
+ Registered card: Thrymr's Breath (ID: 32011)
+ Registered card: Arcane Explosion (ID: 32012)
+ Registered card: Helios Inferno (ID: 32013)
+ Registered card: Muspel Lance (ID: 32014)
+ Registered card: Jörmungandr's Breath (ID: 32015)
+ Registered card: Odin's Brilliance (ID: 32016)
+ Registered card: Rune Deflection (ID: 32017)
+ Registered card: Mirror Reflection (ID: 32018)
+ Registered card: Rune Counter (ID: 32019)
+ Registered card: Mist Vaporization (ID: 32020)
+ Registered card: Rune Barrage (ID: 32021)
+ Registered card: Shatter (ID: 32022)
+ Registered card: Ancient Flame (ID: 32023)
+ Registered card: Völva's Grimoire (ID: 32024)
+ Registered card: Icy Javelin (ID: 32025)
+ Registered card: Glacial Spike (ID: 32026)
+ Registered card: Rune Surge (ID: 32027)
+ Registered card: Element Calling (ID: 32028)
+ Registered card: Scroll of Discovery (ID: 32029)
+ Registered card: Snap Freeze (ID: 32030)
+ Registered card: Gemini Illusion (ID: 32031)
+ Registered card: Spellbender (ID: 32032)
+ Registered card: Eternal Flame (ID: 32033)
+ Mage cards registered successfully.
+ Registering Norse mythology cards...
+ Registered card: Jormungandr (ID: 20620)
+ Registered card: Jormungandr's Coil (ID: 20621)
+ Registered card: Fenrir, the Bound Wolf (ID: 4300)
+ Registered card: Garm, the Hellhound (ID: 4301)
+ Registered card: Hati, the Moon-Devourer (ID: 4302)
+ Registered card: Nidhogg, the Root-Gnawer (ID: 4303)
+ Registered card: Shadowmaw Alpha (ID: 4304)
+ Registered card: Shadowmaw Direwolf (ID: 4305)
+ Registered card: Shadow Hound (ID: 4310)
+ Registered card: Shadow Wolf (ID: 4311)
+ Registered card: Shadow Wolf (ID: 4312)
+ Registered card: Shadow Pup (ID: 4313)
+ Registered card: Hafgufa, the Sea-Mist (ID: 4320)
+ Registered card: Briareos, the Hundred-Armed (ID: 4321)
+ Registered card: Typhon's Brood (ID: 4322)
+ Registered card: Mánagarm, the Blood Moon (ID: 4323)
+ Registered card: Ladon, the Hundred-Eyed (ID: 4324)
+ Registered card: Viðófnir, the Tree Guardian (ID: 4325)
+ Registered card: Vánagand, the Eclipse Dragon (ID: 4326)
+ Registered card: Lernaean Flame (ID: 4327)
+ Registered card: Draugr, the Deathless Hunger (ID: 4328)
+ Registered card: Scylla, the World-Render (ID: 4329)
+ Registered card: Stheno, the Stone-Gazer (ID: 4330)
+ Registered card: Ginnungagap's Fury (ID: 4340)
+ Registered card: Muspel's Wyrm (ID: 4351)
+ Registered card: Múspellsmegir, the Fire Titan (ID: 4352)
+ Registered card: Gullinbursti, Golden Boar (ID: 4353)
+ Registered card: Eldþurs, the Lava Giant (ID: 4354)
+ Registered card: Skoll, Sun-Chaser (ID: 4355)
+ Registered card: Glóð's Spark (ID: 4361)
+ Registered card: Eikthyrnir, the Stag of Valhalla (ID: 4371)
+ Registered card: Fafnir, the Gold-Hoarding Dragon (ID: 4372)
+ Registered card: Dvalinn, the Root Stag (ID: 4373)
+ Registered card: Jörð's Guardian (ID: 4374)
+ Registered card: Élivágar's Beast (ID: 4375)
+ Registered card: Yggdrasil's Tendril (ID: 4377)
+ Registered card: Huginn, Odin's Raven of Thought (ID: 4390)
+ Registered card: Muninn, Odin's Raven of Memory (ID: 4391)
+ Registered card: Baldur, God of Light (ID: 4392)
+ Registered card: Sol, the Sun Goddess (ID: 4393)
+ Registered card: Heimdall, Guardian of Bifrost (ID: 4394)
+ Registered card: Valkyrie Commander (ID: 4395)
+ Registered card: Abyssal Kraken (ID: 4380)
+ Registered card: Ísormr, the Frost Serpent (ID: 4381)
+ Registered card: Ran, Goddess of the Sea (ID: 4382)
+ Registered card: Nokken, the Water Spirit (ID: 4383)
+ Registered card: Aegir, Lord of the Deep (ID: 4384)
+ Registered card: Rán's Thrall (ID: 4385)
+ Registered card: Ember Whelp (ID: 5000)
+ Registered card: Ember Fox (ID: 5001)
+ Registered card: Fire Chick (ID: 5002)
+ Registered card: Magma Imp (ID: 5003)
+ Registered card: Cinder Whelp (ID: 5004)
+ Registered card: Soot Imp (ID: 5005)
+ Registered card: Flame Raven (ID: 5006)
+ Registered card: Muspelspawn (ID: 5010)
+ Registered card: Eldbera, the Flame Bear (ID: 5011)
+ Registered card: Surtr's Spawn (ID: 5020)
+ Registered card: Logi's Fang (ID: 5021)
+ Registered card: Phoenix (ID: 5022)
+ Registered card: Loki's Ember (ID: 5023)
+ Registered card: Muspeldreki (ID: 5024)
+ Registered card: Eldjotnar (ID: 5025)
+ Registered card: Muspel's Harbinger (ID: 5026)
+ Registered card: Tide Serpent (ID: 5100)
+ Registered card: Aquatile (ID: 5101)
+ Registered card: Frost Nokk (ID: 5102)
+ Registered card: Tide Colt (ID: 5103)
+ Registered card: Ullr's Hunting Hound (ID: 5104)
+ Registered card: Thrym's Guard Dog (ID: 5105)
+ Registered card: Frostbristle Boar (ID: 5106)
+ Registered card: Aegir's Brew (ID: 5107)
+ Registered card: Njord's Tide (ID: 5108)
+ Registered card: Frostborn Titan (ID: 5110)
+ Registered card: Skadi's Snow Wolf (ID: 5111)
+ Registered card: Sea Wyrm (ID: 5120)
+ Registered card: Hydrodrake (ID: 5121)
+ Registered card: Nix of Niflheim (ID: 5122)
+ Registered card: Aegir's Steed (ID: 5123)
+ Registered card: Aegir's Flood (ID: 5124)
+ Registered card: Njord's Tempest (ID: 5125)
+ Registered card: Vine Sprout (ID: 6200)
+ Registered card: Ash Sprig (ID: 6201)
+ Registered card: Fawn of Alfheim (ID: 6202)
+ Registered card: Idunn's Seed (ID: 6203)
+ Registered card: Leaf Stag (ID: 6210)
+ Registered card: Gefjon's Ox (ID: 6211)
+ Registered card: Thorn Warden (ID: 6220)
+ Registered card: Yggdrasil's Bough (ID: 6221)
+ Registered card: Elven Hart (ID: 6222)
+ Registered card: Idunn's Apple (ID: 6223)
+ Norse mythology cards registered successfully.
+ Registering Hunter cards...
+ Registered 37 Hunter cards
+ Registering Paladin cards...
+ Registered card: Heimdall's Judgment (ID: 8002)
+ Registered card: Blessing of Odin (ID: 8004)
+ Registered card: Balance of Themis (ID: 8005)
+ Registered card: Sword of Tyr (ID: 8003)
+ Registered card: Luminous Blade (ID: 8501)
+ Registered card: Einherjar Recruit (ID: 8502)
+ Registered card: Baldur's Champion (ID: 8001)
+ Registered card: Touch of Eir (ID: 8006)
+ Registered card: Baldur's Radiance (ID: 8007)
+ Registered card: Blessing of Freya (ID: 8008)
+ Registered card: Thor's Wrath (ID: 8009)
+ Registered card: Odin's Vengeance (ID: 8010)
+ Registered card: Strength of Thor (ID: 8011)
+ Registered card: Baldur's Ward (ID: 8012)
+ Registered card: Rune of Submission (ID: 8013)
+ Registered card: Divine Retribution (ID: 8014)
+ Registered card: Resurrection Rune (ID: 8015)
+ Registered card: Einherjar's Valor (ID: 8016)
+ Paladin cards registered successfully.
+ Registering Rogue cards...
+ Registered card: Shadow of Loki (ID: 12101)
+ Registered card: Óðinn's Foresight (ID: 12102)
+ Registered card: Hel's Path (ID: 12103)
+ Registered card: Jörmungandr Venom (ID: 12104)
+ Registered card: Shadow Strike (ID: 12105)
+ Registered card: Mist of Niflheim (ID: 12106)
+ Registered card: Serpent's Fang (ID: 12107)
+ Registered card: Daggers of Víðarr (ID: 12108)
+ Registered card: Aegis Tempest (ID: 12109)
+ Registered card: Hel's Execution (ID: 12110)
+ Registered card: Loki's Shadow Ringleader (ID: 12201)
+ Registered card: Odin's Raven Scout (ID: 12202)
+ Registered card: Loki's Disciple (ID: 12203)
+ Registered card: Kidnapper (ID: 12204)
+ Registered card: Erik the Shadow Lord (ID: 12404)
+ Registered card: Wicked Knife (ID: 12301)
+ Registered card: Assassin's Blade (ID: 12303)
+ Registered card: Perdition's Blade (ID: 12304)
+ Registered card: Shadow Thief (ID: 12501)
+ Rogue cards registered successfully.
+ Registering Warlock cards...
+ Registered card: Void Wanderer (ID: 17001)
+ Registered card: Rune of Shadows (ID: 17002)
+ Registered card: Muspel's Inferno (ID: 17003)
+ Registered card: Doomed Guardian (ID: 17004)
+ Registered card: Hel's Flame (ID: 17005)
+ Registered card: Soul's Siphon (ID: 17006)
+ Registered card: Void Shade (ID: 17007)
+ Registered card: Shadow Keeper (ID: 17008)
+ Registered card: Nether Void (ID: 17009)
+ Registered card: Loki's Spark (ID: 17010)
+ Registered card: Surtr, Flame Lord (ID: 17101)
+ Registered card: Demon Sense (ID: 17102)
+ Registered card: Void Pact (ID: 17103)
+ Registered card: Surtr's Fist (ID: 17104)
+ Registered card: Shadow Flame (ID: 17105)
+ Registered card: Infernal (ID: 17501)
+ Registered card: Soul Remnant (ID: 17502)
+ Registered card: Candle (ID: 17503)
+ Registered card: Broom (ID: 17504)
+ Registered card: Teapot (ID: 17505)
+ Registered card: Imp (ID: 17506)
+ Warlock cards registered successfully.
+ Registering Druid cards...
+ Registered card: Gaia's Gift (ID: 11003)
+ Registered card: Rune of the Wild (ID: 11015)
+ Registered card: Yggdrasil's Essence (ID: 11016)
+ Registered card: Treant (ID: 11020)
+ Registered card: Healing Spring (ID: 11040)
+ Registered card: Root Guardian (ID: 11041)
+ Registered card: Yggdrasil's Surge (ID: 11042)
+ Registered card: Fenrir's Hunger (ID: 11043)
+ Registered card: Ironwood Sage (ID: 11044)
+ Registered card: Yggdrasil's Growth (ID: 11050)
+ Registered card: Nature's Bloom (ID: 11052)
+ Registered card: Fury of Gaia (ID: 11058)
+ Registered card: Treant (ID: 11059)
+ Registered card: Stone Flower (ID: 85002)
+ Registered card: Life's Sustenance (ID: 33001)
+ Registered card: Grove Warden (ID: 33002)
+ Registered card: Verdian, Nature's Herald (ID: 33003)
+ Druid cards registered successfully.
+ Registering Priest cards...
+ Registered card: Essence of Vitality (ID: 9013)
+ Registered card: Hel's Priestess (ID: 9014)
+ Registered card: Berserker's Fury (ID: 9016)
+ Registered card: Odin's All-Sight (ID: 9017)
+ Registered card: Loki's Deception (ID: 9019)
+ Registered card: Well of Vitality (ID: 9021)
+ Registered card: Baldur's Flame (ID: 9022)
+ Registered card: Radiant Smite (ID: 9023)
+ Registered card: Baldur's Light (ID: 9024)
+ Registered card: Hel's Whisper (ID: 9025)
+ Registered card: Thanatos' Decree (ID: 9026)
+ Registered card: Mind Theft (ID: 9027)
+ Registered card: Odin's Domination (ID: 9028)
+ Registered card: Spirit's Blessing (ID: 9029)
+ Registered card: Healing Ring (ID: 9030)
+ Registered card: Banishing Release (ID: 9031)
+ Registered card: Odin's Ward (ID: 9032)
+ Registered card: Divine Replication (ID: 6003)
+ Registered card: Vitality Infusion (ID: 6004)
+ Registered card: Rebirth (ID: 6005)
+ Registered card: Ascension to Godhood (ID: 6006)
+ Registered card: Stern Mentor (ID: 5112)
+ Registered card: Soul Devourer (ID: 5113)
+ Registered card: Nidhogg the Eternal (ID: 5114)
+ Registered card: The Chained Keeper (ID: 70001)
+ Registered card: Failed Student (ID: 9501)
+ Priest cards registered successfully.
+ Registering Shaman cards...
+ Registered card: Muspel's Ember (ID: 5201)
+ Registered card: Surtr's Totem (ID: 5202)
+ Registered card: Thor's Strike (ID: 5221)
+ Registered card: Thor's Fury (ID: 5222)
+ Registered card: Loki's Trick (ID: 5223)
+ Registered card: Dunk Tank (ID: 5224)
+ Registered card: Landslide (ID: 5225)
+ Registered card: Nerida, Wave Keeper (ID: 5115)
+ Registered card: Leviathan's Child (ID: 5116)
+ Registered card: Aeolus, Wind Tyrant (ID: 5117)
+ Registered card: Berserker's Rage (ID: 5118)
+ Registered card: Gaia's Tremor (ID: 5119)
+ Registered card: Spirit Wolf (ID: 5253)
+ Registered card: Frog (ID: 5251)
+ Registered card: Nerida Prime (ID: 5252)
+ Shaman cards registered successfully.
+ Registering Warrior cards...
+ Registered card: Hel's Taskmaster (ID: 5009)
+ Registered card: Valkyrie Warlord (ID: 5012)
+ Registered card: Warrior's Bloodlust (ID: 5013)
+ Registered card: War Horn of Asgard (ID: 5014)
+ Registered card: Einherjar Elite (ID: 5015)
+ Registered card: Dwarven Artificer (ID: 5016)
+ Registered card: Aegir's Hornbear (ID: 5017)
+ Registered card: Odin's Hammer Blow (ID: 5018)
+ Registered card: Fury of the North (ID: 5019)
+ Registered card: Bifrost Cleave (ID: 5029)
+ Registered card: Raging Berserker (ID: 5030)
+ Registered card: Gungnir's Fury (ID: 5031)
+ Registered card: Valkyr's Edge (ID: 5919)
+ Registered card: Aegis Defense (ID: 31022)
+ Registered card: Defensive Stance (ID: 31050)
+ Registered card: Reckless Strike (ID: 31051)
+ Registered card: Warrior's Will (ID: 31052)
+ Registered card: Blade Sharpening (ID: 31053)
+ Registered card: Call of Valhalla (ID: 31054)
+ Registered card: Battle Preparations (ID: 31055)
+ Registered card: Iron Fortitude (ID: 31056)
+ Registered card: Cleaving Slash (ID: 31057)
+ Registered card: Last Stand (ID: 31058)
+ Registered card: Champion's Legacy (ID: 31059)
+ Warrior cards registered successfully.
+ Registering Death Knight cards...
+ Registered card: Death Coil (ID: 3001)
+ Registered card: Army of the Dead (ID: 3005)
+ Registered card: Remorseless Winter (ID: 3007)
+ Registered card: Frostmourne (ID: 3009)
+ Registered card: Blood Boil (ID: 3011)
+ Registered card: Runeforged Blade (ID: 3012)
+ Registered card: Icebound Fortitude (ID: 3013)
+ Registered card: Dark Command (ID: 3014)
+ Registered card: Arthas Menethil (ID: 3015)
+ Registered card: Death Gate (ID: 3017)
+ Registered card: Bone Shield (ID: 3018)
+ Registered card: Skeleton (ID: 3019)
+ Registered card: Blood Presence (ID: 3021)
+ Registered card: Frost Presence (ID: 3022)
+ Registered card: Unholy Presence (ID: 3023)
+ Registered card: Runeblade (ID: 3024)
+ Registered card: Chains of Ice (ID: 3025)
+ Registered card: Death Strike (ID: 3026)
+ Registered card: Death Knight Initiate (ID: 3027)
+ Registered card: Scourge Champion (ID: 3029)
+ Death Knight cards registered successfully.
+ Registering Demon Hunter cards...
+ Registered card: Chaos Strike (ID: 9101)
+ Registered card: Soul Cleave (ID: 9102)
+ Registered card: Blur (ID: 9103)
+ Registered card: Mana Burn (ID: 9104)
+ Registered card: Skull of Gul'dan (ID: 9105)
+ Registered card: Glaivebound Adept (ID: 9111)
+ Registered card: Altruis the Outcast (ID: 9112)
+ Registered card: Metamorphosis (ID: 9113)
+ Registered card: Demonic Blast (ID: 9114)
+ Registered card: Coordinated Strike (ID: 9116)
+ Registered card: Illidari Initiate (ID: 9117)
+ Registered card: Eye Beam (ID: 50001)
+ Registered card: Spectral Sight (ID: 50002)
+ Registered card: Flamereaper (ID: 10008)
+ Registered card: Imprisoned Antaen (ID: 10009)
+ Demon Hunter cards registered successfully.
+ Registering Necromancer cards...
+ Registered 30 Necromancer cards
+ Registered card: Huginn & Muninn, the All-Seeing (ID: 95001)
+ Registered card: Skald of the Endless Saga (ID: 95002)
+ Registered card: The Mead of Poetry (ID: 95003)
+ Registered card: Phoenix of Alfheim (ID: 95004)
+ Registered card: Muspelheim's Inferno (ID: 95005)
+ Registered card: Keraunos, Living Lightning (ID: 95006)
+ Registered card: Aegis, the Divine Shield (ID: 95007)
+ Registered card: Titan of the Blazing Sun (ID: 95008)
+ Registered card: Celestial Primordial (ID: 95009)
+ Registered card: Eternity's Hourglass (ID: 95010)
+ Registered card: Glitnir's Final Judgment (ID: 95011)
+ Registered card: Hati, the Moon-Devourer (ID: 95012)
+ Registered card: Stormwyrm Tempest (ID: 95013)
+ Registered card: Cerberus, Guardian of the Dead (ID: 95014)
+ Registered card: Maenads' Frenzy (ID: 95015)
+ Registered card: Abyss of Eternal Night (ID: 95016)
+ Registered card: Queen of the Underworld (ID: 95017)
+ Registered card: Skoll, the Sun-Devourer (ID: 95018)
+ Registered card: Lævateinn, Blade of Ruin (ID: 95019)
+ Registered card: Garmr, Hound of Helheim (ID: 95020)
+ Registered card: Tanngrisnir & Tanngnjóstr (ID: 95021)
+ Registered card: Hrungnir's Heart (ID: 95022)
+ Registered card: Jörmungandr, World Serpent (ID: 95023)
+ Registered card: Whetstone of Ymir (ID: 95024)
+ Registered card: Phobos & Deimos (ID: 95025)
+ Registered card: Automatons of Olympus (ID: 95026)
+ Registered card: Hammer of the Forge-Father (ID: 95027)
+ Registered card: Völundr's Masterwork (ID: 95028)
+ Registered card: Gleipnir, the Binding Chain (ID: 95029)
+ Registered card: Iron Boot of Ragnarok (ID: 95030)
+ Registered card: Gjallarhorn, Doom's Herald (ID: 95031)
+ Registered card: Mistletoe's Redemption (ID: 95032)
+ Registered card: Dawn's First Light (ID: 95033)
+ Registered card: Brísingamen, Necklace of Flame (ID: 95034)
+ Registered card: Chalice of Eternal Life (ID: 95035)
+ Registered card: Gullinbursti, the Golden Boar (ID: 95036)
+ Registered card: Breath of the Creator (ID: 95037)
+ Registered card: Eros's Bow of Enchantment (ID: 95038)
+ Registered card: Peacock Throne of Olympus (ID: 95039)
+ Registered card: Arrow of True Love (ID: 95040)
+ Registered card: Eternal Hearth Flame (ID: 95041)
+ Registered card: Golden Apple Tree (ID: 95042)
+ Registered card: Askr & Embla (ID: 95043)
+ Registered card: Heart of the World Tree (ID: 95044)
+ Registered card: Tears of the Faithful (ID: 95045)
+ Registered card: Cornucopia of Abundance (ID: 95046)
+ Registered card: Titan of the Primordial Earth (ID: 95047)
+ Registered card: Frost Giant's Heart (ID: 95048)
+ Registered card: Four Oxen of Zealand (ID: 95049)
+ Registered card: The Golden Net (ID: 95050)
+ Registered card: Skidbladnir, Ship of the Gods (ID: 95051)
+ Registered card: Trident of the Deep (ID: 95052)
+ Registered card: Fenrir, the Unbound Wolf (ID: 95053)
+ Registered card: Mistletoe Arrow (ID: 95054)
+ Registered card: Níðhöggr, Corpse-Gnawer (ID: 95055)
+ Registered card: Serpent of the Nine Waves (ID: 95056)
+ Registered card: Caduceus, Staff of Messengers (ID: 95057)
+ Registered card: Primordial Shadow of Night (ID: 95058)
+ Registered card: Fenrisúlfr, Winter's Maw (ID: 95059)
+ Registered card: Wave Daughters of the Deep (ID: 95060)
+ Registered card: Hawk of Thrymheim (ID: 95061)
+ Registered card: Bow of Ydalir (ID: 95062)
+ Registered card: Chariot of the Sun (ID: 95063)
+ Registered card: Huntress of the Moon (ID: 95064)
+ Registered card: Fel-Bound Behemoth (ID: 95065)
+ Registered card: Alpha of the Twilight Pack (ID: 95066)
+ Registered card: Yomotsu-Shikome (ID: 95067)
+ Registered card: Moonlit Palace (ID: 95068)
+ Registered card: Divine Wind Storm (ID: 95069)
+ Registered card: Crossroads Guardian (ID: 95070)
+ Registered card: Spirit of Creation (ID: 95071)
+ Registered card: Scales of Ma'at (ID: 95072)
+ Registered card: Feather of Truth (ID: 95073)
+ Registered card: Scorpion's Tail (ID: 95074)
+ Registered card: Scarab of Eternal Dawn (ID: 95075)
+ Registered card: Wind of the Void (ID: 95076)
+ Registered card: Jörmungandr, the World Serpent (ID: 95077)
+ Registered card: Gulltoppr, the Golden-Maned (ID: 95078)
+ Registered card: The Ceryneian Hind (ID: 95079)
+ Registered card: Hildisvíni, the Battle Boar (ID: 95080)
+ Registered card: Hippocampus, Steed of the Depths (ID: 95081)
+ Registered 81 super minion cards.
+ Card database initialized with 466 cards.
+ [ArmySelection] Card registry has 466 cards
+ ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+warnOnce @ react-router-dom.js?v=d33c41b8:4394
+ ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+warnOnce @ react-router-dom.js?v=d33c41b8:4394
+ [GameStoreIntegration] Initializing event-driven architecture...
+ [GameStoreIntegration] Initialization complete
+ [ArmySelection] Syncing King hero: Ymir (king-ymir)
+ [KingAbility] Initialized: Object
+ [Combat Init] Attacker bishop (player): HP=100, Stamina=10
+ [Combat Init] Defender rook (opponent): HP=100, Stamina=10
+ [Combat Init] First strike will be applied via animation in poker combat
+ [createPetFromChessPiece] piece.type=bishop, heroData.name=Freya, heroData.norseHeroId=hero-freya
+ [createPetFromChessPiece] piece.type=rook, heroData.name=Thor, heroData.norseHeroId=hero-thor
+ [Combat Init] AttackerPet stamina: 10/10
+ [Combat Init] DefenderPet stamina: 10/10
+ [CombatArena] Rendering FirstStrikeAnimation, phase: first_strike target: opponent
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [AI-ATTACK-ANIM-PROC] pendingAttacks changed - count: 0
+ [AI-ATTACK-ANIM-PROC] useEffect triggered: pendingAttacks=0, isAnimating=false
+ [FirstStrike] Animation starting, target: opponent damage: 15
+ [CombatEventSubscribers] Initializing combat event subscribers...
+ [CombatEventSubscribers] Initialized 4 subscribers
+ [FirstStrike] Phase: strike
+ Mulligan confirmed, replacing selected cards
+ [CombatArena] Rendering FirstStrikeAnimation, phase: first_strike target: opponent
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] Rendering FirstStrikeAnimation, phase: first_strike target: opponent
+ [FirstStrike] Phase: damage
+ [CombatArena] Rendering FirstStrikeAnimation, phase: first_strike target: opponent
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [FirstStrike] Animation complete, calling onComplete
+ [CombatArena] FirstStrikeAnimation onComplete called
+ [PokerCombatSlice] completeFirstStrike called
+ [PokerCombatSlice] First strike damage 15 applied to opponent, transitioning to phase: spell_pet
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+ [CombatArena] FirstStrike completed, not showing animation
+ [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+resetUtils.ts:84 [performTurnStartResets] Starting resets for opponent's turn
+resetUtils.ts:25 [resetMinionsForTurn] Resetting 0 minions for opponent
+resetUtils.ts:98 [performTurnStartResets] Resets complete. Player minions: Array(0)
+resetUtils.ts:84 [performTurnStartResets] Starting resets for player's turn
+resetUtils.ts:25 [resetMinionsForTurn] Resetting 0 minions for player
+resetUtils.ts:98 [performTurnStartResets] Resets complete. Player minions: Array(0)
+debugConfig.ts:31 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+pokerCombatSlice.ts:577 [advancePokerPhase] Blocking auto-advance: waiting for first action
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+pokerCombatSlice.ts:577 [advancePokerPhase] Blocking auto-advance: waiting for first action
+CardDragAnimation.tsx:399 🎮 CardDragAnimation: PointerDown event received Object
+CardDragAnimation.tsx:412 🔍 Click detected on element: Object
+CardDragAnimation.tsx:428 ✅ Drag initiated from valid card area
+CardDragAnimation.tsx:343 🧪 handlePointerUp DEBUG: Object
+CardDragAnimation.tsx:202 🧪 isValidDrop DEBUG: Object
+CardDragAnimation.tsx:241 🧪 isValidDrop: VALID DROP Object
+CardDragAnimation.tsx:368 🧪 handlePointerUp: Drop validation result: true
+debugConfig.ts:41 [CARD] [CARD-DEBUG] Attempting to play card: Object
+debugConfig.ts:41 [CARD] [CARD-DEBUG] Card name: Transmutation Engine, ID: 57bc73e2-f9a6-4572-9b05-4f0c7b77f51b, ManaCost: 1
+debugConfig.ts:46 [MANA] [MANA-DEBUG] Player has 2 mana. Card costs 1.
+debugConfig.ts:46 [MANA] [MANA-DEBUG] Playing card Transmutation Engine (ID: 57bc73e2-f9a6-4572-9b05-4f0c7b77f51b)
+debugConfig.ts:46 [MANA] [MANA-DEBUG] Card cost: 1, Player mana: {"current":2,"max":2,"overloaded":0,"pendingOverload":0}
+debugConfig.ts:46 [MANA] [MANA-DEBUG] Player mana current: 2
+debugConfig.ts:41 [CARD] [CARD-FIX] Card Transmutation Engine missing keywords array, adding empty array
+debugConfig.ts:31 [MINION-PLAYED] Transmutation Engine - 0/3
+debugConfig.ts:31 Playing legendary minion: Transmutation Engine
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+resetUtils.ts:84 [performTurnStartResets] Starting resets for opponent's turn
+resetUtils.ts:25 [resetMinionsForTurn] Resetting 0 minions for opponent
+resetUtils.ts:98 [performTurnStartResets] Resets complete. Player minions: Array(0)
+resetUtils.ts:84 [performTurnStartResets] Starting resets for player's turn
+resetUtils.ts:25 [resetMinionsForTurn] Resetting 1 minions for player
+resetUtils.ts:45 [resetMinionsForTurn] Transmutation Engine: summoningSick true->false, frozen: undefined, canAttack: true
+resetUtils.ts:98 [performTurnStartResets] Resets complete. Player minions: Array(1)
+debugConfig.ts:31 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+pokerCombatSlice.ts:800 [UNIFIED HP RESOLUTION] Before calculation: Object
+pokerCombatSlice.ts:849 [UNIFIED HP RESOLUTION] After calculation: Object
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+debugConfig.ts:31 [PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal
+debugConfig.ts:31 [PokerRewards] Player drew card: Kazakus, Dragon Lord
+debugConfig.ts:31 [PokerRewards] Opponent drew card: Hati, the Moon-Devourer
+debugConfig.ts:31 [PokerRewards] Player mana: 3 → 4 (4 available, 0 overloaded)
+debugConfig.ts:31 [PokerRewards] Opponent mana: 3 → 4 (4 available, 0 overloaded)
+debugConfig.ts:31 [PokerRewards] Card draw and mana grant complete
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+pokerCombatSlice.ts:577 [advancePokerPhase] Blocking auto-advance: waiting for first action
+RagnarokCombatArena.tsx:815 [CombatArena] FirstStrike completed, not showing animation
+AIAttackAnimationProcessor.tsx:23 [AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: 0, isAnimating: false
+pokerCombatSlice.ts:577 [advancePokerPhase] Blocking auto-advance: waiting for first action
