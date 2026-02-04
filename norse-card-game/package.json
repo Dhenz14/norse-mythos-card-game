@@ -1,0 +1,34 @@
+{
+  "name": "norse-card-game",
+  "version": "1.0.0",
+  "description": "Norse Mythology Card Game with Holographic Effects",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.88.4",
+    "@react-three/fiber": "^8.15.12",
+    "framer-motion": "^10.16.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.18.0",
+    "react-spring": "^9.7.3",
+    "tailwind-merge": "^2.0.0",
+    "tailwindcss": "^3.3.5",
+    "three": "^0.158.0",
+    "zustand": "^4.4.6"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@types/three": "^0.158.2",
+    "@vitejs/plugin-react": "^4.1.1",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
+  }
+}
