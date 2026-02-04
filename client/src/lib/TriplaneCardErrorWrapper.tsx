@@ -15,7 +15,7 @@ interface Props {
   children: ReactNode;
   fallbackCard?: CardData;
   position?: [number, number, number];
-  scale?: number | number[];
+  scale?: number | [number, number, number];
 }
 
 interface State {

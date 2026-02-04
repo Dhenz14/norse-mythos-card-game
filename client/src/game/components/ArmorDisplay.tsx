@@ -36,6 +36,7 @@ export function ArmorDisplay({ value, className = '' }: ArmorDisplayProps) {
           controlsEnabled={true}
         >
           <ArmorShield
+            armor={value}
             scale={[0.8, 0.8, 0.8]}
             glowIntensity={getGlowIntensity()}
           />
