@@ -1,0 +1,56 @@
+name: Download All Files Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      download_option:
+        description: 'Which files to download'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - key_components
+          - source_only
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        
+      - name: Create download directory
+        run: mkdir -p downloads
+      
+      - name: Download complete archive (all files)
+        if: ${{ github.event.inputs.download_option == 'all' }}
+        run: |
+          curl -L -o downloads/norse-mythos-everything-complete.tar.gz https://github.com/Dhenz14/norse-mythos-card-game/releases/download/v0.1.0/norse-mythos-everything-complete.tar.gz
+          echo "Downloaded complete archive (261MB)"
+          
+      - name: Download key components
+        if: ${{ github.event.inputs.download_option == 'key_components' }}
+        run: |
+          curl -L -o downloads/norse-mythos-key-components.tar.gz https://github.com/Dhenz14/norse-mythos-card-game/releases/download/v0.1.0/norse-mythos-key-components.tar.gz
+          echo "Downloaded key components archive (28KB)"
+          
+      - name: Download source code only
+        if: ${{ github.event.inputs.download_option == 'source_only' }}
+        run: |
+          curl -L -o downloads/norse-mythos-archive.tar.gz https://github.com/Dhenz14/norse-mythos-card-game/releases/download/v0.1.0/norse-mythos-archive.tar.gz
+          echo "Downloaded source code archive (131MB)"
+          
+      - name: Extract files
+        run: |
+          cd downloads
+          ls -la
+          tar -xzf *.tar.gz
+          echo "Extracted files:"
+          find . -type f | grep -v .tar.gz | head -n 20
+          
+      - name: Upload as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: norse-mythos-files
+          path: downloads

@@ -1,0 +1,2287 @@
+Found 229 cards with duplicates across 37 files.
+
+=== DUPLICATE CARDS BY FILE ===
+
+
+=== additionalClassMinions.ts (16 duplicates) ===
+
+  Line 14: "Mana Wyrm" (ID: 40001, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:5625 (ID: 14016)
+
+  Line 42: "Armorsmith" (ID: 40003, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:607 (ID: 5002)
+    cards.ts:6173 (ID: 16008)
+
+  Line 55: "Frothing Berserker" (ID: 40004, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:671 (ID: 5006)
+    cards.ts:6204 (ID: 16010)
+
+  Line 70: "Aldor Peacekeeper" (ID: 40005, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:1515 (ID: 8005)
+
+  Line 89: "Sunwalker" (ID: 40006, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:198 (ID: 2003)
+    neutralMinions.ts:244 (ID: 30016)
+
+  Line 103: "Savannah Highmane" (ID: 40007, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:1003 (ID: 7002)
+
+  Line 121: "Scavenging Hyena" (ID: 40008, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:1241 (ID: 7016)
+
+  Line 137: "Keeper of the Grove" (ID: 40009, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:3059 (ID: 11008)
+    cards.ts:3527 (ID: 11029)
+
+  Line 182: "Ancient of Lore" (ID: 40010, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:2923 (ID: 11002)
+    cards.ts:3491 (ID: 11028)
+
+  Line 230: "Northshire Cleric" (ID: 40011, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:2531 (ID: 9006)
+    classMinions.ts:259 (ID: 10016)
+
+  Line 243: "Cabal Shadow Priest" (ID: 40012, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:2462 (ID: 9002)
+
+  Line 263: "Flame Imp" (ID: 40013, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:5832 (ID: 15008)
+
+  Line 282: "Doomguard" (ID: 40014, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:5852 (ID: 15009)
+
+  Line 317: "Fire Elemental" (ID: 40016, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:4455 (ID: 13006)
+    mechanicCards.ts:183 (ID: 40010)
+
+  Line 338: "SI:7 Agent" (ID: 40017, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:3981 (ID: 12007)
+    comboCards.ts:9 (ID: 90001)
+    mechanicCards.ts:487 (ID: 40028)
+
+  Line 356: "Defias Ringleader" (ID: 40018, Type: minion, Rarity: common)
+  Also appears in:
+    comboCards.ts:48 (ID: 90003)
+
+=== additionalLegendaryCards.ts (7 duplicates) ===
+
+  Line 14: "Ragnaros the Firelord" (ID: 20024, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:459 (ID: 4001)
+
+  Line 82: "Bloodmage Thalnos" (ID: 20028, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:474 (ID: 4002)
+    mechanicCards.ts:239 (ID: 40013)
+
+  Line 100: "Leeroy Jenkins" (ID: 20029, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7423 (ID: 5065)
+
+  Line 136: "Harrison Jones" (ID: 20042, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7405 (ID: 5064)
+
+  Line 153: "The Black Knight" (ID: 20043, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7385 (ID: 5063)
+
+  Line 188: "Kalimos, Primal Lord" (ID: 20031, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:4653 (ID: 13021)
+
+  Line 223: "Valeera the Hollow" (ID: 20033, Type: hero, Rarity: legendary)
+  Also appears in:
+    cards.ts:4298 (ID: 12025)
+
+=== additionalSpellCards.ts (21 duplicates) ===
+
+  Line 14: "Mind Control" (ID: 31012, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:2515 (ID: 9005)
+    spellCards.ts:308 (ID: 30018)
+
+  Line 30: "Pyroblast" (ID: 31001, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:5590 (ID: 14014)
+
+  Line 65: "Frost Nova" (ID: 31003, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:938 (ID: 6002)
+    cards.ts:5537 (ID: 14011)
+
+  Line 82: "Ice Block" (ID: 31004, Type: secret, Rarity: epic)
+  Also appears in:
+    cards.ts:5486 (ID: 14008)
+
+  Line 106: "Sap" (ID: 31005, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:3933 (ID: 12004)
+
+  Line 122: "Deadly Poison" (ID: 31006, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4041 (ID: 12010)
+
+  Line 139: "Shadowstep" (ID: 31007, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4001 (ID: 12008)
+
+  Line 158: "Avenging Wrath" (ID: 31008, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:1619 (ID: 8011)
+
+  Line 176: "Consecration" (ID: 31009, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1499 (ID: 8004)
+    classCards.ts:102 (ID: 8002)
+    spellCards.ts:134 (ID: 30008)
+
+  Line 194: "Shadow Word: Pain" (ID: 31010, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2451 (ID: 9001)
+    spellCards.ts:291 (ID: 30017)
+
+  Line 214: "Swipe" (ID: 31011, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2905 (ID: 11001)
+    spellCards.ts:239 (ID: 30014)
+
+  Line 238: "Brawl" (ID: 31013, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:699 (ID: 5008)
+    cards.ts:6072 (ID: 16002)
+    newSpellCards.ts:138 (ID: 30057)
+    spellCards.ts:1164 (ID: 30057)
+
+  Line 258: "Arcane Intellect" (ID: 31014, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:518 (ID: 4502)
+    spellCards.ts:47 (ID: 4502)
+
+  Line 276: "Blessing of Kings" (ID: 31015, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1551 (ID: 8007)
+    classCards.ts:127 (ID: 8004)
+    spellCards.ts:117 (ID: 30007)
+    spellCards.ts:804 (ID: 30035)
+
+  Line 295: "Eviscerate" (ID: 31016, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:3910 (ID: 12003)
+    comboCards.ts:28 (ID: 90002)
+    spellCards.ts:610 (ID: 30026)
+
+  Line 336: "Multi-Shot" (ID: 31018, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1276 (ID: 7018)
+    spellCards.ts:202 (ID: 30012)
+
+  Line 356: "Savage Roar" (ID: 31019, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2967 (ID: 11004)
+    cards.ts:3762 (ID: 11038)
+
+  Line 393: "Shadow Word: Death" (ID: 31021, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2482 (ID: 9003)
+    spellCards.ts:339 (ID: 30046)
+
+  Line 411: "Shield Block" (ID: 31022, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:735 (ID: 5010)
+    cards.ts:6157 (ID: 16007)
+
+  Line 430: "Siphon Soul" (ID: 31023, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:5762 (ID: 15004)
+
+  Line 454: "Hex" (ID: 31024, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4429 (ID: 13004)
+    spellCards.ts:477 (ID: 30023)
+
+=== cards.ts (198 duplicates) ===
+
+  Line 23: "Bloodfen Raptor" (ID: 1002, Type: minion, Rarity: common)
+  Also appears in:
+
+  Line 37: "River Crocolisk" (ID: 1003, Type: minion, Rarity: common)
+  Also appears in:
+    coldlightTestData.ts:83 (ID: 1238)
+
+  Line 64: "Acidic Swamp Ooze" (ID: 1005, Type: minion, Rarity: common)
+  Also appears in:
+    neutralMinions.ts:14 (ID: 30001)
+
+  Line 78: "Novice Engineer" (ID: 1006, Type: minion, Rarity: common)
+  Also appears in:
+    mechanicCards.ts:32 (ID: 1006)
+    neutralMinions.ts:31 (ID: 1006)
+
+  Line 99: "Earthen Ring Farseer" (ID: 1007, Type: minion, Rarity: common)
+  Also appears in:
+    neutralMinions.ts:48 (ID: 30003)
+
+  Line 127: "Loot Hoarder" (ID: 1009, Type: minion, Rarity: common)
+  Also appears in:
+    mechanicCards.ts:204 (ID: 40011)
+    neutralMinions.ts:185 (ID: 30012)
+
+  Line 147: "Acolyte of Pain" (ID: 1010, Type: minion, Rarity: common)
+  Also appears in:
+    neutralMinions.ts:218 (ID: 30014)
+
+  Line 162: "Defender of Argus" (ID: 2001, Type: minion, Rarity: rare)
+  Also appears in:
+    mechanicCards.ts:144 (ID: 40008)
+
+  Line 198: "Sunwalker" (ID: 2003, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:89 (ID: 40006)
+    neutralMinions.ts:244 (ID: 30016)
+
+  Line 212: "Wild Pyromancer" (ID: 2004, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralMinions.ts:97 (ID: 30006)
+
+  Line 225: "Coldlight Oracle" (ID: 2005, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralMinions.ts:109 (ID: 30007)
+
+  Line 245: "Twilight Drake" (ID: 2006, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralMinions.ts:201 (ID: 30013)
+
+  Line 260: "Gadgetzan Auctioneer" (ID: 2007, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralMinions.ts:230 (ID: 30015)
+
+  Line 273: "Mind Control Tech" (ID: 2008, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralSpellsAndTech.ts:260 (ID: 31015)
+
+  Line 289: "Big Game Hunter" (ID: 3001, Type: minion, Rarity: epic)
+  Also appears in:
+    neutralSpellsAndTech.ts:109 (ID: 31007)
+
+  Line 303: "Mountain Giant" (ID: 3002, Type: minion, Rarity: epic)
+  Also appears in:
+
+  Line 317: "Faceless Manipulator" (ID: 3003, Type: minion, Rarity: epic)
+  Also appears in:
+    neutralMinions.ts:127 (ID: 30008)
+    specialEffectNeutrals.ts:30 (ID: 32002)
+
+  Line 331: "Doomsayer" (ID: 3004, Type: minion, Rarity: epic)
+  Also appears in:
+    neutralMinions.ts:146 (ID: 30009)
+
+  Line 344: "Sea Giant" (ID: 3005, Type: minion, Rarity: epic)
+  Also appears in:
+    neutralMinions.ts:158 (ID: 30010)
+
+  Line 357: "Molten Giant" (ID: 3006, Type: minion, Rarity: epic)
+  Also appears in:
+    neutralMinions.ts:170 (ID: 30011)
+
+  Line 371: "Hungry Crab" (ID: 3007, Type: minion, Rarity: epic)
+  Also appears in:
+    neutralSpellsAndTech.ts:161 (ID: 31010)
+
+  Line 400: "Spellbreaker" (ID: 3009, Type: minion, Rarity: epic)
+  Also appears in:
+    mechanicCards.ts:68 (ID: 40004)
+    neutralSpellsAndTech.ts:92 (ID: 31006)
+
+  Line 443: "Southsea Captain" (ID: 3012, Type: minion, Rarity: epic)
+  Also appears in:
+    pirateCards.ts:9 (ID: 80002)
+
+  Line 459: "Ragnaros the Firelord" (ID: 4001, Type: minion, Rarity: legendary)
+  Also appears in:
+    additionalLegendaryCards.ts:14 (ID: 20024)
+
+  Line 474: "Bloodmage Thalnos" (ID: 4002, Type: minion, Rarity: legendary)
+  Also appears in:
+    additionalLegendaryCards.ts:82 (ID: 20028)
+    mechanicCards.ts:239 (ID: 40013)
+
+  Line 496: "The Coin" (ID: 4500, Type: spell, Rarity: common)
+  Also appears in:
+    neutralSpellsAndTech.ts:14 (ID: 31001)
+
+  Line 518: "Arcane Intellect" (ID: 4502, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:258 (ID: 31014)
+    spellCards.ts:47 (ID: 4502)
+
+  Line 549: "Trade Routes" (ID: 4504, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:710 (ID: 4504)
+
+  Line 594: "Fiery War Axe" (ID: 5001, Type: weapon, Rarity: common)
+  Also appears in:
+
+  Line 607: "Armorsmith" (ID: 5002, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:42 (ID: 40003)
+
+  Line 620: "Execute" (ID: 5003, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:82 (ID: 30005)
+
+  Line 637: "Shield Slam" (ID: 5004, Type: spell, Rarity: epic)
+  Also appears in:
+    spellCards.ts:66 (ID: 30004)
+
+  Line 655: "Whirlwind" (ID: 5005, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:99 (ID: 30006)
+
+  Line 671: "Frothing Berserker" (ID: 5006, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:55 (ID: 40004)
+
+  Line 685: "Gorehowl" (ID: 5007, Type: weapon, Rarity: epic)
+  Also appears in:
+    legendaryCards.ts:486 (ID: 20035)
+
+  Line 699: "Brawl" (ID: 5008, Type: spell, Rarity: epic)
+  Also appears in:
+    additionalSpellCards.ts:238 (ID: 31013)
+    newSpellCards.ts:138 (ID: 30057)
+    spellCards.ts:1164 (ID: 30057)
+
+  Line 735: "Shield Block" (ID: 5010, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:411 (ID: 31022)
+
+  Line 751: "Mortal Strike" (ID: 5011, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:784 (ID: 30034)
+
+  Line 784: "Inner Rage" (ID: 5013, Type: spell, Rarity: common)
+  Also appears in:
+
+  Line 802: "Commanding Shout" (ID: 5014, Type: spell, Rarity: rare)
+  Also appears in:
+
+  Line 831: "Grommash Hellscream" (ID: 5016, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:54 (ID: 20005)
+
+  Line 846: "Bloodhoof Brave" (ID: 5017, Type: minion, Rarity: common)
+  Also appears in:
+
+  Line 861: "Slam" (ID: 5018, Type: spell, Rarity: common)
+  Also appears in:
+
+  Line 878: "Battle Rage" (ID: 5019, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:121 (ID: 30056)
+    spellCards.ts:1147 (ID: 30056)
+
+  Line 927: "Fireball" (ID: 6001, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:14 (ID: 30001)
+
+  Line 938: "Frost Nova" (ID: 6002, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:65 (ID: 31003)
+
+  Line 987: "Animal Companion" (ID: 7001, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:169 (ID: 30010)
+
+  Line 1003: "Savannah Highmane" (ID: 7002, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:103 (ID: 40007)
+
+  Line 1023: "Eaglehorn Bow" (ID: 7003, Type: weapon, Rarity: rare)
+  Also appears in:
+    classCards.ts:39 (ID: 7003)
+
+  Line 1041: "Unleash the Hounds" (ID: 7004, Type: spell, Rarity: common)
+  Also appears in:
+    classCards.ts:10 (ID: 7001)
+    spellCards.ts:865 (ID: 30038)
+
+  Line 1057: "Explosive Trap" (ID: 7005, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:843 (ID: 30037)
+
+  Line 1075: "Freezing Trap" (ID: 7006, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:211 (ID: 30061)
+    secretCards.ts:120 (ID: 15005)
+    spellCards.ts:1237 (ID: 30061)
+
+  Line 1111: "Kill Command" (ID: 7008, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:185 (ID: 30011)
+
+  Line 1149: "Misha" (ID: 7010, Type: minion, Rarity: common)
+  Also appears in:
+    classCards.ts:184 (ID: 7503)
+
+  Line 1179: "Leokk" (ID: 7012, Type: minion, Rarity: common)
+  Also appears in:
+    classCards.ts:206 (ID: 7505)
+
+  Line 1212: "Hound" (ID: 7014, Type: minion, Rarity: common)
+  Also appears in:
+    classCards.ts:162 (ID: 7501)
+    mechanicCards.ts:529 (ID: 30101)
+
+  Line 1241: "Scavenging Hyena" (ID: 7016, Type: minion, Rarity: common)
+  Also appears in:
+    additionalClassMinions.ts:121 (ID: 40008)
+
+  Line 1261: "Deadly Shot" (ID: 7017, Type: spell, Rarity: common)
+  Also appears in:
+    classCards.ts:67 (ID: 7005)
+    newSpellCards.ts:194 (ID: 30060)
+    spellCards.ts:1220 (ID: 30060)
+
+  Line 1276: "Multi-Shot" (ID: 7018, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:336 (ID: 31018)
+    spellCards.ts:202 (ID: 30012)
+
+  Line 1399: "King Krush" (ID: 7025, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:90 (ID: 20007)
+
+  Line 1414: "Deathstalker Rexxar" (ID: 7026, Type: hero, Rarity: legendary)
+  Also appears in:
+    heroCards.ts:42 (ID: 10001)
+    legendaryCards.ts:454 (ID: 20032)
+
+  Line 1465: "Tirion Fordring" (ID: 8002, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:74 (ID: 20006)
+
+  Line 1499: "Consecration" (ID: 8004, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:176 (ID: 31009)
+    classCards.ts:102 (ID: 8002)
+    spellCards.ts:134 (ID: 30008)
+
+  Line 1515: "Aldor Peacekeeper" (ID: 8005, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:70 (ID: 40005)
+
+  Line 1535: "Equality" (ID: 8006, Type: spell, Rarity: rare)
+  Also appears in:
+    newSpellCards.ts:158 (ID: 30058)
+    spellCards.ts:1184 (ID: 30058)
+
+  Line 1551: "Blessing of Kings" (ID: 8007, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:276 (ID: 31015)
+    classCards.ts:127 (ID: 8004)
+    spellCards.ts:117 (ID: 30007)
+    spellCards.ts:804 (ID: 30035)
+
+  Line 1601: "Lay on Hands" (ID: 8010, Type: spell, Rarity: epic)
+  Also appears in:
+    spellCards.ts:150 (ID: 30009)
+
+  Line 1619: "Avenging Wrath" (ID: 8011, Type: spell, Rarity: epic)
+  Also appears in:
+    additionalSpellCards.ts:158 (ID: 31008)
+
+  Line 1672: "Noble Sacrifice" (ID: 8014, Type: spell, Rarity: common)
+  Also appears in:
+    secretCards.ts:174 (ID: 15007)
+
+  Line 1718: "Redemption" (ID: 8017, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:821 (ID: 30036)
+
+  Line 1939: "Death Coil" (ID: 3001, Type: spell, Rarity: common)
+  Also appears in:
+
+  Line 1956: "Raise Dead" (ID: 3002, Type: spell, Rarity: common)
+  Also appears in:
+    dualClassCards.ts:39 (ID: 14003)
+    spellCards.ts:1491 (ID: 30073)
+
+  Line 1973: "Ghoul" (ID: 3003, Type: minion, Rarity: common)
+  Also appears in:
+    spellCards.ts:1528 (ID: 30075)
+
+  Line 1987: "Frost Strike" (ID: 3004, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:1447 (ID: 30071)
+
+  Line 2021: "The Lich King" (ID: 3006, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:14 (ID: 20001)
+
+  Line 2074: "Frostmourne" (ID: 3009, Type: weapon, Rarity: legendary)
+  Also appears in:
+
+  Line 2254: "Obliterate" (ID: 3020, Type: spell, Rarity: epic)
+  Also appears in:
+    spellCards.ts:1508 (ID: 30074)
+
+  Line 2392: "Unholy Frenzy" (ID: 3028, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:1469 (ID: 30072)
+
+  Line 2451: "Shadow Word: Pain" (ID: 9001, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:194 (ID: 31010)
+    additionalSpellCards.ts:376 (ID: 31020)
+    spellCards.ts:291 (ID: 30017)
+
+  Line 2462: "Cabal Shadow Priest" (ID: 9002, Type: minion, Rarity: epic)
+  Also appears in:
+    additionalClassMinions.ts:243 (ID: 40012)
+
+  Line 2482: "Shadow Word: Death" (ID: 9003, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:393 (ID: 31021)
+    spellCards.ts:339 (ID: 30046)
+
+  Line 2499: "Holy Nova" (ID: 9004, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:274 (ID: 30016)
+
+  Line 2515: "Mind Control" (ID: 9005, Type: spell, Rarity: epic)
+  Also appears in:
+    additionalSpellCards.ts:14 (ID: 31012)
+    spellCards.ts:308 (ID: 30018)
+
+  Line 2531: "Northshire Cleric" (ID: 9006, Type: minion, Rarity: common)
+  Also appears in:
+    additionalClassMinions.ts:230 (ID: 40011)
+    classMinions.ts:259 (ID: 10016)
+
+  Line 2545: "Power Word: Shield" (ID: 9007, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:48 (ID: 30052)
+    spellCards.ts:1074 (ID: 30052)
+
+  Line 2676: "Circle of Healing" (ID: 9015, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:323 (ID: 30045)
+    spellCards.ts:931 (ID: 30040)
+
+  Line 2724: "Prophet Velen" (ID: 9018, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:115 (ID: 20009)
+
+  Line 2755: "Mass Dispel" (ID: 9020, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:388 (ID: 30049)
+
+  Line 2842: "Hellfire" (ID: 10001, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:423 (ID: 30020)
+
+  Line 2853: "Lord Jaraxxus" (ID: 10002, Type: minion, Rarity: legendary)
+  Also appears in:
+    healthModifierCards.ts:46 (ID: 95003)
+    legendaryCards.ts:127 (ID: 20010)
+
+  Line 2868: "Shadowflame" (ID: 15021, Type: spell, Rarity: epic)
+  Also appears in:
+
+  Line 2905: "Swipe" (ID: 11001, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:214 (ID: 31011)
+    spellCards.ts:239 (ID: 30014)
+
+  Line 2923: "Ancient of Lore" (ID: 11002, Type: minion, Rarity: epic)
+  Also appears in:
+    additionalClassMinions.ts:182 (ID: 40010)
+
+  Line 2967: "Savage Roar" (ID: 11004, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:356 (ID: 31019)
+
+  Line 2984: "Force of Nature" (ID: 11005, Type: spell, Rarity: epic)
+  Also appears in:
+    spellCards.ts:256 (ID: 30015)
+
+  Line 3000: "Druid of the Claw" (ID: 11006, Type: minion, Rarity: common)
+  Also appears in:
+
+  Line 3059: "Keeper of the Grove" (ID: 11008, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:137 (ID: 40009)
+
+  Line 3090: "Ancient of War" (ID: 11009, Type: minion, Rarity: epic)
+  Also appears in:
+
+  Line 3119: "Nourish" (ID: 11010, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:885 (ID: 30039)
+
+  Line 3145: "Starfall" (ID: 11011, Type: spell, Rarity: rare)
+  Also appears in:
+    newSpellCards.ts:250 (ID: 30063)
+    spellCards.ts:1276 (ID: 30063)
+
+  Line 3174: "Cenarius" (ID: 11012, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:103 (ID: 20008)
+
+  Line 3204: "Ironbark Protector" (ID: 11013, Type: minion, Rarity: common)
+  Also appears in:
+    classMinions.ts:227 (ID: 10014)
+
+  Line 3218: "Wild Growth" (ID: 11014, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:222 (ID: 30013)
+
+  Line 3274: "Naturalize" (ID: 11017, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:233 (ID: 30062)
+    spellCards.ts:1259 (ID: 30062)
+
+  Line 3309: "Druid of the Flame" (ID: 11019, Type: minion, Rarity: common)
+  Also appears in:
+
+  Line 3667: "Fandral Staghelm" (ID: 11033, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:200 (ID: 20014)
+
+  Line 3874: "Backstab" (ID: 12001, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:593 (ID: 30025)
+
+  Line 3891: "Edwin VanCleef" (ID: 12002, Type: minion, Rarity: legendary)
+  Also appears in:
+    comboCards.ts:80 (ID: 90005)
+    legendaryCards.ts:161 (ID: 20012)
+
+  Line 3910: "Eviscerate" (ID: 12003, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:295 (ID: 31016)
+    comboCards.ts:28 (ID: 90002)
+    spellCards.ts:610 (ID: 30026)
+
+  Line 3933: "Sap" (ID: 12004, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:106 (ID: 31005)
+
+  Line 3949: "Fan of Knives" (ID: 12005, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:316 (ID: 30066)
+    spellCards.ts:1342 (ID: 30066)
+
+  Line 3966: "Preparation" (ID: 12006, Type: spell, Rarity: epic)
+  Also appears in:
+    newSpellCards.ts:333 (ID: 30067)
+    spellCards.ts:1359 (ID: 30067)
+
+  Line 3981: "SI:7 Agent" (ID: 12007, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:338 (ID: 40017)
+    comboCards.ts:9 (ID: 90001)
+    mechanicCards.ts:487 (ID: 40028)
+
+  Line 4001: "Shadowstep" (ID: 12008, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:139 (ID: 31007)
+
+  Line 4041: "Deadly Poison" (ID: 12010, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:122 (ID: 31006)
+
+  Line 4056: "Sprint" (ID: 12011, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:632 (ID: 30027)
+
+  Line 4071: "Blade Flurry" (ID: 12012, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:993 (ID: 30043)
+
+  Line 4086: "Perdition\" (ID: 12013, Type: weapon, Rarity: rare)
+  Also appears in:
+
+  Line 4127: "Assassin\" (ID: 12015, Type: weapon, Rarity: common)
+  Also appears in:
+
+  Line 4158: "Headcrack" (ID: 12017, Type: spell, Rarity: rare)
+  Also appears in:
+
+  Line 4178: "Betrayal" (ID: 12018, Type: spell, Rarity: common)
+  Also appears in:
+
+  Line 4194: "Vanish" (ID: 12019, Type: spell, Rarity: common)
+  Also appears in:
+
+  Line 4298: "Valeera the Hollow" (ID: 12025, Type: hero, Rarity: legendary)
+  Also appears in:
+    additionalLegendaryCards.ts:223 (ID: 20033)
+
+  Line 4387: "Lightning Storm" (ID: 13001, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:510 (ID: 30085)
+
+  Line 4414: "Earth Elemental" (ID: 13003, Type: minion, Rarity: epic)
+  Also appears in:
+    overloadCards.ts:79 (ID: 35006)
+
+  Line 4429: "Hex" (ID: 13004, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:454 (ID: 31024)
+    spellCards.ts:477 (ID: 30023)
+
+  Line 4455: "Fire Elemental" (ID: 13006, Type: minion, Rarity: common)
+  Also appears in:
+    additionalClassMinions.ts:317 (ID: 40016)
+    mechanicCards.ts:183 (ID: 40010)
+
+  Line 4470: "Tunnel Trogg" (ID: 13007, Type: minion, Rarity: common)
+  Also appears in:
+    classMinions.ts:366 (ID: 10022)
+
+  Line 4507: "Unstable Evolution" (ID: 13010, Type: spell, Rarity: epic)
+  Also appears in:
+    specialEffectNeutrals.ts:13 (ID: 32001)
+
+  Line 4519: "Lava Burst" (ID: 13011, Type: spell, Rarity: rare)
+  Also appears in:
+    overloadCards.ts:60 (ID: 35005)
+    spellCards.ts:531 (ID: 30088)
+
+  Line 4531: "Feral Spirit" (ID: 13012, Type: spell, Rarity: rare)
+  Also appears in:
+    overloadCards.ts:20 (ID: 35002)
+
+  Line 4543: "White Eyes" (ID: 13013, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:469 (ID: 20126)
+
+  Line 4589: "Murloc Tidecaller" (ID: 13016, Type: minion, Rarity: rare)
+  Also appears in:
+    rebornCards.ts:49 (ID: 19021)
+
+  Line 4628: "Jade Lightning" (ID: 13019, Type: spell, Rarity: common)
+  Also appears in:
+    jadeGolemCards.ts:54 (ID: 85003)
+
+  Line 4653: "Kalimos, Primal Lord" (ID: 13021, Type: minion, Rarity: legendary)
+  Also appears in:
+    additionalLegendaryCards.ts:188 (ID: 20031)
+
+  Line 4679: "Shudderwock" (ID: 13023, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:43 (ID: 20102)
+
+  Line 4693: "The Storm Guardian" (ID: 13024, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:488 (ID: 20127)
+
+  Line 4915: "Chaos Strike" (ID: 9101, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:650 (ID: 30028)
+
+  Line 4966: "Twin Slice" (ID: 9104, Type: spell, Rarity: common)
+  Also appears in:
+    outcastCards.ts:155 (ID: 50008)
+    spellCards.ts:1013 (ID: 30044)
+
+  Line 4983: "Immolation Aura" (ID: 9105, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:352 (ID: 30068)
+    spellCards.ts:1378 (ID: 30068)
+
+  Line 4998: "Soul Cleave" (ID: 9106, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:374 (ID: 30069)
+    spellCards.ts:1400 (ID: 30069)
+
+  Line 5017: "Eye Beam" (ID: 9107, Type: spell, Rarity: rare)
+  Also appears in:
+    outcastCards.ts:14 (ID: 50001)
+    spellCards.ts:669 (ID: 30029)
+
+  Line 5056: "Consume Magic" (ID: 9109, Type: spell, Rarity: common)
+  Also appears in:
+    outcastCards.ts:135 (ID: 50007)
+
+  Line 5165: "Second Slice" (ID: 9115, Type: spell, Rarity: common)
+  Also appears in:
+    mechanicCards.ts:619 (ID: 30102)
+
+  Line 5212: "Spectral Sight" (ID: 9118, Type: spell, Rarity: common)
+  Also appears in:
+    outcastCards.ts:35 (ID: 50002)
+
+  Line 5232: "Fel Barrage" (ID: 9119, Type: spell, Rarity: epic)
+  Also appears in:
+    spellCards.ts:690 (ID: 30030)
+
+  Line 5321: "Lightning Bolt" (ID: 13036, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:458 (ID: 30022)
+
+  Line 5333: "Bloodlust" (ID: 13037, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:492 (ID: 30024)
+
+  Line 5344: "Elemental Destruction" (ID: 13038, Type: spell, Rarity: epic)
+  Also appears in:
+    overloadCards.ts:110 (ID: 35008)
+    spellCards.ts:550 (ID: 30089)
+
+  Line 5356: "Forked Lightning" (ID: 13039, Type: spell, Rarity: common)
+  Also appears in:
+    overloadCards.ts:40 (ID: 35004)
+    spellCards.ts:570 (ID: 30090)
+
+  Line 5368: "Arcane Explosion" (ID: 14001, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:728 (ID: 30031)
+
+  Line 5384: "Flamestrike" (ID: 14002, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:13 (ID: 30050)
+    spellCards.ts:1039 (ID: 30050)
+
+  Line 5400: "Blizzard" (ID: 14003, Type: spell, Rarity: rare)
+  Also appears in:
+    newSpellCards.ts:29 (ID: 30051)
+    spellCards.ts:1055 (ID: 30051)
+
+  Line 5417: "Mirror Entity" (ID: 14004, Type: spell, Rarity: common)
+  Also appears in:
+    secretCards.ts:10 (ID: 15001)
+    spellCards.ts:744 (ID: 30032)
+
+  Line 5451: "Frostbolt" (ID: 14006, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:30 (ID: 30002)
+
+  Line 5486: "Ice Block" (ID: 14008, Type: spell, Rarity: epic)
+  Also appears in:
+    additionalSpellCards.ts:82 (ID: 31004)
+
+  Line 5590: "Pyroblast" (ID: 14014, Type: spell, Rarity: epic)
+  Also appears in:
+    additionalSpellCards.ts:30 (ID: 31001)
+
+  Line 5607: "Archmage Antonidas" (ID: 14015, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:42 (ID: 20004)
+
+  Line 5625: "Mana Wyrm" (ID: 14016, Type: minion, Rarity: common)
+  Also appears in:
+    additionalClassMinions.ts:14 (ID: 40001)
+
+  Line 5643: "Spellbender" (ID: 14017, Type: spell, Rarity: epic)
+  Also appears in:
+
+  Line 5675: "Water Elemental" (ID: 14019, Type: minion, Rarity: common)
+  Also appears in:
+    heroCards.ts:117 (ID: 10501)
+    legendaryCards.ts:441 (ID: 20031)
+
+  Line 5694: "Ice Barrier" (ID: 14020, Type: spell, Rarity: common)
+  Also appears in:
+    secretCards.ts:64 (ID: 15003)
+
+  Line 5712: "Darkbomb" (ID: 15001, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:85 (ID: 30054)
+    spellCards.ts:1111 (ID: 30054)
+
+  Line 5729: "Defile" (ID: 15002, Type: spell, Rarity: rare)
+  Also appears in:
+    newSpellCards.ts:101 (ID: 30055)
+    spellCards.ts:1127 (ID: 30055)
+
+  Line 5762: "Siphon Soul" (ID: 15004, Type: spell, Rarity: rare)
+  Also appears in:
+    additionalSpellCards.ts:430 (ID: 31023)
+
+  Line 5798: "Twisting Nether" (ID: 15006, Type: spell, Rarity: epic)
+  Also appears in:
+    spellCards.ts:440 (ID: 30021)
+
+  Line 5832: "Flame Imp" (ID: 15008, Type: minion, Rarity: common)
+  Also appears in:
+    additionalClassMinions.ts:263 (ID: 40013)
+
+  Line 5852: "Doomguard" (ID: 15009, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:282 (ID: 40014)
+
+  Line 5945: "Imp" (ID: 15014, Type: minion, Rarity: common)
+  Also appears in:
+
+  Line 6405: "Coldlight Seer" (ID: 5001, Type: minion, Rarity: rare)
+  Also appears in:
+    coldlightTestData.ts:5 (ID: 1234)
+    neutralSpellsAndTech.ts:227 (ID: 31013)
+    rebornCards.ts:28 (ID: 19020)
+
+  Line 6420: "Cult Master" (ID: 5002, Type: minion, Rarity: common)
+  Also appears in:
+    neutralSpellsAndTech.ts:248 (ID: 31014)
+
+  Line 6475: "Ironbeak Owl" (ID: 5006, Type: minion, Rarity: common)
+  Also appears in:
+    mechanicCards.ts:50 (ID: 40003)
+    neutralSpellsAndTech.ts:277 (ID: 31016)
+
+  Line 6490: "Mojomaster Zihi" (ID: 5007, Type: minion, Rarity: legendary)
+  Also appears in:
+    neutralSpellsAndTech.ts:74 (ID: 31005)
+
+  Line 6504: "Skulking Geist" (ID: 5008, Type: minion, Rarity: epic)
+  Also appears in:
+    neutralSpellsAndTech.ts:126 (ID: 31008)
+
+  Line 6518: "Eater of Secrets" (ID: 5009, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralSpellsAndTech.ts:144 (ID: 31009)
+
+  Line 6547: "Golakka Crawler" (ID: 5011, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralSpellsAndTech.ts:184 (ID: 31011)
+
+  Line 6562: "Hemet Nesingwary" (ID: 5012, Type: minion, Rarity: legendary)
+  Also appears in:
+    expansionLegendaryCards.ts:319 (ID: 20205)
+    neutralSpellsAndTech.ts:207 (ID: 31012)
+
+  Line 6578: "Gruul" (ID: 5013, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:538 (ID: 20130)
+
+  Line 6591: "The Beast" (ID: 5014, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:584 (ID: 20133)
+
+  Line 6611: "Finkle Einhorn" (ID: 5015, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:606 (ID: 20134)
+
+  Line 6623: "Gelbin Mekkatorque" (ID: 5016, Type: minion, Rarity: legendary)
+  Also appears in:
+
+  Line 6676: "King Mukla" (ID: 5019, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:620 (ID: 20135)
+
+  Line 6714: "Captain Greenskin" (ID: 5020, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:662 (ID: 20137)
+
+  Line 7055: "Nat Pagle" (ID: 5041, Type: minion, Rarity: legendary)
+  Also appears in:
+    finalLegendaryCards.ts:149 (ID: 20607)
+
+  Line 7219: "Murloc Tidehunter" (ID: 5052, Type: minion, Rarity: common)
+  Also appears in:
+    coldlightTestData.ts:32 (ID: 1235)
+
+  Line 7239: "Murloc Scout" (ID: 5053, Type: minion, Rarity: common)
+  Also appears in:
+    coldlightTestData.ts:52 (ID: 1236)
+
+  Line 7333: "Cairne Bloodhoof" (ID: 5060, Type: minion, Rarity: legendary)
+  Also appears in:
+    mechanicCards.ts:257 (ID: 40014)
+
+  Line 7352: "Baine Bloodhoof" (ID: 5061, Type: minion, Rarity: legendary)
+  Also appears in:
+    mechanicCards.ts:569 (ID: 40114)
+
+  Line 7365: "Frost Elemental" (ID: 5062, Type: minion, Rarity: common)
+  Also appears in:
+    classMinions.ts:44 (ID: 10002)
+
+  Line 7385: "The Black Knight" (ID: 5063, Type: minion, Rarity: legendary)
+  Also appears in:
+    additionalLegendaryCards.ts:153 (ID: 20043)
+
+  Line 7405: "Harrison Jones" (ID: 5064, Type: minion, Rarity: legendary)
+  Also appears in:
+    additionalLegendaryCards.ts:136 (ID: 20042)
+
+  Line 7423: "Leeroy Jenkins" (ID: 5065, Type: minion, Rarity: legendary)
+  Also appears in:
+    additionalLegendaryCards.ts:100 (ID: 20029)
+
+  Line 7443: "Whelp" (ID: 5066, Type: minion, Rarity: common)
+  Also appears in:
+    iconicLegendaryCards.ts:523 (ID: 20129)
+
+  Line 7456: "Baron Geddon" (ID: 5067, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:27 (ID: 20003)
+
+  Line 7618: "Death and Decay" (ID: 8001, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:1425 (ID: 30070)
+
+  Line 7687: "Giga-Fin" (ID: 3003, Type: minion, Rarity: legendary)
+  Also appears in:
+    colossalCards.ts:85 (ID: 3004)
+
+  Line 7702: "Giga-Fin\" (ID: 3004, Type: minion, Rarity: legendary)
+  Also appears in:
+
+  Line 7730: "Colossus of the Moon" (ID: 3006, Type: minion, Rarity: legendary)
+  Also appears in:
+    colossalCards.ts:49 (ID: 3006)
+    rebornCards.ts:198 (ID: 19010)
+
+=== classCards.ts (8 duplicates) ===
+
+  Line 10: "Unleash the Hounds" (ID: 7001, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1041 (ID: 7004)
+    spellCards.ts:865 (ID: 30038)
+
+  Line 39: "Eaglehorn Bow" (ID: 7003, Type: weapon, Rarity: rare)
+  Also appears in:
+    cards.ts:1023 (ID: 7003)
+
+  Line 67: "Deadly Shot" (ID: 7005, Type: spell, Rarity: legendary)
+  Also appears in:
+    cards.ts:1261 (ID: 7017)
+    newSpellCards.ts:194 (ID: 30060)
+    spellCards.ts:1220 (ID: 30060)
+
+  Line 102: "Consecration" (ID: 8002, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:176 (ID: 31009)
+    cards.ts:1499 (ID: 8004)
+    spellCards.ts:134 (ID: 30008)
+
+  Line 127: "Blessing of Kings" (ID: 8004, Type: spell, Rarity: rare)
+  Also appears in:
+    additionalSpellCards.ts:276 (ID: 31015)
+    cards.ts:1551 (ID: 8007)
+    spellCards.ts:117 (ID: 30007)
+    spellCards.ts:804 (ID: 30035)
+
+  Line 162: "Hound" (ID: 7501, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:1212 (ID: 7014)
+    mechanicCards.ts:529 (ID: 30101)
+
+  Line 184: "Misha" (ID: 7503, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:1149 (ID: 7010)
+
+  Line 206: "Leokk" (ID: 7505, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:1179 (ID: 7012)
+
+=== classMinions.ts (4 duplicates) ===
+
+  Line 44: "Frost Elemental" (ID: 10002, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:7365 (ID: 5062)
+
+  Line 227: "Ironbark Protector" (ID: 10014, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:3204 (ID: 11013)
+    cards.ts:3732 (ID: 11036)
+
+  Line 259: "Northshire Cleric" (ID: 10016, Type: minion, Rarity: common)
+  Also appears in:
+    additionalClassMinions.ts:230 (ID: 40011)
+    cards.ts:2531 (ID: 9006)
+
+  Line 366: "Tunnel Trogg" (ID: 10022, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:4470 (ID: 13007)
+
+=== coldlightTestData.ts (5 duplicates) ===
+
+  Line 5: "Coldlight Seer" (ID: 1234, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:6405 (ID: 5001)
+    neutralSpellsAndTech.ts:227 (ID: 31013)
+    rebornCards.ts:28 (ID: 19020)
+
+  Line 32: "Murloc Tidehunter" (ID: 1235, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:7219 (ID: 5052)
+
+  Line 52: "Murloc Scout" (ID: 1236, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:7239 (ID: 5053)
+
+  Line 66: "Bluegill Warrior" (ID: 1237, Type: minion, Rarity: common)
+  Also appears in:
+    rebornCards.ts:15 (ID: 19000)
+
+  Line 83: "River Crocolisk" (ID: 1238, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:37 (ID: 1003)
+    cards.ts:6850 (ID: 5028)
+
+=== colossalCards.ts (2 duplicates) ===
+
+  Line 49: "Colossus of the Moon" (ID: 3006, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7730 (ID: 3006)
+    rebornCards.ts:198 (ID: 19010)
+
+  Line 85: "Giga-Fin" (ID: 3004, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7687 (ID: 3003)
+
+=== comboCards.ts (4 duplicates) ===
+
+  Line 9: "SI:7 Agent" (ID: 90001, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:338 (ID: 40017)
+    cards.ts:3981 (ID: 12007)
+    mechanicCards.ts:487 (ID: 40028)
+
+  Line 28: "Eviscerate" (ID: 90002, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:295 (ID: 31016)
+    cards.ts:3910 (ID: 12003)
+    spellCards.ts:610 (ID: 30026)
+
+  Line 48: "Defias Ringleader" (ID: 90003, Type: minion, Rarity: common)
+  Also appears in:
+    additionalClassMinions.ts:356 (ID: 40018)
+
+  Line 80: "Edwin VanCleef" (ID: 90005, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:3891 (ID: 12002)
+    legendaryCards.ts:161 (ID: 20012)
+
+=== discoverCards.ts (1 duplicates) ===
+
+  Line 304: "I Know a Guy" (ID: 5017, Type: spell, Rarity: common)
+  Also appears in:
+    neutralSpellsAndTech.ts:28 (ID: 31002)
+
+=== dormantCards.ts (1 duplicates) ===
+
+  Line 159: "Flamereaper" (ID: 10008, Type: weapon, Rarity: epic)
+  Also appears in:
+    outcastCards.ts:118 (ID: 50006)
+
+=== dualClassCards.ts (1 duplicates) ===
+
+  Line 39: "Raise Dead" (ID: 14003, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1956 (ID: 3002)
+    cards.ts:4875 (ID: 9003)
+    cards.ts:7652 (ID: 8004)
+    spellCards.ts:1491 (ID: 30073)
+
+=== echoCards.ts (2 duplicates) ===
+
+  Line 46: "Face Collector" (ID: 47222, Type: minion, Rarity: legendary)
+  Also appears in:
+    modernLegendaryCards.ts:135 (ID: 20807)
+
+  Line 88: "Hunting Mastiff" (ID: 47312, Type: minion, Rarity: common)
+  Also appears in:
+    rushLifestealCards.ts:63 (ID: 17005)
+
+=== expansionLegendaryCards.ts (4 duplicates) ===
+
+  Line 209: "Woecleaver" (ID: 20710, Type: weapon, Rarity: legendary)
+  Also appears in:
+    recruitCards.ts:40 (ID: 18003)
+
+  Line 319: "Hemet Nesingwary" (ID: 20205, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:6562 (ID: 5012)
+    neutralSpellsAndTech.ts:207 (ID: 31012)
+
+  Line 595: "Inkmaster Solia" (ID: 20219, Type: minion, Rarity: legendary)
+  Also appears in:
+    highlanderCards.ts:60 (ID: 70003)
+
+  Line 616: "Krul the Unshackled" (ID: 20220, Type: minion, Rarity: legendary)
+  Also appears in:
+    highlanderCards.ts:100 (ID: 70005)
+
+=== finalLegendaryCards.ts (2 duplicates) ===
+
+  Line 129: "Tinkmaster Overspark" (ID: 20606, Type: minion, Rarity: legendary)
+  Also appears in:
+    mechanicCards.ts:165 (ID: 40009)
+
+  Line 149: "Nat Pagle" (ID: 20607, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7055 (ID: 5041)
+
+=== frenzyCards.ts (1 duplicates) ===
+
+  Line 12: "Blademaster Samuro" (ID: 9001, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:239 (ID: 20017)
+
+=== healthModifierCards.ts (2 duplicates) ===
+
+  Line 9: "Prince Renathal" (ID: 95001, Type: minion, Rarity: legendary)
+  Also appears in:
+    modernLegendaryCards.ts:597 (ID: 20319)
+
+  Line 46: "Lord Jaraxxus" (ID: 95003, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:2853 (ID: 10002)
+    cards.ts:5959 (ID: 15015)
+    legendaryCards.ts:127 (ID: 20010)
+
+=== heroCards.ts (2 duplicates) ===
+
+  Line 42: "Deathstalker Rexxar" (ID: 10001, Type: hero, Rarity: legendary)
+  Also appears in:
+    cards.ts:1414 (ID: 7026)
+    legendaryCards.ts:454 (ID: 20032)
+
+  Line 117: "Water Elemental" (ID: 10501, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:5675 (ID: 14019)
+    legendaryCards.ts:441 (ID: 20031)
+
+=== highlanderCards.ts (3 duplicates) ===
+
+  Line 19: "Reno Jackson" (ID: 70001, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:368 (ID: 20025)
+
+  Line 60: "Inkmaster Solia" (ID: 70003, Type: minion, Rarity: legendary)
+  Also appears in:
+    expansionLegendaryCards.ts:595 (ID: 20219)
+
+  Line 100: "Krul the Unshackled" (ID: 70005, Type: minion, Rarity: legendary)
+  Also appears in:
+    expansionLegendaryCards.ts:616 (ID: 20220)
+
+=== iconicLegendaryCards.ts (14 duplicates) ===
+
+  Line 28: "Brann Bronzebeard" (ID: 20101, Type: minion, Rarity: legendary)
+  Also appears in:
+    specialEffectNeutrals.ts:139 (ID: 32008)
+
+  Line 43: "Shudderwock" (ID: 20102, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:4679 (ID: 13023)
+
+  Line 80: "Barnes" (ID: 20105, Type: minion, Rarity: legendary)
+  Also appears in:
+    specialEffectNeutrals.ts:163 (ID: 32010)
+
+  Line 138: "Emperor Thaurissan" (ID: 20108, Type: minion, Rarity: legendary)
+  Also appears in:
+    specialEffectNeutrals.ts:151 (ID: 32009)
+
+  Line 353: "Twin Emperor Vek" (ID: 20120, Type: minion, Rarity: legendary)
+  Also appears in:
+    oldGodsCards.ts:172 (ID: 60009)
+
+  Line 444: "Aya Blackpaw" (ID: 20125, Type: minion, Rarity: legendary)
+  Also appears in:
+    jadeGolemCards.ts:104 (ID: 85006)
+
+  Line 469: "White Eyes" (ID: 20126, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:4543 (ID: 13013)
+
+  Line 488: "The Storm Guardian" (ID: 20127, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:4693 (ID: 13024)
+
+  Line 523: "Whelp" (ID: 20129, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:7443 (ID: 5066)
+
+  Line 538: "Gruul" (ID: 20130, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:6578 (ID: 5013)
+
+  Line 584: "The Beast" (ID: 20133, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:6591 (ID: 5014)
+
+  Line 606: "Finkle Einhorn" (ID: 20134, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:6611 (ID: 5015)
+
+  Line 620: "King Mukla" (ID: 20135, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:6676 (ID: 5019)
+
+  Line 662: "Captain Greenskin" (ID: 20137, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:6714 (ID: 5020)
+
+=== jadeGolemCards.ts (3 duplicates) ===
+
+  Line 54: "Jade Lightning" (ID: 85003, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4628 (ID: 13019)
+
+  Line 104: "Aya Blackpaw" (ID: 85006, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:444 (ID: 20125)
+
+  Line 131: "Jade Golem" (ID: 85101, Type: minion, Rarity: common)
+  Also appears in:
+
+=== legendaryCards.ts (17 duplicates) ===
+
+  Line 14: "The Lich King" (ID: 20001, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:2021 (ID: 3006)
+
+  Line 27: "Baron Geddon" (ID: 20003, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7456 (ID: 5067)
+
+  Line 42: "Archmage Antonidas" (ID: 20004, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:5607 (ID: 14015)
+
+  Line 54: "Grommash Hellscream" (ID: 20005, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:831 (ID: 5016)
+    cards.ts:6121 (ID: 16005)
+
+  Line 74: "Tirion Fordring" (ID: 20006, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:1465 (ID: 8002)
+
+  Line 90: "King Krush" (ID: 20007, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:1399 (ID: 7025)
+
+  Line 103: "Cenarius" (ID: 20008, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:3174 (ID: 11012)
+
+  Line 115: "Prophet Velen" (ID: 20009, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:2724 (ID: 9018)
+
+  Line 127: "Lord Jaraxxus" (ID: 20010, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:2853 (ID: 10002)
+    cards.ts:5959 (ID: 15015)
+    healthModifierCards.ts:46 (ID: 95003)
+
+  Line 161: "Edwin VanCleef" (ID: 20012, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:3891 (ID: 12002)
+    comboCards.ts:80 (ID: 90005)
+
+  Line 200: "Fandral Staghelm" (ID: 20014, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:3667 (ID: 11033)
+
+  Line 239: "Blademaster Samuro" (ID: 20017, Type: minion, Rarity: legendary)
+  Also appears in:
+    frenzyCards.ts:12 (ID: 9001)
+
+  Line 368: "Reno Jackson" (ID: 20025, Type: minion, Rarity: legendary)
+  Also appears in:
+    highlanderCards.ts:19 (ID: 70001)
+
+  Line 386: "Loatheb" (ID: 20026, Type: minion, Rarity: legendary)
+  Also appears in:
+    specialEffectNeutrals.ts:199 (ID: 32012)
+
+  Line 441: "Water Elemental" (ID: 20031, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:5675 (ID: 14019)
+    heroCards.ts:117 (ID: 10501)
+
+  Line 454: "Deathstalker Rexxar" (ID: 20032, Type: hero, Rarity: legendary)
+  Also appears in:
+    cards.ts:1414 (ID: 7026)
+    heroCards.ts:42 (ID: 10001)
+
+  Line 486: "Gorehowl" (ID: 20035, Type: weapon, Rarity: epic)
+  Also appears in:
+    cards.ts:685 (ID: 5007)
+    cards.ts:6104 (ID: 16004)
+
+=== mechanicCards.ts (18 duplicates) ===
+
+  Line 32: "Novice Engineer" (ID: 1006, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:78 (ID: 1006)
+    neutralMinions.ts:31 (ID: 1006)
+
+  Line 50: "Ironbeak Owl" (ID: 40003, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:6475 (ID: 5006)
+    neutralSpellsAndTech.ts:277 (ID: 31016)
+
+  Line 68: "Spellbreaker" (ID: 40004, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:400 (ID: 3009)
+    cards.ts:6447 (ID: 5004)
+    neutralSpellsAndTech.ts:92 (ID: 31006)
+
+  Line 144: "Defender of Argus" (ID: 40008, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:162 (ID: 2001)
+
+  Line 165: "Tinkmaster Overspark" (ID: 40009, Type: minion, Rarity: legendary)
+  Also appears in:
+    finalLegendaryCards.ts:129 (ID: 20606)
+
+  Line 183: "Fire Elemental" (ID: 40010, Type: minion, Rarity: common)
+  Also appears in:
+    additionalClassMinions.ts:317 (ID: 40016)
+    cards.ts:4455 (ID: 13006)
+
+  Line 204: "Loot Hoarder" (ID: 40011, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:127 (ID: 1009)
+    neutralMinions.ts:185 (ID: 30012)
+
+  Line 239: "Bloodmage Thalnos" (ID: 40013, Type: minion, Rarity: legendary)
+  Also appears in:
+    additionalLegendaryCards.ts:82 (ID: 20028)
+    cards.ts:474 (ID: 4002)
+
+  Line 257: "Cairne Bloodhoof" (ID: 40014, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7333 (ID: 5060)
+
+  Line 274: "Sludge Belcher" (ID: 40015, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralMinions.ts:274 (ID: 30018)
+
+  Line 327: "Khartut Defender" (ID: 40018, Type: minion, Rarity: rare)
+  Also appears in:
+    rebornCards.ts:181 (ID: 19009)
+
+  Line 417: "Abomination" (ID: 40024, Type: minion, Rarity: rare)
+  Also appears in:
+    neutralMinions.ts:78 (ID: 30005)
+
+  Line 434: "Piloted Shredder" (ID: 40025, Type: minion, Rarity: common)
+  Also appears in:
+    neutralMinions.ts:256 (ID: 30017)
+
+  Line 487: "SI:7 Agent" (ID: 40028, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:338 (ID: 40017)
+    cards.ts:3981 (ID: 12007)
+    comboCards.ts:9 (ID: 90001)
+
+  Line 529: "Hound" (ID: 30101, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:1212 (ID: 7014)
+    classCards.ts:162 (ID: 7501)
+
+  Line 543: "Spirit Wolf" (ID: 30087, Type: minion, Rarity: common)
+  Also appears in:
+    overloadCards.ts:135 (ID: 35003)
+
+  Line 569: "Baine Bloodhoof" (ID: 40114, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7352 (ID: 5061)
+
+  Line 619: "Second Slice" (ID: 30102, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5165 (ID: 9115)
+
+=== modernLegendaryCards.ts (2 duplicates) ===
+
+  Line 135: "Face Collector" (ID: 20807, Type: minion, Rarity: legendary)
+  Also appears in:
+    echoCards.ts:46 (ID: 47222)
+
+  Line 597: "Prince Renathal" (ID: 20319, Type: minion, Rarity: legendary)
+  Also appears in:
+    healthModifierCards.ts:9 (ID: 95001)
+
+=== neutralMinions.ts (17 duplicates) ===
+
+  Line 14: "Acidic Swamp Ooze" (ID: 30001, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:64 (ID: 1005)
+
+  Line 31: "Novice Engineer" (ID: 1006, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:78 (ID: 1006)
+    mechanicCards.ts:32 (ID: 1006)
+
+  Line 48: "Earthen Ring Farseer" (ID: 30003, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:99 (ID: 1007)
+
+  Line 78: "Abomination" (ID: 30005, Type: minion, Rarity: rare)
+  Also appears in:
+    mechanicCards.ts:417 (ID: 40024)
+
+  Line 97: "Wild Pyromancer" (ID: 30006, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:212 (ID: 2004)
+
+  Line 109: "Coldlight Oracle" (ID: 30007, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:225 (ID: 2005)
+
+  Line 127: "Faceless Manipulator" (ID: 30008, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:317 (ID: 3003)
+    specialEffectNeutrals.ts:30 (ID: 32002)
+
+  Line 146: "Doomsayer" (ID: 30009, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:331 (ID: 3004)
+
+  Line 158: "Sea Giant" (ID: 30010, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:344 (ID: 3005)
+
+  Line 170: "Molten Giant" (ID: 30011, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:357 (ID: 3006)
+
+  Line 185: "Loot Hoarder" (ID: 30012, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:127 (ID: 1009)
+    mechanicCards.ts:204 (ID: 40011)
+
+  Line 201: "Twilight Drake" (ID: 30013, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:245 (ID: 2006)
+    cards.ts:428 (ID: 3011)
+
+  Line 218: "Acolyte of Pain" (ID: 30014, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:147 (ID: 1010)
+
+  Line 230: "Gadgetzan Auctioneer" (ID: 30015, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:260 (ID: 2007)
+
+  Line 244: "Sunwalker" (ID: 30016, Type: minion, Rarity: rare)
+  Also appears in:
+    additionalClassMinions.ts:89 (ID: 40006)
+    cards.ts:198 (ID: 2003)
+
+  Line 256: "Piloted Shredder" (ID: 30017, Type: minion, Rarity: common)
+  Also appears in:
+    mechanicCards.ts:434 (ID: 40025)
+
+  Line 274: "Sludge Belcher" (ID: 30018, Type: minion, Rarity: rare)
+  Also appears in:
+    mechanicCards.ts:274 (ID: 40015)
+
+=== neutralSpellsAndTech.ts (14 duplicates) ===
+
+  Line 14: "The Coin" (ID: 31001, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:496 (ID: 4500)
+
+  Line 28: "I Know a Guy" (ID: 31002, Type: spell, Rarity: common)
+  Also appears in:
+    discoverCards.ts:304 (ID: 5017)
+
+  Line 74: "Mojomaster Zihi" (ID: 31005, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:6490 (ID: 5007)
+
+  Line 92: "Spellbreaker" (ID: 31006, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:400 (ID: 3009)
+    cards.ts:6447 (ID: 5004)
+    mechanicCards.ts:68 (ID: 40004)
+
+  Line 109: "Big Game Hunter" (ID: 31007, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:289 (ID: 3001)
+    cards.ts:6461 (ID: 5005)
+
+  Line 126: "Skulking Geist" (ID: 31008, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:6504 (ID: 5008)
+
+  Line 144: "Eater of Secrets" (ID: 31009, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:6518 (ID: 5009)
+
+  Line 161: "Hungry Crab" (ID: 31010, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:371 (ID: 3007)
+    cards.ts:6532 (ID: 5010)
+
+  Line 184: "Golakka Crawler" (ID: 31011, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:6547 (ID: 5011)
+
+  Line 207: "Hemet Nesingwary" (ID: 31012, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:6562 (ID: 5012)
+    expansionLegendaryCards.ts:319 (ID: 20205)
+
+  Line 227: "Coldlight Seer" (ID: 31013, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:6405 (ID: 5001)
+    coldlightTestData.ts:5 (ID: 1234)
+    rebornCards.ts:28 (ID: 19020)
+
+  Line 248: "Cult Master" (ID: 31014, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:6420 (ID: 5002)
+
+  Line 260: "Mind Control Tech" (ID: 31015, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:273 (ID: 2008)
+    cards.ts:6433 (ID: 5003)
+
+  Line 277: "Ironbeak Owl" (ID: 31016, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:6475 (ID: 5006)
+    mechanicCards.ts:50 (ID: 40003)
+
+=== newSpellCards.ts (21 duplicates) ===
+
+  Line 13: "Flamestrike" (ID: 30050, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5384 (ID: 14002)
+    spellCards.ts:1039 (ID: 30050)
+
+  Line 29: "Blizzard" (ID: 30051, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:5400 (ID: 14003)
+    spellCards.ts:1055 (ID: 30051)
+
+  Line 48: "Power Word: Shield" (ID: 30052, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2545 (ID: 9007)
+    spellCards.ts:1074 (ID: 30052)
+
+  Line 66: "Resurrect" (ID: 30053, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:1092 (ID: 30053)
+
+  Line 85: "Darkbomb" (ID: 30054, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5712 (ID: 15001)
+    spellCards.ts:1111 (ID: 30054)
+
+  Line 101: "Defile" (ID: 30055, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:5729 (ID: 15002)
+    spellCards.ts:1127 (ID: 30055)
+
+  Line 121: "Battle Rage" (ID: 30056, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:878 (ID: 5019)
+    cards.ts:6056 (ID: 16001)
+    spellCards.ts:1147 (ID: 30056)
+
+  Line 138: "Brawl" (ID: 30057, Type: spell, Rarity: epic)
+  Also appears in:
+    additionalSpellCards.ts:238 (ID: 31013)
+    cards.ts:699 (ID: 5008)
+    cards.ts:6072 (ID: 16002)
+    spellCards.ts:1164 (ID: 30057)
+
+  Line 158: "Equality" (ID: 30058, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:1535 (ID: 8006)
+    spellCards.ts:1184 (ID: 30058)
+
+  Line 175: "Hammer of Wrath" (ID: 30059, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:1201 (ID: 30059)
+
+  Line 194: "Deadly Shot" (ID: 30060, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1261 (ID: 7017)
+    classCards.ts:67 (ID: 7005)
+    spellCards.ts:1220 (ID: 30060)
+
+  Line 211: "Freezing Trap" (ID: 30061, Type: secret, Rarity: common)
+  Also appears in:
+    cards.ts:1075 (ID: 7006)
+    secretCards.ts:120 (ID: 15005)
+    spellCards.ts:1237 (ID: 30061)
+
+  Line 233: "Naturalize" (ID: 30062, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:3274 (ID: 11017)
+    spellCards.ts:1259 (ID: 30062)
+
+  Line 250: "Starfall" (ID: 30063, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:3145 (ID: 11011)
+    cards.ts:3564 (ID: 11030)
+    spellCards.ts:1276 (ID: 30063)
+
+  Line 260: "Starfall: AoE" (ID: 30063, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:1286 (ID: 30063)
+
+  Line 276: "Starfall: Single Target" (ID: 30063, Type: spell, Rarity: common)
+  Also appears in:
+    spellCards.ts:1302 (ID: 30063)
+
+  Line 296: "Ancestral Spirit" (ID: 30065, Type: spell, Rarity: rare)
+  Also appears in:
+    spellCards.ts:1322 (ID: 30065)
+
+  Line 316: "Fan of Knives" (ID: 30066, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:3949 (ID: 12005)
+    spellCards.ts:1342 (ID: 30066)
+
+  Line 333: "Preparation" (ID: 30067, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:3966 (ID: 12006)
+    spellCards.ts:1359 (ID: 30067)
+
+  Line 352: "Immolation Aura" (ID: 30068, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4983 (ID: 9105)
+    cards.ts:7595 (ID: 7005)
+    spellCards.ts:1378 (ID: 30068)
+
+  Line 374: "Soul Cleave" (ID: 30069, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4998 (ID: 9106)
+    cards.ts:7606 (ID: 7006)
+    spellCards.ts:1400 (ID: 30069)
+
+=== oldGodsCards.ts (2 duplicates) ===
+
+  Line 20: "C" (ID: 60001, Type: minion, Rarity: legendary)
+  Also appears in:
+
+  Line 172: "Twin Emperor Vek" (ID: 60009, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:353 (ID: 20120)
+
+=== outcastCards.ts (5 duplicates) ===
+
+  Line 14: "Eye Beam" (ID: 50001, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:5017 (ID: 9107)
+    cards.ts:7561 (ID: 7002)
+    spellCards.ts:669 (ID: 30029)
+
+  Line 35: "Spectral Sight" (ID: 50002, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5212 (ID: 9118)
+
+  Line 118: "Flamereaper" (ID: 50006, Type: weapon, Rarity: epic)
+  Also appears in:
+    dormantCards.ts:159 (ID: 10008)
+
+  Line 135: "Consume Magic" (ID: 50007, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5056 (ID: 9109)
+
+  Line 155: "Twin Slice" (ID: 50008, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4966 (ID: 9104)
+    cards.ts:7584 (ID: 7004)
+    spellCards.ts:1013 (ID: 30044)
+
+=== overloadCards.ts (6 duplicates) ===
+
+  Line 20: "Feral Spirit" (ID: 35002, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:4531 (ID: 13012)
+
+  Line 40: "Forked Lightning" (ID: 35004, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5356 (ID: 13039)
+    spellCards.ts:570 (ID: 30090)
+
+  Line 60: "Lava Burst" (ID: 35005, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:4519 (ID: 13011)
+    spellCards.ts:531 (ID: 30088)
+
+  Line 79: "Earth Elemental" (ID: 35006, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:4414 (ID: 13003)
+
+  Line 110: "Elemental Destruction" (ID: 35008, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:5344 (ID: 13038)
+    spellCards.ts:550 (ID: 30089)
+
+  Line 135: "Spirit Wolf" (ID: 35003, Type: minion, Rarity: common)
+  Also appears in:
+    mechanicCards.ts:543 (ID: 30087)
+
+=== pirateCards.ts (1 duplicates) ===
+
+  Line 9: "Southsea Captain" (ID: 80002, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:443 (ID: 3012)
+
+=== rebornCards.ts (5 duplicates) ===
+
+  Line 15: "Bluegill Warrior" (ID: 19000, Type: minion, Rarity: common)
+  Also appears in:
+    coldlightTestData.ts:66 (ID: 1237)
+
+  Line 28: "Coldlight Seer" (ID: 19020, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:6405 (ID: 5001)
+    coldlightTestData.ts:5 (ID: 1234)
+    neutralSpellsAndTech.ts:227 (ID: 31013)
+
+  Line 49: "Murloc Tidecaller" (ID: 19021, Type: minion, Rarity: rare)
+  Also appears in:
+    cards.ts:4589 (ID: 13016)
+
+  Line 181: "Khartut Defender" (ID: 19009, Type: minion, Rarity: rare)
+  Also appears in:
+    mechanicCards.ts:327 (ID: 40018)
+
+  Line 198: "Colossus of the Moon" (ID: 19010, Type: minion, Rarity: legendary)
+  Also appears in:
+    cards.ts:7730 (ID: 3006)
+    colossalCards.ts:49 (ID: 3006)
+
+=== recruitCards.ts (1 duplicates) ===
+
+  Line 40: "Woecleaver" (ID: 18003, Type: weapon, Rarity: common)
+  Also appears in:
+    expansionLegendaryCards.ts:209 (ID: 20710)
+
+=== rushLifestealCards.ts (1 duplicates) ===
+
+  Line 63: "Hunting Mastiff" (ID: 17005, Type: minion, Rarity: common)
+  Also appears in:
+    echoCards.ts:88 (ID: 47312)
+
+=== secretCards.ts (4 duplicates) ===
+
+  Line 10: "Mirror Entity" (ID: 15001, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:5417 (ID: 14004)
+    spellCards.ts:744 (ID: 30032)
+
+  Line 64: "Ice Barrier" (ID: 15003, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5694 (ID: 14020)
+
+  Line 120: "Freezing Trap" (ID: 15005, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1075 (ID: 7006)
+    newSpellCards.ts:211 (ID: 30061)
+    spellCards.ts:1237 (ID: 30061)
+
+  Line 174: "Noble Sacrifice" (ID: 15007, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1672 (ID: 8014)
+
+=== specialEffectNeutrals.ts (6 duplicates) ===
+
+  Line 13: "Unstable Evolution" (ID: 32001, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:4507 (ID: 13010)
+
+  Line 30: "Faceless Manipulator" (ID: 32002, Type: minion, Rarity: epic)
+  Also appears in:
+    cards.ts:317 (ID: 3003)
+    neutralMinions.ts:127 (ID: 30008)
+
+  Line 139: "Brann Bronzebeard" (ID: 32008, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:28 (ID: 20101)
+
+  Line 151: "Emperor Thaurissan" (ID: 32009, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:138 (ID: 20108)
+
+  Line 163: "Barnes" (ID: 32010, Type: minion, Rarity: legendary)
+  Also appears in:
+    iconicLegendaryCards.ts:80 (ID: 20105)
+
+  Line 199: "Loatheb" (ID: 32012, Type: minion, Rarity: legendary)
+  Also appears in:
+    legendaryCards.ts:386 (ID: 20026)
+
+=== spellCards.ts (73 duplicates) ===
+
+  Line 14: "Fireball" (ID: 30001, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:927 (ID: 6001)
+    cards.ts:5434 (ID: 14005)
+
+  Line 30: "Frostbolt" (ID: 30002, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5451 (ID: 14006)
+
+  Line 47: "Arcane Intellect" (ID: 4502, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:258 (ID: 31014)
+    cards.ts:518 (ID: 4502)
+
+  Line 66: "Shield Slam" (ID: 30004, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:637 (ID: 5004)
+    cards.ts:6088 (ID: 16003)
+
+  Line 82: "Execute" (ID: 30005, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:620 (ID: 5003)
+    cards.ts:6140 (ID: 16006)
+
+  Line 99: "Whirlwind" (ID: 30006, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:655 (ID: 5005)
+    cards.ts:6222 (ID: 16011)
+
+  Line 117: "Blessing of Kings" (ID: 30007, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:276 (ID: 31015)
+    cards.ts:1551 (ID: 8007)
+    classCards.ts:127 (ID: 8004)
+
+  Line 134: "Consecration" (ID: 30008, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:176 (ID: 31009)
+    cards.ts:1499 (ID: 8004)
+    classCards.ts:102 (ID: 8002)
+
+  Line 150: "Lay on Hands" (ID: 30009, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:1601 (ID: 8010)
+
+  Line 169: "Animal Companion" (ID: 30010, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:987 (ID: 7001)
+
+  Line 185: "Kill Command" (ID: 30011, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1111 (ID: 7008)
+
+  Line 202: "Multi-Shot" (ID: 30012, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:336 (ID: 31018)
+    cards.ts:1276 (ID: 7018)
+
+  Line 222: "Wild Growth" (ID: 30013, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:3218 (ID: 11014)
+
+  Line 239: "Swipe" (ID: 30014, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:214 (ID: 31011)
+    cards.ts:2905 (ID: 11001)
+
+  Line 256: "Force of Nature" (ID: 30015, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:2984 (ID: 11005)
+    cards.ts:3746 (ID: 11037)
+
+  Line 274: "Holy Nova" (ID: 30016, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2499 (ID: 9004)
+
+  Line 291: "Shadow Word: Pain" (ID: 30017, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:194 (ID: 31010)
+    additionalSpellCards.ts:376 (ID: 31020)
+    cards.ts:2451 (ID: 9001)
+
+  Line 308: "Mind Control" (ID: 30018, Type: spell, Rarity: epic)
+  Also appears in:
+    additionalSpellCards.ts:14 (ID: 31012)
+    cards.ts:2515 (ID: 9005)
+
+  Line 323: "Circle of Healing" (ID: 30045, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2676 (ID: 9015)
+
+  Line 339: "Shadow Word: Death" (ID: 30046, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:393 (ID: 31021)
+    cards.ts:2482 (ID: 9003)
+
+  Line 388: "Mass Dispel" (ID: 30049, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:2755 (ID: 9020)
+    cards.ts:2824 (ID: 9024)
+
+  Line 423: "Hellfire" (ID: 30020, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2842 (ID: 10001)
+    cards.ts:5746 (ID: 15003)
+
+  Line 440: "Twisting Nether" (ID: 30021, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:5798 (ID: 15006)
+
+  Line 458: "Lightning Bolt" (ID: 30022, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5321 (ID: 13036)
+
+  Line 477: "Hex" (ID: 30023, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:454 (ID: 31024)
+    cards.ts:4429 (ID: 13004)
+
+  Line 492: "Bloodlust" (ID: 30024, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5333 (ID: 13037)
+
+  Line 510: "Lightning Storm" (ID: 30085, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:4387 (ID: 13001)
+
+  Line 531: "Lava Burst" (ID: 30088, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:4519 (ID: 13011)
+    overloadCards.ts:60 (ID: 35005)
+
+  Line 550: "Elemental Destruction" (ID: 30089, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:5344 (ID: 13038)
+    overloadCards.ts:110 (ID: 35008)
+
+  Line 570: "Forked Lightning" (ID: 30090, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5356 (ID: 13039)
+    overloadCards.ts:40 (ID: 35004)
+
+  Line 593: "Backstab" (ID: 30025, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:3874 (ID: 12001)
+
+  Line 610: "Eviscerate" (ID: 30026, Type: spell, Rarity: common)
+  Also appears in:
+    additionalSpellCards.ts:295 (ID: 31016)
+    cards.ts:3910 (ID: 12003)
+    comboCards.ts:28 (ID: 90002)
+
+  Line 632: "Sprint" (ID: 30027, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4056 (ID: 12011)
+
+  Line 650: "Chaos Strike" (ID: 30028, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4915 (ID: 9101)
+    cards.ts:7550 (ID: 7001)
+
+  Line 669: "Eye Beam" (ID: 30029, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:5017 (ID: 9107)
+    cards.ts:7561 (ID: 7002)
+    outcastCards.ts:14 (ID: 50001)
+
+  Line 690: "Fel Barrage" (ID: 30030, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:5232 (ID: 9119)
+    cards.ts:7573 (ID: 7003)
+
+  Line 710: "Trade Routes" (ID: 4504, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:549 (ID: 4504)
+
+  Line 728: "Arcane Explosion" (ID: 30031, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5368 (ID: 14001)
+
+  Line 744: "Mirror Entity" (ID: 30032, Type: secret, Rarity: common)
+  Also appears in:
+    cards.ts:5417 (ID: 14004)
+    secretCards.ts:10 (ID: 15001)
+
+  Line 784: "Mortal Strike" (ID: 30034, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:751 (ID: 5011)
+    cards.ts:6275 (ID: 16014)
+
+  Line 821: "Redemption" (ID: 30036, Type: secret, Rarity: common)
+  Also appears in:
+    cards.ts:1718 (ID: 8017)
+
+  Line 843: "Explosive Trap" (ID: 30037, Type: secret, Rarity: common)
+  Also appears in:
+    cards.ts:1057 (ID: 7005)
+
+  Line 865: "Unleash the Hounds" (ID: 30038, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1041 (ID: 7004)
+    classCards.ts:10 (ID: 7001)
+
+  Line 885: "Nourish" (ID: 30039, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:3119 (ID: 11010)
+    cards.ts:3423 (ID: 11026)
+
+  Line 993: "Blade Flurry" (ID: 30043, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:4071 (ID: 12012)
+    cards.ts:4351 (ID: 12029)
+
+  Line 1013: "Twin Slice" (ID: 30044, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4966 (ID: 9104)
+    cards.ts:7584 (ID: 7004)
+    outcastCards.ts:155 (ID: 50008)
+
+  Line 1039: "Flamestrike" (ID: 30050, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5384 (ID: 14002)
+    newSpellCards.ts:13 (ID: 30050)
+
+  Line 1055: "Blizzard" (ID: 30051, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:5400 (ID: 14003)
+    newSpellCards.ts:29 (ID: 30051)
+
+  Line 1074: "Power Word: Shield" (ID: 30052, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:2545 (ID: 9007)
+    newSpellCards.ts:48 (ID: 30052)
+
+  Line 1092: "Resurrect" (ID: 30053, Type: spell, Rarity: rare)
+  Also appears in:
+    newSpellCards.ts:66 (ID: 30053)
+
+  Line 1111: "Darkbomb" (ID: 30054, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:5712 (ID: 15001)
+    newSpellCards.ts:85 (ID: 30054)
+
+  Line 1127: "Defile" (ID: 30055, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:5729 (ID: 15002)
+    newSpellCards.ts:101 (ID: 30055)
+
+  Line 1147: "Battle Rage" (ID: 30056, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:878 (ID: 5019)
+    cards.ts:6056 (ID: 16001)
+    newSpellCards.ts:121 (ID: 30056)
+
+  Line 1164: "Brawl" (ID: 30057, Type: spell, Rarity: epic)
+  Also appears in:
+    additionalSpellCards.ts:238 (ID: 31013)
+    cards.ts:699 (ID: 5008)
+    cards.ts:6072 (ID: 16002)
+    newSpellCards.ts:138 (ID: 30057)
+
+  Line 1184: "Equality" (ID: 30058, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:1535 (ID: 8006)
+    newSpellCards.ts:158 (ID: 30058)
+
+  Line 1201: "Hammer of Wrath" (ID: 30059, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:175 (ID: 30059)
+
+  Line 1220: "Deadly Shot" (ID: 30060, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1261 (ID: 7017)
+    classCards.ts:67 (ID: 7005)
+    newSpellCards.ts:194 (ID: 30060)
+
+  Line 1237: "Freezing Trap" (ID: 30061, Type: secret, Rarity: common)
+  Also appears in:
+    cards.ts:1075 (ID: 7006)
+    newSpellCards.ts:211 (ID: 30061)
+    secretCards.ts:120 (ID: 15005)
+
+  Line 1259: "Naturalize" (ID: 30062, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:3274 (ID: 11017)
+    newSpellCards.ts:233 (ID: 30062)
+
+  Line 1276: "Starfall" (ID: 30063, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:3145 (ID: 11011)
+    cards.ts:3564 (ID: 11030)
+    newSpellCards.ts:250 (ID: 30063)
+
+  Line 1286: "Starfall: AoE" (ID: 30063, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:260 (ID: 30063)
+
+  Line 1302: "Starfall: Single Target" (ID: 30063, Type: spell, Rarity: common)
+  Also appears in:
+    newSpellCards.ts:276 (ID: 30063)
+
+  Line 1322: "Ancestral Spirit" (ID: 30065, Type: spell, Rarity: rare)
+  Also appears in:
+    newSpellCards.ts:296 (ID: 30065)
+
+  Line 1342: "Fan of Knives" (ID: 30066, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:3949 (ID: 12005)
+    newSpellCards.ts:316 (ID: 30066)
+
+  Line 1359: "Preparation" (ID: 30067, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:3966 (ID: 12006)
+    newSpellCards.ts:333 (ID: 30067)
+
+  Line 1378: "Immolation Aura" (ID: 30068, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4983 (ID: 9105)
+    cards.ts:7595 (ID: 7005)
+    newSpellCards.ts:352 (ID: 30068)
+
+  Line 1400: "Soul Cleave" (ID: 30069, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:4998 (ID: 9106)
+    cards.ts:7606 (ID: 7006)
+    newSpellCards.ts:374 (ID: 30069)
+
+  Line 1425: "Death and Decay" (ID: 30070, Type: spell, Rarity: rare)
+  Also appears in:
+    cards.ts:7618 (ID: 8001)
+
+  Line 1447: "Frost Strike" (ID: 30071, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1987 (ID: 3004)
+    cards.ts:4852 (ID: 9001)
+    cards.ts:7629 (ID: 8002)
+
+  Line 1469: "Unholy Frenzy" (ID: 30072, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:2392 (ID: 3028)
+    cards.ts:7640 (ID: 8003)
+
+  Line 1491: "Raise Dead" (ID: 30073, Type: spell, Rarity: common)
+  Also appears in:
+    cards.ts:1956 (ID: 3002)
+    cards.ts:4875 (ID: 9003)
+    cards.ts:7652 (ID: 8004)
+    dualClassCards.ts:39 (ID: 14003)
+
+  Line 1508: "Obliterate" (ID: 30074, Type: spell, Rarity: epic)
+  Also appears in:
+    cards.ts:2254 (ID: 3020)
+    cards.ts:7663 (ID: 8005)
+
+  Line 1528: "Ghoul" (ID: 30075, Type: minion, Rarity: common)
+  Also appears in:
+    cards.ts:1973 (ID: 3003)
+    cards.ts:7674 (ID: 8006)
