@@ -30,7 +30,6 @@ import { fireActionAnnouncement } from '../../stores/animationStore';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
 import { executeNorseHeroPower } from '../../utils/norseHeroPowerUtils';
 import { isValidTargetForHeroPower } from '../../utils/combatUtils';
-import { getSmartAIAction } from '../modules/SmartAI';
 import { usePokerAI } from './usePokerAI';
 import { usePokerPhases } from './usePokerPhases';
 import { useCombatTimer } from './useCombatTimer';
@@ -776,98 +775,6 @@ export function useRagnarokCombatController(
     if (action === CombatAction.BRACE) {
       endTurn();
     }
-    
-    const phaseBeforeAction = combatState.phase;
-    
-    setTimeout(() => {
-      try {
-        if (aiResponseInProgressRef.current) {
-          if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: AI action already in progress from usePokerAI hook');
-          }
-          return;
-        }
-        
-        const adapterState = getPokerCombatAdapterState();
-        const freshStateAfterAction = adapterState.combatState;
-        
-        if (COMBAT_DEBUG.AI) {
-          console.log('[AI Response handleAction] Checking if AI should respond...', {
-            hasFreshState: !!freshStateAfterAction,
-            opponentReady: freshStateAfterAction?.opponent?.isReady,
-            playerReady: freshStateAfterAction?.player?.isReady,
-            phase: freshStateAfterAction?.phase,
-            phaseBeforeAction,
-            foldWinner: freshStateAfterAction?.foldWinner,
-            isAllInShowdown: freshStateAfterAction?.isAllInShowdown,
-            playerHP: freshStateAfterAction?.player?.pet?.stats?.currentHealth,
-            opponentHP: freshStateAfterAction?.opponent?.pet?.stats?.currentHealth
-          });
-        }
-        
-        if (!freshStateAfterAction || freshStateAfterAction.opponent.isReady) {
-          if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: No fresh state or opponent already ready');
-          }
-          return;
-        }
-        
-        if (freshStateAfterAction.phase !== phaseBeforeAction) {
-          if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: Phase has advanced');
-          }
-          return;
-        }
-        
-        if (freshStateAfterAction.phase === CombatPhase.RESOLUTION) {
-          if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: Already in RESOLUTION');
-          }
-          return;
-        }
-        
-        if (freshStateAfterAction.foldWinner) {
-          if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: Fold winner already set');
-          }
-          return;
-        }
-        
-        if (freshStateAfterAction.isAllInShowdown) {
-          if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: All-in showdown - auto-advance useEffect handles phases');
-          }
-          return;
-        }
-        
-        aiResponseInProgressRef.current = true;
-        
-        if (COMBAT_DEBUG.AI) {
-          console.log('[AI Response handleAction] AI will respond now');
-        }
-        
-        const aiDecision = getSmartAIAction(freshStateAfterAction, false);
-        if (COMBAT_DEBUG.AI) {
-          console.log('[AI Response handleAction] AI decision:', aiDecision);
-        }
-        
-        getPokerCombatAdapterState().performAction(freshStateAfterAction.opponent.playerId, aiDecision.action, aiDecision.betAmount);
-        
-        setTimeout(() => {
-          const adapterAfterAI = getPokerCombatAdapterState();
-          if (adapterAfterAI.combatState && 
-              adapterAfterAI.combatState.player.isReady && 
-              adapterAfterAI.combatState.opponent.isReady &&
-              adapterAfterAI.combatState.phase !== CombatPhase.RESOLUTION) {
-            adapterAfterAI.maybeCloseBettingRound();
-          }
-          aiResponseInProgressRef.current = false;
-        }, 100);
-      } catch (error) {
-        console.error('[AI Response handleAction] ERROR:', error);
-        aiResponseInProgressRef.current = false;
-      }
-    }, 1000);
   }, [combatState, performAction, endTurn]);
   
   const handleCombatEnd = useCallback(() => {
