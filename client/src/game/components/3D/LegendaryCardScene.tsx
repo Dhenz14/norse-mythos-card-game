@@ -1,7 +1,7 @@
 import React, { Suspense, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment, useGLTF } from '@react-three/drei';
-import { Card3D } from './Card3D';
+import { OrbitControls, Environment } from '@react-three/drei';
+import { SimpleCard3D } from './SimpleCard3D';
 import { CardInstance, CardData } from '../../types';
 import * as THREE from 'three';
 
@@ -121,13 +121,14 @@ export const LegendaryCardScene: React.FC<LegendaryCardSceneProps> = ({
           )}
           
           {/* The card */}
-          <Card3D 
-            card={card}
+          <SimpleCard3D 
+            card={cardData}
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
-            scale={[1.8, 1.8, 1.8]}
-            hoverable={true}
-            selected={false}
+            scale={1.8}
+            isHovered={false}
+            isSelected={false}
+            quality={isLegendary ? 'golden' : 'normal'}
           />
           
           {/* Allow the user to orbit around the card */}

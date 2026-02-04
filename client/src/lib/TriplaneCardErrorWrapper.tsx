@@ -82,12 +82,15 @@ class TriplaneCardErrorWrapper extends Component<Props, State> {
     if (hasError) {
       console.log(`Rendering fallback card due to ${errorType} error`);
       
+      // Normalize scale to a single number for SimpleCard3D
+      const normalizedScale = typeof scale === 'number' ? scale : scale[0];
+      
       // Return fallback simple card
       return (
         <SimpleCard3D
           card={fallbackCard}
           position={position}
-          scale={scale}
+          scale={normalizedScale}
         />
       );
     }
