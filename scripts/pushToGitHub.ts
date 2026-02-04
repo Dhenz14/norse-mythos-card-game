@@ -203,6 +203,29 @@ async function pushFiles() {
 
     // Files to push - SECURITY: Never include Replit internal files
     const filesToPush = [
+      // Essential build configuration files
+      'package.json',
+      'package-lock.json',
+      'vite.config.ts',
+      'vite.config.local.ts',
+      'vite.config.local.js',
+      'tsconfig.json',
+      'tsconfig.node.json',
+      'drizzle.config.ts',
+      'tailwind.config.js',
+      'postcss.config.js',
+      // Client entry files
+      'client/index.html',
+      'client/src/main.tsx',
+      'client/src/App.tsx',
+      'client/src/index.css',
+      // Server entry files
+      'server/index.ts',
+      'server/routes.ts',
+      'server/db.ts',
+      'server/database.ts',
+      // Shared types (if exists)
+      'shared/schema.ts',
       // Quest system - types, utilities, store, hooks, components
       'client/src/game/utils/quests/types.ts',
       'client/src/game/utils/quests/questUtils.ts',
