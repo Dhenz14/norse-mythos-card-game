@@ -597,67 +597,11 @@
   transform: none !important;
 }
 
-/* Poker Hole Cards - ABOVE hero, bottom overlaps TOP of hero */
-.viewport-mode .hero-hole-cards-overlay {
-  position: absolute;
-  left: 50%;
-  top: var(--poker-offset-top); /* Position ABOVE hero portrait */
-  transform: translateX(-50%);
-  z-index: var(--poker-z-index); /* IN FRONT of hero */
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  pointer-events: auto;
-}
-
-/* Individual poker card slots with fanning effect */
-.viewport-mode .hero-hole-cards-overlay .poker-card-slot {
-  flex-shrink: 0;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-/* Left card - slight tilt for natural fan */
-.viewport-mode .hero-hole-cards-overlay .poker-card-slot:first-child {
-  transform: rotate(calc(var(--poker-card-tilt) * -1))
-    translateX(calc(var(--poker-fan-spread) * -0.5));
-}
-
-/* Right card - opposite tilt */
-.viewport-mode .hero-hole-cards-overlay .poker-card-slot:last-child {
-  transform: rotate(var(--poker-card-tilt))
-    translateX(calc(var(--poker-fan-spread) * 0.5));
-}
-
-.viewport-mode .hero-hole-cards-overlay .playing-card {
-  transform: scale(0.75);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
-}
-
-/* Hover effect - lift card and glow */
-.viewport-mode .hero-hole-cards-overlay .poker-card-slot:hover .playing-card {
-  transform: scale(0.85) translateY(-6px);
-  box-shadow:
-    0 10px 28px rgba(255, 215, 0, 0.5),
-    0 6px 16px rgba(0, 0, 0, 0.7);
-}
-
-/* Depth shadow under cards where they overlap hero */
-.viewport-mode .hero-hole-cards-overlay::after {
-  content: "";
-  position: absolute;
-  bottom: -15px;
-  left: -10px;
-  right: -10px;
-  height: 25px;
-  background: linear-gradient(to top, transparent, rgba(0, 0, 0, 0.25));
-  pointer-events: none;
-  z-index: -1;
-}
+/* ========================================
+   POKER HOLE CARDS - VIEWPORT MODE
+   DEPRECATED: Replaced by HoleCardsOverlay component (2026-02-04)
+   See: client/src/game/combat/components/HoleCardsOverlay.tsx
+   ======================================== */
 
 /* Mana bar below hero */
 .viewport-mode .player-mana-display {

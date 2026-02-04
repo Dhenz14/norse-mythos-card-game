@@ -6,72 +6,15 @@
  */
 
 /* ========================================
-   POT INFO CONTAINERS - Split Layout
-   Foe HP near opponent hero (top-left)
-   You HP + Pot near player hero (bottom-left)
+   POT INFO CONTAINERS
+   DEPRECATED: Legacy classes removed (2026-02-04)
+   
+   The inline pot-info-foe, pot-info-player, pot-info-compact,
+   and pot-container classes have been replaced by the unified
+   PotDisplay component which uses Tailwind classes.
+   
+   See: client/src/game/combat/components/PotDisplay.tsx
    ======================================== */
-
-/* Foe HP Info - Near opponent hero */
-.pot-info-foe {
-        position: absolute;
-        left: var(--zone-pot-foe-left, 170px);
-        top: var(--zone-pot-foe-top, 8px);
-        z-index: var(--zone-pot-z, 25);
-}
-
-.pot-info-foe.hidden {
-        display: none;
-}
-
-/* Player HP + Pot Info - Near player hero */
-.pot-info-player {
-        position: absolute;
-        left: var(--zone-pot-player-left, 170px);
-        bottom: var(--zone-pot-player-bottom, 180px);
-        z-index: var(--zone-pot-z, 25);
-}
-
-.pot-info-player.hidden {
-        display: none;
-}
-
-/* Compact wrapper for split pot info - shares Norse styling */
-.pot-info-compact {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
-        padding: 4px 8px;
-        min-width: fit-content;
-        max-width: 160px;
-        background: linear-gradient(
-                180deg,
-                rgba(15, 23, 41, 0.90) 0%,
-                rgba(30, 41, 59, 0.85) 100%
-        );
-        border: 1px solid rgba(212, 175, 55, 0.4);
-        border-radius: 6px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-}
-
-.pot-info-compact .pot-section {
-        width: auto;
-        padding: 2px 6px;
-}
-
-/* Legacy pot-container - deprecated, kept for compatibility */
-.pot-container {
-        position: absolute;
-        left: var(--zone-pot-left, 8px);
-        top: var(--zone-pot-top, 48%);
-        transform: translateY(-50%);
-        z-index: var(--zone-pot-z, 25);
-        width: var(--zone-pot-width, 80px);
-}
-
-.pot-container.hidden {
-        display: none;
-}
 
 /* ========================================
    POT DISPLAY NORSE - Main Panel

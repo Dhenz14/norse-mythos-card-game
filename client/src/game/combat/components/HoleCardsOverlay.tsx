@@ -1,0 +1,76 @@
+import React from 'react';
+import { PokerCard } from '../../types/PokerCombatTypes';
+import { PlayingCard } from './PlayingCard';
+
+interface HoleCardsOverlayProps {
+  cards: PokerCard[];
+  variant: 'player' | 'opponent';
+  faceDown?: boolean;
+  winningCards?: PokerCard[];
+  isShowdown?: boolean;
+}
+
+const FACE_DOWN_CARD: PokerCard = {
+  suit: 'spades',
+  value: 'A',
+  numericValue: 14
+};
+
+const isCardInWinningHand = (card: PokerCard, winningCards?: PokerCard[]): boolean => {
+  if (!winningCards) return false;
+  return winningCards.some(wc => wc.suit === card.suit && wc.value === card.value);
+};
+
+export const HoleCardsOverlay: React.FC<HoleCardsOverlayProps> = ({
+  cards,
+  variant,
+  faceDown = false,
+  winningCards,
+  isShowdown = false
+}) => {
+  const isOpponent = variant === 'opponent';
+  const displayCards = cards.length > 0 ? cards : [FACE_DOWN_CARD, FACE_DOWN_CARD];
+
+  const positionClass = isOpponent
+    ? 'top-full -mt-[80px]'
+    : 'bottom-full -mb-[50px]';
+
+  return (
+    <div
+      className={`
+        absolute left-1/2 -translate-x-1/2
+        flex flex-row items-center justify-center
+        pointer-events-none z-[0] gap-1
+        ${positionClass}
+      `}
+    >
+      {displayCards.map((card, idx) => {
+        const isWinning = isCardInWinningHand(card, winningCards);
+        const isFirst = idx === 0;
+
+        return (
+          <div
+            key={`${variant}-hole-${idx}`}
+            className={`
+              hole-card-slot
+              ${isFirst ? '-rotate-[8deg]' : 'rotate-[8deg] -ml-[15px]'}
+              ${isWinning ? 'winning-card-glow celebration' : ''}
+            `}
+            style={{
+              background: 'transparent',
+              border: 'none'
+            }}
+          >
+            <PlayingCard
+              card={card}
+              faceDown={faceDown && (!isShowdown || cards.length === 0)}
+              large={false}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export default HoleCardsOverlay;

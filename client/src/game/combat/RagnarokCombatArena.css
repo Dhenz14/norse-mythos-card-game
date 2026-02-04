@@ -4629,58 +4629,17 @@
   max-height: none;
 }
 
-/* Hero hole cards - displayed BEHIND the hero portrait, top 2/3 visible */
-.hero-hole-cards-overlay {
-  position: absolute;
-  bottom: 100%; /* Position ABOVE the hero */
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: row;
-  gap: -8px; /* Slight overlap like real poker */
-  margin-bottom: 50px; /* Moved up another inch (~25px more) */
-  z-index: 5; /* Below hero (z-index: 10+) but above background */
-  pointer-events: none;
-}
+/* ========================================
+   HERO HOLE CARDS OVERLAY
+   DEPRECATED: Replaced by HoleCardsOverlay component (2026-02-04)
+   See: client/src/game/combat/components/HoleCardsOverlay.tsx
+   ======================================== */
 
 /* Ensure hero portrait is above the hole cards */
 .poker-hero-container .battlefield-hero-square,
 .poker-hero-container .battlefield-hero {
   position: relative;
   z-index: 10;
-}
-
-.hero-hole-cards-overlay .poker-card-slot {
-  background: transparent;
-  border: none;
-}
-
-.hero-hole-cards-overlay .arena-poker-card.norse.large,
-.hero-hole-cards-overlay .arena-poker-card.norse,
-.hero-hole-cards-overlay .playing-card {
-  width: clamp(65px, 5.8vw, 92px) !important;
-  height: clamp(92px, 8.2vw, 130px) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.hero-hole-cards-overlay .card-value {
-  font-size: clamp(1rem, 1.2vw, 1.3rem) !important;
-  padding: 2px 4px;
-}
-
-.hero-hole-cards-overlay .norse-symbol-large {
-  font-size: clamp(1.4rem, 1.6vw, 1.8rem) !important;
-}
-
-.hero-hole-cards-overlay .poker-card-slot:first-child,
-.hero-hole-cards-overlay .arena-poker-card:first-child {
-  transform: rotate(-8deg);
-}
-
-.hero-hole-cards-overlay .poker-card-slot:last-child,
-.hero-hole-cards-overlay .arena-poker-card:last-child {
-  transform: rotate(8deg);
-  margin-left: -15px; /* Slight horizontal overlap */
 }
 
 /* ========================================
@@ -5235,44 +5194,11 @@
   overflow: visible;
 }
 
-/* Opponent hole cards overlay - positioned BELOW hero (true mirror of player's layout) */
-/* Since opponent faces you from across the table, their cards appear below their portrait */
-.opponent-hole-cards-overlay {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: row;
-  gap: 4px;
-  align-items: center;
-  justify-content: center;
-  margin-top: -35px;
-  z-index: 5;
-  pointer-events: none;
-}
-
-.opponent-hole-cards-overlay .poker-card-slot {
-  background: transparent;
-  border: none;
-}
-
-.opponent-hole-cards-overlay .arena-poker-card.norse.large,
-.opponent-hole-cards-overlay .arena-poker-card.norse,
-.opponent-hole-cards-overlay .playing-card {
-  width: clamp(65px, 5.8vw, 92px) !important;
-  height: clamp(92px, 8.2vw, 130px) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.opponent-hole-cards-overlay .poker-card-slot:first-child {
-  transform: rotate(-8deg);
-}
-
-.opponent-hole-cards-overlay .poker-card-slot:last-child {
-  transform: rotate(8deg);
-  margin-left: -15px;
-}
+/* ========================================
+   OPPONENT HOLE CARDS OVERLAY
+   DEPRECATED: Replaced by HoleCardsOverlay component (2026-02-04)
+   See: client/src/game/combat/components/HoleCardsOverlay.tsx
+   ======================================== */
 
 /* NOTE: .unified-opponent-hand grid-area is set above in GRID AREA ASSIGNMENTS section */
 

@@ -31,9 +31,11 @@ import { HeroPowerPrompt } from './components/HeroPowerPrompt';
 import { DamageIndicator } from './components/DamageIndicator';
 import { HeroDeathAnimation } from './components/HeroDeathAnimation';
 import { PlayingCard } from './components/PlayingCard';
+import { HoleCardsOverlay } from './components/HoleCardsOverlay';
 import { BattlefieldHero } from './components/BattlefieldHero';
 import { ElementBuffPopup } from './components/ElementBuffPopup';
 import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
+import { PotDisplay } from './components/PotDisplay';
 import { useElementalBuff } from './hooks/useElementalBuff';
 import { GameViewport } from './GameViewport';
 import { useCombatLayout } from '../hooks/useCombatLayout';
@@ -408,28 +410,14 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
               mana={opponentMana}
               maxMana={opponentMaxMana}
             />
-            {/* Opponent hole cards overlay - positioned below hero (mirror of player's layout) */}
-            <div className={`opponent-hole-cards-overlay ${showdownCelebration?.resolution.resolutionType === 'showdown' ? 'showdown-reveal' : ''}`}>
-              {(combatState.isAllInShowdown || showdownCelebration?.resolution.resolutionType === 'showdown') && combatState.opponent.holeCards.length > 0 ? (
-                combatState.opponent.holeCards.map((card: PokerCard, idx: number) => {
-                  const isWinningCard = showdownCelebration ? isCardInWinningHand(card, showdownCelebration.winningCards) : false;
-                  return (
-                    <div key={`opp-hole-${idx}`} className={`poker-card-slot occupied ${isWinningCard ? 'winning-card-glow celebration' : ''}`}>
-                      <PlayingCard card={card} large />
-                    </div>
-                  );
-                })
-              ) : (
-                <>
-                  <div className="poker-card-slot occupied">
-                    <PlayingCard card={{ suit: 'spades', value: 'A', numericValue: 14 }} faceDown large />
-                  </div>
-                  <div className="poker-card-slot occupied">
-                    <PlayingCard card={{ suit: 'spades', value: 'A', numericValue: 14 }} faceDown large />
-                  </div>
-                </>
-              )}
-            </div>
+            {/* Opponent hole cards - uses HoleCardsOverlay component for consistent rendering */}
+            <HoleCardsOverlay
+              cards={combatState.opponent.holeCards}
+              variant="opponent"
+              faceDown={!(combatState.isAllInShowdown || showdownCelebration?.resolution.resolutionType === 'showdown')}
+              winningCards={showdownCelebration?.winningCards}
+              isShowdown={showdownCelebration?.resolution.resolutionType === 'showdown'}
+            />
             <div className="opponent-hero-mana">
               <ManaBar 
                 currentMana={opponentMana} 
@@ -500,29 +488,15 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       </div>
       
-      {/* Foe HP Info - Positioned near opponent hero (top-left) */}
-      <div className={`pot-info-foe ${isMulligan ? 'hidden' : ''}`}>
-        <div className="pot-info-compact">
-          <div className="pot-section pot-section-foe">
-            <span className="pot-label">FOE ({combatState.opponentPosition === 'small_blind' ? 'SB' : 'BB'})</span>
-            <span className="pot-value">{combatState.opponent.hpCommitted} HP</span>
-          </div>
-        </div>
-      </div>
-      
-      {/* Player HP + Pot Info - Positioned near player hero (bottom-left) */}
-      <div className={`pot-info-player ${isMulligan ? 'hidden' : ''}`}>
-        <div className="pot-info-compact">
-          <div className="pot-section pot-section-you">
-            <span className="pot-label">YOU ({combatState.playerPosition === 'small_blind' ? 'SB' : 'BB'})</span>
-            <span className="pot-value">{combatState.player.hpCommitted} HP</span>
-          </div>
-          <div className="pot-section pot-section-total">
-            <span className="pot-label">POT</span>
-            <span className="pot-value">{combatState.pot || (combatState.opponent.hpCommitted + combatState.player.hpCommitted)}</span>
-          </div>
-        </div>
-      </div>
+      {/* Unified Pot Display - consolidates FOE HP, POT total, and YOU HP into single component */}
+      <PotDisplay
+        playerHpCommitted={combatState.player.hpCommitted}
+        opponentHpCommitted={combatState.opponent.hpCommitted}
+        playerPosition={combatState.playerPosition}
+        opponentPosition={combatState.opponentPosition}
+        pot={combatState.pot}
+        hidden={isMulligan}
+      />
       
       {/* Opponent Field */}
       <div className="unified-opponent-field">
@@ -603,16 +577,13 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                     pendingOverload={0}
                   />
                 </div>
-                {/* Poker hole cards overlay behind hero - Fixed 2-slot layout */}
-                {combatState.player.holeCards.length > 0 && (
-                  <div className="hero-hole-cards-overlay zone-poker-cards">
-                    {combatState.player.holeCards.map((card: PokerCard, idx: number) => (
-                      <div key={`player-hole-${idx}`} className="poker-card-slot occupied">
-                        <PlayingCard card={card} large />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* Player hole cards - uses HoleCardsOverlay component for consistent rendering */}
+                <HoleCardsOverlay
+                  cards={combatState.player.holeCards}
+                  variant="player"
+                  winningCards={showdownCelebration?.winningCards}
+                  isShowdown={showdownCelebration?.resolution.resolutionType === 'showdown'}
+                />
               </div>
             </div>
           )}
