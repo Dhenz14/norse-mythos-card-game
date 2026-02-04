@@ -1,0 +1,122 @@
+/* CardFrameOverride.css */
+
+/* Base Card Styles */
+.card-container {
+  width: 240px;
+  height: 340px;
+  margin: 15px;
+  perspective: 1000px;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-art-container {
+  height: 160px;
+  overflow: hidden;
+  border-bottom: 2px solid #333;
+}
+
+.card-name-container {
+  padding: 5px;
+  border-bottom: 2px solid #333;
+}
+
+.card-description-container {
+  flex-grow: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Battlefield Card Styles */
+.battlefield-card-container {
+  width: 120px;
+  height: 170px;
+  margin: 8px;
+  perspective: 1000px;
+}
+
+.battlefield-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.battlefield-card-art-container {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Hexagon Badge Styling */
+.hex-badge {
+  -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card Rarity Frames */
+.card-frame-common {
+  border: 2px solid #9d9d9d;
+  background-color: #1a1a1a;
+}
+
+.card-frame-rare {
+  border: 2px solid #4a8dd8;
+  background-color: #1a1a1a;
+}
+
+.card-frame-epic {
+  border: 2px solid #9e3ebb;
+  background-color: #1e1425;
+}
+
+.card-frame-legendary {
+  border: 2px solid #d68f00;
+  background-color: #2a1e0e;
+}
+
+/* Battlefield Card Rarity Frames */
+.bf-card-frame-common {
+  border: 1px solid #9d9d9d;
+  background-color: #1a1a1a;
+}
+
+.bf-card-frame-rare {
+  border: 1px solid #4a8dd8;
+  background-color: #1a1a1a;
+}
+
+.bf-card-frame-epic {
+  border: 1px solid #9e3ebb;
+  background-color: #1e1425;
+}
+
+.bf-card-frame-legendary {
+  border: 1px solid #d68f00;
+  background-color: #2a1e0e;
+}
+
+/* Active Card State */
+.active-card .card {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(255, 215, 0, 0.4);
+}
+
+.battlefield-active-card .battlefield-card {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
+}
