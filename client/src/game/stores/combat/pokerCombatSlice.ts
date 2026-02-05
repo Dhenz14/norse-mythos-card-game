@@ -570,11 +570,13 @@ export const createPokerCombatSlice: StateCreator<
     const combatState = state.pokerCombatState;
     
     // Prevent advancement from SPELL_PET to FAITH if a player is currently acting
-    // or if it's the start of the game and no action has been taken yet
+    // UNLESS both players are ready (timer expired or both clicked Ready)
+    // This allows the 2.5s timer to advance the phase even if no actions were taken
     if (combatState.phase === PokerCombatPhase.SPELL_PET && 
         combatState.activePlayerId !== null && 
-        combatState.actionsThisRound === 0) {
-      console.log('[advancePokerPhase] Blocking auto-advance: waiting for first action');
+        combatState.actionsThisRound === 0 &&
+        !(combatState.player.isReady && combatState.opponent.isReady)) {
+      console.log('[advancePokerPhase] Blocking auto-advance: waiting for first action or Ready click');
       return;
     }
 
