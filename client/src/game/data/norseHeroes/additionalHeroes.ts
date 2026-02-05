@@ -21,6 +21,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A mortal champion blessed by Thor.',
     lore: 'A warrior who stood against a lightning bolt to prove his worth. Thor\'s thunder now courses through his veins, marking him as the storm\'s chosen champion.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [5309], // Frey's Thunder - lightning legendary
     heroPower: {
@@ -75,6 +76,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The goddess who plowed Zealand from Sweden.',
     lore: 'The tireless goddess who carved the island of Zealand from Swedish soil in a single night. Her divine oxen—her transformed sons—still guard the fertile lands she created.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [6222], // Elven Hart - earth/grass legendary
     heroPower: {
@@ -127,6 +129,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The personification of fire itself.',
     lore: 'The consuming flame given form, who once devoured an entire feast faster than Loki could eat. He is fire\'s hunger incarnate, never satisfied, always spreading.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4352], // Flameheart Behemoth
     heroPower: {
@@ -179,6 +182,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: "Thor's mother, goddess of the earth.",
     lore: 'The ancient earth goddess who bore the thunder god himself. Her embrace is the soil beneath all living things, her heartbeat the rumble of distant storms.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [6211], // Gefjon's Ox - earth/grass rare
     heroPower: {
@@ -231,6 +235,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A wise shaman who speaks with thunder.',
     lore: 'An ancient völva who learned to interpret the voice of storms themselves. Each thunderclap carries prophecy to those with ears to hear the storm\'s wisdom.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [5307], // Skoll's Storm - lightning legendary
     heroPower: {
@@ -287,6 +292,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A fierce huntress who runs with wolves.',
     lore: 'Raised by wolves after her village fell to plague, she leads the greatest pack in Midgard. Her howl can summon any wolf within a hundred leagues to her side.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [6220], // Thorn Warden - protector of the forest
     heroPower: {
@@ -339,6 +345,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A dwarf smith of legendary skill.',
     lore: 'His forge burns hotter than Surtr\'s flames, and his hammer never strikes false. The dwarven masters of Nidavellir whisper that his work rivals even Brokkr and Sindri.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4353], // Gullinbursti, Golden Boar
     heroPower: {
@@ -391,6 +398,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A healer who draws power from the sea.',
     lore: 'A priestess of the deep who learned Aegir\'s healing arts beneath the waves. Saltwater runs through her veins, and her touch carries the ocean\'s restorative power.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [4380], // Abyssal Kraken
     heroPower: {
@@ -443,6 +451,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A holy knight who fights at dawn.',
     lore: 'Blessed by Sol herself, his armor blazes with dawn\'s first light. He has sworn to stand against darkness until Ragnarok claims the sun forever.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4395], // Valkyrie Commander
     heroPower: {
@@ -497,6 +506,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A serpentine creature of darkness.',
     lore: 'A spawn of Nidhogg\'s venom, this wyrm slithers through the roots of Yggdrasil. Its poison corrodes both flesh and spirit, leaving only darkness in its wake.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4301], // Garm, the Hellhound
     heroPower: {
@@ -552,6 +562,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A mage who commands the storm.',
     lore: 'Born during the worst tempest in a thousand years, lightning struck her cradle. Now storms answer to her will, and thunder speaks her name across the sky.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [5308], // Sleipnir's Charge - lightning legendary
     heroPower: {
@@ -604,6 +615,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'A fire mage of great power.',
     lore: 'He walked into Muspelheim and emerged with fire in his soul. Flames dance at his fingertips, and even Surtr\'s servants pause at the heat of his presence.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4354], // Magma Leviathan
     heroPower: {

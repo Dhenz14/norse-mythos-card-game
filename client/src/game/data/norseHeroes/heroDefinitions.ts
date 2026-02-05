@@ -21,6 +21,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The king of the Aesir gods, known for his wisdom and sacrifice.',
     lore: 'The primordial king who sacrificed his eye for infinite wisdom. He hangs from Yggdrasil to learn the secrets of the runes, commanding Huginn and Muninn to see all.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4390], // Huginn, Odin's Raven of Thought
     heroPower: {
@@ -78,6 +79,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The mighty god of thunder, wielder of Mjolnir.',
     lore: 'The mightiest warrior of Asgard whose hammer Mjolnir was forged from a dying star. When thunder roars, the Nine Realms tremble before his unstoppable wrath.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4355], // Skoll, Sun-Chaser
     heroPower: {
@@ -134,6 +136,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The cunning god of mischief and deception.',
     lore: 'The silver-tongued trickster who walks between worlds, father of monsters and chaos incarnate. His schemes weave through the fates of gods and men alike.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4300, 95077], // Fenrir (Bound Wolf) and Jormungandr (World Serpent)
     heroPower: {
@@ -190,6 +193,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The goddess of love, beauty, and battle.',
     lore: 'The most beautiful of all goddesses, she claims half of the fallen warriors for her halls in Folkvangr. Her tears turn to gold, and her fury in battle rivals even the Aesir.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [4371, 95080], // Eikthyrnir, the Stag of Valhalla + Hildisvíni, the Battle Boar
     heroPower: {
@@ -248,6 +252,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The god of poetry and music, inspiring all with his words.',
     lore: 'His tongue was carved with sacred runes at birth, making his voice the very essence of poetry. When Bragi speaks, even the Norns pause their weaving to listen.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4391], // Muninn, Odin's Raven of Memory
     heroPower: {
@@ -307,6 +312,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The divine healer who tends to the wounded.',
     lore: 'The divine physician whose hands have mended the wounds of countless gods. She alone knows the sacred herbs that can restore life from death\'s very threshold.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [4370], // Audhumla, the Primeval Cow - representing life and nature
     heroPower: {
@@ -363,6 +369,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The god of justice and reconciliation.',
     lore: 'The incorruptible arbiter whose judgments are absolute law in all Nine Realms. None who enter his golden hall Glitnir leave without justice being served.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4392], // Baldur, God of Light
     heroPower: {
@@ -421,6 +428,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The god of fertility, prosperity, and sunshine.',
     lore: 'The radiant lord of Alfheim who surrendered his sword for love, yet still commands the sun\'s warmth. Harvests flourish and life blooms wherever his gaze falls.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4372], // Fafnir, the Gold-Hoarding Dragon
     heroPower: {
@@ -495,6 +503,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The goddess who tends the apples of immortality.',
     lore: 'The eternal maiden who tends the golden apples of immortality in her sacred garden. Without her divine fruit, even the gods would wither and fade into dust.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [4373], // Rootbound Stag
     heroPower: {
@@ -550,6 +559,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The goddess of the sea who captures drowned sailors.',
     lore: 'She drags sailors to their watery graves with her gleaming golden net. In the lightless depths of her domain, the drowned serve her for all eternity.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [4382], // Ran, Goddess of the Sea
     heroPower: {
@@ -608,6 +618,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The goddess who drives the chariot of the sun.',
     lore: 'She drives her blazing chariot across the sky, forever chased by the ravenous wolf Skoll. The light of all Nine Realms depends on her endless flight.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [4351], // Cinderstorm Wyrm
     heroPower: {
@@ -665,6 +676,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The god who guides the moon across the sky.',
     lore: 'The keeper of the moon who guides the stars through the endless night. Hati pursues him across the heavens until Ragnarok\'s final hour arrives.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4302], // Hati, the Moon-Devourer
     heroPower: {
@@ -722,6 +734,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The blind god who unknowingly slew Baldr.',
     lore: 'The blind god whose mistletoe arrow slew the beloved Baldur, guided by Loki\'s treachery. Cursed by fate, his darkness became the catalyst for Ragnarok itself.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4303], // Nidhogg, the Root-Gnawer
     heroPower: {
@@ -779,6 +792,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The wisest of beings, created from the saliva of the gods.',
     lore: 'Born from the mingled saliva of all the gods, his wisdom has no equal in any realm. From his blood was brewed the Mead of Poetry that grants divine inspiration.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [5504], // Luminos Hart - radiant stag of wisdom
     heroPower: {
@@ -835,6 +849,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'Son of Thor, destined to survive Ragnarok.',
     lore: 'Thor\'s mighty son who lifted the giant Hrungnir\'s corpse when even his father could not. He is destined to inherit Mjolnir and rebuild the world after Ragnarok.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4350], // Surtr, Flame Giant - legendary fire giant
     heroPower: {
@@ -893,6 +908,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The fire giantess, wife of Surtr.',
     lore: 'The fire giantess who guards the flaming sword Lævateinn in the scorching realm of Muspelheim. Her blazing form rivals her husband Surtr in terrifying splendor.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [5009], // Muspelheim's Fury - fire legendary for Surtr's wife
     heroPower: {
@@ -953,6 +969,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The goddess of winter, skiing, and hunting.',
     lore: 'The giantess who hunts through frozen peaks with wolf and bow, bringing winter\'s wrath. She chose her husband by his feet alone and brought eternal frost to the mountains.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [4381], // Frostfang Serpent
     heroPower: {
@@ -1008,6 +1025,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'The vigilant guardian of Bifrost, the rainbow bridge.',
     lore: 'The ever-vigilant guardian who never sleeps, seeing and hearing all across the Nine Realms. His horn Gjallarhorn will sound the doom of Ragnarok when giants march.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4394, 95078], // Heimdall, Guardian of Bifrost + Gulltoppr, the Golden-Maned
     heroPower: {
@@ -1066,6 +1084,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'Brother of Odin who helped slay Ymir.',
     lore: 'Brother of Odin who helped slay the primordial giant Ymir at the dawn of creation. He granted will and consciousness to the first humans, Ask and Embla.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4393], // Sol, the Sun Goddess
     heroPower: {
@@ -1121,6 +1140,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     startingHealth: 100,
     description: 'Brother of Odin who gave humans speech and senses.',
     lore: 'The third creator god who gave humanity the gift of speech and the five senses. With Odin and Vili, he shaped the world from Ymir\'s colossal corpse.',
+    gender: 'male',
     hasSpells: true,
     fixedCardIds: [4374], // Verdant Behemoth
     heroPower: {
@@ -1186,7 +1206,8 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     weakness: 'electric',
     startingHealth: 100,
     description: 'A beautiful giantess, wife of Frey.',
-    lore: 'The frost giantess whose radiant beauty made Frey surrender his magical sword for her hand. Her union with the harvest god bridges the worlds of fire and ice.',
+    lore: 'The beautiful giantess who won the heart of the god Freyr. Her presence brings the warmth of spring to the frozen earth, bridging the gap between gods and giants.',
+    gender: 'female',
     hasSpells: true,
     fixedCardIds: [4375], // Verdant Leviathan
     heroPower: {
@@ -1543,7 +1564,8 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     weakness: 'light',
     startingHealth: 100,
     description: 'The silent god destined to avenge Odin by slaying Fenrir.',
-    lore: 'The voiceless avenger whose iron boot was forged from all the leather scraps of mankind. At Ragnarok, he will tear apart Fenrir\'s jaws and avenge his father Odin.',
+    lore: 'The silent god destined to avenge Odin by slaying Fenrir.',
+    gender: 'male',
     hasSpells: true,
     heroClass: 'rogue',
     fixedCardIds: [12101, 12102, 12103, 12104, 12105, 12106, 12107, 12108, 12109, 12110],
