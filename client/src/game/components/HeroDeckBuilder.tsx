@@ -186,6 +186,9 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 
             {/* Card Grid */}
             <div className="flex-1 overflow-y-auto p-3">
+              <div className="mb-2 text-sm text-gray-400">
+                Showing {db.totalFilteredCards} of {db.totalValidCards} available cards
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 {db.filteredAndSortedCards.map(card => {
                   const cardId = Number(card.id);

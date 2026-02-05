@@ -46,6 +46,8 @@ export interface UseDeckBuilderReturn {
   deckCardCounts: Record<number, number>;
   deckCardsWithCounts: { card: CardData; count: number }[];
   isDeckComplete: boolean;
+  totalValidCards: number;
+  totalFilteredCards: number;
   
   // Setters
   setSearchTerm: (term: string) => void;
@@ -228,6 +230,8 @@ export function useDeckBuilder({
     deckCardCounts,
     deckCardsWithCounts,
     isDeckComplete,
+    totalValidCards: validCards.length,
+    totalFilteredCards: filteredAndSortedCards.length,
     
     // Setters
     setSearchTerm,
