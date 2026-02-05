@@ -11,7 +11,7 @@ import { CardData } from '../types';
 export const spellburstCards: CardData[] = [
   {
     id: 18001,
-    name: "Wand Thief",
+    name: "Rune Thief",
     manaCost: 1,
     attack: 1,
     health: 2,
@@ -30,7 +30,7 @@ export const spellburstCards: CardData[] = [
   },
   {
     id: 18002,
-    name: "Diligent Notetaker",
+    name: "Saga Keeper",
     manaCost: 2,
     attack: 2,
     health: 3,
@@ -49,7 +49,7 @@ export const spellburstCards: CardData[] = [
   },
   {
     id: 18003,
-    name: "Goody Two-Shields",
+    name: "Valkyrie Two-Shields",
     manaCost: 3,
     attack: 4,
     health: 2,
@@ -68,7 +68,7 @@ export const spellburstCards: CardData[] = [
   },
   {
     id: 18004,
-    name: "Firebrand",
+    name: "Muspel Brand",
     manaCost: 3,
     attack: 3,
     health: 4,
@@ -88,7 +88,7 @@ export const spellburstCards: CardData[] = [
   },
   {
     id: 18005,
-    name: "Speaker Gidra",
+    name: "Speaker of Yggdrasil",
     manaCost: 3,
     attack: 1,
     health: 4,
@@ -107,7 +107,7 @@ export const spellburstCards: CardData[] = [
   },
   {
     id: 18008,
-    name: "Onyx Magescribe",
+    name: "Obsidian Runescribe",
     manaCost: 6,
     attack: 4,
     health: 9,
@@ -128,7 +128,7 @@ export const spellburstCards: CardData[] = [
   },
   {
     id: 18009,
-    name: "Forest Warden Omu",
+    name: "Grove Warden Idunn",
     manaCost: 6,
     attack: 5,
     health: 4,
@@ -147,7 +147,7 @@ export const spellburstCards: CardData[] = [
   },
   {
     id: 18010,
-    name: "Headmaster Kel'Thuzad",
+    name: "Headmaster of Niflheim",
     manaCost: 5,
     attack: 4,
     health: 6,

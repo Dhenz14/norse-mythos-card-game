@@ -199,7 +199,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 20031,
-    name: "Kalimos, Primal Lord",
+    name: "Gaia, Primal Lord",
     manaCost: 8,
     attack: 7,
     health: 7,
@@ -225,7 +225,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 20032,
-    name: "Lyra the Sunshard",
+    name: "Helios, Sun Fragment",
     manaCost: 5,
     attack: 3,
     health: 5,
@@ -240,7 +240,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 20033,
-    name: "Valeera the Hollow",
+    name: "Nyx, the Hollow",
     manaCost: 9,
     type: "hero",
     rarity: "legendary",
@@ -262,7 +262,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 20034,
-    name: "Khadgar",
+    name: "Odin's Apprentice",
     manaCost: 2,
     attack: 2,
     health: 2,
@@ -276,13 +276,13 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 20035,
-    name: "Anub'arak",
+    name: "Skorpius, the Devourer",
     manaCost: 9,
     attack: 8,
     health: 4,
     type: "minion",
     rarity: "legendary",
-    description: "Deathrattle: Return this to your hand and summon a 4/4 Nerubian.",
+    description: "Deathrattle: Return this to your hand and summon a 4/4 Undead Warrior.",
     keywords: [
       "deathrattle"
     ],
@@ -297,7 +297,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 20037,
-    name: "Zul'jin",
+    name: "Vidar, the Relentless",
     manaCost: 10,
     type: "hero",
     rarity: "legendary",
@@ -317,7 +317,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 20038,
-    name: "Skull of Gul'dan",
+    name: "Skull of Hel",
     manaCost: 6,
     type: "spell",
     rarity: "legendary",

@@ -56,7 +56,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20601,
-    name: "Mecha'thun",
+    name: "Talos, Doom Construct",
     manaCost: 10,
     attack: 10,
     health: 10,
@@ -77,7 +77,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20602,
-    name: "Hakkar, the Soulflayer",
+    name: "Fenrir, Soul Flayer",
     manaCost: 10,
     attack: 9,
     health: 6,
@@ -98,7 +98,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20603,
-    name: "King Togwaggle",
+    name: "King Fafnir",
     manaCost: 8,
     attack: 5,
     health: 5,
@@ -119,7 +119,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20604,
-    name: "Skycap'n Kragg",
+    name: "Icarus, Sky Pirate",
     manaCost: 7,
     attack: 4,
     health: 6,
@@ -198,7 +198,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20608,
-    name: "Gormok the Impaler",
+    name: "Ares, the Impaler",
     manaCost: 4,
     attack: 4,
     health: 4,
@@ -221,7 +221,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20609,
-    name: "The Darkness",
+    name: "The Primordial Dark",
     manaCost: 4,
     attack: 20,
     health: 20,
@@ -243,7 +243,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20400,
-    name: "The Jailer",
+    name: "The Binding One",
     manaCost: 10,
     attack: 12,
     health: 12,
@@ -264,7 +264,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20401,
-    name: "Astalor Bloodsworn",
+    name: "Ares, Blood Sworn",
     manaCost: 2,
     attack: 2,
     health: 2,
@@ -286,7 +286,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20402,
-    name: "ETC, Band Manager",
+    name: "Bragi, Battle Conductor",
     manaCost: 5,
     attack: 5,
     health: 5,
@@ -326,7 +326,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20404,
-    name: "Invincible",
+    name: "Sleipnir, the Immortal",
     manaCost: 7,
     attack: 7,
     health: 7,
@@ -403,7 +403,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 20408,
-    name: "Therazane",
+    name: "Gaia, Stone Mother",
     manaCost: 8,
     attack: 5,
     health: 10,

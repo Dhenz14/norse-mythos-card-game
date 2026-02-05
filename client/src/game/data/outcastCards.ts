@@ -12,7 +12,7 @@ import { CardData } from '../types';
 export const outcastCards: CardData[] = [
   {
       id: 50001,
-      name: "Eye Beam",
+      name: "Fenrir's Gaze",
       manaCost: 3,
       type: "spell",
       rarity: "rare",
@@ -35,7 +35,7 @@ export const outcastCards: CardData[] = [
   },
   {
       id: 50002,
-      name: "Spectral Sight",
+      name: "Odin's Vision",
       manaCost: 2,
       type: "spell",
       rarity: "common",
@@ -58,7 +58,7 @@ export const outcastCards: CardData[] = [
   },
   {
       id: 50003,
-      name: "Illidari Studies",
+      name: "Shadow Studies",
       manaCost: 1,
       type: "spell",
       rarity: "common",
@@ -83,7 +83,7 @@ export const outcastCards: CardData[] = [
   },
   {
       id: 50004,
-      name: "Fel Guardians",
+      name: "Chaos Guardians",
       manaCost: 7,
       type: "spell",
       rarity: "rare",
@@ -108,7 +108,7 @@ export const outcastCards: CardData[] = [
   },
   {
       id: 50005,
-      name: "Star Student Stelina",
+      name: "Star Maiden Astraea",
       manaCost: 4,
       attack: 4,
       health: 3,
@@ -127,7 +127,7 @@ export const outcastCards: CardData[] = [
   },
   {
       id: 50007,
-      name: "Consume Magic",
+      name: "Devour Runes",
       manaCost: 1,
       type: "spell",
       rarity: "common",
@@ -149,7 +149,7 @@ export const outcastCards: CardData[] = [
   },
   {
       id: 50008,
-      name: "Twin Slice",
+      name: "Twin Fang Strike",
       manaCost: 1,
       type: "spell",
       rarity: "common",

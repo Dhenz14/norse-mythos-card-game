@@ -8,7 +8,7 @@ export const recruitCards: CardData[] = [
   {
       id: 18001,
 
-      name: "Silver Vanguard",
+      name: "Einherjar Vanguard",
       manaCost: 7,
 
       attack: 5,
@@ -34,7 +34,7 @@ export const recruitCards: CardData[] = [
   {
   id: 18002,
   
-  name: "Gather Your Party",
+  name: "Summon the Warband",
   manaCost: 6,
   
   description: "Recruit a minion.",
@@ -61,7 +61,7 @@ export const recruitCards: CardData[] = [
   {
   id: 18004,
   
-  name: "Guild Recruiter",
+  name: "Valhalla Recruiter",
   manaCost: 5,
   
   attack: 2,
@@ -90,7 +90,7 @@ export const recruitCards: CardData[] = [
   {
   id: 18005,
   
-  name: "Oaken Summons",
+  name: "Yggdrasil Summons",
   manaCost: 4,
   
   description: "Gain 6 Armor. Recruit a minion that costs (4) or less.",
@@ -115,7 +115,7 @@ export const recruitCards: CardData[] = [
   {
   id: 18006,
   
-  name: "Possessed Lackey",
+  name: "Hel's Servant",
   manaCost: 6,
   
   attack: 2,
@@ -141,7 +141,7 @@ export const recruitCards: CardData[] = [
   {
   id: 18007,
   
-  name: "Call to Arms",
+  name: "Call of Valhalla",
   manaCost: 5,
   
   description: "Recruit 3 minions that cost (2) or less.",
@@ -168,7 +168,7 @@ export const recruitCards: CardData[] = [
   {
   id: 18008,
   
-  name: "To My Side!",
+  name: "Rally the Einherjar!",
   manaCost: 6,
   
   description: "Summon a Beast of Valhalla, or 2 if your deck has no minions.",

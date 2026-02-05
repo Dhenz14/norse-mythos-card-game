@@ -5,6 +5,8 @@
  * - Core Set: Basic neutral and class cards
  * - Norse Set: Norse mythology themed expansion
  * - Tokens: Non-collectible cards summoned by other cards
+ * - Legendary Sets: Additional legendary cards from various expansions
+ * - Mechanic Cards: Cards with specific mechanics (quest, outcast, etc.)
  * 
  * All card data flows through this registry with validation.
  */
@@ -22,6 +24,21 @@ import { heroSuperMinions } from '../sets/superMinions/heroSuperMinions';
 // Import poker spells from original location (has proper PokerSpellCardData type)
 import { pokerSpellCards } from '../pokerSpellCards';
 
+// Import additional legendary card sets (previously scattered files)
+import { additionalLegendaryCards } from '../additionalLegendaryCards';
+import { iconicLegendaryCards } from '../iconicLegendaryCards';
+import { modernLegendaryCards } from '../modernLegendaryCards';
+import { finalLegendaryCards } from '../finalLegendaryCards';
+import { expansionLegendaryCards } from '../expansionLegendaryCards';
+
+// Import mechanic-specific card sets
+import { questCards } from '../questCards';
+import { outcastCards } from '../outcastCards';
+import { recruitCards } from '../recruitCards';
+import { spellburstCards } from '../spellburstCards';
+import { secretCards } from '../secretCards';
+import { classMinions } from '../classMinions';
+
 // Combine all sets into a single registry
 // Order matters: Norse cards take precedence over duplicates
 // All tokens are centralized in tokenCards to avoid duplicates
@@ -35,6 +52,19 @@ const rawRegistry: CardData[] = [
   // Cast poker spells to CardData for type compatibility
   // PokerSpellCard extends CardData with additional pokerSpellEffect property
   ...(pokerSpellCards as unknown as CardData[]),
+  // Additional legendary cards from various expansions
+  ...additionalLegendaryCards,
+  ...iconicLegendaryCards,
+  ...modernLegendaryCards,
+  ...finalLegendaryCards,
+  ...expansionLegendaryCards,
+  // Mechanic-specific cards
+  ...questCards,
+  ...outcastCards,
+  ...recruitCards,
+  ...spellburstCards,
+  ...secretCards,
+  ...classMinions,
 ];
 
 // Validate and deduplicate

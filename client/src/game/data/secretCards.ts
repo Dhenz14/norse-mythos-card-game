@@ -6,7 +6,7 @@ import { CardData, SecretTriggerType } from '../types';
 
 export const secretCards: CardData[] = [
   {
-    id: 15001,
+    id: 16501,
     name: "Hunter's Ambush",
     manaCost: 2,
     type: "spell",
@@ -25,7 +25,7 @@ export const secretCards: CardData[] = [
     }
   },
   {
-    id: 15007,
+    id: 16502,
     name: "Einherjar's Sacrifice",
     manaCost: 1,
     description: "Secret: When an enemy attacks, summon a 2/1 Defender as the new target.",
@@ -40,14 +40,14 @@ export const secretCards: CardData[] = [
       type: "summon",
       targetType: "none",
       requiresTarget: false,
-      summonCardId: 15008 // Defender token
+      summonCardId: 16503 // Defender token
     },
     // Adding spellEffect to ensure it can be played manually
     spellEffect: {
       type: "summon",
       targetType: "none",
       requiresTarget: false,
-      summonCardId: 15008 // Defender token
+      summonCardId: 16503 // Defender token
     }
   }
 ];

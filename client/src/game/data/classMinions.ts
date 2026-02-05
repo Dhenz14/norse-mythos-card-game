@@ -10,7 +10,7 @@ import { CardData, HeroClass } from '../types';
  */
 export const classMinions: CardData[] = [
 {
-  id: 5100,
+  id: 16510,
   name: "Twilight Acolyte",
   manaCost: 3,
   attack: 2,
@@ -33,7 +33,7 @@ export const classMinions: CardData[] = [
 },
 
 {
-  id: 5101,
+  id: 16511,
   name: "Crystalline Oracle",
   manaCost: 1,
   attack: 1,
@@ -52,7 +52,7 @@ export const classMinions: CardData[] = [
 },
 
 {
-  id: 5102,
+  id: 16512,
   name: "Shadowy Figure",
   manaCost: 2,
   attack: 2,
@@ -76,7 +76,7 @@ export const classMinions: CardData[] = [
 },
 
 {
-  id: 5103,
+  id: 16513,
   name: "Cleric of Scales",
   manaCost: 1,
   attack: 1,
@@ -99,7 +99,7 @@ export const classMinions: CardData[] = [
 },
 
 {
-  id: 5105,
+  id: 16514,
   name: "Baldur's Warden",
   manaCost: 1,
   attack: 1,

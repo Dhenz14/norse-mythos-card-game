@@ -60,7 +60,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
   id: 20702,
   
-  name: "Moorabi",
+  name: "Boreas, Ice Shaper",
   manaCost: 6,
   
   attack: 4,
@@ -80,7 +80,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20703,
 
-      name: "Hadronox",
+      name: "Arachne, Web Weaver",
       manaCost: 9,
 
       attack: 3,
@@ -110,7 +110,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20704,
 
-      name: "Prince Taldaram",
+      name: "Prince of Shadows",
       manaCost: 3,
 
       attack: 3,
@@ -138,7 +138,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20705,
 
-      name: "Prince Keleseth",
+      name: "Prince Hel's Son",
       manaCost: 2,
 
       attack: 2,
@@ -170,7 +170,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20706,
 
-      name: "Prince Valanar",
+      name: "Prince of Blood",
       manaCost: 4,
 
       attack: 4,
@@ -201,7 +201,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20707,
 
-      name: "Arfus",
+      name: "Garmr, Death Hound",
       manaCost: 4,
 
       attack: 2,
@@ -231,7 +231,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20708,
 
-      name: "Lilian Voss",
+      name: "Eris, Shadow Dancer",
       manaCost: 4,
 
       attack: 4,
@@ -259,7 +259,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
   id: 20709,
   
-  name: "Geosculptor Yip",
+  name: "Gaia, Earth Sculptor",
   manaCost: 8,
   
   attack: 4,
@@ -280,7 +280,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
   id: 20710,
   
-  name: "Woecleaver",
+  name: "Ragnarok Cleaver",
   manaCost: 8,
   
   attack: 3,
@@ -300,7 +300,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20200,
 
-      name: "Toshley",
+      name: "Daedalus, Spark Maker",
       manaCost: 6,
 
       attack: 5,
@@ -338,7 +338,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
   id: 20201,
   
-  name: "Troggzor the Earthinator",
+  name: "Antaeus, Earth Crusher",
   manaCost: 7,
   
   attack: 6,
@@ -358,7 +358,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20202,
 
-      name: "Blingtron 3000",
+      name: "Hephaestus' Gift",
       manaCost: 5,
 
       attack: 3,
@@ -388,7 +388,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
   id: 20203,
   
-  name: "Gazlowe",
+  name: "Daedalus, the Tinkerer",
   manaCost: 6,
   
   attack: 3,
@@ -409,7 +409,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
   id: 20204,
   
-  name: "Mimiron's Head",
+  name: "Talos, Mechanical Head",
   manaCost: 5,
   
   attack: 4,
@@ -432,7 +432,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20205,
 
-      name: "Hemet Nesingwary",
+      name: "Orion, Beast Hunter",
       manaCost: 5,
 
       attack: 6,
@@ -460,7 +460,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
   id: 20206,
   
-  name: "Mekgineer Thermaplugg",
+  name: "Talos, War Engineer",
   manaCost: 9,
   
   attack: 9,
@@ -482,7 +482,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
   id: 20207,
   
-  name: "Foe Reaper 4000",
+  name: "Talos, Reaper Construct",
   manaCost: 8,
   
   attack: 6,
@@ -505,7 +505,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20208,
 
-      name: "Sneed's Old Shredder",
+      name: "Hephaestus' Shredder",
       manaCost: 8,
 
       attack: 5,
@@ -535,7 +535,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20209,
 
-      name: "Justicar Trueheart",
+      name: "Forseti, Judge",
       manaCost: 6,
 
       attack: 6,
@@ -563,7 +563,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20210,
 
-      name: "Rend Blackhand",
+      name: "Tyr, Dragon Slayer",
       manaCost: 7,
 
       attack: 8,
@@ -591,7 +591,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20211,
 
-      name: "Majordomo Executus",
+      name: "Surtr's Herald",
       manaCost: 9,
 
       attack: 9,
@@ -651,7 +651,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20213,
 
-      name: "Xaril, Poisoned Mind",
+      name: "Medusa, Venom Mind",
       manaCost: 4,
 
       attack: 3,
@@ -787,7 +787,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 20218,
 
-      name: "Don Han'Cho",
+      name: "Ares, Crime Lord",
       manaCost: 7,
 
       attack: 5,

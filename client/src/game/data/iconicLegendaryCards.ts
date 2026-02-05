@@ -32,7 +32,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 20102,
 
-      name: "Shudderwock",
+      name: "Jormungandr, Echo Serpent",
       manaCost: 9,
 
       attack: 6,
@@ -140,7 +140,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
   id: 20107,
   
-  name: "Finja, the Flying Star",
+  name: "Triton, Flying Star",
   manaCost: 5,
   
   attack: 2,
@@ -280,7 +280,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
   id: 20113,
   
-  name: "Kel'Thuzad",
+  name: "Archlich of Niflheim",
   manaCost: 8,
   
   attack: 6,
@@ -290,7 +290,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: "legendary",
   
   description: "At the end of each turn, summon all friendly minions that died this turn.",
-  flavorText: "Kel'Thuzad could not resist the call of the Frozen Throne. Unfortunately, his bones made clunking sounds all the way up the Citadel steps.",
+  flavorText: "The archlich could not resist the call of Niflheim. Unfortunately, his bones made clunking sounds all the way up the frozen steps.",
   keywords: [],
   
   heroClass: "neutral", // Special handling in game logic for end-of-turn resurrection
@@ -300,7 +300,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
   id: 20114,
   
-  name: "Chromaggus",
+  name: "Ladon, Chromatic Drake",
   manaCost: 8,
   
   attack: 6,
@@ -310,7 +310,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: "legendary",
   
   description: "Whenever you draw a card, add a copy of it to your hand.",
-  flavorText: "Left head and right head can never agree about what to eat for dinner, so they always end up just eating whatever is closest.",
+  flavorText: "The hundred-headed dragon guards the golden apples. Each head has its own opinion on lunch.",
   keywords: [],
   
   heroClass: "neutral",
@@ -324,7 +324,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 20115,
 
-      name: "Nefarian",
+      name: "Typhon, Dragon Lord",
       manaCost: 9,
 
       attack: 8,
@@ -334,7 +334,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "legendary",
 
       description: "Battlecry: Add 2 random spells from your opponent's class to your hand.",
-      flavorText: "Nefarian really enjoyed the social scene in Blackrock Mountain. He was voted 'Most Popular' among the other bosses.",
+      flavorText: "Father of all monsters, Typhon claims dominion over all dragons. The gods themselves once fled from his wrath.",
 
       keywords: ["battlecry"],
       heroClass: "neutral",
@@ -358,7 +358,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 20116,
 
-      name: "Chillmaw",
+      name: "Skoll, Frost Wyrm",
       manaCost: 7,
 
       attack: 6,
@@ -368,7 +368,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "legendary",
 
       description: "Taunt. Deathrattle: If you're holding a Dragon, deal 3 damage to all minions.",
-      flavorText: "So chilly that his breath smells like frozen burritos.",
+      flavorText: "The wolf who chases the sun will one day swallow it whole.",
 
       keywords: ["taunt", "deathrattle"],
       heroClass: "neutral",
@@ -388,7 +388,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 20117,
 
-      name: "Anomalus",
+      name: "Chaos Elemental",
       manaCost: 8,
 
       attack: 8,
@@ -398,7 +398,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "legendary",
 
       description: "Deathrattle: Deal 8 damage to all minions.",
-    flavorText: "He's huge! He's horned! He's... well, actually there aren't many normal things about him.",
+    flavorText: "Born from the primordial chaos, its death brings destruction to all around it.",
       keywords: ["deathrattle"],
 
       heroClass: "mage",
@@ -414,7 +414,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 20118,
 
-      name: "Cho'gall",
+      name: "Orthrus, Two-Headed",
       manaCost: 7,
 
       attack: 7,
@@ -424,7 +424,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "legendary",
 
       description: "Battlecry: The next spell you cast this turn costs Health instead of Mana.",
-    flavorText: "Even after all this time, Gul'dan still makes Cho'gall pay half the rent.",
+    flavorText: "The two-headed hound guards the gates with eternal vigilance. Each head argues about who's in charge.",
       keywords: ["battlecry"],
 
       heroClass: "warlock",
@@ -470,7 +470,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 20120,
 
-      name: "Twin Emperor Vek'lor",
+      name: "Twin Titan Kronos",
       manaCost: 7,
 
       attack: 4,
@@ -480,7 +480,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "legendary",
 
       description: "Battlecry: If your C'Thun has at least 10 Attack, summon a copy of this minion.",
-    flavorText: "Do they make decisions based on age? \"You're two minutes older Vek'lor, you decide what we're getting Vek'nilash for his birthday.\"",
+    flavorText: "Time splits when the titan king demands it. One becomes two, and two become eternity.",
     keywords: ["battlecry", "taunt"],
       heroClass: "neutral",
       class: "Neutral",
@@ -577,7 +577,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
   id: 20124,
   
-  name: "Genzo, the Shark",
+  name: "Poseidon's Shark",
   manaCost: 4,
   
   attack: 5,
@@ -587,7 +587,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: "legendary",
   
   description: "Whenever this attacks, both players draw until they have 3 cards.",
-  flavorText: "The only thing he hates more than a fair fight is competition for his collection of vintage spoons.",
+  flavorText: "The sea god's favored predator circles the battlefield, drawing fortune for all who witness its hunt.",
   
   keywords: [],
   heroClass: "neutral", // Special handling in game logic for card drawing
@@ -790,7 +790,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 20133,
 
-      name: "The Beast",
+      name: "The Nemean Beast",
       manaCost: 6,
 
       attack: 9,
@@ -800,7 +800,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "legendary",
 
       description: "Deathrattle: Summon a 3/3 Finkle Einhorn for your opponent.",
-      flavorText: "He lives in Blackrock Mountain. He eats adventurers.",
+      flavorText: "Descended from the legendary Nemean Lion, its hide is impervious but its appetite knows no bounds.",
 
       keywords: ["deathrattle"],
       heroClass: "neutral",

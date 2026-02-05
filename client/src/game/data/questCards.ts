@@ -8,7 +8,7 @@ import { CardData } from '../types';
 export const questRewards: CardData[] = [
   {
       id: 15001,
-      name: "Time Warp",
+      name: "Chronos Warp",
       manaCost: 5,
       description: "Take an extra turn after this one.",
       rarity: "legendary",
@@ -25,7 +25,7 @@ export const questRewards: CardData[] = [
   },
   {
       id: 15002,
-      name: "Sulfuras",
+      name: "Mjolnir's Fury",
       manaCost: 3,
       attack: 4,
       durability: 2,
@@ -50,7 +50,7 @@ export const questRewards: CardData[] = [
   },
   {
       id: 15003,
-      name: "Crystal Core",
+      name: "Yggdrasil Core",
       manaCost: 5,
       description: "For the rest of the game, your minions are 4/4.",
       rarity: "legendary",
@@ -66,7 +66,7 @@ export const questRewards: CardData[] = [
   },
   {
       id: 15004,
-      name: "Amara, Warden of Hope",
+      name: "Elpis, Warden of Hope",
       manaCost: 5,
       attack: 8,
       health: 8,
@@ -85,7 +85,7 @@ export const questRewards: CardData[] = [
   },
   {
       id: 15005,
-      name: "Queen Carnassa",
+      name: "Queen Echidna",
       manaCost: 5,
       attack: 8,
       health: 8,
@@ -105,7 +105,7 @@ export const questRewards: CardData[] = [
   },
   {
       id: 15006,
-      name: "Barnabus the Stomper",
+      name: "Barnabus, Titan Stomper",
       manaCost: 5,
       attack: 8,
       health: 8,
@@ -129,9 +129,9 @@ export const questRewards: CardData[] = [
 export const questCards: CardData[] = [
   {
       id: 14001,
-      name: "Open the Waygate",
+      name: "Open the Bifrost",
       manaCost: 1,
-      description: "Quest: Cast 6 spells that didn't start in your deck.   Reward: Time Warp.",
+      description: "Quest: Cast 6 spells that didn't start in your deck.   Reward: Chronos Warp.",
       rarity: "legendary",
       type: "spell",
       keywords: ["quest"],
@@ -152,9 +152,9 @@ export const questCards: CardData[] = [
   },
   {
       id: 14002,
-      name: "Fire Plume's Heart",
+      name: "Surtr's Heart",
       manaCost: 1,
-      description: "Quest: Play 7 Taunt minions.   Reward: Sulfuras.",
+      description: "Quest: Play 7 Taunt minions.   Reward: Mjolnir's Fury.",
       rarity: "legendary",
       type: "spell",
       keywords: ["quest"],
@@ -175,9 +175,9 @@ export const questCards: CardData[] = [
   },
   {
       id: 14003,
-      name: "The Caverns Below",
+      name: "The Underworld Path",
       manaCost: 1,
-      description: "Quest: Play 5 minions with the same name.   Reward: Crystal Core.",
+      description: "Quest: Play 5 minions with the same name.   Reward: Yggdrasil Core.",
       rarity: "legendary",
       type: "spell",
       keywords: ["quest"],
@@ -198,9 +198,9 @@ export const questCards: CardData[] = [
   },
   {
       id: 14004,
-      name: "Awaken the Makers",
+      name: "Awaken the Titans",
       manaCost: 1,
-      description: "Quest: Summon 7 Deathrattle minions. Reward: Amara, Warden of Hope.",
+      description: "Quest: Summon 7 Deathrattle minions. Reward: Elpis, Warden of Hope.",
       rarity: "legendary",
       type: "spell",
       keywords: ["quest"],
@@ -221,9 +221,9 @@ export const questCards: CardData[] = [
   },
   {
       id: 14005,
-      name: "The Marsh Queen",
+      name: "The Hydra Queen",
       manaCost: 1,
-      description: "Quest: Play 7 minions that cost (1).   Reward: Queen Carnassa.",
+      description: "Quest: Play 7 minions that cost (1).   Reward: Queen Echidna.",
       rarity: "legendary",
       type: "spell",
       keywords: ["quest"],
@@ -244,9 +244,9 @@ export const questCards: CardData[] = [
   },
   {
       id: 14006,
-      name: "Jungle Giants",
+      name: "Titan Giants",
       manaCost: 1,
-      description: "Quest: Summon 5 minions with 5 or more Attack.   Reward: Barnabus the Stomper.",
+      description: "Quest: Summon 5 minions with 5 or more Attack.   Reward: Barnabus, Titan Stomper.",
       rarity: "legendary",
       type: "spell",
       keywords: ["quest"],

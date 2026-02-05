@@ -11,7 +11,7 @@ import { CardData } from '../types';
 export const modernLegendaryCards: CardData[] = [
   {
       id: 5104,
-      name: "Dark Inquisitor Xanesh",
+      name: "Hecate, Dark Inquisitor",
       manaCost: 7,
       attack: 5,
       health: 7,
@@ -31,7 +31,7 @@ export const modernLegendaryCards: CardData[] = [
 },
   {
     id: 5108,
-    name: "Catrina Muerte",
+    name: "Persephone, Death Queen",
     manaCost: 8,
     attack: 6,
     health: 8,
@@ -51,7 +51,7 @@ export const modernLegendaryCards: CardData[] = [
   },
   {
       id: 5111,
-      name: "High Priest Amet",
+      name: "Asclepius, High Healer",
       manaCost: 4,
       attack: 2,
       health: 7,
@@ -69,7 +69,7 @@ export const modernLegendaryCards: CardData[] = [
   },
   {
       id: 5112,
-      name: "Disciplinarian Gandling",
+      name: "Charon, Stern Teacher",
       manaCost: 4,
       attack: 3,
       health: 6,
@@ -83,7 +83,7 @@ export const modernLegendaryCards: CardData[] = [
   },
   {
       id: 5113,
-      name: "Mindflayer Kaahrj",
+      name: "Echidna, Mind Stealer",
       manaCost: 3,
       attack: 3,
       health: 3,
@@ -106,7 +106,7 @@ export const modernLegendaryCards: CardData[] = [
     },
   {
       id: 5114,
-      name: "Murozond the Infinite",
+      name: "Ouroboros, the Eternal",
       manaCost: 8,
       attack: 8,
       health: 8,
@@ -123,7 +123,7 @@ export const modernLegendaryCards: CardData[] = [
   },
   {
       id: 5116,
-      name: "Reliquary of Souls",
+      name: "Leviathan's Reliquary",
       manaCost: 1,
       attack: 1,
       health: 3,
@@ -163,7 +163,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20801,
 
-      name: "Temporus",
+      name: "Chronos, Time Dragon",
       manaCost: 7,
 
       attack: 6,
@@ -189,7 +189,7 @@ export const modernLegendaryCards: CardData[] = [
     },
   {
     id: 20802,
-    name: "Blackhowl Gunspire",
+    name: "Cyclops Siege Engine",
     manaCost: 7,
     attack: 3,
     health: 8,
@@ -205,7 +205,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 20803,
   
-  name: "Dollmaster Dorian",
+  name: "Pygmalion, Doll Master",
   manaCost: 5,
   
   attack: 2,
@@ -225,7 +225,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 20804,
   
-  name: "Glinda Crowskin",
+  name: "Circe, Echo Sorceress",
   manaCost: 6,
   
   attack: 3,
@@ -245,7 +245,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20805,
 
-      name: "Countess Ashmore",
+      name: "Countess Nyx",
       manaCost: 7,
 
       attack: 6,
@@ -272,7 +272,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 20806,
   
-  name: "Darius Crowley",
+  name: "Ares, War Commander",
   manaCost: 5,
   
   attack: 4,
@@ -293,7 +293,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20807,
 
-      name: "Face Collector",
+      name: "Proteus, Face Thief",
       manaCost: 3,
 
       attack: 2,
@@ -321,7 +321,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20808,
 
-      name: "Rhonin",
+      name: "Hermes, Spell Messenger",
       manaCost: 8,
 
       attack: 7,
@@ -347,7 +347,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 20809,
   
-  name: "Aviana",
+  name: "Eos, Wing Mother",
   manaCost: 9,
   
   attack: 5,
@@ -367,7 +367,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20810,
 
-      name: "Confessor Paletress",
+      name: "Moirai High Priestess",
       manaCost: 7,
 
       attack: 5,
@@ -471,7 +471,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20303,
 
-      name: "Sir Finley Mrrgglton",
+      name: "Triton, the Explorer",
       manaCost: 1,
 
       attack: 1,
@@ -501,7 +501,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20304,
 
-      name: "Marin the Fox",
+      name: "Hermes, Treasure Hunter",
       manaCost: 8,
 
       attack: 6,
@@ -559,7 +559,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20306,
 
-      name: "Zola the Gorgon",
+      name: "Stheno, the Gorgon",
       manaCost: 3,
 
       attack: 2,
@@ -585,7 +585,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20307,
 
-      name: "Oondasta",
+      name: "Nemean Colossus",
       manaCost: 9,
 
       attack: 7,
@@ -606,7 +606,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20308,
 
-      name: "Archivist Elysiana",
+      name: "Mnemosyne, Archivist",
       manaCost: 8,
 
       attack: 7,
@@ -669,7 +669,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20310,
 
-      name: "Kronx Dragonhoof",
+      name: "Chiron, Dragon Caller",
       manaCost: 6,
 
       attack: 6,
@@ -700,7 +700,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20311,
 
-      name: "Lorekeeper Polkelt",
+      name: "Mimir, Lore Keeper",
       manaCost: 4,
 
       attack: 4,
@@ -728,7 +728,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20312,
 
-      name: "Yogg-Saron, Master of Fate",
+      name: "Moirai, Master of Fate",
       manaCost: 10,
 
       attack: 7,
@@ -758,7 +758,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20313,
 
-      name: "Mutanus the Devourer",
+      name: "Charybdis, the Devourer",
       manaCost: 7,
 
       attack: 4,
@@ -788,7 +788,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 20314,
   
-  name: "Cornelius Roame",
+  name: "Argonaut Cornelius",
   manaCost: 6,
   
   attack: 4,
@@ -808,7 +808,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 20315,
 
-      name: "Lady Prestor",
+      name: "Echidna, Dragon Mother",
       manaCost: 5,
 
       attack: 6,
