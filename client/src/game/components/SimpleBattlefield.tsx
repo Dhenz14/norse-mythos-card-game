@@ -117,7 +117,18 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = ({
                 ${isTarget ? 'valid-target' : ''}
                 ${hasSuperBonus ? 'super-minion-bonus' : ''}
               `}
-              onClick={() => !isInteractionDisabled && onClick?.(card)}
+              onClick={() => {
+                console.log('[SimpleBattlefield Click]', {
+                  cardName: card.card?.name,
+                  side,
+                  canAttack: card.canAttack,
+                  isSummoningSick: card.isSummoningSick,
+                  isPlayerTurn,
+                  isInteractionDisabled,
+                  attackingCard: !!attackingCard
+                });
+                !isInteractionDisabled && onClick?.(card);
+              }}
               onMouseEnter={(e) => handleCardMouseEnter(card, e)}
               onMouseLeave={handleCardMouseLeave}
             >

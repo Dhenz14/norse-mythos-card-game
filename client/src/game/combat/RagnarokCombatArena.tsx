@@ -37,6 +37,7 @@ import { ElementBuffPopup } from './components/ElementBuffPopup';
 import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
 import { PotDisplay } from './components/PotDisplay';
 import { useElementalBuff } from './hooks/useElementalBuff';
+import { canCardAttack as canCardAttackCheck } from './attackUtils';
 import { GameViewport } from './GameViewport';
 import { useCombatLayout } from '../hooks/useCombatLayout';
 import { useRagnarokCombatController } from './hooks/useRagnarokCombatController';
@@ -268,17 +269,67 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       }
     }
     
-    if (!isPlayerTurn) return;
+    if (!isPlayerTurn) {
+      console.log('[Attack Debug] Not player turn - ignoring click');
+      return;
+    }
     if (attackingCard) {
       if (card.instanceId === attackingCard.instanceId) {
+        console.log('[Attack Debug] Deselecting attacker:', card.card?.name);
         selectAttacker(null);
+      } else {
+        console.log('[Attack Debug] Already have attacker selected - cannot select another');
       }
     } else {
-      if (card.canAttack) {
+      // Get fresh card state from gameStore to ensure we have latest canAttack status
+      const freshBattlefield = gameState?.players?.player?.battlefield || [];
+      const freshCard = freshBattlefield.find((c: any) => c.instanceId === card.instanceId);
+      
+      // Use fresh card data if available, otherwise fall back to adapted card
+      const cardToCheck = freshCard || card;
+      
+      console.log('[Attack Debug] Checking if card can attack:', {
+        name: card.card?.name,
+        freshCardFound: !!freshCard,
+        canAttackFresh: freshCard?.canAttack,
+        canAttackAdapted: card.canAttack,
+        isSummoningSickFresh: freshCard?.isSummoningSick,
+        isSummoningSickAdapted: card.isSummoningSick,
+        attacksPerformed: cardToCheck.attacksPerformed,
+        isFrozen: cardToCheck.isFrozen
+      });
+      
+      // Check if the card can attack using fresh state
+      const canAttackNow = cardToCheck.canAttack === true && 
+                           !cardToCheck.isSummoningSick && 
+                           !cardToCheck.isFrozen;
+      
+      if (canAttackNow) {
+        console.log('[Attack Debug] Selecting attacker:', card.card?.name);
         selectAttacker(card);
+      } else {
+        // Also try the authoritative check as fallback
+        const cardAsInstance = {
+          ...cardToCheck,
+          card: card.card,
+          instanceId: card.instanceId,
+          isSummoningSick: cardToCheck.isSummoningSick ?? true,
+          canAttack: cardToCheck.canAttack ?? false,
+          attacksPerformed: cardToCheck.attacksPerformed ?? 0,
+          isFrozen: cardToCheck.isFrozen ?? false
+        };
+        
+        const canAttackResult = canCardAttackCheck(cardAsInstance as any, isPlayerTurn, true);
+        
+        if (canAttackResult) {
+          console.log('[Attack Debug] Authoritative check passed, selecting attacker:', card.card?.name);
+          selectAttacker(card);
+        } else {
+          console.log('[Attack Debug] Card cannot attack - summoning sickness or exhausted');
+        }
       }
     }
-  }, [isPlayerTurn, attackingCard, selectAttacker, selectedCard, playCard, heroPowerTargeting, executeHeroPowerEffect]);
+  }, [isPlayerTurn, attackingCard, selectAttacker, selectedCard, playCard, heroPowerTargeting, executeHeroPowerEffect, gameState?.players?.player?.battlefield]);
 
   const handleOpponentCardClick = useCallback((card: any) => {
     if (heroPowerTargeting?.active && executeHeroPowerEffect) {
@@ -301,7 +352,11 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       }
     }
     
-    if (!isPlayerTurn || !attackingCard) return;
+    if (!isPlayerTurn || !attackingCard) {
+      console.log('[Attack Debug] handleOpponentCardClick - no attacker selected or not player turn');
+      return;
+    }
+    console.log('[Attack Debug] Attacking', card.card?.name, 'with', attackingCard?.card?.name);
     attackWithCard(attackingCard.instanceId, card.instanceId);
   }, [isPlayerTurn, attackingCard, attackWithCard, selectedCard, playCard, heroPowerTargeting, executeHeroPowerEffect]);
 
