@@ -262,8 +262,14 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     
     if (selectedCard) {
       const targetType = (selectedCard.card as any)?.spellEffect?.targetType || (selectedCard.card as any)?.battlecry?.targetType;
+      console.log('[Battlecry Debug] Player minion clicked while selectedCard set:', {
+        selectedCardName: selectedCard.card?.name,
+        targetType,
+        clickedMinion: card.card?.name
+      });
       if (targetType === 'friendly_minion' || targetType === 'friendly_mech' || targetType === 'any_minion' || targetType === 'any') {
         const cardId = selectedCard.instanceId || (selectedCard as any).id;
+        console.log('[Battlecry Debug] Playing card with target:', { cardId, targetId: card.instanceId });
         playCard(cardId, card.instanceId);
         return;
       }
@@ -345,8 +351,14 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     
     if (selectedCard) {
       const targetType = (selectedCard.card as any)?.spellEffect?.targetType || (selectedCard.card as any)?.battlecry?.targetType;
+      console.log('[Battlecry Debug] Opponent minion clicked while selectedCard set:', {
+        selectedCardName: selectedCard.card?.name,
+        targetType,
+        clickedMinion: card.card?.name
+      });
       if (targetType === 'enemy_minion' || targetType === 'any_minion' || targetType === 'any' || targetType === 'enemy') {
         const cardId = selectedCard.instanceId || (selectedCard as any).id;
+        console.log('[Battlecry Debug] Playing card with enemy target:', { cardId, targetId: card.instanceId });
         playCard(cardId, card.instanceId);
         return;
       }
@@ -361,6 +373,15 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   }, [isPlayerTurn, attackingCard, attackWithCard, selectedCard, playCard, heroPowerTargeting, executeHeroPowerEffect]);
 
   const handleCardPlay = useCallback((card: any, position?: Position) => {
+    console.log('[handleCardPlay Debug] Card clicked:', {
+      name: card.card?.name || card.name,
+      type: card.card?.type || card.type,
+      hasBattlecry: !!(card.card?.battlecry || card.battlecry),
+      battlecry: card.card?.battlecry || card.battlecry,
+      keywords: card.card?.keywords || card.keywords,
+      cardStructure: Object.keys(card)
+    });
+    
     if (!isPlayerTurn) return;
     const cardId = card.instanceId || card.id;
     if (!cardId) return;
@@ -408,7 +429,13 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       return;
     }
     
-    if (card.card?.type === 'minion' && card.card.battlecry?.requiresTarget) {
+    // Check for battlecry requiring target - handle both card.card.battlecry and card.battlecry structures
+    const cardType = card.card?.type || card.type;
+    const battlecry = card.card?.battlecry || card.battlecry;
+    
+    if (cardType === 'minion' && battlecry?.requiresTarget) {
+      console.log('[Battlecry Debug] Card requires battlecry target, selecting:', card.card?.name || card.name);
+      console.log('[Battlecry Debug] Battlecry details:', battlecry);
       selectCard(card);
       return;
     }

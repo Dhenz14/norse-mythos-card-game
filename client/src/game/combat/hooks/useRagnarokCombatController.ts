@@ -618,15 +618,19 @@ export function useRagnarokCombatController(
       }
     }
     
-    if (selectedCard && selectedCard.card.type === 'minion' && selectedCard.card.battlecry?.requiresTarget) {
-      const battlecry = selectedCard.card.battlecry;
-      const targetType = battlecry.targetType || '';
+    // Handle both card.card.battlecry and card.battlecry structures
+    const selectedCardType = (selectedCard?.card as any)?.type || (selectedCard as any)?.type;
+    const selectedBattlecry = (selectedCard?.card as any)?.battlecry || (selectedCard as any)?.battlecry;
+    
+    if (selectedCard && selectedCardType === 'minion' && selectedBattlecry?.requiresTarget) {
+      const targetType = selectedBattlecry.targetType || '';
       const allowsEnemyHero = targetType.includes('character') ||
         targetType.includes('any') ||
         targetType.includes('enemy') ||
         targetType.includes('hero') ||
         !targetType.includes('minion');
       if (allowsEnemyHero) {
+        console.log('[Battlecry Debug] Playing minion with battlecry targeting opponent hero');
         playCard(selectedCard.instanceId, 'opponent-hero', 'hero');
         selectCard(null);
         return;
@@ -669,15 +673,19 @@ export function useRagnarokCombatController(
       }
     }
     
-    if (selectedCard && selectedCard.card.type === 'minion' && selectedCard.card.battlecry?.requiresTarget) {
-      const battlecry = selectedCard.card.battlecry;
-      const targetType = battlecry.targetType || '';
+    // Handle both card.card.battlecry and card.battlecry structures for player hero targeting
+    const selectedCardTypeP = (selectedCard?.card as any)?.type || (selectedCard as any)?.type;
+    const selectedBattlecryP = (selectedCard?.card as any)?.battlecry || (selectedCard as any)?.battlecry;
+    
+    if (selectedCard && selectedCardTypeP === 'minion' && selectedBattlecryP?.requiresTarget) {
+      const targetType = selectedBattlecryP.targetType || '';
       const allowsFriendlyHero = targetType.includes('character') ||
         targetType.includes('any') ||
         targetType.includes('friendly') ||
         targetType.includes('hero') ||
         !targetType.includes('minion') && !targetType.includes('enemy');
       if (allowsFriendlyHero) {
+        console.log('[Battlecry Debug] Playing minion with battlecry targeting player hero');
         playCard(selectedCard.instanceId, 'player-hero', 'hero');
         selectCard(null);
         return;
