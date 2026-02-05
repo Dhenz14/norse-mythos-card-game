@@ -18,7 +18,7 @@ interface RawCardInput {
 
 function isValidCardType(type: unknown): type is CardType {
   return typeof type === 'string' && 
-    ['minion', 'spell', 'weapon', 'hero', 'secret', 'location'].includes(type);
+    ['minion', 'spell', 'weapon', 'hero', 'secret', 'location', 'poker_spell'].includes(type);
 }
 
 export function validateCard(input: unknown): ValidationResult {
@@ -105,6 +105,7 @@ export function validateCardRegistry(cards: unknown[]): CardData[] {
   
   if (errors.length > 0) {
     console.warn(`[CardRegistry] ${errors.length} validation errors found`);
+    errors.forEach(e => console.warn(`  - ${e}`));
   }
   
   console.log(`[CardRegistry] Loaded ${validCards.length} valid cards (${duplicates.length} duplicates skipped)`);

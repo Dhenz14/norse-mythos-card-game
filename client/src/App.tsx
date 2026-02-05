@@ -92,7 +92,7 @@ function App() {
       <CardTransformBridgeInitializer />
       <UnifiedCardSystem />
       
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path={routes.home} element={<HomePage />} />
           <Route path={routes.game} element={<RagnarokChessGame />} />
