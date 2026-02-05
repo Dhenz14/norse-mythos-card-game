@@ -13,6 +13,8 @@
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType } from '../../types';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all Priest cards in the registry
  * Card IDs: 
@@ -22,7 +24,7 @@ import { BattlecryTargetType } from '../../types';
  * - Priest tokens: 9xxx series (usually 5xx+)
  */
 export function registerPriestCards(): void {
-  console.log('Registering Priest cards...');
+  if (IS_DEV) console.log('Registering Priest cards...');
 
   // BASIC PRIEST CARDS
 
@@ -585,5 +587,5 @@ export function registerPriestCards(): void {
     .addCategory("token")
     .build();
 
-  console.log('Priest cards registered successfully.');
+  if (IS_DEV) console.log('Priest cards registered successfully.');
 }

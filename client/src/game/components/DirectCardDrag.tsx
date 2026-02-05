@@ -4,6 +4,7 @@ import { Position } from '../types/Position';
 import { useGameStore } from '../stores/gameStore';
 import { canPlayCard } from '../utils/cards/cardUtils';
 import CardRenderer from './CardRenderer';
+import { debug } from '../config/debugConfig';
 
 interface DirectCardDragProps {
   cardInstance: CardInstanceWithCardData;
@@ -88,7 +89,7 @@ export const DirectCardDrag: React.FC<DirectCardDragProps> = ({
     cardRef.current.style.zIndex = '9999';
     cardRef.current.style.transition = 'transform 0.1s ease-out';
     
-    console.log('🎯 DIRECT DRAG: Started dragging card', cardInstance.card.name);
+    debug.drag('Started dragging card', cardInstance.card.name);
   }, [isPlayable, disableDrag, scale, cardInstance.card.name]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -130,12 +131,12 @@ export const DirectCardDrag: React.FC<DirectCardDragProps> = ({
       if (dropX >= bfRect.left && dropX <= bfRect.right && 
           dropY >= bfRect.top && dropY <= bfRect.bottom) {
         
-        console.log('🎯 DIRECT DRAG: Card dropped on battlefield!', cardInstance.card.name);
+        debug.drag('Card dropped on battlefield!', cardInstance.card.name);
         
         // Play the card immediately  
         try {
           playCard(cardInstance.instanceId);
-          console.log('🎯 DIRECT DRAG: Card played successfully!');
+          debug.drag('Card played successfully!');
         } catch (error) {
           console.error('🎯 DIRECT DRAG: Failed to play card:', error);
         }

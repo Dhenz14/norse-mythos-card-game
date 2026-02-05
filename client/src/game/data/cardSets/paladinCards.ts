@@ -7,11 +7,13 @@
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType } from '../../types';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all Paladin cards in the registry
  */
 export function registerPaladinCards(): void {
-  console.log('Registering Paladin cards...');
+  if (IS_DEV) console.log('Registering Paladin cards...');
 
   // PALADIN SPELLS
 
@@ -327,5 +329,5 @@ export function registerPaladinCards(): void {
     .collectible(true)
     .build();
 
-  console.log('Paladin cards registered successfully.');
+  if (IS_DEV) console.log('Paladin cards registered successfully.');
 }

@@ -14,6 +14,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { CardInstance } from '../types';
 import { playSound } from '../utils/soundUtils';
 import CardPlacementEffect from './CardPlacementEffect';
+import { debug } from '../config/debugConfig';
 
 interface Position {
   x: number;
@@ -199,7 +200,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
   }, []);
 
   const isValidDrop = useCallback(() => {
-    console.log("🧪 isValidDrop DEBUG:", {
+    debug.drag("🧪 isValidDrop DEBUG:", {
       boardRefExists: !!boardRef.current,
       boardRefRect: boardRef.current?.getBoundingClientRect(),
       currentPosRefValue: currentPosRef.current,
@@ -208,12 +209,12 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
     });
 
     if (!dragWrapperRef.current || !currentPosRef.current) {
-      console.log("🧪 isValidDrop: FAILED - missing dragWrapperRef.current or currentPosRef.current");
+      debug.drag("🧪 isValidDrop: FAILED - missing dragWrapperRef.current or currentPosRef.current");
       return false;
     }
     
     if (!boardRef.current) {
-      console.log("🧪 isValidDrop: FAILED - boardRef.current is null");
+      debug.drag("🧪 isValidDrop: FAILED - boardRef.current is null");
       return false;
     }
     
@@ -222,7 +223,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
     const wrapperRect = dragWrapperRef.current.getBoundingClientRect();
     
     if (!wrapperRect) {
-      console.log("🧪 isValidDrop: FAILED - wrapperRect is null");
+      debug.drag("🧪 isValidDrop: FAILED - wrapperRect is null");
       return false;
     }
     
@@ -238,7 +239,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
       cardCenterY <= boardRect.bottom + tolerance
     );
     
-    console.log(`🧪 isValidDrop: ${isWithinBounds ? 'VALID DROP' : 'INVALID DROP'}`, {
+    debug.drag(`🧪 isValidDrop: ${isWithinBounds ? 'VALID DROP' : 'INVALID DROP'}`, {
       cardCenter: { x: cardCenterX, y: cardCenterY },
       boardBounds: { left: boardRect.left, right: boardRect.right, top: boardRect.top, bottom: boardRect.bottom },
       tolerance
@@ -340,7 +341,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
     
     pointerDown.current = false;
     
-    console.log("🧪 handlePointerUp DEBUG:", {
+    debug.drag("🧪 handlePointerUp DEBUG:", {
       isDraggingRef: isDraggingRef.current,
       currentPosRef: currentPosRef.current,
       startPosRef: startPosRef.current,
@@ -365,7 +366,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
     if (isDraggingRef.current && currentPosRef.current) {
       const isValid = isValidDrop();
       
-      console.log("🧪 handlePointerUp: Drop validation result:", isValid);
+      debug.drag("🧪 handlePointerUp: Drop validation result:", isValid);
       
       if (isValid && onValidDrop) {
         playSound('card_place');
@@ -381,7 +382,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
         if (onDragEnd) onDragEnd(false, currentPosRef.current);
       }
     } else {
-      console.log("🧪 handlePointerUp: Not dragging or no currentPos, resetting styles");
+      debug.drag("🧪 handlePointerUp: Not dragging or no currentPos, resetting styles");
       if (dragWrapperRef.current) {
         dragWrapperRef.current.style.transform = '';
       }
@@ -396,10 +397,10 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
   }, [animateToPosition, boardRef, cardRef, isPlayable, isValidDrop, onDragEnd, onValidDrop]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    console.log("🎮 CardDragAnimation: PointerDown event received", { disabled, isPlayable, card: card?.card?.name });
+    debug.drag("🎮 CardDragAnimation: PointerDown event received", { disabled, isPlayable, card: card?.card?.name });
     
     if (disabled || !isPlayable) {
-      console.log("🔒 CardDragAnimation: Drag disabled", { disabled, isPlayable });
+      debug.drag("🔒 CardDragAnimation: Drag disabled", { disabled, isPlayable });
       return;
     }
     
@@ -409,7 +410,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
     const isRightClick = e.button === 2;
     
     const target = e.target as HTMLElement;
-    console.log("🔍 Click detected on element:", {
+    debug.drag("🔍 Click detected on element:", {
       tagName: target.tagName,
       className: target.className,
       id: target.id,
@@ -421,11 +422,11 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
                                dragWrapperRef.current?.contains(target);
     
     if (!isWithinCardWrapper) {
-      console.log("❌ Click outside card drag area");
+      debug.drag("❌ Click outside card drag area");
       return;
     }
     
-    console.log("✅ Drag initiated from valid card area");
+    debug.drag("✅ Drag initiated from valid card area");
     
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -470,7 +471,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
         document.addEventListener('pointermove', handlePointerMoveEvent);
         document.addEventListener('pointerup', handlePointerUpEvent);
       } catch (err) {
-        console.log("Pointer capture error:", err);
+        debug.drag("Pointer capture error:", err);
       }
       
       cardRef.current.style.cursor = 'grabbing';

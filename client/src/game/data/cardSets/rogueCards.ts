@@ -7,11 +7,13 @@
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType } from '../../types';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all Rogue cards in the registry
  */
 export function registerRogueCards(): void {
-  console.log('Registering Rogue cards...');
+  if (IS_DEV) console.log('Registering Rogue cards...');
 
   // ROGUE SPELLS
 
@@ -414,5 +416,5 @@ export function registerRogueCards(): void {
     .addCategory("token")
     .build();
 
-  console.log('Rogue cards registered successfully.');
+  if (IS_DEV) console.log('Rogue cards registered successfully.');
 }

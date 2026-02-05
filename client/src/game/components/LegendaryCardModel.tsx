@@ -4,6 +4,7 @@ import { useKeyboardControls, OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { GLTF } from "three-stdlib";
 import { CardData } from "../types";
+import { debug } from '../config/debugConfig';
 
 // Preload models to improve performance
 useGLTF.preload('/models/ragnaros.glb');
@@ -90,7 +91,7 @@ function ModelLoader({ modelPath, scale, position, rotation, animate }: ModelLoa
   useEffect(() => {
     if (model) {
       setModelLoaded(true);
-      console.log(`Model loaded successfully: ${modelPath}`);
+      debug.render3d(`Model loaded successfully: ${modelPath}`);
     }
   }, [model, modelPath]);
   

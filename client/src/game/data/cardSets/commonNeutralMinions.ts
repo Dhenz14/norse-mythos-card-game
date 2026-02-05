@@ -5,11 +5,13 @@
  */
 import { createCard } from '../cardManagement';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register common neutral minions in the registry
  */
 export function registerCommonNeutralMinions(): void {
-  console.log('Registering common neutral minions...');
+  if (IS_DEV) console.log('Registering common neutral minions...');
 
   // Starting ID for common neutral minions (we'll use 20000+ range)
   let id = 20000;
@@ -957,5 +959,5 @@ export function registerCommonNeutralMinions(): void {
     .addCategory("token")
     .build();
 
-  console.log('Common neutral minions registered successfully.');
+  if (IS_DEV) console.log('Common neutral minions registered successfully.');
 }

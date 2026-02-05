@@ -9,6 +9,7 @@ import NorseFrame from './NorseFrame/NorseFrame';
 import RaceIcon from './RaceIcon'; // Import the new RaceIcon component
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip'; // Centralized keyword definitions
 import { isMinion, getAttack, getHealth } from '../utils/cards/typeGuards'; // Type guards for safe property access
+import { debug } from '../config/debugConfig';
 
 // Extend the CardInstance type to include additional properties
 declare module '../types' {
@@ -54,7 +55,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
   // Debug opponent minions attack values
   if ('card' in card && !isInHand) {
     // Only log if we're on the battlefield (not in hand)
-    console.log(`Card instance: ${cardData.name}, Attack: ${getAttack(cardData)}, Type: ${cardData.type}`);
+    debug.card(`Card instance: ${cardData.name}, Attack: ${getAttack(cardData)}, Type: ${cardData.type}`);
   }
   
   // Get current health from CardInstance if available

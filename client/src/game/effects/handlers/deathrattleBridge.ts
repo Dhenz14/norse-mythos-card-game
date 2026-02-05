@@ -7,6 +7,7 @@
 import { GameState, CardInstance } from '../../types';
 import { DeathrattleEffect } from '../../types/CardTypes';
 import { EffectRegistry } from '../EffectRegistry';
+import { debug } from '../../config/debugConfig';
 
 // Import the original deathrattle execution function and related utilities
 import { 
@@ -33,7 +34,7 @@ export function executeDeathrattle(
 ): GameState {
   // Only minions can have deathrattles
   if (card.card.type !== 'minion') {
-    console.log(`[Deathrattle Bridge] Skipped: ${card.card.name} is not a minion`);
+    debug.log(`[Deathrattle Bridge] Skipped: ${card.card.name} is not a minion`);
     return state;
   }
   
@@ -41,15 +42,15 @@ export function executeDeathrattle(
   
   // If no deathrattle, just return the state
   if (!deathrattle) {
-    console.log(`[Deathrattle Bridge] Skipped: ${card.card.name} has no deathrattle effect`);
+    debug.log(`[Deathrattle Bridge] Skipped: ${card.card.name} has no deathrattle effect`);
     return state;
   }
   
-  console.log(`[Deathrattle Bridge] Processing: ${card.card.name} (ID: ${card.card.id}) - Type: ${deathrattle.type}`, deathrattle);
+  debug.log(`[Deathrattle Bridge] Processing: ${card.card.name} (ID: ${card.card.id}) - Type: ${deathrattle.type}`, deathrattle);
   
   // Check if we have a registered handler for this deathrattle type
   if (EffectRegistry.hasHandler('deathrattle', deathrattle.type)) {
-    console.log(`[Deathrattle Bridge] Using EffectRegistry handler for type: ${deathrattle.type}`);
+    debug.log(`[Deathrattle Bridge] Using EffectRegistry handler for type: ${deathrattle.type}`);
     // Use the registered handler from EffectRegistry
     try {
       // Execute the deathrattle using the registry
@@ -60,18 +61,18 @@ export function executeDeathrattle(
       );
       
       if (result.success) {
-        console.log(`[Deathrattle Bridge] Success: ${card.card.name} deathrattle executed via registry`);
+        debug.log(`[Deathrattle Bridge] Success: ${card.card.name} deathrattle executed via registry`);
         return result.additionalData || state;
       } else {
-        console.error(`[Deathrattle Bridge] Error: ${result.error}`);
+        debug.error(`[Deathrattle Bridge] Error: ${result.error}`);
         return state;
       }
     } catch (error) {
-      console.error('[Deathrattle Bridge] Exception:', error);
+      debug.error('[Deathrattle Bridge] Exception:', error);
       return state;
     }
   } else {
-    console.log(`[Deathrattle Bridge] Using original handler for type: ${deathrattle.type}`);
+    debug.log(`[Deathrattle Bridge] Using original handler for type: ${deathrattle.type}`);
     // Fall back to the original implementation
     return originalExecuteDeathrattle(state, card, playerId);
   }

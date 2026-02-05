@@ -7,6 +7,7 @@
 import { CardInstance } from '../types';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { canCardAttack } from '../combat/attackUtils';
+import { debug } from '../config/debugConfig';
 
 /**
  * Handle player card click for attack system
@@ -18,23 +19,23 @@ export const createHandlePlayerCardClick = (
   handleCardSelect: (card: CardInstance | CardInstanceWithCardData) => void
 ) => {
   return (card: CardInstance) => {
-    console.log('[GameBoard] Player card clicked:', card);
+    debug.log('[GameBoard] Player card clicked:', card);
     
     // If the player is allowed to select this card for attack
     if (isPlayerTurn && canCardAttack(card, isPlayerTurn)) {
       // Toggle attack mode for this card
       if (attackingCard && attackingCard.instanceId === card.instanceId) {
         // Cancel attack if clicking the same card
-        console.log('[GameBoard] Canceling attack with card:', card.card.name);
+        debug.log('[GameBoard] Canceling attack with card:', card.card.name);
         selectAttacker(null);
       } else {
         // Start attack with this card
-        console.log('[GameBoard] Starting attack with card:', card.card.name);
+        debug.log('[GameBoard] Starting attack with card:', card.card.name);
         selectAttacker(card);
       }
     } else {
       // Otherwise handle normal card selection
-      console.log('[GameBoard] Card cannot attack, handling as normal selection');
+      debug.log('[GameBoard] Card cannot attack, handling as normal selection');
       handleCardSelect(card);
     }
   };
@@ -48,11 +49,11 @@ export const createHandleOpponentCardClick = (
   attackWithCard: (attackerId: string, defenderId?: string) => void
 ) => {
   return (card: CardInstance) => {
-    console.log('[GameBoard] Opponent card clicked:', card);
+    debug.log('[GameBoard] Opponent card clicked:', card);
     
     if (attackingCard) {
       // Execute attack
-      console.log('[GameBoard] Attacking opponent card:', card.card.name);
+      debug.log('[GameBoard] Attacking opponent card:', card.card.name);
       attackWithCard(attackingCard.instanceId, card.instanceId);
     }
   };
@@ -66,11 +67,11 @@ export const createHandleOpponentHeroClick = (
   attackWithCard: (attackerId: string, defenderId?: string) => void
 ) => {
   return () => {
-    console.log('[GameBoard] Opponent hero clicked');
+    debug.log('[GameBoard] Opponent hero clicked');
     
     if (attackingCard) {
       // Execute attack on opponent's hero
-      console.log('[GameBoard] Attacking opponent hero');
+      debug.log('[GameBoard] Attacking opponent hero');
       attackWithCard(attackingCard.instanceId, 'opponent-hero');
     }
   };

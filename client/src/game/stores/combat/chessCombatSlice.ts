@@ -35,6 +35,7 @@ import {
   ChessCombatSlice,
   UnifiedCombatStore
 } from './types';
+import { debug } from '../../config/debugConfig';
 
 export const createChessCombatSlice: StateCreator<
   UnifiedCombatStore,
@@ -230,7 +231,7 @@ export const createChessCombatSlice: StateCreator<
     // Pawns and Kings use instant-kill resolution and bypass the mine system.
     const mineResult = state.checkAndTriggerMine(to, piece.owner, piece.id, piece.type);
     if (mineResult && mineResult.triggered) {
-      console.log(`[Chess] Mine triggered! ${piece.owner} loses ${mineResult.staPenalty} STA`);
+      debug.chess(`[Chess] Mine triggered! ${piece.owner} loses ${mineResult.staPenalty} STA`);
       const movedPieceForMine = get().boardState.pieces.find(p => p.id === piece.id);
       if (movedPieceForMine) {
         const newStamina = Math.max(0, movedPieceForMine.stamina - mineResult.staPenalty);
@@ -240,7 +241,7 @@ export const createChessCombatSlice: StateCreator<
     
     const movedPiece = get().boardState.pieces.find(p => p.id === piece.id);
     if (movedPiece && state.checkPawnPromotion(movedPiece)) {
-      console.log(`[Chess] Pawn promoted to Queen at (${to.row}, ${to.col})`);
+      debug.chess(`[Chess] Pawn promoted to Queen at (${to.row}, ${to.col})`);
       state.promotePawn(movedPiece.id, 'queen');
     }
     
@@ -254,7 +255,7 @@ export const createChessCombatSlice: StateCreator<
   executeInstantKill: (attacker: ChessPiece, defender: ChessPiece, targetPosition: ChessBoardPosition) => {
     const state = get();
     
-    console.log(`[Chess] Executing instant kill: ${attacker.heroName} -> ${defender.heroName}`);
+    debug.chess(`[Chess] Executing instant kill: ${attacker.heroName} -> ${defender.heroName}`);
     
     state.removePiece(defender.id);
     
@@ -289,7 +290,7 @@ export const createChessCombatSlice: StateCreator<
     
     const movedPiece = get().boardState.pieces.find(p => p.id === attacker.id);
     if (movedPiece && state.checkPawnPromotion(movedPiece)) {
-      console.log(`[Chess] Pawn promoted to Queen after instant kill at (${targetPosition.row}, ${targetPosition.col})`);
+      debug.chess(`[Chess] Pawn promoted to Queen after instant kill at (${targetPosition.row}, ${targetPosition.col})`);
       state.promotePawn(movedPiece.id, 'queen');
     }
     
@@ -519,7 +520,7 @@ export const createChessCombatSlice: StateCreator<
       }
     }
     
-    console.log(`[Chess] CHECKMATE! ${side} has no legal moves while in check`);
+    debug.chess(`[Chess] CHECKMATE! ${side} has no legal moves while in check`);
     return true;
   },
 
@@ -534,7 +535,7 @@ export const createChessCombatSlice: StateCreator<
     else if (opponentInCheck) newCheckStatus = 'opponent';
     
     if (playerInCheck && state.isCheckmate('player')) {
-      console.log('[Chess] Player is checkmated - opponent wins');
+      debug.chess('[Chess] Player is checkmated - opponent wins');
       set({
         boardState: {
           ...state.boardState,
@@ -546,7 +547,7 @@ export const createChessCombatSlice: StateCreator<
     }
     
     if (opponentInCheck && state.isCheckmate('opponent')) {
-      console.log('[Chess] Opponent is checkmated - player wins');
+      debug.chess('[Chess] Opponent is checkmated - player wins');
       set({
         boardState: {
           ...state.boardState,
@@ -558,7 +559,7 @@ export const createChessCombatSlice: StateCreator<
     }
     
     if (newCheckStatus) {
-      console.log(`[Chess] CHECK! ${newCheckStatus}'s King is under attack`);
+      debug.chess(`[Chess] CHECK! ${newCheckStatus}'s King is under attack`);
     }
     
     set({
@@ -632,7 +633,7 @@ export const createChessCombatSlice: StateCreator<
     if (!selectedPiece) return null;
     
     if (state.pendingAttackAnimation) {
-      console.log('[Chess] Move blocked - attack animation in progress');
+      debug.chess('[Chess] Move blocked - attack animation in progress');
       return null;
     }
 
@@ -659,7 +660,7 @@ export const createChessCombatSlice: StateCreator<
           const reason = isInstantKillAttacker 
             ? `${selectedPiece.type} uses Valkyrie weapon` 
             : `pawn is weak and cannot defend`;
-          console.log(`[Chess] Instant kill queued: ${selectedPiece.heroName} -> ${defender.heroName} (${reason})`);
+          debug.chess(`[Chess] Instant kill queued: ${selectedPiece.heroName} -> ${defender.heroName} (${reason})`);
           collision.instantKill = true;
         }
         
@@ -796,7 +797,7 @@ export const createChessCombatSlice: StateCreator<
   },
 
   startAttackAnimation: (attacker: ChessPiece, defender: ChessPiece, isInstantKill: boolean) => {
-    console.log(`[Chess] Starting attack animation: ${attacker.heroName} -> ${defender.heroName} (instant: ${isInstantKill})`);
+    debug.chess(`[Chess] Starting attack animation: ${attacker.heroName} -> ${defender.heroName} (instant: ${isInstantKill})`);
     set({
       pendingAttackAnimation: {
         attacker,
@@ -814,11 +815,11 @@ export const createChessCombatSlice: StateCreator<
     const animation = state.pendingAttackAnimation;
     
     if (!animation) {
-      console.log('[Chess] No pending animation to complete');
+      debug.chess('[Chess] No pending animation to complete');
       return;
     }
 
-    console.log(`[Chess] Completing attack animation: ${animation.attacker.heroName} -> ${animation.defender.heroName}`);
+    debug.chess(`[Chess] Completing attack animation: ${animation.attacker.heroName} -> ${animation.defender.heroName}`);
 
     set({ pendingAttackAnimation: null });
 
@@ -879,7 +880,7 @@ export const createChessCombatSlice: StateCreator<
       
       const movedPiece = get().boardState.pieces.find(p => p.id === pendingCombat.attacker.id);
       if (movedPiece && get().checkPawnPromotion(movedPiece)) {
-        console.log(`[Chess] Pawn promoted to Queen after combat at (${movedPiece.position.row}, ${movedPiece.position.col})`);
+        debug.chess(`[Chess] Pawn promoted to Queen after combat at (${movedPiece.position.row}, ${movedPiece.position.col})`);
         get().promotePawn(movedPiece.id, 'queen');
       }
     }
@@ -964,7 +965,7 @@ export const createChessCombatSlice: StateCreator<
     const finalMove = bestMove || bestNonAttackMove;
     
     if (!finalMove) {
-      console.log('[AI] No valid moves - stalemate');
+      debug.ai('[AI] No valid moves - stalemate');
       const currentBoardState = get().boardState;
       set({
         boardState: { ...currentBoardState, gameStatus: 'player_wins' as ChessGameStatus }
@@ -982,24 +983,24 @@ export const createChessCombatSlice: StateCreator<
       if (currentState.boardState.currentTurn !== 'opponent') return;
       
       if (currentState.pendingAttackAnimation) {
-        console.log('[AI] Waiting for animation to complete, retrying in 200ms...');
+        debug.ai('[AI] Waiting for animation to complete, retrying in 200ms...');
         setTimeout(attemptMove, 200);
         return;
       }
       
       const pieceStillExists = currentState.boardState.pieces.some(p => p.id === pieceId);
       if (!pieceStillExists) {
-        console.log('[AI] Piece no longer exists, skipping move');
+        debug.ai('[AI] Piece no longer exists, skipping move');
         return;
       }
       
       const collision = currentState.movePiece(moveToExecute.target);
       if (!collision) {
-        console.log(`[AI] Moved ${moveToExecute.piece.type} to (${moveToExecute.target.row}, ${moveToExecute.target.col})`);
+        debug.ai(`[AI] Moved ${moveToExecute.piece.type} to (${moveToExecute.target.row}, ${moveToExecute.target.col})`);
       } else if (collision.instantKill) {
-        console.log(`[AI] Instant kill with ${collision.attacker.type} against ${collision.defender.type}`);
+        debug.ai(`[AI] Instant kill with ${collision.attacker.type} against ${collision.defender.type}`);
       } else {
-        console.log(`[AI] PvP combat: ${collision.attacker.type} vs ${collision.defender.type}`);
+        debug.ai(`[AI] PvP combat: ${collision.attacker.type} vs ${collision.defender.type}`);
       }
     };
     

@@ -13,6 +13,8 @@
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all Demon Hunter cards in the registry
  * Card IDs:
@@ -22,7 +24,7 @@ import { createCard } from "../cardManagement/cardBuilder";
  * - Demon Hunter tokens: 99xx series
  */
 export function registerDemonHunterCards(): void {
-  console.log('Registering Demon Hunter cards...');
+  if (IS_DEV) console.log('Registering Demon Hunter cards...');
 
   // Chaos Strike
   createCard()
@@ -326,5 +328,5 @@ export function registerDemonHunterCards(): void {
     .collectible(true)
     .build();
 
-  console.log('Demon Hunter cards registered successfully.');
+  if (IS_DEV) console.log('Demon Hunter cards registered successfully.');
 }

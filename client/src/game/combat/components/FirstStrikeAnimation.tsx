@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUnifiedCombatStore } from '../../stores/unifiedCombatStore';
+import { debug } from '../../config/debugConfig';
 
 interface FirstStrikeAnimationProps {
   onComplete: () => void;
@@ -23,19 +24,19 @@ export const FirstStrikeAnimation: React.FC<FirstStrikeAnimationProps> = ({ onCo
       return;
     }
 
-    console.log('[FirstStrike] Animation starting, target:', target, 'damage:', damage);
+    debug.animation('[FirstStrike] Animation starting, target:', target, 'damage:', damage);
     setPhase('charge');
     
     const chargeTimer = setTimeout(() => {
-      console.log('[FirstStrike] Phase: strike');
+      debug.animation('[FirstStrike] Phase: strike');
       setPhase('strike');
     }, 600);
     const strikeTimer = setTimeout(() => {
-      console.log('[FirstStrike] Phase: damage');
+      debug.animation('[FirstStrike] Phase: damage');
       setPhase('damage');
     }, 1200);
     const doneTimer = setTimeout(() => {
-      console.log('[FirstStrike] Animation complete, calling onComplete');
+      debug.animation('[FirstStrike] Animation complete, calling onComplete');
       setPhase('done');
       onComplete();
     }, 2200);

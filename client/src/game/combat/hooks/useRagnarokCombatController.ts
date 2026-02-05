@@ -37,6 +37,7 @@ import { useCombatTimer } from './useCombatTimer';
 import { useCombatEvents, ShowdownCelebration as ShowdownCelebrationState, HeroDeathState } from './useCombatEvents';
 import { useTurnOrchestrator } from './useTurnOrchestrator';
 import { COMBAT_DEBUG } from '../debugConfig';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Hero power targeting state structure
@@ -180,7 +181,7 @@ export function useRagnarokCombatController(
   } = useTurnOrchestrator({
     onPhaseChange: (from, to, context) => {
       if (COMBAT_DEBUG.PHASES) {
-        console.log(`[TurnOrchestrator] Phase: ${from} → ${to} (Turn ${context.turnNumber})`);
+        debug.combat(`[TurnOrchestrator] Phase: ${from} → ${to} (Turn ${context.turnNumber})`);
       }
     }
   });
@@ -427,14 +428,14 @@ export function useRagnarokCombatController(
   
   const handleHeroPower = useCallback(() => {
     if (COMBAT_DEBUG.PHASES) {
-      console.log('[handleHeroPower] Called!');
+      debug.combat('[handleHeroPower] Called!');
     }
     
     const currentGameState = useGameStore.getState();
     const playerHeroPower = currentGameState.gameState?.players?.player?.heroPower;
     if (playerHeroPower?.used) {
       if (COMBAT_DEBUG.PHASES) {
-        console.log('[handleHeroPower] Blocked: Already used this turn (gameStore)');
+        debug.combat('[handleHeroPower] Blocked: Already used this turn (gameStore)');
       }
       return;
     }
@@ -442,14 +443,14 @@ export function useRagnarokCombatController(
     const norseHeroId = combatState?.player?.pet?.norseHeroId;
     if (!norseHeroId) {
       if (COMBAT_DEBUG.PHASES) {
-        console.log('[handleHeroPower] Blocked: No norseHeroId found');
+        debug.combat('[handleHeroPower] Blocked: No norseHeroId found');
       }
       return;
     }
     
     if (!combatState) {
       if (COMBAT_DEBUG.PHASES) {
-        console.log('[handleHeroPower] Blocked: No combatState');
+        debug.combat('[handleHeroPower] Blocked: No combatState');
       }
       return;
     }
@@ -457,7 +458,7 @@ export function useRagnarokCombatController(
     const norseHero = ALL_NORSE_HEROES[norseHeroId];
     if (!norseHero) {
       if (COMBAT_DEBUG.PHASES) {
-        console.log('[handleHeroPower] Blocked: norseHero not found for ID:', norseHeroId);
+        debug.combat('[handleHeroPower] Blocked: norseHero not found for ID:', norseHeroId);
       }
       return;
     }
@@ -467,19 +468,19 @@ export function useRagnarokCombatController(
     const currentMana = playerMana;
     
     if (COMBAT_DEBUG.PHASES) {
-      console.log('[handleHeroPower] Hero:', norseHero.name, 'Power:', heroPower.name, 'Cost:', manaCost, 'Current mana:', currentMana);
+      debug.combat('[handleHeroPower] Hero:', norseHero.name, 'Power:', heroPower.name, 'Cost:', manaCost, 'Current mana:', currentMana);
     }
     
     if (currentMana < manaCost) {
       if (COMBAT_DEBUG.PHASES) {
-        console.log('[handleHeroPower] Blocked: Not enough mana');
+        debug.combat('[handleHeroPower] Blocked: Not enough mana');
       }
       return;
     }
     
     if (heroPowerUsedThisTurn) {
       if (COMBAT_DEBUG.PHASES) {
-        console.log('[handleHeroPower] Blocked: heroPowerUsedThisTurn is true');
+        debug.combat('[handleHeroPower] Blocked: heroPowerUsedThisTurn is true');
       }
       return;
     }
@@ -490,14 +491,14 @@ export function useRagnarokCombatController(
     
     if (noTargetTypes.includes(targetType)) {
       if (COMBAT_DEBUG.PHASES) {
-        console.log('[handleHeroPower] Executing immediately (no target needed), targetType:', targetType);
+        debug.combat('[handleHeroPower] Executing immediately (no target needed), targetType:', targetType);
       }
       executeHeroPowerEffect(norseHero, heroPower, null);
       return;
     }
     
     if (COMBAT_DEBUG.PHASES) {
-      console.log('[handleHeroPower] Entering targeting mode, targetType:', targetType);
+      debug.combat('[handleHeroPower] Entering targeting mode, targetType:', targetType);
     }
     setHeroPowerTargeting({
       active: true,
@@ -630,7 +631,7 @@ export function useRagnarokCombatController(
         targetType.includes('hero') ||
         !targetType.includes('minion');
       if (allowsEnemyHero) {
-        console.log('[Battlecry Debug] Playing minion with battlecry targeting opponent hero');
+        debug.combat('[Battlecry Debug] Playing minion with battlecry targeting opponent hero');
         playCard(selectedCard.instanceId, 'opponent-hero', 'hero');
         selectCard(null);
         return;
@@ -685,7 +686,7 @@ export function useRagnarokCombatController(
         targetType.includes('hero') ||
         !targetType.includes('minion') && !targetType.includes('enemy');
       if (allowsFriendlyHero) {
-        console.log('[Battlecry Debug] Playing minion with battlecry targeting player hero');
+        debug.combat('[Battlecry Debug] Playing minion with battlecry targeting player hero');
         playCard(selectedCard.instanceId, 'player-hero', 'hero');
         selectCard(null);
         return;
@@ -791,7 +792,7 @@ export function useRagnarokCombatController(
       try {
         if (aiResponseInProgressRef.current) {
           if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: AI action already in progress from usePokerAI hook');
+            debug.combat('[AI Response handleAction] SKIP: AI action already in progress from usePokerAI hook');
           }
           return;
         }
@@ -800,7 +801,7 @@ export function useRagnarokCombatController(
         const freshStateAfterAction = adapterState.combatState;
         
         if (COMBAT_DEBUG.AI) {
-          console.log('[AI Response handleAction] Checking if AI should respond...', {
+          debug.combat('[AI Response handleAction] Checking if AI should respond...', {
             hasFreshState: !!freshStateAfterAction,
             opponentReady: freshStateAfterAction?.opponent?.isReady,
             playerReady: freshStateAfterAction?.player?.isReady,
@@ -815,35 +816,35 @@ export function useRagnarokCombatController(
         
         if (!freshStateAfterAction || freshStateAfterAction.opponent.isReady) {
           if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: No fresh state or opponent already ready');
+            debug.combat('[AI Response handleAction] SKIP: No fresh state or opponent already ready');
           }
           return;
         }
         
         if (freshStateAfterAction.phase !== phaseBeforeAction) {
           if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: Phase has advanced');
+            debug.combat('[AI Response handleAction] SKIP: Phase has advanced');
           }
           return;
         }
         
         if (freshStateAfterAction.phase === CombatPhase.RESOLUTION) {
           if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: Already in RESOLUTION');
+            debug.combat('[AI Response handleAction] SKIP: Already in RESOLUTION');
           }
           return;
         }
         
         if (freshStateAfterAction.foldWinner) {
           if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: Fold winner already set');
+            debug.combat('[AI Response handleAction] SKIP: Fold winner already set');
           }
           return;
         }
         
         if (freshStateAfterAction.isAllInShowdown) {
           if (COMBAT_DEBUG.AI) {
-            console.log('[AI Response handleAction] SKIP: All-in showdown - auto-advance useEffect handles phases');
+            debug.combat('[AI Response handleAction] SKIP: All-in showdown - auto-advance useEffect handles phases');
           }
           return;
         }
@@ -851,12 +852,12 @@ export function useRagnarokCombatController(
         aiResponseInProgressRef.current = true;
         
         if (COMBAT_DEBUG.AI) {
-          console.log('[AI Response handleAction] AI will respond now');
+          debug.combat('[AI Response handleAction] AI will respond now');
         }
         
         const aiDecision = getSmartAIAction(freshStateAfterAction, false);
         if (COMBAT_DEBUG.AI) {
-          console.log('[AI Response handleAction] AI decision:', aiDecision);
+          debug.combat('[AI Response handleAction] AI decision:', aiDecision);
         }
         
         getPokerCombatAdapterState().performAction(freshStateAfterAction.opponent.playerId, aiDecision.action, aiDecision.betAmount);

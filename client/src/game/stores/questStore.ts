@@ -13,6 +13,7 @@ import {
   QuestProgressUpdate,
   QuestActivationData 
 } from '../utils/quests/types';
+import { debug } from '../config/debugConfig';
 import { 
   generateQuestId, 
   getQuestConditionDescription,
@@ -66,7 +67,7 @@ export const useQuestStore = create<QuestStore>((set, get) => ({
       }));
     }
 
-    console.log(`[QuestStore] Quest activated: ${newQuest.name} for ${owner}`);
+    debug.log(`[QuestStore] Quest activated: ${newQuest.name} for ${owner}`);
   },
 
   updateQuestProgress: (owner, questId, increment = 1) => {
@@ -112,7 +113,7 @@ export const useQuestStore = create<QuestStore>((set, get) => ({
       }));
     }
     
-    console.log(`[QuestStore] Quest progress: ${quest.name} ${newProgress}/${quest.goal}${isComplete ? ' (COMPLETE!)' : ''}`);
+    debug.log(`[QuestStore] Quest progress: ${quest.name} ${newProgress}/${quest.goal}${isComplete ? ' (COMPLETE!)' : ''}`);
   },
 
   completeQuest: (owner, questId) => {
@@ -142,7 +143,7 @@ export const useQuestStore = create<QuestStore>((set, get) => ({
       }));
     }
     
-    console.log(`[QuestStore] Quest completed: ${updatedQuest.name}`);
+    debug.log(`[QuestStore] Quest completed: ${updatedQuest.name}`);
   },
 
   clearQuests: () => {

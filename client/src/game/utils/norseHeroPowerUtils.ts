@@ -8,6 +8,7 @@
 import { GameState, CardInstance, CardData, EquippedWeapon } from '../types';
 import { NorseHero, NorseHeroPower, HeroPassiveTrigger, NorseHeroPassive } from '../types/NorseTypes';
 import { ALL_NORSE_HEROES, getAnyHeroById } from '../data/norseHeroes';
+import { debug } from '../config/debugConfig';
 
 /**
  * Helper to safely get attack from card data
@@ -75,7 +76,7 @@ export function executeNorseHeroPower(
   // NOTE: Mana deduction and hero power marking is handled by the caller (UI's executeHeroPowerEffect)
   // Do NOT deduct mana here to avoid double-deduction
 
-  console.log(`[Hero Power] ${hero.name} used ${power.name}: ${power.description}`);
+  debug.log(`[Hero Power] ${hero.name} used ${power.name}: ${power.description}`);
 
   // Execute based on effect type
   switch (power.effectType) {

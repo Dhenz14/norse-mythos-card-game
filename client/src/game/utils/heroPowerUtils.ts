@@ -8,6 +8,7 @@ import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { NORSE_HEROES } from '../data/norseHeroes/heroDefinitions';
 import { isMinion, isWeapon, isSpell, isHero, getAttack, getHealth, getDurability } from './cards/typeGuards';
 import { trackQuestProgress } from './quests/questProgress';
+import { debug } from '../config/debugConfig';
 
 // Type for animation callback function
 // Used to trigger animations when hero power is used
@@ -254,13 +255,13 @@ export function executeHeroPower(
   
   // Check if hero power can be used
   if (player.heroPower.used) {
-    console.error('Hero power already used this turn');
+    debug.error('Hero power already used this turn');
     return state;
   }
   
   // Check if player has enough mana
   if (player.mana.current < player.heroPower.cost) {
-    console.error(`Not enough mana. Need ${player.heroPower.cost} but only have ${player.mana.current}`);
+    debug.error(`Not enough mana. Need ${player.heroPower.cost} but only have ${player.mana.current}`);
     return state;
   }
   
@@ -314,7 +315,7 @@ export function executeHeroPower(
         updatedState = executeDemonHunterPower(newState, playerType);
         break;
       default:
-        console.error('Unknown hero class');
+        debug.error('Unknown hero class');
         return state;
     }
   }
@@ -342,7 +343,7 @@ function executeNorseHeroPower(
   const power = player.heroPower.isUpgraded && hero.upgradedHeroPower ? hero.upgradedHeroPower : hero.heroPower;
   
   if (!power) {
-    console.error(`[Hero Power] Norse hero power not found for ${hero.name}`);
+    debug.error(`[Hero Power] Norse hero power not found for ${hero.name}`);
     return state;
   }
 
@@ -350,7 +351,7 @@ function executeNorseHeroPower(
   player.mana.current -= player.heroPower.cost;
   player.heroPower.used = true;
 
-  console.log(`[Hero Power] ${hero.name} used ${power.name}: ${power.description}`);
+  debug.log(`[Hero Power] ${hero.name} used ${power.name}: ${power.description}`);
 
   // Execute based on effectType
   switch (power.effectType) {
@@ -364,7 +365,7 @@ function executeNorseHeroPower(
       if (power.secondaryValue && opponent.hand.length > 0) {
         const revealCount = Math.min(power.secondaryValue, opponent.hand.length);
         const revealedCards = opponent.hand.slice(0, revealCount);
-        console.log(`[Hero Power] Revealed ${revealCount} cards from opponent's hand:`, revealedCards.map(c => c.card.name));
+        debug.log(`[Hero Power] Revealed ${revealCount} cards from opponent's hand:`, revealedCards.map(c => c.card.name));
         // Mark cards as revealed (visual indicator)
         for (let i = 0; i < revealCount; i++) {
           if (opponent.hand[i]) {
@@ -382,7 +383,7 @@ function executeNorseHeroPower(
         for (let i = 0; i < actualReveal; i++) {
           const randomIdx = Math.floor(Math.random() * opponent.hand.length);
           (opponent.hand[randomIdx] as any).isRevealed = true;
-          console.log(`[Hero Power] Revealed: ${opponent.hand[randomIdx].card.name}`);
+          debug.log(`[Hero Power] Revealed: ${opponent.hand[randomIdx].card.name}`);
         }
       }
       return state;
@@ -395,7 +396,7 @@ function executeNorseHeroPower(
       for (const minion of opponent.battlefield) {
         if (minion.currentHealth !== undefined) {
           minion.currentHealth -= damage;
-          console.log(`[Hero Power] Dealt ${damage} damage to ${minion.card.name}`);
+          debug.log(`[Hero Power] Dealt ${damage} damage to ${minion.card.name}`);
         }
       }
       // Check for deaths
@@ -410,13 +411,13 @@ function executeNorseHeroPower(
     case 'damage_single': {
       const damage = power.value || 1;
       if (!targetId) {
-        console.error('[Hero Power] damage_single requires a target');
+        debug.error('[Hero Power] damage_single requires a target');
         return state;
       }
       
       if (targetType === 'hero') {
         opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
-        console.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
+        debug.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
         if (opponent.heroHealth <= 0) {
           state.gamePhase = "game_over";
           state.winner = playerType;
@@ -427,12 +428,12 @@ function executeNorseHeroPower(
         const targetMinion = allBattlefields.find(m => m.instanceId === targetId);
         if (targetMinion && targetMinion.currentHealth !== undefined) {
           targetMinion.currentHealth -= damage;
-          console.log(`[Hero Power] Dealt ${damage} damage to ${targetMinion.card.name}`);
+          debug.log(`[Hero Power] Dealt ${damage} damage to ${targetMinion.card.name}`);
           
           // Apply secondary effects (freeze, debuff, etc.)
           if (power.grantKeyword === 'frozen') {
             (targetMinion as any).isFrozen = true;
-            console.log(`[Hero Power] Froze ${targetMinion.card.name}`);
+            debug.log(`[Hero Power] Froze ${targetMinion.card.name}`);
           }
           
           state = updateEnrageEffects(state);
@@ -446,7 +447,7 @@ function executeNorseHeroPower(
       // Handle secondaryValue for armor gain (like Tyr)
       if (power.secondaryValue) {
         player.heroArmor = (player.heroArmor || 0) + power.secondaryValue;
-        console.log(`[Hero Power] Gained ${power.secondaryValue} armor`);
+        debug.log(`[Hero Power] Gained ${power.secondaryValue} armor`);
       }
       return state;
     }
@@ -454,14 +455,14 @@ function executeNorseHeroPower(
     case 'damage_random': {
       const damage = power.value || 1;
       if (opponent.battlefield.length === 0) {
-        console.log('[Hero Power] No enemy minions to damage');
+        debug.log('[Hero Power] No enemy minions to damage');
         return state;
       }
       const randomIdx = Math.floor(Math.random() * opponent.battlefield.length);
       const target = opponent.battlefield[randomIdx];
       if (target.currentHealth !== undefined) {
         target.currentHealth -= damage;
-        console.log(`[Hero Power] Dealt ${damage} random damage to ${target.card.name}`);
+        debug.log(`[Hero Power] Dealt ${damage} random damage to ${target.card.name}`);
       }
       
       // Handle splash damage (secondaryValue)
@@ -486,7 +487,7 @@ function executeNorseHeroPower(
     case 'damage_hero': {
       const damage = power.value || 2;
       opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
-      console.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
+      debug.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
       if (opponent.heroHealth <= 0) {
         state.gamePhase = "game_over";
         state.winner = playerType;
@@ -509,7 +510,7 @@ function executeNorseHeroPower(
             target.card.health = (target.card.health ?? 0) + healthValue;
           }
         }
-        console.log(`[Hero Power] Buffed ${target.card.name} +${value}/+${healthValue}`);
+        debug.log(`[Hero Power] Buffed ${target.card.name} +${value}/+${healthValue}`);
         
         if (power.grantKeyword) {
           applyKeywordToMinion(target, power.grantKeyword);
@@ -522,7 +523,7 @@ function executeNorseHeroPower(
             target.currentHealth += healthValue;
             target.card.health = (target.card.health ?? 0) + healthValue;
           }
-          console.log(`[Hero Power] Buffed ${target.card.name} +${value}/+${healthValue}`);
+          debug.log(`[Hero Power] Buffed ${target.card.name} +${value}/+${healthValue}`);
           
           if (power.grantKeyword) {
             applyKeywordToMinion(target, power.grantKeyword);
@@ -533,7 +534,7 @@ function executeNorseHeroPower(
       // Heal hero if secondaryValue specified for that purpose (like Freya)
       if (power.secondaryValue && hero.id === 'hero-freya') {
         player.heroHealth = Math.min((player.heroHealth || 30) + power.secondaryValue, 30);
-        console.log(`[Hero Power] Restored ${power.secondaryValue} health to hero`);
+        debug.log(`[Hero Power] Restored ${power.secondaryValue} health to hero`);
       }
       return state;
     }
@@ -548,7 +549,7 @@ function executeNorseHeroPower(
           minion.card.health = (minion.card.health ?? 0) + value;
         }
       }
-      console.log(`[Hero Power] Buffed all friendly minions +${value}/+${value}`);
+      debug.log(`[Hero Power] Buffed all friendly minions +${value}/+${value}`);
       return state;
     }
 
@@ -558,7 +559,7 @@ function executeNorseHeroPower(
       if (!player.tempStats) player.tempStats = { attack: 0 };
       player.tempStats.attack = (player.tempStats.attack || 0) + attackValue;
       player.heroArmor = (player.heroArmor || 0) + armorValue;
-      console.log(`[Hero Power] Hero gained +${attackValue} attack and +${armorValue} armor`);
+      debug.log(`[Hero Power] Hero gained +${attackValue} attack and +${armorValue} armor`);
       return state;
     }
 
@@ -567,21 +568,21 @@ function executeNorseHeroPower(
     case 'heal_single': {
       const healAmount = power.value || 2;
       if (!targetId) {
-        console.error('[Hero Power] heal requires a target');
+        debug.error('[Hero Power] heal requires a target');
         return state;
       }
       
       if (targetType === 'hero' || targetId === 'player' || targetId === 'opponent') {
         const targetPlayer = targetId === 'opponent' ? opponent : player;
         targetPlayer.heroHealth = Math.min((targetPlayer.heroHealth || 30) + healAmount, 30);
-        console.log(`[Hero Power] Restored ${healAmount} health to hero`);
+        debug.log(`[Hero Power] Restored ${healAmount} health to hero`);
       } else {
         const allMinions = [...player.battlefield, ...opponent.battlefield];
         const target = allMinions.find(m => m.instanceId === targetId);
         if (target && target.currentHealth !== undefined) {
           const maxHealth = getHealth(target.card) || 1;
           target.currentHealth = Math.min(target.currentHealth + healAmount, maxHealth);
-          console.log(`[Hero Power] Restored ${healAmount} health to ${target.card.name}`);
+          debug.log(`[Hero Power] Restored ${healAmount} health to ${target.card.name}`);
         }
       }
       return state;
@@ -596,7 +597,7 @@ function executeNorseHeroPower(
           minion.currentHealth = Math.min(minion.currentHealth + healAmount, maxHealth);
         }
       }
-      console.log(`[Hero Power] Restored ${healAmount} health to all friendly minions`);
+      debug.log(`[Hero Power] Restored ${healAmount} health to all friendly minions`);
       return state;
     }
 
@@ -609,7 +610,7 @@ function executeNorseHeroPower(
           const maxHealth = getHealth(target.card) || 1;
           target.currentHealth = Math.min(target.currentHealth + healAmount, maxHealth);
           target.card.attack = (target.card.attack ?? 0) + buffAmount;
-          console.log(`[Hero Power] Healed ${target.card.name} for ${healAmount} and gave +${buffAmount} attack`);
+          debug.log(`[Hero Power] Healed ${target.card.name} for ${healAmount} and gave +${buffAmount} attack`);
         }
       }
       return state;
@@ -619,7 +620,7 @@ function executeNorseHeroPower(
     case 'copy': {
       const copyCount = power.value || 1;
       if (opponent.hand.length === 0) {
-        console.log('[Hero Power] No cards to copy from opponent');
+        debug.log('[Hero Power] No cards to copy from opponent');
         return state;
       }
       
@@ -627,7 +628,7 @@ function executeNorseHeroPower(
         const randomIdx = Math.floor(Math.random() * opponent.hand.length);
         const cardToCopy = opponent.hand[randomIdx].card;
         state = addCardToHand(state, playerType, { ...cardToCopy });
-        console.log(`[Hero Power] Copied ${cardToCopy.name} from opponent's hand`);
+        debug.log(`[Hero Power] Copied ${cardToCopy.name} from opponent's hand`);
       }
       return state;
     }
@@ -635,13 +636,13 @@ function executeNorseHeroPower(
     // ==================== SUMMON EFFECTS ====================
     case 'summon': {
       if (player.battlefield.length >= 7) {
-        console.log('[Hero Power] Battlefield is full');
+        debug.log('[Hero Power] Battlefield is full');
         return state;
       }
       
       const summonData = power.summonData;
       if (!summonData) {
-        console.error('[Hero Power] No summon data provided');
+        debug.error('[Hero Power] No summon data provided');
         return state;
       }
       
@@ -673,7 +674,7 @@ function executeNorseHeroPower(
       }
       
       player.battlefield.push(summonedMinion);
-      console.log(`[Hero Power] Summoned ${summonData.name} (${summonData.attack}/${summonData.health})`);
+      debug.log(`[Hero Power] Summoned ${summonData.name} (${summonData.attack}/${summonData.health})`);
       
       // Track quest progress for summoned minion
       trackQuestProgress(playerType, 'summon_minion', summonedMinion.card);
@@ -682,7 +683,7 @@ function executeNorseHeroPower(
 
     case 'summon_random': {
       if (player.battlefield.length >= 7) {
-        console.log('[Hero Power] Battlefield is full');
+        debug.log('[Hero Power] Battlefield is full');
         return state;
       }
       
@@ -700,7 +701,7 @@ function executeNorseHeroPower(
       
       const availablePool = summonPool.filter(t => !existingTotems.includes(totemDefinitions[t]?.name));
       if (availablePool.length === 0) {
-        console.log('[Hero Power] All totems already summoned');
+        debug.log('[Hero Power] All totems already summoned');
         return state;
       }
       
@@ -732,7 +733,7 @@ function executeNorseHeroPower(
       };
       
       player.battlefield.push(totem);
-      console.log(`[Hero Power] Summoned ${totemData.name}`);
+      debug.log(`[Hero Power] Summoned ${totemData.name}`);
       
       // Track quest progress for summoned totem
       trackQuestProgress(playerType, 'summon_minion', totem.card);
@@ -742,7 +743,7 @@ function executeNorseHeroPower(
     case 'self_damage_and_summon': {
       const selfDamage = power.value || 2;
       player.heroHealth = Math.max(0, (player.heroHealth || 30) - selfDamage);
-      console.log(`[Hero Power] Took ${selfDamage} damage`);
+      debug.log(`[Hero Power] Took ${selfDamage} damage`);
       
       if (player.heroHealth <= 0) {
         state.gamePhase = "game_over";
@@ -751,7 +752,7 @@ function executeNorseHeroPower(
       }
       
       if (player.battlefield.length >= 7) {
-        console.log('[Hero Power] Battlefield is full');
+        debug.log('[Hero Power] Battlefield is full');
         return state;
       }
       
@@ -783,7 +784,7 @@ function executeNorseHeroPower(
         }
         
         player.battlefield.push(minion);
-        console.log(`[Hero Power] Summoned ${summonData.name}`);
+        debug.log(`[Hero Power] Summoned ${summonData.name}`);
         
         // Track quest progress for summoned minion
         trackQuestProgress(playerType, 'summon_minion', minion.card);
@@ -795,7 +796,7 @@ function executeNorseHeroPower(
     case 'grant_keyword':
     case 'grant_divine_shield': {
       if (!targetId) {
-        console.error('[Hero Power] grant_keyword requires a target');
+        debug.error('[Hero Power] grant_keyword requires a target');
         return state;
       }
       
@@ -803,17 +804,17 @@ function executeNorseHeroPower(
       if (target && isMinion(target.card)) {
         const keyword = power.grantKeyword || 'divine_shield';
         applyKeywordToMinion(target, keyword);
-        console.log(`[Hero Power] Granted ${keyword} to ${target.card.name}`);
+        debug.log(`[Hero Power] Granted ${keyword} to ${target.card.name}`);
         
         // Handle stat bonuses with keyword
         if (power.value) {
           target.card.attack = (target.card.attack ?? 0) + power.value;
-          console.log(`[Hero Power] Also gave +${power.value} attack`);
+          debug.log(`[Hero Power] Also gave +${power.value} attack`);
         }
         if (power.secondaryValue && target.currentHealth !== undefined) {
           target.currentHealth += power.secondaryValue;
           target.card.health = (target.card.health ?? 0) + power.secondaryValue;
-          console.log(`[Hero Power] Also gave +${power.secondaryValue} health`);
+          debug.log(`[Hero Power] Also gave +${power.secondaryValue} health`);
         }
       }
       return state;
@@ -821,7 +822,7 @@ function executeNorseHeroPower(
 
     case 'stealth': {
       if (!targetId) {
-        console.error('[Hero Power] stealth requires a target');
+        debug.error('[Hero Power] stealth requires a target');
         return state;
       }
       
@@ -832,14 +833,14 @@ function executeNorseHeroPower(
         if (!target.card.keywords.includes('stealth')) {
           target.card.keywords.push('stealth');
         }
-        console.log(`[Hero Power] Granted Stealth to ${target.card.name}`);
+        debug.log(`[Hero Power] Granted Stealth to ${target.card.name}`);
       }
       return state;
     }
 
     case 'silence': {
       if (!targetId) {
-        console.error('[Hero Power] silence requires a target');
+        debug.error('[Hero Power] silence requires a target');
         return state;
       }
       
@@ -854,7 +855,7 @@ function executeNorseHeroPower(
         (target as any).hasTaunt = false;
         (target as any).hasStealth = false;
         (target as any).isSilenced = true;
-        console.log(`[Hero Power] Silenced ${target.card.name}`);
+        debug.log(`[Hero Power] Silenced ${target.card.name}`);
         
         // Deal damage if upgraded (Hoenir+)
         if (power.value && target.currentHealth !== undefined) {
@@ -871,7 +872,7 @@ function executeNorseHeroPower(
 
     case 'freeze': {
       if (!targetId) {
-        console.error('[Hero Power] freeze requires a target');
+        debug.error('[Hero Power] freeze requires a target');
         return state;
       }
       
@@ -879,7 +880,7 @@ function executeNorseHeroPower(
       if (target) {
         (target as any).isFrozen = true;
         target.canAttack = false;
-        console.log(`[Hero Power] Froze ${target.card.name}`);
+        debug.log(`[Hero Power] Froze ${target.card.name}`);
       }
       return state;
     }
@@ -888,13 +889,13 @@ function executeNorseHeroPower(
     case 'scry': {
       const scryCount = power.value || 1;
       if (player.deck.length === 0) {
-        console.log('[Hero Power] Deck is empty');
+        debug.log('[Hero Power] Deck is empty');
         return state;
       }
       
       // Look at top cards
       const topCards = player.deck.slice(0, scryCount);
-      console.log(`[Hero Power] Scrying top ${scryCount} card(s):`, topCards.map(c => c.name));
+      debug.log(`[Hero Power] Scrying top ${scryCount} card(s):`, topCards.map(c => c.name));
       
       // For now, just draw the first card (simplified scry)
       state = drawCard(state, playerType);
@@ -904,14 +905,14 @@ function executeNorseHeroPower(
     case 'debuff_single': {
       const debuffAmount = power.value || 2;
       if (!targetId) {
-        console.error('[Hero Power] debuff_single requires a target');
+        debug.error('[Hero Power] debuff_single requires a target');
         return state;
       }
       
       const target = opponent.battlefield.find(m => m.instanceId === targetId);
       if (target && isMinion(target.card)) {
         target.card.attack = Math.max(0, getAttack(target.card) - debuffAmount);
-        console.log(`[Hero Power] Reduced ${target.card.name}'s attack by ${debuffAmount}`);
+        debug.log(`[Hero Power] Reduced ${target.card.name}'s attack by ${debuffAmount}`);
       }
       return state;
     }
@@ -919,7 +920,7 @@ function executeNorseHeroPower(
     case 'equip_weapon': {
       const weaponData = power.weaponData;
       if (!weaponData) {
-        console.error('[Hero Power] No weapon data provided');
+        debug.error('[Hero Power] No weapon data provided');
         return state;
       }
       
@@ -940,14 +941,14 @@ function executeNorseHeroPower(
       };
       
       player.weapon = weapon as any;
-      console.log(`[Hero Power] Equipped ${weaponData.name || 'Wicked Knife'} (${weaponData.attack}/${weaponData.durability})`);
+      debug.log(`[Hero Power] Equipped ${weaponData.name || 'Wicked Knife'} (${weaponData.attack}/${weaponData.durability})`);
       return state;
     }
 
     // ==================== SPECIAL EFFECTS ====================
     case 'conditional_destroy': {
       if (!targetId) {
-        console.error('[Hero Power] conditional_destroy requires a target');
+        debug.error('[Hero Power] conditional_destroy requires a target');
         return state;
       }
       
@@ -957,9 +958,9 @@ function executeNorseHeroPower(
         const attack = getAttack(target.card);
         if (attack <= maxAttack) {
           state = destroyCard(state, target.instanceId, opponentType);
-          console.log(`[Hero Power] Destroyed ${target.card.name}`);
+          debug.log(`[Hero Power] Destroyed ${target.card.name}`);
         } else {
-          console.log(`[Hero Power] ${target.card.name} doesn't meet condition (attack > ${maxAttack})`);
+          debug.log(`[Hero Power] ${target.card.name} doesn't meet condition (attack > ${maxAttack})`);
         }
       }
       return state;
@@ -967,7 +968,7 @@ function executeNorseHeroPower(
 
     case 'set_stats': {
       if (!targetId) {
-        console.error('[Hero Power] set_stats requires a target');
+        debug.error('[Hero Power] set_stats requires a target');
         return state;
       }
       
@@ -980,7 +981,7 @@ function executeNorseHeroPower(
         if (target.currentHealth !== undefined) {
           target.currentHealth = value;
         }
-        console.log(`[Hero Power] Set ${target.card.name}'s stats to ${value}/${value}`);
+        debug.log(`[Hero Power] Set ${target.card.name}'s stats to ${value}/${value}`);
       }
       return state;
     }
@@ -988,7 +989,7 @@ function executeNorseHeroPower(
     case 'bounce_to_hand':
     case 'bounce': {
       if (!targetId) {
-        console.error('[Hero Power] bounce requires a target');
+        debug.error('[Hero Power] bounce requires a target');
         return state;
       }
       
@@ -1000,7 +1001,7 @@ function executeNorseHeroPower(
         // Return to hand (reset stats)
         const cardData = { ...target.card };
         state = addCardToHand(state, opponentType, cardData);
-        console.log(`[Hero Power] Returned ${cardData.name} to opponent's hand`);
+        debug.log(`[Hero Power] Returned ${cardData.name} to opponent's hand`);
       }
       return state;
     }
@@ -1008,7 +1009,7 @@ function executeNorseHeroPower(
     case 'bounce_and_damage_hero':
     case 'bounce_damage': {
       if (!targetId) {
-        console.error('[Hero Power] bounce_and_damage requires a target');
+        debug.error('[Hero Power] bounce_and_damage requires a target');
         return state;
       }
       
@@ -1019,12 +1020,12 @@ function executeNorseHeroPower(
         
         const cardData = { ...target.card };
         state = addCardToHand(state, opponentType, cardData);
-        console.log(`[Hero Power] Returned ${cardData.name} to opponent's hand`);
+        debug.log(`[Hero Power] Returned ${cardData.name} to opponent's hand`);
         
         // Deal damage to hero
         const damage = power.value || 2;
         opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
-        console.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
+        debug.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
         
         if (opponent.heroHealth <= 0) {
           state.gamePhase = "game_over";
@@ -1036,14 +1037,14 @@ function executeNorseHeroPower(
 
     case 'sacrifice_summon': {
       if (!targetId) {
-        console.error('[Hero Power] sacrifice_summon requires a target');
+        debug.error('[Hero Power] sacrifice_summon requires a target');
         return state;
       }
       
       const targetIdx = player.battlefield.findIndex(m => m.instanceId === targetId);
       if (targetIdx !== -1) {
         const target = player.battlefield[targetIdx];
-        console.log(`[Hero Power] Sacrificed ${target.card.name}`);
+        debug.log(`[Hero Power] Sacrificed ${target.card.name}`);
         player.battlefield.splice(targetIdx, 1);
         
         // Summon replacement
@@ -1071,7 +1072,7 @@ function executeNorseHeroPower(
           };
           
           player.battlefield.push(minion);
-          console.log(`[Hero Power] Summoned ${summonData.name}`);
+          debug.log(`[Hero Power] Summoned ${summonData.name}`);
           
           // Track quest progress for summoned minion
           trackQuestProgress(playerType, 'summon_minion', minion.card);
@@ -1083,7 +1084,7 @@ function executeNorseHeroPower(
     case 'damage_and_poison': {
       const damage = power.value || 1;
       if (!targetId) {
-        console.error('[Hero Power] damage_and_poison requires a target');
+        debug.error('[Hero Power] damage_and_poison requires a target');
         return state;
       }
       
@@ -1091,7 +1092,7 @@ function executeNorseHeroPower(
       if (target && target.currentHealth !== undefined) {
         target.currentHealth -= damage;
         (target as any).isPoisoned = true;
-        console.log(`[Hero Power] Dealt ${damage} damage to ${target.card.name} and applied Poison`);
+        debug.log(`[Hero Power] Dealt ${damage} damage to ${target.card.name} and applied Poison`);
         
         state = updateEnrageEffects(state);
         if (target.currentHealth <= 0) {
@@ -1103,7 +1104,7 @@ function executeNorseHeroPower(
 
     // ==================== DEFAULT FALLBACK ====================
     default:
-      console.warn(`[Hero Power] Unhandled effectType: ${power.effectType} for ${hero.name}`);
+      debug.warn(`[Hero Power] Unhandled effectType: ${power.effectType} for ${hero.name}`);
       // Fallback to class-based power
       switch (player.heroClass) {
         case 'mage': return executeMagePower(state, playerType, targetId, targetType);
@@ -1181,7 +1182,7 @@ function executeMagePower(
   
   // Mage power requires a target
   if (!targetId || !targetType) {
-    console.error('Mage power requires a target');
+    debug.error('Mage power requires a target');
     return state;
   }
   
@@ -1208,14 +1209,14 @@ function executeMagePower(
     const targetIndex = targetField.findIndex(card => card.instanceId === targetId);
     
     if (targetIndex === -1) {
-      console.error('Target card not found');
+      debug.error('Target card not found');
       return state;
     }
     
     // Get the target card
     const targetCard = targetField[targetIndex];
     if (!targetCard.currentHealth) {
-      console.error('Target card has no health property');
+      debug.error('Target card has no health property');
       return state;
     }
     
@@ -1266,7 +1267,7 @@ function executePaladinPower(state: GameState, playerType: 'player' | 'opponent'
   
   // Check if the battlefield is full (max 7 minions)
   if (player.battlefield.length >= 7) {
-    console.error('Battlefield is full, cannot summon recruit');
+    debug.error('Battlefield is full, cannot summon recruit');
     return state;
   }
   
@@ -1367,7 +1368,7 @@ function executePriestPower(
   
   // Priest power requires a target
   if (!targetId || !targetType) {
-    console.error('Priest power requires a target');
+    debug.error('Priest power requires a target');
     return state;
   }
   
@@ -1390,13 +1391,13 @@ function executePriestPower(
     const targetIndex = targetField.findIndex(card => card.instanceId === targetId);
     
     if (targetIndex === -1) {
-      console.error('Target card not found');
+      debug.error('Target card not found');
       return state;
     }
     
     const targetCard = targetField[targetIndex];
     if (!targetCard.currentHealth) {
-      console.error('Target card has no health property');
+      debug.error('Target card has no health property');
       return state;
     }
     
@@ -1443,7 +1444,7 @@ function executeShamanPower(state: GameState, playerType: 'player' | 'opponent')
   
   // Check if the battlefield is full (max 7 minions)
   if (player.battlefield.length >= 7) {
-    console.error('Battlefield is full, cannot summon totem');
+    debug.error('Battlefield is full, cannot summon totem');
     return state;
   }
   

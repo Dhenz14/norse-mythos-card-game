@@ -12,54 +12,91 @@ interface DebugConfig {
   logGameState: boolean;
   logAIDecisions: boolean;
   logBattlefieldChanges: boolean;
+  logCombat: boolean;
+  logChess: boolean;
+  logDrag: boolean;
+  log3D: boolean;
+  logAnimations: boolean;
 }
 
+const IS_DEV = import.meta.env?.DEV ?? process.env.NODE_ENV === 'development';
+
 const debugConfig: DebugConfig = {
-  enableLogging: process.env.NODE_ENV === 'development',
+  enableLogging: IS_DEV,
   enableVerboseLogging: false,
   enablePerformanceLogging: false,
-  logCardOperations: process.env.NODE_ENV === 'development',
-  logManaOperations: process.env.NODE_ENV === 'development',
+  logCardOperations: false,
+  logManaOperations: false,
   logGameState: false,
-  logAIDecisions: process.env.NODE_ENV === 'development',
+  logAIDecisions: false,
   logBattlefieldChanges: false,
+  logCombat: false,
+  logChess: false,
+  logDrag: false,
+  log3D: false,
+  logAnimations: false,
 };
 
 export const debug = {
-  log: (...args: any[]) => {
+  log: (...args: unknown[]) => {
     if (debugConfig.enableLogging) {
       console.log(...args);
     }
   },
-  verbose: (...args: any[]) => {
+  verbose: (...args: unknown[]) => {
     if (debugConfig.enableVerboseLogging) {
       console.log('[VERBOSE]', ...args);
     }
   },
-  card: (...args: any[]) => {
+  card: (...args: unknown[]) => {
     if (debugConfig.logCardOperations) {
       console.log('[CARD]', ...args);
     }
   },
-  mana: (...args: any[]) => {
+  mana: (...args: unknown[]) => {
     if (debugConfig.logManaOperations) {
       console.log('[MANA]', ...args);
     }
   },
-  state: (...args: any[]) => {
+  state: (...args: unknown[]) => {
     if (debugConfig.logGameState) {
       console.log('[STATE]', ...args);
     }
   },
-  ai: (...args: any[]) => {
+  ai: (...args: unknown[]) => {
     if (debugConfig.logAIDecisions) {
       console.log('[AI]', ...args);
     }
   },
-  error: (...args: any[]) => {
+  combat: (...args: unknown[]) => {
+    if (debugConfig.logCombat) {
+      console.log('[COMBAT]', ...args);
+    }
+  },
+  chess: (...args: unknown[]) => {
+    if (debugConfig.logChess) {
+      console.log('[CHESS]', ...args);
+    }
+  },
+  drag: (...args: unknown[]) => {
+    if (debugConfig.logDrag) {
+      console.log('[DRAG]', ...args);
+    }
+  },
+  render3d: (...args: unknown[]) => {
+    if (debugConfig.log3D) {
+      console.log('[3D]', ...args);
+    }
+  },
+  animation: (...args: unknown[]) => {
+    if (debugConfig.logAnimations) {
+      console.log('[ANIM]', ...args);
+    }
+  },
+  error: (...args: unknown[]) => {
     console.error(...args);
   },
-  warn: (...args: any[]) => {
+  warn: (...args: unknown[]) => {
     console.warn(...args);
   }
 };

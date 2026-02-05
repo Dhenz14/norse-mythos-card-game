@@ -3,6 +3,7 @@
  * This is similar to how Hearthstone implements "discover a dragon" or "discover a deathrattle minion"
  */
 import { CardData } from '../types';
+import { debug } from '../config/debugConfig';
 // Use allCards as the single source of truth for card data (1300+ cards)
 import allCards from './allCards';
 // Alias for backward compatibility within this file
@@ -279,24 +280,24 @@ export function getCardsFromPool(poolId: string): CardData[] {
           // Find the pool
   const pool = discoveryPools.find((p: DiscoveryPool) => p.id === poolId);
   if (!pool) {
-  console.error(`Discovery pool with ID ${poolId} not found`);
+  debug.error(`Discovery pool with ID ${poolId} not found`);
     return [];
   }
   
   // Log total cards in the database for debugging
-  console.log(`Total cards in   database: ${fullCardDatabase.length}`);
+  debug.log(`Total cards in   database: ${fullCardDatabase.length}`);
    // Enhanced debug for beast cards
   if (poolId === 'beast') {
-            console.log('Searching for beast cards in database...');
+            debug.log('Searching for beast cards in database...');
     // Find cards with race 'Beast' (case-insensitive)
     const beasts = fullCardDatabase.filter(card => 
       card.race && card.race.toLowerCase() === 'beast'
     );
-    console.log(`Found ${beasts.length} beast cards in the card database`);
+    debug.log(`Found ${beasts.length} beast cards in the card database`);
     
     // Log beast cards for debugging
     beasts.forEach(card => {
-              console.log(`Beast card found: ${card.name}
+              debug.log(`Beast card found: ${card.name}
 ID: ${card.id}
 Race: ${card.race}`);
     });
@@ -306,16 +307,16 @@ Race: ${card.race}`);
   
   // Enhanced debug for taunt minions
   if (poolId === 'taunt') {
-            console.log('Searching for taunt minions in card database...');
+            debug.log('Searching for taunt minions in card database...');
     const taunts = fullCardDatabase.filter(card => 
       card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
         typeof keyword === 'string' && keyword.toLowerCase() === 'taunt')
     );
-    console.log(`Found ${taunts.length} taunt minions with proper taunt keyword`);
+    debug.log(`Found ${taunts.length} taunt minions with proper taunt keyword`);
     
     // Log some sample taunt cards
     taunts.slice(0, 3).forEach(card => {
-              console.log(`Taunt card found: ${card.name}
+              debug.log(`Taunt card found: ${card.name}
 ID: ${card.id}
 Keywords: ${card.keywords}`);
     });
@@ -325,7 +326,7 @@ Keywords: ${card.keywords}`);
   
   // Filter cards based on the pool's filter
   const result = fullCardDatabase.filter(pool.filter);
-  console.log(`Found ${result.length} cards for discovery   pool: ${poolId}`);
+  debug.log(`Found ${result.length} cards for discovery   pool: ${poolId}`);
    return result;
 }
 

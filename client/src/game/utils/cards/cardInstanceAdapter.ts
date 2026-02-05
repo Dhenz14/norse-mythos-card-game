@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CardInstance } from '../../types/CardTypes';
 import { CardInstanceWithCardData } from '../../types/interfaceExtensions';
 import { Position } from '../../types/Position';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Debug logging helper for card adapter operations
@@ -22,7 +23,7 @@ const DEBUG_CARD_ADAPTER = false;
 
 function debugCardAdapter(message: string, data?: any): void {
   if (DEBUG_CARD_ADAPTER) {
-    console.log(`[CardAdapter] ${message}`, data);
+    debug.card(`[CardAdapter] ${message}`, data);
   }
 }
 

@@ -1,6 +1,7 @@
 import { CardInstance, GameState, ZoneType } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { shouldTriggerDeathrattle, processPendingDeathrattles } from './deathrattleUtils';
+import { debug } from '../config/debugConfig';
 // Use the bridge for enhanced deathrattle handling with EffectRegistry support
 import { executeDeathrattle } from '../effects/handlers/deathrattleBridge';
 import { logCardDraw, logCardDeath } from './gameLogUtils';
@@ -299,7 +300,7 @@ export function removeDeadMinions(state: GameState): GameState {
     // Process each dead minion through the proper destroyCard flow
     // This ensures deathrattles trigger and animations play
     for (const deadMinion of deadMinions) {
-      console.log(`[removeDeadMinions] Removing ${deadMinion.card.name} (health: ${deadMinion.currentHealth}) for ${playerId}`);
+      debug.state(`[removeDeadMinions] Removing ${deadMinion.card.name} (health: ${deadMinion.currentHealth}) for ${playerId}`);
       newState = destroyCard(newState, deadMinion.instanceId, playerId);
     }
   }

@@ -7,6 +7,7 @@ import MovePlate from './MovePlate';
 import ChessAttackAnimation from './ChessAttackAnimation';
 import { useAudio } from '../../../lib/stores/useAudio';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
+import { debug } from '../../config/debugConfig';
 import {
   getActiveMineStyle,
   getActiveMineGlowAnimation,
@@ -153,7 +154,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         const success = placeMineAtPosition(position);
         if (success) {
           playSoundEffect('card_play');
-          console.log(`[Chess] Mine placed at (${row}, ${col})`);
+          debug.chess(`Mine placed at (${row}, ${col})`);
           setMinePlacementEffect({
             position,
             tiles: previewTiles,
@@ -172,7 +173,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
       const collision = movePiece(position);
       
       if (collision) {
-        console.log(`[Chess] Attack initiated: ${collision.attacker.heroName} -> ${collision.defender.heroName}`);
+        debug.chess(`Attack initiated: ${collision.attacker.heroName} -> ${collision.defender.heroName}`);
       } else {
         playSoundEffect('card_play');
       }
@@ -184,7 +185,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     if (pieceAtPosition) {
       if (pieceAtPosition.owner === currentTurn) {
         const { moves, attacks } = getValidMoves(pieceAtPosition);
-        console.log(`[Chess] Selected ${pieceAtPosition.type} at (${row}, ${col}). Valid moves: ${moves.length}, attacks: ${attacks.length}`);
+        debug.chess(`Selected ${pieceAtPosition.type} at (${row}, ${col}). Valid moves: ${moves.length}, attacks: ${attacks.length}`);
         
         if (moves.length === 0 && attacks.length === 0) {
           setNoMovesMessage(`${pieceAtPosition.heroName} is blocked and cannot move!`);

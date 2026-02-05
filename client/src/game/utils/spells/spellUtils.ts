@@ -14,6 +14,7 @@ import { scheduleSpellEffect, SpellEffectType } from '../../animations/UnifiedAn
 import { useGameStore } from '../../stores/gameStore';
 import { isMinion, isSpell, isWeapon, getAttack, getHealth, hasAttack, hasHealth } from '../cards/typeGuards';
 import { trackQuestProgress } from '../quests/questProgress';
+import { debug } from '../../config/debugConfig';
 
 function getSpellEffectType(effectType: string): SpellEffectType {
   const typeMap: Record<string, SpellEffectType> = {
@@ -166,7 +167,7 @@ export function executeSpell(
       resultState = executeSummonSpell(state, effect);
       break;
     case 'discover':
-      console.log('[executeSpell] Discovery spell detected, processing discovery state');
+      debug.log('[executeSpell] Discovery spell detected, processing discovery state');
       resultState = executeDiscoverSpell(state, effect, spellCard.instanceId);
       break;
     case 'freeze':
@@ -1571,7 +1572,7 @@ function executeDiscoverSpell(
   effect: SpellEffect,
   sourceCardId: string
 ): GameState {
-  console.log('[executeDiscoverSpell] Called with effect:', effect, 'sourceCardId:', sourceCardId);
+  debug.log('[executeDiscoverSpell] Called with effect:', effect, 'sourceCardId:', sourceCardId);
   
   // Number of cards to choose from (typically 3 in Hearthstone)
   const discoveryCount = effect.discoveryCount || 3;
@@ -1580,16 +1581,16 @@ function executeDiscoverSpell(
   const discoveryType = effect.discoveryType || 'any';
   const discoveryClass = effect.discoveryClass || 'any';
   
-  console.log('[executeDiscoverSpell] discoveryType:', discoveryType, 'discoveryClass:', discoveryClass, 'discoveryCount:', discoveryCount);
+  debug.log('[executeDiscoverSpell] discoveryType:', discoveryType, 'discoveryClass:', discoveryClass, 'discoveryCount:', discoveryCount);
   
   // Get random cards based on discovery type/class
   let pool = [...allCards];
-  console.log('[executeDiscoverSpell] Total card pool size:', pool.length);
+  debug.log('[executeDiscoverSpell] Total card pool size:', pool.length);
   
   // Filter by type if specified
   if (discoveryType !== 'any') {
     pool = pool.filter(card => card.type === discoveryType);
-    console.log('[executeDiscoverSpell] After type filter, pool size:', pool.length);
+    debug.log('[executeDiscoverSpell] After type filter, pool size:', pool.length);
   }
   
   // Filter by class if specified
@@ -1598,7 +1599,7 @@ function executeDiscoverSpell(
       card.class?.toLowerCase() === discoveryClass.toLowerCase() || 
       card.heroClass?.toLowerCase() === discoveryClass.toLowerCase()
     );
-    console.log('[executeDiscoverSpell] After class filter, pool size:', pool.length);
+    debug.log('[executeDiscoverSpell] After class filter, pool size:', pool.length);
   }
 
   // Shuffle and pick
@@ -1606,8 +1607,8 @@ function executeDiscoverSpell(
     .sort(() => 0.5 - Math.random())
     .slice(0, discoveryCount);
   
-  console.log('[executeDiscoverSpell] Discovery options:', discoveryOptions.map(c => c.name));
-  console.log('[executeDiscoverSpell] Setting discovery.active = true');
+  debug.log('[executeDiscoverSpell] Discovery options:', discoveryOptions.map(c => c.name));
+  debug.log('[executeDiscoverSpell] Setting discovery.active = true');
   
   // Set discovery state - get fresh state from store in callback
   return {
@@ -5690,13 +5691,13 @@ function executeResurrectSpell(
   // Get graveyard (dead minions)
   const graveyard = playerState.graveyard || [];
   if (graveyard.length === 0) {
-    console.log('[executeResurrectSpell] No minions in graveyard');
+    debug.log('[executeResurrectSpell] No minions in graveyard');
     return newState;
   }
   
   // Check board space (reuse playerState, don't redeclare)
   if (playerState.battlefield.length >= 7) {
-    console.log('[executeResurrectSpell] Board is full');
+    debug.log('[executeResurrectSpell] Board is full');
     return newState;
   }
   
@@ -5852,7 +5853,7 @@ function executeGiveCardsSpell(
   
   // Early exit if no cardIds specified
   if (cardIds.length === 0) {
-    console.log('[executeGiveCardsSpell] No cardIds specified');
+    debug.log('[executeGiveCardsSpell] No cardIds specified');
     return state;
   }
   

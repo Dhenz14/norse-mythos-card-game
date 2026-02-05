@@ -4,6 +4,7 @@ import { Card } from './Card';
 import { createCardInstance } from '../utils/cards/cardUtils';
 import { filterCards } from '../utils/discoveryUtils';
 import { useAudio } from '../../lib/stores/useAudio';
+import { debug } from '../config/debugConfig';
 
 interface DiscoveryModalProps {
   discoveryState: DiscoveryState;
@@ -16,19 +17,19 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
 }) => {
   const { playSoundEffect } = useAudio();
   
-  console.log('[DiscoveryModal] Rendering with discoveryState:', discoveryState);
-  console.log('[DiscoveryModal] active:', discoveryState?.active, 'options:', discoveryState?.options?.length);
+  debug.log('[DiscoveryModal] Rendering with discoveryState:', discoveryState);
+  debug.log('[DiscoveryModal] active:', discoveryState?.active, 'options:', discoveryState?.options?.length);
   
   // Guard against invalid discovery state - handle case where game is over
   // but discovery UI is attempting to render
   if (!discoveryState || !discoveryState.options || !discoveryState.active) {
-    console.error("DiscoveryModal: Invalid discovery state provided", discoveryState);
+    debug.error("DiscoveryModal: Invalid discovery state provided", discoveryState);
     // Auto-close the modal to avoid freezing the UI
     setTimeout(() => onCardSelect(null), 100);
     return null;
   }
   
-  console.log('[DiscoveryModal] Valid discovery state, rendering', discoveryState.options.length, 'options');
+  debug.log('[DiscoveryModal] Valid discovery state, rendering', discoveryState.options.length, 'options');
   
   // Initialize filters from discovery state
   const [cardType, setCardType] = useState<CardType | 'any'>(
@@ -60,7 +61,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
   }, [cardType, cardRarity, manaCost, discoveryState.allOptions]);
   
   const handleCardClick = (card: CardData) => {
-    console.log("DiscoveryModal: Card selected:", card.name);
+    debug.log("DiscoveryModal: Card selected:", card.name);
     // Play sound effect when a card is selected
     playSoundEffect('spell_cast');
     onCardSelect(card);
@@ -184,7 +185,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                   isPlayable={true}
                   scale={1.1} // Make the card slightly larger
                   onClick={() => {
-                    console.log("DiscoveryModal: Card selected:", card.name);
+                    debug.log("DiscoveryModal: Card selected:", card.name);
                     handleCardClick(card);
                   }}
                 />
@@ -194,7 +195,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                     className="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-md transition-colors"
                     onClick={(e) => {
                       e.stopPropagation(); // Stop event bubbling
-                      console.log("DiscoveryModal: Card selected via button:", card.name);
+                      debug.log("DiscoveryModal: Card selected via button:", card.name);
                       handleCardClick(card);
                     }}
                   >

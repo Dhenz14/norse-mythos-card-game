@@ -11,6 +11,7 @@ import { CardData } from '../../types';
 import { getQuestStoreState } from '../../stores/questStore';
 import { shouldIncrementQuest } from './questUtils';
 import { ActiveQuest, QuestActivationData } from './types';
+import { debug } from '../../config/debugConfig';
 
 export type QuestActionType = 'play_minion' | 'summon_minion' | 'cast_spell';
 export type QuestOwner = 'player' | 'opponent';
@@ -28,7 +29,7 @@ export function activateQuest(
 ): void {
   const state = getQuestStoreState();
   state.activateQuest(owner, questData);
-  console.log(`[Quest] Activated quest: ${questData.name} for ${owner}`);
+  debug.log(`[Quest] Activated quest: ${questData.name} for ${owner}`);
 }
 
 /**

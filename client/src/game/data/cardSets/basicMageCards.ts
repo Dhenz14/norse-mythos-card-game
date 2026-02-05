@@ -6,11 +6,13 @@
  */
 import { createCard } from '../cardManagement';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register basic mage cards in the registry
  */
 export function registerBasicMageCards(): void {
-  console.log('Registering basic mage cards...');
+  if (IS_DEV) console.log('Registering basic mage cards...');
 
   // Apprentice Arcanist
   createCard()
@@ -137,5 +139,5 @@ export function registerBasicMageCards(): void {
     .addCategory("basic")
     .build();
 
-  console.log('Basic mage cards registered successfully.');
+  if (IS_DEV) console.log('Basic mage cards registered successfully.');
 }

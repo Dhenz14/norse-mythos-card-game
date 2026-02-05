@@ -27,6 +27,7 @@ import {
   KingAbilitySlice,
   UnifiedCombatStore
 } from './types';
+import { debug } from '../../config/debugConfig';
 
 const createInitialKingState = (kingId: string): KingDivineCommandState => {
   const config = getKingAbilityConfig(kingId);
@@ -67,7 +68,7 @@ export const createKingAbilitySlice: StateCreator<
       lastMineTriggered: null
     });
 
-    console.log('[KingAbility] Initialized:', { playerKingId, opponentKingId });
+    debug.chess('[KingAbility] Initialized:', { playerKingId, opponentKingId });
   },
 
   placeMine: (
@@ -142,7 +143,7 @@ export const createKingAbilitySlice: StateCreator<
       selectedMineDirection: null
     });
 
-    console.log('[KingAbility] Mine placed:', {
+    debug.chess('[KingAbility] Mine placed:', {
       owner,
       kingId: kingState.kingId,
       position: centerPosition,
@@ -217,7 +218,7 @@ export const createKingAbilitySlice: StateCreator<
       pendingManaBoost: updatedPendingManaBoost
     });
 
-    console.log('[KingAbility] Mine triggered!', {
+    debug.chess('[KingAbility] Mine triggered!', {
       mineOwner: triggeredMine.owner,
       victim: movingPieceOwner,
       staPenalty,
@@ -241,7 +242,7 @@ export const createKingAbilitySlice: StateCreator<
     
     const expiredCount = state.allActiveMines.length - activeMines.length;
     if (expiredCount > 0) {
-      console.log('[KingAbility] Cleared expired mines:', expiredCount);
+      debug.chess('[KingAbility] Cleared expired mines:', expiredCount);
     }
 
     const playerKingState = state.playerKingAbility;
@@ -325,7 +326,7 @@ export const createKingAbilitySlice: StateCreator<
       
       set({ pendingManaBoost: updatedBoost });
       
-      console.log('[KingAbility] Consumed mana boost:', { side, boost });
+      debug.chess('[KingAbility] Consumed mana boost:', { side, boost });
     }
     
     return boost;

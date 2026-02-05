@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { CardInstance, GameState } from '../types';
 import { useAnimation, useAnimationStore } from './AnimationManager';
+import { debug } from '../config/debugConfig';
 
 /**
  * Types of actions the AI can take
@@ -95,7 +96,7 @@ export const useAIActionManager = ({
    */
   const executeAction = useCallback((action: AIAction) => {
     try {
-      console.log(`Executing AI action: ${action.type}`);
+      debug.animation(`Executing AI action: ${action.type}`);
       
       // Helper function to get element position
       const getCardPosition = (cardId: string) => {
@@ -126,7 +127,7 @@ export const useAIActionManager = ({
       switch (action.type) {
         case 'play_card':
           if (action.card && action.card.card) {
-            console.log(`AI playing card: ${action.card.card.name}`);
+            debug.animation(`AI playing card: ${action.card.card.name}`);
             try {
               // Show card play visual effect before executing the actual play
               const { addAnimation } = useAnimationStore.getState();
@@ -162,7 +163,7 @@ export const useAIActionManager = ({
                 setTimeout(() => {
                   // Defensive guard: verify card reference is still valid
                   if (!cardRef || !cardRef.card) {
-                    console.warn("Card reference became invalid before animation callback");
+                    debug.warn("Card reference became invalid before animation callback");
                     return;
                   }
                   
@@ -177,14 +178,14 @@ export const useAIActionManager = ({
                   // Randomize pitch slightly for more natural feel
                   const playbackRate = 0.9 + Math.random() * 0.3; // Between 0.9 and 1.2
                   audio.playbackRate = playbackRate;
-                  audio.play().catch(e => console.error("Failed to play sound:", e));
+                  audio.play().catch(e => debug.error("Failed to play sound:", e));
                   
                   // Add extra "whoosh" sound for dramatic effect on expensive cards
                   if (manaCost >= 5) {
                     setTimeout(() => {
                       const whooshSound = new Audio('/sounds/card_whoosh.mp3');
                       whooshSound.volume = 0.4;
-                      whooshSound.play().catch(e => console.error("Failed to play whoosh sound:", e));
+                      whooshSound.play().catch(e => debug.error("Failed to play whoosh sound:", e));
                     }, 100);
                   }
                   
@@ -264,7 +265,7 @@ export const useAIActionManager = ({
                     if (cardRef && cardRef.card) {
                       onPlayCard(cardRef, action.targetId);
                     } else {
-                      console.warn("Card reference became stale before onPlayCard execution");
+                      debug.warn("Card reference became stale before onPlayCard execution");
                     }
                   }, 250);
                   
@@ -280,20 +281,20 @@ export const useAIActionManager = ({
                 }, 400);
               }
             } catch (playError) {
-              console.error("Error playing card:", playError);
+              debug.error("Error playing card:", playError);
               // Fallback
               if (action.card) {
                 onPlayCard(action.card, action.targetId);
               }
             }
           } else {
-            console.error("Invalid card data for AI play_card action");
+            debug.error("Invalid card data for AI play_card action");
           }
           break;
           
         case 'attack':
           if (action.cardId && action.targetId) {
-            console.log(`AI attacking with ${action.cardId} against ${action.targetId}`);
+            debug.animation(`AI attacking with ${action.cardId} against ${action.targetId}`);
             try {
               // Get positions for attacker and target for animation
               const attackerPosition = getCardPosition(action.cardId);
@@ -325,7 +326,7 @@ export const useAIActionManager = ({
                   const randomSound = attackSounds[Math.floor(Math.random() * attackSounds.length)];
                   const audio = new Audio(randomSound);
                   audio.volume = 0.6;
-                  audio.play().catch(e => console.error("Failed to play sound:", e));
+                  audio.play().catch(e => debug.error("Failed to play sound:", e));
                   
                   // Add camera shake for impact
                   const intensity = Math.random() * 5 + 5; // Between 5-10px shake
@@ -437,15 +438,15 @@ export const useAIActionManager = ({
                 }, 200);
               }
             } catch (attackError) {
-              console.error("Error during attack:", attackError);
+              debug.error("Error during attack:", attackError);
             }
           } else {
-            console.error("Missing cardId or targetId for AI attack action");
+            debug.error("Missing cardId or targetId for AI attack action");
           }
           break;
           
         case 'hero_power':
-          console.log(`AI using hero power${action.targetId ? ` on ${action.targetId}` : ''}`);
+          debug.animation(`AI using hero power${action.targetId ? ` on ${action.targetId}` : ''}`);
           try {
             // Get target position if any (convert null to undefined for type compatibility)
             const targetPosition = action.targetId ? 
@@ -475,7 +476,7 @@ export const useAIActionManager = ({
                 const audio = new Audio('/sounds/hero_power.mp3');
                 audio.volume = 0.6;
                 audio.playbackRate = 0.95 + Math.random() * 0.2; // Subtle variation
-                audio.play().catch(e => console.error("Failed to play sound:", e));
+                audio.play().catch(e => debug.error("Failed to play sound:", e));
                 
                 // Add dramatic glow around hero
                 addAnimation({
@@ -573,14 +574,14 @@ export const useAIActionManager = ({
               }, 500);
             }
           } catch (heroPowerError) {
-            console.error("Error using hero power:", heroPowerError);
+            debug.error("Error using hero power:", heroPowerError);
             // Fallback
             onUseHeroPower(action.targetId);
           }
           break;
           
         case 'end_turn':
-          console.log('AI ending turn');
+          debug.animation('AI ending turn');
           try {
             // Add some visual and audio feedback before ending turn
             const { addAnimation } = useAnimationStore.getState();
@@ -588,7 +589,7 @@ export const useAIActionManager = ({
             // Play end turn sound
             const audio = new Audio('/sounds/end_turn.mp3');
             audio.volume = 0.5;
-            audio.play().catch(e => console.error("Failed to play end turn sound:", e));
+            audio.play().catch(e => debug.error("Failed to play end turn sound:", e));
             
             // Get the end turn button position (approximate)
             const endTurnButtonPosition = {
@@ -620,25 +621,25 @@ export const useAIActionManager = ({
               onEndTurn();
             }, 250);
           } catch (endTurnError) {
-            console.error("Error in end turn animation:", endTurnError);
+            debug.error("Error in end turn animation:", endTurnError);
             // Ensure the turn always ends even if animations fail
             onEndTurn();
           }
           break;
           
         default:
-          console.warn('Unknown AI action type:', action.type);
+          debug.warn('Unknown AI action type:', action.type);
       }
     } catch (error) {
-      console.error("Error in executeAction:", error);
+      debug.error("Error in executeAction:", error);
       
       // Force end turn if we have any critical error
       if (action.type !== 'end_turn') {
-        console.log("Critical action failure, forcing end turn");
+        debug.animation("Critical action failure, forcing end turn");
         try {
           onEndTurn();
         } catch (endTurnError) {
-          console.error("Failed to force end turn:", endTurnError);
+          debug.error("Failed to force end turn:", endTurnError);
         }
       }
     }
@@ -651,15 +652,15 @@ export const useAIActionManager = ({
     // If queue is empty, check if we need to end the turn
     if (actionQueue.length === 0) {
       setCurrentAction(null);
-      console.log("AI action queue is empty");
+      debug.animation("AI action queue is empty");
       
       // If AI turn is active but no actions remain, we should end the turn
       if (isAITurn && !isThinking) {
-        console.log("No more AI actions, ending turn");
+        debug.animation("No more AI actions, ending turn");
         // Add small delay before ending turn
         const endTurnTimer = setTimeout(() => {
           // Force an end turn action to ensure the turn completes
-          console.log("AI turn - forcing end turn (failsafe)");
+          debug.animation("AI turn - forcing end turn (failsafe)");
           onEndTurn();
           // Clean up after end turn
           resetQueue();
@@ -674,7 +675,7 @@ export const useAIActionManager = ({
     setActionQueue(prev => prev.slice(1));
     setCurrentAction(nextAction);
     
-    console.log(`Processing AI action: ${nextAction.type}`);
+    debug.animation(`Processing AI action: ${nextAction.type}`);
     
     // Use extremely short delays to prevent game from hanging
     const actionDelay = nextAction.type === 'play_card' ? 300 : 
@@ -687,14 +688,14 @@ export const useAIActionManager = ({
       try {
         // Handle end_turn actions immediately and directly
         if (nextAction.type === 'end_turn') {
-          console.log("AI executing end turn action");
+          debug.animation("AI executing end turn action");
           
           // Direct end turn execution - critical path
           onEndTurn();
           
           // Cleanup immediately after end turn
           const resetTimer = setTimeout(() => {
-            console.log("Resetting AI action queue after end turn");
+            debug.animation("Resetting AI action queue after end turn");
             setCurrentAction(null);
             resetQueue();
           }, 50);
@@ -705,7 +706,7 @@ export const useAIActionManager = ({
           try {
             executeAction(nextAction);
           } catch (actionError) {
-            console.error(`Error executing ${nextAction.type} action:`, actionError);
+            debug.error(`Error executing ${nextAction.type} action:`, actionError);
           }
           
           // Always clear current action after a short delay to ensure progress
@@ -723,15 +724,15 @@ export const useAIActionManager = ({
         }
       } catch (error) {
         // Final fallback error handling
-        console.error("Critical error executing AI action:", error);
+        debug.error("Critical error executing AI action:", error);
         
         // Ensure turn always ends even with errors
         if (nextAction.type === 'end_turn') {
-          console.log("Error during end turn, forcing player turn");
+          debug.animation("Error during end turn, forcing player turn");
           try {
             onEndTurn();
           } catch (e) {
-            console.error("Even the fallback end turn failed:", e);
+            debug.error("Even the fallback end turn failed:", e);
           }
           resetQueue();
         } else {
@@ -754,7 +755,7 @@ export const useAIActionManager = ({
   useEffect(() => {
     // Only execute if the isAITurn state actually changed
     if (isAITurn !== lastAITurnRef.current) {
-      console.log(`AI turn state changed from ${lastAITurnRef.current} to ${isAITurn}`);
+      debug.animation(`AI turn state changed from ${lastAITurnRef.current} to ${isAITurn}`);
       lastAITurnRef.current = isAITurn;
       
       // Reset thinking state when turn changes
@@ -770,7 +771,7 @@ export const useAIActionManager = ({
           
           // Begin thinking phase - brief delay before actions
           startThinking();
-          console.log("AI turn started - thinking phase");
+          debug.animation("AI turn started - thinking phase");
           
           // After brief thinking delay, process actions
           const thinkingTimer = setTimeout(() => {
@@ -780,7 +781,7 @@ export const useAIActionManager = ({
               
               // Add default end turn action if queue is empty
               if (actionQueue.length === 0) {
-                console.log("No AI actions found, adding default end turn action");
+                debug.animation("No AI actions found, adding default end turn action");
                 const endTurnAction: AIAction = { type: 'end_turn' };
                 setActionQueue([endTurnAction]);
               } else {
@@ -791,7 +792,7 @@ export const useAIActionManager = ({
               // Ultimate failsafe: force end turn after 3 seconds if still AI's turn
               const safetyTimer = setTimeout(() => {
                 if (isAITurn) {
-                  console.log("EMERGENCY FAILSAFE - Force ending AI turn after timeout");
+                  debug.animation("EMERGENCY FAILSAFE - Force ending AI turn after timeout");
                   onEndTurn();
                   resetQueue();
                 }
@@ -806,12 +807,12 @@ export const useAIActionManager = ({
         
         // Return cleanup function
         return () => {
-          console.log("Cleanup triggered in AI turn effect");
+          debug.animation("Cleanup triggered in AI turn effect");
           clearAllTimers();
         };
       } else {
         // Not AI's turn anymore, reset state
-        console.log("AI turn ended - resetting state");
+        debug.animation("AI turn ended - resetting state");
         resetQueue();
       }
     }
@@ -829,7 +830,7 @@ export const useAIActionManager = ({
     
     // Only start processing if conditions are right
     if (!currentAction && actionQueue.length > 0 && !isThinking && queueHasChanged && isAITurn) {
-      console.log("Processing action queue due to queue length change:", actionQueue.length);
+      debug.animation("Processing action queue due to queue length change:", actionQueue.length);
       processNextAction();
     }
   }, [actionQueue, currentAction, isThinking, processNextAction, isAITurn]);

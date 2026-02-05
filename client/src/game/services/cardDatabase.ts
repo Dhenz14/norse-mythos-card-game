@@ -6,6 +6,7 @@
  */
 
 import { CardData } from '../types';
+import { debug } from '../config/debugConfig';
 
 // Advanced card data store with optimized lookup via multiple indices
 class CardDatabaseService {
@@ -32,12 +33,12 @@ class CardDatabaseService {
    */
   public initialize(cards: CardData[]): void {
     if (this.isInitialized()) {
-      console.warn('Card database already initialized.');
+      debug.warn('Card database already initialized.');
       return;
     }
 
     // Initialize without external validation to avoid circular dependencies
-    console.log(`Initializing ${cards.length} cards into database...`);
+    debug.log(`Initializing ${cards.length} cards into database...`);
     
     // Store the cards directly
     this.cards = [...cards];
@@ -45,7 +46,7 @@ class CardDatabaseService {
     // Build optimized lookup tables
     this.buildLookupIndices();
     
-    console.log(`Card database initialized with ${this.cards.length} cards.`);
+    debug.log(`Card database initialized with ${this.cards.length} cards.`);
     this.initialized = true;
   }
 
@@ -173,7 +174,7 @@ class CardDatabaseService {
       this.addCardToIndices(card);
     }
     
-    console.log(`Added ${cardsToAdd.length} new cards to the database.`);
+    debug.log(`Added ${cardsToAdd.length} new cards to the database.`);
   }
 
   /**
@@ -490,7 +491,7 @@ const initializeDemo = () => {
     // Access the method using the public interface
     (cardDatabaseInstance as any).initializeDemoData(); // Use type assertion for private method access
     
-    console.log('Demo card database initialized. Available in cardDatabase.getAllCards()');
+    debug.log('Demo card database initialized. Available in cardDatabase.getAllCards()');
   }
 };
 

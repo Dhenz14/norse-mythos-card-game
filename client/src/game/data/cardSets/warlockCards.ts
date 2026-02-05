@@ -8,6 +8,8 @@
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType } from '../../types';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all Warlock cards in the registry
  * Card IDs: 
@@ -16,7 +18,7 @@ import { BattlecryTargetType } from '../../types';
  * - Demon-specific tokens: 17xxx series (usually 500+)
  */
 export function registerWarlockCards(): void {
-  console.log('Registering Warlock cards...');
+  if (IS_DEV) console.log('Registering Warlock cards...');
 
   // BASIC WARLOCK CARDS
   createCard()
@@ -420,5 +422,5 @@ export function registerWarlockCards(): void {
     .addCategory("token")
     .build();
 
-  console.log('Warlock cards registered successfully.');
+  if (IS_DEV) console.log('Warlock cards registered successfully.');
 }

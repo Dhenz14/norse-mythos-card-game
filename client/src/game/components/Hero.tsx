@@ -4,6 +4,7 @@ import HeroPower from './HeroPower';
 import SecretIcon from './SecretIcon';
 import HealthDisplay from './HealthDisplay';
 import ArmorDisplay from './ArmorDisplay';
+import { debug } from '../config/debugConfig';
 
 // Define default hero portraits
 // These are served through our server-side Cloudinary API
@@ -139,7 +140,7 @@ export const Hero: React.FC<HeroProps> = ({
 
   // Handle image error - using emoji fallback (Cloudinary removed)
   const handleImageError = () => {
-    console.log(`Using emoji fallback for ${heroImageId} hero portrait`);
+    debug.log(`Using emoji fallback for ${heroImageId} hero portrait`);
     setImageError(true);
   };
   

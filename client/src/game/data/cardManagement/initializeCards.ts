@@ -5,6 +5,7 @@
  * It registers cards from all sets and makes them available through the card registry.
  */
 import { getCardCount } from './cardRegistry';
+import { debug } from '../../config/debugConfig';
 import { registerBasicMageCards } from '../cardSets/basicMageCards';
 import { registerMageCards } from '../cardSets/mageCards';
 import { registerNorseMythologyCards } from '../cardSets/norseMythologyCards';
@@ -36,11 +37,11 @@ let isInitialized = false;
 export function initializeCardDatabase(): void {
   // Skip if already initialized
   if (isInitialized) {
-    console.log('Card database already initialized.');
+    debug.log('Card database already initialized.');
     return;
   }
   
-  console.log('Initializing card database...');
+  debug.log('Initializing card database...');
   
   // Register cards from individual sets
   registerBasicMageCards();
@@ -64,7 +65,7 @@ export function initializeCardDatabase(): void {
   
   // Log the results
   const totalCards = getCardCount();
-  console.log(`Card database initialized with ${totalCards} cards.`);
+  debug.log(`Card database initialized with ${totalCards} cards.`);
   
   // Mark as initialized
   isInitialized = true;

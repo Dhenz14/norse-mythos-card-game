@@ -7,6 +7,9 @@
 import { CardData } from '../../types';
 import { isMinion, getAttack, getHealth } from '../../utils/cards/typeGuards';
 
+const IS_DEV = import.meta.env?.DEV ?? process.env.NODE_ENV === 'development';
+const VERBOSE_CARD_LOGGING = false;
+
 // Central registry of all cards - maps card ID to card data
 const cardRegistry: Map<number | string, CardData> = new Map();
 
@@ -75,7 +78,9 @@ export function registerCard(card: CardData, categories: string[] = []): void {
     cardsByCategory[category].push(card.id);
   });
   
-  console.log(`Registered card: ${card.name} (ID: ${card.id})`);
+  if (IS_DEV && VERBOSE_CARD_LOGGING) {
+    console.log(`Registered card: ${card.name} (ID: ${card.id})`);
+  }
 }
 
 /**

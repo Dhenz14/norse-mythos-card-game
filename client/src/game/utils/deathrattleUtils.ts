@@ -4,6 +4,7 @@ import { createCardInstance } from './cards/cardUtils';
 import { drawCardFromDeck } from './zoneUtils';
 import allCards from '../data/allCards';
 import { trackQuestProgress } from './quests/questProgress';
+import { debug } from '../config/debugConfig';
 
 /**
  * Execute deathrattle effects for a card
@@ -15,7 +16,7 @@ export function executeDeathrattle(
 ): GameState {
   // If the card is not a minion, return the original state
   if (card.card.type !== 'minion') {
-    console.log(`[Deathrattle] Skipped: ${card.card.name} is not a minion`);
+    debug.log(`[Deathrattle] Skipped: ${card.card.name} is not a minion`);
     return state;
   }
   
@@ -41,7 +42,7 @@ export function executeDeathrattle(
     console.warn(`[Deathrattle] Card ${card.card.name} has deathrattle effect but no keyword - executing anyway`);
   }
   
-  console.log(`[Deathrattle] Triggered: ${card.card.name} (ID: ${card.card.id}) - Effect: ${minionCard.deathrattle!.type}`, minionCard.deathrattle);
+  debug.log(`[Deathrattle] Triggered: ${card.card.name} (ID: ${card.card.id}) - Effect: ${minionCard.deathrattle!.type}`, minionCard.deathrattle);
 
 
   // Create a deep copy of the state to safely modify
@@ -289,7 +290,7 @@ function executeDamageDeathrattle(
       // Log deaths with deathrattles for debugging - these will be handled by the combat resolution phase
       for (const minion of deadMinions) {
         if (shouldTriggerDeathrattle(minion)) {
-          console.log(`[Deathrattle] Minion ${minion.card.name} died from AOE damage - deathrattle queued for combat resolution`);
+          debug.log(`[Deathrattle] Minion ${minion.card.name} died from AOE damage - deathrattle queued for combat resolution`);
           // Mark on the state that there are pending deathrattles to process
           if (!(newState as any).pendingDeathrattles) {
             (newState as any).pendingDeathrattles = [];
@@ -582,7 +583,7 @@ export function processPendingDeathrattles(state: GameState): GameState {
     return state;
   }
   
-  console.log(`[Deathrattle] Processing ${pendingDeathrattles.length} pending deathrattles`);
+  debug.log(`[Deathrattle] Processing ${pendingDeathrattles.length} pending deathrattles`);
   
   let currentState = state;
   const MAX_ITERATIONS = 30; // Safety limit
@@ -594,7 +595,7 @@ export function processPendingDeathrattles(state: GameState): GameState {
     (currentState as any).pendingDeathrattles = [];
     
     for (const { minion, playerId } of queue) {
-      console.log(`[Deathrattle] Processing pending: ${minion.card.name} for ${playerId}`);
+      debug.log(`[Deathrattle] Processing pending: ${minion.card.name} for ${playerId}`);
       currentState = executeDeathrattle(currentState, minion, playerId);
     }
     

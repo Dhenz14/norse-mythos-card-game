@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { CombatPhase, PokerCombatState } from '../../types/PokerCombatTypes';
 import { getPokerCombatAdapterState } from '../../hooks/usePokerCombatAdapter';
-import { COMBAT_DEBUG } from '../debugConfig';
+import { debug } from '../../config/debugConfig';
 
 // SPELL_PET phase duration in milliseconds - time for players to play cards
 const SPELL_PET_PHASE_DURATION_MS = 2500;
@@ -33,9 +33,7 @@ export function usePokerPhases(options: UsePokerPhasesOptions): void {
     const elapsed = Date.now() - startTime;
     const remainingTime = Math.max(0, SPELL_PET_PHASE_DURATION_MS - elapsed);
     
-    if (COMBAT_DEBUG.PHASES) {
-      console.log('[SPELL_PET Phase] Started, will advance to FAITH in', remainingTime, 'ms');
-    }
+    debug.combat('[SPELL_PET Phase] Started, will advance to FAITH in', remainingTime, 'ms');
     
     // Set timer to advance after the timing window
     spellPetTimerRef.current = setTimeout(() => {
@@ -46,9 +44,7 @@ export function usePokerPhases(options: UsePokerPhasesOptions): void {
         return;
       }
       
-      if (COMBAT_DEBUG.PHASES) {
-        console.log('[SPELL_PET Phase] Timing window complete, advancing to FAITH');
-      }
+      debug.combat('[SPELL_PET Phase] Timing window complete, advancing to FAITH');
       
       // Mark both players ready and advance to FAITH
       adapter.setPlayerReady(freshState.player.playerId);
@@ -96,11 +92,11 @@ export function usePokerPhases(options: UsePokerPhasesOptions): void {
       if (!combatState || !isActive) return;
       if (!combatState.isAllInShowdown) return;
       
-      if (COMBAT_DEBUG.PHASES) console.log('[All-In Showdown] Active - phase:', combatState.phase, 'playerReady:', combatState.player.isReady, 'opponentReady:', combatState.opponent.isReady);
+      debug.combat('[All-In Showdown] Active - phase:', combatState.phase, 'playerReady:', combatState.player.isReady, 'opponentReady:', combatState.opponent.isReady);
       
       // Stop when we reach RESOLUTION phase
       if (combatState.phase === CombatPhase.RESOLUTION) {
-        if (COMBAT_DEBUG.PHASES) console.log('[All-In Showdown] Showdown reached, stopping auto-advance');
+        debug.combat('[All-In Showdown] Showdown reached, stopping auto-advance');
         return;
       }
       
@@ -108,12 +104,12 @@ export function usePokerPhases(options: UsePokerPhasesOptions): void {
       
       // Prevent multiple concurrent auto-advance timers
       if (allInAdvanceInProgressRef.current) {
-        if (COMBAT_DEBUG.PHASES) console.log('[All-In Showdown] SKIP: Auto-advance already in progress');
+        debug.combat('[All-In Showdown] SKIP: Auto-advance already in progress');
         return;
       }
       
       allInAdvanceInProgressRef.current = true;
-      if (COMBAT_DEBUG.PHASES) console.log('[All-In Showdown] Starting 1.5s timer to advance from phase:', combatState.phase);
+      debug.combat('[All-In Showdown] Starting 1.5s timer to advance from phase:', combatState.phase);
       
       const currentPhase = combatState.phase;
       const autoAdvanceTimer = setTimeout(() => {
@@ -130,7 +126,7 @@ export function usePokerPhases(options: UsePokerPhasesOptions): void {
           return;
         }
         
-        if (COMBAT_DEBUG.PHASES) console.log('[All-In Showdown] Advancing from phase:', currentPhase);
+        debug.combat('[All-In Showdown] Advancing from phase:', currentPhase);
         
         // Directly call advancePhase for all-in showdown to ensure progression
         // without getting stuck in betting validation logic

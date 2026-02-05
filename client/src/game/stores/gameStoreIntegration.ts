@@ -17,6 +17,7 @@ import { GameEventBus } from '@/core/events/GameEventBus';
 import { initializeAudioSubscriber } from '@/game/subscribers/AudioSubscriber';
 import { initializeNotificationSubscriber } from '@/game/subscribers/NotificationSubscriber';
 import { initializeAnimationSubscriber } from '@/game/subscribers/AnimationSubscriber';
+import { debug } from '../config/debugConfig';
 
 let isInitialized = false;
 let cleanupFunctions: (() => void)[] = [];
@@ -27,11 +28,11 @@ let cleanupFunctions: (() => void)[] = [];
  */
 export function initializeGameStoreIntegration(): () => void {
   if (isInitialized) {
-    console.warn('[GameStoreIntegration] Already initialized, skipping');
+    debug.warn('[GameStoreIntegration] Already initialized, skipping');
     return () => {};
   }
 
-  console.log('[GameStoreIntegration] Initializing event-driven architecture...');
+  debug.log('[GameStoreIntegration] Initializing event-driven architecture...');
 
   // Initialize UI subscribers
   cleanupFunctions.push(initializeAudioSubscriber());
@@ -39,7 +40,7 @@ export function initializeGameStoreIntegration(): () => void {
   cleanupFunctions.push(initializeAnimationSubscriber());
 
   isInitialized = true;
-  console.log('[GameStoreIntegration] Initialization complete');
+  debug.log('[GameStoreIntegration] Initialization complete');
 
   // Return cleanup function
   return () => {
@@ -47,7 +48,7 @@ export function initializeGameStoreIntegration(): () => void {
     cleanupFunctions = [];
     isInitialized = false;
     GameEventBus.reset();
-    console.log('[GameStoreIntegration] Cleanup complete');
+    debug.log('[GameStoreIntegration] Cleanup complete');
   };
 }
 

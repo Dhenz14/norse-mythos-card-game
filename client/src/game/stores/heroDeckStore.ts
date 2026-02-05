@@ -8,6 +8,7 @@
 
 import { create } from 'zustand';
 import { cardRegistry } from '../data/cardRegistry';
+import { debug } from '../config/debugConfig';
 
 export type PieceType = 'queen' | 'rook' | 'bishop' | 'knight';
 
@@ -92,7 +93,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
 
   setDeck: (pieceType: string, deck: HeroDeck) => {
     if (!isPieceType(pieceType)) {
-      console.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
+      debug.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
       return;
     }
     
@@ -104,12 +105,12 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     }));
     
     get().saveToStorage();
-    console.log(`[HeroDeck] Set deck for ${pieceType}: ${deck.heroId} with ${deck.cardIds.length} cards`);
+    debug.log(`[HeroDeck] Set deck for ${pieceType}: ${deck.heroId} with ${deck.cardIds.length} cards`);
   },
 
   addCard: (pieceType: string, cardId: number): boolean => {
     if (!isPieceType(pieceType)) {
-      console.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
+      debug.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
       return false;
     }
     
@@ -117,12 +118,12 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     const deck = state.decks[pieceType];
     
     if (!deck) {
-      console.warn(`[HeroDeck] No deck exists for ${pieceType}. Create deck first.`);
+      debug.warn(`[HeroDeck] No deck exists for ${pieceType}. Create deck first.`);
       return false;
     }
     
     if (deck.cardIds.length >= DECK_SIZE) {
-      console.warn(`[HeroDeck] Deck is full (${DECK_SIZE} cards)`);
+      debug.warn(`[HeroDeck] Deck is full (${DECK_SIZE} cards)`);
       return false;
     }
     
@@ -131,13 +132,13 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     if (currentCopies >= maxAllowed) {
       const card = getCardById(cardId);
       const rarityNote = isCardLegendary(cardId) ? ' (Legendary)' : '';
-      console.warn(`[HeroDeck] Max copies (${maxAllowed}) of card ${card?.name || cardId}${rarityNote} already in deck`);
+      debug.warn(`[HeroDeck] Max copies (${maxAllowed}) of card ${card?.name || cardId}${rarityNote} already in deck`);
       return false;
     }
     
     if (!isCardValidForClass(cardId, deck.heroClass)) {
       const card = getCardById(cardId);
-      console.warn(`[HeroDeck] Card ${card?.name || cardId} is not valid for class ${deck.heroClass}`);
+      debug.warn(`[HeroDeck] Card ${card?.name || cardId} is not valid for class ${deck.heroClass}`);
       return false;
     }
     
@@ -154,13 +155,13 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     }));
     
     get().saveToStorage();
-    console.log(`[HeroDeck] Added card ${cardId} to ${pieceType}. Deck size: ${updatedDeck.cardIds.length}`);
+    debug.log(`[HeroDeck] Added card ${cardId} to ${pieceType}. Deck size: ${updatedDeck.cardIds.length}`);
     return true;
   },
 
   removeCard: (pieceType: string, cardId: number) => {
     if (!isPieceType(pieceType)) {
-      console.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
+      debug.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
       return;
     }
     
@@ -168,13 +169,13 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     const deck = state.decks[pieceType];
     
     if (!deck) {
-      console.warn(`[HeroDeck] No deck exists for ${pieceType}`);
+      debug.warn(`[HeroDeck] No deck exists for ${pieceType}`);
       return;
     }
     
     const cardIndex = deck.cardIds.indexOf(cardId);
     if (cardIndex === -1) {
-      console.warn(`[HeroDeck] Card ${cardId} not found in deck`);
+      debug.warn(`[HeroDeck] Card ${cardId} not found in deck`);
       return;
     }
     
@@ -194,7 +195,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     }));
     
     get().saveToStorage();
-    console.log(`[HeroDeck] Removed card ${cardId} from ${pieceType}. Deck size: ${updatedCardIds.length}`);
+    debug.log(`[HeroDeck] Removed card ${cardId} from ${pieceType}. Deck size: ${updatedCardIds.length}`);
   },
 
   getDeck: (pieceType: string): HeroDeck | null => {
@@ -280,7 +281,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
 
   clearDeck: (pieceType: string) => {
     if (!isPieceType(pieceType)) {
-      console.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
+      debug.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
       return;
     }
     
@@ -292,20 +293,20 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     }));
     
     get().saveToStorage();
-    console.log(`[HeroDeck] Cleared deck for ${pieceType}`);
+    debug.log(`[HeroDeck] Cleared deck for ${pieceType}`);
   },
 
   clearAll: () => {
     set(createInitialState());
     get().saveToStorage();
-    console.log('[HeroDeck] Cleared all decks');
+    debug.log('[HeroDeck] Cleared all decks');
   },
 
   loadFromStorage: () => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (!stored) {
-        console.log('[HeroDeck] No saved decks found in storage');
+        debug.log('[HeroDeck] No saved decks found in storage');
         return;
       }
       
@@ -331,9 +332,9 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
       }
       
       set({ decks: validatedDecks });
-      console.log('[HeroDeck] Loaded decks from storage');
+      debug.log('[HeroDeck] Loaded decks from storage');
     } catch (error) {
-      console.error('[HeroDeck] Failed to load from storage:', error);
+      debug.error('[HeroDeck] Failed to load from storage:', error);
     }
   },
 
@@ -346,7 +347,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
     } catch (error) {
-      console.error('[HeroDeck] Failed to save to storage:', error);
+      debug.error('[HeroDeck] Failed to save to storage:', error);
     }
   },
 }));

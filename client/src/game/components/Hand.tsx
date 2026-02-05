@@ -10,6 +10,7 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { CardInstance, CardData } from '../types';
 import { playSound } from '../utils/soundUtils';
+import { debug } from '../config/debugConfig';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
 import DirectCardDrag from './DirectCardDrag';
@@ -47,7 +48,7 @@ export const Hand: React.FC<HandProps> = ({
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   
   // Debug the props being passed to Hand component
-  console.log('🎯 Hand component render:', {
+  debug.log('🎯 Hand component render:', {
     cardsCount: originalCards?.length || 0,
     currentMana,
     isPlayerTurn,
@@ -59,7 +60,7 @@ export const Hand: React.FC<HandProps> = ({
   // Force initialization if no cards
   useEffect(() => {
     if (!originalCards || originalCards.length === 0) {
-      console.log('🔧 Hand is empty - checking game initialization');
+      debug.log('🔧 Hand is empty - checking game initialization');
     }
   }, [originalCards]);
 
@@ -88,7 +89,7 @@ export const Hand: React.FC<HandProps> = ({
   
   // Handle card play - accepts optional position from drag-drop
   const handleCardPlay = (card: CardInstanceWithCardData, position?: Position) => {
-    console.log('[Hand.handleCardPlay] Called with:', {
+    debug.log('[Hand.handleCardPlay] Called with:', {
       cardInstanceId: card.instanceId,
       cardId: card.card.id,
       cardName: card.card.name,
@@ -96,7 +97,7 @@ export const Hand: React.FC<HandProps> = ({
     });
     
     if (!onCardPlay) {
-      console.log('[Hand.handleCardPlay] No onCardPlay callback!');
+      debug.log('[Hand.handleCardPlay] No onCardPlay callback!');
       return;
     }
     
@@ -106,13 +107,13 @@ export const Hand: React.FC<HandProps> = ({
       (card.card.id === (c as any).card?.id)
     );
     
-    console.log('[Hand.handleCardPlay] Original card found:', !!originalCard, originalCard?.instanceId);
+    debug.log('[Hand.handleCardPlay] Original card found:', !!originalCard, originalCard?.instanceId);
     
     if (originalCard) {
       playSound('card_play');
       onCardPlay(originalCard, position);
     } else {
-      console.error('[Hand.handleCardPlay] Could not find original card!');
+      debug.error('[Hand.handleCardPlay] Could not find original card!');
     }
   };
   
@@ -158,7 +159,7 @@ export const Hand: React.FC<HandProps> = ({
         >
           {adaptedCards.map((card, index) => {
             if (!card || !card.card) {
-              console.error("Invalid card data in hand:", card);
+              debug.error("Invalid card data in hand:", card);
               return null;
             }
             
@@ -210,7 +211,7 @@ export const Hand: React.FC<HandProps> = ({
                   isPlayable={canPlay}
                   onClick={canPlay ? () => handleCardPlay(card) : undefined}
                   onValidDrop={canPlay ? (position) => {
-                    console.log("🎯 Card dropped on battlefield:", card.card.name, "at position:", position);
+                    debug.log("🎯 Card dropped on battlefield:", card.card.name, "at position:", position);
                     handleCardPlay(card, position);
                   } : undefined}
                   boardRef={battlefieldRef}

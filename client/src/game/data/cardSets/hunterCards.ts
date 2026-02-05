@@ -13,6 +13,8 @@
 
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
+
+const IS_DEV = import.meta.env?.DEV ?? false;
 import { registerCard } from "../cardManagement/cardRegistry";
 
 // Create an array to hold all Hunter cards
@@ -768,13 +770,13 @@ const hunterCards = [
 
 // Function to register all Hunter cards in the registry
 export function registerHunterCards(): void {
-  console.log('Registering Hunter cards...');
+  if (IS_DEV) console.log('Registering Hunter cards...');
   
   for (const card of hunterCards) {
     registerCard(card);
   }
   
-  console.log(`Registered ${hunterCards.length} Hunter cards`);
+  if (IS_DEV) console.log(`Registered ${hunterCards.length} Hunter cards`);
 }
 
 export default hunterCards;

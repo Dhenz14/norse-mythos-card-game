@@ -24,6 +24,7 @@ import {
   isCardTransformObject,
   isCardEffectObject 
 } from './cardDataValidator';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Unified card type that can represent both legacy CardData and CardInstanceWithCardData
@@ -268,7 +269,7 @@ export function logCardRendering(card: UnifiedCard, renderer: string): void {
   if (process.env.NODE_ENV !== 'production') {
     try {
       const cardData = extractCardData(card);
-      console.log(
+      debug.card(
         `Rendering card ${cardData.name} (ID: ${cardData.id}) with ${renderer} renderer`
       );
     } catch (err) {

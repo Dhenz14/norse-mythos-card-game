@@ -3,6 +3,7 @@ import { CombatPhase, PokerCombatState } from '../../types/PokerCombatTypes';
 import { getPokerCombatAdapterState } from '../../hooks/usePokerCombatAdapter';
 import { getSmartAIAction } from '../modules/SmartAI';
 import { COMBAT_DEBUG } from '../debugConfig';
+import { debug } from '../../config/debugConfig';
 
 interface UsePokerAIOptions {
   combatState: PokerCombatState | null;
@@ -38,7 +39,7 @@ export function usePokerAI(options: UsePokerAIOptions): void {
           return;
         }
         if (now - lastSetTime >= AI_TIMEOUT_MS) {
-          if (COMBAT_DEBUG.AI) console.warn('[AI Watchdog] Resetting stuck aiResponseInProgressRef');
+          if (COMBAT_DEBUG.AI) debug.warn('[AI Watchdog] Resetting stuck aiResponseInProgressRef');
           aiResponseInProgressRef.current = false;
           lastSetTime = 0;
         }
@@ -65,7 +66,7 @@ export function usePokerAI(options: UsePokerAIOptions): void {
     const isAITurn = combatState.activePlayerId === aiPlayerId;
 
     if (!isAITurn) {
-      if (COMBAT_DEBUG.AI) console.log('[AI Effect] Not AI turn, activePlayerId:', combatState.activePlayerId);
+      if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] Not AI turn, activePlayerId:', combatState.activePlayerId);
       return;
     }
 
@@ -76,24 +77,24 @@ export function usePokerAI(options: UsePokerAIOptions): void {
       combatState.phase === CombatPhase.DESTINY;
 
     if (!isBettingPhase) {
-      if (COMBAT_DEBUG.AI) console.log('[AI Effect] Not a betting phase:', combatState.phase);
+      if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] Not a betting phase:', combatState.phase);
       return;
     }
 
     // Skip if game is over
     if (combatState.foldWinner || combatState.isAllInShowdown) {
-      if (COMBAT_DEBUG.AI) console.log('[AI Effect] Game over (fold or all-in showdown)');
+      if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] Game over (fold or all-in showdown)');
       return;
     }
 
     // Prevent duplicate actions
     if (aiResponseInProgressRef.current) {
-      if (COMBAT_DEBUG.AI) console.log('[AI Effect] AI action already in progress');
+      if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] AI action already in progress');
       return;
     }
 
     if (COMBAT_DEBUG.AI) {
-      console.log('[AI Effect] AI turn detected, will act in', AI_RESPONSE_DELAY_MS, 'ms', {
+      debug.ai('[AI Effect] AI turn detected, will act in', AI_RESPONSE_DELAY_MS, 'ms', {
         phase: combatState.phase,
         activePlayerId: combatState.activePlayerId,
         currentBet: combatState.currentBet,
@@ -115,7 +116,7 @@ export function usePokerAI(options: UsePokerAIOptions): void {
 
         // Re-verify it's still AI's turn
         if (freshState.activePlayerId !== aiPlayerId) {
-          if (COMBAT_DEBUG.AI) console.log('[AI Effect] No longer AI turn after delay');
+          if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] No longer AI turn after delay');
           aiResponseInProgressRef.current = false;
           return;
         }
@@ -127,9 +128,9 @@ export function usePokerAI(options: UsePokerAIOptions): void {
           return;
         }
 
-        if (COMBAT_DEBUG.AI) console.log('[AI Effect] AI making decision now');
+        if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] AI making decision now');
         const aiDecision = getSmartAIAction(freshState, false);
-        if (COMBAT_DEBUG.AI) console.log('[AI Effect] AI decision:', aiDecision);
+        if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] AI decision:', aiDecision);
 
         adapter.performAction(aiPlayerId, aiDecision.action, aiDecision.betAmount);
 
@@ -146,7 +147,7 @@ export function usePokerAI(options: UsePokerAIOptions): void {
         }, 100);
 
       } catch (error) {
-        if (COMBAT_DEBUG.AI) console.error('[AI Effect] ERROR:', error);
+        if (COMBAT_DEBUG.AI) debug.error('[AI Effect] ERROR:', error);
         aiResponseInProgressRef.current = false;
       }
     }, AI_RESPONSE_DELAY_MS);

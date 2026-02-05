@@ -5,6 +5,7 @@
  */
 
 import { GameState } from '../types';
+import { debug } from '../config/debugConfig';
 
 /**
  * Resets all minions' attack state at the start of a player's turn
@@ -22,7 +23,7 @@ export function resetMinionsForTurn(state: GameState): GameState {
   // Get player object based on whose turn it is
   const player = newState.players[currentPlayer];
   
-  console.log(`[resetMinionsForTurn] Resetting ${player.battlefield.length} minions for ${currentPlayer}`);
+  debug.state(`[resetMinionsForTurn] Resetting ${player.battlefield.length} minions for ${currentPlayer}`);
   
   // Update each minion on the battlefield
   player.battlefield = player.battlefield.map(minion => {
@@ -42,7 +43,7 @@ export function resetMinionsForTurn(state: GameState): GameState {
     
     // Log state changes for debugging
     if (wasSummoningSick || wasFrozen) {
-      console.log(`[resetMinionsForTurn] ${minion.card.name}: summoningSick ${wasSummoningSick}->false, frozen: ${wasFrozen}, canAttack: ${updatedMinion.canAttack}`);
+      debug.state(`[resetMinionsForTurn] ${minion.card.name}: summoningSick ${wasSummoningSick}->false, frozen: ${wasFrozen}, canAttack: ${updatedMinion.canAttack}`);
     }
     
     return updatedMinion;
@@ -81,7 +82,7 @@ export function performTurnStartResets(state: GameState): GameState {
   // Deep clone to avoid mutation issues
   let newState = JSON.parse(JSON.stringify(state)) as GameState;
   
-  console.log(`[performTurnStartResets] Starting resets for ${newState.currentTurn}'s turn`);
+  debug.state(`[performTurnStartResets] Starting resets for ${newState.currentTurn}'s turn`);
   
   // Apply overload penalties
   newState = applyOverload(newState);
@@ -95,7 +96,7 @@ export function performTurnStartResets(state: GameState): GameState {
   // Reset hero power usage
   newState.players[newState.currentTurn].heroPower.used = false;
   
-  console.log(`[performTurnStartResets] Resets complete. Player minions:`, 
+  debug.state(`[performTurnStartResets] Resets complete. Player minions:`, 
     newState.players[newState.currentTurn].battlefield.map(m => ({
       name: m.card.name,
       canAttack: m.canAttack,

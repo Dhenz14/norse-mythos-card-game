@@ -14,6 +14,8 @@
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType, SpellTargetType } from '../../types';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all Druid cards in the registry
  * Card IDs: 
@@ -22,7 +24,7 @@ import { BattlecryTargetType, SpellTargetType } from '../../types';
  * - Druid tokens: 11xxx series (usually 5xx+)
  */
 export function registerDruidCards(): void {
-  console.log('Registering Druid cards...');
+  if (IS_DEV) console.log('Registering Druid cards...');
 
   // BASIC DRUID CARDS
   createCard()
@@ -463,5 +465,5 @@ export function registerDruidCards(): void {
     .addCategory("basic")
     .build();
 
-  console.log('Druid cards registered successfully.');
+  if (IS_DEV) console.log('Druid cards registered successfully.');
 }

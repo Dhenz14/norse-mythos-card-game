@@ -13,6 +13,8 @@
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType, SpellTargetType } from '../../types';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all Mage cards in the registry
  * Card IDs: 
@@ -22,7 +24,7 @@ import { BattlecryTargetType, SpellTargetType } from '../../types';
  * - Mage tokens: 3xxxx series
  */
 export function registerMageCards(): void {
-  console.log('Registering Mage cards...');
+  if (IS_DEV) console.log('Registering Mage cards...');
 
   // MAGE MINION CARDS
   
@@ -882,5 +884,5 @@ export function registerMageCards(): void {
     .collectible(false)
     .build();
 
-  console.log('Mage cards registered successfully.');
+  if (IS_DEV) console.log('Mage cards registered successfully.');
 }

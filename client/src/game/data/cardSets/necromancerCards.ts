@@ -13,6 +13,8 @@
 
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
+
+const IS_DEV = import.meta.env?.DEV ?? false;
 import { registerCard } from "../cardManagement/cardRegistry";
 import { getGraveyard, countGraveyardByRace } from "../cardManagement/graveyardTracker";
 
@@ -639,13 +641,13 @@ const necromancerCards = [
 
 // Function to register all Necromancer cards in the registry
 export function registerNecromancerCards(): void {
-  console.log('Registering Necromancer cards...');
+  if (IS_DEV) console.log('Registering Necromancer cards...');
   
   for (const card of necromancerCards) {
     registerCard(card);
   }
   
-  console.log(`Registered ${necromancerCards.length} Necromancer cards`);
+  if (IS_DEV) console.log(`Registered ${necromancerCards.length} Necromancer cards`);
 }
 
 export default necromancerCards;

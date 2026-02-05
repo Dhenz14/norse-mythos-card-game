@@ -7,6 +7,8 @@
 import { registerCard } from '../cardManagement/cardRegistry';
 import { heroSuperMinions } from '../sets/superMinions/heroSuperMinions';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all super minion cards with the card registry
  */
@@ -19,5 +21,5 @@ export function registerSuperMinionCards(): void {
     }
   });
   
-  console.log(`Registered ${heroSuperMinions.length} super minion cards.`);
+  if (IS_DEV) console.log(`Registered ${heroSuperMinions.length} super minion cards.`);
 }

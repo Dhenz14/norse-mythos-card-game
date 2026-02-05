@@ -7,6 +7,7 @@
 
 import { PlayerCombatState } from '../../types/PokerCombatTypes';
 import { COMBAT_DEBUG } from '../debugConfig';
+import { debug } from '../../config/debugConfig';
 
 export interface SidePot {
   id: string;
@@ -75,7 +76,7 @@ export function calculateSidePots(
       isMainPot: false
     });
     
-    if (COMBAT_DEBUG.SIDEPOT) console.log(`[SidePot] Uncalled bet of ${excess} for ${excessPlayer.playerName} (will be returned)`);
+    debug.combat(`[SidePot] Uncalled bet of ${excess} for ${excessPlayer.playerName} (will be returned)`);
   }
   
   return {
@@ -100,16 +101,16 @@ export function awardPots(
   }
   
   awards.set(winnerId, (awards.get(winnerId) || 0) + potState.mainPot);
-  if (COMBAT_DEBUG.SIDEPOT) console.log(`[SidePot] ${winnerId} wins main pot of ${potState.mainPot}`);
+  debug.combat(`[SidePot] ${winnerId} wins main pot of ${potState.mainPot}`);
   
   for (const sidePot of potState.sidePots) {
     if (sidePot.eligiblePlayers.includes(winnerId)) {
       awards.set(winnerId, (awards.get(winnerId) || 0) + sidePot.amount);
-      if (COMBAT_DEBUG.SIDEPOT) console.log(`[SidePot] ${winnerId} wins side pot of ${sidePot.amount}`);
+      debug.combat(`[SidePot] ${winnerId} wins side pot of ${sidePot.amount}`);
     } else if (sidePot.eligiblePlayers.length === 1) {
       const returnTo = sidePot.eligiblePlayers[0];
       awards.set(returnTo, (awards.get(returnTo) || 0) + sidePot.amount);
-      if (COMBAT_DEBUG.SIDEPOT) console.log(`[SidePot] ${returnTo} has uncalled bet of ${sidePot.amount} returned`);
+      debug.combat(`[SidePot] ${returnTo} has uncalled bet of ${sidePot.amount} returned`);
     }
   }
   

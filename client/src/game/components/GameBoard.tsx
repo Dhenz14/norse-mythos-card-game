@@ -53,6 +53,7 @@ import AttackSystem from '../combat/AttackSystem';
 import { canCardAttack, isValidAttackTarget } from '../combat/attackUtils';
 import { createHandlePlayerCardClick, createHandleOpponentCardClick, createHandleOpponentHeroClick } from './GameBoardHandlers';
 import { isMinion, isSpell, isWeapon, isHero, getAttack, getHealth, getDurability, hasOverload, hasBattlecry, hasSpellEffect } from '../utils/cards/typeGuards';
+import { debug } from '../config/debugConfig';
 // Ultimate CardWithDrag system handles all interactions now
 
 // CardWithDrag is now the ONLY card interaction system
@@ -242,7 +243,7 @@ export const GameBoard: React.FC<{}> = () => {
         // Prevent default context menu
         e.preventDefault();
         
-        console.log('[TARGETING] Right-click detected, cancelling targeting mode');
+        debug.log('[TARGETING] Right-click detected, cancelling targeting mode');
         
         // Clear targeting state
         selectCard(null);
@@ -275,14 +276,14 @@ export const GameBoard: React.FC<{}> = () => {
   useEffect(() => {
     const handleHearthstoneCardPlay = (e: CustomEvent) => {
       const { instanceId, position } = e.detail;
-      console.log('Hearthstone card play event received:', instanceId, 'at position:', position);
+      debug.log('Hearthstone card play event received:', instanceId, 'at position:', position);
       
       // Find the card in player's hand
       const player = gameState.players.player;
       if (player && player.hand) {
         const cardToPlay = player.hand.find(card => card.instanceId === instanceId);
         if (cardToPlay) {
-          console.log('Playing card via clean interaction system:', cardToPlay.card.name);
+          debug.log('Playing card via clean interaction system:', cardToPlay.card.name);
           
           // Play the card using the existing game logic
           playCard(instanceId, position);
@@ -306,7 +307,7 @@ export const GameBoard: React.FC<{}> = () => {
     const handleDocumentClick = (e: MouseEvent) => {
       // Only do this if we're in targeting mode
       if (showTargetingArrow && selectedCard) {
-        console.log('[TARGETING] Document click detected, checking if we should cancel targeting');
+        debug.log('[TARGETING] Document click detected, checking if we should cancel targeting');
         
         // We should NOT cancel targeting when:
         // 1. Clicking on a card (these are handled by their own click handlers)
@@ -328,23 +329,23 @@ export const GameBoard: React.FC<{}> = () => {
         
         // Log more detailed information for debugging
         if (isClickOnCard) {
-          console.log('[TARGETING] Click was detected on a card element:', clickedElement?.className);
+          debug.log('[TARGETING] Click was detected on a card element:', clickedElement?.className);
           if (clickedCardId) {
-            console.log('[TARGETING] Clicked card ID:', clickedCardId, 'Valid target?', isValidTargetCard);
+            debug.log('[TARGETING] Clicked card ID:', clickedCardId, 'Valid target?', isValidTargetCard);
           }
         }
         if (isClickOnTargetingUI) {
-          console.log('[TARGETING] Click was detected on targeting UI or battlefield:', clickedElement?.className);
+          debug.log('[TARGETING] Click was detected on targeting UI or battlefield:', clickedElement?.className);
         }
         
         // If the click is on a valid target, UI element, or any card-like element, don't cancel
         if (isClickOnCard || isClickOnTargetingUI || isValidTargetCard) {
-          console.log('[TARGETING] Click was on a card, targeting UI, or battlefield - not canceling targeting');
+          debug.log('[TARGETING] Click was on a card, targeting UI, or battlefield - not canceling targeting');
           return;
         }
         
         // If we reach here, the click was outside valid targets
-        console.log('[TARGETING] Click was outside valid targets, canceling targeting');
+        debug.log('[TARGETING] Click was outside valid targets, canceling targeting');
         setShowTargetingArrow(false);
         selectCard(null);
         
@@ -447,8 +448,8 @@ export const GameBoard: React.FC<{}> = () => {
   
   // Handle playing a card
   const handlePlayCard = (card: CardInstance, cardPosition?: Position) => {
-    console.log(`[CARD-DEBUG] Attempting to play card:`, card);
-    console.log(`[CARD-DEBUG] Card name: ${card?.card?.name}, ID: ${card?.instanceId}, ManaCost: ${card?.card?.manaCost}`);
+    debug.log(`[CARD-DEBUG] Attempting to play card:`, card);
+    debug.log(`[CARD-DEBUG] Card name: ${card?.card?.name}, ID: ${card?.instanceId}, ManaCost: ${card?.card?.manaCost}`);
     
     // Check if card is valid
     if (!card || !card.card) {
@@ -464,10 +465,10 @@ export const GameBoard: React.FC<{}> = () => {
     
     // Check if we have enough mana to play this card
     const playerMana = player.mana?.current || 0;
-    console.log(`[MANA-DEBUG] Player has ${playerMana} mana. Card costs ${card.card.manaCost}.`);
+    debug.log(`[MANA-DEBUG] Player has ${playerMana} mana. Card costs ${card.card.manaCost}.`);
     
     if ((card.card.manaCost ?? 0) > playerMana) {
-      console.log(`[ERROR] Not enough mana. Card costs ${card.card.manaCost}, but player only has ${playerMana}`);
+      debug.log(`[ERROR] Not enough mana. Card costs ${card.card.manaCost}, but player only has ${playerMana}`);
       
       // Show notification to the player
       showNotification({
@@ -482,7 +483,7 @@ export const GameBoard: React.FC<{}> = () => {
     
     // Check if it's a legendary card and show special entrance animation
     if (card.card.rarity === 'legendary' && cardPosition) {
-      console.log(`[LEGENDARY-DEBUG] Triggering legendary entrance for ${card.card.name}`);
+      debug.log(`[LEGENDARY-DEBUG] Triggering legendary entrance for ${card.card.name}`);
       
       // Set the legendary card to trigger the animation component
       setActiveLegendaryCard({ 
@@ -498,11 +499,11 @@ export const GameBoard: React.FC<{}> = () => {
     if (isMinion(card.card) && 
         hasBattlecry(card.card) && 
         card.card.battlecry?.requiresTarget) {
-      console.log(`${card.card.name} requires a battlecry target`);
+      debug.log(`${card.card.name} requires a battlecry target`);
       
       // Store the card for targeting and update the game state
       selectCard(card);
-      console.log(`Selected ${card.card.name} as the active card, waiting for battlecry target`);
+      debug.log(`Selected ${card.card.name} as the active card, waiting for battlecry target`);
       
       // Show a notification that user needs to select a target
       showNotification({
@@ -521,7 +522,7 @@ export const GameBoard: React.FC<{}> = () => {
     
     // Start drag animation if we have the card's position
     if (cardPosition) {
-      console.log(`Starting card drag animation from:`, cardPosition, `to:`, targetPos);
+      debug.log(`Starting card drag animation from:`, cardPosition, `to:`, targetPos);
       animateCard(card, cardPosition, targetPos);
       
       // Play card placement sound
@@ -575,12 +576,12 @@ export const GameBoard: React.FC<{}> = () => {
         
         // Initialize targeting UI components
         setShowTargetingArrow(true);
-        console.log(`[TARGETING] Showing targeting arrow for ${card.card.name}. Target type: ${spellEffect.targetType}`);
+        debug.log(`[TARGETING] Showing targeting arrow for ${card.card.name}. Target type: ${spellEffect.targetType}`);
         
         // Set the starting position of the arrow at the card's position
         if (cardPosition) {
           setArrowStartPosition(cardPosition);
-          console.log(`[TARGETING] Arrow start position set to:`, cardPosition);
+          debug.log(`[TARGETING] Arrow start position set to:`, cardPosition);
         }
         
         // Determine valid targets based on spell requirements
@@ -756,7 +757,7 @@ export const GameBoard: React.FC<{}> = () => {
           showBattlecryEffect(card.card.name, 'draw', battlecry?.value);
         } else if (battlecry?.type === 'draw_both') {
           // Draw for both players effect (Coldlight Oracle)
-          console.log(`Executing draw_both battlecry for ${card.card.name}: Each player draws ${battlecry?.value || 2} cards`);
+          debug.log(`Executing draw_both battlecry for ${card.card.name}: Each player draws ${battlecry?.value || 2} cards`);
           showBattlecryEffect(card.card.name, 'draw_both', battlecry?.value || 2, 'cards for both players');
         }
       }
@@ -769,9 +770,9 @@ export const GameBoard: React.FC<{}> = () => {
     // Convert the card to ensure it has the right format (CardInstance)
     const adaptedCard = reverseAdaptCardInstance(adaptCardInstance(card));
     
-    console.log(`[CARD SELECT] Card selected: ${adaptedCard.card.name}, type: ${adaptedCard.card.type}`);
-    console.log(`[CARD SELECT] Card can attack: ${adaptedCard.canAttack}, summoning sick: ${adaptedCard.isSummoningSick}, attacks performed: ${adaptedCard.attacksPerformed}`);
-    console.log(`[CARD SELECT] Current targeting state: showTargetingArrow=${showTargetingArrow}, selectedCard=${selectedCard?.card?.name || 'none'}, attackingCard=${attackingCard?.card?.name || 'none'}`);
+    debug.log(`[CARD SELECT] Card selected: ${adaptedCard.card.name}, type: ${adaptedCard.card.type}`);
+    debug.log(`[CARD SELECT] Card can attack: ${adaptedCard.canAttack}, summoning sick: ${adaptedCard.isSummoningSick}, attacks performed: ${adaptedCard.attacksPerformed}`);
+    debug.log(`[CARD SELECT] Current targeting state: showTargetingArrow=${showTargetingArrow}, selectedCard=${selectedCard?.card?.name || 'none'}, attackingCard=${attackingCard?.card?.name || 'none'}`);
     
     // Check if a minion with battlecry is currently selected (waiting for target)
     if (selectedCard && 
@@ -779,7 +780,7 @@ export const GameBoard: React.FC<{}> = () => {
         hasBattlecry(selectedCard.card) && 
         selectedCard.card.battlecry?.requiresTarget) {
       
-      console.log(`Selected ${adaptedCard.card.name} as battlecry target for ${selectedCard.card.name}`);
+      debug.log(`Selected ${adaptedCard.card.name} as battlecry target for ${selectedCard.card.name}`);
       
       // Check if this is a valid target for the battlecry
       // We need to check based on the targetType in the battlecry
@@ -807,9 +808,9 @@ export const GameBoard: React.FC<{}> = () => {
             isValid = (player.battlefield.some(c => c.instanceId === card.instanceId) || 
                       opponent.battlefield.some(c => c.instanceId === card.instanceId)) &&
                       card.card.type === 'minion';
-            console.log(`Copy battlecry target validity for ${card.card.name}: ${isValid}`);
+            debug.log(`Copy battlecry target validity for ${card.card.name}: ${isValid}`);
           } else {
-            console.log(`Unsupported battlecry target type: ${targetType}`);
+            debug.log(`Unsupported battlecry target type: ${targetType}`);
             isValid = false;
           }
       }
@@ -823,7 +824,7 @@ export const GameBoard: React.FC<{}> = () => {
         selectCard(null);
         
         // Now play the card with the target
-        console.log(`Playing ${battlecryCard.card.name} with target ${card.card.name}`);
+        debug.log(`Playing ${battlecryCard.card.name} with target ${card.card.name}`);
         playCard(battlecryCard.instanceId, card.instanceId, 'minion');
         
         // Add mana use animation if mana position is tracked
@@ -885,7 +886,7 @@ export const GameBoard: React.FC<{}> = () => {
     }
     // Check if a spell card is currently selected (waiting for target)
     else if (selectedCard && isSpell(selectedCard.card) && selectedCard.card.spellEffect?.requiresTarget) {
-      console.log(`Selected ${card.card.name} as target for ${selectedCard.card.name}`);
+      debug.log(`Selected ${card.card.name} as target for ${selectedCard.card.name}`);
       
       // Check if this is a valid target for the spell
       if (isValidTarget(selectedCard, card)) {
@@ -965,20 +966,20 @@ export const GameBoard: React.FC<{}> = () => {
     } 
     // Otherwise, this is a regular card selection for attack
     else if (isPlayerTurn && card.isPlayed && !card.isSummoningSick && card.canAttack) {
-      console.log(`Selected card to attack with: ${card.card.name}`);
-      console.log(`Card details: isPlayed=${card.isPlayed}, isSummoningSick=${card.isSummoningSick}, canAttack=${card.canAttack}, attacks performed=${card.attacksPerformed}`);
+      debug.log(`Selected card to attack with: ${card.card.name}`);
+      debug.log(`Card details: isPlayed=${card.isPlayed}, isSummoningSick=${card.isSummoningSick}, canAttack=${card.canAttack}, attacks performed=${card.attacksPerformed}`);
       
       // Toggle selection - if already selected, deselect it
       if (attackingCard?.instanceId === card.instanceId) {
-        console.log(`Deselecting attacker: ${card.card.name}`);
+        debug.log(`Deselecting attacker: ${card.card.name}`);
         selectAttacker(null);
       } else {
-        console.log(`Selecting attacker: ${card.card.name}`);
+        debug.log(`Selecting attacker: ${card.card.name}`);
         // Clear any previous selected card
         selectCard(null);
         
         // Set as attacking card - store a reference to the instance to ensure state consistency
-        console.log(`Before selectAttacker call - card type: ${typeof card}, has instanceId: ${!!card.instanceId}, has card prop: ${!!card.card}`);
+        debug.log(`Before selectAttacker call - card type: ${typeof card}, has instanceId: ${!!card.instanceId}, has card prop: ${!!card.card}`);
         
         // Need to ensure the card data is properly converted for both types
         const attackerCardWithChecks = {
@@ -991,7 +992,7 @@ export const GameBoard: React.FC<{}> = () => {
         // Only proceed if card can actually attack
         if (!attackerCardWithChecks.isSummoningSick && attackerCardWithChecks.canAttack) {
           selectAttacker(attackerCardWithChecks);
-          console.log(`After selectAttacker call - attackingCard: ${!!attackingCard}, name: ${attackingCard?.card?.name || 'none'}`);
+          debug.log(`After selectAttacker call - attackingCard: ${!!attackingCard}, name: ${attackingCard?.card?.name || 'none'}`);
           
           // Show notification that card is selected for attack
           showNotification({
@@ -1001,7 +1002,7 @@ export const GameBoard: React.FC<{}> = () => {
             duration: 2000
           });
         } else {
-          console.log(`Card ${card.card.name} attempted to attack but was blocked due to: ${card.isSummoningSick ? 'summoning sickness' : 'already attacked'}`);
+          debug.log(`Card ${card.card.name} attempted to attack but was blocked due to: ${card.isSummoningSick ? 'summoning sickness' : 'already attacked'}`);
           showNotification({
             title: `Cannot Attack`,
             description: card.isSummoningSick 
@@ -1036,13 +1037,13 @@ export const GameBoard: React.FC<{}> = () => {
   // Helper to check if a card is a valid target for the selected spell or battlecry
   const isValidTarget = (sourceCard: CardInstance, targetCard: CardInstance): boolean => {
     // More detailed console logging for targeting debugging
-    console.log(`[TARGETING] Checking if ${targetCard.card.name} is a valid target for ${sourceCard.card.name}`);
-    console.log(`[TARGETING] Source card details:`, {
+    debug.log(`[TARGETING] Checking if ${targetCard.card.name} is a valid target for ${sourceCard.card.name}`);
+    debug.log(`[TARGETING] Source card details:`, {
       name: sourceCard.card.name,
       type: sourceCard.card.type,
       spellEffect: isSpell(sourceCard.card) ? sourceCard.card.spellEffect : undefined
     });
-    console.log(`[TARGETING] Target card details:`, {
+    debug.log(`[TARGETING] Target card details:`, {
       name: targetCard.card.name,
       type: targetCard.card.type,
       instanceId: targetCard.instanceId,
@@ -1052,7 +1053,7 @@ export const GameBoard: React.FC<{}> = () => {
     // For spell cards
     if (isSpell(sourceCard.card)) {
       const spellEffect = sourceCard.card.spellEffect;
-      console.log(`[TARGETING] Spell requires target: ${spellEffect?.requiresTarget}`);
+      debug.log(`[TARGETING] Spell requires target: ${spellEffect?.requiresTarget}`);
       
       // Check if target is a minion
       const targetIsMinionInstance = player.battlefield?.some(c => c.instanceId === targetCard.instanceId) || 
@@ -1069,7 +1070,7 @@ export const GameBoard: React.FC<{}> = () => {
       const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
       
       // Log for debugging
-      console.log(`[DEBUG] Checking target validity for ${sourceCard.card.name}:`, {
+      debug.log(`[DEBUG] Checking target validity for ${sourceCard.card.name}:`, {
         targetName: targetCard.card.name,
         targetType: spellEffect?.targetType,
         conditionalTarget: spellEffect?.conditionalTarget,
@@ -1092,31 +1093,31 @@ export const GameBoard: React.FC<{}> = () => {
           switch (spellEffect?.conditionalTarget) {
             case 'attack_greater_than_5':
               if (targetAttack < 5) {
-                console.log(`Target attack ${targetAttack} is less than 5, invalid for Shadow Word: Death`);
+                debug.log(`Target attack ${targetAttack} is less than 5, invalid for Shadow Word: Death`);
                 return false;
               }
               break;
             case 'attack_less_than_3':
               if (targetAttack > 3) {
-                console.log(`Target attack ${targetAttack} is greater than 3, invalid for Shadow Word: Pain`);
+                debug.log(`Target attack ${targetAttack} is greater than 3, invalid for Shadow Word: Pain`);
                 return false;
               }
               break;
             case 'low_attack_minion':
               if (targetAttack > 3) {
-                console.log(`Target attack ${targetAttack} is greater than 3, invalid for Shadow Word: Pain`);
+                debug.log(`Target attack ${targetAttack} is greater than 3, invalid for Shadow Word: Pain`);
                 return false;
               }
               break;
             case 'damaged_minion':
               if (targetCurrentHealth >= targetMaxHealth) {
-                console.log(`Target is not damaged (${targetCurrentHealth}/${targetMaxHealth}), invalid for Execute`);
+                debug.log(`Target is not damaged (${targetCurrentHealth}/${targetMaxHealth}), invalid for Execute`);
                 return false;
               }
               break;
             case 'undamaged_minion':
               if (targetCurrentHealth < targetMaxHealth) {
-                console.log(`Target is damaged (${targetCurrentHealth}/${targetMaxHealth}), invalid for Backstab`);
+                debug.log(`Target is damaged (${targetCurrentHealth}/${targetMaxHealth}), invalid for Backstab`);
                 return false;
               }
               break;
@@ -1125,7 +1126,7 @@ export const GameBoard: React.FC<{}> = () => {
           }
         } else {
           // Most conditional targets only apply to minions
-          console.log('Conditional target only applies to minions, but target is not a minion');
+          debug.log('Conditional target only applies to minions, but target is not a minion');
           return false;
         }
       }
@@ -1145,13 +1146,13 @@ export const GameBoard: React.FC<{}> = () => {
             // If opponent has taunt minions, we can only target those unless the target itself has taunt
             if (opponentHasTaunt && !hasTaunt && 
                 opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
-              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
             }
             
             // If targeting opponent hero and there are taunt minions, cannot target hero
             if (isOpponentHero && opponentHasTaunt) {
-              console.log('Cannot target opponent hero when there are taunt minions');
+              debug.log('Cannot target opponent hero when there are taunt minions');
               return false;
             }
           }
@@ -1172,7 +1173,7 @@ export const GameBoard: React.FC<{}> = () => {
           if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
             // If opponent has taunt minions, we can only target those unless the target itself has taunt
             if (opponentHasTaunt && !hasTaunt) {
-              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
             }
             return true;
@@ -1188,7 +1189,7 @@ export const GameBoard: React.FC<{}> = () => {
           if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
             // If opponent has taunt minions, we can only target those unless the target itself has taunt
             if (opponentHasTaunts && !hasTaunt) {
-              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
             }
             return true;
@@ -1197,7 +1198,7 @@ export const GameBoard: React.FC<{}> = () => {
           // If targeting opponent hero and there are taunt minions, cannot target hero
           if (targetIsHero && isOpponentHero) {
             if (opponentHasTaunts) {
-              console.log('Cannot target opponent hero when there are taunt minions');
+              debug.log('Cannot target opponent hero when there are taunt minions');
               return false;
             }
             return true;
@@ -1241,13 +1242,13 @@ export const GameBoard: React.FC<{}> = () => {
             const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
             
             if (opponentHasTaunt && !hasTaunt && isOpponentMinion) {
-              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
             }
             
             // If targeting opponent hero and there are taunt minions, cannot target hero
             if (isOpponentHero && opponentHasTaunt) {
-              console.log('Cannot target opponent hero when there are taunt minions');
+              debug.log('Cannot target opponent hero when there are taunt minions');
               return false;
             }
           }
@@ -1269,7 +1270,7 @@ export const GameBoard: React.FC<{}> = () => {
             const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
             
             if (opponentHasTaunt && !hasTaunt) {
-              console.log('Cannot target non-taunt minions when opponent has taunt minions');
+              debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
             }
           }
@@ -1291,7 +1292,7 @@ export const GameBoard: React.FC<{}> = () => {
           const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
           
           if (opponentHasTaunt && !hasTaunt) {
-            console.log('Cannot target non-taunt minions when opponent has taunt minions');
+            debug.log('Cannot target non-taunt minions when opponent has taunt minions');
             return false;
           }
           return true;
@@ -1316,13 +1317,13 @@ export const GameBoard: React.FC<{}> = () => {
     // Convert the card to ensure it has the right format (CardInstance)
     const adaptedTargetCard = reverseAdaptCardInstance(adaptCardInstance(targetCard));
     
-    console.log("[ATTACK_FLOW] Attack opponent card function called with target:", adaptedTargetCard.card.name);
-    console.log("[ATTACK_FLOW] Is player turn:", isPlayerTurn);
-    console.log("[ATTACK_FLOW] Target card zone:", opponent.battlefield.some(c => c.instanceId === adaptedTargetCard.instanceId) ? "opponent battlefield" : "unknown");
+    debug.log("[ATTACK_FLOW] Attack opponent card function called with target:", adaptedTargetCard.card.name);
+    debug.log("[ATTACK_FLOW] Is player turn:", isPlayerTurn);
+    debug.log("[ATTACK_FLOW] Target card zone:", opponent.battlefield.some(c => c.instanceId === adaptedTargetCard.instanceId) ? "opponent battlefield" : "unknown");
     
     if (attackingCard) {
-      console.log("[ATTACK_FLOW] Attacking card exists:", attackingCard.card.name);
-      console.log("[ATTACK_FLOW] Attacking card details:", {
+      debug.log("[ATTACK_FLOW] Attacking card exists:", attackingCard.card.name);
+      debug.log("[ATTACK_FLOW] Attacking card details:", {
         canAttack: attackingCard.canAttack,
         isSummoningSick: attackingCard.isSummoningSick,
         attacksPerformed: attackingCard.attacksPerformed,
@@ -1331,7 +1332,7 @@ export const GameBoard: React.FC<{}> = () => {
       
       // Check if the card can attack (not summoning sick and has not used its attacks)
       if (attackingCard.isSummoningSick) {
-        console.log(`${attackingCard.card.name} can't attack - it has summoning sickness`);
+        debug.log(`${attackingCard.card.name} can't attack - it has summoning sickness`);
         showNotification({
           title: "Can't Attack",
           description: "This minion can't attack yet - it has summoning sickness.",
@@ -1342,7 +1343,7 @@ export const GameBoard: React.FC<{}> = () => {
       }
       
       if (!attackingCard.canAttack) {
-        console.log(`${attackingCard.card.name} can't attack - it has already attacked this turn`);
+        debug.log(`${attackingCard.card.name} can't attack - it has already attacked this turn`);
         showNotification({
           title: "Can't Attack",
           description: "This minion has already attacked this turn.",
@@ -1361,7 +1362,7 @@ export const GameBoard: React.FC<{}> = () => {
       const targetHasTaunt = targetCard.card.keywords?.includes('taunt') || false;
       
       if (opponentHasTaunts && !targetHasTaunt) {
-        console.log(`Can't attack non-taunt minion when opponent has taunt minions`);
+        debug.log(`Can't attack non-taunt minion when opponent has taunt minions`);
         showNotification({
           title: "Can't Attack",
           description: "You must attack minions with Taunt first.",
@@ -1371,7 +1372,7 @@ export const GameBoard: React.FC<{}> = () => {
         return;
       }
       
-      console.log(`Attacking ${targetCard.card.name} with ${attackingCard.card.name}`);
+      debug.log(`Attacking ${targetCard.card.name} with ${attackingCard.card.name}`);
       
       // Play attack sound
       playHit();
@@ -1455,7 +1456,7 @@ export const GameBoard: React.FC<{}> = () => {
         isSpell(selectedCard.card) && 
         selectedCard.card.spellEffect?.requiresTarget) {
       
-      console.log(`Selected opponent's hero as target for spell ${selectedCard.card.name}`);
+      debug.log(`Selected opponent's hero as target for spell ${selectedCard.card.name}`);
       
       // Create a dummy hero card instance for the opponent's hero
       const opponentHeroInstance = {
@@ -1482,7 +1483,7 @@ export const GameBoard: React.FC<{}> = () => {
         ) || false;
         
         if (opponentHasTaunt) {
-          console.log(`Cannot target opponent's hero with spell when there are taunt minions on the battlefield`);
+          debug.log(`Cannot target opponent's hero with spell when there are taunt minions on the battlefield`);
           showNotification({
             title: "Can't Target Hero",
             description: "You must target taunt minions first.",
@@ -1500,7 +1501,7 @@ export const GameBoard: React.FC<{}> = () => {
         selectCard(null);
         
         // Now play the card with the target
-        console.log(`Playing ${spellCard.card.name} targeting opponent's hero`);
+        debug.log(`Playing ${spellCard.card.name} targeting opponent's hero`);
         playCard(spellCard.instanceId, 'opponent', 'hero');
         
         // Add mana use animation
@@ -1556,7 +1557,7 @@ export const GameBoard: React.FC<{}> = () => {
         hasBattlecry(selectedCard.card) && 
         selectedCard.card.battlecry?.requiresTarget) {
       
-      console.log(`Selected opponent's hero as battlecry target for ${selectedCard.card.name}`);
+      debug.log(`Selected opponent's hero as battlecry target for ${selectedCard.card.name}`);
       
       // Check if this is a valid target for the battlecry
       const targetType = selectedCard.card.battlecry?.targetType;
@@ -1585,7 +1586,7 @@ export const GameBoard: React.FC<{}> = () => {
         ) || false;
         
         if (opponentHasTaunt) {
-          console.log(`Can't target opponent's hero directly when there are taunt minions on the battlefield`);
+          debug.log(`Can't target opponent's hero directly when there are taunt minions on the battlefield`);
           showNotification({
             title: "Can't Target Hero",
             description: "You must target taunt minions first.",
@@ -1605,7 +1606,7 @@ export const GameBoard: React.FC<{}> = () => {
         selectCard(null);
         
         // Now play the card with the target
-        console.log(`Playing ${battlecryCard.card.name} with target opponent's hero`);
+        debug.log(`Playing ${battlecryCard.card.name} with target opponent's hero`);
         playCard(battlecryCard.instanceId, 'opponent', 'hero');
         
         // Add mana use animation
@@ -1640,7 +1641,7 @@ export const GameBoard: React.FC<{}> = () => {
     // CASE 2: If in hero power target mode
     else if (heroTargetMode) {
       // If in hero power target mode and clicking on opponent's hero
-      console.log('Using hero power on opponent\'s hero');
+      debug.log('Using hero power on opponent\'s hero');
       
       // For mage and hunter hero powers that target the opponent's hero, check for taunt minions
       if (player.heroClass === 'mage' || player.heroClass === 'hunter') {
@@ -1650,7 +1651,7 @@ export const GameBoard: React.FC<{}> = () => {
         ) || false;
         
         if (opponentHasTaunt) {
-          console.log(`Cannot target opponent's hero with hero power when there are taunt minions on the battlefield`);
+          debug.log(`Cannot target opponent's hero with hero power when there are taunt minions on the battlefield`);
           showNotification({
             title: "Can't Target Hero",
             description: "You must target taunt minions first.",
@@ -1706,7 +1707,7 @@ export const GameBoard: React.FC<{}> = () => {
     else if (attackingCard) {
       // Check if the card can attack (not summoning sick and has not used its attacks)
       if (attackingCard.isSummoningSick) {
-        console.log(`${attackingCard.card.name} can't attack - it has summoning sickness`);
+        debug.log(`${attackingCard.card.name} can't attack - it has summoning sickness`);
         showNotification({
           title: "Can't Attack",
           description: "This minion can't attack yet - it has summoning sickness.",
@@ -1717,7 +1718,7 @@ export const GameBoard: React.FC<{}> = () => {
       }
       
       if (!attackingCard.canAttack) {
-        console.log(`${attackingCard.card.name} can't attack - it has already attacked this turn`);
+        debug.log(`${attackingCard.card.name} can't attack - it has already attacked this turn`);
         showNotification({
           title: "Can't Attack",
           description: "This minion has already attacked this turn.",
@@ -1733,7 +1734,7 @@ export const GameBoard: React.FC<{}> = () => {
       ) || false;
       
       if (opponentHasTaunt) {
-        console.log(`Can't attack hero directly when there are taunt minions on the battlefield`);
+        debug.log(`Can't attack hero directly when there are taunt minions on the battlefield`);
         showNotification({
           title: "Can't Attack Hero",
           description: "You must attack taunt minions first.",
@@ -1744,7 +1745,7 @@ export const GameBoard: React.FC<{}> = () => {
       }
       
       // Normal attack against hero
-      console.log(`Attacking opponent's hero with ${attackingCard.card.name}`);
+      debug.log(`Attacking opponent's hero with ${attackingCard.card.name}`);
       
       // Get card positions for animation
       const attackerPosition = getCardPosition(attackingCard.instanceId);
@@ -1764,7 +1765,7 @@ export const GameBoard: React.FC<{}> = () => {
       attackWithCard(attackingCard.instanceId); // No target ID means attacking hero
     } else {
       // If clicked with no selection, do nothing but log for debugging
-      console.log('Clicked opponent hero without attack selection or hero power active');
+      debug.log('Clicked opponent hero without attack selection or hero power active');
     }
   };
   
@@ -1811,7 +1812,7 @@ export const GameBoard: React.FC<{}> = () => {
   // Handle using hero power on a minion
   const handleHeroPowerOnMinion = (targetCard: CardInstance) => {
     if (heroTargetMode) {
-      console.log(`Using hero power on ${targetCard.card.name}`);
+      debug.log(`Using hero power on ${targetCard.card.name}`);
       
       // Get the target position for animation
       const targetPosition = getCardPosition(targetCard.instanceId);
@@ -1848,7 +1849,7 @@ export const GameBoard: React.FC<{}> = () => {
   // Handle using hero power on a hero (opponent's hero)
   const handleHeroPowerOnHero = () => {
     if (heroTargetMode) {
-      console.log('Using hero power on opponent hero');
+      debug.log('Using hero power on opponent hero');
       
       // Create animations based on the hero class
       if (player.heroClass === 'mage') {
@@ -1901,8 +1902,8 @@ export const GameBoard: React.FC<{}> = () => {
       const spellEffect = selectedCard.card.spellEffect;
       
       // Log for debugging
-      console.log(`Selected player's hero as target for spell ${selectedCard.card.name}`);
-      console.log('Spell effect:', spellEffect);
+      debug.log(`Selected player's hero as target for spell ${selectedCard.card.name}`);
+      debug.log('Spell effect:', spellEffect);
       
       let isValid = false;
       
@@ -1924,7 +1925,7 @@ export const GameBoard: React.FC<{}> = () => {
         selectCard(null);
         
         // Now play the card with the target
-        console.log(`Playing ${spellCard.card.name} targeting player's hero`);
+        debug.log(`Playing ${spellCard.card.name} targeting player's hero`);
         playCard(spellCard.instanceId, 'player', 'hero');
         
         // Add mana use animation
@@ -1990,7 +1991,7 @@ export const GameBoard: React.FC<{}> = () => {
         return;
       }
       
-      console.log(`Selected player's hero as battlecry target for ${selectedCard.card.name}`);
+      debug.log(`Selected player's hero as battlecry target for ${selectedCard.card.name}`);
       
       // Check if this is a valid target for the battlecry
       const targetType = selectedCard.card.battlecry?.targetType;
@@ -2022,7 +2023,7 @@ export const GameBoard: React.FC<{}> = () => {
         selectCard(null);
         
         // Now play the card with the target
-        console.log(`Playing ${battlecryCard.card.name} with target player's hero`);
+        debug.log(`Playing ${battlecryCard.card.name} with target player's hero`);
         playCard(battlecryCard.instanceId, 'player', 'hero');
         
         // Add mana use animation
@@ -2222,7 +2223,7 @@ export const GameBoard: React.FC<{}> = () => {
           y: window.innerHeight / 2
         })}
         onAttackComplete={() => {
-          console.log('[ATTACK] Attack completed successfully');
+          debug.log('[ATTACK] Attack completed successfully');
         }}
       />
       
@@ -2370,7 +2371,7 @@ export const GameBoard: React.FC<{}> = () => {
                }) :
               // Otherwise, regular attack - same approach for type compatibility
               ((card) => {
-                console.log("Attack opponent card clicked:", card.card.name);
+                debug.log("Attack opponent card clicked:", card.card.name);
                 // Extract the essential properties to create a compatible CardInstance
                 const cardInstance = {
                   instanceId: card.instanceId,

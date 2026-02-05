@@ -318,7 +318,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             (cardInstance.card.spellEffect?.type === 'discover' || cardInstance.card.keywords?.includes('discover')) &&
             newState.discovery?.active) {
           
-          console.log('[GameStore] Discovery triggered, state active:', newState.discovery.active);
+          debug.log('[GameStore] Discovery triggered, state active:', newState.discovery.active);
           
           // Play sound effect
           if (audioStore && typeof audioStore.playSoundEffect === 'function') {
@@ -326,7 +326,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           }
           
           // Use the newState directly - it already has discovery set up from executeDiscoverSpell()
-          console.log('[GameStore] Discovery spell played, discovery options:', newState.discovery?.options?.length);
+          debug.log('[GameStore] Discovery spell played, discovery options:', newState.discovery?.options?.length);
           set({ 
             gameState: newState,
             selectedCard: null
@@ -723,7 +723,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     const { gameState } = get();
     if (!gameState.discovery || !gameState.discovery.active) return;
     
-    console.log(`[GameStore] Selecting discovery option: ${card?.name || 'Skip'}`);
+    debug.log(`[GameStore] Selecting discovery option: ${card?.name || 'Skip'}`);
     
     // Execute the callback stored in discovery state
     if (!gameState.discovery.callback) return;

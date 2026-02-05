@@ -43,6 +43,7 @@ import { useCombatLayout } from '../hooks/useCombatLayout';
 import { useRagnarokCombatController } from './hooks/useRagnarokCombatController';
 import type { ShowdownCelebration as ShowdownCelebrationState } from './hooks/useCombatEvents';
 import { isCardInWinningHand } from './utils/combatArenaUtils';
+import { debug } from '../config/debugConfig';
 
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
@@ -262,29 +263,29 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     
     if (selectedCard) {
       const targetType = (selectedCard.card as any)?.spellEffect?.targetType || (selectedCard.card as any)?.battlecry?.targetType;
-      console.log('[Battlecry Debug] Player minion clicked while selectedCard set:', {
+      debug.combat('[Battlecry Debug] Player minion clicked while selectedCard set:', {
         selectedCardName: selectedCard.card?.name,
         targetType,
         clickedMinion: card.card?.name
       });
       if (targetType === 'friendly_minion' || targetType === 'friendly_mech' || targetType === 'any_minion' || targetType === 'any') {
         const cardId = selectedCard.instanceId || (selectedCard as any).id;
-        console.log('[Battlecry Debug] Playing card with target:', { cardId, targetId: card.instanceId });
+        debug.combat('[Battlecry Debug] Playing card with target:', { cardId, targetId: card.instanceId });
         playCard(cardId, card.instanceId);
         return;
       }
     }
     
     if (!isPlayerTurn) {
-      console.log('[Attack Debug] Not player turn - ignoring click');
+      debug.combat('[Attack Debug] Not player turn - ignoring click');
       return;
     }
     if (attackingCard) {
       if (card.instanceId === attackingCard.instanceId) {
-        console.log('[Attack Debug] Deselecting attacker:', card.card?.name);
+        debug.combat('[Attack Debug] Deselecting attacker:', card.card?.name);
         selectAttacker(null);
       } else {
-        console.log('[Attack Debug] Already have attacker selected - cannot select another');
+        debug.combat('[Attack Debug] Already have attacker selected - cannot select another');
       }
     } else {
       // Get fresh card state from gameStore to ensure we have latest canAttack status
@@ -294,7 +295,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       // Use fresh card data if available, otherwise fall back to adapted card
       const cardToCheck = freshCard || card;
       
-      console.log('[Attack Debug] Checking if card can attack:', {
+      debug.combat('[Attack Debug] Checking if card can attack:', {
         name: card.card?.name,
         freshCardFound: !!freshCard,
         canAttackFresh: freshCard?.canAttack,
@@ -311,7 +312,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                            !cardToCheck.isFrozen;
       
       if (canAttackNow) {
-        console.log('[Attack Debug] Selecting attacker:', card.card?.name);
+        debug.combat('[Attack Debug] Selecting attacker:', card.card?.name);
         selectAttacker(card);
       } else {
         // Also try the authoritative check as fallback
@@ -328,10 +329,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         const canAttackResult = canCardAttackCheck(cardAsInstance as any, isPlayerTurn, true);
         
         if (canAttackResult) {
-          console.log('[Attack Debug] Authoritative check passed, selecting attacker:', card.card?.name);
+          debug.combat('[Attack Debug] Authoritative check passed, selecting attacker:', card.card?.name);
           selectAttacker(card);
         } else {
-          console.log('[Attack Debug] Card cannot attack - summoning sickness or exhausted');
+          debug.combat('[Attack Debug] Card cannot attack - summoning sickness or exhausted');
         }
       }
     }
@@ -351,29 +352,29 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     
     if (selectedCard) {
       const targetType = (selectedCard.card as any)?.spellEffect?.targetType || (selectedCard.card as any)?.battlecry?.targetType;
-      console.log('[Battlecry Debug] Opponent minion clicked while selectedCard set:', {
+      debug.combat('[Battlecry Debug] Opponent minion clicked while selectedCard set:', {
         selectedCardName: selectedCard.card?.name,
         targetType,
         clickedMinion: card.card?.name
       });
       if (targetType === 'enemy_minion' || targetType === 'any_minion' || targetType === 'any' || targetType === 'enemy') {
         const cardId = selectedCard.instanceId || (selectedCard as any).id;
-        console.log('[Battlecry Debug] Playing card with enemy target:', { cardId, targetId: card.instanceId });
+        debug.combat('[Battlecry Debug] Playing card with enemy target:', { cardId, targetId: card.instanceId });
         playCard(cardId, card.instanceId);
         return;
       }
     }
     
     if (!isPlayerTurn || !attackingCard) {
-      console.log('[Attack Debug] handleOpponentCardClick - no attacker selected or not player turn');
+      debug.combat('[Attack Debug] handleOpponentCardClick - no attacker selected or not player turn');
       return;
     }
-    console.log('[Attack Debug] Attacking', card.card?.name, 'with', attackingCard?.card?.name);
+    debug.combat('[Attack Debug] Attacking', card.card?.name, 'with', attackingCard?.card?.name);
     attackWithCard(attackingCard.instanceId, card.instanceId);
   }, [isPlayerTurn, attackingCard, attackWithCard, selectedCard, playCard, heroPowerTargeting, executeHeroPowerEffect]);
 
   const handleCardPlay = useCallback((card: any, position?: Position) => {
-    console.log('[handleCardPlay Debug] Card clicked:', {
+    debug.combat('[handleCardPlay Debug] Card clicked:', {
       name: card.card?.name || card.name,
       type: card.card?.type || card.type,
       hasBattlecry: !!(card.card?.battlecry || card.battlecry),
@@ -434,8 +435,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     const battlecry = card.card?.battlecry || card.battlecry;
     
     if (cardType === 'minion' && battlecry?.requiresTarget) {
-      console.log('[Battlecry Debug] Card requires battlecry target, selecting:', card.card?.name || card.name);
-      console.log('[Battlecry Debug] Battlecry details:', battlecry);
+      debug.combat('[Battlecry Debug] Card requires battlecry target, selecting:', card.card?.name || card.name);
+      debug.combat('[Battlecry Debug] Battlecry details:', battlecry);
       selectCard(card);
       return;
     }
@@ -885,16 +886,16 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       {/* First Strike Animation - plays when attacker deals initial damage */}
       {combatState.firstStrike && !combatState.firstStrike.completed ? (
         <>
-          {console.log('[CombatArena] Rendering FirstStrikeAnimation, phase:', combatState.phase, 'target:', combatState.firstStrike.target)}
+          {debug.combat('[CombatArena] Rendering FirstStrikeAnimation, phase:', combatState.phase, 'target:', combatState.firstStrike.target)}
           <FirstStrikeAnimation
             onComplete={() => {
-              console.log('[CombatArena] FirstStrikeAnimation onComplete called');
+              debug.combat('[CombatArena] FirstStrikeAnimation onComplete called');
               getPokerCombatAdapterState().completeFirstStrike();
             }}
           />
         </>
       ) : combatState.firstStrike ? (
-        <>{console.log('[CombatArena] FirstStrike completed, not showing animation')}</>
+        <>{debug.combat('[CombatArena] FirstStrike completed, not showing animation')}</>
       ) : null}
       
       {/* Minion Elemental Buff Popup */}

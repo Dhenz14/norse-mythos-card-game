@@ -10,6 +10,7 @@ import { drawCard } from '../drawUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { processTurnStartEffects as processStatusTurnStart, clearEndOfTurnEffects } from './statusEffectUtils';
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
+import { debug } from '../../config/debugConfig';
 
 // Helper to create type-safe game log entries for effects
 function createEffectLogEntry(
@@ -160,7 +161,7 @@ function processClockworkAutomatonEffect(
   );
   
   if (minionsInHand.length === 0) {
-    console.log('[Clockwork Automaton] No minions in hand to swap with');
+    debug.log('[Clockwork Automaton] No minions in hand to swap with');
     return {
       ...state,
       gameLog: [
@@ -184,7 +185,7 @@ function processClockworkAutomatonEffect(
   const handMinionIndex = hand.findIndex((c: CardInstance) => c.instanceId === handMinion.instanceId);
   
   if (automatonIndex === -1 || handMinionIndex === -1) {
-    console.error('[Clockwork Automaton] Could not find cards to swap');
+    debug.log('[Clockwork Automaton] Could not find cards to swap');
     return state;
   }
   
@@ -223,7 +224,7 @@ function processClockworkAutomatonEffect(
   newBattlefield[automatonIndex] = minionToBattlefield;
   newHand[handMinionIndex] = automatonToHand;
   
-  console.log(`[Clockwork Automaton] Swapped with ${handMinion.card.name} from hand`);
+  debug.log(`[Clockwork Automaton] Swapped with ${handMinion.card.name} from hand`);
   
   return {
     ...state,

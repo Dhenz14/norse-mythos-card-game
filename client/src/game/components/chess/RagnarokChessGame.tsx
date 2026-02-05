@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
 import { getKingAbilityConfig, getAbilityDescription, requiresDirectionSelection, getAvailableDirections, MineDirection } from '../../utils/chess/kingAbilityUtils';
 import { Tooltip } from '../ui/Tooltip';
+import { debug } from '../../config/debugConfig';
 
 type GamePhase = 'army_selection' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
 
@@ -383,9 +384,9 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
       const heroData = army[piece.type as keyof ArmySelectionType];
       heroName = heroData.name;
       norseHeroId = heroData.norseHeroId;
-      console.log(`[createPetFromChessPiece] piece.type=${piece.type}, heroData.name=${heroData.name}, heroData.norseHeroId=${heroData.norseHeroId}`);
+      debug.chess(`createPetFromChessPiece: piece.type=${piece.type}, heroData.name=${heroData.name}, heroData.norseHeroId=${heroData.norseHeroId}`);
     } else {
-      console.log(`[createPetFromChessPiece] Skipping norseHeroId - piece.type=${piece.type}, isPawn=${piece.type === 'pawn'}, hasArmyEntry=${!!army[piece.type as keyof ArmySelectionType]}`);
+      debug.chess(`createPetFromChessPiece: Skipping norseHeroId - piece.type=${piece.type}, isPawn=${piece.type === 'pawn'}, hasArmyEntry=${!!army[piece.type as keyof ArmySelectionType]}`);
     }
     
     return {
@@ -445,9 +446,9 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
 
     const { attacker, defender } = vsScreenPieces;
     
-    console.log(`[Combat Init] Attacker ${attacker.type} (${attacker.owner}): HP=${attacker.health}, Stamina=${attacker.stamina}`);
-    console.log(`[Combat Init] Defender ${defender.type} (${defender.owner}): HP=${defender.health}, Stamina=${defender.stamina}`);
-    console.log(`[Combat Init] First strike will be applied via animation in poker combat`);
+    debug.combat(`Attacker ${attacker.type} (${attacker.owner}): HP=${attacker.health}, Stamina=${attacker.stamina}`);
+    debug.combat(`Defender ${defender.type} (${defender.owner}): HP=${defender.health}, Stamina=${defender.stamina}`);
+    debug.combat(`First strike will be applied via animation in poker combat`);
     
     const attackerArmy = attacker.owner === 'player' ? playerArmy : opponentArmy;
     const defenderArmy = defender.owner === 'player' ? playerArmy : opponentArmy;
@@ -457,8 +458,8 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
     const attackerPet = createPetFromChessPiece(attacker, attackerArmy);
     const defenderPet = createPetFromChessPiece(defender, defenderArmy);
     
-    console.log(`[Combat Init] AttackerPet stamina: ${attackerPet.stats.currentStamina}/${attackerPet.stats.maxStamina}`);
-    console.log(`[Combat Init] DefenderPet stamina: ${defenderPet.stats.currentStamina}/${defenderPet.stats.maxStamina}`);
+    debug.combat(`AttackerPet stamina: ${attackerPet.stats.currentStamina}/${attackerPet.stats.maxStamina}`);
+    debug.combat(`DefenderPet stamina: ${defenderPet.stats.currentStamina}/${defenderPet.stats.maxStamina}`);
 
     const attackerName = attackerPet.name || `${attacker.owner === 'player' ? 'Player' : 'Opponent'} ${attacker.type}`;
     const defenderName = defenderPet.name || `${defender.owner === 'player' ? 'Player' : 'Opponent'} ${defender.type}`;
@@ -531,9 +532,9 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
     const pokerPlayerPiece = pokerSlotsSwapped ? combat.defender : combat.attacker;
     const pokerOpponentPiece = pokerSlotsSwapped ? combat.attacker : combat.defender;
     
-    console.log(`[Combat End] Winner: ${winner}, pokerSlotsSwapped: ${pokerSlotsSwapped}`);
-    console.log(`[Combat End] Poker player = chess ${pokerSlotsSwapped ? 'defender' : 'attacker'} (${pokerPlayerPiece.owner})`);
-    console.log(`[Combat End] Poker opponent = chess ${pokerSlotsSwapped ? 'attacker' : 'defender'} (${pokerOpponentPiece.owner})`);
+    debug.combat(`Winner: ${winner}, pokerSlotsSwapped: ${pokerSlotsSwapped}`);
+    debug.combat(`Poker player = chess ${pokerSlotsSwapped ? 'defender' : 'attacker'} (${pokerPlayerPiece.owner})`);
+    debug.combat(`Poker opponent = chess ${pokerSlotsSwapped ? 'attacker' : 'defender'} (${pokerOpponentPiece.owner})`);
     
     if (winner === 'draw') {
       // Draw: Both pieces survive with preBlindHealth (no damage on draw)
@@ -546,7 +547,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
       incrementAllStamina();
       nextTurn();
       
-      console.log(`[Chess] Draw resolved - both pieces survive. Player HP: ${playerPreBlindHP}, Opponent HP: ${opponentPreBlindHP}`);
+      debug.chess(`Draw resolved - both pieces survive. Player HP: ${playerPreBlindHP}, Opponent HP: ${opponentPreBlindHP}`);
     } else {
       let winnerPiece: typeof combat.attacker;
       let loserPiece: typeof combat.attacker;
@@ -559,14 +560,14 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
         loserPiece = pokerOpponentPiece;
         winnerNewHealth = playerPreBlindHP; // Winner takes NO damage
         winnerNewStamina = playerStamina;
-        console.log(`[Chess] Poker player (${winnerPiece.owner} ${winnerPiece.type}) wins - HP stays at ${playerPreBlindHP}`);
+        debug.chess(`Poker player (${winnerPiece.owner} ${winnerPiece.type}) wins - HP stays at ${playerPreBlindHP}`);
       } else {
         // Poker "opponent" wins - the chess piece in the opponent slot survives
         winnerPiece = pokerOpponentPiece;
         loserPiece = pokerPlayerPiece;
         winnerNewHealth = opponentPreBlindHP; // Winner takes NO damage
         winnerNewStamina = opponentStamina;
-        console.log(`[Chess] Poker opponent (${winnerPiece.owner} ${winnerPiece.type}) wins - HP stays at ${opponentPreBlindHP}`);
+        debug.chess(`Poker opponent (${winnerPiece.owner} ${winnerPiece.type}) wins - HP stays at ${opponentPreBlindHP}`);
       }
       
       resolveCombat({
@@ -575,7 +576,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
         winnerNewHealth: Math.max(1, winnerNewHealth)
       });
       
-      console.log(`[Combat End] Updating winner ${winnerPiece.type} (${winnerPiece.owner}) stamina to ${winnerNewStamina}`);
+      debug.combat(`Updating winner ${winnerPiece.type} (${winnerPiece.owner}) stamina to ${winnerNewStamina}`);
       updatePieceStamina(winnerPiece.id, winnerNewStamina);
     }
     
@@ -611,7 +612,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
 
   useEffect(() => {
     if (pendingCombat && boardState.gameStatus === 'combat' && phase === 'chess' && !combatPieces) {
-      console.log('[RagnarokChessGame] pendingCombat detected (AI attack), triggering combat flow');
+      debug.chess('pendingCombat detected (AI attack), triggering combat flow');
       const { attacker, defender } = pendingCombat;
       
       setCombatPieces({ attackerId: attacker.id, defenderId: defender.id });
@@ -637,7 +638,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
       
       if (!hasValidMove && pieces.length > 0) {
         const winnerStatus = currentSide === 'player' ? 'opponent_wins' : 'player_wins';
-        console.log(`[Chess] ${currentSide} has no valid moves - stalemate, ${winnerStatus}`);
+        debug.chess(`${currentSide} has no valid moves - stalemate, ${winnerStatus}`);
         setGameStatus(winnerStatus);
       }
     }
@@ -656,7 +657,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
     const opponentPieces = boardState.pieces.filter(p => p.owner === 'opponent' && p.type !== 'pawn' && p.type !== 'king');
     
     if (playerPieces.length === 0 || opponentPieces.length === 0) {
-      console.log('[BattleMode] Not enough pieces for test battle');
+      debug.chess('BattleMode: Not enough pieces for test battle');
       return;
     }
     

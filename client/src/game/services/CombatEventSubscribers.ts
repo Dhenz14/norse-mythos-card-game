@@ -16,6 +16,7 @@ import { CombatEventBus, CombatEvent, DamageResolvedEvent, AttackBlockedEvent, I
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { useAnimationStore } from '../stores/animationStore';
 import { scheduleDamageEffect } from '../animations/UnifiedAnimationOrchestrator';
+import { debug } from '../config/debugConfig';
 
 let initialized = false;
 const unsubscribers: (() => void)[] = [];
@@ -26,11 +27,11 @@ const unsubscribers: (() => void)[] = [];
  */
 export function initializeCombatEventSubscribers(): void {
   if (initialized) {
-    console.log('[CombatEventSubscribers] Already initialized, skipping');
+    debug.combat('[CombatEventSubscribers] Already initialized, skipping');
     return;
   }
 
-  console.log('[CombatEventSubscribers] Initializing combat event subscribers...');
+  debug.combat('[CombatEventSubscribers] Initializing combat event subscribers...');
 
   unsubscribers.push(subscribePokerCombatHP());
   unsubscribers.push(subscribeCombatLog());
@@ -38,7 +39,7 @@ export function initializeCombatEventSubscribers(): void {
   unsubscribers.push(subscribeDamageAnimations());
 
   initialized = true;
-  console.log(`[CombatEventSubscribers] Initialized ${unsubscribers.length} subscribers`);
+  debug.combat(`[CombatEventSubscribers] Initialized ${unsubscribers.length} subscribers`);
 }
 
 /**
@@ -50,7 +51,7 @@ export function cleanupCombatEventSubscribers(): void {
   }
   unsubscribers.length = 0;
   initialized = false;
-  console.log('[CombatEventSubscribers] Cleaned up all subscribers');
+  debug.combat('[CombatEventSubscribers] Cleaned up all subscribers');
 }
 
 /**
@@ -73,9 +74,9 @@ function subscribePokerCombatHP(): () => void {
           pokerStore.applyDirectDamage('opponent', event.damageToTarget);
         }
         
-        console.log(`[PokerCombatHP] Applied ${event.damageToTarget} damage to ${targetOwner} hero via CombatEventBus`);
+        debug.combat(`[PokerCombatHP] Applied ${event.damageToTarget} damage to ${targetOwner} hero via CombatEventBus`);
       } else {
-        console.log(`[PokerCombatHP] Minion damage: ${event.damageToTarget} to ${event.targetId} (minion HP handled by gameStore)`);
+        debug.combat(`[PokerCombatHP] Minion damage: ${event.damageToTarget} to ${event.targetId} (minion HP handled by gameStore)`);
       }
     }
 
@@ -91,7 +92,7 @@ function subscribePokerCombatHP(): () => void {
           pokerStore.applyDirectDamage('opponent', event.damageToAttacker);
         }
         
-        console.log(`[PokerCombatHP] Applied ${event.damageToAttacker} counter damage to ${attackerOwner} hero via CombatEventBus`);
+        debug.combat(`[PokerCombatHP] Applied ${event.damageToAttacker} counter damage to ${attackerOwner} hero via CombatEventBus`);
       }
     }
   }, 100);
@@ -107,25 +108,25 @@ function subscribeCombatLog(): () => void {
     
     switch (event.type) {
       case 'ATTACK_STARTED':
-        console.log(`${logPrefix} Attack started: ${event.attackerId} -> ${event.targetId}`);
+        debug.combat(`${logPrefix} Attack started: ${event.attackerId} -> ${event.targetId}`);
         break;
       case 'DAMAGE_INTENT':
-        console.log(`${logPrefix} Damage intent: ${event.intendedDamage} from ${event.sourceId} to ${event.targetId}`);
+        debug.combat(`${logPrefix} Damage intent: ${event.intendedDamage} from ${event.sourceId} to ${event.targetId}`);
         break;
       case 'IMPACT_PHASE':
-        console.log(`${logPrefix} IMPACT! ${event.damageToTarget} damage to target, ${event.damageToAttacker} counter damage`);
+        debug.combat(`${logPrefix} IMPACT! ${event.damageToTarget} damage to target, ${event.damageToAttacker} counter damage`);
         break;
       case 'DAMAGE_RESOLVED':
-        console.log(`${logPrefix} Damage resolved: ${event.actualDamage} to ${event.targetId} (${event.targetHealthBefore} -> ${event.targetHealthAfter})${event.targetDied ? ' [DIED]' : ''}`);
+        debug.combat(`${logPrefix} Damage resolved: ${event.actualDamage} to ${event.targetId} (${event.targetHealthBefore} -> ${event.targetHealthAfter})${event.targetDied ? ' [DIED]' : ''}`);
         break;
       case 'ATTACK_BLOCKED':
-        console.log(`${logPrefix} Attack BLOCKED: ${event.attackerId} - ${event.reason}: ${event.message}`);
+        debug.combat(`${logPrefix} Attack BLOCKED: ${event.attackerId} - ${event.reason}: ${event.message}`);
         break;
       case 'ATTACK_COMPLETED':
-        console.log(`${logPrefix} Attack completed: ${event.attackerId} -> ${event.targetId} (success: ${event.success})`);
+        debug.combat(`${logPrefix} Attack completed: ${event.attackerId} -> ${event.targetId} (success: ${event.success})`);
         break;
       case 'DEATH_TRIGGERED':
-        console.log(`${logPrefix} DEATH: ${event.diedId} (${event.diedType}) killed by ${event.killerId || 'unknown'}`);
+        debug.combat(`${logPrefix} DEATH: ${event.diedId} (${event.diedType}) killed by ${event.killerId || 'unknown'}`);
         break;
     }
   }, -100);
@@ -137,7 +138,7 @@ function subscribeCombatLog(): () => void {
  */
 function subscribeBlockedAttackNotifications(): () => void {
   return CombatEventBus.subscribe<AttackBlockedEvent>('ATTACK_BLOCKED', (event) => {
-    console.warn(`[AttackBlocked] ${event.message}`);
+    debug.warn(`[AttackBlocked] ${event.message}`);
     
     // Show visual notification to user
     const animationStore = useAnimationStore.getState();
@@ -178,7 +179,7 @@ function subscribeDamageAnimations(): () => void {
       const targetPosition = getPositionForTarget(targetId);
       if (targetPosition) {
         scheduleDamageEffect(targetPosition, damageToTarget, 'combat-damage');
-        console.log(`[DamageAnimation] Showing -${damageToTarget} at target ${targetId}`);
+        debug.combat(`[DamageAnimation] Showing -${damageToTarget} at target ${targetId}`);
       }
     }
     
@@ -189,7 +190,7 @@ function subscribeDamageAnimations(): () => void {
         // Slight delay for counter damage to feel more natural
         setTimeout(() => {
           scheduleDamageEffect(attackerPosition, damageToAttacker, 'combat-counter');
-          console.log(`[DamageAnimation] Showing -${damageToAttacker} counter at attacker ${attackerId}`);
+          debug.combat(`[DamageAnimation] Showing -${damageToAttacker} counter at attacker ${attackerId}`);
         }, 100);
       }
     }
@@ -250,7 +251,7 @@ function getPositionForTarget(targetId: string): { x: number; y: number } | null
   }
   
   // Fallback - can't find element, return null
-  console.warn(`[DamageAnimation] Could not find position for target: ${targetId}`);
+  debug.warn(`[DamageAnimation] Could not find position for target: ${targetId}`);
   return null;
 }
 

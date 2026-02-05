@@ -7,6 +7,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { CardInstance } from '../types';
 import { useCardPositions } from './useCardPositions';
+import { debug } from '../config/debugConfig';
 import { Position } from '../types/Position';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 
@@ -35,7 +36,7 @@ export function useCardDragAnimation() {
       // This is useful for animations that need to react to position changes
       if (draggedCard && 'instanceId' in draggedCard && draggedCard.instanceId === cardId) {
         // If this is our currently dragged card, we might want to update animation states
-        console.log(`Position update for dragged card ${cardId}: (${position.x}, ${position.y})`);
+        debug.drag(`Position update for dragged card ${cardId}: (${position.x}, ${position.y})`);
       }
     });
     
@@ -67,7 +68,7 @@ export function useCardDragAnimation() {
     const cardName = 'card' in card && card.card ? card.card.name : 'Unknown Card';
     
     // Log animation for debugging
-    console.log(`Starting card animation for ${cardName} from (${from.x}, ${from.y}) to (${to.x}, ${to.y})`);
+    debug.drag(`Starting card animation for ${cardName} from (${from.x}, ${from.y}) to (${to.x}, ${to.y})`);
   }, []);
   
   // Handle animation completion
@@ -78,7 +79,7 @@ export function useCardDragAnimation() {
     setTargetPosition(null);
     
     // Log animation completion for debugging
-    console.log('Card animation completed');
+    debug.drag('Card animation completed');
   }, []);
   
   return {

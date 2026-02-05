@@ -15,6 +15,7 @@ import { ADDITIONAL_HEROES, getAdditionalHeroById } from './additionalHeroes';
 import { JAPANESE_HEROES, getJapaneseHeroById } from './japaneseHeroes';
 import { EGYPTIAN_HEROES, getEgyptianHeroById } from './egyptianHeroes';
 import { NorseHero } from '../../types/NorseTypes';
+import { debug } from '../../config/debugConfig';
 
 export const ALL_NORSE_HEROES: Record<string, NorseHero> = {
   ...NORSE_HEROES,
@@ -45,12 +46,12 @@ export function validateAllHeroesExist(): boolean {
   // Verify all heroes have required properties
   for (const hero of ALL_HERO_LIST) {
     if (!hero.heroPower || !hero.weaponUpgrade || !hero.passive) {
-      console.warn(`[VALIDATION] Hero ${hero.id} missing required properties`);
+      debug.warn(`[VALIDATION] Hero ${hero.id} missing required properties`);
       return false;
     }
   }
   
-  console.log(`[VALIDATION] All ${actualHeroes} Heroes validated successfully`);
+  debug.log(`[VALIDATION] All ${actualHeroes} Heroes validated successfully`);
   return true;
 }
 
@@ -61,7 +62,7 @@ export function validateFullRoster(): { valid: boolean; kings: number; heroes: n
     heroes: ALL_HERO_LIST.length
   };
   
-  console.log(`[ROSTER] Total: ${result.kings} Kings + ${result.heroes} Heroes = ${result.kings + result.heroes} characters`);
+  debug.log(`[ROSTER] Total: ${result.kings} Kings + ${result.heroes} Heroes = ${result.kings + result.heroes} characters`);
   return result;
 }
 
@@ -270,7 +271,7 @@ export function getHeroClass(norseHeroId: string): string {
     return hero.heroClass;
   }
   
-  console.warn(`[getHeroClass] No class mapping found for hero: ${norseHeroId}`);
+  debug.warn(`[getHeroClass] No class mapping found for hero: ${norseHeroId}`);
   return 'neutral';
 }
 

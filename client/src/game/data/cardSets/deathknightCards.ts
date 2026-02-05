@@ -13,6 +13,8 @@
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Register all Death Knight cards in the registry
  * Card IDs:
@@ -22,7 +24,7 @@ import { createCard } from "../cardManagement/cardBuilder";
  * - Death Knight tokens: 39xx series
  */
 export function registerDeathKnightCards(): void {
-  console.log('Registering Death Knight cards...');
+  if (IS_DEV) console.log('Registering Death Knight cards...');
 
   // Death Coil
   createCard()
@@ -420,5 +422,5 @@ export function registerDeathKnightCards(): void {
     .collectible(true)
     .build();
 
-  console.log('Death Knight cards registered successfully.');
+  if (IS_DEV) console.log('Death Knight cards registered successfully.');
 }

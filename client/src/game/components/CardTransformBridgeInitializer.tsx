@@ -11,6 +11,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { initializeCardTransformBridge } from '../utils/cards/CardTransformBridge';
 import CardTransformContext from '../context/CardTransformContext';
+import { debug } from '../config/debugConfig';
 
 const CardTransformBridgeInitializer: React.FC = () => {
   // Get context state and dispatch function
@@ -23,7 +24,7 @@ const CardTransformBridgeInitializer: React.FC = () => {
   
   // Initialize the bridge just once on mount
   useEffect(() => {
-    console.log('CardTransformBridgeInitializer: Initializing bridge between legacy and context systems');
+    debug.log('CardTransformBridgeInitializer: Initializing bridge between legacy and context systems');
     
     // Initialize the bridge with the context state and dispatch function
     // Use a function that grabs the latest dispatch from the ref

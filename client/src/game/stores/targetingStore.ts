@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { debug } from '../config/debugConfig';
 
 export interface CardPosition {
   id: string;
@@ -54,7 +55,7 @@ export const useTargetingStore = create<TargetingState>((set, get) => ({
     const positions = get().cardPositions;
     const attackerPos = positions.get(attackerId) || null;
     
-    console.log(`[Targeting] Started targeting with attacker: ${attackerId}, valid targets:`, validTargets);
+    debug.log(`[Targeting] Started targeting with attacker: ${attackerId}, valid targets:`, validTargets);
     
     set({
       isTargeting: true,
@@ -112,7 +113,7 @@ export const useTargetingStore = create<TargetingState>((set, get) => ({
   },
   
   cancelTargeting: () => {
-    console.log('[Targeting] Cancelled');
+    debug.log('[Targeting] Cancelled');
     set({
       isTargeting: false,
       attackerId: null,
@@ -143,7 +144,7 @@ export const useTargetingStore = create<TargetingState>((set, get) => ({
       validTargets: []
     });
     
-    console.log(`[Targeting] Confirmed attack: ${result.attackerId} -> ${result.targetId}`);
+    debug.log(`[Targeting] Confirmed attack: ${result.attackerId} -> ${result.targetId}`);
     return result;
   },
   

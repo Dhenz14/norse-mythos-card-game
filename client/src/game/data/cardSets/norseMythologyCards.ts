@@ -6,6 +6,8 @@
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType, CardData } from '../../types';
 
+const IS_DEV = import.meta.env?.DEV ?? false;
+
 /**
  * Static definition of Norse mythology cards for inclusion in the card database
  * This array is used by the deck builder and other components that need direct access to card data
@@ -3351,7 +3353,7 @@ export const norseMythologyCards: CardData[] = [
  * This function is called during game initialization to add cards to the registry
  */
 export function registerNorseMythologyCards(): void {
-  console.log('Registering Norse mythology cards...');
+  if (IS_DEV) console.log('Registering Norse mythology cards...');
 
   // Jormungandr - The World Serpent
   createCard()
@@ -5996,5 +5998,5 @@ export function registerNorseMythologyCards(): void {
     .collectible(true)
     .build();
 
-  console.log('Norse mythology cards registered successfully.');
+  if (IS_DEV) console.log('Norse mythology cards registered successfully.');
 }

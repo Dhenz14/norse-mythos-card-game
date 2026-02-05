@@ -39,7 +39,7 @@ import {
 import { getElementAdvantage } from '../../utils/elements';
 import { getCachedHandEvaluation, clearHandCache } from '../../utils/poker/handCache';
 import { compareHands } from '../../combat/modules/HandEvaluator';
-import { COMBAT_DEBUG } from '../../combat/debugConfig';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Evaluate poker hand with caching for performance.
@@ -236,7 +236,7 @@ export const createPokerCombatSlice: StateCreator<
     let isAllInShowdown = false;
 
     if (playerHealth < bigBlind || opponentHealth < bigBlind) {
-      console.log('[PokerCombat] Auto-all-in triggered due to low health:', { playerHealth, opponentHealth, bigBlind });
+      debug.combat('[PokerCombat] Auto-all-in triggered due to low health:', { playerHealth, opponentHealth, bigBlind });
       isAllInShowdown = true;
       // Flip cards immediately
       skipMulligan = true;
@@ -278,7 +278,7 @@ export const createPokerCombatSlice: StateCreator<
     };
     
     if (playerManaBoost > 0 || opponentManaBoost > 0) {
-      console.log('[PokerCombat] Applied mana boosts from Divine Command:', { playerManaBoost, opponentManaBoost });
+      debug.combat('[PokerCombat] Applied mana boosts from Divine Command:', { playerManaBoost, opponentManaBoost });
     }
     
     // Use centralized utility for activePlayerId initialization
@@ -334,14 +334,14 @@ export const createPokerCombatSlice: StateCreator<
   },
 
   completeFirstStrike: () => {
-    console.log('[PokerCombatSlice] completeFirstStrike called');
+    debug.combat('[PokerCombatSlice] completeFirstStrike called');
     const state = get();
     if (!state.pokerCombatState || !state.pokerCombatState.firstStrike) {
-      console.log('[PokerCombatSlice] No firstStrike state, returning early');
+      debug.combat('[PokerCombatSlice] No firstStrike state, returning early');
       return;
     }
     if (state.pokerCombatState.firstStrike.completed) {
-      console.log('[PokerCombatSlice] FirstStrike already completed, returning early');
+      debug.combat('[PokerCombatSlice] FirstStrike already completed, returning early');
       return;
     }
     
@@ -363,7 +363,7 @@ export const createPokerCombatSlice: StateCreator<
     };
     
     const nextPhase = state.mulliganComplete ? PokerCombatPhase.SPELL_PET : PokerCombatPhase.MULLIGAN;
-    console.log(`[PokerCombatSlice] First strike damage ${damage} applied to ${target}, transitioning to phase: ${nextPhase}`);
+    debug.combat(`[PokerCombatSlice] First strike damage ${damage} applied to ${target}, transitioning to phase: ${nextPhase}`);
     
     // Enter next phase with isReady: false
     // If going to SPELL_PET, it's a timed phase for card playing
@@ -549,16 +549,14 @@ export const createPokerCombatSlice: StateCreator<
       }
     }
     
-    if (COMBAT_DEBUG.BETTING) {
-      console.log('[performPokerAction] Action completed:', {
-        playerId,
-        action,
-        nextActivePlayerId: newState.activePlayerId,
-        actionsThisRound: newState.actionsThisRound,
-        playerReady: newState.player.isReady,
-        opponentReady: newState.opponent.isReady
-      });
-    }
+    debug.combat('[performPokerAction] Action completed:', {
+      playerId,
+      action,
+      nextActivePlayerId: newState.activePlayerId,
+      actionsThisRound: newState.actionsThisRound,
+      playerReady: newState.player.isReady,
+      opponentReady: newState.opponent.isReady
+    });
     
     set({ pokerCombatState: newState });
   },
@@ -576,7 +574,7 @@ export const createPokerCombatSlice: StateCreator<
         combatState.activePlayerId !== null && 
         combatState.actionsThisRound === 0 &&
         !(combatState.player.isReady && combatState.opponent.isReady)) {
-      console.log('[advancePokerPhase] Blocking auto-advance: waiting for first action or Ready click');
+      debug.combat('[advancePokerPhase] Blocking auto-advance: waiting for first action or Ready click');
       return;
     }
 
@@ -634,14 +632,12 @@ export const createPokerCombatSlice: StateCreator<
     const newActivePlayerId = getActivePlayerForPhase(newPhase, ctx);
     validateActivePlayer(newPhase, newActivePlayerId, 'advancePokerPhase');
     
-    if (COMBAT_DEBUG.PHASES) {
-      console.log('[advancePokerPhase] Phase transition:', {
-        from: combatState.phase,
-        to: newPhase,
-        activePlayerId: newActivePlayerId,
-        playerPosition: combatState.playerPosition
-      });
-    }
+    debug.combat('[advancePokerPhase] Phase transition:', {
+      from: combatState.phase,
+      to: newPhase,
+      activePlayerId: newActivePlayerId,
+      playerPosition: combatState.playerPosition
+    });
     
     set({
       pokerDeck: deck,
@@ -799,7 +795,7 @@ export const createPokerCombatSlice: StateCreator<
     
     const isCheckThrough = playerCommitted === 0 && opponentCommitted === 0;
     
-    console.log('[UNIFIED HP RESOLUTION] Before calculation:', {
+    debug.combat('[UNIFIED HP RESOLUTION] Before calculation:', {
       winner,
       playerCurrentHP,
       opponentCurrentHP,
@@ -848,7 +844,7 @@ export const createPokerCombatSlice: StateCreator<
       opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
     }
     
-    console.log('[UNIFIED HP RESOLUTION] After calculation:', {
+    debug.combat('[UNIFIED HP RESOLUTION] After calculation:', {
       winner,
       playerFinalHealth,
       opponentFinalHealth,
@@ -1267,7 +1263,7 @@ export const createPokerCombatSlice: StateCreator<
     
     const eitherAllIn = playerAllIn || opponentAllIn;
     if (eitherAllIn && !combatState.isAllInShowdown) {
-      if (COMBAT_DEBUG.PHASES) console.log('[maybeCloseBettingRound] All-in detected, enabling showdown mode');
+      debug.combat('[maybeCloseBettingRound] All-in detected, enabling showdown mode');
       set({
         pokerCombatState: {
           ...combatState,

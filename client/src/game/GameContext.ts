@@ -4,6 +4,7 @@
  * Provides the game state for effect handlers to use when executing effects.
  */
 import { CardInstance } from './types/CardTypes';
+import { debug } from './config/debugConfig';
 
 export interface Player {
   id: string;
@@ -134,7 +135,7 @@ export class GameContext {
       case 'self':
         return [sourceCard];
       default:
-        console.error(`Unknown target type: ${targetType}`);
+        debug.error(`Unknown target type: ${targetType}`);
         return [];
     }
   }
@@ -145,7 +146,7 @@ export class GameContext {
   dealDamage(target: CardInstance, amount: number): void {
     if (!target) return;
     
-    console.log(`Dealing ${amount} damage to ${target.card.name}`);
+    debug.log(`Dealing ${amount} damage to ${target.card.name}`);
     
     // Check for divine shield
     if (target.hasDivineShield) {
@@ -252,7 +253,7 @@ export class GameContext {
    */
   logGameEvent(message: string): void {
     this.gameLog.push(`[Turn ${this.turnCount}] ${message}`);
-    console.log(`[GAME] ${message}`);
+    debug.log(`[GAME] ${message}`);
   }
 }
 

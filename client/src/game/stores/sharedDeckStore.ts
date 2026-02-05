@@ -8,6 +8,7 @@
 import { create } from 'zustand';
 import { ArmySelection, ChessPieceType } from '../types/ChessTypes';
 import { useHeroDeckStore, PieceType } from './heroDeckStore';
+import { debug } from '../config/debugConfig';
 
 export interface CardInstance {
   instanceId: string;
@@ -92,7 +93,7 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
   ...createInitialState(),
 
   initialize: (playerArmy, neutralCardIds, matchId) => {
-    console.log('[SharedDeck] Initializing deck for match:', matchId);
+    debug.log('[SharedDeck] Initializing deck for match:', matchId);
     
     const allCards: CardInstance[] = [];
     const heroCardOwners: Record<string, string> = {};
@@ -118,15 +119,15 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
     }
     
     if (missingDecks.length > 0) {
-      console.warn(`[SharedDeck] Missing decks for pieces: ${missingDecks.join(', ')}`);
+      debug.warn(`[SharedDeck] Missing decks for pieces: ${missingDecks.join(', ')}`);
     }
     
     if (invalidDecks.length > 0) {
-      console.warn(`[SharedDeck] Invalid decks: ${invalidDecks.join('; ')}`);
+      debug.warn(`[SharedDeck] Invalid decks: ${invalidDecks.join('; ')}`);
     }
     
     if (missingDecks.length === 4) {
-      console.error('[SharedDeck] No valid decks found! Cannot initialize shared deck.');
+      debug.error('[SharedDeck] No valid decks found! Cannot initialize shared deck.');
       throw new Error('Cannot initialize shared deck: All 4 hero decks are missing. Please build your army first.');
     }
     
@@ -141,7 +142,7 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
       const deckCardIds = heroDeck?.cardIds || [];
       
       if (deckCardIds.length === 0) {
-        console.warn(`[SharedDeck] Hero ${heroKey} (${pieceType}) has no cards in deck!`);
+        debug.warn(`[SharedDeck] Hero ${heroKey} (${pieceType}) has no cards in deck!`);
       }
       
       deckCardIds.forEach((cardId: number) => {
@@ -155,7 +156,7 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
         heroCardOwners[instanceId] = heroKey;
       });
       
-      console.log(`[SharedDeck] Added ${deckCardIds.length} cards for ${heroKey} (${pieceType})`);
+      debug.log(`[SharedDeck] Added ${deckCardIds.length} cards for ${heroKey} (${pieceType})`);
     });
     
     neutralCardIds.forEach(cardId => {
@@ -168,11 +169,11 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
       });
     });
     
-    console.log(`[SharedDeck] Added ${neutralCardIds.length} neutral cards`);
+    debug.log(`[SharedDeck] Added ${neutralCardIds.length} neutral cards`);
     
     const drawPile = shuffleArray(allCards.map(c => c.instanceId));
     
-    console.log(`[SharedDeck] Total deck size: ${drawPile.length} cards`);
+    debug.log(`[SharedDeck] Total deck size: ${drawPile.length} cards`);
     
     set({
       matchId: matchId || `match_${Date.now()}`,
@@ -220,7 +221,7 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
       totalCardsRemaining: newDrawPile.length,
     });
     
-    console.log(`[SharedDeck] Drew ${drawnCards.length} cards for ${forPlayer ? 'player' : 'opponent'}. Deck: ${newDrawPile.length} remaining`);
+    debug.log(`[SharedDeck] Drew ${drawnCards.length} cards for ${forPlayer ? 'player' : 'opponent'}. Deck: ${newDrawPile.length} remaining`);
     
     return drawnCards;
   },
@@ -231,7 +232,7 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
     const cardIndex = updatedAllCards.findIndex(c => c.instanceId === instanceId);
     
     if (cardIndex === -1) {
-      console.warn(`[SharedDeck] Card instance ${instanceId} not found`);
+      debug.warn(`[SharedDeck] Card instance ${instanceId} not found`);
       return;
     }
     
@@ -244,7 +245,7 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
     const newPlayerHand = state.playerHand.filter(id => id !== instanceId);
     const newOpponentHand = state.opponentHand.filter(id => id !== instanceId);
     
-    console.log(`[SharedDeck] Card played and removed permanently. Total played: ${newPlayedCards.length}`);
+    debug.log(`[SharedDeck] Card played and removed permanently. Total played: ${newPlayedCards.length}`);
     
     set({
       allCards: updatedAllCards,
@@ -276,7 +277,7 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
     const newOpponentHand = state.opponentHand.filter(id => !cardsToBurn.includes(id));
     const newBurnedCards = [...state.burnedCards, ...cardsToBurn];
     
-    console.log(`[SharedDeck] Burned ${burnedCount} cards from ${heroKey}. Deck: ${newDrawPile.length} remaining`);
+    debug.log(`[SharedDeck] Burned ${burnedCount} cards from ${heroKey}. Deck: ${newDrawPile.length} remaining`);
     
     set({
       allCards: updatedAllCards,
@@ -310,7 +311,7 @@ export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((s
   },
 
   reset: () => {
-    console.log('[SharedDeck] Resetting deck state');
+    debug.log('[SharedDeck] Resetting deck state');
     set(createInitialState());
   },
 }));

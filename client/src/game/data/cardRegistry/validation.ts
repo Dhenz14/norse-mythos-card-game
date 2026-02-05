@@ -1,5 +1,7 @@
 import { CardData, CardType } from '../../types';
 
+const IS_DEV = import.meta.env?.DEV ?? process.env.NODE_ENV === 'development';
+
 interface ValidationResult {
   valid: boolean;
   errors: string[];
@@ -108,6 +110,8 @@ export function validateCardRegistry(cards: unknown[]): CardData[] {
     errors.forEach(e => console.warn(`  - ${e}`));
   }
   
-  console.log(`[CardRegistry] Loaded ${validCards.length} valid cards (${duplicates.length} duplicates skipped)`);
+  if (IS_DEV) {
+    console.log(`[CardRegistry] Loaded ${validCards.length} valid cards (${duplicates.length} duplicates skipped)`);
+  }
   return validCards;
 }

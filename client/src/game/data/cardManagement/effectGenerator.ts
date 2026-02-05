@@ -8,6 +8,8 @@
  * not directly in the browser.
  */
 
+import { debug } from '../../config/debugConfig';
+
 /**
  * Generate an effect handler template file for a specific effect
  * 
@@ -158,7 +160,7 @@ export const fsImplementation = {
     const code = generateEffectHandlerCode(effectType, effectName);
     await fs.writeFile(filePath, code, 'utf8');
     
-    console.log(`Created ${effectType} handler: ${filePath}`);
+    debug.log(`Created ${effectType} handler: ${filePath}`);
   },
   
   /**
@@ -196,6 +198,6 @@ export const fsImplementation = {
     const code = generateEffectIndexCode(effectType, handlerNames);
     await fs.writeFile(indexPath, code, 'utf8');
     
-    console.log(`Updated ${effectType} index: ${indexPath} with ${handlerNames.length} handlers`);
+    debug.log(`Updated ${effectType} index: ${indexPath} with ${handlerNames.length} handlers`);
   }
 };

@@ -4,6 +4,7 @@ import { getPokerCombatAdapterState, getActionPermissions } from '../../hooks/us
 import { getSmartAIAction } from '../modules/SmartAI';
 import { fireActionAnnouncement } from '../../stores/animationStore';
 import { COMBAT_DEBUG } from '../debugConfig';
+import { debug } from '../../config/debugConfig';
 
 interface UseCombatTimerOptions {
   combatState: PokerCombatState | null;
@@ -21,12 +22,12 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
     if (combatState.phase === CombatPhase.SPELL_PET) return;
     
     if (combatState.player.isReady) {
-      if (COMBAT_DEBUG.TIMER) console.log('[Timer] SKIP: Player already ready (isReady=true)');
+      debug.combat('[Timer] SKIP: Player already ready (isReady=true)');
       return;
     }
     
     if (combatState.isAllInShowdown) {
-      if (COMBAT_DEBUG.TIMER) console.log('[Timer] SKIP: All-in showdown in progress - auto-advance handles phases');
+      debug.combat('[Timer] SKIP: All-in showdown in progress - auto-advance handles phases');
       return;
     }
     
@@ -38,7 +39,7 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
           freshState.phase === CombatPhase.SPELL_PET ||
           freshState.player.isReady ||
           freshState.isAllInShowdown) {
-        if (COMBAT_DEBUG.TIMER) console.log('[Timer] SKIP in interval: phase=', freshState.phase, 'playerReady=', freshState.player.isReady, 'allIn=', freshState.isAllInShowdown);
+        debug.combat('[Timer] SKIP in interval: phase=', freshState.phase, 'playerReady=', freshState.player.isReady, 'allIn=', freshState.isAllInShowdown);
         return;
       }
       

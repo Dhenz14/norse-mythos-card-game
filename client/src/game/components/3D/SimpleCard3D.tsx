@@ -16,6 +16,7 @@ import { CardData, CardQuality } from '../../types';
 
 // Import the active renderer info
 import { ACTIVE_CARD_RENDERER } from '../../utils/cardRenderingSystemFix';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Creates a fallback texture with text when image loading fails
@@ -171,7 +172,7 @@ const SimpleCard3D: React.FC<SimpleCard3DProps> = ({
         }
         
         // Log the URL we're using to load the texture
-        console.log(`Loading card image for ${cardData.name} (ID: ${cardData.id}) from: ${data.url}`);
+        debug.render3d(`Loading card image for ${cardData.name} (ID: ${cardData.id}) from: ${data.url}`);
         
         // Set up loader and load texture using a promise
         const textureLoader = new THREE.TextureLoader();
@@ -188,7 +189,7 @@ const SimpleCard3D: React.FC<SimpleCard3DProps> = ({
               loadedTexture.anisotropy = 4;
               loadedTexture.needsUpdate = true;
               
-              console.log(`Successfully loaded texture for card: ${cardData.name} (ID: ${cardData.id})`);
+              debug.render3d(`Successfully loaded texture for card: ${cardData.name} (ID: ${cardData.id})`);
               
               // Update the state with the loaded texture
               setArtTexture(loadedTexture);
@@ -244,7 +245,7 @@ const SimpleCard3D: React.FC<SimpleCard3DProps> = ({
 
   // Log rendering info for debugging
   if (ACTIVE_CARD_RENDERER === 'SimpleCard3D') {
-    console.log(`Rendering SimpleCard3D for card: ${cardData.name} (ID: ${cardData.id}) with quality: ${quality}`);
+    debug.render3d(`Rendering SimpleCard3D for card: ${cardData.name} (ID: ${cardData.id}) with quality: ${quality}`);
   }
   
   // Add a data attribute to help with debugging and rendering system tracking

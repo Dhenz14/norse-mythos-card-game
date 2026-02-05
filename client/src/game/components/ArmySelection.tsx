@@ -16,6 +16,7 @@ import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { HeroPortrait } from './ui/HeroPortrait';
 import { HeroArtImage } from './ui/HeroArtImage';
 import './styles/ArmySelectionNorse.css';
+import { debug } from '../config/debugConfig';
 
 interface ArmySelectionProps {
   onComplete: (army: ArmySelectionType) => void;
@@ -55,7 +56,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
   useEffect(() => {
     initializeCardDatabase();
     const allCards = getAllCards();
-    console.log(`[ArmySelection] Card registry has ${allCards.length} cards`);
+    debug.log(`[ArmySelection] Card registry has ${allCards.length} cards`);
     setCardsLoaded(allCards.length > 0);
   }, []);
   
@@ -110,7 +111,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
     // Sync selected king hero to global store to ensure correct hero state
     const kingHero = army.king;
     if (kingHero) {
-      console.log(`[ArmySelection] Syncing King hero: ${kingHero.name} (${kingHero.id})`);
+      debug.log(`[ArmySelection] Syncing King hero: ${kingHero.name} (${kingHero.id})`);
       setSelectedHero(kingHero.heroClass, kingHero.id);
     }
     

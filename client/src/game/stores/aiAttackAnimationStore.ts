@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { CombatStep } from '../services/AttackResolutionService';
+import { debug } from '../config/debugConfig';
 
 export interface AIAttackEvent {
   id: string;
@@ -54,7 +55,7 @@ export const useAIAttackAnimationStore = create<AIAttackAnimationState>((set, ge
       damageApplied: false
     };
     
-    console.log(`[AI-ATTACK-ANIM] Queued attack: ${event.attackerName} -> ${event.targetName} (deferDamage: ${get().deferDamage})`);
+    debug.animation(`[AI-ATTACK-ANIM] Queued attack: ${event.attackerName} -> ${event.targetName} (deferDamage: ${get().deferDamage})`);
     
     set(state => ({
       pendingAttacks: [...state.pendingAttacks, newEvent]
@@ -80,7 +81,7 @@ export const useAIAttackAnimationStore = create<AIAttackAnimationState>((set, ge
       attackerSide: step.attackerSide
     };
     
-    console.log(`[AI-ATTACK-ANIM] Queued deferred attack: ${step.attackerName} -> ${step.targetName} (${step.damage} dmg)`);
+    debug.animation(`[AI-ATTACK-ANIM] Queued deferred attack: ${step.attackerName} -> ${step.targetName} (${step.damage} dmg)`);
     
     set(state => ({
       pendingAttacks: [...state.pendingAttacks, newEvent]
@@ -96,7 +97,7 @@ export const useAIAttackAnimationStore = create<AIAttackAnimationState>((set, ge
     
     const [next, ...rest] = state.pendingAttacks;
     
-    console.log(`[AI-ATTACK-ANIM] Starting animation: ${next.attackerName} -> ${next.targetName}`);
+    debug.animation(`[AI-ATTACK-ANIM] Starting animation: ${next.attackerName} -> ${next.targetName}`);
     
     set({
       currentAttack: next,
@@ -108,7 +109,7 @@ export const useAIAttackAnimationStore = create<AIAttackAnimationState>((set, ge
   },
   
   completeAnimation: () => {
-    console.log('[AI-ATTACK-ANIM] Animation complete');
+    debug.animation('[AI-ATTACK-ANIM] Animation complete');
     set({
       currentAttack: null,
       isAnimating: false

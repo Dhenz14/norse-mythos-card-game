@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { GameState, CardInstance } from '../types';
+import { debug } from '../config/debugConfig';
 import { destroyCard } from '../utils/zoneUtils';
 import { updateEnrageEffects } from '../utils/mechanics/enrageUtils';
 import { processFrenzyEffects } from '../utils/mechanics/frenzyUtils';
@@ -76,7 +77,7 @@ export const useAttackResolutionStore = create<AttackResolutionState>((set, get)
   isProcessing: false,
   
   initializeAttackSequence: (preState, postState, steps) => {
-    console.log(`[AttackResolution] Initializing sequence with ${steps.length} steps`);
+    debug.combat(`[AttackResolution] Initializing sequence with ${steps.length} steps`);
     set({
       preAttackState: preState,
       postAttackState: postState,
@@ -90,18 +91,18 @@ export const useAttackResolutionStore = create<AttackResolutionState>((set, get)
     const stepIndex = state.pendingSteps.findIndex(s => s.id === stepId);
     
     if (stepIndex === -1) {
-      console.warn(`[AttackResolution] Step ${stepId} not found`);
+      debug.warn(`[AttackResolution] Step ${stepId} not found`);
       return null;
     }
     
     const step = state.pendingSteps[stepIndex];
     
     if (step.resolved) {
-      console.warn(`[AttackResolution] Step ${stepId} already resolved`);
+      debug.warn(`[AttackResolution] Step ${stepId} already resolved`);
       return step;
     }
     
-    console.log(`[AttackResolution] Resolving step: ${step.attackerName} -> ${step.targetName}`);
+    debug.combat(`[AttackResolution] Resolving step: ${step.attackerName} -> ${step.targetName}`);
     
     applyDamage(step);
     
@@ -119,7 +120,7 @@ export const useAttackResolutionStore = create<AttackResolutionState>((set, get)
   },
   
   clearAll: () => {
-    console.log('[AttackResolution] Clearing all steps');
+    debug.combat('[AttackResolution] Clearing all steps');
     set({
       pendingSteps: [],
       preAttackState: null,
@@ -146,7 +147,7 @@ export function applyDamageToState(
   const attackerSide: 'player' | 'opponent' = step.attackerSide;
   const defenderSide: 'player' | 'opponent' = attackerSide === 'player' ? 'opponent' : 'player';
   
-  console.log(`[AttackResolution] ${attackerSide} attacking ${defenderSide} - ${step.attackerName} -> ${step.targetName}`);
+  debug.combat(`[AttackResolution] ${attackerSide} attacking ${defenderSide} - ${step.attackerName} -> ${step.targetName}`);
   
   if (step.targetType === 'hero') {
     const targetPlayer = newState.players[defenderSide];
@@ -171,7 +172,7 @@ export function applyDamageToState(
       targetPlayer.heroHealth = Math.max(0, currentHeroHealth - remainingDamage);
     }
     
-    console.log(`[AttackResolution] ${defenderSide} Hero takes ${step.damage} damage (${remainingDamage} after armor), now at ${targetPlayer.heroHealth} HP`);
+    debug.combat(`[AttackResolution] ${defenderSide} Hero takes ${step.damage} damage (${remainingDamage} after armor), now at ${targetPlayer.heroHealth} HP`);
     
     const finalHeroHealth = targetPlayer.heroHealth ?? targetPlayer.health;
     if (finalHeroHealth <= 0 || targetPlayer.health <= 0) {
@@ -188,18 +189,18 @@ export function applyDamageToState(
       
       if (step.defenderHasDivineShield) {
         newState.players[defenderSide].battlefield[defenderIndex].hasDivineShield = false;
-        console.log(`[AttackResolution] ${defender.card.name}'s Divine Shield absorbed damage`);
+        debug.combat(`[AttackResolution] ${defender.card.name}'s Divine Shield absorbed damage`);
       } else {
         const baseHealth = 'health' in defender.card ? (defender.card as any).health : 1;
         const currentHP = defender.currentHealth ?? baseHealth;
         const newHP = Math.max(0, currentHP - step.damage);
         newState.players[defenderSide].battlefield[defenderIndex].currentHealth = newHP;
-        console.log(`[AttackResolution] ${defender.card.name} takes ${step.damage} damage, now at ${newHP} HP`);
+        debug.combat(`[AttackResolution] ${defender.card.name} takes ${step.damage} damage, now at ${newHP} HP`);
         
         damagedMinionIds.push({ id: step.targetId, playerId: defenderSide });
         
         if (newHP <= 0) {
-          console.log(`[AttackResolution] ${defender.card.name} is destroyed`);
+          debug.combat(`[AttackResolution] ${defender.card.name} is destroyed`);
           newState = destroyCard(newState, step.targetId, defenderSide);
         }
       }
@@ -214,18 +215,18 @@ export function applyDamageToState(
       
       if (step.attackerHasDivineShield) {
         newState.players[attackerSide].battlefield[attackerIndex].hasDivineShield = false;
-        console.log(`[AttackResolution] ${attacker.card.name}'s Divine Shield absorbed counter damage`);
+        debug.combat(`[AttackResolution] ${attacker.card.name}'s Divine Shield absorbed counter damage`);
       } else {
         const baseHealth = 'health' in attacker.card ? (attacker.card as any).health : 1;
         const currentHP = attacker.currentHealth ?? baseHealth;
         const newHP = Math.max(0, currentHP - step.counterDamage);
         newState.players[attackerSide].battlefield[attackerIndex].currentHealth = newHP;
-        console.log(`[AttackResolution] ${attacker.card.name} takes ${step.counterDamage} counter damage, now at ${newHP} HP`);
+        debug.combat(`[AttackResolution] ${attacker.card.name} takes ${step.counterDamage} counter damage, now at ${newHP} HP`);
         
         damagedMinionIds.push({ id: step.attackerId, playerId: attackerSide });
         
         if (newHP <= 0) {
-          console.log(`[AttackResolution] ${attacker.card.name} is destroyed`);
+          debug.combat(`[AttackResolution] ${attacker.card.name} is destroyed`);
           newState = destroyCard(newState, step.attackerId, attackerSide);
         }
       }

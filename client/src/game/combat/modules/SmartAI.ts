@@ -14,6 +14,7 @@ import {
 } from '../../types/PokerCombatTypes';
 import { calculateHandStrength, findBestHand } from './HandEvaluator';
 import { COMBAT_DEBUG } from '../debugConfig';
+import { debug } from '../../config/debugConfig';
 
 export interface AIDecision {
   action: CombatAction;
@@ -81,20 +82,20 @@ export function getSmartAIAction(
   const actorPosition = isPlayer ? combatState.playerPosition : combatState.opponentPosition;
   const position = actorPosition === 'small_blind' ? 'early' : 'late';
   
-  if (COMBAT_DEBUG.AI) console.log(`[SmartAI] Phase: ${combatState.phase}, Hand strength: ${(handStrength * 100).toFixed(1)}%, Pot odds: ${(potOdds * 100).toFixed(1)}%`);
-  if (COMBAT_DEBUG.AI) console.log(`[SmartAI] Position: ${actorPosition}, firstBettingRound: ${isFirstBettingRound}, hasBetToCall: ${hasBetToCall}, toCall: ${toCall}`);
-  if (COMBAT_DEBUG.AI) console.log(`[SmartAI] availableHP: ${availableHP}, currentBet: ${combatState.currentBet}, actorHpCommitted: ${actor.hpCommitted}`);
+  debug.ai(`[SmartAI] Phase: ${combatState.phase}, Hand strength: ${(handStrength * 100).toFixed(1)}%, Pot odds: ${(potOdds * 100).toFixed(1)}%`);
+  debug.ai(`[SmartAI] Position: ${actorPosition}, firstBettingRound: ${isFirstBettingRound}, hasBetToCall: ${hasBetToCall}, toCall: ${toCall}`);
+  debug.ai(`[SmartAI] availableHP: ${availableHP}, currentBet: ${combatState.currentBet}, actorHpCommitted: ${actor.hpCommitted}`);
   
   if (availableHP <= 0) {
     if (hasBetToCall) {
-      if (COMBAT_DEBUG.AI) console.log(`[SmartAI] DECISION: ENGAGE (All-in call)`);
+      debug.ai(`[SmartAI] DECISION: ENGAGE (All-in call)`);
       return {
         action: CombatAction.ENGAGE,
         betAmount: 0,
         reasoning: 'Already all-in, must call to see cards'
       };
     }
-    if (COMBAT_DEBUG.AI) console.log(`[SmartAI] DECISION: DEFEND (All-in check)`);
+    debug.ai(`[SmartAI] DECISION: DEFEND (All-in check)`);
     return {
       action: CombatAction.DEFEND,
       betAmount: 0,

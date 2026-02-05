@@ -3,6 +3,7 @@ import { useAIAttackAnimationStore, AIAttackEvent } from '../stores/aiAttackAnim
 import { useGameStore } from '../stores/gameStore';
 import { applyDamageToState, CombatStep } from '../services/AttackResolutionService';
 import { CombatEventBus } from '../services/CombatEventBus';
+import { debug } from '../config/debugConfig';
 import './AIAttackAnimation.css';
 
 interface AnimationState {
@@ -20,13 +21,13 @@ const AIAttackAnimationProcessor: React.FC = () => {
   const deferDamage = useAIAttackAnimationStore(state => state.deferDamage);
   
   // Debug: Log component render with store state on every render
-  console.log(`[AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: ${pendingAttacks.length}, isAnimating: ${isAnimating}`);
+  debug.animation(`[AI-ATTACK-ANIM-PROC] Component render - pendingAttacks: ${pendingAttacks.length}, isAnimating: ${isAnimating}`);
   
   // Debug: Track pendingAttacks changes
   useEffect(() => {
-    console.log(`[AI-ATTACK-ANIM-PROC] pendingAttacks changed - count: ${pendingAttacks.length}`);
+    debug.animation(`[AI-ATTACK-ANIM-PROC] pendingAttacks changed - count: ${pendingAttacks.length}`);
     if (pendingAttacks.length > 0) {
-      console.log(`[AI-ATTACK-ANIM-PROC] Pending attack details:`, pendingAttacks.map(a => `${a.attackerName} -> ${a.targetName}`));
+      debug.animation(`[AI-ATTACK-ANIM-PROC] Pending attack details:`, pendingAttacks.map(a => `${a.attackerName} -> ${a.targetName}`));
     }
   }, [pendingAttacks]);
   
@@ -39,21 +40,21 @@ const AIAttackAnimationProcessor: React.FC = () => {
   
   const applyDamageFromEvent = useCallback((event: AIAttackEvent) => {
     const currentDeferDamage = useAIAttackAnimationStore.getState().deferDamage;
-    console.log(`[AI-ATTACK-ANIM] applyDamageFromEvent called: deferDamage=${currentDeferDamage}, damageApplied=${event.damageApplied}`);
+    debug.animation(`[AI-ATTACK-ANIM] applyDamageFromEvent called: deferDamage=${currentDeferDamage}, damageApplied=${event.damageApplied}`);
     
     if (!currentDeferDamage) {
-      console.log(`[AI-ATTACK-ANIM] Skipping - damage not deferred (legacy mode)`);
+      debug.animation(`[AI-ATTACK-ANIM] Skipping - damage not deferred (legacy mode)`);
       markDamageApplied();
       return;
     }
     
     if (event.damageApplied) {
-      console.log(`[AI-ATTACK-ANIM] Skipping - damage already applied for: ${event.attackerName}`);
+      debug.animation(`[AI-ATTACK-ANIM] Skipping - damage already applied for: ${event.attackerName}`);
       markDamageApplied();
       return;
     }
     
-    console.log(`[AI-ATTACK-ANIM] Applying real-time damage: ${event.attackerName} -> ${event.targetName} (${event.damage} dmg)`);
+    debug.animation(`[AI-ATTACK-ANIM] Applying real-time damage: ${event.attackerName} -> ${event.targetName} (${event.damage} dmg)`);
     
     // PROFESSIONAL EVENT-DRIVEN DAMAGE: Emit IMPACT_PHASE event for AI attacks
     // This ensures poker HP syncs for AI attacks just like player attacks
@@ -79,7 +80,7 @@ const AIAttackAnimationProcessor: React.FC = () => {
         damageToTarget: event.damage,
         damageToAttacker: event.counterDamage
       });
-      console.log(`[AI-ATTACK-ANIM] Emitted IMPACT_PHASE: ${event.attackerId} -> ${targetId} (${event.damage} dmg)`);
+      debug.animation(`[AI-ATTACK-ANIM] Emitted IMPACT_PHASE: ${event.attackerId} -> ${targetId} (${event.damage} dmg)`);
     } else {
       console.warn(`[AI-ATTACK-ANIM] Skipping IMPACT_PHASE: missing targetId for minion attack (damage still applied)`);
     }
@@ -133,10 +134,10 @@ const AIAttackAnimationProcessor: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log(`[AI-ATTACK-ANIM-PROC] useEffect triggered: pendingAttacks=${pendingAttacks.length}, isAnimating=${isAnimating}`);
+    debug.animation(`[AI-ATTACK-ANIM-PROC] useEffect triggered: pendingAttacks=${pendingAttacks.length}, isAnimating=${isAnimating}`);
     if (pendingAttacks.length > 0 && !isAnimating) {
       const event = startAnimation();
-      console.log(`[AI-ATTACK-ANIM-PROC] Starting animation event:`, event?.attackerName, '->', event?.targetName);
+      debug.animation(`[AI-ATTACK-ANIM-PROC] Starting animation event:`, event?.attackerName, '->', event?.targetName);
       if (event) {
         setDisplayEvent(event);
         
