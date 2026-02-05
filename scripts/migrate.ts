@@ -1,6 +1,6 @@
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { neon } from '@neondatabase/serverless';
-import { migrate } from 'drizzle-orm/neon-serverless/migrator';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import * as dotenv from 'dotenv';
 
 // Load environment variables
@@ -19,13 +19,17 @@ async function runMigrations() {
   try {
     console.log('Starting database migrations...');
     
-    const sql = neon(DATABASE_URL);
-    const db = drizzle(sql);
+    const pool = new Pool({
+      connectionString: DATABASE_URL,
+      ssl: DATABASE_URL.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
+    });
+    const db = drizzle(pool);
     
     // Run migrations from the drizzle folder
     await migrate(db, { migrationsFolder: 'drizzle' });
     
     console.log('Database migrations completed successfully');
+    await pool.end();
     process.exit(0);
   } catch (error) {
     console.error('Error running migrations:', error);
