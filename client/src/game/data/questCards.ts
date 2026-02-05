@@ -7,7 +7,7 @@ import { CardData } from '../types';
 // Quest reward cards
 export const questRewards: CardData[] = [
   {
-      id: 15001,
+      id: 95501,
       name: "Chronos Warp",
       manaCost: 5,
       description: "Take an extra turn after this one.",
@@ -24,7 +24,7 @@ export const questRewards: CardData[] = [
       class: "Neutral"
   },
   {
-      id: 15002,
+      id: 95502,
       name: "Mjolnir's Fury",
       manaCost: 3,
       attack: 4,
@@ -49,7 +49,7 @@ export const questRewards: CardData[] = [
       class: "Neutral"
   },
   {
-      id: 15003,
+      id: 95503,
       name: "Yggdrasil Core",
       manaCost: 5,
       description: "For the rest of the game, your minions are 4/4.",
@@ -65,7 +65,7 @@ export const questRewards: CardData[] = [
       class: "Neutral"
   },
   {
-      id: 15004,
+      id: 95504,
       name: "Elpis, Warden of Hope",
       manaCost: 5,
       attack: 8,
@@ -84,7 +84,7 @@ export const questRewards: CardData[] = [
       class: "Neutral"
   },
   {
-      id: 15005,
+      id: 95505,
       name: "Queen Echidna",
       manaCost: 5,
       attack: 8,
@@ -104,7 +104,7 @@ export const questRewards: CardData[] = [
       class: "Neutral"
   },
   {
-      id: 15006,
+      id: 95506,
       name: "Barnabus, Titan Stomper",
       manaCost: 5,
       attack: 8,
@@ -128,7 +128,7 @@ export const questRewards: CardData[] = [
 // Main quest cards
 export const questCards: CardData[] = [
   {
-      id: 14001,
+      id: 95507,
       name: "Open the Bifrost",
       manaCost: 1,
       description: "Quest: Cast 6 spells that didn't start in your deck.   Reward: Chronos Warp.",
@@ -144,14 +144,14 @@ export const questCards: CardData[] = [
           progress: 0,
           target: 6,
           completed: false,
-          rewardCardId: 15001 // Time Warp
+          rewardCardId: 95501 // Time Warp
         }
     },
       class: "Neutral",
       collectible: true
   },
   {
-      id: 14002,
+      id: 95508,
       name: "Surtr's Heart",
       manaCost: 1,
       description: "Quest: Play 7 Taunt minions.   Reward: Mjolnir's Fury.",
@@ -167,14 +167,14 @@ export const questCards: CardData[] = [
           progress: 0,
           target: 7,
           completed: false,
-          rewardCardId: 15002 // Sulfuras
+          rewardCardId: 95502 // Sulfuras
         }
     },
       class: "Neutral",
       collectible: true
   },
   {
-      id: 14003,
+      id: 95509,
       name: "The Underworld Path",
       manaCost: 1,
       description: "Quest: Play 5 minions with the same name.   Reward: Yggdrasil Core.",
@@ -190,14 +190,14 @@ export const questCards: CardData[] = [
           progress: 0,
           target: 5,
           completed: false,
-          rewardCardId: 15003 // Crystal Core
+          rewardCardId: 95503 // Crystal Core
         }
     },
       class: "Neutral",
       collectible: true
   },
   {
-      id: 14004,
+      id: 95510,
       name: "Awaken the Titans",
       manaCost: 1,
       description: "Quest: Summon 7 Deathrattle minions. Reward: Elpis, Warden of Hope.",
@@ -213,14 +213,14 @@ export const questCards: CardData[] = [
           progress: 0,
           target: 7,
           completed: false,
-          rewardCardId: 15004 // Amara, Warden of Hope
+          rewardCardId: 95504 // Amara, Warden of Hope
         }
     },
       class: "Neutral",
       collectible: true
   },
   {
-      id: 14005,
+      id: 95511,
       name: "The Hydra Queen",
       manaCost: 1,
       description: "Quest: Play 7 minions that cost (1).   Reward: Queen Echidna.",
@@ -236,14 +236,14 @@ export const questCards: CardData[] = [
           progress: 0,
           target: 7,
           completed: false,
-          rewardCardId: 15005 // Queen Carnassa
+          rewardCardId: 95505 // Queen Carnassa
         }
     },
       class: "Neutral",
       collectible: true
   },
   {
-      id: 14006,
+      id: 95512,
       name: "Titan Giants",
       manaCost: 1,
       description: "Quest: Summon 5 minions with 5 or more Attack.   Reward: Barnabus, Titan Stomper.",
@@ -259,7 +259,7 @@ export const questCards: CardData[] = [
           progress: 0,
           target: 5,
           completed: false,
-          rewardCardId: 15006 // Barnabus the Stomper
+          rewardCardId: 95506 // Barnabus the Stomper
         }
     },
       class: "Neutral",

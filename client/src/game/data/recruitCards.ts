@@ -6,7 +6,7 @@ import { CardData } from '../types';
 
 export const recruitCards: CardData[] = [
   {
-      id: 18001,
+      id: 95701,
 
       name: "Einherjar Vanguard",
       manaCost: 7,
@@ -32,7 +32,7 @@ export const recruitCards: CardData[] = [
       class: "Neutral"
 },
   {
-  id: 18002,
+  id: 95702,
   
   name: "Summon the Warband",
   manaCost: 6,
@@ -59,7 +59,7 @@ export const recruitCards: CardData[] = [
       collectible: true
   },
   {
-  id: 18004,
+  id: 95703,
   
   name: "Valhalla Recruiter",
   manaCost: 5,
@@ -88,7 +88,7 @@ export const recruitCards: CardData[] = [
   class: "Neutral"
   },
   {
-  id: 18005,
+  id: 95704,
   
   name: "Yggdrasil Summons",
   manaCost: 4,
@@ -113,7 +113,7 @@ export const recruitCards: CardData[] = [
       collectible: true
   },
   {
-  id: 18006,
+  id: 95705,
   
   name: "Hel's Servant",
   manaCost: 6,
@@ -139,7 +139,7 @@ export const recruitCards: CardData[] = [
   class: "Neutral"
   },
   {
-  id: 18007,
+  id: 95706,
   
   name: "Call of Valhalla",
   manaCost: 5,
@@ -166,7 +166,7 @@ export const recruitCards: CardData[] = [
       collectible: true
   },
   {
-  id: 18008,
+  id: 95707,
   
   name: "Rally the Einherjar!",
   manaCost: 6,

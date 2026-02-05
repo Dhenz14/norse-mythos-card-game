@@ -11,7 +11,7 @@ import { CardData } from '../types';
  */
 export const outcastCards: CardData[] = [
   {
-      id: 50001,
+      id: 95601,
       name: "Fenrir's Gaze",
       manaCost: 3,
       type: "spell",
@@ -34,7 +34,7 @@ export const outcastCards: CardData[] = [
       collectible: true
   },
   {
-      id: 50002,
+      id: 95602,
       name: "Odin's Vision",
       manaCost: 2,
       type: "spell",
@@ -57,7 +57,7 @@ export const outcastCards: CardData[] = [
       collectible: true
   },
   {
-      id: 50003,
+      id: 95603,
       name: "Shadow Studies",
       manaCost: 1,
       type: "spell",
@@ -82,7 +82,7 @@ export const outcastCards: CardData[] = [
       collectible: true
   },
   {
-      id: 50004,
+      id: 95604,
       name: "Chaos Guardians",
       manaCost: 7,
       type: "spell",
@@ -97,7 +97,7 @@ export const outcastCards: CardData[] = [
         requiresTarget: false,
         targetType: "none",
         // Will summon 1/2 demons with Taunt in the implementation
-        summonCardId: 50005
+        summonCardId: 95605
       },
       outcastEffect: {
         type: "mana_discount",
@@ -107,7 +107,7 @@ export const outcastCards: CardData[] = [
       collectible: true
   },
   {
-      id: 50005,
+      id: 95605,
       name: "Star Maiden Astraea",
       manaCost: 4,
       attack: 4,
@@ -126,7 +126,7 @@ export const outcastCards: CardData[] = [
       collectible: true
   },
   {
-      id: 50007,
+      id: 95606,
       name: "Devour Runes",
       manaCost: 1,
       type: "spell",
@@ -148,7 +148,7 @@ export const outcastCards: CardData[] = [
       collectible: true
   },
   {
-      id: 50008,
+      id: 95607,
       name: "Twin Fang Strike",
       manaCost: 1,
       type: "spell",

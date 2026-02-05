@@ -10,7 +10,7 @@ import { CardData } from '../types';
  */
 export const modernLegendaryCards: CardData[] = [
   {
-      id: 5104,
+      id: 95201,
       name: "Hecate, Dark Inquisitor",
       manaCost: 7,
       attack: 5,
@@ -30,7 +30,7 @@ export const modernLegendaryCards: CardData[] = [
       class: "Priest"
 },
   {
-    id: 5108,
+    id: 95202,
     name: "Persephone, Death Queen",
     manaCost: 8,
     attack: 6,
@@ -50,7 +50,7 @@ export const modernLegendaryCards: CardData[] = [
     }
   },
   {
-      id: 5111,
+      id: 95203,
       name: "Asclepius, High Healer",
       manaCost: 4,
       attack: 2,
@@ -68,7 +68,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
   },
   {
-      id: 5112,
+      id: 95204,
       name: "Charon, Stern Teacher",
       manaCost: 4,
       attack: 3,
@@ -82,7 +82,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
   },
   {
-      id: 5113,
+      id: 95205,
       name: "Echidna, Mind Stealer",
       manaCost: 3,
       attack: 3,
@@ -105,7 +105,7 @@ export const modernLegendaryCards: CardData[] = [
       }
     },
   {
-      id: 5114,
+      id: 95206,
       name: "Ouroboros, the Eternal",
       manaCost: 8,
       attack: 8,
@@ -122,7 +122,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
   },
   {
-      id: 5116,
+      id: 95207,
       name: "Leviathan's Reliquary",
       manaCost: 1,
       attack: 1,
@@ -140,7 +140,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
   },
   {
-      id: 20800,
+      id: 95208,
       name: "Replay Specialist",
       manaCost: 6,
       attack: 5,
@@ -161,7 +161,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
     },
   {
-      id: 20801,
+      id: 95209,
 
       name: "Chronos, Time Dragon",
       manaCost: 7,
@@ -188,7 +188,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-    id: 20802,
+    id: 95210,
     name: "Cyclops Siege Engine",
     manaCost: 7,
     attack: 3,
@@ -203,7 +203,7 @@ export const modernLegendaryCards: CardData[] = [
     collectible: true
   },
   {
-  id: 20803,
+  id: 95211,
   
   name: "Pygmalion, Doll Master",
   manaCost: 5,
@@ -223,7 +223,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
   },
   {
-  id: 20804,
+  id: 95212,
   
   name: "Circe, Echo Sorceress",
   manaCost: 6,
@@ -243,7 +243,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
   },
   {
-      id: 20805,
+      id: 95213,
 
       name: "Countess Nyx",
       manaCost: 7,
@@ -270,7 +270,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-  id: 20806,
+  id: 95214,
   
   name: "Ares, War Commander",
   manaCost: 5,
@@ -291,7 +291,7 @@ export const modernLegendaryCards: CardData[] = [
   class: "Warrior"
   },
   {
-      id: 20807,
+      id: 95215,
 
       name: "Proteus, Face Thief",
       manaCost: 3,
@@ -319,7 +319,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20808,
+      id: 95216,
 
       name: "Hermes, Spell Messenger",
       manaCost: 8,
@@ -345,7 +345,7 @@ export const modernLegendaryCards: CardData[] = [
        }
     },
   {
-  id: 20809,
+  id: 95217,
   
   name: "Eos, Wing Mother",
   manaCost: 9,
@@ -365,7 +365,7 @@ export const modernLegendaryCards: CardData[] = [
   class: "Druid"
   },
   {
-      id: 20810,
+      id: 95218,
 
       name: "Moirai High Priestess",
       manaCost: 7,
@@ -391,7 +391,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20300,
+      id: 95219,
 
       name: "Hephaestus Forgemaster",
       manaCost: 2,
@@ -422,7 +422,7 @@ export const modernLegendaryCards: CardData[] = [
        }
     },
   {
-  id: 20301,
+  id: 95220,
   
   name: "Hermès the Trader",
   manaCost: 3,
@@ -442,7 +442,7 @@ export const modernLegendaryCards: CardData[] = [
   class: "Neutral"
   },
   {
-      id: 20302,
+      id: 95221,
 
       name: "Níðhöggr's Heir",
       manaCost: 5,
@@ -469,7 +469,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20303,
+      id: 95222,
 
       name: "Triton, the Explorer",
       manaCost: 1,
@@ -499,7 +499,7 @@ export const modernLegendaryCards: CardData[] = [
        }
     },
   {
-      id: 20304,
+      id: 95223,
 
       name: "Hermes, Treasure Hunter",
       manaCost: 8,
@@ -524,11 +524,11 @@ export const modernLegendaryCards: CardData[] = [
       targetType: "none",
         summonForOpponent: true,
 
-      summonCardId: 20305 // Treasure Chest
+      summonCardId: 95224 // Treasure Chest
     }
     },
   {
-      id: 20305,
+      id: 95224,
 
       name: "Treasure Chest",
       manaCost: 0,
@@ -557,7 +557,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20306,
+      id: 95225,
 
       name: "Stheno, the Gorgon",
       manaCost: 3,
@@ -583,7 +583,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20307,
+      id: 95226,
 
       name: "Nemean Colossus",
       manaCost: 9,
@@ -604,7 +604,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
     },
   {
-      id: 20308,
+      id: 95227,
 
       name: "Mnemosyne, Archivist",
       manaCost: 8,
@@ -635,7 +635,7 @@ export const modernLegendaryCards: CardData[] = [
        }
     },
   {
-      id: 20309,
+      id: 95228,
 
       name: "Níðhöggr the Wyrm Queen",
       manaCost: 9,
@@ -667,7 +667,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20310,
+      id: 95229,
 
       name: "Chiron, Dragon Caller",
       manaCost: 6,
@@ -698,7 +698,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20311,
+      id: 95230,
 
       name: "Mimir, Lore Keeper",
       manaCost: 4,
@@ -726,7 +726,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20312,
+      id: 95231,
 
       name: "Moirai, Master of Fate",
       manaCost: 10,
@@ -756,7 +756,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20313,
+      id: 95232,
 
       name: "Charybdis, the Devourer",
       manaCost: 7,
@@ -786,7 +786,7 @@ export const modernLegendaryCards: CardData[] = [
        }
     },
   {
-  id: 20314,
+  id: 95233,
   
   name: "Argonaut Cornelius",
   manaCost: 6,
@@ -806,7 +806,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true
   },
   {
-      id: 20315,
+      id: 95234,
 
       name: "Echidna, Dragon Mother",
       manaCost: 5,
@@ -835,7 +835,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-      id: 20316,
+      id: 95235,
 
       name: "Raid Boss Ladon",
       manaCost: 9,
@@ -859,14 +859,14 @@ export const modernLegendaryCards: CardData[] = [
         requiresTarget: false,
       targetType: "none",
 
-      summonCardId: 20317, // Whelp with Rush
+      summonCardId: 95236, // Whelp with Rush
       summonCount: 6
 
        }
         // Special handling for resummon effect
   },
   {
-  id: 20317,
+  id: 95236,
   
   name: "Whelp with Rush",
   manaCost: 1,
@@ -886,7 +886,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: false
   },
   {
-      id: 20318,
+      id: 95237,
 
       name: "The Nameless One",
       manaCost: 4,
@@ -912,7 +912,7 @@ export const modernLegendaryCards: CardData[] = [
     }
     },
   {
-  id: 20319,
+  id: 95238,
   
   name: "Prince Renathal",
   manaCost: 3,
@@ -933,7 +933,7 @@ export const modernLegendaryCards: CardData[] = [
   class: "Neutral"
   },
   {
-      id: 20320,
+      id: 95239,
 
       name: "Sire Denathrius",
       manaCost: 10,

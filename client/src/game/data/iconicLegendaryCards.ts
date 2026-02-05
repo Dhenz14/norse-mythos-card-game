@@ -9,7 +9,7 @@ import { CardData } from '../types';
  * These cards have had significant impact on the Hearthstone meta over the years
  */
 export const   iconicLegendaryCards: CardData[] = [{
-      id: 20101,
+      id: 95101,
 
       name: "Brokkr the Explorer",
       manaCost: 3,
@@ -30,7 +30,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   class: "Neutral"
 },
   {
-      id: 20102,
+      id: 95102,
 
       name: "Jormungandr, Echo Serpent",
       manaCost: 9,
@@ -59,7 +59,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-  id: 20104,
+  id: 95103,
   
   name: "Ægir's Raider",
   manaCost: 1,
@@ -81,7 +81,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   class: "Neutral"
   },
   {
-      id: 20105,
+      id: 95104,
 
       name: "Dionysus the Showman",
       manaCost: 4,
@@ -116,7 +116,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-  id: 20106,
+  id: 95105,
   
   name: "Erebus, Prince of Void",
   manaCost: 5,
@@ -138,7 +138,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   class: "Neutral"
   },
   {
-  id: 20107,
+  id: 95106,
   
   name: "Triton, Flying Star",
   manaCost: 5,
@@ -162,7 +162,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-  id: 20108,
+  id: 95107,
   
   name: "Midas the Golden",
   manaCost: 6,
@@ -182,7 +182,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-  id: 20109,
+  id: 95108,
   
   name: "Hel's Warden",
   manaCost: 4,
@@ -202,7 +202,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-      id: 20110,
+      id: 95109,
 
       name: "Móði (Thor's son)",
       manaCost: 5,
@@ -225,12 +225,12 @@ export const   iconicLegendaryCards: CardData[] = [{
       targetType: "none",
 
       condition: "magni_died",
-      summonCardId: 20112 // Surtr's Creation
+      summonCardId: 95111 // Surtr's Creation
 
        }
     },
   {
-      id: 20111,
+      id: 95110,
 
       name: "Magni (Dwarf god)",
       manaCost: 5,
@@ -254,11 +254,11 @@ export const   iconicLegendaryCards: CardData[] = [{
         targetType: "none",
       condition: "modi_died",
 
-      summonCardId: 20112 // Surtr's Creation
+      summonCardId: 95111 // Surtr's Creation
     }
     },
   {
-  id: 20112,
+  id: 95111,
   
   name: "Surtr's Creation",
   manaCost: 10,
@@ -278,7 +278,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: false
   },
   {
-  id: 20113,
+  id: 95112,
   
   name: "Archlich of Niflheim",
   manaCost: 8,
@@ -298,7 +298,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-  id: 20114,
+  id: 95113,
   
   name: "Ladon, Chromatic Drake",
   manaCost: 8,
@@ -322,7 +322,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-      id: 20115,
+      id: 95114,
 
       name: "Typhon, Dragon Lord",
       manaCost: 9,
@@ -356,7 +356,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20116,
+      id: 95115,
 
       name: "Skoll, Frost Wyrm",
       manaCost: 7,
@@ -386,7 +386,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20117,
+      id: 95116,
 
       name: "Chaos Elemental",
       manaCost: 8,
@@ -412,7 +412,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20118,
+      id: 95117,
 
       name: "Orthrus, Two-Headed",
       manaCost: 7,
@@ -446,7 +446,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-  id: 20119,
+  id: 95118,
   
   name: "Æsir the Ascended",
   manaCost: 5,
@@ -468,7 +468,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   class: "Shaman",
   },
   {
-      id: 20120,
+      id: 95119,
 
       name: "Twin Titan Kronos",
       manaCost: 7,
@@ -497,7 +497,7 @@ export const   iconicLegendaryCards: CardData[] = [{
        }
     },
   {
-      id: 20121,
+      id: 95120,
 
       name: "Mímir the Keeper",
       manaCost: 7,
@@ -526,7 +526,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20122,
+      id: 95121,
 
       name: "Óðinn's Guardian",
       manaCost: 8,
@@ -551,11 +551,11 @@ export const   iconicLegendaryCards: CardData[] = [{
           requiresTarget: false,
       targetType: "none",
 
-      summonCardId: 20123 // Atiesh
+      summonCardId: 95122 // Atiesh
     }
     },
   {
-  id: 20123,
+  id: 95122,
   
   name: "Atiesh, Greatstaff of the Guardian",
   manaCost: 3,
@@ -575,7 +575,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   class: "Neutral"
   },
   {
-  id: 20124,
+  id: 95123,
   
   name: "Poseidon's Shark",
   manaCost: 4,
@@ -595,7 +595,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-      id: 20125,
+      id: 95124,
 
       name: "Artemis Shadowpaw",
       manaCost: 6,
@@ -630,7 +630,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20126,
+      id: 95125,
 
       name: "Argus White-Eye",
       manaCost: 5,
@@ -650,11 +650,11 @@ export const   iconicLegendaryCards: CardData[] = [{
         type: "shuffle",
       targetType: "none",
 
-      summonCardId: 20127 // The Storm Guardian
+      summonCardId: 95126 // The Storm Guardian
     }
     },
   {
-  id: 20127,
+  id: 95126,
   
   name: "The Storm Guardian",
   manaCost: 5,
@@ -673,7 +673,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       class: "Shaman"
   },
   {
-      id: 20128,
+      id: 95127,
 
       name: "Ladon, Guardian Wyrm",
       manaCost: 9,
@@ -700,11 +700,11 @@ export const   iconicLegendaryCards: CardData[] = [{
           requiresTarget: false,
       targetType: "none",
 
-      summonCardId: 20129 // Whelp
+      summonCardId: 95128 // Whelp
     }
     },
   {
-  id: 20129,
+  id: 95128,
   
   name: "Whelp",
   manaCost: 1,
@@ -724,7 +724,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       class: "Neutral"
   },
   {
-  id: 20130,
+  id: 95129,
   
   name: "Atlas the Unbroken",
   manaCost: 8,
@@ -744,7 +744,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-  id: 20131,
+  id: 95130,
   
   name: "Fenrisúlfr the Ravager",
   manaCost: 6,
@@ -764,7 +764,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-  id: 20132,
+  id: 95131,
   
   name: "Typhon, Storm Titan",
   manaCost: 6,
@@ -788,7 +788,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-      id: 20133,
+      id: 95132,
 
       name: "The Nemean Beast",
       manaCost: 6,
@@ -813,14 +813,14 @@ export const   iconicLegendaryCards: CardData[] = [{
         type: "summon",
 
         targetType: "none",
-    summonCardId: 20134, // Finkle Einhorn
+    summonCardId: 95133, // Finkle Einhorn
       // Special handling for summoning for opponent will be in deathrattle code
       condition: "summon_for_opponent"
 
        }
     },
   {
-  id: 20134,
+  id: 95133,
   
   name: "Finkle Einhorn",
   manaCost: 3,
@@ -839,7 +839,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       class: "Neutral"
   },
   {
-      id: 20135,
+      id: 95134,
 
       name: "Hanuman the Wild",
       manaCost: 3,
@@ -867,13 +867,13 @@ export const   iconicLegendaryCards: CardData[] = [{
       targetType: "none",
       cardCount: 2,
 
-      cardId: 20136, // Banana
+      cardId: 95135, // Banana
       giveToOpponent: true
 
        }
     },
   {
-      id: 20136,
+      id: 95135,
 
       name: "Bananas",
       manaCost: 1,
@@ -900,7 +900,7 @@ export const   iconicLegendaryCards: CardData[] = [{
        }
     },
   {
-      id: 20137,
+      id: 95136,
 
       name: "Ægir Greenwave",
       manaCost: 5,
@@ -932,7 +932,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20138,
+      id: 95137,
 
       name: "Skadi the Mighty",
       manaCost: 5,

@@ -10,7 +10,7 @@ import { CardData } from '../types';
  */
 export const additionalLegendaryCards: CardData[] = [
 {
-    id: 20025,
+    id: 95001,
     name: "Níðhöggr",
     manaCost: 9,
     attack: 8,
@@ -33,7 +33,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20026,
+    id: 95002,
     name: "Jörmungandr, Dream Serpent",
     manaCost: 9,
     attack: 4,
@@ -48,7 +48,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20027,
+    id: 95003,
     name: "Apophis, World Ender",
     manaCost: 10,
     attack: 12,
@@ -67,12 +67,12 @@ export const additionalLegendaryCards: CardData[] = [
       requiresTarget: false,
       targetType: "all_minions",
       discardCount: -1,
-      summonCardId: 20028
+      summonCardId: 95004
     },
     collectible: true
   },
 {
-    id: 20028,
+    id: 95004,
     name: "Völva Bloodweaver",
     manaCost: 2,
     attack: 1,
@@ -94,7 +94,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20029,
+    id: 95005,
     name: "Víðarr the Bold",
     manaCost: 5,
     attack: 6,
@@ -114,12 +114,12 @@ export const additionalLegendaryCards: CardData[] = [
       targetType: "none",
       summonCount: 2,
       summonForOpponent: true,
-      summonCardId: 20030
+      summonCardId: 95006
     },
     collectible: true
   },
 {
-    id: 20030,
+    id: 95006,
     name: "Fáfnir, Spell Wyrm",
     manaCost: 9,
     attack: 4,
@@ -135,7 +135,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20042,
+    id: 95007,
     name: "Perseus the Relic Hunter",
     manaCost: 5,
     attack: 5,
@@ -156,7 +156,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20043,
+    id: 95008,
     name: "Níðhöggr's Champion",
     manaCost: 6,
     attack: 4,
@@ -177,7 +177,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20044,
+    id: 95009,
     name: "Nótt Stargazer",
     manaCost: 4,
     attack: 3,
@@ -198,7 +198,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20031,
+    id: 95010,
     name: "Gaia, Primal Lord",
     manaCost: 8,
     attack: 7,
@@ -224,7 +224,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20032,
+    id: 95011,
     name: "Helios, Sun Fragment",
     manaCost: 5,
     attack: 3,
@@ -239,7 +239,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20033,
+    id: 95012,
     name: "Nyx, the Hollow",
     manaCost: 9,
     type: "hero",
@@ -261,7 +261,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20034,
+    id: 95013,
     name: "Odin's Apprentice",
     manaCost: 2,
     attack: 2,
@@ -275,7 +275,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20035,
+    id: 95014,
     name: "Skorpius, the Devourer",
     manaCost: 9,
     attack: 8,
@@ -296,7 +296,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20037,
+    id: 95015,
     name: "Vidar, the Relentless",
     manaCost: 10,
     type: "hero",
@@ -316,7 +316,7 @@ export const additionalLegendaryCards: CardData[] = [
     collectible: true
   },
 {
-    id: 20038,
+    id: 95016,
     name: "Skull of Hel",
     manaCost: 6,
     type: "spell",

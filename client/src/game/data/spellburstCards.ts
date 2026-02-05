@@ -10,7 +10,7 @@ import { CardData } from '../types';
  */
 export const spellburstCards: CardData[] = [
   {
-    id: 18001,
+    id: 95801,
     name: "Rune Thief",
     manaCost: 1,
     attack: 1,
@@ -29,7 +29,7 @@ export const spellburstCards: CardData[] = [
     collectible: true
   },
   {
-    id: 18002,
+    id: 95802,
     name: "Saga Keeper",
     manaCost: 2,
     attack: 2,
@@ -48,7 +48,7 @@ export const spellburstCards: CardData[] = [
     collectible: true
   },
   {
-    id: 18003,
+    id: 95803,
     name: "Valkyrie Two-Shields",
     manaCost: 3,
     attack: 4,
@@ -67,7 +67,7 @@ export const spellburstCards: CardData[] = [
     collectible: true
   },
   {
-    id: 18004,
+    id: 95804,
     name: "Muspel Brand",
     manaCost: 3,
     attack: 3,
@@ -87,7 +87,7 @@ export const spellburstCards: CardData[] = [
     collectible: true
   },
   {
-    id: 18005,
+    id: 95805,
     name: "Speaker of Yggdrasil",
     manaCost: 3,
     attack: 1,
@@ -106,7 +106,7 @@ export const spellburstCards: CardData[] = [
     collectible: true
   },
   {
-    id: 18008,
+    id: 95806,
     name: "Obsidian Runescribe",
     manaCost: 6,
     attack: 4,
@@ -127,7 +127,7 @@ export const spellburstCards: CardData[] = [
     collectible: true
   },
   {
-    id: 18009,
+    id: 95807,
     name: "Grove Warden Idunn",
     manaCost: 6,
     attack: 5,
@@ -146,7 +146,7 @@ export const spellburstCards: CardData[] = [
     collectible: true
   },
   {
-    id: 18010,
+    id: 95808,
     name: "Headmaster of Niflheim",
     manaCost: 5,
     attack: 4,

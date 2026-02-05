@@ -9,7 +9,7 @@ import { CardData } from '../types';
  * These cards cover several Hearthstone expansions
  */
 export const expansionLegendaryCards: CardData[] = [{
-      id: 20700,
+      id: 95401,
       name: "Jötun Giant",
       manaCost: 8,
       attack: 8,
@@ -24,12 +24,12 @@ export const expansionLegendaryCards: CardData[] = [{
       deathrattle: {
         type: "summon",
         targetType: "none",
-        summonCardId: 20701, // Frozen Champion
+        summonCardId: 95402, // Frozen Champion
         value: 2
       }
     },
   {
-      id: 20701,
+      id: 95402,
 
       name: "Frozen Champion",
       manaCost: 1,
@@ -58,7 +58,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-  id: 20702,
+  id: 95403,
   
   name: "Boreas, Ice Shaper",
   manaCost: 6,
@@ -78,7 +78,7 @@ export const expansionLegendaryCards: CardData[] = [{
   class: "Shaman"
   },
   {
-      id: 20703,
+      id: 95404,
 
       name: "Arachne, Web Weaver",
       manaCost: 9,
@@ -108,7 +108,7 @@ export const expansionLegendaryCards: CardData[] = [{
        }
     },
   {
-      id: 20704,
+      id: 95405,
 
       name: "Prince of Shadows",
       manaCost: 3,
@@ -136,7 +136,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20705,
+      id: 95406,
 
       name: "Prince Hel's Son",
       manaCost: 2,
@@ -168,7 +168,7 @@ export const expansionLegendaryCards: CardData[] = [{
        }
     },
   {
-      id: 20706,
+      id: 95407,
 
       name: "Prince of Blood",
       manaCost: 4,
@@ -199,7 +199,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20707,
+      id: 95408,
 
       name: "Garmr, Death Hound",
       manaCost: 4,
@@ -229,7 +229,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20708,
+      id: 95409,
 
       name: "Eris, Shadow Dancer",
       manaCost: 4,
@@ -257,7 +257,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-  id: 20709,
+  id: 95410,
   
   name: "Gaia, Earth Sculptor",
   manaCost: 8,
@@ -278,7 +278,7 @@ export const expansionLegendaryCards: CardData[] = [{
   class: "Warrior"
   },
   {
-  id: 20710,
+  id: 95411,
   
   name: "Ragnarok Cleaver",
   manaCost: 8,
@@ -298,7 +298,7 @@ export const expansionLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-      id: 20200,
+      id: 95412,
 
       name: "Daedalus, Spark Maker",
       manaCost: 6,
@@ -336,7 +336,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-  id: 20201,
+  id: 95413,
   
   name: "Antaeus, Earth Crusher",
   manaCost: 7,
@@ -356,7 +356,7 @@ export const expansionLegendaryCards: CardData[] = [{
   class: "Neutral",
   },
   {
-      id: 20202,
+      id: 95414,
 
       name: "Hephaestus' Gift",
       manaCost: 5,
@@ -386,7 +386,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-  id: 20203,
+  id: 95415,
   
   name: "Daedalus, the Tinkerer",
   manaCost: 6,
@@ -407,7 +407,7 @@ export const expansionLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-  id: 20204,
+  id: 95416,
   
   name: "Talos, Mechanical Head",
   manaCost: 5,
@@ -430,7 +430,7 @@ export const expansionLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-      id: 20205,
+      id: 95417,
 
       name: "Orion, Beast Hunter",
       manaCost: 5,
@@ -458,7 +458,7 @@ export const expansionLegendaryCards: CardData[] = [{
        }
     },
   {
-  id: 20206,
+  id: 95418,
   
   name: "Talos, War Engineer",
   manaCost: 9,
@@ -480,7 +480,7 @@ export const expansionLegendaryCards: CardData[] = [{
   class: "Neutral",
   },
   {
-  id: 20207,
+  id: 95419,
   
   name: "Talos, Reaper Construct",
   manaCost: 8,
@@ -503,7 +503,7 @@ export const expansionLegendaryCards: CardData[] = [{
       collectible: true
   },
   {
-      id: 20208,
+      id: 95420,
 
       name: "Hephaestus' Shredder",
       manaCost: 8,
@@ -529,11 +529,11 @@ export const expansionLegendaryCards: CardData[] = [{
         // Special handling for summoning a random legendary minion
         condition: "random_legendary",
 
-        summonCardId: 20209
+        summonCardId: 95421
     }
     },
   {
-      id: 20209,
+      id: 95421,
 
       name: "Forseti, Judge",
       manaCost: 6,
@@ -561,7 +561,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20210,
+      id: 95422,
 
       name: "Tyr, Dragon Slayer",
       manaCost: 7,
@@ -589,7 +589,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20211,
+      id: 95423,
 
       name: "Surtr's Herald",
       manaCost: 9,
@@ -614,11 +614,11 @@ export const expansionLegendaryCards: CardData[] = [{
         // Special condition for Surtr hero replacement
         condition: "transform_into_ragnaros",
 
-        summonCardId: 20212
+        summonCardId: 95424
     }
     },
   {
-      id: 20212,
+      id: 95424,
 
       name: "Hanuman, Tyrant of the Vale",
       manaCost: 6,
@@ -649,7 +649,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-      id: 20213,
+      id: 95425,
 
       name: "Medusa, Venom Mind",
       manaCost: 4,
@@ -687,7 +687,7 @@ export const expansionLegendaryCards: CardData[] = [{
     }
     },
   {
-  id: 20214,
+  id: 95426,
   
   name: "Charon the Steward",
   manaCost: 3,
@@ -708,7 +708,7 @@ export const expansionLegendaryCards: CardData[] = [{
   class: "Neutral",
   },
   {
-      id: 20215,
+      id: 95427,
 
       name: "Hecate the Merchant",
       manaCost: 6,
@@ -736,7 +736,7 @@ export const expansionLegendaryCards: CardData[] = [{
        }
     },
   {
-      id: 20216,
+      id: 95428,
 
       name: "Valkyrie Sally",
       manaCost: 3,
@@ -763,7 +763,7 @@ export const expansionLegendaryCards: CardData[] = [{
        }
     },
   {
-  id: 20217,
+  id: 95429,
   
   name: "Fenrir's Fist",
   manaCost: 5,
@@ -785,7 +785,7 @@ export const expansionLegendaryCards: CardData[] = [{
   class: "Hunter",
   },
   {
-      id: 20218,
+      id: 95430,
 
       name: "Ares, Crime Lord",
       manaCost: 7,

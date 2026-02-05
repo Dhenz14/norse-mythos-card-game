@@ -10,7 +10,7 @@ import { CardData } from '../types';
  */
 export const finalLegendaryCards: CardData[] = [
   {
-    id: 20611,
+    id: 95301,
     name: "Fenrir",
     manaCost: 9,
     attack: 8,
@@ -34,11 +34,11 @@ export const finalLegendaryCards: CardData[] = [
       type: "conditional_summon",
       targetType: "none",
       condition: "killed_by_spell_or_hero_power",
-      summonCardId: 20612
+      summonCardId: 95302
     }
   },
   {
-    id: 20612,
+    id: 95302,
     name: "Fenrir, the Worldbreaker",
     manaCost: 12,
     attack: 12,
@@ -55,7 +55,7 @@ export const finalLegendaryCards: CardData[] = [
     cantBeTargetedBySpells: true
   },
   {
-    id: 20601,
+    id: 95303,
     name: "Talos, Doom Construct",
     manaCost: 10,
     attack: 10,
@@ -76,7 +76,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20602,
+    id: 95304,
     name: "Fenrir, Soul Flayer",
     manaCost: 10,
     attack: 9,
@@ -97,7 +97,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20603,
+    id: 95305,
     name: "King Fafnir",
     manaCost: 8,
     attack: 5,
@@ -118,7 +118,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20604,
+    id: 95306,
     name: "Icarus, Sky Pirate",
     manaCost: 7,
     attack: 4,
@@ -139,7 +139,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20605,
+    id: 95307,
     name: "Ran's Champion",
     manaCost: 4,
     attack: 2,
@@ -160,7 +160,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20606,
+    id: 95308,
     name: "Daedalus the Inventor",
     manaCost: 3,
     attack: 3,
@@ -181,7 +181,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20607,
+    id: 95309,
     name: "Njörðr the Fisher",
     manaCost: 2,
     attack: 0,
@@ -197,7 +197,7 @@ export const finalLegendaryCards: CardData[] = [
     // Special handling for 50% chance to draw
   },
   {
-    id: 20608,
+    id: 95310,
     name: "Ares, the Impaler",
     manaCost: 4,
     attack: 4,
@@ -220,7 +220,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20609,
+    id: 95311,
     name: "The Primordial Dark",
     manaCost: 4,
     attack: 20,
@@ -242,7 +242,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20400,
+    id: 95312,
     name: "The Binding One",
     manaCost: 10,
     attack: 12,
@@ -263,7 +263,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20401,
+    id: 95313,
     name: "Ares, Blood Sworn",
     manaCost: 2,
     attack: 2,
@@ -285,7 +285,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20402,
+    id: 95314,
     name: "Bragi, Battle Conductor",
     manaCost: 5,
     attack: 5,
@@ -301,7 +301,7 @@ export const finalLegendaryCards: CardData[] = [
     collectible: true
   },
   {
-    id: 20403,
+    id: 95315,
     name: "Hel, the Accused",
     manaCost: 5,
     attack: 5,
@@ -325,7 +325,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20404,
+    id: 95316,
     name: "Sleipnir, the Immortal",
     manaCost: 7,
     attack: 7,
@@ -342,7 +342,7 @@ export const finalLegendaryCards: CardData[] = [
     cantBeTargetedBySpells: true
   },
   {
-    id: 20405,
+    id: 95317,
     name: "Flint Firearm",
     manaCost: 6,
     attack: 4,
@@ -358,7 +358,7 @@ export const finalLegendaryCards: CardData[] = [
     collectible: true
   },
   {
-    id: 20406,
+    id: 95318,
     name: "Toy Captain Tarim",
     manaCost: 6,
     attack: 3,
@@ -380,7 +380,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20407,
+    id: 95319,
     name: "Zok Fogsnout",
     manaCost: 5,
     attack: 4,
@@ -402,7 +402,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20408,
+    id: 95320,
     name: "Gaia, Stone Mother",
     manaCost: 8,
     attack: 5,
@@ -419,7 +419,7 @@ export const finalLegendaryCards: CardData[] = [
     collectible: true
   },
   {
-    id: 20409,
+    id: 95321,
     name: "Mass Polymorph",
     manaCost: 7,
     type: "spell",
@@ -437,7 +437,7 @@ export const finalLegendaryCards: CardData[] = [
     }
   },
   {
-    id: 20410,
+    id: 95322,
     name: "The First Seal",
     manaCost: 3,
     type: "spell",
