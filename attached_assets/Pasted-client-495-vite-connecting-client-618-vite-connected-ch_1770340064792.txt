@@ -1,0 +1,77 @@
+client:495 [vite] connecting...
+client:618 [vite] connected.
+chunk-UPELNCPK.js?v=84ceefd8:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+validation.ts:114 [CardRegistry] Loaded 1564 valid cards (0 duplicates skipped)
+blakejs-browser.js:243 ✅ blakejs loaded successfully (self-contained version)
+blakejs-browser.js:244   Available functions: Array(5)
+paywall-detector.js:318 🛡️ Paywall Detector loaded - 100% client-side, no external dependencies
+content.js:13 🏛️ ArcHive Content Script Loaded
+content.js:434 🏛️ ArcHive Content Script Ready - 100% Decentralized
+debugConfig.ts:43 CardTransformBridgeInitializer: Initializing bridge between legacy and context systems
+debugConfig.ts:43 [HeroDeck] Loaded decks from storage
+debugConfig.ts:43 Initializing card database...
+basicMageCards.ts:15 Registering basic mage cards...
+basicMageCards.ts:142 Basic mage cards registered successfully.
+mageCards.ts:27 Registering Mage cards...
+mageCards.ts:887 Mage cards registered successfully.
+norseMythologyCards.ts:3356 Registering Norse mythology cards...
+norseMythologyCards.ts:6001 Norse mythology cards registered successfully.
+hunterCards.ts:773 Registering Hunter cards...
+hunterCards.ts:779 Registered 37 Hunter cards
+paladinCards.ts:16 Registering Paladin cards...
+paladinCards.ts:332 Paladin cards registered successfully.
+rogueCards.ts:16 Registering Rogue cards...
+rogueCards.ts:419 Rogue cards registered successfully.
+warlockCards.ts:21 Registering Warlock cards...
+warlockCards.ts:425 Warlock cards registered successfully.
+druidCards.ts:27 Registering Druid cards...
+druidCards.ts:468 Druid cards registered successfully.
+priestCards.ts:27 Registering Priest cards...
+priestCards.ts:590 Priest cards registered successfully.
+shamanCards.ts:29 Registering Shaman cards...
+shamanCards.ts:515 Shaman cards registered successfully.
+warriorCards.ts:28 Registering Warrior cards...
+warriorCards.ts:641 Warrior cards registered successfully.
+deathknightCards.ts:27 Registering Death Knight cards...
+deathknightCards.ts:425 Death Knight cards registered successfully.
+demonhunterCards.ts:27 Registering Demon Hunter cards...
+demonhunterCards.ts:331 Demon Hunter cards registered successfully.
+necromancerCards.ts:644 Registering Necromancer cards...
+necromancerCards.ts:650 Registered 30 Necromancer cards
+superMinionCards.ts:24 Registered 81 super minion cards.
+debugConfig.ts:43 Card database initialized with 466 cards.
+debugConfig.ts:43 [ArmySelection] Card registry has 466 cards
+debugConfig.ts:43 [GameStoreIntegration] Initializing event-driven architecture...
+debugConfig.ts:43 [GameStoreIntegration] Initialization complete
+debugConfig.ts:43 [ArmySelection] Syncing King hero: Ymir (king-ymir)
+debugConfig.ts:43 Mulligan confirmed, replacing selected cards
+debugConfig.ts:43 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+debugConfig.ts:43 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+battlecryUtils.ts:416 Unknown battlecry type: conditional_grant_keyword
+executeBattlecry @ battlecryUtils.ts:416
+debugConfig.ts:43 [MINION-PLAYED] Stonebleat Buckling - 2/2
+debugConfig.ts:43 [BATTLECRY] Stonebleat Buckling: Battlecry: If you control another Beast, gain Taunt.
+debugConfig.ts:43 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: c9c1b13e-479d-461a-ae72-8330db187915
+warn @ debugConfig.ts:100
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: cbb00df2-2387-4fc7-b83f-49e1900b71fd
+warn @ debugConfig.ts:100
+debugConfig.ts:43 [Deathrattle Bridge] Processing: Gullinkambi, the Ragnarok Rooster (ID: 4404) - Type: damage_conditional Object
+debugConfig.ts:43 [Deathrattle Bridge] Using original handler for type: damage_conditional
+debugConfig.ts:43 [Deathrattle] Triggered: Gullinkambi, the Ragnarok Rooster (ID: 4404) - Effect: damage_conditional Object
+deathrattleUtils.ts:122 Unknown deathrattle type: damage_conditional
+executeDeathrattle @ deathrattleUtils.ts:122
+debugConfig.ts:43 [Targeting] Starting targeting for c9c1b13e-479d-461a-ae72-8330db187915 with valid targets: Array(2)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: c9c1b13e-479d-461a-ae72-8330db187915, valid targets: Array(2)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:43 [Targeting] Starting targeting for c9c1b13e-479d-461a-ae72-8330db187915 with valid targets: Array(2)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: c9c1b13e-479d-461a-ae72-8330db187915, valid targets: Array(2)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: 92801e8d-d4ad-4b74-82bb-647ff24c67dc
+warn @ debugConfig.ts:100
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: c9c1b13e-479d-461a-ae72-8330db187915
+warn @ debugConfig.ts:100
+debugConfig.ts:43 [Targeting] Cancelled
+gameUtils.ts:2045 [ATTACK ERROR] Attacker card with ID c9c1b13e-479d-461a-ae72-8330db187915 not found on the battlefield
+processAttack @ gameUtils.ts:2045
+debugConfig.ts:43 [Targeting] Cancelled
