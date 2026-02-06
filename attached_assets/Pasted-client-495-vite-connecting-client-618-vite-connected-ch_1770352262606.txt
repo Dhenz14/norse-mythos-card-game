@@ -1,0 +1,74 @@
+client:495 [vite] connecting...
+client:618 [vite] connected.
+chunk-UPELNCPK.js?v=84ceefd8:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+validation.ts:114 [CardRegistry] Loaded 1564 valid cards (0 duplicates skipped)
+blakejs-browser.js:243 ✅ blakejs loaded successfully (self-contained version)
+blakejs-browser.js:244   Available functions: Array(5)
+paywall-detector.js:318 🛡️ Paywall Detector loaded - 100% client-side, no external dependencies
+content.js:13 🏛️ ArcHive Content Script Loaded
+content.js:434 🏛️ ArcHive Content Script Ready - 100% Decentralized
+debugConfig.ts:43 CardTransformBridgeInitializer: Initializing bridge between legacy and context systems
+debugConfig.ts:43 [HeroDeck] Loaded decks from storage
+debugConfig.ts:43 Initializing card database...
+basicMageCards.ts:15 Registering basic mage cards...
+basicMageCards.ts:142 Basic mage cards registered successfully.
+mageCards.ts:27 Registering Mage cards...
+mageCards.ts:887 Mage cards registered successfully.
+norseMythologyCards.ts:3356 Registering Norse mythology cards...
+norseMythologyCards.ts:6001 Norse mythology cards registered successfully.
+hunterCards.ts:773 Registering Hunter cards...
+hunterCards.ts:779 Registered 37 Hunter cards
+paladinCards.ts:16 Registering Paladin cards...
+paladinCards.ts:332 Paladin cards registered successfully.
+rogueCards.ts:16 Registering Rogue cards...
+rogueCards.ts:419 Rogue cards registered successfully.
+warlockCards.ts:21 Registering Warlock cards...
+warlockCards.ts:425 Warlock cards registered successfully.
+druidCards.ts:27 Registering Druid cards...
+druidCards.ts:468 Druid cards registered successfully.
+priestCards.ts:27 Registering Priest cards...
+priestCards.ts:590 Priest cards registered successfully.
+shamanCards.ts:29 Registering Shaman cards...
+shamanCards.ts:515 Shaman cards registered successfully.
+warriorCards.ts:28 Registering Warrior cards...
+warriorCards.ts:641 Warrior cards registered successfully.
+deathknightCards.ts:27 Registering Death Knight cards...
+deathknightCards.ts:425 Death Knight cards registered successfully.
+demonhunterCards.ts:27 Registering Demon Hunter cards...
+demonhunterCards.ts:331 Demon Hunter cards registered successfully.
+necromancerCards.ts:644 Registering Necromancer cards...
+necromancerCards.ts:650 Registered 30 Necromancer cards
+superMinionCards.ts:24 Registered 81 super minion cards.
+debugConfig.ts:43 Card database initialized with 466 cards.
+debugConfig.ts:43 [ArmySelection] Card registry has 466 cards
+debugConfig.ts:43 [GameStoreIntegration] Initializing event-driven architecture...
+debugConfig.ts:43 [GameStoreIntegration] Initialization complete
+debugConfig.ts:43 [ArmySelection] Syncing King hero: Ymir (king-ymir)
+debugConfig.ts:43 Mulligan confirmed, replacing selected cards
+debugConfig.ts:43 [PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal
+debugConfig.ts:43 [PokerRewards] Player drew card: Ran, Goddess of the Sea
+debugConfig.ts:43 [PokerRewards] Opponent drew card: Pack Alpha
+debugConfig.ts:43 [PokerRewards] Player mana: 1 → 2 (2 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Opponent mana: 1 → 2 (2 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Card draw and mana grant complete
+battlecryUtils.ts:237 Card not found for battlecry execution
+executeBattlecry @ battlecryUtils.ts:237
+battlecryUtils.ts:238 Looking for card ID: 73185507-a444-4753-96a6-86e1f972886a
+executeBattlecry @ battlecryUtils.ts:238
+battlecryUtils.ts:239 Battlefield cards: 
+executeBattlecry @ battlecryUtils.ts:239
+battlecryUtils.ts:240 Hand cards: 78589695-0dcb-4b63-bcc7-3ed1866851c0, 2278175c-addb-4130-8ed2-7ae98a32b8eb, d6802fef-45ea-4906-8042-082478b36cac, bf7b3d41-f611-40e8-b1be-f9236d8e4afa
+executeBattlecry @ battlecryUtils.ts:240
+debugConfig.ts:43 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+debugConfig.ts:43 [PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal
+debugConfig.ts:43 [PokerRewards] Player drew card: Wisdom Seeker
+debugConfig.ts:43 [PokerRewards] Opponent drew card: Armor Burst
+debugConfig.ts:43 [PokerRewards] Player mana: 3 → 4 (4 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Opponent mana: 3 → 4 (4 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Card draw and mana grant complete
+debugConfig.ts:43 [PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal
+debugConfig.ts:43 [PokerRewards] Player drew card: Transmutation Engine
+debugConfig.ts:43 [PokerRewards] Opponent drew card: Treasure Hunter of Hermes
+debugConfig.ts:43 [PokerRewards] Player mana: 4 → 5 (5 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Opponent mana: 4 → 5 (5 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Card draw and mana grant complete

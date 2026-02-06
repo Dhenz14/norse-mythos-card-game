@@ -463,7 +463,6 @@ export const createPokerCombatSlice: StateCreator<
     
     switch (action) {
       case CombatAction.ATTACK:
-      case CombatAction.COUNTER_ATTACK:
         if (hpCommitment && hpCommitment > 0) {
           const availableHP = playerState.pet.stats.currentHealth;
           const actualBet = Math.min(hpCommitment, availableHP);
@@ -474,6 +473,30 @@ export const createPokerCombatSlice: StateCreator<
           newState.preflopBetMade = true;
           if (!newState.blindsPosted) {
             newState.blindsPosted = true;
+          }
+          if (playerState.pet.stats.currentHealth === 0) {
+            newState.isAllInShowdown = true;
+          }
+        }
+        break;
+
+      case CombatAction.COUNTER_ATTACK:
+        {
+          const callAmount = Math.max(0, newState.currentBet - playerState.hpCommitted);
+          const raiseAmount = hpCommitment || 0;
+          const totalNeeded = callAmount + raiseAmount;
+          const availableHP = playerState.pet.stats.currentHealth;
+          const actualTotal = Math.min(totalNeeded, availableHP);
+          playerState.hpCommitted += actualTotal;
+          playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - actualTotal);
+          newState.pot += actualTotal;
+          newState.currentBet = Math.max(newState.currentBet, playerState.hpCommitted);
+          newState.preflopBetMade = true;
+          if (!newState.blindsPosted) {
+            newState.blindsPosted = true;
+          }
+          if (playerState.pet.stats.currentHealth === 0) {
+            newState.isAllInShowdown = true;
           }
         }
         break;
@@ -494,6 +517,9 @@ export const createPokerCombatSlice: StateCreator<
             newState.pot -= excess;
             newState.currentBet = playerState.hpCommitted;
           }
+        }
+        if (playerState.pet.stats.currentHealth === 0 || 
+            (isPlayer ? newState.opponent : newState.player).pet.stats.currentHealth === 0) {
           newState.isAllInShowdown = true;
         }
         if (!newState.blindsPosted) {
