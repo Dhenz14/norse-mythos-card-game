@@ -32,7 +32,8 @@ export function HeroArtImage({
     <img
       src={artPath || ''}
       alt={heroName}
-      className={`${className} object-contain`}
+      className={className}
+      style={{ objectFit: 'contain' }}
       onError={(e) => {
         (e.target as HTMLImageElement).style.display = 'none';
       }}
