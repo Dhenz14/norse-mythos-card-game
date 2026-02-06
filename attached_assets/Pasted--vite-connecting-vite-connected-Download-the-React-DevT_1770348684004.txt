@@ -1,0 +1,147 @@
+ [vite] connecting...
+ [vite] connected.
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ [CardRegistry] Loaded 1564 valid cards (0 duplicates skipped)
+ ✅ blakejs loaded successfully (self-contained version)
+   Available functions: Array(5)
+paywall-detector.js:318 🛡️ Paywall Detector loaded - 100% client-side, no external dependencies
+content.js:13 🏛️ ArcHive Content Script Loaded
+content.js:434 🏛️ ArcHive Content Script Ready - 100% Decentralized
+debugConfig.ts:43 CardTransformBridgeInitializer: Initializing bridge between legacy and context systems
+debugConfig.ts:43 [HeroDeck] Loaded decks from storage
+debugConfig.ts:43 Initializing card database...
+basicMageCards.ts:15 Registering basic mage cards...
+basicMageCards.ts:142 Basic mage cards registered successfully.
+mageCards.ts:27 Registering Mage cards...
+mageCards.ts:887 Mage cards registered successfully.
+norseMythologyCards.ts:3356 Registering Norse mythology cards...
+norseMythologyCards.ts:6001 Norse mythology cards registered successfully.
+hunterCards.ts:773 Registering Hunter cards...
+hunterCards.ts:779 Registered 37 Hunter cards
+paladinCards.ts:16 Registering Paladin cards...
+paladinCards.ts:332 Paladin cards registered successfully.
+rogueCards.ts:16 Registering Rogue cards...
+rogueCards.ts:419 Rogue cards registered successfully.
+warlockCards.ts:21 Registering Warlock cards...
+warlockCards.ts:425 Warlock cards registered successfully.
+druidCards.ts:27 Registering Druid cards...
+druidCards.ts:468 Druid cards registered successfully.
+priestCards.ts:27 Registering Priest cards...
+priestCards.ts:590 Priest cards registered successfully.
+shamanCards.ts:29 Registering Shaman cards...
+shamanCards.ts:515 Shaman cards registered successfully.
+warriorCards.ts:28 Registering Warrior cards...
+warriorCards.ts:641 Warrior cards registered successfully.
+deathknightCards.ts:27 Registering Death Knight cards...
+deathknightCards.ts:425 Death Knight cards registered successfully.
+demonhunterCards.ts:27 Registering Demon Hunter cards...
+demonhunterCards.ts:331 Demon Hunter cards registered successfully.
+necromancerCards.ts:644 Registering Necromancer cards...
+necromancerCards.ts:650 Registered 30 Necromancer cards
+superMinionCards.ts:24 Registered 81 super minion cards.
+debugConfig.ts:43 Card database initialized with 466 cards.
+debugConfig.ts:43 [ArmySelection] Card registry has 466 cards
+debugConfig.ts:43 [GameStoreIntegration] Initializing event-driven architecture...
+debugConfig.ts:43 [GameStoreIntegration] Initialization complete
+debugConfig.ts:43 [ArmySelection] Syncing King hero: Ymir (king-ymir)
+debugConfig.ts:43 Mulligan confirmed, replacing selected cards
+debugConfig.ts:43 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+debugConfig.ts:43 [PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal
+debugConfig.ts:43 [PokerRewards] Player drew card: Wounded Champion of Athena
+debugConfig.ts:43 [PokerRewards] Opponent drew card: Coldlight Seer
+debugConfig.ts:43 [PokerRewards] Player mana: 2 → 3 (3 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Opponent mana: 2 → 3 (3 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Card draw and mana grant complete
+debugConfig.ts:43 [PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal
+debugConfig.ts:43 [PokerRewards] Player drew card: Y'Shaarj, Rage Unbound
+debugConfig.ts:43 [PokerRewards] Opponent drew card: Arcane Giant of Olympus
+debugConfig.ts:43 [PokerRewards] Player mana: 3 → 4 (4 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Opponent mana: 3 → 4 (4 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Card draw and mana grant complete
+battlecryUtils.ts:421 Unknown battlecry type: self_damage
+executeBattlecry @ battlecryUtils.ts:421
+debugConfig.ts:43 [PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal
+debugConfig.ts:43 [PokerRewards] Player drew card: Finkle Einhorn
+debugConfig.ts:43 [PokerRewards] Opponent drew card: Twilight Whelp
+debugConfig.ts:43 [PokerRewards] Player mana: 4 → 5 (5 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Opponent mana: 4 → 5 (5 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Card draw and mana grant complete
+debugConfig.ts:43 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+debugConfig.ts:43 [Targeting] Starting targeting for 3050c6b8-5c32-4484-bcd1-c1070753196b with valid targets: Array(2)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: 3050c6b8-5c32-4484-bcd1-c1070753196b, valid targets: Array(2)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:43 [Targeting] Starting targeting for 3050c6b8-5c32-4484-bcd1-c1070753196b with valid targets: Array(2)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: 3050c6b8-5c32-4484-bcd1-c1070753196b, valid targets: Array(2)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: 1b4859e0-40f8-4f58-ab17-a2df580910a0
+warn @ debugConfig.ts:100
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: 3050c6b8-5c32-4484-bcd1-c1070753196b
+warn @ debugConfig.ts:100
+debugConfig.ts:43 [Targeting] Cancelled
+gameUtils.ts:2060 [ATTACK ERROR] Card Wounded Champion of Athena cannot attack (already attacked this turn)
+processAttack @ gameUtils.ts:2060
+debugConfig.ts:43 [Targeting] Cancelled
+debugConfig.ts:43 [PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal
+debugConfig.ts:43 [PokerRewards] Player drew card: Midas' Apprentice
+debugConfig.ts:43 [PokerRewards] Opponent drew card: Spirit Lash
+debugConfig.ts:43 [PokerRewards] Player mana: 6 → 7 (7 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Opponent mana: 6 → 7 (7 available, 0 overloaded)
+debugConfig.ts:43 [PokerRewards] Card draw and mana grant complete
+attackUtils.ts:39 [canCardAttack] Finkle Einhorn: CANNOT attack - Minion cannot attack (exhausted or disabled)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+attackUtils.ts:39 [canCardAttack] Finkle Einhorn: CANNOT attack - Minion cannot attack (exhausted or disabled)
+attackUtils.ts:39 [canCardAttack] Midas' Apprentice: CANNOT attack - Minion cannot attack (exhausted or disabled)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+attackUtils.ts:39 [canCardAttack] Midas' Apprentice: CANNOT attack - Minion cannot attack (exhausted or disabled)
+attackUtils.ts:39 [canCardAttack] Wounded Champion of Athena: CANNOT attack - Minion cannot attack (exhausted or disabled)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+attackUtils.ts:39 [canCardAttack] Wounded Champion of Athena: CANNOT attack - Minion cannot attack (exhausted or disabled)
+attackUtils.ts:39 [canCardAttack] Midas' Apprentice: CANNOT attack - Minion cannot attack (exhausted or disabled)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+attackUtils.ts:39 [canCardAttack] Midas' Apprentice: CANNOT attack - Minion cannot attack (exhausted or disabled)
+attackUtils.ts:39 [canCardAttack] Finkle Einhorn: CANNOT attack - Minion cannot attack (exhausted or disabled)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+attackUtils.ts:39 [canCardAttack] Finkle Einhorn: CANNOT attack - Minion cannot attack (exhausted or disabled)
+debugConfig.ts:43 [UnifiedEndTurn] End Turn = Fold - starting new poker hand
+debugConfig.ts:43 [Targeting] Starting targeting for 3c5c83c4-dec5-40b1-bb27-e706e1909451 with valid targets: Array(3)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: 3c5c83c4-dec5-40b1-bb27-e706e1909451, valid targets: Array(3)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:43 [Targeting] Starting targeting for 3c5c83c4-dec5-40b1-bb27-e706e1909451 with valid targets: Array(3)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: 3c5c83c4-dec5-40b1-bb27-e706e1909451, valid targets: Array(3)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: 2413163d-63d2-47cf-bc74-81c70c411f5e
+warn @ debugConfig.ts:100
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: 3c5c83c4-dec5-40b1-bb27-e706e1909451
+warn @ debugConfig.ts:100
+debugConfig.ts:43 [Targeting] Cancelled
+gameUtils.ts:2045 [ATTACK ERROR] Attacker card with ID 3c5c83c4-dec5-40b1-bb27-e706e1909451 not found on the battlefield
+processAttack @ gameUtils.ts:2045
+debugConfig.ts:43 [Targeting] Cancelled
+debugConfig.ts:43 [Targeting] Starting targeting for a1f34f10-3aa0-4016-9280-573d5da76979 with valid targets: Array(3)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: a1f34f10-3aa0-4016-9280-573d5da76979, valid targets: Array(3)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:43 [Targeting] Starting targeting for a1f34f10-3aa0-4016-9280-573d5da76979 with valid targets: Array(3)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: a1f34f10-3aa0-4016-9280-573d5da76979, valid targets: Array(3)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: 2413163d-63d2-47cf-bc74-81c70c411f5e
+warn @ debugConfig.ts:100
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: a1f34f10-3aa0-4016-9280-573d5da76979
+warn @ debugConfig.ts:100
+debugConfig.ts:43 [Targeting] Cancelled
+gameUtils.ts:2060 [ATTACK ERROR] Card Midas' Apprentice cannot attack (already attacked this turn)
+processAttack @ gameUtils.ts:2060
+debugConfig.ts:43 [Targeting] Cancelled
+debugConfig.ts:43 [Targeting] Starting targeting for 3050c6b8-5c32-4484-bcd1-c1070753196b with valid targets: Array(2)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: 3050c6b8-5c32-4484-bcd1-c1070753196b, valid targets: Array(2)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:43 [Targeting] Starting targeting for 3050c6b8-5c32-4484-bcd1-c1070753196b with valid targets: Array(2)
+debugConfig.ts:43 [Targeting] Started targeting with attacker: 3050c6b8-5c32-4484-bcd1-c1070753196b, valid targets: Array(2)
+SimpleBattlefield.tsx:121 [SimpleBattlefield Click] Object
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: ff60605d-158f-4ed2-a05f-a4360eed87d9
+warn @ debugConfig.ts:100
+debugConfig.ts:100 [DamageAnimation] Could not find position for target: 3050c6b8-5c32-4484-bcd1-c1070753196b
+warn @ debugConfig.ts:100
+debugConfig.ts:43 [Targeting] Cancelled
+gameUtils.ts:2045 [ATTACK ERROR] Attacker card with ID 3050c6b8-5c32-4484-bcd1-c1070753196b not found on the battlefield
+processAttack @ gameUtils.ts:2045
+debugConfig.ts:43 [Targeting] Cancelled
