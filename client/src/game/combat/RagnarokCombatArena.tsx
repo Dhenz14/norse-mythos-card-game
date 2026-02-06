@@ -148,6 +148,19 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   
   const isPlayerTurn = gameState?.currentTurn === 'player';
   
+  const [communityCardsRevealed, setCommunityCardsRevealed] = useState(false);
+
+  useEffect(() => {
+    if (combatState?.phase === CombatPhase.SPELL_PET || combatState?.phase === CombatPhase.MULLIGAN) {
+      setCommunityCardsRevealed(false);
+    }
+  }, [combatState?.phase]);
+
+  const wrappedOnAction = useCallback((action: CombatAction, hp?: number) => {
+    setCommunityCardsRevealed(true);
+    onAction(action, hp);
+  }, [onAction]);
+  
   // Refs for battlefield
   const internalBattlefieldRef = useRef<HTMLDivElement>(null);
   const battlefieldRef = externalBattlefieldRef || internalBattlefieldRef;
@@ -178,7 +191,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       
       const key = e.key.toLowerCase();
       const currentBet = betAmountRef.current;
-      const action = onActionRef.current;
+      const action = (a: CombatAction, hp?: number) => {
+        setCommunityCardsRevealed(true);
+        onActionRef.current(a, hp);
+      };
       
       switch (key) {
         case 'b':
@@ -450,9 +466,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   }
   
   const isMulligan = combatState.phase === CombatPhase.MULLIGAN;
-  const showFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET;
-  const showForesight = !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
-  const showDestiny = !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
+  const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET;
+  const showFaith = phaseAllowsFaith && communityCardsRevealed;
+  const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
+  const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
   
   const basePermissions = getActionPermissions(combatState, true);
   const disabled = isMulligan || !basePermissions?.isMyTurnToAct;
@@ -660,11 +677,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                     pendingOverload={0}
                   />
                 </div>
-                {/* Player hole cards - face down during SPELL_PET, revealed from FAITH onwards */}
+                {/* Player hole cards - always visible (your own cards) */}
                 <HoleCardsOverlay
                   cards={combatState.player.holeCards}
                   variant="player"
-                  faceDown={combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.MULLIGAN}
                   winningCards={showdownCelebration?.winningCards}
                   isShowdown={showdownCelebration?.resolution.resolutionType === 'showdown'}
                 />
@@ -725,7 +741,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                    {/* BET/RAISE button - always show, disable when not turn */}
                    <button 
                      className="poker-btn raise-btn"
-                     onClick={() => onAction(
+                     onClick={() => wrappedOnAction(
                        hasBetToCall ? CombatAction.COUNTER_ATTACK : CombatAction.ATTACK, 
                        effectiveBet
                      )}
@@ -737,7 +753,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                    {/* CALL/CHECK button */}
                    <button 
                      className="poker-btn call-btn"
-                     onClick={() => onAction(canCall ? CombatAction.ENGAGE : CombatAction.DEFEND)}
+                     onClick={() => wrappedOnAction(canCall ? CombatAction.ENGAGE : CombatAction.DEFEND)}
                      disabled={isDisabled || (!canCall && !canCheck)}
                    >
                      <span className="btn-text">{canCall ? callLabel : 'CHECK'}</span>
@@ -746,7 +762,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                    {/* FOLD button */}
                    <button 
                      className="poker-btn fold-btn"
-                     onClick={() => onAction(CombatAction.BRACE)}
+                     onClick={() => wrappedOnAction(CombatAction.BRACE)}
                      disabled={isDisabled || !canFold}
                    >
                      <span className="btn-text">FOLD</span>
