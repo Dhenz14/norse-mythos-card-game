@@ -910,6 +910,11 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   grantPokerHandRewards: () => {
     const { gameState } = get();
     
+    if (gameState?.mulligan?.active) {
+      debug.log('[PokerRewards] Blocked: card game mulligan still active');
+      return;
+    }
+    
     try {
       debug.log('[PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal');
       

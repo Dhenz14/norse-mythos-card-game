@@ -3,6 +3,7 @@ import { CombatPhase, CombatAction, PokerCombatState } from '../../types/PokerCo
 import { getPokerCombatAdapterState, getActionPermissions } from '../../hooks/usePokerCombatAdapter';
 import { getSmartAIAction } from '../modules/SmartAI';
 import { fireActionAnnouncement } from '../../stores/animationStore';
+import { useGameStore } from '../../stores/gameStore';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
 
@@ -16,10 +17,13 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
   const { combatState, isActive, updateTimer } = options;
   const nestedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const cardGameMulliganActive = useGameStore(state => state.gameState?.mulligan?.active);
+
   useEffect(() => {
     if (!combatState || !isActive) return;
     if (combatState.phase === CombatPhase.MULLIGAN) return;
     if (combatState.phase === CombatPhase.SPELL_PET) return;
+    if (cardGameMulliganActive) return;
     
     if (combatState.player.isReady) {
       debug.combat('[Timer] SKIP: Player already ready (isReady=true)');
@@ -32,6 +36,9 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
     }
     
     const timer = setInterval(() => {
+      const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
+      if (mulliganStillActive) return;
+
       const freshState = getPokerCombatAdapterState().combatState;
       if (!freshState) return;
       
@@ -90,5 +97,5 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
         nestedTimerRef.current = null;
       }
     };
-  }, [combatState?.phase, combatState?.player?.isReady, combatState?.isAllInShowdown, isActive, updateTimer]);
+  }, [combatState?.phase, combatState?.player?.isReady, combatState?.isAllInShowdown, isActive, updateTimer, cardGameMulliganActive]);
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { CombatPhase, PokerCombatState } from '../../types/PokerCombatTypes';
 import { getPokerCombatAdapterState } from '../../hooks/usePokerCombatAdapter';
 import { getSmartAIAction } from '../modules/SmartAI';
+import { useGameStore } from '../../stores/gameStore';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
 
@@ -27,7 +28,8 @@ export function usePokerAI(options: UsePokerAIOptions): void {
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const watchdogTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Watchdog to reset stuck AI flag
+  const cardGameMulliganActive = useGameStore(state => state.gameState?.mulligan?.active);
+
   useEffect(() => {
     let lastSetTime = 0;
 
@@ -57,11 +59,14 @@ export function usePokerAI(options: UsePokerAIOptions): void {
     };
   }, [aiResponseInProgressRef]);
 
-  // Single unified AI effect using activePlayerId
   useEffect(() => {
     if (!combatState || !isActive) return;
 
-    // Core check: Is it the AI's turn?
+    if (cardGameMulliganActive) {
+      if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] Blocked: card game mulligan still active');
+      return;
+    }
+
     const aiPlayerId = combatState.opponent.playerId;
     const isAITurn = combatState.activePlayerId === aiPlayerId;
 
@@ -70,7 +75,6 @@ export function usePokerAI(options: UsePokerAIOptions): void {
       return;
     }
 
-    // Skip non-betting phases
     const isBettingPhase =
       combatState.phase === CombatPhase.FAITH ||
       combatState.phase === CombatPhase.FORESIGHT ||
@@ -81,13 +85,11 @@ export function usePokerAI(options: UsePokerAIOptions): void {
       return;
     }
 
-    // Skip if game is over
     if (combatState.foldWinner || combatState.isAllInShowdown) {
       if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] Game over (fold or all-in showdown)');
       return;
     }
 
-    // Prevent duplicate actions
     if (aiResponseInProgressRef.current) {
       if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] AI action already in progress');
       return;
@@ -106,6 +108,12 @@ export function usePokerAI(options: UsePokerAIOptions): void {
 
     aiTimerRef.current = setTimeout(() => {
       try {
+        const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
+        if (mulliganStillActive) {
+          aiResponseInProgressRef.current = false;
+          return;
+        }
+
         const adapter = getPokerCombatAdapterState();
         const freshState = adapter.combatState;
 
@@ -114,14 +122,12 @@ export function usePokerAI(options: UsePokerAIOptions): void {
           return;
         }
 
-        // Re-verify it's still AI's turn
         if (freshState.activePlayerId !== aiPlayerId) {
           if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] No longer AI turn after delay');
           aiResponseInProgressRef.current = false;
           return;
         }
 
-        // Skip if game ended
         if (freshState.foldWinner || freshState.isAllInShowdown ||
             freshState.phase === CombatPhase.RESOLUTION) {
           aiResponseInProgressRef.current = false;
@@ -134,7 +140,6 @@ export function usePokerAI(options: UsePokerAIOptions): void {
 
         adapter.performAction(aiPlayerId, aiDecision.action, aiDecision.betAmount);
 
-        // Check if betting round should close after AI action
         setTimeout(() => {
           const adapterAfterAI = getPokerCombatAdapterState();
           if (adapterAfterAI.combatState &&
@@ -160,5 +165,5 @@ export function usePokerAI(options: UsePokerAIOptions): void {
       }
     };
   }, [combatState?.activePlayerId, combatState?.phase, combatState?.foldWinner,
-      combatState?.isAllInShowdown, isActive, aiResponseInProgressRef]);
+      combatState?.isAllInShowdown, isActive, aiResponseInProgressRef, cardGameMulliganActive]);
 }

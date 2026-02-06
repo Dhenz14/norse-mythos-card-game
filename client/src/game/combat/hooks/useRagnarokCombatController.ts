@@ -881,6 +881,8 @@ export function useRagnarokCombatController(
   
   const handleCombatEnd = useCallback(() => {
     if (!resolution) return;
+    const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
+    if (mulliganStillActive) return;
     
     advanceTurnPhase();
     
@@ -897,6 +899,8 @@ export function useRagnarokCombatController(
       }
       
       showdownBackupTimerRef.current = setTimeout(() => {
+        const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
+        if (mulliganStillActive) return;
         console.warn('[RagnarokCombatArena] Showdown backup timer fired - forcing combat end', { hasResolution: !!resolution });
         setShowdownCelebration(null);
         handleCombatEnd();

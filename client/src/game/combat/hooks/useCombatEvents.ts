@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { CombatPhase, PokerCombatState, PokerCard } from '../../types/PokerCombatTypes';
 import { initializeCombatEventSubscribers, cleanupCombatEventSubscribers } from '../../services/CombatEventSubscribers';
-import { getPokerCombatAdapterState } from '../../hooks/usePokerCombatAdapter';
+import { useGameStore } from '../../stores/gameStore';
 
 export interface ShowdownCelebration {
   resolution: {
@@ -34,6 +34,8 @@ interface UseCombatEventsOptions {
 export function useCombatEvents(options: UseCombatEventsOptions): void {
   const { combatState, isActive, onShowdownCelebration, onHeroDeath, resolveCombat, setResolution } = options;
 
+  const cardGameMulliganActive = useGameStore(state => state.gameState?.mulligan?.active);
+
   useEffect(() => {
     initializeCombatEventSubscribers();
     
@@ -43,8 +45,9 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
   }, []);
 
   useEffect(() => {
-    if (!combatState) return;
+    if (!combatState || !isActive) return;
     if (combatState.phase !== CombatPhase.RESOLUTION) return;
+    if (cardGameMulliganActive) return;
     
     if (!combatState.player.isReady || !combatState.opponent.isReady) {
       return;
@@ -87,5 +90,5 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
         });
       }
     }
-  }, [combatState?.phase, combatState?.player?.isReady, combatState?.opponent?.isReady, resolveCombat, onShowdownCelebration, onHeroDeath, setResolution]);
+  }, [combatState?.phase, combatState?.player?.isReady, combatState?.opponent?.isReady, isActive, resolveCombat, onShowdownCelebration, onHeroDeath, setResolution, cardGameMulliganActive]);
 }
