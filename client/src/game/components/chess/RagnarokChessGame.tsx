@@ -12,6 +12,7 @@ import { PetData, DEFAULT_PET_STATS, calculateStaminaFromHP } from '../../types/
 import { useAudio } from '../../../lib/stores/useAudio';
 import { v4 as uuidv4 } from 'uuid';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
+import { useUnifiedCombatStore } from '../../stores/unifiedCombatStore';
 import { getKingAbilityConfig, getAbilityDescription, requiresDirectionSelection, getAvailableDirections, MineDirection } from '../../utils/chess/kingAbilityUtils';
 import { Tooltip } from '../ui/Tooltip';
 import { debug } from '../../config/debugConfig';
@@ -428,23 +429,38 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
     playSoundEffect('game_start');
   }, [opponentArmy, initializeBoard, setSharedDeck, playSoundEffect]);
 
+  const { lastMineTriggered } = useKingChessAbility('player');
+
   const handleCombatTriggered = useCallback((attackerId: string, defenderId: string) => {
     setCombatPieces({ attackerId, defenderId });
     
-    const attacker = boardState.pieces.find(p => p.id === attackerId);
-    const defender = boardState.pieces.find(p => p.id === defenderId);
-    
-    if (!attacker || !defender) return;
-
-    setVsScreenPieces({ attacker, defender });
-    setPhase('vs_screen');
-    playSoundEffect('card_draw');
-  }, [boardState.pieces, playSoundEffect]);
+    if (lastMineTriggered) {
+      setTimeout(() => {
+        const freshPieces = useUnifiedCombatStore.getState().boardState.pieces;
+        const freshAttacker = freshPieces.find(p => p.id === attackerId);
+        const freshDefender = freshPieces.find(p => p.id === defenderId);
+        if (!freshAttacker || !freshDefender) return;
+        setVsScreenPieces({ attacker: freshAttacker, defender: freshDefender });
+        setPhase('vs_screen');
+        playSoundEffect('card_draw');
+      }, 1800);
+    } else {
+      const attacker = boardState.pieces.find(p => p.id === attackerId);
+      const defender = boardState.pieces.find(p => p.id === defenderId);
+      if (!attacker || !defender) return;
+      setVsScreenPieces({ attacker, defender });
+      setPhase('vs_screen');
+      playSoundEffect('card_draw');
+    }
+  }, [boardState.pieces, playSoundEffect, lastMineTriggered]);
 
   const handleVsScreenComplete = useCallback(() => {
     if (!vsScreenPieces || !combatPieces) return;
 
-    const { attacker, defender } = vsScreenPieces;
+    const freshAttacker = boardState.pieces.find(p => p.id === vsScreenPieces.attacker.id) || vsScreenPieces.attacker;
+    const freshDefender = boardState.pieces.find(p => p.id === vsScreenPieces.defender.id) || vsScreenPieces.defender;
+    const attacker = freshAttacker;
+    const defender = freshDefender;
     
     debug.combat(`Attacker ${attacker.type} (${attacker.owner}): HP=${attacker.health}, Stamina=${attacker.stamina}`);
     debug.combat(`Defender ${defender.type} (${defender.owner}): HP=${defender.health}, Stamina=${defender.stamina}`);
@@ -510,7 +526,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
     setVsScreenPieces(null);
     setPhase('poker_combat');
     playSoundEffect('game_start');
-  }, [vsScreenPieces, combatPieces, playerArmy, opponentArmy, createPetFromChessPiece, initializeCombat, playSoundEffect]);
+  }, [vsScreenPieces, combatPieces, playerArmy, opponentArmy, boardState.pieces, createPetFromChessPiece, initializeCombat, playSoundEffect]);
 
   const handleCombatEnd = useCallback((winner: 'player' | 'opponent' | 'draw') => {
     const combat = pendingCombat;

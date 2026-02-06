@@ -288,6 +288,16 @@ export const createChessCombatSlice: StateCreator<
     
     state.incrementAllStamina();
     
+    const mineResult = state.checkAndTriggerMine(targetPosition, attacker.owner, attacker.id, attacker.type);
+    if (mineResult && mineResult.triggered) {
+      debug.chess(`[Chess] Mine triggered after instant kill! ${attacker.owner} loses ${mineResult.staPenalty} STA`);
+      const attackerPiece = get().boardState.pieces.find(p => p.id === attacker.id);
+      if (attackerPiece) {
+        const newStamina = Math.max(0, attackerPiece.stamina - mineResult.staPenalty);
+        state.updatePieceStamina(attacker.id, newStamina);
+      }
+    }
+    
     const movedPiece = get().boardState.pieces.find(p => p.id === attacker.id);
     if (movedPiece && state.checkPawnPromotion(movedPiece)) {
       debug.chess(`[Chess] Pawn promoted to Queen after instant kill at (${targetPosition.row}, ${targetPosition.col})`);
@@ -826,6 +836,21 @@ export const createChessCombatSlice: StateCreator<
     if (animation.isInstantKill) {
       state.executeInstantKill(animation.attacker, animation.defender, animation.defenderPosition);
     } else {
+      const mineResult = state.checkAndTriggerMine(
+        animation.defenderPosition, 
+        animation.attacker.owner, 
+        animation.attacker.id, 
+        animation.attacker.type
+      );
+      if (mineResult && mineResult.triggered) {
+        debug.chess(`[Chess] Mine triggered before combat! ${animation.attacker.owner} loses ${mineResult.staPenalty} STA`);
+        const attackerPiece = get().boardState.pieces.find(p => p.id === animation.attacker.id);
+        if (attackerPiece) {
+          const newStamina = Math.max(0, attackerPiece.stamina - mineResult.staPenalty);
+          state.updatePieceStamina(animation.attacker.id, newStamina);
+        }
+      }
+      
       const collision: ChessCollision = {
         attacker: animation.attacker,
         defender: animation.defender,
