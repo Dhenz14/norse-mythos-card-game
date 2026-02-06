@@ -529,6 +529,15 @@ export const createPokerCombatSlice: StateCreator<
         
       case CombatAction.BRACE:
         const folderIsPlayer = playerId === newState.player.playerId;
+        const FOLD_HP_PENALTY = 5;
+        
+        // Deduct penalty from the folder
+        if (folderIsPlayer) {
+          newState.player.pet.stats.currentHealth = Math.max(1, newState.player.pet.stats.currentHealth - FOLD_HP_PENALTY);
+        } else {
+          newState.opponent.pet.stats.currentHealth = Math.max(1, newState.opponent.pet.stats.currentHealth - FOLD_HP_PENALTY);
+        }
+        
         newState.foldWinner = folderIsPlayer ? 'opponent' : 'player';
         newState.phase = PokerCombatPhase.RESOLUTION;
         newState.player.isReady = true;
