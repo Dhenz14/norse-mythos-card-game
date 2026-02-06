@@ -529,81 +529,91 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
   }, [vsScreenPieces, combatPieces, playerArmy, opponentArmy, boardState.pieces, createPetFromChessPiece, initializeCombat, playSoundEffect]);
 
   const handleCombatEnd = useCallback((winner: 'player' | 'opponent' | 'draw') => {
-    const combat = pendingCombat;
-    if (!combat || !combatPieces) return;
-    
-    // Use preBlindHealth for calculating chess piece HP to avoid blind/ante bleed
-    // preBlindHealth = HP the chess piece had BEFORE poker betting started
-    // Winner takes 0 damage, Loser takes damage = their hpCommitted
-    const playerPreBlindHP = combatState?.player.preBlindHealth ?? combatState?.player.pet.stats.currentHealth ?? 0;
-    const opponentPreBlindHP = combatState?.opponent.preBlindHealth ?? combatState?.opponent.pet.stats.currentHealth ?? 0;
-    const playerHpCommitted = combatState?.player.hpCommitted ?? 0;
-    const opponentHpCommitted = combatState?.opponent.hpCommitted ?? 0;
-    const playerStamina = combatState?.player.pet.stats.currentStamina ?? 0;
-    const opponentStamina = combatState?.opponent.pet.stats.currentStamina ?? 0;
-    
-    // FIX: Map poker slots to chess pieces correctly
-    // When pokerSlotsSwapped is false: poker "player" = chess attacker, poker "opponent" = chess defender
-    // When pokerSlotsSwapped is true: poker "player" = chess defender, poker "opponent" = chess attacker
-    const pokerPlayerPiece = pokerSlotsSwapped ? combat.defender : combat.attacker;
-    const pokerOpponentPiece = pokerSlotsSwapped ? combat.attacker : combat.defender;
-    
-    debug.combat(`Winner: ${winner}, pokerSlotsSwapped: ${pokerSlotsSwapped}`);
-    debug.combat(`Poker player = chess ${pokerSlotsSwapped ? 'defender' : 'attacker'} (${pokerPlayerPiece.owner})`);
-    debug.combat(`Poker opponent = chess ${pokerSlotsSwapped ? 'attacker' : 'defender'} (${pokerOpponentPiece.owner})`);
-    
-    if (winner === 'draw') {
-      // Draw: Both pieces survive with preBlindHealth (no damage on draw)
-      updatePieceHealth(pokerPlayerPiece.id, Math.max(1, playerPreBlindHP));
-      updatePieceHealth(pokerOpponentPiece.id, Math.max(1, opponentPreBlindHP));
-      updatePieceStamina(pokerPlayerPiece.id, playerStamina);
-      updatePieceStamina(pokerOpponentPiece.id, opponentStamina);
+    try {
+      const storeState = useUnifiedCombatStore.getState();
+      const freshCombat = storeState.pendingCombat;
+      const freshPokerState = storeState.pokerCombatState;
       
-      // Draw still counts as a move attempt - increment stamina and change turn
-      incrementAllStamina();
-      nextTurn();
-      
-      debug.chess(`Draw resolved - both pieces survive. Player HP: ${playerPreBlindHP}, Opponent HP: ${opponentPreBlindHP}`);
-    } else {
-      let winnerPiece: typeof combat.attacker;
-      let loserPiece: typeof combat.attacker;
-      let winnerNewHealth: number;
-      let winnerNewStamina: number;
-      
-      if (winner === 'player') {
-        // Poker "player" wins - the chess piece in the player slot survives
-        winnerPiece = pokerPlayerPiece;
-        loserPiece = pokerOpponentPiece;
-        winnerNewHealth = playerPreBlindHP; // Winner takes NO damage
-        winnerNewStamina = playerStamina;
-        debug.chess(`Poker player (${winnerPiece.owner} ${winnerPiece.type}) wins - HP stays at ${playerPreBlindHP}`);
-      } else {
-        // Poker "opponent" wins - the chess piece in the opponent slot survives
-        winnerPiece = pokerOpponentPiece;
-        loserPiece = pokerPlayerPiece;
-        winnerNewHealth = opponentPreBlindHP; // Winner takes NO damage
-        winnerNewStamina = opponentStamina;
-        debug.chess(`Poker opponent (${winnerPiece.owner} ${winnerPiece.type}) wins - HP stays at ${opponentPreBlindHP}`);
+      if (!freshCombat || !combatPieces) {
+        debug.combat(`[handleCombatEnd] Guard fail: pendingCombat=${!!freshCombat}, combatPieces=${!!combatPieces}`);
+        clearPendingCombat();
+        setCombatPieces(null);
+        setPokerSlotsSwapped(false);
+        endCombat();
+        setPhase('chess');
+        playSoundEffect('turn_start');
+        return;
       }
       
-      resolveCombat({
-        winner: winnerPiece,
-        loser: loserPiece,
-        winnerNewHealth: Math.max(1, winnerNewHealth)
-      });
+      const playerPreBlindHP = freshPokerState?.player.preBlindHealth ?? freshPokerState?.player.pet.stats.currentHealth ?? 0;
+      const opponentPreBlindHP = freshPokerState?.opponent.preBlindHealth ?? freshPokerState?.opponent.pet.stats.currentHealth ?? 0;
+      const playerStamina = freshPokerState?.player.pet.stats.currentStamina ?? 0;
+      const opponentStamina = freshPokerState?.opponent.pet.stats.currentStamina ?? 0;
       
-      debug.combat(`Updating winner ${winnerPiece.type} (${winnerPiece.owner}) stamina to ${winnerNewStamina}`);
-      updatePieceStamina(winnerPiece.id, winnerNewStamina);
+      const pokerPlayerPiece = pokerSlotsSwapped ? freshCombat.defender : freshCombat.attacker;
+      const pokerOpponentPiece = pokerSlotsSwapped ? freshCombat.attacker : freshCombat.defender;
+      
+      debug.combat(`Winner: ${winner}, pokerSlotsSwapped: ${pokerSlotsSwapped}`);
+      debug.combat(`Poker player = chess ${pokerSlotsSwapped ? 'defender' : 'attacker'} (${pokerPlayerPiece.owner})`);
+      debug.combat(`Poker opponent = chess ${pokerSlotsSwapped ? 'attacker' : 'defender'} (${pokerOpponentPiece.owner})`);
+      debug.combat(`PreBlindHP - player: ${playerPreBlindHP}, opponent: ${opponentPreBlindHP}`);
+      debug.combat(`Stamina - player: ${playerStamina}, opponent: ${opponentStamina}`);
+      
+      if (winner === 'draw') {
+        updatePieceHealth(pokerPlayerPiece.id, Math.max(1, playerPreBlindHP));
+        updatePieceHealth(pokerOpponentPiece.id, Math.max(1, opponentPreBlindHP));
+        updatePieceStamina(pokerPlayerPiece.id, playerStamina);
+        updatePieceStamina(pokerOpponentPiece.id, opponentStamina);
+        
+        incrementAllStamina();
+        nextTurn();
+        
+        debug.chess(`Draw resolved - both pieces survive. Player HP: ${playerPreBlindHP}, Opponent HP: ${opponentPreBlindHP}`);
+      } else {
+        let winnerPiece: typeof freshCombat.attacker;
+        let loserPiece: typeof freshCombat.attacker;
+        let winnerNewHealth: number;
+        let winnerNewStamina: number;
+        
+        if (winner === 'player') {
+          winnerPiece = pokerPlayerPiece;
+          loserPiece = pokerOpponentPiece;
+          winnerNewHealth = playerPreBlindHP;
+          winnerNewStamina = playerStamina;
+          debug.chess(`Poker player (${winnerPiece.owner} ${winnerPiece.type}) wins - HP stays at ${playerPreBlindHP}`);
+        } else {
+          winnerPiece = pokerOpponentPiece;
+          loserPiece = pokerPlayerPiece;
+          winnerNewHealth = opponentPreBlindHP;
+          winnerNewStamina = opponentStamina;
+          debug.chess(`Poker opponent (${winnerPiece.owner} ${winnerPiece.type}) wins - HP stays at ${opponentPreBlindHP}`);
+        }
+        
+        resolveCombat({
+          winner: winnerPiece,
+          loser: loserPiece,
+          winnerNewHealth: Math.max(1, winnerNewHealth)
+        });
+        
+        debug.combat(`Updating winner ${winnerPiece.type} (${winnerPiece.owner}) stamina to ${winnerNewStamina}`);
+        updatePieceStamina(winnerPiece.id, winnerNewStamina);
+      }
+      
+      clearPendingCombat();
+      setCombatPieces(null);
+      setPokerSlotsSwapped(false);
+      endCombat();
+      
+      setPhase('chess');
+      playSoundEffect('turn_start');
+    } catch (error) {
+      console.error('[handleCombatEnd] Error during combat resolution:', error);
+      setCombatPieces(null);
+      setPokerSlotsSwapped(false);
+      endCombat();
+      setPhase('chess');
     }
-    
-    clearPendingCombat();
-    setCombatPieces(null);
-    setPokerSlotsSwapped(false); // Reset for next combat
-    endCombat();
-    
-    setPhase('chess');
-    playSoundEffect('turn_start');
-  }, [pendingCombat, combatPieces, combatState, pokerSlotsSwapped, resolveCombat, clearPendingCombat, endCombat, playSoundEffect, updatePieceStamina]);
+  }, [combatPieces, pokerSlotsSwapped, resolveCombat, clearPendingCombat, endCombat, playSoundEffect, updatePieceStamina, updatePieceHealth, incrementAllStamina, nextTurn]);
 
   useEffect(() => {
     if (boardState.gameStatus === 'player_wins' || boardState.gameStatus === 'opponent_wins') {
