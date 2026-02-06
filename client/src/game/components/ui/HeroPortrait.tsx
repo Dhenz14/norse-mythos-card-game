@@ -47,8 +47,7 @@ export function HeroPortrait({
         <img
           src={artPath}
           alt={name}
-          className="w-full h-full"
-          style={{ objectFit: 'contain' }}
+          className="w-full h-full object-cover"
           onError={(e) => {
             (e.target as HTMLImageElement).style.display = 'none';
             (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');

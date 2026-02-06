@@ -310,6 +310,7 @@ const CHARACTER_ART_IDS: Record<string, string> = {
   'ymirshell': 'b1d0-z8eue8gt',
   // Custom art entries (not from CDN)
   'yggdrasil-world-tree': 'yggdrasil-new',  // Custom tree being art for Yggdrasil king
+  'ginnungagap-void': 'ginnungagap-void',   // Custom primordial void art for Ginnungagap king
 };
 
 /**
@@ -389,6 +390,7 @@ const HERO_TO_CHARACTER: Record<string, string> = {
   'hero-logi': 'surtr',
   
   // Greek goddesses - using Norse wave maidens (human-looking female artwork)
+  'hero-ammit': 'nott',
   'hero-aphrodite': 'bylgja',
   'hero-artemis': 'hefring',
   'hero-athena': 'himinglaeva',
@@ -431,7 +433,7 @@ const KING_TO_CHARACTER: Record<string, string> = {
   'king-audumbla': 'gerd',
   'king-blainn': 'dwarves',
   'king-brimir': 'jormungandr',
-  'king-ginnungagap': 'nott',
+  'king-ginnungagap': 'ginnungagap-void',
 };
 
 /**
