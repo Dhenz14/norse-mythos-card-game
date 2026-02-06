@@ -410,6 +410,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
 
   // Select a card as a possible attacker
   selectAttacker: (card: CardInstance | CardInstanceWithCardData | null) => {
+    const targetingStore = useTargetingStore.getState();
+    
     // If card is not null, set it as the attacking card
     if (card) {
       set({ attackingCard: card as CardInstance });
@@ -428,22 +430,22 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       
       if (hasTaunt) {
         // Can only attack taunt minions
-        opponentBattlefield.forEach((m: any) => {
-          if (m.card?.keywords?.includes('taunt') || m.keywords?.includes('taunt')) {
+        opponentBattlefield.forEach((m: CardInstance) => {
+          if (m.card?.keywords?.includes('taunt')) {
             validTargetIds.push(m.instanceId);
           }
         });
       } else {
         // Can attack any opponent minion or hero
-        opponentBattlefield.forEach((m: any) => {
+        opponentBattlefield.forEach((m: CardInstance) => {
           validTargetIds.push(m.instanceId);
         });
         // Can also attack hero
         validTargetIds.push('opponent-hero');
       }
       
-      debug.log('[Targeting] Starting targeting for', standardCard.instanceId, 'with valid targets:', validTargetIds);
-      targetingStore.startTargeting(standardCard.instanceId, validTargetIds);
+      debug.log('[Targeting] Starting targeting for', card.instanceId, 'with valid targets:', validTargetIds);
+      targetingStore.startTargeting(card.instanceId, validTargetIds);
     } else {
       // Clear the selection and cancel targeting
       set({ attackingCard: null });
@@ -627,13 +629,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   },
   
   selectCard: (card: CardInstance | CardInstanceWithCardData | null) => {
-    // If card is not null, convert it to ensure consistent format
     if (card) {
-      // Convert to standard CardInstance format (cast needed due to different CardInstance definitions)
-      const standardCard = reverseAdaptCardInstance(card) as CardInstance;
-      set({ selectedCard: standardCard });
+      set({ selectedCard: card as CardInstance });
     } else {
-      // Simply clear the selection if null
       set({ selectedCard: null });
     }
   },
@@ -693,23 +691,18 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       return;
     }
     
-    // Set the players object directly with type safety
-    set({ 
-      gameState: {
-        ...gameState,
-        players
-      }
-    });
+      set({ 
+        gameState: {
+          ...gameState,
+          players: players as any
+        }
+      });
   },
 
   setHoveredCard: (card: CardInstance | CardInstanceWithCardData | null) => {
-    // If card is not null, convert it to ensure consistent format
     if (card) {
-      // Convert to standard CardInstance format (cast needed due to different CardInstance definitions)
-      const standardCard = reverseAdaptCardInstance(card) as CardInstance;
-      set({ hoveredCard: standardCard });
+      set({ hoveredCard: card as CardInstance });
     } else {
-      // Simply clear the selection if null
       set({ hoveredCard: null });
     }
   },
