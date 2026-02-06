@@ -1938,6 +1938,19 @@
   gap: 0;
   position: relative;
   padding-top: 4px;
+  height: 60px;
+}
+
+.opponent-revealed-card {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+
+.opponent-revealed-card:hover {
+  transform: scale(0.8) translateY(20px);
+  z-index: 100;
 }
 
 .opponent-card-back {

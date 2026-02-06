@@ -63,7 +63,7 @@ export const HoleCardsOverlay: React.FC<HoleCardsOverlayProps> = ({
           >
             <PlayingCard
               card={card}
-              faceDown={faceDown && (!isShowdown || cards.length === 0)}
+              faceDown={faceDown && (!isShowdown || cards.length === 0) && !(card as any).isRevealed}
               large={false}
             />
           </div>

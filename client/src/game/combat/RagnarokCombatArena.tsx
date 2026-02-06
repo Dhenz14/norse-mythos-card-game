@@ -577,8 +577,14 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Opponent Hand Display */}
       <div className="unified-opponent-hand">
         <div className="opponent-hand-display">
-          {Array.from({ length: Math.min(gameState?.players?.opponent?.hand?.length || 0, 10) }).map((_, index) => (
-            <div key={`opp-card-${index}`} className="opponent-card-back" />
+          {(gameState?.players?.opponent?.hand || []).slice(0, 10).map((card: any, index: number) => (
+            card.isRevealed ? (
+              <div key={card.instanceId || `opp-revealed-${index}`} className="opponent-revealed-card scale-[0.4] -mx-8">
+                <Card card={card} isInHand={true} />
+              </div>
+            ) : (
+              <div key={`opp-card-${index}`} className="opponent-card-back" />
+            )
           ))}
           {(gameState?.players?.opponent?.hand?.length || 0) > 0 && (
             <div className="opponent-hand-count">
