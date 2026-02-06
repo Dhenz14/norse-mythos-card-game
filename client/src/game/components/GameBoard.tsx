@@ -2271,10 +2271,14 @@ export const GameBoard: React.FC<{}> = () => {
               </div>
             </div>
             
-            {/* Enemy hero portrait - Invisible but in DOM for position tracking */}
-            {/* Keep rendered for animation position tracking */}
+            {/* Enemy hero portrait - clickable for attacks */}
             <div 
-              className="opacity-0 pointer-events-none absolute w-16 h-16"
+              className={`opponent-hero-portrait relative cursor-pointer transition-all ${
+                attackingCard && !opponent.battlefield?.some(c => c.card.keywords?.includes('taunt'))
+                  ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-gray-900 animate-pulse scale-105'
+                  : ''
+              }`}
+              data-card-id="opponent-hero"
               ref={ref => {
                 if (ref) {
                   const rect = ref.getBoundingClientRect();
@@ -2284,7 +2288,24 @@ export const GameBoard: React.FC<{}> = () => {
                   });
                 }
               }}
-            />
+              onClick={() => {
+                if (!isProcessingAIActions) {
+                  handleAttackOpponentHero();
+                }
+              }}
+            >
+              <div className="w-16 h-16 rounded-full bg-gradient-to-b from-red-700 to-red-900 flex items-center justify-center text-white font-bold shadow-lg border-2 border-red-600 hover:scale-110 transition-transform">
+                <div className="text-center">
+                  <div className="text-lg leading-none">{opponent.heroHealth ?? opponent.health ?? 30}</div>
+                  <div className="text-[8px] opacity-70">HP</div>
+                </div>
+              </div>
+              {(opponent.heroArmor ?? opponent.armor ?? 0) > 0 && (
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center text-white text-xs font-bold border border-gray-400">
+                  {opponent.heroArmor ?? opponent.armor ?? 0}
+                </div>
+              )}
+            </div>
             
             {/* Enemy hand count */}
             <div className="flex items-center">
