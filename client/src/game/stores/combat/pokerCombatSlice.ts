@@ -529,20 +529,13 @@ export const createPokerCombatSlice: StateCreator<
         
       case CombatAction.BRACE:
         const folderIsPlayer = playerId === newState.player.playerId;
-        const FOLD_HP_PENALTY = 5;
-        
-        // Deduct penalty from the folder
-        if (folderIsPlayer) {
-          newState.player.pet.stats.currentHealth = Math.max(1, newState.player.pet.stats.currentHealth - FOLD_HP_PENALTY);
-        } else {
-          newState.opponent.pet.stats.currentHealth = Math.max(1, newState.opponent.pet.stats.currentHealth - FOLD_HP_PENALTY);
-        }
-        
+        // NLH fold: player forfeits what they've already committed (blinds/bets)
+        // No additional HP penalty - the committed HP stays in the pot for the winner
         newState.foldWinner = folderIsPlayer ? 'opponent' : 'player';
         newState.phase = PokerCombatPhase.RESOLUTION;
         newState.player.isReady = true;
         newState.opponent.isReady = true;
-        newState.activePlayerId = null; // Ensure no active player during resolution
+        newState.activePlayerId = null;
         break;
         
       case CombatAction.DEFEND:
@@ -666,6 +659,46 @@ export const createPokerCombatSlice: StateCreator<
       currentAction: undefined 
     };
     
+    // Auto-post blinds when entering FAITH phase (NLH rules: SB=5, BB=10)
+    let newPot = 0;
+    let newCurrentBet = 0;
+    let blindsJustPosted = false;
+    let blindAllIn = false;
+    
+    if (newPhase === PokerCombatPhase.FAITH && !combatState.blindsPosted) {
+      const sbAmount = combatState.blindConfig?.smallBlind || BLINDS.SB;
+      const bbAmount = combatState.blindConfig?.bigBlind || BLINDS.BB;
+      
+      const playerIsSB = combatState.playerPosition === 'small_blind';
+      const sbPlayer = playerIsSB ? newPlayer : newOpponent;
+      const bbPlayer = playerIsSB ? newOpponent : newPlayer;
+      
+      const sbActual = Math.min(sbAmount, sbPlayer.pet.stats.currentHealth);
+      const bbActual = Math.min(bbAmount, bbPlayer.pet.stats.currentHealth);
+      
+      sbPlayer.pet = { ...sbPlayer.pet, stats: { ...sbPlayer.pet.stats, currentHealth: sbPlayer.pet.stats.currentHealth - sbActual } };
+      bbPlayer.pet = { ...bbPlayer.pet, stats: { ...bbPlayer.pet.stats, currentHealth: bbPlayer.pet.stats.currentHealth - bbActual } };
+      sbPlayer.hpCommitted = sbActual;
+      bbPlayer.hpCommitted = bbActual;
+      
+      newPot = sbActual + bbActual;
+      newCurrentBet = bbActual;
+      blindsJustPosted = true;
+      
+      if (sbPlayer.pet.stats.currentHealth === 0 || bbPlayer.pet.stats.currentHealth === 0) {
+        blindAllIn = true;
+      }
+      
+      debug.combat('[advancePokerPhase] Blinds auto-posted:', {
+        sbPlayer: playerIsSB ? 'player' : 'opponent',
+        sbAmount: sbActual,
+        bbPlayer: playerIsSB ? 'opponent' : 'player',
+        bbAmount: bbActual,
+        pot: newPot,
+        blindAllIn
+      });
+    }
+    
     // Use centralized utility for activePlayerId
     const ctx: ActivePlayerContext = {
       playerPosition: combatState.playerPosition,
@@ -690,7 +723,11 @@ export const createPokerCombatSlice: StateCreator<
         communityCards: newCommunityCards,
         player: newPlayer,
         opponent: newOpponent,
-        currentBet: 0,
+        pot: blindsJustPosted ? newPot : combatState.pot,
+        currentBet: blindsJustPosted ? newCurrentBet : 0,
+        blindsPosted: blindsJustPosted || combatState.blindsPosted,
+        preflopBetMade: blindsJustPosted || combatState.preflopBetMade,
+        isAllInShowdown: blindAllIn || combatState.isAllInShowdown,
         activePlayerId: newActivePlayerId,
         actionsThisRound: 0
       }
@@ -726,10 +763,12 @@ export const createPokerCombatSlice: StateCreator<
       let playerFinalHealth = playerCurrentHP;
       let opponentFinalHealth = opponentCurrentHP;
       
+      // Winner recovers their own committed HP + gets loser's committed HP (pot transfer)
+      const totalPot = playerCommitted + opponentCommitted;
       if (winner === 'player') {
-        playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
+        playerFinalHealth = Math.min(playerCurrentHP + totalPot, playerMaxHP);
       } else {
-        opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
+        opponentFinalHealth = Math.min(opponentCurrentHP + totalPot, opponentMaxHP);
       }
       
       const loserCommitted = winner === 'player' ? opponentCommitted : playerCommitted;
