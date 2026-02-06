@@ -20,6 +20,7 @@ export function usePokerPhases(options: UsePokerPhasesOptions): void {
   // This phase gives players ~2.5 seconds to play cards/spells before poker betting begins
   useEffect(() => {
     if (!combatState || !isActive) return;
+    if (combatState.phase === CombatPhase.MULLIGAN) return; // Explicitly block during mulligan
     if (combatState.phase !== CombatPhase.SPELL_PET) return;
     
     // Clear any existing timer
