@@ -68,12 +68,11 @@ export function processBettingAction(
         
         switch (action.type) {
                 case CombatAction.BRACE: {
-                        const foldPenalty = BLINDS.SB;
                         return {
                                 newState,
                                 isRoundComplete: true,
                                 winner: isPlayer ? 'opponent' : 'player',
-                                hpLost: foldPenalty
+                                hpLost: 0
                         };
                 }
                 
