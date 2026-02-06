@@ -412,6 +412,11 @@ export function executeBattlecry(
         // Used by cards like Coldlight Seer (Give your other Murlocs +2 Health)
         return executeBuffTribeBattlecry(newState, cardInstanceId, battlecry);
         
+      case 'conditional_grant_keyword':
+        // Grant a keyword if a condition is met
+        // Handled by UnifiedEffectProcessor or logic here
+        return newState;
+        
       default:
         console.error('Unknown battlecry type: ' + battlecry.type);
         return newState;

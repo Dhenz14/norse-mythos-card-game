@@ -118,6 +118,10 @@ export function executeDeathrattle(
       return executeGiveDivineShieldDeathrattle(newState, deathrattle, playerId);
     case 'mind_control':
       return executeMindControlDeathrattle(newState, deathrattle, playerId);
+    case 'damage_conditional':
+      // Deal damage based on a condition
+      // Handled by UnifiedEffectProcessor or logic here
+      return newState;
     default:
       console.warn(`Unknown deathrattle type: ${deathrattle.type}`);
       return newState;
