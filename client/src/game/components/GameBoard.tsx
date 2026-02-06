@@ -602,7 +602,7 @@ export const GameBoard: React.FC<{}> = () => {
         }
         
         // Add heroes as valid targets if applicable
-        if (spellEffect.targetType?.includes('hero') || spellEffect.targetType === 'any') {
+        if (spellEffect.targetType?.includes('hero') || spellEffect.targetType === 'any' || spellEffect.targetType === 'any_character') {
           validTargetIds.push('player_hero');
           validTargetIds.push('opponent_hero');
         }
@@ -788,6 +788,7 @@ export const GameBoard: React.FC<{}> = () => {
       let isValid = false;
       
       switch (targetType) {
+        case 'any_character':
         case 'any':
           // Can target any minion or hero
           isValid = true;

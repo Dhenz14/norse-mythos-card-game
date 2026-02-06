@@ -64,7 +64,7 @@ export function registerBasicMageCards(): void {
     .spellEffect({
       type: "deal_damage",
       value: 6,
-      targetType: "any",
+      targetType: "any_character",
       requiresTarget: true
     })
     .addCategory("basic")

@@ -611,6 +611,7 @@ export function useRagnarokCombatController(
         targetType.includes('any') ||
         targetType.includes('enemy') ||
         targetType.includes('hero') ||
+        targetType.includes('any_character') ||
         !targetType.includes('minion');
       if (allowsEnemyHero) {
         playCard(selectedCard.instanceId, 'opponent-hero', 'hero');
@@ -629,6 +630,7 @@ export function useRagnarokCombatController(
         targetType.includes('any') ||
         targetType.includes('enemy') ||
         targetType.includes('hero') ||
+        targetType.includes('any_character') ||
         !targetType.includes('minion');
       if (allowsEnemyHero) {
         debug.combat('[Battlecry Debug] Playing minion with battlecry targeting opponent hero');
@@ -666,6 +668,7 @@ export function useRagnarokCombatController(
         targetType.includes('any') ||
         targetType.includes('friendly') ||
         targetType.includes('hero') ||
+        targetType.includes('any_character') ||
         !targetType.includes('minion') && !targetType.includes('enemy');
       if (allowsFriendlyHero) {
         playCard(selectedCard.instanceId, 'player-hero', 'hero');
@@ -684,6 +687,7 @@ export function useRagnarokCombatController(
         targetType.includes('any') ||
         targetType.includes('friendly') ||
         targetType.includes('hero') ||
+        targetType.includes('any_character') ||
         !targetType.includes('minion') && !targetType.includes('enemy');
       if (allowsFriendlyHero) {
         debug.combat('[Battlecry Debug] Playing minion with battlecry targeting player hero');
