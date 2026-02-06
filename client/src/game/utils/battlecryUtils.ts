@@ -24,6 +24,7 @@ import {
 } from './cards/cardUtils';
 import { transformMinion, silenceMinion } from './transformUtils';
 import { dealDamage } from './effects/damageUtils';
+import { destroyCard } from './zoneUtils';
 import { healTarget } from './effects/effectUtils';
 import { setHeroHealth } from './effects/healthModifierUtils';
 import { getCardsFromPool } from '../data/discoverPools';
@@ -216,7 +217,7 @@ export function executeBattlecry(
   targetType?: 'minion' | 'hero'
 ): GameState {
   // Deep clone the state to avoid mutation
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   try {
     // Find the card on the battlefield - the card should already be on the battlefield
@@ -413,9 +414,53 @@ export function executeBattlecry(
         return executeBuffTribeBattlecry(newState, cardInstanceId, battlecry);
         
       case 'conditional_grant_keyword':
-        // Grant a keyword if a condition is met
-        // Handled by UnifiedEffectProcessor or logic here
         return newState;
+        
+      case 'self_damage': {
+        const selfDamage = battlecry.value || 0;
+        if (selfDamage > 0) {
+          let ownerKey: 'player' | 'opponent' = 'player';
+          let idx = newState.players.player.battlefield.findIndex(c => c.instanceId === cardInstanceId);
+          if (idx === -1) {
+            idx = newState.players.opponent.battlefield.findIndex(c => c.instanceId === cardInstanceId);
+            ownerKey = 'opponent';
+          }
+          if (idx !== -1) {
+            const minion = newState.players[ownerKey].battlefield[idx];
+            const currentHp = minion.currentHealth ?? (minion.card as any).health ?? 0;
+            newState.players[ownerKey].battlefield[idx].currentHealth = currentHp - selfDamage;
+            if (currentHp - selfDamage <= 0) {
+              newState = destroyCard(newState, cardInstanceId, ownerKey);
+            }
+          }
+        }
+        return newState;
+      }
+
+      case 'self_damage_buff': {
+        const dmg = battlecry.value || 0;
+        let sdOwner: 'player' | 'opponent' = 'player';
+        let sdIdx = newState.players.player.battlefield.findIndex(c => c.instanceId === cardInstanceId);
+        if (sdIdx === -1) {
+          sdIdx = newState.players.opponent.battlefield.findIndex(c => c.instanceId === cardInstanceId);
+          sdOwner = 'opponent';
+        }
+        if (sdIdx !== -1) {
+          const minion = newState.players[sdOwner].battlefield[sdIdx];
+          const currentHp = minion.currentHealth ?? (minion.card as any).health ?? 0;
+          if (dmg > 0) {
+            minion.currentHealth = currentHp - dmg;
+          }
+          if ((battlecry as any).buff) {
+            (minion.card as any).attack = ((minion.card as any).attack || 0) + ((battlecry as any).buff.attack || 0);
+            minion.currentHealth = (minion.currentHealth || 0) + ((battlecry as any).buff.health || 0);
+          }
+          if ((minion.currentHealth || 0) <= 0) {
+            newState = destroyCard(newState, cardInstanceId, sdOwner);
+          }
+        }
+        return newState;
+      }
         
       default:
         console.error('Unknown battlecry type: ' + battlecry.type);

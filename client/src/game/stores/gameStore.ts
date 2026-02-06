@@ -538,16 +538,18 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const impactDelay = Math.round(attackAnimationDuration * 0.6);
       
       setTimeout(() => {
-        // FIX #1: Get FRESH state inside setTimeout to avoid stale closure bug
-        // The original gameState was captured 480ms ago - state may have changed since then
         const { gameState: freshState } = get();
         
-        // Re-find the attacker in fresh state for accurate damage values
         const freshAttackerCard = freshState.players.player.battlefield.find(
           c => c.instanceId === attackerId
         );
         
-        // Process the attack with FRESH state
+        if (!freshAttackerCard) {
+          targetingStore.cancelTargeting();
+          set({ attackingCard: null, selectedCard: null });
+          return;
+        }
+        
         const newState = processAttack(freshState, attackerId, defenderId);
         
         // If the state changed, it means the attack was successful

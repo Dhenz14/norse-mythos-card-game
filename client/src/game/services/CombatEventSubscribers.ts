@@ -250,9 +250,19 @@ function getPositionForTarget(targetId: string): { x: number; y: number } | null
     };
   }
   
-  // Fallback - can't find element, return null
-  debug.warn(`[DamageAnimation] Could not find position for target: ${targetId}`);
-  return null;
+  const opponentBattlefield = document.querySelector('.opponent-battlefield, [class*="opponent-field"], [class*="enemy-field"]');
+  const playerBattlefield = document.querySelector('.player-battlefield, [class*="player-field"], [class*="friendly-field"]');
+  
+  if (opponentBattlefield) {
+    const rect = opponentBattlefield.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  }
+  if (playerBattlefield) {
+    const rect = playerBattlefield.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  }
+  
+  return { x: window.innerWidth / 2, y: window.innerHeight * 0.4 };
 }
 
 export default {
