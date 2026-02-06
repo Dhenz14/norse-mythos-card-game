@@ -7,41 +7,14 @@
  * properties that are only used in specific components or features.
  */
 
-import { CardData } from '../types';
+import { Card as CardData, CardInstance } from './CardTypes';
 
 // Extend the CardInstance interface to include the card property
 // This reflects the actual runtime structure where a CardInstance
 // has a .card property containing the CardData
-export interface CardInstanceWithCardData {
-  instanceId: string;
-  card: CardData;
-  // Include other properties that might be on CardInstance
-  currentHealth?: number;
-  canAttack?: boolean;
-  isPlayed?: boolean;
-  isSummoningSick?: boolean;
-  hasDivineShield?: boolean;
-  attacksPerformed?: number;
-  isPoisonous?: boolean;
-  hasLifesteal?: boolean;
-  isRush?: boolean;
-  isMagnetic?: boolean;
-  animationPosition?: {
-    x: number;
-    y: number;
-  };
-  
-  // Status Effects (Ragnarok unique system)
-  isPoisonedDoT?: boolean;     // Takes 3 damage at start of turn
-  isBleeding?: boolean;        // Takes +3 damage when damaged
-  isParalyzed?: boolean;       // 50% chance to fail actions
-  isWeakened?: boolean;        // Has -3 Attack
-  isVulnerable?: boolean;      // Takes +3 damage from all sources
-  isMarked?: boolean;          // Can always be targeted (ignores stealth/protection)
-  isSilenced?: boolean;        // Cannot use abilities
-  isBurning?: boolean;         // Takes 3 damage when attacking, deals +3 damage
-  
-  [key: string]: any;  // Allow other properties
+export interface CardInstanceWithCardData extends CardInstance {
+  // Add legacy catch-all for any other properties
+  [key: string]: any;
 }
 
 // Helper utility to check if an object is a CardInstanceWithCardData

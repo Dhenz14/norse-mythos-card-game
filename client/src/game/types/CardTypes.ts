@@ -217,6 +217,12 @@ export interface CardInstance {
   isBurning?: boolean;         // Takes 3 damage when attacking, deals +3 damage
   
   isPlayerOwned?: boolean;
+  
+  // Extension fields
+  animationPosition?: {
+    x: number;
+    y: number;
+  };
 }
 
 // Card database interface

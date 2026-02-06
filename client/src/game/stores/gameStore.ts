@@ -195,52 +195,35 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const cardResult = findCardInstance(player.hand, cardId);
       
       if (!cardResult) {
-        console.error(`[CARD-ERROR] Card ID ${cardId} not found in player's hand`);
         throw new Error('Card not found');
       }
       
       // Extract the card instance from the result
-      const cardInstance = cardResult.card;
-      
-      // Debug card info
-      debug.card('[CARD-DEBUG] Attempting to play card:', cardInstance);
-      debug.card(`[CARD-DEBUG] Card name: ${cardInstance.card.name}, ID: ${cardInstance.instanceId}, ManaCost: ${cardInstance.card.manaCost}`);
+      const cardInstance = cardResult.card as CardInstance;
       
       // Check if player has enough mana
-      // Add verbose logging for debugging mana issues
-      debug.mana(`[MANA-DEBUG] Player has ${player.mana?.current} mana. Card costs ${cardInstance.card.manaCost}.`);
-      debug.mana(`[MANA-DEBUG] Playing card ${cardInstance.card.name} (ID: ${cardInstance.instanceId})`);
-      debug.mana(`[MANA-DEBUG] Card cost: ${cardInstance.card.manaCost}, Player mana: ${JSON.stringify(player.mana)}`);
-      debug.mana(`[MANA-DEBUG] Player mana current: ${player.mana?.current}`);
-      
-      // Check if player.mana exists and has current property
       if (!player.mana || typeof player.mana.current !== 'number') {
-        console.error(`[MANA-ERROR] Invalid mana structure: ${JSON.stringify(player.mana)}`);
         player.mana = { current: 1, max: 1, overloaded: 0, pendingOverload: 0 };
-        debug.mana(`[MANA-FIX] Set default mana values: ${JSON.stringify(player.mana)}`);
       }
       
-      if ((cardInstance.card.manaCost ?? 0) > player.mana.current) {
-        debug.mana(`[MANA-ERROR] Not enough mana. Need ${cardInstance.card.manaCost ?? 0} but only have ${player.mana.current}`);
-        throw new Error(`Not enough mana. Need ${cardInstance.card.manaCost} but only have ${player.mana.current}`);
+      const cardCost = cardInstance.card.manaCost ?? 0;
+      if (cardCost > player.mana.current) {
+        throw new Error(`Not enough mana. Need ${cardCost} but only have ${player.mana.current}`);
       }
 
       // HEARTHSTONE RULE: Maximum 7 minions on battlefield
       const MAX_BATTLEFIELD_SIZE = 7;
       if (cardInstance.card.type === 'minion' && player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
-        debug.log(`[BATTLEFIELD-FULL] Cannot play ${cardInstance.card.name} - battlefield is full (${MAX_BATTLEFIELD_SIZE} minions max)`);
         throw new Error(`Battlefield is full! Maximum ${MAX_BATTLEFIELD_SIZE} minions allowed.`);
       }
 
       // Ensure the card has a keywords array even if it's missing
       if (!cardInstance.card.keywords) {
-        debug.card(`[CARD-FIX] Card ${cardInstance.card.name} missing keywords array, adding empty array`);
         cardInstance.card.keywords = [];
       }
       
       // For cards with battlecry that require target, check if we have a target
       if (cardInstance.card.type === 'minion' && 
-          Array.isArray(cardInstance.card.keywords) &&
           cardInstance.card.keywords.includes('battlecry') && 
           cardInstance.card.battlecry?.requiresTarget && 
           !targetId) {
@@ -258,7 +241,6 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         // If the card requires a battlecry target but we still don't have a valid game state,
         // it means the battlecry couldn't be executed properly
         if (cardData.type === 'minion' && 
-            Array.isArray(cardData.keywords) &&
             cardData.keywords.includes('battlecry') && 
             cardData.battlecry?.requiresTarget && 
             newState === gameState) {
@@ -270,14 +252,13 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         if (cardInstance.card.type === 'spell') {
           const effectType = cardInstance.card.spellEffect?.type || 'default';
           const effectValue = cardInstance.card.spellEffect?.value;
-          showSpellNotification(cardInstance.card.name, effectType, effectValue);
-          debug.log(`[SPELL-PLAYED] ${cardInstance.card.name} - Effect: ${effectType}`);
+          showSpellNotification(cardInstance.card.name, effectType as string, effectValue as number);
           
           // Log to saga feed
           logActivity('spell_cast', 'player', `Cast ${cardInstance.card.name}`, {
             cardName: cardInstance.card.name,
             cardId: typeof cardInstance.card.id === 'number' ? cardInstance.card.id : undefined,
-            value: effectValue
+            value: effectValue as number
           });
         } else if (cardInstance.card.type === 'minion') {
           showMinionNotification(
@@ -285,11 +266,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             cardInstance.card.attack, 
             cardInstance.card.health
           );
-          debug.log(`[MINION-PLAYED] ${cardInstance.card.name} - ${cardInstance.card.attack}/${cardInstance.card.health}`);
           
           // Show battlecry popup if the minion has a battlecry (like Hearthstone)
-          if (Array.isArray(cardInstance.card.keywords) && 
-              cardInstance.card.keywords.includes('battlecry') && 
+          if (cardInstance.card.keywords.includes('battlecry') && 
               cardInstance.card.battlecry) {
             // Get the battlecry description from the card
             const battlecryDescription = cardInstance.card.description || 
@@ -299,11 +278,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             fireActionAnnouncement('battlecry', cardInstance.card.name, {
               subtitle: battlecryDescription,
               rarity: cardInstance.card.rarity as 'common' | 'rare' | 'epic' | 'legendary',
-              cardClass: cardInstance.card.class,
+              cardClass: cardInstance.card.class as any,
               duration: 2500
             });
-            
-            debug.log(`[BATTLECRY] ${cardInstance.card.name}: ${battlecryDescription}`);
           }
           
           // Log to saga feed
@@ -314,66 +291,47 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         }
         
         // Check if the card has a spell effect that triggers discovery
-        if (cardInstance.card.type === 'spell' && 
-            (cardInstance.card.spellEffect?.type === 'discover' || cardInstance.card.keywords?.includes('discover')) &&
-            newState.discovery?.active) {
-          
-          debug.log('[GameStore] Discovery triggered, state active:', newState.discovery.active);
-          
+        const hasDiscover = (cardInstance.card.type === 'spell' && cardInstance.card.spellEffect?.type === 'discover') || 
+                          cardInstance.card.keywords?.includes('discover');
+
+        if (hasDiscover && newState.discovery?.active) {
           // Play sound effect
           if (audioStore && typeof audioStore.playSoundEffect === 'function') {
             audioStore.playSoundEffect('discover');
           }
           
-          // Use the newState directly - it already has discovery set up from executeDiscoverSpell()
-          debug.log('[GameStore] Discovery spell played, discovery options:', newState.discovery?.options?.length);
           set({ 
             gameState: newState,
             selectedCard: null
           });
-          
-          debug.log('Discovery effect triggered');
         } else {
           // Normal card play, no discovery
           
           // Play sound effect based on card type
-          // NOTE: Summon animations are handled by useSummonEffectStore in UnifiedBattlefield
-          // which positions the animation at the actual card location on the battlefield
           if (cardInstance.card.rarity === 'legendary') {
-            // Legendary card sound
             if (audioStore && typeof audioStore.playSoundEffect === 'function') {
               audioStore.playSoundEffect('legendary');
             }
-            debug.log('Playing legendary minion:', cardInstance.card.name);
           } else if (cardInstance.card.type === 'minion' && 
-                    Array.isArray(cardInstance.card.keywords) &&
                     cardInstance.card.keywords.includes('battlecry') && 
                     cardInstance.card.battlecry?.type === 'damage') {
-            // Damage battlecry sound
             if (audioStore && typeof audioStore.playSoundEffect === 'function') {
               audioStore.playSoundEffect('damage');
             }
           } else {
-            // Default sound
             if (audioStore && typeof audioStore.playSoundEffect === 'function') {
               audioStore.playSoundEffect('card_play');
             }
           }
           
-          // HEARTHSTONE BEHAVIOR: Charge/Rush minions bypass summoning sickness but player chooses targets
-          // We do NOT auto-attack - player manually selects targets like in Hearthstone
           let finalState = newState;
-          const hasCharge = Array.isArray(cardInstance.card.keywords) && cardInstance.card.keywords.includes('charge');
-          const hasRush = Array.isArray(cardInstance.card.keywords) && cardInstance.card.keywords.includes('rush');
+          const hasCharge = cardInstance.card.keywords.includes('charge');
+          const hasRush = cardInstance.card.keywords.includes('rush');
           
-          // For Charge/Rush minions, ensure they can attack immediately (no summoning sickness)
-          // The summoning sickness is already handled in playCard utility, but we ensure canAttack is set
-          if (cardInstance.card.type === 'minion' && cardInstance.card.attack && cardInstance.card.attack > 0 && (hasCharge || hasRush)) {
-            debug.log(`[PlayCard] ${cardInstance.card.name} has ${hasCharge ? 'CHARGE' : 'RUSH'} - can attack immediately (player chooses target)`);
-            
+          if (cardInstance.card.type === 'minion' && (cardInstance.card.attack ?? 0) > 0 && (hasCharge || hasRush)) {
             // Find the minion in state and ensure it's ready to attack
             const minionIndex = finalState.players.player.battlefield.findIndex(
-              (c: any) => c.instanceId === cardInstance.instanceId
+              (c: CardInstance) => c.instanceId === cardInstance.instanceId
             );
             if (minionIndex !== -1) {
               finalState.players.player.battlefield[minionIndex].isSummoningSick = false;
@@ -381,28 +339,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             }
           }
           
-          // Debug: Log the battlefield state BEFORE updating
-          debug.verbose('[BATTLEFIELD-DEBUG] BEFORE state update:');
-          debug.verbose('[BATTLEFIELD-DEBUG] Player battlefield length:', finalState.players.player.battlefield?.length);
-          debug.verbose('[BATTLEFIELD-DEBUG] Player battlefield cards:', finalState.players.player.battlefield?.map((c: any) => c.card?.name || 'unknown'));
-          debug.verbose('[BATTLEFIELD-DEBUG] Opponent battlefield length:', finalState.players.opponent.battlefield?.length);
-          
           // Update state
           set({ 
             gameState: finalState,
             selectedCard: null
           });
-          
-          // Debug: Verify state was updated
-          const updatedState = get().gameState;
-          debug.verbose('[BATTLEFIELD-DEBUG] AFTER state update:');
-          debug.verbose('[BATTLEFIELD-DEBUG] Player battlefield length:', updatedState.players.player.battlefield?.length);
-          debug.verbose('[BATTLEFIELD-DEBUG] Player battlefield cards:', updatedState.players.player.battlefield?.map((c: any) => c.card?.name || 'unknown'));
         }
       } catch (playCardError) {
         console.error(`[PLAY-CARD-ERROR] Error in playCard utility for ${cardInstance.card.name}:`, playCardError);
-        console.error(`[PLAY-CARD-ERROR] Card data:`, JSON.stringify(cardInstance.card, null, 2));
-        throw playCardError; // Re-throw to outer catch
+        throw playCardError;
       }
     } catch (error) {
       console.error('Error playing card:', error);
@@ -465,21 +410,17 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
 
   // Select a card as a possible attacker
   selectAttacker: (card: CardInstance | CardInstanceWithCardData | null) => {
-    const targetingStore = useTargetingStore.getState();
-    
-    // If card is not null, convert it to ensure consistent format
+    // If card is not null, set it as the attacking card
     if (card) {
-      // Convert to standard CardInstance format (cast needed due to different CardInstance definitions)
-      const standardCard = reverseAdaptCardInstance(card) as CardInstance;
-      set({ attackingCard: standardCard });
+      set({ attackingCard: card as CardInstance });
       
       // Calculate valid targets for this attacker
       const { gameState } = get();
       const opponentBattlefield = gameState.players.opponent.battlefield || [];
       
       // Check if any opponent minion has taunt
-      const hasTaunt = opponentBattlefield.some((m: any) => 
-        m.card?.keywords?.includes('taunt') || m.keywords?.includes('taunt')
+      const hasTaunt = opponentBattlefield.some((m: CardInstance) => 
+        m.card?.keywords?.includes('taunt')
       );
       
       // Build list of valid target IDs
