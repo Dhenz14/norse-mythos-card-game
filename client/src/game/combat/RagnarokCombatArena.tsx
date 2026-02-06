@@ -660,10 +660,11 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                     pendingOverload={0}
                   />
                 </div>
-                {/* Player hole cards - uses HoleCardsOverlay component for consistent rendering */}
+                {/* Player hole cards - face down during SPELL_PET, revealed from FAITH onwards */}
                 <HoleCardsOverlay
                   cards={combatState.player.holeCards}
                   variant="player"
+                  faceDown={combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.MULLIGAN}
                   winningCards={showdownCelebration?.winningCards}
                   isShowdown={showdownCelebration?.resolution.resolutionType === 'showdown'}
                 />
