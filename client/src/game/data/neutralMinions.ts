@@ -141,7 +141,8 @@ export const   neutralMinions: CardData[] = [{
   description: "At the start of your turn, destroy ALL minions.",
   heroClass: "neutral",
       class: "Neutral",
-      collectible: true
+      collectible: true,
+      startOfTurn: { type: "destroy_all_minions" }
   },
   {
   id: 30010,

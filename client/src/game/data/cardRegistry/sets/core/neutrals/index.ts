@@ -2161,7 +2161,8 @@ const epicNeutralMinions: CardData[] = [
     health: 7,
     class: 'Neutral',
     collectible: true,
-    set: 'core'
+    set: 'core',
+    startOfTurn: { type: "destroy_all_minions" }
   },
   {
     id: 30008,
@@ -5949,7 +5950,8 @@ const legendaryNeutralMinions: CardData[] = [
     flavorText: 'When Ragnarok comes, none shall be spared.',
     class: 'Neutral',
     collectible: true,
-    set: 'core'
+    set: 'core',
+    startOfTurn: { type: "destroy_all_minions" }
   },
   {
     id: 33031,
@@ -9245,7 +9247,8 @@ const controlRemovalCards: CardData[] = [
     health: 7,
     class: 'Neutral',
     set: 'core',
-    collectible: true
+    collectible: true,
+    startOfTurn: { type: "destroy_all_minions" }
   },
   {
     id: 33248,

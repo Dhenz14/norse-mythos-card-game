@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { processTurnStartEffects as processStatusTurnStart, clearEndOfTurnEffects } from './statusEffectUtils';
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
+import { executeDeathrattle } from '../../effects/handlers/deathrattleBridge';
 
 // Helper to create type-safe game log entries for effects
 function createEffectLogEntry(
@@ -43,49 +44,311 @@ export function processStartOfTurnEffects(state: GameState): GameState {
   const battlefield = newState.players[currentPlayer]?.battlefield || [];
   
   for (const minion of battlefield) {
-    // Handle specific card effects by ID
+    const currentBattlefield = newState.players[currentPlayer]?.battlefield || [];
+    const stillOnBoard = currentBattlefield.some((m: CardInstance) => m.instanceId === minion.instanceId);
+    if (!stillOnBoard) {
+      continue;
+    }
+
     switch (minion.card.id) {
-      // Fishing Master (ID: 20607)
       case 20607:
         newState = processFishingMasterEffect(newState, minion, currentPlayer);
         break;
       
-      // Clockwork Automaton (ID: 5103) - Swap with random minion in hand
       case 5103:
         newState = processClockworkAutomatonEffect(newState, minion, currentPlayer);
         break;
-        
-      // Add any other start-of-turn effects here as needed
       
       default:
-        // Process generic start-of-turn effects (only for minion cards)
         if (minion.card.type === 'minion') {
           const minionCard = minion.card as MinionCardData;
           if (minionCard.startOfTurn) {
-            // Implement generic start of turn effect processing
+            newState = processGenericStartOfTurnEffect(newState, minion, currentPlayer, minionCard.startOfTurn);
           }
         }
     }
   }
   
-  // Process status effects for all minions using centralized utility
-  for (let i = 0; i < battlefield.length; i++) {
-    const minion = newState.players[currentPlayer].battlefield[i];
-    const { damage } = processStatusTurnStart(minion as any);
+  const currentBattlefieldAfterEffects = newState.players[currentPlayer]?.battlefield || [];
+  for (let i = 0; i < currentBattlefieldAfterEffects.length; i++) {
+    const m = newState.players[currentPlayer].battlefield[i];
+    if (!m) continue;
+    const { damage } = processStatusTurnStart(m as any);
     
     if (damage > 0) {
-      // Type guard for health access
-      const cardHealth = getHealth(minion.card);
-      const currentHealth = minion.currentHealth ?? cardHealth ?? 0;
+      const cardHealth = getHealth(m.card);
+      const currentHealth = m.currentHealth ?? cardHealth ?? 0;
       const newHealth = currentHealth - damage;
       
       newState.players[currentPlayer].battlefield[i] = {
-        ...minion,
+        ...m,
         currentHealth: newHealth
       };
     }
   }
   
+  return newState;
+}
+
+function processGenericStartOfTurnEffect(
+  state: GameState,
+  minion: CardInstance,
+  currentPlayer: 'player' | 'opponent',
+  effect: { type: string; [key: string]: any }
+): GameState {
+  const opponentPlayer: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
+  let newState = { ...state };
+
+  switch (effect.type) {
+    case 'destroy_all_minions': {
+      const playerBattlefield = [...(newState.players[currentPlayer]?.battlefield || [])];
+      const opponentBattlefield = [...(newState.players[opponentPlayer]?.battlefield || [])];
+      const totalDestroyed = playerBattlefield.length + opponentBattlefield.length;
+
+      if (totalDestroyed === 0) {
+        return newState;
+      }
+
+      debug.log(`[StartOfTurn] ${minion.card.name} triggers: destroying ALL ${totalDestroyed} minions`);
+
+      const destroyedNames = [
+        ...playerBattlefield.map((m: CardInstance) => m.card.name),
+        ...opponentBattlefield.map((m: CardInstance) => m.card.name)
+      ];
+
+      newState = {
+        ...newState,
+        players: {
+          ...newState.players,
+          [currentPlayer]: {
+            ...newState.players[currentPlayer],
+            battlefield: []
+          },
+          [opponentPlayer]: {
+            ...newState.players[opponentPlayer],
+            battlefield: []
+          }
+        },
+        gameLog: [
+          ...(newState.gameLog || []),
+          createEffectLogEntry(
+            `${minion.card.name} destroyed ALL minions! (${destroyedNames.join(', ')})`,
+            currentPlayer,
+            newState.turnNumber || 1,
+            minion.card.id
+          )
+        ]
+      };
+
+      for (const destroyed of playerBattlefield) {
+        newState = executeDeathrattle(newState, destroyed, currentPlayer);
+      }
+      for (const destroyed of opponentBattlefield) {
+        newState = executeDeathrattle(newState, destroyed, opponentPlayer);
+      }
+      break;
+    }
+
+    case 'heal_all': {
+      const healValue = typeof effect.value === 'number' ? effect.value : 1;
+      const friendlyMinions = newState.players[currentPlayer]?.battlefield || [];
+      const healedBattlefield = friendlyMinions.map((m: CardInstance) => {
+        const maxHealth = getHealth(m.card) ?? 0;
+        const currentHp = m.currentHealth ?? maxHealth;
+        const newHp = Math.min(currentHp + healValue, maxHealth);
+        return { ...m, currentHealth: newHp };
+      });
+
+      newState = {
+        ...newState,
+        players: {
+          ...newState.players,
+          [currentPlayer]: {
+            ...newState.players[currentPlayer],
+            battlefield: healedBattlefield
+          }
+        },
+        gameLog: [
+          ...(newState.gameLog || []),
+          createEffectLogEntry(
+            `${minion.card.name} healed all friendly minions for ${healValue}.`,
+            currentPlayer,
+            newState.turnNumber || 1,
+            minion.card.id
+          )
+        ]
+      };
+      break;
+    }
+
+    case 'buff_self': {
+      const buffAttack = typeof effect.buffAttack === 'number' ? effect.buffAttack : (typeof effect.attackBuff === 'number' ? effect.attackBuff : 0);
+      const buffHealth = typeof effect.buffHealth === 'number' ? effect.buffHealth : (typeof effect.healthBuff === 'number' ? effect.healthBuff : 0);
+      const battlefield = newState.players[currentPlayer]?.battlefield || [];
+      const updatedBattlefield = battlefield.map((m: CardInstance) => {
+        if (m.instanceId === minion.instanceId) {
+          const curAtk = m.currentAttack ?? (getAttack(m.card) ?? 0);
+          const curHp = m.currentHealth ?? (getHealth(m.card) ?? 0);
+          return {
+            ...m,
+            currentAttack: curAtk + buffAttack,
+            currentHealth: curHp + buffHealth
+          };
+        }
+        return m;
+      });
+
+      newState = {
+        ...newState,
+        players: {
+          ...newState.players,
+          [currentPlayer]: {
+            ...newState.players[currentPlayer],
+            battlefield: updatedBattlefield
+          }
+        },
+        gameLog: [
+          ...(newState.gameLog || []),
+          createEffectLogEntry(
+            `${minion.card.name} buffed itself +${buffAttack}/+${buffHealth}.`,
+            currentPlayer,
+            newState.turnNumber || 1,
+            minion.card.id
+          )
+        ]
+      };
+      break;
+    }
+
+    case 'buff': {
+      const friendlyMinions = newState.players[currentPlayer]?.battlefield || [];
+      const otherMinions = friendlyMinions.filter((m: CardInstance) => m.instanceId !== minion.instanceId);
+      if (otherMinions.length === 0) {
+        debug.log(`[StartOfTurn] ${minion.card.name}: no friendly minions to buff`);
+        break;
+      }
+      const target = otherMinions[Math.floor(Math.random() * otherMinions.length)];
+      const bAttack = typeof effect.buffAttack === 'number' ? effect.buffAttack : (typeof effect.attackBuff === 'number' ? effect.attackBuff : 1);
+      const bHealth = typeof effect.buffHealth === 'number' ? effect.buffHealth : (typeof effect.healthBuff === 'number' ? effect.healthBuff : 1);
+
+      const buffedBattlefield = friendlyMinions.map((m: CardInstance) => {
+        if (m.instanceId === target.instanceId) {
+          const curAtk = m.currentAttack ?? (getAttack(m.card) ?? 0);
+          const curHp = m.currentHealth ?? (getHealth(m.card) ?? 0);
+          return {
+            ...m,
+            currentAttack: curAtk + bAttack,
+            currentHealth: curHp + bHealth
+          };
+        }
+        return m;
+      });
+
+      newState = {
+        ...newState,
+        players: {
+          ...newState.players,
+          [currentPlayer]: {
+            ...newState.players[currentPlayer],
+            battlefield: buffedBattlefield
+          }
+        },
+        gameLog: [
+          ...(newState.gameLog || []),
+          createEffectLogEntry(
+            `${minion.card.name} buffed ${target.card.name} +${bAttack}/+${bHealth}.`,
+            currentPlayer,
+            newState.turnNumber || 1,
+            minion.card.id
+          )
+        ]
+      };
+      break;
+    }
+
+    case 'compound': {
+      const effects = effect.effects || [];
+      for (const subEffect of effects) {
+        newState = processGenericStartOfTurnEffect(newState, minion, currentPlayer, subEffect);
+      }
+      break;
+    }
+
+    case 'transform_random_enemy': {
+      const enemyMinions = newState.players[opponentPlayer]?.battlefield || [];
+      if (enemyMinions.length === 0) {
+        debug.log(`[StartOfTurn] ${minion.card.name}: no enemy minions to transform`);
+        break;
+      }
+      const targetIdx = Math.floor(Math.random() * enemyMinions.length);
+      const targetMinion = enemyMinions[targetIdx];
+      const updatedEnemyBattlefield = enemyMinions.filter((_: CardInstance, i: number) => i !== targetIdx);
+
+      newState = {
+        ...newState,
+        players: {
+          ...newState.players,
+          [opponentPlayer]: {
+            ...newState.players[opponentPlayer],
+            battlefield: updatedEnemyBattlefield
+          }
+        },
+        gameLog: [
+          ...(newState.gameLog || []),
+          createEffectLogEntry(
+            `${minion.card.name} transformed ${targetMinion.card.name}!`,
+            currentPlayer,
+            newState.turnNumber || 1,
+            minion.card.id
+          )
+        ]
+      };
+      break;
+    }
+
+    case 'reduce_cost': {
+      const reduceValue = typeof effect.value === 'number' ? effect.value : 1;
+      const hand = newState.players[currentPlayer]?.hand || [];
+      const updatedHand = hand.map((c: CardInstance) => {
+        const currentCost = c.card.manaCost ?? 0;
+        const newCost = Math.max(0, currentCost - reduceValue);
+        return {
+          ...c,
+          card: { ...c.card, manaCost: newCost }
+        };
+      });
+
+      newState = {
+        ...newState,
+        players: {
+          ...newState.players,
+          [currentPlayer]: {
+            ...newState.players[currentPlayer],
+            hand: updatedHand
+          }
+        },
+        gameLog: [
+          ...(newState.gameLog || []),
+          createEffectLogEntry(
+            `${minion.card.name} reduced cost of cards in hand by ${reduceValue}.`,
+            currentPlayer,
+            newState.turnNumber || 1,
+            minion.card.id
+          )
+        ]
+      };
+      break;
+    }
+
+    case 'summon_token': {
+      debug.log(`[StartOfTurn] ${minion.card.name}: summon_token effect not yet fully implemented`);
+      break;
+    }
+
+    default:
+      debug.log(`[StartOfTurn] Unknown startOfTurn effect type: ${effect.type} on ${minion.card.name}`);
+  }
+
   return newState;
 }
 
