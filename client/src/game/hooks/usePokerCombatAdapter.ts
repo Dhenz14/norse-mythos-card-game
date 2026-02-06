@@ -42,7 +42,7 @@ export function getActionPermissions(
   const opponent = isPlayer ? combatState.opponent : combatState.player;
   const minBet = combatState.minBet || 5;
   
-  const toCall = Math.max(0, combatState.currentBet - actor.blindPosted);
+  const toCall = Math.max(0, combatState.currentBet - actor.hpCommitted);
   const hasBetToCall = toCall > 0;
   const actorCurrentHP = Math.max(0, actor.pet.stats.currentHealth);
   const actorStaminaCap = actor.pet.stats.currentStamina * 10;

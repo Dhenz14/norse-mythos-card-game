@@ -251,7 +251,6 @@ export const createPokerCombatSlice: StateCreator<
       pet: playerPetCopy,
       holeCards: playerHoleCards,
       hpCommitted: 0,
-      blindPosted: 0,
       preBlindHealth: playerPetCopy.stats.currentHealth,
       heroArmor: playerAdvantage.hasAdvantage ? playerAdvantage.armorBonus : 0,
       statusEffects: [],
@@ -267,7 +266,6 @@ export const createPokerCombatSlice: StateCreator<
       pet: opponentPetCopy,
       holeCards: opponentHoleCards,
       hpCommitted: 0,
-      blindPosted: 0,
       preBlindHealth: opponentPetCopy.stats.currentHealth,
       heroArmor: opponentAdvantage.hasAdvantage ? opponentAdvantage.armorBonus : 0,
       statusEffects: [],
@@ -484,9 +482,19 @@ export const createPokerCombatSlice: StateCreator<
         const toMatch = Math.min(newState.currentBet - playerState.hpCommitted, playerState.pet.stats.currentHealth);
         if (toMatch > 0) {
           playerState.hpCommitted += toMatch;
-          playerState.blindPosted += toMatch;
           playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - toMatch);
           newState.pot += toMatch;
+        }
+        if (playerState.pet.stats.currentHealth === 0 && playerState.hpCommitted < newState.currentBet) {
+          const otherPlayer = isPlayer ? newState.opponent : newState.player;
+          const excess = otherPlayer.hpCommitted - playerState.hpCommitted;
+          if (excess > 0) {
+            otherPlayer.hpCommitted -= excess;
+            otherPlayer.pet.stats.currentHealth += excess;
+            newState.pot -= excess;
+            newState.currentBet = playerState.hpCommitted;
+          }
+          newState.isAllInShowdown = true;
         }
         if (!newState.blindsPosted) {
           newState.blindsPosted = true;
@@ -724,7 +732,6 @@ export const createPokerCombatSlice: StateCreator<
           player: {
             ...currentState.pokerCombatState.player,
             hpCommitted: 0,
-            blindPosted: 0,
             isReady: false,
             currentAction: undefined,
             pet: {
@@ -738,7 +745,6 @@ export const createPokerCombatSlice: StateCreator<
           opponent: {
             ...currentState.pokerCombatState.opponent,
             hpCommitted: 0,
-            blindPosted: 0,
             isReady: false,
             currentAction: undefined,
             pet: {
@@ -876,7 +882,6 @@ export const createPokerCombatSlice: StateCreator<
           player: {
             ...stateForUpdate.pokerCombatState.player,
             hpCommitted: 0,
-            blindPosted: 0,
             isReady: false,
             currentAction: undefined,
             heroArmor: playerFinalArmor,
@@ -891,7 +896,6 @@ export const createPokerCombatSlice: StateCreator<
           opponent: {
             ...stateForUpdate.pokerCombatState.opponent,
             hpCommitted: 0,
-            blindPosted: 0,
             isReady: false,
             currentAction: undefined,
             heroArmor: opponentFinalArmor,
@@ -1168,7 +1172,6 @@ export const createPokerCombatSlice: StateCreator<
           ...state.pokerCombatState.player,
           holeCards: playerHoleCards,
           hpCommitted: 0,
-          blindPosted: 0,
           preBlindHealth: playerFinalHP,
           isReady: false,
           currentAction: undefined,
@@ -1185,7 +1188,6 @@ export const createPokerCombatSlice: StateCreator<
           ...state.pokerCombatState.opponent,
           holeCards: opponentHoleCards,
           hpCommitted: 0,
-          blindPosted: 0,
           preBlindHealth: opponentFinalHP,
           isReady: false,
           currentAction: undefined,

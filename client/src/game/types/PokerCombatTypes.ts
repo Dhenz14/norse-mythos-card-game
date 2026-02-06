@@ -301,7 +301,6 @@ export interface PlayerCombatState {
   holeCards: PokerCard[];   // Player's 2 private cards
   currentAction?: CombatAction;
   hpCommitted: number;      // Total HP at risk (blind + ante + bets)
-  blindPosted: number;      // Just the blind amount (for call calculation)
   preBlindHealth: number;   // HP BEFORE blinds/antes were deducted (for proper HP persistence back to chess)
   heroArmor: number;        // Armor that absorbs damage before HP (like Hearthstone), granted by elemental advantage (+20)
   statusEffects: StatusEffect[];

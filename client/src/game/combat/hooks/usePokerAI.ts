@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { CombatPhase, PokerCombatState } from '../../types/PokerCombatTypes';
+import { CombatAction, CombatPhase, PokerCombatState } from '../../types/PokerCombatTypes';
 import { getPokerCombatAdapterState } from '../../hooks/usePokerCombatAdapter';
 import { getSmartAIAction } from '../modules/SmartAI';
 import { useGameStore } from '../../stores/gameStore';
@@ -153,7 +153,49 @@ export function usePokerAI(options: UsePokerAIOptions): void {
 
       } catch (error) {
         if (COMBAT_DEBUG.AI) debug.error('[AI Effect] ERROR:', error);
-        aiResponseInProgressRef.current = false;
+        debug.warn('[AI Effect] SmartAI failed, using emergency fallback decision');
+
+        try {
+          const fallbackAdapter = getPokerCombatAdapterState();
+          const fallbackState = fallbackAdapter.combatState;
+
+          if (fallbackState && fallbackState.activePlayerId === aiPlayerId) {
+            const aiPlayer = fallbackState.opponent;
+            const aiHP = aiPlayer.pet.stats.currentHealth;
+            const betToCall = Math.max(0, fallbackState.currentBet - aiPlayer.hpCommitted);
+            const hasBet = betToCall > 0;
+
+            let fallbackAction: CombatAction;
+            let fallbackBetAmount = 0;
+
+            if (hasBet && aiHP < betToCall) {
+              fallbackAction = CombatAction.BRACE;
+            } else if (!hasBet) {
+              fallbackAction = CombatAction.DEFEND;
+            } else {
+              fallbackAction = CombatAction.ENGAGE;
+            }
+
+            debug.warn('[AI Effect] Fallback decision:', fallbackAction);
+            fallbackAdapter.performAction(aiPlayerId, fallbackAction, fallbackBetAmount);
+
+            setTimeout(() => {
+              const adapterAfterFallback = getPokerCombatAdapterState();
+              if (adapterAfterFallback.combatState &&
+                  adapterAfterFallback.combatState.player.isReady &&
+                  adapterAfterFallback.combatState.opponent.isReady &&
+                  adapterAfterFallback.combatState.phase !== CombatPhase.RESOLUTION) {
+                adapterAfterFallback.maybeCloseBettingRound();
+              }
+              aiResponseInProgressRef.current = false;
+            }, 100);
+          } else {
+            aiResponseInProgressRef.current = false;
+          }
+        } catch (fallbackError) {
+          debug.error('[AI Effect] Fallback also failed:', fallbackError);
+          aiResponseInProgressRef.current = false;
+        }
       }
     }, AI_RESPONSE_DELAY_MS);
 

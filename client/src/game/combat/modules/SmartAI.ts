@@ -61,10 +61,8 @@ export function getSmartAIAction(
 ): AIDecision {
   const actor = isPlayer ? combatState.player : combatState.opponent;
   
-  // HP is already deducted when committed, so availableHP = currentHealth
   const availableHP = actor.pet.stats.currentHealth;
-  // Use blindPosted for call calculation (ante doesn't count as a bet)
-  const toCall = Math.max(0, combatState.currentBet - actor.blindPosted);
+  const toCall = Math.max(0, combatState.currentBet - actor.hpCommitted);
   const hasBetToCall = toCall > 0;
   const minBet = combatState.minBet; // 5 HP minimum in Ragnarok
   
