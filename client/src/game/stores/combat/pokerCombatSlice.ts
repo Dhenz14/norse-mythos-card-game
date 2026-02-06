@@ -481,7 +481,7 @@ export const createPokerCombatSlice: StateCreator<
         break;
         
       case CombatAction.ENGAGE:
-        const toMatch = Math.min(newState.currentBet - playerState.blindPosted, playerState.pet.stats.currentHealth);
+        const toMatch = Math.min(newState.currentBet - playerState.hpCommitted, playerState.pet.stats.currentHealth);
         if (toMatch > 0) {
           playerState.hpCommitted += toMatch;
           playerState.blindPosted += toMatch;

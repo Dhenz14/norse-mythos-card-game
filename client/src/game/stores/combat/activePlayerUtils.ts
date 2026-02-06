@@ -20,9 +20,9 @@ export function getActivePlayerForPhase(
 ): string | null {
   switch (phase) {
     case CombatPhase.SPELL_PET:
-    case CombatPhase.FAITH:
       return getSmallBlindPlayerId(ctx);
       
+    case CombatPhase.FAITH:
     case CombatPhase.FORESIGHT:
     case CombatPhase.DESTINY:
       return getBigBlindPlayerId(ctx);
