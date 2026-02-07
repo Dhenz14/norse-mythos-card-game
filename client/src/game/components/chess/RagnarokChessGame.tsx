@@ -16,6 +16,7 @@ import { useUnifiedCombatStore } from '../../stores/unifiedCombatStore';
 import { getKingAbilityConfig, getAbilityDescription, requiresDirectionSelection, getAvailableDirections, MineDirection } from '../../utils/chess/kingAbilityUtils';
 import { Tooltip } from '../ui/Tooltip';
 import { debug } from '../../config/debugConfig';
+import { resolveHeroPortrait } from '../../utils/art/artMapping';
 
 type GamePhase = 'army_selection' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
 
@@ -26,7 +27,7 @@ interface HeroPortraitPanelProps {
 
 const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side }) => {
   const king = army.king;
-  const kingPortrait = king.portrait || `/portraits/kings/${king.id?.replace('king-', '')}.png`;
+  const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || `/portraits/kings/${king.id?.replace('king-', '')}.png`;
   const fallbackPortrait = `/portraits/heroes/${king.heroClass}.png`;
   
   const isPlayer = side === 'player';

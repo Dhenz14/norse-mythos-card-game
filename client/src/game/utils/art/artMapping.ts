@@ -633,6 +633,16 @@ export function getCharacterArtPath(id: string): string | null {
 }
 
 /**
+ * Resolve the best available portrait for a hero or king.
+ * Checks explicit portrait first, then falls back to art mapping.
+ */
+export function resolveHeroPortrait(heroId?: string, explicitPortrait?: string): string | undefined {
+  if (explicitPortrait) return explicitPortrait;
+  if (!heroId) return undefined;
+  return getCharacterArtPath(heroId) ?? undefined;
+}
+
+/**
  * Find art for a card by name (fuzzy matching)
  * Useful for minions/spells that match character names
  * @deprecated Use getCardArtPath instead - this is kept for backwards compatibility

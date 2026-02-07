@@ -15,6 +15,7 @@ import { HeroDetailPopup } from './HeroDetailPopup';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { HeroPortrait } from './ui/HeroPortrait';
 import { HeroArtImage } from './ui/HeroArtImage';
+import { resolveHeroPortrait } from '../utils/art/artMapping';
 import './styles/ArmySelectionNorse.css';
 import { debug } from '../config/debugConfig';
 
@@ -438,7 +439,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
             heroId={army[deckBuilderOpen as keyof ArmySelectionType]!.id}
             heroClass={army[deckBuilderOpen as keyof ArmySelectionType]!.heroClass}
             heroName={army[deckBuilderOpen as keyof ArmySelectionType]!.name}
-            heroPortrait={army[deckBuilderOpen as keyof ArmySelectionType]!.portrait}
+            heroPortrait={resolveHeroPortrait(army[deckBuilderOpen as keyof ArmySelectionType]!.id, army[deckBuilderOpen as keyof ArmySelectionType]!.portrait)}
             onClose={handleCloseDeckBuilder}
             onSave={() => {
               playSoundEffect('card_draw');

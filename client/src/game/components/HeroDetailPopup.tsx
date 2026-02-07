@@ -7,6 +7,7 @@ import { ChessPieceHero } from '../types/ChessTypes';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { NORSE_KINGS } from '../data/norseKings/kingDefinitions';
 import { useKingDivineCommandDisplay } from '../hooks/useKingDivineCommandDisplay';
+import { resolveHeroPortrait } from '../utils/art/artMapping';
 
 interface HeroDetailPopupProps {
   hero: ChessPieceHero | null;
@@ -487,6 +488,7 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
   const designIntent = norseKing?.designIntent;
   const role = norseKing?.role || (norseHero ? norseHero.heroClass : 'Hero');
   const portraitPos = hero.id ? (PORTRAIT_POSITIONS[hero.id] || 'center 20%') : 'center 20%';
+  const resolvedPortrait = resolveHeroPortrait(hero.id, hero.portrait);
   const heroRunes = getRunesForText(hero.name, 3);
 
   const popupContent = (
@@ -505,9 +507,9 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
           
           <div className="hero-popup-container">
             <div className="hero-popup-portrait">
-              {hero.portrait && (
+              {resolvedPortrait && (
                 <img 
-                  src={hero.portrait} 
+                  src={resolvedPortrait} 
                   alt={hero.name}
                   style={{ objectPosition: portraitPos }}
                 />
