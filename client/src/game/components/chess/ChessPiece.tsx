@@ -143,6 +143,8 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
         ${isSelected ? 'ring-4 ring-yellow-400 z-20' : ''}
         ${canSelect ? 'hover:brightness-110' : ''}
         ${hasElement ? `element-piece element-piece-${piece.element}` : ''}
+        ${matchupGlow === 'advantage' ? 'matchup-pulse-advantage' : ''}
+        ${matchupGlow === 'disadvantage' ? 'matchup-pulse-disadvantage' : ''}
       `}
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
@@ -152,7 +154,21 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      style={hasElement ? { boxShadow: elementGlow.shadow } : undefined}
+      style={{
+        ...(hasElement ? { boxShadow: elementGlow.shadow } : undefined),
+        ...(matchupGlow === 'advantage' ? { 
+          outline: '3px solid rgba(34, 197, 94, 0.9)',
+          outlineOffset: '2px',
+          boxShadow: '0 0 20px rgba(34, 197, 94, 0.8), 0 0 40px rgba(34, 197, 94, 0.5), 0 0 60px rgba(34, 197, 94, 0.3), inset 0 0 15px rgba(34, 197, 94, 0.3)',
+          zIndex: 50
+        } : {}),
+        ...(matchupGlow === 'disadvantage' ? { 
+          outline: '3px solid rgba(239, 68, 68, 0.9)',
+          outlineOffset: '2px',
+          boxShadow: '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5), 0 0 60px rgba(239, 68, 68, 0.3), inset 0 0 15px rgba(239, 68, 68, 0.3)',
+          zIndex: 50
+        } : {})
+      }}
     >
       <AnimatePresence>
         {showTooltip && (
@@ -284,9 +300,6 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
         <div className={`element-border-glow element-border-${piece.element}`} />
       )}
       
-      {matchupGlow && (
-        <div className={`matchup-glow matchup-glow-${matchupGlow}`} />
-      )}
     </motion.div>
   );
 };
