@@ -233,13 +233,24 @@ export function executeBattlecry(
       cardInfo = findCardInstance(playerHand, cardInstanceId);
       
       if (!cardInfo) {
-        // Log more debug information to help diagnose the issue
-        console.error('Card not found for battlecry execution');
-        console.error(`Looking for card ID: ${cardInstanceId}`);
-        console.error(`Battlefield cards: ${playerBattlefield.map(c => c.instanceId).join(', ')}`);
-        console.error(`Hand cards: ${(player.hand || []).map(c => c.instanceId).join(', ')}`);
-        // Return original state when card cannot be found
-        return state;
+        const opponent = newState.players.opponent;
+        const opponentBattlefield = opponent.battlefield || [];
+        cardInfo = findCardInstance(opponentBattlefield, cardInstanceId);
+        
+        if (!cardInfo) {
+          const opponentHand = opponent.hand || [];
+          cardInfo = findCardInstance(opponentHand, cardInstanceId);
+        }
+        
+        if (!cardInfo) {
+          console.error('Card not found for battlecry execution');
+          console.error(`Looking for card ID: ${cardInstanceId}`);
+          console.error(`Player battlefield cards: ${playerBattlefield.map(c => c.instanceId).join(', ')}`);
+          console.error(`Player hand cards: ${(player.hand || []).map(c => c.instanceId).join(', ')}`);
+          console.error(`Opponent battlefield cards: ${(opponent.battlefield || []).map(c => c.instanceId).join(', ')}`);
+          console.error(`Opponent hand cards: ${(opponent.hand || []).map(c => c.instanceId).join(', ')}`);
+          return state;
+        }
       }
     }
     
@@ -398,10 +409,29 @@ export function executeBattlecry(
       case 'conditional_self_buff':
       case 'conditional_armor':
       case 'conditional_summon':
+      case 'summon_by_condition':
       case 'resurrect_deathrattle':
       case 'yogg_saron':
         // These are handled in oldGodsUtils.ts
         return newState;
+        
+      case 'heal_hero': {
+        const healAmount = battlecry.value || 0;
+        if (healAmount > 0) {
+          let heroOwner: 'player' | 'opponent' = 'player';
+          const onPlayerField = (newState.players.player.battlefield || []).some(c => c.instanceId === cardInstanceId);
+          if (!onPlayerField) {
+            const onOpponentField = (newState.players.opponent.battlefield || []).some(c => c.instanceId === cardInstanceId);
+            if (onOpponentField) {
+              heroOwner = 'opponent';
+            }
+          }
+          const hero = newState.players[heroOwner];
+          const maxHp = 30;
+          hero.health = Math.min(maxHp, (hero.health || 0) + healAmount);
+        }
+        return newState;
+      }
         
       case 'summon_parts':
         // Execute a battlecry to summon colossal parts

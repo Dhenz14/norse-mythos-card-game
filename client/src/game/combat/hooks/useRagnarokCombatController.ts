@@ -899,6 +899,12 @@ export function useRagnarokCombatController(
     const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
     if (mulliganStillActive) return;
     
+    const discoveryActive = useGameStore.getState().gameState?.discovery?.active;
+    if (discoveryActive) {
+      debug.combat('[handleCombatEnd] Blocked: discovery active, deferring hand-end processing');
+      return;
+    }
+    
     handEndProcessedRef.current = true;
     
     advanceTurnPhase();

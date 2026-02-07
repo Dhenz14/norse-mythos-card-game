@@ -672,6 +672,11 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         options: []
       };
       set({ gameState: newState });
+      
+      setTimeout(() => {
+        debug.log('[GameStore] Discovery complete, granting deferred poker hand rewards');
+        get().grantPokerHandRewards();
+      }, 0);
     }
   },
   
@@ -908,6 +913,11 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     
     if (gameState?.mulligan?.active) {
       debug.log('[PokerRewards] Blocked: card game mulligan still active');
+      return;
+    }
+    
+    if (gameState?.discovery?.active) {
+      debug.log('[PokerRewards] Blocked: discovery active, will grant after selection');
       return;
     }
     
