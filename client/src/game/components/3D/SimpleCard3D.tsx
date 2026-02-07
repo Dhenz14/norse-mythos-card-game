@@ -155,76 +155,8 @@ const SimpleCard3D: React.FC<SimpleCard3DProps> = ({
       return;
     }
     
-    const loadCardTexture = async () => {
-      try {
-        // First fetch the API to get the actual Cloudinary URL
-        const response = await fetch(`/api/cloudinary/card/${cardData.id}`);
-        
-        if (!response.ok) {
-          throw new Error(`API response status: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        // Check if the API returned a valid URL
-        if (!data || !data.url) {
-          throw new Error('API response did not contain a valid image URL');
-        }
-        
-        // Log the URL we're using to load the texture
-        debug.render3d(`Loading card image for ${cardData.name} (ID: ${cardData.id}) from: ${data.url}`);
-        
-        // Set up loader and load texture using a promise
-        const textureLoader = new THREE.TextureLoader();
-        textureLoader.setCrossOrigin('anonymous');
-        
-        return new Promise<void>((resolve, reject) => {
-          textureLoader.load(
-            data.url,
-            (loadedTexture) => {
-              // Configure texture once loaded
-              loadedTexture.generateMipmaps = true;
-              loadedTexture.minFilter = THREE.LinearMipMapLinearFilter;
-              loadedTexture.magFilter = THREE.LinearFilter;
-              loadedTexture.anisotropy = 4;
-              loadedTexture.needsUpdate = true;
-              
-              debug.render3d(`Successfully loaded texture for card: ${cardData.name} (ID: ${cardData.id})`);
-              
-              // Update the state with the loaded texture
-              setArtTexture(loadedTexture);
-              
-              // Force material update when texture loads
-              if (cardRef.current && cardRef.current.material) {
-                if (Array.isArray(cardRef.current.material)) {
-                  cardRef.current.material.forEach(mat => {
-                    if (mat) mat.needsUpdate = true;
-                  });
-                } else {
-                  cardRef.current.material.needsUpdate = true;
-                }
-              }
-              
-              resolve();
-            },
-            undefined,
-            (error) => {
-              debug.error(`Error loading texture for card ${cardData.id}:`, error);
-              reject(error);
-            }
-          );
-        });
-      } catch (error: any) {
-        debug.error(`Failed to load image for card ${cardData.id}:`, error);
-        const errorTexture = createFallbackTexture(`Error loading card image`);
-        setArtTexture(errorTexture);
-      }
-    };
-    
-    // Start loading the texture
-    loadCardTexture().catch(error => {
-      debug.error('Card texture loading error:', error);
-    });
+    const placeholderTexture = createFallbackTexture(cardData.name || 'Card');
+    setArtTexture(placeholderTexture);
     
     // Clean up function to dispose of textures
     return () => {

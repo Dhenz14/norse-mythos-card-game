@@ -73,7 +73,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
   
   // Responsive card sizing using aspect-ratio (standard Hearthstone card ratio: 230/342)
   
-  // State for card images and hover state - using placeholder logic (Cloudinary removed)
+  // State for card images and hover state
   const [cardImage, setCardImage] = useState<string | null>(null);
   const [largeCardImage, setLargeCardImage] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(true); // Default to true for placeholder
@@ -166,8 +166,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
 
   const effectIcons = getCardKeywordIcons();
   
-  // Card images now use placeholder logic (Cloudinary service removed)
-  // Cards will display placeholder content instead of loading images
+  // Cards display placeholder content instead of loading images
   
   // Internal ref to track our element
   const internalRef = useRef<HTMLDivElement | null>(null);

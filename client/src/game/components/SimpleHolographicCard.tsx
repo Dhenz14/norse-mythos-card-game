@@ -92,7 +92,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
   // 2. forceHolographic is explicitly set to true (override mode)
   const hasHolographicEffects = (isPremiumRarity && enableHolographic) || forceHolographic === true;
   
-  // Card images now use placeholder logic (Cloudinary service removed)
+  // Card image state
   const cardId = typeof card.id === 'string' ? parseInt(card.id, 10) : card.id;
   const imageUrl: string | null = null; // Placeholder - no image loading
   const isLoading = false;
@@ -486,7 +486,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
           {card.name}
         </div>
         
-        {/* Card Art - Loaded from Cloudinary */}
+        {/* Card Art */}
         <div style={{
           width: '90%',
           height: '130px',

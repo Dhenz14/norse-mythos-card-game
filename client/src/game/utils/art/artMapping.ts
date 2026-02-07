@@ -435,7 +435,7 @@ const KING_TO_CHARACTER: Record<string, string> = {
   'king-yggdrasil': 'yggdrasil-world-tree',  // Custom art - tree being humanoid
   'king-audumbla': 'audumbla-cow',
   'king-blainn': 'dwarves',
-  'king-brimir': 'jormungandr',
+  'king-brimir': 'brimir',
   'king-ginnungagap': 'ginnungagap-void',
 };
 

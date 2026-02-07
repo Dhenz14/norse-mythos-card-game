@@ -21,9 +21,7 @@ const EnhancedDeathAnimation: React.FC<EnhancedDeathAnimationProps> = ({
   const particlesRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   
-  // Death animation effects (Cloudinary image loading removed)
   useEffect(() => {
-    // Card images now use placeholder logic
     
     // Play enhanced death sound with multiple layers for a more dramatic effect
     // Create sound instances

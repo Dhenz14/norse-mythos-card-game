@@ -861,7 +861,8 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       description: 'Sea Titan: All friendly minions have +2 Health. At the start of your turn, freeze a random enemy.',
       fixedCardIds: [],
       passiveEffect: 'brimir_passives',
-      chessAbility: 'king-brimir'
+      chessAbility: 'king-brimir',
+      portrait: '/portraits/kings/brimir.png'
     },
     {
       id: 'king-ginnungagap',

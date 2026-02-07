@@ -6,8 +6,6 @@ import HealthDisplay from './HealthDisplay';
 import ArmorDisplay from './ArmorDisplay';
 import { debug } from '../config/debugConfig';
 
-// Define default hero portraits
-// These are served through our server-side Cloudinary API
 const HERO_IMAGE_IDS = {
   jaina: 'jaina',
   garrosh: 'garrosh', 
@@ -82,7 +80,7 @@ const getHeroClassName = (heroClass: HeroClass | undefined): string => {
   return heroClass.charAt(0).toUpperCase() + heroClass.slice(1);
 };
 
-// Mapping of hero class to image ID for Cloudinary
+// Mapping of hero class to image ID
 const getHeroImageId = (heroClass: HeroClass | undefined): string => {
   if (!heroClass) return 'unknown';
   
@@ -129,22 +127,17 @@ export const Hero: React.FC<HeroProps> = ({
   const heroClassColor = getHeroClassColor(player.heroClass);
   const heroName = getHeroClassName(player.heroClass);
   const heroRef = useRef<HTMLDivElement>(null);
-  const [imageError, setImageError] = useState(true); // Default to true to use emoji fallback (Cloudinary removed)
+  const [imageError, setImageError] = useState(true);
   
-  // Get hero portrait URL from Cloudinary through our server API
   const heroImageId = getHeroImageId(player.heroClass);
   
-  // Use state to track image source and error state
   const [imageSource, setImageSource] = useState<string>('');
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Handle image error - using emoji fallback (Cloudinary removed)
   const handleImageError = () => {
     debug.log(`Using emoji fallback for ${heroImageId} hero portrait`);
     setImageError(true);
   };
-  
-  // Hero images now use emoji fallback (Cloudinary service removed)
   
   // Register this hero's position for attack animations
   useEffect(() => {
