@@ -822,12 +822,12 @@ export const createPokerCombatSlice: StateCreator<
       let playerFinalHealth = playerCurrentHP;
       let opponentFinalHealth = opponentCurrentHP;
       
-      // Winner recovers their own committed HP + gets loser's committed HP (pot transfer)
-      const totalPot = playerCommitted + opponentCommitted;
+      // Winner recovers ONLY their own committed HP (back to pre-bet level)
+      // Loser's committed HP stays deducted (permanently lost)
       if (winner === 'player') {
-        playerFinalHealth = Math.min(playerCurrentHP + totalPot, playerMaxHP);
+        playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
       } else {
-        opponentFinalHealth = Math.min(opponentCurrentHP + totalPot, opponentMaxHP);
+        opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
       }
       
       const loserCommitted = winner === 'player' ? opponentCommitted : playerCommitted;

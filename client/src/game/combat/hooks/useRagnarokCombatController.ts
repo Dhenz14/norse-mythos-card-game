@@ -191,6 +191,7 @@ export function useRagnarokCombatController(
   const sharedBattlefieldRef = useRef<HTMLDivElement>(null);
   
   const cardPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
+  const handEndProcessedRef = useRef(false);
   
   const sharedRegisterCardPosition = useCallback((card: any, position: { x: number; y: number }) => {
     const cardId = card?.instanceId || card?.id;
@@ -883,10 +884,22 @@ export function useRagnarokCombatController(
     }, 1000);
   }, [combatState, performAction, endTurn]);
   
+  useEffect(() => {
+    if (resolution) {
+      handEndProcessedRef.current = false;
+    }
+  }, [resolution]);
+  
   const handleCombatEnd = useCallback(() => {
     if (!resolution) return;
+    if (handEndProcessedRef.current) {
+      debug.combat('[handleCombatEnd] Blocked: already processed this hand end');
+      return;
+    }
     const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
     if (mulliganStillActive) return;
+    
+    handEndProcessedRef.current = true;
     
     advanceTurnPhase();
     

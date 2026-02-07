@@ -22,6 +22,7 @@ import { useAnimationStore as useAnnouncementStore, fireActionAnnouncement } fro
 import { isAISimulationMode, debug, getDebugConfig } from '../config/debugConfig';
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
+import { useUnifiedCombatStore } from './unifiedCombatStore';
 import { useTargetingStore, predictAttackOutcome } from './targetingStore';
 import { logActivity } from './activityLogStore';
 import { CombatEventBus } from '../services/CombatEventBus';
@@ -381,12 +382,14 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         const phase = pokerAdapter.combatState.phase;
         const playerId = pokerAdapter.combatState.player.playerId;
         
-        if (phase !== CombatPhase.MULLIGAN) {
+        const isTransitioning = useUnifiedCombatStore.getState().isTransitioningHand;
+        const hasFoldWinner = !!pokerAdapter.combatState.foldWinner;
+        if (phase !== CombatPhase.MULLIGAN && phase !== CombatPhase.RESOLUTION && !isTransitioning && !hasFoldWinner) {
           debug.log('[UnifiedEndTurn] End Turn = Fold');
           
           pokerAdapter.performAction(playerId, CombatAction.BRACE);
         } else {
-          debug.log('[UnifiedEndTurn] Skipping mulligan phase');
+          debug.log(`[UnifiedEndTurn] Skipping fold: phase=${phase}, transitioning=${isTransitioning}`);
         }
       }
       
