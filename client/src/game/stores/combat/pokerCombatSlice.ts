@@ -951,32 +951,32 @@ export const createPokerCombatSlice: StateCreator<
     if (winner === 'player') {
       playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
       
-      const opponentLoss = isCheckThrough ? 2 : opponentCommitted;
-      if (opponentFinalArmor > 0 && opponentLoss > 0) {
-        const armorRefund = Math.min(opponentFinalArmor, opponentLoss);
-        opponentFinalArmor -= armorRefund;
-        opponentFinalHealth = isCheckThrough 
-          ? Math.max(0, opponentCurrentHP - (opponentLoss - armorRefund))
-          : Math.min(opponentCurrentHP + armorRefund, opponentMaxHP);
+      if (isCheckThrough) {
+        const checkPenalty = 2;
+        if (opponentFinalArmor > 0) {
+          const armorAbsorb = Math.min(opponentFinalArmor, checkPenalty);
+          opponentFinalArmor -= armorAbsorb;
+          opponentFinalHealth = Math.max(0, opponentCurrentHP - (checkPenalty - armorAbsorb));
+        } else {
+          opponentFinalHealth = Math.max(0, opponentCurrentHP - checkPenalty);
+        }
       } else {
-        opponentFinalHealth = isCheckThrough 
-          ? Math.max(0, opponentCurrentHP - opponentLoss)
-          : opponentCurrentHP;
+        opponentFinalHealth = opponentCurrentHP;
       }
     } else if (winner === 'opponent') {
       opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
       
-      const playerLoss = isCheckThrough ? 2 : playerCommitted;
-      if (playerFinalArmor > 0 && playerLoss > 0) {
-        const armorRefund = Math.min(playerFinalArmor, playerLoss);
-        playerFinalArmor -= armorRefund;
-        playerFinalHealth = isCheckThrough 
-          ? Math.max(0, playerCurrentHP - (playerLoss - armorRefund))
-          : Math.min(playerCurrentHP + armorRefund, playerMaxHP);
+      if (isCheckThrough) {
+        const checkPenalty = 2;
+        if (playerFinalArmor > 0) {
+          const armorAbsorb = Math.min(playerFinalArmor, checkPenalty);
+          playerFinalArmor -= armorAbsorb;
+          playerFinalHealth = Math.max(0, playerCurrentHP - (checkPenalty - armorAbsorb));
+        } else {
+          playerFinalHealth = Math.max(0, playerCurrentHP - checkPenalty);
+        }
       } else {
-        playerFinalHealth = isCheckThrough 
-          ? Math.max(0, playerCurrentHP - playerLoss)
-          : playerCurrentHP;
+        playerFinalHealth = playerCurrentHP;
       }
     } else {
       playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
@@ -990,7 +990,10 @@ export const createPokerCombatSlice: StateCreator<
       playerDamage,
       opponentDamage,
       playerFinalArmor,
-      opponentFinalArmor
+      opponentFinalArmor,
+      winnerRecovered: winner === 'player' ? playerCommitted : winner === 'opponent' ? opponentCommitted : 0,
+      loserLostPermanently: winner === 'player' ? opponentCommitted : winner === 'opponent' ? playerCommitted : 0,
+      isCheckThrough
     });
     
     const resolution: CombatResolution = {
