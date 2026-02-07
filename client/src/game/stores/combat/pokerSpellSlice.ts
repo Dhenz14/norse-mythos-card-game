@@ -104,6 +104,16 @@ export const createPokerSpellSlice: StateCreator<
           if (effect.type === 'skip_to_showdown') {
             state.setPokerPhase('SHOWDOWN');
           }
+          if (effect.type === 'deduct_stamina' && effect.data) {
+            const target = effect.data.target as 'player' | 'opponent';
+            const amount = (effect.data.amount as number) || 1;
+            const combatState = state.pokerCombatState;
+            if (combatState) {
+              const targetPlayer = target === 'player' ? combatState.player : combatState.opponent;
+              targetPlayer.pet.stats.currentStamina = Math.max(0, targetPlayer.pet.stats.currentStamina - amount);
+              set({ pokerCombatState: { ...combatState } });
+            }
+          }
         }
       }
     }

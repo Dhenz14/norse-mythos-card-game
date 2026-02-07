@@ -56,7 +56,7 @@ export interface SpellCastResult {
 }
 
 export interface ImmediateSpellEffect {
-  type: 'reveal_card' | 'swap_card' | 'skip_to_showdown' | 'force_action';
+  type: 'reveal_card' | 'swap_card' | 'skip_to_showdown' | 'force_action' | 'deduct_stamina';
   data: Record<string, unknown>;
 }
 
@@ -349,10 +349,16 @@ const resolveBloodBet = (
     success: true,
     message: `Paid 1 STA. Opponent must match your bet or fold`,
     stateChanges: {},
-    immediateEffects: [{
-      type: 'force_action',
-      data: { target: caster === 'player' ? 'opponent' : 'player', options: ['match', 'fold'] }
-    }]
+    immediateEffects: [
+      {
+        type: 'deduct_stamina',
+        data: { target: caster, amount: 1 }
+      },
+      {
+        type: 'force_action',
+        data: { target: caster === 'player' ? 'opponent' : 'player', options: ['match', 'fold'] }
+      }
+    ]
   };
 };
 

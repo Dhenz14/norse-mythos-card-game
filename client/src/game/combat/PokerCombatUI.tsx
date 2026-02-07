@@ -517,8 +517,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
                     : 'Opponent folded their hand'}
                 </p>
                 <div className="fold-penalty">
-                  {/* Fold penalty: 5 HP + ante + committed HP, plus 1 STA */}
-                  <span>Fold Penalty: -{resolution.foldPenalty} HP, -1 STA</span>
+                  <span>Fold Penalty: -{resolution.foldPenalty} HP, -1 ⚡STA</span>
                 </div>
               </div>
             ) : (

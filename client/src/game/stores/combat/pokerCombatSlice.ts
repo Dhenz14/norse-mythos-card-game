@@ -40,6 +40,7 @@ import { getElementAdvantage } from '../../utils/elements';
 import { getCachedHandEvaluation, clearHandCache } from '../../utils/poker/handCache';
 import { compareHands } from '../../combat/modules/HandEvaluator';
 import { debug } from '../../config/debugConfig';
+import { applyStaminaShield, getExtraFoldPenalty } from '../../utils/poker/pokerSpellUtils';
 
 /**
  * Evaluate poker hand with caching for performance.
@@ -471,6 +472,12 @@ export const createPokerCombatSlice: StateCreator<
           newState.pot += actualBet;
           newState.currentBet = Math.max(newState.currentBet, playerState.hpCommitted);
           newState.preflopBetMade = true;
+          // Deduct STA for betting (1 STA per 10 HP committed)
+          const betStaCost = Math.ceil(actualBet / 10);
+          if (betStaCost > 0) {
+            playerState.pet.stats.currentStamina = Math.max(0, playerState.pet.stats.currentStamina - betStaCost);
+            debug.combat(`[STA] ${isPlayer ? 'Player' : 'Opponent'} bet ${actualBet} HP: -${betStaCost} STA (now ${playerState.pet.stats.currentStamina}/${playerState.pet.stats.maxStamina})`);
+          }
           if (!newState.blindsPosted) {
             newState.blindsPosted = true;
           }
@@ -492,6 +499,12 @@ export const createPokerCombatSlice: StateCreator<
           newState.pot += actualTotal;
           newState.currentBet = Math.max(newState.currentBet, playerState.hpCommitted);
           newState.preflopBetMade = true;
+          // Deduct STA for raising (1 STA per 10 HP committed)
+          const raiseStaCost = Math.ceil(actualTotal / 10);
+          if (raiseStaCost > 0) {
+            playerState.pet.stats.currentStamina = Math.max(0, playerState.pet.stats.currentStamina - raiseStaCost);
+            debug.combat(`[STA] ${isPlayer ? 'Player' : 'Opponent'} raised ${actualTotal} HP: -${raiseStaCost} STA (now ${playerState.pet.stats.currentStamina}/${playerState.pet.stats.maxStamina})`);
+          }
           if (!newState.blindsPosted) {
             newState.blindsPosted = true;
           }
@@ -529,8 +542,32 @@ export const createPokerCombatSlice: StateCreator<
         
       case CombatAction.BRACE:
         const folderIsPlayer = playerId === newState.player.playerId;
-        // NLH fold: player forfeits what they've already committed (blinds/bets)
-        // No additional HP penalty - the committed HP stays in the pot for the winner
+        const folderSide: 'player' | 'opponent' = folderIsPlayer ? 'player' : 'opponent';
+        
+        // Base fold STA penalty
+        let foldStaPenalty = 1;
+        
+        // Check fold curse from spell state (extra -1 STA)
+        const spellState = get().pokerSpellState;
+        if (spellState) {
+          foldStaPenalty += getExtraFoldPenalty(spellState, folderSide);
+          
+          // Apply stamina shield absorption
+          const shieldResult = applyStaminaShield(spellState, folderSide, foldStaPenalty);
+          foldStaPenalty = shieldResult.reducedPenalty;
+          
+          // Update spell state if shield was consumed
+          if (shieldResult.newState !== spellState) {
+            set({ pokerSpellState: shieldResult.newState });
+          }
+        }
+        
+        // Deduct STA from folder
+        if (foldStaPenalty > 0) {
+          playerState.pet.stats.currentStamina = Math.max(0, playerState.pet.stats.currentStamina - foldStaPenalty);
+          debug.combat(`[STA] ${folderSide} folded: -${foldStaPenalty} STA (now ${playerState.pet.stats.currentStamina}/${playerState.pet.stats.maxStamina})`);
+        }
+        
         newState.foldWinner = folderIsPlayer ? 'opponent' : 'player';
         newState.phase = PokerCombatPhase.RESOLUTION;
         newState.player.isReady = true;
