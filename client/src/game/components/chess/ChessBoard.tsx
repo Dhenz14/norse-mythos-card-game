@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { ChessBoardPosition, BOARD_ROWS, BOARD_COLS } from '../../types/ChessTypes';
@@ -8,6 +8,7 @@ import ChessAttackAnimation from './ChessAttackAnimation';
 import { useAudio } from '../../../lib/stores/useAudio';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
 import { debug } from '../../config/debugConfig';
+import { computeMatchupGlows } from '../../utils/chess/elementMatchupUtils';
 import {
   getActiveMineStyle,
   getActiveMineGlowAnimation,
@@ -138,6 +139,13 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
   }, [lastInstantKill?.timestamp]);
 
   const { pieces, currentTurn, selectedPiece, validMoves, attackMoves, gameStatus } = boardState;
+
+  const matchupGlowMap = useMemo(() => {
+    if (!selectedPiece || selectedPiece.owner !== 'player' || currentTurn !== 'player') {
+      return {};
+    }
+    return computeMatchupGlows(selectedPiece.element, pieces, selectedPiece.owner);
+  }, [selectedPiece?.id, selectedPiece?.element, selectedPiece?.owner, currentTurn, pieces]);
 
   const playerPieceCount = pieces.filter(p => p.owner === 'player').length;
   const opponentPieceCount = pieces.filter(p => p.owner === 'opponent').length;
@@ -410,6 +418,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
                 isSelected={selectedPiece?.id === piece.id}
                 isPlayerTurn={currentTurn === 'player'}
                 onClick={() => handleCellClick(row, col)}
+                matchupGlow={matchupGlowMap[piece.id] || null}
               />
             </motion.div>
           )}
@@ -517,7 +526,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         boardOffset={{ x: boardRect.x, y: boardRect.y }}
       />
       
-      <div className="mt-3 flex gap-6 text-sm">
+      <div className="mt-3 flex flex-wrap gap-4 text-sm justify-center">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-green-500/60 rounded border-2 border-green-400" />
           <span className="text-gray-300">Move</span>
@@ -525,6 +534,14 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-red-500/60 rounded border-2 border-red-400" />
           <span className="text-gray-300">Attack</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded border-2 border-green-400" style={{ boxShadow: '0 0 8px rgba(34, 197, 94, 0.8)' }} />
+          <span className="text-gray-300">Strong vs</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded border-2 border-red-400" style={{ boxShadow: '0 0 8px rgba(239, 68, 68, 0.8)' }} />
+          <span className="text-gray-300">Weak vs</span>
         </div>
       </div>
       

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChessPiece as ChessPieceType, ChessPieceType as PieceType, ELEMENT_COLORS, ELEMENT_ICONS, ElementType } from '../../types/ChessTypes';
+import type { MatchupGlow } from '../../utils/chess/elementMatchupUtils';
 import './ChessPiece.css';
 
 const ELEMENT_IMAGES: Record<ElementType, string | null> = {
@@ -70,6 +71,7 @@ interface ChessPieceProps {
   isSelected: boolean;
   isPlayerTurn: boolean;
   onClick: () => void;
+  matchupGlow?: MatchupGlow;
 }
 
 const PIECE_TYPE_NAMES: Record<PieceType, string> = {
@@ -95,7 +97,8 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
   piece,
   isSelected,
   isPlayerTurn,
-  onClick
+  onClick,
+  matchupGlow
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -279,6 +282,10 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
       
       {hasElement && (
         <div className={`element-border-glow element-border-${piece.element}`} />
+      )}
+      
+      {matchupGlow && (
+        <div className={`matchup-glow matchup-glow-${matchupGlow}`} />
       )}
     </motion.div>
   );

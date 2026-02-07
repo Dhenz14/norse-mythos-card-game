@@ -288,6 +288,56 @@
 .element-piece-holy:hover { box-shadow: 0 0 40px #ffd700, 0 0 80px rgba(255, 215, 0, 0.9), 0 0 120px rgba(255, 255, 100, 0.6) !important; }
 .element-piece-shadow:hover { box-shadow: 0 0 35px #9932cc, 0 0 70px rgba(153, 50, 204, 0.8), 0 0 100px rgba(75, 0, 130, 0.5) !important; }
 
+.matchup-glow {
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.matchup-glow-advantage {
+  border: 3px solid rgba(34, 197, 94, 0.9);
+  box-shadow: 
+    0 0 12px rgba(34, 197, 94, 0.8),
+    0 0 24px rgba(34, 197, 94, 0.5),
+    0 0 40px rgba(34, 197, 94, 0.3),
+    inset 0 0 8px rgba(34, 197, 94, 0.3);
+  animation: matchup-advantage-pulse 1.5s ease-in-out infinite;
+}
+
+.matchup-glow-disadvantage {
+  border: 3px solid rgba(239, 68, 68, 0.9);
+  box-shadow: 
+    0 0 12px rgba(239, 68, 68, 0.8),
+    0 0 24px rgba(239, 68, 68, 0.5),
+    0 0 40px rgba(239, 68, 68, 0.3),
+    inset 0 0 8px rgba(239, 68, 68, 0.3);
+  animation: matchup-disadvantage-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes matchup-advantage-pulse {
+  0%, 100% { 
+    border-color: rgba(34, 197, 94, 0.7);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.6), 0 0 24px rgba(34, 197, 94, 0.3), inset 0 0 6px rgba(34, 197, 94, 0.2);
+  }
+  50% { 
+    border-color: rgba(34, 197, 94, 1);
+    box-shadow: 0 0 18px rgba(34, 197, 94, 0.9), 0 0 36px rgba(34, 197, 94, 0.6), 0 0 50px rgba(34, 197, 94, 0.3), inset 0 0 10px rgba(34, 197, 94, 0.4);
+  }
+}
+
+@keyframes matchup-disadvantage-pulse {
+  0%, 100% { 
+    border-color: rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6), 0 0 24px rgba(239, 68, 68, 0.3), inset 0 0 6px rgba(239, 68, 68, 0.2);
+  }
+  50% { 
+    border-color: rgba(239, 68, 68, 1);
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.9), 0 0 36px rgba(239, 68, 68, 0.6), 0 0 50px rgba(239, 68, 68, 0.3), inset 0 0 10px rgba(239, 68, 68, 0.4);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .element-image-bg,
   .element-effect-layer,
@@ -309,7 +359,9 @@
   .element-effect-shadow::before,
   .element-effect-shadow::after,
   .element-badge-large,
-  .element-border-glow {
+  .element-border-glow,
+  .matchup-glow-advantage,
+  .matchup-glow-disadvantage {
     animation: none !important;
   }
 }
