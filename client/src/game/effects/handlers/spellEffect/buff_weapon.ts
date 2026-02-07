@@ -31,40 +31,32 @@ export default function executeBuffWeapon(
     const buffAttack = effect.buffAttack;
     const buffDurability = effect.buffDurability;
     
-    // Implementation placeholder
-    
-    // Create a CardInstance wrapper for the source card
-    const sourceCardInstance: any = {
-      instanceId: 'temp-' + Date.now(),
-      card: sourceCard,
-      canAttack: false,
-      isPlayed: true,
-      isSummoningSick: false,
-      attacksPerformed: 0
-    };
-    
-    // TODO: Implement the spellEffect:buff_weapon effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for spellEffect:buff_weapon`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Buff Weapon effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Buff Weapon effect applied`);
-      // TODO: Apply effect without target
+    const attackBuff = buffAttack || effect.value || 0;
+    const durabilityBuff = buffDurability || (effect as any).secondaryValue || 0;
+
+    const weapon = (context.currentPlayer as any).weapon;
+
+    if (!weapon) {
+      context.logGameEvent(`No weapon equipped to buff`);
+      return { success: false, error: 'No weapon equipped' };
     }
-    
-    return { success: true };
+
+    if (weapon.card) {
+      weapon.card.attack = (weapon.card.attack || 0) + attackBuff;
+      if (weapon.card.durability !== undefined) {
+        weapon.card.durability += durabilityBuff;
+      }
+    }
+    if (weapon.currentDurability !== undefined) {
+      weapon.currentDurability += durabilityBuff;
+    }
+
+    context.logGameEvent(`Buffed weapon: +${attackBuff} attack, +${durabilityBuff} durability`);
+
+    return { 
+      success: true,
+      additionalData: { attackBuff, durabilityBuff }
+    };
   } catch (error) {
     console.error(`Error executing spellEffect:buff_weapon:`, error);
     return { 

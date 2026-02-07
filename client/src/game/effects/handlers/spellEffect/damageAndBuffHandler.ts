@@ -2,59 +2,83 @@
  * DamageAndBuff SpellEffect Handler
  * 
  * Implements the "damage_and_buff" spellEffect effect.
- * Example card: Card ID: 5013
  */
-import { GameState, CardInstance } from '../../../types';
-import { SpellEffect } from '../../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a damage_and_buff spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
 export function executeDamageAndBuffDamageAndBuff(
-  state: GameState,
+  context: GameContext,
   effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DamageAndBuff effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
 
-  // Check for required property: buffAttack
-  if (effect.buffAttack === undefined) {
-    console.warn(`DamageAndBuff effect missing buffAttack property`);
-    // Fall back to a default value or handle the missing property
+  try {
+    context.logGameEvent(`Executing spellEffect:damage_and_buff for ${sourceCard.name}`);
+
+    const damageValue = effect.value || 0;
+    const buffAttack = effect.buffAttack || 0;
+    const buffHealth = effect.buffHealth || 0;
+    const targetType = effect.targetType || 'any';
+
+    const targets = context.getTargets(targetType, sourceCardInstance);
+
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage_and_buff`);
+      return { success: false, error: 'No valid targets' };
+    }
+
+    const target = targets[0];
+
+    if (damageValue > 0) {
+      context.logGameEvent(`Dealing ${damageValue} damage to ${target.card.name}`);
+      context.dealDamage(target, damageValue);
+    }
+
+    const friendlyMinions = context.getFriendlyMinions();
+    let buffedCount = 0;
+
+    if (buffAttack > 0 || buffHealth > 0) {
+      friendlyMinions.forEach(minion => {
+        if (buffAttack > 0 && minion.currentAttack !== undefined) {
+          minion.currentAttack = (minion.currentAttack || 0) + buffAttack;
+        }
+        if (buffHealth > 0 && minion.currentHealth !== undefined) {
+          minion.currentHealth = (minion.currentHealth || 0) + buffHealth;
+          if ((minion as any).maxHealth !== undefined) {
+            (minion as any).maxHealth = ((minion as any).maxHealth || 0) + buffHealth;
+          }
+        }
+        buffedCount++;
+        context.logGameEvent(`Buffed ${minion.card.name} with +${buffAttack}/+${buffHealth}`);
+      });
+    }
+
+    return { 
+      success: true, 
+      additionalData: { 
+        target: target.card.name,
+        damageDealt: damageValue,
+        buffedMinions: buffedCount,
+        buffAttack,
+        buffHealth
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:damage_and_buff:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:damage_and_buff: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the damage_and_buff spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'effect',
-    player: newState.currentTurn,
-    text: `${sourceCard.card.name} triggered damage_and_buff spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    cardName: sourceCard.card.name,
-    cardId: String(sourceCard.card.id)
-  });
-  
-  return newState;
 }
 
 export default executeDamageAndBuffDamageAndBuff;

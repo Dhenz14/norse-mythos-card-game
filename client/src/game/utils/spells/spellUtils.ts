@@ -5,6 +5,7 @@ import { executeBattlecry } from '../battlecryUtils';
 import { getRandomCards } from '../cards/cardUtils';
 import { updateEnrageEffects } from '../mechanics/enrageUtils';
 import { dealDamage } from '../effects/damageUtils';
+import { removeDeadMinions, destroyCard as destroyCardFromZone } from '../zoneUtils';
 import { drawCard, drawMultipleCards, drawMultipleCardsForCurrentPlayer } from '../drawUtils';
 import executeSetHealthHandler from '../../effects/handlers/spellEffect/set_healthHandler';
 import allCards from '../../data/allCards';
@@ -690,14 +691,6 @@ function executeDamageSpell(
             // Apply enrage effects after damage
             newState = updateEnrageEffects(newState);
           }
-          
-          // Check if the minion is destroyed
-          if (target.currentHealth <= 0) {
-            // Move to graveyard - this should be handled by the game state update
-            if (!player.graveyard) player.graveyard = [];
-            player.graveyard.push({ ...target });
-            playerBattlefield.splice(i, 1);
-          }
         }
         
         break;
@@ -723,14 +716,6 @@ function executeDamageSpell(
               // Apply enrage effects after damage
               newState = updateEnrageEffects(newState);
             }
-            
-            // Check if the minion is destroyed
-            if (target.currentHealth <= 0) {
-              // Move to graveyard
-              if (!opponent.graveyard) opponent.graveyard = [];
-              opponent.graveyard.push({ ...target });
-              opponentBattlefield.splice(i, 1);
-            }
           }
           
           break;
@@ -743,6 +728,9 @@ function executeDamageSpell(
     
     // Update player's battlefield
     newState.players.player.battlefield = playerBattlefield;
+    
+    // Use removeDeadMinions to properly trigger deathrattles via destroyCard
+    newState = removeDeadMinions(newState);
   } else if (targetType === 'hero') {
     // Damage a hero using dealDamage to handle armor properly
     if (targetId === 'opponent' || targetId === 'opponent-hero') {
@@ -864,83 +852,50 @@ function applyAoEDamage(
   const player = newState.players.player;
   const opponent = newState.players.opponent;
   
-  // Helper to process damage on a single battlefield
-  const processBattlefield = (
-    battlefield: CardInstance[],
-    graveyard: CardInstance[] = []
-  ): { newBattlefield: CardInstance[], newGraveyard: CardInstance[] } => {
-    const newBattlefield: CardInstance[] = [];
-    const newGraveyard = [...graveyard];
-    
-    for (const minion of battlefield) {
+  // Helper to apply damage on a single battlefield (leaves dead minions in place for removeDeadMinions)
+  const applyDamageToBattlefield = (battlefield: CardInstance[]): CardInstance[] => {
+    return battlefield.map(minion => {
       if (minion.currentHealth !== undefined) {
-        // Clone the minion to avoid modifying the original
         const newMinion = { ...minion };
         
-        // Ensure currentHealth is initialized
         if (newMinion.currentHealth === undefined) {
           newMinion.currentHealth = getHealth(newMinion.card);
         }
         
-        // Check for Divine Shield
         if (newMinion.hasDivineShield) {
           newMinion.hasDivineShield = false;
-          newBattlefield.push(newMinion);
         } else {
-          // Apply damage
-          newMinion.currentHealth! -= damageAmount; // Non-null assertion after above init
-          
-          // Check if destroyed
-          if (newMinion.currentHealth! <= 0) {
-            newGraveyard.push(newMinion);
-          } else {
-            newBattlefield.push(newMinion);
-          }
+          newMinion.currentHealth! -= damageAmount;
         }
-      } else {
-        // Non-minion card (shouldn't happen on battlefield)
-        newBattlefield.push(minion);
+        
+        return newMinion;
       }
-    }
-    
-    return { newBattlefield, newGraveyard };
+      return minion;
+    });
   };
   
   // Apply damage according to filter
   if (filter === 'all' || filter === 'friendly') {
-    // Damage player's minions if current player or damage opponent's if not
-    const battlefield = currentPlayer === 'player' ? player.battlefield : opponent.battlefield;
-    const graveyard = currentPlayer === 'player' ? (player.graveyard || []) : (opponent.graveyard || []);
-    
-    const { newBattlefield, newGraveyard } = processBattlefield(battlefield, graveyard);
-    
     if (currentPlayer === 'player') {
-      newState.players.player.battlefield = newBattlefield;
-      newState.players.player.graveyard = newGraveyard;
+      newState.players.player.battlefield = applyDamageToBattlefield(player.battlefield);
     } else {
-      newState.players.opponent.battlefield = newBattlefield;
-      newState.players.opponent.graveyard = newGraveyard;
+      newState.players.opponent.battlefield = applyDamageToBattlefield(opponent.battlefield);
     }
   }
   
   if (filter === 'all' || filter === 'enemy') {
-    // Damage opponent's minions if current player or damage player's if not
-    const battlefield = currentPlayer === 'player' ? opponent.battlefield : player.battlefield;
-    const graveyard = currentPlayer === 'player' ? (opponent.graveyard || []) : (player.graveyard || []);
-    
-    const { newBattlefield, newGraveyard } = processBattlefield(battlefield, graveyard);
-    
     if (currentPlayer === 'player') {
-      newState.players.opponent.battlefield = newBattlefield;
-      newState.players.opponent.graveyard = newGraveyard;
+      newState.players.opponent.battlefield = applyDamageToBattlefield(opponent.battlefield);
     } else {
-      newState.players.player.battlefield = newBattlefield;
-      newState.players.player.graveyard = newGraveyard;
+      newState.players.player.battlefield = applyDamageToBattlefield(player.battlefield);
     }
   }
   
   // Apply enrage effects after all AoE damage
   newState = updateEnrageEffects(newState);
+  
+  // Use removeDeadMinions to properly trigger deathrattles via destroyCard
+  newState = removeDeadMinions(newState);
   
   return newState;
 }
@@ -2281,40 +2236,26 @@ function executeCleaveSpell(
   
   // Apply damage to these minions
   const newBattlefield = [...battlefield];
-  const killedMinions: CardInstance[] = [];
   
   minionsToModify.forEach(index => {
     if (index >= 0 && index < newBattlefield.length) {
       const minion = newBattlefield[index];
       applyDamageToMinion(minion);
-      
-      // Check if minion died
-      if (minion.currentHealth !== undefined && minion.currentHealth <= 0) {
-        killedMinions.push(minion);
-      }
     }
   });
   
-  // Remove killed minions
-  const updatedBattlefield = newBattlefield.filter(
-    minion => minion.currentHealth === undefined || minion.currentHealth > 0
-  );
-  
-  // Move killed minions to graveyard
-  const graveyard = targetOwner === 'player' ? player.graveyard || [] : opponent.graveyard || [];
-  const updatedGraveyard = [...graveyard, ...killedMinions];
-  
-  // Update the battlefield
+  // Update the battlefield with damaged minions (leave dead ones for removeDeadMinions)
   if (targetOwner === 'player') {
-    newState.players.player.battlefield = updatedBattlefield;
-    newState.players.player.graveyard = updatedGraveyard;
+    newState.players.player.battlefield = newBattlefield;
   } else {
-    newState.players.opponent.battlefield = updatedBattlefield;
-    newState.players.opponent.graveyard = updatedGraveyard;
+    newState.players.opponent.battlefield = newBattlefield;
   }
   
   // Apply enrage effects after all damage
   newState = updateEnrageEffects(newState);
+  
+  // Use removeDeadMinions to properly trigger deathrattles via destroyCard
+  newState = removeDeadMinions(newState);
   
   return newState;
 }
@@ -2400,17 +2341,11 @@ function executeCleaveWithFreezeSpell(
   
   // Apply damage to target and freeze to adjacent minions
   const newBattlefield = [...battlefield];
-  const killedMinions: CardInstance[] = [];
   
   // Apply damage to target
   if (targetIndex >= 0 && targetIndex < newBattlefield.length) {
     const targetMinion = newBattlefield[targetIndex];
     applyDamageToMinion(targetMinion);
-    
-    // Check if target died
-    if (targetMinion.currentHealth !== undefined && targetMinion.currentHealth <= 0) {
-      killedMinions.push(targetMinion);
-    }
   }
   
   // Apply freeze to adjacent minions
@@ -2426,26 +2361,18 @@ function executeCleaveWithFreezeSpell(
     applyFreezeToMinion(rightMinion);
   }
   
-  // Remove killed minions
-  const updatedBattlefield = newBattlefield.filter(
-    minion => minion.currentHealth === undefined || minion.currentHealth > 0
-  );
-  
-  // Move killed minions to graveyard
-  const graveyard = targetOwner === 'player' ? player.graveyard || [] : opponent.graveyard || [];
-  const updatedGraveyard = [...graveyard, ...killedMinions];
-  
-  // Update the battlefield
+  // Update the battlefield with damaged minions (leave dead ones for removeDeadMinions)
   if (targetOwner === 'player') {
-    newState.players.player.battlefield = updatedBattlefield;
-    newState.players.player.graveyard = updatedGraveyard;
+    newState.players.player.battlefield = newBattlefield;
   } else {
-    newState.players.opponent.battlefield = updatedBattlefield;
-    newState.players.opponent.graveyard = updatedGraveyard;
+    newState.players.opponent.battlefield = newBattlefield;
   }
   
   // Apply enrage effects after all damage
   newState = updateEnrageEffects(newState);
+  
+  // Use removeDeadMinions to properly trigger deathrattles via destroyCard
+  newState = removeDeadMinions(newState);
   
   return newState;
 }
@@ -2570,22 +2497,8 @@ function executeConditionalFreezeOrDestroySpell(
   // Check if target is already frozen
   if (target.isFrozen) {
     
-    // Target is frozen, so destroy it
-    const updatedBattlefield = [...battlefield];
-    const killedMinion = updatedBattlefield.splice(targetIndex, 1)[0];
-    
-    // Move to graveyard
-    const graveyard = targetOwner === 'player' ? player.graveyard || [] : opponent.graveyard || [];
-    const updatedGraveyard = [...graveyard, killedMinion];
-    
-    // Update the battlefield
-    if (targetOwner === 'player') {
-      newState.players.player.battlefield = updatedBattlefield;
-      newState.players.player.graveyard = updatedGraveyard;
-    } else {
-      newState.players.opponent.battlefield = updatedBattlefield;
-      newState.players.opponent.graveyard = updatedGraveyard;
-    }
+    // Target is frozen, so destroy it - use destroyCard for proper deathrattle handling
+    newState = destroyCardFromZone(newState, target.instanceId, targetOwner!);
   } else {
     // Target is not frozen, so freeze it
     target.isFrozen = true;

@@ -31,38 +31,24 @@ export default function executeGainArmorReduceHeroPower(
     const value = effect.value;
     const heroReduction = effect.heroReduction;
     
-    // Implementation placeholder
-    
-    // TODO: Implement the spellEffect:gain_armor_reduce_hero_power effect
-    if (requiresTarget) {
-      // Get targets based on targetType - create a CardInstance wrapper for the sourceCard
-      const sourceCardInstance = {
-        instanceId: `source-${sourceCard.id}`,
-        card: sourceCard,
-        canAttack: false,
-        isPlayed: true,
-        isSummoningSick: false,
-        attacksPerformed: 0
-      };
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for spellEffect:gain_armor_reduce_hero_power`);
-        return { success: false, error: 'No valid targets' };
+    const armorGain = value || 0;
+    const reduction = (effect as any).reduction || heroReduction || 1;
+
+    context.currentPlayer.armor = (context.currentPlayer.armor || 0) + armorGain;
+    context.logGameEvent(`${sourceCard.name} granted ${armorGain} armor to the current player`);
+
+    if (context.currentPlayer.heroPower) {
+      const heroPower = context.currentPlayer.heroPower;
+      if (heroPower.card && heroPower.card.manaCost !== undefined) {
+        heroPower.card.manaCost = Math.max(0, heroPower.card.manaCost - reduction);
+        context.logGameEvent(`Hero power cost reduced by ${reduction}`);
       }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Gain Armor Reduce Hero Power effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Gain Armor Reduce Hero Power effect applied`);
-      // TODO: Apply effect without target
     }
-    
-    return { success: true };
+
+    return { 
+      success: true,
+      additionalData: { armorGained: armorGain, heroPowerReduction: reduction }
+    };
   } catch (error) {
     console.error(`Error executing spellEffect:gain_armor_reduce_hero_power:`, error);
     return { 

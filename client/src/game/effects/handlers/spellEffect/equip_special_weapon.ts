@@ -33,40 +33,41 @@ export default function executeEquipSpecialWeapon(
     const weaponDurability = effect.weaponDurability;
     const armorPerAttack = effect.armorPerAttack;
     
-    // Implementation placeholder
-    
-    // Create a CardInstance wrapper for the source card
-    const sourceCardInstance: any = {
-      instanceId: 'temp-' + Date.now(),
-      card: sourceCard,
-      canAttack: false,
+    const attack = weaponAttack || (effect as any).attack || 1;
+    const durability = weaponDurability || (effect as any).durability || 2;
+    const weaponCardId = (effect as any).weaponCardId;
+
+    const weaponCard: any = {
+      id: weaponCardId || `weapon-${Date.now()}`,
+      name: sourceCard.name + ' Weapon',
+      type: 'weapon',
+      attack: attack,
+      durability: durability,
+      manaCost: 0,
+    };
+
+    const weaponInstance: any = {
+      instanceId: `weapon-${Date.now()}`,
+      card: weaponCard,
+      canAttack: true,
       isPlayed: true,
       isSummoningSick: false,
-      attacksPerformed: 0
+      attacksPerformed: 0,
+      currentDurability: durability,
     };
-    
-    // TODO: Implement the spellEffect:equip_special_weapon effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for spellEffect:equip_special_weapon`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Equip Special Weapon effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Equip Special Weapon effect applied`);
-      // TODO: Apply effect without target
+
+    (context.currentPlayer as any).weapon = weaponInstance;
+
+    if (armorPerAttack) {
+      (weaponInstance as any).armorPerAttack = armorPerAttack;
     }
-    
-    return { success: true };
+
+    context.logGameEvent(`${sourceCard.name} equipped a ${attack}/${durability} weapon`);
+
+    return { 
+      success: true,
+      additionalData: { weapon: weaponInstance }
+    };
   } catch (error) {
     console.error(`Error executing spellEffect:equip_special_weapon:`, error);
     return { 

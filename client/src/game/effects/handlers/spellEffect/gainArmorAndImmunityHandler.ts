@@ -26,28 +26,26 @@ export function executeGainArmorAndImmunityGainArmorAndImmunity(
   const newState = { ...state };
   
   
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`GainArmorAndImmunity effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  const armorValue = effect.value || 0;
+  const currentTurn = newState.currentTurn;
+
+  newState.players = { ...state.players };
+  if (currentTurn === 'player') {
+    newState.players.player = { ...state.players.player };
+    newState.players.player.armor = (newState.players.player.armor || 0) + armorValue;
+    (newState.players.player as any).isImmune = true;
+  } else {
+    newState.players.opponent = { ...state.players.opponent };
+    newState.players.opponent.armor = (newState.players.opponent.armor || 0) + armorValue;
+    (newState.players.opponent as any).isImmune = true;
   }
 
-  // Check for required property: duration
-  if (effect.duration === undefined) {
-    console.warn(`GainArmorAndImmunity effect missing duration property`);
-    // Fall back to a default value or handle the missing property
-  }
-  
-  // TODO: Implement the gain_armor_and_immunity spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Log the effect for debugging
   newState.gameLog = newState.gameLog || [];
   newState.gameLog.push({
     id: Math.random().toString(36).substring(2, 15),
     type: 'effect',
     player: newState.currentTurn,
-    text: `${sourceCard.card.name} triggered gain_armor_and_immunity spellEffect`,
+    text: `${sourceCard.card.name} gained ${armorValue} armor and immunity`,
     timestamp: Date.now(),
     turn: newState.turnNumber,
     cardName: sourceCard.card.name,

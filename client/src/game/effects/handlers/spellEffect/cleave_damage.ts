@@ -29,9 +29,8 @@ export default function executeCleaveDamage(
     const targetType = effect.targetType || 'none';
     const value = effect.value;
     
-    // Implementation placeholder
-    
-    // Create a CardInstance wrapper for the source card
+    const damageValue = value || 0;
+
     const sourceCardInstance: any = {
       instanceId: 'temp-' + Date.now(),
       card: sourceCard,
@@ -40,29 +39,35 @@ export default function executeCleaveDamage(
       isSummoningSick: false,
       attacksPerformed: 0
     };
-    
-    // TODO: Implement the spellEffect:cleave_damage effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for spellEffect:cleave_damage`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Cleave Damage effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Cleave Damage effect applied`);
-      // TODO: Apply effect without target
+
+    const targets = context.getTargets(targetType || 'enemy_minion', sourceCardInstance);
+
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for cleave damage`);
+      return { success: false, error: 'No valid targets' };
     }
-    
-    return { success: true };
+
+    const mainTarget = targets[0];
+    let totalDamage = 0;
+
+    context.dealDamage(mainTarget, damageValue);
+    totalDamage += damageValue;
+    context.logGameEvent(`Cleave: dealt ${damageValue} damage to ${mainTarget.card.name}`);
+
+    const adjacentMinions = context.getAdjacentMinions(mainTarget);
+    adjacentMinions.forEach(adjacent => {
+      context.dealDamage(adjacent, damageValue);
+      totalDamage += damageValue;
+      context.logGameEvent(`Cleave: dealt ${damageValue} damage to adjacent ${adjacent.card.name}`);
+    });
+
+    return { 
+      success: true,
+      additionalData: { 
+        targetsHit: 1 + adjacentMinions.length,
+        totalDamage
+      }
+    };
   } catch (error) {
     console.error(`Error executing spellEffect:cleave_damage:`, error);
     return { 

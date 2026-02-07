@@ -1,66 +1,70 @@
 /**
  * DamageWithAdjacent SpellEffect Handler
  * 
- * Implements the "damage_with_adjacent" spellEffect effect.
- * Example card: Card ID: 14020
+ * Implements the "damage_with_adjacent" spellEffect effect (cleave).
  */
-import { GameState, CardInstance } from '../../../types';
-import { SpellEffect } from '../../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a damage_with_adjacent spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
 export function executeDamageWithAdjacentDamageWithAdjacent(
-  state: GameState,
+  context: GameContext,
   effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DamageWithAdjacent effect missing value property`);
-    // Fall back to a default value or handle the missing property
-  }
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
 
-  // Check for required property: adjacentDamage
-  if (effect.adjacentDamage === undefined) {
-    console.warn(`DamageWithAdjacent effect missing adjacentDamage property`);
-    // Fall back to a default value or handle the missing property
-  }
+  try {
+    context.logGameEvent(`Executing spellEffect:damage_with_adjacent for ${sourceCard.name}`);
 
-  // Check for required property: primaryDamage
-  if (effect.primaryDamage === undefined) {
-    console.warn(`DamageWithAdjacent effect missing primaryDamage property`);
-    // Fall back to a default value or handle the missing property
+    const damageValue = effect.value || effect.primaryDamage || 0;
+    const adjacentDamage = effect.adjacentDamage || damageValue;
+    const targetType = effect.targetType || 'any_minion';
+
+    if (damageValue <= 0) {
+      return { success: false, error: 'No damage value specified' };
+    }
+
+    const targets = context.getTargets(targetType, sourceCardInstance);
+
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage_with_adjacent`);
+      return { success: false, error: 'No valid targets' };
+    }
+
+    const primaryTarget = targets[0];
+
+    context.logGameEvent(`Dealing ${damageValue} damage to ${primaryTarget.card.name}`);
+    context.dealDamage(primaryTarget, damageValue);
+
+    const adjacentMinions = context.getAdjacentMinions(primaryTarget);
+    adjacentMinions.forEach(adjacent => {
+      context.logGameEvent(`Dealing ${adjacentDamage} cleave damage to ${adjacent.card.name}`);
+      context.dealDamage(adjacent, adjacentDamage);
+    });
+
+    return { 
+      success: true, 
+      additionalData: { 
+        primaryTarget: primaryTarget.card.name,
+        adjacentHit: adjacentMinions.length,
+        totalDamage: damageValue + (adjacentDamage * adjacentMinions.length)
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:damage_with_adjacent:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:damage_with_adjacent: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the damage_with_adjacent spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'effect',
-    player: newState.currentTurn,
-    text: `${sourceCard.card.name} triggered damage_with_adjacent spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    cardName: sourceCard.card.name,
-    cardId: String(sourceCard.card.id)
-  });
-  
-  return newState;
 }
 
 export default executeDamageWithAdjacentDamageWithAdjacent;

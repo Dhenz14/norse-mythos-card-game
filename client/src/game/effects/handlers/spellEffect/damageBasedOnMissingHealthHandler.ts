@@ -2,53 +2,70 @@
  * DamageBasedOnMissingHealth SpellEffect Handler
  * 
  * Implements the "damage_based_on_missing_health" spellEffect effect.
- * Example card: Card ID: 3026
  */
-import { GameState, CardInstance } from '../../../types';
-import { SpellEffect } from '../../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a damage_based_on_missing_health spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
 export function executeDamageBasedOnMissingHealthDamageBasedOnMissingHealth(
-  state: GameState,
+  context: GameContext,
   effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  
-  // Check for required property: healValue
-  if (effect.healValue === undefined) {
-    console.warn(`DamageBasedOnMissingHealth effect missing healValue property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
+
+  try {
+    context.logGameEvent(`Executing spellEffect:damage_based_on_missing_health for ${sourceCard.name}`);
+
+    const targetType = effect.targetType || 'any';
+    const maxHealth = context.currentPlayer.maxHealth || 30;
+    const currentHealth = context.currentPlayer.health;
+    const missingHealth = maxHealth - currentHealth;
+
+    context.logGameEvent(`Hero missing health: ${missingHealth} (${maxHealth} max - ${currentHealth} current)`);
+
+    if (missingHealth <= 0) {
+      context.logGameEvent(`Hero is at full health, no damage to deal`);
+      return { 
+        success: true, 
+        additionalData: { damageDealt: 0, missingHealth: 0 } 
+      };
+    }
+
+    const targets = context.getTargets(targetType, sourceCardInstance);
+
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage_based_on_missing_health`);
+      return { success: false, error: 'No valid targets' };
+    }
+
+    const target = targets[0];
+
+    context.logGameEvent(`Dealing ${missingHealth} damage (missing health) to ${target.card.name}`);
+    context.dealDamage(target, missingHealth);
+
+    return { 
+      success: true, 
+      additionalData: { 
+        target: target.card.name,
+        damageDealt: missingHealth,
+        missingHealth
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:damage_based_on_missing_health:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:damage_based_on_missing_health: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the damage_based_on_missing_health spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'effect',
-    player: newState.currentTurn,
-    text: `${sourceCard.card.name} triggered damage_based_on_missing_health spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    cardName: sourceCard.card.name,
-    cardId: String(sourceCard.card.id)
-  });
-  
-  return newState;
 }
 
 export default executeDamageBasedOnMissingHealthDamageBasedOnMissingHealth;

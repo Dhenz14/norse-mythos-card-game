@@ -65,6 +65,14 @@ import executeAoeWithOnKill from './aoeWithOnKillHandler';
 import executeAttackEqualsHealth from './attackEqualsHealthHandler';
 import executeDamageBasedOnArmor from './damage_based_on_armor';
 import executeDamageWithSelfDamage from './damage_with_self_damage';
+import executeGainArmorReduceHeroPower from './gain_armor_reduce_hero_power';
+import executeEquipSpecialWeapon from './equip_special_weapon';
+import executeDrawWeaponGainArmor from './draw_weapon_gain_armor';
+import executeCleaveDamage from './cleave_damage';
+import executeBuffWeapon from './buff_weapon';
+import executeBuffDamagedMinions from './buff_damaged_minions';
+import executeArmorBasedOnMissingHealth from './armor_based_on_missing_health';
+import executeSetHealthSetHealth from './setHealthHandler';
 
 // Map of all spellEffect handlers
 const spellEffectHandlers = {
@@ -130,6 +138,14 @@ const spellEffectHandlers = {
   'attack_equals_health': executeAttackEqualsHealth,
   'damage_based_on_armor': executeDamageBasedOnArmor,
   'damage_with_self_damage': executeDamageWithSelfDamage,
+  'gain_armor_reduce_hero_power': executeGainArmorReduceHeroPower,
+  'equip_special_weapon': executeEquipSpecialWeapon,
+  'draw_weapon_gain_armor': executeDrawWeaponGainArmor,
+  'cleave_damage': executeCleaveDamage,
+  'buff_weapon': executeBuffWeapon,
+  'buff_damaged_minions': executeBuffDamagedMinions,
+  'armor_based_on_missing_health': executeArmorBasedOnMissingHealth,
+  'set_health_minion': executeSetHealthSetHealth,
 };
 
 export default spellEffectHandlers;

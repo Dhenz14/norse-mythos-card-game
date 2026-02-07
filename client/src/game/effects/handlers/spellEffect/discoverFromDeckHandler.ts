@@ -2,59 +2,61 @@
  * DiscoverFromDeck SpellEffect Handler
  * 
  * Implements the "discover_from_deck" spellEffect effect.
- * Example card: Card ID: 7022
  */
-import { GameState, CardInstance } from '../../../types';
-import { SpellEffect } from '../../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a discover_from_deck spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
 export function executeDiscoverFromDeckDiscoverFromDeck(
-  state: GameState,
+  context: GameContext,
   effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  
-  // Check for required property: count
-  if (effect.count === undefined) {
-    console.warn(`DiscoverFromDeck effect missing count property`);
-    // Fall back to a default value or handle the missing property
-  }
+  sourceCard: Card
+): EffectResult {
+  try {
+    context.logGameEvent(`Executing spellEffect:discover_from_deck for ${sourceCard.name}`);
 
-  // Check for required property: drawCount
-  if (effect.drawCount === undefined) {
-    console.warn(`DiscoverFromDeck effect missing drawCount property`);
-    // Fall back to a default value or handle the missing property
+    const deck = context.currentPlayer.deck;
+    const discoverCount = effect.count || 3;
+
+    if (deck.length === 0) {
+      context.logGameEvent(`Deck is empty, cannot discover`);
+      return { success: false, error: 'Deck is empty' };
+    }
+
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+
+    const choices = deck.splice(0, Math.min(discoverCount, deck.length));
+
+    if (choices.length === 0) {
+      context.logGameEvent(`No cards available to discover`);
+      return { success: false, error: 'No cards available to discover' };
+    }
+
+    const chosen = choices[0];
+    context.currentPlayer.hand.push(chosen);
+    context.logGameEvent(`Discovered ${chosen.card.name} and added to hand`);
+
+    for (let i = 1; i < choices.length; i++) {
+      deck.push(choices[i]);
+    }
+
+    return { 
+      success: true, 
+      additionalData: { 
+        discovered: chosen.card.name,
+        choices: choices.map(c => c.card.name) 
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:discover_from_deck:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:discover_from_deck: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the discover_from_deck spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'effect',
-    player: newState.currentTurn,
-    text: `${sourceCard.card.name} triggered discover_from_deck spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    cardName: sourceCard.card.name,
-    cardId: String(sourceCard.card.id)
-  });
-  
-  return newState;
 }
 
 export default executeDiscoverFromDeckDiscoverFromDeck;

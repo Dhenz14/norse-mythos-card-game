@@ -2,65 +2,102 @@
  * BuffAndEnchant SpellEffect Handler
  * 
  * Implements the "buff_and_enchant" spellEffect effect.
- * Example card: Card ID: 3018
  */
-import { GameState, CardInstance } from '../../../types';
-import { SpellEffect } from '../../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a buff_and_enchant spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
 export function executeBuffAndEnchantBuffAndEnchant(
-  state: GameState,
+  context: GameContext,
   effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  
-  // Check for required property: buffHealth
-  if (effect.buffHealth === undefined) {
-    console.warn(`BuffAndEnchant effect missing buffHealth property`);
-    // Fall back to a default value or handle the missing property
-  }
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
 
-  // Check for required property: enchantEffect
-  if (effect.enchantEffect === undefined) {
-    console.warn(`BuffAndEnchant effect missing enchantEffect property`);
-    // Fall back to a default value or handle the missing property
-  }
+  try {
+    context.logGameEvent(`Executing spellEffect:buff_and_enchant for ${sourceCard.name}`);
 
-  // Check for required property: summonCardId
-  if (effect.summonCardId === undefined) {
-    console.warn(`BuffAndEnchant effect missing summonCardId property`);
-    // Fall back to a default value or handle the missing property
+    const buffAttack = effect.attack || effect.buffAttack || 0;
+    const buffHealth = effect.health || effect.buffHealth || effect.value || 0;
+    const enchantEffect = effect.enchantEffect;
+    const targetType = effect.targetType || 'friendly_minion';
+
+    const targets = context.getTargets(targetType, sourceCardInstance);
+
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for buff_and_enchant`);
+      return { success: false, error: 'No valid targets' };
+    }
+
+    const target = targets[0];
+
+    if (buffAttack > 0 && target.currentAttack !== undefined) {
+      target.currentAttack = (target.currentAttack || 0) + buffAttack;
+      context.logGameEvent(`Buffed ${target.card.name} attack by +${buffAttack}`);
+    }
+
+    if (buffHealth > 0 && target.currentHealth !== undefined) {
+      target.currentHealth = (target.currentHealth || 0) + buffHealth;
+      if ((target as any).maxHealth !== undefined) {
+        (target as any).maxHealth = ((target as any).maxHealth || 0) + buffHealth;
+      }
+      context.logGameEvent(`Buffed ${target.card.name} health by +${buffHealth}`);
+    }
+
+    if (enchantEffect) {
+      const keyword = typeof enchantEffect === 'string' ? enchantEffect : enchantEffect.keyword;
+      if (keyword) {
+        switch (keyword.toLowerCase()) {
+          case 'taunt':
+            (target as any).hasTaunt = true;
+            break;
+          case 'divine_shield':
+            (target as any).hasDivineShield = true;
+            break;
+          case 'windfury':
+            (target as any).hasWindfury = true;
+            break;
+          case 'stealth':
+            (target as any).hasStealth = true;
+            break;
+          case 'rush':
+            (target as any).hasRush = true;
+            break;
+          case 'charge':
+            (target as any).hasCharge = true;
+            (target as any).canAttack = true;
+            break;
+          default:
+            context.logGameEvent(`Applied enchantment: ${keyword} to ${target.card.name}`);
+            break;
+        }
+        context.logGameEvent(`Enchanted ${target.card.name} with ${keyword}`);
+      }
+    }
+
+    return { 
+      success: true, 
+      additionalData: { 
+        target: target.card.name,
+        buffAttack,
+        buffHealth,
+        enchantment: enchantEffect
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:buff_and_enchant:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:buff_and_enchant: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the buff_and_enchant spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'effect',
-    player: newState.currentTurn,
-    text: `${sourceCard.card.name} triggered buff_and_enchant spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    cardId: String(sourceCard.card.id),
-    cardName: sourceCard.card.name
-  });
-  
-  return newState;
 }
 
 export default executeBuffAndEnchantBuffAndEnchant;

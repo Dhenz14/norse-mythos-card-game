@@ -7,64 +7,57 @@ import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a Buff Damaged Minions effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
-   * @param effect.buffAttack - The buff attack for the effect
-   * @param effect.buffHealth - The buff health for the effect
- * @returns An object indicating success or failure and any additional data
- */
 export default function executeBuffDamagedMinions(
   context: GameContext, 
   effect: SpellEffect, 
   sourceCard: Card
 ): EffectResult {
   try {
-    // Log the effect execution
     context.logGameEvent(`Executing spellEffect:buff_damaged_minions for ${sourceCard.name}`);
-    
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const buffAttack = effect.buffAttack;
-    const buffHealth = effect.buffHealth;
-    
-    // Implementation placeholder
-    
-    // Create a CardInstance wrapper for the source card
-    const sourceCardInstance: any = {
-      instanceId: 'temp-' + Date.now(),
-      card: sourceCard,
-      canAttack: false,
-      isPlayed: true,
-      isSummoningSick: false,
-      attacksPerformed: 0
-    };
-    
-    // TODO: Implement the spellEffect:buff_damaged_minions effect
-    if (requiresTarget) {
-      // Get targets based on targetType
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for spellEffect:buff_damaged_minions`);
-        return { success: false, error: 'No valid targets' };
-      }
-      
-      // Example implementation for target-based effect
-      targets.forEach(target => {
-        context.logGameEvent(`Buff Damaged Minions effect applied to ${target.card.name}`);
-        // TODO: Apply effect to target
-      });
-    } else {
-      // Example implementation for non-target effect
-      context.logGameEvent(`Buff Damaged Minions effect applied`);
-      // TODO: Apply effect without target
+
+    const buffAttack = effect.attack || effect.buffAttack || effect.value || 0;
+    const buffHealth = effect.health || effect.buffHealth || 0;
+
+    const friendlyMinions = context.getFriendlyMinions();
+    const damagedMinions = friendlyMinions.filter(minion => {
+      const currentHealth = minion.currentHealth || 0;
+      const maxHealth = (minion as any).maxHealth || minion.card.health || 0;
+      return currentHealth < maxHealth;
+    });
+
+    if (damagedMinions.length === 0) {
+      context.logGameEvent(`No damaged friendly minions to buff`);
+      return { 
+        success: true, 
+        additionalData: { buffedCount: 0 } 
+      };
     }
-    
-    return { success: true };
+
+    let buffedCount = 0;
+    damagedMinions.forEach(minion => {
+      if (buffAttack > 0 && minion.currentAttack !== undefined) {
+        minion.currentAttack = (minion.currentAttack || 0) + buffAttack;
+      }
+      if (buffHealth > 0 && minion.currentHealth !== undefined) {
+        minion.currentHealth = (minion.currentHealth || 0) + buffHealth;
+        if ((minion as any).maxHealth !== undefined) {
+          (minion as any).maxHealth = ((minion as any).maxHealth || 0) + buffHealth;
+        }
+      }
+      buffedCount++;
+      context.logGameEvent(`Buffed damaged minion ${minion.card.name} with +${buffAttack}/+${buffHealth}`);
+    });
+
+    context.logGameEvent(`Buffed ${buffedCount} damaged minion(s)`);
+
+    return { 
+      success: true, 
+      additionalData: { 
+        buffedCount,
+        buffAttack,
+        buffHealth
+      } 
+    };
   } catch (error) {
     console.error(`Error executing spellEffect:buff_damaged_minions:`, error);
     return { 

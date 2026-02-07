@@ -2,53 +2,73 @@
  * DamageDrawIfSurvives SpellEffect Handler
  * 
  * Implements the "damage_draw_if_survives" spellEffect effect.
- * Example card: Card ID: 5018
  */
-import { GameState, CardInstance } from '../../../types';
-import { SpellEffect } from '../../../types/CardTypes';
+import { GameContext } from '../../../GameContext';
+import { Card, SpellEffect } from '../../../types/CardTypes';
+import { EffectResult } from '../../../types/EffectTypes';
 
-/**
- * Execute a damage_draw_if_survives spellEffect effect
- * 
- * @param state Current game state
- * @param effect The effect to execute
- * @param sourceCard The card that triggered the effect
- * @param targetId Optional target ID if the effect requires a target
- * @returns Updated game state
- */
 export function executeDamageDrawIfSurvivesDamageDrawIfSurvives(
-  state: GameState,
+  context: GameContext,
   effect: SpellEffect,
-  sourceCard: CardInstance,
-  targetId?: string
-): GameState {
-  // Create a new state to avoid mutating the original
-  const newState = { ...state };
-  
-  
-  // Check for required property: value
-  if (effect.value === undefined) {
-    console.warn(`DamageDrawIfSurvives effect missing value property`);
-    // Fall back to a default value or handle the missing property
+  sourceCard: Card
+): EffectResult {
+  const sourceCardInstance: any = {
+    instanceId: 'temp-' + Date.now(),
+    card: sourceCard,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: false,
+    attacksPerformed: 0
+  };
+
+  try {
+    context.logGameEvent(`Executing spellEffect:damage_draw_if_survives for ${sourceCard.name}`);
+
+    const damageValue = effect.value || 0;
+    const drawCount = effect.drawCount || 1;
+    const targetType = effect.targetType || 'any_minion';
+
+    if (damageValue <= 0) {
+      return { success: false, error: 'No damage value specified' };
+    }
+
+    const targets = context.getTargets(targetType, sourceCardInstance);
+
+    if (targets.length === 0) {
+      context.logGameEvent(`No valid targets for damage_draw_if_survives`);
+      return { success: false, error: 'No valid targets' };
+    }
+
+    const target = targets[0];
+
+    context.logGameEvent(`Dealing ${damageValue} damage to ${target.card.name}`);
+    context.dealDamage(target, damageValue);
+
+    const survived = (target.currentHealth !== undefined && target.currentHealth > 0);
+
+    if (survived) {
+      context.logGameEvent(`${target.card.name} survived! Drawing ${drawCount} card(s)`);
+      context.drawCards(drawCount);
+    } else {
+      context.logGameEvent(`${target.card.name} did not survive, no cards drawn`);
+    }
+
+    return { 
+      success: true, 
+      additionalData: { 
+        target: target.card.name,
+        damageDealt: damageValue,
+        survived,
+        cardsDrawn: survived ? drawCount : 0
+      } 
+    };
+  } catch (error) {
+    console.error(`Error executing spellEffect:damage_draw_if_survives:`, error);
+    return { 
+      success: false, 
+      error: `Error executing spellEffect:damage_draw_if_survives: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
-  
-  // TODO: Implement the damage_draw_if_survives spellEffect effect
-  // This is a template implementation - implement based on the effect's actual behavior
-  
-  // Log the effect for debugging
-  newState.gameLog = newState.gameLog || [];
-  newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
-    type: 'effect',
-    player: newState.currentTurn,
-    text: `${sourceCard.card.name} triggered damage_draw_if_survives spellEffect`,
-    timestamp: Date.now(),
-    turn: newState.turnNumber,
-    cardName: sourceCard.card.name,
-    cardId: String(sourceCard.card.id)
-  });
-  
-  return newState;
 }
 
 export default executeDamageDrawIfSurvivesDamageDrawIfSurvives;
