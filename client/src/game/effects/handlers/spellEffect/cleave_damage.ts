@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:cleave_damage effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -69,7 +70,7 @@ export default function executeCleaveDamage(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:cleave_damage:`, error);
+    debug.error(`Error executing spellEffect:cleave_damage:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:cleave_damage: ${error instanceof Error ? error.message : String(error)}`

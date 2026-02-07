@@ -9,6 +9,7 @@ import { getCardDatabase } from '../data/cardDatabaseUtils';
 import { applyDamage } from './gameUtils';
 import { getRandomInt } from './randomUtils';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
+import { debug } from '../config/debugConfig';
 
 interface CThunState {
   baseAttack: number;
@@ -174,7 +175,7 @@ export function executeCThunBattlecry(
   );
   
   if (cthunIndex === -1) {
-    console.error("C'Thun not found on battlefield");
+    debug.error("C'Thun not found on battlefield");
     return state;
   }
   

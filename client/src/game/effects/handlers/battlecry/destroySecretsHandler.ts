@@ -5,6 +5,7 @@
  * Destroys all enemy secrets and optionally buffs the source minion.
  * Example card: Eater of Secrets (ID: 31009)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -68,7 +69,7 @@ export default function executeDestroySecrets(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_secrets:`, error);
+    debug.error(`Error executing battlecry:destroy_secrets:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_secrets: ${error instanceof Error ? error.message : String(error)}`

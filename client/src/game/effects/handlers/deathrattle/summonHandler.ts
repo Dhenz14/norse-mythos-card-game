@@ -5,6 +5,7 @@
  * Summons specific minions when this minion dies.
  * Example: Savannah Highmane (summons two 2/2 Hyenas)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance as CardInstanceType } from '../../../types/CardTypes';
 import { CardInstance, DeathrattleEffect } from '../../../types';
@@ -91,7 +92,7 @@ export default function executeSummonSummon(
       }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:summon:`, error);
+    debug.error(`Error executing deathrattle:summon:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:summon: ${error instanceof Error ? error.message : String(error)}`

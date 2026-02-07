@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:discover effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -116,7 +117,7 @@ export default function executeDiscoverDiscover(
     
     return { success: true };
   } catch (error) {
-    console.error(`Error executing spellEffect:discover:`, error);
+    debug.error(`Error executing spellEffect:discover:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:discover: ${error instanceof Error ? error.message : String(error)}`

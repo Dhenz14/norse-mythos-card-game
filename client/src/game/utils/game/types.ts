@@ -9,6 +9,7 @@
 import { GameState, CardInstance as LegacyCardInstance, CardData, Player as LegacyPlayer } from '../../types';
 import { Card, CardInstance as EffectCardInstance, BattlecryEffect, DeathrattleEffect, SpellEffect } from '../../types/CardTypes';
 import { GameContext, Player as ContextPlayer } from '../../GameContext';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Type guard to check if a card ID is a number
@@ -27,7 +28,7 @@ export function toNumericCardId(id: string | number): number {
   }
   const parsed = parseInt(id, 10);
   if (isNaN(parsed)) {
-    console.warn(`Invalid card ID: ${id}, defaulting to 0`);
+    debug.warn(`Invalid card ID: ${id}, defaulting to 0`);
     return 0;
   }
   return parsed;
@@ -152,7 +153,7 @@ export function toPlayerId(value: string): PlayerId {
   if (isPlayerId(value)) {
     return value;
   }
-  console.warn(`Invalid player ID: ${value}, defaulting to 'player'`);
+  debug.warn(`Invalid player ID: ${value}, defaulting to 'player'`);
   return 'player';
 }
 

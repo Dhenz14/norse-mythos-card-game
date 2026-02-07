@@ -4,6 +4,7 @@
  * Shuffles a card into the player's deck.
  * Example card: Ancient Shade (ID: 30028)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -60,7 +61,7 @@ export default function executeShuffleCard(
       additionalData: { shuffledCards, count: shuffledCards.length }
     };
   } catch (error) {
-    console.error('Error executing shuffle_card:', error);
+    debug.error('Error executing shuffle_card:', error);
     return { success: false, error: `Failed to execute shuffle_card: ${error}` };
   }
 }

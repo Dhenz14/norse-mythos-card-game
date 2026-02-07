@@ -5,6 +5,7 @@
  * Swaps a minion on the board with a random minion from your deck.
  * Example card: Madam Goya (ID: 20215)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -97,7 +98,7 @@ export default function executeSwapWithDeck(
     
     return { success: false, error: 'Failed to find target on board' };
   } catch (error) {
-    console.error(`Error executing battlecry:swap_with_deck:`, error);
+    debug.error(`Error executing battlecry:swap_with_deck:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:swap_with_deck: ${error instanceof Error ? error.message : String(error)}`

@@ -11,6 +11,7 @@
 import { create } from 'zustand';
 import { CardInstance } from '../types';
 import { useGameStore } from '../stores/gameStore';
+import { debug } from '../config/debugConfig';
 
 interface AttackState {
   // The card that is currently attacking
@@ -84,7 +85,7 @@ export const useAttackStore = create<AttackState>((set, get) => ({
     
     // Safety check - make sure we have an attacking card
     if (!state.attackingCard) {
-      console.error('[AttackStore] No attacking card selected');
+      debug.error('[AttackStore] No attacking card selected');
       return false;
     }
     

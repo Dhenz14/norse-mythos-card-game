@@ -4,6 +4,7 @@
  * Transforms the source minion into a copy of a minion from the deck.
  * Example card: Muckmorpher (ID: 30042)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -65,7 +66,7 @@ export default function executeTransformCopyFromDeck(
       }
     };
   } catch (error) {
-    console.error('Error executing transform_copy_from_deck:', error);
+    debug.error('Error executing transform_copy_from_deck:', error);
     return { success: false, error: `Failed to execute transform_copy_from_deck: ${error}` };
   }
 }

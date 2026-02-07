@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:death_coil effect.
  * Deals damage to an enemy OR heals a friendly undead/character.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -79,7 +80,7 @@ export default function executeDeathCoil(
       error: 'Target is neither enemy nor friendly'
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:death_coil:`, error);
+    debug.error(`Error executing spellEffect:death_coil:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:death_coil: ${error instanceof Error ? error.message : String(error)}`

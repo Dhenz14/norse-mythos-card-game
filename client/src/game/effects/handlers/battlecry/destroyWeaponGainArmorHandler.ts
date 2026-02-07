@@ -5,6 +5,7 @@
  * Destroys the enemy hero's weapon and gains armor equal to its attack.
  * Example card: Gluttonous Ooze (ID: 30025)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -56,7 +57,7 @@ export default function executeDestroyWeaponGainArmor(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_weapon_gain_armor:`, error);
+    debug.error(`Error executing battlecry:destroy_weapon_gain_armor:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_weapon_gain_armor: ${error instanceof Error ? error.message : String(error)}`

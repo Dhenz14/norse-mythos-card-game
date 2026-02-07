@@ -3,6 +3,7 @@
  * 
  * Implements the "damage_and_buff" spellEffect effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -73,7 +74,7 @@ export function executeDamageAndBuffDamageAndBuff(
       } 
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:damage_and_buff:`, error);
+    debug.error(`Error executing spellEffect:damage_and_buff:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage_and_buff: ${error instanceof Error ? error.message : String(error)}`

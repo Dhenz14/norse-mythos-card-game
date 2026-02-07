@@ -5,6 +5,7 @@
  * Checks a condition before drawing cards.
  * Example card: Fight Promoter (ID: 30034) - If you control a minion with 6+ Health, draw 2 cards
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -115,7 +116,7 @@ function checkCondition(
       return context.currentPlayer.board.some(ci => ci.card.race === 'spirit' || ci.card.race === 'totem');
       
     default:
-      console.warn(`Unknown condition: ${condition}`);
+      debug.warn(`Unknown condition: ${condition}`);
       return true;
   }
 }
@@ -191,7 +192,7 @@ export default function executeConditionalDraw(
       }
     };
   } catch (error) {
-    console.error(`Error executing conditional_draw:`, error);
+    debug.error(`Error executing conditional_draw:`, error);
     return {
       success: false,
       error: `Error executing conditional_draw: ${error instanceof Error ? error.message : String(error)}`

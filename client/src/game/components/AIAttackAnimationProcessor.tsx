@@ -82,7 +82,7 @@ const AIAttackAnimationProcessor: React.FC = () => {
       });
       debug.animation(`[AI-ATTACK-ANIM] Emitted IMPACT_PHASE: ${event.attackerId} -> ${targetId} (${event.damage} dmg)`);
     } else {
-      console.warn(`[AI-ATTACK-ANIM] Skipping IMPACT_PHASE: missing targetId for minion attack (damage still applied)`);
+      debug.warn(`[AI-ATTACK-ANIM] Skipping IMPACT_PHASE: missing targetId for minion attack (damage still applied)`);
     }
     
     const step: CombatStep = {

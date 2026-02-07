@@ -2,6 +2,7 @@ import { GameState, CardData, Player } from '../types';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';
 import { getHealth } from './cards/typeGuards';
+import { debug } from '../config/debugConfig';
 
 const MAX_HAND_SIZE = 9;
 
@@ -20,7 +21,7 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
     logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
     
   } catch (error) {
-    console.error('[CardBurn] Failed to queue animation:', error);
+    debug.error('[CardBurn] Failed to queue animation:', error);
   }
 }
 

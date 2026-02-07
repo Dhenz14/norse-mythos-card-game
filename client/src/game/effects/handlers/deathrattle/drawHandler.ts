@@ -5,6 +5,7 @@
  * Draws cards when the minion dies.
  * Example: Loot Hoarder (draw 1 card)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -58,7 +59,7 @@ export default function executeDrawDraw(
       additionalData: { drawnCards, count: drawnCards.length }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:draw:`, error);
+    debug.error(`Error executing deathrattle:draw:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:draw: ${error instanceof Error ? error.message : String(error)}`

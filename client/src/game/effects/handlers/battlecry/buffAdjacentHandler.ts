@@ -4,6 +4,7 @@
  * Implements the "buff_adjacent" battlecry effect.
  * Buffs minions adjacent (left and right) to the source minion.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -76,7 +77,7 @@ export default function executeBuffAdjacent(
     
     return { success: true, additionalData: { buffedCount } };
   } catch (error) {
-    console.error(`Error executing battlecry:buff_adjacent:`, error);
+    debug.error(`Error executing battlecry:buff_adjacent:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:buff_adjacent: ${error instanceof Error ? error.message : String(error)}`

@@ -4,6 +4,7 @@
  * This handler implements the battlecry:buff effect.
  * Applies attack and health buffs to target minion(s).
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -98,7 +99,7 @@ export default function executeBuff(
     
     return { success: true, additionalData: { buffedCount } };
   } catch (error) {
-    console.error(`Error executing battlecry:buff:`, error);
+    debug.error(`Error executing battlecry:buff:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:buff: ${error instanceof Error ? error.message : String(error)}`

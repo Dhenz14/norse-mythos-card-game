@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:damage_with_self_damage effect.
  * Deals damage to a target and also damages your own hero.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -55,7 +56,7 @@ export default function executeDamageWithSelfDamage(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:damage_with_self_damage:`, error);
+    debug.error(`Error executing spellEffect:damage_with_self_damage:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage_with_self_damage: ${error instanceof Error ? error.message : String(error)}`

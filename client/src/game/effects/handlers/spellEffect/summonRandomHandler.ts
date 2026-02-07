@@ -4,6 +4,7 @@
  * Implements the "summon_random" spellEffect effect.
  * Summons a random minion from a pool of options.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -63,7 +64,7 @@ export default function executeSummonRandom(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:summon_random:`, error);
+    debug.error(`Error executing spellEffect:summon_random:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:summon_random: ${error instanceof Error ? error.message : String(error)}`

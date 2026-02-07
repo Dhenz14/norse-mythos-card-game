@@ -10,6 +10,7 @@ import {
 import { destroyCard } from '../zoneUtils';
 import { calculateDamageTaken } from './statusEffectUtils';
 import { isMinion, getHealth } from '../cards/typeGuards';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Utility function to handle damage dealing to heroes or minions
@@ -34,7 +35,7 @@ export function dealDamage(
     // Damage to minion
     return dealDamageToMinion(newState, targetPlayerId, targetInstanceId, amount, sourceCardId, sourcePlayerId);
   } else {
-    console.error('Invalid target for damage: missing targetInstanceId for minion');
+    debug.error('Invalid target for damage: missing targetInstanceId for minion');
     return newState;
   }
 }

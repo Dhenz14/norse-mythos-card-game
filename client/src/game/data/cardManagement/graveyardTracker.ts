@@ -31,6 +31,8 @@ export interface GraveyardMinion {
 }
 
 // Initialize the graveyard as an empty array
+import { debug } from '../../config/debugConfig';
+
 let graveyard: GraveyardMinion[] = [];
 
 /**
@@ -47,7 +49,7 @@ export function addToGraveyard(minion: GraveyardMinion): void {
     graveyard.shift();
   }
   
-  console.log(`Added ${minion.name} to graveyard. Current graveyard size: ${graveyard.length}`);
+  debug.card(`Added ${minion.name} to graveyard. Current graveyard size: ${graveyard.length}`);
 }
 
 /**
@@ -84,7 +86,7 @@ export function countGraveyardByRace(race: string): number {
  */
 export function clearGraveyard(): void {
   graveyard = [];
-  console.log('Graveyard cleared');
+  debug.card('Graveyard cleared');
 }
 
 /**

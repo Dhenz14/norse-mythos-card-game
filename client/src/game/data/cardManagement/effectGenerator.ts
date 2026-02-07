@@ -59,14 +59,14 @@ export default function execute${functionName}(
 ): EffectResult {
   try {
     // TODO: Implement ${effectName} logic here
-    console.log(\`Executing ${effectType} ${effectName} from \${sourceCard.name}\`);
+    debug.card(\`Executing ${effectType} ${effectName} from \${sourceCard.name}\`);
     
     return {
       success: true,
       // Add any additional result data as needed
     };
   } catch (error) {
-    console.error(\`Error executing ${effectType}:${effectName}:\`, error);
+    debug.error(\`Error executing ${effectType}:${effectName}:\`, error);
     return { 
       success: false, 
       error: \`Error executing ${effectType}:${effectName}: \${error instanceof Error ? error.message : String(error)}\`

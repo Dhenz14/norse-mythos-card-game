@@ -26,9 +26,13 @@ export {
 export {
   useUnifiedUIStore,
   type AnimationType,
+  type AnnouncementType,
   type Animation,
+  type ActionAnnouncement,
   type TargetingState,
   type ActivityLogEntry,
   type TooltipState,
   type ModalState,
+  getAnnouncementConfig,
+  fireAnnouncement,
 } from './unifiedUIStore';

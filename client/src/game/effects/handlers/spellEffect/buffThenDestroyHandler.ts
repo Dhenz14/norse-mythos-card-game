@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:buff_then_destroy effect.
  * Buffs a minion and then destroys it after a duration.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -80,7 +81,7 @@ export default function executeBuffThenDestroy(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:buff_then_destroy:`, error);
+    debug.error(`Error executing spellEffect:buff_then_destroy:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:buff_then_destroy: ${error instanceof Error ? error.message : String(error)}`

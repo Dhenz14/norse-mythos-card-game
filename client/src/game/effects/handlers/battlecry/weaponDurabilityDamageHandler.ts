@@ -4,6 +4,7 @@
  * Deals damage equal to weapon durability or removes durability.
  * Example card: Bloodsail Corsair (ID: 80004)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -78,7 +79,7 @@ export default function executeWeaponDurabilityDamage(
       }
     };
   } catch (error) {
-    console.error('Error executing weapon_durability_damage:', error);
+    debug.error('Error executing weapon_durability_damage:', error);
     return { success: false, error: `Failed to execute weapon_durability_damage: ${error}` };
   }
 }

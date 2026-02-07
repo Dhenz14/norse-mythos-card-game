@@ -4,6 +4,7 @@
  * Implements the "summon_random_minions" battlecry effect.
  * Summons X random minions matching specific criteria (mana cost, race, etc.)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -131,7 +132,7 @@ export default function executeSummonRandomMinions(
       } 
     };
   } catch (error) {
-    console.error(`Error executing summon_random_minions:`, error);
+    debug.error(`Error executing summon_random_minions:`, error);
     return { 
       success: false, 
       error: `Error executing summon_random_minions: ${error instanceof Error ? error.message : String(error)}`

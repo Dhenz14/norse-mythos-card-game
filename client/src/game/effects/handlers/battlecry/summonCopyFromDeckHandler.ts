@@ -5,6 +5,7 @@
  * Summons a copy of a random minion from the player's deck (with optional stat overrides).
  * Example card: Barnes (ID: 20105) - summons a 1/1 copy
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -102,7 +103,7 @@ export default function executeSummonCopyFromDeck(
       } 
     };
   } catch (error) {
-    console.error(`Error executing summon_copy_from_deck:`, error);
+    debug.error(`Error executing summon_copy_from_deck:`, error);
     return { 
       success: false, 
       error: `Error executing summon_copy_from_deck: ${error instanceof Error ? error.message : String(error)}`

@@ -4,6 +4,7 @@
  * Implements the "gain_keyword" battlecry effect.
  * Grants keywords (Taunt, Windfury, Lifesteal, etc.) to target minion(s).
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -85,7 +86,7 @@ export default function executeGainKeyword(
     
     return { success: true, additionalData: { modifiedCount, keywordsGranted: keywords } };
   } catch (error) {
-    console.error(`Error executing battlecry:gain_keyword:`, error);
+    debug.error(`Error executing battlecry:gain_keyword:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:gain_keyword: ${error instanceof Error ? error.message : String(error)}`

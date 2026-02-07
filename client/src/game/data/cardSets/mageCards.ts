@@ -10,6 +10,7 @@
  * - Secrets: Hidden effects that trigger on specific conditions
  * - Direct Damage: Spells that deal damage to minions and heroes
  */
+import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType, SpellTargetType } from '../../types';
 
@@ -24,7 +25,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * - Mage tokens: 3xxxx series
  */
 export function registerMageCards(): void {
-  if (IS_DEV) console.log('Registering Mage cards...');
+  if (IS_DEV) debug.card('Registering Mage cards...');
 
   // MAGE MINION CARDS
   
@@ -884,5 +885,5 @@ export function registerMageCards(): void {
     .collectible(false)
     .build();
 
-  if (IS_DEV) console.log('Mage cards registered successfully.');
+  if (IS_DEV) debug.card('Mage cards registered successfully.');
 }

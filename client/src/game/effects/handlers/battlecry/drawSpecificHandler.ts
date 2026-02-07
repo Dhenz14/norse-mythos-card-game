@@ -5,6 +5,7 @@
  * Draws a specific card by ID or matching criteria.
  * Example card: Kronx Dragonhoof (ID: 20310) - Draw Galakrond if in deck
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -117,7 +118,7 @@ export default function executeDrawSpecific(
       }
     };
   } catch (error) {
-    console.error(`Error executing draw_specific:`, error);
+    debug.error(`Error executing draw_specific:`, error);
     return {
       success: false,
       error: `Error executing draw_specific: ${error instanceof Error ? error.message : String(error)}`

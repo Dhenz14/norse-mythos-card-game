@@ -9,6 +9,7 @@
 
 import { StorageKeys } from '@/game/config/storageKeys';
 import { FeatureFlags } from '@/game/config/featureFlags';
+import { debug as debugUtil } from '@/game/config/debugConfig';
 import {
         BaseHiveDataAdapter,
         type AdapterResult,
@@ -32,19 +33,19 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
         readonly usesLocalStorage = true;
         readonly syncMode = 'none' as const;
 
-        private debug(message: string, ...args: unknown[]): void {
+        private debugLog(message: string, ...args: unknown[]): void {
                 if (FeatureFlags.DATA_LAYER_DEBUG) {
-                        console.log(`[LocalStorageAdapter] ${message}`, ...args);
+                        debugUtil.log(`[LocalStorageAdapter] ${message}`, ...args);
                 }
         }
 
         async initialize(): Promise<AdapterResult<void>> {
-                this.debug('Initializing...');
+                this.debugLog('Initializing...');
                 return this.createResult(undefined);
         }
 
         async dispose(): Promise<void> {
-                this.debug('Disposing...');
+                this.debugLog('Disposing...');
         }
 
         // User operations
@@ -60,7 +61,7 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
         async saveUser(user: HiveUser): Promise<AdapterResult<void>> {
                 try {
                         localStorage.setItem(StorageKeys.HIVE_USER_DATA, JSON.stringify(user));
-                        this.debug('User saved:', user.username);
+                        this.debugLog('User saved:', user.username);
                         return this.createResult(undefined);
                 } catch (e) {
                         return this.createError('Failed to save user');
@@ -85,7 +86,7 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
         async saveStats(stats: HivePlayerStats): Promise<AdapterResult<void>> {
                 try {
                         localStorage.setItem(StorageKeys.HIVE_PLAYER_STATS, JSON.stringify(stats));
-                        this.debug('Stats saved:', stats);
+                        this.debugLog('Stats saved:', stats);
                         return this.createResult(undefined);
                 } catch (e) {
                         return this.createError('Failed to save stats');
@@ -113,7 +114,7 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         // Limit stored matches
                         const limited = matches.slice(0, STORAGE_LIMITS.MAX_MATCHES_STORED);
                         localStorage.setItem(StorageKeys.HIVE_MATCHES, JSON.stringify(limited));
-                        this.debug('Match saved:', match.matchId);
+                        this.debugLog('Match saved:', match.matchId);
                         return this.createResult(undefined);
                 } catch (e) {
                         return this.createError('Failed to save match');
@@ -249,12 +250,12 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
 
         // Sync operations - no-op for LocalStorageAdapter
         async syncToExternal(): Promise<AdapterResult<void>> {
-                this.debug('syncToExternal called - no external sync in local mode');
+                this.debugLog('syncToExternal called - no external sync in local mode');
                 return this.createResult(undefined);
         }
 
         async syncFromExternal(): Promise<AdapterResult<void>> {
-                this.debug('syncFromExternal called - no external sync in local mode');
+                this.debugLog('syncFromExternal called - no external sync in local mode');
                 return this.createResult(undefined);
         }
 }

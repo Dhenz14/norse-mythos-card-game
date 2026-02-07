@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createGameLogEvent } from '../gameLogUtils';
 import { dealDamage, getValidTargets } from '../effects/damageUtils';
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Execute a combo effect for a spell card
@@ -33,7 +34,7 @@ export function executeComboSpellEffect(
   const cardIndex = playerHand.findIndex((card: CardInstance) => card.instanceId === cardInstanceId);
   
   if (cardIndex === -1) {
-    console.error(`Card ${cardInstanceId} not found in player's hand`);
+    debug.error(`Card ${cardInstanceId} not found in player's hand`);
     return newState;
   }
   
@@ -41,7 +42,7 @@ export function executeComboSpellEffect(
   
   // Check if the card has a combo effect
   if (!comboCard.card.comboEffect) {
-    console.error(`Card ${cardInstanceId} has no combo effect`);
+    debug.error(`Card ${cardInstanceId} has no combo effect`);
     return newState;
   }
   
@@ -173,7 +174,7 @@ export function executeComboSpellEffect(
       
     default:
       // Unknown combo effect type
-      console.error(`Unknown combo effect type: ${comboEffect.type}`);
+      debug.error(`Unknown combo effect type: ${comboEffect.type}`);
       break;
   }
   

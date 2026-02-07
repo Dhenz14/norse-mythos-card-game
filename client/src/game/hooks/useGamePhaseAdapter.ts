@@ -7,6 +7,7 @@
 
 import { useGameFlowStore, GamePhase } from '../stores/gameFlowStore';
 import { MIGRATION_FLAGS } from './useAdapterConfig';
+import { debug } from '../config/debugConfig';
 
 export type LegacyScreen = 
   | 'main_menu'
@@ -85,8 +86,8 @@ export function useGamePhaseAdapter(
   }
 
   if (!MIGRATION_FLAGS.USE_GAME_FLOW_STORE) {
-    console.error('[useGamePhaseAdapter] Legacy mode requires legacyPhase/setLegacyPhase args but none provided. Returning no-op adapter to prevent silent migration.');
-    const noOp = () => console.error('[useGamePhaseAdapter] Transition blocked - missing legacy args');
+    debug.error('[useGamePhaseAdapter] Legacy mode requires legacyPhase/setLegacyPhase args but none provided. Returning no-op adapter to prevent silent migration.');
+    const noOp = () => debug.error('[useGamePhaseAdapter] Transition blocked - missing legacy args');
     return {
       currentPhase: 'MAIN_MENU' as GamePhase,
       currentScreen: 'main_menu' as LegacyScreen,

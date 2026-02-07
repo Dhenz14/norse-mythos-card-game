@@ -5,6 +5,7 @@
  * Destroys a minion of a specific tribe and optionally buffs the source minion.
  * Example card: Hungry Crab (ID: 31010) - destroys a Murloc, gains +2/+2
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -92,7 +93,7 @@ export default function executeDestroyTribe(
     
     return { success: true, additionalData: { minionsDestroyed: 0 } };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_tribe:`, error);
+    debug.error(`Error executing battlecry:destroy_tribe:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_tribe: ${error instanceof Error ? error.message : String(error)}`

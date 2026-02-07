@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:buff_damaged_minions effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -59,7 +60,7 @@ export default function executeBuffDamagedMinions(
       } 
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:buff_damaged_minions:`, error);
+    debug.error(`Error executing spellEffect:buff_damaged_minions:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:buff_damaged_minions: ${error instanceof Error ? error.message : String(error)}`

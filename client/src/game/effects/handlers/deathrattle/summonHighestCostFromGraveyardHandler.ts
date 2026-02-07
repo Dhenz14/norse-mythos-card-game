@@ -4,6 +4,7 @@
  * This handler finds the highest mana cost minion in the graveyard and summons it.
  * Used by Necromancer cards like Grave Pact.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -114,7 +115,7 @@ export default function executeSummonHighestCostFromGraveyardSummonHighestCostFr
       };
     }
   } catch (error) {
-    console.error('Error in summon_highest_cost_from_graveyard effect:', error);
+    debug.error('Error in summon_highest_cost_from_graveyard effect:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : String(error)

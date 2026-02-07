@@ -4,6 +4,7 @@
  * Implements the "give_mana" battlecry effect.
  * Gives extra mana crystals for the next turn.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -56,7 +57,7 @@ export default function executeGiveMana(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:give_mana:`, error);
+    debug.error(`Error executing battlecry:give_mana:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:give_mana: ${error instanceof Error ? error.message : String(error)}`

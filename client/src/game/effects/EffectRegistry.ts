@@ -7,6 +7,7 @@
 import { GameContext } from '../GameContext';
 import { Card, SpellEffect, BattlecryEffect, DeathrattleEffect } from '../types/CardTypes';
 import { EffectResult } from '../types/EffectTypes';
+import { debug } from '../config/debugConfig';
 
 // Type definitions for effect handlers
 export type BattlecryHandler = (context: GameContext, effect: BattlecryEffect, sourceCard: Card) => EffectResult;
@@ -45,14 +46,14 @@ export class EffectRegistry {
     const handler = this.battlecryHandlers[effect.type];
     
     if (!handler) {
-      console.error(`Unknown battlecry type: ${effect.type}`);
+      debug.error(`Unknown battlecry type: ${effect.type}`);
       return { success: false, error: `Unknown battlecry type: ${effect.type}` };
     }
     
     try {
       return handler(context, effect, sourceCard);
     } catch (error) {
-      console.error(`Error executing battlecry ${effect.type}:`, error);
+      debug.error(`Error executing battlecry ${effect.type}:`, error);
       return { 
         success: false, 
         error: `Error executing battlecry ${effect.type}: ${error instanceof Error ? error.message : String(error)}` 
@@ -64,14 +65,14 @@ export class EffectRegistry {
     const handler = this.deathrattleHandlers[effect.type];
     
     if (!handler) {
-      console.error(`Unknown deathrattle type: ${effect.type}`);
+      debug.error(`Unknown deathrattle type: ${effect.type}`);
       return { success: false, error: `Unknown deathrattle type: ${effect.type}` };
     }
     
     try {
       return handler(context, effect, sourceCard);
     } catch (error) {
-      console.error(`Error executing deathrattle ${effect.type}:`, error);
+      debug.error(`Error executing deathrattle ${effect.type}:`, error);
       return { 
         success: false, 
         error: `Error executing deathrattle ${effect.type}: ${error instanceof Error ? error.message : String(error)}` 
@@ -83,14 +84,14 @@ export class EffectRegistry {
     const handler = this.spellEffectHandlers[effect.type];
     
     if (!handler) {
-      console.error(`Unknown spell effect type: ${effect.type}`);
+      debug.error(`Unknown spell effect type: ${effect.type}`);
       return { success: false, error: `Unknown spell effect type: ${effect.type}` };
     }
     
     try {
       return handler(context, effect, sourceCard);
     } catch (error) {
-      console.error(`Error executing spell effect ${effect.type}:`, error);
+      debug.error(`Error executing spell effect ${effect.type}:`, error);
       return { 
         success: false, 
         error: `Error executing spell effect ${effect.type}: ${error instanceof Error ? error.message : String(error)}` 
@@ -102,14 +103,14 @@ export class EffectRegistry {
     const handler = this.comboHandlers[effect.type];
     
     if (!handler) {
-      console.error(`Unknown combo type: ${effect.type}`);
+      debug.error(`Unknown combo type: ${effect.type}`);
       return { success: false, error: `Unknown combo type: ${effect.type}` };
     }
     
     try {
       return handler(context, effect, sourceCard);
     } catch (error) {
-      console.error(`Error executing combo ${effect.type}:`, error);
+      debug.error(`Error executing combo ${effect.type}:`, error);
       return { 
         success: false, 
         error: `Error executing combo ${effect.type}: ${error instanceof Error ? error.message : String(error)}` 

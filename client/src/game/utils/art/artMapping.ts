@@ -1,3 +1,4 @@
+import { debug } from '../../config/debugConfig';
 /**
  * Art Mapping Utility
  * Maps game hero/king IDs to artwork IDs from metadata
@@ -680,7 +681,7 @@ export function getCardArtPath(cardName: string): string | null {
   
   // Validate character is in creature-only set (not hero-reserved)
   if (!CREATURE_ART_CHARACTERS.has(character)) {
-    console.warn(`[artMapping] Warning: "${cardName}" maps to hero-reserved character "${character}"`);
+    debug.warn(`[artMapping] Warning: "${cardName}" maps to hero-reserved character "${character}"`);
     return null;
   }
   

@@ -1,3 +1,4 @@
+import { debug } from '../../config/debugConfig';
 import React, { useState, useEffect } from 'react';
 import { initializeGame, playCard, endTurn } from '../../utils/gameUtils';
 import { CardInstance, CardRarity } from '../../types';
@@ -145,7 +146,7 @@ export const SimpleGame = () => {
       setGameState(newState);
       playHit(); // Play sound effect
     } catch (error) {
-      console.error('Error playing card:', error);
+      debug.error('Error playing card:', error);
       alert('Error playing card');
     }
   };
@@ -157,7 +158,7 @@ export const SimpleGame = () => {
       setGameState(newState);
       playSuccess(); // Play sound effect
     } catch (error) {
-      console.error('Error ending turn:', error);
+      debug.error('Error ending turn:', error);
       alert('Error ending turn');
     }
   };

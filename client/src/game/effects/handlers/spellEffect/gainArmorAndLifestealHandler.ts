@@ -4,6 +4,7 @@
  * Implements the "gain_armor_and_lifesteal" spellEffect effect.
  * Grants armor and gives lifesteal to the hero for a duration.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -41,7 +42,7 @@ export default function executeGainArmorAndLifesteal(
       additionalData: { armorGained: armorValue, lifestealDuration: duration }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:gain_armor_and_lifesteal:`, error);
+    debug.error(`Error executing spellEffect:gain_armor_and_lifesteal:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:gain_armor_and_lifesteal: ${error instanceof Error ? error.message : String(error)}`

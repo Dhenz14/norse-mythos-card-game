@@ -5,6 +5,7 @@
  * Buffs other minions when this minion dies.
  * Example: Spawn of N'Zoth (gives all friendly minions +1/+1)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -92,7 +93,7 @@ export default function executeBuffBuff(
       additionalData: { buffedCount, attackBuff, healthBuff }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:buff:`, error);
+    debug.error(`Error executing deathrattle:buff:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:buff: ${error instanceof Error ? error.message : String(error)}`

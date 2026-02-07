@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:buff_weapon effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -58,7 +59,7 @@ export default function executeBuffWeapon(
       additionalData: { attackBuff, durabilityBuff }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:buff_weapon:`, error);
+    debug.error(`Error executing spellEffect:buff_weapon:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:buff_weapon: ${error instanceof Error ? error.message : String(error)}`

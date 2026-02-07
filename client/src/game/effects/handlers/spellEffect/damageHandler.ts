@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:damage effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -121,7 +122,7 @@ export default function executeDamageDamage(
       return { success: false, error: 'Damage effect requires target but none specified' };
     }
   } catch (error) {
-    console.error(`Error executing spellEffect:damage:`, error);
+    debug.error(`Error executing spellEffect:damage:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage: ${error instanceof Error ? error.message : String(error)}`

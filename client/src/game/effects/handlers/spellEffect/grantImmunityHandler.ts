@@ -4,6 +4,7 @@
  * Implements the "grant_immunity" spellEffect effect.
  * Grants temporary immunity to the hero or minions.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -71,7 +72,7 @@ export default function executeGrantImmunity(
       additionalData: { immunitiesGranted, duration }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:grant_immunity:`, error);
+    debug.error(`Error executing spellEffect:grant_immunity:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:grant_immunity: ${error instanceof Error ? error.message : String(error)}`

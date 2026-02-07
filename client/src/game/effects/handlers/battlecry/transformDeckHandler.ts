@@ -4,6 +4,7 @@
  * Transforms all cards in the deck into something else.
  * Example card: Lady Prestor (ID: 20315)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -70,7 +71,7 @@ export default function executeTransformDeck(
       additionalData: { transformedCount, transformInto }
     };
   } catch (error) {
-    console.error('Error executing transform_deck:', error);
+    debug.error('Error executing transform_deck:', error);
     return { success: false, error: `Failed to execute transform_deck: ${error}` };
   }
 }

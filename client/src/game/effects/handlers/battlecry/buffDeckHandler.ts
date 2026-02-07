@@ -5,6 +5,7 @@
  * Buffs all minions in the player's deck.
  * Example card: Prince Keleseth (ID: 20705)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -68,7 +69,7 @@ export default function executeBuffDeck(
     
     return { success: true, additionalData: { buffedCount } };
   } catch (error) {
-    console.error(`Error executing battlecry:buff_deck:`, error);
+    debug.error(`Error executing battlecry:buff_deck:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:buff_deck: ${error instanceof Error ? error.message : String(error)}`

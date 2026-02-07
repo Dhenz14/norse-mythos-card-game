@@ -4,6 +4,7 @@
  * This handler summons a random minion from the graveyard.
  * Used by Necromancer cards like Raise Dead.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card } from '../../../types/CardTypes';
 import { SpellEffect } from '../../../types';
@@ -85,7 +86,7 @@ function executeSummonFromGraveyardSummonFromGraveyard(
       additionalData: { summonedCard: cardToSummon.name } 
     };
   } catch (error) {
-    console.error('Error in summon_from_graveyard effect:', error);
+    debug.error('Error in summon_from_graveyard effect:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : String(error)

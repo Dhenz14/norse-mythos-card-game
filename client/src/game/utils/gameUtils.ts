@@ -88,7 +88,7 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
       // Fallback to random deck if saved deck not found
       playerDeck = createStartingDeck(30);
       playerClass = selectedHeroClass;
-      console.warn(`Selected deck not found. Using random deck.`);
+      debug.warn(`Selected deck not found. Using random deck.`);
     }
   } else {
     // Fallback to random class deck with no test cards
@@ -278,7 +278,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   // Find the card in the player's hand
   const cardResult = findCardInstance(player.hand, cardInstanceId);
   if (!cardResult) {
-    console.error(`Card with ID ${cardInstanceId} not found in player's hand`);
+    debug.error(`Card with ID ${cardInstanceId} not found in player's hand`);
     return state;
   }
   
@@ -418,7 +418,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
         // Apply magnetization
         return applyMagnetization(newState, currentPlayer, cardInstanceId, targetId);
       } else {
-        console.error('Magnetize target is not a mech');
+        debug.error('Magnetize target is not a mech');
         return state;
       }
     }
@@ -479,7 +479,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // Check if battlefield is full (Hearthstone has a limit of 7 minions)
   if (player.battlefield.length >= 7) {
-    console.error(`Cannot play ${card.card.name}: Battlefield is full (7 minions maximum)`);
+    debug.error(`Cannot play ${card.card.name}: Battlefield is full (7 minions maximum)`);
     return state;
   }
 
@@ -520,7 +520,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   );
   
   if (!justPlayedCardInfo) {
-    console.error('Card just played not found on battlefield - this should never happen');
+    debug.error('Card just played not found on battlefield - this should never happen');
     return state;
   }
   
@@ -611,7 +611,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
               }
             }
           } else {
-            console.error('Target minion not found for battlecry damage');
+            debug.error('Target minion not found for battlecry damage');
           }
         }
       } else if (targetType === 'hero') {
@@ -747,7 +747,7 @@ function applyTurnStartPipeline(state: GameState, player: 'player' | 'opponent')
   
   // Validation: ensure currentTurn matches the player we're processing
   if (newState.currentTurn !== player) {
-    console.warn(`[applyTurnStartPipeline] currentTurn mismatch: expected ${player}, got ${newState.currentTurn}`);
+    debug.warn(`[applyTurnStartPipeline] currentTurn mismatch: expected ${player}, got ${newState.currentTurn}`);
   }
   
   // 1. Log the turn start first (so logs show before effects)
@@ -960,7 +960,7 @@ export function endTurn(state: GameState): GameState {
       newState = applyTurnStartPipeline(newState, 'player');
       
     } catch (error) {
-      console.error("Error during opponent's turn:", error);
+      debug.error("Error during opponent's turn:", error);
       
       // Error recovery - set up base state and use standard pipeline
       const playerState = newState.players.player;
@@ -996,7 +996,7 @@ export function endTurn(state: GameState): GameState {
         newState = applyTurnStartPipeline(newState, 'player');
       } catch (recoveryError) {
         // Minimal recovery as last resort - just reset minions
-        console.error("Error in recovery path:", recoveryError);
+        debug.error("Error in recovery path:", recoveryError);
         newState = performTurnStartResets(newState);
       }
     }
@@ -1015,14 +1015,14 @@ function simulateOpponentTurn(state: GameState): GameState {
   try {
     // Safety check to ensure we received a valid state object
     if (!state || !state.players || !state.players.opponent) {
-      console.error("Invalid state passed to simulateOpponentTurn", state);
+      debug.error("Invalid state passed to simulateOpponentTurn", state);
       return state; // Return the original state to avoid crashing
     }
 
     let currentState = JSON.parse(JSON.stringify(state)) as GameState;
     const opponent = currentState.players.opponent;
     
-    console.log('[AI Turn] simulateOpponentTurn called:', {
+    debug.ai('[AI Turn] simulateOpponentTurn called:', {
       handSize: opponent.hand.length,
       mana: opponent.mana.current,
       maxMana: opponent.mana.max,
@@ -1157,11 +1157,11 @@ function simulateOpponentTurn(state: GameState): GameState {
         // Play the card with target if we found one
         if (targetId) {
           try {
-            debug.log(`[AI Turn] Playing targeted card: ${card.card.name} (cost: ${card.card.manaCost}) → target: ${targetId}`);
+            debug.ai(`[AI Turn] Playing targeted card: ${card.card.name} (cost: ${card.card.manaCost}) → target: ${targetId}`);
             const targetType = targetId === 'player-hero' || targetId === 'opponent-hero' ? 'hero' : 'minion';
             currentState = playCard(currentState, card.instanceId, targetId, targetType);
           } catch (error) {
-            console.error(`Error playing targeted card ${card.card.name}:`, error);
+            debug.error(`Error playing targeted card ${card.card.name}:`, error);
           }
         } else {
           continue; // Skip if no valid target
@@ -1169,15 +1169,15 @@ function simulateOpponentTurn(state: GameState): GameState {
       } else {
         // Non-targeted card, play normally
         try {
-          debug.log(`[AI Turn] Playing card: ${card.card.name} (cost: ${card.card.manaCost}, type: ${card.card.type})`);
+          debug.ai(`[AI Turn] Playing card: ${card.card.name} (cost: ${card.card.manaCost}, type: ${card.card.type})`);
           currentState = playCard(currentState, card.instanceId);
         } catch (error) {
-          console.error(`Error playing card ${card.card.name}:`, error);
+          debug.error(`Error playing card ${card.card.name}:`, error);
         }
       }
     }
     
-    console.log('[AI Turn] After card play phase:', {
+    debug.ai('[AI Turn] After card play phase:', {
       battlefieldSize: currentState.players.opponent.battlefield.length,
       handSize: currentState.players.opponent.hand.length,
       manaLeft: currentState.players.opponent.mana.current,
@@ -1193,7 +1193,7 @@ function simulateOpponentTurn(state: GameState): GameState {
     .sort((a, b) => (b.currentHealth || 0) - (a.currentHealth || 0)); // Sort by HP (highest first)
   
   
-  console.log('[AI Turn] Attack phase:', {
+  debug.ai('[AI Turn] Attack phase:', {
     attackableCount: attackableCards.length,
     allMinions: currentState.players.opponent.battlefield.map(m => ({
       name: m.card.name,
@@ -1330,7 +1330,7 @@ function simulateOpponentTurn(state: GameState): GameState {
           }
         }
       } catch (error) {
-        console.error('AI attack error:', error);
+        debug.error('AI attack error:', error);
       }
     });
   }
@@ -1340,7 +1340,7 @@ function simulateOpponentTurn(state: GameState): GameState {
   
   return currentState;
   } catch (error) {
-    console.error('AI simulation error:', error);
+    debug.error('AI simulation error:', error);
     return state; // Return the original state if we encounter an error
   }
 }
@@ -1370,7 +1370,7 @@ function processAttackForOpponent(
     const attackerIndex = opponentField.findIndex(card => card.instanceId === attackerInstanceId);
     
     if (attackerIndex === -1) {
-      console.error('AI: Attacker card not found');
+      debug.error('AI: Attacker card not found');
       return state;
     }
     
@@ -1386,7 +1386,7 @@ function processAttackForOpponent(
     
     // Check if the card can attack
     if (attacker.isSummoningSick || !attacker.canAttack) {
-      console.error('AI: Card cannot attack - summoning sick or already attacked');
+      debug.error('AI: Card cannot attack - summoning sick or already attacked');
       return state;
     }
     
@@ -1395,7 +1395,7 @@ function processAttackForOpponent(
       // Check for Rush restriction - cards with Rush can only attack minions on the turn they're played
       // Use the more robust isValidRushTarget function for consistency
       if (!isValidRushTarget(attacker, 'hero')) {
-        console.error('AI: Minions with Rush cannot attack the player hero on the turn they are played');
+        debug.error('AI: Minions with Rush cannot attack the player hero on the turn they are played');
         return state;
       }
       
@@ -1404,7 +1404,7 @@ function processAttackForOpponent(
       if (attacker.isWeakened) attackDamage = Math.max(0, attackDamage - 3);
       if (attacker.isBurning) attackDamage += 3;
       
-      console.log(`[AI Attack] ${attacker.card.name} attacks Player Hero for ${attackDamage} damage (deferDamage=${deferDamage})`);
+      debug.combat(`[AI Attack] ${attacker.card.name} attacks Player Hero for ${attackDamage} damage (deferDamage=${deferDamage})`);
       
       // Queue animation with full combat data
       queueAIAttackAnimation(
@@ -1424,7 +1424,7 @@ function processAttackForOpponent(
       // Apply damage immediately when NOT deferring
       if (!deferDamage) {
         newState.players.player.health -= attackDamage;
-        console.log(`[AI Attack] Player HP: ${newState.players.player.health + attackDamage} → ${newState.players.player.health}`);
+        debug.combat(`[AI Attack] Player HP: ${newState.players.player.health + attackDamage} → ${newState.players.player.health}`);
       }
       
       // Apply Burn self-damage if attacker is burning
@@ -1475,7 +1475,7 @@ function processAttackForOpponent(
     const defenderIndex = playerField.findIndex(card => card.instanceId === defenderInstanceId);
     
     if (defenderIndex === -1) {
-      console.error('AI: Defender card not found');
+      debug.error('AI: Defender card not found');
       return state;
     }
     
@@ -1490,7 +1490,7 @@ function processAttackForOpponent(
     const attackerHasDivineShield = attacker.hasDivineShield || false;
     const defenderHasDivineShield = defender.hasDivineShield || false;
     
-    console.log(`[AI Attack] ${attacker.card.name} (${attackDamage} atk) attacks ${defender.card.name} (deferDamage=${deferDamage})`);
+    debug.combat(`[AI Attack] ${attacker.card.name} (${attackDamage} atk) attacks ${defender.card.name} (deferDamage=${deferDamage})`);
     
     // Queue animation with full combat data
     queueAIAttackAnimation(
@@ -1640,7 +1640,7 @@ function processAttackForOpponent(
     
     return checkGameOver(newState);
   } catch (error) {
-    console.error('AI attack processing error:', error);
+    debug.error('AI attack processing error:', error);
     return state;
   }
 }
@@ -1664,7 +1664,7 @@ function processAttackForPlayer(
     const attackerIndex = playerField.findIndex(card => card.instanceId === attackerInstanceId);
     
     if (attackerIndex === -1) {
-      console.error('Player Auto-Attack: Attacker card not found');
+      debug.error('Player Auto-Attack: Attacker card not found');
       return state;
     }
     
@@ -1680,7 +1680,7 @@ function processAttackForPlayer(
     
     // Check if the card can attack
     if (attacker.isSummoningSick || !attacker.canAttack) {
-      console.error('Player Auto-Attack: Card cannot attack - summoning sick or already attacked');
+      debug.error('Player Auto-Attack: Card cannot attack - summoning sick or already attacked');
       return state;
     }
     
@@ -1688,7 +1688,7 @@ function processAttackForPlayer(
     if (!defenderInstanceId) {
       // Check for Rush restriction
       if (!isValidRushTarget(attacker, 'hero')) {
-        console.error('Player Auto-Attack: Minions with Rush cannot attack the hero on the turn they are played');
+        debug.error('Player Auto-Attack: Minions with Rush cannot attack the hero on the turn they are played');
         return state;
       }
       
@@ -1763,7 +1763,7 @@ function processAttackForPlayer(
     const defenderIndex = opponentField.findIndex(card => card.instanceId === defenderInstanceId);
     
     if (defenderIndex === -1) {
-      console.error('Player Auto-Attack: Defender card not found');
+      debug.error('Player Auto-Attack: Defender card not found');
       return state;
     }
     
@@ -1898,7 +1898,7 @@ function processAttackForPlayer(
     
     return checkGameOver(newState);
   } catch (error) {
-    console.error('Player auto-attack processing error:', error);
+    debug.error('Player auto-attack processing error:', error);
     return state;
   }
 }
@@ -2013,7 +2013,7 @@ function simulatePlayerMinionAttacks(state: GameState): GameState {
           );
         }
       } catch (error) {
-        console.error(`Error during player auto-attack with ${attackerCard.card.name}:`, error);
+        debug.error(`Error during player auto-attack with ${attackerCard.card.name}:`, error);
       }
     });
   }
@@ -2069,7 +2069,7 @@ export function processAttack(
     (window.location.pathname.includes('ai') || window.location.href.includes('ai-game'));
   
   if (state.currentTurn !== 'player' && !isAISimulation) {
-    console.error('[ATTACK ERROR] Cannot attack during opponent\'s turn');
+    debug.error('[ATTACK ERROR] Cannot attack during opponent\'s turn');
     return state;
   }
   
@@ -2078,7 +2078,7 @@ export function processAttack(
   const attackerIndex = playerField.findIndex(card => card.instanceId === attackerInstanceId);
   
   if (attackerIndex === -1) {
-    console.error(`[ATTACK ERROR] Attacker card with ID ${attackerInstanceId} not found on the battlefield`);
+    debug.error(`[ATTACK ERROR] Attacker card with ID ${attackerInstanceId} not found on the battlefield`);
     // Additional diagnostic info
     return state;
   }
@@ -2088,12 +2088,12 @@ export function processAttack(
     
   // Check if the card can attack
   if (attacker.isSummoningSick) {
-    console.error(`[ATTACK ERROR] Card ${attacker.card.name} cannot attack due to summoning sickness`);
+    debug.error(`[ATTACK ERROR] Card ${attacker.card.name} cannot attack due to summoning sickness`);
     return state;
   }
   
   if (!attacker.canAttack) {
-    console.error(`[ATTACK ERROR] Card ${attacker.card.name} cannot attack (already attacked this turn)`);
+    debug.error(`[ATTACK ERROR] Card ${attacker.card.name} cannot attack (already attacked this turn)`);
     return state;
   }
   
@@ -2106,12 +2106,12 @@ export function processAttack(
   // Use the more robust isValidRushTarget function for consistency
   if (!defenderInstanceId) {
     if (!isValidRushTarget(attacker, 'hero')) {
-      console.error('Minions with Rush cannot attack the enemy hero on the turn they are played');
+      debug.error('Minions with Rush cannot attack the enemy hero on the turn they are played');
       return state;
     }
   } else {
     if (!isValidRushTarget(attacker, 'minion')) {
-      console.error('Invalid target for minion with Rush');
+      debug.error('Invalid target for minion with Rush');
       return state;
     }
   }
@@ -2123,7 +2123,7 @@ export function processAttack(
   if (!defenderInstanceId) {
     // Cannot attack hero if there are Taunt minions on the battlefield
     if (opponentHasTaunt) {
-      console.error('Cannot attack hero directly when opponent has Taunt minions');
+      debug.error('Cannot attack hero directly when opponent has Taunt minions');
       return state;
     }
     
@@ -2171,7 +2171,7 @@ export function processAttack(
   const defenderIndex = opponentField.findIndex(card => card.instanceId === defenderInstanceId);
   
   if (defenderIndex === -1) {
-    console.error('Defender card not found');
+    debug.error('Defender card not found');
     return state;
   }
   
@@ -2180,7 +2180,7 @@ export function processAttack(
   // If there are Taunt minions, we can only attack those
   const defenderKeywords = defender.card.keywords || [];
   if (opponentHasTaunt && !defenderKeywords.includes('taunt')) {
-    console.error('Must attack Taunt minions first');
+    debug.error('Must attack Taunt minions first');
     return state;
   }
   
@@ -2333,7 +2333,7 @@ export function findOptimalAttackTargets(
   const attackerIndex = playerField.findIndex(card => card.instanceId === attackerInstanceId);
   
   if (attackerIndex === -1) {
-    console.error('Attacker card not found');
+    debug.error('Attacker card not found');
     return [];
   }
   
@@ -2524,7 +2524,7 @@ export function autoAttackWithCard(
       return processAttack(state, attackerInstanceId, bestTarget.defenderId);
     }
   } catch (error) {
-    console.error('Auto-attack error:', error);
+    debug.error('Auto-attack error:', error);
     return state; // Return unchanged state if there's an error
   }
 }
@@ -2605,7 +2605,7 @@ export function autoAttackOnPlace(
     
     return newState;
   } catch (error) {
-    console.error('[AutoAttackOnPlace] Error:', error);
+    debug.error('[AutoAttackOnPlace] Error:', error);
     return state;
   }
 }
@@ -2699,7 +2699,7 @@ export function autoAttackWithAllCards(state: GameState): GameState {
     
     return newState;
   } catch (error) {
-    console.error('Auto-attack all error:', error);
+    debug.error('Auto-attack all error:', error);
     return state; // Return unchanged state if there's an error
   }
 }

@@ -4,6 +4,7 @@
  * Destroys adjacent minions and gains their stats.
  * Example card: Void Terror (ID: 15007)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -75,7 +76,7 @@ export default function executeConsumeAdjacent(
       }
     };
   } catch (error) {
-    console.error('Error executing consume_adjacent:', error);
+    debug.error('Error executing consume_adjacent:', error);
     return { success: false, error: `Failed to execute consume_adjacent: ${error}` };
   }
 }

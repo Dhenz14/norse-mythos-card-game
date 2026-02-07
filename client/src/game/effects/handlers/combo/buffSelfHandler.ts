@@ -5,6 +5,7 @@
  * Buffs the card that triggered the combo with attack/health bonuses.
  * Example card: Card ID: 12016 (Defias Ringleader, Edwin VanCleef, etc.)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance, GameLogEvent } from '../../../types';
 import { ComboEffect } from '../../../types/CardTypes';
 
@@ -28,7 +29,7 @@ export function executeBuffSelfBuffSelf(
   const buffHealth = effect.buffHealth ?? 0;
   
   if (buffAttack === 0 && buffHealth === 0) {
-    console.warn(`BuffSelf combo effect has no buff values (buffAttack: ${buffAttack}, buffHealth: ${buffHealth})`);
+    debug.warn(`BuffSelf combo effect has no buff values (buffAttack: ${buffAttack}, buffHealth: ${buffHealth})`);
     return state;
   }
   
@@ -79,7 +80,7 @@ export function executeBuffSelfBuffSelf(
     gameLog: [...(state.gameLog || []), logEntry]
   };
   
-  console.log(`Combo: ${sourceCard.card.name} gained +${buffAttack}/+${buffHealth}`);
+  debug.combat(`Combo: ${sourceCard.card.name} gained +${buffAttack}/+${buffHealth}`);
   
   return newState;
 }

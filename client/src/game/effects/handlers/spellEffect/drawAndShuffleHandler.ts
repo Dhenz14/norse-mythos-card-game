@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:draw_and_shuffle effect.
  * Draws cards and shuffles another card into the deck.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -60,7 +61,7 @@ export default function executeDrawAndShuffle(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:draw_and_shuffle:`, error);
+    debug.error(`Error executing spellEffect:draw_and_shuffle:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:draw_and_shuffle: ${error instanceof Error ? error.message : String(error)}`

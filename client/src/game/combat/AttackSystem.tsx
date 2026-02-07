@@ -24,6 +24,7 @@ import { GameState } from '../types';
 import { destroyCard } from '../utils/zoneUtils';
 // AUTHORITATIVE canCardAttack function - single source of truth
 import { canCardAttack as canCardAttackUtil, getAttackEligibility } from './attackUtils';
+import { debug } from '../config/debugConfig';
 
 // Types
 export type AttackTarget = {
@@ -53,7 +54,7 @@ export function canCardAttack(card: CardInstance, isPlayerTurn: boolean): boolea
   // Use the authoritative function with verbose logging
   const result = getAttackEligibility(card, isPlayerTurn);
   
-  console.log('[AttackSystem.canCardAttack]', {
+  debug.combat('[AttackSystem.canCardAttack]', {
     name: card.card.name,
     instanceId: card.instanceId,
     canAttack: result.canAttack,

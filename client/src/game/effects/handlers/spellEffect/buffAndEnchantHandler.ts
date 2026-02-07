@@ -3,6 +3,7 @@
  * 
  * Implements the "buff_and_enchant" spellEffect effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -92,7 +93,7 @@ export function executeBuffAndEnchantBuffAndEnchant(
       } 
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:buff_and_enchant:`, error);
+    debug.error(`Error executing spellEffect:buff_and_enchant:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:buff_and_enchant: ${error instanceof Error ? error.message : String(error)}`

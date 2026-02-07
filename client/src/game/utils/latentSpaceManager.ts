@@ -22,6 +22,7 @@
  */
 
 import { CardData } from '../types';
+import { debug } from '../config/debugConfig';
 
 // Types for latent space operations
 export interface LatentVector {
@@ -358,7 +359,7 @@ export function applyAttention(
   strength = 1.0
 ): LatentVector {
   if (attentionMask.length !== latent.dimensions) {
-    console.warn('Attention mask dimensions do not match latent vector');
+    debug.warn('Attention mask dimensions do not match latent vector');
     return latent;
   }
 

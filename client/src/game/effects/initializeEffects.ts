@@ -5,6 +5,7 @@
  * It eliminates the need for manual registration of each handler.
  */
 import { EffectRegistry } from './EffectRegistry';
+import { debug } from '../config/debugConfig';
 
 // Import handler collections - these will be replaced with dynamic imports in a production system
 // For simplicity, we'll create placeholders for now
@@ -98,7 +99,7 @@ export async function registerEffectHandlersAsync(): Promise<void> {
     */
     
   } catch (error) {
-    console.error('Error during dynamic effect handler registration:', error);
+    debug.error('Error during dynamic effect handler registration:', error);
   }
 }
 

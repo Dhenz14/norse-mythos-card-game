@@ -26,7 +26,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePokerCombatAdapter, getActionPermissions, getPokerCombatAdapterState } from '../../hooks/usePokerCombatAdapter';
 import { useGameStore } from '../../stores/gameStore';
 import { CombatPhase, CombatAction } from '../../types/PokerCombatTypes';
-import { fireActionAnnouncement } from '../../stores/animationStore';
+import { fireAnnouncement } from '../../stores/unifiedUIStore';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
 import { executeNorseHeroPower } from '../../utils/norseHeroPowerUtils';
 import { isValidTargetForHeroPower } from '../../utils/combatUtils';
@@ -288,7 +288,7 @@ export function useRagnarokCombatController(
     const targetName = isHeroTarget 
       ? (isOpponentHeroTarget ? ' on enemy hero' : ' on your hero')
       : (targetMinion?.card?.name ? ` on ${targetMinion.card.name}` : '');
-    fireActionAnnouncement('spell', `${norseHero.name} uses ${heroPower.name}${targetName}!`, { duration: 2000 });
+    fireAnnouncement('spell', `${norseHero.name} uses ${heroPower.name}${targetName}!`, { duration: 2000 });
     
     setHeroPowerUsedThisTurn(true);
     setHeroPowerTargeting(null);
@@ -512,7 +512,7 @@ export function useRagnarokCombatController(
       heroName: norseHero.name,
       manaCost
     });
-    fireActionAnnouncement('spell', `Select a target for ${heroPower.name}`, { duration: 3000 });
+    fireAnnouncement('spell', `Select a target for ${heroPower.name}`, { duration: 3000 });
   }, [combatState, heroPowerUsedThisTurn, playerMana, executeHeroPowerEffect]);
   
   const cancelHeroPowerTargeting = useCallback(() => {
@@ -547,7 +547,7 @@ export function useRagnarokCombatController(
       return;
     }
     
-    fireActionAnnouncement('spell', `${norseHero.name} equips ${norseHero.weaponUpgrade.name}!`, { duration: 2500 });
+    fireAnnouncement('spell', `${norseHero.name} equips ${norseHero.weaponUpgrade.name}!`, { duration: 2500 });
     
     setWeaponUpgraded(true);
     
@@ -775,14 +775,14 @@ export function useRagnarokCombatController(
     }
     
     if (action === CombatAction.DEFEND) {
-      fireActionAnnouncement('poker_check', 'Check', { subtitle: '+1 ⚡ STA', duration: 1200 });
+      fireAnnouncement('poker_check', 'Check', { subtitle: '+1 ⚡ STA', duration: 1200 });
     } else if (action === CombatAction.ATTACK) {
       const staminaCost = hp ? Math.ceil(hp / 10) : 0;
-      fireActionAnnouncement('poker_bet', hp ? `Bet ${hp} HP` : 'Bet', { subtitle: staminaCost > 0 ? `-${staminaCost} ⚡ STA` : undefined, duration: 1200 });
+      fireAnnouncement('poker_bet', hp ? `Bet ${hp} HP` : 'Bet', { subtitle: staminaCost > 0 ? `-${staminaCost} ⚡ STA` : undefined, duration: 1200 });
     } else if (action === CombatAction.ENGAGE) {
-      fireActionAnnouncement('poker_call', 'Call', { duration: 1200 });
+      fireAnnouncement('poker_call', 'Call', { duration: 1200 });
     } else if (action === CombatAction.BRACE) {
-      fireActionAnnouncement('poker_fold', 'Fold', { duration: 1200 });
+      fireAnnouncement('poker_fold', 'Fold', { duration: 1200 });
     }
     
     performAction(combatState.player.playerId, action, hp);
@@ -878,7 +878,7 @@ export function useRagnarokCombatController(
           aiResponseInProgressRef.current = false;
         }, 100);
       } catch (error) {
-        console.error('[AI Response handleAction] ERROR:', error);
+        debug.error('[AI Response handleAction] ERROR:', error);
         aiResponseInProgressRef.current = false;
       }
     }, 1000);
@@ -924,7 +924,7 @@ export function useRagnarokCombatController(
       showdownBackupTimerRef.current = setTimeout(() => {
         const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
         if (mulliganStillActive) return;
-        console.warn('[RagnarokCombatArena] Showdown backup timer fired - forcing combat end', { hasResolution: !!resolution });
+        debug.warn('[RagnarokCombatArena] Showdown backup timer fired - forcing combat end', { hasResolution: !!resolution });
         setShowdownCelebration(null);
         handleCombatEnd();
       }, 8000);

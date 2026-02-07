@@ -5,6 +5,7 @@
  * Spins a wheel for a random crazy effect (Yogg-Saron, Master of Fate).
  * Example card: Yogg-Saron, Master of Fate (ID: 20312)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -270,7 +271,7 @@ export default function executeWheelOfYogg(
       additionalData: result
     };
   } catch (error) {
-    console.error(`Error executing battlecry:wheel_of_yogg:`, error);
+    debug.error(`Error executing battlecry:wheel_of_yogg:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:wheel_of_yogg: ${error instanceof Error ? error.message : String(error)}`

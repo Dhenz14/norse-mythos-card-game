@@ -5,6 +5,7 @@
  * Destroys a friendly minion and stores it for later resurrection (typically via deathrattle).
  * Example card: Carnivorous Cube (ID: 30019)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -102,7 +103,7 @@ export default function executeDestroyAndStore(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_and_store:`, error);
+    debug.error(`Error executing battlecry:destroy_and_store:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_and_store: ${error instanceof Error ? error.message : String(error)}`

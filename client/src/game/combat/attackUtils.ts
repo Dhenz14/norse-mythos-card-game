@@ -13,6 +13,7 @@
  */
 
 import { CardInstance } from '../types';
+import { debug } from '../config/debugConfig';
 
 export interface AttackEligibilityResult {
   canAttack: boolean;
@@ -36,7 +37,7 @@ export function canCardAttack(
   const result = getAttackEligibility(card, isPlayerTurn);
   
   if (verbose) {
-    console.log(`[canCardAttack] ${card.card.name}: ${result.canAttack ? 'CAN attack' : `CANNOT attack - ${result.reason}`}`);
+    debug.combat(`[canCardAttack] ${card.card.name}: ${result.canAttack ? 'CAN attack' : `CANNOT attack - ${result.reason}`}`);
   }
   
   return result.canAttack;

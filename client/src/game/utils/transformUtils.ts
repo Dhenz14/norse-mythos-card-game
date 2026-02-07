@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { findCardInstance, createCardInstance } from './cards/cardUtils';
 import { isMinion, getHealth } from './cards/typeGuards';
 import allCards from '../data/allCards';
+import { debug } from '../config/debugConfig';
 
 /**
  * Transform a minion into another minion
@@ -27,7 +28,7 @@ export function transformMinion(
     
     // If still not found, log an error and return the original state
     if (!targetInfo) {
-      console.error(`Target card with ID ${targetId} not found for transformation`);
+      debug.error(`Target card with ID ${targetId} not found for transformation`);
       return state;
     }
   }
@@ -36,7 +37,7 @@ export function transformMinion(
   const transformToCard = allCards.find(card => card.id === transformToCardId);
   
   if (!transformToCard) {
-    console.error(`Card with ID ${transformToCardId} not found for transformation target`);
+    debug.error(`Card with ID ${transformToCardId} not found for transformation target`);
     return state;
   }
   
@@ -75,7 +76,7 @@ export function silenceMinion(
     
     // If still not found, log an error and return the original state
     if (!targetInfo) {
-      console.error(`Target card with ID ${targetId} not found for silencing`);
+      debug.error(`Target card with ID ${targetId} not found for silencing`);
       return state;
     }
   }
@@ -88,7 +89,7 @@ export function silenceMinion(
   
   // Only silence if it's a minion card with effects
   if (!isMinion(originalCard)) {
-    console.error(`Target card is not a minion and cannot be silenced`);
+    debug.error(`Target card is not a minion and cannot be silenced`);
     return state;
   }
   

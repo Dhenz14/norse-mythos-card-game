@@ -4,6 +4,7 @@
  * This handler allows a player to discover a minion from the graveyard.
  * Used by Necromancer cards like Grave Robber.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -89,7 +90,7 @@ export default function executeDiscoverFromGraveyard(
       }
     };
   } catch (error) {
-    console.error('Error in discover_from_graveyard effect:', error);
+    debug.error('Error in discover_from_graveyard effect:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : String(error)

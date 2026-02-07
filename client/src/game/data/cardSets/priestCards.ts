@@ -10,6 +10,7 @@
  * - Health/Attack manipulation: Change minion stats
  * - Card copying: Copy cards from opponent's hand or deck
  */
+import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType } from '../../types';
 
@@ -24,7 +25,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * - Priest tokens: 9xxx series (usually 5xx+)
  */
 export function registerPriestCards(): void {
-  if (IS_DEV) console.log('Registering Priest cards...');
+  if (IS_DEV) debug.card('Registering Priest cards...');
 
   // BASIC PRIEST CARDS
 
@@ -587,5 +588,5 @@ export function registerPriestCards(): void {
     .addCategory("token")
     .build();
 
-  if (IS_DEV) console.log('Priest cards registered successfully.');
+  if (IS_DEV) debug.card('Priest cards registered successfully.');
 }

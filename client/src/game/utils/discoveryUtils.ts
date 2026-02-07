@@ -2,6 +2,7 @@ import { CardData, SpellEffect, GameState, DiscoveryState, CardRarity, CardType,
 import allCards from '../data/allCards';
 import { useGameStore } from '../stores/gameStore';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
+import { debug } from '../config/debugConfig';
 
 /**
  * Filter cards based on discovery parameters
@@ -194,7 +195,7 @@ export function createDiscoveryFromSpell(
         }
       } catch (error) {
         // Handle error gracefully
-        console.error('[DISCOVERY] Error in discovery callback:', error);
+        debug.error('[DISCOVERY] Error in discovery callback:', error);
         
         // Get fresh state and clear discovery
         const { gameState: errorCurrentState } = useGameStore.getState();
@@ -230,7 +231,7 @@ export function processDiscovery(
     
     // If no options are available, return the state unchanged
     if (discoveryState.options.length === 0) {
-      console.error('No cards available for AI discovery');
+      debug.error('No cards available for AI discovery');
       return state;
     }
     

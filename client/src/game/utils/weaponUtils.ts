@@ -17,6 +17,7 @@ import {
   hasAttack,
   hasDurability
 } from './cards/typeGuards';
+import { debug } from '../config/debugConfig';
 
 /**
  * Equip a weapon for a player
@@ -36,7 +37,7 @@ export function equipWeapon(
   
   // Type guard: ensure the card is a weapon
   if (!isWeapon(weaponCard.card)) {
-    console.error(`Invalid weapon card: ${weaponCard.card.name}`);
+    debug.error(`Invalid weapon card: ${weaponCard.card.name}`);
     return state;
   }
   
@@ -104,13 +105,13 @@ export function attackWithWeapon(
   const weapon = newState.players[attackingPlayerType].weapon;
   
   if (!weapon) {
-    console.error(`${attackingPlayerType} doesn't have a weapon equipped`);
+    debug.error(`${attackingPlayerType} doesn't have a weapon equipped`);
     return state;
   }
   
   if (newState.players[attackingPlayerType].attacksPerformedThisTurn &&
       newState.players[attackingPlayerType].attacksPerformedThisTurn > 0) {
-    console.error(`${attackingPlayerType} has already attacked this turn`);
+    debug.error(`${attackingPlayerType} has already attacked this turn`);
     return state;
   }
   
@@ -138,7 +139,7 @@ export function attackWithWeapon(
     );
     
     if (targetIndex === -1) {
-      console.error(`Target minion not found: ${targetId}`);
+      debug.error(`Target minion not found: ${targetId}`);
       return state;
     }
     
@@ -146,7 +147,7 @@ export function attackWithWeapon(
     
     // Type guard: ensure the target minion is actually a minion
     if (!isMinion(targetMinion.card)) {
-      console.error(`Invalid target: expected minion, got ${targetMinion.card.type}`);
+      debug.error(`Invalid target: expected minion, got ${targetMinion.card.type}`);
       return state;
     }
     
@@ -377,13 +378,13 @@ export function buffWeapon(
   const weapon = newState.players[playerType].weapon;
   
   if (!weapon) {
-    console.error(`${playerType} doesn't have a weapon to buff`);
+    debug.error(`${playerType} doesn't have a weapon to buff`);
     return state;
   }
   
   // Type guard: ensure weapon is actually a weapon card
   if (!isWeapon(weapon.card)) {
-    console.error(`Invalid weapon card for buff: ${weapon.card.type}`);
+    debug.error(`Invalid weapon card for buff: ${weapon.card.type}`);
     return state;
   }
   

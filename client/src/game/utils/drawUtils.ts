@@ -2,6 +2,7 @@ import { GameState, CardData, CardInstance } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';
+import { debug } from '../config/debugConfig';
 
 const MAX_HAND_SIZE = 9;
 
@@ -20,7 +21,7 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
     logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
     
   } catch (error) {
-    console.error('[CardBurn] Failed to queue animation:', error);
+    debug.error('[CardBurn] Failed to queue animation:', error);
   }
 }
 
@@ -89,7 +90,7 @@ export function drawCardFromDeck(
  */
 export function drawCard(state: GameState): GameState {
   if (!state.currentTurn) {
-    console.error('Cannot draw card: No current turn specified');
+    debug.error('Cannot draw card: No current turn specified');
     return state;
   }
   
@@ -121,7 +122,7 @@ export function drawMultipleCardsForCurrentPlayer(
   count: number
 ): GameState {
   if (!state.currentTurn) {
-    console.error('Cannot draw cards: No current turn specified');
+    debug.error('Cannot draw cards: No current turn specified');
     return state;
   }
   

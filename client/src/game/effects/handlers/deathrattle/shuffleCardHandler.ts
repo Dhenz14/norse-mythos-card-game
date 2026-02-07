@@ -5,6 +5,7 @@
  * Shuffles a specific card into the deck when this minion dies.
  * Example: Hakkar, the Soulflayer (shuffles Corrupted Blood into both decks)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -78,7 +79,7 @@ export default function executeShuffleCardShuffleCard(
       additionalData: { shuffledCount, cardName: cardToShuffle.name }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:shuffle_card:`, error);
+    debug.error(`Error executing deathrattle:shuffle_card:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:shuffle_card: ${error instanceof Error ? error.message : String(error)}`

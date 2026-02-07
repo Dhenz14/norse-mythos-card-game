@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:copy_last_played_card effect.
  * Copies the last card played by either player to your hand.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -83,7 +84,7 @@ export default function executeCopyLastPlayedCard(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:copy_last_played_card:`, error);
+    debug.error(`Error executing spellEffect:copy_last_played_card:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:copy_last_played_card: ${error instanceof Error ? error.message : String(error)}`

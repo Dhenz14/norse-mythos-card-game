@@ -4,6 +4,7 @@
  * Implements the battlecry:gain_armor_equal_to_attack effect.
  * Hero gains armor equal to a minion's attack value.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -72,7 +73,7 @@ export default function executeGainArmorEqualToAttack(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:gain_armor_equal_to_attack:`, error);
+    debug.error(`Error executing battlecry:gain_armor_equal_to_attack:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:gain_armor_equal_to_attack: ${error instanceof Error ? error.message : String(error)}`

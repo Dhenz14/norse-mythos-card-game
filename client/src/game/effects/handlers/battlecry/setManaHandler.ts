@@ -4,6 +4,7 @@
  * Implements the "set_mana" battlecry effect.
  * Sets mana crystals to a specific value for one or both players.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -58,7 +59,7 @@ export default function executeSetMana(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:set_mana:`, error);
+    debug.error(`Error executing battlecry:set_mana:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:set_mana: ${error instanceof Error ? error.message : String(error)}`

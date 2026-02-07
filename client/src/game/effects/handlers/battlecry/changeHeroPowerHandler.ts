@@ -5,6 +5,7 @@
  * Replaces the hero power with effect.newHeroPower.
  * Example card: Sulfuras (ID: 15002)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -55,7 +56,7 @@ export default function executeChangeHeroPower(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:change_hero_power:`, error);
+    debug.error(`Error executing battlecry:change_hero_power:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:change_hero_power: ${error instanceof Error ? error.message : String(error)}`

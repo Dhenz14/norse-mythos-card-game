@@ -9,6 +9,7 @@
  * 2. Generic mode - when used as a wrapper for any card rendering (takes children and fallbackCardData)
  */
 
+import { debug } from '../config/debugConfig';
 import React, { useState, useEffect, ReactNode } from 'react';
 import { CardData } from '../types';
 import CollectionCard from './collection/CollectionCard';
@@ -81,7 +82,7 @@ const ErrorBoundaryCard: React.FC<ErrorBoundaryCardProps> = (props) => {
           (card.position !== undefined && card.rotation !== undefined)) {
         setHasError(true);
         setErrorInfo('Invalid card: transform object');
-        console.warn('Transform object detected:', card);
+        debug.warn('Transform object detected:', card);
         return;
       }
 
@@ -89,7 +90,7 @@ const ErrorBoundaryCard: React.FC<ErrorBoundaryCardProps> = (props) => {
       if (!card.id || !card.name) {
         setHasError(true);
         setErrorInfo('Invalid card: missing required fields');
-        console.warn('Invalid card data:', card);
+        debug.warn('Invalid card data:', card);
         return;
       }
 
@@ -99,13 +100,13 @@ const ErrorBoundaryCard: React.FC<ErrorBoundaryCardProps> = (props) => {
     } catch (err) {
       setHasError(true);
       setErrorInfo(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      console.error('Error validating card:', err);
+      debug.error('Error validating card:', err);
     }
   }, [card]);
 
   // Error handler for React error boundary
   const handleError = (error: Error) => {
-    console.error('ErrorBoundaryCard caught an error:', error);
+    debug.error('ErrorBoundaryCard caught an error:', error);
     setHasError(true);
     setErrorInfo(`Rendering Error: ${error.message}`);
   };

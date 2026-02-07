@@ -4,6 +4,7 @@
  * Implements the "draw_to_match_opponent" spellEffect effect.
  * Draws cards until the player's hand size matches the opponent's.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -55,7 +56,7 @@ export default function executeDrawToMatchOpponent(
       additionalData: { cardsDrawn }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:draw_to_match_opponent:`, error);
+    debug.error(`Error executing spellEffect:draw_to_match_opponent:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:draw_to_match_opponent: ${error instanceof Error ? error.message : String(error)}`

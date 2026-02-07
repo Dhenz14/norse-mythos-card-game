@@ -5,6 +5,7 @@
  * Destroys the enemy hero's equipped weapon.
  * Example card: Acidic Swamp Ooze (ID: 30001)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -51,7 +52,7 @@ export default function executeDestroyWeapon(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_weapon:`, error);
+    debug.error(`Error executing battlecry:destroy_weapon:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_weapon: ${error instanceof Error ? error.message : String(error)}`

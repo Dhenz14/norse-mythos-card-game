@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:betrayal effect.
  * Forces an enemy minion to deal its attack damage to adjacent minions.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -66,7 +67,7 @@ export default function executeBetrayal(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:betrayal:`, error);
+    debug.error(`Error executing spellEffect:betrayal:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:betrayal: ${error instanceof Error ? error.message : String(error)}`

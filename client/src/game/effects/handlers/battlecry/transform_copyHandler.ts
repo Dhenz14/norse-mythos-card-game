@@ -4,6 +4,7 @@
  * Implements the "transform_copy" battlecry effect.
  * Example: Prince Taldaram (transforms into a 3/3 copy of a minion)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -121,7 +122,7 @@ export default function executeTransformCopyTransformCopy(
       }
     };
   } catch (error) {
-    console.error(`Error executing battlecry:transform_copy:`, error);
+    debug.error(`Error executing battlecry:transform_copy:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:transform_copy: ${error instanceof Error ? error.message : String(error)}`

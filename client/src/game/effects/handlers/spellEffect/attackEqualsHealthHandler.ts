@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:attack_equals_health effect.
  * Sets a minion's attack equal to its current health.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -55,7 +56,7 @@ export default function executeAttackEqualsHealth(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:attack_equals_health:`, error);
+    debug.error(`Error executing spellEffect:attack_equals_health:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:attack_equals_health: ${error instanceof Error ? error.message : String(error)}`

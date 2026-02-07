@@ -5,6 +5,7 @@
  * Presents 3 random adaptations from a pool of 10, player picks one.
  * Example card: Gentle Megasaur (ID: 30016)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -95,7 +96,7 @@ export default function executeAdapt(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:adapt:`, error);
+    debug.error(`Error executing battlecry:adapt:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:adapt: ${error instanceof Error ? error.message : String(error)}`

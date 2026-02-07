@@ -5,6 +5,7 @@
  * No 3D effects, no complex transforms - just clear, readable cards.
  */
 
+import { debug } from '../../config/debugConfig';
 import React from 'react';
 import { CardData, CardInstance } from '../../types';
 import { SimpleCard, SimpleCardData } from '../SimpleCard';
@@ -51,7 +52,7 @@ const CardRenderer: React.FC<CardRendererProps> = ({
   const processedCard = getCardDataSafely(card);
   
   if (!processedCard) {
-    console.warn('CardRenderer: No card data available');
+    debug.warn('CardRenderer: No card data available');
     return null;
   }
   

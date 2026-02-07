@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:armor_based_on_missing_health effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -64,7 +65,7 @@ export default function executeArmorBasedOnMissingHealth(
     
     return { success: true };
   } catch (error) {
-    console.error(`Error executing spellEffect:armor_based_on_missing_health:`, error);
+    debug.error(`Error executing spellEffect:armor_based_on_missing_health:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:armor_based_on_missing_health: ${error instanceof Error ? error.message : String(error)}`

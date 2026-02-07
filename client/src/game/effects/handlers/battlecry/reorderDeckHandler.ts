@@ -4,6 +4,7 @@
  * Reorders cards in the deck based on mana cost.
  * Example card: Lorekeeper Polkelt (ID: 20311)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -69,7 +70,7 @@ export default function executeReorderDeck(
       }
     };
   } catch (error) {
-    console.error('Error executing reorder_deck:', error);
+    debug.error('Error executing reorder_deck:', error);
     return { success: false, error: `Failed to execute reorder_deck: ${error}` };
   }
 }

@@ -4,6 +4,7 @@
  */
 import { CardInstance, GameState } from '../../types';
 import { isMinion, getAttack, getHealth, hasOverload } from '../cards/typeGuards';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Check if a card can be magnetized to a target
@@ -57,14 +58,14 @@ export function applyMagnetization(
   // Find the target card on the battlefield
   const targetIndex = player.battlefield.findIndex(card => card.instanceId === targetId);
   if (targetIndex === -1) {
-    console.error('Magnetic target not found on battlefield');
+    debug.error('Magnetic target not found on battlefield');
     return state;
   }
   
   // Find the magnetic card in hand
   const magneticCardIndex = player.hand.findIndex(card => card.instanceId === magneticCardId);
   if (magneticCardIndex === -1) {
-    console.error('Magnetic card not found in hand');
+    debug.error('Magnetic card not found in hand');
     return state;
   }
   
@@ -74,7 +75,7 @@ export function applyMagnetization(
   
   // Verify magnetization is valid
   if (!canMagnetize(magneticCard, targetCard)) {
-    console.error('Invalid magnetization attempt');
+    debug.error('Invalid magnetization attempt');
     return state;
   }
   

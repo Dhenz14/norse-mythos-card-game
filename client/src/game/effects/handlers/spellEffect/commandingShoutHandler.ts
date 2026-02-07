@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:commanding_shout effect.
  * Prevents friendly minions from dropping below 1 health this turn.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -42,7 +43,7 @@ export default function executeCommandingShout(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:commanding_shout:`, error);
+    debug.error(`Error executing spellEffect:commanding_shout:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:commanding_shout: ${error instanceof Error ? error.message : String(error)}`

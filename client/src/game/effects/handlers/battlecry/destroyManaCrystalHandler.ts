@@ -5,6 +5,7 @@
  * Destroys mana crystal(s) from either opponent or self.
  * Example card: Felguard - destroys one of your own mana crystals
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -66,7 +67,7 @@ export default function executeDestroyManaCrystal(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_mana_crystal:`, error);
+    debug.error(`Error executing battlecry:destroy_mana_crystal:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_mana_crystal: ${error instanceof Error ? error.message : String(error)}`

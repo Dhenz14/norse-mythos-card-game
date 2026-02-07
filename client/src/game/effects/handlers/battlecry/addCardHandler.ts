@@ -4,6 +4,7 @@
  * Adds a specific card to the player's hand by cardId.
  * Example card: Face Collector (ID: 20807)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -64,7 +65,7 @@ export default function executeAddCard(
       additionalData: { addedCards, count: addedCards.length }
     };
   } catch (error) {
-    console.error('Error executing add_card:', error);
+    debug.error('Error executing add_card:', error);
     return { success: false, error: `Failed to execute add_card: ${error}` };
   }
 }

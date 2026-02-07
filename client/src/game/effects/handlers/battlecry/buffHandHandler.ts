@@ -5,6 +5,7 @@
  * Buffs minions in the player's hand.
  * Example card: Don Han'Cho (ID: 20218)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -81,7 +82,7 @@ export default function executeBuffHand(
     
     return { success: true, additionalData: { buffedCount } };
   } catch (error) {
-    console.error(`Error executing battlecry:buff_hand:`, error);
+    debug.error(`Error executing battlecry:buff_hand:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:buff_hand: ${error instanceof Error ? error.message : String(error)}`

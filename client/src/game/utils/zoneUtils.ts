@@ -27,7 +27,7 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
     logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
     
   } catch (error) {
-    console.error('[CardBurn] Failed to queue animation:', error);
+    debug.error('[CardBurn] Failed to queue animation:', error);
   }
 }
 
@@ -73,14 +73,14 @@ export function moveCard(
       sourceZone = player.graveyard || [];
       break;
     default:
-      console.error(`Unknown source zone: ${fromZone}`);
+      debug.error(`Unknown source zone: ${fromZone}`);
       return { newState: state, movedCard: null };
   }
   
   // Find the card in the source zone
   const cardIndex = sourceZone.findIndex(card => card.instanceId === cardId);
   if (cardIndex === -1) {
-    console.error(`Card ${cardId} not found in zone ${fromZone}`);
+    debug.error(`Card ${cardId} not found in zone ${fromZone}`);
     return { newState: state, movedCard: null };
   }
   
@@ -157,7 +157,7 @@ export function moveCard(
       player.deck.push(movedCard.card);
       break;
     default:
-      console.error(`Unknown destination zone: ${toZone}`);
+      debug.error(`Unknown destination zone: ${toZone}`);
       return { newState: state, movedCard: null };
   }
   
@@ -352,7 +352,7 @@ export function getCardsInZone(
         attacksPerformed: 0
       }));
     default:
-      console.error(`Unknown zone: ${zone}`);
+      debug.error(`Unknown zone: ${zone}`);
       return [];
   }
 }

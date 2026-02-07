@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { CombatPhase, CombatAction, PokerCombatState } from '../../types/PokerCombatTypes';
 import { getPokerCombatAdapterState, getActionPermissions } from '../../hooks/usePokerCombatAdapter';
 import { getSmartAIAction } from '../modules/SmartAI';
-import { fireActionAnnouncement } from '../../stores/animationStore';
+import { fireAnnouncement } from '../../stores/unifiedUIStore';
 import { useGameStore } from '../../stores/gameStore';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
@@ -59,13 +59,13 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
         if (permissions?.hasBetToCall) {
           if (permissions.canCall) {
             autoAction = CombatAction.ENGAGE;
-            fireActionAnnouncement('poker_call', 'Call', { subtitle: 'Time expired - matched bet', duration: 1500 });
+            fireAnnouncement('poker_call', 'Call', { subtitle: 'Time expired - matched bet', duration: 1500 });
           } else {
             autoAction = CombatAction.BRACE;
-            fireActionAnnouncement('poker_fold', 'Fold', { subtitle: 'Time expired', duration: 1500 });
+            fireAnnouncement('poker_fold', 'Fold', { subtitle: 'Time expired', duration: 1500 });
           }
         } else {
-          fireActionAnnouncement('poker_check', 'Check', { subtitle: 'Time expired', duration: 1500 });
+          fireAnnouncement('poker_check', 'Check', { subtitle: 'Time expired', duration: 1500 });
         }
         
         const phaseBeforeAutoAction = freshState.phase;

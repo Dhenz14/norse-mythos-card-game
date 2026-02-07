@@ -1,3 +1,4 @@
+import { debug } from '../config/debugConfig';
 import { GameState, CardInstance, Player } from '../types';
 
 /**
@@ -76,7 +77,7 @@ export interface PlayOption {
 export const evaluatePlayOptions = (gameState: GameState, playerIndex: number): PlayOption[] => {
   // Safety check for gameState and players
   if (!gameState || !gameState.players) {
-    console.error('[AI Utils] Invalid game state in evaluatePlayOptions:', gameState);
+    debug.error('[AI Utils] Invalid game state in evaluatePlayOptions:', gameState);
     return [];
   }
   
@@ -90,7 +91,7 @@ export const evaluatePlayOptions = (gameState: GameState, playerIndex: number): 
   
   // Safety check for currentPlayer and hand
   if (!currentPlayer || !currentPlayer.hand) {
-    console.error('[AI Utils] Invalid player or hand data:', currentPlayer);
+    debug.error('[AI Utils] Invalid player or hand data:', currentPlayer);
     return [];
   }
   
@@ -102,7 +103,7 @@ export const evaluatePlayOptions = (gameState: GameState, playerIndex: number): 
   // Evaluate each card in hand
   for (const cardInstance of currentPlayer.hand) {
     if (!cardInstance || !cardInstance.card) {
-      console.warn('[AI Utils] Skipping invalid card instance in hand');
+      debug.warn('[AI Utils] Skipping invalid card instance in hand');
       continue;
     }
     
@@ -218,7 +219,7 @@ export const evaluatePlayOptions = (gameState: GameState, playerIndex: number): 
  */
 export const playAITurn = (gameState: GameState, playerIndex: number) => {
   if (!gameState || !gameState.players) {
-    console.error('[AI Utils] Invalid game state in playAITurn:', gameState);
+    debug.error('[AI Utils] Invalid game state in playAITurn:', gameState);
     return null;
   }
   

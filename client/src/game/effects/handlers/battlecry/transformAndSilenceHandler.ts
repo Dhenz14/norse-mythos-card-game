@@ -4,6 +4,7 @@
  * Transforms a minion into a copy of another and silences it.
  * Example card: The Nameless One (ID: 20318)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -82,7 +83,7 @@ export default function executeTransformAndSilence(
       }
     };
   } catch (error) {
-    console.error('Error executing transform_and_silence:', error);
+    debug.error('Error executing transform_and_silence:', error);
     return { success: false, error: `Failed to execute transform_and_silence: ${error}` };
   }
 }

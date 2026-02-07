@@ -4,6 +4,7 @@
  * Implements the "next_spell_costs_health" spellEffect effect.
  * The next spell costs health instead of mana.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -39,7 +40,7 @@ export default function executeNextSpellCostsHealth(
       additionalData: { spellCount }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:next_spell_costs_health:`, error);
+    debug.error(`Error executing spellEffect:next_spell_costs_health:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:next_spell_costs_health: ${error instanceof Error ? error.message : String(error)}`

@@ -138,7 +138,7 @@ export const DirectCardDrag: React.FC<DirectCardDragProps> = ({
           playCard(cardInstance.instanceId);
           debug.drag('Card played successfully!');
         } catch (error) {
-          console.error('🎯 DIRECT DRAG: Failed to play card:', error);
+          debug.error('🎯 DIRECT DRAG: Failed to play card:', error);
         }
       }
     }

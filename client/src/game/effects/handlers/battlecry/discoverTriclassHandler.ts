@@ -5,6 +5,7 @@
  * Discovers from cards belonging to 3 different classes (like Kabal Courier).
  * Example card: Kabal Courier (ID: 32004)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -70,7 +71,7 @@ export default function executeDiscoverTriclass(
       }
     };
   } catch (error) {
-    console.error(`Error executing battlecry:discover_triclass:`, error);
+    debug.error(`Error executing battlecry:discover_triclass:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:discover_triclass: ${error instanceof Error ? error.message : String(error)}`

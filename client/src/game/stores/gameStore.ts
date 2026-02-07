@@ -18,7 +18,7 @@ import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { useAudio } from '../../lib/stores/useAudio';
 import useGame from '../../lib/stores/useGame';
 import { useAnimationStore } from '../animations/AnimationManager';
-import { useAnimationStore as useAnnouncementStore, fireActionAnnouncement } from './animationStore';
+import { useUnifiedUIStore as useAnnouncementStore, fireAnnouncement } from './unifiedUIStore';
 import { isAISimulationMode, debug, getDebugConfig } from '../config/debugConfig';
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
@@ -50,16 +50,16 @@ function logBattlefieldChange(
   const added = newCards.filter(c => !prevCards.includes(c));
   
   if (removed.length > 0 || added.length > 0) {
-    console.warn(`[BattlefieldDebug] ${side} battlefield CHANGED:`);
-    console.warn(`  Previous (${prevCards.length}):`, prevCards);
-    console.warn(`  New (${newCards.length}):`, newCards);
-    if (removed.length > 0) console.warn(`  REMOVED:`, removed);
-    if (added.length > 0) console.warn(`  Added:`, added);
-    console.warn(`  Stack trace:\n${stack}`);
+    debug.warn(`[BattlefieldDebug] ${side} battlefield CHANGED:`);
+    debug.warn(`  Previous (${prevCards.length}):`, prevCards);
+    debug.warn(`  New (${newCards.length}):`, newCards);
+    if (removed.length > 0) debug.warn(`  REMOVED:`, removed);
+    if (added.length > 0) debug.warn(`  Added:`, added);
+    debug.warn(`  Stack trace:\n${stack}`);
     
     // Special alert if battlefield was cleared unexpectedly
     if (prevCards.length > 0 && newCards.length === 0) {
-      console.error(`[BattlefieldDebug] CRITICAL: ${side} battlefield CLEARED to empty!`);
+      debug.error(`[BattlefieldDebug] CRITICAL: ${side} battlefield CLEARED to empty!`);
     }
   }
 }
@@ -276,7 +276,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
               `Battlecry: ${cardInstance.card.battlecry.type || 'Special effect'}`;
             
             // Fire the battlecry announcement popup
-            fireActionAnnouncement('battlecry', cardInstance.card.name, {
+            fireAnnouncement('battlecry', cardInstance.card.name, {
               subtitle: battlecryDescription,
               rarity: cardInstance.card.rarity as 'common' | 'rare' | 'epic' | 'legendary',
               cardClass: cardInstance.card.class as any,
@@ -347,11 +347,11 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           });
         }
       } catch (playCardError) {
-        console.error(`[PLAY-CARD-ERROR] Error in playCard utility for ${cardInstance.card.name}:`, playCardError);
+        debug.error(`[PLAY-CARD-ERROR] Error in playCard utility for ${cardInstance.card.name}:`, playCardError);
         throw playCardError;
       }
     } catch (error) {
-      console.error('Error playing card:', error);
+      debug.error('Error playing card:', error);
     }
   },
 
@@ -398,7 +398,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         selectedCard: null
       });
     } catch (error) {
-      console.error('Error ending turn:', error);
+      debug.error('Error ending turn:', error);
     }
   },
 
@@ -618,7 +618,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       }, impactDelay);
       
     } catch (error) {
-      console.error('Error processing attack:', error);
+      debug.error('Error processing attack:', error);
       // Clear targeting on error
       targetingStore.cancelTargeting();
     }
@@ -722,7 +722,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         });
         debug.log(`Hero power mode activated: ${gameState.players.player.heroPower.name}`);
       } else {
-        console.error('Not enough mana to use hero power');
+        debug.error('Not enough mana to use hero power');
       }
     } else {
       // Exit hero power mode
@@ -745,7 +745,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       set({ gameState: newState });
       debug.log(`Toggled mulligan selection for card ${cardId}`);
     } catch (error) {
-      console.error('Error during mulligan selection:', error);
+      debug.error('Error during mulligan selection:', error);
     }
   },
   
@@ -771,7 +771,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       debug.log('Mulligan confirmed, replacing selected cards');
       // Note: RagnarokCombatArena watches mulligan.active state directly for poker integration
     } catch (error) {
-      console.error('Error confirming mulligan:', error);
+      debug.error('Error confirming mulligan:', error);
     }
   },
   
@@ -797,7 +797,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       debug.log('Mulligan skipped, keeping all cards');
       // Note: RagnarokCombatArena watches mulligan.active state directly for poker integration
     } catch (error) {
-      console.error('Error skipping mulligan:', error);
+      debug.error('Error skipping mulligan:', error);
     }
   },
   
@@ -904,7 +904,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       
       debug.log(`Hero power ${player.heroPower.name} used successfully`);
     } catch (error) {
-      console.error('Error using hero power:', error);
+      debug.error('Error using hero power:', error);
     }
   },
   
@@ -1023,7 +1023,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       
       debug.log(`[PokerRewards] Card draw and mana grant complete`);
     } catch (error) {
-      console.error('[PokerRewards] Error granting rewards:', error);
+      debug.error('[PokerRewards] Error granting rewards:', error);
     }
   }
 })));

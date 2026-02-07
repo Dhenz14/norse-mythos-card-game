@@ -5,6 +5,7 @@
  * Swaps stats between the source minion and a target minion.
  * Example card: Darkspeaker (ID: 30035)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -75,7 +76,7 @@ export default function executeSwapStatsWithTarget(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:swap_stats_with_target:`, error);
+    debug.error(`Error executing battlecry:swap_stats_with_target:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:swap_stats_with_target: ${error instanceof Error ? error.message : String(error)}`

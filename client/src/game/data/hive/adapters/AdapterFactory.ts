@@ -10,6 +10,7 @@
 import { getDataLayerMode, type DataLayerMode } from '@/game/config/featureFlags';
 import type { IHiveDataAdapter } from './IHiveDataAdapter';
 import { LocalStorageAdapter } from './LocalStorageAdapter';
+import { debug } from '@/game/config/debugConfig';
 
 let currentAdapter: IHiveDataAdapter | null = null;
 let currentMode: DataLayerMode | null = null;
@@ -34,19 +35,19 @@ export function getAdapter(): IHiveDataAdapter {
                         currentAdapter = new LocalStorageAdapter();
                         break;
                 case 'test':
-                        console.warn(`[AdapterFactory] Test mode selected - sync features not yet implemented. Using LocalStorageAdapter.`);
+                        debug.warn(`[AdapterFactory] Test mode selected - sync features not yet implemented. Using LocalStorageAdapter.`);
                         currentAdapter = new LocalStorageAdapter();
                         break;
                 case 'hive':
-                        console.warn(`[AdapterFactory] Hive mode selected - blockchain sync not yet implemented. Using LocalStorageAdapter.`);
+                        debug.warn(`[AdapterFactory] Hive mode selected - blockchain sync not yet implemented. Using LocalStorageAdapter.`);
                         currentAdapter = new LocalStorageAdapter();
                         break;
                 default:
-                        console.warn(`[AdapterFactory] Unknown mode: ${mode}, falling back to local`);
+                        debug.warn(`[AdapterFactory] Unknown mode: ${mode}, falling back to local`);
                         currentAdapter = new LocalStorageAdapter();
         }
 
-        console.log(`[AdapterFactory] Created ${currentAdapter!.name} for mode: ${mode}`);
+        debug.log(`[AdapterFactory] Created ${currentAdapter!.name} for mode: ${mode}`);
         return currentAdapter!;
 }
 
@@ -58,7 +59,7 @@ export async function initializeAdapter(): Promise<void> {
         const result = await adapter.initialize();
 
         if (!result.success) {
-                console.error('[AdapterFactory] Failed to initialize adapter:', result.error);
+                debug.error('[AdapterFactory] Failed to initialize adapter:', result.error);
         }
 }
 

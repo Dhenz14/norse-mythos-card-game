@@ -4,6 +4,7 @@
  * Equips a random weapon (can affect both players).
  * Example card: Blingtron 3000 (ID: 20202)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -67,7 +68,7 @@ export default function executeRandomWeapon(
       additionalData: { playerWeapon, opponentWeapon, forBothPlayers }
     };
   } catch (error) {
-    console.error('Error executing random_weapon:', error);
+    debug.error('Error executing random_weapon:', error);
     return { success: false, error: `Failed to execute random_weapon: ${error}` };
   }
 }

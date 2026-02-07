@@ -4,6 +4,7 @@
  * Implements the "gain_mana" spellEffect effect.
  * Grants mana crystals (permanent or temporary).
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -55,7 +56,7 @@ export default function executeGainMana(
       };
     }
   } catch (error) {
-    console.error(`Error executing spellEffect:gain_mana:`, error);
+    debug.error(`Error executing spellEffect:gain_mana:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:gain_mana: ${error instanceof Error ? error.message : String(error)}`

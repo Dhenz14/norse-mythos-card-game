@@ -10,6 +10,7 @@ import { initializeMagneticEffect } from '../mechanics/magneticUtils';
 import { initializeFrenzyEffect } from '../mechanics/frenzyUtils';
 import { initializeColossalEffect } from '../mechanics/colossalUtils';
 import { initializeEchoEffect } from '../mechanics/echoUtils';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Creates a new card instance from card data
@@ -245,7 +246,7 @@ export function createClassDeck(heroClass: string, size: number = 30): CardData[
       return matchesClass && card.collectible !== false;
     } catch (error) {
       // Log the error safely without breaking the application
-      console.error("Error filtering card:", error);
+      debug.error("Error filtering card:", error);
       return false;
     }
   });

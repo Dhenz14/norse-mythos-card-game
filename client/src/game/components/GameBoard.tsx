@@ -453,7 +453,7 @@ export const GameBoard: React.FC<{}> = () => {
     
     // Check if card is valid
     if (!card || !card.card) {
-      console.error(`[CARD-ERROR] Invalid card object:`, card);
+      debug.error(`[CARD-ERROR] Invalid card object:`, card);
       showNotification({
         title: `❌ Card Error`,
         description: `Unable to play this card. It appears to be invalid.`,
@@ -1123,7 +1123,7 @@ export const GameBoard: React.FC<{}> = () => {
               }
               break;
             default:
-              console.warn(`Unknown conditional target: ${spellEffect?.conditionalTarget}`);
+              debug.warn(`Unknown conditional target: ${spellEffect?.conditionalTarget}`);
           }
         } else {
           // Most conditional targets only apply to minions
@@ -1210,7 +1210,7 @@ export const GameBoard: React.FC<{}> = () => {
           return player.battlefield.some(c => c.instanceId === targetCard.instanceId) || 
                  (targetIsHero && isPlayerHero);
         default:
-          console.warn(`Unknown target type: ${spellEffect?.targetType}`);
+          debug.warn(`Unknown target type: ${spellEffect?.targetType}`);
           return false;
       }
     }
@@ -1879,7 +1879,7 @@ export const GameBoard: React.FC<{}> = () => {
       // Create a dummy hero card instance for the player's hero
       // First check if player.hero exists to avoid the "Cannot read properties of undefined" error
       if (!player.hero) {
-        console.error('Player hero is undefined when clicking player hero portrait');
+        debug.error('Player hero is undefined when clicking player hero portrait');
         return;
       }
       
@@ -1988,7 +1988,7 @@ export const GameBoard: React.FC<{}> = () => {
       
       // First check if player.hero exists to avoid the "Cannot read properties of undefined" error
       if (!player.hero) {
-        console.error('Player hero is undefined when selecting hero as battlecry target');
+        debug.error('Player hero is undefined when selecting hero as battlecry target');
         return;
       }
       

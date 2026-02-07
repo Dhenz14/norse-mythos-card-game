@@ -5,6 +5,7 @@
  * Checks a condition (combo, holding_dragon, played_elemental, etc.) before discovering.
  * Example card: Servant of Kalimos (ID: 30032) - requires playing an Elemental last turn
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -84,7 +85,7 @@ function checkCondition(
       return context.currentPlayer.hand.length >= 10;
       
     default:
-      console.warn(`Unknown condition type: ${conditionType}, defaulting to true`);
+      debug.warn(`Unknown condition type: ${conditionType}, defaulting to true`);
       return true;
   }
 }
@@ -168,7 +169,7 @@ export default function executeConditionalDiscover(
       }
     };
   } catch (error) {
-    console.error(`Error executing battlecry:conditional_discover:`, error);
+    debug.error(`Error executing battlecry:conditional_discover:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:conditional_discover: ${error instanceof Error ? error.message : String(error)}`

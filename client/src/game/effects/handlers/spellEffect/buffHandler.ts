@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:buff effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -91,7 +92,7 @@ export default function executeBuffBuff(
       return { success: true };
     }
   } catch (error) {
-    console.error(`Error executing spellEffect:buff:`, error);
+    debug.error(`Error executing spellEffect:buff:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:buff: ${error instanceof Error ? error.message : String(error)}`

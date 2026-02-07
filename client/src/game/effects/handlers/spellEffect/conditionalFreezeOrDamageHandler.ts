@@ -8,6 +8,7 @@
  * - If the target is NOT frozen, it applies a freeze effect
  * - If the target is ALREADY frozen, it deals damage instead
  */
+import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
 import { applyFreezeEffect } from '../../../utils/mechanics/freezeUtils';
@@ -36,18 +37,18 @@ export function executeConditionalFreezeOrDamageConditionalFreezeOrDamage(
   
   // Check for required properties
   if (effect.value === undefined) {
-    console.warn(`ConditionalFreezeOrDamage effect missing value property`);
+    debug.warn(`ConditionalFreezeOrDamage effect missing value property`);
     return state;
   }
 
   if (effect.condition === undefined) {
-    console.warn(`ConditionalFreezeOrDamage effect missing condition property`);
+    debug.warn(`ConditionalFreezeOrDamage effect missing condition property`);
     return state;
   }
   
   // Check that we have a target
   if (!targetId) {
-    console.warn(`ConditionalFreezeOrDamage effect requires a target`);
+    debug.warn(`ConditionalFreezeOrDamage effect requires a target`);
     return state;
   }
   
@@ -90,7 +91,7 @@ export function executeConditionalFreezeOrDamageConditionalFreezeOrDamage(
   
   // If target was not found, return the original state
   if (targetPlayer === null) {
-    console.warn(`Target ${targetId} not found for conditional_freeze_or_damage effect`);
+    debug.warn(`Target ${targetId} not found for conditional_freeze_or_damage effect`);
     return state;
   }
   

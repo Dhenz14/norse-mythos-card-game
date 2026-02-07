@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:aoe_damage effect.
  * Deals damage to all enemy minions (and optionally heroes).
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -68,7 +69,7 @@ export default function executeAoeDamage(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:aoe_damage:`, error);
+    debug.error(`Error executing spellEffect:aoe_damage:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:aoe_damage: ${error instanceof Error ? error.message : String(error)}`

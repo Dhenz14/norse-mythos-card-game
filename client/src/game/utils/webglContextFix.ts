@@ -1,3 +1,4 @@
+import { debug } from '../config/debugConfig';
 /**
  * WebGL Context Fix Utility
  * 
@@ -30,7 +31,7 @@ export function isWebGLSupported(): boolean {
     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
     return !!gl;
   } catch (e) {
-    console.error('Error checking WebGL support:', e);
+    debug.error('Error checking WebGL support:', e);
     return false;
   }
 }
@@ -98,7 +99,7 @@ function disposeContext(canvas: HTMLCanvasElement, context: WebGLRenderingContex
     canvasRegistry.delete(canvas);
     activeWebGLContexts--;
   } catch (e) {
-    console.error('Error disposing WebGL context:', e);
+    debug.error('Error disposing WebGL context:', e);
   }
 }
 
@@ -118,7 +119,7 @@ export function patchCanvasGetContext(): void {
     // Check if this canvas already has a context of a different type
     const existingRegistration = canvasRegistry.get(this);
     if (existingRegistration && existingRegistration.contextType !== contextType) {
-      console.warn(
+      debug.warn(
         `Canvas already has a context of type ${existingRegistration.contextType}, ` +
         `but ${contextType} was requested. Creating replacement canvas.`
       );
@@ -163,11 +164,11 @@ export function patchCanvasGetContext(): void {
       
       return context;
     } catch (e) {
-      console.error('Error creating context:', e);
+      debug.error('Error creating context:', e);
       
       // If this error is related to WebGL, try a replacement canvas
       if (contextType === 'webgl' || contextType === 'experimental-webgl') {
-        console.warn('WebGL context creation failed. Creating replacement canvas.');
+        debug.warn('WebGL context creation failed. Creating replacement canvas.');
         
         // Create a replacement canvas
         const replacementCanvas = createReplacementCanvas(this);
@@ -197,7 +198,7 @@ export function patchCanvasGetContext(): void {
           
           return context;
         } catch (e2) {
-          console.error('Error creating context on replacement canvas:', e2);
+          debug.error('Error creating context on replacement canvas:', e2);
           return null;
         }
       }

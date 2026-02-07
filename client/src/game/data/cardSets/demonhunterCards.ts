@@ -10,6 +10,7 @@
  * - Fel magic: Destructive spells and demon synergy
  * - Mobility: Cards with aggressive positioning and tempo
  */
+import { debug } from '../../config/debugConfig';
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
@@ -24,7 +25,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * - Demon Hunter tokens: 99xx series
  */
 export function registerDemonHunterCards(): void {
-  if (IS_DEV) console.log('Registering Demon Hunter cards...');
+  if (IS_DEV) debug.card('Registering Demon Hunter cards...');
 
   // Chaos Strike
   createCard()
@@ -328,5 +329,5 @@ export function registerDemonHunterCards(): void {
     .collectible(true)
     .build();
 
-  if (IS_DEV) console.log('Demon Hunter cards registered successfully.');
+  if (IS_DEV) debug.card('Demon Hunter cards registered successfully.');
 }

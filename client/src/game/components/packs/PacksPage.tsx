@@ -1,3 +1,4 @@
+import { debug } from '../../config/debugConfig';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -92,7 +93,7 @@ export default function PacksPage() {
         setSupplyStats(null);
       }
     } catch (err) {
-      console.error('Error fetching pack data:', err);
+      debug.error('Error fetching pack data:', err);
       setError('Failed to load packs. Please try again.');
       setPackTypes([]);
       setSupplyStats(null);
@@ -136,7 +137,7 @@ export default function PacksPage() {
         setOpeningPack(null);
       }
     } catch (err) {
-      console.error('Error opening pack:', err);
+      debug.error('Error opening pack:', err);
       setPackError('Failed to open pack. Please try again.');
       setIsOpening(false);
       setOpeningPack(null);

@@ -33,13 +33,13 @@ export function executeDeathrattle(
   
   // If keyword exists but no effect, log warning
   if (hasDeathrattleKeyword && !hasDeathrattleEffect) {
-    console.warn(`[Deathrattle] Card ${card.card.name} has deathrattle keyword but no effect defined!`);
+    debug.warn(`[Deathrattle] Card ${card.card.name} has deathrattle keyword but no effect defined!`);
     return state;
   }
   
   // If effect exists but no keyword, still execute but log for debugging
   if (!hasDeathrattleKeyword && hasDeathrattleEffect) {
-    console.warn(`[Deathrattle] Card ${card.card.name} has deathrattle effect but no keyword - executing anyway`);
+    debug.warn(`[Deathrattle] Card ${card.card.name} has deathrattle effect but no keyword - executing anyway`);
   }
   
   debug.log(`[Deathrattle] Triggered: ${card.card.name} (ID: ${card.card.id}) - Effect: ${minionCard.deathrattle!.type}`, minionCard.deathrattle);
@@ -123,7 +123,7 @@ export function executeDeathrattle(
       // Handled by UnifiedEffectProcessor or logic here
       return newState;
     default:
-      console.warn(`Unknown deathrattle type: ${deathrattle.type}`);
+      debug.warn(`Unknown deathrattle type: ${deathrattle.type}`);
       return newState;
   }
 }
@@ -141,14 +141,14 @@ function executeSummonDeathrattle(
   
   // Find the card to summon based on the specified card ID
   if (!deathrattle.summonCardId) {
-    console.error("No summon card ID specified in the deathrattle effect");
+    debug.error("No summon card ID specified in the deathrattle effect");
     return state;
   }
   
   const cardToSummon = allCards.find(card => card.id === deathrattle.summonCardId);
   
   if (!cardToSummon) {
-    console.error(`Card with ID ${deathrattle.summonCardId} not found in the database`);
+    debug.error(`Card with ID ${deathrattle.summonCardId} not found in the database`);
     return state;
   }
   
@@ -383,7 +383,7 @@ function executeBuffDeathrattle(
   const healthBuff = deathrattle.buffHealth || 0;
   
   if (attackBuff === 0 && healthBuff === 0) {
-    console.warn('Deathrattle buff effect has no attack or health changes');
+    debug.warn('Deathrattle buff effect has no attack or health changes');
     return state;
   }
   
@@ -564,7 +564,7 @@ export function shouldTriggerDeathrattle(card: CardInstance): boolean {
   if (!hasDeathrattleEffect) {
     const hasDeathrattleKeyword = minionCard.keywords?.includes('deathrattle') === true;
     if (hasDeathrattleKeyword) {
-      console.warn(`[Deathrattle] Card ${card.card.name} has deathrattle keyword but no effect defined - data error`);
+      debug.warn(`[Deathrattle] Card ${card.card.name} has deathrattle keyword but no effect defined - data error`);
     }
   }
   
@@ -607,7 +607,7 @@ export function processPendingDeathrattles(state: GameState): GameState {
   }
   
   if (iterations >= MAX_ITERATIONS) {
-    console.warn('[Deathrattle] Maximum iterations reached while processing pending deathrattles');
+    debug.warn('[Deathrattle] Maximum iterations reached while processing pending deathrattles');
   }
   
   // Clear any remaining pending deathrattles

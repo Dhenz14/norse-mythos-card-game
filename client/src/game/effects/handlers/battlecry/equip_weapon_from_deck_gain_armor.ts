@@ -3,6 +3,7 @@
  * 
  * Equips a weapon from the deck and gains armor.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -58,7 +59,7 @@ export default function executeEquipWeaponFromDeckGainArmor(
       }
     };
   } catch (error) {
-    console.error('Error executing equip_weapon_from_deck_gain_armor:', error);
+    debug.error('Error executing equip_weapon_from_deck_gain_armor:', error);
     return { success: false, error: `Failed to execute equip_weapon_from_deck_gain_armor: ${error}` };
   }
 }

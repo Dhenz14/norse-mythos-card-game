@@ -5,6 +5,7 @@
  * particularly focusing on counting minions of a specific race.
  * Used by Necromancer cards like Bone Collector.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card } from '../../../types/CardTypes';
 import { BattlecryEffect } from '../../../types';
@@ -64,7 +65,7 @@ function executeBuffFromGraveyardCountBuffFromGraveyardCount(
       additionalData: { message: `Buffed by +${totalBuff}/+${totalBuff} based on ${minionCount} minions in graveyard` }
     };
   } catch (error) {
-    console.error('Error in buff_from_graveyard_count effect:', error);
+    debug.error('Error in buff_from_graveyard_count effect:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : String(error)

@@ -4,6 +4,7 @@
  * This handler implements the battlecry:eat_opponent_card effect.
  * Used by Mutanus the Devourer: "Battlecry: Eat a minion in your opponent's hand. Gain its stats."
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -105,7 +106,7 @@ export default function executeEatOpponentCardEatOpponentCard(
       }
     };
   } catch (error) {
-    console.error(`Error executing battlecry:eat_opponent_card:`, error);
+    debug.error(`Error executing battlecry:eat_opponent_card:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:eat_opponent_card: ${error instanceof Error ? error.message : String(error)}`

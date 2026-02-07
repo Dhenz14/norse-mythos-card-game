@@ -9,6 +9,7 @@
  * - Proper lifecycle management
  */
 
+import { debug } from '../config/debugConfig';
 import { create } from 'zustand';
 
 export type AnimationCategory = 
@@ -316,7 +317,7 @@ export function scheduleSpellEffect(
     phase?: string;
   }
 ): string {
-  console.log(`[Animation] Scheduling spell effect: ${spellName} (${spellType})`);
+  debug.animation(`[Animation] Scheduling spell effect: ${spellName} (${spellType})`);
   return useAnimationOrchestrator.getState().scheduleEffect({
     category: 'spell',
     priority: 'high',
@@ -334,7 +335,7 @@ export function scheduleShuffleEffect(
   phase?: string
 ): string {
   if (typeof window === 'undefined') {
-    console.warn('[Animation] scheduleShuffleEffect called in non-browser context');
+    debug.warn('[Animation] scheduleShuffleEffect called in non-browser context');
     return '';
   }
   

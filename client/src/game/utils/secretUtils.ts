@@ -1,5 +1,6 @@
 import { CardData, SecretTriggerType, ActiveSecret } from '../types';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
+import { debug } from '../config/debugConfig';
 
 /**
  * Helper functions for handling game secrets
@@ -108,7 +109,7 @@ export function playSecret(gameState: any, cardInstanceId: string): any {
   );
   
   if (cardIndex === -1) {
-    console.error(`[SECRET-ERROR] Card with ID ${cardInstanceId} not found in player's hand`);
+    debug.error(`[SECRET-ERROR] Card with ID ${cardInstanceId} not found in player's hand`);
     return gameState;
   }
   

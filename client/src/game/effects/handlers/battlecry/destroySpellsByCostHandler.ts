@@ -5,6 +5,7 @@
  * Destroys all spells of a specific mana cost from both players' hands and decks.
  * Example card: Skulking Geist (ID: 30021) - destroys 1-cost spells
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -70,7 +71,7 @@ export default function executeDestroySpellsByCost(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_spells_by_cost:`, error);
+    debug.error(`Error executing battlecry:destroy_spells_by_cost:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_spells_by_cost: ${error instanceof Error ? error.message : String(error)}`

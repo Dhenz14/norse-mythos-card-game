@@ -4,6 +4,7 @@
  * Gives Divine Shield to target minions.
  * Example card: Argent Protector (ID: 8020)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -58,7 +59,7 @@ export default function executeGiveDivineShield(
       }
     };
   } catch (error) {
-    console.error('Error executing give_divine_shield:', error);
+    debug.error('Error executing give_divine_shield:', error);
     return { success: false, error: `Failed to execute give_divine_shield: ${error}` };
   }
 }

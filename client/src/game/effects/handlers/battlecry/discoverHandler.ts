@@ -4,6 +4,7 @@
  * This handler implements the battlecry:discover effect.
  * Presents 3 random cards matching criteria for the player to pick and add to hand.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -99,7 +100,7 @@ export default function executeDiscover(
       }
     };
   } catch (error) {
-    console.error(`Error executing battlecry:discover:`, error);
+    debug.error(`Error executing battlecry:discover:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:discover: ${error instanceof Error ? error.message : String(error)}`

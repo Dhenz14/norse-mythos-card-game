@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:destroy_deck_portion effect.
  * Destroys a number of cards from the target player's deck.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -59,7 +60,7 @@ export default function executeDestroyDeckPortion(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:destroy_deck_portion:`, error);
+    debug.error(`Error executing spellEffect:destroy_deck_portion:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:destroy_deck_portion: ${error instanceof Error ? error.message : String(error)}`

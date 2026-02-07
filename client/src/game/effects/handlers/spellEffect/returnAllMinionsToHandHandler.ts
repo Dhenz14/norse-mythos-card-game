@@ -4,6 +4,7 @@
  * Implements the "return_all_minions_to_hand" spellEffect effect.
  * Returns all minions on the board to their owners' hands.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -81,7 +82,7 @@ export default function executeReturnAllMinionsToHand(
       additionalData: { minionsReturned }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:return_all_minions_to_hand:`, error);
+    debug.error(`Error executing spellEffect:return_all_minions_to_hand:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:return_all_minions_to_hand: ${error instanceof Error ? error.message : String(error)}`

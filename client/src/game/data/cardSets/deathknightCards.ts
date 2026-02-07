@@ -10,6 +10,7 @@
  * - Unholy: Raising undead minions and disease effects
  * - Rune empowerment: Cards that interact with runes
  */
+import { debug } from '../../config/debugConfig';
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
@@ -24,7 +25,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * - Death Knight tokens: 39xx series
  */
 export function registerDeathKnightCards(): void {
-  if (IS_DEV) console.log('Registering Death Knight cards...');
+  if (IS_DEV) debug.card('Registering Death Knight cards...');
 
   // Death Coil
   createCard()
@@ -422,5 +423,5 @@ export function registerDeathKnightCards(): void {
     .collectible(true)
     .build();
 
-  if (IS_DEV) console.log('Death Knight cards registered successfully.');
+  if (IS_DEV) debug.card('Death Knight cards registered successfully.');
 }

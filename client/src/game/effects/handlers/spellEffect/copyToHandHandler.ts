@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:copy_to_hand effect.
  * Copies a minion or card to the player's hand.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -88,7 +89,7 @@ export default function executeCopyToHand(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:copy_to_hand:`, error);
+    debug.error(`Error executing spellEffect:copy_to_hand:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:copy_to_hand: ${error instanceof Error ? error.message : String(error)}`

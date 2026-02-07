@@ -4,6 +4,7 @@
  * Equips the legendary Frostmourne weapon.
  * Example card: The Lich King (ID: 3015)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -55,7 +56,7 @@ export default function executeEquipFrostmourne(
       additionalData: { equippedWeapon: frostmourne }
     };
   } catch (error) {
-    console.error('Error executing equip_frostmourne:', error);
+    debug.error('Error executing equip_frostmourne:', error);
     return { success: false, error: `Failed to execute equip_frostmourne: ${error}` };
   }
 }

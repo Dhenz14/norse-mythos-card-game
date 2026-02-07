@@ -5,6 +5,7 @@
  * Warlock cards often trade health for power, summon demons, and control the board through dark magic.
  * Key mechanics include Life Tap (drawing at the cost of health) and Discard synergies.
  */
+import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType } from '../../types';
 
@@ -18,7 +19,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * - Demon-specific tokens: 17xxx series (usually 500+)
  */
 export function registerWarlockCards(): void {
-  if (IS_DEV) console.log('Registering Warlock cards...');
+  if (IS_DEV) debug.card('Registering Warlock cards...');
 
   // BASIC WARLOCK CARDS
   createCard()
@@ -422,5 +423,5 @@ export function registerWarlockCards(): void {
     .addCategory("token")
     .build();
 
-  if (IS_DEV) console.log('Warlock cards registered successfully.');
+  if (IS_DEV) debug.card('Warlock cards registered successfully.');
 }

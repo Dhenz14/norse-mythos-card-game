@@ -4,6 +4,7 @@
  * Shuffles special cards (like bombs, mines, map pieces) into deck.
  * Example card: Elise the Trailblazer (ID: 32007)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -93,7 +94,7 @@ export default function executeShuffleSpecial(
       additionalData: { shuffledCards, specialType, count: shuffledCards.length }
     };
   } catch (error) {
-    console.error('Error executing shuffle_special:', error);
+    debug.error('Error executing shuffle_special:', error);
     return { success: false, error: `Failed to execute shuffle_special: ${error}` };
   }
 }

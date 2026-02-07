@@ -4,6 +4,7 @@
  * This file contains Paladin-specific cards using the card builder API.
  * Paladin cards focus on divine shields, healing, buffs, and Silver Hand Recruit synergy.
  */
+import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType } from '../../types';
 
@@ -13,7 +14,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * Register all Paladin cards in the registry
  */
 export function registerPaladinCards(): void {
-  if (IS_DEV) console.log('Registering Paladin cards...');
+  if (IS_DEV) debug.card('Registering Paladin cards...');
 
   // PALADIN SPELLS
 
@@ -329,5 +330,5 @@ export function registerPaladinCards(): void {
     .collectible(true)
     .build();
 
-  if (IS_DEV) console.log('Paladin cards registered successfully.');
+  if (IS_DEV) debug.card('Paladin cards registered successfully.');
 }

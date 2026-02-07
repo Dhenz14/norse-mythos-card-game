@@ -14,6 +14,7 @@
  */
 
 import * as THREE from 'three';
+import { debug } from '../config/debugConfig';
 
 type TextureLoadState = 'idle' | 'loading' | 'loaded' | 'error';
 
@@ -395,7 +396,7 @@ class CanvasContextManager {
           undefined,
           // Error callback
           (error: unknown) => {
-            console.warn(`Failed to load texture: ${url}`, error);
+            debug.warn(`Failed to load texture: ${url}`, error);
             const entry = this.textureCache.get(url);
             if (entry) {
               entry.state = 'error';

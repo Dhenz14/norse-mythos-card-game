@@ -4,6 +4,7 @@
  * This handler summons skeleton minions based on the number of minions in the graveyard.
  * Used by Necromancer cards like Skeletal Lord.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card } from '../../../types/CardTypes';
 import { BattlecryEffect } from '../../../types';
@@ -46,7 +47,7 @@ function executeSummonSkeletonsBasedOnGraveyardSummonSkeletonsBasedOnGraveyard(
     const skeletonCard = getCardById(skeletonId);
     
     if (!skeletonCard) {
-      console.error(`Skeleton card with ID ${skeletonId} not found`);
+      debug.error(`Skeleton card with ID ${skeletonId} not found`);
       return { 
         success: false, 
         error: `Skeleton card with ID ${skeletonId} not found` 
@@ -55,7 +56,7 @@ function executeSummonSkeletonsBasedOnGraveyardSummonSkeletonsBasedOnGraveyard(
     
     // Ensure the skeleton card is a minion using type guard
     if (!isMinion(skeletonCard)) {
-      console.error(`Skeleton card with ID ${skeletonId} is not a minion`);
+      debug.error(`Skeleton card with ID ${skeletonId} is not a minion`);
       return { 
         success: false, 
         error: `Skeleton card with ID ${skeletonId} is not a minion` 
@@ -85,7 +86,7 @@ function executeSummonSkeletonsBasedOnGraveyardSummonSkeletonsBasedOnGraveyard(
       success: true
     };
   } catch (error) {
-    console.error('Error in summon_skeletons_based_on_graveyard effect:', error);
+    debug.error('Error in summon_skeletons_based_on_graveyard effect:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : String(error)

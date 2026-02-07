@@ -4,6 +4,7 @@
  * Implements the "give_divine_shield" spellEffect effect.
  * Grants Divine Shield to target minions.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -52,7 +53,7 @@ export default function executeGiveDivineShield(
       additionalData: { shieldsGranted }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:give_divine_shield:`, error);
+    debug.error(`Error executing spellEffect:give_divine_shield:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:give_divine_shield: ${error instanceof Error ? error.message : String(error)}`

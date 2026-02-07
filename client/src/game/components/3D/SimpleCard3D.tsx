@@ -209,13 +209,13 @@ const SimpleCard3D: React.FC<SimpleCard3DProps> = ({
             },
             undefined,
             (error) => {
-              console.error(`Error loading texture for card ${cardData.id}:`, error);
+              debug.error(`Error loading texture for card ${cardData.id}:`, error);
               reject(error);
             }
           );
         });
       } catch (error: any) {
-        console.error(`Failed to load image for card ${cardData.id}:`, error);
+        debug.error(`Failed to load image for card ${cardData.id}:`, error);
         const errorTexture = createFallbackTexture(`Error loading card image`);
         setArtTexture(errorTexture);
       }
@@ -223,7 +223,7 @@ const SimpleCard3D: React.FC<SimpleCard3DProps> = ({
     
     // Start loading the texture
     loadCardTexture().catch(error => {
-      console.error('Card texture loading error:', error);
+      debug.error('Card texture loading error:', error);
     });
     
     // Clean up function to dispose of textures

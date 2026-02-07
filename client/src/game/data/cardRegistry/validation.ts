@@ -1,4 +1,5 @@
 import { CardData, CardType } from '../../types';
+import { debug } from '../../config/debugConfig';
 
 const IS_DEV = import.meta.env?.DEV ?? process.env.NODE_ENV === 'development';
 
@@ -101,17 +102,17 @@ export function validateCardRegistry(cards: unknown[]): CardData[] {
   }
   
   if (duplicates.length > 0) {
-    console.error(`[CardRegistry] DUPLICATE IDs FOUND:`);
-    duplicates.forEach(d => console.error(`  - ${d}`));
+    debug.error(`[CardRegistry] DUPLICATE IDs FOUND:`);
+    duplicates.forEach(d => debug.error(`  - ${d}`));
   }
   
   if (errors.length > 0) {
-    console.warn(`[CardRegistry] ${errors.length} validation errors found`);
-    errors.forEach(e => console.warn(`  - ${e}`));
+    debug.warn(`[CardRegistry] ${errors.length} validation errors found`);
+    errors.forEach(e => debug.warn(`  - ${e}`));
   }
   
   if (IS_DEV) {
-    console.log(`[CardRegistry] Loaded ${validCards.length} valid cards (${duplicates.length} duplicates skipped)`);
+    debug.card(`[CardRegistry] Loaded ${validCards.length} valid cards (${duplicates.length} duplicates skipped)`);
   }
   return validCards;
 }

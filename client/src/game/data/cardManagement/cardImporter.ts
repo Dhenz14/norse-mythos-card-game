@@ -6,6 +6,7 @@
  */
 import { CardData } from '../../types';
 import { createCard } from './cardBuilder';
+import { debug } from '../../config/debugConfig';
 
 /**
  * External card data format (e.g., from JSON)
@@ -126,7 +127,7 @@ export function importCards(externalCards: ExternalCardData[]): CardData[] {
               cardBuilder = cardBuilder.spellEffect(effect as any);
               break;
             default:
-              console.warn(`Unknown effect type for card ${externalCard.name}: ${effectCategory}`);
+              debug.warn(`Unknown effect type for card ${externalCard.name}: ${effectCategory}`);
           }
         }
       }
@@ -136,15 +137,15 @@ export function importCards(externalCards: ExternalCardData[]): CardData[] {
       importedCards.push(card);
     } catch (error) {
       const errorMessage = `Error importing card ${externalCard.name} (ID: ${externalCard.id}): ${error instanceof Error ? error.message : String(error)}`;
-      console.error(errorMessage);
+      debug.error(errorMessage);
       errors.push(errorMessage);
     }
   }
   
   // Report import results
-  console.log(`Imported ${importedCards.length} cards successfully`);
+  debug.card(`Imported ${importedCards.length} cards successfully`);
   if (errors.length > 0) {
-    console.warn(`Failed to import ${errors.length} cards`);
+    debug.warn(`Failed to import ${errors.length} cards`);
   }
   
   return importedCards;
@@ -161,7 +162,7 @@ export function importCardsFromJson(jsonData: string): CardData[] {
     const parsedData = JSON.parse(jsonData) as ExternalCardData[];
     return importCards(parsedData);
   } catch (error) {
-    console.error('Error parsing JSON card data:', error);
+    debug.error('Error parsing JSON card data:', error);
     return [];
   }
 }
@@ -176,7 +177,7 @@ export function importCardsFromJson(jsonData: string): CardData[] {
 export async function importCardsFromFile(filePath: string): Promise<CardData[]> {
   // This assumes a Node.js environment, so we check for it
   if (typeof window !== 'undefined') {
-    console.error('importCardsFromFile can only be used in Node.js environments');
+    debug.error('importCardsFromFile can only be used in Node.js environments');
     return [];
   }
 
@@ -186,7 +187,7 @@ export async function importCardsFromFile(filePath: string): Promise<CardData[]>
     const jsonData = await fs.readFile(filePath, 'utf8');
     return importCardsFromJson(jsonData);
   } catch (error) {
-    console.error(`Error importing cards from file ${filePath}:`, error);
+    debug.error(`Error importing cards from file ${filePath}:`, error);
     return [];
   }
 }

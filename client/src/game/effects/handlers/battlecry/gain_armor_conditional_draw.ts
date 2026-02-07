@@ -4,6 +4,7 @@
  * Implements the battlecry:gain_armor_conditional_draw effect.
  * Hero gains armor, then draws if a condition is met.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -82,7 +83,7 @@ export default function executeGainArmorConditionalDraw(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:gain_armor_conditional_draw:`, error);
+    debug.error(`Error executing battlecry:gain_armor_conditional_draw:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:gain_armor_conditional_draw: ${error instanceof Error ? error.message : String(error)}`

@@ -97,7 +97,7 @@ export function isTransformObject(obj: any): obj is CardTransformObject {
  */
 export function validateCard(card: any): card is UnifiedCard {
   if (!card) {
-    console.warn('Null or undefined card data was passed', card);
+    debug.warn('Null or undefined card data was passed', card);
     return false;
   }
   
@@ -110,7 +110,7 @@ export function validateCard(card: any): card is UnifiedCard {
   if (isCardInstanceWithCardData(card)) {
     // Ensure the nested card is valid
     if (!card.card) {
-      console.warn('Card instance has no card data:', card);
+      debug.warn('Card instance has no card data:', card);
       return false;
     }
     return isCardData(card.card);
@@ -273,7 +273,7 @@ export function logCardRendering(card: UnifiedCard, renderer: string): void {
         `Rendering card ${cardData.name} (ID: ${cardData.id}) with ${renderer} renderer`
       );
     } catch (err) {
-      console.error('Error logging card rendering:', err);
+      debug.error('Error logging card rendering:', err);
     }
   }
 }

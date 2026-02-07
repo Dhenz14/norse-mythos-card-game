@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:buff_attack effect.
  * Applies a simple attack buff to a target minion.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -55,7 +56,7 @@ export default function executeBuffAttack(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:buff_attack:`, error);
+    debug.error(`Error executing spellEffect:buff_attack:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:buff_attack: ${error instanceof Error ? error.message : String(error)}`

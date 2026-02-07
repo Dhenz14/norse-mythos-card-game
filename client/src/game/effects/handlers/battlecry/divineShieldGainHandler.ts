@@ -4,6 +4,7 @@
  * Implements the "divine_shield_gain" battlecry effect.
  * Grants Divine Shield to target minion(s).
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -67,7 +68,7 @@ export default function executeDivineShieldGain(
     
     return { success: true, additionalData: { shieldedCount } };
   } catch (error) {
-    console.error(`Error executing battlecry:divine_shield_gain:`, error);
+    debug.error(`Error executing battlecry:divine_shield_gain:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:divine_shield_gain: ${error instanceof Error ? error.message : String(error)}`

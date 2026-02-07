@@ -4,6 +4,7 @@
  * This handler implements the battlecry:damage effect.
  * Deals effect.value damage to target(s) based on targetType.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -88,7 +89,7 @@ export default function executeDamage(
     
     return { success: true, additionalData: { totalDamageDealt } };
   } catch (error) {
-    console.error(`Error executing battlecry:damage:`, error);
+    debug.error(`Error executing battlecry:damage:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:damage: ${error instanceof Error ? error.message : String(error)}`

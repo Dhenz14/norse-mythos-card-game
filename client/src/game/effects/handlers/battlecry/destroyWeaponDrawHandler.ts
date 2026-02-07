@@ -5,6 +5,7 @@
  * Destroys the enemy hero's weapon and draws cards equal to its durability.
  * Example card: Harrison Jones (ID: 20042)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -56,7 +57,7 @@ export default function executeDestroyWeaponDraw(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_weapon_draw:`, error);
+    debug.error(`Error executing battlecry:destroy_weapon_draw:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_weapon_draw: ${error instanceof Error ? error.message : String(error)}`

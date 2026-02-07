@@ -5,6 +5,7 @@
  * Deals damage to targets when the minion dies.
  * Example: Abomination (deals 2 damage to all characters)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -84,7 +85,7 @@ export default function executeDamageDamage(
       additionalData: { damagedCount, damageDealt: damageAmount }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:damage:`, error);
+    debug.error(`Error executing deathrattle:damage:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:damage: ${error instanceof Error ? error.message : String(error)}`

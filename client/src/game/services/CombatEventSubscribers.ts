@@ -14,7 +14,7 @@
 
 import { CombatEventBus, CombatEvent, DamageResolvedEvent, AttackBlockedEvent, ImpactPhaseEvent } from './CombatEventBus';
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
-import { useAnimationStore } from '../stores/animationStore';
+import { useUnifiedUIStore } from '../stores/unifiedUIStore';
 import { scheduleDamageEffect } from '../animations/UnifiedAnimationOrchestrator';
 import { debug } from '../config/debugConfig';
 
@@ -141,7 +141,7 @@ function subscribeBlockedAttackNotifications(): () => void {
     debug.warn(`[AttackBlocked] ${event.message}`);
     
     // Show visual notification to user
-    const animationStore = useAnimationStore.getState();
+    const animationStore = useUnifiedUIStore.getState();
     
     // Map block reasons to user-friendly messages and icons
     const reasonMessages: Record<string, { title: string; icon: string }> = {

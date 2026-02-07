@@ -5,6 +5,7 @@
  * Heals targets when the minion dies.
  * Example: Zombie Chow (heals enemy hero for 5)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -84,7 +85,7 @@ export default function executeHealHeal(
       additionalData: { healedCount, totalHealed }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:heal:`, error);
+    debug.error(`Error executing deathrattle:heal:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:heal: ${error instanceof Error ? error.message : String(error)}`

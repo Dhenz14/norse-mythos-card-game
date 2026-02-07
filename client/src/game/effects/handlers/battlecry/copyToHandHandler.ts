@@ -4,6 +4,7 @@
  * Copies a minion and adds it to the player's hand.
  * Example card: Zola the Gorgon (ID: 20306)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -71,7 +72,7 @@ export default function executeCopyToHand(
       additionalData: { copiedCard, originalTarget: target }
     };
   } catch (error) {
-    console.error('Error executing copy_to_hand:', error);
+    debug.error('Error executing copy_to_hand:', error);
     return { success: false, error: `Failed to execute copy_to_hand: ${error}` };
   }
 }

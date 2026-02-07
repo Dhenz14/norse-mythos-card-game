@@ -4,6 +4,7 @@
  * Implements the "temp_mana" spellEffect effect.
  * Grants temporary mana crystals for this turn only.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -40,7 +41,7 @@ export default function executeTempMana(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:temp_mana:`, error);
+    debug.error(`Error executing spellEffect:temp_mana:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:temp_mana: ${error instanceof Error ? error.message : String(error)}`

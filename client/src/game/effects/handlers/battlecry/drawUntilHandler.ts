@@ -5,6 +5,7 @@
  * Draws cards until a condition is met.
  * Example card: Wrathion (ID: 20302) - Draw cards until you draw a non-Dragon
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -135,7 +136,7 @@ export default function executeDrawUntil(
       }
     };
   } catch (error) {
-    console.error(`Error executing draw_until:`, error);
+    debug.error(`Error executing draw_until:`, error);
     return {
       success: false,
       error: `Error executing draw_until: ${error instanceof Error ? error.message : String(error)}`

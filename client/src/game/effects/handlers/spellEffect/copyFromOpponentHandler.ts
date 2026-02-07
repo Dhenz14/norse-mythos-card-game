@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:copy_from_opponent effect.
  * Copies a card from the opponent's deck or hand to your hand.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -70,7 +71,7 @@ export default function executeCopyFromOpponent(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:copy_from_opponent:`, error);
+    debug.error(`Error executing spellEffect:copy_from_opponent:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:copy_from_opponent: ${error instanceof Error ? error.message : String(error)}`

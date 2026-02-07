@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:destroy effect.
  * Destroys a target minion.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -81,7 +82,7 @@ export default function executeDestroy(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:destroy:`, error);
+    debug.error(`Error executing spellEffect:destroy:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:destroy: ${error instanceof Error ? error.message : String(error)}`

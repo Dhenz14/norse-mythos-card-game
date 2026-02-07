@@ -4,6 +4,7 @@
  * Implements the "summon_copy_from_deck" spellEffect effect.
  * Summons a copy of a minion from the player's deck.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -80,7 +81,7 @@ export default function executeSummonCopyFromDeck(
       additionalData: { summonedCount }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:summon_copy_from_deck:`, error);
+    debug.error(`Error executing spellEffect:summon_copy_from_deck:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:summon_copy_from_deck: ${error instanceof Error ? error.message : String(error)}`

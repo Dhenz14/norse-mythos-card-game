@@ -6,6 +6,7 @@
 import { GameState, CardInstance } from '../../types';
 import { logDamage } from '../gameLogUtils';
 import { v4 as uuidv4 } from 'uuid';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Apply freeze effect to a minion or hero
@@ -67,7 +68,7 @@ export function applyFreezeEffect(
     }
     
     // Target not found
-    console.warn(`Target minion ${targetId} not found for freeze effect`);
+    debug.warn(`Target minion ${targetId} not found for freeze effect`);
     return state;
   }
   

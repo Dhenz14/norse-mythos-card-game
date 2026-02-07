@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:buff_and_immune effect.
  * Buffs a minion and grants it immunity for a duration.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -78,7 +79,7 @@ export default function executeBuffAndImmune(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:buff_and_immune:`, error);
+    debug.error(`Error executing spellEffect:buff_and_immune:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:buff_and_immune: ${error instanceof Error ? error.message : String(error)}`

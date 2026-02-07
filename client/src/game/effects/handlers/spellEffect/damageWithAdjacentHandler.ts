@@ -3,6 +3,7 @@
  * 
  * Implements the "damage_with_adjacent" spellEffect effect (cleave).
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -59,7 +60,7 @@ export function executeDamageWithAdjacentDamageWithAdjacent(
       } 
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:damage_with_adjacent:`, error);
+    debug.error(`Error executing spellEffect:damage_with_adjacent:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage_with_adjacent: ${error instanceof Error ? error.message : String(error)}`

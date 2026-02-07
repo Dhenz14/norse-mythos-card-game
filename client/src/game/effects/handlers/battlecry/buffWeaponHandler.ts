@@ -5,6 +5,7 @@
  * Adds attack and/or durability to the player's equipped weapon.
  * Example card: Hobart Grapplehammer (ID: 20300)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -75,7 +76,7 @@ export default function executeBuffWeapon(
     
     return { success: true };
   } catch (error) {
-    console.error(`Error executing battlecry:buff_weapon:`, error);
+    debug.error(`Error executing battlecry:buff_weapon:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:buff_weapon: ${error instanceof Error ? error.message : String(error)}`

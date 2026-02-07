@@ -25,6 +25,8 @@
  * @see RagnarokCombatArena.tsx for UI integration
  */
 
+import { debug } from '../config/debugConfig';
+
 export type TurnPhase = 
   | 'POKER_RESOLUTION'
   | 'MINION_COMBAT'
@@ -101,7 +103,7 @@ export class TurnOrchestrator {
       try {
         listener(from, to, this.context);
       } catch (err) {
-        console.error('[TurnOrchestrator] Listener error:', err);
+        debug.error('[TurnOrchestrator] Listener error:', err);
       }
     });
   }

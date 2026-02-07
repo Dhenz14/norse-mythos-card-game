@@ -82,17 +82,17 @@ export const createKingAbilitySlice: StateCreator<
       : state.opponentKingAbility;
     
     if (!kingState || !kingState.abilityConfig) {
-      console.warn('[KingAbility] No king ability configured for', owner);
+      debug.warn('[KingAbility] No king ability configured for', owner);
       return false;
     }
 
     if (kingState.minesRemaining <= 0) {
-      console.warn('[KingAbility] No mines remaining for', owner);
+      debug.warn('[KingAbility] No mines remaining for', owner);
       return false;
     }
 
     if (kingState.hasPlacedThisTurn) {
-      console.warn('[KingAbility] Already placed mine this turn for', owner);
+      debug.warn('[KingAbility] Already placed mine this turn for', owner);
       return false;
     }
 
@@ -109,7 +109,7 @@ export const createKingAbilitySlice: StateCreator<
     );
 
     if (!validation.valid) {
-      console.warn('[KingAbility] Invalid placement:', validation.reason);
+      debug.warn('[KingAbility] Invalid placement:', validation.reason);
       return false;
     }
 
@@ -125,7 +125,7 @@ export const createKingAbilitySlice: StateCreator<
     );
 
     if (!newMine) {
-      console.warn('[KingAbility] Failed to create mine');
+      debug.warn('[KingAbility] Failed to create mine');
       return false;
     }
 

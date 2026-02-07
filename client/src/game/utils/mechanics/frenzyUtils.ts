@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { findCardInstance, findCardById } from '../cards/cardUtils';
 import { applyDamage } from '../gameUtils';
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Initializes a card's frenzy effect
@@ -57,7 +58,7 @@ export function executeFrenzyEffect(
   // Find the card instance
   const cardInfo = findCardInstance(state.players[playerId].battlefield, cardId);
   if (!cardInfo) {
-    console.error('Frenzy card not found on battlefield');
+    debug.error('Frenzy card not found on battlefield');
     return state;
   }
 
@@ -68,7 +69,7 @@ export function executeFrenzyEffect(
   // Ensure card has a frenzy effect to execute
   const cardAny = card as any;
   if (!cardAny.frenzyEffect) {
-    console.error('Card has no frenzy effect to execute');
+    debug.error('Card has no frenzy effect to execute');
     return state;
   }
   
@@ -169,7 +170,7 @@ export function executeFrenzyEffect(
       if (effect.transformId) {
         const transformCard = findCardById(effect.transformId);
         if (!transformCard) {
-          console.error(`Transform target card (ID: ${effect.transformId}) not found`);
+          debug.error(`Transform target card (ID: ${effect.transformId}) not found`);
           return updatedState;
         }
         
@@ -208,7 +209,7 @@ export function executeFrenzyEffect(
       return updatedState;
       
     default:
-      console.error(`Unknown frenzy effect type: ${effectType}`);
+      debug.error(`Unknown frenzy effect type: ${effectType}`);
       return updatedState;
   }
 }

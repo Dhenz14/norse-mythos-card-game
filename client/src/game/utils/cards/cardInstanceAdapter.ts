@@ -42,7 +42,7 @@ export function adaptCardInstance(
 ): CardInstanceWithCardData {
   // Handle null or undefined card
   if (!card) {
-    console.error("Attempted to adapt null or undefined card");
+    debug.error("Attempted to adapt null or undefined card");
     return createFallbackCardInstance();
   }
 
@@ -162,7 +162,7 @@ export function adaptCardInstances(
 export function getCardDataSafely(card: any) {
   // Handle null/undefined case
   if (!card) {
-    console.warn('getCardDataSafely: Received null/undefined card');
+    debug.warn('getCardDataSafely: Received null/undefined card');
     return {
       id: 0,
       name: 'Unknown Card',
@@ -206,7 +206,7 @@ export function getCardDataSafely(card: any) {
   }
   
   // If we get here, we have an unexpected format - log and return a minimal object
-  console.error('getCardDataSafely: Unrecognized card format', card);
+  debug.error('getCardDataSafely: Unrecognized card format', card);
   return {
     id: card.id || 0,
     name: card.name || 'Invalid Card Format',
@@ -232,7 +232,7 @@ export function reverseAdaptCardInstance(
   debugCardAdapter("Reverse adapting card instance", card);
   
   if (!card) {
-    console.error("Attempted to reverse adapt null or undefined card");
+    debug.error("Attempted to reverse adapt null or undefined card");
     return createFallbackStandardCardInstance();
   }
   

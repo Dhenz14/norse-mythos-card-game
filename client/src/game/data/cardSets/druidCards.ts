@@ -11,6 +11,7 @@
  * - Transformation: Shifting forms to adapt to situations
  * - Beast and Nature themes: Many cards involve plants, animals, and natural forces
  */
+import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType, SpellTargetType } from '../../types';
 
@@ -24,7 +25,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * - Druid tokens: 11xxx series (usually 5xx+)
  */
 export function registerDruidCards(): void {
-  if (IS_DEV) console.log('Registering Druid cards...');
+  if (IS_DEV) debug.card('Registering Druid cards...');
 
   // BASIC DRUID CARDS
   createCard()
@@ -465,5 +466,5 @@ export function registerDruidCards(): void {
     .addCategory("basic")
     .build();
 
-  if (IS_DEV) console.log('Druid cards registered successfully.');
+  if (IS_DEV) debug.card('Druid cards registered successfully.');
 }

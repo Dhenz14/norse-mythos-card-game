@@ -3,6 +3,7 @@
  * 
  * Implements the "damage_draw_if_survives" spellEffect effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -63,7 +64,7 @@ export function executeDamageDrawIfSurvivesDamageDrawIfSurvives(
       } 
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:damage_draw_if_survives:`, error);
+    debug.error(`Error executing spellEffect:damage_draw_if_survives:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage_draw_if_survives: ${error instanceof Error ? error.message : String(error)}`

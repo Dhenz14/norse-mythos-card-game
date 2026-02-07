@@ -51,7 +51,7 @@ function queueSpellDamagePopup(spellName: string, damage: number, targetName?: s
       targetName
     });
   } catch (error) {
-    console.error('[SpellDamagePopup] Failed to queue popup:', error);
+    debug.error('[SpellDamagePopup] Failed to queue popup:', error);
   }
 }
 
@@ -64,7 +64,7 @@ function executeManaSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Mana crystal spell missing value parameter');
+    debug.error('Mana crystal spell missing value parameter');
     return state;
   }
   
@@ -111,7 +111,7 @@ export function executeSpell(
 ): GameState {
   // Type guard: ensure card is a spell with spellEffect
   if (!isSpell(spellCard.card) || !spellCard.card.spellEffect) {
-    console.error(`Card ${spellCard.card.name} does not have a spell effect`);
+    debug.error(`Card ${spellCard.card.name} does not have a spell effect`);
     return state;
   }
   
@@ -136,7 +136,7 @@ export function executeSpell(
     const description = spellCard.card.description || '';
     scheduleSpellEffect(spellCard.card.name, description, spellType);
   } catch (error) {
-    console.error('[SpellAnimation] Failed to schedule spell effect:', error);
+    debug.error('[SpellAnimation] Failed to schedule spell effect:', error);
   }
   
   // Execute the appropriate effect based on the type
@@ -622,7 +622,7 @@ export function executeSpell(
       resultState = executeGainArmorSpell(state, effect);
       break;
     default:
-      console.error(`Unknown spell effect type: ${effect.type}`);
+      debug.error(`Unknown spell effect type: ${effect.type}`);
       return state;
   }
   
@@ -653,12 +653,12 @@ function executeDamageSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!effect.value) {
-    console.error('Damage spell missing value parameter');
+    debug.error('Damage spell missing value parameter');
     return state;
   }
   
   if (!targetId || !targetType) {
-    console.error('Damage spell requires target ID and type');
+    debug.error('Damage spell requires target ID and type');
     return state;
   }
   
@@ -742,7 +742,7 @@ function executeDamageSpell(
       newState = dealDamage(newState, 'player', 'hero', damageAmount);
       // Game over check is handled in dealDamage function
     } else {
-      console.error(`Unknown hero target ID: ${targetId}`);
+      debug.error(`Unknown hero target ID: ${targetId}`);
     }
   }
   
@@ -761,7 +761,7 @@ function executeSetHealthSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!targetId) {
-    console.error('Set health spell requires a target ID');
+    debug.error('Set health spell requires a target ID');
     return state;
   }
   
@@ -776,7 +776,7 @@ function executeSetHealthSpell(
     } else if (targetId === 'player' || targetId === 'player-hero') {
       newState.players.player.health = healthValue;
     } else {
-      console.error(`Unknown hero target ID: ${targetId}`);
+      debug.error(`Unknown hero target ID: ${targetId}`);
     }
     
     return newState;
@@ -811,7 +811,7 @@ function executeAoEDamageSpell(
 ): GameState {
   // Consider value 0 as valid for effects like Frost Nova which just freeze without dealing damage
   if (effect.value === undefined) {
-    console.error('AoE damage spell missing value parameter');
+    debug.error('AoE damage spell missing value parameter');
     return state;
   }
   
@@ -966,7 +966,7 @@ function applyFreezeEffect(
     }
     
   } else {
-    console.warn(`Unsupported freeze target type: ${targetType}`);
+    debug.warn(`Unsupported freeze target type: ${targetType}`);
   }
   
   return newState;
@@ -982,12 +982,12 @@ function executeHealSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!effect.value) {
-    console.error('Heal spell missing value parameter');
+    debug.error('Heal spell missing value parameter');
     return state;
   }
   
   if (!targetId || !targetType) {
-    console.error('Heal spell requires target ID and type');
+    debug.error('Heal spell requires target ID and type');
     return state;
   }
   
@@ -1062,7 +1062,7 @@ function executeHealSpell(
       const newHealth = Math.min(heroHealth + healAmount, 30);
       newState.players.player.health = newHealth;
     } else {
-      console.error(`Unknown hero target ID: ${targetId}`);
+      debug.error(`Unknown hero target ID: ${targetId}`);
     }
   }
   
@@ -1078,13 +1078,13 @@ function executeBuffSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Buff spell requires a target ID');
+    debug.error('Buff spell requires a target ID');
     return state;
   }
   
   // Allow buff spells that only grant keywords without stat changes
   if (!effect.buffAttack && !effect.buffHealth && !effect.grantKeywords) {
-    console.error('Buff spell missing buff values or keywords to grant');
+    debug.error('Buff spell missing buff values or keywords to grant');
     return state;
   }
   
@@ -1244,7 +1244,7 @@ function executeSummonSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.summonCardId) {
-    console.error('Summon spell missing summonCardId parameter');
+    debug.error('Summon spell missing summonCardId parameter');
     return state;
   }
   
@@ -1336,7 +1336,7 @@ function executeDrawSpell(
   }
   
   if (effect.value === undefined) {
-    console.error('Draw spell missing value parameter');
+    debug.error('Draw spell missing value parameter');
     return state;
   }
   
@@ -1367,14 +1367,14 @@ function executeFreezeSpell(
     if (effect.targetType) {
       return applyFreezeEffect(state, effect.targetType);
     } else {
-      console.error('Freeze spell missing target type');
+      debug.error('Freeze spell missing target type');
       return state;
     }
   }
   
   // Single target freeze effects
   if (!targetId || !targetType) {
-    console.error('Targeted freeze spell requires a target');
+    debug.error('Targeted freeze spell requires a target');
     return state;
   }
   
@@ -1435,7 +1435,7 @@ function executeTransformSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Transform spell requires a target ID');
+    debug.error('Transform spell requires a target ID');
     return state;
   }
   
@@ -1687,7 +1687,7 @@ function executeSilenceSpell(
   
   // Handle single-target silence effects
   if (!targetId) {
-    console.error('Single-target silence spell requires a target ID');
+    debug.error('Single-target silence spell requires a target ID');
     return state;
   }
   
@@ -1796,7 +1796,7 @@ function executeQuestSpell(
     spellCard.card.spellEffect.type !== 'quest' ||
     !spellCard.card.spellEffect.questData
   ) {
-    console.error('Not a valid quest card:', spellCard);
+    debug.error('Not a valid quest card:', spellCard);
     return state;
   }
   
@@ -1937,7 +1937,7 @@ function executeDebuffSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Debuff spell requires a target ID');
+    debug.error('Debuff spell requires a target ID');
     return state;
   }
   
@@ -2161,12 +2161,12 @@ function executeCleaveSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!effect.value) {
-    console.error('Cleave spell missing value parameter');
+    debug.error('Cleave spell missing value parameter');
     return state;
   }
   
   if (!targetId || !targetType || targetType !== 'minion') {
-    console.error('Cleave spell requires a minion target');
+    debug.error('Cleave spell requires a minion target');
     return state;
   }
   
@@ -2200,7 +2200,7 @@ function executeCleaveSpell(
   }
   
   if (targetOwner === null || targetIndex < 0) {
-    console.error('Target minion not found for cleave spell');
+    debug.error('Target minion not found for cleave spell');
     return state;
   }
   
@@ -2270,12 +2270,12 @@ function executeCleaveWithFreezeSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!effect.value) {
-    console.error('Cleave with freeze spell missing value parameter');
+    debug.error('Cleave with freeze spell missing value parameter');
     return state;
   }
   
   if (!targetId || !targetType || targetType !== 'minion') {
-    console.error('Cleave with freeze spell requires a minion target');
+    debug.error('Cleave with freeze spell requires a minion target');
     return state;
   }
   
@@ -2309,7 +2309,7 @@ function executeCleaveWithFreezeSpell(
   }
   
   if (targetOwner === null || targetIndex < 0) {
-    console.error('Target minion not found for cleave with freeze spell');
+    debug.error('Target minion not found for cleave with freeze spell');
     return state;
   }
   
@@ -2387,12 +2387,12 @@ function executeConditionalDamageSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!effect.value || !effect.enhancedValue) {
-    console.error('Conditional damage spell missing value parameters');
+    debug.error('Conditional damage spell missing value parameters');
     return state;
   }
   
   if (!targetId || !targetType) {
-    console.error('Conditional damage spell requires target ID and type');
+    debug.error('Conditional damage spell requires target ID and type');
     return state;
   }
   
@@ -2451,7 +2451,7 @@ function executeConditionalFreezeOrDestroySpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!targetId || !targetType || targetType !== 'minion') {
-    console.error('Conditional freeze or destroy spell requires a minion target');
+    debug.error('Conditional freeze or destroy spell requires a minion target');
     return state;
   }
   
@@ -2487,7 +2487,7 @@ function executeConditionalFreezeOrDestroySpell(
   }
   
   if (!targetFound || targetOwner === null || targetIndex < 0) {
-    console.error('Target minion not found for conditional freeze or destroy spell');
+    debug.error('Target minion not found for conditional freeze or destroy spell');
     return state;
   }
   
@@ -2518,12 +2518,12 @@ function executeDrawAndDamageSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!targetId || !targetType) {
-    console.error('Draw and damage spell requires target ID and type');
+    debug.error('Draw and damage spell requires target ID and type');
     return state;
   }
   
   if (!effect.drawCards) {
-    console.error('Draw and damage spell missing drawCards parameter');
+    debug.error('Draw and damage spell missing drawCards parameter');
     return state;
   }
   
@@ -2589,7 +2589,7 @@ function executeDrawBothPlayersSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Draw both players spell missing value parameter');
+    debug.error('Draw both players spell missing value parameter');
     return state;
   }
   
@@ -2631,17 +2631,17 @@ function executeDamageAndShuffleSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!effect.value) {
-    console.error('Damage and shuffle spell missing value parameter');
+    debug.error('Damage and shuffle spell missing value parameter');
     return state;
   }
   
   if (!effect.shuffleCardId) {
-    console.error('Damage and shuffle spell missing shuffleCardId parameter');
+    debug.error('Damage and shuffle spell missing shuffleCardId parameter');
     return state;
   }
   
   if (!targetId || !targetType) {
-    console.error('Damage and shuffle spell requires target ID and type');
+    debug.error('Damage and shuffle spell requires target ID and type');
     return state;
   }
   
@@ -2665,7 +2665,7 @@ function executeDamageAndShuffleSpell(
   const cardToShuffle = allCards.find(card => card.id === cardIdToShuffle);
   
   if (!cardToShuffle) {
-    console.error(`Card with ID ${cardIdToShuffle} not found for shuffling`);
+    debug.error(`Card with ID ${cardIdToShuffle} not found for shuffling`);
     return newState;
   }
   
@@ -2703,7 +2703,7 @@ function executeCostReductionSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Cost reduction spell missing value parameter');
+    debug.error('Cost reduction spell missing value parameter');
     return state;
   }
   
@@ -2752,7 +2752,7 @@ function executeDestroySpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!targetId) {
-    console.error('Destroy spell requires a target');
+    debug.error('Destroy spell requires a target');
     return state;
   }
   
@@ -2805,7 +2805,7 @@ function executeMindControlSpell(
   temporary: boolean = false
 ): GameState {
   if (!targetId) {
-    console.error('Mind control spell requires a target');
+    debug.error('Mind control spell requires a target');
     return state;
   }
   
@@ -2821,13 +2821,13 @@ function executeMindControlSpell(
   // Find target in enemy battlefield
   const targetIdx = enemyBattlefield.findIndex(m => m.instanceId === targetId);
   if (targetIdx === -1) {
-    console.error('Mind control target not found in enemy battlefield');
+    debug.error('Mind control target not found in enemy battlefield');
     return state;
   }
   
   // Check if player's battlefield is full (max 7 minions)
   if (myBattlefield.length >= 7) {
-    console.warn(`Cannot take control of ${enemyBattlefield[targetIdx].card.name}: your battlefield is full (7/7)`);
+    debug.warn(`Cannot take control of ${enemyBattlefield[targetIdx].card.name}: your battlefield is full (7/7)`);
     return state;
   }
   
@@ -2865,7 +2865,7 @@ function executeReturnToHandSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Return to hand spell requires a target');
+    debug.error('Return to hand spell requires a target');
     return state;
   }
   
@@ -2886,7 +2886,7 @@ function executeReturnToHandSpell(
     
     // Check if hand is full before adding
     if (playerHand.length >= 10) {
-      console.warn(`Cannot return ${minion.card.name} to hand: hand is full (10/10)`);
+      debug.warn(`Cannot return ${minion.card.name} to hand: hand is full (10/10)`);
       return state;
     }
     
@@ -2913,7 +2913,7 @@ function executeReturnToHandSpell(
     
     // Check if hand is full before adding
     if (opponentHand.length >= 10) {
-      console.warn(`Cannot return ${minion.card.name} to opponent's hand: hand is full (10/10)`);
+      debug.warn(`Cannot return ${minion.card.name} to opponent's hand: hand is full (10/10)`);
       return state;
     }
     
@@ -2970,7 +2970,7 @@ function executeEquipWeaponSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.weaponCardId) {
-    console.error('Equip weapon spell missing weaponCardId');
+    debug.error('Equip weapon spell missing weaponCardId');
     return state;
   }
   
@@ -2981,7 +2981,7 @@ function executeEquipWeaponSpell(
   // Find the weapon card
   const weaponCard = allCards.find(c => c.id === effect.weaponCardId);
   if (!weaponCard || weaponCard.type !== 'weapon') {
-    console.error(`Weapon card ${effect.weaponCardId} not found`);
+    debug.error(`Weapon card ${effect.weaponCardId} not found`);
     return state;
   }
   
@@ -3055,7 +3055,7 @@ function executeRandomDamageSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Random damage spell missing value');
+    debug.error('Random damage spell missing value');
     return state;
   }
   
@@ -3090,13 +3090,9 @@ function executeRandomDamageSpell(
     const minion = enemyBattlefield[target.idx];
     minion.currentHealth = (minion.currentHealth || getHealth(minion.card)) - (effect.value || 0);
     
-    // Check for death
+    // Check for death - use removeDeadMinions to properly trigger deathrattles
     if (minion.currentHealth <= 0) {
-      enemyBattlefield.splice(target.idx, 1);
-      const graveyard = currentPlayer === 'player' ? 
-        newState.players.opponent.graveyard : 
-        newState.players.player.graveyard;
-      graveyard.push(minion);
+      newState = removeDeadMinions(newState);
     }
   }
   
@@ -3121,13 +3117,9 @@ function executeDestroyRandomSpell(
   }
   
   const randomIdx = Math.floor(Math.random() * enemyBattlefield.length);
-  const destroyed = enemyBattlefield.splice(randomIdx, 1)[0];
-  
-  const graveyard = currentPlayer === 'player' ? 
-    newState.players.opponent.graveyard : 
-    newState.players.player.graveyard;
-  graveyard.push(destroyed);
-  
+  const destroyed = enemyBattlefield[randomIdx];
+  const targetOwner = currentPlayer === 'player' ? 'opponent' : 'player';
+  newState = destroyCardFromZone(newState, destroyed.instanceId, targetOwner);
   
   return newState;
 }
@@ -3195,7 +3187,7 @@ function executeGrantKeywordSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Grant keyword spell requires a target');
+    debug.error('Grant keyword spell requires a target');
     return state;
   }
   
@@ -3216,7 +3208,7 @@ function executeGrantKeywordSpell(
   }
   
   if (!target) {
-    console.error('Target minion not found');
+    debug.error('Target minion not found');
     return state;
   }
   
@@ -3265,7 +3257,7 @@ function executeGrantDeathrattleSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Grant deathrattle spell requires a target');
+    debug.error('Grant deathrattle spell requires a target');
     return state;
   }
   
@@ -3304,7 +3296,7 @@ function executeDamageBasedOnArmorSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!targetId) {
-    console.error('Damage based on armor spell requires a target');
+    debug.error('Damage based on armor spell requires a target');
     return state;
   }
   
@@ -3386,7 +3378,7 @@ function executeGainManaSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Gain mana spell missing value');
+    debug.error('Gain mana spell missing value');
     return state;
   }
   
@@ -3428,7 +3420,7 @@ function executeSummonRandomSpell(
   // Get all minion cards from allCards
   const minions = allCards.filter(card => card && card.type === 'minion');
   if (minions.length === 0) {
-    console.error('No minions available to summon randomly');
+    debug.error('No minions available to summon randomly');
     return newState;
   }
   
@@ -3464,12 +3456,12 @@ function executeSummonCopiesSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Summon copies spell requires a target ID');
+    debug.error('Summon copies spell requires a target ID');
     return state;
   }
   
   if (!effect.count) {
-    console.error('Summon copies spell missing count parameter');
+    debug.error('Summon copies spell missing count parameter');
     return state;
   }
   
@@ -3487,7 +3479,7 @@ function executeSummonCopiesSpell(
   }
   
   if (!targetMinion) {
-    console.error(`Target minion ${targetId} not found`);
+    debug.error(`Target minion ${targetId} not found`);
     return state;
   }
   
@@ -3523,7 +3515,7 @@ function executeSummonTokenSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.tokenId || !effect.count) {
-    console.error('Summon token spell missing tokenId or count');
+    debug.error('Summon token spell missing tokenId or count');
     return state;
   }
   
@@ -3534,7 +3526,7 @@ function executeSummonTokenSpell(
   // Find the token card
   const tokenCard = allCards.find(card => card && card.id === effect.tokenId);
   if (!tokenCard) {
-    console.error(`Token with ID ${effect.tokenId} not found`);
+    debug.error(`Token with ID ${effect.tokenId} not found`);
     return state;
   }
   
@@ -3666,7 +3658,7 @@ function executeSummonRushMinionsSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   if (!effect.count) {
-    console.error('Summon rush minions spell missing count');
+    debug.error('Summon rush minions spell missing count');
     return state;
   }
   
@@ -3754,7 +3746,7 @@ function executeResurrectMultipleSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   if (!effect.count) {
-    console.error('Resurrect multiple spell missing count');
+    debug.error('Resurrect multiple spell missing count');
     return state;
   }
   
@@ -3907,12 +3899,12 @@ function executeSilenceAndDamageSpell(
   targetType?: 'minion' | 'hero'
 ): GameState {
   if (!targetId || !targetType || targetType !== 'minion') {
-    console.error('Silence and damage spell requires a minion target');
+    debug.error('Silence and damage spell requires a minion target');
     return state;
   }
   
   if (!effect.value) {
-    console.error('Silence and damage spell missing damage value');
+    debug.error('Silence and damage spell missing damage value');
     return state;
   }
   
@@ -3982,7 +3974,7 @@ function executeSilenceAndDamageSpell(
   }
   
   if (!targetFound) {
-    console.error('Target minion not found for silence and damage spell');
+    debug.error('Target minion not found for silence and damage spell');
     return state;
   }
   
@@ -4005,12 +3997,12 @@ function executeSetAttackSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Set attack spell requires a target');
+    debug.error('Set attack spell requires a target');
     return state;
   }
   
   if (effect.value === undefined) {
-    console.error('Set attack spell missing attack value');
+    debug.error('Set attack spell missing attack value');
     return state;
   }
   
@@ -4048,7 +4040,7 @@ function executeSetAttackSpell(
   }
   
   if (!targetFound) {
-    console.error('Target minion not found for set attack spell');
+    debug.error('Target minion not found for set attack spell');
     return state;
   }
   
@@ -4064,12 +4056,12 @@ function executeSetHeroHealthSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Set hero health spell requires a target');
+    debug.error('Set hero health spell requires a target');
     return state;
   }
   
   if (effect.value === undefined) {
-    console.error('Set hero health spell missing health value');
+    debug.error('Set hero health spell missing health value');
     return state;
   }
   
@@ -4081,7 +4073,7 @@ function executeSetHeroHealthSpell(
   } else if (targetId === 'player' || targetId === 'player-hero') {
     newState.players.player.health = effect.value;
   } else {
-    console.error(`Unknown hero target ID: ${targetId}`);
+    debug.error(`Unknown hero target ID: ${targetId}`);
     return state;
   }
   
@@ -4096,7 +4088,7 @@ function executeSelfDamageSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Self damage spell missing damage value');
+    debug.error('Self damage spell missing damage value');
     return state;
   }
   
@@ -4119,7 +4111,7 @@ function executeSelfDamageBuffSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Self damage buff spell missing damage value');
+    debug.error('Self damage buff spell missing damage value');
     return state;
   }
   
@@ -4169,7 +4161,7 @@ function executeSacrificeSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Sacrifice spell requires a target');
+    debug.error('Sacrifice spell requires a target');
     return state;
   }
   
@@ -4186,7 +4178,7 @@ function executeSacrificeSpell(
     playerState.battlefield.splice(minionIdx, 1);
     playerState.graveyard = [...(playerState.graveyard || []), sacrificedMinion];
   } else {
-    console.error('Target minion not found in friendly battlefield');
+    debug.error('Target minion not found in friendly battlefield');
     return state;
   }
   
@@ -4202,12 +4194,12 @@ function executeSacrificeAndAoEDamageSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Sacrifice and AoE damage spell requires a target');
+    debug.error('Sacrifice and AoE damage spell requires a target');
     return state;
   }
   
   if (!effect.value && !effect.damageBasedOnSacrifice) {
-    console.error('Sacrifice and AoE damage spell missing damage value or flag');
+    debug.error('Sacrifice and AoE damage spell missing damage value or flag');
     return state;
   }
   
@@ -4220,7 +4212,7 @@ function executeSacrificeAndAoEDamageSpell(
   const minionIdx = playerState.battlefield.findIndex(m => m.instanceId === targetId);
   
   if (minionIdx === -1) {
-    console.error('Target minion not found in friendly battlefield');
+    debug.error('Target minion not found in friendly battlefield');
     return state;
   }
   
@@ -4263,7 +4255,7 @@ function executeReturnToHandNextTurnSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Return to hand next turn spell requires a target');
+    debug.error('Return to hand next turn spell requires a target');
     return state;
   }
   
@@ -4297,7 +4289,7 @@ function executeReturnToHandNextTurnSpell(
   }
   
   if (!targetFound) {
-    console.error('Target minion not found for return to hand next turn spell');
+    debug.error('Target minion not found for return to hand next turn spell');
     return state;
   }
   
@@ -4363,7 +4355,7 @@ function executeTransformCopySpell(
   targetId?: string
 ): GameState {
   if (!targetId || !effect.transformTargetId) {
-    console.error('Transform copy spell requires both target ID and transform target ID');
+    debug.error('Transform copy spell requires both target ID and transform target ID');
     return state;
   }
   
@@ -4381,7 +4373,7 @@ function executeTransformCopySpell(
   }
   
   if (!sourceMinion) {
-    console.error(`Source minion ${effect.transformTargetId} not found`);
+    debug.error(`Source minion ${effect.transformTargetId} not found`);
     return state;
   }
   
@@ -4479,7 +4471,7 @@ function executeTransformAndSilenceSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Transform and silence spell requires a target');
+    debug.error('Transform and silence spell requires a target');
     return state;
   }
   
@@ -4604,7 +4596,7 @@ function executeTransformCopyFromDeckSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Transform copy from deck spell requires a target');
+    debug.error('Transform copy from deck spell requires a target');
     return state;
   }
   
@@ -4703,7 +4695,7 @@ function executeSplitDamageSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Split damage spell missing damage value');
+    debug.error('Split damage spell missing damage value');
     return state;
   }
   
@@ -4742,20 +4734,8 @@ function executeSplitDamageSpell(
     }
   }
   
-  // Remove destroyed minions
-  const survivors: CardInstance[] = [];
-  const graveyard = enemyState.graveyard || [];
-  
-  for (const minion of enemyState.battlefield) {
-    if (minion.currentHealth !== undefined && minion.currentHealth <= 0) {
-      graveyard.push(minion);
-    } else {
-      survivors.push(minion);
-    }
-  }
-  
-  enemyState.battlefield = survivors;
-  enemyState.graveyard = graveyard;
+  // Remove dead minions properly through destroyCard flow for deathrattle triggers
+  newState = removeDeadMinions(newState);
   
   return newState;
 }
@@ -4810,7 +4790,7 @@ function executeReduceDeckCostSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Reduce deck cost spell missing cost reduction value');
+    debug.error('Reduce deck cost spell missing cost reduction value');
     return state;
   }
   
@@ -4840,7 +4820,7 @@ function executeReduceNextSpellCostSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Reduce next spell cost spell missing cost reduction value');
+    debug.error('Reduce next spell cost spell missing cost reduction value');
     return state;
   }
   
@@ -4864,7 +4844,7 @@ function executeReduceOpponentManaSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Reduce opponent mana spell missing mana reduction value');
+    debug.error('Reduce opponent mana spell missing mana reduction value');
     return state;
   }
   
@@ -4887,7 +4867,7 @@ function executeReduceSpellCostSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Reduce spell cost spell missing cost reduction value');
+    debug.error('Reduce spell cost spell missing cost reduction value');
     return state;
   }
   
@@ -4916,7 +4896,7 @@ function executeReplaceHeroPowerSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.heroPowerId && !effect.heroPower) {
-    console.error('Replace hero power spell missing hero power data');
+    debug.error('Replace hero power spell missing hero power data');
     return state;
   }
   
@@ -4997,7 +4977,7 @@ function executeRandomDamageAndBuffSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Random damage and buff spell missing damage value');
+    debug.error('Random damage and buff spell missing damage value');
     return state;
   }
   
@@ -5044,7 +5024,7 @@ function executeRandomDamageWithSelfDamageSpell(
   effect: SpellEffect
 ): GameState {
   if (!effect.value) {
-    console.error('Random damage with self damage spell missing damage value');
+    debug.error('Random damage with self damage spell missing damage value');
     return state;
   }
   
@@ -5125,7 +5105,7 @@ function executeShuffleCopiesSpell(
   targetId?: string
 ): GameState {
   if (!effect.count) {
-    console.error('Shuffle copies spell missing count value');
+    debug.error('Shuffle copies spell missing count value');
     return state;
   }
   
@@ -5266,7 +5246,7 @@ function executeBuffAttackSpell(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Buff attack spell requires a target');
+    debug.error('Buff attack spell requires a target');
     return state;
   }
   
@@ -6722,18 +6702,17 @@ function executeShadowflameSpell(
   
   const damage = targetMinion.currentAttack || getAttack(targetMinion.card);
   
-  // Destroy the target minion
-  const myPlayerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
-  myPlayerState.battlefield = myPlayerState.battlefield.filter((m: CardInstance) => m.instanceId !== targetId);
-  if (!myPlayerState.graveyard) myPlayerState.graveyard = [];
-  myPlayerState.graveyard.push(targetMinion);
+  // Destroy the target minion through proper destroyCard flow for deathrattle triggers
+  newState = destroyCardFromZone(newState, targetId, currentPlayer);
   
   // Deal damage to all enemy minions
   const enemyPlayerState = currentPlayer === 'player' ? newState.players.opponent : newState.players.player;
   enemyPlayerState.battlefield = enemyPlayerState.battlefield.map((minion: CardInstance) => ({
     ...minion,
     currentHealth: (minion.currentHealth || getHealth(minion.card)) - damage
-  })).filter((minion: CardInstance) => (minion.currentHealth || 0) > 0);
+  }));
+  // Remove dead enemy minions properly for deathrattle triggers
+  newState = removeDeadMinions(newState);
   
   return newState;
 }

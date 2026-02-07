@@ -5,6 +5,7 @@
  * Checks effect.condition (like 'elemental_played_this_turn'), if true deals effect.value damage.
  * Example card: Blazecaller (ID: 30030)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -53,7 +54,7 @@ function checkCondition(context: GameContext, condition: string): boolean {
       return cardIds.length === new Set(cardIds).size;
     
     default:
-      console.warn(`Unknown condition: ${condition}`);
+      debug.warn(`Unknown condition: ${condition}`);
       return false;
   }
 }
@@ -131,7 +132,7 @@ export default function executeConditionalDamage(
     
     return { success: true, additionalData: { conditionMet: true, totalDamageDealt } };
   } catch (error) {
-    console.error(`Error executing battlecry:conditional_damage:`, error);
+    debug.error(`Error executing battlecry:conditional_damage:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:conditional_damage: ${error instanceof Error ? error.message : String(error)}`

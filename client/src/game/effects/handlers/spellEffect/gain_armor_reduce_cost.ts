@@ -4,6 +4,7 @@
  * Implements the "gain_armor_reduce_cost" spellEffect effect.
  * Gains armor and reduces cost of cards based on certain conditions.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -44,7 +45,7 @@ export default function executeGainArmorReduceCost(
       additionalData: { armorGained: armorValue, cardsReduced }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:gain_armor_reduce_cost:`, error);
+    debug.error(`Error executing spellEffect:gain_armor_reduce_cost:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:gain_armor_reduce_cost: ${error instanceof Error ? error.message : String(error)}`

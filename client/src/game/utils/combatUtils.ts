@@ -1,4 +1,5 @@
 import { CardSuit } from '../types/PokerCombatTypes';
+import { debug } from '../config/debugConfig';
 
 export interface HeroPowerTarget {
   isMinion: boolean;
@@ -41,7 +42,7 @@ export function isValidTargetForHeroPower(targetType: string, target: HeroPowerT
     case 'random_friendly':
       return false;
     default:
-      console.warn(`[isValidTargetForHeroPower] Unknown targetType: ${targetType}`);
+      debug.warn(`[isValidTargetForHeroPower] Unknown targetType: ${targetType}`);
       return false;
   }
 }

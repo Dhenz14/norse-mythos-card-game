@@ -4,6 +4,7 @@
  * Implements the "summon_with_stats" deathrattle effect.
  * Example: Scrapyard Colossus (summons a 4/5 elemental with Taunt)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance, DeathrattleEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -119,7 +120,7 @@ export default function executeSummonWithStatsSummonWithStats(
       }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:summon_with_stats:`, error);
+    debug.error(`Error executing deathrattle:summon_with_stats:`, error);
     return { 
       success: false, 
       error: `Error executing deathrattle:summon_with_stats: ${error instanceof Error ? error.message : String(error)}`

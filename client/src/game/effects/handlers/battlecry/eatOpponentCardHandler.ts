@@ -4,6 +4,7 @@
  * Steals/eats a card from opponent's hand and gains its stats.
  * Example card: Mutanus the Devourer (ID: 20313)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -74,7 +75,7 @@ export default function executeEatOpponentCard(
       }
     };
   } catch (error) {
-    console.error('Error executing eat_opponent_card:', error);
+    debug.error('Error executing eat_opponent_card:', error);
     return { success: false, error: `Failed to execute eat_opponent_card: ${error}` };
   }
 }

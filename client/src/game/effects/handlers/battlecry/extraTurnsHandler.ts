@@ -5,6 +5,7 @@
  * Grants extra turns after this one.
  * Example card: Temporus (ID: 20801)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -61,7 +62,7 @@ export default function executeExtraTurns(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:extra_turns:`, error);
+    debug.error(`Error executing battlecry:extra_turns:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:extra_turns: ${error instanceof Error ? error.message : String(error)}`

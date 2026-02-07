@@ -11,6 +11,7 @@ import { GameState, CardInstance } from '../../types';
 import { BattlecryEffect } from '../../types/CardTypes';
 import { EffectRegistry } from '../EffectRegistry';
 import { createGameContextFromState, adaptCardDataToCard } from '../../utils/game/types';
+import { debug } from '../../config/debugConfig';
 
 // Import the original battlecry execution function
 import { executeBattlecry as originalExecuteBattlecry } from '../../utils/battlecryUtils';
@@ -53,7 +54,7 @@ export function executeBattlecry(
   }
   
   if (!cardInfo) {
-    console.error(`Cannot find card with instanceId ${cardInstanceId}`);
+    debug.error(`Cannot find card with instanceId ${cardInstanceId}`);
     return state;
   }
   
@@ -97,14 +98,14 @@ export function executeBattlecry(
         }
         // If no additionalData with state structure, the effect worked but didn't modify state
         // This is expected for effects that only log or have visual effects
-        console.log(`Battlecry ${battlecry.type} executed via registry (no state changes returned)`);
+        debug.card(`Battlecry ${battlecry.type} executed via registry (no state changes returned)`);
         return state;
       } else {
-        console.error(`Error executing battlecry via registry: ${result.error}`);
+        debug.error(`Error executing battlecry via registry: ${result.error}`);
         return state;
       }
     } catch (error) {
-      console.error('Error in battlecry bridge:', error);
+      debug.error('Error in battlecry bridge:', error);
       return state;
     }
   } else {

@@ -4,6 +4,7 @@
  * Implements the "kill_and_summon" spellEffect effect.
  * Destroys a minion and summons another in its place.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -61,7 +62,7 @@ export default function executeKillAndSummon(
       additionalData: { minionsKilled, minionsSummoned }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:kill_and_summon:`, error);
+    debug.error(`Error executing spellEffect:kill_and_summon:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:kill_and_summon: ${error instanceof Error ? error.message : String(error)}`

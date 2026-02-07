@@ -4,6 +4,7 @@
  * Implements the "freeze" battlecry effect.
  * This handler freezes a target character, preventing it from attacking on the next turn.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -59,7 +60,7 @@ export default function executeFreeze(
     
     return { success: true, additionalData: { frozenCount } };
   } catch (error) {
-    console.error(`Error executing battlecry:freeze:`, error);
+    debug.error(`Error executing battlecry:freeze:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:freeze: ${error instanceof Error ? error.message : String(error)}`

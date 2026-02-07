@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:damage_based_on_armor effect.
  * Deals damage equal to the player's armor amount.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -64,7 +65,7 @@ export default function executeDamageBasedOnArmor(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:damage_based_on_armor:`, error);
+    debug.error(`Error executing spellEffect:damage_based_on_armor:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage_based_on_armor: ${error instanceof Error ? error.message : String(error)}`

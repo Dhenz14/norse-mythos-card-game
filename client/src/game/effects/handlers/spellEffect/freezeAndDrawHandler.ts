@@ -4,6 +4,7 @@
  * Implements the "freeze_and_draw" spellEffect effect.
  * Freezes a target and draws cards.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -61,7 +62,7 @@ export default function executeFreezeAndDraw(
       additionalData: { frozenCount, cardsDrawn }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:freeze_and_draw:`, error);
+    debug.error(`Error executing spellEffect:freeze_and_draw:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:freeze_and_draw: ${error instanceof Error ? error.message : String(error)}`

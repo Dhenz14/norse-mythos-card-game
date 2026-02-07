@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:draw_weapon_gain_armor effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -52,7 +53,7 @@ export default function executeDrawWeaponGainArmor(
       additionalData: { weaponDrawn, armorGained: armorGain }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:draw_weapon_gain_armor:`, error);
+    debug.error(`Error executing spellEffect:draw_weapon_gain_armor:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:draw_weapon_gain_armor: ${error instanceof Error ? error.message : String(error)}`

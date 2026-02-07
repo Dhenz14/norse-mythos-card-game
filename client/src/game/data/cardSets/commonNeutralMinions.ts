@@ -3,6 +3,7 @@
  * 
  * This file contains common neutral minions using the new card management system.
  */
+import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
 
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -11,7 +12,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * Register common neutral minions in the registry
  */
 export function registerCommonNeutralMinions(): void {
-  if (IS_DEV) console.log('Registering common neutral minions...');
+  if (IS_DEV) debug.card('Registering common neutral minions...');
 
   // Starting ID for common neutral minions (we'll use 20000+ range)
   let id = 20000;
@@ -959,5 +960,5 @@ export function registerCommonNeutralMinions(): void {
     .addCategory("token")
     .build();
 
-  if (IS_DEV) console.log('Common neutral minions registered successfully.');
+  if (IS_DEV) debug.card('Common neutral minions registered successfully.');
 }

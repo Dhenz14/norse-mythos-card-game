@@ -4,6 +4,7 @@
  * Transforms a minion into a random minion.
  * Example card: Tinkmaster Overspark (ID: 20606)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -80,7 +81,7 @@ export default function executeTransformRandom(
       additionalData: { originalTarget: target, transformedMinion, selectedOption: randomOption }
     };
   } catch (error) {
-    console.error('Error executing transform_random:', error);
+    debug.error('Error executing transform_random:', error);
     return { success: false, error: `Failed to execute transform_random: ${error}` };
   }
 }

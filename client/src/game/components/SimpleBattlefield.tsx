@@ -8,6 +8,7 @@
  * Replaces the bloated 3000+ line UnifiedBattlefield system.
  */
 
+import { debug } from '../config/debugConfig';
 import React, { useState, useCallback } from 'react';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import CardRenderer from './CardRendering/CardRenderer';
@@ -118,7 +119,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = ({
                 ${hasSuperBonus ? 'super-minion-bonus' : ''}
               `}
               onClick={() => {
-                console.log('[SimpleBattlefield Click]', {
+                debug.combat('[SimpleBattlefield Click]', {
                   cardName: card.card?.name,
                   side,
                   canAttack: card.canAttack,

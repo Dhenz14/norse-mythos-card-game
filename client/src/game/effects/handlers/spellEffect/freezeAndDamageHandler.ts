@@ -4,6 +4,7 @@
  * Implements the "freeze_and_damage" spellEffect effect.
  * Deals damage to a target and freezes it.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -53,7 +54,7 @@ export default function executeFreezeAndDamage(
       additionalData: { totalDamage, frozenCount }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:freeze_and_damage:`, error);
+    debug.error(`Error executing spellEffect:freeze_and_damage:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:freeze_and_damage: ${error instanceof Error ? error.message : String(error)}`

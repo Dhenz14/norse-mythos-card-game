@@ -5,6 +5,7 @@
  * Swaps your deck with your opponent's deck.
  * Example card: King Togwaggle (ID: 20603)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -66,7 +67,7 @@ export default function executeSwapDecks(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:swap_decks:`, error);
+    debug.error(`Error executing battlecry:swap_decks:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:swap_decks: ${error instanceof Error ? error.message : String(error)}`

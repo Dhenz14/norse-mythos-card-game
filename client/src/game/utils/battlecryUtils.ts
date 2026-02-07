@@ -10,6 +10,7 @@ import {
   MinionCardData,
   WeaponCardData
 } from '../types';
+import { debug } from '../config/debugConfig';
 import { trackQuestProgress } from './quests/questProgress';
 import { useAnimationStore } from '../animations/AnimationManager';
 import allCards from '../data/allCards';
@@ -114,7 +115,7 @@ function executeAoEDamageBattlecry(
       state.players.opponent.battlefield = [];
       
     } else {
-      console.error('Could not find source minion for World Ender battlecry');
+      debug.error('Could not find source minion for World Ender battlecry');
     }
     
     // Handle discarding the player's hand if specified in the battlecry
@@ -243,12 +244,12 @@ export function executeBattlecry(
         }
         
         if (!cardInfo) {
-          console.error('Card not found for battlecry execution');
-          console.error(`Looking for card ID: ${cardInstanceId}`);
-          console.error(`Player battlefield cards: ${playerBattlefield.map(c => c.instanceId).join(', ')}`);
-          console.error(`Player hand cards: ${(player.hand || []).map(c => c.instanceId).join(', ')}`);
-          console.error(`Opponent battlefield cards: ${(opponent.battlefield || []).map(c => c.instanceId).join(', ')}`);
-          console.error(`Opponent hand cards: ${(opponent.hand || []).map(c => c.instanceId).join(', ')}`);
+          debug.error('Card not found for battlecry execution');
+          debug.error(`Looking for card ID: ${cardInstanceId}`);
+          debug.error(`Player battlefield cards: ${playerBattlefield.map(c => c.instanceId).join(', ')}`);
+          debug.error(`Player hand cards: ${(player.hand || []).map(c => c.instanceId).join(', ')}`);
+          debug.error(`Opponent battlefield cards: ${(opponent.battlefield || []).map(c => c.instanceId).join(', ')}`);
+          debug.error(`Opponent hand cards: ${(opponent.hand || []).map(c => c.instanceId).join(', ')}`);
           return state;
         }
       }
@@ -283,7 +284,7 @@ export function executeBattlecry(
     
     // Check if a target is required but not provided
     if (battlecry.requiresTarget && !targetId) {
-      console.error('Battlecry requires a target but none provided');
+      debug.error('Battlecry requires a target but none provided');
       return state;
     }
     
@@ -317,7 +318,7 @@ export function executeBattlecry(
       case 'transform':
         // Check if we have a target ID and a value to use as the cardId to transform into
         if (!targetId || !battlecry.value) {
-          console.error('Transform battlecry requires a target and a card ID to transform into');
+          debug.error('Transform battlecry requires a target and a card ID to transform into');
           return state;
         }
         return transformMinion(newState, targetId, battlecry.value);
@@ -325,7 +326,7 @@ export function executeBattlecry(
       case 'silence':
         // Check if we have a target ID
         if (!targetId) {
-          console.error('Silence battlecry requires a target');
+          debug.error('Silence battlecry requires a target');
           return state;
         }
         return silenceMinion(newState, targetId);
@@ -494,11 +495,11 @@ export function executeBattlecry(
       }
         
       default:
-        console.error('Unknown battlecry type: ' + battlecry.type);
+        debug.error('Unknown battlecry type: ' + battlecry.type);
         return newState;
     }
   } catch (error) {
-    console.error('Error executing battlecry:', error);
+    debug.error('Error executing battlecry:', error);
     return state;
   }
 }
@@ -571,7 +572,7 @@ function executeDamageBattlecry(
       targetInfo = findCardInstance(playerBattlefield, targetId!);
       
       if (!targetInfo) {
-        console.error('Target minion not found for battlecry');
+        debug.error('Target minion not found for battlecry');
         return state;
       }
       
@@ -649,7 +650,7 @@ function executeHealBattlecry(
       targetInfo = findCardInstance(playerBattlefield, targetId!);
       
       if (!targetInfo) {
-        console.error('Target minion not found for heal battlecry');
+        debug.error('Target minion not found for heal battlecry');
         return state;
       }
       
@@ -687,7 +688,7 @@ function executeBuffBattlecry(
     const targetInfo = findCardInstance(playerBattlefield, targetId!);
     
     if (!targetInfo) {
-      console.error('Target minion not found for buff battlecry');
+      debug.error('Target minion not found for buff battlecry');
       return state;
     }
     
@@ -710,7 +711,7 @@ function executeBuffBattlecry(
     // Ensure player battlefield exists
     if (!state.players.player.battlefield) {
       state.players.player.battlefield = [];
-      console.error('Player battlefield was undefined during buff battlecry');
+      debug.error('Player battlefield was undefined during buff battlecry');
       return state;
     }
     
@@ -730,7 +731,7 @@ function executeBuffBattlecry(
     const targetInfo = findCardInstance(opponentBattlefield, targetId!);
     
     if (!targetInfo) {
-      console.error('Target enemy minion not found for buff battlecry');
+      debug.error('Target enemy minion not found for buff battlecry');
       return state;
     }
     
@@ -753,7 +754,7 @@ function executeBuffBattlecry(
     // Ensure opponent battlefield exists
     if (!state.players.opponent.battlefield) {
       state.players.opponent.battlefield = [];
-      console.error('Opponent battlefield was undefined during buff battlecry');
+      debug.error('Opponent battlefield was undefined during buff battlecry');
       return state;
     }
     
@@ -788,7 +789,7 @@ function executeBuffTribeBattlecry(
     // Get the source card (the one with the buff tribe battlecry)
     const cardInfo = findCardInstance(newState.players.player.battlefield || [], cardInstanceId);
     if (!cardInfo) {
-      console.error('Card not found for buff tribe battlecry', cardInstanceId);
+      debug.error('Card not found for buff tribe battlecry', cardInstanceId);
       return state;
     }
     
@@ -796,7 +797,7 @@ function executeBuffTribeBattlecry(
     const tribeName = battlecry.tribe || '';
     
     if (!tribeName) {
-      console.error('No tribe specified for buff tribe battlecry');
+      debug.error('No tribe specified for buff tribe battlecry');
       return state;
     }
     
@@ -807,7 +808,7 @@ function executeBuffTribeBattlecry(
     
     // Only proceed if at least one stat is being buffed
     if (attackBuff === 0 && healthBuff === 0) {
-      console.error('No buff values provided for buff tribe battlecry');
+      debug.error('No buff values provided for buff tribe battlecry');
       return state;
     }
     
@@ -858,7 +859,7 @@ function executeBuffTribeBattlecry(
     
     return newState;
   } catch (error) {
-    console.error('Error executing buff tribe battlecry:', error);
+    debug.error('Error executing buff tribe battlecry:', error);
     return state;
   }
 }
@@ -872,7 +873,7 @@ function executeSummonBattlecry(
 ): GameState {
   // Check if a card ID is provided for summoning
   if (!battlecry.summonCardId) {
-    console.error('No card ID provided for summon battlecry');
+    debug.error('No card ID provided for summon battlecry');
     return state;
   }
   
@@ -880,7 +881,7 @@ function executeSummonBattlecry(
   const cardToSummon = allCards.find(card => card.id === battlecry.summonCardId);
   
   if (!cardToSummon) {
-    console.error(`Card with ID ${battlecry.summonCardId} not found for summoning`);
+    debug.error(`Card with ID ${battlecry.summonCardId} not found for summoning`);
     return state;
   }
   
@@ -1188,7 +1189,7 @@ function executeDiscoverBattlecry(
     
     // If we couldn't get any cards, return the state unchanged
     if (discoveryCards.length === 0) {
-      console.error('No cards available for discovery');
+      debug.error('No cards available for discovery');
       return state;
     }
     
@@ -1275,7 +1276,7 @@ function executeDiscoverBattlecry(
       discovery: discoveryState
     };
   } catch (error) {
-    console.error('Error executing discover battlecry:', error);
+    debug.error('Error executing discover battlecry:', error);
     return state;
   }
 }
@@ -1307,7 +1308,7 @@ function executeSetHealthBattlecry(
   
   // If no target is needed or target is not a hero, return the state unchanged
   if (!battlecry.requiresTarget || targetType !== 'hero') {
-    console.error('Set health battlecry requires a hero target');
+    debug.error('Set health battlecry requires a hero target');
     return state;
   }
   
@@ -1362,7 +1363,7 @@ function executeDebuffBattlecry(
     const targetInfo = findCardInstance(state.players.opponent.battlefield, targetId!);
     
     if (!targetInfo) {
-      console.error('Target enemy minion not found for debuff battlecry');
+      debug.error('Target enemy minion not found for debuff battlecry');
       return state;
     }
     
@@ -1411,7 +1412,7 @@ function executeAddToHandBattlecry(
     const cardToAdd = allCards.find(card => card.id === cardId);
     
     if (!cardToAdd) {
-      console.error(`Card with ID ${cardId} not found for add to hand battlecry`);
+      debug.error(`Card with ID ${cardId} not found for add to hand battlecry`);
       return state;
     }
     
@@ -1515,7 +1516,7 @@ function executeDestroyBattlecry(
         // Remove the minion
         state.players.player.battlefield.splice(targetIndex, 1);
       } else {
-        console.error('Target minion not found for destroy battlecry');
+        debug.error('Target minion not found for destroy battlecry');
       }
     }
   }
@@ -1549,7 +1550,7 @@ function executeCopyBattlecry(
     isPlayerMinion = true;
     
     if (!targetInfo) {
-      console.error('Target minion not found for copy battlecry');
+      debug.error('Target minion not found for copy battlecry');
       return state;
     }
   }
@@ -1591,7 +1592,7 @@ function executeReturnToHandBattlecry(
     const targetInfo = findCardInstance(state.players.player.battlefield, targetId!);
     
     if (!targetInfo) {
-      console.error('Target minion not found for return to hand battlecry');
+      debug.error('Target minion not found for return to hand battlecry');
       return state;
     }
     
@@ -1625,7 +1626,7 @@ function executeEquipWeaponBattlecry(
 ): GameState {
   // Check if a card ID is provided for the weapon
   if (!battlecry.summonCardId) {
-    console.error('No weapon card ID provided for equip weapon battlecry');
+    debug.error('No weapon card ID provided for equip weapon battlecry');
     return state;
   }
   
@@ -1633,7 +1634,7 @@ function executeEquipWeaponBattlecry(
   const weaponCard = allCards.find(card => card.id === battlecry.summonCardId && card.type === 'weapon');
   
   if (!weaponCard) {
-    console.error(`Weapon card with ID ${battlecry.summonCardId} not found`);
+    debug.error(`Weapon card with ID ${battlecry.summonCardId} not found`);
     return state;
   }
   
@@ -1699,7 +1700,7 @@ function executeFreezeBattlecry(
         // Freeze the friendly minion
         state.players.player.battlefield[targetInfo.index].isFrozen = true;
       } else {
-        console.error('Target minion not found for freeze battlecry');
+        debug.error('Target minion not found for freeze battlecry');
       }
     }
   }
@@ -1730,7 +1731,7 @@ function executeMindControlBattlecry(
   const targetInfo = findCardInstance(state.players.opponent.battlefield, targetId!);
   
   if (!targetInfo) {
-    console.error('Target enemy minion not found for mind control battlecry');
+    debug.error('Target enemy minion not found for mind control battlecry');
     return state;
   }
   
@@ -1766,7 +1767,7 @@ function executeSummonColossalPartsBattlecry(
   const cardInfo = findCardInstance(state.players.player.battlefield, cardInstanceId);
   
   if (!cardInfo) {
-    console.error(`Colossal minion with ID ${cardInstanceId} not found on battlefield`);
+    debug.error(`Colossal minion with ID ${cardInstanceId} not found on battlefield`);
     return state;
   }
   
@@ -1774,7 +1775,7 @@ function executeSummonColossalPartsBattlecry(
   
   // Verify the card has the colossal keyword
   if (!getCardKeywords(cardInstance.card).includes('colossal')) {
-    console.error(`Card ${cardInstance.card.name} does not have the colossal keyword`);
+    debug.error(`Card ${cardInstance.card.name} does not have the colossal keyword`);
     return state;
   }
   

@@ -5,6 +5,7 @@
  * Destroys a minion and adds a copy of it to the current player's hand.
  * Example card: The Jailer (ID: 20400)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -91,7 +92,7 @@ export default function executeDestroyAndSteal(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_and_steal:`, error);
+    debug.error(`Error executing battlecry:destroy_and_steal:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_and_steal: ${error instanceof Error ? error.message : String(error)}`

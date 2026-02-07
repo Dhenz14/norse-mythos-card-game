@@ -3,6 +3,7 @@
  * 
  * Implements the "damage_based_on_missing_health" spellEffect effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -60,7 +61,7 @@ export function executeDamageBasedOnMissingHealthDamageBasedOnMissingHealth(
       } 
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:damage_based_on_missing_health:`, error);
+    debug.error(`Error executing spellEffect:damage_based_on_missing_health:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage_based_on_missing_health: ${error instanceof Error ? error.message : String(error)}`

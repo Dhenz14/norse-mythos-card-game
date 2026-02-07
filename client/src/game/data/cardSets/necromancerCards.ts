@@ -11,6 +11,7 @@
  * - Self-sacrifice: Trading health for powerful effects
  */
 
+import { debug } from '../../config/debugConfig';
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
@@ -641,13 +642,13 @@ const necromancerCards = [
 
 // Function to register all Necromancer cards in the registry
 export function registerNecromancerCards(): void {
-  if (IS_DEV) console.log('Registering Necromancer cards...');
+  if (IS_DEV) debug.card('Registering Necromancer cards...');
   
   for (const card of necromancerCards) {
     registerCard(card);
   }
   
-  if (IS_DEV) console.log(`Registered ${necromancerCards.length} Necromancer cards`);
+  if (IS_DEV) debug.card(`Registered ${necromancerCards.length} Necromancer cards`);
 }
 
 export default necromancerCards;

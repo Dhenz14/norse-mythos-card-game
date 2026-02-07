@@ -4,6 +4,7 @@
  * Implements the "sacrifice_and_damage" spellEffect effect.
  * Sacrifices a friendly minion and deals damage based on its stats.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -66,7 +67,7 @@ export default function executeSacrificeAndDamage(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:sacrifice_and_damage:`, error);
+    debug.error(`Error executing spellEffect:sacrifice_and_damage:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:sacrifice_and_damage: ${error instanceof Error ? error.message : String(error)}`

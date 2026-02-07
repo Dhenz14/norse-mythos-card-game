@@ -5,6 +5,7 @@
  * Summons a Jade Golem with incrementing stats (1/1, 2/2, 3/3, etc. up to 30/30).
  * Example card: Jade Claws (ID: 85004)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext, Player } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -82,7 +83,7 @@ export default function executeSummonJadeGolem(
       } 
     };
   } catch (error) {
-    console.error(`Error executing summon_jade_golem:`, error);
+    debug.error(`Error executing summon_jade_golem:`, error);
     return { 
       success: false, 
       error: `Error executing summon_jade_golem: ${error instanceof Error ? error.message : String(error)}`

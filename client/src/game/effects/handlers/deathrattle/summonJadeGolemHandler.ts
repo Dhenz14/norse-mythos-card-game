@@ -5,6 +5,7 @@
  * Summons a Jade Golem with stats based on jade counter.
  * Example: Jade Swarmer (deathrattle: summon a Jade Golem)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -79,7 +80,7 @@ export default function executeSummonJadeGolemSummonJadeGolem(
       }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:summon_jade_golem:`, error);
+    debug.error(`Error executing deathrattle:summon_jade_golem:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:summon_jade_golem: ${error instanceof Error ? error.message : String(error)}`

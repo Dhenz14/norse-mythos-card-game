@@ -5,6 +5,7 @@
  * Adds a specific card to the player's hand when the minion dies.
  * Example card: Rhonin (adds 3 Arcane Missiles to hand)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -63,7 +64,7 @@ export default function executeAddCardAddCard(
       additionalData: { addedCards }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:add_card:`, error);
+    debug.error(`Error executing deathrattle:add_card:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:add_card: ${error instanceof Error ? error.message : String(error)}`

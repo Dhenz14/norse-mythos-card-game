@@ -3,6 +3,7 @@
  * 
  * This handler implements the spellEffect:gain_armor_reduce_hero_power effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -50,7 +51,7 @@ export default function executeGainArmorReduceHeroPower(
       additionalData: { armorGained: armorGain, heroPowerReduction: reduction }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:gain_armor_reduce_hero_power:`, error);
+    debug.error(`Error executing spellEffect:gain_armor_reduce_hero_power:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:gain_armor_reduce_hero_power: ${error instanceof Error ? error.message : String(error)}`

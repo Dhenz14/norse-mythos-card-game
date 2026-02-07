@@ -5,6 +5,7 @@
  * Draws cards matching a specific type (minion/spell/weapon) or race.
  * Example card: The Curator (ID: 20121) - Draw a Beast, Dragon, and Murloc
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -99,7 +100,7 @@ export default function executeDrawByType(
       }
     };
   } catch (error) {
-    console.error(`Error executing draw_by_type:`, error);
+    debug.error(`Error executing draw_by_type:`, error);
     return {
       success: false,
       error: `Error executing draw_by_type: ${error instanceof Error ? error.message : String(error)}`

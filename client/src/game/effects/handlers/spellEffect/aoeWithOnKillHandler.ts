@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:aoe_with_on_kill effect.
  * Deals AoE damage and provides a bonus effect when minions are killed.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -70,7 +71,7 @@ export default function executeAoeWithOnKill(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:aoe_with_on_kill:`, error);
+    debug.error(`Error executing spellEffect:aoe_with_on_kill:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:aoe_with_on_kill: ${error instanceof Error ? error.message : String(error)}`

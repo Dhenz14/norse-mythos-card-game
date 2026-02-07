@@ -5,6 +5,7 @@
  * Replaces the hero power permanently with an upgraded version.
  * Example card: Justicar Trueheart (ID: 20209)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -82,7 +83,7 @@ export default function executeReplaceHeroPower(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:replace_hero_power:`, error);
+    debug.error(`Error executing battlecry:replace_hero_power:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:replace_hero_power: ${error instanceof Error ? error.message : String(error)}`

@@ -5,6 +5,7 @@
  * Summons a copy of the source card (itself) or a target minion.
  * Example card: Twin Emperor Vek'lor (ID: 20120)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -118,7 +119,7 @@ export default function executeSummonCopy(
       } 
     };
   } catch (error) {
-    console.error(`Error executing summon_copy:`, error);
+    debug.error(`Error executing summon_copy:`, error);
     return { 
       success: false, 
       error: `Error executing summon_copy: ${error instanceof Error ? error.message : String(error)}`

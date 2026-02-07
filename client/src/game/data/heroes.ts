@@ -1,4 +1,5 @@
 import { HeroClass } from "../types";
+import { debug } from "../config/debugConfig";
 
 // Hero power interface
 interface HeroPower {
@@ -701,7 +702,7 @@ export const getHeroDataByClass = (heroClass: HeroClass): HeroData | undefined =
   
   // Safely handle potential undefined heroClass
   if (!heroClass) {
-    console.warn("getHeroDataByClass called with undefined heroClass");
+    debug.warn("getHeroDataByClass called with undefined heroClass");
     return undefined;
   }
   
@@ -711,7 +712,7 @@ export const getHeroDataByClass = (heroClass: HeroClass): HeroData | undefined =
       hero.class && hero.class.toLowerCase() === heroClass.toLowerCase()
     );
   } catch (error) {
-    console.error("Error in getHeroDataByClass:", error);
+    debug.error("Error in getHeroDataByClass:", error);
     return undefined;
   }
 };

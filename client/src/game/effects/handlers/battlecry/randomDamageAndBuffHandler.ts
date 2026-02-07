@@ -5,6 +5,7 @@
  * Deals random damage (1 to effect.maxValue) and buffs based on damage dealt.
  * Example card: Sire Denathrius (ID: 20320)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -128,7 +129,7 @@ export default function executeRandomDamageAndBuff(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:random_damage_and_buff:`, error);
+    debug.error(`Error executing battlecry:random_damage_and_buff:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:random_damage_and_buff: ${error instanceof Error ? error.message : String(error)}`

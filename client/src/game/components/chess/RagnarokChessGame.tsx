@@ -608,7 +608,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
       setPhase('chess');
       playSoundEffect('turn_start');
     } catch (error) {
-      console.error('[handleCombatEnd] Error during combat resolution:', error);
+      debug.error('[handleCombatEnd] Error during combat resolution:', error);
       setCombatPieces(null);
       setPokerSlotsSwapped(false);
       endCombat();

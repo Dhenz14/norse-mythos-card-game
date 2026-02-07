@@ -4,6 +4,7 @@
  * This handler implements the battlecry:set_health effect.
  * This is used by cards like Alexstrasza that set a hero's remaining health to a specific value.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -92,7 +93,7 @@ export default function executeSetHealthSetHealth(
       }
     };
   } catch (error) {
-    console.error(`Error executing battlecry:set_health:`, error);
+    debug.error(`Error executing battlecry:set_health:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:set_health: ${error instanceof Error ? error.message : String(error)}`

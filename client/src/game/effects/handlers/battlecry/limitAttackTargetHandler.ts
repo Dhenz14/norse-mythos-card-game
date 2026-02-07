@@ -4,6 +4,7 @@
  * Limits what the minion can attack (e.g., can't attack heroes this turn).
  * Example card: Charged Devilsaur (ID: 30024)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -53,7 +54,7 @@ export default function executeLimitAttackTarget(
       }
     };
   } catch (error) {
-    console.error('Error executing limit_attack_target:', error);
+    debug.error('Error executing limit_attack_target:', error);
     return { success: false, error: `Failed to execute limit_attack_target: ${error}` };
   }
 }

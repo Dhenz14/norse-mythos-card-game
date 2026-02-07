@@ -16,7 +16,7 @@ import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
 import { Position } from '../types/Position';
 import { TargetingOverlay } from '../components/TargetingOverlay';
 import { CardBurnOverlay } from '../components/CardBurnOverlay';
-import { useAnimationStore } from '../stores/animationStore';
+import { useUnifiedUIStore } from '../stores/unifiedUIStore';
 import { ActionAnnouncement } from '../components/ActionAnnouncement';
 import './RagnarokCombatArena.css';
 import './GameViewport.css';
@@ -453,7 +453,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       }
       
       if (!hasValidTargets) {
-        const { addAnnouncement } = useAnimationStore.getState();
+        const { addAnnouncement } = useUnifiedUIStore.getState();
         addAnnouncement({
           type: 'warning',
           title: 'No Valid Targets',

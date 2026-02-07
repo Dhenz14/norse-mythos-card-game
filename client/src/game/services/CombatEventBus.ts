@@ -9,6 +9,8 @@
  * Inspired by: Blizzard's Hearthstone event system
  */
 
+import { debug } from '../config/debugConfig';
+
 export type CombatEventType = 
   | 'DAMAGE_INTENT'      // Something wants to deal damage
   | 'DAMAGE_RESOLVED'    // Damage was successfully applied
@@ -203,7 +205,7 @@ class CombatEventBusImpl {
       try {
         sub.handler(event);
       } catch (error) {
-        console.error(`[CombatEventBus] Handler error for ${event.type}:`, error);
+        debug.error(`[CombatEventBus] Handler error for ${event.type}:`, error);
       }
     }
   }

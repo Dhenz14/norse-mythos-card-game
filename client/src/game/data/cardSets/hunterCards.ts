@@ -11,6 +11,7 @@
  * - Weapons: Enhanced weapon synergy
  */
 
+import { debug } from '../../config/debugConfig';
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
@@ -770,13 +771,13 @@ const hunterCards = [
 
 // Function to register all Hunter cards in the registry
 export function registerHunterCards(): void {
-  if (IS_DEV) console.log('Registering Hunter cards...');
+  if (IS_DEV) debug.card('Registering Hunter cards...');
   
   for (const card of hunterCards) {
     registerCard(card);
   }
   
-  if (IS_DEV) console.log(`Registered ${hunterCards.length} Hunter cards`);
+  if (IS_DEV) debug.card(`Registered ${hunterCards.length} Hunter cards`);
 }
 
 export default hunterCards;

@@ -6,6 +6,7 @@
  */
 
 import { CardData } from '../../types';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Required fields for all cards regardless of type
@@ -255,7 +256,7 @@ export function validateCardSchema(card: any): { valid: boolean; errors: string[
  */
 export function normalizeCardArray(cards: any[]): CardData[] {
   if (!Array.isArray(cards)) {
-    console.warn('Expected an array of cards for normalization');
+    debug.warn('Expected an array of cards for normalization');
     return [];
   }
 
@@ -273,7 +274,7 @@ export function normalizeCardArray(cards: any[]): CardData[] {
       const normalized = normalizeCard(card);
       result.push(normalized);
     } catch (error) {
-      console.warn('Could not normalize card:', error, card);
+      debug.warn('Could not normalize card:', error, card);
       invalidCount++;
     }
   }

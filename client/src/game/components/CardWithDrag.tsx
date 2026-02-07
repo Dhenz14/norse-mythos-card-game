@@ -4,6 +4,7 @@
  * This component is responsible for card dragging behaviors and transformations.
  * Uses flat card design with hover preview system (no 3D tilt effects).
  */
+import { debug } from '../config/debugConfig';
 import React, { useRef, useEffect, useState } from 'react';
 import { CardInstance } from '../types';
 import { Position } from '../types/Position';
@@ -52,7 +53,7 @@ export const CardWithDrag: React.FC<CardWithDragProps> = ({
   const cardData = hasCardProperty ? card.card : card;
   
   if (!card) {
-    console.error('CardWithDrag received null card data');
+    debug.error('CardWithDrag received null card data');
     return null;
   }
 

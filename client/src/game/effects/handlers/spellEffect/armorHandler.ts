@@ -5,6 +5,7 @@
  * Grants armor to the player's hero. May also draw cards (like Shield Block).
  * Example card: Shield Block (ID: 31022) - Gain 5 Armor. Draw a card.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance, GameLogEvent } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
 import { drawCardFromDeck } from '../../../utils/zoneUtils';
@@ -29,7 +30,7 @@ export function executeArmorArmor(
   const drawCount = effect.drawCards ?? 0;
   
   if (armorValue === 0 && drawCount === 0) {
-    console.warn(`Armor effect has no value or drawCards property`);
+    debug.warn(`Armor effect has no value or drawCards property`);
     return state;
   }
   
@@ -73,7 +74,7 @@ export function executeArmorArmor(
     }
   }
   
-  console.log(`Armor effect: Gained ${armorValue} armor${drawCount > 0 ? `, drew ${drawCount} card(s)` : ''}`);
+  debug.card(`Armor effect: Gained ${armorValue} armor${drawCount > 0 ? `, drew ${drawCount} card(s)` : ''}`);
   
   return newState;
 }

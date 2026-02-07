@@ -4,6 +4,7 @@
  * Transforms the source minion into a copy of another minion.
  * Example card: Prince Taldaram (ID: 20704)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -78,7 +79,7 @@ export default function executeTransformCopy(
       additionalData: { originalSource: sourceCard, copiedFrom: target, result: copiedMinion }
     };
   } catch (error) {
-    console.error('Error executing transform_copy:', error);
+    debug.error('Error executing transform_copy:', error);
     return { success: false, error: `Failed to execute transform_copy: ${error}` };
   }
 }

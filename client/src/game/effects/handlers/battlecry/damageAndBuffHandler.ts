@@ -5,6 +5,7 @@
  * Deals damage to target AND buffs the source minion with effect.buffAttack/effect.buffHealth.
  * Example card: Card ID: 5009
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -97,7 +98,7 @@ export default function executeDamageAndBuff(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:damage_and_buff:`, error);
+    debug.error(`Error executing battlecry:damage_and_buff:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:damage_and_buff: ${error instanceof Error ? error.message : String(error)}`

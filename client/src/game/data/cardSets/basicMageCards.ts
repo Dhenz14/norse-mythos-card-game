@@ -4,6 +4,7 @@
  * A collection of basic mage cards using the new card management system.
  * This demonstrates the usage of the card builder API.
  */
+import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
 
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -12,7 +13,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * Register basic mage cards in the registry
  */
 export function registerBasicMageCards(): void {
-  if (IS_DEV) console.log('Registering basic mage cards...');
+  if (IS_DEV) debug.card('Registering basic mage cards...');
 
   // Apprentice Arcanist
   createCard()
@@ -139,5 +140,5 @@ export function registerBasicMageCards(): void {
     .addCategory("basic")
     .build();
 
-  if (IS_DEV) console.log('Basic mage cards registered successfully.');
+  if (IS_DEV) debug.card('Basic mage cards registered successfully.');
 }

@@ -5,6 +5,7 @@
  * Destroys all spells in the opponent's hand.
  * Example card: Skulking Geist (ID: 31008)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -54,7 +55,7 @@ export default function executeDestroySpells(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:destroy_spells:`, error);
+    debug.error(`Error executing battlecry:destroy_spells:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:destroy_spells: ${error instanceof Error ? error.message : String(error)}`

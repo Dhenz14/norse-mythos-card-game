@@ -5,6 +5,7 @@
  * Takes control of a random enemy minion.
  * Example card: Mind Control Tech (ID: 31015)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -67,7 +68,7 @@ export default function executeMindControlRandom(
     
     return { success: false, error: 'Failed to find minion on opponent board' };
   } catch (error) {
-    console.error(`Error executing battlecry:mind_control_random:`, error);
+    debug.error(`Error executing battlecry:mind_control_random:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:mind_control_random: ${error instanceof Error ? error.message : String(error)}`

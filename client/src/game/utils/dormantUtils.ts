@@ -8,6 +8,7 @@ import { CardInstance, GameState } from '../types';
 import { applyDamage } from './gameUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
+import { debug } from '../config/debugConfig';
 
 /**
  * Initialize a card's dormant effect when played
@@ -104,7 +105,7 @@ export function awakeDormantMinion(
   // Find the minion
   const minionIndex = battlefield.findIndex(m => m.instanceId === minionId);
   if (minionIndex === -1) {
-    console.error(`Dormant minion with ID ${minionId} not found`);
+    debug.error(`Dormant minion with ID ${minionId} not found`);
     return state;
   }
   
@@ -294,7 +295,7 @@ function processAwakeningEffect(
       return updatedState;
       
     default:
-      console.error(`Unknown awakening effect type: ${(awakenEffect as any).type}`);
+      debug.error(`Unknown awakening effect type: ${(awakenEffect as any).type}`);
       return updatedState;
   }
 }
@@ -320,7 +321,7 @@ export function checkDormantAwakeningCondition(
       return warderCount === 0; // All warders have been destroyed
       
     default:
-      console.error(`Unknown dormant awakening condition: ${condition}`);
+      debug.error(`Unknown dormant awakening condition: ${condition}`);
       return false;
   }
 }

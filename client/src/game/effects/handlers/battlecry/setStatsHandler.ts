@@ -4,6 +4,7 @@
  * Implements the "set_stats" battlecry effect.
  * Sets attack and health to specific values for target minion(s).
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -85,7 +86,7 @@ export default function executeSetStats(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:set_stats:`, error);
+    debug.error(`Error executing battlecry:set_stats:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:set_stats: ${error instanceof Error ? error.message : String(error)}`

@@ -1,4 +1,5 @@
 import { CombatPhase, PokerPosition } from '../../types/PokerCombatTypes';
+import { debug } from '../../config/debugConfig';
 
 export interface ActivePlayerContext {
   playerPosition: PokerPosition;
@@ -46,7 +47,7 @@ export function validateActivePlayer(
   source: string
 ): void {
   if (isBettingPhase(phase) && activePlayerId === null) {
-    console.error(
+    debug.error(
       `[POKER BUG] activePlayerId is null during betting phase ${phase} at ${source}. ` +
       `This will cause buttons to freeze. Check phase transition logic.`
     );

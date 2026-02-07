@@ -5,6 +5,7 @@
  * Replays all battlecries played this game (Shudderwock style).
  * Example card: Shudderwock (ID: 20102)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -90,7 +91,7 @@ export default function executeReplayBattlecries(
           }
         }
       } catch (err) {
-        console.error(`Error replaying battlecry:`, err);
+        debug.error(`Error replaying battlecry:`, err);
       }
     }
     
@@ -104,7 +105,7 @@ export default function executeReplayBattlecries(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:replay_battlecries:`, error);
+    debug.error(`Error executing battlecry:replay_battlecries:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:replay_battlecries: ${error instanceof Error ? error.message : String(error)}`

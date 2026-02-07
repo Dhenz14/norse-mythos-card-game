@@ -5,6 +5,7 @@
  * Swaps attack and health of target minion(s).
  * Example card: Void Ripper (ID: 30020)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -67,7 +68,7 @@ export default function executeSwapStats(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:swap_stats:`, error);
+    debug.error(`Error executing battlecry:swap_stats:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:swap_stats: ${error instanceof Error ? error.message : String(error)}`

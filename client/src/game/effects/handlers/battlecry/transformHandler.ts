@@ -3,6 +3,7 @@
  * 
  * Transforms a minion into another specific minion.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -75,7 +76,7 @@ export default function executeTransform(
       additionalData: { originalTarget: target, transformedMinion }
     };
   } catch (error) {
-    console.error('Error executing transform:', error);
+    debug.error('Error executing transform:', error);
     return { success: false, error: `Failed to execute transform: ${error}` };
   }
 }

@@ -4,6 +4,7 @@
  * Resurrects all friendly minions that died this game.
  * Example card: N'Zoth, the Corruptor (ID: 15019)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -83,7 +84,7 @@ export default function executeResurrectAll(
       }
     };
   } catch (error) {
-    console.error('Error executing resurrect_all:', error);
+    debug.error('Error executing resurrect_all:', error);
     return { success: false, error: `Failed to execute resurrect_all: ${error}` };
   }
 }

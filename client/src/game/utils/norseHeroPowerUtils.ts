@@ -207,7 +207,7 @@ export function executeNorseHeroPower(
       newState = executeBuffHero(newState, playerType, power);
       break;
     default:
-      console.warn(`[HERO POWER] Unknown effect type: ${power.effectType}`);
+      debug.warn(`[HERO POWER] Unknown effect type: ${power.effectType}`);
   }
 
   // Handle secondary effects (e.g., heal hero after buff)
@@ -1062,7 +1062,7 @@ function executeEquipWeapon(
 
   const weaponData = power.weaponData;
   if (!weaponData) {
-    console.warn(`  - No weapon data provided for equip_weapon`);
+    debug.warn(`  - No weapon data provided for equip_weapon`);
     return state;
   }
 
@@ -1810,7 +1810,7 @@ export function executeHeroPassive(
       }
       break;
     default:
-      console.warn(`[HERO PASSIVE] Unknown effect type: ${passive.effectType}`);
+      debug.warn(`[HERO PASSIVE] Unknown effect type: ${passive.effectType}`);
   }
 
   return newState;

@@ -8,6 +8,7 @@
  */
 
 import { GameEventBus } from '@/core/events/GameEventBus';
+import { debug } from '../config/debugConfig';
 import type {
   CardPlayedEvent,
   CardDrawnEvent,
@@ -118,7 +119,7 @@ class AnimationSubscriberImpl {
       try {
         cb(this.state.currentAnimation!);
       } catch (error) {
-        console.error('[AnimationSubscriber] Callback error:', error);
+        debug.error('[AnimationSubscriber] Callback error:', error);
       }
     });
 

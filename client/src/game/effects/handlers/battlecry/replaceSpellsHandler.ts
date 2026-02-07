@@ -4,6 +4,7 @@
  * Replaces all spells in hand with random spells from another class.
  * Example card: Lilian Voss (ID: 20708)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -88,7 +89,7 @@ export default function executeReplaceSpells(
       }
     };
   } catch (error) {
-    console.error('Error executing replace_spells:', error);
+    debug.error('Error executing replace_spells:', error);
     return { success: false, error: `Failed to execute replace_spells: ${error}` };
   }
 }

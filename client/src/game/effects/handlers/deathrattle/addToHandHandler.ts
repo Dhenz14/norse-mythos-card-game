@@ -5,6 +5,7 @@
  * Returns the minion back to the player's hand on death.
  * Example: Anub'arak (returns itself to hand)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -48,7 +49,7 @@ export default function executeAddToHandAddToHand(
       additionalData: { returnedCard: newCardInstance }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:add_to_hand:`, error);
+    debug.error(`Error executing deathrattle:add_to_hand:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:add_to_hand: ${error instanceof Error ? error.message : String(error)}`

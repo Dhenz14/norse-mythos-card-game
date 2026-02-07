@@ -4,6 +4,7 @@
  * Forces the opponent to summon a random minion from their hand.
  * Example card: Dirty Rat (ID: 32011)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -73,7 +74,7 @@ export default function executeOpponentSummonFromHand(
       }
     };
   } catch (error) {
-    console.error('Error executing opponent_summon_from_hand:', error);
+    debug.error('Error executing opponent_summon_from_hand:', error);
     return { success: false, error: `Failed to execute opponent_summon_from_hand: ${error}` };
   }
 }

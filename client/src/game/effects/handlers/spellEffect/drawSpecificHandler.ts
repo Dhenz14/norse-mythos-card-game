@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:draw_specific effect.
  * Draws a specific type of card from the deck.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -91,7 +92,7 @@ export default function executeDrawSpecific(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:draw_specific:`, error);
+    debug.error(`Error executing spellEffect:draw_specific:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:draw_specific: ${error instanceof Error ? error.message : String(error)}`

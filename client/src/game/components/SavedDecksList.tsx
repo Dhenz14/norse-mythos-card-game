@@ -1,3 +1,4 @@
+import { debug } from '../config/debugConfig';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DeckInfo, HeroClass } from '../types';
@@ -22,7 +23,7 @@ const SavedDecksList: React.FC<SavedDecksListProps> = ({ onSelectDeck, onCreateN
   const decksByClass = validDecks.reduce((groups, deck) => {
     // Make sure deck is an object and deck.heroClass exists and is a string
     if (!deck || typeof deck !== 'object') {
-      console.warn("Invalid deck found:", deck);
+      debug.warn("Invalid deck found:", deck);
       return groups;
     }
     
@@ -96,12 +97,12 @@ const SavedDecksList: React.FC<SavedDecksListProps> = ({ onSelectDeck, onCreateN
                 <div className="decks-grid grid grid-cols-1 gap-4">
                   {decks.map(deck => {
                     if (!deck || typeof deck !== 'object') {
-                      console.error("Invalid deck in class group:", className, deck);
+                      debug.error("Invalid deck in class group:", className, deck);
                       return null;
                     }
                     
                     if (!deck.cards || typeof deck.cards !== 'object') {
-                      console.error("Deck has invalid cards property:", deck);
+                      debug.error("Deck has invalid cards property:", deck);
                       return null;
                     }
                     
@@ -119,7 +120,7 @@ const SavedDecksList: React.FC<SavedDecksListProps> = ({ onSelectDeck, onCreateN
                         return sum + numCount;
                       }, 0);
                     } catch (e) {
-                      console.error("Error calculating card count:", e, deck.cards);
+                      debug.error("Error calculating card count:", e, deck.cards);
                     }
 
                     return (

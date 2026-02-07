@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:damage_and_buff_weapon effect.
  * Deals damage to a target and buffs the player's equipped weapon.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -68,7 +69,7 @@ export default function executeDamageAndBuffWeapon(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:damage_and_buff_weapon:`, error);
+    debug.error(`Error executing spellEffect:damage_and_buff_weapon:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage_and_buff_weapon: ${error instanceof Error ? error.message : String(error)}`

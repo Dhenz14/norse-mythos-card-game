@@ -6,6 +6,7 @@
  */
 import { CardData } from '../../types';
 import { isMinion, getAttack, getHealth } from '../../utils/cards/typeGuards';
+import { debug } from '../../config/debugConfig';
 
 const IS_DEV = import.meta.env?.DEV ?? process.env.NODE_ENV === 'development';
 const VERBOSE_CARD_LOGGING = false;
@@ -79,7 +80,7 @@ export function registerCard(card: CardData, categories: string[] = []): void {
   });
   
   if (IS_DEV && VERBOSE_CARD_LOGGING) {
-    console.log(`Registered card: ${card.name} (ID: ${card.id})`);
+    debug.card(`Registered card: ${card.name} (ID: ${card.id})`);
   }
 }
 

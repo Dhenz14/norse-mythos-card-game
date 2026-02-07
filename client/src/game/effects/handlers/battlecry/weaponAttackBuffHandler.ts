@@ -4,6 +4,7 @@
  * Buffs the minion's attack based on the player's weapon attack.
  * Example card: Bloodsail Raider (ID: 80003)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -52,7 +53,7 @@ export default function executeWeaponAttackBuff(
       }
     };
   } catch (error) {
-    console.error('Error executing weapon_attack_buff:', error);
+    debug.error('Error executing weapon_attack_buff:', error);
     return { success: false, error: `Failed to execute weapon_attack_buff: ${error}` };
   }
 }

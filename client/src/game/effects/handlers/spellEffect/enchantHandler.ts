@@ -4,6 +4,7 @@
  * Implements the "enchant" spellEffect effect.
  * Applies an enchantment to target cards that modifies their stats or abilities.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -85,7 +86,7 @@ export default function executeEnchant(
       additionalData: { enchantedCount }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:enchant:`, error);
+    debug.error(`Error executing spellEffect:enchant:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:enchant: ${error instanceof Error ? error.message : String(error)}`

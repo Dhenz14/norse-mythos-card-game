@@ -17,6 +17,7 @@
  * - Token cards: 5251-5260
  * - Additional spells: 5118-5125 (legacy, kept for backwards compatibility)
  */
+import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
 import { BattlecryTargetType } from '../../types';
 
@@ -26,7 +27,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * Register all Shaman cards in the registry
  */
 export function registerShamanCards(): void {
-  if (IS_DEV) console.log('Registering Shaman cards...');
+  if (IS_DEV) debug.card('Registering Shaman cards...');
 
   // BASIC SHAMAN CARDS
 
@@ -512,5 +513,5 @@ export function registerShamanCards(): void {
     .addCategory("token")
     .build();
 
-  if (IS_DEV) console.log('Shaman cards registered successfully.');
+  if (IS_DEV) debug.card('Shaman cards registered successfully.');
 }

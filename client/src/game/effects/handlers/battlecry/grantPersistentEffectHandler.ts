@@ -4,6 +4,7 @@
  * Implements the "grant_persistent_effect" battlecry effect.
  * Grants an ongoing effect that persists throughout the game.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -90,7 +91,7 @@ export default function executeGrantPersistentEffect(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:grant_persistent_effect:`, error);
+    debug.error(`Error executing battlecry:grant_persistent_effect:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:grant_persistent_effect: ${error instanceof Error ? error.message : String(error)}`

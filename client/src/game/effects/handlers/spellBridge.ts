@@ -4,6 +4,7 @@
  * This file bridges the gap between the existing spellUtils.ts and the new EffectRegistry system.
  * It wraps the existing spell execution logic to use the registry when appropriate.
  */
+import { debug } from '../../config/debugConfig';
 import { GameState, CardInstance } from '../../types';
 import { SpellEffect } from '../../types/CardTypes';
 import { EffectRegistry } from '../../effects/EffectRegistry';
@@ -51,11 +52,11 @@ export function executeSpell(
       if (result.success) {
         return result.additionalData || state;
       } else {
-        console.error(`Error executing spell effect via registry: ${result.error}`);
+        debug.error(`Error executing spell effect via registry: ${result.error}`);
         return state;
       }
     } catch (error) {
-      console.error('Error in spell effect bridge:', error);
+      debug.error('Error in spell effect bridge:', error);
       return state;
     }
   } else {

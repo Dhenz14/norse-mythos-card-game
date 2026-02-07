@@ -5,6 +5,7 @@
  * Fills the board with copies of a specified minion or random minions.
  * Example card: Onyxia (ID: 20128) - fills board with 1/1 Whelps
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -155,7 +156,7 @@ export default function executeFillBoard(
       } 
     };
   } catch (error) {
-    console.error(`Error executing fill_board:`, error);
+    debug.error(`Error executing fill_board:`, error);
     return { 
       success: false, 
       error: `Error executing fill_board: ${error instanceof Error ? error.message : String(error)}`

@@ -8,6 +8,7 @@ export * from './kingDefinitions';
 
 import { NORSE_KINGS, getKingById, getAllKings, KING_LIST } from './kingDefinitions';
 import { NorseKing } from '../../types/NorseTypes';
+import { debug } from '../../config/debugConfig';
 
 export { NORSE_KINGS, getKingById, getAllKings, KING_LIST };
 
@@ -18,7 +19,7 @@ export const KING_COUNT = Object.keys(NORSE_KINGS).length;
  * Always returns an empty array.
  */
 export function getKingsByElement(element: string): NorseKing[] {
-  console.warn('[getKingsByElement] Kings do not have elements. This function is deprecated.');
+  debug.warn('[getKingsByElement] Kings do not have elements. This function is deprecated.');
   return [];
 }
 
@@ -27,10 +28,10 @@ export function validateAllKingsExist(): boolean {
   const actualKings = KING_LIST.length;
   
   if (actualKings !== expectedKings) {
-    console.warn(`[VALIDATION] Expected ${expectedKings} Kings, found ${actualKings}`);
+    debug.warn(`[VALIDATION] Expected ${expectedKings} Kings, found ${actualKings}`);
     return false;
   }
   
-  console.log(`[VALIDATION] All ${actualKings} Kings validated successfully`);
+  debug.log(`[VALIDATION] All ${actualKings} Kings validated successfully`);
   return true;
 }

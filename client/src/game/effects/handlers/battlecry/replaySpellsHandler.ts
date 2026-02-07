@@ -5,6 +5,7 @@
  * Replays spells cast this game (Yogg-Saron style).
  * Example card: Lynessa Sunsorrow (ID: 20800), Yogg-Saron (various)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -124,7 +125,7 @@ export default function executeReplaySpells(
           }
         }
       } catch (err) {
-        console.error(`Error replaying spell:`, err);
+        debug.error(`Error replaying spell:`, err);
       }
     }
     
@@ -138,7 +139,7 @@ export default function executeReplaySpells(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:replay_spells:`, error);
+    debug.error(`Error executing battlecry:replay_spells:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:replay_spells: ${error instanceof Error ? error.message : String(error)}`

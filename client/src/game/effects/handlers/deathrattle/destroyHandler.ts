@@ -5,6 +5,7 @@
  * Destroys other minions when this minion dies.
  * Example: Mecha'thun (destroys enemy hero if conditions met)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -77,7 +78,7 @@ export default function executeDestroyDestroy(
       additionalData: { destroyedCount }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:destroy:`, error);
+    debug.error(`Error executing deathrattle:destroy:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:destroy: ${error instanceof Error ? error.message : String(error)}`

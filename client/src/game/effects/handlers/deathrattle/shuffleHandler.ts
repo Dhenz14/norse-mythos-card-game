@@ -5,6 +5,7 @@
  * Shuffles something (typically this minion or a related card) into the deck.
  * Example: White Eyes (shuffles The Storm Guardian into your deck)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -70,7 +71,7 @@ export default function executeShuffleShuffle(
       }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:shuffle:`, error);
+    debug.error(`Error executing deathrattle:shuffle:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:shuffle: ${error instanceof Error ? error.message : String(error)}`

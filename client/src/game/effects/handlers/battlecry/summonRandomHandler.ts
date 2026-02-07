@@ -4,6 +4,7 @@
  * Implements the "summon_random" battlecry effect.
  * Summons random minion(s) from a specified pool or criteria.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -109,7 +110,7 @@ export default function executeSummonRandom(
       } 
     };
   } catch (error) {
-    console.error(`Error executing summon_random:`, error);
+    debug.error(`Error executing summon_random:`, error);
     return { 
       success: false, 
       error: `Error executing summon_random: ${error instanceof Error ? error.message : String(error)}`

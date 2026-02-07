@@ -4,6 +4,7 @@
  * This handler implements the battlecry:conditional_buff effect.
  * Checks a condition before applying the buff.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -90,7 +91,7 @@ export default function executeConditionalBuff(
     
     return { success: true, additionalData: { buffedCount, conditionMet: true } };
   } catch (error) {
-    console.error(`Error executing battlecry:conditional_buff:`, error);
+    debug.error(`Error executing battlecry:conditional_buff:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:conditional_buff: ${error instanceof Error ? error.message : String(error)}`
@@ -157,7 +158,7 @@ function checkCondition(context: GameContext, condition: string, sourceCard: any
       return context.currentPlayer.health >= 25;
     
     default:
-      console.warn(`Unknown condition: ${condition}`);
+      debug.warn(`Unknown condition: ${condition}`);
       return false;
   }
 }

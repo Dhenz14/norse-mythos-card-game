@@ -6,6 +6,7 @@
  * following industry best practices with React's Context API and hooks.
  */
 
+import { debug } from '../config/debugConfig';
 import React, { createContext, useReducer, useContext, useCallback, useEffect, useRef } from 'react';
 import { CardTransformState } from '../utils/cards/CardTransformationManager';
 
@@ -92,7 +93,7 @@ function cardReducer(state: Record<string, CardTransformState>, action: CardActi
       if (!cardState) return state;
       
       // Store the hover action for debugging - this is critical for finding why hover is triggered
-      console.log(`[CardTransformContext] SET_HOVERING for card ${action.cardId}, hover: ${action.isHovering}, location: ${cardState.isInHand ? 'hand' : cardState.isOnBoard ? 'board' : 'other'}`);
+      debug.card(`[CardTransformContext] SET_HOVERING for card ${action.cardId}, hover: ${action.isHovering}, location: ${cardState.isInHand ? 'hand' : cardState.isOnBoard ? 'board' : 'other'}`);
       
       // PRECISION FIX: Check if this is a battlefield card hover
       // If it's a board card and we're in hover mode, perform a strict bounds check
@@ -101,7 +102,7 @@ function cardReducer(state: Record<string, CardTransformState>, action: CardActi
         // For battlefield cards, only apply hover if exact coordinates match
         // This prevents the "inch above card" hover issue
         if (action.hoverSource === 'indirect' || action.hoverCoordinates?.outsideBoundary) {
-          console.log(`[CardTransformContext] REJECTING hover for card ${action.cardId} - indirect hover or outside boundary`);
+          debug.card(`[CardTransformContext] REJECTING hover for card ${action.cardId} - indirect hover or outside boundary`);
           // Do not set hover state for out-of-bounds or indirect hover
           return state;
         }

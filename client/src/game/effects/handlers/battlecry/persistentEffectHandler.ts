@@ -4,6 +4,7 @@
  * Implements the "persistent_effect" battlecry effect.
  * Applies a persistent effect to the game state that triggers on conditions.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -120,7 +121,7 @@ export default function executePersistentEffect(
       } 
     };
   } catch (error) {
-    console.error(`Error executing battlecry:persistent_effect:`, error);
+    debug.error(`Error executing battlecry:persistent_effect:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:persistent_effect: ${error instanceof Error ? error.message : String(error)}`

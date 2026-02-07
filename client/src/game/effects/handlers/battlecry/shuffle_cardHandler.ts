@@ -4,6 +4,7 @@
  * Implements the "shuffle_card" battlecry effect.
  * Example: Ancient Shade (shuffles a curse into your deck)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -133,7 +134,7 @@ export default function executeShuffleCardShuffleCard(
       }
     };
   } catch (error) {
-    console.error(`Error executing battlecry:shuffle_card:`, error);
+    debug.error(`Error executing battlecry:shuffle_card:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:shuffle_card: ${error instanceof Error ? error.message : String(error)}`

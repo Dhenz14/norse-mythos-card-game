@@ -4,6 +4,7 @@
  * Implements the "set_health" spellEffect effect.
  * Example card: Card ID: 7020
  */
+import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
 
@@ -27,7 +28,7 @@ export function executeSetHealthSetHealth(
   
   
   if (effect.value === undefined) {
-    console.warn(`SetHealth effect missing value property`);
+    debug.warn(`SetHealth effect missing value property`);
     return newState;
   }
 

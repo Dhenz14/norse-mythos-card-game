@@ -4,6 +4,7 @@
  * This handler implements the spellEffect:damage_and_heal effect.
  * Deals damage to a target and heals another target.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -69,7 +70,7 @@ export default function executeDamageAndHeal(
       }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:damage_and_heal:`, error);
+    debug.error(`Error executing spellEffect:damage_and_heal:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:damage_and_heal: ${error instanceof Error ? error.message : String(error)}`

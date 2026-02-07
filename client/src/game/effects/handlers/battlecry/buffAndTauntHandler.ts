@@ -4,6 +4,7 @@
  * Implements the "buff_and_taunt" battlecry effect.
  * Buffs target minion and gives it Taunt.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -78,7 +79,7 @@ export default function executeBuffAndTaunt(
     
     return { success: true, additionalData: { buffedCount } };
   } catch (error) {
-    console.error(`Error executing battlecry:buff_and_taunt:`, error);
+    debug.error(`Error executing battlecry:buff_and_taunt:`, error);
     return { 
       success: false, 
       error: `Error executing battlecry:buff_and_taunt: ${error instanceof Error ? error.message : String(error)}`

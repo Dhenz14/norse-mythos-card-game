@@ -3,6 +3,7 @@
  * 
  * Implements the "discover_from_deck" spellEffect effect.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -51,7 +52,7 @@ export function executeDiscoverFromDeckDiscoverFromDeck(
       } 
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:discover_from_deck:`, error);
+    debug.error(`Error executing spellEffect:discover_from_deck:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:discover_from_deck: ${error instanceof Error ? error.message : String(error)}`

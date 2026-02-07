@@ -10,6 +10,7 @@
  * - Enrage/Damaged minions: Cards that gain benefits when damaged
  * - Control tools: Removal and board control options
  */
+import { debug } from '../../config/debugConfig';
 import { SpellTargetType, BattlecryTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
@@ -25,7 +26,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * - Warrior tokens: 59xx series
  */
 export function registerWarriorCards(): void {
-  if (IS_DEV) console.log('Registering Warrior cards...');
+  if (IS_DEV) debug.card('Registering Warrior cards...');
 
   // Fiery War Axe
   createCard()
@@ -638,5 +639,5 @@ export function registerWarriorCards(): void {
     .collectible(true)
     .build();
 
-  if (IS_DEV) console.log('Warrior cards registered successfully.');
+  if (IS_DEV) debug.card('Warrior cards registered successfully.');
 }

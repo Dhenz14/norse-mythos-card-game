@@ -10,6 +10,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { StorageKeys } from '@/game/config/storageKeys';
+import { debug } from '@/game/config/debugConfig';
 import { FeatureFlags, isBattleHistoryEnabled } from '@/game/config/featureFlags';
 import { generateBattleSessionId } from '@/game/data/hive/adapters/IHiveDataAdapter';
 import type { BattleHistoryEntry, BattleHistoryState } from './types';
@@ -53,7 +54,7 @@ export const useBattleHistoryStore = create<BattleHistoryStore>()(
                                         currentBattleId: sessionId,
                                 }));
 
-                                console.log('[BattleHistory] Started battle:', sessionId);
+                                debug.combat('[BattleHistory] Started battle:', sessionId);
                                 return sessionId;
                         },
 
@@ -77,7 +78,7 @@ export const useBattleHistoryStore = create<BattleHistoryStore>()(
                                         };
                                 });
 
-                                console.log('[BattleHistory] Ended battle:', id, result);
+                                debug.combat('[BattleHistory] Ended battle:', id, result);
                         },
 
                         updateBattle: (id, updates) => {

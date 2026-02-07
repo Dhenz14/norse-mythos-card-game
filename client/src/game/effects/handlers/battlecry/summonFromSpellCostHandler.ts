@@ -5,6 +5,7 @@
  * Reveals a spell from the deck and summons a random minion with cost equal to the spell's cost.
  * Example card: Spiteful Summoner (ID: 30017)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -120,7 +121,7 @@ export default function executeSummonFromSpellCost(
       } 
     };
   } catch (error) {
-    console.error(`Error executing summon_from_spell_cost:`, error);
+    debug.error(`Error executing summon_from_spell_cost:`, error);
     return { 
       success: false, 
       error: `Error executing summon_from_spell_cost: ${error instanceof Error ? error.message : String(error)}`

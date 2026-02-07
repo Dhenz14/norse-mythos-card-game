@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { findCardInstance, findCardById } from '../cards/cardUtils';
 import { isMinion, getHealth, getAttack } from '../cards/typeGuards';
 import { trackQuestProgress } from '../quests/questProgress';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Check if a card is a colossal minion
@@ -75,7 +76,7 @@ export function summonColossalParts(
   const foundMinion = findCardInstance(playerField, mainMinionId);
   
   if (!foundMinion) {
-    console.error(`Main colossal minion with ID ${mainMinionId} not found`);
+    debug.error(`Main colossal minion with ID ${mainMinionId} not found`);
     return newState;
   }
   
@@ -128,7 +129,7 @@ export function summonColossalParts(
     const partData = findCardById(partId);
     
     if (!partData) {
-      console.error(`Part card with ID ${partId} not found`);
+      debug.error(`Part card with ID ${partId} not found`);
       continue;
     }
     

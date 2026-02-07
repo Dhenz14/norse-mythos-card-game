@@ -8,6 +8,7 @@
 import { GameState, CardInstance } from '../types';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { EffectRegistry } from './EffectRegistry';
+import { debug } from '../config/debugConfig';
 
 // Import type guards for proper type narrowing
 import {
@@ -88,7 +89,7 @@ export class UnifiedEffectProcessor {
         return { success: true, newState };
       }
     } catch (error) {
-      console.error(`Error in battlecry execution for ${card.name}:`, error);
+      debug.error(`Error in battlecry execution for ${card.name}:`, error);
       return {
         success: false,
         newState: state,
@@ -139,7 +140,7 @@ export class UnifiedEffectProcessor {
         return { success: true, newState };
       }
     } catch (error) {
-      console.error(`Error in deathrattle execution for ${card.name}:`, error);
+      debug.error(`Error in deathrattle execution for ${card.name}:`, error);
       return {
         success: false,
         newState: state,
@@ -190,7 +191,7 @@ export class UnifiedEffectProcessor {
         return { success: true, newState };
       }
     } catch (error) {
-      console.error(`Error in spell execution for ${card.name}:`, error);
+      debug.error(`Error in spell execution for ${card.name}:`, error);
       return {
         success: false,
         newState: state,
@@ -247,7 +248,7 @@ export class UnifiedEffectProcessor {
         return { success: true, newState };
       }
     } catch (error) {
-      console.error(`Error in combo execution for ${card.name}:`, error);
+      debug.error(`Error in combo execution for ${card.name}:`, error);
       return {
         success: false,
         newState: state,

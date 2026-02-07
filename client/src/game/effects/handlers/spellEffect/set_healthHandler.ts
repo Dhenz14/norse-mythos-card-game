@@ -5,6 +5,7 @@
  * Example card: Hunter's Mark (sets a minion's health to 1)
  */
 
+import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance, SpellEffect } from '../../../types';
 
 /**
@@ -23,12 +24,12 @@ export default function executeSetHealthSetHealth(
   targetId?: string
 ): GameState {
   if (!targetId) {
-    console.error('Set health effect requires a target ID');
+    debug.error('Set health effect requires a target ID');
     return state;
   }
 
   if (effect.value === undefined) {
-    console.error('Set health effect missing value parameter');
+    debug.error('Set health effect missing value parameter');
     return state;
   }
 

@@ -5,6 +5,7 @@
  * Deals damage split randomly among enemy targets when the minion dies.
  * Example: Augmented Porcupine (deals attack damage split among enemies)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
@@ -95,7 +96,7 @@ export default function executeSplitDamageSplitDamage(
       }
     };
   } catch (error) {
-    console.error(`Error executing deathrattle:split_damage:`, error);
+    debug.error(`Error executing deathrattle:split_damage:`, error);
     return {
       success: false,
       error: `Error executing deathrattle:split_damage: ${error instanceof Error ? error.message : String(error)}`

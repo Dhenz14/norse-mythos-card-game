@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAnnouncementConfig } from '../stores/animationStore';
+import { getAnnouncementConfig } from '../stores/unifiedUIStore';
 import { useAnimationAdapter } from '../hooks';
 import './ActionAnnouncement.css';
 

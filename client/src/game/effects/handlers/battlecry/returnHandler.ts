@@ -4,6 +4,7 @@
  * Implements the "return" battlecry effect.
  * Example card: Youthful Brewmaster (ID: 32005)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance, PlayerState } from '../../../types';
 import { BattlecryEffect } from '../../../types/CardTypes';
 import { isMinion, getHealth } from '../../../utils/cards/typeGuards';
@@ -29,7 +30,7 @@ export function executeReturnReturn(
   
   // If no target is provided, we can't return anything
   if (!targetId) {
-    console.warn('Return battlecry requires a target, but none was provided');
+    debug.warn('Return battlecry requires a target, but none was provided');
     return newState;
   }
   
@@ -38,7 +39,7 @@ export function executeReturnReturn(
   const currentPlayer = newState.players[currentPlayerId as 'player' | 'opponent'];
   
   if (!currentPlayer) {
-    console.error('Current player not found in game state');
+    debug.error('Current player not found in game state');
     return newState;
   }
   
@@ -46,7 +47,7 @@ export function executeReturnReturn(
   const targetIndex = currentPlayer.battlefield.findIndex((minion: CardInstance) => minion.instanceId === targetId);
   
   if (targetIndex === -1) {
-    console.error(`Target minion with ID ${targetId} not found on the battlefield`);
+    debug.error(`Target minion with ID ${targetId} not found on the battlefield`);
     return newState;
   }
   

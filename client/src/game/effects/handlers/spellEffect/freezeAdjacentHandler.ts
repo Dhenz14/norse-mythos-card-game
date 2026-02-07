@@ -4,6 +4,7 @@
  * Implements the "freeze_adjacent" spellEffect effect.
  * Freezes minions adjacent to the target.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -54,7 +55,7 @@ export default function executeFreezeAdjacent(
       additionalData: { frozenCount }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:freeze_adjacent:`, error);
+    debug.error(`Error executing spellEffect:freeze_adjacent:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:freeze_adjacent: ${error instanceof Error ? error.message : String(error)}`

@@ -4,6 +4,7 @@
  * Gives cards to a player (from effect.cards array).
  * Example card: King Mukla (ID: 20135)
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -75,7 +76,7 @@ export default function executeGiveCards(
       additionalData: { givenCards, count: givenCards.length, giveToOpponent }
     };
   } catch (error) {
-    console.error('Error executing give_cards:', error);
+    debug.error('Error executing give_cards:', error);
     return { success: false, error: `Failed to execute give_cards: ${error}` };
   }
 }

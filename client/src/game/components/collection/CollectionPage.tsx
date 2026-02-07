@@ -1,3 +1,4 @@
+import { debug } from '../../config/debugConfig';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -66,7 +67,7 @@ export default function CollectionPage() {
         setCards([]);
       }
     } catch (err) {
-      console.error('Error fetching inventory:', err);
+      debug.error('Error fetching inventory:', err);
       setError('Failed to load collection.');
       setCards([]);
     } finally {

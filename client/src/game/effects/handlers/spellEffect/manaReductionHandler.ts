@@ -4,6 +4,7 @@
  * Implements the "mana_reduction" spellEffect effect.
  * Reduces the mana cost of cards in hand or the next spell.
  */
+import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
@@ -58,7 +59,7 @@ export default function executeManaReduction(
       additionalData: { cardsReduced, reductionValue }
     };
   } catch (error) {
-    console.error(`Error executing spellEffect:mana_reduction:`, error);
+    debug.error(`Error executing spellEffect:mana_reduction:`, error);
     return { 
       success: false, 
       error: `Error executing spellEffect:mana_reduction: ${error instanceof Error ? error.message : String(error)}`
