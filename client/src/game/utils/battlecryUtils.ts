@@ -305,6 +305,7 @@ export function executeBattlecry(
         return executeDrawBattlecry(newState, battlecry);
         
       case 'draw_both':
+      case 'draw_both_players':
         return executeDrawBothBattlecry(newState, battlecry);
         
       case 'discover':
@@ -1039,54 +1040,28 @@ function executeDrawBattlecry(
   } else {
   }
   
-  // Add animation for card draws
-  // Access the animation store directly so we don't need to make battlecryUtils.ts a React component
-  if (typeof window !== 'undefined') {
-    // Only run in browser environment
+  if (typeof window !== 'undefined' && drawnCount > 0) {
     setTimeout(() => {
-      // We're using setTimeout to ensure this runs after the state update is processed
-      if (drawnCount > 0) {
-        const animationStore = useAnimationStore.getState();
-        
-        // Use specialized animation for different card types
-        if (cardType === 'murloc') {
-          // Create a specialized animation for Murlocs using standard animation API
-          animationStore.addAnimation({
-            id: `murloc-draw-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            type: 'draw',
-            position: { x: window.innerWidth / 2, y: window.innerHeight / 2 - 50 },
-            value: drawnCount,
-            duration: 1600
-          } as any);
-          
-          // Play the murloc sound effect directly
-          const audio = new Audio('/sounds/tribes/murloc_summon.mp3');
-          audio.volume = 0.7;
-          audio.play().catch(err => console.error('Failed to play murloc sound:', err));
-        } else if (cardType === 'beast') {
-          // Create a specialized animation for Beasts using standard animation API
-          animationStore.addAnimation({
-            id: `beast-draw-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            type: 'draw',
-            position: { x: window.innerWidth / 2, y: window.innerHeight / 2 - 50 },
-            value: drawnCount,
-            duration: 1600
-          } as any);
-          
-          // Play the beast sound effect directly
-          const audio = new Audio('/sounds/tribes/beast_summon.mp3');
-          audio.volume = 0.7;
-          audio.play().catch(err => console.error('Failed to play beast sound:', err));
-        } else {
-          // Add standard draw animation for other card types
-          animationStore.addAnimation({
-            id: `draw-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            type: 'draw',
-            position: { x: window.innerWidth / 2, y: window.innerHeight / 2 - 50 },
-            value: drawnCount,
-            duration: 1500
-          } as any);
-        }
+      const animationStore = useAnimationStore.getState();
+      
+      animationStore.addAnimation({
+        id: `draw_cards_player_${Date.now()}`,
+        type: 'card_draw_notification',
+        startTime: Date.now(),
+        value: drawnCount,
+        playerId: 'player',
+        cardName: cardType ? `${cardType} card${drawnCount > 1 ? 's' : ''}` : undefined,
+        duration: 2500
+      } as any);
+
+      if (cardType === 'murloc') {
+        const audio = new Audio('/sounds/tribes/murloc_summon.mp3');
+        audio.volume = 0.7;
+        audio.play().catch(() => {});
+      } else if (cardType === 'beast') {
+        const audio = new Audio('/sounds/tribes/beast_summon.mp3');
+        audio.volume = 0.7;
+        audio.play().catch(() => {});
       }
     }, 100);
   }
@@ -1135,20 +1110,31 @@ function executeDrawBothBattlecry(
     }
   }
   
-  // Add animation for card draws
   if (typeof window !== 'undefined') {
-    // Only run in browser environment
     setTimeout(() => {
       const animationStore = useAnimationStore.getState();
       
-      // Add standard draw animation
-      animationStore.addAnimation({
-        id: `draw_both_${Date.now()}`,  // Add a unique ID for the animation
-        type: 'draw',
-        position: { x: window.innerWidth / 2, y: window.innerHeight / 2 - 50 },
-        value: cardsToDraw,
-        duration: 1500
-      } as any);
+      if (playerDrawnCount > 0) {
+        animationStore.addAnimation({
+          id: `draw_cards_player_${Date.now()}`,
+          type: 'card_draw_notification',
+          startTime: Date.now(),
+          value: playerDrawnCount,
+          playerId: 'player',
+          duration: 2500
+        } as any);
+      }
+      
+      if (opponentDrawnCount > 0) {
+        animationStore.addAnimation({
+          id: `draw_cards_opponent_${Date.now()}`,
+          type: 'card_draw_notification',
+          startTime: Date.now(),
+          value: opponentDrawnCount,
+          playerId: 'opponent',
+          duration: 2500
+        } as any);
+      }
     }, 100);
   }
   

@@ -364,6 +364,9 @@ export const AnimationLayer: React.FC = () => {
             {animation.type === 'card_burn' && (
               <CardBurnPopup animation={animation} />
             )}
+            {animation.type === 'card_draw_notification' && (
+              <CardDrawNotification animation={animation} />
+            )}
           </React.Fragment>
         ))}
       </AnimatePresence>
@@ -531,6 +534,122 @@ const CardBurnPopup: React.FC<{ animation: Animation }> = ({ animation }) => {
         }}>
           BURNED!
         </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const CardDrawNotification: React.FC<{ animation: Animation }> = ({ animation }) => {
+  const count = animation.value || 1;
+  const playerId = animation.playerId || 'player';
+  const isPlayer = playerId === 'player';
+  const cardLabel = animation.cardName || (count === 1 ? 'card' : 'cards');
+  
+  return (
+    <motion.div
+      style={{
+        position: 'fixed',
+        top: isPlayer ? '65%' : '15%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 9999,
+        pointerEvents: 'none'
+      }}
+      initial={{ opacity: 0, scale: 0.3, y: isPlayer ? 40 : -40 }}
+      animate={{ 
+        opacity: [0, 1, 1, 1, 0],
+        scale: [0.3, 1.15, 1, 1, 0.9],
+        y: [isPlayer ? 40 : -40, 0, 0, 0, isPlayer ? -20 : 20]
+      }}
+      transition={{ 
+        duration: 2.5,
+        times: [0, 0.12, 0.2, 0.8, 1],
+        ease: "easeOut"
+      }}
+    >
+      <div style={{
+        background: isPlayer 
+          ? 'linear-gradient(180deg, rgba(30, 80, 160, 0.95) 0%, rgba(20, 50, 120, 0.95) 100%)'
+          : 'linear-gradient(180deg, rgba(120, 40, 40, 0.95) 0%, rgba(80, 25, 25, 0.95) 100%)',
+        border: `3px solid ${isPlayer ? '#60a5fa' : '#f87171'}`,
+        borderRadius: '16px',
+        padding: '14px 36px',
+        boxShadow: isPlayer 
+          ? '0 0 40px rgba(96, 165, 250, 0.6), 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1)' 
+          : '0 0 40px rgba(248, 113, 113, 0.6), 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
+        textAlign: 'center',
+        minWidth: '240px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '6px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {Array.from({ length: Math.min(count, 5) }).map((_, i) => (
+            <motion.div
+              key={i}
+              style={{
+                width: '36px',
+                height: '50px',
+                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
+                borderRadius: '4px',
+                border: '2px solid #fef3c7',
+                boxShadow: '0 0 12px rgba(251, 191, 36, 0.6), 0 2px 8px rgba(0,0,0,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              initial={{ opacity: 0, y: 30, rotateZ: -15 + i * 8 }}
+              animate={{ 
+                opacity: 1, 
+                y: 0, 
+                rotateZ: -10 + i * 5
+              }}
+              transition={{ 
+                delay: 0.15 + i * 0.12, 
+                duration: 0.4,
+                type: 'spring',
+                stiffness: 200
+              }}
+            >
+              <span style={{ fontSize: '18px', color: '#78350f', fontWeight: 800 }}>
+                {isPlayer ? '?' : '?'}
+              </span>
+            </motion.div>
+          ))}
+        </div>
+        
+        <div style={{
+          fontSize: '14px',
+          fontWeight: 700,
+          color: isPlayer ? '#93c5fd' : '#fca5a5',
+          textTransform: 'uppercase',
+          letterSpacing: '2px'
+        }}>
+          {isPlayer ? 'You Drew' : 'Opponent Drew'}
+        </div>
+        
+        <div style={{
+          fontSize: '28px',
+          fontWeight: 800,
+          color: '#ffffff',
+          textShadow: `0 0 15px ${isPlayer ? 'rgba(96, 165, 250, 0.8)' : 'rgba(248, 113, 113, 0.8)'}, 2px 2px 4px rgba(0,0,0,0.8)`,
+          lineHeight: 1
+        }}>
+          {count} {cardLabel}
+        </div>
+        
+        <motion.div
+          style={{
+            width: '100%',
+            height: '2px',
+            background: `linear-gradient(90deg, transparent, ${isPlayer ? '#60a5fa' : '#f87171'}, transparent)`,
+            marginTop: '2px'
+          }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        />
       </div>
     </motion.div>
   );
