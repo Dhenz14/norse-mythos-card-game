@@ -1,0 +1,521 @@
+If I wanted to make a NFT on Hive, a "NFT" just a refernece to the actual card in this case, is there a way to do it with just text on chain? I mean a NFT can be anything, its just text that refences an image, can't I just save that as a custom json or inside a hive post or memo? And by doing that, with my NFT game, how would I transfer them, is there a clever way to "send a transaction" on hive that sends "ownership" of the text to the person I sent it to? The game can pick up on this and scan and see if a card has been traded or not. What would this look like? The Hive blockchain. I dont want to use smart contracts or layer 2sKey Points
+
+Feasibility of Text-Based NFTs on Hive Base Layer: Yes, you can create simple NFTs as text references (e.g., to a card in your game) using only on-chain data without images, smart contracts, or layer-2 solutions like Hive Engine. This leverages Hive's custom JSON operations to store and transfer ownership data immutably on the blockchain.
+Storage Options: Custom JSON is the most efficient method for structured, arbitrary text data. Hive posts or memos can work but are less ideal—posts are better for content, and memos require token transfers (even minimal amounts).
+Transfer Mechanism: Ownership can be "transferred" via a custom JSON broadcast signed by the current owner, specifying the NFT details and new recipient. Your game scans the blockchain to verify and update ownership based on the transaction history.
+Game Integration: The game acts as the off-chain "enforcer" by parsing custom JSON history to determine current owners, detect trades, and prevent invalid actions (e.g., transfers from non-owners).
+Limitations and Considerations: This approach relies on off-chain logic, so it's trust-minimized but not enforced on-chain like smart contracts. Resource credits (RC) are needed for broadcasts, and scanning large histories may require efficient tools like Beem or HiveSQL for performance.
+
+Creating Text-Based NFTs
+On Hive, an NFT can indeed be just text—a unique identifier, description, or reference to your game's card (e.g., "Card ID: 001, Type: Fire Dragon"). No need for images or media; the "NFT" is the on-chain record of ownership. Use the custom_json operation to mint it by broadcasting a JSON payload with details like ID, name, and initial owner. This stores the data permanently on the blockchain without requiring layer-2.
+For example, tools like Hive Keychain or Python libraries (e.g., Beem) can handle broadcasting. Avoid Hive Engine or similar, as they add sidechain complexity.
+Storing the NFT Data
+
+Custom JSON (Recommended): Broadcast arbitrary JSON under a custom protocol ID (e.g., "my_nft_game"). This is free of token fees but consumes RC. It's ideal for structured data like {"action": "mint", "nft_id": "card001", "reference": "Fire Dragon Card v1"}.
+Hive Posts: Embed the text in a post body, but posts are visible on social frontends and less suited for machine-readable data.
+Memos: Attach to a small HIVE/HBD transfer (e.g., 0.001 HIVE), but this incurs minor fees and ties data to financial ops.
+
+Custom JSON keeps it clean and app-specific. See examples in Hive developer resources.
+Transferring Ownership
+Transfers happen via another custom JSON broadcast, signed by the owner (using posting authority for non-financial actions). The payload might include {"action": "transfer", "nft_id": "card001", "to": "new_owner"}. No acceptance needed—the blockchain records it.
+Your game scans custom JSON ops with your protocol ID, builds the ownership chain (from mint to latest valid transfer), and reflects changes. Use libraries like Beem to query blocks efficiently. This "sends ownership" without smart contracts, as the game trusts the immutable history.
+Implementation in Your Game
+Integrate Hive wallet signing (e.g., via HiveSigner at https://hivesigner.com/) for users to broadcast transfers. The game backend or client scans recent blocks or uses APIs like HiveSQL for faster queries. This detects trades in near-real-time, updating card ownership without on-chain enforcement.
+While effective, scale scanning for high-volume games with optimized queries to avoid performance issues.
+
+Detailed Survey on Implementing Text-Only NFTs on the Hive Blockchain Without Smart Contracts or Layer-2 Solutions
+The Hive blockchain, a decentralized platform primarily designed for social content and governance, offers flexible base-layer operations that can be repurposed for simple asset management, including non-fungible tokens (NFTs). Unlike Ethereum or other smart contract-heavy chains, Hive emphasizes speed, feeless transactions (in terms of native tokens for non-financial ops), and delegated proof-of-stake (DPoS) consensus. This makes it an attractive option for lightweight applications, such as your proposed NFT game where NFTs serve as mere text references to in-game cards. Below, we explore the technical feasibility, methods, and practical considerations for achieving this purely on the base layer, adhering to your constraints of avoiding smart contracts and layer-2 solutions like Hive Engine.
+Understanding Hive's Base-Layer Capabilities for NFTs
+Hive's core operations include transfers, posts, comments, and crucially, custom_json—a versatile operation for broadcasting arbitrary JSON data. This is not a smart contract system; instead, it acts as a data publication layer where applications can build higher-level protocols off-chain. As noted in developer discussions, Hive is "the easiest blockchain to build apps on without smart contracts," treating the chain as infrastructure for data storage and signaling rather than execution.
+For NFTs, this means:
+
+Text-Only Representation: An NFT can be a simple JSON object, e.g., a unique ID referencing your game's card (no need for IPFS hashes or images). The "value" is in the ownership record, not the asset itself.
+On-Chain Immutability: Once broadcast, the data is permanent and verifiable by anyone scanning the chain.
+No Built-In Enforcement: Ownership logic resides in your game, which parses the blockchain to validate states. This is trust-minimized, as the chain provides tamper-proof history, but it's not automated like ERC-721 contracts.
+
+Common NFT implementations on Hive (e.g., Splinterlands cards or NFT Showroom) often use Hive Engine, a sidechain that listens to base-layer custom JSON for token actions. However, you can replicate a similar pattern without the sidechain: your game becomes the "listener" and enforcer.
+Storage Methods for NFT Data
+You have several base-layer options for storing text-based NFT references, each with trade-offs. Custom JSON stands out as the most suitable for your use case.
+
+Custom JSON Operations:
+Description: The custom_json op allows broadcasting JSON payloads up to 8,192 bytes per operation (with up to 5 ops per transaction). It requires no token fees but consumes resource credits (RC), which regenerate based on your Hive Power (HP).
+Why Ideal for NFTs: It's designed for "higher-level protocols," enabling app-specific data like minting or transfers. Use a unique id field (e.g., "my_nft_game") to filter your protocol's ops.
+Example Mint Payload (as JSON in the op):text{
+  "action": "mint",
+  "nft_id": "card001",
+  "reference": "Fire Dragon Card - Attack: 10, Defense: 5",
+  "owner": "your_username"
+}Broadcast via wallets like PeakD or code (see implementation below).
+Limitations: Payload size limits; for larger data, split across multiple ops or transactions.
+
+Hive Posts or Comments:
+Description: Embed NFT text in a post body (e.g., a JSON string in markdown). Posts are immutable after broadcast.
+Pros/Cons: Visible on social interfaces, but less efficient for scanning. Edits aren't possible post-broadcast, but it's not optimized for structured data like custom JSON.
+
+Memos in Transfers:
+Description: Attach text (up to 2,048 bytes) to a HIVE/HBD transfer. For minimal cost, send 0.001 HIVE with a memo like "Transfer NFT card001 to new_owner".
+Pros/Cons: Ties to financial ops, requiring tokens (though negligible). Less flexible than custom JSON for pure data.
+
+
+Comparison Table of Storage Options:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MethodFee TypeMax Size per OpStructured Data SuitabilityRequires Token Transfer?Best ForCustom JSONRC only8,192 bytesHigh (arbitrary JSON)NoApp protocols, NFTsHive PostRC only~65KB (block limit)Medium (text/markdown)NoContent embeddingMemoToken + RC2,048 bytesLow (plain text)YesSimple notes with value
+Custom JSON is recommended for your game, as it allows machine-readable formats without social visibility.
+Transferring Ownership
+Transfers mimic a "transaction" by broadcasting a new custom JSON op, signed by the current owner (using posting authority for feeless ops). The payload declares the change, and the blockchain records it as an immutable event.
+
+Mechanism:
+Sender broadcasts: {"action": "transfer", "nft_id": "card001", "to": "new_owner", "memo": "Trade for 5 HIVE"}.
+No receiver action needed; ownership shifts upon validation.
+Your game scans for ops with your id, reconstructs the chain: Mint → Transfer1 → Transfer2, etc. Only honor transfers from the latest verified owner to prevent doublespends.
+
+Clever "Send Transaction" Approach:
+Use posting auth for security (less risk than active keys).
+Integrate with Hive wallets: Users sign via Hive Keychain or HiveSigner, embedding the transfer in your game's UI.
+For atomicity, combine with a small HIVE transfer if value exchange is involved (e.g., paid trades).
+
+
+Example Transaction Flow Table:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+StepActionExample Custom JSON PayloadSignerGame's RoleMintBroadcast initial ownership{"action": "mint", "nft_id": "card001", "owner": "creator"}CreatorRecord as owned by creatorTransferBroadcast ownership change{"action": "transfer", "nft_id": "card001", "to": "buyer"}Current OwnerScan, update to new ownerValidationQuery historyN/AN/AParse chain to confirm
+This ensures trades are detectable: Your game periodically scans recent blocks (e.g., via APIs) and flags changed ownership.
+Game Integration and Scanning
+
+Off-Chain Logic: The game client/server queries the blockchain using tools like:
+Beem (Python Library): Broadcast and retrieve ops (see code examples from tutorials).
+HiveSQL: Faster SQL queries for historical data (free tier available).
+Direct Node APIs: Use get_block or get_ops_in_block via JSON-RPC.
+
+Scanning Process:
+Start from a known block (e.g., game's launch).
+Filter custom_json ops by your id.
+Build an ownership ledger: Track mints, validate transfer signatures against prior owners.
+For efficiency, cache states and scan only new blocks (Hive produces ~3-second blocks).
+
+Edge Cases:
+Forks/Reorgs: Rare on Hive, but rescan if detected.
+Scalability: For thousands of NFTs, use indexed databases like HiveSQL to avoid full scans.
+Security: Validate signatures off-chain; prevent replay attacks by including timestamps or nonces.
+
+
+Practical Examples and Tools
+Broadcasting example (Python with Beem):
+Pythonfrom beem import Hive
+from beem.transactionbuilder import TransactionBuilder
+from beembase.operations import Custom_json
+
+hive = Hive(keys=['your_posting_wif'])
+tx = TransactionBuilder(hive)
+op = Custom_json({
+    "required_posting_auths": ["your_username"],
+    "id": "my_nft_game",
+    "json": {"action": "transfer", "nft_id": "card001", "to": "new_owner"}
+})
+tx.appendOps(op)
+tx.sign()
+tx.broadcast()
+Retrieval: Iterate blocks post-broadcast to find and parse the JSON.
+While not common for NFTs (most projects opt for Hive Engine for added features), this mirrors how early Steem/Hive games used custom JSON for assets before sidechains.
+Pros, Cons, and Alternatives
+
+Advantages: Feeless (RC-based), fast (3s blocks), eco-friendly (DPoS), fully decentralized.
+Drawbacks: Off-chain dependency for logic; potential scanning overhead; less interoperability than standards like ERC-721.
+If Scaling Issues Arise: Consider hybrid approaches (still base-layer) like embedding in posts for visibility, but stick to custom JSON for purity.
+
+This method aligns with Hive's philosophy of simplicity, enabling your text-referenced NFT game without external dependencies.
+Key Citations:
+
+Hive Blockchain: The Easiest Place to Build Apps (Without Smart Contracts)
+Using Hive Blockchain Custom Json Operation with Python & Beem
+Hive Developer Portal: Custom JSON Operation
+NFTs on Steem Engine: A Technical Overview (Analogous to Hive Custom JSON Usage)
+Hive Engine Actions Documentation (Illustrates Custom JSON Patterns, Adaptable to Base Layer)
+RE: Using Hive Blockchain Custom Json Operation with Python & Beem
+62 sourcesGIve this to me in a concise, step by step instructions on how it would work. Key Points
+
+Feasibility of Text-Based NFTs on Hive Base Layer: Yes, you can create simple NFTs as text references (e.g., to a card in your game) using only on-chain data without images, smart contracts, or layer-2 solutions like Hive Engine. This leverages Hive's custom JSON operations to store and transfer ownership data immutably on the blockchain.
+Storage Options: Custom JSON is the most efficient method for structured, arbitrary text data. Hive posts or memos can work but are less ideal—posts are better for content, and memos require token transfers (even minimal amounts).
+Transfer Mechanism: Ownership can be "transferred" via a custom JSON broadcast signed by the current owner, specifying the NFT details and new recipient. Your game scans the blockchain to verify and update ownership based on the transaction history.
+Game Integration: The game acts as the off-chain "enforcer" by parsing custom JSON history to determine current owners, detect trades, and prevent invalid actions (e.g., transfers from non-owners).
+Limitations and Considerations: This approach relies on off-chain logic, so it's trust-minimized but not enforced on-chain like smart contracts. Resource credits (RC) are needed for broadcasts, and scanning large histories may require efficient tools like Beem or HiveSQL for performance.
+
+Creating Text-Based NFTs
+On Hive, an NFT can indeed be just text—a unique identifier, description, or reference to your game's card (e.g., "Card ID: 001, Type: Fire Dragon"). No need for images or media; the "NFT" is the on-chain record of ownership. Use the custom_json operation to mint it by broadcasting a JSON payload with details like ID, name, and initial owner. This stores the data permanently on the blockchain without requiring layer-2.
+For example, tools like Hive Keychain or Python libraries (e.g., Beem) can handle broadcasting. Avoid Hive Engine or similar, as they add sidechain complexity.
+Storing the NFT Data
+
+Custom JSON (Recommended): Broadcast arbitrary JSON under a custom protocol ID (e.g., "my_nft_game"). This is free of token fees but consumes RC. It's ideal for structured data like {"action": "mint", "nft_id": "card001", "reference": "Fire Dragon Card v1"}.
+Hive Posts: Embed the text in a post body, but posts are visible on social frontends and less suited for machine-readable data.
+Memos: Attach to a small HIVE/HBD transfer (e.g., 0.001 HIVE), but this incurs minor fees and ties data to financial ops.
+
+Custom JSON keeps it clean and app-specific. See examples in Hive developer resources.
+Transferring Ownership
+Transfers happen via another custom JSON broadcast, signed by the owner (using posting authority for non-financial actions). The payload might include {"action": "transfer", "nft_id": "card001", "to": "new_owner"}. No acceptance needed—the blockchain records it.
+Your game scans custom JSON ops with your protocol ID, builds the ownership chain (from mint to latest valid transfer), and reflects changes. Use libraries like Beem to query blocks efficiently. This "sends ownership" without smart contracts, as the game trusts the immutable history.
+Implementation in Your Game
+Integrate Hive wallet signing (e.g., via HiveSigner at https://hivesigner.com/) for users to broadcast transfers. The game backend or client scans recent blocks or uses APIs like HiveSQL for faster queries. This detects trades in near-real-time, updating card ownership without on-chain enforcement.
+While effective, scale scanning for high-volume games with optimized queries to avoid performance issues.
+Detailed Survey on Implementing Text-Only NFTs on the Hive Blockchain Without Smart Contracts or Layer-2 Solutions
+The Hive blockchain, a decentralized platform primarily designed for social content and governance, offers flexible base-layer operations that can be repurposed for simple asset management, including non-fungible tokens (NFTs). Unlike Ethereum or other smart contract-heavy chains, Hive emphasizes speed, feeless transactions (in terms of native tokens for non-financial ops), and delegated proof-of-stake (DPoS) consensus. This makes it an attractive option for lightweight applications, such as your proposed NFT game where NFTs serve as mere text references to in-game cards. Below, we explore the technical feasibility, methods, and practical considerations for achieving this purely on the base layer, adhering to your constraints of avoiding smart contracts and layer-2 solutions like Hive Engine.
+Understanding Hive's Base-Layer Capabilities for NFTs
+Hive's core operations include transfers, posts, comments, and crucially, custom_json—a versatile operation for broadcasting arbitrary JSON data. This is not a smart contract system; instead, it acts as a data publication layer where applications can build higher-level protocols off-chain. As noted in developer discussions, Hive is "the easiest blockchain to build apps on without smart contracts," treating the chain as infrastructure for data storage and signaling rather than execution.
+For NFTs, this means:
+
+Text-Only Representation: An NFT can be a simple JSON object, e.g., a unique ID referencing your game's card (no need for IPFS hashes or images). The "value" is in the ownership record, not the asset itself.
+On-Chain Immutability: Once broadcast, the data is permanent and verifiable by anyone scanning the chain.
+No Built-In Enforcement: Ownership logic resides in your game, which parses the blockchain to validate states. This is trust-minimized, as the chain provides tamper-proof history, but it's not automated like ERC-721 contracts.
+
+Common NFT implementations on Hive (e.g., Splinterlands cards or NFT Showroom) often use Hive Engine, a sidechain that listens to base-layer custom JSON for token actions. However, you can replicate a similar pattern without the sidechain: your game becomes the "listener" and enforcer.
+Storage Methods for NFT Data
+You have several base-layer options for storing text-based NFT references, each with trade-offs. Custom JSON stands out as the most suitable for your use case.
+
+Custom JSON Operations:
+
+  * Description: The custom_json op allows broadcasting JSON payloads up to 8,192 bytes per operation (with up to 5 ops per transaction). It requires no token fees but consumes resource credits (RC), which regenerate based on your Hive Power (HP).
+  * Why Ideal for NFTs: It's designed for "higher-level protocols," enabling app-specific data like minting or transfers. Use a unique id field (e.g., "my_nft_game") to filter your protocol's ops.
+  * Example Mint Payload (as JSON in the op):
+    text
+     &nbsp;&nbsp;&nbsp;&nbsp;{ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"action": "mint", &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"nft_id": "card001", &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"reference": "Fire Dragon Card - Attack: 10, Defense: 5", &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"owner": "your_username" &nbsp;&nbsp;&nbsp;&nbsp;} &nbsp;&nbsp;&nbsp;&nbsp;
+    Broadcast via wallets like PeakD or code (see implementation below).
+  * Limitations: Payload size limits; for larger data, split across multiple ops or transactions.
+
+Hive Posts or Comments:
+
+  * Description: Embed NFT text in a post body (e.g., a JSON string in markdown). Posts are immutable after broadcast.
+  * Pros/Cons: Visible on social interfaces, but less efficient for scanning. Edits aren't possible post-broadcast, but it's not optimized for structured data like custom JSON.
+
+Memos in Transfers:
+
+  * Description: Attach text (up to 2,048 bytes) to a HIVE/HBD transfer. For minimal cost, send 0.001 HIVE with a memo like "Transfer NFT card001 to new_owner".
+  * Pros/Cons: Ties to financial ops, requiring tokens (though negligible). Less flexible than custom JSON for pure data.
+Comparison Table of Storage Options:
+MethodFee TypeMax Size per OpStructured Data SuitabilityRequires Token Transfer?Best ForCustom JSONRC only8,192 bytesHigh (arbitrary JSON)NoApp protocols, NFTsHive PostRC only~65KB (block limit)Medium (text/markdown)NoContent embeddingMemoToken + RC2,048 bytesLow (plain text)YesSimple notes with value
+Custom JSON is recommended for your game, as it allows machine-readable formats without social visibility.
+Transferring Ownership
+Transfers mimic a "transaction" by broadcasting a new custom JSON op, signed by the current owner (using posting authority for feeless ops). The payload declares the change, and the blockchain records it as an immutable event.
+
+Mechanism:
+
+  * Sender broadcasts: {"action": "transfer", "nft_id": "card001", "to": "new_owner", "memo": "Trade for 5 HIVE"}.
+  * No receiver action needed; ownership shifts upon validation.
+  * Your game scans for ops with your id, reconstructs the chain: Mint → Transfer1 → Transfer2, etc. Only honor transfers from the latest verified owner to prevent doublespends.
+
+Clever "Send Transaction" Approach:
+
+  * Use posting auth for security (less risk than active keys).
+  * Integrate with Hive wallets: Users sign via Hive Keychain or HiveSigner, embedding the transfer in your game's UI.
+  * For atomicity, combine with a small HIVE transfer if value exchange is involved (e.g., paid trades).
+Example Transaction Flow Table:
+StepActionExample Custom JSON PayloadSignerGame's RoleMintBroadcast initial ownership{"action": "mint", "nft_id": "card001", "owner": "creator"}CreatorRecord as owned by creatorTransferBroadcast ownership change{"action": "transfer", "nft_id": "card001", "to": "buyer"}Current OwnerScan, update to new ownerValidationQuery historyN/AN/AParse chain to confirm
+This ensures trades are detectable: Your game periodically scans recent blocks (e.g., via APIs) and flags changed ownership.
+Game Integration and Scanning
+
+Off-Chain Logic: The game client/server queries the blockchain using tools like:
+
+  * Beem (Python Library): Broadcast and retrieve ops (see code examples from tutorials).
+  * HiveSQL: Faster SQL queries for historical data (free tier available).
+  * Direct Node APIs: Use get_block or get_ops_in_block via JSON-RPC.
+
+Scanning Process:
+
+  * Start from a known block (e.g., game's launch).
+  * Filter custom_json ops by your id.
+  * Build an ownership ledger: Track mints, validate transfer signatures against prior owners.
+  * For efficiency, cache states and scan only new blocks (Hive produces ~3-second blocks).
+
+Edge Cases:
+
+  * Forks/Reorgs: Rare on Hive, but rescan if detected.
+  * Scalability: For thousands of NFTs, use indexed databases like HiveSQL to avoid full scans.
+  * Security: Validate signatures off-chain; prevent replay attacks by including timestamps or nonces.
+Practical Examples and Tools
+Broadcasting example (Python with Beem):
+Python
+textfrom beem import Hive
+from beem.transactionbuilder import TransactionBuilder
+from beembase.operations import Custom_json
+
+hive = Hive(keys=['your_posting_wif'])
+tx = TransactionBuilder(hive)
+op = Custom_json({
+    "required_posting_auths": ["your_username"],
+    "id": "my_nft_game",
+    "json": {"action": "transfer", "nft_id": "card001", "to": "new_owner"}
+})
+tx.appendOps(op)
+tx.sign()
+tx.broadcast()
+Retrieval: Iterate blocks post-broadcast to find and parse the JSON.
+While not common for NFTs (most projects opt for Hive Engine for added features), this mirrors how early Steem/Hive games used custom JSON for assets before sidechains.
+Pros, Cons, and Alternatives
+
+Advantages: Feeless (RC-based), fast (3s blocks), eco-friendly (DPoS), fully decentralized.
+Drawbacks: Off-chain dependency for logic; potential scanning overhead; less interoperability than standards like ERC-721.
+If Scaling Issues Arise: Consider hybrid approaches (still base-layer) like embedding in posts for visibility, but stick to custom JSON for purity.
+
+This method aligns with Hive's philosophy of simplicity, enabling your text-referenced NFT game without external dependencies.Key Steps for Implementing Text-Based NFTs on Hive
+
+Feasibility: Research indicates it's viable to create simple text-based NFTs on Hive's base layer using custom JSON for immutable ownership records, without smart contracts or layer-2 like Hive Engine; however, enforcement relies on off-chain game logic, which may introduce scalability challenges for high-volume use.
+Storage Preference: Custom JSON is the most efficient for structured text data, though posts or memos can serve as alternatives with trade-offs in visibility and costs.
+Transfer Approach: Use signed custom JSON broadcasts to signal ownership changes; games must scan the chain to validate and update states, acknowledging potential debates on decentralization purity versus practicality.
+Game Role: Off-chain scanning tools like Beem or HiveSQL help detect trades empathetically, ensuring fair play while recognizing limitations in real-time enforcement.
+Limitations: Resource credits (RC) are required, and while eco-friendly, this method may not suit complex scenarios; evidence suggests it's best for lightweight games.
+
+Setup Requirements
+To start, create a Hive account via wallets like PeakD or Hive Keychain. Install Python and the Beem library (pip install beem) for broadcasting and scanning. Ensure you have sufficient Hive Power (HP) for RC regeneration, as operations consume RC but not tokens for non-financial actions.
+Minting an NFT
+Broadcast a custom JSON to mint: Define a protocol ID (e.g., "my_nft_game") and payload like {"action": "mint", "nft_id": "card001", "reference": "Fire Dragon Card", "owner": "your_username"}. Use posting authority for signing.
+Transferring Ownership
+Broadcast another JSON: {"action": "transfer", "nft_id": "card001", "to": "new_owner"}. The chain records it immutably; no receiver confirmation needed.
+Integrating with Your Game
+Scan custom JSON ops using Beem to build ownership history. Cache states for efficiency, and validate transfers to prevent invalid actions.
+For detailed code and considerations, see the survey below.
+
+Detailed Survey on Implementing Text-Only NFTs on the Hive Blockchain Without Smart Contracts or Layer-2 Solutions
+The Hive blockchain, forked from Steem in 2020, is a decentralized, high-throughput platform optimized for social media, content creation, and lightweight applications through its delegated proof-of-stake (DPoS) consensus mechanism. It processes transactions in approximately 3-second blocks without native gas fees for non-financial operations, making it suitable for text-based non-fungible tokens (NFTs) that serve as references to in-game assets like cards. Unlike Ethereum's smart contract-centric model, Hive uses base-layer operations for data storage and signaling, allowing developers to build protocols off-chain. This approach enables simple NFT implementations via the custom_json operation, where NFTs are represented as text strings (e.g., unique IDs and descriptions) without requiring images, IPFS links, or layer-2 sidechains like Hive Engine. However, as developer resources note, this is "trust-minimized" rather than fully on-chain enforced, relying on applications to parse and honor the immutable history. Projects like early Steem games and modern Hive dApps (e.g., Splinterlands precursors) have used this for asset management, though most now opt for sidechains for added features. Below, we outline the step-by-step process, technical details, and considerations for your NFT game, drawing from Hive's developer portal and practical tutorials.
+Step 1: Understanding Base-Layer Capabilities and Setup
+Hive's core operations include transfers, posts, votes, and custom_json, which broadcasts arbitrary JSON data as an event log. This operation treats the blockchain as a tamper-proof database for protocols, not executable code—ideal for NFTs as ownership ledgers. For text-based NFTs:
+
+Representation: An NFT is a JSON object, e.g., {"nft_id": "card001", "reference": "Fire Dragon Card - Attack: 10, Defense: 5"}. Value lies in the ownership chain, not media.
+Immutability: Data is permanent once broadcast, verifiable by scanning blocks.
+No Enforcement: Your game enforces rules off-chain, reducing decentralization but enabling simplicity.
+
+Setup:
+
+Create a Hive account on platforms like hive.io or via wallets (e.g., Hive Keychain at https://hive-keychain.com/).
+Acquire Hive Power (HP) for resource credits (RC)—operations like custom_json consume RC, regenerating based on HP (e.g., 1000 HP supports moderate use).
+Install tools: Python with Beem library (pip install beem) for broadcasting and querying. Alternatives include JavaScript libraries or direct JSON-RPC to nodes (e.g., api.hive.blog).
+
+Step 2: Choosing Storage for NFT Data
+Store NFT references on-chain using base-layer methods. Custom JSON is optimal for structured, app-specific data.
+
+Custom JSON (Recommended): Broadcast JSON payloads with a unique id (e.g., "my_nft_game") to filter your protocol. Limits: 8,192 bytes per op, up to 5 ops per transaction, block size ~65KB. No token fees; only RC cost.
+Hive Posts/Comments: Embed text in post bodies (immutable, visible on social fronts like PeakD). Suited for human-readable data but less efficient for machines.
+Memos: Attach to small HIVE/HBD transfers (up to 2,048 bytes). Incurs minor token costs (e.g., 0.001 HIVE).
+
+Comparison Table of Storage Options:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MethodCost TypeMax Size per OperationData Structure SuitabilityToken Transfer Required?Ideal Use CaseCustom JSONRC only8,192 bytesHigh (JSON)NoProtocols, NFTsHive PostRC only~65KB (block limit)Medium (Markdown/Text)NoVisible contentMemoToken + RC2,048 bytesLow (Plain Text)YesNotes with value transfers
+Custom JSON ensures clean, filterable storage without social clutter.
+Step 3: Minting NFTs
+Mint by broadcasting a custom_json op to record initial ownership.
+
+Payload Example: {"action": "mint", "nft_id": "card001", "reference": "Fire Dragon Card v1", "owner": "your_username"}.
+Broadcast Process: Use posting authority (safer than active keys). Tools like Hive Keychain or Beem handle signing.
+
+Code Example with Beem (Python):
+Pythonfrom beem import Hive
+from beem.transactionbuilder import TransactionBuilder
+from beembase.operations import Custom_json
+
+hive = Hive(keys=['your_posting_key'])  # Use posting WIF
+tx = TransactionBuilder(hive)
+op = Custom_json({
+    "required_posting_auths": ["your_username"],
+    "id": "my_nft_game",
+    "json": {"action": "mint", "nft_id": "card001", "reference": "Fire Dragon Card", "owner": "creator"}
+})
+tx.appendOps(op)
+tx.sign()
+tx.broadcast()
+
+Note broadcast details (e.g., ref_block_num) for later retrieval. This stores the mint event immutably.
+
+Step 4: Transferring Ownership
+Transfers are signaled via new custom_json ops, mimicking transactions without on-chain validation.
+
+Mechanism: Current owner broadcasts {"action": "transfer", "nft_id": "card001", "to": "new_owner", "memo": "Optional note"}. Include timestamps/nonces to prevent replays.
+No Acceptance: Ownership shifts on record; game validates chain.
+Atomicity Tip: Pair with HIVE transfer for paid trades.
+
+Code Example:
+Similar to minting, replace JSON with transfer payload. Use HiveSigner for user-friendly UI integration.
+Transaction Flow Table:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+StepActionExample PayloadSignerGame ValidationMintRecord initial owner{"action": "mint", "nft_id": "card001", "owner": "creator"}CreatorLog as owned by creatorTransferSignal change{"action": "transfer", "nft_id": "card001", "to": "buyer"}Current OwnerScan chain, update ownerValidateQuery historyN/AN/ARebuild chain to confirm
+This detects trades by reconstructing history (Mint → Transfers).
+Step 5: Game Integration and Scanning
+Your game acts as the off-chain enforcer, parsing custom_json for ownership.
+
+Scanning Tools:
+Beem: Query blocks via Block or Blockchain classes.
+HiveSQL: SQL database for faster historical queries (free tier; e.g., SELECT * FROM TxCustoms WHERE id = 'my_nft_game').
+Direct APIs: JSON-RPC methods like get_ops_in_block.
+
+Process:
+Start from a genesis block (e.g., game launch).
+Filter ops by id.
+Build ledger: Validate signatures, honor only valid transfers from current owners.
+Cache states; scan new blocks (~3s intervals) for real-time updates.
+
+
+Retrieval Code Example:
+Pythonfrom beem import Hive
+from beem.block import Block
+
+hive = Hive()
+block_num = 12345678  # Known block from broadcast
+block = Block(block_num, blockchain_instance=hive)
+operations = block.json()['transactions'][0]['operations']  # Parse for custom_json
+print(operations)
+For efficiency in large games, use HiveSQL to avoid full scans.
+
+Edge Cases:
+Forks: Rare in DPoS; rescan on detection.
+Scalability: For 1000+ NFTs, index with databases; overhead grows with history.
+Security: Off-chain validation prevents doublespends; add nonces for replays.
+
+
+Pros, Cons, and Alternatives
+
+Advantages: Feeless non-financial ops, fast blocks, eco-friendly (low energy vs. PoW), decentralized storage.
+Drawbacks: Off-chain dependency reduces trustlessness; scanning can be resource-intensive; limited interoperability (not ERC-721 compliant).
+Scaling Tips: Hybrid with posts for visibility; for complexity, consider but avoid layer-2 per constraints.
+Controversies: Some developers argue this isn't "true" NFTs due to off-chain logic, favoring sidechains for automation. However, it aligns with Hive's simplicity for games, as seen in historical Steem apps.
+
+This method empowers lightweight NFT games on Hive, leveraging its base layer for cost-effective, text-referenced assets.
+Key Citations:
+
+Using Hive Blockchain Custom Json Operation with Python & Beem
+RE: Using Hive Blockchain Custom Json Operation with Python & Beem
+Create and Broadcast Custom JSON on the Hive Blockchain with ...
+Hive Blockchain: The Easiest Place to Build Apps (Without Smart ...
+Hive Engine Platform Developer Documentation.
+Applications on HIVE: From Social Networks to Games and DeFi
+Crypto Facts:The HIVE Blockchain Innovated Gaming, Social Media ...
