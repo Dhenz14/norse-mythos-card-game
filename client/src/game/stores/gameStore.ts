@@ -373,27 +373,18 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         audioStore.playSoundEffect('turn_end');
       }
       
-      // End Turn = Fold in poker, deal new cards
-      // Using unified store via adapter (no more legacy PokerCombatStore)
+      // End Turn = Fold in poker
+      // Only perform the fold action here - let useCombatEvents handle
+      // resolution and startNextHand to avoid double resolution path
       const pokerAdapter = getPokerCombatAdapterState();
       if (pokerAdapter.isActive && pokerAdapter.combatState) {
         const phase = pokerAdapter.combatState.phase;
         const playerId = pokerAdapter.combatState.player.playerId;
         
-        // Skip mulligan phase - that's handled separately
         if (phase !== CombatPhase.MULLIGAN) {
-          debug.log('[UnifiedEndTurn] End Turn = Fold - starting new poker hand');
+          debug.log('[UnifiedEndTurn] End Turn = Fold');
           
-          // Perform fold action (BRACE)
           pokerAdapter.performAction(playerId, CombatAction.BRACE);
-          
-          // Get the resolution after fold for HP restoration
-          const resolution = pokerAdapter.resolveCombat();
-          
-          // Use centralized delayed transition to avoid race conditions
-          if (resolution) {
-            pokerAdapter.startNextHandDelayed(resolution);
-          }
         } else {
           debug.log('[UnifiedEndTurn] Skipping mulligan phase');
         }

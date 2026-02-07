@@ -544,6 +544,28 @@ export const createPokerCombatSlice: StateCreator<
         const folderIsPlayer = playerId === newState.player.playerId;
         const folderSide: 'player' | 'opponent' = folderIsPlayer ? 'player' : 'opponent';
         
+        // Force blind posting if folding before FAITH phase (e.g. during SPELL_PET)
+        // This ensures the folder always loses at least their blind HP
+        if (!newState.blindsPosted) {
+          const sbBlind = newState.blindConfig?.smallBlind || BLINDS.SB;
+          const bbBlind = newState.blindConfig?.bigBlind || BLINDS.BB;
+          const sbPlayer = newState.playerPosition === 'small_blind' ? newState.player : newState.opponent;
+          const bbPlayer = newState.playerPosition === 'big_blind' ? newState.player : newState.opponent;
+          
+          const sbAmount = Math.min(sbBlind, sbPlayer.pet.stats.currentHealth);
+          const bbAmount = Math.min(bbBlind, bbPlayer.pet.stats.currentHealth);
+          
+          sbPlayer.pet.stats.currentHealth -= sbAmount;
+          sbPlayer.hpCommitted += sbAmount;
+          bbPlayer.pet.stats.currentHealth -= bbAmount;
+          bbPlayer.hpCommitted += bbAmount;
+          newState.pot += sbAmount + bbAmount;
+          newState.currentBet = bbAmount;
+          newState.blindsPosted = true;
+          
+          debug.combat(`[BRACE] Force-posted blinds before fold: SB=${sbAmount}, BB=${bbAmount}`);
+        }
+        
         // Base fold STA penalty
         let foldStaPenalty = 1;
         
