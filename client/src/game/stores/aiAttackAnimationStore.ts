@@ -26,7 +26,7 @@ interface AIAttackAnimationState {
   deferDamage: boolean;
   
   queueAttack: (event: Omit<AIAttackEvent, 'id' | 'timestamp'>) => void;
-  queueAttackFromStep: (step: CombatStep) => void;
+  queueAttackFromStep: (step: CombatStep & { damageApplied?: boolean }) => void;
   startAnimation: () => AIAttackEvent | null;
   completeAnimation: () => void;
   clearAll: () => void;
@@ -40,7 +40,7 @@ export const useAIAttackAnimationStore = create<AIAttackAnimationState>((set, ge
   pendingAttacks: [],
   currentAttack: null,
   isAnimating: false,
-  deferDamage: true,
+  deferDamage: false,
   
   setDeferDamage: (defer) => {
     set({ deferDamage: defer });
@@ -52,17 +52,17 @@ export const useAIAttackAnimationStore = create<AIAttackAnimationState>((set, ge
       ...event,
       id,
       timestamp: Date.now(),
-      damageApplied: false
+      damageApplied: event.damageApplied ?? false
     };
     
-    debug.animation(`[AI-ATTACK-ANIM] Queued attack: ${event.attackerName} -> ${event.targetName} (deferDamage: ${get().deferDamage})`);
+    debug.animation(`[AI-ATTACK-ANIM] Queued attack: ${event.attackerName} -> ${event.targetName} (damageApplied: ${newEvent.damageApplied})`);
     
     set(state => ({
       pendingAttacks: [...state.pendingAttacks, newEvent]
     }));
   },
   
-  queueAttackFromStep: (step: CombatStep) => {
+  queueAttackFromStep: (step: CombatStep & { damageApplied?: boolean }) => {
     const id = `ai-attack-${++attackIdCounter}-${Date.now()}`;
     const newEvent: AIAttackEvent = {
       id,
@@ -74,14 +74,14 @@ export const useAIAttackAnimationStore = create<AIAttackAnimationState>((set, ge
       damage: step.damage,
       counterDamage: step.counterDamage,
       timestamp: Date.now(),
-      damageApplied: false,
+      damageApplied: step.damageApplied ?? false,
       combatStepId: step.id,
       attackerHasDivineShield: step.attackerHasDivineShield,
       defenderHasDivineShield: step.defenderHasDivineShield,
       attackerSide: step.attackerSide
     };
     
-    debug.animation(`[AI-ATTACK-ANIM] Queued deferred attack: ${step.attackerName} -> ${step.targetName} (${step.damage} dmg)`);
+    debug.animation(`[AI-ATTACK-ANIM] Queued attack from step: ${step.attackerName} -> ${step.targetName} (${step.damage} dmg, damageApplied: ${newEvent.damageApplied})`);
     
     set(state => ({
       pendingAttacks: [...state.pendingAttacks, newEvent]
@@ -144,7 +144,8 @@ export function queueAIAttackAnimation(
   counterDamage: number = 0,
   attackerHasDivineShield: boolean = false,
   defenderHasDivineShield: boolean = false,
-  attackerSide: 'player' | 'opponent' = 'opponent'
+  attackerSide: 'player' | 'opponent' = 'opponent',
+  damageAlreadyApplied: boolean = false
 ): void {
   useAIAttackAnimationStore.getState().queueAttack({
     attackerId,
@@ -157,6 +158,7 @@ export function queueAIAttackAnimation(
     combatStepId: `legacy-${Date.now()}`,
     attackerHasDivineShield,
     defenderHasDivineShield,
-    attackerSide
+    attackerSide,
+    damageApplied: damageAlreadyApplied
   });
 }

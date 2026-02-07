@@ -1,4 +1,5 @@
 import { GameState, CardInstance, Player, HeroClass, CardData } from '../types';
+import { debug } from '../config/debugConfig';
 import { createStartingDeck, createClassDeck, drawCards, findCardInstance } from './cards/cardUtils';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { getDefaultHeroPower, resetHeroPower } from './heroPowerUtils';
@@ -1021,6 +1022,13 @@ function simulateOpponentTurn(state: GameState): GameState {
     let currentState = JSON.parse(JSON.stringify(state)) as GameState;
     const opponent = currentState.players.opponent;
     
+    console.log('[AI Turn] simulateOpponentTurn called:', {
+      handSize: opponent.hand.length,
+      mana: opponent.mana.current,
+      maxMana: opponent.mana.max,
+      battlefieldSize: opponent.battlefield.length,
+      currentTurn: currentState.currentTurn
+    });
     
     // Phase 1: Play cards from hand (highest cost first)
     const sortedHand = [...opponent.hand].sort(
@@ -1149,6 +1157,7 @@ function simulateOpponentTurn(state: GameState): GameState {
         // Play the card with target if we found one
         if (targetId) {
           try {
+            debug.log(`[AI Turn] Playing targeted card: ${card.card.name} (cost: ${card.card.manaCost}) → target: ${targetId}`);
             const targetType = targetId === 'player-hero' || targetId === 'opponent-hero' ? 'hero' : 'minion';
             currentState = playCard(currentState, card.instanceId, targetId, targetType);
           } catch (error) {
@@ -1160,6 +1169,7 @@ function simulateOpponentTurn(state: GameState): GameState {
       } else {
         // Non-targeted card, play normally
         try {
+          debug.log(`[AI Turn] Playing card: ${card.card.name} (cost: ${card.card.manaCost}, type: ${card.card.type})`);
           currentState = playCard(currentState, card.instanceId);
         } catch (error) {
           console.error(`Error playing card ${card.card.name}:`, error);
@@ -1167,6 +1177,12 @@ function simulateOpponentTurn(state: GameState): GameState {
       }
     }
     
+    console.log('[AI Turn] After card play phase:', {
+      battlefieldSize: currentState.players.opponent.battlefield.length,
+      handSize: currentState.players.opponent.hand.length,
+      manaLeft: currentState.players.opponent.mana.current,
+      minionsOnBoard: currentState.players.opponent.battlefield.map(m => m.card.name)
+    });
   
   // Phase 2: Attack with minions (similar to autoAttackWithAllCards but for opponent)
   
@@ -1176,6 +1192,17 @@ function simulateOpponentTurn(state: GameState): GameState {
     .filter(card => !card.isSummoningSick && card.canAttack)
     .sort((a, b) => (b.currentHealth || 0) - (a.currentHealth || 0)); // Sort by HP (highest first)
   
+  
+  console.log('[AI Turn] Attack phase:', {
+    attackableCount: attackableCards.length,
+    allMinions: currentState.players.opponent.battlefield.map(m => ({
+      name: m.card.name,
+      canAttack: m.canAttack,
+      isSummoningSick: m.isSummoningSick,
+      attack: (m.card as any).attack,
+      health: m.currentHealth
+    }))
+  });
   
   if (attackableCards.length > 0) {
     // For each card that can attack, find optimal targets (player minions or hero)
@@ -1327,7 +1354,7 @@ function processAttackForOpponent(
   state: GameState,
   attackerInstanceId: string,
   defenderInstanceId?: string, // If undefined, attack is directed at the player's hero
-  deferDamage: boolean = true // When true, damage is applied by animation processor
+  deferDamage: boolean = false // Apply damage immediately for reliable AI attacks
 ): GameState {
   // Deep clone state to avoid mutation
   let newState = JSON.parse(JSON.stringify(state)) as GameState;
@@ -1377,7 +1404,9 @@ function processAttackForOpponent(
       if (attacker.isWeakened) attackDamage = Math.max(0, attackDamage - 3);
       if (attacker.isBurning) attackDamage += 3;
       
-      // Queue animation with full combat data for deferred damage
+      console.log(`[AI Attack] ${attacker.card.name} attacks Player Hero for ${attackDamage} damage (deferDamage=${deferDamage})`);
+      
+      // Queue animation with full combat data
       queueAIAttackAnimation(
         attacker.card.name,
         attacker.instanceId,
@@ -1387,12 +1416,15 @@ function processAttackForOpponent(
         attackDamage,
         0, // counterDamage
         attacker.hasDivineShield || false,
-        false // defender (hero) has no divine shield
+        false, // defender (hero) has no divine shield
+        'opponent',
+        !deferDamage // mark as already applied when not deferring
       );
       
-      // Only apply damage immediately if NOT deferring
+      // Apply damage immediately when NOT deferring
       if (!deferDamage) {
         newState.players.player.health -= attackDamage;
+        console.log(`[AI Attack] Player HP: ${newState.players.player.health + attackDamage} → ${newState.players.player.health}`);
       }
       
       // Apply Burn self-damage if attacker is burning
@@ -1458,7 +1490,9 @@ function processAttackForOpponent(
     const attackerHasDivineShield = attacker.hasDivineShield || false;
     const defenderHasDivineShield = defender.hasDivineShield || false;
     
-    // Queue animation with full combat data for deferred damage
+    console.log(`[AI Attack] ${attacker.card.name} (${attackDamage} atk) attacks ${defender.card.name} (deferDamage=${deferDamage})`);
+    
+    // Queue animation with full combat data
     queueAIAttackAnimation(
       attacker.card.name,
       attacker.instanceId,
@@ -1468,7 +1502,9 @@ function processAttackForOpponent(
       attackDamage,
       (defender.card as any).attack || 0, // counterDamage
       attackerHasDivineShield,
-      defenderHasDivineShield
+      defenderHasDivineShield,
+      'opponent',
+      !deferDamage // mark as already applied when not deferring
     );
     
     // If deferring damage, skip damage application - animation processor will handle it
