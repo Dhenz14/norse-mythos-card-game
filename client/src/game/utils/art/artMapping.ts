@@ -311,6 +311,7 @@ const CHARACTER_ART_IDS: Record<string, string> = {
   // Custom art entries (not from CDN)
   'yggdrasil-world-tree': 'yggdrasil-new',  // Custom tree being art for Yggdrasil king
   'ginnungagap-void': 'ginnungagap-void',   // Custom primordial void art for Ginnungagap king
+  'audumbla-cow': 'audumbla-cow',           // Custom primordial cow art for Audumbla king
 };
 
 /**
@@ -382,6 +383,7 @@ const HERO_TO_CHARACTER: Record<string, string> = {
   'hero-ve': 'vidarr',
   'hero-vili': 'vali',
   'hero-fjorgyn': 'frigg',
+  'hero-lirien': 'gerd',
   'hero-magni': 'thor',
   'hero-solvi': 'sol',
   'hero-myrka': 'nott',
@@ -430,7 +432,7 @@ const KING_TO_CHARACTER: Record<string, string> = {
   'king-surtr': 'surtr',
   'king-borr': 'borr',
   'king-yggdrasil': 'yggdrasil-world-tree',  // Custom art - tree being humanoid
-  'king-audumbla': 'gerd',
+  'king-audumbla': 'audumbla-cow',
   'king-blainn': 'dwarves',
   'king-brimir': 'jormungandr',
   'king-ginnungagap': 'ginnungagap-void',
