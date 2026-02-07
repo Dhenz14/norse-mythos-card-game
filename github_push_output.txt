@@ -1,8 +1,0 @@
-🚀 Batched Push to GitHub...
-   Repository: Dhenz14/norse-mythos-card-game
-   Batch size: 50 files per commit
-   Total files to push: 1829
-   Total batches: 37
-
-📦 Batch 1/37 (50 files)
-.......
