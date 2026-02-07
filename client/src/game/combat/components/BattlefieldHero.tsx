@@ -256,7 +256,38 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
           </div>
         
           {armor > 0 && (
-            <div className="hero-armor-badge" title="Armor">{armor}</div>
+            <div className="hero-armor-badge" title={`Armor: ${armor} - Absorbs damage before HP`}>
+              <svg className="armor-shield-icon" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id={`armorGrad-${isOpponent ? 'opp' : 'plr'}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#b8b8b8" />
+                    <stop offset="30%" stopColor="#8a8a8a" />
+                    <stop offset="60%" stopColor="#a0a0a0" />
+                    <stop offset="100%" stopColor="#6b6b6b" />
+                  </linearGradient>
+                  <linearGradient id={`armorHighlight-${isOpponent ? 'opp' : 'plr'}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+                  </linearGradient>
+                </defs>
+                <path 
+                  d="M18 2 L4 10 L4 22 Q4 34 18 38 Q32 34 32 22 L32 10 Z" 
+                  fill={`url(#armorGrad-${isOpponent ? 'opp' : 'plr'})`}
+                  stroke="#4a4a4a"
+                  strokeWidth="2"
+                />
+                <path 
+                  d="M18 4 L6 11 L6 22 Q6 32 18 36 Q30 32 30 22 L30 11 Z" 
+                  fill={`url(#armorHighlight-${isOpponent ? 'opp' : 'plr'})`}
+                  opacity="0.3"
+                />
+                <path 
+                  d="M18 6 L8 12 L8 14 L18 8 L28 14 L28 12 Z" 
+                  fill="rgba(255,255,255,0.15)"
+                />
+              </svg>
+              <span className="armor-value">{armor}</span>
+            </div>
           )}
         
           {secrets && secrets.length > 0 && (

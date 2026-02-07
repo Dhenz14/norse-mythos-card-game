@@ -242,6 +242,28 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const opponentSecrets = gameState?.players?.opponent?.secrets || [];
   const opponentHeroClass = gameState?.players?.opponent?.heroClass || 'neutral';
   
+  const enrichedPlayerPet = useMemo(() => {
+    if (!playerPet || !combatState) return playerPet;
+    return {
+      ...playerPet,
+      stats: {
+        ...playerPet.stats,
+        armor: combatState.player.heroArmor || 0
+      }
+    };
+  }, [playerPet, combatState?.player?.heroArmor]);
+
+  const enrichedOpponentPet = useMemo(() => {
+    if (!opponentPet || !combatState) return opponentPet;
+    return {
+      ...opponentPet,
+      stats: {
+        ...opponentPet.stats,
+        armor: combatState.opponent.heroArmor || 0
+      }
+    };
+  }, [opponentPet, combatState?.opponent?.heroArmor]);
+
   const attackingCard = useMemo(() => {
     return rawAttackingCard ? adaptCardInstance(rawAttackingCard as any) : null;
   }, [rawAttackingCard]);
@@ -499,7 +521,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         {opponentPet && (
           <div className="opponent-hero-container">
             <BattlefieldHero
-              pet={opponentPet}
+              pet={enrichedOpponentPet}
               hpCommitted={opponentHpCommitted}
               level={opponentLevel}
               onClick={onOpponentHeroClick}
@@ -661,7 +683,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
             <div className={`unified-hero-section ${shakingTargets.has('player-hero') ? 'damage-shake damage-flash' : ''} ${isPlayerTurn ? 'turn-active' : ''}`}>
               <div className="poker-hero-container">
                 <BattlefieldHero
-                  pet={playerPet}
+                  pet={enrichedPlayerPet}
                   hpCommitted={playerHpCommitted}
                   level={playerLevel}
                   onClick={onPlayerHeroClick}
