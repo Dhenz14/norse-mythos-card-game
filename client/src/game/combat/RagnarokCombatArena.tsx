@@ -40,6 +40,7 @@ import { useElementalBuff } from './hooks/useElementalBuff';
 import { canCardAttack as canCardAttackCheck } from './attackUtils';
 import { GameViewport } from './GameViewport';
 import { useCombatLayout } from '../hooks/useCombatLayout';
+import CardRenderer from '../components/CardRendering/CardRenderer';
 import { useRagnarokCombatController } from './hooks/useRagnarokCombatController';
 import type { ShowdownCelebration as ShowdownCelebrationState } from './hooks/useCombatEvents';
 import { isCardInWinningHand } from './utils/combatArenaUtils';
@@ -602,7 +603,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           {(gameState?.players?.opponent?.hand || []).slice(0, 10).map((card: any, index: number) => (
             card.isRevealed ? (
               <div key={card.instanceId || `opp-revealed-${index}`} className="opponent-revealed-card scale-[0.4] -mx-8">
-                <Card card={card} isInHand={true} />
+                <CardRenderer card={card} isInHand={true} size="small" />
               </div>
             ) : (
               <div key={`opp-card-${index}`} className="opponent-card-back" />

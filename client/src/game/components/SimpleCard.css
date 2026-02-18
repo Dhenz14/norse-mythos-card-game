@@ -1,21 +1,47 @@
 /**
  * SimpleCard.css
  * 
- * Professional card styling with high contrast and clear readability.
- * Matches the BattlefieldCardFrame design for visual consistency.
+ * Premium card styling with deep contrast, beveled stat gems,
+ * metallic edges, and bold rarity glows. Clean and readable.
  */
 
-/* Base card container - Professional dark theme */
+/* Base card container - Deep premium dark theme */
 .simple-card {
   position: relative;
-  background: linear-gradient(180deg, #1E1E2E 0%, #12121A 100%);
+  background: linear-gradient(180deg, #1E1E2E 0%, #151520 40%, #0C0C14 100%);
   border-radius: 10px;
   overflow: hidden;
   cursor: grab;
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease-out;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.4),
+    0 8px 24px rgba(0,0,0,0.6),
+    0 16px 40px rgba(0,0,0,0.3);
   user-select: none;
   flex-shrink: 0;
+}
+
+/* Subtle top-edge metallic highlight */
+.simple-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.25) 70%, transparent 100%);
+  pointer-events: none;
+  z-index: 12;
+}
+
+/* Inner frame border texture */
+.simple-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 10;
 }
 
 /* Active/dragging state */
@@ -44,77 +70,86 @@
   height: 400px;
 }
 
-/* Hover effects - subtle lift */
+/* Hover effects - lift + scale + glow burst */
 .simple-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.4),
+    0 16px 36px rgba(0,0,0,0.65),
+    0 24px 56px rgba(0,0,0,0.35),
+    0 0 30px rgba(120,120,180,0.12);
 }
 
 .simple-card.not-playable {
-  filter: brightness(0.6) saturate(0.5);
+  filter: brightness(0.55) saturate(0.4);
   cursor: not-allowed;
 }
 
 .simple-card.not-playable:hover {
   transform: none;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.4),
+    0 8px 24px rgba(0,0,0,0.6);
 }
 
-/* Rarity borders - professional solid borders with inner accent */
-.simple-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.simple-card::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border-radius: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  pointer-events: none;
-  z-index: 11;
-}
+/* ==========================================================================
+   RARITY BORDERS - Bold glows with metallic sheen
+   ========================================================================== */
 
 .simple-card.rarity-common::before {
   border: 3px solid #4A5568;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.4);
 }
 
 .simple-card.rarity-rare::before {
-  border: 3px solid #4299E1;
-  box-shadow: 0 0 12px rgba(66, 153, 225, 0.4);
+  border: 3px solid #3B82F6;
+  box-shadow:
+    0 0 16px rgba(59,130,246,0.55),
+    0 0 32px rgba(59,130,246,0.25),
+    inset 0 0 12px rgba(59,130,246,0.1);
 }
 
 .simple-card.rarity-epic::before {
-  border: 3px solid #9F7AEA;
-  box-shadow: 0 0 15px rgba(159, 122, 234, 0.5);
+  border: 3px solid #A855F7;
+  box-shadow:
+    0 0 18px rgba(168,85,247,0.6),
+    0 0 36px rgba(168,85,247,0.3),
+    inset 0 0 12px rgba(168,85,247,0.1);
 }
 
 .simple-card.rarity-legendary::before {
-  border: 3px solid #F6AD55;
-  box-shadow: 0 0 20px rgba(246, 173, 85, 0.6);
+  border: 3px solid #F59E0B;
+  box-shadow:
+    0 0 22px rgba(245,158,11,0.7),
+    0 0 44px rgba(245,158,11,0.3),
+    0 0 8px rgba(255,200,50,0.4),
+    inset 0 0 12px rgba(245,158,11,0.1);
 }
 
-/* Mana cost gem - Blue crystal style */
+/* ==========================================================================
+   MANA GEM - Deep crystal with bevel
+   ========================================================================== */
+
 .card-mana {
   position: absolute;
   top: 4px;
   left: 4px;
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #4299E1 0%, #2B6CB0 100%);
-  border: 2px solid #63B3ED;
+  background: linear-gradient(135deg, #60A5FA 0%, #2563EB 40%, #1D4ED8 70%, #1E3A8A 100%);
+  border: 2px solid #93C5FD;
   border-radius: 4px;
   transform: rotate(45deg);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 25;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+  box-shadow:
+    0 3px 10px rgba(0,0,0,0.7),
+    0 0 12px rgba(37,99,235,0.4),
+    inset 0 2px 3px rgba(255,255,255,0.35),
+    inset 0 -2px 4px rgba(0,0,0,0.5),
+    inset 0 0 8px rgba(96,165,250,0.3);
 }
 
 .simple-card.small .card-mana {
@@ -136,7 +171,7 @@
   color: #ffffff;
   font-size: 16px;
   font-weight: 800;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 6px rgba(96,165,250,0.5);
   transform: rotate(-45deg);
 }
 
@@ -149,7 +184,10 @@
   font-size: 22px;
 }
 
-/* Card art container */
+/* ==========================================================================
+   CARD ART CONTAINER - Dramatic vignette + deep inner shadow
+   ========================================================================== */
+
 .card-art-container {
   position: absolute;
   top: 8%;
@@ -158,9 +196,14 @@
   height: 48%;
   border-radius: 6px;
   overflow: hidden;
-  background: linear-gradient(180deg, #0A0A0F 0%, #1A1A2E 100%);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(180deg, #08080F 0%, #141428 100%);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,0.8),
+    inset 0 4px 12px rgba(0,0,0,0.6),
+    inset 0 -4px 12px rgba(0,0,0,0.4),
+    inset 6px 0 12px rgba(0,0,0,0.3),
+    inset -6px 0 12px rgba(0,0,0,0.3);
 }
 
 .simple-card.preview .card-art-container {
@@ -188,21 +231,27 @@
   font-size: 56px;
 }
 
-/* Card name banner - High contrast readable text */
+/* ==========================================================================
+   NAME BANNER - Richer gradient with gold trim feel
+   ========================================================================== */
+
 .card-name-banner {
   position: absolute;
   top: 57%;
   left: 4%;
   right: 4%;
   height: 14%;
-  background: linear-gradient(180deg, #2D3748 0%, #1A202C 100%);
+  background: linear-gradient(180deg, #3D4763 0%, #252D42 50%, #1A1F30 100%);
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255,215,100,0.18);
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
   z-index: 15;
 }
 
@@ -211,18 +260,18 @@
   height: 9%;
 }
 
-/* Card name text - High contrast */
+/* Card name text - High contrast, slightly larger */
 .card-name {
   color: #FFFFFF;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   word-wrap: break-word;
   overflow-wrap: break-word;
   line-height: 1.2;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 1), 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.7);
 }
 
 .simple-card.small .card-name {
@@ -230,25 +279,29 @@
 }
 
 .simple-card.large .card-name {
-  font-size: 14px;
+  font-size: 15px;
+  letter-spacing: 0.8px;
 }
 
 .simple-card.preview .card-name {
-  font-size: 18px;
-  letter-spacing: 0.7px;
+  font-size: 19px;
+  letter-spacing: 1px;
 }
 
 /* Rarity-based name colors */
 .simple-card.rarity-legendary .card-name {
-  color: #FBD38D;
+  color: #FCD34D;
+  text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(252,211,77,0.3);
 }
 
 .simple-card.rarity-epic .card-name {
-  color: #B794F4;
+  color: #C084FC;
+  text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(192,132,252,0.3);
 }
 
 .simple-card.rarity-rare .card-name {
-  color: #90CDF4;
+  color: #93C5FD;
+  text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(147,197,253,0.3);
 }
 
 /* Card tribe */
@@ -257,14 +310,14 @@
   bottom: 26%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   padding: 2px 8px;
   border-radius: 8px;
   font-size: 7px;
-  color: #FBD38D;
+  color: #FCD34D;
   text-transform: uppercase;
   font-weight: 600;
-  border: 1px solid rgba(251, 211, 141, 0.3);
+  border: 1px solid rgba(252,211,77,0.3);
 }
 
 .simple-card.preview .card-tribe {
@@ -278,16 +331,16 @@
   top: 72%;
   left: 5%;
   right: 5%;
-  bottom: 12%; /* Use bottom instead of fixed height for flexibility */
+  bottom: 12%;
   min-height: 18%;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   text-align: center;
   padding: 4px 6px;
-  background: linear-gradient(180deg, rgba(30, 30, 46, 0.98) 0%, rgba(18, 18, 26, 1) 100%);
+  background: linear-gradient(180deg, rgba(28,28,44,0.98) 0%, rgba(14,14,22,1) 100%);
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 15;
   overflow-y: auto;
   scrollbar-width: none;
@@ -325,7 +378,7 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 1), 0 2px 4px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.8);
 }
 
 .simple-card.small .card-description span {
@@ -341,7 +394,7 @@
   line-height: 1.4;
 }
 
-/* Keyword icons container - Hearthstone-style icon display */
+/* Keyword icons container */
 .keyword-icons-container {
   display: flex;
   justify-content: center;
@@ -352,7 +405,6 @@
   width: 100%;
 }
 
-/* Individual keyword icon badge */
 .keyword-icon-badge {
   width: 26px;
   height: 26px;
@@ -398,21 +450,29 @@
   text-align: center;
 }
 
-/* Attack stat - Gold badge */
+/* ==========================================================================
+   ATTACK STAT - Bold gold with bevel
+   ========================================================================== */
+
 .card-attack {
   position: absolute;
   bottom: 2px;
   left: 2px;
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #F6AD55 0%, #C05621 100%);
-  border: 2px solid #FBD38D;
+  background: linear-gradient(135deg, #FBBF24 0%, #D97706 40%, #B45309 70%, #92400E 100%);
+  border: 2px solid #FDE68A;
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 25;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+  box-shadow:
+    0 3px 10px rgba(0,0,0,0.7),
+    0 0 10px rgba(217,119,6,0.35),
+    inset 0 2px 3px rgba(255,255,255,0.45),
+    inset 0 -2px 4px rgba(0,0,0,0.5),
+    inset 0 0 6px rgba(251,191,36,0.3);
 }
 
 .simple-card.small .card-attack {
@@ -430,21 +490,29 @@
   left: 4px;
 }
 
-/* Health stat - Red badge */
+/* ==========================================================================
+   HEALTH STAT - Vivid deep red with bevel
+   ========================================================================== */
+
 .card-health {
   position: absolute;
   bottom: 2px;
   right: 2px;
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #FC8181 0%, #C53030 100%);
-  border: 2px solid #FEB2B2;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 40%, #B91C1C 70%, #7F1D1D 100%);
+  border: 2px solid #FCA5A5;
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 25;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+  box-shadow:
+    0 3px 10px rgba(0,0,0,0.7),
+    0 0 10px rgba(220,38,38,0.35),
+    inset 0 2px 3px rgba(255,255,255,0.4),
+    inset 0 -2px 4px rgba(0,0,0,0.5),
+    inset 0 0 6px rgba(239,68,68,0.3);
 }
 
 .simple-card.small .card-health {
@@ -466,7 +534,7 @@
   color: #ffffff;
   font-size: 16px;
   font-weight: 800;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9);
 }
 
 .simple-card.small .stat-value {
@@ -479,81 +547,44 @@
 }
 
 /* ==========================================================================
-   FOIL OVERLAYS - Rarity-based foil effects
+   FOIL OVERLAYS - Dormant (no holographic effects)
    ========================================================================== */
 
-/* Base foil overlay */
 .foil-overlay {
   position: absolute;
   inset: 0;
   border-radius: 10px;
   pointer-events: none;
   z-index: 5;
-  mix-blend-mode: color-dodge;
   opacity: 0;
-  transition: opacity 0.3s ease;
 }
 
-/* Show foil on hover for enhanced effect */
-.simple-card:hover .foil-overlay {
-  opacity: 1;
-}
-
-/* Legendary - Gold foil */
-.foil-overlay.legendary-foil {
-  background-image: url('/textures/foil.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.5;
-  filter: brightness(1.3) contrast(1.1) saturate(1.2);
-}
-
-.simple-card:hover .foil-overlay.legendary-foil {
-  opacity: 0.7;
-}
-
-/* Epic - Purple holographic */
-.foil-overlay.epic-foil {
-  background-image: url('/textures/epic_holographic.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.4;
-  filter: brightness(1.2) contrast(1.1);
-}
-
-.simple-card:hover .foil-overlay.epic-foil {
-  opacity: 0.6;
-}
-
-/* Rare - Blue shimmer (using gold foil with blue hue) */
+.foil-overlay.legendary-foil,
+.foil-overlay.epic-foil,
 .foil-overlay.rare-foil {
-  background-image: url('/textures/foil.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.3;
-  filter: brightness(1.1) contrast(1.05) hue-rotate(200deg);
+  opacity: 0;
 }
 
-.simple-card:hover .foil-overlay.rare-foil {
-  opacity: 0.5;
+.simple-card:hover .foil-overlay {
+  opacity: 0;
 }
 
 /* Highlighted state */
 .simple-card.highlighted {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-8px) scale(1.04);
 }
 
 .simple-card.highlighted::before {
   border-color: rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.35) !important;
 }
 
 /* ==========================================================================
-   SPELL CARD STYLING - Arcane theme with professional colors
+   SPELL CARD STYLING - Arcane theme
    ========================================================================== */
 
 .simple-card.card-type-spell {
-  background: linear-gradient(180deg, #1A1A2E 0%, #16132B 50%, #0F0D1A 100%);
+  background: linear-gradient(180deg, #1A1A30 0%, #14112B 40%, #0C0A1A 100%);
 }
 
 .simple-card.card-type-spell .card-art-container {
@@ -561,21 +592,22 @@
 }
 
 .simple-card.card-type-spell .card-name-banner {
-  background: linear-gradient(180deg, #3D3666 0%, #2D2650 100%);
+  background: linear-gradient(180deg, #3D3666 0%, #2D2650 50%, #221E40 100%);
 }
 
-/* Epic spell enhancement */
 .simple-card.card-type-spell.rarity-epic {
-  background: linear-gradient(180deg, #1F1A35 0%, #15112A 50%, #0D0B1A 100%);
+  background: linear-gradient(180deg, #1F1A38 0%, #15112A 40%, #0D0B1A 100%);
 }
 
 .simple-card.card-type-spell.rarity-epic::before {
-  box-shadow: 0 0 18px rgba(159, 122, 234, 0.6);
+  box-shadow:
+    0 0 20px rgba(168,85,247,0.6),
+    0 0 40px rgba(168,85,247,0.3),
+    inset 0 0 12px rgba(168,85,247,0.1);
 }
 
-/* Legendary spell enhancement */
 .simple-card.card-type-spell.rarity-legendary {
-  background: linear-gradient(180deg, #2A1F10 0%, #1F170A 50%, #140F05 100%);
+  background: linear-gradient(180deg, #2A1F10 0%, #1F170A 40%, #140F05 100%);
 }
 
 /* ==========================================================================
@@ -583,7 +615,7 @@
    ========================================================================== */
 
 .simple-card.card-type-weapon {
-  background: linear-gradient(180deg, #2D2D2D 0%, #1A1A1A 50%, #0F0F0F 100%);
+  background: linear-gradient(180deg, #2D2D2D 0%, #1A1A1A 40%, #0F0F0F 100%);
 }
 
 .simple-card.card-type-weapon .card-art-container {
@@ -591,28 +623,28 @@
 }
 
 .simple-card.card-type-weapon .card-name-banner {
-  background: linear-gradient(180deg, #4A4A4A 0%, #333333 100%);
+  background: linear-gradient(180deg, #4A4A4A 0%, #383838 50%, #2A2A2A 100%);
 }
 
 /* ==========================================================================
-   ANIMATIONS
+   ANIMATIONS - Bold rarity glows
    ========================================================================== */
 
 @keyframes card-glow-legendary {
   0%, 100% { 
-    box-shadow: 0 0 15px rgba(246, 173, 85, 0.5);
+    box-shadow: 0 0 18px rgba(245,158,11,0.6), 0 0 36px rgba(245,158,11,0.2);
   }
   50% { 
-    box-shadow: 0 0 25px rgba(246, 173, 85, 0.7);
+    box-shadow: 0 0 28px rgba(245,158,11,0.8), 0 0 50px rgba(245,158,11,0.35);
   }
 }
 
 @keyframes card-glow-epic {
   0%, 100% { 
-    box-shadow: 0 0 12px rgba(159, 122, 234, 0.4);
+    box-shadow: 0 0 14px rgba(168,85,247,0.5), 0 0 28px rgba(168,85,247,0.2);
   }
   50% { 
-    box-shadow: 0 0 20px rgba(159, 122, 234, 0.6);
+    box-shadow: 0 0 24px rgba(168,85,247,0.7), 0 0 42px rgba(168,85,247,0.3);
   }
 }
 
@@ -624,22 +656,33 @@
   animation: card-glow-epic 3s ease-in-out infinite;
 }
 
-/* Playable card glow indicator - pulsing green like Hearthstone */
+/* Playable card glow indicator */
 .simple-card.playable {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(72, 187, 120, 0.6);
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.6),
+    0 0 0 2px rgba(72,187,120,0.6);
   animation: playable-pulse 1.5s ease-in-out infinite;
 }
 
 .simple-card.playable:hover {
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 0 3px rgba(72, 187, 120, 0.9), 0 0 25px rgba(72, 187, 120, 0.5);
+  box-shadow:
+    0 16px 36px rgba(0,0,0,0.65),
+    0 0 0 3px rgba(72,187,120,0.9),
+    0 0 30px rgba(72,187,120,0.5);
   animation: none;
 }
 
 @keyframes playable-pulse {
   0%, 100% {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(72, 187, 120, 0.5), 0 0 8px rgba(72, 187, 120, 0.3);
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.6),
+      0 0 0 2px rgba(72,187,120,0.5),
+      0 0 10px rgba(72,187,120,0.3);
   }
   50% {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(72, 187, 120, 0.9), 0 0 20px rgba(72, 187, 120, 0.6);
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.6),
+      0 0 0 3px rgba(72,187,120,0.9),
+      0 0 24px rgba(72,187,120,0.6);
   }
 }
