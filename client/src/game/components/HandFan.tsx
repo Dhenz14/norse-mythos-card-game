@@ -104,10 +104,10 @@ export const HandFan: React.FC<HandFanProps> = ({
     const springTransition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
     const smoothTransition = 'transform 0.3s cubic-bezier(0.19, 1, 0.22, 1)';
     
-    // Hovered card gets lifted and scaled
+    // Hovered card gets lifted and scaled - z-index must exceed betting zone (200)
     if (isHovered) {
       return {
-        zIndex: 100,
+        zIndex: 9000,
         transform: 'translateY(-55px) scale(1.25) rotate(0deg)',
         transition: springTransition
       };
@@ -140,7 +140,7 @@ export const HandFan: React.FC<HandFanProps> = ({
   };
 
   return (
-    <div className="hand-fan-container">
+    <div className="hand-fan-container" style={hoveredIndex !== null ? { zIndex: 9000, position: 'relative' } : undefined}>
       {adaptedCards.map((card, index) => {
         if (!card || !card.card) return null;
         
