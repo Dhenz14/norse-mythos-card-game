@@ -284,12 +284,11 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
         />
       )}
       
-      <div className="mt-4 text-center text-sm text-gray-500">
-        <p>Click a piece to see valid moves. Attack enemies to trigger poker combat.</p>
-        {boardState.inCheck === boardState.currentTurn && (
-          <p className="text-yellow-400 mt-1 font-semibold">You must escape check! Move King, block, or capture the threat.</p>
-        )}
-      </div>
+      {boardState.inCheck === boardState.currentTurn && (
+        <div className="mt-4 text-center text-sm">
+          <p className="text-yellow-400 font-semibold">You must escape check! Move King, block, or capture the threat.</p>
+        </div>
+      )}
     </motion.div>
   );
 };
