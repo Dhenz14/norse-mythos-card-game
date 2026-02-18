@@ -270,7 +270,7 @@
 
 /* Betting buttons - shift right when poker sidebar is active */
 .has-poker-sidebar .unified-betting-actions-container {
-  left: calc(var(--zone-betting-left, 460px) + 15%);
+  left: calc(var(--zone-betting-left, 220px) + 15%);
 }
 
 /* ========================================
@@ -691,16 +691,16 @@
    BETTING BUTTONS - BELOW HAND CARDS
    ======================================== */
 
-/* BETTING AREA - Stacked poker-site style: pot info on top, buttons below */
+/* BETTING AREA - Next to hero, under hand cards. HP slider on top, buttons below */
 .viewport-mode .unified-betting-actions-container {
   position: absolute;
-  left: var(--zone-betting-left, 460px);
+  left: var(--zone-betting-left, 220px);
   bottom: var(--zone-betting-bottom, 8px);
   z-index: var(--zone-betting-z, 200);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 4px;
   background: transparent;
   border: none;
   padding: 0;

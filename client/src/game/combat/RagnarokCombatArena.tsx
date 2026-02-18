@@ -617,7 +617,15 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       </div>
       
-      
+      {/* Unified Pot Display - consolidates FOE HP, POT total, and YOU HP into single component */}
+      <PotDisplay
+        playerHpCommitted={combatState.player.hpCommitted}
+        opponentHpCommitted={combatState.opponent.hpCommitted}
+        playerPosition={combatState.playerPosition}
+        opponentPosition={combatState.opponentPosition}
+        pot={combatState.pot}
+        hidden={isMulligan}
+      />
       
       {/* Opponent Field */}
       <div className="unified-opponent-field">
@@ -731,14 +739,20 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Always render during active betting phases (not mulligan/resolution) */}
       {!isMulligan && combatState.phase !== CombatPhase.RESOLUTION && !combatState.isAllInShowdown && (
         <div className="unified-betting-actions-container">
-          <PotDisplay
-            playerHpCommitted={combatState.player.hpCommitted}
-            opponentHpCommitted={combatState.opponent.hpCommitted}
-            playerPosition={combatState.playerPosition}
-            opponentPosition={combatState.opponentPosition}
-            pot={combatState.pot}
-            hidden={false}
-          />
+          {/* HP Slider for Raise - On top, above buttons */}
+          <div className="poker-hp-slider-container">
+
+            <input 
+              type="range"
+              min={basePermissions?.minBet || 1}
+              max={basePermissions?.maxBetAmount || 100}
+              value={betAmount}
+              onChange={(e) => setBetAmount(Number(e.target.value))}
+              className="poker-hp-slider"
+              disabled={!basePermissions?.isMyTurnToAct}
+            />
+            <span className="slider-value">{betAmount} HP</span>
+          </div>
           <div className="unified-betting-actions poker-actions">
             {(() => {
                const permissions = getActionPermissions(combatState, true)!;
@@ -767,7 +781,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                
                return (
                  <div className="action-buttons-group">
-                   {/* BET/RAISE button - always show, disable when not turn */}
                    <button 
                      className="poker-btn raise-btn"
                      onClick={() => wrappedOnAction(
@@ -779,7 +792,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      <span className="btn-text">{betOrRaiseLabel}</span>
                    </button>
                    
-                   {/* CALL/CHECK button */}
                    <button 
                      className="poker-btn call-btn"
                      onClick={() => wrappedOnAction(canCall ? CombatAction.ENGAGE : CombatAction.DEFEND)}
@@ -788,7 +800,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      <span className="btn-text">{canCall ? callLabel : 'CHECK'}</span>
                    </button>
                    
-                   {/* FOLD button */}
                    <button 
                      className="poker-btn fold-btn"
                      onClick={() => wrappedOnAction(CombatAction.BRACE)}
@@ -799,20 +810,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                  </div>
                );
             })()}
-          </div>
-          
-          {/* HP Slider for Raise - Positioned below buttons */}
-          <div className="poker-hp-slider-container">
-            <input 
-              type="range"
-              min={basePermissions?.minBet || 1}
-              max={basePermissions?.maxBetAmount || 100}
-              value={betAmount}
-              onChange={(e) => setBetAmount(Number(e.target.value))}
-              className="poker-hp-slider"
-              disabled={!basePermissions?.isMyTurnToAct}
-            />
-            <span className="slider-value">{betAmount} HP</span>
           </div>
         </div>
       )}
