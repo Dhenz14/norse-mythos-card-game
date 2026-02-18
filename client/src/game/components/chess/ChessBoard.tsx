@@ -531,24 +531,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         boardOffset={{ x: boardRect.x, y: boardRect.y }}
       />
       
-      <div className="chess-legend-bar">
-        <div className="chess-legend-item">
-          <div className="chess-legend-dot chess-legend-dot-move" />
-          <span>Move</span>
-        </div>
-        <div className="chess-legend-item">
-          <div className="chess-legend-dot chess-legend-dot-attack" />
-          <span>Attack</span>
-        </div>
-        <div className="chess-legend-item">
-          <div className="chess-legend-dot chess-legend-dot-strong" />
-          <span>Strong vs</span>
-        </div>
-        <div className="chess-legend-item">
-          <div className="chess-legend-dot chess-legend-dot-weak" />
-          <span>Weak vs</span>
-        </div>
-      </div>
       
       <div className="chess-piece-count">
         <div className="chess-piece-count-shield chess-piece-count-player">
