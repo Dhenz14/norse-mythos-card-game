@@ -530,20 +530,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         cellSize={boardRect.width / BOARD_COLS}
         boardOffset={{ x: boardRect.x, y: boardRect.y }}
       />
-      
-      
-      <div className="chess-piece-count">
-        <div className="chess-piece-count-shield chess-piece-count-player">
-          <span className="text-lg">👤</span>
-          <span className="font-bold text-lg">{playerPieceCount}</span>
-          <span className="text-xs opacity-70">pieces</span>
-        </div>
-        <div className="chess-piece-count-shield chess-piece-count-opponent">
-          <span className="text-xs opacity-70">pieces</span>
-          <span className="font-bold text-lg">{opponentPieceCount}</span>
-          <span className="text-lg">🤖</span>
-        </div>
-      </div>
     </div>
   );
 };

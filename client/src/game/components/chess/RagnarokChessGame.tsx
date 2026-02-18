@@ -24,9 +24,10 @@ type GamePhase = 'army_selection' | 'chess' | 'vs_screen' | 'poker_combat' | 'ga
 interface HeroPortraitPanelProps {
   army: ArmySelectionType;
   side: 'player' | 'opponent';
+  pieceCount?: number;
 }
 
-const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side }) => {
+const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, pieceCount }) => {
   const king = army.king;
   const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || `/portraits/kings/${king.id?.replace('king-', '')}.png`;
   const fallbackPortrait = `/portraits/heroes/${king.heroClass}.png`;
@@ -59,6 +60,13 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side }) => 
           {isPlayer ? 'Champion' : 'Adversary'}
         </div>
       </div>
+      
+      {pieceCount !== undefined && (
+        <div className={`chess-piece-count-shield mt-2 ${isPlayer ? 'chess-piece-count-player' : 'chess-piece-count-opponent'}`}>
+          <span className="font-bold text-sm">{pieceCount}</span>
+          <span className="text-[10px] opacity-60 ml-1">pieces</span>
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -222,6 +230,8 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
   handleBattleMode
 }) => {
   const { isPlacementMode } = useKingChessAbility('player');
+  const playerPieceCount = boardState.pieces.filter((p: any) => p.owner === 'player').length;
+  const opponentPieceCount = boardState.pieces.filter((p: any) => p.owner === 'opponent').length;
   
   return (
     <motion.div
@@ -251,7 +261,7 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
       
       <div className="flex items-center justify-center">
         {playerArmy && (
-          <HeroPortraitPanel army={playerArmy} side="player" />
+          <HeroPortraitPanel army={playerArmy} side="player" pieceCount={playerPieceCount} />
         )}
         
         <div className="relative">
@@ -262,7 +272,7 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
           
         </div>
         
-        <HeroPortraitPanel army={opponentArmy} side="opponent" />
+        <HeroPortraitPanel army={opponentArmy} side="opponent" pieceCount={opponentPieceCount} />
         
         <button
           onClick={(e) => {
