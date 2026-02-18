@@ -17,6 +17,7 @@ import { getKingAbilityConfig, getAbilityDescription, requiresDirectionSelection
 import { Tooltip } from '../ui/Tooltip';
 import { debug } from '../../config/debugConfig';
 import { resolveHeroPortrait } from '../../utils/art/artMapping';
+import './HeroPortraitEnhanced.css';
 
 type GamePhase = 'army_selection' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
 
@@ -29,7 +30,6 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side }) => 
   const king = army.king;
   const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || `/portraits/kings/${king.id?.replace('king-', '')}.png`;
   const fallbackPortrait = `/portraits/heroes/${king.heroClass}.png`;
-  
   const isPlayer = side === 'player';
   
   return (
@@ -37,48 +37,25 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side }) => 
       initial={{ opacity: 0, x: isPlayer ? -50 : 50 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className={`flex flex-col items-center ${isPlayer ? 'mr-4' : 'ml-4'}`}
+      className={`flex flex-col items-center ${isPlayer ? 'mr-6' : 'ml-6'}`}
     >
-      <div className="relative">
-        <div 
-          className="w-24 h-28 rounded-lg overflow-hidden border-2 shadow-lg"
-          style={{ 
-            borderColor: isPlayer ? '#3b82f6' : '#ef4444',
-            boxShadow: `0 0 20px ${isPlayer ? 'rgba(59, 130, 246, 0.5)' : 'rgba(239, 68, 68, 0.5)'}` 
+      <div className={`hero-portrait-frame ${isPlayer ? 'hero-portrait-player' : 'hero-portrait-opponent'}`}>
+        <img 
+          src={kingPortrait}
+          alt={king.name}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            if (target.src !== fallbackPortrait) {
+              target.src = fallbackPortrait;
+            }
           }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 z-10" />
-          <img 
-            src={kingPortrait}
-            alt={king.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              if (target.src !== fallbackPortrait) {
-                target.src = fallbackPortrait;
-              }
-            }}
-          />
-          <div 
-            className="absolute -top-1 -left-1 -right-1 h-2 rounded-t"
-            style={{ 
-              background: `linear-gradient(90deg, ${isPlayer ? '#3b82f6' : '#ef4444'}, #fbbf24, ${isPlayer ? '#3b82f6' : '#ef4444'})` 
-            }}
-          />
-        </div>
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg">
-          <span className="text-xs">👑</span>
-        </div>
+        />
       </div>
       
-      <div className="mt-3 text-center max-w-24">
-        <div 
-          className="text-sm font-bold truncate"
-          style={{ color: isPlayer ? '#60a5fa' : '#f87171' }}
-        >
-          {king.name}
-        </div>
-        <div className="text-xs text-gray-400 truncate">
+      <div className="hero-nameplate">
+        <div className="hero-nameplate-text">{king.name}</div>
+        <div className="hero-nameplate-subtitle">
           {isPlayer ? 'Champion' : 'Adversary'}
         </div>
       </div>
@@ -170,19 +147,7 @@ const DivineCommandButton: React.FC<DivineCommandButtonProps> = ({ playerArmy, i
         <button
           onClick={handleClick}
           disabled={isDisabled}
-          className={`
-            relative px-6 py-3 rounded-lg font-bold text-lg transition-all
-            ${isPlacementMode 
-              ? 'bg-gradient-to-r from-red-700 to-red-600 text-white shadow-lg shadow-red-500/30' 
-              : isDisabled 
-                ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-yellow-700 via-yellow-600 to-yellow-700 text-yellow-100 hover:from-yellow-600 hover:via-yellow-500 hover:to-yellow-600 shadow-lg shadow-yellow-500/30 hover:scale-105'
-            }
-            border-2 ${isPlacementMode ? 'border-red-400' : isDisabled ? 'border-gray-600' : 'border-yellow-400'}
-          `}
-          style={{
-            textShadow: isDisabled ? 'none' : '0 2px 4px rgba(0,0,0,0.5)'
-          }}
+          className={`divine-command-btn ${isPlacementMode ? 'divine-command-active' : isDisabled ? 'divine-command-disabled' : ''}`}
         >
           <div className="flex items-center gap-2">
             <span className="text-xl">{isPlacementMode ? '✕' : '⚡'}</span>
@@ -190,11 +155,7 @@ const DivineCommandButton: React.FC<DivineCommandButtonProps> = ({ playerArmy, i
           </div>
           
           <div 
-            className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 border-2 flex items-center justify-center text-sm font-bold"
-            style={{ 
-              borderColor: minesRemaining > 0 ? '#fbbf24' : '#6b7280',
-              color: minesRemaining > 0 ? '#fbbf24' : '#6b7280'
-            }}
+            className={`divine-command-badge ${minesRemaining === 0 ? 'divine-command-badge-empty' : ''}`}
           >
             {minesRemaining}/5
           </div>
@@ -271,8 +232,8 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
       className="w-full h-full flex flex-col items-center justify-center p-4"
     >
       <div className="mb-4 text-center">
-        <h1 className="text-3xl font-bold text-yellow-400">Ragnarok Chess</h1>
-        <p className="text-gray-400">Checkmate the enemy King to win!</p>
+        <h1 className="text-4xl font-bold" style={{ background: 'linear-gradient(180deg, #ffd700, #ff8c00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: 'none', filter: 'drop-shadow(0 2px 4px rgba(255, 165, 0, 0.5))' }}>Ragnarok Chess</h1>
+        <p className="text-gray-400 text-sm tracking-widest uppercase">Checkmate the enemy King to win!</p>
       </div>
       
       <AnimatePresence>
@@ -281,11 +242,7 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
             initial={{ opacity: 0, scale: 0.8, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: -20 }}
-            className={`mb-3 px-6 py-2 rounded-lg font-bold text-xl ${
-              boardState.inCheck === 'player' 
-                ? 'bg-red-600 text-white animate-pulse' 
-                : 'bg-yellow-500 text-black'
-            }`}
+            className="check-warning-banner mb-3"
           >
             CHECK! {boardState.inCheck === 'player' ? 'Your King is in danger!' : "Enemy King is threatened!"}
           </motion.div>
@@ -309,7 +266,7 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
               e.stopPropagation();
               handleBattleMode();
             }}
-            className="absolute -right-32 top-3/4 -translate-y-1/2 px-4 py-3 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-lg shadow-xl transition-all hover:scale-110 z-50 border-2 border-purple-400"
+            className="battle-mode-btn absolute -right-32 top-3/4 -translate-y-1/2 z-50"
             title="Quick test PvP combat"
           >
             ⚔️ Battle<br/>Mode

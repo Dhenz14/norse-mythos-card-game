@@ -9,6 +9,7 @@ import { useAudio } from '../../../lib/stores/useAudio';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
 import { debug } from '../../config/debugConfig';
 import { computeMatchupGlows } from '../../utils/chess/elementMatchupUtils';
+import './ChessBoardEnhanced.css';
 import {
   getActiveMineStyle,
   getActiveMineGlowAnimation,
@@ -254,7 +255,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         key={`${row}-${col}`}
         className={`
           chess-cell relative aspect-square overflow-visible
-          ${isLight ? 'bg-amber-100' : 'bg-amber-700'}
+          ${isLight ? 'chess-cell-light' : 'chess-cell-dark'}
           ${gameStatus === 'playing' ? '' : 'opacity-75'}
           ${isPlacementMode ? 'cursor-crosshair' : ''}
         `}
@@ -467,18 +468,18 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
 
   return (
     <div className="chess-board-container flex flex-col items-center">
-      <div className="mb-2 text-center">
-        <span className={`text-lg font-bold ${currentTurn === 'player' ? 'text-blue-400' : 'text-red-400'}`}>
+      <div className={`chess-turn-banner chess-banner-enter ${currentTurn === 'player' ? 'chess-turn-player' : 'chess-turn-opponent'}`}>
+        <span className="chess-turn-text">
           {currentTurn === 'player' ? 'Your Turn' : "Opponent's Turn"}
         </span>
         {gameStatus === 'combat' && (
           <span className="ml-2 text-yellow-400 animate-pulse">⚔ Combat!</span>
         )}
         {gameStatus === 'player_wins' && (
-          <span className="ml-2 text-green-400">Victory!</span>
+          <span className="ml-2 text-green-400 font-bold">Victory!</span>
         )}
         {gameStatus === 'opponent_wins' && (
-          <span className="ml-2 text-red-400">Defeat</span>
+          <span className="ml-2 text-red-400 font-bold">Defeat</span>
         )}
       </div>
       
@@ -493,24 +494,28 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         </motion.div>
       )}
       
-      <motion.div 
-        ref={boardRef}
-        className="chess-board rounded-lg overflow-hidden shadow-2xl border-4 border-amber-900"
-        animate={screenShake ? { 
-          x: [0, -5, 5, -5, 5, 0],
-          y: [0, 2, -2, 2, -2, 0]
-        } : {}}
-        transition={{ duration: 0.4, ease: 'easeInOut' }}
-        style={{
-          display: 'grid',
-          gridTemplateRows: `repeat(${BOARD_ROWS}, 1fr)`,
-          gridTemplateColumns: `repeat(${BOARD_COLS}, 1fr)`,
-          width: 'min(500px, 85vw)',
-          aspectRatio: `${BOARD_COLS}/${BOARD_ROWS}`
-        }}
-      >
-        {cells}
-      </motion.div>
+      <div className="relative">
+        <motion.div 
+          ref={boardRef}
+          className="chess-board rounded-lg overflow-hidden"
+          animate={screenShake ? { 
+            x: [0, -5, 5, -5, 5, 0],
+            y: [0, 2, -2, 2, -2, 0]
+          } : {}}
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
+          style={{
+            display: 'grid',
+            gridTemplateRows: `repeat(${BOARD_ROWS}, 1fr)`,
+            gridTemplateColumns: `repeat(${BOARD_COLS}, 1fr)`,
+            width: 'min(500px, 85vw)',
+            aspectRatio: `${BOARD_COLS}/${BOARD_ROWS}`
+          }}
+        >
+          {cells}
+        </motion.div>
+        <div className="chess-board-vignette" />
+        <div className="chess-board-particles" />
+      </div>
       
       {/* Attack Animation Overlay */}
       <ChessAttackAnimation
@@ -526,34 +531,34 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         boardOffset={{ x: boardRect.x, y: boardRect.y }}
       />
       
-      <div className="mt-3 flex flex-wrap gap-4 text-sm justify-center">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-500/60 rounded border-2 border-green-400" />
-          <span className="text-gray-300">Move</span>
+      <div className="chess-legend-bar">
+        <div className="chess-legend-item">
+          <div className="chess-legend-dot chess-legend-dot-move" />
+          <span>Move</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-red-500/60 rounded border-2 border-red-400" />
-          <span className="text-gray-300">Attack</span>
+        <div className="chess-legend-item">
+          <div className="chess-legend-dot chess-legend-dot-attack" />
+          <span>Attack</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border-2 border-green-400" style={{ boxShadow: '0 0 8px rgba(34, 197, 94, 0.8)' }} />
-          <span className="text-gray-300">Strong vs</span>
+        <div className="chess-legend-item">
+          <div className="chess-legend-dot chess-legend-dot-strong" />
+          <span>Strong vs</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border-2 border-red-400" style={{ boxShadow: '0 0 8px rgba(239, 68, 68, 0.8)' }} />
-          <span className="text-gray-300">Weak vs</span>
+        <div className="chess-legend-item">
+          <div className="chess-legend-dot chess-legend-dot-weak" />
+          <span>Weak vs</span>
         </div>
       </div>
       
-      <div className="mt-3 flex justify-between w-full max-w-md px-4">
-        <div className="flex items-center gap-2 text-blue-400">
+      <div className="chess-piece-count">
+        <div className="chess-piece-count-shield chess-piece-count-player">
           <span className="text-lg">👤</span>
-          <span className="font-bold">{playerPieceCount}</span>
-          <span className="text-xs text-gray-400">pieces</span>
+          <span className="font-bold text-lg">{playerPieceCount}</span>
+          <span className="text-xs opacity-70">pieces</span>
         </div>
-        <div className="flex items-center gap-2 text-red-400">
-          <span className="text-xs text-gray-400">pieces</span>
-          <span className="font-bold">{opponentPieceCount}</span>
+        <div className="chess-piece-count-shield chess-piece-count-opponent">
+          <span className="text-xs opacity-70">pieces</span>
+          <span className="font-bold text-lg">{opponentPieceCount}</span>
           <span className="text-lg">🤖</span>
         </div>
       </div>

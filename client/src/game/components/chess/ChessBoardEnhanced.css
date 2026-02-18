@@ -1,0 +1,482 @@
+/* ============================================
+   CHESS BOARD ENHANCED - Norse Iron & Gold Theme
+   ============================================ */
+
+/* 1. BOARD FRAME - Ornate Norse iron/gold border */
+.chess-board {
+  position: relative;
+  border: 4px solid #8b6914 !important;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 12px rgba(0, 0, 0, 0.6),
+    inset 0 0 3px rgba(251, 191, 36, 0.3),
+    0 0 0 2px #3d2a0a,
+    0 0 0 5px #6b4c1a,
+    0 0 0 7px #3d2a0a,
+    0 4px 20px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(139, 105, 20, 0.25),
+    0 0 60px rgba(139, 105, 20, 0.1);
+}
+
+.chess-board::before {
+  content: '';
+  position: absolute;
+  inset: -9px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 8px,
+      rgba(251, 191, 36, 0.15) 8px,
+      rgba(251, 191, 36, 0.15) 10px,
+      transparent 10px,
+      transparent 14px,
+      rgba(184, 134, 11, 0.1) 14px,
+      rgba(184, 134, 11, 0.1) 15px
+    ) border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* 2. CELL TEXTURES - Stone/parchment feel */
+.chess-cell {
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.35);
+}
+
+.chess-cell-light {
+  background: linear-gradient(
+    135deg,
+    #c8a96e 0%,
+    #d4b87a 25%,
+    #c8a96e 50%,
+    #b8975a 75%,
+    #c8a96e 100%
+  ) !important;
+  box-shadow:
+    inset 1px 1px 2px rgba(255, 255, 255, 0.15),
+    inset -1px -1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.3);
+}
+
+.chess-cell-dark {
+  background: linear-gradient(
+    135deg,
+    #6b3a2a 0%,
+    #7a4433 25%,
+    #6b3a2a 50%,
+    #5a2d1f 75%,
+    #6b3a2a 100%
+  ) !important;
+  box-shadow:
+    inset 1px 1px 3px rgba(0, 0, 0, 0.3),
+    inset -1px -1px 2px rgba(255, 255, 255, 0.05),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.4);
+}
+
+/* 3. AMBIENT BOARD PARTICLES */
+.chess-board-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.chess-board-particles::before,
+.chess-board-particles::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.9) 0%, rgba(251, 191, 36, 0.3) 50%, transparent 100%);
+  opacity: 0;
+  animation: chess-particle-drift-1 8s ease-in-out infinite;
+}
+
+.chess-board-particles::before {
+  left: 25%;
+  bottom: 0;
+  animation-delay: 0s;
+}
+
+.chess-board-particles::after {
+  left: 65%;
+  bottom: 0;
+  width: 2px;
+  height: 2px;
+  background: radial-gradient(circle, rgba(218, 165, 32, 0.8) 0%, rgba(218, 165, 32, 0.2) 50%, transparent 100%);
+  animation: chess-particle-drift-2 11s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+@keyframes chess-particle-drift-1 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-50%) translateX(15px);
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(-100%) translateX(-10px);
+    opacity: 0;
+  }
+}
+
+@keyframes chess-particle-drift-2 {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-45%) translateX(-20px);
+    opacity: 0.4;
+  }
+  85% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateY(-95%) translateX(12px);
+    opacity: 0;
+  }
+}
+
+/* 4. BOARD VIGNETTE */
+.chess-board-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.15) 70%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+
+/* 5. TURN INDICATOR BANNER */
+.chess-turn-banner {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    #b8860b 0%,
+    #daa520 25%,
+    #ffd700 50%,
+    #daa520 75%,
+    #b8860b 100%
+  );
+  border: 2px solid #8b6914;
+  border-radius: 6px;
+  padding: 6px 20px;
+  text-align: center;
+  box-shadow:
+    0 0 15px rgba(218, 165, 32, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  animation: chess-banner-enter 0.4s ease-out;
+  overflow: hidden;
+}
+
+.chess-turn-banner::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 4px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 6px,
+      rgba(139, 105, 20, 0.15) 6px,
+      rgba(139, 105, 20, 0.15) 7px
+    );
+}
+
+.chess-turn-banner span,
+.chess-turn-banner .chess-turn-text {
+  position: relative;
+  z-index: 1;
+  color: #1a1a2e;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4),
+    0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes chess-banner-enter {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.chess-turn-player {
+  border-color: #2563eb;
+  box-shadow:
+    0 0 15px rgba(37, 99, 235, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 6px rgba(37, 99, 235, 0.2);
+}
+
+.chess-turn-player::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+  border-radius: 1px;
+}
+
+.chess-turn-opponent {
+  border-color: #dc2626;
+  box-shadow:
+    0 0 15px rgba(220, 38, 38, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 6px rgba(220, 38, 38, 0.2);
+}
+
+.chess-turn-opponent::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ef4444, transparent);
+  border-radius: 1px;
+}
+
+/* 6. LEGEND BAR */
+.chess-legend-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.7) 100%);
+  border: 1px solid rgba(139, 105, 20, 0.3);
+  border-radius: 8px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.03);
+}
+
+.chess-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+.chess-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.chess-legend-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: chess-legend-pulse 2s ease-in-out infinite;
+}
+
+.chess-legend-dot-move {
+  background: rgba(34, 197, 94, 0.8);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+.chess-legend-dot-move::after {
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.chess-legend-dot-attack {
+  background: rgba(239, 68, 68, 0.8);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+}
+.chess-legend-dot-attack::after {
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.chess-legend-dot-strong {
+  background: rgba(34, 197, 94, 0.8);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+  border: 1.5px solid rgba(34, 197, 94, 0.9);
+}
+.chess-legend-dot-strong::after {
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+}
+
+.chess-legend-dot-weak {
+  background: rgba(239, 68, 68, 0.8);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+  border: 1.5px solid rgba(239, 68, 68, 0.9);
+}
+.chess-legend-dot-weak::after {
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+@keyframes chess-legend-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.3);
+  }
+}
+
+/* 7. PIECE COUNT BAR */
+.chess-piece-count {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 28rem;
+  padding: 6px 16px;
+}
+
+.chess-piece-count-shield {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  border-radius: 6px;
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.8) 0%,
+    rgba(15, 23, 42, 0.9) 100%
+  );
+  border: 1.5px solid rgba(139, 105, 20, 0.4);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+.chess-piece-count-shield::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.3), transparent);
+}
+
+.chess-piece-count-player {
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    0 0 8px rgba(37, 99, 235, 0.15);
+}
+
+.chess-piece-count-opponent {
+  border-color: rgba(220, 38, 38, 0.5);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    0 0 8px rgba(220, 38, 38, 0.15);
+}
+
+.chess-piece-count-number {
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.chess-piece-count-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 8. BOARD GRID LINES - Etched/carved feel */
+.chess-cell {
+  position: relative;
+}
+
+.chess-cell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 1px 0 0 rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(0, 0, 0, 0.25),
+    inset -1px 0 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  z-index: 1;
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .chess-board-particles::before,
+  .chess-board-particles::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .chess-turn-banner {
+    animation: none !important;
+  }
+
+  .chess-legend-dot::after {
+    animation: none !important;
+    opacity: 0.5 !important;
+  }
+
+  @keyframes chess-banner-enter {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
