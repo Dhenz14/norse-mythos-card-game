@@ -617,15 +617,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       </div>
       
-      {/* Unified Pot Display - consolidates FOE HP, POT total, and YOU HP into single component */}
-      <PotDisplay
-        playerHpCommitted={combatState.player.hpCommitted}
-        opponentHpCommitted={combatState.opponent.hpCommitted}
-        playerPosition={combatState.playerPosition}
-        opponentPosition={combatState.opponentPosition}
-        pot={combatState.pot}
-        hidden={isMulligan}
-      />
+      
       
       {/* Opponent Field */}
       <div className="unified-opponent-field">
@@ -739,6 +731,14 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Always render during active betting phases (not mulligan/resolution) */}
       {!isMulligan && combatState.phase !== CombatPhase.RESOLUTION && !combatState.isAllInShowdown && (
         <div className="unified-betting-actions-container">
+          <PotDisplay
+            playerHpCommitted={combatState.player.hpCommitted}
+            opponentHpCommitted={combatState.opponent.hpCommitted}
+            playerPosition={combatState.playerPosition}
+            opponentPosition={combatState.opponentPosition}
+            pot={combatState.pot}
+            hidden={false}
+          />
           <div className="unified-betting-actions poker-actions">
             {(() => {
                const permissions = getActionPermissions(combatState, true)!;

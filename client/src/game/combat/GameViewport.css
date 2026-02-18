@@ -691,17 +691,16 @@
    BETTING BUTTONS - BELOW HAND CARDS
    ======================================== */
 
-/* BETTING BUTTONS - Position controlled by zones.css variables */
+/* BETTING AREA - Stacked poker-site style: pot info on top, buttons below */
 .viewport-mode .unified-betting-actions-container {
   position: absolute;
   left: var(--zone-betting-left, 460px);
   bottom: var(--zone-betting-bottom, 8px);
   z-index: var(--zone-betting-z, 200);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  /* NO background or border - removed to avoid blocking mana crystals */
+  gap: 6px;
   background: transparent;
   border: none;
   padding: 0;

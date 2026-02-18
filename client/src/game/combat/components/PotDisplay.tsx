@@ -78,11 +78,9 @@ export function PotDisplay({
 
   return (
     <div className="
-      absolute left-[var(--zone-pot-unified-left,15%)] bottom-[var(--zone-pot-unified-bottom,30%)]
-      z-[var(--z-pot,35)]
       flex items-center gap-3
-      px-4 py-2
-      rounded-xl
+      px-4 py-1.5
+      rounded-lg
       bg-gradient-to-b from-slate-950/95 via-slate-900/95 to-slate-950/95
       border border-amber-500/50
       shadow-xl shadow-black/60
