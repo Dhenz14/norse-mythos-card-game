@@ -562,10 +562,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
           <span className="text-lg">🤖</span>
         </div>
       </div>
-      
-      <div className="mt-2 text-xs text-gray-500 text-center max-w-md">
-        Pawns move forward. Knights jump in L-shapes. Other pieces are blocked until pawns move.
-      </div>
     </div>
   );
 };
