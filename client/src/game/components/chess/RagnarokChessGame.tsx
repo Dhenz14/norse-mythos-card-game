@@ -233,7 +233,7 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
     >
       <div className="mb-4 text-center">
         <h1 className="text-4xl font-bold" style={{ background: 'linear-gradient(180deg, #ffd700, #ff8c00)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: 'none', filter: 'drop-shadow(0 2px 4px rgba(255, 165, 0, 0.5))' }}>Ragnarok Chess</h1>
-        <p className="text-gray-400 text-sm tracking-widest uppercase">Checkmate the enemy King to win!</p>
+
       </div>
       
       <AnimatePresence>
