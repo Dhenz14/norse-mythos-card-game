@@ -369,10 +369,10 @@
   gap: 8px;
 }
 
-/* Opponent Hand - top center */
+/* Opponent Hand - near opponent hero */
 .viewport-mode .unified-opponent-hand {
   position: absolute;
-  left: 50%;
+  left: var(--zone-opponent-hand-left, 18%);
   top: 8px;
   transform: translateX(-50%);
   z-index: var(--z-hand, 40);

@@ -118,7 +118,7 @@
      OPPONENT HAND
      Top-center - opponent's hidden cards
      ======================================== */
-  --zone-opponent-hand-left: 50%;
+  --zone-opponent-hand-left: 18%;
   --zone-opponent-hand-top: 0%;
   --zone-opponent-hand-z: 40;
 
