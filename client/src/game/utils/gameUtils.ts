@@ -579,7 +579,8 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
             
             // Check if minion is destroyed
             if ((newState.players[targetPlayer].battlefield[targetIndex].currentHealth || 0) <= 0) {
-              newState.players[targetPlayer].battlefield.splice(targetIndex, 1);
+              const deadMinionId = newState.players[targetPlayer].battlefield[targetIndex].instanceId;
+              newState = destroyCard(newState, deadMinionId, targetPlayer);
             }
           }
         } else {
@@ -607,7 +608,8 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
               
               // Check if minion is destroyed
               if ((newState.players[currentPlayer].battlefield[targetIndex].currentHealth || 0) <= 0) {
-                newState.players[currentPlayer].battlefield.splice(targetIndex, 1);
+                const deadMinionId = newState.players[currentPlayer].battlefield[targetIndex].instanceId;
+                newState = destroyCard(newState, deadMinionId, currentPlayer);
               }
             }
           } else {
@@ -701,9 +703,10 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
           }
         }
         
-        // Remove destroyed minions in reverse order
-        for (let i = minionsToRemove.length - 1; i >= 0; i--) {
-          newState.players[enemyPlayer].battlefield.splice(minionsToRemove[i], 1);
+        // Remove destroyed minions using destroyCard to trigger graveyard and deathrattle effects
+        const deadIds = minionsToRemove.map(idx => newState.players[enemyPlayer].battlefield[idx].instanceId);
+        for (const id of deadIds) {
+          newState = destroyCard(newState, id, enemyPlayer);
         }
       }
     } 

@@ -1045,7 +1045,7 @@ function executeNorseHeroPower(
       if (targetIdx !== -1) {
         const target = player.battlefield[targetIdx];
         debug.log(`[Hero Power] Sacrificed ${target.card.name}`);
-        player.battlefield.splice(targetIdx, 1);
+        state = destroyCard(state, target.instanceId, playerType);
         
         // Summon replacement
         const summonData = power.summonData;

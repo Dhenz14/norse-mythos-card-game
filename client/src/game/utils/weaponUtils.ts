@@ -18,6 +18,7 @@ import {
   hasDurability
 } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
+import { destroyCard } from './zoneUtils';
 
 /**
  * Equip a weapon for a player
@@ -161,17 +162,8 @@ export function attackWithWeapon(
       
       // Check if the minion was killed
       if ((newState.players[defendingPlayerType].battlefield[targetIndex].currentHealth || 0) <= 0) {
-        
-        // Add to graveyard if it doesn't exist yet
-        if (!newState.players[defendingPlayerType].graveyard) {
-          newState.players[defendingPlayerType].graveyard = [];
-        }
-        
-        // Move to graveyard
-        newState.players[defendingPlayerType].graveyard.push(targetMinion);
-        
-        // Remove from battlefield
-        newState.players[defendingPlayerType].battlefield.splice(targetIndex, 1);
+        const deadMinionId = targetMinion.instanceId;
+        newState = destroyCard(newState, deadMinionId, defendingPlayerType);
       }
     }
     

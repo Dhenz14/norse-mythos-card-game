@@ -9,6 +9,7 @@ import { GameState, CardInstance, CardData, EquippedWeapon } from '../types';
 import { NorseHero, NorseHeroPower, HeroPassiveTrigger, NorseHeroPassive } from '../types/NorseTypes';
 import { ALL_NORSE_HEROES, getAnyHeroById } from '../data/norseHeroes';
 import { debug } from '../config/debugConfig';
+import { destroyCard } from './zoneUtils';
 
 /**
  * Helper to safely get attack from card data
@@ -907,12 +908,12 @@ function executeSacrificeSummon(
     if (player.battlefield.length === 0) return state;
     const randomIndex = Math.floor(Math.random() * player.battlefield.length);
     const sacrificed = player.battlefield[randomIndex];
-    player.battlefield.splice(randomIndex, 1);
+    state = destroyCard(state, sacrificed.instanceId, playerType);
   } else {
     const targetIndex = player.battlefield.findIndex(m => m.instanceId === targetId);
     if (targetIndex === -1) return state;
     const sacrificed = player.battlefield[targetIndex];
-    player.battlefield.splice(targetIndex, 1);
+    state = destroyCard(state, sacrificed.instanceId, playerType);
   }
 
   if (power.summonData && player.battlefield.length < 7) {

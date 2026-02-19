@@ -31,6 +31,7 @@ import {
   getHealth, 
   getDurability 
 } from './cards/typeGuards';
+import { destroyCard } from './zoneUtils';
 
 // ===================== DISCOVER MECHANICS =====================
 /**
@@ -497,9 +498,7 @@ export const handleSecretTrigger = (
               
               // Check if minion died
               if (targetMinion.currentHealth <= 0) {
-                // Remove from battlefield and add to graveyard
-                enemyBattlefield.splice(targetIndex, 1);
-                newGameState.players[triggeringPlayer].graveyard.push(targetMinion);
+                newGameState = destroyCard(newGameState, targetMinion.instanceId, triggeringPlayer);
               }
             }
           }

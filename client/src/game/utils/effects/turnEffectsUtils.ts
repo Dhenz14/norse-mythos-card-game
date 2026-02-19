@@ -12,6 +12,7 @@ import { processTurnStartEffects as processStatusTurnStart, clearEndOfTurnEffect
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
 import { executeDeathrattle } from '../../effects/handlers/deathrattleBridge';
+import { removeDeadMinions } from '../zoneUtils';
 
 // Helper to create type-safe game log entries for effects
 function createEffectLogEntry(
@@ -619,6 +620,9 @@ function processJormungandrCoilEffect(
     ]
   };
   
+  // Remove dead minions
+  newState = removeDeadMinions(newState);
+  
   return newState;
 }
 
@@ -694,9 +698,46 @@ function processCustomEndOfTurnEffect(
             )
           ]
         };
+        
+        // Remove dead minions
+        newState = removeDeadMinions(newState);
       }
       break;
       
+    case 'damage_split_randomly': {
+      const damageValue = typeof effect.value === 'number' ? effect.value : 1;
+      const allEnemyTargets = [...(newState.players[opponentPlayer]?.battlefield || [])];
+      if (allEnemyTargets.length === 0) break;
+      
+      for (let i = 0; i < damageValue; i++) {
+        const currentEnemies = newState.players[opponentPlayer]?.battlefield || [];
+        if (currentEnemies.length === 0) break;
+        const randomIdx = Math.floor(Math.random() * currentEnemies.length);
+        const target = currentEnemies[randomIdx];
+        const hp = target.currentHealth ?? (getHealth(target.card) ?? 0);
+        newState.players[opponentPlayer].battlefield[randomIdx] = {
+          ...target,
+          currentHealth: hp - 1
+        };
+      }
+      
+      newState = removeDeadMinions(newState);
+      
+      newState = {
+        ...newState,
+        gameLog: [
+          ...(newState.gameLog || []),
+          createEffectLogEntry(
+            `${minion.card.name} dealt ${damageValue} damage split randomly among enemies.`,
+            currentPlayer,
+            newState.turnNumber || 1,
+            minion.card.id
+          )
+        ]
+      };
+      break;
+    }
+    
     // Add more effect types as needed
     
     default:

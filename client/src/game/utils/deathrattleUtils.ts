@@ -1,7 +1,7 @@
 import { CardInstance, GameState, CardData, DeathrattleEffect, CardAnimationType, GameLogEvent, AnimationParams, MinionCardData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { createCardInstance } from './cards/cardUtils';
-import { drawCardFromDeck } from './zoneUtils';
+import { createCardInstance, isCardOfTribe } from './cards/cardUtils';
+import { drawCardFromDeck, removeDeadMinions, destroyCard } from './zoneUtils';
 import allCards from '../data/allCards';
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
@@ -119,9 +119,51 @@ export function executeDeathrattle(
     case 'mind_control':
       return executeMindControlDeathrattle(newState, deathrattle, playerId);
     case 'damage_conditional':
-      // Deal damage based on a condition
-      // Handled by UnifiedEffectProcessor or logic here
       return newState;
+    case 'deal_damage':
+      return executeDamageDeathrattle(newState, deathrattle, playerId);
+    case 'recruit':
+      return executeRecruitDeathrattle(newState, deathrattle, playerId);
+    case 'summon_splitting':
+      return executeSummonSplittingDeathrattle(newState, deathrattle, playerId);
+    case 'summon_multiple':
+      return executeSummonMultipleDeathrattle(newState, deathrattle, playerId);
+    case 'summon_if_other_died':
+      return executeSummonIfOtherDiedDeathrattle(newState, deathrattle, playerId);
+    case 'summon_for_opponent':
+      return executeSummonForOpponentDeathrattle(newState, deathrattle, playerId);
+    case 'add_random_to_hand':
+      return executeAddRandomToHandDeathrattle(newState, deathrattle, playerId);
+    case 'summon_random_legendary':
+      return executeSummonRandomLegendaryDeathrattle(newState, deathrattle, playerId);
+    case 'summon_from_hand':
+      return executeSummonFromHandDeathrattle(newState, deathrattle, playerId);
+    case 'shuffle_copies_buffed':
+      return executeShuffleCopiesBuffedDeathrattle(newState, deathrattle, playerId);
+    case 'return_to_hand':
+      return newState;
+    case 'random_damage':
+      return executeRandomDamageDeathrattle(newState, deathrattle, playerId);
+    case 'grant_keyword':
+      return executeGrantKeywordDeathrattle(newState, deathrattle, playerId);
+    case 'give_spare_part':
+      return executeGiveSparePartDeathrattle(newState, deathrattle, playerId);
+    case 'freeze_random':
+      return executeFreezeRandomDeathrattle(newState, deathrattle, playerId);
+    case 'equip_weapon':
+      return executeEquipWeaponDeathrattle(newState, deathrattle, playerId);
+    case 'conditional_aoe':
+      return executeConditionalAoeDeathrattle(newState, deathrattle, playerId);
+    case 'buff_friendly_beasts':
+      return executeBuffFriendlyBeastsDeathrattle(newState, deathrattle, playerId);
+    case 'buff_and_enchant':
+      return executeBuffAndEnchantDeathrattle(newState, deathrattle, playerId);
+    case 'split_damage':
+      return executeRandomDamageDeathrattle(newState, deathrattle, playerId);
+    case 'resurrect':
+      return executeSummonDeathrattle(newState, deathrattle, playerId);
+    case 'destroy':
+      return executeDestroyDeathrattle(newState, deathrattle, playerId);
     default:
       debug.warn(`Unknown deathrattle type: ${deathrattle.type}`);
       return newState;
@@ -614,4 +656,444 @@ export function processPendingDeathrattles(state: GameState): GameState {
   delete (currentState as any).pendingDeathrattles;
   
   return currentState;
+}
+
+function executeRecruitDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+
+  if (player.battlefield.length >= 7) return newState;
+
+  const minionIndices: number[] = [];
+  player.deck.forEach((cardData, i) => {
+    if (cardData.type === 'minion') minionIndices.push(i);
+  });
+
+  if (minionIndices.length === 0) return newState;
+
+  const randomIdx = minionIndices[Math.floor(Math.random() * minionIndices.length)];
+  const recruitedCardData = player.deck.splice(randomIdx, 1)[0];
+  const instance = createCardInstance(recruitedCardData);
+  player.battlefield.push(instance);
+  trackQuestProgress(playerId, 'summon_minion', instance.card);
+
+  return newState;
+}
+
+function executeSummonSplittingDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+
+  if (!deathrattle.summonCardId) return newState;
+
+  const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+  if (!cardData) return newState;
+
+  for (let i = 0; i < 2; i++) {
+    if (player.battlefield.length >= 7) break;
+    const instance = createCardInstance(cardData);
+    player.battlefield.push(instance);
+    trackQuestProgress(playerId, 'summon_minion', instance.card);
+  }
+
+  return newState;
+}
+
+function executeSummonMultipleDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+
+  const summonCardIds: string[] = (deathrattle as any).summonCardIds || [];
+
+  if (summonCardIds.length > 0) {
+    for (const cardId of summonCardIds) {
+      if (player.battlefield.length >= 7) break;
+      const cardData = allCards.find(c => c.id === cardId);
+      if (!cardData) continue;
+      const instance = createCardInstance(cardData);
+      player.battlefield.push(instance);
+      trackQuestProgress(playerId, 'summon_minion', instance.card);
+    }
+  } else if (deathrattle.summonCardId) {
+    const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+    if (!cardData) return newState;
+    const count = deathrattle.value || 1;
+    for (let i = 0; i < count; i++) {
+      if (player.battlefield.length >= 7) break;
+      const instance = createCardInstance(cardData);
+      player.battlefield.push(instance);
+      trackQuestProgress(playerId, 'summon_minion', instance.card);
+    }
+  }
+
+  return newState;
+}
+
+function executeSummonIfOtherDiedDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+
+  if (player.battlefield.length >= 7) return newState;
+  if (!deathrattle.summonCardId) return newState;
+
+  const graveyard = player.graveyard || [];
+  const hasDeadMinion = graveyard.some(c => c.card.type === 'minion');
+  if (!hasDeadMinion) return newState;
+
+  const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+  if (!cardData) return newState;
+
+  const instance = createCardInstance(cardData);
+  player.battlefield.push(instance);
+  trackQuestProgress(playerId, 'summon_minion', instance.card);
+
+  return newState;
+}
+
+function executeSummonForOpponentDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const opponentId = playerId === 'player' ? 'opponent' : 'player';
+  const opponent = newState.players[opponentId];
+
+  if (opponent.battlefield.length >= 7) return newState;
+  if (!deathrattle.summonCardId) return newState;
+
+  const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+  if (!cardData) return newState;
+
+  const count = deathrattle.value || 1;
+  for (let i = 0; i < count; i++) {
+    if (opponent.battlefield.length >= 7) break;
+    const instance = createCardInstance(cardData);
+    opponent.battlefield.push(instance);
+  }
+
+  return newState;
+}
+
+function executeAddRandomToHandDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+  const count = deathrattle.value || 1;
+
+  for (let i = 0; i < count; i++) {
+    if (player.hand.length >= 9) break;
+    if (allCards.length === 0) break;
+    const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
+    const instance = createCardInstance(randomCard);
+    player.hand.push(instance);
+  }
+
+  return newState;
+}
+
+function executeSummonRandomLegendaryDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+
+  if (player.battlefield.length >= 7) return newState;
+
+  const legendaries = allCards.filter(c => c.type === 'minion' && c.rarity === 'legendary');
+  if (legendaries.length === 0) return newState;
+
+  const randomCard = legendaries[Math.floor(Math.random() * legendaries.length)];
+  const instance = createCardInstance(randomCard);
+  player.battlefield.push(instance);
+  trackQuestProgress(playerId, 'summon_minion', instance.card);
+
+  return newState;
+}
+
+function executeSummonFromHandDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+
+  if (player.battlefield.length >= 7) return newState;
+
+  const minionIndices: number[] = [];
+  player.hand.forEach((card, i) => {
+    if (card.card.type === 'minion') minionIndices.push(i);
+  });
+
+  if (minionIndices.length === 0) return newState;
+
+  const randomIdx = minionIndices[Math.floor(Math.random() * minionIndices.length)];
+  const minion = player.hand.splice(randomIdx, 1)[0];
+  player.battlefield.push(minion);
+  trackQuestProgress(playerId, 'summon_minion', minion.card);
+
+  return newState;
+}
+
+function executeShuffleCopiesBuffedDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+  const buffAmount = deathrattle.value || 1;
+  const copyCount = deathrattle.value || 1;
+
+  if (!deathrattle.summonCardId) return newState;
+
+  const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+  if (!cardData) return newState;
+
+  for (let i = 0; i < copyCount; i++) {
+    const copy = JSON.parse(JSON.stringify(cardData)) as CardData;
+    if (copy.type === 'minion') {
+      const minionCopy = copy as MinionCardData;
+      minionCopy.attack = (minionCopy.attack ?? 0) + buffAmount;
+      minionCopy.health = (minionCopy.health ?? 0) + buffAmount;
+    }
+    const insertIdx = Math.floor(Math.random() * (player.deck.length + 1));
+    player.deck.splice(insertIdx, 0, copy);
+  }
+
+  return newState;
+}
+
+function executeRandomDamageDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const enemyId = playerId === 'player' ? 'opponent' : 'player';
+  const enemy = newState.players[enemyId];
+  const totalDamage = deathrattle.value || 1;
+
+  for (let i = 0; i < totalDamage; i++) {
+    const targets: Array<{ type: 'minion'; index: number } | { type: 'hero' }> = [];
+    enemy.battlefield.forEach((m, idx) => {
+      const currentHp = m.currentHealth ?? ((m.card as any).health || 1);
+      if (currentHp > 0) {
+        targets.push({ type: 'minion', index: idx });
+      }
+    });
+    targets.push({ type: 'hero' });
+
+    if (targets.length === 0) break;
+
+    const target = targets[Math.floor(Math.random() * targets.length)];
+    if (target.type === 'hero') {
+      enemy.health -= 1;
+    } else {
+      const minion = enemy.battlefield[target.index];
+      if (minion.hasDivineShield) {
+        minion.hasDivineShield = false;
+      } else {
+        const currentHp = minion.currentHealth ?? ((minion.card as any).health || 1);
+        minion.currentHealth = currentHp - 1;
+      }
+    }
+  }
+
+  // Use removeDeadMinions to properly handle graveyard and deathrattles
+  const afterDeadRemoved = removeDeadMinions(newState);
+
+  if (afterDeadRemoved.players[enemyId].health <= 0) {
+    afterDeadRemoved.gamePhase = 'game_over';
+    afterDeadRemoved.winner = playerId;
+  }
+
+  return afterDeadRemoved;
+}
+
+function executeGrantKeywordDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+  const keyword = (deathrattle as any).keyword as string;
+
+  if (!keyword) return newState;
+
+  player.battlefield.forEach(minion => {
+    if (minion.card.type === 'minion') {
+      const minionCard = minion.card as MinionCardData;
+      if (!minionCard.keywords) minionCard.keywords = [];
+      if (!minionCard.keywords.includes(keyword)) {
+        minionCard.keywords.push(keyword);
+      }
+    }
+  });
+
+  return newState;
+}
+
+function executeGiveSparePartDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+  const count = deathrattle.value || 1;
+
+  for (let i = 0; i < count; i++) {
+    if (player.hand.length >= 9) break;
+    if (allCards.length === 0) break;
+    const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
+    const instance = createCardInstance(randomCard);
+    player.hand.push(instance);
+  }
+
+  return newState;
+}
+
+function executeFreezeRandomDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const enemyId = playerId === 'player' ? 'opponent' : 'player';
+  const enemy = newState.players[enemyId];
+
+  if (enemy.battlefield.length === 0) return newState;
+
+  const randomIdx = Math.floor(Math.random() * enemy.battlefield.length);
+  (enemy.battlefield[randomIdx] as any).isFrozen = true;
+
+  return newState;
+}
+
+function executeEquipWeaponDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+
+  const attack = deathrattle.value || 1;
+  const durability = (deathrattle as any).durability || 2;
+  (player as any).weapon = { attack, durability };
+
+  return newState;
+}
+
+function executeConditionalAoeDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const enemyId = playerId === 'player' ? 'opponent' : 'player';
+  const enemy = newState.players[enemyId];
+  const damageAmount = deathrattle.value || 1;
+
+  enemy.battlefield.forEach(minion => {
+    if (minion.hasDivineShield) {
+      minion.hasDivineShield = false;
+    } else {
+      const currentHp = minion.currentHealth ?? ((minion.card as any).health || 1);
+      minion.currentHealth = currentHp - damageAmount;
+    }
+  });
+
+  // Use removeDeadMinions to properly handle graveyard and deathrattles
+  return removeDeadMinions(newState);
+}
+
+function executeBuffFriendlyBeastsDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+  const attackBuff = deathrattle.buffAttack || deathrattle.value || 1;
+  const healthBuff = deathrattle.buffHealth || deathrattle.value || 1;
+
+  player.battlefield.forEach(minion => {
+    if (minion.card.type === 'minion' && isCardOfTribe(minion.card, 'beast')) {
+      const minionCard = minion.card as MinionCardData;
+      minionCard.attack = (minionCard.attack ?? 0) + attackBuff;
+      minionCard.health = (minionCard.health ?? 0) + healthBuff;
+      minion.currentHealth = (minion.currentHealth ?? minionCard.health ?? 0) + healthBuff;
+    }
+  });
+
+  return newState;
+}
+
+function executeBuffAndEnchantDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const player = newState.players[playerId];
+  const attackBuff = deathrattle.buffAttack || 0;
+  const healthBuff = deathrattle.buffHealth || 0;
+
+  player.battlefield.forEach(minion => {
+    if (minion.card.type === 'minion') {
+      const minionCard = minion.card as MinionCardData;
+      if (attackBuff !== 0) {
+        minionCard.attack = (minionCard.attack ?? 0) + attackBuff;
+      }
+      if (healthBuff !== 0) {
+        minionCard.health = (minionCard.health ?? 0) + healthBuff;
+        minion.currentHealth = (minion.currentHealth ?? minionCard.health ?? 0) + healthBuff;
+      }
+    }
+  });
+
+  return newState;
+}
+
+function executeDestroyDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const enemyId = playerId === 'player' ? 'opponent' : 'player';
+  const enemy = newState.players[enemyId];
+
+  if (enemy.battlefield.length === 0) return newState;
+
+  const randomIdx = Math.floor(Math.random() * enemy.battlefield.length);
+  const toDestroy = enemy.battlefield[randomIdx];
+
+  // Use destroyCard to properly handle graveyard and deathrattle triggers
+  return destroyCard(newState, toDestroy.instanceId, enemyId);
 }
