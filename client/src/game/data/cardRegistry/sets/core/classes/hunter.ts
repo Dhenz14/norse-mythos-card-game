@@ -297,6 +297,12 @@ export const hunterCards: CardData[] = [
     type: "spell",
     rarity: "epic",
     class: "Hunter",
+    spellEffect: {
+      type: "summon_multiple",
+      targetType: "none",
+      requiresTarget: false,
+      summonCardIds: [7503, 7504, 7505]
+    },
     collectible: true,
     set: "core"
   },

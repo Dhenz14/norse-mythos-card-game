@@ -170,7 +170,8 @@ export const mageCards: CardData[] = [
       type: "damage",
       value: 2,
       targetType: "any_minion",
-      requiresTarget: true
+      requiresTarget: true,
+      spellDamageMultiplier: 2
     },
     collectible: true,
     set: "core"
@@ -188,7 +189,9 @@ export const mageCards: CardData[] = [
       type: "damage",
       value: 3,
       targetType: "random_enemies",
-      requiresTarget: false
+      requiresTarget: false,
+      isSplit: true,
+      isRandom: true
     },
     collectible: true,
     set: "core"
@@ -298,8 +301,10 @@ export const mageCards: CardData[] = [
       type: "aoe_damage",
       value: 2,
       targetType: "all_enemy_minions",
-      requiresTarget: false
+      requiresTarget: false,
+      freezeTarget: true
     },
+    keywords: ["freeze"],
     collectible: true,
     set: "core"
   },
@@ -333,8 +338,10 @@ export const mageCards: CardData[] = [
       type: "cleave_damage",
       value: 1,
       targetType: "any_minion",
-      requiresTarget: true
+      requiresTarget: true,
+      freezeTarget: true
     },
+    keywords: ["freeze"],
     collectible: true,
     set: "core"
   },
@@ -370,6 +377,24 @@ export const mageCards: CardData[] = [
       value: 10,
       targetType: "any_character",
       requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 32015,
+    name: "Dragon's Breath",
+    manaCost: 5,
+    description: "Deal 4 damage. Costs (1) less for each minion that died this turn.",
+    type: "spell",
+    rarity: "common",
+    class: "Mage",
+    spellEffect: {
+      type: "damage",
+      value: 4,
+      targetType: "any_character",
+      requiresTarget: true,
+      costReductionPerDeadMinion: 1
     },
     collectible: true,
     set: "core"

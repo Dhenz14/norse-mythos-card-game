@@ -17,7 +17,11 @@ export default function executeAoeDamage(
   try {
     context.logGameEvent(`Executing spellEffect:aoe_damage for ${sourceCard.name}`);
     
-    const damageValue = effect.value || 1;
+    const minVal = (effect as any).minValue;
+    const maxVal = (effect as any).maxValue;
+    const damageValue = (minVal !== undefined && maxVal !== undefined)
+      ? Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal
+      : (effect.value || 1);
     const includeHeroes = effect.includeHeroes || false;
     const includeFriendly = effect.includeFriendly || false;
     const freezeTarget = effect.freezeTarget || false;

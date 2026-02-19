@@ -71,8 +71,10 @@ export const paladinCards: CardData[] = [
     rarity: "rare",
     class: "Paladin",
     spellEffect: {
-      type: "buff",
-      targetType: "all_minions"
+      type: "set_health",
+      value: 1,
+      targetType: "all_minions",
+      requiresTarget: false
     },
     collectible: true,
     set: "core"

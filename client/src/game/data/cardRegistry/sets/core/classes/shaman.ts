@@ -128,6 +128,8 @@ export const shamanCards: CardData[] = [
     spellEffect: {
       type: "aoe_damage",
       value: 2,
+      minValue: 2,
+      maxValue: 3,
       targetType: "all_enemy_minions"
     },
     collectible: true,
@@ -282,7 +284,8 @@ export const shamanCards: CardData[] = [
     spellEffect: {
       type: "draw",
       value: 1,
-      targetType: "none"
+      targetType: "none",
+      costReduction: 3
     },
     collectible: true,
     set: "core"
@@ -803,7 +806,8 @@ export const shamanCards: CardData[] = [
       type: "damage",
       value: 4,
       targetType: "any",
-      requiresTarget: true
+      requiresTarget: true,
+      summonCardId: 85002
     },
     collectible: true,
     set: "core"

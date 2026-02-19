@@ -103,6 +103,13 @@ export const priestCards: CardData[] = [
     type: "spell",
     rarity: "rare",
     class: "Priest",
+    spellEffect: {
+      type: "damage",
+      value: 5,
+      targetType: "any_character",
+      requiresTarget: true,
+      healValue: 5
+    },
     collectible: true,
     set: "core"
   },

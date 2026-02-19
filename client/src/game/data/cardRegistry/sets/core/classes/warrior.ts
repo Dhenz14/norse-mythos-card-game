@@ -816,7 +816,8 @@ export const warriorCards: CardData[] = [
     spellEffect: {
       type: "armor_based_on_missing_health",
       requiresTarget: false,
-      targetType: "none"
+      targetType: "none",
+      drawPerArmorGained: 5
     },
     collectible: true,
     set: "core"

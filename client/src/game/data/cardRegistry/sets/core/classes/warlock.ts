@@ -96,7 +96,8 @@ export const warlockCards: CardData[] = [
     spellEffect: {
       type: "destroy",
       targetType: "minion_only",
-      requiresTarget: true
+      requiresTarget: true,
+      healValue: 3
     },
     collectible: true,
     set: "core"
@@ -203,7 +204,8 @@ export const warlockCards: CardData[] = [
     class: "Warlock",
     spellEffect: {
       type: "draw_specific",
-      count: 2
+      count: 2,
+      condition: "demon"
     },
     collectible: true,
     set: "core"
