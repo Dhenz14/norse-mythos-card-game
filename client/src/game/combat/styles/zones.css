@@ -171,7 +171,7 @@
      Updated: Shifted right ~192px (~2 inches) to avoid blocking mana crystals
      Uses clamp() for responsive behavior
      ======================================== */
-  --zone-betting-left: 220px;
+  --zone-betting-left: 280px;
   --zone-betting-bottom: 8px;
   --zone-betting-z: var(--token-z-betting, 200);
 
