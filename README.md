@@ -536,6 +536,8 @@ Each of the 9 Primordial Norse Kings possesses a unique **Divine Command** - the
 | **UI Components** | Radix UI (shadcn/ui) |
 | **Backend** | Express + TypeScript |
 | **Database** | PostgreSQL + Drizzle ORM |
+| **Multiplayer** | PeerJS (WebRTC peer-to-peer) |
+| **Blockchain** | hive-tx v7 (Hive NFTs) |
 
 ---
 
@@ -635,7 +637,7 @@ Pure Utilities (business logic)
 
 - [ ] Hive Keychain authentication
 - [ ] NFT card ownership on Hive blockchain
-- [ ] Multiplayer via WebSocket/PartyKit
+- [ ] Peer-to-peer multiplayer via PeerJS/WebRTC (package installed)
 - [ ] Tournament system
 - [ ] Ranked matchmaking
 
