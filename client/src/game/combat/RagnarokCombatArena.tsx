@@ -35,6 +35,7 @@ import { HoleCardsOverlay } from './components/HoleCardsOverlay';
 import { BattlefieldHero } from './components/BattlefieldHero';
 import { ElementBuffPopup } from './components/ElementBuffPopup';
 import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
+import { PhaseBanner } from './components/PhaseBanner';
 import { PotDisplay } from './components/PotDisplay';
 import { useElementalBuff } from './hooks/useElementalBuff';
 import { canCardAttack as canCardAttackCheck } from './attackUtils';
@@ -877,11 +878,13 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
 
   return (
     <GameViewport>
-      <div className="ragnarok-combat-arena viewport-mode">
+      <div className={`ragnarok-combat-arena viewport-mode ${isPlayerTurn ? 'player-turn' : 'opponent-turn'}`}>
         {/* Minimal Timer at Top Center */}
         <div className={`zone-timer minimal-timer ${combatState.turnTimer <= 10 ? 'low-time' : ''}`}>
           {combatState.turnTimer}
         </div>
+        
+        <PhaseBanner phase={combatState.phase} />
         
         <div className="arena-content">
           <UnifiedCombatArena 

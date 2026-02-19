@@ -15,3 +15,4 @@ export { ShowdownCelebration } from './ShowdownCelebration';
 export { TargetingPrompt, type TargetingPromptProps } from './TargetingPrompt';
 export { HeroPowerPrompt, type HeroPowerPromptProps } from './HeroPowerPrompt';
 export { ElementBuffPopup } from './ElementBuffPopup';
+export { PhaseBanner } from './PhaseBanner';

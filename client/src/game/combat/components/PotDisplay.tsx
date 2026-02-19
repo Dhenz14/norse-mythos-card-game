@@ -77,17 +77,21 @@ export function PotDisplay({
   if (hidden) return null;
 
   return (
-    <div className="
-      absolute left-[var(--zone-pot-unified-left,15%)] bottom-[var(--zone-pot-unified-bottom,30%)]
-      z-[var(--z-pot,35)]
-      flex items-center gap-3
-      px-4 py-2
-      rounded-xl
-      bg-gradient-to-b from-slate-950/95 via-slate-900/95 to-slate-950/95
-      border border-amber-500/50
-      shadow-xl shadow-black/60
-      backdrop-blur-sm
-    ">
+    <div 
+      className="
+        pot-display-container
+        absolute left-[var(--zone-pot-unified-left,15%)] bottom-[var(--zone-pot-unified-bottom,30%)]
+        z-[var(--z-pot,35)]
+        flex items-center gap-3
+        px-4 py-2
+        rounded-xl
+        bg-gradient-to-b from-slate-950/95 via-slate-900/95 to-slate-950/95
+        border border-amber-500/50
+        shadow-xl shadow-black/60
+        backdrop-blur-sm
+      "
+      style={{ '--pot-intensity': Math.min(1, totalPot / 60) } as React.CSSProperties}
+    >
       <PotSection
         label={`FOE (${formatPosition(opponentPosition)})`}
         value={`${opponentHpCommitted} HP`}
