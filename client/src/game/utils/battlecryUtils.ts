@@ -301,6 +301,30 @@ export function executeBattlecry(
         
       case 'summon':
         return executeSummonBattlecry(newState, battlecry);
+
+      case 'summon_random':
+        return executeSummonRandomBattlecry(newState, battlecry);
+
+      case 'summon_copy':
+        return executeSummonCopyBattlecry(newState, battlecry, cardInstanceId);
+
+      case 'fill_board':
+        return executeFillBoardBattlecry(newState, battlecry);
+
+      case 'summon_jade_golem':
+        return executeSummonJadeGolemBattlecry(newState);
+
+      case 'summon_random_minions':
+        return executeSummonRandomMinionsBattlecry(newState, battlecry);
+
+      case 'summon_copy_from_deck':
+        return executeSummonCopyFromDeckBattlecry(newState, battlecry);
+
+      case 'summon_from_spell_cost':
+        return executeSummonFromSpellCostBattlecry(newState);
+
+      case 'summon_skeletons_based_on_graveyard':
+        return executeSummonSkeletonsBasedOnGraveyardBattlecry(newState, battlecry);
         
       case 'draw':
         return executeDrawBattlecry(newState, battlecry);
@@ -871,6 +895,11 @@ function executeSummonBattlecry(
   state: GameState,
   battlecry: BattlecryEffect
 ): GameState {
+  // Check board limit before summoning
+  if (state.players.player.battlefield.length >= 7) {
+    return state;
+  }
+  
   // Check if a card ID is provided for summoning
   if (!battlecry.summonCardId) {
     debug.error('No card ID provided for summon battlecry');
@@ -900,6 +929,340 @@ function executeSummonBattlecry(
   // Track quest progress for summoned minion
   trackQuestProgress('player', 'summon_minion', summonedCard.card);
   
+  return state;
+}
+
+const MAX_BOARD_SIZE = 7;
+
+function executeSummonRandomBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect
+): GameState {
+  const count = (battlecry as any).value || (battlecry as any).count || 1;
+  const pool = (battlecry as any).pool as (number | string)[] | undefined;
+  const manaCostFilter = (battlecry as any).manaCost as number | undefined;
+  const raceFilter = (battlecry as any).race as string | undefined;
+
+  if (!state.players.player.battlefield) state.players.player.battlefield = [];
+  const availableSlots = MAX_BOARD_SIZE - state.players.player.battlefield.length;
+  if (availableSlots <= 0) return state;
+  const actualCount = Math.min(count, availableSlots);
+
+  let candidates: CardData[];
+  if (pool && pool.length > 0) {
+    candidates = allCards.filter(c => pool.includes(c.id));
+  } else {
+    candidates = allCards.filter(c => c.type === 'minion');
+    if (manaCostFilter !== undefined) {
+      candidates = candidates.filter(c => c.manaCost === manaCostFilter);
+    }
+    if (raceFilter) {
+      candidates = candidates.filter(c => (c as any).race === raceFilter);
+    }
+  }
+
+  if (candidates.length === 0) return state;
+
+  for (let i = 0; i < actualCount; i++) {
+    if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
+    const selected = candidates[Math.floor(Math.random() * candidates.length)];
+    const instance = createCardInstance(selected);
+    instance.isPlayed = true;
+    state.players.player.battlefield.push(instance);
+  }
+  return state;
+}
+
+function executeSummonCopyBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect,
+  cardInstanceId: string
+): GameState {
+  if (!state.players.player.battlefield) state.players.player.battlefield = [];
+  const availableSlots = MAX_BOARD_SIZE - state.players.player.battlefield.length;
+  if (availableSlots <= 0) return state;
+
+  const condition = (battlecry as any).condition as string | undefined;
+  if (condition) {
+    const bf = state.players.player.battlefield;
+    if (condition === 'has_taunt' && !bf.some(m => getCardKeywords(m.card).includes('taunt'))) return state;
+    if (condition === 'has_divine_shield' && !bf.some(m => m.hasDivineShield || getCardKeywords(m.card).includes('divine_shield'))) return state;
+    if (condition === 'holding_dragon' && !(state.players.player.hand || []).some(c => isCardOfTribe(c.card, 'dragon'))) return state;
+  }
+
+  const sourceCard = state.players.player.battlefield.find(m => m.instanceId === cardInstanceId);
+  if (!sourceCard) return state;
+
+  const count = Math.min((battlecry as any).count || 1, availableSlots);
+  for (let i = 0; i < count; i++) {
+    if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
+    const cardData = allCards.find(c => c.id === sourceCard.card.id);
+    if (cardData) {
+      const copy = createCardInstance(cardData);
+      copy.isPlayed = true;
+      state.players.player.battlefield.push(copy);
+    }
+  }
+  return state;
+}
+
+function executeFillBoardBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect
+): GameState {
+  if (!state.players.player.battlefield) state.players.player.battlefield = [];
+  const availableSlots = MAX_BOARD_SIZE - state.players.player.battlefield.length;
+  if (availableSlots <= 0) return state;
+
+  const summonCardId = (battlecry as any).summonCardId as number | undefined;
+  const summonName = (battlecry as any).summonName as string | undefined;
+  const summonAttack = (battlecry as any).summonAttack as number | undefined;
+  const summonHealth = (battlecry as any).summonHealth as number | undefined;
+
+  for (let i = 0; i < availableSlots; i++) {
+    if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
+
+    if (summonCardId) {
+      const cardData = allCards.find(c => c.id === summonCardId);
+      if (cardData) {
+        const instance = createCardInstance(cardData);
+        instance.isPlayed = true;
+        if (summonAttack !== undefined) (instance.card as any).attack = summonAttack;
+        if (summonHealth !== undefined) {
+          (instance.card as any).health = summonHealth;
+          instance.currentHealth = summonHealth;
+        }
+        state.players.player.battlefield.push(instance);
+      }
+    } else {
+      const tokenCard: CardData = {
+        id: 99990 + i,
+        name: summonName || 'Whelp',
+        description: 'Summoned token',
+        manaCost: 1,
+        type: 'minion',
+        rarity: 'token' as any,
+        heroClass: 'neutral',
+        attack: summonAttack !== undefined ? summonAttack : 1,
+        health: summonHealth !== undefined ? summonHealth : 1,
+        keywords: []
+      } as any;
+      const instance = createCardInstance(tokenCard);
+      instance.isPlayed = true;
+      state.players.player.battlefield.push(instance);
+    }
+  }
+  return state;
+}
+
+function executeSummonJadeGolemBattlecry(
+  state: GameState
+): GameState {
+  if (!state.players.player.battlefield) state.players.player.battlefield = [];
+  if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) return state;
+
+  const player = state.players.player as any;
+  const currentCounter = player.jadeGolemCounter || 0;
+  player.jadeGolemCounter = currentCounter + 1;
+  const golemSize = Math.min(currentCounter + 1, 30);
+
+  const jadeGolemCard: CardData = {
+    id: 85100 + golemSize,
+    name: 'Jade Golem',
+    description: `A ${golemSize}/${golemSize} Jade Golem.`,
+    manaCost: Math.min(golemSize, 10),
+    type: 'minion',
+    rarity: 'token' as any,
+    heroClass: 'neutral',
+    attack: golemSize,
+    health: golemSize,
+    keywords: []
+  } as any;
+
+  const instance = createCardInstance(jadeGolemCard);
+  instance.isPlayed = true;
+  state.players.player.battlefield.push(instance);
+  return state;
+}
+
+function executeSummonRandomMinionsBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect
+): GameState {
+  const count = (battlecry as any).value || (battlecry as any).count || 1;
+  const manaCostFilter = (battlecry as any).manaCost as number | undefined;
+  const minManaCost = (battlecry as any).minManaCost as number | undefined;
+  const maxManaCost = (battlecry as any).maxManaCost as number | undefined;
+  const raceFilter = (battlecry as any).race as string | undefined;
+  const rarityFilter = (battlecry as any).rarity as string | undefined;
+
+  if (!state.players.player.battlefield) state.players.player.battlefield = [];
+  const availableSlots = MAX_BOARD_SIZE - state.players.player.battlefield.length;
+  if (availableSlots <= 0) return state;
+  const actualCount = Math.min(count, availableSlots);
+
+  let candidates = allCards.filter(c => c.type === 'minion');
+  if (manaCostFilter !== undefined) candidates = candidates.filter(c => c.manaCost === manaCostFilter);
+  if (minManaCost !== undefined) candidates = candidates.filter(c => (c.manaCost ?? 0) >= minManaCost);
+  if (maxManaCost !== undefined) candidates = candidates.filter(c => (c.manaCost ?? 0) <= maxManaCost);
+  if (raceFilter) candidates = candidates.filter(c => (c as any).race === raceFilter);
+  if (rarityFilter) candidates = candidates.filter(c => c.rarity === rarityFilter);
+
+  if (candidates.length === 0) return state;
+
+  const usedIndices = new Set<number>();
+  for (let i = 0; i < actualCount; i++) {
+    if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
+    let available = candidates.filter((_, idx) => !usedIndices.has(idx));
+    if (available.length === 0) {
+      available = candidates;
+      usedIndices.clear();
+    }
+    const randomIdx = Math.floor(Math.random() * available.length);
+    const selected = available[randomIdx];
+    const originalIdx = candidates.indexOf(selected);
+    usedIndices.add(originalIdx);
+    const instance = createCardInstance(selected);
+    instance.isPlayed = true;
+    state.players.player.battlefield.push(instance);
+  }
+  return state;
+}
+
+function executeSummonCopyFromDeckBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect
+): GameState {
+  if (!state.players.player.battlefield) state.players.player.battlefield = [];
+  const availableSlots = MAX_BOARD_SIZE - state.players.player.battlefield.length;
+  if (availableSlots <= 0) return state;
+
+  const count = (battlecry as any).value || (battlecry as any).count || 1;
+  const statOverride = (battlecry as any).statOverride as boolean | undefined;
+  const overrideAttack = (battlecry as any).attack as number | undefined;
+  const overrideHealth = (battlecry as any).health as number | undefined;
+
+  const deck = (state.players.player.deck || []) as any[];
+  const minionsInDeck = deck.filter(
+    c => (c.card ? c.card.type : c.type) === 'minion'
+  );
+  if (minionsInDeck.length === 0) return state;
+
+  const actualCount = Math.min(count, availableSlots, minionsInDeck.length);
+  const shuffled = [...minionsInDeck].sort(() => Math.random() - 0.5);
+
+  for (let i = 0; i < actualCount; i++) {
+    if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
+    const deckMinion = shuffled[i];
+    const minionId = deckMinion.card ? deckMinion.card.id : deckMinion.id;
+    let cardData = allCards.find(c => c.id === minionId);
+    
+    if (cardData) {
+      const instance = createCardInstance(cardData);
+      instance.isPlayed = true;
+      if (statOverride) {
+        (instance.card as any).attack = overrideAttack !== undefined ? overrideAttack : 1;
+        const hp = overrideHealth !== undefined ? overrideHealth : 1;
+        (instance.card as any).health = hp;
+        instance.currentHealth = hp;
+      }
+      state.players.player.battlefield.push(instance);
+    } else if (deckMinion.card) {
+      // Fallback: create CardInstance directly from deck card's data when allCards lookup fails
+      const instance = createCardInstance(deckMinion.card);
+      instance.isPlayed = true;
+      if (statOverride) {
+        (instance.card as any).attack = overrideAttack !== undefined ? overrideAttack : 1;
+        const hp = overrideHealth !== undefined ? overrideHealth : 1;
+        (instance.card as any).health = hp;
+        instance.currentHealth = hp;
+      }
+      state.players.player.battlefield.push(instance);
+    }
+  }
+  return state;
+}
+
+function executeSummonFromSpellCostBattlecry(
+  state: GameState
+): GameState {
+  if (!state.players.player.battlefield) state.players.player.battlefield = [];
+  if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) return state;
+
+  const spellDeck = (state.players.player.deck || []) as any[];
+  const spellsInDeck = spellDeck.filter(
+    c => (c.card ? c.card.type : c.type) === 'spell'
+  );
+  if (spellsInDeck.length === 0) return state;
+
+  const randomIdx = Math.floor(Math.random() * spellsInDeck.length);
+  const revealedSpell = spellsInDeck[randomIdx];
+  const spellCost = revealedSpell.card ? revealedSpell.card.manaCost : revealedSpell.manaCost;
+
+  const spellId = revealedSpell.instanceId || revealedSpell.id;
+  const deckIdx = spellDeck.findIndex(
+    (c: any) => (c.instanceId || c.id) === spellId
+  );
+  if (deckIdx !== -1) {
+    (state.players.player.deck as any[]).splice(deckIdx, 1);
+    if (!state.players.player.graveyard) state.players.player.graveyard = [] as any;
+    (state.players.player.graveyard as any[]).push(revealedSpell);
+  }
+
+  const minionsWithCost = allCards.filter(
+    c => c.type === 'minion' && c.manaCost === spellCost
+  );
+  if (minionsWithCost.length === 0) return state;
+
+  const selected = minionsWithCost[Math.floor(Math.random() * minionsWithCost.length)];
+  const instance = createCardInstance(selected);
+  instance.isPlayed = true;
+  state.players.player.battlefield.push(instance);
+  return state;
+}
+
+function executeSummonSkeletonsBasedOnGraveyardBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect
+): GameState {
+  if (!state.players.player.battlefield) state.players.player.battlefield = [];
+  const availableSlots = MAX_BOARD_SIZE - state.players.player.battlefield.length;
+  if (availableSlots <= 0) return state;
+
+  const graveyard = (state.players.player.graveyard || []) as any[];
+  const graveyardMinionCount = graveyard.filter(c => (c.card ? c.card.type : c.type) === 'minion').length;
+  if (graveyardMinionCount === 0) return state;
+
+  const maxSkeletons = (battlecry as any).value || 3;
+  const skeletonsToSummon = Math.min(graveyardMinionCount, maxSkeletons, availableSlots);
+
+  const skeletonCardId = (battlecry as any).summonCardId || 4900;
+  const skeletonData = allCards.find(c => c.id === skeletonCardId);
+
+  for (let i = 0; i < skeletonsToSummon; i++) {
+    if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
+    if (skeletonData) {
+      const instance = createCardInstance(skeletonData);
+      instance.isPlayed = true;
+      state.players.player.battlefield.push(instance);
+    } else {
+      const tokenCard: CardData = {
+        id: 4900,
+        name: 'Skeleton',
+        description: 'Summoned skeleton',
+        manaCost: 1,
+        type: 'minion',
+        rarity: 'token' as any,
+        heroClass: 'neutral',
+        attack: 1,
+        health: 1,
+        keywords: []
+      } as any;
+      const instance = createCardInstance(tokenCard);
+      instance.isPlayed = true;
+      state.players.player.battlefield.push(instance);
+    }
+  }
   return state;
 }
 
