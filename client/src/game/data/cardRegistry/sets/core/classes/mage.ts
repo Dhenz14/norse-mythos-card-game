@@ -242,8 +242,10 @@ export const mageCards: CardData[] = [
       type: "damage",
       value: 3,
       targetType: "any_character",
-      requiresTarget: true
+      requiresTarget: true,
+      freezeTarget: true
     },
+    keywords: ["freeze"],
     collectible: true,
     set: "core"
   },
