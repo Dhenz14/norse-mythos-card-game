@@ -1,8 +1,5 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import packRoutes from "./routes/packRoutes";
-import inventoryRoutes from "./routes/inventoryRoutes";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
@@ -20,11 +17,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 
-  // Mount the Pack System routes
-  app.use('/api/packs', packRoutes);
-  
-  // Mount the Inventory routes
-  app.use('/api/inventory', inventoryRoutes);
+  // Mount Pack and Inventory routes only when DATABASE_URL is set (optional for static/local dev)
+  if (process.env.DATABASE_URL) {
+    const packRoutes = (await import("./routes/packRoutes")).default;
+    const inventoryRoutes = (await import("./routes/inventoryRoutes")).default;
+    app.use('/api/packs', packRoutes);
+    app.use('/api/inventory', inventoryRoutes);
+  }
 
   // Health check endpoint
   app.get('/api/health', (req: Request, res: Response) => {

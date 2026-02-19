@@ -3,13 +3,8 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",
-    "ms-vscode.vscode-typescript-next",
-    "dsznajder.es7-react-js-snippets",
-    "formulahendry.auto-rename-tag",
-    "ms-vscode.js-debug",
-    "csstools.postcss",
-    "steoates.autoimport",
-    "streetsidesoftware.code-spell-checker",
-    "ms-vsliveshare.vsliveshare"
+    "eamodio.gitlens",
+    "usernamehw.errorlens",
+    "humao.rest-client"
   ]
 }

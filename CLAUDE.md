@@ -5,9 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev     # Development server (Vite + Express)
-npm run build   # Production build
-npm run check   # TypeScript type checking
+npm run dev       # Development server (Vite + Express) — http://localhost:5000
+npm run dev:game  # Alias for dev
+npm run build     # Production build
+npm run check     # TypeScript type checking
+npm run lint      # ESLint
+npm run lint:fix  # ESLint with auto-fix
 ```
 
 ## Documentation
