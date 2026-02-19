@@ -58,19 +58,38 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game featur
 ```bash
 # Clone the repository
 git clone https://github.com/Ragnaroknfthive/Ragnarok-Card-.git
+cd Ragnarok-Card-
 
 # Install dependencies
 npm install
 
-# Start development server
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your actual database credentials (see Environment Setup below)
+
+# Push database schema
+npm run db:push
+
+# Start development server (serves on port 5000)
 npm run dev
-
-# TypeScript check
-npm run check
-
-# Production build
-npm run build
 ```
+
+### Environment Setup
+
+1. Copy `.env.example` to `.env`
+2. Set up a PostgreSQL database (Neon recommended) and fill in `DATABASE_URL` and `PG*` variables
+3. Generate a random `SESSION_SECRET` (any long random string)
+4. Cloudinary variables are optional (used for card art hosting)
+
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server on port 5000 |
+| `npm run build` | Build for production (Vite + esbuild) |
+| `npm start` | Run production build |
+| `npm run check` | TypeScript type checking |
+| `npm run db:push` | Push database schema via Drizzle |
 
 ---
 
