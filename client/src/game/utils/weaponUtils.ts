@@ -19,6 +19,7 @@ import {
 } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { destroyCard } from './zoneUtils';
+import { dealDamage } from './effects/damageUtils';
 
 /**
  * Equip a weapon for a player
@@ -124,15 +125,7 @@ export function attackWithWeapon(
   
   // If no targetId is specified, attack the enemy hero directly
   if (!targetId || targetType === 'hero') {
-    
-    // Apply damage to enemy hero
-    newState.players[defendingPlayerType].health -= attackDamage;
-    
-    // Check for lethal damage
-    if (newState.players[defendingPlayerType].health <= 0) {
-      newState.gamePhase = "game_over";
-      newState.winner = attackingPlayerType;
-    }
+    newState = dealDamage(newState, defendingPlayerType, 'hero', attackDamage, undefined, undefined, attackingPlayerType);
   } else if (targetType === 'minion') {
     // Find the target minion
     const targetIndex = newState.players[defendingPlayerType].battlefield.findIndex(
@@ -168,24 +161,20 @@ export function attackWithWeapon(
     }
     
     // Hero also takes damage from attacking the minion
-    // Use helper function to safely get attack value
     const minionAttack = getAttack(targetMinion.card);
-    newState.players[attackingPlayerType].health -= minionAttack;
-    
-    // Check for lethal damage to the attacking hero
-    if (newState.players[attackingPlayerType].health <= 0) {
-      newState.gamePhase = "game_over";
-      newState.winner = defendingPlayerType;
+    if (minionAttack > 0) {
+      newState = dealDamage(newState, attackingPlayerType, 'hero', minionAttack, undefined, undefined, defendingPlayerType);
     }
   }
   
-  // Reduce weapon durability
-  if (weapon.currentDurability !== undefined) {
-    weapon.currentDurability -= 1;
-    
+  // Reduce weapon durability — re-read from newState in case destroyCard replaced the state object
+  const currentWeapon = newState.players[attackingPlayerType].weapon;
+  if (currentWeapon && currentWeapon.currentDurability !== undefined) {
+    currentWeapon.currentDurability -= 1;
+
     // Check if weapon broke
-    if (weapon.currentDurability <= 0) {
-      
+    if (currentWeapon.currentDurability <= 0) {
+
       // Add to game log
       const breakEvent: GameLogEvent = {
         id: uuidv4(),
@@ -193,20 +182,20 @@ export function attackWithWeapon(
         turn: newState.turnNumber,
         timestamp: Date.now(),
         player: attackingPlayerType,
-        text: `${weapon.card.name} broke`,
-        cardId: weapon.instanceId
+        text: `${currentWeapon.card.name} broke`,
+        cardId: currentWeapon.instanceId
       };
-      
+
       newState.gameLog.push(breakEvent);
-      
+
       // Add to graveyard if it doesn't exist yet
       if (!newState.players[attackingPlayerType].graveyard) {
         newState.players[attackingPlayerType].graveyard = [];
       }
-      
+
       // Move to graveyard
-      newState.players[attackingPlayerType].graveyard.push(weapon);
-      
+      newState.players[attackingPlayerType].graveyard.push(currentWeapon);
+
       // Remove weapon
       newState.players[attackingPlayerType].weapon = undefined;
     }

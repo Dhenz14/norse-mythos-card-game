@@ -1,33 +1,30 @@
 /**
  * Database Connection Module
- * 
+ *
  * This module sets up the database connection using Drizzle ORM with PostgreSQL.
- * It uses the connection string from the environment variables.
+ * Exports null when DATABASE_URL is not set, allowing the server to boot
+ * without a database (pack/inventory routes are conditionally mounted).
  */
 
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
-// Get database URL from environment
 const databaseUrl = process.env.DATABASE_URL;
 
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL environment variable not set');
+let pool: Pool | null = null;
+let drizzleDb: ReturnType<typeof drizzle> | null = null;
+
+if (databaseUrl) {
+  console.log(`Database connection initialized with URL: ${databaseUrl.replace(/:[^:]*@/, ':***@')}`);
+  pool = new Pool({
+    connectionString: databaseUrl,
+    ssl: databaseUrl.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
+  });
+  drizzleDb = drizzle(pool);
+} else {
+  console.log('DATABASE_URL not set — database features disabled');
 }
 
-console.log(`Database connection initialized with URL: ${databaseUrl.replace(/:[^:]*@/, ':***@')}`);
-
-// Create connection pool with SSL support
-const pool = new Pool({
-  connectionString: databaseUrl,
-  ssl: databaseUrl.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
-});
-
-// Create drizzle instance with the pg pool
-export const db = drizzle(pool);
-
-// Export direct pool for SQL migrations
+export const db = drizzleDb;
 export const directDb = pool;
-
-// Export for use in other modules
 export default db;

@@ -15,6 +15,8 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
+import { getElementColor, getElementIcon, ELEMENT_LABELS, type ElementType } from '../../utils/elements';
+import { NORSE_TO_GAME_ELEMENT, type NorseElement } from '../../types/NorseTypes';
 
 /**
  * Props for the BattlefieldHero component
@@ -50,11 +52,21 @@ export interface BattlefieldHeroProps {
   isWeaponUpgraded?: boolean;
 }
 
+const getSecretColor = (heroClass: string) => {
+  switch (heroClass) {
+    case 'mage': return '#3b82f6';
+    case 'hunter': return '#22c55e';
+    case 'paladin': return '#eab308';
+    case 'rogue': return '#94a3b8';
+    default: return '#a855f7';
+  }
+};
+
 /**
  * BattlefieldHero displays an enhanced hero card on the battlefield
  * with interactive hero powers, elemental effects, and detailed stats
  */
-export const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({ 
+export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   pet, 
   hpCommitted, 
   level, 
@@ -96,6 +108,12 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
   const norseHero = pet.norseHeroId ? ALL_NORSE_HEROES[pet.norseHeroId] : null;
   const heroPower = norseHero?.heroPower;
   const weaponUpgrade = norseHero?.weaponUpgrade;
+
+  const weaknessElement = useMemo(() => {
+    if (!isOpponent || !norseHero?.weakness) return null;
+    const gameElement = NORSE_TO_GAME_ELEMENT[norseHero.weakness as NorseElement];
+    return gameElement || null;
+  }, [isOpponent, norseHero?.weakness]);
   
   const WEAPON_COST = 5;
   const canAffordPower = heroPower ? mana >= heroPower.cost : false;
@@ -120,16 +138,6 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
     };
   }, []);
   
-  const getSecretColor = (heroClass: string) => {
-    switch (heroClass) {
-      case 'mage': return '#3b82f6';
-      case 'hunter': return '#22c55e';
-      case 'paladin': return '#eab308';
-      case 'rogue': return '#6b7280';
-      default: return '#a855f7';
-    }
-  };
-
   return (
     <div 
       className={`battlefield-hero-square ${isOpponent ? 'opponent' : 'player'} ${isTargetable ? 'targetable' : ''} ${onClick ? 'clickable' : ''}`}
@@ -162,7 +170,6 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
               pointerEvents: 'auto'
             }}
             onClick={(e) => {
-              e.stopPropagation();
               handlePortraitClick(e);
             }}
             onMouseEnter={(e) => {
@@ -244,6 +251,19 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
           <div className="hero-name-plate">
             <span className="hero-name">{pet.name.split(' ')[0]}</span>
           </div>
+
+          {weaknessElement && (
+            <div
+              className="hero-weakness-badge"
+              title={`Weak to ${ELEMENT_LABELS[weaknessElement as ElementType] || weaknessElement}`}
+            >
+              <span className="weakness-label">Weak to</span>
+              <span className="weakness-icon">{getElementIcon(weaknessElement as ElementType)}</span>
+              <span className="weakness-name" style={{ color: getElementColor(weaknessElement as ElementType) }}>
+                {ELEMENT_LABELS[weaknessElement as ElementType] || weaknessElement}
+              </span>
+            </div>
+          )}
         
           <div className="hero-stat-bar hp-bar">
             <div className="stat-bar-fill hp-fill" style={{ width: `${healthPercent}%` }} />
@@ -372,6 +392,6 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export default BattlefieldHero;

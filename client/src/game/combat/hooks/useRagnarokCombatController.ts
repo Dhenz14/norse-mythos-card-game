@@ -937,7 +937,57 @@ export function useRagnarokCombatController(
       }
     };
   }, [showdownCelebration, heroDeathState?.isAnimating, handleCombatEnd, resolution]);
-  
+
+  // RESOLUTION phase escape timer — catches freezes where showdown never triggers
+  const resolutionEscapeRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    const phase = combatState?.phase;
+    if (phase === CombatPhase.RESOLUTION && !showdownCelebration && !heroDeathState && isActive) {
+      if (resolutionEscapeRef.current) clearTimeout(resolutionEscapeRef.current);
+      resolutionEscapeRef.current = setTimeout(() => {
+        const adapter = getPokerCombatAdapterState();
+        const currentPhase = adapter.combatState?.phase;
+        if (currentPhase === CombatPhase.RESOLUTION && !showdownCelebration) {
+          debug.warn('[ResolutionEscape] Stuck in RESOLUTION for 12s — forcing resolution via resolveCombat');
+          const result = resolveCombat();
+          if (result) {
+            setResolution(result);
+            const winningCards = result.winner === 'draw'
+              ? [...(result.playerHand?.cards || []), ...(result.opponentHand?.cards || [])]
+              : result.winner === 'player'
+                ? result.playerHand?.cards || []
+                : result.opponentHand?.cards || [];
+            setShowdownCelebration({
+              resolution: {
+                winner: result.winner,
+                resolutionType: result.resolutionType,
+                playerHand: result.playerHand,
+                opponentHand: result.opponentHand,
+                whoFolded: result.whoFolded
+              },
+              winningCards
+            });
+          } else {
+            debug.warn('[ResolutionEscape] resolveCombat returned null — forcing advance');
+            advanceTurnPhase();
+            grantPokerHandRewards();
+          }
+        }
+      }, 12000);
+    } else {
+      if (resolutionEscapeRef.current) {
+        clearTimeout(resolutionEscapeRef.current);
+        resolutionEscapeRef.current = null;
+      }
+    }
+    return () => {
+      if (resolutionEscapeRef.current) {
+        clearTimeout(resolutionEscapeRef.current);
+        resolutionEscapeRef.current = null;
+      }
+    };
+  }, [combatState?.phase, showdownCelebration, heroDeathState, isActive, resolveCombat, advanceTurnPhase, grantPokerHandRewards]);
+
   const handleHeroDeathComplete = useCallback(() => {
     if (!heroDeathState) return;
     

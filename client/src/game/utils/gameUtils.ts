@@ -217,46 +217,29 @@ export function drawCard(state: GameState): GameState {
     
     // Log fatigue damage
     
-    // Apply fatigue damage (increasing with each empty draw)
+    // Apply fatigue counter update
     let updatedState: GameState = {
       ...state,
       fatigueCount: {
-        ...state.fatigueCount,
+        player: state.fatigueCount?.player ?? 0,
+        opponent: state.fatigueCount?.opponent ?? 0,
         [currentPlayer]: newFatigue
-      },
-      players: {
-        ...state.players,
-        [currentPlayer]: {
-          ...player,
-          health: player.health - newFatigue
-        }
       }
     } as GameState;
-    
-    // Make sure fatigueCount is defined in the state
-    const stateWithFatigue: GameState = {
-      ...updatedState,
-      fatigueCount: {
-        player: updatedState.fatigueCount?.player ?? 0,
-        opponent: updatedState.fatigueCount?.opponent ?? 0
-      }
-    };
-    
+
+    // Apply fatigue damage via canonical path (handles heroArmor, heroHealth, game-over)
+    const enemyPlayer = currentPlayer === 'player' ? 'opponent' : 'player';
+    updatedState = dealDamage(updatedState, currentPlayer as 'player' | 'opponent', 'hero', newFatigue, undefined, undefined, enemyPlayer as 'player' | 'opponent');
+
     // Add to game log
     updatedState = logCardDraw(
-      stateWithFatigue, 
+      updatedState,
       currentPlayer as 'player' | 'opponent',
       undefined, // cardId
       false, // isBurned
       true, // isFatigue
       newFatigue // fatigueDamage
     );
-    
-    // Check for game over due to fatigue
-    if (updatedState.players[currentPlayer].health <= 0) {
-      updatedState.gamePhase = "game_over";
-      updatedState.winner = currentPlayer === 'player' ? 'opponent' : 'player';
-    }
     
     return updatedState as GameState;
   }
@@ -299,9 +282,6 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   const isComboActive = updatedCardsPlayedThisTurn > 1 && 
                         Array.isArray(cardKeywords) && 
                         cardKeywords.includes('combo');
-  
-  if (isComboActive) {
-  }
   
   // Handle pending overload if card has overload keyword
   let pendingOverload = player.mana.pendingOverload || 0;
@@ -392,10 +372,6 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   }
   
   // 3. Handle Minion cards
-  // Special handling for legendary cards (for debugging)
-  if (card.card.rarity === 'legendary') {
-    // Special handling for legendary cards can be implemented here
-  }
   
   // Handle Magnetic mechanic - check if targeting a mech on battlefield
   // Reuse the existing cardKeywords variable declared above
@@ -431,7 +407,13 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     // Don't play the card yet, wait for target selection
     return state;
   }
-  
+
+  // Check if battlefield is full before removing card from hand
+  if (player.battlefield.length >= 7) {
+    debug.error(`Cannot play ${card.card.name}: Battlefield is full (7 minions maximum)`);
+    return state;
+  }
+
   // Remove card from hand - must be done BEFORE battlecry processing to ensure clean state
   player.hand.splice(index, 1);
   
@@ -477,12 +459,6 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     };
   }
   
-  // Check if battlefield is full (Hearthstone has a limit of 7 minions)
-  if (player.battlefield.length >= 7) {
-    debug.error(`Cannot play ${card.card.name}: Battlefield is full (7 minions maximum)`);
-    return state;
-  }
-
   // Add the played card to the battlefield
   player.battlefield.push(playedCard);
   
@@ -621,23 +597,9 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
         const damage = originalCardData.battlecry.value || 1;
         
         if (targetId === 'opponent') {
-          // Damage opponent hero
-          newState.players.opponent.health -= damage;
-          
-          // Check for lethal damage
-          if (newState.players.opponent.health <= 0) {
-            newState.gamePhase = "game_over";
-            newState.winner = 'player';
-          }
+          newState = dealDamage(newState, 'opponent', 'hero', damage, undefined, originalCardData.id as number | undefined, currentPlayer);
         } else {
-          // Damage player hero (self-damage effects)
-          newState.players.player.health -= damage;
-          
-          // Check for lethal damage
-          if (newState.players.player.health <= 0) {
-            newState.gamePhase = "game_over";
-            newState.winner = 'opponent';
-          }
+          newState = dealDamage(newState, 'player', 'hero', damage, undefined, originalCardData.id as number | undefined, currentPlayer);
         }
       }
     } else if (originalCardData.battlecry.type === 'aoe_damage') {
@@ -773,7 +735,7 @@ function applyTurnStartPipeline(state: GameState, player: 'player' | 'opponent')
   return newState;
 }
 
-export function endTurn(state: GameState): GameState {
+export function endTurn(state: GameState, skipAISimulation = false): GameState {
   // Begin turn transition
   const currentPlayer = state.currentTurn;
   const nextPlayer = currentPlayer === 'player' ? 'opponent' : 'player';
@@ -917,7 +879,7 @@ export function endTurn(state: GameState): GameState {
   newState = applyTurnStartPipeline(newState, typedNextPlayer);
   
   // If next player is AI (opponent), simulate their turn
-  if (typedNextPlayer === 'opponent') {
+  if (typedNextPlayer === 'opponent' && !skipAISimulation) {
     try {
       // AI logic: Play cards if they have enough mana, prioritizing high cost cards
       // This implements Hearthstone-like AI behavior for playing cards and attacking
@@ -1008,6 +970,87 @@ export function endTurn(state: GameState): GameState {
   // Check for game over conditions
   newState = checkGameOver(newState);
   
+  return newState;
+}
+
+/**
+ * Process AI turn separately (used for delayed AI execution).
+ * Takes a state where currentTurn === 'opponent' and turn-start pipeline is already applied.
+ * Simulates AI play, processes end-of-turn, then switches back to player.
+ */
+export function processAITurn(state: GameState): GameState {
+  let newState = state;
+  try {
+    newState = simulateOpponentTurn(newState);
+    newState = processEndOfTurnEffects(newState);
+
+    const playerState = newState.players.player;
+    const newTurnNumber = newState.turnNumber + 1;
+    const newPlayerMaxMana = Math.min(playerState.mana.max + 1, 10);
+    const playerOverloaded = playerState.mana.overloaded || 0;
+    const availableMana = Math.max(0, newPlayerMaxMana - playerOverloaded);
+
+    newState = {
+      ...newState,
+      currentTurn: 'player',
+      turnNumber: newTurnNumber,
+      players: {
+        ...newState.players,
+        player: {
+          ...playerState,
+          mana: {
+            current: availableMana,
+            max: newPlayerMaxMana,
+            overloaded: playerOverloaded,
+            pendingOverload: 0
+          },
+          heroPower: {
+            ...playerState.heroPower,
+            used: false
+          },
+          cardsPlayedThisTurn: 0
+        }
+      }
+    };
+
+    newState = applyTurnStartPipeline(newState, 'player');
+  } catch (error) {
+    debug.error("Error during AI turn processing:", error);
+    const playerState = newState.players.player;
+    const newTurnNumber = newState.turnNumber + 1;
+    const newPlayerMaxMana = Math.min(playerState.mana.max + 1, 10);
+
+    try {
+      newState = {
+        ...newState,
+        currentTurn: 'player',
+        turnNumber: newTurnNumber,
+        players: {
+          ...newState.players,
+          player: {
+            ...playerState,
+            mana: {
+              current: newPlayerMaxMana,
+              max: newPlayerMaxMana,
+              overloaded: 0,
+              pendingOverload: 0
+            },
+            heroPower: {
+              ...playerState.heroPower,
+              used: false
+            },
+            cardsPlayedThisTurn: 0
+          }
+        }
+      };
+      newState = applyTurnStartPipeline(newState, 'player');
+    } catch (recoveryError) {
+      debug.error("Error in AI turn recovery:", recoveryError);
+      newState = performTurnStartResets(newState);
+    }
+  }
+
+  newState = checkGameOver(newState);
   return newState;
 }
 
@@ -1213,9 +1256,9 @@ function simulateOpponentTurn(state: GameState): GameState {
       try {
         // Get player's battlefield and check for Taunt minions
         const playerField = currentState.players.player.battlefield;
-        const playerHealth = currentState.players.player.health;
+        const playerHealth = currentState.players.player.heroHealth ?? currentState.players.player.health;
         const playerHasTaunts = hasTauntMinions(playerField);
-        
+
         // If we can kill player, do it! (But only if there are no Taunts)
         if (!playerHasTaunts && ((attackerCard.card as any).attack || 0) >= playerHealth) {
           // Attack player's hero directly
@@ -1426,10 +1469,12 @@ function processAttackForOpponent(
       
       // Apply damage immediately when NOT deferring
       if (!deferDamage) {
-        newState.players.player.health -= attackDamage;
-        debug.combat(`[AI Attack] Player HP: ${newState.players.player.health + attackDamage} → ${newState.players.player.health}`);
+        const hpBefore = newState.players.player.heroHealth ?? newState.players.player.health;
+        newState = dealDamage(newState, 'player', 'hero', attackDamage, undefined, undefined, 'opponent');
+        const hpAfter = newState.players.player.heroHealth ?? newState.players.player.health;
+        debug.combat(`[AI Attack] Player HP: ${hpBefore} → ${hpAfter}`);
       }
-      
+
       // Apply Burn self-damage if attacker is burning
       if (attacker.isBurning) {
         const burnDamage = 3;
@@ -1439,37 +1484,32 @@ function processAttackForOpponent(
           newState.players.opponent.battlefield[attackerIdx].currentHealth = currentHealth - burnDamage;
         }
       }
-      
+
       // Store the original attacker ID
       const attackerId = attacker.instanceId;
-      
+
       // Find attacker to ensure we have the right index (in case state has changed)
       const updatedAttackerIndex = newState.players.opponent.battlefield.findIndex(
         card => card.instanceId === attackerId
       );
-      
+
       if (updatedAttackerIndex !== -1) {
         // Track attacks performed for Windfury
         newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
-        
+
         // For non-Windfury cards, or Windfury cards that have performed their maximum attacks (2), disable attacking
         // Ensure keywords array exists before checking
         const attackerKeywords = attacker.card.keywords || [];
         const hasWindfury = attackerKeywords.includes('windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
-        
+
         if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
           // Mark the attacker as having used all its attacks this turn
           newState.players.opponent.battlefield[updatedAttackerIndex].canAttack = false;
         }
       }
-      
-      // Check if the player is defeated
-      if (newState.players.player.health <= 0) {
-        newState.gamePhase = "game_over";
-        newState.winner = 'opponent';
-      }
-      
+
+      // Game over is handled by dealDamage above
       return newState;
     }
     
@@ -1716,9 +1756,9 @@ function processAttackForPlayer(
       
       // Only apply damage immediately if NOT deferring
       if (!deferDamage) {
-        newState.players.opponent.health -= attackDamage;
+        newState = dealDamage(newState, 'opponent', 'hero', attackDamage, undefined, undefined, 'player');
       }
-      
+
       // Apply Burn self-damage if attacker is burning
       if (attacker.isBurning) {
         const burnDamage = 3;
@@ -1728,36 +1768,30 @@ function processAttackForPlayer(
           newState.players.player.battlefield[attackerIdx].currentHealth = currentHealth - burnDamage;
         }
       }
-      
+
       // Store the original attacker ID
       const attackerId = attacker.instanceId;
-      
+
       // Find attacker to ensure we have the right index
       const updatedAttackerIndex = newState.players.player.battlefield.findIndex(
         card => card.instanceId === attackerId
       );
-      
+
       if (updatedAttackerIndex !== -1) {
         // Track attacks performed for Windfury
         const currentCard = newState.players.player.battlefield[updatedAttackerIndex];
         const currentAttacks = currentCard.attacksPerformed ?? 0;
         currentCard.attacksPerformed = currentAttacks + 1;
-        
+
         const attackerKeywords = attacker.card.keywords || [];
         const hasWindfury = attackerKeywords.includes('windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
-        
+
         if ((currentCard.attacksPerformed ?? 0) >= maxAttacksAllowed) {
           currentCard.canAttack = false;
         }
       }
-      
-      // Check if the opponent is defeated
-      if (newState.players.opponent.health <= 0) {
-        newState.gamePhase = "game_over";
-        newState.winner = 'player';
-      }
-      
+
       return newState;
     }
     
@@ -2107,7 +2141,7 @@ export function processAttack(
   
   // Check for Rush restriction - cards with Rush can only attack minions on the turn they're played
   // Use the more robust isValidRushTarget function for consistency
-  if (!defenderInstanceId) {
+  if (!defenderInstanceId || defenderInstanceId === 'opponent-hero') {
     if (!isValidRushTarget(attacker, 'hero')) {
       debug.error('Minions with Rush cannot attack the enemy hero on the turn they are played');
       return state;
@@ -2122,8 +2156,8 @@ export function processAttack(
   // Check if opponent has Taunt minions - if so, we can't attack the hero or non-Taunt minions
   const opponentHasTaunt = hasTauntMinions(newState.players.opponent.battlefield);
   
-  // If no defender is specified, attack the opponent's hero directly
-  if (!defenderInstanceId) {
+  // If no defender is specified (or 'opponent-hero' sentinel), attack the opponent's hero directly
+  if (!defenderInstanceId || defenderInstanceId === 'opponent-hero') {
     // Cannot attack hero if there are Taunt minions on the battlefield
     if (opponentHasTaunt) {
       debug.error('Cannot attack hero directly when opponent has Taunt minions');
@@ -2149,26 +2183,21 @@ export function processAttack(
       // Track attacks performed for Windfury
       newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
       
-      // For non-Windfury cards, or Windfury cards that have performed their maximum attacks (2), disable attacking
+      // For non-Windfury cards, or Windfury cards that have performed their maximum attacks, disable attacking
       const attackerKeywords = attacker.card.keywords || [];
+      const hasMegaWindfury = attackerKeywords.includes('mega_windfury');
       const hasWindfury = attackerKeywords.includes('windfury');
-      const maxAttacksAllowed = hasWindfury ? 2 : 1;
-      
+      const maxAttacksAllowed = hasMegaWindfury ? 4 : hasWindfury ? 2 : 1;
+
       if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
         // Mark the attacker as having used all its attacks this turn
         newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
       }
     }
-    
-    // Check if the opponent is defeated
-    if (newState.players.opponent.health <= 0) {
-      newState.gamePhase = "game_over";
-      newState.winner = 'player';
-    }
-    
+
     return newState;
   }
-  
+
   // Find the defender card
   const opponentField = newState.players.opponent.battlefield;
   const defenderIndex = opponentField.findIndex(card => card.instanceId === defenderInstanceId);
@@ -2253,11 +2282,12 @@ export function processAttack(
     // Attacker is still alive, mark it as having performed an attack
     // We need to do this here because the index might have changed
     const attackerKeywords = attacker.card.keywords || [];
+    const hasMegaWindfury = attackerKeywords.includes('mega_windfury');
     const hasWindfury = attackerKeywords.includes('windfury');
-    const maxAttacksAllowed = hasWindfury ? 2 : 1;
-    
+    const maxAttacksAllowed = hasMegaWindfury ? 4 : hasWindfury ? 2 : 1;
+
     newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
-    
+
     if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
       // Mark the attacker as having used all its attacks this turn
       newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;

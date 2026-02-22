@@ -5,6 +5,7 @@ import { drawCardFromDeck, removeDeadMinions, destroyCard } from './zoneUtils';
 import allCards from '../data/allCards';
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
+import { dealDamage } from './effects/damageUtils';
 
 /**
  * Execute deathrattle effects for a card
@@ -267,7 +268,7 @@ function executeDamageDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   const damageAmount = deathrattle.value || 1;
   const targets = deathrattle.targetType;
@@ -290,7 +291,7 @@ function executeDamageDeathrattle(
     });
     
     // Deal damage to enemy hero
-    enemyPlayer.health -= damageAmount;
+    newState = dealDamage(newState, enemyId, 'hero', damageAmount, undefined, undefined, playerId);
   } else if (targets === 'all') {
     // Deal damage to all minions on both sides
     for (const playerKey of ['player', 'opponent'] as const) {
@@ -307,7 +308,7 @@ function executeDamageDeathrattle(
   } else if (targets === 'enemy_hero') {
     // Deal damage to enemy hero only
     const enemyId = playerId === 'player' ? 'opponent' : 'player';
-    newState.players[enemyId].health -= damageAmount;
+    newState = dealDamage(newState, enemyId, 'hero', damageAmount, undefined, undefined, playerId);
   }
   
   // Check if any minions died as a result of the deathrattle damage
@@ -390,7 +391,8 @@ function executeHealDeathrattle(
     });
     
     // Heal friendly hero
-    currentPlayer.health = Math.min(currentPlayer.health + healAmount, 30); // 30 is max health
+    const cpMaxHp = (currentPlayer as any).maxHealth || 30;
+    currentPlayer.heroHealth = Math.min((currentPlayer.heroHealth ?? currentPlayer.health) + healAmount, cpMaxHp);
   } else if (targets === 'all') {
     // Heal all minions and heroes
     for (const playerKey of ['player', 'opponent'] as const) {
@@ -399,12 +401,16 @@ function executeHealDeathrattle(
         const maxHealth = minion.card.type === 'minion' ? (minion.card.health ?? 0) : 0;
         minion.currentHealth = Math.min(currentHealth + healAmount, maxHealth);
       });
-      
-      newState.players[playerKey].health = Math.min(newState.players[playerKey].health + healAmount, 30);
+
+      const p = newState.players[playerKey];
+      const pMaxHp = (p as any).maxHealth || 30;
+      p.heroHealth = Math.min((p.heroHealth ?? p.health) + healAmount, pMaxHp);
     }
   } else if (targets === 'friendly_hero') {
     // Heal friendly hero only
-    newState.players[playerId].health = Math.min(newState.players[playerId].health + healAmount, 30);
+    const p = newState.players[playerId];
+    const pMaxHp = (p as any).maxHealth || 30;
+    p.heroHealth = Math.min((p.heroHealth ?? p.health) + healAmount, pMaxHp);
   }
   
   return newState;
@@ -891,7 +897,7 @@ function executeRandomDamageDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const enemyId = playerId === 'player' ? 'opponent' : 'player';
   const enemy = newState.players[enemyId];
   const totalDamage = deathrattle.value || 1;
@@ -910,7 +916,7 @@ function executeRandomDamageDeathrattle(
 
     const target = targets[Math.floor(Math.random() * targets.length)];
     if (target.type === 'hero') {
-      enemy.health -= 1;
+      newState = dealDamage(newState, enemyId, 'hero', 1, undefined, undefined, playerId);
     } else {
       const minion = enemy.battlefield[target.index];
       if (minion.hasDivineShield) {
@@ -923,14 +929,7 @@ function executeRandomDamageDeathrattle(
   }
 
   // Use removeDeadMinions to properly handle graveyard and deathrattles
-  const afterDeadRemoved = removeDeadMinions(newState);
-
-  if (afterDeadRemoved.players[enemyId].health <= 0) {
-    afterDeadRemoved.gamePhase = 'game_over';
-    afterDeadRemoved.winner = playerId;
-  }
-
-  return afterDeadRemoved;
+  return removeDeadMinions(newState);
 }
 
 function executeGrantKeywordDeathrattle(

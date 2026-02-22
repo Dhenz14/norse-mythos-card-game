@@ -112,6 +112,19 @@
   display: block;
 }
 
+.hearthstone-end-turn .end-turn-hint {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: -1px;
+}
+
+.hearthstone-end-turn.inactive .end-turn-hint {
+  color: rgba(255, 255, 255, 0.15);
+}
+
 @keyframes end-turn-glow {
   0%, 100% {
     box-shadow: 

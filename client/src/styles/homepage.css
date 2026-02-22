@@ -40,3 +40,30 @@
   outline: 2px solid rgba(200,100,100,0.6);
   outline-offset: 2px;
 }
+
+/* Homepage container background */
+.homepage-container {
+  background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 50%, #050508 100%);
+}
+
+/* Background overlay with blurred logo */
+.homepage-bg-overlay {
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) brightness(0.3);
+}
+
+/* Logo glow effect */
+.homepage-logo-glow {
+  background: radial-gradient(circle, rgba(200,50,50,0.4) 0%, transparent 70%);
+}
+
+/* Logo image filter */
+.homepage-logo-image {
+  filter: drop-shadow(0 0 30px rgba(255,50,50,0.3)) drop-shadow(0 0 60px rgba(150,150,170,0.2));
+}
+
+/* Bottom gradient overlay */
+.homepage-bottom-gradient {
+  background: linear-gradient(to top, rgba(200,50,50,0.1) 0%, transparent 100%);
+}

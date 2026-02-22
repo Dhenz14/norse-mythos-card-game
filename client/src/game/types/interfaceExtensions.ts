@@ -7,7 +7,7 @@
  * properties that are only used in specific components or features.
  */
 
-import { Card as CardData, CardInstance } from './CardTypes';
+import { CardData, CardInstance } from '../types';
 
 // Extend the CardInstance interface to include the card property
 // This reflects the actual runtime structure where a CardInstance

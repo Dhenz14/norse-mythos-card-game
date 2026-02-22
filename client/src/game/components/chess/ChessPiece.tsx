@@ -145,6 +145,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
         ${hasElement ? `element-piece element-piece-${piece.element}` : ''}
         ${matchupGlow === 'advantage' ? 'matchup-pulse-advantage' : ''}
         ${matchupGlow === 'disadvantage' ? 'matchup-pulse-disadvantage' : ''}
+        ${matchupGlow === 'mutual' ? 'matchup-pulse-mutual' : ''}
       `}
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
@@ -162,10 +163,16 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
           boxShadow: '0 0 20px rgba(34, 197, 94, 0.8), 0 0 40px rgba(34, 197, 94, 0.5), 0 0 60px rgba(34, 197, 94, 0.3), inset 0 0 15px rgba(34, 197, 94, 0.3)',
           zIndex: 50
         } : {}),
-        ...(matchupGlow === 'disadvantage' ? { 
+        ...(matchupGlow === 'disadvantage' ? {
           outline: '3px solid rgba(239, 68, 68, 0.9)',
           outlineOffset: '2px',
           boxShadow: '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5), 0 0 60px rgba(239, 68, 68, 0.3), inset 0 0 15px rgba(239, 68, 68, 0.3)',
+          zIndex: 50
+        } : {}),
+        ...(matchupGlow === 'mutual' ? {
+          outline: '3px solid rgba(192, 132, 252, 0.9)',
+          outlineOffset: '2px',
+          boxShadow: '0 0 20px rgba(192, 132, 252, 0.8), 0 0 40px rgba(192, 132, 252, 0.5), 0 0 60px rgba(192, 132, 252, 0.3), inset 0 0 15px rgba(192, 132, 252, 0.3)',
           zIndex: 50
         } : {})
       }}

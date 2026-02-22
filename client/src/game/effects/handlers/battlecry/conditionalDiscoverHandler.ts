@@ -60,7 +60,7 @@ function checkCondition(
       
     case 'no_duplicates':
     case 'highlander':
-      const cardCounts = new Map<number, number>();
+      const cardCounts = new Map<number | string, number>();
       for (const cardInstance of context.currentPlayer.deck) {
         const id = cardInstance.card.id;
         cardCounts.set(id, (cardCounts.get(id) || 0) + 1);

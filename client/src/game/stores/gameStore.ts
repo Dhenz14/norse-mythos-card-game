@@ -2,11 +2,12 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { toast } from 'sonner';
 import { createCardInstance, findCardInstance } from '../utils/cards/cardUtils';
-import { 
-  initializeGame, 
-  playCard, 
-  endTurn, 
-  processAttack
+import {
+  initializeGame,
+  playCard,
+  endTurn,
+  processAttack,
+  processAITurn
 } from '../utils/gameUtils';
 import { executeHeroPower } from '../utils/heroPowerUtils';
 import { processDiscovery } from '../utils/discoveryUtils';
@@ -155,6 +156,9 @@ interface GameStore {
 
 // Create a battlefield monitor that tracks changes with stack traces
 let prevBattlefieldLength = 0;
+
+// Guard: prevents a second attack from being initiated while one is already animating
+let isAttackProcessing = false;
 
 // Create store with subscribeWithSelector middleware for precise battlefield monitoring
 export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get) => ({
@@ -358,45 +362,59 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   endTurn: () => {
     const { gameState } = get();
     const audioStore = useAudio.getState();
-    
+
     try {
       // Log end turn to saga feed
       logActivity('turn_end', 'player', `Turn ${gameState.turnNumber} ended`);
-      
-      const newState = endTurn(gameState);
-      
-      // Log start of new turn to saga feed
-      logActivity('turn_start', newState.currentTurn === 'player' ? 'player' : 'opponent', 
-        `Turn ${newState.turnNumber} - ${newState.currentTurn === 'player' ? 'Your' : "Opponent's"} turn`);
-      
+
+      // Phase 1: End player turn, switch to opponent (skip AI simulation for delay)
+      const intermediateState = endTurn(gameState, true);
+
+      // Log opponent turn start
+      logActivity('turn_start', 'opponent',
+        `Turn ${intermediateState.turnNumber} - Opponent's turn`);
+
       // Play sound effect
       if (audioStore && typeof audioStore.playSoundEffect === 'function') {
         audioStore.playSoundEffect('turn_end');
       }
-      
+
       // End Turn = Fold in poker
-      // Only perform the fold action here - let useCombatEvents handle
-      // resolution and startNextHand to avoid double resolution path
       const pokerAdapter = getPokerCombatAdapterState();
       if (pokerAdapter.isActive && pokerAdapter.combatState) {
         const phase = pokerAdapter.combatState.phase;
         const playerId = pokerAdapter.combatState.player.playerId;
-        
+
         const isTransitioning = useUnifiedCombatStore.getState().isTransitioningHand;
         const hasFoldWinner = !!pokerAdapter.combatState.foldWinner;
         if (phase !== CombatPhase.MULLIGAN && phase !== CombatPhase.RESOLUTION && !isTransitioning && !hasFoldWinner) {
           debug.log('[UnifiedEndTurn] End Turn = Fold');
-          
           pokerAdapter.performAction(playerId, CombatAction.BRACE);
         } else {
           debug.log(`[UnifiedEndTurn] Skipping fold: phase=${phase}, transitioning=${isTransitioning}`);
         }
       }
-      
-      set({ 
-        gameState: newState,
+
+      // Set intermediate state (shows opponent's turn, triggers turn banner)
+      set({
+        gameState: intermediateState,
         selectedCard: null
       });
+
+      // Phase 2: After AI thinking delay, process AI turn and switch back to player
+      const aiDelay = 800 + Math.random() * 700; // 800-1500ms
+      setTimeout(() => {
+        const { gameState: currentState } = get();
+        if (currentState.currentTurn !== 'opponent') return;
+        if (currentState.gamePhase === 'game_over') return;
+
+        const finalState = processAITurn(currentState);
+
+        logActivity('turn_start', 'player',
+          `Turn ${finalState.turnNumber} - Your turn`);
+
+        set({ gameState: finalState });
+      }, aiDelay);
     } catch (error) {
       debug.error('Error ending turn:', error);
     }
@@ -405,9 +423,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   // Select a card as a possible attacker
   selectAttacker: (card: CardInstance | CardInstanceWithCardData | null) => {
     const targetingStore = useTargetingStore.getState();
-    
+
     // If card is not null, set it as the attacking card
     if (card) {
+      // Guard against re-entry — if already targeting this card, skip
+      const currentAttacker = get().attackingCard;
+      if (currentAttacker && currentAttacker.instanceId === card.instanceId && targetingStore.isTargeting) {
+        debug.log('[Targeting] Already targeting this card, skipping re-entry');
+        return;
+      }
       set({ attackingCard: card as CardInstance });
       
       // Calculate valid targets for this attacker
@@ -423,18 +447,19 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const validTargetIds: string[] = [];
       
       if (hasTaunt) {
-        // Can only attack taunt minions
+        // Can only attack taunt minions (stealth doesn't protect a taunt minion)
         opponentBattlefield.forEach((m: CardInstance) => {
           if (m.card?.keywords?.includes('taunt')) {
             validTargetIds.push(m.instanceId);
           }
         });
       } else {
-        // Can attack any opponent minion or hero
+        // Can attack any non-stealthed opponent minion or hero
         opponentBattlefield.forEach((m: CardInstance) => {
-          validTargetIds.push(m.instanceId);
+          if (!m.card?.keywords?.includes('stealth')) {
+            validTargetIds.push(m.instanceId);
+          }
         });
-        // Can also attack hero
         validTargetIds.push('opponent-hero');
       }
       
@@ -449,26 +474,32 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   
   // Execute an attack with the selected card against a target (or hero if no target)
   attackWithCard: (attackerId: string, defenderId?: string) => {
+    // Prevent re-entry while a previous attack animation is in flight
+    if (isAttackProcessing) return;
+    isAttackProcessing = true;
+
     const { gameState } = get();
     const audioStore = useAudio.getState();
     const targetingStore = useTargetingStore.getState();
-    
+
     // Get animation stores - use getState() since we're outside React component
     const animationManager = useAnimationStore.getState();
     const announcementStore = useAnnouncementStore.getState();
-    
-    // Find the attacker card for animation
-    const attackerCard = gameState.players.player.battlefield.find(
+
+    // Find the attacker card for animation — use fresh state for accurate attacksPerformed
+    const attackerCard = get().gameState.players.player.battlefield.find(
       c => c.instanceId === attackerId
     );
 
     if (attackerCard) {
+      const hasMegaWindfury = attackerCard.card.keywords?.includes('mega_windfury');
       const hasWindfury = attackerCard.card.keywords?.includes('windfury');
-      const maxAttacks = hasWindfury ? 2 : 1;
+      const maxAttacks = hasMegaWindfury ? 4 : hasWindfury ? 2 : 1;
       if ((attackerCard.attacksPerformed || 0) >= maxAttacks) {
         toast.error("This minion already attacked this turn!");
         targetingStore.cancelTargeting();
         set({ attackingCard: null });
+        isAttackProcessing = false;
         return;
       }
     }
@@ -533,14 +564,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       
       setTimeout(() => {
         const { gameState: freshState } = get();
-        
+
         const freshAttackerCard = freshState.players.player.battlefield.find(
           c => c.instanceId === attackerId
         );
-        
+
         if (!freshAttackerCard) {
           targetingStore.cancelTargeting();
           set({ attackingCard: null, selectedCard: null });
+          isAttackProcessing = false;
           return;
         }
         
@@ -604,21 +636,24 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           
           // Clear targeting state - attack completed
           targetingStore.cancelTargeting();
-          
+
           // Update game state
           set({
             gameState: newState,
-            attackingCard: null, // Clear attacking card after attack
-            selectedCard: null   // Clear any selected card
+            attackingCard: null,
+            selectedCard: null
           });
         } else {
           // Attack failed - clear targeting
           targetingStore.cancelTargeting();
+          set({ attackingCard: null });
         }
+        isAttackProcessing = false;
       }, impactDelay);
-      
+
     } catch (error) {
       debug.error('Error processing attack:', error);
+      isAttackProcessing = false;
       // Clear targeting on error
       targetingStore.cancelTargeting();
     }

@@ -37,6 +37,7 @@ export function applyHealthAndDeckSizeModifier(
   if (additionalHealth > 0) {
     newState.players[playerType].maxHealth += additionalHealth;
     newState.players[playerType].health += additionalHealth;
+    newState.players[playerType].heroHealth = newState.players[playerType].health;
     
     // Log the health increase
     newState.gameLog.push(
@@ -87,8 +88,9 @@ export function setHeroHealth(
   // Set max health to the specified value
   newState.players[playerType].maxHealth = healthValue;
   
-  // Set current health to the max value
+  // Set current health to the max value (keep both fields in sync)
   newState.players[playerType].health = healthValue;
+  newState.players[playerType].heroHealth = healthValue;
   
   // Log the health change
   newState.gameLog.push(
@@ -128,6 +130,7 @@ export function replaceHero(
   // For now, we just set health to Lord Jaraxxus's health (15)
   newState.players[playerType].maxHealth = 15;
   newState.players[playerType].health = Math.min(newState.players[playerType].health, 15);
+  newState.players[playerType].heroHealth = Math.min(newState.players[playerType].heroHealth ?? newState.players[playerType].health, 15);
   
   // Replace hero power
   // newState.players[playerType].heroPower = getJaraxxusHeroPower();

@@ -28,9 +28,9 @@ export function findBestMove(state: GameState, isPlayerTurn: boolean) {
     // Simple score based on health, minions, and cards
     let score = 0;
     
-    // Value health points
-    score += player.health * 2;
-    score -= opponent.health * 2;
+    // Value health points (heroHealth is authoritative; fall back to health for older state shapes)
+    score += (player.heroHealth ?? player.health) * 2;
+    score -= (opponent.heroHealth ?? opponent.health) * 2;
     
     // Value minions on board (attack + health)
     player.battlefield.forEach(minion => {

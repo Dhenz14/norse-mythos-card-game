@@ -12,6 +12,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "db:push": "drizzle-kit push",
+    "db:setup": "tsx server/setupDatabase.ts",
+    "db:seed": "tsx server/seedCardSupply.ts",
+    "db:seed-packs": "tsx server/seedPackTypes.ts",
     "prepare": "husky"
   },
   "dependencies": {

@@ -99,6 +99,7 @@ export const cardSupply = pgTable("card_supply", {
   nftRarity: text("nft_rarity").notNull(), // common, rare, epic, legendary, mythic
   maxSupply: integer("max_supply").notNull(), // Absolute max ever minted
   remainingSupply: integer("remaining_supply").notNull(), // How many left to pull
+  rewardReserve: integer("reward_reserve").notNull().default(0), // 20% held back for in-game rewards
   cardType: text("card_type").notNull(), // minion, spell, weapon, hero
   heroClass: text("hero_class").notNull(), // neutral, warrior, mage, etc.
   createdAt: timestamp("created_at").defaultNow(),
@@ -110,6 +111,7 @@ export const userInventory = pgTable("user_inventory", {
   userId: integer("user_id").references(() => users.id).notNull(),
   cardId: integer("card_id").notNull(), // References card_supply.cardId
   quantity: integer("quantity").notNull().default(1),
+  mintNumber: integer("mint_number"), // Serial # of first copy pulled (null for legacy)
   acquiredAt: timestamp("acquired_at").defaultNow(),
 });
 
@@ -147,6 +149,7 @@ export const insertCardSupplySchema = createInsertSchema(cardSupply).pick({
   nftRarity: true,
   maxSupply: true,
   remainingSupply: true,
+  rewardReserve: true,
   cardType: true,
   heroClass: true,
 });

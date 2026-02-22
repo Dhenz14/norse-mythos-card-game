@@ -151,7 +151,7 @@
   --zone-pot-z: var(--token-z-community, 25);
 
   /* Legacy pot container (deprecated) */
-  --zone-pot-left: 10px;
+  --zone-pot-left: clamp(8px, 1.5vw, 24px);
   --zone-pot-top: 48%;
   --zone-pot-width: 80px;
   --zone-pot-margin-right: 2px;
@@ -161,7 +161,7 @@
      FAR LEFT of screen - snapped to edge
      No pot blocking since pot moved to hero areas
      ======================================== */
-  --zone-community-left: 10px;
+  --zone-community-left: clamp(8px, 1.5vw, 24px);
   --zone-community-top: 48%;
   --zone-community-z: var(--token-z-community, 25);
 
@@ -171,7 +171,7 @@
      Updated: Shifted right ~192px (~2 inches) to avoid blocking mana crystals
      Uses clamp() for responsive behavior
      ======================================== */
-  --zone-betting-left: 280px;
+  --zone-betting-left: clamp(200px, 18vw, 320px);
   --zone-betting-bottom: 8px;
   --zone-betting-z: var(--token-z-betting, 200);
 

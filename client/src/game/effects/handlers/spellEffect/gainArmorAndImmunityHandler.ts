@@ -32,11 +32,11 @@ export function executeGainArmorAndImmunityGainArmorAndImmunity(
   newState.players = { ...state.players };
   if (currentTurn === 'player') {
     newState.players.player = { ...state.players.player };
-    newState.players.player.armor = (newState.players.player.armor || 0) + armorValue;
+    newState.players.player.heroArmor = (newState.players.player.heroArmor || 0) + armorValue;
     (newState.players.player as any).isImmune = true;
   } else {
     newState.players.opponent = { ...state.players.opponent };
-    newState.players.opponent.armor = (newState.players.opponent.armor || 0) + armorValue;
+    newState.players.opponent.heroArmor = (newState.players.opponent.heroArmor || 0) + armorValue;
     (newState.players.opponent as any).isImmune = true;
   }
 

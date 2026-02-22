@@ -5,7 +5,10 @@
  */
 
 import express, { Request, Response } from 'express';
-import { directDb } from '../db';
+import { directDb as _directDb } from '../db';
+
+// This file is only imported when DATABASE_URL is set (see server/routes.ts)
+const directDb = _directDb!;
 
 const router = express.Router();
 
@@ -57,10 +60,11 @@ router.get('/:userId', async (req: Request, res: Response) => {
     
     // Get paginated results
     const inventoryResult = await directDb.query(`
-      SELECT 
+      SELECT
         ui.id,
         ui.card_id,
         ui.quantity,
+        ui.mint_number,
         ui.acquired_at,
         cs.card_name,
         cs.nft_rarity,
@@ -219,10 +223,11 @@ router.get('/:userId/card/:cardId', async (req: Request, res: Response) => {
   
   try {
     const result = await directDb.query(`
-      SELECT 
+      SELECT
         ui.id,
         ui.card_id,
         ui.quantity,
+        ui.mint_number,
         ui.acquired_at,
         cs.card_name,
         cs.nft_rarity,

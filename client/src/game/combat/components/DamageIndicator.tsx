@@ -1,10 +1,11 @@
 /**
- * DamageIndicator - Floating damage number animation
- * 
- * Extracted from RagnarokCombatArena.tsx for modular UI
+ * DamageIndicator - Floating damage/heal number animation
+ *
+ * Shows rising, fading numbers on hit. Scales up for big damage.
+ * Green for heals, red for damage, gold outline for critical (8+).
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 export interface DamageAnimation {
 	id: string;
@@ -13,32 +14,46 @@ export interface DamageAnimation {
 	x: number;
 	y: number;
 	timestamp: number;
+	isHeal?: boolean;
 }
 
 interface DamageIndicatorProps {
 	damage: number;
 	x: number;
 	y: number;
+	isHeal?: boolean;
 	onComplete: () => void;
 }
 
-export const DamageIndicator: React.FC<DamageIndicatorProps> = ({ 
-	damage, 
-	x, 
-	y, 
-	onComplete 
+export const DamageIndicator: React.FC<DamageIndicatorProps> = ({
+	damage,
+	x,
+	y,
+	isHeal = false,
+	onComplete
 }) => {
 	useEffect(() => {
-		const timer = setTimeout(onComplete, 1000);
+		const timer = setTimeout(onComplete, 1200);
 		return () => clearTimeout(timer);
 	}, [onComplete]);
 
+	const isBig = damage >= 5;
+	const isCritical = damage >= 8;
+	const jitterX = useMemo(() => (Math.random() - 0.5) * 20, []);
+
+	const className = [
+		'damage-indicator',
+		isHeal ? 'damage-heal' : '',
+		isBig ? 'damage-big' : '',
+		isCritical ? 'damage-critical' : '',
+	].filter(Boolean).join(' ');
+
 	return (
-		<div 
-			className="damage-indicator"
-			style={{ left: x, top: y }}
+		<div
+			className={className}
+			style={{ left: x + jitterX, top: y }}
 		>
-			-{damage}
+			{isHeal ? '+' : '-'}{damage}
 		</div>
 	);
 };

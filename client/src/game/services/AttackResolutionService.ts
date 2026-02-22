@@ -167,16 +167,17 @@ export function applyDamageToState(
     
     // Apply remaining damage to health - update BOTH health properties for UI sync
     if (remainingDamage > 0) {
-      targetPlayer.health = Math.max(0, targetPlayer.health - remainingDamage);
-      const currentHeroHealth = targetPlayer.heroHealth ?? targetPlayer.health;
-      targetPlayer.heroHealth = Math.max(0, currentHeroHealth - remainingDamage);
+      const prevHealth = targetPlayer.health;
+      const prevHeroHealth = targetPlayer.heroHealth ?? prevHealth;
+      targetPlayer.health = Math.max(0, prevHealth - remainingDamage);
+      targetPlayer.heroHealth = Math.max(0, prevHeroHealth - remainingDamage);
     }
     
     debug.combat(`[AttackResolution] ${defenderSide} Hero takes ${step.damage} damage (${remainingDamage} after armor), now at ${targetPlayer.heroHealth} HP`);
     
     const finalHeroHealth = targetPlayer.heroHealth ?? targetPlayer.health;
     if (finalHeroHealth <= 0 || targetPlayer.health <= 0) {
-      newState.gamePhase = "ended";
+      newState.gamePhase = "game_over";
       newState.winner = attackerSide;
     }
   } else if (step.targetId) {

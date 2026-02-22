@@ -111,13 +111,13 @@ export interface ComboEffect {
 
 // Base Card interface - common properties for all card types
 export interface Card {
-  id: number;
+  id: number | string;
   name: string;
-  description: string;
+  description?: string;
   manaCost: number;
   type: CardType;
-  rarity: CardRarity;
-  heroClass: HeroClass;
+  rarity?: CardRarity;
+  heroClass?: HeroClass | string;
   keywords?: string[];
   flavorText?: string;
   collectible?: boolean;

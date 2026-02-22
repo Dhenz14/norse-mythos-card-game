@@ -454,7 +454,7 @@ export function executeBattlecry(
           }
           const hero = newState.players[heroOwner];
           const maxHp = 30;
-          hero.health = Math.min(maxHp, (hero.health || 0) + healAmount);
+          hero.heroHealth = Math.min(maxHp, (hero.heroHealth ?? hero.health ?? 0) + healAmount);
         }
         return newState;
       }
@@ -522,6 +522,7 @@ export function executeBattlecry(
         return executeDamageBattlecry(newState, battlecry, targetId, targetType);
 
       case 'damage_aoe':
+      case 'damage_all':
         return executeAoEDamageBattlecry(newState, battlecry, targetId, targetType);
 
       case 'buff_adjacent':
@@ -1849,13 +1850,13 @@ function executeSetHealthBattlecry(
     return state;
   }
   
-  // Set health based on target
+  // Set health based on target (keep both fields in sync)
   if (targetId === 'opponent') {
-    // Set opponent hero health
     state.players.opponent.health = healthValue;
+    state.players.opponent.heroHealth = healthValue;
   } else {
-    // Set player hero health
     state.players.player.health = healthValue;
+    state.players.player.heroHealth = healthValue;
   }
   
   return state;
@@ -3004,44 +3005,44 @@ function executeBuffAndDamageBattlecry(
   cardInstanceId: string,
   targetId?: string
 ): GameState {
-  const battlefield = state.players.player.battlefield || [];
-  const sourceIdx = battlefield.findIndex(c => c.instanceId === cardInstanceId);
-  if (sourceIdx !== -1) {
-    const minion = battlefield[sourceIdx];
-    (minion.card as any).attack = ((minion.card as any).attack || 0) + (battlecry.buffAttack || 0);
-    (minion.card as any).health = ((minion.card as any).health || 0) + (battlecry.buffHealth || 0);
-    minion.currentHealth = (minion.currentHealth ?? (minion.card as any).health) + (battlecry.buffHealth || 0);
+  if (!targetId) return state;
+
+  const damage = (battlecry as any).damageValue ?? battlecry.value ?? 1;
+  const buffAtk = battlecry.buffAttack || 0;
+  const buffHp = battlecry.buffHealth || 0;
+
+  // Find target in either battlefield (card description says "Give a minion" — any minion)
+  let targetInfo = findCardInstance(state.players.opponent.battlefield || [], targetId);
+  let ownerKey: 'opponent' | 'player' = 'opponent';
+  if (!targetInfo) {
+    targetInfo = findCardInstance(state.players.player.battlefield || [], targetId);
+    ownerKey = 'player';
   }
-  if (targetId) {
-    const damage = battlecry.value || 1;
-    let targetInfo = findCardInstance(state.players.opponent.battlefield || [], targetId);
-    if (targetInfo) {
-      const m = targetInfo.card;
-      if (m.currentHealth === undefined) m.currentHealth = (m.card as any).health || 1;
-      if (m.hasDivineShield) {
-        m.hasDivineShield = false;
-      } else {
-        m.currentHealth! -= damage;
-        if (m.currentHealth! <= 0) {
-          state.players.opponent.battlefield.splice(targetInfo.index, 1);
-        }
-      }
-    } else {
-      targetInfo = findCardInstance(state.players.player.battlefield || [], targetId);
-      if (targetInfo) {
-        const m = targetInfo.card;
-        if (m.currentHealth === undefined) m.currentHealth = (m.card as any).health || 1;
-        if (m.hasDivineShield) {
-          m.hasDivineShield = false;
-        } else {
-          m.currentHealth! -= damage;
-          if (m.currentHealth! <= 0) {
-            state.players.player.battlefield.splice(targetInfo.index, 1);
-          }
-        }
-      }
+  if (!targetInfo) return state;
+
+  const m = targetInfo.card;
+  if (m.currentHealth === undefined) m.currentHealth = (m.card as any).health || 1;
+
+  // Apply attack buff to the target
+  if (buffAtk > 0) {
+    (m.card as any).attack = ((m.card as any).attack || 0) + buffAtk;
+    m.currentAttack = (m.currentAttack ?? (m.card as any).attack) + buffAtk;
+  }
+  if (buffHp > 0) {
+    (m.card as any).health = ((m.card as any).health || 0) + buffHp;
+    m.currentHealth += buffHp;
+  }
+
+  // Deal damage to the target (after buff so max health is updated first)
+  if (m.hasDivineShield) {
+    m.hasDivineShield = false;
+  } else {
+    m.currentHealth = (m.currentHealth ?? 0) - damage;
+    if ((m.currentHealth ?? 0) <= 0) {
+      state.players[ownerKey].battlefield.splice(targetInfo.index, 1);
     }
   }
+
   return state;
 }
 
@@ -3183,7 +3184,7 @@ function executeBuffHeroBattlecry(
   battlecry: BattlecryEffect
 ): GameState {
   const amount = battlecry.value || 0;
-  (state.players.player as any).armor = ((state.players.player as any).armor || 0) + amount;
+  state.players.player.heroArmor = (state.players.player.heroArmor || 0) + amount;
   return state;
 }
 

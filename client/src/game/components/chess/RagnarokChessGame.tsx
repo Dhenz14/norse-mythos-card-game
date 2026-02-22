@@ -305,12 +305,13 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
 
 interface RagnarokChessGameProps {
   onGameEnd?: (winner: 'player' | 'opponent') => void;
+  initialArmy?: ArmySelectionType | null;
 }
 
-const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
+const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initialArmy = null }) => {
   const { playSoundEffect } = useAudio();
-  const [phase, setPhase] = useState<GamePhase>('army_selection');
-  const [playerArmy, setPlayerArmy] = useState<ArmySelectionType | null>(null);
+  const [phase, setPhase] = useState<GamePhase>(initialArmy ? 'chess' : 'army_selection');
+  const [playerArmy, setPlayerArmy] = useState<ArmySelectionType | null>(initialArmy);
   const [sharedDeckCardIds, setSharedDeckCardIds] = useState<number[]>([]);
   const [combatPieces, setCombatPieces] = useState<{ attackerId: string; defenderId: string } | null>(null);
   const [vsScreenPieces, setVsScreenPieces] = useState<{ attacker: ChessPiece; defender: ChessPiece } | null>(null);
@@ -387,6 +388,14 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd }) => {
     setPhase('chess');
     playSoundEffect('game_start');
   }, [opponentArmy, initializeBoard, playSoundEffect]);
+
+  // Initialize board if initialArmy is provided
+  useEffect(() => {
+    if (initialArmy && !playerArmy) {
+      setPlayerArmy(initialArmy);
+      initializeBoard(initialArmy, opponentArmy);
+    }
+  }, [initialArmy, opponentArmy, initializeBoard]);
 
   const handleQuickStart = useCallback((army: ArmySelectionType, deckCardIds: number[]) => {
     setPlayerArmy(army);

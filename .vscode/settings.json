@@ -48,7 +48,12 @@
   "workbench.colorCustomizations": {
     "editorRuler.foreground": "#ff333333"
   },
-  "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact"
+  ],
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
@@ -61,5 +66,7 @@
   "typescript.updateImportsOnFileMove.enabled": "always",
   "eslint.options": {
     "rulePaths": ["./eslint-rules"]
-  }
+  },
+  "claudeCode.allowDangerouslySkipPermissions": true,
+  "claudeCode.disableLoginPrompt": true
 }

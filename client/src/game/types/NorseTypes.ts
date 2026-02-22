@@ -363,7 +363,7 @@ export interface NorseHero {
   description: string;
   portrait?: string;
   lore?: string;
-  gender: 'male' | 'female' | 'non-binary';
+  gender?: 'male' | 'female' | 'non-binary';
   
   // Heroes have spells
   hasSpells: true;

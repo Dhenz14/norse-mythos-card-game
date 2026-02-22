@@ -12,6 +12,7 @@ import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
 import CardWithDrag from './CardWithDrag';
 import { Position } from '../types/Position';
 import CardHoverPreview from './CardHoverPreview';
+import { useElementalBuff } from '../combat/hooks/useElementalBuff';
 import './HandFan.css';
 
 interface HandFanProps {
@@ -40,6 +41,10 @@ export const HandFan: React.FC<HandFanProps> = ({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const prevCardCount = useRef<number>(0);
+
+  const elementalBuff = useElementalBuff();
+  const atkBuff = elementalBuff.playerBuff?.attackBonus ?? 0;
+  const hpBuff = elementalBuff.playerBuff?.healthBonus ?? 0;
 
   const adaptedCards = useMemo(() => {
     return originalCards.map(card => {
@@ -164,7 +169,7 @@ export const HandFan: React.FC<HandFanProps> = ({
               setHoveredIndex(null);
             }}
           >
-            <CardWithDrag 
+            <CardWithDrag
               card={card}
               isInHand={true}
               isPlayable={canPlay}
@@ -172,6 +177,8 @@ export const HandFan: React.FC<HandFanProps> = ({
               onValidDrop={canPlay ? (position) => handleCardPlay(card, position) : undefined}
               boardRef={battlefieldRef}
               registerPosition={registerCardPosition || (() => {})}
+              attackBuff={card.card?.type === 'minion' ? atkBuff : 0}
+              healthBuff={card.card?.type === 'minion' ? hpBuff : 0}
             />
           </div>
         );

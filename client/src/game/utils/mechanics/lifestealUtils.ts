@@ -49,13 +49,13 @@ export function applyLifestealHealing(
 
   // Create a deep copy of the state to avoid direct mutations
   let newState = JSON.parse(JSON.stringify(state)) as GameState;
-  
-  // Apply the healing to the hero
+
+  // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[attackerOwner];
-  
-  // Get the current health and heal up to the max of 30
-  player.health = Math.min(30, player.health + damageDealt);
-  
+  const currentHp = player.heroHealth ?? player.health;
+  const maxHp = (player as any).maxHealth || 30;
+  player.heroHealth = Math.min(maxHp, currentHp + damageDealt);
+
   // Log the heal event
   return logHeal(
     newState,
@@ -86,13 +86,13 @@ export function processSpellLifesteal(
 
   // Create a deep copy of the state to avoid direct mutations
   let newState = JSON.parse(JSON.stringify(state)) as GameState;
-  
-  // Apply the healing to the hero
+
+  // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[casterOwner];
-  
-  // Get the current health and heal up to the max of 30
-  player.health = Math.min(30, player.health + damageDealt);
-  
+  const currentHp = player.heroHealth ?? player.health;
+  const maxHp = (player as any).maxHealth || 30;
+  player.heroHealth = Math.min(maxHp, currentHp + damageDealt);
+
   // Log the heal event
   return logHeal(
     newState,
@@ -123,13 +123,13 @@ export function processWeaponLifesteal(
 
   // Create a deep copy of the state to avoid direct mutations
   let newState = JSON.parse(JSON.stringify(state)) as GameState;
-  
-  // Apply the healing to the hero
+
+  // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[attackerOwner];
-  
-  // Get the current health and heal up to the max of 30
-  player.health = Math.min(30, player.health + damageDealt);
-  
+  const currentHp = player.heroHealth ?? player.health;
+  const maxHp = (player as any).maxHealth || 30;
+  player.heroHealth = Math.min(maxHp, currentHp + damageDealt);
+
   // Log the heal event
   return logHeal(
     newState,

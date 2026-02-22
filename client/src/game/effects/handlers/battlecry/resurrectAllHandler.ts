@@ -43,7 +43,7 @@ export default function executeResurrectAll(
     const availableSlots = 7 - context.currentPlayer.board.length;
     const countToResurrect = Math.min(deadMinions.length, maxCount, availableSlots);
     
-    const uniqueMinions = new Map<number, CardInstance>();
+    const uniqueMinions = new Map<number | string, CardInstance>();
     for (const minion of deadMinions) {
       if (!uniqueMinions.has(minion.card.id)) {
         uniqueMinions.set(minion.card.id, minion);

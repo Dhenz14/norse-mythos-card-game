@@ -30,6 +30,8 @@ interface CardWithDragProps {
   boardRef: React.RefObject<HTMLDivElement>;
   registerPosition: (card: CardInstance | CardInstanceWithCardData, position: Position) => void;
   className?: string;
+  attackBuff?: number;
+  healthBuff?: number;
 }
 
 export const CardWithDrag: React.FC<CardWithDragProps> = ({
@@ -42,7 +44,9 @@ export const CardWithDrag: React.FC<CardWithDragProps> = ({
   onValidDrop,
   boardRef,
   registerPosition,
-  className = ""
+  className = "",
+  attackBuff = 0,
+  healthBuff = 0
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   
@@ -175,6 +179,8 @@ export const CardWithDrag: React.FC<CardWithDragProps> = ({
           className="flat-card-container"
           renderQuality="high"
           cardId={cardId}
+          attackBuff={attackBuff}
+          healthBuff={healthBuff}
         />
       </div>
     </CardDragAnimation>

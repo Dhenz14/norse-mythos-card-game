@@ -2,388 +2,521 @@
  * HeroDeckBuilder.tsx
  * Main deck builder component - presentation layer only.
  * All state and logic lives in useDeckBuilder hook.
- * 
+ *
  * Following Feature-First architecture:
  * - Hook: ./deckbuilder/useDeckBuilder.ts
  * - Utils: ./deckbuilder/utils.ts
  * - Tokens: ./deckbuilder/tokens.css
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PieceType } from '../stores/heroDeckStore';
 import { useDeckBuilder, DECK_SIZE, isClassCard, getMaxCopies } from './deckbuilder';
 import { ArtGallery } from './art';
 import { getCardArtPath } from '../utils/art/artMapping';
+import { CardData } from '../types';
 import './deckbuilder/tokens.css';
+import './deckbuilder/deckbuilder.css';
 
 type ViewTab = 'cards' | 'art';
 
 interface HeroDeckBuilderProps {
-  pieceType: PieceType;
-  heroId: string;
-  heroClass: string;
-  heroName: string;
-  heroPortrait?: string;
-  onClose: () => void;
-  onSave?: () => void;
+	pieceType: PieceType;
+	heroId: string;
+	heroClass: string;
+	heroName: string;
+	heroPortrait?: string;
+	onClose: () => void;
+	onSave?: () => void;
 }
 
-const RARITY_COLORS: Record<string, string> = {
-  free: 'text-gray-300 border-gray-400',
-  common: 'text-gray-100 border-gray-300',
-  rare: 'text-blue-400 border-blue-500',
-  epic: 'text-purple-400 border-purple-500',
-  legendary: 'text-orange-400 border-orange-500',
+interface HoverInfo {
+	card: CardData;
+	rect: DOMRect;
+}
+
+const TYPE_ICONS: Record<string, string> = {
+	minion: '\u2694',
+	spell: '\u2728',
+	weapon: '\uD83D\uDDE1',
 };
 
-const RARITY_BG: Record<string, string> = {
-  free: 'bg-gray-700',
-  common: 'bg-gray-700',
-  rare: 'bg-blue-900/50',
-  epic: 'bg-purple-900/50',
-  legendary: 'bg-orange-900/50',
-};
+function getClassColor(heroClass: string): string {
+	const colors: Record<string, string> = {
+		warrior: '#c2410c',
+		mage: '#2563eb',
+		hunter: '#16a34a',
+		priest: '#e5e7eb',
+		rogue: '#6b7280',
+		paladin: '#eab308',
+		warlock: '#7c3aed',
+		druid: '#854d0e',
+		shaman: '#0891b2',
+		'demon hunter': '#15803d',
+		'death knight': '#6366f1',
+		monk: '#65a30d',
+	};
+	return colors[heroClass.toLowerCase()] || '#6b7280';
+}
 
 export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
-  pieceType,
-  heroId,
-  heroClass,
-  heroName,
-  heroPortrait,
-  onClose,
-  onSave,
+	pieceType,
+	heroId,
+	heroClass,
+	heroName,
+	heroPortrait,
+	onClose,
+	onSave,
 }) => {
-  const db = useDeckBuilder({ pieceType, heroId, heroClass, onClose, onSave });
-  const [viewTab, setViewTab] = useState<ViewTab>('cards');
+	const db = useDeckBuilder({ pieceType, heroId, heroClass, onClose, onSave });
+	const [viewTab, setViewTab] = useState<ViewTab>('cards');
+	const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
+	const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const classColor = getClassColor(heroClass);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="deck-builder fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="w-[95vw] max-w-7xl h-[90vh] bg-gradient-to-b from-gray-900 to-gray-800 rounded-xl border border-gray-700 shadow-2xl flex flex-col overflow-hidden"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex-shrink-0 border-b border-gray-700 flex items-stretch">
-          {heroPortrait ? (
-            <div className="w-32 h-28 flex-shrink-0 relative overflow-hidden">
-              <img src={heroPortrait} alt={heroName} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-gray-900/80" />
-            </div>
-          ) : (
-            <div className="w-28 h-28 flex-shrink-0 bg-gradient-to-br from-yellow-900/50 to-gray-800 flex items-center justify-center">
-              <span className="text-5xl font-bold text-yellow-400">{heroName.charAt(0)}</span>
-            </div>
-          )}
-          <div className="flex-1 p-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-yellow-400">Build Deck: {heroName}</h2>
-              <p className="text-sm text-gray-400 capitalize">{pieceType} • {heroClass} Class</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className={`text-xl font-bold ${db.isDeckComplete ? 'text-green-400' : 'text-yellow-400'}`}>
-                {db.deckCardIds.length}/{DECK_SIZE} Cards
-              </div>
-              <button onClick={onClose} className="text-gray-400 hover:text-white text-3xl leading-none">×</button>
-            </div>
-          </div>
-        </div>
+	const handleCardMouseEnter = useCallback((card: CardData, e: React.MouseEvent<HTMLDivElement>) => {
+		const rect = e.currentTarget.getBoundingClientRect();
+		if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+		hoverTimeoutRef.current = setTimeout(() => {
+			setHoverInfo({ card, rect });
+		}, 200);
+	}, []);
 
-        {/* Main Content */}
-        <div className="flex-1 flex min-h-0">
-          {/* Card Collection / Art Gallery */}
-          <div className="flex-1 flex flex-col border-r border-gray-700 min-w-0">
-            {/* Tab Toggle */}
-            <div className="flex-shrink-0 px-3 pt-3 flex gap-2">
-              <button
-                onClick={() => setViewTab('cards')}
-                className={`px-4 py-2 rounded-t-lg text-sm font-semibold transition-all ${
-                  viewTab === 'cards'
-                    ? 'bg-gray-700 text-yellow-400 border-b-2 border-yellow-400'
-                    : 'bg-gray-800 text-gray-400 hover:text-white'
-                }`}
-              >
-                Cards
-              </button>
-              <button
-                onClick={() => setViewTab('art')}
-                className={`px-4 py-2 rounded-t-lg text-sm font-semibold transition-all ${
-                  viewTab === 'art'
-                    ? 'bg-gray-700 text-yellow-400 border-b-2 border-yellow-400'
-                    : 'bg-gray-800 text-gray-400 hover:text-white'
-                }`}
-              >
-                Artwork (406)
-              </button>
-            </div>
+	const handleCardMouseLeave = useCallback(() => {
+		if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+		setHoverInfo(null);
+	}, []);
 
-            {/* Art Gallery View */}
-            {viewTab === 'art' ? (
-              <ArtGallery compact />
-            ) : (
-            <>
-            {/* Filters */}
-            <div className="flex-shrink-0 p-3 border-b border-gray-700 space-y-3">
-              <div className="flex gap-3 flex-wrap">
-                <input
-                  type="text"
-                  placeholder="Search cards..."
-                  value={db.searchTerm}
-                  onChange={e => db.setSearchTerm(e.target.value)}
-                  className="flex-1 min-w-48 px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
-                />
-                <select
-                  value={db.filterType}
-                  onChange={e => db.setFilterType(e.target.value as any)}
-                  className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-yellow-500"
-                >
-                  <option value="all">All Types</option>
-                  <option value="minion">Minions</option>
-                  <option value="spell">Spells</option>
-                  <option value="weapon">Weapons</option>
-                </select>
-                <select
-                  value={db.sortBy}
-                  onChange={e => db.setSortBy(e.target.value as any)}
-                  className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-yellow-500"
-                >
-                  <option value="cost">Sort by Cost</option>
-                  <option value="name">Sort by Name</option>
-                  <option value="type">Sort by Type</option>
-                </select>
-              </div>
-              <div className="flex gap-2 items-center">
-                <span className="text-sm text-gray-400">Mana:</span>
-                {[0, 1, 2, 3, 4, 5, 6, 7].map(cost => (
-                  <button
-                    key={cost}
-                    onClick={() => db.handleManaFilter(cost)}
-                    className={`w-8 h-8 rounded-full text-sm font-bold transition-all ${
-                      (db.minCost === cost || (cost === 7 && db.minCost === 7))
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    {cost === 7 ? '7+' : cost}
-                  </button>
-                ))}
-                {db.minCost !== null && (
-                  <button onClick={db.handleClearManaFilter} className="text-xs text-gray-400 hover:text-white ml-2">
-                    Clear
-                  </button>
-                )}
-              </div>
-            </div>
+	const manaCurve = useMemo(() => {
+		const curve: number[] = new Array(8).fill(0);
+		for (const { card, count } of db.deckCardsWithCounts) {
+			const cost = Math.min(card.manaCost ?? 0, 7);
+			curve[cost] += count;
+		}
+		return curve;
+	}, [db.deckCardsWithCounts]);
 
-            {/* Card Grid */}
-            <div className="flex-1 overflow-y-auto p-3">
-              <div className="mb-2 text-sm text-gray-400">
-                Showing {db.totalFilteredCards} of {db.totalValidCards} available cards
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                {db.filteredAndSortedCards.map(card => {
-                  const cardId = Number(card.id);
-                  const inDeckCount = db.deckCardCounts[cardId] || 0;
-                  const canAdd = db.canAddCard(cardId);
-                  const rarityKey = (card.rarity || 'common').toLowerCase();
-                  const rarityColor = RARITY_COLORS[rarityKey] || RARITY_COLORS.common;
-                  const rarityBg = RARITY_BG[rarityKey] || RARITY_BG.common;
-                  const isMinion = card.type === 'minion';
-                  const maxCopies = getMaxCopies(card);
-                  const cardArtPath = getCardArtPath(card.name);
+	const maxCurveValue = Math.max(...manaCurve, 1);
 
-                  return (
-                    <motion.div
-                      key={card.id}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => canAdd && db.handleAddCard(card)}
-                      onContextMenu={e => { e.preventDefault(); db.setSelectedCard(card); }}
-                      className={`relative rounded-lg overflow-hidden cursor-pointer transition-all border-2 ${rarityBg} ${canAdd ? 'opacity-100' : 'opacity-50'} ${rarityColor}`}
-                      style={{ minHeight: '160px' }}
-                    >
-                      {cardArtPath && (
-                        <div className="absolute inset-0">
-                          <img 
-                            src={cardArtPath} 
-                            alt="" 
-                            className="w-full h-full"
-                            style={{ objectFit: 'contain' }}
-                            loading="lazy"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                        </div>
-                      )}
-                      <div className="absolute top-1 left-1 w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm border border-blue-400 z-10">
-                        {card.manaCost ?? 0}
-                      </div>
-                      {inDeckCount > 0 && (
-                        <div className="absolute top-1 right-1 w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-xs border border-green-400 z-10">
-                          {inDeckCount}
-                        </div>
-                      )}
-                      <div className={`absolute bottom-0 left-0 right-0 p-2 ${cardArtPath ? '' : 'pt-9'}`}>
-                        <p className="text-white font-semibold text-xs leading-tight truncate text-center drop-shadow-lg" title={card.name}>
-                          {card.name}
-                        </p>
-                        <div className="flex items-center justify-center gap-1 mt-0.5">
-                          <span className="text-xs text-gray-300 capitalize drop-shadow">{card.type}</span>
-                          {isClassCard(card) && <span className="text-xs text-yellow-500">★</span>}
-                        </div>
-                      </div>
-                      {isMinion && (
-                        <div className="absolute bottom-8 left-0 right-0 flex justify-between px-2">
-                          <div className="w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center text-white font-bold text-xs border border-yellow-400">
-                            {(card as any).attack ?? 0}
-                          </div>
-                          <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-xs border border-red-400">
-                            {(card as any).health ?? 0}
-                          </div>
-                        </div>
-                      )}
-                      {!canAdd && inDeckCount >= maxCopies && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
-                          <span className="text-xs text-gray-300 font-bold">MAX</span>
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </div>
-              {db.filteredAndSortedCards.length === 0 && (
-                <div className="text-center text-gray-500 py-8">No cards found matching your filters</div>
-              )}
-            </div>
-            </>
-            )}
-          </div>
+	return (
+		<motion.div
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			exit={{ opacity: 0 }}
+			className="deck-builder fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+			onClick={onClose}
+		>
+			<motion.div
+				initial={{ scale: 0.95, opacity: 0 }}
+				animate={{ scale: 1, opacity: 1 }}
+				exit={{ scale: 0.95, opacity: 0 }}
+				transition={{ duration: 0.2 }}
+				className="db-main-container w-[96vw] max-w-[1400px] h-[92vh] rounded-xl shadow-2xl flex flex-col overflow-hidden"
+				onClick={e => e.stopPropagation()}
+			>
+				{/* Header */}
+				<div className="db-header flex-shrink-0">
+					<div className="db-header-portrait">
+						{heroPortrait ? (
+							<>
+								<img src={heroPortrait} alt={heroName} />
+								<div className="db-header-portrait-overlay" />
+							</>
+						) : (
+							<div className="db-header-fallback" style={{ background: `linear-gradient(135deg, ${classColor}40, ${classColor}15)` }}>
+								<span className="db-header-fallback-letter" style={{ color: classColor }}>{heroName.charAt(0)}</span>
+							</div>
+						)}
+					</div>
+					<div className="db-header-info">
+						<div>
+							<div className="db-header-title">Build Deck: {heroName}</div>
+							<div className="db-header-subtitle">{pieceType} &bull; {heroClass} Class</div>
+						</div>
+						<div className="db-header-actions">
+							<div className={`db-header-counter ${db.isDeckComplete ? 'complete' : 'incomplete'}`}>
+								{db.deckCardIds.length}/{DECK_SIZE} Cards
+							</div>
+							<button type="button" onClick={onClose} className="db-close-btn">&times;</button>
+						</div>
+					</div>
+				</div>
 
-          {/* Deck Sidebar */}
-          <div className="w-72 flex flex-col bg-gray-800/50">
-            <div className="flex-shrink-0 p-3 border-b border-gray-700">
-              <h3 className="font-bold text-white mb-2">Your Deck</h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={db.handleAutoFill}
-                  disabled={db.isDeckComplete}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                    db.isDeckComplete ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'
-                  }`}
-                >
-                  Auto-fill
-                </button>
-                <button
-                  onClick={db.handleClearDeck}
-                  disabled={db.deckCardIds.length === 0}
-                  className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                    db.deckCardIds.length === 0 ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-red-600 hover:bg-red-500 text-white'
-                  }`}
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
+				{/* Main Content */}
+				<div className="db-main-split">
+					{/* Card Collection / Art Gallery */}
+					<div className="db-collection-pane">
+						{/* Tab Toggle */}
+						<div className="db-tab-bar">
+							<button
+								type="button"
+								onClick={() => setViewTab('cards')}
+								className={`db-tab ${viewTab === 'cards' ? 'active' : ''}`}
+							>
+								Cards
+							</button>
+							<button
+								type="button"
+								onClick={() => setViewTab('art')}
+								className={`db-tab ${viewTab === 'art' ? 'active' : ''}`}
+							>
+								Artwork (406)
+							</button>
+						</div>
 
-            <div className="flex-1 overflow-y-auto p-2">
-              {db.deckCardsWithCounts.length === 0 ? (
-                <div className="text-center text-gray-500 py-8 text-sm">Click cards to add them to your deck</div>
-              ) : (
-                <div className="space-y-1">
-                  {db.deckCardsWithCounts.map(({ card, count }) => {
-                    const rarityColor = RARITY_COLORS[(card.rarity || 'common').toLowerCase()] || RARITY_COLORS.common;
-                    return (
-                      <motion.div
-                        key={card.id}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        onClick={() => db.handleRemoveCard(card)}
-                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all bg-gray-700 hover:bg-gray-600 border-l-4 ${rarityColor.split(' ')[1]}`}
-                      >
-                        <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
-                          {card.manaCost ?? 0}
-                        </div>
-                        <span className="flex-1 text-sm text-white truncate">{card.name}</span>
-                        {count > 1 && (
-                          <span className="w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center text-white font-bold text-xs">
-                            {count}
-                          </span>
-                        )}
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+						{/* Art Gallery View */}
+						{viewTab === 'art' ? (
+							<ArtGallery compact />
+						) : (
+						<>
+						{/* Filters */}
+						<div className="db-filter-bar">
+							<div className="db-filter-row">
+								<input
+									type="text"
+									placeholder="Search cards..."
+									value={db.searchTerm}
+									onChange={e => db.setSearchTerm(e.target.value)}
+									className="db-search-input"
+								/>
+								<select
+									value={db.filterType}
+									onChange={e => db.setFilterType(e.target.value as any)}
+									className="db-filter-select"
+									title="Filter by card type"
+								>
+									<option value="all">All Types</option>
+									<option value="minion">Minions</option>
+									<option value="spell">Spells</option>
+									<option value="weapon">Weapons</option>
+								</select>
+								<select
+									value={db.sortBy}
+									onChange={e => db.setSortBy(e.target.value as any)}
+									className="db-filter-select"
+									title="Sort cards"
+								>
+									<option value="cost">Sort by Cost</option>
+									<option value="name">Sort by Name</option>
+									<option value="type">Sort by Type</option>
+								</select>
+							</div>
+							<div className="db-filter-mana-row">
+								<div className="db-mana-filter">
+									{[0, 1, 2, 3, 4, 5, 6, 7].map(cost => (
+										<button
+											type="button"
+											key={cost}
+											onClick={() => db.handleManaFilter(cost)}
+											className={`db-mana-btn ${(db.minCost === cost || (cost === 7 && db.minCost === 7)) ? 'active' : ''}`}
+										>
+											{cost === 7 ? '7+' : cost}
+										</button>
+									))}
+								</div>
+								{db.minCost !== null && (
+									<button type="button" onClick={db.handleClearManaFilter} className="db-clear-mana-btn">
+										Clear
+									</button>
+								)}
+								<span className="db-showing-count" style={{ marginLeft: 'auto' }}>
+									{db.totalFilteredCards} of {db.totalValidCards} cards
+								</span>
+							</div>
+						</div>
 
-            <div className="flex-shrink-0 p-3 border-t border-gray-700">
-              {db.saveError && (
-                <div className="mb-2 p-2 bg-red-900/50 border border-red-500 rounded-lg text-red-300 text-xs whitespace-pre-wrap">
-                  {db.saveError}
-                </div>
-              )}
-              <button
-                onClick={db.handleSave}
-                className={`w-full py-3 rounded-lg font-bold transition-all ${
-                  db.isDeckComplete ? 'bg-green-600 hover:bg-green-500 text-white' : 'bg-yellow-600 hover:bg-yellow-500 text-white'
-                }`}
-              >
-                {db.isDeckComplete ? 'Save Complete Deck' : `Save Deck (${db.deckCardIds.length}/30)`}
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+						{/* Card Grid */}
+						<div className="db-card-scroll">
+							<div className="db-card-grid">
+								{db.filteredAndSortedCards.map(card => {
+									const cardId = Number(card.id);
+									const inDeckCount = db.deckCardCounts[cardId] || 0;
+									const canAdd = db.canAddCard(cardId);
+									const rarityKey = (card.rarity || 'common').toLowerCase();
+									const isMinion = card.type === 'minion';
+									const maxCopies = getMaxCopies(card);
+									const cardArtPath = getCardArtPath(card.name);
+									const isMaxed = !canAdd && inDeckCount >= maxCopies;
 
-      {/* Card Detail Modal */}
-      <AnimatePresence>
-        {db.selectedCard && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[60] w-80 p-4 bg-gray-900 rounded-xl border border-gray-600 shadow-2xl"
-            onClick={() => db.setSelectedCard(null)}
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border border-blue-400">
-                {db.selectedCard.manaCost ?? 0}
-              </div>
-              <div className="flex-1">
-                <h4 className="font-bold text-white text-lg">{db.selectedCard.name}</h4>
-                <p className="text-sm text-gray-400 capitalize">{db.selectedCard.type} • {db.selectedCard.rarity || 'common'}</p>
-              </div>
-            </div>
-            {db.selectedCard.type === 'minion' && (
-              <div className="flex gap-4 mt-3">
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-400 font-bold">{(db.selectedCard as any).attack ?? 0}</span>
-                  <span className="text-gray-400 text-sm">Attack</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-red-400 font-bold">{(db.selectedCard as any).health ?? 0}</span>
-                  <span className="text-gray-400 text-sm">Health</span>
-                </div>
-              </div>
-            )}
-            {db.selectedCard.description && (
-              <p className="mt-3 text-gray-300 text-sm">{db.selectedCard.description}</p>
-            )}
-            <p className="mt-2 text-xs text-gray-500 text-center">Click to close</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
+									return (
+										<div
+											key={card.id}
+											onClick={() => canAdd && db.handleAddCard(card)}
+											onContextMenu={e => { e.preventDefault(); db.setSelectedCard(card); }}
+											onMouseEnter={e => handleCardMouseEnter(card, e)}
+											onMouseLeave={handleCardMouseLeave}
+											className={`db-card rarity-${rarityKey} ${isMaxed ? 'not-playable' : ''}`}
+										>
+											{/* Art Section */}
+											<div className="db-card-art">
+												{cardArtPath ? (
+													<>
+														<img src={cardArtPath} alt="" loading="lazy" />
+														<div className="db-card-art-overlay" />
+													</>
+												) : (
+													<div className="db-card-art-fallback" style={{ background: `linear-gradient(135deg, ${classColor}25 0%, ${classColor}08 100%)` }}>
+														{TYPE_ICONS[card.type] || '\u2726'}
+													</div>
+												)}
+
+												{/* Mana Badge */}
+												<div className="db-mana-badge">{card.manaCost ?? 0}</div>
+
+												{/* Count Badge */}
+												{inDeckCount > 0 && (
+													<div className="db-count-badge">{inDeckCount}</div>
+												)}
+											</div>
+
+											{/* Info Section */}
+											<div className="db-card-info">
+												<div className="db-card-name">{card.name}</div>
+												<div className="db-card-meta">
+													<div className="db-card-meta-left">
+														<span className="db-card-type">{card.type}</span>
+														{isClassCard(card) && <span className="db-class-star">{'\u2605'}</span>}
+													</div>
+													{isMinion && (
+														<div className="db-stat-row">
+															<span className="db-stat db-stat-attack">
+																<span className="db-stat-icon">{'\u2694'}</span>
+																{(card as any).attack ?? 0}
+															</span>
+															<span className="db-stat db-stat-health">
+																<span className="db-stat-icon">{'\u2665'}</span>
+																{(card as any).health ?? 0}
+															</span>
+														</div>
+													)}
+												</div>
+											</div>
+
+											{/* MAX Overlay */}
+											{isMaxed && (
+												<div className="db-max-overlay">
+													<span className="db-max-text">MAX</span>
+												</div>
+											)}
+										</div>
+									);
+								})}
+							</div>
+							{db.filteredAndSortedCards.length === 0 && (
+								<div className="db-no-results">No cards found matching your filters</div>
+							)}
+						</div>
+						</>
+						)}
+					</div>
+
+					{/* Deck Sidebar */}
+					<div className="db-sidebar">
+						<div className="db-sidebar-header">
+							<div className="db-sidebar-title">Your Deck</div>
+							<div className="db-sidebar-actions">
+								<button
+									type="button"
+									onClick={db.handleAutoFill}
+									disabled={db.isDeckComplete}
+									className="db-sidebar-btn auto-fill"
+								>
+									Auto-fill
+								</button>
+								<button
+									type="button"
+									onClick={db.handleClearDeck}
+									disabled={db.deckCardIds.length === 0}
+									className="db-sidebar-btn clear"
+								>
+									Clear
+								</button>
+							</div>
+						</div>
+
+						{/* Mana Curve */}
+						{db.deckCardIds.length > 0 && (
+							<div className="db-mana-curve">
+								{manaCurve.map((count, i) => (
+									<div key={i} className="db-mana-bar-wrap">
+										<div className="db-mana-bar-track">
+											<div
+												className="db-mana-bar"
+												style={{ height: count > 0 ? `${Math.max((count / maxCurveValue) * 100, 8)}%` : '0%', opacity: count > 0 ? 1 : 0.15 }}
+											/>
+										</div>
+										<span className="db-mana-bar-label">{i === 7 ? '7+' : i}</span>
+									</div>
+								))}
+							</div>
+						)}
+
+						<div className="db-sidebar-list">
+							{db.deckCardsWithCounts.length === 0 ? (
+								<div className="db-sidebar-empty">Click cards to add them to your deck</div>
+							) : (
+								db.deckCardsWithCounts.map(({ card, count }) => {
+									const rarityKey = (card.rarity || 'common').toLowerCase();
+									return (
+										<div
+											key={card.id}
+											onClick={() => db.handleRemoveCard(card)}
+											className={`db-deck-card rarity-${rarityKey}`}
+										>
+											<div className="db-deck-mana">{card.manaCost ?? 0}</div>
+											<span className="db-deck-name">{card.name}</span>
+											{count > 1 && (
+												<div className="db-deck-count">{count}</div>
+											)}
+										</div>
+									);
+								})
+							)}
+						</div>
+
+						<div className="db-sidebar-footer">
+							{db.saveError && (
+								<div className="db-save-error">{db.saveError}</div>
+							)}
+							<button
+								type="button"
+								onClick={db.handleSave}
+								className={`db-save-btn ${db.isDeckComplete ? 'complete' : 'incomplete'}`}
+							>
+								{db.isDeckComplete ? 'Save Complete Deck' : `Save Deck (${db.deckCardIds.length}/30)`}
+							</button>
+						</div>
+					</div>
+				</div>
+			</motion.div>
+
+			{/* Hover Preview Panel */}
+			{hoverInfo && (
+				<HoverPreview
+					card={hoverInfo.card}
+					rect={hoverInfo.rect}
+					classColor={classColor}
+				/>
+			)}
+
+			{/* Card Detail Modal (right-click) */}
+			<AnimatePresence>
+				{db.selectedCard && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						className="fixed inset-0 z-[55] flex items-center justify-center db-detail-backdrop"
+						onClick={() => db.setSelectedCard(null)}
+					>
+						<motion.div
+							initial={{ scale: 0.9, opacity: 0 }}
+							animate={{ scale: 1, opacity: 1 }}
+							exit={{ scale: 0.9, opacity: 0 }}
+							className="db-preview-panel db-detail-modal"
+							onClick={e => e.stopPropagation()}
+						>
+							<CardPreviewContent card={db.selectedCard} classColor={classColor} showArt />
+							<div className="db-detail-hint">Click outside to close</div>
+						</motion.div>
+					</motion.div>
+				)}
+			</AnimatePresence>
+		</motion.div>
+	);
+};
+
+const HoverPreview: React.FC<{ card: CardData; rect: DOMRect; classColor: string }> = ({ card, rect, classColor }) => {
+	const panelWidth = 280;
+	const panelHeight = 320;
+	const viewportWidth = window.innerWidth;
+	const viewportHeight = window.innerHeight;
+
+	let left = rect.right + 12;
+	let top = rect.top;
+
+	if (left + panelWidth > viewportWidth - 16) {
+		left = rect.left - panelWidth - 12;
+	}
+	if (left < 16) {
+		left = 16;
+	}
+	if (top + panelHeight > viewportHeight - 16) {
+		top = viewportHeight - panelHeight - 16;
+	}
+	if (top < 16) {
+		top = 16;
+	}
+
+	return (
+		<div className="db-preview-panel" style={{ left, top }}>
+			<CardPreviewContent card={card} classColor={classColor} showArt />
+		</div>
+	);
+};
+
+const CardPreviewContent: React.FC<{ card: CardData; classColor: string; showArt?: boolean }> = ({ card, classColor, showArt }) => {
+	const isMinion = card.type === 'minion';
+	const rarityKey = (card.rarity || 'common').toLowerCase();
+	const cardArtPath = getCardArtPath(card.name);
+	const keywords = (card as any).keywords as string[] | undefined;
+
+	return (
+		<>
+			<div className="db-preview-header">
+				<div className="db-preview-mana">{card.manaCost ?? 0}</div>
+				<div className="db-preview-title">
+					<div className="db-preview-name">{card.name}</div>
+					<div className="db-preview-subtitle">
+						{card.type} &bull; <span className={`db-preview-rarity ${rarityKey}`}>{card.rarity || 'Common'}</span>
+						{isClassCard(card) && <span className="db-preview-class-badge">{'\u2605'} Class</span>}
+					</div>
+				</div>
+			</div>
+
+			{showArt && cardArtPath && (
+				<div className="db-preview-art">
+					<img src={cardArtPath} alt="" />
+				</div>
+			)}
+			{showArt && !cardArtPath && (
+				<div className="db-preview-art db-preview-art-fallback" style={{ background: `linear-gradient(135deg, ${classColor}25, ${classColor}08)` }}>
+					<span className="db-preview-art-fallback-icon">{TYPE_ICONS[card.type] || '\u2726'}</span>
+				</div>
+			)}
+
+			{isMinion && (
+				<div className="db-preview-stats">
+					<div className="db-preview-stat">
+						<span className="db-preview-stat-val" style={{ color: '#fbbf24' }}>{(card as any).attack ?? 0}</span>
+						<span className="db-preview-stat-label">Attack</span>
+					</div>
+					<div className="db-preview-stat">
+						<span className="db-preview-stat-val" style={{ color: '#f87171' }}>{(card as any).health ?? 0}</span>
+						<span className="db-preview-stat-label">Health</span>
+					</div>
+					{(card as any).race && (
+						<div className="db-preview-stat db-preview-stat-race">
+							<span className="db-preview-stat-label" style={{ color: 'rgba(180,200,230,0.7)' }}>{(card as any).race}</span>
+						</div>
+					)}
+				</div>
+			)}
+
+			{card.description && (
+				<div className="db-preview-desc">{card.description}</div>
+			)}
+
+			{keywords && keywords.length > 0 && (
+				<div className="db-preview-keywords">
+					{keywords.map((kw: string) => (
+						<span key={kw} className="db-preview-keyword">{kw}</span>
+					))}
+				</div>
+			)}
+		</>
+	);
 };
 
 export default HeroDeckBuilder;

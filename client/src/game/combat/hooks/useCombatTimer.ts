@@ -57,13 +57,8 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
         
         let autoAction = CombatAction.DEFEND;
         if (permissions?.hasBetToCall) {
-          if (permissions.canCall) {
-            autoAction = CombatAction.ENGAGE;
-            fireAnnouncement('poker_call', 'Call', { subtitle: 'Time expired - matched bet', duration: 1500 });
-          } else {
-            autoAction = CombatAction.BRACE;
-            fireAnnouncement('poker_fold', 'Fold', { subtitle: 'Time expired', duration: 1500 });
-          }
+          autoAction = CombatAction.BRACE;
+          fireAnnouncement('poker_fold', 'Fold', { subtitle: 'Time expired', duration: 1500 });
         } else {
           fireAnnouncement('poker_check', 'Check', { subtitle: 'Time expired', duration: 1500 });
         }

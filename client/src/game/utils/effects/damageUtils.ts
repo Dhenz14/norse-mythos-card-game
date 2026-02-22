@@ -548,7 +548,7 @@ export function healHero(
   const targetPlayer = newState.players[targetPlayerId];
   
   // Calculate actual healing (can't go above max health)
-  const maxHealth = 30; // Default max health in Hearthstone
+  const maxHealth = (targetPlayer as any).maxHealth || 30;
   const currentHealth = targetPlayer.heroHealth ?? 0;
   const actualHealing = Math.min(amount, maxHealth - currentHealth);
   

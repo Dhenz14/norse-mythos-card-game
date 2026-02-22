@@ -178,16 +178,8 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
         // Timer expired - choose appropriate timeout action based on game state
         const permissions = getActionPermissions(combatState, true);
         if (permissions?.canCheck) {
-          // Can check - safe default
           performAction(combatState.player.playerId, CombatAction.DEFEND);
-        } else if (permissions?.hasBetToCall && permissions?.availableHP > 0) {
-          // Must call or fold - auto-call with proper HP amount
-          // ENGAGE action uses the toCall amount which is calculated in performAction
-          // but we pass toCall as hpCommitment for clarity 
-          const callAmount = Math.min(permissions.toCall, permissions.availableHP);
-          performAction(combatState.player.playerId, CombatAction.ENGAGE, callAmount);
         } else {
-          // No valid action or can't afford call - fold
           performAction(combatState.player.playerId, CombatAction.BRACE);
         }
       }

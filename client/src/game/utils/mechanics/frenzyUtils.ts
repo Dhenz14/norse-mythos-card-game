@@ -1,7 +1,7 @@
 import { GameState, CardInstance } from '../../types';
 import { v4 as uuidv4 } from 'uuid';
 import { findCardInstance, findCardById } from '../cards/cardUtils';
-import { applyDamage } from '../gameUtils';
+import { dealDamageToMinion } from '../effects/damageUtils';
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
 
@@ -120,7 +120,7 @@ export function executeFrenzyEffect(
         // Apply damage to each enemy minion
         let newState = { ...updatedState };
         for (const minion of enemyMinions) {
-          newState = applyDamage(newState, enemyPlayerId, minion.instanceId, damageAmount);
+          newState = dealDamageToMinion(newState, enemyPlayerId, minion.instanceId, damageAmount);
         }
         return newState;
       }
@@ -130,9 +130,10 @@ export function executeFrenzyEffect(
       // Heal the specified target
       if (effect.targetType === 'friendly_hero') {
         const healAmount = effect.value || 1;
-        updatedState.players[playerId].health = Math.min(
-          30, // Max health in Hearthstone
-          updatedState.players[playerId].health + healAmount
+        const maxHp = (updatedState.players[playerId] as any).maxHealth || 30;
+        updatedState.players[playerId].heroHealth = Math.min(
+          maxHp,
+          (updatedState.players[playerId].heroHealth ?? updatedState.players[playerId].health) + healAmount
         );
       }
       return updatedState;

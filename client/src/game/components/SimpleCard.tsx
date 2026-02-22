@@ -6,7 +6,7 @@
  * Uses simple color-based backgrounds with rarity styling.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
 import './SimpleCard.css';
 
@@ -35,6 +35,8 @@ interface SimpleCardProps {
   showDescription?: boolean;
   className?: string;
   style?: React.CSSProperties;
+  attackBuff?: number;
+  healthBuff?: number;
 }
 
 const getRarityClass = (rarity?: string): string => {
@@ -115,16 +117,53 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   size = 'medium',
   showDescription = false,
   className = '',
-  style = {}
+  style = {},
+  attackBuff = 0,
+  healthBuff = 0
 }) => {
   const isMinion = card.type === 'minion';
   const isSpell = card.type === 'spell';
   const isWeapon = card.type === 'weapon';
-  
+
   const classColor = getClassColor(card.cardClass);
+
+  const nameClass = card.name.length > 18 ? 'name-very-long' : card.name.length > 13 ? 'name-long' : '';
   
   const cardTypeClass = isSpell ? 'card-type-spell' : isWeapon ? 'card-type-weapon' : 'card-type-minion';
-  
+
+  const descriptionContent = useMemo(() => {
+    const effectIcons = getCardKeywordIcons(card.description, card.keywords);
+    const hasContent = card.description || effectIcons.length > 0;
+    if (!hasContent) return null;
+    return (
+      <div className="card-description">
+        {showDescription ? (
+          <span>{card.description}</span>
+        ) : (
+          effectIcons.length > 0 ? (
+            <div className="keyword-icons-container">
+              {effectIcons.map((effect, idx) => (
+                <div
+                  key={idx}
+                  className="keyword-icon-badge"
+                  style={{
+                    borderColor: effect.color,
+                    boxShadow: `0 2px 8px rgba(0,0,0,0.6), 0 0 6px ${effect.color}88`,
+                  }}
+                  data-keyword={effect.keyword}
+                >
+                  {effect.icon}
+                </div>
+              ))}
+            </div>
+          ) : card.description ? (
+            <span className="truncated-desc">{card.description.slice(0, 30)}...</span>
+          ) : null
+        )}
+      </div>
+    );
+  }, [card.description, card.keywords, showDescription]);
+
   return (
     <div 
       className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${className}`}
@@ -150,7 +189,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       
       {/* Card Name */}
       <div className="card-name-banner">
-        <span className="card-name">{card.name}</span>
+        <span className={`card-name ${nameClass}`}>{card.name}</span>
       </div>
       
       {/* Card Type/Tribe */}
@@ -161,51 +200,20 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       )}
       
       {/* Description area - shows icons or text based on size and content */}
-      {(() => {
-        const effectIcons = getCardKeywordIcons(card.description, card.keywords);
-        const hasContent = card.description || effectIcons.length > 0;
-        
-        if (!hasContent) return null;
-        
-        return (
-          <div className="card-description">
-            {showDescription ? (
-              // Full text for large/preview cards
-              <span>{card.description}</span>
-            ) : (
-              // Icon-only for battlefield minions (Hearthstone style)
-              effectIcons.length > 0 ? (
-                <div className="keyword-icons-container">
-                  {effectIcons.map((effect, idx) => (
-                    <div
-                      key={idx}
-                      className="keyword-icon-badge"
-                      style={{
-                        borderColor: effect.color,
-                        boxShadow: `0 2px 8px rgba(0,0,0,0.6), 0 0 6px ${effect.color}88`,
-                      }}
-                      data-keyword={effect.keyword}
-                    >
-                      {effect.icon}
-                    </div>
-                  ))}
-                </div>
-              ) : card.description ? (
-                <span className="truncated-desc">{card.description.slice(0, 30)}...</span>
-              ) : null
-            )}
-          </div>
-        );
-      })()}
+      {descriptionContent}
       
       {/* Stats (Attack/Health for minions, Attack/Durability for weapons) */}
       {(isMinion || isWeapon) && (
         <>
           <div className="card-attack">
-            <span className="stat-value">{card.attack ?? 0}</span>
+            <span className={`stat-value ${attackBuff > 0 ? 'stat-buffed' : ''}`}>
+              {(card.attack ?? 0) + attackBuff}
+            </span>
           </div>
           <div className="card-health">
-            <span className="stat-value">{card.health ?? 0}</span>
+            <span className={`stat-value ${healthBuff > 0 ? 'stat-buffed' : ''}`}>
+              {(card.health ?? 0) + healthBuff}
+            </span>
           </div>
         </>
       )}
@@ -228,4 +236,4 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   );
 };
 
-export default SimpleCard;
+export default React.memo(SimpleCard);

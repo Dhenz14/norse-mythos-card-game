@@ -31,6 +31,8 @@ interface CardRendererProps {
   enableHolographic?: boolean;
   forceHolographic?: boolean;
   size?: 'small' | 'medium' | 'large' | 'preview';
+  attackBuff?: number;
+  healthBuff?: number;
 }
 
 /**
@@ -47,7 +49,9 @@ const CardRenderer: React.FC<CardRendererProps> = ({
   onMouseLeave,
   className = '',
   style = {},
-  size = 'medium'
+  size = 'medium',
+  attackBuff = 0,
+  healthBuff = 0
 }) => {
   const processedCard = getCardDataSafely(card);
   
@@ -87,6 +91,8 @@ const CardRenderer: React.FC<CardRendererProps> = ({
         onMouseLeave={onMouseLeave}
         size={size}
         showDescription={size === 'large' || size === 'preview'}
+        attackBuff={attackBuff}
+        healthBuff={healthBuff}
       />
     </div>
   );

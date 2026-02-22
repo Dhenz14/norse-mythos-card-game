@@ -22,6 +22,7 @@ import { Position } from '../types/Position';
 import { useGameStore } from '../stores/gameStore';
 import { GameState } from '../types';
 import { destroyCard } from '../utils/zoneUtils';
+import { dealDamage } from '../utils/effects/damageUtils';
 // AUTHORITATIVE canCardAttack function - single source of truth
 import { canCardAttack as canCardAttackUtil, getAttackEligibility } from './attackUtils';
 import { debug } from '../config/debugConfig';
@@ -180,23 +181,15 @@ export function executeAttack(
       targetId: 'opponent-hero'
     });
 
-    // Deal damage to opponent hero
+    // Deal damage to opponent hero — goes through armor, sets gamePhase if lethal
     const damage = attacker.card.type === 'minion' ? (attacker.card.attack ?? 0) : 0;
-    if (newState.players.opponent.heroHealth !== undefined) {
-      newState.players.opponent.heroHealth -= damage;
-    }
-    
+    newState = dealDamage(newState, 'opponent', 'hero', damage, undefined, undefined, 'player');
+
     animations.push({
       type: 'damage',
       sourceId: attackerId,
       targetId: 'opponent-hero'
     });
-
-    // Check for game over
-    if ((newState.players.opponent.heroHealth ?? 0) <= 0) {
-      (newState as any).gameOver = true;
-      newState.winner = 'player';
-    }
   } 
   // Targeting a minion
   else {

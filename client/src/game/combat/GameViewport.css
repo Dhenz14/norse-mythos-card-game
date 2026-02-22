@@ -18,25 +18,55 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #0a0a0f;
   overflow: hidden;
   z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .game-viewport {
-  width: 100%;
-  height: 100%;
-  max-width: calc(100vh * 16 / 9);
-  max-height: calc(100vw * 9 / 16);
-  aspect-ratio: 16 / 9;
-  position: relative;
+  width: var(--vp-width, 1920px);
+  height: var(--vp-height, 1080px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1));
+  transform-origin: top left;
   overflow: hidden;
   background: linear-gradient(180deg, #0a0e1a 0%, #141830 30%, #1a1610 70%, #0a0e1a 100%);
   container-type: inline-size;
   container-name: game-viewport;
+}
+
+/* Screen shake on big damage hits */
+.game-viewport.screen-shake-mild {
+  animation: screenShakeMild 0.3s ease-out;
+}
+
+.game-viewport.screen-shake-strong {
+  animation: screenShakeStrong 0.3s ease-out;
+}
+
+@keyframes screenShakeMild {
+  0%, 100% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(0, 0); }
+  15% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-2px, 1px); }
+  30% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(2px, -1px); }
+  50% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-1px, 2px); }
+  70% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(1px, -1px); }
+}
+
+@keyframes screenShakeStrong {
+  0%, 100% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(0, 0); }
+  10% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-4px, 2px); }
+  25% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(4px, -3px); }
+  40% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-3px, 4px); }
+  55% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(3px, -2px); }
+  70% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-2px, 1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-viewport.screen-shake-mild,
+  .game-viewport.screen-shake-strong {
+    animation: none !important;
+  }
 }
 
 /* ========================================
@@ -528,8 +558,8 @@
   --poker-offset-top: -30%;
   --poker-fan-spread: 24px;
   --poker-card-tilt: 4deg;
-  --poker-z-index: 100;
-  --hero-z-index: 50;
+  --poker-z-index: var(--z-betting, 200);
+  --hero-z-index: var(--z-heroes, 30);
 
   /* Hand zone gap */
   --hand-zone-gap: 12px;
@@ -577,7 +607,7 @@
 .viewport-mode .unified-hero-section {
   position: relative;
   flex-shrink: 0;
-  z-index: 50; /* Hero above hole cards */
+  z-index: var(--z-heroes, 30); /* Hero above hole cards */
 }
 
 .viewport-mode .poker-hero-container {
@@ -684,7 +714,7 @@
 
 .viewport-mode .poker-hand-container .hand-card-wrapper:hover {
   transform: translateY(-12px) scale(1.05);
-  z-index: 100;
+  z-index: var(--z-hover, 500);
 }
 
 /* ========================================
@@ -798,5 +828,83 @@
 
   .viewport-mode .unified-community .community-slot {
     transform: scale(0.8);
+  }
+}
+
+/* ========================================
+   FOCUS-VISIBLE - Keyboard navigation
+   ======================================== */
+
+.viewport-hero-card:focus-visible {
+  outline: 2px solid var(--color-gold, #ffd700);
+  outline-offset: 3px;
+}
+
+.viewport-mode .poker-btn:focus-visible {
+  outline: 2px solid var(--color-gold, #ffd700);
+  outline-offset: 2px;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+}
+
+.viewport-mode .poker-hand-container .hand-card-wrapper:focus-visible {
+  outline: 2px solid var(--color-gold, #ffd700);
+  outline-offset: 2px;
+  z-index: var(--z-hover, 500);
+}
+
+/* ========================================
+   TOUCH DEVICE SUPPORT
+   ======================================== */
+
+@media (hover: none) {
+  .viewport-hero-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .viewport-mode .poker-hand-container .hand-card-wrapper:hover {
+    transform: none;
+    z-index: auto;
+  }
+
+  .viewport-mode .poker-btn:not(:disabled):hover {
+    transform: none;
+  }
+
+  .viewport-mode .unified-player-field .battlefield-card:hover {
+    transform: none;
+  }
+}
+
+/* ========================================
+   TRANSITION HIERARCHY
+   Larger elements use slower transitions
+   ======================================== */
+
+.viewport-mode .poker-hand-container .hand-card-wrapper {
+  transition:
+    transform 0.18s ease,
+    z-index 0.1s;
+}
+
+.viewport-mode .poker-btn {
+  transition: all 0.15s ease;
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .viewport-hero-card {
+    transition: none;
+  }
+
+  .viewport-mode .poker-hand-container .hand-card-wrapper {
+    transition: none;
+  }
+
+  .viewport-mode .poker-btn {
+    transition: none;
   }
 }

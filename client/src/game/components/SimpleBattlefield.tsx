@@ -9,7 +9,8 @@
  */
 
 import { debug } from '../config/debugConfig';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import CardRenderer from './CardRendering/CardRenderer';
 import { UnifiedCardTooltip, TooltipCardData } from './ui/UnifiedCardTooltip';
@@ -31,8 +32,9 @@ interface SimpleBattlefieldProps {
 }
 
 const MAX_SLOTS = 7;
+const EMPTY_SET = new Set<string>();
 
-export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = ({
+export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
   playerCards,
   opponentCards,
   onCardClick,
@@ -40,7 +42,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = ({
   attackingCard,
   isPlayerTurn,
   renderMode = 'both',
-  shakingTargets = new Set(),
+  shakingTargets = EMPTY_SET,
   isInteractionDisabled = false
 }) => {
   // Tooltip state for hover
@@ -99,53 +101,71 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = ({
       const isOccupied = !!card;
       const isShaking = card && shakingTargets.has(card.instanceId);
       const isAttacking = card && attackingCard?.instanceId === card.instanceId;
-      const canAttack = side === 'player' && card && isPlayerTurn && 
+      const canAttack = side === 'player' && card && isPlayerTurn &&
                         !card.isSummoningSick && card.canAttack && !attackingCard;
       const isTarget = side === 'opponent' && card && isValidTarget(card, opponentCards);
       const hasSuperBonus = card && (card as any).hasSuperMinionBonus;
+      const hasCharge = !!(card?.card?.keywords?.includes('charge'));
+      const isSummoningSick = side === 'player' && !!card && !!card.isSummoningSick && !hasCharge;
+      const isExhausted = side === 'player' && !!card && isPlayerTurn &&
+                          !card.isSummoningSick && !card.canAttack &&
+                          !!((card.card as any)?.attack > 0);
+      const cardHasTaunt = !!(card?.card?.keywords?.includes('taunt'));
+      const hasElementalBuff = !!(card as any)?.hasElementalBuff;
 
       return (
-        <div 
+        <div
           key={`${side}-slot-${index}`}
           className={`bf-slot ${isOccupied ? 'occupied' : 'empty'}`}
         >
-          {card && (
-            <div 
-              className={`bf-card-wrapper 
-                ${isShaking ? 'shake' : ''} 
-                ${isAttacking ? 'attacking' : ''} 
-                ${canAttack ? 'can-attack' : ''} 
-                ${isTarget ? 'valid-target' : ''}
-                ${hasSuperBonus ? 'super-minion-bonus' : ''}
-              `}
-              onClick={() => {
-                debug.combat('[SimpleBattlefield Click]', {
-                  cardName: card.card?.name,
-                  side,
-                  canAttack: card.canAttack,
-                  isSummoningSick: card.isSummoningSick,
-                  isPlayerTurn,
-                  isInteractionDisabled,
-                  attackingCard: !!attackingCard
-                });
-                !isInteractionDisabled && onClick?.(card);
-              }}
-              onMouseEnter={(e) => handleCardMouseEnter(card, e)}
-              onMouseLeave={handleCardMouseLeave}
-            >
-              <CardRenderer
-                card={card}
-                isPlayable={canAttack}
-                isHighlighted={isAttacking || canAttack || isTarget}
-                onClick={() => !isInteractionDisabled && onClick?.(card)}
-                size="medium"
-              />
-              <div className="bf-card-stats">
-                <span className="bf-attack">{card.currentAttack ?? (card.card as any)?.attack ?? 0}</span>
-                <span className="bf-health">{card.currentHealth ?? (card.card as any)?.health ?? 0}</span>
-              </div>
-            </div>
-          )}
+          <AnimatePresence>
+            {card && (
+              <motion.div
+                key={card.instanceId}
+                className={`bf-card-wrapper
+                  ${isShaking ? 'shake' : ''}
+                  ${isAttacking ? 'attacking' : ''}
+                  ${canAttack ? 'can-attack' : ''}
+                  ${isTarget ? 'valid-target' : ''}
+                  ${hasSuperBonus ? 'super-minion-bonus' : ''}
+                  ${isSummoningSick ? 'summoning-sick' : ''}
+                  ${isExhausted ? 'exhausted' : ''}
+                  ${cardHasTaunt ? 'has-taunt' : ''}
+                  ${hasElementalBuff ? 'elemental-buffed' : ''}
+                `}
+                initial={{ opacity: 0, scale: 0.3, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.05, filter: 'brightness(4)', rotate: 12 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                onClick={() => {
+                  debug.combat('[SimpleBattlefield Click]', {
+                    cardName: card.card?.name,
+                    side,
+                    canAttack: card.canAttack,
+                    isSummoningSick: card.isSummoningSick,
+                    isPlayerTurn,
+                    isInteractionDisabled,
+                    attackingCard: !!attackingCard
+                  });
+                  !isInteractionDisabled && onClick?.(card);
+                }}
+                onMouseEnter={(e) => handleCardMouseEnter(card, e)}
+                onMouseLeave={handleCardMouseLeave}
+              >
+                <CardRenderer
+                  card={card}
+                  isPlayable={true}
+                  isHighlighted={isAttacking || canAttack || isTarget}
+                  onClick={() => !isInteractionDisabled && onClick?.(card)}
+                  size="medium"
+                />
+                <div className="bf-card-stats">
+                  <span className="bf-attack">{card.currentAttack ?? (card.card as any)?.attack ?? 0}</span>
+                  <span className="bf-health">{card.currentHealth ?? (card.card as any)?.health ?? 0}</span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       );
     });
@@ -176,6 +196,6 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = ({
       />
     </>
   );
-};
+});
 
 export default SimpleBattlefield;

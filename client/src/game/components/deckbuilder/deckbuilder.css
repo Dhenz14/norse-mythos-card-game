@@ -1,0 +1,936 @@
+/**
+ * Deck Builder Styles
+ * Custom CSS for card tiles, hover previews, mana curve, and grid layout.
+ * Complements tokens.css and Tailwind utilities.
+ */
+
+/* ===== Card Grid ===== */
+.db-card-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	gap: 10px;
+	padding: 12px;
+}
+
+@media (min-width: 1400px) {
+	.db-card-grid {
+		grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+	}
+}
+
+@media (max-width: 900px) {
+	.db-card-grid {
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		gap: 8px;
+	}
+}
+
+/* ===== Card Tile ===== */
+.db-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	border-radius: 8px;
+	overflow: hidden;
+	cursor: pointer;
+	transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+	border: 2px solid rgba(100, 100, 120, 0.5);
+	background: linear-gradient(180deg, #1a1f2e 0%, #0d1117 100%);
+	aspect-ratio: 3 / 4;
+}
+
+.db-card:hover {
+	transform: translateY(-4px) scale(1.02);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+	z-index: 5;
+}
+
+.db-card.rarity-common { border-color: rgba(150, 155, 165, 0.5); }
+.db-card.rarity-common:hover { border-color: rgba(200, 205, 215, 0.8); }
+
+.db-card.rarity-rare {
+	border-color: rgba(59, 130, 246, 0.6);
+	box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+.db-card.rarity-rare:hover {
+	border-color: rgba(96, 165, 250, 0.9);
+	box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+.db-card.rarity-epic {
+	border-color: rgba(168, 85, 247, 0.6);
+	box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
+}
+.db-card.rarity-epic:hover {
+	border-color: rgba(192, 132, 252, 0.9);
+	box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3);
+}
+
+.db-card.rarity-legendary {
+	border-color: rgba(249, 115, 22, 0.6);
+	box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
+}
+.db-card.rarity-legendary:hover {
+	border-color: rgba(251, 146, 60, 0.9);
+	box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3);
+}
+
+.db-card.not-playable {
+	opacity: 0.45;
+	filter: saturate(0.5);
+}
+
+.db-card.not-playable:hover {
+	transform: none;
+	box-shadow: none;
+}
+
+/* ===== Card Art Section ===== */
+.db-card-art {
+	position: relative;
+	flex: 1 1 0;
+	min-height: 0;
+	overflow: hidden;
+	background: linear-gradient(135deg, rgba(40, 50, 70, 0.8) 0%, rgba(20, 25, 35, 0.9) 100%);
+}
+
+.db-card-art img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center 20%;
+	display: block;
+}
+
+.db-card-art-overlay {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 50%;
+	background: linear-gradient(to top, rgba(13, 17, 23, 0.95) 0%, transparent 100%);
+	pointer-events: none;
+}
+
+/* No-art fallback */
+.db-card-art-fallback {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2.5rem;
+	opacity: 0.3;
+}
+
+/* ===== Mana Badge ===== */
+.db-mana-badge {
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+	border: 2px solid #60a5fa;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 800;
+	font-size: 13px;
+	z-index: 3;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== Count Badge ===== */
+.db-count-badge {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+	border: 2px solid #4ade80;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 800;
+	font-size: 11px;
+	z-index: 3;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== Card Info Section ===== */
+.db-card-info {
+	flex-shrink: 0;
+	padding: 6px 8px;
+	background: rgba(13, 17, 23, 0.95);
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-height: 52px;
+}
+
+.db-card-name {
+	font-size: 11px;
+	font-weight: 700;
+	color: #f0f0f0;
+	line-height: 1.2;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.db-card-meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 4px;
+}
+
+.db-card-type {
+	font-size: 9px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: rgba(156, 163, 175, 0.8);
+	font-weight: 600;
+}
+
+.db-class-star {
+	color: #eab308;
+	font-size: 10px;
+}
+
+/* ===== Stat Gems ===== */
+.db-stat-row {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.db-stat {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	font-size: 11px;
+	font-weight: 800;
+}
+
+.db-stat-attack {
+	color: #fbbf24;
+}
+
+.db-stat-health {
+	color: #f87171;
+}
+
+.db-stat-icon {
+	font-size: 9px;
+	opacity: 0.7;
+}
+
+/* ===== MAX Overlay ===== */
+.db-max-overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 4;
+}
+
+.db-max-text {
+	font-size: 11px;
+	font-weight: 800;
+	color: rgba(200, 200, 200, 0.8);
+	text-transform: uppercase;
+	letter-spacing: 2px;
+}
+
+/* ===== Hover Preview Panel ===== */
+.db-preview-panel {
+	position: fixed;
+	width: 280px;
+	background: linear-gradient(180deg, #1e2538 0%, #111827 100%);
+	border: 1px solid rgba(100, 120, 160, 0.4);
+	border-radius: 12px;
+	padding: 16px;
+	z-index: 100;
+	pointer-events: none;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(8px);
+}
+
+.db-preview-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.db-preview-mana {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #2563eb, #1d4ed8);
+	border: 2px solid #60a5fa;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 800;
+	font-size: 16px;
+	flex-shrink: 0;
+}
+
+.db-preview-title {
+	flex: 1;
+}
+
+.db-preview-name {
+	font-size: 16px;
+	font-weight: 700;
+	color: #f0f0f0;
+	line-height: 1.2;
+	margin-bottom: 2px;
+}
+
+.db-preview-subtitle {
+	font-size: 11px;
+	color: rgba(156, 163, 175, 0.8);
+	text-transform: capitalize;
+}
+
+.db-preview-art {
+	width: 100%;
+	height: 140px;
+	border-radius: 8px;
+	overflow: hidden;
+	margin-bottom: 12px;
+	background: rgba(30, 40, 60, 0.5);
+}
+
+.db-preview-art img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center 20%;
+}
+
+.db-preview-stats {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 10px;
+	padding: 8px 12px;
+	background: rgba(30, 40, 60, 0.5);
+	border-radius: 6px;
+}
+
+.db-preview-stat {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.db-preview-stat-val {
+	font-size: 18px;
+	font-weight: 800;
+}
+
+.db-preview-stat-label {
+	font-size: 11px;
+	color: rgba(156, 163, 175, 0.7);
+}
+
+.db-preview-desc {
+	font-size: 13px;
+	color: rgba(210, 215, 225, 0.9);
+	line-height: 1.5;
+	padding: 8px 0;
+	border-top: 1px solid rgba(100, 120, 160, 0.2);
+}
+
+.db-preview-keywords {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-top: 8px;
+}
+
+.db-preview-keyword {
+	font-size: 10px;
+	padding: 2px 8px;
+	border-radius: 10px;
+	background: rgba(60, 80, 120, 0.4);
+	color: rgba(180, 200, 230, 0.9);
+	font-weight: 600;
+	text-transform: capitalize;
+}
+
+.db-preview-rarity {
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.db-preview-rarity.common { color: rgba(200, 205, 215, 0.6); }
+.db-preview-rarity.rare { color: #60a5fa; }
+.db-preview-rarity.epic { color: #c084fc; }
+.db-preview-rarity.legendary { color: #fb923c; }
+
+/* ===== Mana Curve in Sidebar ===== */
+.db-mana-curve {
+	display: flex;
+	align-items: flex-end;
+	gap: 3px;
+	height: 48px;
+	padding: 8px 12px 4px;
+}
+
+.db-mana-bar-wrap {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	height: 100%;
+}
+
+.db-mana-bar-track {
+	flex: 1;
+	width: 100%;
+	display: flex;
+	align-items: flex-end;
+}
+
+.db-mana-bar {
+	width: 100%;
+	background: linear-gradient(to top, #2563eb, #3b82f6);
+	border-radius: 2px 2px 0 0;
+	min-height: 2px;
+	transition: height 0.3s ease;
+}
+
+.db-mana-bar-label {
+	font-size: 9px;
+	color: rgba(156, 163, 175, 0.6);
+	font-weight: 600;
+}
+
+/* ===== Deck Card Entry ===== */
+.db-deck-card {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 5px 8px;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background 0.15s ease;
+	background: rgba(30, 40, 60, 0.5);
+	border-left: 3px solid transparent;
+}
+
+.db-deck-card:hover {
+	background: rgba(50, 60, 90, 0.6);
+}
+
+.db-deck-card.rarity-common { border-left-color: rgba(150, 155, 165, 0.4); }
+.db-deck-card.rarity-rare { border-left-color: rgba(59, 130, 246, 0.7); }
+.db-deck-card.rarity-epic { border-left-color: rgba(168, 85, 247, 0.7); }
+.db-deck-card.rarity-legendary { border-left-color: rgba(249, 115, 22, 0.7); }
+
+.db-deck-mana {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #2563eb, #1d4ed8);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 700;
+	font-size: 10px;
+	flex-shrink: 0;
+}
+
+.db-deck-name {
+	flex: 1;
+	font-size: 12px;
+	color: #e0e0e5;
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.db-deck-count {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: rgba(202, 138, 4, 0.8);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 700;
+	font-size: 10px;
+	flex-shrink: 0;
+}
+
+/* ===== Mana Filter Buttons ===== */
+.db-mana-filter {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.db-mana-btn {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 2px solid transparent;
+	background: rgba(30, 40, 60, 0.6);
+	color: rgba(156, 163, 175, 0.7);
+	font-weight: 700;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.db-mana-btn:hover {
+	background: rgba(37, 99, 235, 0.3);
+	color: white;
+	border-color: rgba(37, 99, 235, 0.5);
+}
+
+.db-mana-btn.active {
+	background: linear-gradient(135deg, #2563eb, #1d4ed8);
+	color: white;
+	border-color: #60a5fa;
+	box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+}
+
+/* ===== Header Improvements ===== */
+.db-header {
+	display: flex;
+	align-items: stretch;
+	border-bottom: 1px solid rgba(55, 65, 81, 0.8);
+	background: linear-gradient(180deg, rgba(20, 25, 35, 0.95) 0%, rgba(15, 20, 30, 0.95) 100%);
+}
+
+.db-header-portrait {
+	width: 100px;
+	flex-shrink: 0;
+	position: relative;
+	overflow: hidden;
+}
+
+.db-header-portrait img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center 20%;
+}
+
+.db-header-portrait-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to right, transparent 60%, rgba(15, 20, 30, 0.9) 100%);
+}
+
+.db-header-info {
+	flex: 1;
+	padding: 12px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.db-header-title {
+	font-size: 22px;
+	font-weight: 800;
+	color: #fbbf24;
+	margin-bottom: 2px;
+}
+
+.db-header-subtitle {
+	font-size: 12px;
+	color: rgba(156, 163, 175, 0.7);
+	text-transform: capitalize;
+}
+
+.db-header-counter {
+	font-size: 20px;
+	font-weight: 800;
+}
+
+.db-header-counter.complete { color: #4ade80; }
+.db-header-counter.incomplete { color: #fbbf24; }
+
+/* ===== Sidebar ===== */
+.db-sidebar {
+	width: 280px;
+	display: flex;
+	flex-direction: column;
+	background: rgba(15, 20, 30, 0.6);
+	border-left: 1px solid rgba(55, 65, 81, 0.5);
+}
+
+.db-sidebar-header {
+	padding: 12px;
+	border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+}
+
+.db-sidebar-title {
+	font-size: 14px;
+	font-weight: 700;
+	color: #e0e0e5;
+	margin-bottom: 8px;
+}
+
+.db-sidebar-actions {
+	display: flex;
+	gap: 6px;
+}
+
+.db-sidebar-btn {
+	flex: 1;
+	padding: 6px 10px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	border: none;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.db-sidebar-btn.auto-fill {
+	background: linear-gradient(135deg, #2563eb, #1d4ed8);
+	color: white;
+}
+.db-sidebar-btn.auto-fill:hover { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.db-sidebar-btn.auto-fill:disabled { background: rgba(55, 65, 81, 0.5); color: rgba(156, 163, 175, 0.4); cursor: not-allowed; }
+
+.db-sidebar-btn.clear {
+	background: rgba(220, 38, 38, 0.2);
+	color: #f87171;
+	border: 1px solid rgba(220, 38, 38, 0.3);
+}
+.db-sidebar-btn.clear:hover { background: rgba(220, 38, 38, 0.3); }
+.db-sidebar-btn.clear:disabled { background: rgba(55, 65, 81, 0.3); color: rgba(156, 163, 175, 0.3); border-color: transparent; cursor: not-allowed; }
+
+.db-sidebar-list {
+	flex: 1;
+	overflow-y: auto;
+	padding: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.db-sidebar-empty {
+	padding: 24px 12px;
+	text-align: center;
+	color: rgba(156, 163, 175, 0.4);
+	font-size: 12px;
+}
+
+.db-sidebar-footer {
+	padding: 12px;
+	border-top: 1px solid rgba(55, 65, 81, 0.5);
+}
+
+.db-save-btn {
+	width: 100%;
+	padding: 10px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 700;
+	border: none;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.db-save-btn.complete {
+	background: linear-gradient(135deg, #16a34a, #15803d);
+	color: white;
+	box-shadow: 0 0 12px rgba(22, 163, 74, 0.3);
+}
+.db-save-btn.complete:hover {
+	background: linear-gradient(135deg, #22c55e, #16a34a);
+	box-shadow: 0 0 16px rgba(22, 163, 74, 0.5);
+}
+
+.db-save-btn.incomplete {
+	background: linear-gradient(135deg, #ca8a04, #a16207);
+	color: white;
+}
+.db-save-btn.incomplete:hover {
+	background: linear-gradient(135deg, #eab308, #ca8a04);
+}
+
+/* ===== Filter Bar ===== */
+.db-filter-bar {
+	padding: 10px 12px;
+	border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.db-filter-row {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.db-search-input {
+	flex: 1;
+	min-width: 180px;
+	padding: 7px 12px;
+	background: rgba(20, 25, 40, 0.8);
+	border: 1px solid rgba(75, 85, 99, 0.5);
+	border-radius: 8px;
+	color: #e0e0e5;
+	font-size: 13px;
+	outline: none;
+	transition: border-color 0.15s ease;
+}
+
+.db-search-input:focus {
+	border-color: rgba(202, 138, 4, 0.6);
+}
+
+.db-search-input::placeholder {
+	color: rgba(107, 114, 128, 0.6);
+}
+
+.db-filter-select {
+	padding: 7px 10px;
+	background: rgba(20, 25, 40, 0.8);
+	border: 1px solid rgba(75, 85, 99, 0.5);
+	border-radius: 8px;
+	color: #e0e0e5;
+	font-size: 12px;
+	outline: none;
+	cursor: pointer;
+}
+
+.db-filter-select:focus {
+	border-color: rgba(202, 138, 4, 0.6);
+}
+
+.db-showing-count {
+	font-size: 11px;
+	color: rgba(156, 163, 175, 0.5);
+	padding: 0 4px;
+}
+
+/* ===== Tab Toggle ===== */
+.db-tab-bar {
+	display: flex;
+	gap: 2px;
+	padding: 8px 12px 0;
+}
+
+.db-tab {
+	padding: 8px 16px;
+	border-radius: 8px 8px 0 0;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	border: none;
+	background: transparent;
+	color: rgba(156, 163, 175, 0.6);
+}
+
+.db-tab:hover {
+	color: rgba(220, 225, 235, 0.8);
+}
+
+.db-tab.active {
+	background: rgba(30, 40, 60, 0.5);
+	color: #fbbf24;
+	border-bottom: 2px solid #fbbf24;
+}
+
+/* ===== Scrollbar ===== */
+.db-sidebar-list::-webkit-scrollbar,
+.db-card-scroll::-webkit-scrollbar {
+	width: 5px;
+}
+
+.db-sidebar-list::-webkit-scrollbar-track,
+.db-card-scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.db-sidebar-list::-webkit-scrollbar-thumb,
+.db-card-scroll::-webkit-scrollbar-thumb {
+	background: rgba(100, 110, 130, 0.3);
+	border-radius: 3px;
+}
+
+.db-sidebar-list::-webkit-scrollbar-thumb:hover,
+.db-card-scroll::-webkit-scrollbar-thumb:hover {
+	background: rgba(100, 110, 130, 0.5);
+}
+
+/* ===== Type Icons ===== */
+.db-type-minion::before { content: '⚔'; }
+.db-type-spell::before { content: '✨'; }
+.db-type-weapon::before { content: '🗡'; }
+
+/* ===== Save Error ===== */
+.db-save-error {
+	padding: 8px;
+	margin-bottom: 8px;
+	background: rgba(220, 38, 38, 0.15);
+	border: 1px solid rgba(220, 38, 38, 0.3);
+	border-radius: 6px;
+	color: #fca5a5;
+	font-size: 11px;
+	white-space: pre-wrap;
+}
+
+/* ===== Layout Helpers ===== */
+.db-main-container {
+	background: linear-gradient(180deg, #111827 0%, #0a0e17 100%);
+	border: 1px solid rgba(55, 65, 81, 0.6);
+}
+
+.db-main-split {
+	flex: 1;
+	display: flex;
+	min-height: 0;
+}
+
+.db-collection-pane {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.db-card-scroll {
+	flex: 1;
+	overflow-y: auto;
+}
+
+.db-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.db-close-btn {
+	color: rgba(156, 163, 175, 0.6);
+	font-size: 28px;
+	line-height: 1;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+}
+
+.db-close-btn:hover {
+	color: rgba(220, 225, 235, 0.9);
+}
+
+.db-header-fallback {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.db-header-fallback-letter {
+	font-size: 40px;
+	font-weight: 800;
+	opacity: 0.7;
+}
+
+.db-filter-mana-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.db-clear-mana-btn {
+	font-size: 11px;
+	color: rgba(156, 163, 175, 0.5);
+	background: none;
+	border: none;
+	cursor: pointer;
+	margin-left: 4px;
+}
+
+.db-clear-mana-btn:hover {
+	color: rgba(220, 225, 235, 0.8);
+}
+
+.db-no-results {
+	text-align: center;
+	color: rgba(107, 114, 128, 0.5);
+	padding: 48px 0;
+	font-size: 13px;
+}
+
+.db-card-meta-left {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+}
+
+.db-detail-backdrop {
+	background: rgba(0, 0, 0, 0.6);
+}
+
+.db-detail-modal {
+	position: relative;
+	pointer-events: auto;
+	width: 320px;
+}
+
+.db-detail-hint {
+	margin-top: 12px;
+	text-align: center;
+	font-size: 11px;
+	color: rgba(107, 114, 128, 0.5);
+}
+
+/* ===== Preview Content Helpers ===== */
+.db-preview-art-fallback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.db-preview-art-fallback-icon {
+	font-size: 3rem;
+	opacity: 0.2;
+}
+
+.db-preview-stat-race {
+	margin-left: auto;
+}
+
+.db-preview-class-badge {
+	color: #eab308;
+	margin-left: 6px;
+}

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';
 import { debug } from '../config/debugConfig';
+import { dealDamage } from './effects/damageUtils';
 
 const MAX_HAND_SIZE = 9;
 
@@ -34,9 +35,9 @@ export function drawCardFromDeck(
   state: GameState,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
-  
+
   if (player.deck.length === 0) {
     if (!newState.fatigueCount) {
       newState.fatigueCount = {
@@ -44,19 +45,12 @@ export function drawCardFromDeck(
         opponent: 0
       };
     }
-    
+
     const currentFatigue = newState.fatigueCount[playerId] || 0;
     const newFatigue = currentFatigue + 1;
-    
-    
-    player.health -= newFatigue;
     newState.fatigueCount[playerId] = newFatigue;
-    
-    if (player.health <= 0) {
-      newState.gamePhase = "game_over";
-      newState.winner = playerId === 'player' ? 'opponent' : 'player';
-    }
-    
+    newState = dealDamage(newState, playerId, 'hero', newFatigue, undefined, undefined, playerId);
+
     return newState;
   }
   

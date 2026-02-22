@@ -5,6 +5,8 @@ import { getSmartAIAction } from '../modules/SmartAI';
 import { useGameStore } from '../../stores/gameStore';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
+import { fireAnnouncement } from '../../stores/unifiedUIStore';
+import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
 
 interface UsePokerAIOptions {
   combatState: PokerCombatState | null;
@@ -139,6 +141,35 @@ export function usePokerAI(options: UsePokerAIOptions): void {
         if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] AI decision:', aiDecision);
 
         adapter.performAction(aiPlayerId, aiDecision.action, aiDecision.betAmount);
+
+        // Fire dramatic announcement for opponent poker actions
+        const heroId = freshState.opponent.pet.norseHeroId;
+        const hero = heroId ? ALL_NORSE_HEROES[heroId] : null;
+        const heroName = hero?.name || 'Opponent';
+
+        if (aiDecision.action === CombatAction.ATTACK) {
+          const amount = aiDecision.betAmount || freshState.currentBet || 0;
+          fireAnnouncement('poker_bet', `${heroName} attacks for ${amount} HP!`, {
+            subtitle: 'Match or fold!',
+            duration: 2500
+          });
+        } else if (aiDecision.action === CombatAction.COUNTER_ATTACK) {
+          const amount = aiDecision.betAmount || 0;
+          fireAnnouncement('poker_bet', `${heroName} raises ${amount} HP!`, {
+            subtitle: 'The stakes grow higher!',
+            duration: 2500
+          });
+        } else if (aiDecision.action === CombatAction.ENGAGE) {
+          fireAnnouncement('poker_call', `${heroName} calls!`, {
+            subtitle: 'Matched your bet',
+            duration: 1800
+          });
+        } else if (aiDecision.action === CombatAction.BRACE) {
+          fireAnnouncement('poker_fold', `${heroName} folds!`, {
+            subtitle: 'They couldn\'t take the heat',
+            duration: 1800
+          });
+        }
 
         setTimeout(() => {
           const adapterAfterAI = getPokerCombatAdapterState();

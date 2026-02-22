@@ -90,10 +90,11 @@ export function healTarget(
   
   // Heal the player's hero
   if (targetId === 'hero') {
-    const currentHealth = updatedState.players[playerId].health;
-    const maxHealth = 30; // Maximum health in Hearthstone
-    
-    updatedState.players[playerId].health = Math.min(currentHealth + healAmount, maxHealth);
+    const p = updatedState.players[playerId];
+    const currentHealth = p.heroHealth ?? p.health;
+    const maxHealth = (p as any).maxHealth || 30;
+
+    p.heroHealth = Math.min(currentHealth + healAmount, maxHealth);
     
     // Add to game log
     updatedState.gameLog = [

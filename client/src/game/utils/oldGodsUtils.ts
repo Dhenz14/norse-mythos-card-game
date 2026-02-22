@@ -7,6 +7,7 @@ import { GameState, CardData, CardInstance, GameLogEventType, Player } from '../
 import { createGameLogEvent } from './logUtils';
 import { getCardDatabase } from '../data/cardDatabaseUtils';
 import { applyDamage } from './gameUtils';
+import { dealDamage } from './effects/damageUtils';
 import { getRandomInt } from './randomUtils';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
@@ -219,19 +220,7 @@ export function executeCThunBattlecry(
     
     // Apply 1 damage
     if (target.isHero) {
-      // Damage enemy hero
-      newState.players[enemyType].hero.health -= 1;
-      
-      // Log hero damage
-      newState.gameLog.push(
-        createGameLogEvent({
-          type: 'damage' as GameLogEventType,
-          player: enemyType,
-          targetId: `${enemyType}_hero`,
-          text: `C'Thun deals 1 damage to ${enemyType} hero.`,
-          value: 1
-        })
-      );
+      newState = dealDamage(newState as GameState, enemyType, 'hero', 1, undefined, undefined, playerType);
     } else {
       // Damage minion
       const targetPlayerId = enemyType; // Target is from the enemy

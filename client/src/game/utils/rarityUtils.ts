@@ -58,6 +58,7 @@ export function getTypeIcon(type: string): string {
     case 'minion': return '⚔️';
     case 'spell': return '✨';
     case 'weapon': return '🗡️';
+    case 'hero': return '👑';
     default: return '📜';
   }
 }

@@ -9,6 +9,7 @@ import { NORSE_HEROES } from '../data/norseHeroes/heroDefinitions';
 import { isMinion, isWeapon, isSpell, isHero, getAttack, getHealth, getDurability } from './cards/typeGuards';
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
+import { dealDamage } from './effects/damageUtils';
 
 // Type for animation callback function
 // Used to trigger animations when hero power is used
@@ -416,12 +417,8 @@ function executeNorseHeroPower(
       }
       
       if (targetType === 'hero') {
-        opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
+        state = dealDamage(state, opponentType, 'hero', damage, undefined, undefined, playerType);
         debug.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
-        if (opponent.heroHealth <= 0) {
-          state.gamePhase = "game_over";
-          state.winner = playerType;
-        }
       } else {
         // Find target minion
         const allBattlefields = [...player.battlefield, ...opponent.battlefield];
@@ -446,7 +443,7 @@ function executeNorseHeroPower(
       
       // Handle secondaryValue for armor gain (like Tyr)
       if (power.secondaryValue) {
-        player.heroArmor = (player.heroArmor || 0) + power.secondaryValue;
+        state.players[playerType].heroArmor = (state.players[playerType].heroArmor || 0) + power.secondaryValue;
         debug.log(`[Hero Power] Gained ${power.secondaryValue} armor`);
       }
       return state;
@@ -486,12 +483,8 @@ function executeNorseHeroPower(
 
     case 'damage_hero': {
       const damage = power.value || 2;
-      opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
+      state = dealDamage(state, opponentType, 'hero', damage, undefined, undefined, playerType);
       debug.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
-      if (opponent.heroHealth <= 0) {
-        state.gamePhase = "game_over";
-        state.winner = playerType;
-      }
       return state;
     }
 
@@ -533,7 +526,8 @@ function executeNorseHeroPower(
       
       // Heal hero if secondaryValue specified for that purpose (like Freya)
       if (power.secondaryValue && hero.id === 'hero-freya') {
-        player.heroHealth = Math.min((player.heroHealth || 30) + power.secondaryValue, 30);
+        const freyaMaxHp = (player as any).maxHealth || 30;
+        player.heroHealth = Math.min((player.heroHealth || freyaMaxHp) + power.secondaryValue, freyaMaxHp);
         debug.log(`[Hero Power] Restored ${power.secondaryValue} health to hero`);
       }
       return state;
@@ -574,7 +568,8 @@ function executeNorseHeroPower(
       
       if (targetType === 'hero' || targetId === 'player' || targetId === 'opponent') {
         const targetPlayer = targetId === 'opponent' ? opponent : player;
-        targetPlayer.heroHealth = Math.min((targetPlayer.heroHealth || 30) + healAmount, 30);
+        const tpMaxHp = (targetPlayer as any).maxHealth || 30;
+        targetPlayer.heroHealth = Math.min((targetPlayer.heroHealth || tpMaxHp) + healAmount, tpMaxHp);
         debug.log(`[Hero Power] Restored ${healAmount} health to hero`);
       } else {
         const allMinions = [...player.battlefield, ...opponent.battlefield];
@@ -1024,13 +1019,8 @@ function executeNorseHeroPower(
         
         // Deal damage to hero
         const damage = power.value || 2;
-        opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - damage);
+        state = dealDamage(state, opponentType, 'hero', damage, undefined, undefined, playerType);
         debug.log(`[Hero Power] Dealt ${damage} damage to enemy hero`);
-        
-        if (opponent.heroHealth <= 0) {
-          state.gamePhase = "game_over";
-          state.winner = playerType;
-        }
       }
       return state;
     }
@@ -1192,14 +1182,7 @@ function executeMagePower(
   
   // Deal 1 damage to the target
   if (targetType === 'hero') {
-    // Damage the opponent's hero using the proper heroHealth property
-    opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - 1);
-    
-    // Check for game over
-    if (opponent.heroHealth <= 0) {
-      state.gamePhase = "game_over";
-      state.winner = playerType;
-    }
+    state = dealDamage(state, opponentType, 'hero', 1, undefined, undefined, playerType);
   } else {
     // Find the target card
     const targetField = targetId.startsWith(playerType) 
@@ -1254,7 +1237,8 @@ function executeWarriorPower(state: GameState, playerType: 'player' | 'opponent'
   player.heroPower.used = true;
   
   // Gain 2 health (simplified version of armor)
-  player.heroHealth = Math.min((player.heroHealth || 30) + 2, 30);
+  const warlockMaxHp = (player as any).maxHealth || 30;
+  player.heroHealth = Math.min((player.heroHealth || warlockMaxHp) + 2, warlockMaxHp);
   
   return state;
 }
@@ -1318,15 +1302,9 @@ function executeHunterPower(state: GameState, playerType: 'player' | 'opponent')
   player.mana.current -= player.heroPower.cost;
   player.heroPower.used = true;
   
-  // Deal 2 damage to enemy hero using the proper heroHealth property
-  opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - 2);
-  
-  // Check for game over
-  if (opponent.heroHealth <= 0) {
-    state.gamePhase = "game_over";
-    state.winner = playerType;
-  }
-  
+  // Deal 2 damage to enemy hero
+  state = dealDamage(state, opponentType, 'hero', 2, undefined, undefined, playerType);
+
   return state;
 }
 
@@ -1381,7 +1359,8 @@ function executePriestPower(
     const targetHero = targetId === 'player' ? state.players.player : state.players.opponent;
     
     // Heal the hero
-    targetHero.heroHealth = Math.min((targetHero.heroHealth || 30) + 2, 30); // Cap at 30 health
+    const heroMaxHp = (targetHero as any).maxHealth || 30;
+    targetHero.heroHealth = Math.min((targetHero.heroHealth || heroMaxHp) + 2, heroMaxHp);
   } else {
     // Find the target card
     const targetField = targetId.startsWith(playerType) 

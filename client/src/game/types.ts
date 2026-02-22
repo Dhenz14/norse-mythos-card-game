@@ -1,13 +1,12 @@
 /**
  * Types.ts
- * 
+ *
  * Central type definitions for the game system.
- * 
+ *
  * This file contains the core types used throughout the application.
  * For adapter functions and unified types that bridge systems, see:
  * /utils/cardTypeAdapter.ts
  */
-
 /**
  * Collection filtering types
  */
@@ -340,12 +339,12 @@ export interface PokerSpellCardData extends BaseCardData {
 /**
  * Union type for all card data types with discriminated union based on type field
  */
-export type CardData = 
-  | MinionCardData 
-  | SpellCardData 
-  | WeaponCardData 
-  | HeroCardData 
-  | SecretCardData 
+export type CardData =
+  | MinionCardData
+  | SpellCardData
+  | WeaponCardData
+  | HeroCardData
+  | SecretCardData
   | LocationCardData
   | PokerSpellCardData;
 

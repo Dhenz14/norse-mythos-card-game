@@ -1,6 +1,6 @@
 import { hasElementAdvantage, type ElementType } from '../elements/elementAdvantage';
 
-export type MatchupGlow = 'advantage' | 'disadvantage' | null;
+export type MatchupGlow = 'advantage' | 'disadvantage' | 'mutual' | null;
 
 export interface MatchupGlowMap {
   [pieceId: string]: MatchupGlow;
@@ -24,7 +24,9 @@ export function computeMatchupGlows(
     const weAreStrong = hasElementAdvantage(selectedElement, piece.element);
     const theyAreStrong = hasElementAdvantage(piece.element, selectedElement);
 
-    if (weAreStrong) {
+    if (weAreStrong && theyAreStrong) {
+      map[piece.id] = 'mutual';
+    } else if (weAreStrong) {
       map[piece.id] = 'advantage';
     } else if (theyAreStrong) {
       map[piece.id] = 'disadvantage';

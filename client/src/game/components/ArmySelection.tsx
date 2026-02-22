@@ -18,11 +18,16 @@ import { HeroArtImage } from './ui/HeroArtImage';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import './styles/ArmySelectionNorse.css';
 import { debug } from '../config/debugConfig';
+import { useMatchmaking } from '../hooks/useMatchmaking';
+import { usePeerStore } from '../stores/peerStore';
+import { toast } from 'sonner';
 
 interface ArmySelectionProps {
   onComplete: (army: ArmySelectionType) => void;
   onQuickStart?: (army: ArmySelectionType, deckCardIds: number[]) => void;
   onBack?: () => void;
+  isMultiplayer?: boolean;
+  onMatchmakingStart?: (army: ArmySelectionType) => void;
 }
 
 const PIECE_ORDER: ChessPieceType[] = ['king', 'queen', 'rook', 'bishop', 'knight'];
@@ -38,7 +43,7 @@ const PIECE_DISPLAY_INFO: Record<ChessPieceType, { name: string; icon: string; c
 
 const MAJOR_PIECES: PieceType[] = ['queen', 'rook', 'bishop', 'knight'];
 
-const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart, onBack }) => {
+const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart, onBack, isMultiplayer = false, onMatchmakingStart }) => {
   const { playSoundEffect } = useAudio();
   const { setupStage, selectedHero, setSelectedHero, setSelectedDeck, startGame, savedDecks } = useGame();
   const [army, setArmy] = useState<ArmySelectionType>(getDefaultArmySelection());
@@ -49,6 +54,9 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
   const [popupHero, setPopupHero] = useState<ChessPieceHero | null>(null);
   
   const { getDeck, validateDeck, isArmyComplete: areAllDecksComplete, loadFromStorage } = useHeroDeckStore();
+  
+  const { myPeerId, host } = usePeerStore();
+  const { status: matchmakingStatus, queuePosition, joinQueue, leaveQueue, error: matchmakingError } = useMatchmaking();
   
   useEffect(() => {
     loadFromStorage();
@@ -119,6 +127,39 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
     onComplete(army);
   };
 
+  const handleMatchmaking = async () => {
+    if (!canProceedToBattle) {
+      toast.error('Please complete all decks before starting matchmaking');
+      return;
+    }
+
+    playSoundEffect('button_click');
+    
+    // Sync selected king hero to global store
+    const kingHero = army.king;
+    if (kingHero) {
+      debug.log(`[ArmySelection] Syncing King hero: ${kingHero.name} (${kingHero.id})`);
+      setSelectedHero(kingHero.heroClass, kingHero.id);
+    }
+
+    // Initialize peer connection if needed
+    if (!myPeerId) {
+      try {
+        await host();
+      } catch (err) {
+        toast.error('Failed to initialize connection. Please try again.');
+        return;
+      }
+    }
+
+    // Start matchmaking
+    if (onMatchmakingStart) {
+      onMatchmakingStart(army);
+    } else {
+      await joinQueue();
+    }
+  };
+
   const isArmyComplete = PIECE_ORDER.every(pieceType => 
     army[pieceType as keyof ArmySelectionType] !== undefined
   );
@@ -162,23 +203,37 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
       <div className="norse-top-bar">
         <h1 className="norse-top-title">ASSEMBLE YOUR ARMY</h1>
         
-        {validDecks.length > 0 && onQuickStart && (
-          <div className="norse-quick-decks">
-            {validDecks.slice(0, 3).map((deck) => {
-              const cardCount = Object.values(deck.cards || {}).reduce((sum: number, count) => sum + (typeof count === 'number' ? count : 0), 0);
-              return (
-                <button
-                  key={deck.id || deck.name}
-                  onClick={() => handleQuickStart(deck)}
-                  disabled={!isArmyComplete}
-                  className="norse-quick-deck-btn"
-                >
-                  ⚡ {deck.name || 'Quick Deck'} ({cardCount}/30)
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <div className="norse-top-bar-actions">
+          {validDecks.length > 0 && onQuickStart && !isMultiplayer && (
+            <div className="norse-quick-decks">
+              {validDecks.slice(0, 3).map((deck) => {
+                const cardCount = Object.values(deck.cards || {}).reduce((sum: number, count) => sum + (typeof count === 'number' ? count : 0), 0);
+                return (
+                  <button
+                    key={deck.id || deck.name}
+                    onClick={() => handleQuickStart(deck)}
+                    disabled={!isArmyComplete}
+                    className="norse-quick-deck-btn"
+                  >
+                    ⚡ {deck.name || 'Quick Deck'} ({cardCount}/30)
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          
+          {/* DEV TOOL: START BATTLE (Solo AI) - Only show in non-multiplayer mode */}
+          {!isMultiplayer && (
+            <button
+              onClick={handleConfirm}
+              disabled={!canProceedToBattle}
+              className="norse-dev-tool-btn"
+              title="[DEV] Start solo game with AI"
+            >
+              {canProceedToBattle ? '⚔ START BATTLE' : 'Complete All Decks'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* LEFT SIDEBAR - PIECE SELECTOR */}
@@ -227,15 +282,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
               {PIECE_DISPLAY_INFO[selectedPieceType].domain}
             </div>
           </div>
-          <span style={{ 
-            fontSize: '11px', 
-            padding: '4px 12px', 
-            borderRadius: '4px',
-            background: pieceHasSpells(selectedPieceType) ? 'rgba(59, 130, 246, 0.2)' : 'rgba(107, 114, 128, 0.2)',
-            color: pieceHasSpells(selectedPieceType) ? '#93c5fd' : '#9ca3af',
-            border: '1px solid',
-            borderColor: pieceHasSpells(selectedPieceType) ? 'rgba(96, 165, 250, 0.3)' : 'rgba(107, 114, 128, 0.3)'
-          }}>
+          <span className={`norse-spell-badge ${pieceHasSpells(selectedPieceType) ? 'has-spells' : 'no-spells'}`}>
             {pieceHasSpells(selectedPieceType) ? '10 Signature Cards' : 'No Spells (King)'}
           </span>
         </div>
@@ -262,7 +309,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                     className="norse-hero-image"
                     fallbackIcon={
                       <div className="norse-hero-placeholder">
-                        <span style={{ fontSize: '48px', color: PIECE_DISPLAY_INFO[selectedPieceType].color }}>
+                        <span className="norse-hero-placeholder-icon" style={{ color: PIECE_DISPLAY_INFO[selectedPieceType].color }}>
                           {PIECE_DISPLAY_INFO[selectedPieceType].icon}
                         </span>
                       </div>
@@ -297,6 +344,9 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                       </span>
                     )}
                   </div>
+                  {hero.description && (
+                    <div className="norse-hero-desc-preview">{hero.description}</div>
+                  )}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -343,7 +393,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                   </div>
                   <div className="norse-army-item-info">
                     <div className="norse-army-item-name">
-                      {hero?.name || <span style={{ color: '#6b7280' }}>Empty</span>}
+                      {hero?.name || <span className="norse-empty-text">Empty</span>}
                     </div>
                     <div className="norse-army-item-deck">
                       {pieceType === 'king' ? 'No deck required' : info.name}
@@ -381,16 +431,9 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
             const hero = army[piece as keyof ArmySelectionType];
             const status = getDeckStatus(piece);
             return (
-              <div key={piece} style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                fontSize: '10px',
-                marginBottom: '4px'
-              }}>
-                <span style={{ color: '#9ca3af', textTransform: 'capitalize' }}>{piece}:</span>
-                <span style={{ 
-                  color: status.isComplete ? '#4ade80' : hero ? '#fbbf24' : '#6b7280'
-                }}>
+              <div key={piece} className="norse-deck-breakdown">
+                <span className="norse-deck-breakdown-label">{piece}:</span>
+                <span className={`norse-deck-breakdown-value ${status.isComplete ? 'complete' : hero ? 'has-hero' : 'no-hero'}`}>
                   {hero ? `${status.cardCount}/30` : 'No hero'}
                 </span>
               </div>
@@ -401,7 +444,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
 
       {/* BOTTOM BAR */}
       <div className="norse-bottom-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="norse-bottom-bar-left">
           <div className="norse-user-avatar">👤</div>
           {onBack && (
             <button onClick={onBack} className="norse-back-btn">
@@ -409,26 +452,53 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
             </button>
           )}
         </div>
-        
+
         {!allDecksComplete && isArmyComplete && (
-          <div style={{ 
-            color: '#fbbf24', 
-            fontSize: '13px',
-            textAlign: 'center'
-          }}>
+          <div className="norse-deck-warning">
             Build 30-card decks for all heroes to continue
           </div>
         )}
+
+        {/* Matchmaking status for multiplayer */}
+        {isMultiplayer && matchmakingStatus === 'queued' && (
+          <div className="norse-matchmaking-status">
+            <div>🔍 Searching for opponent...</div>
+            {queuePosition !== null && (
+              <div className="norse-queue-position">
+                Position in queue: {queuePosition}
+              </div>
+            )}
+          </div>
+        )}
+
+        {isMultiplayer && matchmakingError && (
+          <div className="norse-matchmaking-error">
+            {matchmakingError}
+          </div>
+        )}
         
-        <motion.button
-          whileHover={canProceedToBattle ? { scale: 1.02 } : undefined}
-          whileTap={canProceedToBattle ? { scale: 0.98 } : undefined}
-          onClick={handleConfirm}
-          disabled={!canProceedToBattle}
-          className="norse-battle-btn"
-        >
-          {canProceedToBattle ? 'START BATTLE' : 'Complete All Decks'}
-        </motion.button>
+        {/* Main action button - Matchmaking for multiplayer, Start Battle for solo */}
+        {isMultiplayer ? (
+          <motion.button
+            whileHover={canProceedToBattle && matchmakingStatus !== 'queued' ? { scale: 1.02 } : undefined}
+            whileTap={canProceedToBattle && matchmakingStatus !== 'queued' ? { scale: 0.98 } : undefined}
+            onClick={matchmakingStatus === 'queued' ? leaveQueue : handleMatchmaking}
+            disabled={!canProceedToBattle && matchmakingStatus !== 'queued'}
+            className="norse-battle-btn"
+          >
+            {matchmakingStatus === 'queued' ? 'CANCEL SEARCH' : canProceedToBattle ? 'MATCH MAKING' : 'Complete All Decks'}
+          </motion.button>
+        ) : (
+          <motion.button
+            whileHover={canProceedToBattle ? { scale: 1.02 } : undefined}
+            whileTap={canProceedToBattle ? { scale: 0.98 } : undefined}
+            onClick={handleConfirm}
+            disabled={!canProceedToBattle}
+            className="norse-battle-btn"
+          >
+            {canProceedToBattle ? 'START BATTLE' : 'Complete All Decks'}
+          </motion.button>
+        )}
       </div>
       
       {/* DECK BUILDER MODAL */}

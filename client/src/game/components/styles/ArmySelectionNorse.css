@@ -126,6 +126,33 @@
   transform: none;
 }
 
+.norse-army-selection .norse-dev-tool-btn {
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 6px;
+  color: #a78bfa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.norse-army-selection .norse-dev-tool-btn:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.6);
+  opacity: 1;
+}
+
+.norse-army-selection .norse-dev-tool-btn:disabled {
+  background: rgba(51, 65, 85, 0.3);
+  border-color: rgba(51, 65, 85, 0.5);
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
 /* ============================================
    LEFT SIDEBAR - Piece Selector (212px = 16px margin + 180px + 16px padding)
    ============================================ */
@@ -143,7 +170,7 @@
   border-right: 2px solid #8B7355;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
   overflow-y: auto;
-  z-index: 50;
+  z-index: var(--z-modal, 50);
 }
 
 .norse-army-selection .norse-piece-sidebar::before {
@@ -277,11 +304,11 @@
   flex: 1;
   min-height: 0; /* Critical for overflow to work */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
   grid-auto-rows: min-content;
   align-content: start; /* Align cards to top */
-  gap: 12px;
-  padding: 12px;
+  gap: 14px;
+  padding: 14px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(139, 115, 85, 0.5) transparent;
@@ -312,14 +339,14 @@
   position: relative;
   background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
   border: 2px solid #6B5B45;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  min-height: 180px;
-  max-height: 220px;
+  min-height: 220px;
+  max-height: 280px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
@@ -574,7 +601,7 @@
   }
   
   .norse-army-selection .norse-hero-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
 }
 
@@ -582,9 +609,9 @@
   .norse-army-selection {
     grid-template-columns: 160px 1fr 200px;
   }
-  
+
   .norse-army-selection .norse-hero-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 8px;
     padding: 8px;
   }
@@ -668,7 +695,7 @@
 .norse-army-selection .norse-hero-media {
   position: relative;
   width: 100%;
-  height: 120px;
+  height: 150px;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -1212,20 +1239,224 @@
     animation: none !important;
     display: none;
   }
-  
+
   .norse-army-selection .norse-hero-card::before {
     animation: none !important;
   }
-  
+
   .norse-army-selection .norse-battle-btn::before {
     animation: none !important;
   }
-  
+
+  .norse-army-selection .norse-lightning-overlay {
+    animation: none !important;
+  }
+
   .norse-army-selection .norse-lightning-overlay::before {
     animation: none !important;
   }
-  
+
   .norse-army-selection .norse-top-bar::after {
     animation: none !important;
+  }
+
+  .norse-army-selection .norse-piece-sidebar {
+    animation: none !important;
+  }
+
+  .norse-army-selection .norse-select-btn.selected {
+    animation: none !important;
+  }
+
+  .norse-army-selection .norse-hero-card,
+  .norse-army-selection .norse-piece-btn,
+  .norse-army-selection .norse-select-btn,
+  .norse-army-selection .norse-quick-deck-btn,
+  .norse-army-selection .norse-back-btn,
+  .norse-army-selection .norse-confirm-btn,
+  .norse-army-selection .norse-battle-btn {
+    transition: none !important;
+  }
+}
+
+/* Focus-visible for army selection */
+.norse-army-selection .norse-hero-card:focus-visible {
+  outline: 2px solid var(--color-gold, #ffd700);
+  outline-offset: 3px;
+}
+
+.norse-army-selection .norse-piece-btn:focus-visible {
+  outline: 2px solid #00ffcc;
+  outline-offset: 2px;
+}
+
+.norse-army-selection .norse-select-btn:focus-visible,
+.norse-army-selection .norse-quick-deck-btn:focus-visible,
+.norse-army-selection .norse-back-btn:focus-visible,
+.norse-army-selection .norse-confirm-btn:focus-visible,
+.norse-army-selection .norse-battle-btn:focus-visible {
+  outline: 2px solid var(--color-gold, #ffd700);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   INLINE STYLE REPLACEMENTS
+   ============================================ */
+.norse-army-selection .norse-top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.norse-army-selection .norse-spell-badge {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+.norse-army-selection .norse-spell-badge.has-spells {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.norse-army-selection .norse-spell-badge.no-spells {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+  border-color: rgba(107, 114, 128, 0.3);
+}
+
+.norse-army-selection .norse-hero-placeholder-icon {
+  font-size: 48px;
+}
+
+.norse-army-selection .norse-empty-text {
+  color: #6b7280;
+}
+
+.norse-army-selection .norse-deck-breakdown {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+.norse-army-selection .norse-deck-breakdown-label {
+  color: #9ca3af;
+  text-transform: capitalize;
+}
+
+.norse-army-selection .norse-deck-breakdown-value.complete {
+  color: #4ade80;
+}
+
+.norse-army-selection .norse-deck-breakdown-value.has-hero {
+  color: #fbbf24;
+}
+
+.norse-army-selection .norse-deck-breakdown-value.no-hero {
+  color: #6b7280;
+}
+
+.norse-army-selection .norse-bottom-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.norse-army-selection .norse-deck-warning {
+  color: #fbbf24;
+  font-size: 13px;
+  text-align: center;
+}
+
+.norse-army-selection .norse-matchmaking-status {
+  color: #60a5fa;
+  font-size: 13px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.norse-army-selection .norse-queue-position {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.norse-army-selection .norse-matchmaking-error {
+  color: #ef4444;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ============================================
+   HERO INFO PANEL IMPROVEMENTS
+   ============================================ */
+.norse-army-selection .norse-hero-info-panel {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.norse-army-selection .norse-hero-desc-preview {
+  font-size: 10px;
+  color: rgba(148, 163, 184, 0.7);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-style: italic;
+}
+
+.norse-army-selection .norse-hero-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f5f9;
+  text-align: center;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+/* Responsive updates */
+@media (max-width: 900px) {
+  .norse-army-selection .norse-hero-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .norse-army-selection .norse-hero-card {
+    min-height: 180px;
+    max-height: 240px;
+  }
+
+  .norse-army-selection .norse-hero-media {
+    height: 120px;
+  }
+}
+
+/* Touch device support */
+@media (hover: none) {
+  .norse-army-selection .norse-hero-card:hover {
+    transform: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .norse-army-selection .norse-hero-card:hover::before {
+    opacity: 0;
+  }
+
+  .norse-army-selection .norse-piece-btn:hover {
+    transform: none;
+  }
+
+  .norse-army-selection .norse-select-btn:hover {
+    box-shadow: none;
   }
 }

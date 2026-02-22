@@ -59,7 +59,6 @@ export function adaptCardInstance(
         id: 0,
         name: "Invalid Card",
         type: "minion",
-        class: "Neutral",
         manaCost: 0,
         collectible: false
       };
@@ -67,7 +66,6 @@ export function adaptCardInstance(
     
     // Ensure all required fields are present
     result.card.manaCost = result.card.manaCost ?? (result.card as any).cost ?? 0;
-    result.card.class = result.card.class || (result.card as any).heroClass || "Neutral";
     result.card.description = result.card.description || (result.card as any).text || "";
     result.card.keywords = result.card.keywords || [];
     
@@ -99,7 +97,6 @@ export function adaptCardInstance(
       id: (legacyCard as any).id || 0,
       name: (legacyCard as any).name || "Unknown Card",
       type: (legacyCard as any).type || "minion",
-      class: (legacyCard as any).class || (legacyCard as any).heroClass || "Neutral",
       rarity: (legacyCard as any).rarity || "common",
       manaCost: (legacyCard as any).manaCost ?? (legacyCard as any).cost ?? 0,
       attack: (legacyCard as any).attack,
@@ -296,7 +293,6 @@ function createFallbackCardInstance(): CardInstanceWithCardData {
       id: 0,
       name: "Fallback Card",
       type: "minion",
-      class: "Neutral",
       rarity: "common",
       manaCost: 0,
       attack: 1,

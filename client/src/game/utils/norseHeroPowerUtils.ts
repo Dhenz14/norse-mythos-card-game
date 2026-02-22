@@ -10,6 +10,7 @@ import { NorseHero, NorseHeroPower, HeroPassiveTrigger, NorseHeroPassive } from 
 import { ALL_NORSE_HEROES, getAnyHeroById } from '../data/norseHeroes';
 import { debug } from '../config/debugConfig';
 import { destroyCard } from './zoneUtils';
+import { dealDamage } from './effects/damageUtils';
 
 /**
  * Helper to safely get attack from card data
@@ -213,7 +214,21 @@ export function executeNorseHeroPower(
 
   // Handle secondary effects (e.g., heal hero after buff)
   if (power.secondaryValue && power.effectType === 'buff_single') {
-    player.heroHealth = Math.min((player.heroHealth || 30) + power.secondaryValue, 30);
+    const maxHp = (player as any).maxHealth || 30;
+    player.heroHealth = Math.min((player.heroHealth || maxHp) + power.secondaryValue, maxHp);
+  }
+
+  // Check for game over after any hero power effect
+  if (newState.gamePhase !== 'game_over') {
+    const playerHp = newState.players[playerType].heroHealth ?? newState.players[playerType].health;
+    const opponentHp = newState.players[opponentType].heroHealth ?? newState.players[opponentType].health;
+    if (playerHp <= 0) {
+      newState.gamePhase = 'game_over';
+      newState.winner = opponentType;
+    } else if (opponentHp <= 0) {
+      newState.gamePhase = 'game_over';
+      newState.winner = playerType;
+    }
   }
 
   return newState;
@@ -293,7 +308,8 @@ function executeHealSingle(
   const player = state.players[playerType];
 
   if (targetId === 'hero') {
-    player.heroHealth = Math.min((player.heroHealth || 30) + (power.value || 0), 30);
+    const maxHp = (player as any).maxHealth || 30;
+    player.heroHealth = Math.min((player.heroHealth || maxHp) + (power.value || 0), maxHp);
   } else if (targetId) {
     const targetMinion = player.battlefield.find(m => m.instanceId === targetId);
     if (targetMinion) {
@@ -658,9 +674,11 @@ function executeHeal(
   if (!targetId) return state;
 
   if (targetId === 'hero' || targetId === 'friendly_hero') {
-    player.heroHealth = Math.min((player.heroHealth || 30) + healAmount, 30);
+    const maxHp = (player as any).maxHealth || 30;
+    player.heroHealth = Math.min((player.heroHealth || maxHp) + healAmount, maxHp);
   } else if (targetId === 'enemy_hero') {
-    opponent.heroHealth = Math.min((opponent.heroHealth || 30) + healAmount, 30);
+    const oppMaxHp = (opponent as any).maxHealth || 30;
+    opponent.heroHealth = Math.min((opponent.heroHealth || oppMaxHp) + healAmount, oppMaxHp);
   } else {
     const friendlyMinion = player.battlefield.find(m => m.instanceId === targetId);
     if (friendlyMinion) {
@@ -693,27 +711,8 @@ function executeDamageHero(
   power: NorseHeroPower
 ): GameState {
   const opponentType = playerType === 'player' ? 'opponent' : 'player';
-  const opponent = state.players[opponentType];
   const damageAmount = power.value || 0;
-
-  const armorAmount = opponent.heroArmor || 0;
-  let remainingDamage = damageAmount;
-
-  if (armorAmount > 0) {
-    if (armorAmount >= remainingDamage) {
-      opponent.heroArmor = armorAmount - remainingDamage;
-      remainingDamage = 0;
-    } else {
-      opponent.heroArmor = 0;
-      remainingDamage = remainingDamage - armorAmount;
-    }
-  }
-
-  if (remainingDamage > 0) {
-    opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - remainingDamage);
-  }
-
-  return state;
+  return dealDamage(state, opponentType, 'hero', damageAmount, undefined, undefined, playerType);
 }
 
 /**
@@ -860,7 +859,7 @@ function executeSelfDamageAndSummon(
   const selfDamageAmount = power.selfDamage || 0;
 
   if (selfDamageAmount > 0) {
-    player.heroHealth = Math.max(0, (player.heroHealth || 30) - selfDamageAmount);
+    player.heroHealth = Math.max(0, (player.heroHealth ?? player.health ?? 30) - selfDamageAmount);
   }
 
   if (power.summonData && player.battlefield.length < 7) {
@@ -1452,24 +1451,7 @@ function executeBounceAndDamageHero(
     targetOwner.hand.push(returnedCard);
   }
 
-  const armorAmount = opponent.heroArmor || 0;
-  let remainingDamage = damageValue;
-
-  if (armorAmount > 0) {
-    if (armorAmount >= remainingDamage) {
-      opponent.heroArmor = armorAmount - remainingDamage;
-      remainingDamage = 0;
-    } else {
-      opponent.heroArmor = 0;
-      remainingDamage = remainingDamage - armorAmount;
-    }
-  }
-
-  if (remainingDamage > 0) {
-    opponent.heroHealth = Math.max(0, (opponent.heroHealth || 30) - remainingDamage);
-  }
-
-  return state;
+  return dealDamage(state, opponentType, 'hero', damageValue, undefined, undefined, playerType);
 }
 
 /**
@@ -1484,7 +1466,8 @@ function executeHealAllFriendly(
   const player = state.players[playerType];
   const healAmount = power.value || 0;
 
-  player.heroHealth = Math.min((player.heroHealth || 30) + healAmount, 30);
+  const maxHp = (player as any).maxHealth || 30;
+  player.heroHealth = Math.min((player.heroHealth || maxHp) + healAmount, maxHp);
 
   player.battlefield.forEach(minion => {
     const maxHealth = getCardHealth(minion.card);
@@ -1562,7 +1545,7 @@ function executeDrawAndDamage(
   const drawCount = (power as any).drawCount || power.value || 1;
   const damageValue = (power as any).damageValue || power.selfDamage || 0;
 
-  player.heroHealth = Math.max(0, (player.heroHealth || 30) - damageValue);
+  player.heroHealth = Math.max(0, (player.heroHealth ?? player.health ?? 30) - damageValue);
 
   for (let i = 0; i < drawCount; i++) {
     if (player.deck.length > 0 && player.hand.length < 10) {
@@ -1753,9 +1736,11 @@ export function executeHeroPassive(
         }
       });
       break;
-    case 'damage_hero':
-      opponent.heroHealth = (opponent.heroHealth || 30) - (passive.value || 0);
+    case 'damage_hero': {
+      const opponentType: 'player' | 'opponent' = ownerType === 'player' ? 'opponent' : 'player';
+      newState = dealDamage(newState, opponentType, 'hero', passive.value || 0, undefined, undefined, ownerType);
       break;
+    }
     case 'cost_reduction':
       owner.hand.forEach(card => {
         if (!passive.condition?.minionElement || (card.card as any).element === passive.condition.minionElement) {

@@ -621,6 +621,27 @@ export function executeSpell(
     case 'gain_armor':
       resultState = executeGainArmorSpell(state, effect);
       break;
+    case 'armor_based_on_missing_health':
+      resultState = executeArmorBasedOnMissingHealthSpell(state, effect);
+      break;
+    case 'gain_armor_reduce_cost':
+      resultState = executeGainArmorReduceCostSpell(state, effect);
+      break;
+    case 'death_coil':
+      resultState = executeDeathCoilSpell(state, effect, targetId, targetType);
+      break;
+    case 'aoe_with_on_kill':
+      resultState = executeAoEWithOnKillSpell(state, effect, spellCard.card.name);
+      break;
+    case 'freeze_adjacent':
+      resultState = executeFreezeAdjacentSpell(state, effect, targetId);
+      break;
+    case 'fill_board':
+      resultState = executeFillBoardSpell(state, effect);
+      break;
+    case 'hero_attack_buff':
+      resultState = executeHeroAttackBuffSpell(state, effect);
+      break;
     default:
       debug.error(`Unknown spell effect type: ${effect.type}`);
       return state;
@@ -770,15 +791,17 @@ function executeSetHealthSpell(
     const healthValue = effect.value || 15; // Default to 15 (like Alexstrasza)
     let newState = { ...state };
     
-    // Set the target hero's health to the specified value
+    // Set the target hero's health to the specified value (keep both fields in sync)
     if (targetId === 'opponent' || targetId === 'opponent-hero') {
       newState.players.opponent.health = healthValue;
+      newState.players.opponent.heroHealth = healthValue;
     } else if (targetId === 'player' || targetId === 'player-hero') {
       newState.players.player.health = healthValue;
+      newState.players.player.heroHealth = healthValue;
     } else {
       debug.error(`Unknown hero target ID: ${targetId}`);
     }
-    
+
     return newState;
   } else {
     // For minions, use the handler from the set_healthHandler file
@@ -1052,15 +1075,13 @@ function executeHealSpell(
   } else if (targetType === 'hero') {
     // Heal a hero
     if (targetId === 'opponent' || targetId === 'opponent-hero') {
-      // Basic hero healing
-      const heroHealth = newState.players.opponent.health || 30;
-      const newHealth = Math.min(heroHealth + healAmount, 30);
-      newState.players.opponent.health = newHealth;
+      const opp = newState.players.opponent;
+      const oppMaxHp = (opp as any).maxHealth || 30;
+      opp.heroHealth = Math.min((opp.heroHealth ?? opp.health ?? oppMaxHp) + healAmount, oppMaxHp);
     } else if (targetId === 'player' || targetId === 'player-hero') {
-      // Heal player
-      const heroHealth = newState.players.player.health || 30;
-      const newHealth = Math.min(heroHealth + healAmount, 30);
-      newState.players.player.health = newHealth;
+      const plr = newState.players.player;
+      const plrMaxHp = (plr as any).maxHealth || 30;
+      plr.heroHealth = Math.min((plr.heroHealth ?? plr.health ?? plrMaxHp) + healAmount, plrMaxHp);
     } else {
       debug.error(`Unknown hero target ID: ${targetId}`);
     }
@@ -2785,9 +2806,13 @@ function executeDestroySpell(
     if (effect.secondaryValue && effect.secondaryType === 'heal') {
       const currentPlayer = state.currentTurn || 'player';
       if (currentPlayer === 'player') {
-        newState.players.player.health = Math.min(30, (newState.players.player.health || 30) + effect.secondaryValue);
+        const p = newState.players.player;
+        const pMaxHp = (p as any).maxHealth || 30;
+        p.heroHealth = Math.min(pMaxHp, (p.heroHealth ?? p.health ?? pMaxHp) + effect.secondaryValue);
       } else {
-        newState.players.opponent.health = Math.min(30, (newState.players.opponent.health || 30) + effect.secondaryValue);
+        const p = newState.players.opponent;
+        const pMaxHp = (p as any).maxHealth || 30;
+        p.heroHealth = Math.min(pMaxHp, (p.heroHealth ?? p.health ?? pMaxHp) + effect.secondaryValue);
       }
     }
   }
@@ -3084,8 +3109,8 @@ function executeRandomDamageSpell(
   const target = targets[Math.floor(Math.random() * targets.length)];
   
   if (target.type === 'hero') {
-    const enemyPlayer = currentPlayer === 'player' ? newState.players.opponent : newState.players.player;
-    enemyPlayer.health = (enemyPlayer.health || 30) - effect.value;
+    const enemyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
+    newState = dealDamage(newState, enemyType, 'hero', effect.value, undefined, undefined, currentPlayer as 'player' | 'opponent');
   } else if (target.idx !== undefined) {
     const minion = enemyBattlefield[target.idx];
     minion.currentHealth = (minion.currentHealth || getHealth(minion.card)) - (effect.value || 0);
@@ -3821,12 +3846,6 @@ function executeResurrectDeathrattleSpell(
   playerState.graveyard = graveyard;
   
   
-  // TODO: Trigger deathrattle effect if the minion has one
-  // This would require checking minionToResurrect.card.deathrattle and executing it
-  // For now, just log that we would trigger it
-  if (isMinion(minionToResurrect.card) && minionToResurrect.card.deathrattle) {
-  }
-  
   return newState;
 }
 
@@ -4067,16 +4086,18 @@ function executeSetHeroHealthSpell(
   
   let newState = { ...state };
   
-  // Set the target hero's health to the specified value
+  // Set the target hero's health to the specified value (keep both fields in sync)
   if (targetId === 'opponent' || targetId === 'opponent-hero') {
     newState.players.opponent.health = effect.value;
+    newState.players.opponent.heroHealth = effect.value;
   } else if (targetId === 'player' || targetId === 'player-hero') {
     newState.players.player.health = effect.value;
+    newState.players.player.heroHealth = effect.value;
   } else {
     debug.error(`Unknown hero target ID: ${targetId}`);
     return state;
   }
-  
+
   return newState;
 }
 
@@ -4117,15 +4138,14 @@ function executeSelfDamageBuffSpell(
   
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
-  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   const damageAmount = effect.value;
-  
+
   // First, deal damage to self
   newState = dealDamage(newState, currentPlayer, 'hero', damageAmount);
-  
-  
-  // Then apply buff effect if specified
+
+  // Then apply buff effect if specified (re-fetch playerState after dealDamage deep copy)
   if (effect.buffAttack || effect.buffHealth || effect.grantKeywords) {
+    const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
     // Apply buff to all friendly minions
     for (const minion of playerState.battlefield) {
       if (effect.buffAttack) {
@@ -5029,33 +5049,32 @@ function executeRandomDamageWithSelfDamageSpell(
   }
   
   let newState = { ...state };
-  const currentPlayer = state.currentTurn || 'player';
-  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
-  const enemyState = currentPlayer === 'player' ? newState.players.opponent : newState.players.player;
-  
+  const currentPlayer = (state.currentTurn || 'player') as 'player' | 'opponent';
+  const enemyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
+
   const damage = effect.value;
-  
+
   // Deal random damage to a random enemy minion
-  if (enemyState.battlefield.length > 0) {
-    const randomTarget = enemyState.battlefield[Math.floor(Math.random() * enemyState.battlefield.length)];
-    
+  const enemyBattlefield = newState.players[enemyType].battlefield;
+  if (enemyBattlefield.length > 0) {
+    const randomTarget = enemyBattlefield[Math.floor(Math.random() * enemyBattlefield.length)];
+
     if (randomTarget.currentHealth !== undefined) {
       randomTarget.currentHealth -= damage;
-      
+
       if (randomTarget.currentHealth <= 0) {
-        const survivors = enemyState.battlefield.filter(m => m.instanceId !== randomTarget.instanceId);
-        enemyState.battlefield = survivors;
+        newState.players[enemyType].battlefield = enemyBattlefield.filter(m => m.instanceId !== randomTarget.instanceId);
       }
     }
   } else {
-    // Damage enemy hero if no minions
-    enemyState.health = Math.max(0, (enemyState.health || 30) - damage);
+    // Damage enemy hero if no minions — goes through armor
+    newState = dealDamage(newState, enemyType, 'hero', damage, undefined, undefined, currentPlayer);
   }
-  
-  // Deal self damage
+
+  // Deal self damage — goes through armor
   const selfDamage = effect.selfDamage || damage;
-  playerState.health = Math.max(0, (playerState.health || 30) - selfDamage);
-  
+  newState = dealDamage(newState, currentPlayer, 'hero', selfDamage, undefined, undefined, enemyType);
+
   return newState;
 }
 
@@ -5505,8 +5524,33 @@ function executeGainArmorSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   const armorAmount = effect.value || 0;
-  playerState.armor = (playerState.armor || 0) + armorAmount;
-  
+  playerState.heroArmor = (playerState.heroArmor || 0) + armorAmount;
+
+  return newState;
+}
+
+function executeArmorBasedOnMissingHealthSpell(
+  state: GameState,
+  effect: SpellEffect
+): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+
+  const maxHp = (playerState as any).maxHealth || 30;
+  const currentHealth = playerState.heroHealth ?? (playerState as any).health ?? maxHp;
+  const missingHealth = Math.max(0, maxHp - currentHealth);
+
+  playerState.heroArmor = (playerState.heroArmor || 0) + missingHealth;
+
+  const drawPerArmor = (effect as any).drawPerArmorGained || 0;
+  if (drawPerArmor > 0 && missingHealth > 0) {
+    const cardsToDraw = Math.floor(missingHealth / drawPerArmor);
+    for (let i = 0; i < cardsToDraw; i++) {
+      newState = drawCard(newState);
+    }
+  }
+
   return newState;
 }
 
@@ -5524,14 +5568,14 @@ function executeGainArmorAndImmunitySpell(
   if (currentPlayer === 'player') {
     const updatedPlayer = {
       ...newState.players.player,
-      armor: (newState.players.player.armor || 0) + (effect.value || 0)
+      heroArmor: (newState.players.player.heroArmor || 0) + (effect.value || 0)
     };
     (updatedPlayer as any).isImmune = true;
     newState.players = { ...newState.players, player: updatedPlayer };
   } else {
     const updatedOpponent = {
       ...newState.players.opponent,
-      armor: (newState.players.opponent.armor || 0) + (effect.value || 0)
+      heroArmor: (newState.players.opponent.heroArmor || 0) + (effect.value || 0)
     };
     (updatedOpponent as any).isImmune = true;
     newState.players = { ...newState.players, opponent: updatedOpponent };
@@ -5554,14 +5598,14 @@ function executeGainArmorAndLifestealSpell(
   if (currentPlayer === 'player') {
     const updatedPlayer = {
       ...newState.players.player,
-      armor: (newState.players.player.armor || 0) + (effect.value || 0)
+      heroArmor: (newState.players.player.heroArmor || 0) + (effect.value || 0)
     };
     (updatedPlayer as any).hasLifesteal = true;
     newState.players = { ...newState.players, player: updatedPlayer };
   } else {
     const updatedOpponent = {
       ...newState.players.opponent,
-      armor: (newState.players.opponent.armor || 0) + (effect.value || 0)
+      heroArmor: (newState.players.opponent.heroArmor || 0) + (effect.value || 0)
     };
     (updatedOpponent as any).hasLifesteal = true;
     newState.players = { ...newState.players, opponent: updatedOpponent };
@@ -5915,7 +5959,7 @@ function executeGainArmorAndDrawSpell(
       ...newState.players,
       player: {
         ...newState.players.player,
-        armor: (newState.players.player.armor || 0) + armorGain
+        heroArmor: (newState.players.player.heroArmor || 0) + armorGain
       }
     };
   } else {
@@ -5923,11 +5967,11 @@ function executeGainArmorAndDrawSpell(
       ...newState.players,
       opponent: {
         ...newState.players.opponent,
-        armor: (newState.players.opponent.armor || 0) + armorGain
+        heroArmor: (newState.players.opponent.heroArmor || 0) + armorGain
       }
     };
   }
-  
+
   // Draw cards
   for (let i = 0; i < cardsToDraw; i++) {
     newState = drawCard(newState);
@@ -6176,7 +6220,7 @@ function executeConditionalArmorSpell(
         ...newState.players,
         player: {
           ...newState.players.player,
-          armor: (newState.players.player.armor || 0) + armorGain
+          heroArmor: (newState.players.player.heroArmor || 0) + armorGain
         }
       };
     } else {
@@ -6184,12 +6228,12 @@ function executeConditionalArmorSpell(
         ...newState.players,
         opponent: {
           ...newState.players.opponent,
-          armor: (newState.players.opponent.armor || 0) + armorGain
+          heroArmor: (newState.players.opponent.heroArmor || 0) + armorGain
         }
       };
     }
   }
-  
+
   return newState;
 }
 
@@ -6859,7 +6903,7 @@ function executeWeaponDamageAoESpell(
   state: GameState,
   effect: SpellEffect
 ): GameState {
-  const newState = { ...state };
+  let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
   
   // Get weapon attack
@@ -6882,8 +6926,248 @@ function executeWeaponDamageAoESpell(
   
   // Optionally damage enemy hero too
   if (effect.damageHero) {
-    enemyPlayerState.health = enemyPlayerState.health - (damage || 0);
+    const enemyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
+    const friendlyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'player' : 'opponent';
+    newState = dealDamage(newState, enemyType, 'hero', damage || 0, undefined, undefined, friendlyType);
   }
-  
+
+  return newState;
+}
+
+function executeGainArmorReduceCostSpell(
+  state: GameState,
+  effect: SpellEffect
+): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+
+  const armorAmount = effect.value || 5;
+  playerState.heroArmor = (playerState.heroArmor || 0) + armorAmount;
+
+  const costReduction = (effect as any).costReduction || 1;
+  const targetCardType = (effect as any).targetCardType || 'all';
+
+  playerState.hand = playerState.hand.map((cardInst: CardInstance) => {
+    const manaCost = cardInst.card.manaCost ?? 0;
+    const matchesType = targetCardType === 'all' || cardInst.card.type === targetCardType;
+    if (matchesType && manaCost > 0) {
+      const reduction = Math.min(costReduction, manaCost);
+      return {
+        ...cardInst,
+        card: { ...cardInst.card, manaCost: manaCost - reduction }
+      };
+    }
+    return cardInst;
+  });
+
+  return newState;
+}
+
+function executeDeathCoilSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string,
+  targetType?: 'minion' | 'hero'
+): GameState {
+  if (!targetId || !targetType) {
+    debug.error('Death Coil spell requires a target');
+    return state;
+  }
+
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const damageValue = effect.value || 5;
+  const healValue = (effect as any).healValue || effect.value || 5;
+
+  const friendlyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'player' : 'opponent';
+  const enemyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
+
+  const enemyBoard = newState.players[enemyType].battlefield;
+  const friendlyBoard = newState.players[friendlyType].battlefield;
+
+  const isEnemyMinion = enemyBoard.some(m => m.instanceId === targetId);
+  const isFriendlyMinion = friendlyBoard.some(m => m.instanceId === targetId);
+  const isEnemyHero = targetType === 'hero' && !isFriendlyMinion;
+
+  if (isEnemyMinion || isEnemyHero) {
+    if (targetType === 'hero') {
+      newState = dealDamage(newState, enemyType, 'hero', damageValue, undefined, undefined, friendlyType);
+    } else {
+      newState = dealDamage(newState, enemyType, 'minion', damageValue, targetId, undefined, friendlyType);
+    }
+  } else if (isFriendlyMinion) {
+    newState.players[friendlyType].battlefield = friendlyBoard.map(m => {
+      if (m.instanceId === targetId) {
+        const maxHealth = getHealth(m.card) || 1;
+        const newHealth = Math.min((m.currentHealth || 0) + healValue, maxHealth);
+        return { ...m, currentHealth: newHealth };
+      }
+      return m;
+    });
+  }
+
+  return newState;
+}
+
+function executeAoEWithOnKillSpell(
+  state: GameState,
+  effect: SpellEffect,
+  _spellName?: string
+): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const friendlyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'player' : 'opponent';
+  const enemyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
+
+  const damageValue = effect.value || 1;
+  const healValue = (effect as any).healValue || 0;
+  const drawOnKill = (effect as any).drawOnKill || 0;
+  const buffOnKill = (effect as any).buffOnKill || 0;
+
+  const enemyBoard = newState.players[enemyType].battlefield;
+  const beforeCount = enemyBoard.length;
+
+  enemyBoard.forEach((minion: CardInstance) => {
+    const currentHp = minion.currentHealth || getHealth(minion.card);
+    minion.currentHealth = currentHp - damageValue;
+  });
+
+  newState.players[enemyType].battlefield = enemyBoard.filter(
+    (m: CardInstance) => (m.currentHealth || 0) > 0
+  );
+
+  const killed = beforeCount - newState.players[enemyType].battlefield.length;
+
+  if (killed > 0) {
+    if (healValue > 0) {
+      const totalHeal = healValue * killed;
+      const hero = newState.players[friendlyType];
+      const heroMaxHp = (hero as any).maxHealth || 30;
+      hero.heroHealth = Math.min((hero.heroHealth ?? hero.health ?? heroMaxHp) + totalHeal, heroMaxHp);
+    }
+    if (drawOnKill > 0) {
+      for (let i = 0; i < drawOnKill * killed; i++) {
+        newState = drawCard(newState);
+      }
+    }
+    if (buffOnKill > 0) {
+      newState.players[friendlyType].battlefield = newState.players[friendlyType].battlefield.map(
+        (m: CardInstance) => ({
+          ...m,
+          card: { ...m.card, attack: (getAttack(m.card) || 0) + buffOnKill },
+          currentHealth: (m.currentHealth || getHealth(m.card)) + buffOnKill
+        })
+      );
+    }
+  }
+
+  newState = removeDeadMinions(newState);
+  return newState;
+}
+
+function executeFreezeAdjacentSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string
+): GameState {
+  if (!targetId) {
+    debug.error('Freeze adjacent spell requires a target');
+    return state;
+  }
+
+  const newState = { ...state };
+  const includeTarget = (effect as any).includeTarget !== false;
+
+  for (const side of ['player', 'opponent'] as const) {
+    const board = newState.players[side].battlefield;
+    const targetIdx = board.findIndex(m => m.instanceId === targetId);
+    if (targetIdx === -1) continue;
+
+    newState.players[side].battlefield = board.map((minion, idx) => {
+      const isTarget = idx === targetIdx;
+      const isAdjacent = idx === targetIdx - 1 || idx === targetIdx + 1;
+
+      if ((isTarget && includeTarget) || isAdjacent) {
+        return { ...minion, isFrozen: true, canAttack: false };
+      }
+      return minion;
+    });
+    break;
+  }
+
+  return newState;
+}
+
+function executeFillBoardSpell(
+  state: GameState,
+  effect: SpellEffect
+): GameState {
+  const newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const side = currentPlayer === 'player' ? 'player' : 'opponent' as const;
+  const playerState = newState.players[side];
+  const maxBoardSize = 7;
+  const slotsAvailable = maxBoardSize - playerState.battlefield.length;
+
+  if (slotsAvailable <= 0) return newState;
+
+  const summonId = (effect as any).summonCardId || effect.value;
+  const summonCount = Math.min((effect as any).count || slotsAvailable, slotsAvailable);
+
+  for (let i = 0; i < summonCount; i++) {
+    let cardData: CardData | undefined;
+    if (summonId) {
+      cardData = allCards.find(c => c.id === summonId);
+    }
+    if (!cardData) {
+      cardData = {
+        id: 9999,
+        name: 'Risen Skeleton',
+        manaCost: 1,
+        attack: 1,
+        health: 1,
+        type: 'minion',
+        description: 'Summoned from the grave.',
+        rarity: 'common',
+        keywords: [],
+      } as MinionCardData;
+    }
+
+    const instance: CardInstance = {
+      instanceId: uuidv4(),
+      card: cardData,
+      currentHealth: getHealth(cardData) || 1,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0,
+    };
+    playerState.battlefield.push(instance);
+  }
+
+  return newState;
+}
+
+function executeHeroAttackBuffSpell(
+  state: GameState,
+  effect: SpellEffect
+): GameState {
+  const newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const attackValue = effect.value || 0;
+  const armorValue = (effect as any).armorValue || 0;
+
+  const side = currentPlayer === 'player' ? 'player' : 'opponent' as const;
+  const updatedPlayer = {
+    ...newState.players[side],
+    canAttack: true
+  };
+  (updatedPlayer as any).heroAttack = ((newState.players[side] as any).heroAttack || 0) + attackValue;
+  if (armorValue > 0) {
+    updatedPlayer.heroArmor = (updatedPlayer.heroArmor || 0) + armorValue;
+  }
+  newState.players = { ...newState.players, [side]: updatedPlayer };
+
   return newState;
 }

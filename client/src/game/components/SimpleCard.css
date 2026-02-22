@@ -19,6 +19,7 @@
     0 16px 40px rgba(0,0,0,0.3);
   user-select: none;
   flex-shrink: 0;
+  will-change: transform;
 }
 
 /* Subtle top-edge metallic highlight */
@@ -62,7 +63,7 @@
 
 .simple-card.large {
   width: 180px;
-  height: 260px;
+  height: 280px;
 }
 
 .simple-card.preview {
@@ -143,7 +144,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 25;
+  z-index: var(--z-cards, 20);
   box-shadow:
     0 3px 10px rgba(0,0,0,0.7),
     0 0 12px rgba(37,99,235,0.4),
@@ -206,6 +207,10 @@
     inset -6px 0 12px rgba(0,0,0,0.3);
 }
 
+.simple-card.large .card-art-container {
+  height: 40%;
+}
+
 .simple-card.preview .card-art-container {
   top: 8%;
   height: 42%;
@@ -252,7 +257,12 @@
     0 2px 8px rgba(0,0,0,0.6),
     inset 0 1px 0 rgba(255,255,255,0.1),
     inset 0 -1px 0 rgba(0,0,0,0.4);
-  z-index: 15;
+  z-index: 18;
+  overflow: hidden;
+}
+
+.simple-card.large .card-name-banner {
+  top: 49%;
 }
 
 .simple-card.preview .card-name-banner {
@@ -275,12 +285,22 @@
 }
 
 .simple-card.small .card-name {
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .simple-card.large .card-name {
   font-size: 15px;
   letter-spacing: 0.8px;
+}
+
+.simple-card.large .card-name.name-long {
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.simple-card.large .card-name.name-very-long {
+  font-size: 10px;
+  letter-spacing: 0.3px;
 }
 
 .simple-card.preview .card-name {
@@ -313,7 +333,7 @@
   background: rgba(0, 0, 0, 0.85);
   padding: 2px 8px;
   border-radius: 8px;
-  font-size: 7px;
+  font-size: 9px;
   color: #FCD34D;
   text-transform: uppercase;
   font-weight: 600;
@@ -342,13 +362,7 @@
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 15;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.card-description::-webkit-scrollbar {
-  display: none;
+  overflow: hidden;
 }
 
 .simple-card.small .card-description {
@@ -358,15 +372,16 @@
 }
 
 .simple-card.large .card-description {
-  top: 62%;
-  bottom: 10%;
-  min-height: 22%;
+  top: 64%;
+  bottom: 19%;
+  min-height: 14%;
+  overflow: hidden;
 }
 
 .simple-card.preview .card-description {
-  top: 58%;
-  bottom: 8%;
-  min-height: 28%;
+  top: 61%;
+  bottom: 13%;
+  min-height: 22%;
 }
 
 .card-description span {
@@ -374,7 +389,6 @@
   font-size: 9px;
   font-weight: 600;
   line-height: 1.3;
-  overflow: visible;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
@@ -382,11 +396,12 @@
 }
 
 .simple-card.small .card-description span {
-  font-size: 7px;
+  font-size: 8px;
 }
 
 .simple-card.large .card-description span {
-  font-size: 11px;
+  font-size: 9.5px;
+  line-height: 1.35;
 }
 
 .simple-card.preview .card-description span {
@@ -466,7 +481,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 25;
+  z-index: var(--z-cards, 20);
   box-shadow:
     0 3px 10px rgba(0,0,0,0.7),
     0 0 10px rgba(217,119,6,0.35),
@@ -506,7 +521,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 25;
+  z-index: var(--z-cards, 20);
   box-shadow:
     0 3px 10px rgba(0,0,0,0.7),
     0 0 10px rgba(220,38,38,0.35),
@@ -546,8 +561,17 @@
   font-size: 22px;
 }
 
+/* Elemental buff indicator - green numbers like Hearthstone's "above base" convention */
+.stat-value.stat-buffed {
+  color: #4ade80;
+  text-shadow:
+    0 0 6px rgba(74, 222, 128, 0.6),
+    0 1px 0 rgba(0,0,0,1),
+    0 2px 4px rgba(0,0,0,0.9);
+}
+
 /* ==========================================================================
-   FOIL OVERLAYS - Dormant (no holographic effects)
+   FOIL OVERLAYS - Activated on rare+ cards on hover
    ========================================================================== */
 
 .foil-overlay {
@@ -557,17 +581,33 @@
   pointer-events: none;
   z-index: 5;
   opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.foil-overlay.legendary-foil,
-.foil-overlay.epic-foil,
+.foil-overlay.legendary-foil {
+  background: linear-gradient(135deg,
+    rgba(245,158,11,0.08) 0%,
+    rgba(255,200,50,0.12) 50%,
+    rgba(245,158,11,0.08) 100%);
+}
+
+.foil-overlay.epic-foil {
+  background: linear-gradient(135deg,
+    rgba(168,85,247,0.08) 0%,
+    rgba(192,132,252,0.12) 50%,
+    rgba(168,85,247,0.08) 100%);
+}
+
 .foil-overlay.rare-foil {
-  opacity: 0;
+  background: linear-gradient(135deg,
+    rgba(59,130,246,0.06) 0%,
+    rgba(96,165,250,0.10) 50%,
+    rgba(59,130,246,0.06) 100%);
 }
 
-.simple-card:hover .foil-overlay {
-  opacity: 0;
-}
+.simple-card:hover .foil-overlay.legendary-foil { opacity: 1; }
+.simple-card:hover .foil-overlay.epic-foil { opacity: 1; }
+.simple-card:hover .foil-overlay.rare-foil { opacity: 0.8; }
 
 /* Highlighted state */
 .simple-card.highlighted {
@@ -684,5 +724,70 @@
       0 8px 24px rgba(0,0,0,0.6),
       0 0 0 3px rgba(72,187,120,0.9),
       0 0 24px rgba(72,187,120,0.6);
+  }
+}
+
+/* ==========================================================================
+   FOCUS-VISIBLE - Keyboard navigation support
+   ========================================================================== */
+
+.simple-card:focus-visible {
+  outline: 2px solid var(--color-gold, #ffd700);
+  outline-offset: 3px;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.4),
+    0 8px 24px rgba(0,0,0,0.6),
+    0 0 0 4px rgba(255,215,0,0.25);
+}
+
+/* ==========================================================================
+   TOUCH DEVICE SUPPORT - Disable hover effects on touch screens
+   ========================================================================== */
+
+@media (hover: none) {
+  .simple-card:hover {
+    transform: none;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.4),
+      0 8px 24px rgba(0,0,0,0.6),
+      0 16px 40px rgba(0,0,0,0.3);
+  }
+
+  .simple-card.playable:hover {
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.6),
+      0 0 0 2px rgba(72,187,120,0.6);
+  }
+
+  .simple-card:hover .foil-overlay.legendary-foil,
+  .simple-card:hover .foil-overlay.epic-foil,
+  .simple-card:hover .foil-overlay.rare-foil {
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION - Respect user preference
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .simple-card {
+    transition: none;
+  }
+
+  .simple-card.rarity-legendary,
+  .simple-card.rarity-epic {
+    animation: none;
+  }
+
+  .simple-card.playable {
+    animation: none;
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.6),
+      0 0 0 3px rgba(72,187,120,0.8);
+  }
+
+  .foil-overlay {
+    transition: none;
   }
 }

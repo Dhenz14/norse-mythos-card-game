@@ -1,12 +1,22 @@
 export type ElementType = 'fire' | 'water' | 'wind' | 'earth' | 'holy' | 'shadow' | 'neutral';
 
 export const ELEMENT_STRENGTHS: Record<ElementType, ElementType[]> = {
-  fire: ['earth'],
-  water: ['fire'],
-  wind: ['water'],
-  earth: ['wind'],
-  holy: ['shadow'],
-  shadow: ['holy'],
+  fire: ['earth', 'wind'],
+  water: ['fire', 'shadow'],
+  wind: ['water', 'holy'],
+  earth: ['wind', 'shadow'],
+  holy: ['fire', 'shadow'],
+  shadow: ['holy', 'wind'],
+  neutral: []
+};
+
+export const ELEMENT_WEAKNESSES: Record<ElementType, ElementType[]> = {
+  fire: ['water', 'holy'],
+  water: ['earth', 'wind'],
+  wind: ['fire', 'earth'],
+  earth: ['fire', 'water'],
+  holy: ['wind', 'shadow'],
+  shadow: ['water', 'earth'],
   neutral: []
 };
 

@@ -32,6 +32,7 @@ import {
   getDurability 
 } from './cards/typeGuards';
 import { destroyCard } from './zoneUtils';
+import { dealDamage, dealDamageToAllEnemyMinions } from './effects/damageUtils';
 
 // ===================== DISCOVER MECHANICS =====================
 /**
@@ -242,9 +243,10 @@ export const handleInspireEffects = (
         // Heal effect (e.g., Tournament Medic)
         if (inspireEffect.targetType === 'friendly_hero' && inspireEffect.value) {
           // Heal hero
-          newGameState.players[player].health = Math.min(
-            30, // Max health
-            newGameState.players[player].health + inspireEffect.value
+          const inspireMaxHp = (newGameState.players[player] as any).maxHealth || 30;
+          newGameState.players[player].heroHealth = Math.min(
+            inspireMaxHp,
+            (newGameState.players[player].heroHealth ?? newGameState.players[player].health) + inspireEffect.value
           );
         }
         break;
@@ -436,8 +438,8 @@ export const handleSecretTrigger = (
   triggeringPlayer: 'player' | 'opponent',
   targetCardId?: string
 ): GameState => {
-  let newGameState = { ...gameState };
-  
+  let newGameState = JSON.parse(JSON.stringify(gameState)) as GameState;
+
   // Determine which player's secrets we're checking (the opponent of who triggered it)
   const secretOwner = triggeringPlayer === 'player' ? 'opponent' : 'player';
   
@@ -486,46 +488,19 @@ export const handleSecretTrigger = (
       case 'damage':
         // Deal damage (e.g., Snipe, Explosive Trap)
         if (secretEffect.value && targetCardId) {
-          // Find the target minion if it exists
-          const enemyBattlefield = newGameState.players[triggeringPlayer].battlefield;
-          const targetIndex = enemyBattlefield.findIndex(m => m.instanceId === targetCardId);
-          
-          if (targetIndex !== -1) {
-            // Apply damage
-            const targetMinion = enemyBattlefield[targetIndex];
-            if (targetMinion.currentHealth) {
-              targetMinion.currentHealth -= secretEffect.value;
-              
-              // Check if minion died
-              if (targetMinion.currentHealth <= 0) {
-                newGameState = destroyCard(newGameState, targetMinion.instanceId, triggeringPlayer);
-              }
-            }
-          }
+          newGameState = dealDamage(newGameState, triggeringPlayer, 'minion', secretEffect.value, targetCardId, undefined, secretOwner);
         }
         break;
         
       case 'aoe_damage':
         // Deal AoE damage (e.g., Explosive Trap)
         if (secretEffect.value) {
-          // Deal damage to all enemy minions
-          const enemyBattlefield = newGameState.players[triggeringPlayer].battlefield;
-          
-          // Apply damage to all enemy minions
-          const survivingMinions = enemyBattlefield.filter(minion => {
-            if (minion.currentHealth) {
-              minion.currentHealth -= secretEffect.value || 0;
-              return minion.currentHealth > 0;
-            }
-            return true;
-          });
-          
-          // Update battlefield with surviving minions
-          newGameState.players[triggeringPlayer].battlefield = survivingMinions;
-          
+          // secretOwner deals damage to triggeringPlayer's minions
+          newGameState = dealDamageToAllEnemyMinions(newGameState, secretOwner, secretEffect.value);
+
           // Deal damage to enemy hero if applicable
-          if (secretEffect.targetType.includes('hero')) {
-            newGameState.players[triggeringPlayer].health -= secretEffect.value;
+          if (secretEffect.targetType.includes('hero') && secretEffect.value) {
+            newGameState = dealDamage(newGameState, triggeringPlayer, 'hero', secretEffect.value, undefined, undefined, secretOwner);
           }
         }
         break;
@@ -534,8 +509,8 @@ export const handleSecretTrigger = (
         // Gain armor or heal (e.g., Ice Barrier)
         if (secretEffect.value) {
           // Ice Barrier gives armor
-          newGameState.players[secretOwner].armor = 
-            (newGameState.players[secretOwner].armor || 0) + secretEffect.value;
+          newGameState.players[secretOwner].heroArmor =
+            (newGameState.players[secretOwner].heroArmor || 0) + secretEffect.value;
         }
         break;
         

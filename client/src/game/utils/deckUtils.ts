@@ -3,6 +3,7 @@ import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';
 import { getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
+import { dealDamage } from './effects/damageUtils';
 
 const MAX_HAND_SIZE = 9;
 
@@ -29,9 +30,9 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
  * Draw a card from player's deck and add it to their hand
  */
 export function drawCard(state: GameState, playerType: 'player' | 'opponent'): GameState {
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerType];
-  
+
   // Check if the deck is empty (fatigue)
   if (player.deck.length === 0) {
     // Initialize fatigue counter if not exists
@@ -41,20 +42,15 @@ export function drawCard(state: GameState, playerType: 'player' | 'opponent'): G
         opponent: 0
       };
     }
-    
+
     // Increment fatigue counter for this player
     newState.fatigueCount[playerType] += 1;
     const fatigueDamage = newState.fatigueCount[playerType];
-    
-    // Apply fatigue damage
-    player.health -= fatigueDamage;
-    
-    // Check for game over
-    if (player.health <= 0) {
-      newState.gamePhase = "game_over";
-      newState.winner = playerType === 'player' ? 'opponent' : 'player';
-    }
-    
+
+    // Apply fatigue damage via dealDamage (handles armor + heroHealth + game-over)
+    const enemyType = playerType === 'player' ? 'opponent' : 'player';
+    newState = dealDamage(newState, playerType, 'hero', fatigueDamage, undefined, undefined, enemyType);
+
     return newState;
   }
   

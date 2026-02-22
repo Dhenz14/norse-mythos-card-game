@@ -30,6 +30,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
+  // Matchmaking routes (always available, no DB required)
+  const matchmakingRoutes = (await import("./routes/matchmakingRoutes")).default;
+  app.use('/api/matchmaking', matchmakingRoutes);
+
   const httpServer = createServer(app);
 
   return httpServer;

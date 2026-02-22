@@ -1,0 +1,229 @@
+/* Game Over Screen - Victory/Defeat overlay */
+
+.game-over-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 9600;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	backdrop-filter: blur(8px);
+}
+
+.game-over-overlay.victory {
+	background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.1) 0%, rgba(0, 0, 0, 0.85) 70%);
+}
+
+.game-over-overlay.defeat {
+	background: radial-gradient(ellipse at center, rgba(239, 68, 68, 0.08) 0%, rgba(0, 0, 0, 0.9) 70%);
+}
+
+.game-over-panel {
+	text-align: center;
+	max-width: 480px;
+	width: 90%;
+}
+
+/* Main title */
+.game-over-title {
+	font-size: 64px;
+	font-weight: 900;
+	letter-spacing: 6px;
+	text-transform: uppercase;
+	line-height: 1;
+	margin-bottom: 8px;
+}
+
+.victory .game-over-title {
+	color: #fbbf24;
+	text-shadow:
+		0 0 30px rgba(251, 191, 36, 0.8),
+		0 0 60px rgba(251, 191, 36, 0.4),
+		0 4px 8px rgba(0, 0, 0, 0.8);
+}
+
+.defeat .game-over-title {
+	color: #ef4444;
+	text-shadow:
+		0 0 30px rgba(239, 68, 68, 0.8),
+		0 0 60px rgba(239, 68, 68, 0.4),
+		0 4px 8px rgba(0, 0, 0, 0.8);
+}
+
+.game-over-subtitle {
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: 4px;
+	text-transform: uppercase;
+	margin-bottom: 32px;
+}
+
+.victory .game-over-subtitle {
+	color: rgba(251, 191, 36, 0.6);
+}
+
+.defeat .game-over-subtitle {
+	color: rgba(239, 68, 68, 0.5);
+}
+
+/* Stats panel */
+.game-over-stats {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	margin-bottom: 32px;
+	padding: 20px;
+	background: rgba(15, 23, 42, 0.8);
+	border: 1px solid rgba(100, 116, 139, 0.3);
+	border-radius: 12px;
+}
+
+.game-over-stat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+
+.game-over-stat-value {
+	font-size: 28px;
+	font-weight: 800;
+	color: #f0f0f0;
+}
+
+.game-over-stat-label {
+	font-size: 11px;
+	color: rgba(148, 163, 184, 0.7);
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+/* Hero portraits */
+.game-over-heroes {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 24px;
+	margin-bottom: 28px;
+}
+
+.game-over-hero {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+}
+
+.game-over-hero-portrait {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	overflow: hidden;
+	border: 3px solid rgba(100, 116, 139, 0.5);
+}
+
+.game-over-hero-portrait img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.game-over-hero-portrait.winner {
+	border-color: #fbbf24;
+	box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+}
+
+.game-over-hero-portrait.loser {
+	border-color: rgba(100, 116, 139, 0.3);
+	filter: grayscale(0.5) brightness(0.7);
+}
+
+.game-over-hero-name {
+	font-size: 13px;
+	font-weight: 600;
+	color: rgba(224, 228, 233, 0.8);
+}
+
+.game-over-vs {
+	font-size: 18px;
+	font-weight: 800;
+	color: rgba(100, 116, 139, 0.5);
+	letter-spacing: 2px;
+}
+
+/* Action buttons */
+.game-over-actions {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+}
+
+.game-over-btn {
+	padding: 12px 28px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+}
+
+.game-over-btn.primary {
+	background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+	color: white;
+	box-shadow: 0 0 16px rgba(34, 197, 94, 0.3);
+}
+
+.game-over-btn.primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 0 24px rgba(34, 197, 94, 0.5);
+}
+
+.game-over-btn.secondary {
+	background: rgba(51, 65, 85, 0.6);
+	color: rgba(203, 213, 225, 0.9);
+	border: 1px solid rgba(100, 116, 139, 0.4);
+}
+
+.game-over-btn.secondary:hover {
+	background: rgba(71, 85, 105, 0.7);
+	transform: translateY(-1px);
+}
+
+/* Particle burst for victory */
+.victory-particles {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.victory-particle {
+	position: absolute;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	animation: victoryParticleFall 3s ease-in forwards;
+}
+
+@keyframes victoryParticleFall {
+	0% {
+		opacity: 1;
+		transform: translateY(-20px) rotate(0deg);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(100vh) rotate(720deg);
+	}
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.game-over-title,
+	.game-over-panel,
+	.victory-particle {
+		animation: none !important;
+	}
+}
