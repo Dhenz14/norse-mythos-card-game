@@ -1,0 +1,230 @@
+/**
+ * transactionProcessor.ts
+ *
+ * Drains the transactionQueueStore and routes each transaction to the
+ * appropriate backend depending on DATA_LAYER_MODE:
+ *
+ *   'local' → no-op (transactions stay queued, never submitted)
+ *   'test'  → POST to local Express mock-blockchain endpoints
+ *   'hive'  → broadcast via Hive Keychain (stub — implement when ready)
+ *
+ * Usage:
+ *   startTransactionProcessor()   — call once at app start (idempotent)
+ *   stopTransactionProcessor()    — call on unmount / test teardown
+ *
+ * The processor polls every POLL_INTERVAL_MS for queued transactions,
+ * submits them one at a time (sequential to avoid double-submission), and
+ * marks each as confirmed/failed in the store.
+ */
+
+import { useTransactionQueueStore } from './transactionQueueStore';
+import { getDataLayerMode } from '@/game/config/featureFlags';
+import type { TransactionEntry, PackagedMatchResult, CardXPReward } from './types';
+
+const POLL_INTERVAL_MS = 2000;
+const MOCK_API_BASE = '/api/mock-blockchain';
+
+let processorInterval: ReturnType<typeof setInterval> | null = null;
+let isRunning = false;
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+export function startTransactionProcessor(): void {
+	if (processorInterval !== null) return; // already running
+
+	const mode = getDataLayerMode();
+	if (mode === 'local') {
+		// In local mode there's no server to send to — leave queue in-memory only
+		return;
+	}
+
+	processorInterval = setInterval(processNextTransaction, POLL_INTERVAL_MS);
+}
+
+export function stopTransactionProcessor(): void {
+	if (processorInterval !== null) {
+		clearInterval(processorInterval);
+		processorInterval = null;
+	}
+	isRunning = false;
+}
+
+// ---------------------------------------------------------------------------
+// Core drain loop
+// ---------------------------------------------------------------------------
+
+async function processNextTransaction(): Promise<void> {
+	if (isRunning) return; // prevent overlap
+
+	const store = useTransactionQueueStore.getState();
+	// Pick the oldest queued transaction
+	const queued = store.getByStatus('queued');
+	if (queued.length === 0) return;
+
+	// Sort by createdAt ascending — oldest first
+	const tx = queued.sort((a, b) => a.createdAt - b.createdAt)[0];
+
+	isRunning = true;
+	store.updateStatus(tx.id, 'submitting');
+
+	try {
+		const mode = getDataLayerMode();
+
+		if (mode === 'test') {
+			await submitToMockServer(tx);
+		} else if (mode === 'hive') {
+			await submitToHive(tx);
+		}
+		// 'local' never reaches here (processor doesn't start)
+
+	} catch (err) {
+		const canRetry = useTransactionQueueStore.getState().retry(tx.id);
+		if (!canRetry) {
+			useTransactionQueueStore.getState().updateStatus(tx.id, 'failed', {
+				error: err instanceof Error ? err.message : String(err),
+			});
+		}
+	} finally {
+		isRunning = false;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Mock server submission ('test' mode)
+// ---------------------------------------------------------------------------
+
+async function submitToMockServer(tx: TransactionEntry): Promise<void> {
+	const store = useTransactionQueueStore.getState();
+
+	let endpoint = '';
+	let body: unknown = tx.payload;
+
+	switch (tx.actionType) {
+		case 'match_result':
+			endpoint = `${MOCK_API_BASE}/match-result`;
+			body = tx.payload as PackagedMatchResult;
+			break;
+
+		case 'xp_update':
+			endpoint = `${MOCK_API_BASE}/xp-update`;
+			body = tx.payload as CardXPReward;
+			break;
+
+		case 'card_transfer':
+			endpoint = `${MOCK_API_BASE}/transfer`;
+			body = tx.payload;
+			break;
+
+		case 'nft_mint':
+			endpoint = `${MOCK_API_BASE}/mint`;
+			body = tx.payload;
+			break;
+
+		default:
+			throw new Error(`Unknown action type: ${tx.actionType}`);
+	}
+
+	const response = await fetch(endpoint, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body),
+	});
+
+	if (!response.ok) {
+		const errText = await response.text();
+		throw new Error(`Mock server ${response.status}: ${errText}`);
+	}
+
+	const data = await response.json() as { trxId?: string; blockNum?: number };
+
+	store.updateStatus(tx.id, 'confirmed', {
+		trxId: data.trxId ?? `mock_${tx.id}`,
+		blockNum: data.blockNum ?? 0,
+	});
+}
+
+// ---------------------------------------------------------------------------
+// Real Hive submission ('hive' mode) — stub for future implementation
+// ---------------------------------------------------------------------------
+
+async function submitToHive(tx: TransactionEntry): Promise<void> {
+	// TODO: Implement Hive Keychain broadcasting
+	// Pattern will be:
+	//   1. Build custom_json operation
+	//   2. window.hive_keychain.requestCustomJson(username, appId, 'Posting', json, displayMsg, callback)
+	//   3. On success: mark confirmed with real trxId + blockNum
+	//   4. On failure/rejection: mark failed
+
+	throw new Error(`Hive submission not yet implemented for action: ${tx.actionType}`);
+}
+
+// ---------------------------------------------------------------------------
+// Helpers for manual use (e.g. dev console or UI)
+// ---------------------------------------------------------------------------
+
+/**
+ * Manually submit a single transaction by ID (for retry UI).
+ */
+export async function resubmitTransaction(txId: string): Promise<void> {
+	const store = useTransactionQueueStore.getState();
+	const tx = store.transactions.find(t => t.id === txId);
+	if (!tx) throw new Error(`Transaction ${txId} not found`);
+
+	store.updateStatus(txId, 'submitting');
+
+	const mode = getDataLayerMode();
+	if (mode === 'test') {
+		await submitToMockServer(tx);
+	} else if (mode === 'hive') {
+		await submitToHive(tx);
+	}
+}
+
+/**
+ * Fetch current collection from mock server (test mode only).
+ */
+export async function fetchMockCollection(username: string): Promise<unknown> {
+	if (getDataLayerMode() !== 'test') {
+		throw new Error('fetchMockCollection only available in test mode');
+	}
+	const res = await fetch(`${MOCK_API_BASE}/collection/${username}`);
+	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	return res.json();
+}
+
+/**
+ * Fetch player stats from mock server (test mode only).
+ */
+export async function fetchMockStats(username: string): Promise<unknown> {
+	if (getDataLayerMode() !== 'test') {
+		throw new Error('fetchMockStats only available in test mode');
+	}
+	const res = await fetch(`${MOCK_API_BASE}/stats/${username}`);
+	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	return res.json();
+}
+
+/**
+ * Reset all mock blockchain data (test mode only, useful between test runs).
+ */
+export async function resetMockBlockchain(): Promise<void> {
+	if (getDataLayerMode() !== 'test') {
+		throw new Error('resetMockBlockchain only available in test mode');
+	}
+	const res = await fetch(`${MOCK_API_BASE}/reset`, { method: 'POST' });
+	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+}
+
+/**
+ * Dump entire mock blockchain state as JSON (debug).
+ */
+export async function dumpMockBlockchain(): Promise<unknown> {
+	if (getDataLayerMode() !== 'test') {
+		throw new Error('dumpMockBlockchain only available in test mode');
+	}
+	const res = await fetch(`${MOCK_API_BASE}/dump`);
+	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	return res.json();
+}

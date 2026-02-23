@@ -13,9 +13,11 @@ import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PieceType } from '../stores/heroDeckStore';
 import { useDeckBuilder, DECK_SIZE, isClassCard, getMaxCopies } from './deckbuilder';
+import type { CardGroup } from './deckbuilder';
 import { ArtGallery } from './art';
 import { getCardArtPath } from '../utils/art/artMapping';
 import { CardData } from '../types';
+import { getSuperMinionForHero, getAllSuperMinionsForHero, isSuperMinion } from '../data/sets/superMinions/heroSuperMinions';
 import './deckbuilder/tokens.css';
 import './deckbuilder/deckbuilder.css';
 
@@ -226,86 +228,104 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 							</div>
 						</div>
 
-						{/* Card Grid */}
+						{/* Card Grid - Grouped by Class */}
 						<div className="db-card-scroll">
-							<div className="db-card-grid">
-								{db.filteredAndSortedCards.map(card => {
-									const cardId = Number(card.id);
-									const inDeckCount = db.deckCardCounts[cardId] || 0;
-									const canAdd = db.canAddCard(cardId);
-									const rarityKey = (card.rarity || 'common').toLowerCase();
-									const isMinion = card.type === 'minion';
-									const maxCopies = getMaxCopies(card);
-									const cardArtPath = getCardArtPath(card.name);
-									const isMaxed = !canAdd && inDeckCount >= maxCopies;
+							{db.groupedCards.length === 0 && (
+								<div className="db-no-results">No cards found matching your filters</div>
+							)}
+							{db.groupedCards.map(group => (
+								<div key={group.label} className="db-card-group">
+									<div className="db-group-header">
+										<span className="db-group-label">{group.label}</span>
+										<span className="db-group-count">{group.cards.length}</span>
+									</div>
+									<div className="db-card-grid">
+										{group.cards.map(card => {
+											const cardId = Number(card.id);
+											const inDeckCount = db.deckCardCounts[cardId] || 0;
+											const canAdd = db.canAddCard(cardId);
+											const rarityKey = (card.rarity || 'common').toLowerCase();
+											const isMinion = card.type === 'minion';
+											const maxCopies = getMaxCopies(card);
+											const cardArtPath = getCardArtPath(card.name);
+											const isMaxed = !canAdd && inDeckCount >= maxCopies;
+											const isSuper = isSuperMinion(cardId);
+											const isLinkedSuper = isSuper && getAllSuperMinionsForHero(db.heroId).includes(cardId);
 
-									return (
-										<div
-											key={card.id}
-											onClick={() => canAdd && db.handleAddCard(card)}
-											onContextMenu={e => { e.preventDefault(); db.setSelectedCard(card); }}
-											onMouseEnter={e => handleCardMouseEnter(card, e)}
-											onMouseLeave={handleCardMouseLeave}
-											className={`db-card rarity-${rarityKey} ${isMaxed ? 'not-playable' : ''}`}
-										>
-											{/* Art Section */}
-											<div className="db-card-art">
-												{cardArtPath ? (
-													<>
-														<img src={cardArtPath} alt="" loading="lazy" />
-														<div className="db-card-art-overlay" />
-													</>
-												) : (
-													<div className="db-card-art-fallback" style={{ background: `linear-gradient(135deg, ${classColor}25 0%, ${classColor}08 100%)` }}>
-														{TYPE_ICONS[card.type] || '\u2726'}
+											return (
+												<div
+													key={card.id}
+													onClick={() => canAdd && db.handleAddCard(card)}
+													onContextMenu={e => { e.preventDefault(); db.setSelectedCard(card); }}
+													onMouseEnter={e => handleCardMouseEnter(card, e)}
+													onMouseLeave={handleCardMouseLeave}
+													className={`db-card rarity-${rarityKey} ${isMaxed ? 'not-playable' : ''} ${isLinkedSuper ? 'super-minion-linked' : ''}`}
+												>
+													{/* Art Section */}
+													<div className="db-card-art">
+														{cardArtPath ? (
+															<>
+																<img src={cardArtPath} alt="" loading="lazy" />
+																<div className="db-card-art-overlay" />
+															</>
+														) : (
+															<div className="db-card-art-fallback" style={{ background: `linear-gradient(135deg, ${classColor}25 0%, ${classColor}08 100%)` }}>
+																{TYPE_ICONS[card.type] || '\u2726'}
+															</div>
+														)}
+
+														{/* Mana Badge */}
+														<div className="db-mana-badge">{card.manaCost ?? 0}</div>
+
+														{/* Super Minion Badge */}
+														{isLinkedSuper && (
+															<div className="db-super-badge" title="Your Super Minion! Gets +2/+2 when played by this hero">
+																{'\u2B50'}
+															</div>
+														)}
+
+														{/* Count Badge */}
+														{inDeckCount > 0 && (
+															<div className="db-count-badge">{inDeckCount}</div>
+														)}
 													</div>
-												)}
 
-												{/* Mana Badge */}
-												<div className="db-mana-badge">{card.manaCost ?? 0}</div>
-
-												{/* Count Badge */}
-												{inDeckCount > 0 && (
-													<div className="db-count-badge">{inDeckCount}</div>
-												)}
-											</div>
-
-											{/* Info Section */}
-											<div className="db-card-info">
-												<div className="db-card-name">{card.name}</div>
-												<div className="db-card-meta">
-													<div className="db-card-meta-left">
-														<span className="db-card-type">{card.type}</span>
-														{isClassCard(card) && <span className="db-class-star">{'\u2605'}</span>}
+													{/* Info Section */}
+													<div className="db-card-info">
+														<div className="db-card-name">{card.name}</div>
+														<div className="db-card-meta">
+															<div className="db-card-meta-left">
+																<span className="db-card-type">{card.type}</span>
+																{isClassCard(card) && <span className="db-class-star">{'\u2605'}</span>}
+																{isLinkedSuper && <span className="db-super-tag">SUPER</span>}
+															</div>
+															{isMinion && (
+																<div className="db-stat-row">
+																	<span className="db-stat db-stat-attack">
+																		<span className="db-stat-icon">{'\u2694'}</span>
+																		{(card as any).attack ?? 0}
+																	</span>
+																	<span className="db-stat db-stat-health">
+																		<span className="db-stat-icon">{'\u2665'}</span>
+																		{(card as any).health ?? 0}
+																	</span>
+																</div>
+															)}
+														</div>
 													</div>
-													{isMinion && (
-														<div className="db-stat-row">
-															<span className="db-stat db-stat-attack">
-																<span className="db-stat-icon">{'\u2694'}</span>
-																{(card as any).attack ?? 0}
-															</span>
-															<span className="db-stat db-stat-health">
-																<span className="db-stat-icon">{'\u2665'}</span>
-																{(card as any).health ?? 0}
-															</span>
+
+													{/* MAX Overlay */}
+													{isMaxed && (
+														<div className="db-max-overlay">
+															<span className="db-max-text">MAX</span>
 														</div>
 													)}
 												</div>
-											</div>
-
-											{/* MAX Overlay */}
-											{isMaxed && (
-												<div className="db-max-overlay">
-													<span className="db-max-text">MAX</span>
-												</div>
-											)}
-										</div>
-									);
-								})}
-							</div>
-							{db.filteredAndSortedCards.length === 0 && (
-								<div className="db-no-results">No cards found matching your filters</div>
-							)}
+											);
+										})}
+									</div>
+								</div>
+							))}
 						</div>
 						</>
 						)}

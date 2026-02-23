@@ -1,8 +1,8 @@
 /**
  * DamageIndicator - Floating damage/heal number animation
  *
- * Shows rising, fading numbers on hit. Scales up for big damage.
- * Green for heals, red for damage, gold outline for critical (8+).
+ * Uses position:fixed so viewport-relative coordinates from getBoundingClientRect work correctly.
+ * Green for heals, red for damage, gold for critical hits (8+).
  */
 
 import React, { useEffect, useMemo } from 'react';
@@ -33,17 +33,18 @@ export const DamageIndicator: React.FC<DamageIndicatorProps> = ({
 	onComplete
 }) => {
 	useEffect(() => {
-		const timer = setTimeout(onComplete, 1200);
+		const timer = setTimeout(onComplete, 1400);
 		return () => clearTimeout(timer);
 	}, [onComplete]);
 
 	const isBig = damage >= 5;
 	const isCritical = damage >= 8;
-	const jitterX = useMemo(() => (Math.random() - 0.5) * 20, []);
+	const jitterX = useMemo(() => (Math.random() - 0.5) * 28, []);
+	const jitterY = useMemo(() => (Math.random() - 0.5) * 8, []);
 
 	const className = [
 		'damage-indicator',
-		isHeal ? 'damage-heal' : '',
+		isHeal ? 'damage-heal' : 'damage-hurt',
 		isBig ? 'damage-big' : '',
 		isCritical ? 'damage-critical' : '',
 	].filter(Boolean).join(' ');
@@ -51,9 +52,17 @@ export const DamageIndicator: React.FC<DamageIndicatorProps> = ({
 	return (
 		<div
 			className={className}
-			style={{ left: x + jitterX, top: y }}
+			style={{
+				position: 'fixed',
+				left: x + jitterX,
+				top: y + jitterY,
+				pointerEvents: 'none',
+				zIndex: 99999,
+				transform: 'translateX(-50%)',
+			}}
 		>
-			{isHeal ? '+' : '-'}{damage}
+			<span className="damage-number-text">{isHeal ? '+' : '-'}{damage}</span>
+			{isCritical && !isHeal && <span className="damage-crit-label">CRIT!</span>}
 		</div>
 	);
 };

@@ -4,6 +4,33 @@ import { usePeerStore } from '../stores/peerStore';
 import { useGameStore } from '../stores/gameStore';
 import { GameState } from '../types';
 
+/**
+ * Flip the game state so the client sees themselves as 'player' and the host as 'opponent'.
+ * The host always stores state from its own perspective (host=player, client=opponent).
+ * Without this flip the client would see their own cards at the top under "opponent".
+ */
+function flipGameState(state: GameState): GameState {
+	return {
+		...state,
+		players: {
+			player: state.players.opponent,
+			opponent: state.players.player,
+		},
+		currentTurn: state.currentTurn === 'player' ? 'opponent' : 'player',
+		winner: state.winner === 'player' ? 'opponent' : state.winner === 'opponent' ? 'player' : state.winner,
+	};
+}
+
+/**
+ * Translate a target ID from the client's flipped perspective back to the host's perspective.
+ * e.g. the client sees the host's hero as 'opponent-hero', but the host calls it 'player-hero'.
+ */
+function translateTargetForHost(targetId: string | undefined): string | undefined {
+	if (targetId === 'opponent-hero') return 'player-hero';
+	if (targetId === 'player-hero') return 'opponent-hero';
+	return targetId;
+}
+
 export type P2PMessage =
 	| { type: 'init'; gameState: GameState; isHost: boolean }
 	| { type: 'playCard'; cardId: string; targetId?: string; targetType?: 'minion' | 'hero' }
@@ -70,22 +97,24 @@ export function useP2PSync() {
 			try {
 				switch (data.type) {
 					case 'init':
-						// Client receives the host's authoritative game state and syncs to it
+						// Client receives the host's authoritative game state — flip perspective so
+						// client sees themselves as 'player' (bottom) and host as 'opponent' (top)
 						if (!isHost) {
-							useGameStore.setState({ gameState: data.gameState });
+							useGameStore.setState({ gameState: flipGameState(data.gameState) });
 						}
 						break;
 
 					case 'playCard':
 						if (isHost) {
-							gameStore.playCard(data.cardId, data.targetId, data.targetType);
+							// Translate target IDs: client's 'opponent-hero' = host's 'player-hero'
+							gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType);
 							setTimeout(() => syncGameState(), 50);
 						}
 						break;
 
 					case 'attack':
 						if (isHost) {
-							gameStore.attackWithCard(data.attackerId, data.defenderId);
+							gameStore.attackWithCard(data.attackerId, translateTargetForHost(data.defenderId) ?? data.defenderId);
 							setTimeout(() => syncGameState(), 50);
 						}
 						break;
@@ -99,16 +128,17 @@ export function useP2PSync() {
 
 					case 'useHeroPower':
 						if (isHost) {
-							gameStore.useHeroPower(data.targetId);
+							gameStore.useHeroPower(translateTargetForHost(data.targetId));
 							setTimeout(() => syncGameState(), 50);
 						}
 						break;
 
 					case 'gameState':
 						if (!isHost) {
+							const flipped = flipGameState(data.gameState);
 							const currentState = useGameStore.getState().gameState;
-							if (JSON.stringify(currentState) !== JSON.stringify(data.gameState)) {
-								useGameStore.setState({ gameState: data.gameState });
+							if (JSON.stringify(currentState) !== JSON.stringify(flipped)) {
+								useGameStore.setState({ gameState: flipped });
 							}
 						}
 						break;
@@ -151,7 +181,8 @@ export function useP2PSync() {
 
 	const wrappedPlayCard = useCallback((cardId: string, targetId?: string, targetType?: 'minion' | 'hero') => {
 		if (connectionState === 'connected' && !isHost) {
-			send({ type: 'playCard', cardId, targetId, targetType });
+			// Translate target IDs before sending to host
+			send({ type: 'playCard', cardId, targetId: translateTargetForHost(targetId), targetType });
 		} else {
 			gameStore.playCard(cardId, targetId, targetType);
 			if (isHost) setTimeout(() => syncGameState(), 50);
@@ -160,7 +191,7 @@ export function useP2PSync() {
 
 	const wrappedAttack = useCallback((attackerId: string, defenderId: string) => {
 		if (connectionState === 'connected' && !isHost) {
-			send({ type: 'attack', attackerId, defenderId });
+			send({ type: 'attack', attackerId, defenderId: translateTargetForHost(defenderId) ?? defenderId });
 		} else {
 			gameStore.attackWithCard(attackerId, defenderId);
 			if (isHost) setTimeout(() => syncGameState(), 50);
@@ -178,7 +209,7 @@ export function useP2PSync() {
 
 	const wrappedUseHeroPower = useCallback((targetId?: string) => {
 		if (connectionState === 'connected' && !isHost) {
-			send({ type: 'useHeroPower', targetId });
+			send({ type: 'useHeroPower', targetId: translateTargetForHost(targetId) });
 		} else {
 			gameStore.useHeroPower(targetId);
 			if (isHost) setTimeout(() => syncGameState(), 50);

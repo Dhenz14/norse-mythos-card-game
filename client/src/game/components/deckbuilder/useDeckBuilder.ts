@@ -20,6 +20,7 @@ import {
   canAddCardToDeck,
   getDeckCardsWithCounts,
   generateAutoFillCards,
+  getCardClass,
 } from './utils';
 
 export interface UseDeckBuilderProps {
@@ -28,6 +29,11 @@ export interface UseDeckBuilderProps {
   heroClass: string;
   onClose: () => void;
   onSave?: () => void;
+}
+
+export interface CardGroup {
+  label: string;
+  cards: CardData[];
 }
 
 export interface UseDeckBuilderReturn {
@@ -40,9 +46,11 @@ export interface UseDeckBuilderReturn {
   minCost: number | null;
   maxCost: number | null;
   saveError: string | null;
-  
+  heroId: string;
+
   // Derived State
   filteredAndSortedCards: CardData[];
+  groupedCards: CardGroup[];
   deckCardCounts: Record<number, number>;
   deckCardsWithCounts: { card: CardData; count: number }[];
   isDeckComplete: boolean;
@@ -114,6 +122,24 @@ export function useDeckBuilder({
     return filterAndSortCards(validCards, filters);
   }, [validCards, searchTerm, filterType, sortBy, minCost, maxCost]);
   
+  // Derived: Cards grouped by class (hero class first, then neutral)
+  const groupedCards = useMemo(() => {
+    const classCards: CardData[] = [];
+    const neutralCards: CardData[] = [];
+    for (const card of filteredAndSortedCards) {
+      if (getCardClass(card) === 'neutral') {
+        neutralCards.push(card);
+      } else {
+        classCards.push(card);
+      }
+    }
+    const groups: CardGroup[] = [];
+    const classLabel = normalizedHeroClass.charAt(0).toUpperCase() + normalizedHeroClass.slice(1);
+    if (classCards.length > 0) groups.push({ label: `${classLabel} Cards`, cards: classCards });
+    if (neutralCards.length > 0) groups.push({ label: 'Neutral Cards', cards: neutralCards });
+    return groups;
+  }, [filteredAndSortedCards, normalizedHeroClass]);
+
   // Derived: Card counts in deck
   const deckCardCounts = useMemo(() => {
     return countCards(deckCardIds);
@@ -225,8 +251,11 @@ export function useDeckBuilder({
     maxCost,
     saveError,
     
+    heroId,
+
     // Derived
     filteredAndSortedCards,
+    groupedCards,
     deckCardCounts,
     deckCardsWithCounts,
     isDeckComplete,

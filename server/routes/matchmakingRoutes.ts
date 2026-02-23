@@ -1,4 +1,6 @@
 import { Router, Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
 
 const router = Router();
 
@@ -12,6 +14,46 @@ const matchmakingQueue: QueuedPlayer[] = [];
 const activeMatches = new Map<string, { player1: string; player2: string; createdAt: number }>();
 
 const QUEUE_STALE_MS = 5 * 60 * 1000; // 5 minutes
+const QUEUE_FILE = path.join(process.cwd(), 'data', 'matchmaking-queue.json');
+
+function ensureDataDir() {
+	const dir = path.dirname(QUEUE_FILE);
+	if (!fs.existsSync(dir)) {
+		fs.mkdirSync(dir, { recursive: true });
+	}
+}
+
+function saveQueue() {
+	try {
+		ensureDataDir();
+		const serializable = matchmakingQueue.map(({ peerId, timestamp }) => ({ peerId, timestamp }));
+		fs.writeFileSync(QUEUE_FILE, JSON.stringify(serializable), 'utf8');
+	} catch (err) {
+		console.warn('[Matchmaking] Failed to save queue:', err);
+	}
+}
+
+function loadQueue() {
+	try {
+		if (!fs.existsSync(QUEUE_FILE)) return;
+		const raw = fs.readFileSync(QUEUE_FILE, 'utf8');
+		const entries: { peerId: string; timestamp: number }[] = JSON.parse(raw);
+		const now = Date.now();
+		for (const entry of entries) {
+			if (now - entry.timestamp < QUEUE_STALE_MS) {
+				matchmakingQueue.push(entry);
+			}
+		}
+		if (matchmakingQueue.length > 0) {
+			console.log(`[Matchmaking] Restored ${matchmakingQueue.length} queue entries from disk`);
+		}
+	} catch (err) {
+		console.warn('[Matchmaking] Failed to load queue:', err);
+	}
+}
+
+// Restore queue on startup
+loadQueue();
 
 function removeStaleQueueEntries() {
 	const now = Date.now();
@@ -23,6 +65,7 @@ function removeStaleQueueEntries() {
 	}
 	if (matchmakingQueue.length < before) {
 		console.log(`[Matchmaking] Removed ${before - matchmakingQueue.length} stale queue entries`);
+		saveQueue();
 	}
 }
 
@@ -51,6 +94,7 @@ router.post('/queue', (req: Request, res: Response) => {
 	if (matchmakingQueue.length >= 2) {
 		const player1 = matchmakingQueue.shift()!;
 		const player2 = matchmakingQueue.shift()!;
+		saveQueue();
 
 		const matchId = `${player1.peerId}-${player2.peerId}`;
 		activeMatches.set(matchId, {
@@ -72,6 +116,7 @@ router.post('/queue', (req: Request, res: Response) => {
 		});
 	}
 
+	saveQueue();
 	return res.json({ success: true, status: 'queued', position: matchmakingQueue.length });
 });
 
@@ -85,6 +130,7 @@ router.post('/leave', (req: Request, res: Response) => {
 	const index = matchmakingQueue.findIndex(p => p.peerId === peerId);
 	if (index !== -1) {
 		matchmakingQueue.splice(index, 1);
+		saveQueue();
 	}
 
 	return res.json({ success: true });

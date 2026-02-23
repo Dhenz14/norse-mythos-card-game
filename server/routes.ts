@@ -34,6 +34,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const matchmakingRoutes = (await import("./routes/matchmakingRoutes")).default;
   app.use('/api/matchmaking', matchmakingRoutes);
 
+  // Mock blockchain routes (always available, no DB required)
+  // Used when DATA_LAYER_MODE = 'test' — simulates Hive blockchain locally
+  const mockBlockchainRoutes = (await import("./routes/mockBlockchainRoutes")).default;
+  app.use('/api/mock-blockchain', mockBlockchainRoutes);
+
   const httpServer = createServer(app);
 
   return httpServer;

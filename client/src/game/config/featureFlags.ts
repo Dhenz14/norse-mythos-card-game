@@ -12,9 +12,11 @@ export type DataLayerMode = 'local' | 'test' | 'hive';
 export const FeatureFlags = {
 	/**
 	 * Data layer mode:
-	 * - 'local': Uses localStorage only (default, offline mode)
-	 * - 'test': Uses JSON files in hivedatatest/ folder (for testing)
-	 * - 'hive': Uses Hive blockchain (requires Keychain)
+	 * - 'local': Uses localStorage only (default, offline mode). No server calls.
+	 * - 'test':  Local Express mock-blockchain endpoints (/api/mock-blockchain).
+	 *            Simulates Hive L1 minting/ownership/match-recording without real chain.
+	 *            Enable BLOCKCHAIN_PACKAGING_ENABLED=true to drain the tx queue to mock server.
+	 * - 'hive':  Real Hive blockchain via Keychain (production).
 	 */
 	DATA_LAYER_MODE: 'local' as DataLayerMode,
 
@@ -52,7 +54,7 @@ export function isHiveMode(): boolean {
 }
 
 /**
- * Checks if test mode is active (JSON files).
+ * Checks if test mode is active (mock blockchain endpoints).
  */
 export function isTestMode(): boolean {
 	return FeatureFlags.DATA_LAYER_MODE === 'test';

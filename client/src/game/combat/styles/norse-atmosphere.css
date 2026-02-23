@@ -268,31 +268,36 @@
 }
 
 .phase-banner-enter {
-  animation: phase-banner-sweep-in 0.3s ease-out forwards;
+  animation: phase-banner-sweep-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .phase-banner-exit {
-  animation: phase-banner-sweep-out 0.3s ease-in forwards;
+  animation: phase-banner-sweep-out 0.35s cubic-bezier(0.55, 0, 1, 0.45) forwards;
 }
 
 @keyframes phase-banner-sweep-in {
   0% {
-    transform: translateY(-50%) translateX(-100%);
+    transform: translateY(-50%) scaleX(0.4) scaleY(0.8);
     opacity: 0;
+    filter: brightness(2);
+  }
+  60% {
+    filter: brightness(1.4);
   }
   100% {
-    transform: translateY(-50%) translateX(0);
+    transform: translateY(-50%) scaleX(1) scaleY(1);
     opacity: 1;
+    filter: brightness(1);
   }
 }
 
 @keyframes phase-banner-sweep-out {
   0% {
-    transform: translateY(-50%) translateX(0);
+    transform: translateY(-50%) scaleX(1) scaleY(1);
     opacity: 1;
   }
   100% {
-    transform: translateY(-50%) translateX(100%);
+    transform: translateY(-50%) scaleX(0.3) scaleY(0.7);
     opacity: 0;
   }
 }
@@ -328,15 +333,22 @@
 
 .phase-banner-title {
   font-family: 'Cinzel', 'Palatino Linotype', 'Georgia', serif;
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 1.8rem;
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.3em;
-  color: #d4af37;
+  letter-spacing: 0.35em;
+  color: #e8c84a;
   text-shadow:
-    0 0 10px rgba(212, 175, 55, 0.6),
-    0 0 20px rgba(212, 175, 55, 0.3),
-    0 0 40px rgba(212, 175, 55, 0.15);
+    0 0 12px rgba(232, 200, 74, 0.9),
+    0 0 28px rgba(212, 175, 55, 0.55),
+    0 0 55px rgba(212, 175, 55, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  animation: phaseTitleFlash 0.45s ease-out;
+}
+
+@keyframes phaseTitleFlash {
+  0% { letter-spacing: 0.2em; opacity: 0.5; text-shadow: 0 0 40px rgba(255,255,200,1), 0 0 80px rgba(255,220,80,0.8); }
+  100% { letter-spacing: 0.35em; opacity: 1; text-shadow: 0 0 12px rgba(232,200,74,0.9), 0 0 28px rgba(212,175,55,0.55); }
 }
 
 .phase-banner-subtitle {

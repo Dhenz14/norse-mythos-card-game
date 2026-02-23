@@ -51,7 +51,7 @@ function HomePage() {
 
           <Link to={routes.multiplayer}>
             <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              PvP Multiplayer
+              Ranked
             </Button>
           </Link>
 

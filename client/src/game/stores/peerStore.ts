@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import Peer, { DataConnection } from 'peerjs';
 
-// 'waiting' = host peer created, waiting for opponent to connect
-export type P2PConnectionState = 'disconnected' | 'connecting' | 'waiting' | 'connected' | 'error';
+// 'waiting'      = host peer created, waiting for opponent to connect
+// 'reconnecting' = client lost connection, attempting one auto-reconnect
+export type P2PConnectionState = 'disconnected' | 'connecting' | 'waiting' | 'connected' | 'reconnecting' | 'error';
 
 export interface PeerStore {
 	myPeerId: string | null;
@@ -22,7 +23,7 @@ export interface PeerStore {
 	setError: (error: string | null) => void;
 
 	host: () => Promise<void>;
-	join: (remoteId: string) => Promise<void>;
+	join: (remoteId: string, isReconnect?: boolean) => Promise<void>;
 	disconnect: () => void;
 	send: (data: any) => void;
 }
@@ -89,13 +90,14 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 		});
 	},
 
-	join: async (remoteId: string) => {
+	join: async (remoteId: string, isReconnect = false) => {
 		const { peer, disconnect } = get();
 		if (peer) {
 			disconnect();
 		}
 
-		set({ connectionState: 'connecting', isHost: false, remotePeerId: remoteId, error: null });
+		const state = isReconnect ? 'reconnecting' : 'connecting';
+		set({ connectionState: state, isHost: false, remotePeerId: remoteId, error: null });
 
 		return new Promise((resolve, reject) => {
 			const newPeer = new Peer({
@@ -124,7 +126,21 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 				});
 
 				conn.on('close', () => {
-					set({ connection: null, connectionState: 'disconnected' });
+					const { remotePeerId } = get();
+					if (!isReconnect && remotePeerId) {
+						// First drop — attempt one auto-reconnect after 2 seconds
+						console.warn('[PeerStore] Connection lost — attempting reconnect in 2s');
+						set({ connection: null, connectionState: 'reconnecting' });
+						setTimeout(() => {
+							get().join(remotePeerId, true).catch(() => {
+								console.error('[PeerStore] Reconnect failed');
+								set({ connectionState: 'disconnected' });
+							});
+						}, 2000);
+					} else {
+						// Already tried reconnecting — give up
+						set({ connection: null, connectionState: 'disconnected' });
+					}
 				});
 			});
 

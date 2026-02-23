@@ -46,3 +46,13 @@ export {
 	hashNFTMetadata,
 	canonicalStringify,
 } from './hashUtils';
+
+export {
+	startTransactionProcessor,
+	stopTransactionProcessor,
+	resubmitTransaction,
+	fetchMockCollection,
+	fetchMockStats,
+	resetMockBlockchain,
+	dumpMockBlockchain,
+} from './transactionProcessor';

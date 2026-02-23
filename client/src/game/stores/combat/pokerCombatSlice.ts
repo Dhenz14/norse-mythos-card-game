@@ -1245,12 +1245,16 @@ export const createPokerCombatSlice: StateCreator<
 
   startNextHand: (resolution?: CombatResolution) => {
     const state = get();
-    if (!state.pokerCombatState) return;
-    
+    if (!state.pokerCombatState) {
+      set({ isTransitioningHand: false });
+      return;
+    }
+
     const playerFinalHP = resolution?.playerFinalHealth ?? state.pokerCombatState.player.pet.stats.currentHealth;
     const opponentFinalHP = resolution?.opponentFinalHealth ?? state.pokerCombatState.opponent.pet.stats.currentHealth;
-    
+
     if (playerFinalHP <= 0 || opponentFinalHP <= 0) {
+      set({ isTransitioningHand: false });
       return;
     }
     
@@ -1345,12 +1349,20 @@ export const createPokerCombatSlice: StateCreator<
 
   startNextHandDelayed: (resolution: CombatResolution) => {
     const state = get();
-    if (state.isTransitioningHand) return;
-    
+    if (state.isTransitioningHand) {
+      debug.combat('[startNextHandDelayed] Skipped: already transitioning');
+      return;
+    }
+
     set({ isTransitioningHand: true });
-    
+
     setTimeout(() => {
-      get().startNextHand(resolution);
+      try {
+        get().startNextHand(resolution);
+      } catch (err) {
+        debug.error('[startNextHandDelayed] startNextHand threw:', err);
+        set({ isTransitioningHand: false });
+      }
     }, 2000);
   },
 

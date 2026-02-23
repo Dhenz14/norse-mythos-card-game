@@ -125,6 +125,7 @@ export interface PokerCombatAdapter {
   updateTimer: (newTime: number) => void;
   startNextHand: (resolution?: CombatResolution) => void;
   startNextHandDelayed: (resolution: CombatResolution) => void;
+  setTransitioning: (value: boolean) => void;
   applyDirectDamage: (targetPlayerId: 'player' | 'opponent', damage: number, sourceDescription?: string) => void;
   healPlayerHero: (amount: number) => void;
   healOpponentHero: (amount: number) => void;
@@ -220,6 +221,10 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
 
     startNextHand: (resolution?: CombatResolution) => {
       unified.startNextHand(resolution);
+    },
+
+    setTransitioning: (value: boolean) => {
+      useUnifiedCombatStore.setState({ isTransitioningHand: value });
     },
 
     maybeCloseBettingRound: () => {
@@ -338,6 +343,10 @@ export function getPokerCombatAdapterState(): PokerCombatAdapter {
 
     startNextHandDelayed: (resolution: CombatResolution) => {
       getStore().startNextHandDelayed(resolution);
+    },
+
+    setTransitioning: (value: boolean) => {
+      useUnifiedCombatStore.setState({ isTransitioningHand: value });
     },
 
     applyDirectDamage: (targetPlayerId: 'player' | 'opponent', damage: number, sourceDescription?: string) => {

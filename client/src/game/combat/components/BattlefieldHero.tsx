@@ -15,7 +15,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
-import { getElementColor, getElementIcon, ELEMENT_LABELS, type ElementType } from '../../utils/elements';
+import { getElementColor, getElementIcon, ELEMENT_LABELS, ELEMENT_WEAKNESSES, ELEMENT_STRENGTHS, type ElementType } from '../../utils/elements';
 import { NORSE_TO_GAME_ELEMENT, type NorseElement } from '../../types/NorseTypes';
 
 /**
@@ -99,9 +99,12 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   const staminaPercent = maxSta > 0 ? Math.max(0, (currentSta / maxSta) * 100) : 0;
   const [showSecretTooltip, setShowSecretTooltip] = useState(false);
   const [showHeroPowerTooltip, setShowHeroPowerTooltip] = useState(false);
+  const [showMatchupTooltip, setShowMatchupTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
+  const [matchupTooltipPos, setMatchupTooltipPos] = useState<{ top: number; left: number } | null>(null);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
+  const matchupBadgeRef = useRef<HTMLDivElement>(null);
   
   const elementClass = heroElement ? `element-${heroElement.toLowerCase()}` : '';
   
@@ -109,11 +112,16 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   const heroPower = norseHero?.heroPower;
   const weaponUpgrade = norseHero?.weaponUpgrade;
 
-  const weaknessElement = useMemo(() => {
-    if (!isOpponent || !norseHero?.weakness) return null;
-    const gameElement = NORSE_TO_GAME_ELEMENT[norseHero.weakness as NorseElement];
-    return gameElement || null;
-  }, [isOpponent, norseHero?.weakness]);
+  const elementMatchups = useMemo(() => {
+    const norseEl = norseHero?.element as NorseElement | undefined;
+    if (!norseEl) return null;
+    const gameEl = NORSE_TO_GAME_ELEMENT[norseEl];
+    if (!gameEl || gameEl === 'neutral') return null;
+    const weakTo = ELEMENT_WEAKNESSES[gameEl] || [];
+    const strongVs = ELEMENT_STRENGTHS[gameEl] || [];
+    if (weakTo.length === 0 && strongVs.length === 0) return null;
+    return { weakTo, strongVs };
+  }, [norseHero?.element]);
   
   const WEAPON_COST = 5;
   const canAffordPower = heroPower ? mana >= heroPower.cost : false;
@@ -264,17 +272,78 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
             <span className="hero-name">{pet.name.split(' ')[0]}</span>
           </div>
 
-          {weaknessElement && (
+          {elementMatchups && (
             <div
-              className="hero-weakness-badge"
-              title={`Weak to ${ELEMENT_LABELS[weaknessElement as ElementType] || weaknessElement}`}
+              ref={matchupBadgeRef}
+              className="hero-matchup-badge"
+              onMouseEnter={() => {
+                if (matchupBadgeRef.current) {
+                  const rect = matchupBadgeRef.current.getBoundingClientRect();
+                  setMatchupTooltipPos({
+                    top: isOpponent ? rect.bottom + 6 : rect.top - 6,
+                    left: rect.left + rect.width / 2,
+                  });
+                }
+                setShowMatchupTooltip(true);
+              }}
+              onMouseLeave={() => {
+                setShowMatchupTooltip(false);
+                setMatchupTooltipPos(null);
+              }}
             >
-              <span className="weakness-label">Weak to</span>
-              <span className="weakness-icon">{getElementIcon(weaknessElement as ElementType)}</span>
-              <span className="weakness-name" style={{ color: getElementColor(weaknessElement as ElementType) }}>
-                {ELEMENT_LABELS[weaknessElement as ElementType] || weaknessElement}
-              </span>
+              <span className="matchup-arrow matchup-arrow-weak">▼</span>
+              {elementMatchups.weakTo.map(el => (
+                <span key={el} className="matchup-el-icon matchup-el-weak">
+                  {getElementIcon(el)}
+                </span>
+              ))}
+              <span className="matchup-sep" />
+              <span className="matchup-arrow matchup-arrow-strong">▲</span>
+              {elementMatchups.strongVs.map(el => (
+                <span key={el} className="matchup-el-icon matchup-el-strong">
+                  {getElementIcon(el)}
+                </span>
+              ))}
             </div>
+          )}
+
+          {showMatchupTooltip && elementMatchups && matchupTooltipPos && createPortal(
+            <div
+              className="matchup-tooltip-portal"
+              style={{
+                position: 'fixed',
+                top: matchupTooltipPos.top,
+                left: matchupTooltipPos.left,
+                transform: isOpponent ? 'translateX(-50%)' : 'translateX(-50%) translateY(-100%)',
+                zIndex: 10000,
+                pointerEvents: 'none',
+                animation: 'tooltip-fade-in 0.15s ease-out',
+              }}
+            >
+              <div className="matchup-tooltip-content">
+                <div className="matchup-tooltip-row matchup-tooltip-weak">
+                  <span className="matchup-tooltip-label">▼ Weak vs</span>
+                  <span className="matchup-tooltip-elements">
+                    {elementMatchups.weakTo.map(el => (
+                      <span key={el} className="matchup-tooltip-el" style={{ '--el-color': getElementColor(el) } as React.CSSProperties}>
+                        {getElementIcon(el)} {ELEMENT_LABELS[el]}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+                <div className="matchup-tooltip-row matchup-tooltip-strong">
+                  <span className="matchup-tooltip-label">▲ Strong vs</span>
+                  <span className="matchup-tooltip-elements">
+                    {elementMatchups.strongVs.map(el => (
+                      <span key={el} className="matchup-tooltip-el" style={{ '--el-color': getElementColor(el) } as React.CSSProperties}>
+                        {getElementIcon(el)} {ELEMENT_LABELS[el]}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              </div>
+            </div>,
+            document.body
           )}
         
           <div className="hero-stat-bar hp-bar">

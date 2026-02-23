@@ -3,6 +3,7 @@ import { CombatPhase } from '../../types/PokerCombatTypes';
 
 interface PhaseBannerProps {
   phase: CombatPhase;
+  forceHide?: boolean;
 }
 
 const PHASE_CONFIG: Partial<Record<CombatPhase, { title: string; subtitle: string }>> = {
@@ -12,7 +13,7 @@ const PHASE_CONFIG: Partial<Record<CombatPhase, { title: string; subtitle: strin
   [CombatPhase.DESTINY]: { title: 'DESTINY', subtitle: 'The final card' },
 };
 
-export const PhaseBanner: React.FC<PhaseBannerProps> = ({ phase }) => {
+export const PhaseBanner: React.FC<PhaseBannerProps> = ({ phase, forceHide = false }) => {
   const [showBanner, setShowBanner] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [bannerData, setBannerData] = useState<{ title: string; subtitle: string } | null>(null);
@@ -47,6 +48,19 @@ export const PhaseBanner: React.FC<PhaseBannerProps> = ({ phase }) => {
     }, 1700);
     timersRef.current.push(hideTimer);
   }, [phase]);
+
+  // Immediately dismiss when forceHide becomes true
+  useEffect(() => {
+    if (forceHide && showBanner) {
+      clearAllTimers();
+      setIsVisible(false);
+      const t = setTimeout(() => {
+        setShowBanner(false);
+        setBannerData(null);
+      }, 200);
+      timersRef.current.push(t);
+    }
+  }, [forceHide, showBanner]);
 
   useEffect(() => {
     return () => clearAllTimers();

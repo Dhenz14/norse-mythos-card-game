@@ -11,5 +11,6 @@ export {
   isSuperMinion,
   getLinkedHero,
   getSuperMinionForHero,
+  getAllSuperMinionsForHero,
   shouldGetHeroBonus
 } from './heroSuperMinions';

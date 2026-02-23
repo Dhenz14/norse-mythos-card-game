@@ -163,6 +163,19 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     }
   }, [combatState?.phase]);
 
+  // In an all-in showdown, phases advance automatically with no player action,
+  // so communityCardsRevealed never gets set via wrappedOnAction. Force it true.
+  useEffect(() => {
+    if (
+      combatState?.isAllInShowdown &&
+      combatState.phase !== CombatPhase.SPELL_PET &&
+      combatState.phase !== CombatPhase.MULLIGAN &&
+      combatState.phase !== CombatPhase.PRE_FLOP
+    ) {
+      setCommunityCardsRevealed(true);
+    }
+  }, [combatState?.isAllInShowdown, combatState?.phase]);
+
   const wrappedOnAction = useCallback((action: CombatAction, hp?: number) => {
     setCommunityCardsRevealed(true);
     onAction(action, hp);
@@ -991,6 +1004,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   const opponentHandCount = useGameStore(state => state.gameState?.players?.opponent?.hand?.length ?? 0);
   const attackingCardForShortcuts = useGameStore(state => state.attackingCard);
   const selectAttackerForClear = useGameStore(state => state.selectAttacker);
+  const selectCard = useGameStore(state => state.selectCard);
 
   // Screen shake in the outer component (RagnarokCombatArena owns the GameViewport)
   const [outerShakeClass, setOuterShakeClass] = useState('');
@@ -1018,7 +1032,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     prevHeroHealthRef.current = curr;
   });
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts + right-click cancel for targeting
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
@@ -1030,14 +1044,27 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       }
       if (e.key === 'Escape') {
         e.preventDefault();
+        if (selectedCard) {
+          selectCard(null);
+        }
         if (attackingCardForShortcuts) {
           selectAttackerForClear(null);
         }
       }
     };
+    const handleContextMenu = (e: MouseEvent) => {
+      if (selectedCard) {
+        e.preventDefault();
+        selectCard(null);
+      }
+    };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPlayerTurn, combatState, handleUnifiedEndTurn, attackingCardForShortcuts, selectAttackerForClear]);
+    window.addEventListener('contextmenu', handleContextMenu);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('contextmenu', handleContextMenu);
+    };
+  }, [isPlayerTurn, combatState, handleUnifiedEndTurn, attackingCardForShortcuts, selectAttackerForClear, selectedCard, selectCard]);
 
   if (!combatState || !isActive) {
     return null;
@@ -1051,8 +1078,17 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           {combatState.turnTimer}
         </div>
         
-        <PhaseBanner phase={combatState.phase} />
-        
+        <PhaseBanner phase={combatState.phase} forceHide={!!showdownCelebration} />
+
+        {/* Opponent thinking indicator — shown when it's not the player's turn */}
+        {!isPlayerTurn && (
+          <div className="opponent-thinking-indicator" aria-label="Opponent is thinking">
+            <span className="thinking-dot" />
+            <span className="thinking-dot" />
+            <span className="thinking-dot" />
+          </div>
+        )}
+
         <div className="arena-content">
           <UnifiedCombatArena 
             onAction={handleAction}
@@ -1137,7 +1173,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       )}
 
       {/* Spell/Battlecry Targeting Prompt */}
-      <TargetingPrompt card={selectedCard} />
+      <TargetingPrompt card={selectedCard} onCancel={() => selectCard(null)} />
       
       {/* Hero Power Targeting Prompt */}
       <HeroPowerPrompt targeting={heroPowerTargeting} onCancel={cancelHeroPowerTargeting} />

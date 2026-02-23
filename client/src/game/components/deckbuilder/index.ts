@@ -12,7 +12,7 @@
  */
 
 export { useDeckBuilder } from './useDeckBuilder';
-export type { UseDeckBuilderProps, UseDeckBuilderReturn } from './useDeckBuilder';
+export type { UseDeckBuilderProps, UseDeckBuilderReturn, CardGroup } from './useDeckBuilder';
 
 export {
   DECK_SIZE,

@@ -2,17 +2,18 @@ import React from 'react';
 import '../styles/targeting-prompts.css';
 
 export interface TargetingPromptProps {
-  card: { 
-    card: { 
-      name: string; 
-      type: string; 
-      battlecry?: { targetType?: string }; 
-      spellEffect?: { targetType?: string }; 
-    } 
+  card: {
+    card: {
+      name: string;
+      type: string;
+      battlecry?: { targetType?: string };
+      spellEffect?: { targetType?: string };
+    }
   } | null;
+  onCancel?: () => void;
 }
 
-export const TargetingPrompt: React.FC<TargetingPromptProps> = ({ card }) => {
+export const TargetingPrompt: React.FC<TargetingPromptProps> = ({ card, onCancel }) => {
   if (!card) return null;
 
   const getTargetingMessage = () => {
@@ -41,8 +42,13 @@ export const TargetingPrompt: React.FC<TargetingPromptProps> = ({ card }) => {
       <div className="targeting-prompt-message">
         {getTargetingMessage()}
       </div>
+      {onCancel && (
+        <button type="button" className="targeting-cancel-btn" onClick={onCancel}>
+          Cancel
+        </button>
+      )}
       <div className="targeting-prompt-hint">
-        (Right-click or press ESC to cancel)
+        Right-click or ESC to cancel
       </div>
     </div>
   );

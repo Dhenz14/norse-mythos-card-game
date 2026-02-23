@@ -396,42 +396,120 @@
 }
 
 /* ========================================
-   WEAKNESS BADGE - Shown on opponent hero
+   MATCHUP BADGE - Compact icon-pill on hero card
+   Single row: ▼🔥💨 | ▲💧🌊
    ======================================== */
-.hero-weakness-badge {
+.hero-matchup-badge {
   position: absolute;
-  bottom: -6px;
+  top: 5px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px 8px;
-  background: rgba(10, 10, 20, 0.9);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  border-radius: 10px;
+  gap: 2px;
+  padding: 2px 7px;
+  background: rgba(6, 6, 14, 0.88);
+  border: 1px solid rgba(100, 100, 150, 0.4);
+  border-radius: 20px;
   white-space: nowrap;
-  z-index: 5;
+  z-index: 6;
   pointer-events: auto;
   cursor: help;
+  backdrop-filter: blur(6px);
 }
 
-.hero-weakness-badge .weakness-label {
-  font-size: 9px;
-  font-weight: 600;
-  color: rgba(239, 68, 68, 0.7);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.hero-weakness-badge .weakness-icon {
-  font-size: 11px;
+/* ▼ / ▲ direction arrows */
+.matchup-arrow {
+  font-size: 7px;
+  font-weight: 900;
   line-height: 1;
+  flex-shrink: 0;
 }
 
-.hero-weakness-badge .weakness-name {
-  font-size: 9px;
+.matchup-arrow-weak  { color: rgba(239, 68, 68, 0.95); }
+.matchup-arrow-strong { color: rgba(74, 222, 128, 0.95); }
+
+/* Thin separator between the two groups */
+.matchup-sep {
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  background: rgba(120, 120, 180, 0.3);
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+/* Element icons */
+.matchup-el-icon {
+  font-size: 12px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.matchup-el-weak {
+  filter: drop-shadow(0 0 3px rgba(239, 68, 68, 0.75));
+}
+
+.matchup-el-strong {
+  filter: drop-shadow(0 0 3px rgba(74, 222, 128, 0.75));
+}
+
+/* ========================================
+   MATCHUP HOVER TOOLTIP - Portal popup
+   ======================================== */
+.matchup-tooltip-portal {
+  pointer-events: none;
+}
+
+.matchup-tooltip-content {
+  background: rgba(8, 8, 18, 0.97);
+  border: 1px solid rgba(120, 120, 180, 0.4);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.5);
+  min-width: 160px;
+}
+
+.matchup-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.matchup-tooltip-label {
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.5px;
   text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: 72px;
+}
+
+.matchup-tooltip-weak .matchup-tooltip-label {
+  color: rgba(239, 68, 68, 0.95);
+}
+
+.matchup-tooltip-strong .matchup-tooltip-label {
+  color: rgba(74, 222, 128, 0.95);
+}
+
+.matchup-tooltip-elements {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.matchup-tooltip-el {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-color, #e2e8f0);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
 }

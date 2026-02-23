@@ -133,10 +133,16 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   ${cardHasTaunt ? 'has-taunt' : ''}
                   ${hasElementalBuff ? 'elemental-buffed' : ''}
                 `}
-                initial={{ opacity: 0, scale: 0.3, y: 30 }}
+                initial={{ opacity: 0, scale: 0.15, y: 50 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.05, filter: 'brightness(4)', rotate: 12 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.05,
+                  y: side === 'opponent' ? 25 : -25,
+                  filter: 'brightness(5) saturate(0)',
+                  transition: { duration: 0.35, ease: [0.55, 0, 1, 0.45] }
+                }}
+                transition={{ type: 'spring', stiffness: 420, damping: 24 }}
                 onClick={() => {
                   debug.combat('[SimpleBattlefield Click]', {
                     cardName: card.card?.name,

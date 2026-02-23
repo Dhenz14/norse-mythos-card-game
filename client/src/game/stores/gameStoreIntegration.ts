@@ -17,6 +17,9 @@ import { GameEventBus } from '@/core/events/GameEventBus';
 import { initializeAudioSubscriber } from '@/game/subscribers/AudioSubscriber';
 import { initializeNotificationSubscriber } from '@/game/subscribers/NotificationSubscriber';
 import { initializeAnimationSubscriber } from '@/game/subscribers/AnimationSubscriber';
+import { initializeBlockchainSubscriber } from '@/game/subscribers/BlockchainSubscriber';
+import { startTransactionProcessor, stopTransactionProcessor } from '@/data/blockchain/transactionProcessor';
+import { isBlockchainPackagingEnabled } from '../config/featureFlags';
 import { debug } from '../config/debugConfig';
 
 let isInitialized = false;
@@ -38,6 +41,14 @@ export function initializeGameStoreIntegration(): () => void {
   cleanupFunctions.push(initializeAudioSubscriber());
   cleanupFunctions.push(initializeNotificationSubscriber());
   cleanupFunctions.push(initializeAnimationSubscriber());
+
+  // Initialize blockchain subscriber + transaction processor when enabled
+  if (isBlockchainPackagingEnabled()) {
+    cleanupFunctions.push(initializeBlockchainSubscriber());
+    startTransactionProcessor();
+    cleanupFunctions.push(stopTransactionProcessor);
+    debug.log('[GameStoreIntegration] Blockchain subscriber + transaction processor started');
+  }
 
   isInitialized = true;
   debug.log('[GameStoreIntegration] Initialization complete');
