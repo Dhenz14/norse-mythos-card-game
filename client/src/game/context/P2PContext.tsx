@@ -17,14 +17,18 @@ const P2PContext = createContext<P2PActions | null>(null);
 
 export const P2PProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const p2pSync = useP2PSync();
-	const gameStore = useGameStore();
+	const gsPlayCard = useGameStore(s => s.playCard);
+	const gsAttackWithCard = useGameStore(s => s.attackWithCard);
+	const gsEndTurn = useGameStore(s => s.endTurn);
+	const gsUseHeroPower = useGameStore(s => s.useHeroPower);
+	const gameState = useGameStore(s => s.gameState);
 
 	const actions: P2PActions = {
-		playCard: p2pSync.isConnected ? p2pSync.playCard : gameStore.playCard,
-		attackWithCard: p2pSync.isConnected ? p2pSync.attackWithCard : gameStore.attackWithCard,
-		endTurn: p2pSync.isConnected ? p2pSync.endTurn : gameStore.endTurn,
-		useHeroPower: p2pSync.isConnected ? p2pSync.useHeroPower : gameStore.useHeroPower,
-		gameState: gameStore.gameState,
+		playCard: p2pSync.isConnected ? p2pSync.playCard : gsPlayCard,
+		attackWithCard: p2pSync.isConnected ? p2pSync.attackWithCard : gsAttackWithCard,
+		endTurn: p2pSync.isConnected ? p2pSync.endTurn : gsEndTurn,
+		useHeroPower: p2pSync.isConnected ? p2pSync.useHeroPower : gsUseHeroPower,
+		gameState,
 		isConnected: p2pSync.isConnected,
 		isHost: p2pSync.isHost,
 	};
@@ -34,14 +38,18 @@ export const P2PProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
 export const useP2PActions = () => {
 	const context = useContext(P2PContext);
+	const gsPlayCard = useGameStore(s => s.playCard);
+	const gsAttackWithCard = useGameStore(s => s.attackWithCard);
+	const gsEndTurn = useGameStore(s => s.endTurn);
+	const gsUseHeroPower = useGameStore(s => s.useHeroPower);
+	const gsGameState = useGameStore(s => s.gameState);
 	if (!context) {
-		const gameStore = useGameStore();
 		return {
-			playCard: gameStore.playCard,
-			attackWithCard: gameStore.attackWithCard,
-			endTurn: gameStore.endTurn,
-			useHeroPower: gameStore.useHeroPower,
-			gameState: gameStore.gameState,
+			playCard: gsPlayCard,
+			attackWithCard: gsAttackWithCard,
+			endTurn: gsEndTurn,
+			useHeroPower: gsUseHeroPower,
+			gameState: gsGameState,
 			isConnected: false,
 			isHost: false,
 		};

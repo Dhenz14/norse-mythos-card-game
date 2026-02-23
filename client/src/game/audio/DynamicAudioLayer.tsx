@@ -15,7 +15,7 @@ import { useAudio } from '../../lib/stores/useAudio';
 import { Howl, Howler } from 'howler';
 
 const DynamicAudioLayer: React.FC = () => {
-  const { gameState } = useGameStore();
+  const gameState = useGameStore(s => s.gameState);
   // Just using playSoundEffect as setAmbientVolume is not in the current interface
   const { playSoundEffect } = useAudio();
   

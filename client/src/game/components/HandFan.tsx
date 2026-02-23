@@ -15,6 +15,24 @@ import CardHoverPreview from './CardHoverPreview';
 import { useElementalBuff } from '../combat/hooks/useElementalBuff';
 import './HandFan.css';
 
+interface HandFanTooltipProps {
+  card: CardData | null;
+}
+
+const HandFanTooltip: React.FC<HandFanTooltipProps> = ({ card }) => {
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (!card) return;
+    const handleMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
+    window.addEventListener('mousemove', handleMove);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, [card]);
+
+  if (!card) return null;
+  return <CardHoverPreview card={card} mousePosition={mousePos} />;
+};
+
 interface HandFanProps {
   cards: CardInstance[];
   currentMana: number;
@@ -39,7 +57,6 @@ export const HandFan: React.FC<HandFanProps> = ({
 }) => {
   const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const prevCardCount = useRef<number>(0);
 
   const elementalBuff = useElementalBuff();
@@ -159,12 +176,10 @@ export const HandFan: React.FC<HandFanProps> = ({
             className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''}`}
             style={getCardStyle(index)}
             onDoubleClick={() => { if (canPlay) handleCardPlay(card); }}
-            onMouseEnter={(e) => {
+            onMouseEnter={() => {
               setHoveredCard(card.card);
               setHoveredIndex(index);
-              setMousePos({ x: e.clientX, y: e.clientY });
             }}
-            onMouseMove={(e) => setMousePos({ x: e.clientX, y: e.clientY })}
             onMouseLeave={() => {
               setHoveredCard(null);
               setHoveredIndex(null);
@@ -185,7 +200,7 @@ export const HandFan: React.FC<HandFanProps> = ({
         );
       })}
       
-      {hoveredCard && <CardHoverPreview card={hoveredCard} mousePosition={mousePos} />}
+      <HandFanTooltip card={hoveredCard} />
     </div>
   );
 };

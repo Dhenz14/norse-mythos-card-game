@@ -1047,7 +1047,7 @@
 }
 
 .stat-badge {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
   border: 1px solid rgba(71, 85, 105, 0.5);
   border-radius: 8px;
   padding: 6px 16px;
@@ -1058,7 +1058,6 @@
   text-align: center;
   min-width: 80px;
   box-sizing: border-box;
-  backdrop-filter: blur(4px);
 }
 
 .stat-badge .stat-label {
@@ -1094,7 +1093,7 @@
 }
 
 .stat-box {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
   border: 1px solid rgba(71, 85, 105, 0.5);
   border-radius: 8px;
   padding: 6px 10px;
@@ -1102,7 +1101,6 @@
   flex-direction: column;
   align-items: center;
   min-width: 50px;
-  backdrop-filter: blur(4px);
 }
 
 .stat-box .stat-label {
@@ -2487,7 +2485,6 @@
   font-weight: 700;
   z-index: 10;
   transition: all 0.2s ease;
-  backdrop-filter: blur(4px);
 }
 
 .portrait-power-badge.affordable {

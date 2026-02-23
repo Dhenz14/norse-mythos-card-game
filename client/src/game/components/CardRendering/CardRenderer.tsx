@@ -6,7 +6,7 @@
  */
 
 import { debug } from '../../config/debugConfig';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { CardData, CardInstance } from '../../types';
 import { SimpleCard, SimpleCardData } from '../SimpleCard';
 import { getCardDataSafely } from '../../utils/cards/cardInstanceAdapter';
@@ -38,7 +38,7 @@ interface CardRendererProps {
 /**
  * CardRenderer - Clean abstraction for rendering cards using SimpleCard
  */
-const CardRenderer: React.FC<CardRendererProps> = ({
+const CardRenderer: React.FC<CardRendererProps> = React.memo(({
   card,
   isInHand = false,
   isPlayable = true,
@@ -53,16 +53,16 @@ const CardRenderer: React.FC<CardRendererProps> = ({
   attackBuff = 0,
   healthBuff = 0
 }) => {
-  const processedCard = getCardDataSafely(card);
-  
+  const processedCard = useMemo(() => getCardDataSafely(card), [card]);
+
   if (!processedCard) {
     debug.warn('CardRenderer: No card data available');
     return null;
   }
-  
+
   const evolutionLevel = ('evolutionLevel' in card) ? (card as any).evolutionLevel as (1 | 2 | 3 | undefined) : undefined;
 
-  const simpleCardData: SimpleCardData = {
+  const simpleCardData: SimpleCardData = useMemo(() => ({
     id: processedCard.id || 0,
     name: processedCard.name || 'Unknown',
     manaCost: processedCard.manaCost || 0,
@@ -75,14 +75,15 @@ const CardRenderer: React.FC<CardRendererProps> = ({
     cardClass: processedCard.cardClass || processedCard.class,
     keywords: processedCard.keywords || [],
     evolutionLevel,
-  };
-  
-  const scaleStyle: React.CSSProperties = scale !== 1 ? {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [processedCard, evolutionLevel]);
+
+  const scaleStyle: React.CSSProperties = useMemo(() => scale !== 1 ? {
     transform: `scale(${scale})`,
     transformOrigin: 'center center',
     ...style
-  } : style;
-  
+  } : style, [scale, style]);
+
   return (
     <div className={`card-renderer-wrapper ${className}`} style={scaleStyle}>
       <SimpleCard
@@ -99,6 +100,6 @@ const CardRenderer: React.FC<CardRendererProps> = ({
       />
     </div>
   );
-};
+});
 
 export default CardRenderer;

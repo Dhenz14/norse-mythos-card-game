@@ -1050,10 +1050,18 @@ const VERCEL_CARD_ART: Record<string, string> = {
  * @param cardName - The minion card name
  * @returns The art path (/art/{id}.webp) or null if no explicit mapping exists
  */
+const _artPathCache = new Map<string, string | null>();
+
 export function getCardArtPath(cardName: string): string | null {
   if (!cardName) return null;
 
   const lowerName = cardName.toLowerCase().trim();
+
+  if (_artPathCache.has(lowerName)) {
+    return _artPathCache.get(lowerName)!;
+  }
+
+  let result: string | null = null;
 
   // Check VERCEL_CARD_ART first (new curated art takes priority)
   const vercelUrl = VERCEL_CARD_ART[lowerName];
@@ -1064,27 +1072,39 @@ export function getCardArtPath(cardName: string): string | null {
       // Block if art belongs to any named character that is NOT a creature
       // (covers heroes, kings, gods, humans, and any other non-creature characters)
       if (ALL_CHARACTER_ART_IDS_SET.has(artId) && !CREATURE_RESERVED_ART_IDS.has(artId)) {
+        _artPathCache.set(lowerName, null);
         return null;
       }
     }
-    return vercelUrl;
+    result = vercelUrl;
+    _artPathCache.set(lowerName, result);
+    return result;
   }
 
   // Check MINION_CARD_TO_ART for exact match
   const character = MINION_CARD_TO_ART[lowerName];
-  if (!character) return null;
-  
+  if (!character) {
+    _artPathCache.set(lowerName, null);
+    return null;
+  }
+
   // Validate character is in creature-only set (not hero-reserved)
   if (!CREATURE_ART_CHARACTERS.has(character)) {
     debug.warn(`[artMapping] Warning: "${cardName}" maps to hero-reserved character "${character}"`);
+    _artPathCache.set(lowerName, null);
     return null;
   }
-  
+
   // Get the art ID for this creature
   const artId = CHARACTER_ART_IDS[character];
-  if (!artId) return null;
-  
-  return `/art/${artId}.webp`;
+  if (!artId) {
+    _artPathCache.set(lowerName, null);
+    return null;
+  }
+
+  result = `/art/${artId}.webp`;
+  _artPathCache.set(lowerName, result);
+  return result;
 }
 
 /**

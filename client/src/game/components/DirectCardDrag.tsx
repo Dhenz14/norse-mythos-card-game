@@ -39,7 +39,8 @@ export const DirectCardDrag: React.FC<DirectCardDragProps> = ({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
   
-  const { gameState, playCard } = useGameStore();
+  const gameState = useGameStore(s => s.gameState);
+  const playCard = useGameStore(s => s.playCard);
   // Fix: GameState.players is { player, opponent } not an array
   const currentPlayer = gameState.players?.player;
   const isCurrentPlayerTurn = gameState.currentTurn === 'player';

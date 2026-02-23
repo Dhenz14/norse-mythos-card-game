@@ -52,12 +52,13 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
   const showOpponent = renderMode === 'both' || renderMode === 'opponent';
   const showPlayer = renderMode === 'both' || renderMode === 'player';
 
-  const hasTaunt = (cards: CardInstanceWithCardData[]) => 
-    cards.some(c => c.card?.keywords?.includes('taunt'));
+  const opponentHasTaunt = useMemo(
+    () => opponentCards.some(c => c.card?.keywords?.includes('taunt')),
+    [opponentCards]
+  );
 
-  const isValidTarget = (card: CardInstanceWithCardData, allCards: CardInstanceWithCardData[]) => {
+  const isValidTarget = (card: CardInstanceWithCardData) => {
     if (!attackingCard) return false;
-    const opponentHasTaunt = hasTaunt(allCards);
     return !opponentHasTaunt || card.card?.keywords?.includes('taunt');
   };
 
@@ -103,7 +104,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
       const isAttacking = card && attackingCard?.instanceId === card.instanceId;
       const canAttack = side === 'player' && card && isPlayerTurn &&
                         !card.isSummoningSick && card.canAttack && !attackingCard;
-      const isTarget = side === 'opponent' && card && isValidTarget(card, opponentCards);
+      const isTarget = side === 'opponent' && card && isValidTarget(card);
       const hasSuperBonus = card && (card as any).hasSuperMinionBonus;
       const hasCharge = !!(card?.card?.keywords?.includes('charge'));
       const isSummoningSick = side === 'player' && !!card && !!card.isSummoningSick && !hasCharge;

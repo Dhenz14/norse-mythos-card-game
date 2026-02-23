@@ -5,6 +5,7 @@
  * Components import this instead of directly using the store.
  */
 
+import React from 'react';
 import { useUnifiedCombatStore, PokerPhase } from '../stores/unifiedCombatStore';
 import {
   PokerCombatState,
@@ -143,16 +144,39 @@ const POKER_TO_UNIFIED_PHASE: Record<string, PokerPhase> = {
 };
 
 export function usePokerCombatAdapter(): PokerCombatAdapter {
-  const unified = useUnifiedCombatStore();
+  const combatState = useUnifiedCombatStore(s => s.pokerCombatState);
+  const deck = useUnifiedCombatStore(s => s.pokerDeck);
+  const isActive = useUnifiedCombatStore(s => s.pokerIsActive);
+  const mulliganComplete = useUnifiedCombatStore(s => s.mulliganComplete);
 
-  return {
-    combatState: unified.pokerCombatState,
-    deck: unified.pokerDeck,
-    isActive: unified.pokerIsActive,
-    mulliganComplete: unified.mulliganComplete,
+  const initializePokerCombat = useUnifiedCombatStore(s => s.initializePokerCombat);
+  const initializeCombat = useUnifiedCombatStore(s => s.initializeCombat);
+  const performPokerAction = useUnifiedCombatStore(s => s.performPokerAction);
+  const advancePokerPhase = useUnifiedCombatStore(s => s.advancePokerPhase);
+  const resolvePokerCombat = useUnifiedCombatStore(s => s.resolvePokerCombat);
+  const endPokerCombat = useUnifiedCombatStore(s => s.endPokerCombat);
+  const completeMulliganFn = useUnifiedCombatStore(s => s.completeMulligan);
+  const setPlayerReadyFn = useUnifiedCombatStore(s => s.setPlayerReady);
+  const updatePokerTimer = useUnifiedCombatStore(s => s.updatePokerTimer);
+  const startNextHandDelayedFn = useUnifiedCombatStore(s => s.startNextHandDelayed);
+  const startNextHandFn = useUnifiedCombatStore(s => s.startNextHand);
+  const maybeCloseBettingRoundFn = useUnifiedCombatStore(s => s.maybeCloseBettingRound);
+  const applyDirectDamageFn = useUnifiedCombatStore(s => s.applyDirectDamage);
+  const healPlayerHeroFn = useUnifiedCombatStore(s => s.healPlayerHero);
+  const healOpponentHeroFn = useUnifiedCombatStore(s => s.healOpponentHero);
+  const setPlayerHeroBuffsFn = useUnifiedCombatStore(s => s.setPlayerHeroBuffs);
+  const addPlayerArmorFn = useUnifiedCombatStore(s => s.addPlayerArmor);
+  const markBothPlayersReadyFn = useUnifiedCombatStore(s => s.markBothPlayersReady);
+  const completeFirstStrikeFn = useUnifiedCombatStore(s => s.completeFirstStrike);
+
+  return React.useMemo(() => ({
+    combatState,
+    deck,
+    isActive,
+    mulliganComplete,
 
     initializeCombat: (playerId, playerName, playerPet, opponentId, opponentName, opponentPet, skipMulligan, playerKingId, opponentKingId, firstStrikeTarget?: 'player' | 'opponent') => {
-      unified.initializePokerCombat(
+      initializePokerCombat(
         playerId,
         playerName,
         playerPet,
@@ -164,8 +188,8 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
         opponentKingId,
         firstStrikeTarget
       );
-      
-      unified.initializeCombat(
+
+      initializeCombat(
         [{
           id: 'player-king',
           type: 'king',
@@ -188,39 +212,39 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
     },
 
     performAction: (playerId, action, hpCommitment) => {
-      unified.performPokerAction(playerId, action, hpCommitment);
+      performPokerAction(playerId, action, hpCommitment);
     },
 
     advancePhase: () => {
-      unified.advancePokerPhase();
+      advancePokerPhase();
     },
 
     resolveCombat: () => {
-      return unified.resolvePokerCombat();
+      return resolvePokerCombat();
     },
 
     endCombat: () => {
-      unified.endPokerCombat();
+      endPokerCombat();
     },
 
     completeMulligan: () => {
-      unified.completeMulligan();
+      completeMulliganFn();
     },
 
     setPlayerReady: (playerId: string) => {
-      unified.setPlayerReady(playerId);
+      setPlayerReadyFn(playerId);
     },
 
     updateTimer: (newTime: number) => {
-      unified.updatePokerTimer(newTime);
+      updatePokerTimer(newTime);
     },
 
     startNextHandDelayed: (resolution: CombatResolution) => {
-      unified.startNextHandDelayed(resolution);
+      startNextHandDelayedFn(resolution);
     },
 
     startNextHand: (resolution?: CombatResolution) => {
-      unified.startNextHand(resolution);
+      startNextHandFn(resolution);
     },
 
     setTransitioning: (value: boolean) => {
@@ -228,37 +252,38 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
     },
 
     maybeCloseBettingRound: () => {
-      unified.maybeCloseBettingRound();
+      maybeCloseBettingRoundFn();
     },
 
     applyDirectDamage: (targetPlayerId: 'player' | 'opponent', damage: number, sourceDescription?: string) => {
-      unified.applyDirectDamage(targetPlayerId, damage, sourceDescription);
+      applyDirectDamageFn(targetPlayerId, damage, sourceDescription);
     },
 
     healPlayerHero: (amount: number) => {
-      unified.healPlayerHero(amount);
+      healPlayerHeroFn(amount);
     },
 
     healOpponentHero: (amount: number) => {
-      unified.healOpponentHero(amount);
+      healOpponentHeroFn(amount);
     },
 
     setPlayerHeroBuffs: (attack: number, armor: number) => {
-      unified.setPlayerHeroBuffs({ attack, armor });
+      setPlayerHeroBuffsFn({ attack, armor });
     },
 
     addPlayerArmor: (amount: number) => {
-      unified.addPlayerArmor(amount);
+      addPlayerArmorFn(amount);
     },
 
     markBothPlayersReady: () => {
-      unified.markBothPlayersReady();
+      markBothPlayersReadyFn();
     },
 
     completeFirstStrike: () => {
-      unified.completeFirstStrike();
+      completeFirstStrikeFn();
     },
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [combatState, deck, isActive, mulliganComplete]);
 }
 
 export function getPokerCombatAdapterState(): PokerCombatAdapter {

@@ -89,6 +89,19 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
     }
     return 'neutral';
   }, [pet.norseHeroId, elementProp]);
+
+  const portraitUrl = useMemo(
+    () => `/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png`,
+    [pet.name]
+  );
+
+  const portraitBgStyle = useMemo((): React.CSSProperties => ({
+    backgroundImage: `url('${portraitUrl}')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center top',
+    cursor: !isOpponent ? 'pointer' : 'default',
+    pointerEvents: 'auto'
+  }), [portraitUrl, isOpponent]);
   
   const currentHP = pet.stats.currentHealth;
   const maxHP = pet.stats.maxHealth;
@@ -182,13 +195,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
           <div 
             ref={portraitRef}
             className={`hero-portrait hero-portrait-interactive ${!isOpponent && heroPower ? 'has-power' : ''} ${!isPowerDisabled ? 'power-ready' : ''} ${canUpgrade ? 'upgrade-ready' : ''} ${isWeaponUpgraded ? 'upgraded' : ''}`}
-            style={{
-              backgroundImage: `url('/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center top',
-              cursor: !isOpponent ? 'pointer' : 'default',
-              pointerEvents: 'auto'
-            }}
+            style={portraitBgStyle}
             onClick={(e) => {
               handlePortraitClick(e);
             }}

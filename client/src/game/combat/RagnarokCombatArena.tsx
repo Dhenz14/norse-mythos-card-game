@@ -592,18 +592,22 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     playCard(cardId);
   }, [isPlayerTurn, playCard, selectCard, gameState]);
   
+  const basePermissions = useMemo(
+    () => getActionPermissions(combatState, true),
+    [combatState]
+  );
+
   // Early return if no combat state
   if (!combatState) {
     return <div className="unified-combat-arena">Loading...</div>;
   }
-  
+
   const isMulligan = combatState.phase === CombatPhase.MULLIGAN;
   const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
   const showFaith = phaseAllowsFaith && communityCardsRevealed;
   const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
   const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
-  
-  const basePermissions = getActionPermissions(combatState, true);
+
   const disabled = isMulligan || !basePermissions?.isMyTurnToAct;
 
   return (
@@ -866,53 +870,52 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
             <span className="slider-value">{betAmount} HP</span>
           </div>
           <div className="unified-betting-actions poker-actions">
-            {(() => {
-               const permissions = getActionPermissions(combatState, true)!;
-               const { 
+            {basePermissions && (() => {
+               const {
                  hasBetToCall, toCall, availableHP, minBet,
                  canCheck, canBet, canCall, canRaise, canFold, maxBetAmount, isAllIn,
                  isMyTurnToAct
-               } = permissions;
-               
+               } = basePermissions;
+
                const isDisabled = !isMyTurnToAct;
-               
+
                const maxBet = Math.max(1, availableHP);
                const clampedBet = Math.min(betAmount, maxBet);
                const maxSlider = maxBetAmount;
                const effectiveBet = maxSlider >= minBet ? Math.min(Math.max(minBet, clampedBet), maxSlider) : 0;
                const actualCanRaise = canRaise && maxSlider >= minBet && effectiveBet >= minBet;
-               
+
                const actualCallAmount = Math.min(toCall, availableHP);
-               
-               const betOrRaiseLabel = hasBetToCall 
+
+               const betOrRaiseLabel = hasBetToCall
                  ? `RAISE to ${toCall + effectiveBet} HP`
                  : `BET ${effectiveBet} HP`;
-               const callLabel = isAllIn 
+               const callLabel = isAllIn
                  ? `ALL-IN ${actualCallAmount} HP`
                  : `CALL ${toCall} HP`;
-               
+
                return (
                  <div className="action-buttons-group">
-                   <button 
+                   <button
                      className="poker-btn raise-btn"
                      onClick={() => wrappedOnAction(
-                       hasBetToCall ? CombatAction.COUNTER_ATTACK : CombatAction.ATTACK, 
+                       hasBetToCall ? CombatAction.COUNTER_ATTACK : CombatAction.ATTACK,
                        effectiveBet
                      )}
                      disabled={isDisabled || (hasBetToCall ? !actualCanRaise : !canBet)}
                    >
                      <span className="btn-text">{betOrRaiseLabel}</span>
                    </button>
-                   
-                   <button 
+
+                   <button
                      className="poker-btn call-btn"
                      onClick={() => wrappedOnAction(canCall ? CombatAction.ENGAGE : CombatAction.DEFEND)}
                      disabled={isDisabled || (!canCall && !canCheck)}
                    >
                      <span className="btn-text">{canCall ? callLabel : 'CHECK'}</span>
                    </button>
-                   
-                   <button 
+
+                   <button
                      className="poker-btn fold-btn"
                      onClick={() => wrappedOnAction(CombatAction.BRACE)}
                      disabled={isDisabled || !canFold}
@@ -1005,6 +1008,14 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   const attackingCardForShortcuts = useGameStore(state => state.attackingCard);
   const selectAttackerForClear = useGameStore(state => state.selectAttacker);
   const selectCard = useGameStore(state => state.selectCard);
+  const playerHeroHealth = useGameStore(state => {
+    const p = state.gameState?.players?.player;
+    return p ? (p.heroHealth ?? p.health) : 0;
+  });
+  const opponentHeroHealth = useGameStore(state => {
+    const p = state.gameState?.players?.opponent;
+    return p ? (p.heroHealth ?? p.health) : 0;
+  });
 
   // Screen shake in the outer component (RagnarokCombatArena owns the GameViewport)
   const [outerShakeClass, setOuterShakeClass] = useState('');
@@ -1012,11 +1023,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   const prevHeroHealthRef = useRef<{ player: number; opponent: number } | null>(null);
 
   useEffect(() => {
-    const gs = useGameStore.getState().gameState;
-    if (!gs) return;
-    const playerHp = gs.players.player.heroHealth ?? gs.players.player.health;
-    const opponentHp = gs.players.opponent.heroHealth ?? gs.players.opponent.health;
-    const curr = { player: playerHp, opponent: opponentHp };
+    const curr = { player: playerHeroHealth, opponent: opponentHeroHealth };
     const prev = prevHeroHealthRef.current;
     if (prev) {
       const playerDmg = prev.player - curr.player;
@@ -1030,7 +1037,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       }
     }
     prevHeroHealthRef.current = curr;
-  });
+  }, [playerHeroHealth, opponentHeroHealth]);
 
   // Keyboard shortcuts + right-click cancel for targeting
   useEffect(() => {

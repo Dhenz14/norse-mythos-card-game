@@ -399,7 +399,7 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
   onAttackComplete
 }) => {
   const { attackingCard, isAttackMode, validTargets, selectAttacker, performAttack, cancelAttack } = useAttackStore();
-  const { gameState } = useGameStore();
+  const gameState = useGameStore(s => s.gameState);
   const audioState = useAudio.getState();
   
   // Handle escape key to cancel attack
