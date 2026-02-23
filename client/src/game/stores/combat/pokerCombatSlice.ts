@@ -224,8 +224,8 @@ export const createPokerCombatSlice: StateCreator<
       armorBonus: opponentAdvantage.armorBonus
     };
     
-    const playerPetCopy = JSON.parse(JSON.stringify(playerPet));
-    const opponentPetCopy = JSON.parse(JSON.stringify(opponentPet));
+    const playerPetCopy = structuredClone(playerPet);
+    const opponentPetCopy = structuredClone(opponentPet);
     
     const playerManaBoost = get().consumePendingManaBoost('player');
     const opponentManaBoost = get().consumePendingManaBoost('opponent');

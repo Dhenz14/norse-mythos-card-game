@@ -6,15 +6,6 @@ import { GLTF } from "three-stdlib";
 import { CardData } from "../types";
 import { debug } from '../config/debugConfig';
 
-// Preload models to improve performance
-useGLTF.preload('/models/ragnaros.glb');
-useGLTF.preload('/models/lich_king.glb');
-useGLTF.preload('/models/sylvanas.glb');
-useGLTF.preload('/models/neptulon.glb');
-useGLTF.preload('/models/giga_fin.glb');
-useGLTF.preload('/models/colossus_moon.glb');
-useGLTF.preload('/models/fenrir_wolf.glb');
-
 interface LegendaryCardModelProps {
   card: CardData;
   scale?: number;
@@ -47,11 +38,14 @@ export function LegendaryCardModel({
   const [modelLoaded, setModelLoaded] = useState(false);
   const [modelPath, setModelPath] = useState<string | null>(null);
   
-  // Determine which model to use based on the card ID
+  // Determine which model to use based on the card ID and kick off preload
   useEffect(() => {
     if (card && card.id) {
       const cardId = typeof card.id === 'string' ? parseInt(card.id, 10) : card.id;
       const path = modelMap[cardId];
+      if (path) {
+        useGLTF.preload(path);
+      }
       setModelPath(path || null);
     }
   }, [card]);
