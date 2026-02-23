@@ -107,23 +107,22 @@ export function getLevelBonuses(rarity: string, level: number): CardLevelBonus {
 
 export function calculateXPRewards(
 	cardUids: CardUidMapping[],
-	cardCollection: HiveCardAsset[],
+	cardCollection: HiveCardAsset[] | null | undefined,
 	cardRarities: Map<number, string>,
 	mvpCardUid: string | null
 ): CardXPReward[] {
 	const rewards: CardXPReward[] = [];
 
 	for (const mapping of cardUids) {
-		const asset = cardCollection.find(c => c.uid === mapping.uid);
-		if (!asset) continue;
-
 		const rarity = cardRarities.get(mapping.cardId) || 'common';
 		const isMvp = mapping.uid === mvpCardUid;
 		const xpGained = calculateXPGain(rarity, true, isMvp);
 
 		if (xpGained === 0) continue;
 
-		const xpBefore = asset.xp;
+		// Default xp=0 when card isn't in the collection yet (new card, first time earning XP)
+		const asset = cardCollection?.find(c => c.uid === mapping.uid);
+		const xpBefore = asset?.xp ?? 0;
 		const xpAfter = xpBefore + xpGained;
 		const levelBefore = getLevelForXP(rarity, xpBefore);
 		const levelAfter = getLevelForXP(rarity, xpAfter);

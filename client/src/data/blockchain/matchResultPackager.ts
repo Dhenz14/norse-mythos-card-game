@@ -13,6 +13,21 @@ import type { HiveCardAsset } from '../schemas/HiveTypes';
 
 const ELO_K_FACTOR = 32;
 
+// Typed game log entry for damage calculation
+interface DamageLogEntry {
+	type: 'damage';
+	source: 'player' | 'opponent';
+	amount: number;
+}
+
+function isDamageEntry(entry: unknown): entry is DamageLogEntry {
+	if (!entry || typeof entry !== 'object') return false;
+	const e = entry as Record<string, unknown>;
+	return e.type === 'damage' &&
+	       (e.source === 'player' || e.source === 'opponent') &&
+	       typeof e.amount === 'number';
+}
+
 function calculateEloChange(playerElo: number, opponentElo: number, isWinner: boolean): number {
 	const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
 	const actualScore = isWinner ? 1 : 0;
@@ -28,16 +43,16 @@ function extractPlayerData(
 	const isPlayerSide = side === 'player';
 
 	const cardIds = [
-		...player.battlefield.map(c => (c.card as any)?.id ?? c.card?.id),
-		...player.graveyard.map(c => (c.card as any)?.id ?? c.card?.id),
+		...player.battlefield.map(c => (c.card as any)?.id),
+		...player.graveyard.map(c => (c.card as any)?.id),
 	].filter((id): id is number => typeof id === 'number');
 
 	const uniqueCardIds = [...new Set(cardIds)];
 
 	let damageDealt = 0;
 	for (const entry of gameState.gameLog) {
-		if ((entry as any).type === 'damage' && (entry as any).source === side) {
-			damageDealt += (entry as any).amount || 0;
+		if (isDamageEntry(entry) && entry.source === side) {
+			damageDealt += entry.amount;
 		}
 	}
 
@@ -47,7 +62,7 @@ function extractPlayerData(
 		heroId: isPlayerSide ? input.playerHeroId : input.opponentHeroId,
 		finalHp: (player as any).heroHealth ?? player.health ?? 0,
 		damageDealt,
-		pokerHandsWon: 0,
+		pokerHandsWon: 0, // TODO (Phase 2B): wire from pokerCombatSlice hand resolution counter
 		cardsUsed: uniqueCardIds,
 	};
 }
@@ -55,7 +70,7 @@ function extractPlayerData(
 export async function packageMatchResult(
 	gameState: GameState,
 	input: MatchPackagerInput,
-	cardCollection?: HiveCardAsset[],
+	cardCollection?: HiveCardAsset[] | null,
 	cardRarities?: Map<number, string>
 ): Promise<PackagedMatchResult> {
 	const isPlayerWinner = gameState.winner === 'player';
@@ -82,13 +97,15 @@ export async function packageMatchResult(
 		delta: loserEloDelta,
 	};
 
+	// XP rewards for winner's cards only (loser gets 0 — intentional "brutal" design)
+	// calculateXPRewards handles null/undefined collection by defaulting card XP to 0
 	let xpRewards: CardXPReward[] = [];
-	if (input.matchType === 'ranked' && cardCollection && cardRarities) {
+	if (input.matchType === 'ranked' && cardRarities && input.playerCardUids.length > 0) {
 		const winnerCardUids = isPlayerWinner ? input.playerCardUids : input.opponentCardUids;
 		xpRewards = calculateXPRewards(winnerCardUids, cardCollection, cardRarities, null);
 	}
 
-	const duration = Date.now() - input.startTime;
+	const duration = Math.max(0, Date.now() - input.startTime);
 
 	const resultWithoutHash: Omit<PackagedMatchResult, 'hash'> = {
 		matchId: input.matchId,

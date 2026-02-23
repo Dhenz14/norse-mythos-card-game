@@ -47,6 +47,13 @@ export const useTransactionQueueStore = create<TransactionQueueStore>()(
 			isProcessing: false,
 
 			enqueue: <T>(actionType: BlockchainActionType, payload: T, hash: string): string => {
+				// Dedup: reuse existing entry if same hash+type is already active (not failed/expired)
+				const existing = get().transactions.find(
+					tx => tx.hash === hash && tx.actionType === actionType &&
+					      !['failed', 'expired'].includes(tx.status)
+				);
+				if (existing) return existing.id;
+
 				const id = generateTxId();
 				const now = Date.now();
 

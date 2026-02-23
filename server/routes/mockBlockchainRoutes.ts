@@ -19,11 +19,37 @@
  */
 
 import { Router, Request, Response } from 'express';
+import { createHash } from 'crypto';
 import type {
 	NFTMetadata,
 	PackagedMatchResult,
 	CardXPReward,
 } from '../../client/src/data/blockchain/types';
+
+// ---------------------------------------------------------------------------
+// Hashing helpers (mirrors client hashUtils.ts, using Node crypto)
+// ---------------------------------------------------------------------------
+
+function sortKeys(obj: unknown): unknown {
+	if (obj === null || obj === undefined) return obj;
+	if (Array.isArray(obj)) return (obj as unknown[]).map(sortKeys);
+	if (typeof obj === 'object') {
+		const sorted: Record<string, unknown> = {};
+		for (const key of Object.keys(obj as Record<string, unknown>).sort()) {
+			sorted[key] = sortKeys((obj as Record<string, unknown>)[key]);
+		}
+		return sorted;
+	}
+	return obj;
+}
+
+function sha256(data: string): string {
+	return createHash('sha256').update(data).digest('hex');
+}
+
+function hashObject(obj: unknown): string {
+	return sha256(JSON.stringify(sortKeys(obj)));
+}
 
 const router = Router();
 
@@ -174,7 +200,8 @@ router.post('/mint', async (req: Request, res: Response) => {
 			mintedAt: blockNum,
 			mintedBy: 'ragnarok',
 		};
-		const hash = `mock_${uid}_${blockNum}`;
+		// Use the same canonical SHA-256 as the client's hashNFTMetadata()
+		const hash = hashObject(metaWithoutHash);
 		const metadata: NFTMetadata = { ...metaWithoutHash, hash };
 
 		state.nfts.set(uid, metadata);
