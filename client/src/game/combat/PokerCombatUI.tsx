@@ -280,13 +280,14 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
     [CombatPhase.MULLIGAN]: 'Mulligan',
     [CombatPhase.FIRST_STRIKE]: 'First Strike',
     [CombatPhase.SPELL_PET]: 'Spell & Pet Phase',
+    [CombatPhase.PRE_FLOP]: 'Pre-Flop',
     [CombatPhase.FAITH]: 'Faith',
     [CombatPhase.FORESIGHT]: 'Foresight',
     [CombatPhase.DESTINY]: 'Destiny',
     [CombatPhase.RESOLUTION]: 'Resolution'
   }[combatState.phase];
 
-  const showFaith = combatState.phase !== CombatPhase.SPELL_PET;
+  const showFaith = combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
   const showForesight = combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION;
   const showDestiny = combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION;
 

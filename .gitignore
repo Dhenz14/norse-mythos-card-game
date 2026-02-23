@@ -124,3 +124,6 @@ client/src/**/*.js
 # 3. NEVER include Replit internal configuration
 # 4. NEVER include one-off test/fix scripts
 # 5. Always verify with: git status --ignored
+
+# Claude Code local settings
+.claude/

@@ -68,7 +68,7 @@ export function getSmartAIAction(
   
   // Ragnarok "preflop" = first betting round (SPELL_PET or FAITH phase)
   // NO checking allowed - must bet or fold (opener) or call/raise/fold (after bet)
-  const isFirstBettingRound = combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.FAITH;
+  const isFirstBettingRound = combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.PRE_FLOP || combatState.phase === CombatPhase.FAITH;
   const mustBetOrFold = isFirstBettingRound && !hasBetToCall; // Must bet if no current bet in first round
   
   const communityCards = getCommunityCards(combatState);

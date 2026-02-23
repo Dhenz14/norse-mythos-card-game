@@ -131,6 +131,7 @@ export enum CombatPhase {
   FIRST_STRIKE = 'first_strike', // First strike animation - attacker deals 15 damage
   MULLIGAN = 'mulligan',      // Mulligan phase - replace cards in hand (MUST be first)
   SPELL_PET = 'spell_pet',    // Cast spells and use pets
+  PRE_FLOP = 'pre_flop',      // Pre-flop betting round (blinds posted, no community cards)
   FAITH = 'faith',            // First 3 cards (flop)
   FORESIGHT = 'foresight',    // 4th card (turn)
   DESTINY = 'destiny',        // 5th card (river)

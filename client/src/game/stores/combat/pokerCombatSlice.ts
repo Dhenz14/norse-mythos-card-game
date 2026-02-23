@@ -682,6 +682,9 @@ export const createPokerCombatSlice: StateCreator<
         newPhase = PokerCombatPhase.SPELL_PET;
         break;
       case PokerCombatPhase.SPELL_PET:
+        newPhase = PokerCombatPhase.PRE_FLOP;
+        break;
+      case PokerCombatPhase.PRE_FLOP:
         newPhase = PokerCombatPhase.FAITH;
         const faithCards = [deck.pop()!, deck.pop()!, deck.pop()!];
         newCommunityCards.faith = faithCards;
@@ -724,7 +727,7 @@ export const createPokerCombatSlice: StateCreator<
     let blindsJustPosted = false;
     let blindAllIn = false;
     
-    if (newPhase === PokerCombatPhase.FAITH && !combatState.blindsPosted) {
+    if (newPhase === PokerCombatPhase.PRE_FLOP && !combatState.blindsPosted) {
       const sbAmount = combatState.blindConfig?.smallBlind || BLINDS.SB;
       const bbAmount = combatState.blindConfig?.bigBlind || BLINDS.BB;
       

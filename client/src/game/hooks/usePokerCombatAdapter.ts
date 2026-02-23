@@ -80,7 +80,7 @@ export function getActionPermissions(
     : availableHP;
   
   return {
-    isPreForesight: combatState.phase === CombatPhase.SPELL_PET,
+    isPreForesight: combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.PRE_FLOP,
     hasBetToCall,
     toCall,
     availableHP,

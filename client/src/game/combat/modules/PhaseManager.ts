@@ -26,6 +26,7 @@ const PHASE_ORDER: CombatPhase[] = [
         CombatPhase.FIRST_STRIKE,
         CombatPhase.MULLIGAN,
         CombatPhase.SPELL_PET,
+        CombatPhase.PRE_FLOP,
         CombatPhase.FAITH,
         CombatPhase.FORESIGHT,
         CombatPhase.DESTINY,
@@ -35,7 +36,8 @@ const PHASE_ORDER: CombatPhase[] = [
 const BETTING_ROUND_MAP: Record<CombatPhase, BettingRoundType | null> = {
         [CombatPhase.MULLIGAN]: null,
         [CombatPhase.FIRST_STRIKE]: null,
-        [CombatPhase.SPELL_PET]: 'preflop',
+        [CombatPhase.SPELL_PET]: null,
+        [CombatPhase.PRE_FLOP]: 'preflop',
         [CombatPhase.FAITH]: 'flop',
         [CombatPhase.FORESIGHT]: 'turn',
         [CombatPhase.DESTINY]: 'river',
@@ -55,9 +57,9 @@ export function getBettingRound(phase: CombatPhase): BettingRoundType | null {
 }
 
 export function isBettingPhase(phase: CombatPhase): boolean {
-        return phase === CombatPhase.SPELL_PET || 
-               phase === CombatPhase.FAITH || 
-               phase === CombatPhase.FORESIGHT || 
+        return phase === CombatPhase.PRE_FLOP ||
+               phase === CombatPhase.FAITH ||
+               phase === CombatPhase.FORESIGHT ||
                phase === CombatPhase.DESTINY;
 }
 

@@ -78,6 +78,7 @@ export function usePokerAI(options: UsePokerAIOptions): void {
     }
 
     const isBettingPhase =
+      combatState.phase === CombatPhase.PRE_FLOP ||
       combatState.phase === CombatPhase.FAITH ||
       combatState.phase === CombatPhase.FORESIGHT ||
       combatState.phase === CombatPhase.DESTINY;

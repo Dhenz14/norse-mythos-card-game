@@ -158,7 +158,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const [communityCardsRevealed, setCommunityCardsRevealed] = useState(false);
 
   useEffect(() => {
-    if (combatState?.phase === CombatPhase.SPELL_PET || combatState?.phase === CombatPhase.MULLIGAN) {
+    if (combatState?.phase === CombatPhase.SPELL_PET || combatState?.phase === CombatPhase.MULLIGAN || combatState?.phase === CombatPhase.PRE_FLOP) {
       setCommunityCardsRevealed(false);
     }
   }, [combatState?.phase]);
@@ -585,7 +585,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   }
   
   const isMulligan = combatState.phase === CombatPhase.MULLIGAN;
-  const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET;
+  const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
   const showFaith = phaseAllowsFaith && communityCardsRevealed;
   const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
   const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);

@@ -30,3 +30,5 @@ export { useHiveDataStore, generateMatchId, generateCardUid } from './HiveDataLa
 export { HiveSync, hiveSync, type HiveBroadcastResult } from './HiveSync';
 
 export { hiveEvents, type HiveEvent, type HiveEventType } from './HiveEvents';
+
+export * from './blockchain';

@@ -158,6 +158,7 @@ export const HandFan: React.FC<HandFanProps> = ({
             key={card.instanceId || card.card.id}
             className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''}`}
             style={getCardStyle(index)}
+            onDoubleClick={() => { if (canPlay) handleCardPlay(card); }}
             onMouseEnter={(e) => {
               setHoveredCard(card.card);
               setHoveredIndex(index);

@@ -34,6 +34,12 @@ export const FeatureFlags = {
 	 * Shows detailed logs for storage operations.
 	 */
 	DATA_LAYER_DEBUG: false,
+
+	/**
+	 * Enables blockchain data packaging.
+	 * When true, match results and XP updates are queued for chain submission.
+	 */
+	BLOCKCHAIN_PACKAGING_ENABLED: false as boolean,
 } as const;
 
 export type FeatureFlagsType = typeof FeatureFlags;
@@ -71,4 +77,11 @@ export function isBattleHistoryEnabled(): boolean {
  */
 export function getDataLayerMode(): DataLayerMode {
 	return FeatureFlags.DATA_LAYER_MODE;
+}
+
+/**
+ * Checks if blockchain packaging is enabled.
+ */
+export function isBlockchainPackagingEnabled(): boolean {
+	return FeatureFlags.BLOCKCHAIN_PACKAGING_ENABLED;
 }

@@ -60,6 +60,8 @@ const CardRenderer: React.FC<CardRendererProps> = ({
     return null;
   }
   
+  const evolutionLevel = ('evolutionLevel' in card) ? (card as any).evolutionLevel as (1 | 2 | 3 | undefined) : undefined;
+
   const simpleCardData: SimpleCardData = {
     id: processedCard.id || 0,
     name: processedCard.name || 'Unknown',
@@ -71,7 +73,8 @@ const CardRenderer: React.FC<CardRendererProps> = ({
     rarity: (processedCard.rarity as 'common' | 'rare' | 'epic' | 'legendary') || 'common',
     tribe: processedCard.tribe,
     cardClass: processedCard.cardClass || processedCard.class,
-    keywords: processedCard.keywords || [] // Pass keywords for ability icons
+    keywords: processedCard.keywords || [],
+    evolutionLevel,
   };
   
   const scaleStyle: React.CSSProperties = scale !== 1 ? {

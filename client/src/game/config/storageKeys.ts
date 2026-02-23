@@ -27,6 +27,9 @@ export const StorageKeys = {
 	HIVE_CARD_COLLECTION: 'ragnarok-hive-cards',
 	HIVE_MATCHES: 'ragnarok-hive-matches',
 
+	// Blockchain
+	BLOCKCHAIN_TX_QUEUE: 'ragnarok-blockchain-queue',
+
 	// Settings
 	GAME_SETTINGS: 'ragnarok-settings',
 	AUDIO_SETTINGS: 'ragnarok-audio',

@@ -21,7 +21,8 @@ export interface SimpleCardData {
   rarity?: 'common' | 'rare' | 'epic' | 'legendary';
   tribe?: string;
   cardClass?: string;
-  keywords?: string[]; // Explicit keywords array for icon display
+  keywords?: string[];
+  evolutionLevel?: 1 | 2 | 3;
 }
 
 interface SimpleCardProps {
@@ -131,6 +132,12 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   
   const cardTypeClass = isSpell ? 'card-type-spell' : isWeapon ? 'card-type-weapon' : 'card-type-minion';
 
+  const evolutionClass = card.evolutionLevel === 1 ? 'evolution-mortal'
+    : card.evolutionLevel === 2 ? 'evolution-ascended'
+    : card.evolutionLevel === 3 ? 'evolution-divine' : '';
+
+  const evolutionStars = card.evolutionLevel ? '★'.repeat(card.evolutionLevel) : '';
+
   const descriptionContent = useMemo(() => {
     const effectIcons = getCardKeywordIcons(card.description, card.keywords);
     const hasContent = card.description || effectIcons.length > 0;
@@ -165,8 +172,8 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   }, [card.description, card.keywords, showDescription]);
 
   return (
-    <div 
-      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${className}`}
+    <div
+      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${evolutionClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${className}`}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -174,11 +181,17 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       data-card-id={card.id}
       data-rarity={card.rarity}
       data-card-type={card.type}
+      data-evolution-level={card.evolutionLevel}
     >
       {/* Mana Cost */}
       <div className="card-mana">
         <span className="mana-value">{card.manaCost}</span>
       </div>
+
+      {/* Evolution Stars */}
+      {evolutionStars && (
+        <div className="evolution-stars">{evolutionStars}</div>
+      )}
       
       {/* Card Art Area - styled background with icon */}
       <div className="card-art-container" style={{ background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}>

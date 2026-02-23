@@ -159,10 +159,20 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   onClick={() => !isInteractionDisabled && onClick?.(card)}
                   size="medium"
                 />
-                <div className="bf-card-stats">
-                  <span className="bf-attack">{card.currentAttack ?? (card.card as any)?.attack ?? 0}</span>
-                  <span className="bf-health">{card.currentHealth ?? (card.card as any)?.health ?? 0}</span>
-                </div>
+                {(() => {
+                  const curAtk = card.currentAttack ?? (card.card as any)?.attack ?? 0;
+                  const curHp = card.currentHealth ?? (card.card as any)?.health ?? 0;
+                  const baseAtk = (card.card as any)?.attack ?? 0;
+                  const baseHp = (card.card as any)?.health ?? 0;
+                  const atkClass = curAtk > baseAtk ? 'buffed' : '';
+                  const hpClass = curHp > baseHp ? 'buffed' : curHp < baseHp ? 'damaged' : '';
+                  return (
+                    <div className="bf-card-stats">
+                      <span className={`bf-attack ${atkClass}`}>{curAtk}</span>
+                      <span className={`bf-health ${hpClass}`}>{curHp}</span>
+                    </div>
+                  );
+                })()}
               </motion.div>
             )}
           </AnimatePresence>

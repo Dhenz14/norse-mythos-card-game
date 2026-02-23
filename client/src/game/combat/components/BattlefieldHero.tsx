@@ -124,11 +124,23 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   const handlePortraitClick = useCallback((e: React.MouseEvent) => {
     if (isOpponent) return;
     e.stopPropagation();
-    
-    if (onHeroPowerClick) {
-      onHeroPowerClick();
+
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+      if (canUpgrade && onWeaponUpgradeClick) {
+        onWeaponUpgradeClick();
+      }
+      return;
     }
-  }, [isOpponent, onHeroPowerClick]);
+
+    clickTimeoutRef.current = setTimeout(() => {
+      clickTimeoutRef.current = null;
+      if (onHeroPowerClick) {
+        onHeroPowerClick();
+      }
+    }, 300);
+  }, [isOpponent, onHeroPowerClick, onWeaponUpgradeClick, canUpgrade]);
   
   useEffect(() => {
     return () => {

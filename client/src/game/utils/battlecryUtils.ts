@@ -385,7 +385,10 @@ export function executeBattlecry(
       case 'copy':
         // Execute a copy battlecry (like Faceless Manipulator)
         return executeCopyBattlecry(newState, battlecry, targetId);
-        
+
+      case 'copy_to_hand':
+        return executeCopyToHandBattlecry(newState, targetId);
+
       case 'return_to_hand':
       case 'return':
         // Execute a return to hand battlecry (like Youthful Brewmaster)
@@ -3632,5 +3635,21 @@ function executeSummonDefenderBattlecry(
   instance.isPlayed = true;
   (instance as any).hasTaunt = true;
   state.players.player.battlefield.push(instance);
+  return state;
+}
+
+function executeCopyToHandBattlecry(state: GameState, targetId?: string): GameState {
+  if (!targetId) return state;
+
+  const player = state.players.player;
+  const target = player.battlefield.find(c => c.instanceId === targetId);
+  if (!target) return state;
+
+  if ((player.hand?.length ?? 0) >= 10) return state;
+
+  const copy = createCardInstance(target.card);
+  player.hand = player.hand || [];
+  player.hand.push(copy);
+
   return state;
 }

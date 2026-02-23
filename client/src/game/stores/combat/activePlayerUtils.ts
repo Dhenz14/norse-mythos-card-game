@@ -21,6 +21,7 @@ export function getActivePlayerForPhase(
 ): string | null {
   switch (phase) {
     case CombatPhase.SPELL_PET:
+    case CombatPhase.PRE_FLOP:
     case CombatPhase.FAITH:
     case CombatPhase.FORESIGHT:
     case CombatPhase.DESTINY:
@@ -35,7 +36,7 @@ export function getActivePlayerForPhase(
 }
 
 export function isBettingPhase(phase: CombatPhase): boolean {
-  return phase === CombatPhase.SPELL_PET ||
+  return phase === CombatPhase.PRE_FLOP ||
          phase === CombatPhase.FAITH ||
          phase === CombatPhase.FORESIGHT ||
          phase === CombatPhase.DESTINY;

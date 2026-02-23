@@ -791,3 +791,74 @@
     transition: none;
   }
 }
+
+/* ==========================================================================
+   EVOLUTION LEVELS - Mortal / Ascended / Divine
+   ========================================================================== */
+
+/* Evolution star indicator */
+.evolution-stars {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 25;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+
+.simple-card.small .evolution-stars {
+  font-size: 8px;
+  top: 2px;
+  right: 2px;
+}
+
+.simple-card.large .evolution-stars,
+.simple-card.preview .evolution-stars {
+  font-size: 14px;
+  top: 6px;
+  right: 6px;
+}
+
+/* Mortal (Level 1) — desaturated, bronze/iron tint */
+.evolution-mortal .evolution-stars {
+  color: #A0886C;
+}
+
+.simple-card.evolution-mortal {
+  filter: saturate(0.6) brightness(0.85);
+}
+
+.simple-card.evolution-mortal::before {
+  border-color: #8B7355 !important;
+  box-shadow: inset 0 0 12px rgba(139,115,85,0.2) !important;
+}
+
+.simple-card.evolution-mortal .card-art-container {
+  filter: saturate(0.5) brightness(0.9);
+}
+
+/* Ascended (Level 2) — normal saturation, silver accent */
+.evolution-ascended .evolution-stars {
+  color: #C0C0C0;
+  text-shadow: 0 1px 2px rgba(0,0,0,1), 0 0 8px rgba(192,192,192,0.4);
+}
+
+.simple-card.evolution-ascended::before {
+  border-color: #A0A0B8 !important;
+  box-shadow:
+    0 0 10px rgba(160,160,184,0.3),
+    inset 0 0 12px rgba(160,160,184,0.1) !important;
+}
+
+/* Divine (Level 3) — full saturation, golden glow (default look enhanced) */
+.evolution-divine .evolution-stars {
+  color: #FFD700;
+  text-shadow: 0 1px 2px rgba(0,0,0,1), 0 0 8px rgba(255,215,0,0.5);
+}
+
+.simple-card.evolution-divine::after {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,215,0,0.15) 30%, rgba(255,215,0,0.25) 50%, rgba(255,215,0,0.15) 70%, transparent 100%);
+}

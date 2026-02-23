@@ -6,6 +6,7 @@ interface PhaseBannerProps {
 }
 
 const PHASE_CONFIG: Partial<Record<CombatPhase, { title: string; subtitle: string }>> = {
+  [CombatPhase.PRE_FLOP]: { title: 'PRE-FLOP', subtitle: 'Place your bets' },
   [CombatPhase.FAITH]: { title: 'THE FAITH', subtitle: 'Three cards revealed' },
   [CombatPhase.FORESIGHT]: { title: 'FORESIGHT', subtitle: 'The fourth card' },
   [CombatPhase.DESTINY]: { title: 'DESTINY', subtitle: 'The final card' },

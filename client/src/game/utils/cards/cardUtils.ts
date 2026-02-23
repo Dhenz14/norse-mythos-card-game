@@ -11,78 +11,84 @@ import { initializeFrenzyEffect } from '../mechanics/frenzyUtils';
 import { initializeColossalEffect } from '../mechanics/colossalUtils';
 import { initializeEchoEffect } from '../mechanics/echoUtils';
 import { debug } from '../../config/debugConfig';
+import { getCardAtLevel, type EvolutionLevel } from './cardLevelScaling';
 
 /**
  * Creates a new card instance from card data
  */
-export function createCardInstance(card: CardData): CardInstance {
+export function createCardInstance(card: CardData, evolutionLevel?: EvolutionLevel): CardInstance {
+  const level = evolutionLevel ?? 3;
+  const scaledCard = level !== 3 ? getCardAtLevel(card, level) : card;
+
   // Check if the card has Charge, which allows it to attack immediately
-  const hasCharge = card.keywords?.includes('charge') || false;
-  
-  const cardHealth = 'health' in card ? (card as any).health : 0;
+  const hasCharge = scaledCard.keywords?.includes('charge') || false;
+
+  const cardHealth = 'health' in scaledCard ? (scaledCard as any).health : 0;
   
   // Create the basic card instance
   const cardInstance: CardInstance = {
     instanceId: uuidv4(),
-    card,
+    card: scaledCard,
     currentHealth: cardHealth,
     canAttack: false,
     isPlayed: false,
     // Charge minions are not affected by summoning sickness
     isSummoningSick: !hasCharge,
     // Initialize hasDivineShield based on card keywords
-    hasDivineShield: card.keywords?.includes('divine_shield') || false,
+    hasDivineShield: scaledCard.keywords?.includes('divine_shield') || false,
     // Initialize attacks performed this turn
     attacksPerformed: 0,
     // Initialize new keyword properties
-    hasPoisonous: card.keywords?.includes('poisonous') || false,
-    hasLifesteal: card.keywords?.includes('lifesteal') || false,
-    isRush: card.keywords?.includes('rush') || false,
-    isMagnetic: card.keywords?.includes('magnetic') || false,
+    hasPoisonous: scaledCard.keywords?.includes('poisonous') || false,
+    hasLifesteal: scaledCard.keywords?.includes('lifesteal') || false,
+    isRush: scaledCard.keywords?.includes('rush') || false,
+    isMagnetic: scaledCard.keywords?.includes('magnetic') || false,
     // For mech attachments in magnetic mechanic
-    mechAttachments: []
+    mechAttachments: [],
+    // Evolution level
+    evolutionLevel: level,
   } as CardInstance;
   
   // Apply additional card-specific initializations
   let processedInstance = cardInstance;
   
   // Apply spell power initialization if the card has the spell_damage keyword
-  if (card.keywords?.includes('spell_damage')) {
+  if (scaledCard.keywords?.includes('spell_damage')) {
     processedInstance = initializeSpellPower(processedInstance);
   }
-  
+
   // Initialize poisonous effect
-  if (card.keywords?.includes('poisonous')) {
+  if (scaledCard.keywords?.includes('poisonous')) {
     processedInstance = initializePoisonousEffect(processedInstance);
   }
-  
+
   // Initialize lifesteal effect
-  if (card.keywords?.includes('lifesteal')) {
+  if (scaledCard.keywords?.includes('lifesteal')) {
     processedInstance = initializeLifestealEffect(processedInstance);
   }
-  
+
   // Initialize rush effect (allows immediate attacks against minions)
-  if (card.keywords?.includes('rush')) {
+  if (scaledCard.keywords?.includes('rush')) {
     processedInstance = initializeRushEffect(processedInstance);
   }
-  
+
   // Initialize magnetic effect for mechs
-  if (card.keywords?.includes('magnetic')) {
+  if (scaledCard.keywords?.includes('magnetic')) {
     processedInstance = initializeMagneticEffect(processedInstance);
   }
-  
+
   // Initialize frenzy effect
-  if (card.keywords?.includes('frenzy') && (card as any).frenzyEffect) {
+  if (scaledCard.keywords?.includes('frenzy') && (scaledCard as any).frenzyEffect) {
     processedInstance = initializeFrenzyEffect(processedInstance);
   }
-  
+
   // Initialize colossal effect
-  if (card.keywords?.includes('colossal')) {
+  if (scaledCard.keywords?.includes('colossal')) {
     processedInstance = initializeColossalEffect(processedInstance);
   }
-  
+
   // Initialize echo effect
-  if (card.keywords?.includes('echo')) {
+  if (scaledCard.keywords?.includes('echo')) {
     processedInstance = initializeEchoEffect(processedInstance);
   }
   
@@ -281,7 +287,7 @@ export function drawCards(deck: CardData[], count: number): {
   const remainingDeck = deck.slice(actualDrawCount);
   
   // Convert card data to card instances
-  const drawnCards = drawnCardData.map(createCardInstance);
+  const drawnCards = drawnCardData.map(c => createCardInstance(c));
   
   return {
     drawnCards,
