@@ -731,40 +731,24 @@
 }
 
 /* ==========================================================================
-   ANIMATIONS - Bold rarity glows
+   ANIMATIONS - Rarity glows (static — no repaint animation needed)
    ========================================================================== */
 
-@keyframes card-glow-legendary {
-  0%, 100% { 
-    box-shadow: 0 0 18px rgba(245,158,11,0.6), 0 0 36px rgba(245,158,11,0.2);
-  }
-  50% { 
-    box-shadow: 0 0 28px rgba(245,158,11,0.8), 0 0 50px rgba(245,158,11,0.35);
-  }
-}
-
-@keyframes card-glow-epic {
-  0%, 100% { 
-    box-shadow: 0 0 14px rgba(168,85,247,0.5), 0 0 28px rgba(168,85,247,0.2);
-  }
-  50% { 
-    box-shadow: 0 0 24px rgba(168,85,247,0.7), 0 0 42px rgba(168,85,247,0.3);
-  }
-}
-
+/* Static glows: legendary/epic identity is fixed, pulsing adds CPU cost with no UX benefit */
 .simple-card.rarity-legendary {
-  animation: card-glow-legendary 3s ease-in-out infinite;
+  box-shadow: 0 0 22px rgba(245,158,11,0.7), 0 0 44px rgba(245,158,11,0.28);
 }
 
 .simple-card.rarity-epic {
-  animation: card-glow-epic 3s ease-in-out infinite;
+  box-shadow: 0 0 18px rgba(168,85,247,0.65), 0 0 36px rgba(168,85,247,0.28);
 }
 
-/* Playable card glow indicator */
+/* Playable card glow indicator — static shadow + GPU-composited scale pulse */
 .simple-card.playable {
   box-shadow:
     0 8px 24px rgba(0,0,0,0.6),
-    0 0 0 2px rgba(72,187,120,0.6);
+    0 0 0 2px rgba(72,187,120,0.75),
+    0 0 16px rgba(72,187,120,0.4);
   animation: playable-pulse 1.5s ease-in-out infinite;
 }
 
@@ -772,23 +756,14 @@
   box-shadow:
     0 16px 36px rgba(0,0,0,0.65),
     0 0 0 3px rgba(72,187,120,0.9),
-    0 0 30px rgba(72,187,120,0.5);
+    0 0 28px rgba(72,187,120,0.5);
   animation: none;
 }
 
+/* transform-only animation — runs on GPU compositor, zero repaints */
 @keyframes playable-pulse {
-  0%, 100% {
-    box-shadow:
-      0 8px 24px rgba(0,0,0,0.6),
-      0 0 0 2px rgba(72,187,120,0.5),
-      0 0 10px rgba(72,187,120,0.3);
-  }
-  50% {
-    box-shadow:
-      0 8px 24px rgba(0,0,0,0.6),
-      0 0 0 3px rgba(72,187,120,0.9),
-      0 0 24px rgba(72,187,120,0.6);
-  }
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.028); }
 }
 
 /* ==========================================================================
