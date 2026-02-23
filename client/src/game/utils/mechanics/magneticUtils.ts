@@ -52,7 +52,7 @@ export function applyMagnetization(
   targetId: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   const player = newState.players[playerId];
   
   // Find the target card on the battlefield

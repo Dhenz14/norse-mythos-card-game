@@ -100,7 +100,7 @@ export function executeKingPassive(
   const king = getKingById(kingId);
   if (!king) return state;
 
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   const owner = newState.players[ownerType];
   const opponentType = ownerType === 'player' ? 'opponent' : 'player';
   const opponent = newState.players[opponentType];

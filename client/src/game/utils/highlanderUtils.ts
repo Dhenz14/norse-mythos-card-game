@@ -58,7 +58,7 @@ export function executeRenoJacksonBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Check if the player's deck has no duplicates
   const noDuplicates = deckHasNoDuplicates(newState, playerType);
@@ -96,12 +96,12 @@ export function executeRenoJacksonBattlecry(
   }
   
   // Get the player's current and maximum health
-  const currentHealth = newState.players[playerType].hero.health;
-  const maxHealth = newState.players[playerType].hero.maxHealth;
+  const currentHealth = (newState.players[playerType].hero as any)?.health ?? newState.players[playerType].health;
+  const maxHealth = (newState.players[playerType].hero as any)?.maxHealth ?? (newState.players[playerType] as any).maxHealth ?? 30;
   const healAmount = maxHealth - currentHealth;
-  
+
   // Apply the full heal
-  newState.players[playerType].hero.health = maxHealth;
+  (newState.players[playerType].hero as any).health = maxHealth;
   
   // Log the healing
   newState.gameLog.push(
@@ -168,7 +168,7 @@ export function executeKazakusBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Check if the player's deck has no duplicates
   const noDuplicates = deckHasNoDuplicates(newState, playerType);
@@ -277,7 +277,7 @@ export function executeSoliaBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Check if the player's deck has no duplicates
   const noDuplicates = deckHasNoDuplicates(newState, playerType);
@@ -315,7 +315,7 @@ export function executeSoliaBattlecry(
   }
   
   // Set the next spell costs zero flag
-  newState.players[playerType].nextSpellCostsZero = true;
+  (newState.players[playerType] as any).nextSpellCostsZero = true;
   
   // Log the effect
   newState.gameLog.push(
@@ -342,7 +342,7 @@ export function executeRazaBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Check if the player's deck has no duplicates
   const noDuplicates = deckHasNoDuplicates(newState, playerType);
@@ -380,7 +380,7 @@ export function executeRazaBattlecry(
   }
   
   // Set the hero power costs zero flag
-  newState.players[playerType].heroPowerCostsZero = true;
+  (newState.players[playerType] as any).heroPowerCostsZero = true;
   
   // Log the effect
   newState.gameLog.push(
@@ -407,7 +407,7 @@ export function executeKrulBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Check if the player's deck has no duplicates
   const noDuplicates = deckHasNoDuplicates(newState, playerType);
@@ -518,7 +518,7 @@ export function castKazakusPotion(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Find the potion card in hand
   const hand = newState.players[playerType].hand;
@@ -532,8 +532,8 @@ export function castKazakusPotion(
   const potion = hand[potionIndex];
   
   // Get the potion's cost and effects
-  const potionCost = potion.card.potionCost || 1;
-  const effectIds = potion.card.kazakusEffects || [];
+  const potionCost = (potion.card as any).potionCost || 1;
+  const effectIds = (potion.card as any).kazakusEffects || [];
   
   // Log the potion cast
   newState.gameLog.push(

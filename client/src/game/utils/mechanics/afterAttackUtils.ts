@@ -18,7 +18,7 @@ export function processAfterHeroAttackEffects(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Deep clone the state to avoid mutations
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Get the player's battlefield
   const playerMinions = newState.players[playerType].battlefield || [];
@@ -70,7 +70,7 @@ export function processAfterAttackEffects(
   attackingPlayerType: 'player' | 'opponent'
 ): GameState {
   // Deep clone the state to avoid mutations
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Process minion-specific "after attack" effects
   if (attackerType === 'minion') {

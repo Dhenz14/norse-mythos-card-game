@@ -30,7 +30,7 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
  * Draw a card from player's deck and add it to their hand
  */
 export function drawCard(state: GameState, playerType: 'player' | 'opponent'): GameState {
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   const player = newState.players[playerType];
 
   // Check if the deck is empty (fatigue)
@@ -86,7 +86,7 @@ export function drawCard(state: GameState, playerType: 'player' | 'opponent'): G
  * Add a card to player's hand (different from drawing - can create cards not in deck)
  */
 export function addCardToHand(state: GameState, playerType: 'player' | 'opponent', cardData: CardData): GameState {
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   const player = newState.players[playerType];
   
   // Check if the hand is full (max 9 cards like Hearthstone)
@@ -116,7 +116,7 @@ export function addCardToHand(state: GameState, playerType: 'player' | 'opponent
  * Add a card to player's deck
  */
 export function addCardToDeck(state: GameState, playerType: 'player' | 'opponent', cardData: CardData): GameState {
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   const player = newState.players[playerType];
   
   // Add card to the deck
@@ -129,7 +129,7 @@ export function addCardToDeck(state: GameState, playerType: 'player' | 'opponent
  * Shuffle player's deck
  */
 export function shuffleDeck(state: GameState, playerType: 'player' | 'opponent'): GameState {
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   const player = newState.players[playerType];
   
   // Fisher-Yates shuffle algorithm
@@ -145,7 +145,7 @@ export function shuffleDeck(state: GameState, playerType: 'player' | 'opponent')
  * Draw multiple cards
  */
 export function drawCards(state: GameState, playerType: 'player' | 'opponent', count: number): GameState {
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   for (let i = 0; i < count; i++) {
     newState = drawCard(newState, playerType);

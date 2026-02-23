@@ -253,7 +253,7 @@ export function drawCard(state: GameState): GameState {
  */
 export function playCard(state: GameState, cardInstanceId: string, targetId?: string, targetType?: 'minion' | 'hero'): GameState {
   // Deep clone the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   const currentPlayer = newState.currentTurn;
   const player = newState.players[currentPlayer];
@@ -268,7 +268,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   const { card, index } = cardResult;
   
   // Save the original card data for reference (before we remove it from hand)
-  const originalCardData = JSON.parse(JSON.stringify(card.card));
+  const originalCardData = structuredClone(card.card);
   
   // Check if player has enough mana to play the card
   if ((card.card.manaCost || 0) > player.mana.current) {
@@ -504,8 +504,8 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // Check if we should execute combo or battlecry
   const originalKeywords = originalCardData.keywords || [];
-  const hasComboEffect = Array.isArray(originalKeywords) && originalKeywords.includes('combo') && originalCardData.comboEffect;
-  const hasBattlecryEffect = Array.isArray(originalKeywords) && originalKeywords.includes('battlecry') && originalCardData.battlecry;
+  const hasComboEffect = Array.isArray(originalKeywords) && originalKeywords.includes('combo') && (originalCardData as any).comboEffect;
+  const hasBattlecryEffect = Array.isArray(originalKeywords) && originalKeywords.includes('battlecry') && (originalCardData as any).battlecry;
   // Check if combo should activate (updatedCardsPlayedThisTurn is already > 0 when playing any card)
   
   // Use the new ID from the battlefield for the effects
@@ -521,7 +521,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     // Execute the battlecry for this card on the battlefield
     
     // Apply the battlecry effect
-    if (originalCardData.battlecry.type === 'damage') {
+    if ((originalCardData as any).battlecry.type === 'damage') {
       // Handle damage battlecry
       if (targetType === 'minion' && targetId) {
         // Find target minion
@@ -539,7 +539,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
           targetPlayer = opponentPlayer;
           
           // Apply damage to the target
-          const damage = originalCardData.battlecry.value || 1;
+          const damage = (originalCardData as any).battlecry.value || 1;
           
           // Check for Divine Shield
           if (targetMinion.hasDivineShield) {
@@ -568,7 +568,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
             targetIndex = friendlyTargetInfo.index;
             
             // Apply damage to friendly target
-            const damage = originalCardData.battlecry.value || 1;
+            const damage = (originalCardData as any).battlecry.value || 1;
             
             // Check for Divine Shield
             if (targetMinion.hasDivineShield) {
@@ -594,7 +594,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
         }
       } else if (targetType === 'hero') {
         // Handle damage to hero
-        const damage = originalCardData.battlecry.value || 1;
+        const damage = (originalCardData as any).battlecry.value || 1;
         
         if (targetId === 'opponent') {
           newState = dealDamage(newState, 'opponent', 'hero', damage, undefined, originalCardData.id as number | undefined, currentPlayer);
@@ -602,12 +602,12 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
           newState = dealDamage(newState, 'player', 'hero', damage, undefined, originalCardData.id as number | undefined, currentPlayer);
         }
       }
-    } else if (originalCardData.battlecry.type === 'aoe_damage') {
+    } else if ((originalCardData as any).battlecry.type === 'aoe_damage') {
       // Handle AoE damage battlecry
-      const damageAmount = originalCardData.battlecry.value || 2;
+      const damageAmount = (originalCardData as any).battlecry.value || 2;
       
       // Special case for Deathwing (destroy all other minions, discard hand)
-      if (damageAmount >= 1000 && originalCardData.battlecry.targetType === 'all_minions') {
+      if (damageAmount >= 1000 && (originalCardData as any).battlecry.targetType === 'all_minions') {
         // Special battlecry: Destroy all other minions
         
         // Get the ID of the card we just played (Deathwing)
@@ -622,14 +622,14 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
         newState.players[currentPlayer === 'player' ? 'opponent' : 'player'].battlefield = [];
         
         // If this card also discards your hand, do that
-        if (originalCardData.battlecry.discardCount !== undefined && 
-            originalCardData.battlecry.discardCount === -1) {
+        if ((originalCardData as any).battlecry.discardCount !== undefined && 
+            (originalCardData as any).battlecry.discardCount === -1) {
           // Special battlecry: Discard your hand
           newState.players[currentPlayer].hand = [];
         }
       } 
       // Regular AOE damage to all enemy minions
-      else if (originalCardData.battlecry.affectsAllEnemies) {
+      else if ((originalCardData as any).battlecry.affectsAllEnemies) {
         // Execute AoE damage to all enemy minions
         
         // Determine the enemy player
@@ -1065,7 +1065,7 @@ function simulateOpponentTurn(state: GameState): GameState {
       return state; // Return the original state to avoid crashing
     }
 
-    let currentState = JSON.parse(JSON.stringify(state)) as GameState;
+    let currentState = structuredClone(state) as GameState;
     const opponent = currentState.players.opponent;
     
     debug.ai('[AI Turn] simulateOpponentTurn called:', {
@@ -1403,7 +1403,7 @@ function processAttackForOpponent(
   deferDamage: boolean = false // Apply damage immediately for reliable AI attacks
 ): GameState {
   // Deep clone state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   try {
     // Only process during opponent's turn
@@ -1699,7 +1699,7 @@ function processAttackForPlayer(
   deferDamage: boolean = true // When true, damage is applied by animation processor
 ): GameState {
   // Deep clone state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   try {
     // Find the attacker card
@@ -1946,7 +1946,7 @@ function processAttackForPlayer(
  */
 function simulatePlayerMinionAttacks(state: GameState): GameState {
   
-  let currentState = JSON.parse(JSON.stringify(state)) as GameState;
+  let currentState = structuredClone(state) as GameState;
   
   // Log minion states before filtering
   currentState.players.player.battlefield.forEach(card => {
@@ -2098,7 +2098,7 @@ export function processAttack(
   // Add comprehensive logging
   
   // Deep clone the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   // Only allow attacks during player's turn, except for AI simulation
   // FIX #2: Use original state for turn check, not the cloned newState
@@ -2627,7 +2627,7 @@ export function autoAttackOnPlace(
     }
     
     // Temporarily enable attack by removing summoning sickness
-    let newState = JSON.parse(JSON.stringify(state)) as GameState;
+    let newState = structuredClone(state) as GameState;
     const attackerInNewState = newState.players[attackerOwner].battlefield[attackerIndex];
     attackerInNewState.isSummoningSick = false;
     attackerInNewState.canAttack = true;
@@ -2658,7 +2658,7 @@ export function applyDamage(
   damageAmount: number
 ): GameState {
   // Create a copy of the state to modify
-  const updatedState = JSON.parse(JSON.stringify(state)) as GameState;
+  const updatedState = structuredClone(state) as GameState;
   
   // If the target is the hero, apply damage using the specialized dealDamage function
   if (targetId === 'hero') {
@@ -2724,7 +2724,7 @@ export function autoAttackWithAllCards(state: GameState): GameState {
     }
     
     // Execute attacks one by one, modifying the state each time
-    let newState = JSON.parse(JSON.stringify(state)) as GameState;
+    let newState = structuredClone(state) as GameState;
     
     attackableCards.forEach(card => {
       newState = autoAttackWithCard(newState, card.instanceId);

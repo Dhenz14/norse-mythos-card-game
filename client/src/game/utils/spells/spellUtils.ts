@@ -1,4 +1,4 @@
-import { GameState, SpellEffect, CardData, CardInstance, Position, MinionCardData, SpellCardData } from '../../types';
+import { GameState, SpellEffect, CardData, CardInstance, Position, MinionCardData, SpellCardData, GameLogEventType } from '../../types';
 import { v4 as uuidv4 } from 'uuid';
 import { playCard as gamePlayCard } from '../gameUtils';
 import { executeBattlecry } from '../battlecryUtils';
@@ -1602,7 +1602,7 @@ function executeDiscoverSpell(
       callback: (selectedCard: CardData | null) => {
         // Get the CURRENT game state from the store, not the stale captured state
         const { gameState: currentState } = useGameStore.getState();
-        const updatedState = JSON.parse(JSON.stringify(currentState));
+        const updatedState = structuredClone(currentState);
         
         if (selectedCard) {
           
@@ -1828,19 +1828,19 @@ function executeQuestSpell(
   const questData = spellCard.card.spellEffect.questData;
   
   // Create a new state with deep copies to avoid mutation
-  const newState = JSON.parse(JSON.stringify(state));
+  const newState = structuredClone(state);
   
   // Set the quest as active for the player
-  newState.players[state.currentTurn].activeQuest = {
+  (newState.players[state.currentTurn] as any).activeQuest = {
     ...questData,
     cardId: spellCard.card.id,
     cardName: spellCard.card.name
   };
-  
+
   // Add event to game log
   newState.gameLog.push({
     id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-    type: 'quest_started',
+    type: 'quest_started' as GameLogEventType,
     turn: state.turnNumber,
     timestamp: Date.now(),
     player: state.currentTurn,
@@ -1862,14 +1862,14 @@ function executeExtraTurnSpell(
   state: GameState,
   effect: SpellEffect
 ): GameState {
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   const currentPlayer = state.currentTurn;
   
   // Set the flag for an extra turn
   if (currentPlayer === 'player') {
-    newState.players.player.extraTurn = true;
+    (newState.players.player as any).extraTurn = true;
   } else {
-    newState.players.opponent.extraTurn = true;
+    (newState.players.opponent as any).extraTurn = true;
   }
   
   return newState;
@@ -1883,7 +1883,7 @@ function executeCrystalCoreSpell(
   state: GameState,
   effect: SpellEffect
 ): GameState {
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   const currentPlayer = state.currentTurn;
   
   // Apply the Crystal Core effect

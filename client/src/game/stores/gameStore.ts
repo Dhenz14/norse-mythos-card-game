@@ -237,7 +237,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       }
       
       // Save the card data for reference after it's played
-      const cardData = JSON.parse(JSON.stringify(cardInstance.card));
+      const cardData = structuredClone(cardInstance.card);
       
       try {
         // Play the card with the target if provided
@@ -245,9 +245,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         
         // If the card requires a battlecry target but we still don't have a valid game state,
         // it means the battlecry couldn't be executed properly
-        if (cardData.type === 'minion' && 
-            cardData.keywords.includes('battlecry') && 
-            cardData.battlecry?.requiresTarget && 
+        if (cardData.type === 'minion' &&
+            cardData.keywords?.includes('battlecry') &&
+            cardData.battlecry?.requiresTarget &&
             newState === gameState) {
           debug.log('Battlecry target validation failed');
           return;

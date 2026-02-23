@@ -218,7 +218,7 @@ export function executeBattlecry(
   targetType?: 'minion' | 'hero'
 ): GameState {
   // Deep clone the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   try {
     // Find the card on the battlefield - the card should already be on the battlefield
@@ -985,7 +985,7 @@ function executeBuffTribeBattlecry(
   battlecry: BattlecryEffect
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   try {
     // Get the source card (the one with the buff tribe battlecry)

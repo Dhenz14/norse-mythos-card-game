@@ -139,7 +139,7 @@ export function applyDamageToState(
   state: GameState,
   step: CombatStep
 ): GameState {
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   const damagedMinionIds: { id: string; playerId: 'player' | 'opponent' }[] = [];
   

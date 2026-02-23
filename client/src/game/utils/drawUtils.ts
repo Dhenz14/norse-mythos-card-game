@@ -35,7 +35,7 @@ export function drawCardFromDeck(
   state: GameState,
   playerId: 'player' | 'opponent'
 ): GameState {
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   const player = newState.players[playerId];
 
   if (player.deck.length === 0) {

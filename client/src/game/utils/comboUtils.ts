@@ -53,7 +53,7 @@ export function executeComboEffect(
   targetInstanceId?: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Check if combo is active
   const comboActive = isComboActive(newState, playerType);
@@ -166,7 +166,7 @@ function handleComboDamage(
   targetInstanceId?: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Check if target is required and provided
   if (comboEffect.requiresTarget && !targetInstanceId) {
@@ -260,7 +260,7 @@ function handleComboSummon(
   comboEffect: ComboEffect
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Check if the battlefield is full
   const battlefield = newState.players[playerType].battlefield;
@@ -279,7 +279,7 @@ function handleComboSummon(
   
   // Find the card to summon
   const cardToSummonId = comboEffect.cardId;
-  const cardToSummon = newState.cardDatabase.find((card: CardData) => card.id === cardToSummonId);
+  const cardToSummon = (newState as any).cardDatabase?.find((card: CardData) => card.id === cardToSummonId);
   
   if (!cardToSummon) {
     newState.gameLog.push(
@@ -340,7 +340,7 @@ function handleComboBuffPerCard(
   comboEffect: ComboEffect
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Find the minion on the battlefield (should be already played)
   const battlefield = newState.players[playerType].battlefield;
@@ -367,15 +367,15 @@ function handleComboBuffPerCard(
   // Apply the buff
   const minion = battlefield[minionIndex];
   
-  if (!minion.buffs) {
-    minion.buffs = { attack: attackBuff, health: healthBuff };
+  if (!(minion as any).buffs) {
+    (minion as any).buffs = { attack: attackBuff, health: healthBuff };
   } else {
-    minion.buffs.attack += attackBuff;
-    minion.buffs.health += healthBuff;
+    (minion as any).buffs.attack += attackBuff;
+    (minion as any).buffs.health += healthBuff;
   }
-  
+
   // Make sure health is adjusted properly
-  minion.health += healthBuff;
+  (minion as any).health += healthBuff;
   
   // Log the buff
   newState.gameLog.push(

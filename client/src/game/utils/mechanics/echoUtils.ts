@@ -56,11 +56,11 @@ export function createEchoCopy(
   }
 
   // Create a deep copy of the current state
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Create a new instance of the card that was played
   // Important: Reset certain attributes for the Echo copy
-  const originalCard = { ...JSON.parse(JSON.stringify(playedCard)) };
+  const originalCard = { ...structuredClone(playedCard) };
   
   // Per Hearthstone rules, Echo copies use the base card's original cost
   // but retain other modified properties
@@ -127,7 +127,7 @@ export function createEchoCopy(
  */
 export function expireEchoCardsAtEndOfTurn(state: GameState): GameState {
   // Create a deep copy of the state
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Process each player's hand
   const playerTypes: Array<'player' | 'opponent'> = ['player', 'opponent'];

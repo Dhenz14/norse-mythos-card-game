@@ -15,7 +15,7 @@ export function transformMinion(
   transformToCardId: number
 ): GameState {
   // Deep clone the state to avoid mutation
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // First, look for the target in player's battlefield
   let targetInfo = findCardInstance(newState.players.player.battlefield, targetId);
@@ -63,7 +63,7 @@ export function silenceMinion(
   targetId: string
 ): GameState {
   // Deep clone the state to avoid mutation
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // First, look for the target in player's battlefield
   let targetInfo = findCardInstance(newState.players.player.battlefield, targetId);

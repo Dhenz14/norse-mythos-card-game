@@ -96,7 +96,7 @@ export function getSecretTriggerDescription(triggerType: SecretTriggerType): str
  */
 export function playSecret(gameState: any, cardInstanceId: string): any {
   // Deep clone the game state using JSON parser to avoid reference issues
-  const newState = JSON.parse(JSON.stringify(gameState));
+  const newState = structuredClone(gameState);
   
   // Find the current player
   const currentPlayer = newState.currentTurn;

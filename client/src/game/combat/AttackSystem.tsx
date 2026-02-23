@@ -135,7 +135,7 @@ export function executeAttack(
 ): AttackResult {
 
   // Deep clone the state to avoid mutations
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
 
   // Find the attacker
   const attacker = newState.players.player.battlefield.find(
@@ -339,7 +339,7 @@ function destroyMinion(state: GameState, minionId: string, playerId: 'player' | 
 export function resetAttackStateForTurn(state: GameState, playerId: 'player' | 'opponent'): GameState {
   
   // Clone state to avoid mutations
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Get the current player's battlefield
   const battlefield = newState.players[playerId].battlefield;

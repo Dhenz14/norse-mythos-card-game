@@ -251,7 +251,7 @@ export function executeHeroPower(
   onHeroPowerAnimation?: AnimationCallback // Optional callback for animation effects
 ): GameState {
   // Deep clone the state to avoid mutation
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   const player = newState.players[playerType];
   
   // Check if hero power can be used
@@ -1580,7 +1580,7 @@ function executeDemonHunterPower(state: GameState, playerType: 'player' | 'oppon
  * Reset hero power when the turn ends
  */
 export function resetHeroPower(player: 'player' | 'opponent', state: GameState): GameState {
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   newState.players[player].heroPower.used = false;
   
   // Also reset temporary stats that were granted by hero powers

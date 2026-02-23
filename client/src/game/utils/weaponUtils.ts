@@ -35,7 +35,7 @@ export function equipWeapon(
 ): GameState {
   
   // Make a deep copy of the state to avoid mutations
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Type guard: ensure the card is a weapon
   if (!isWeapon(weaponCard.card)) {
@@ -101,7 +101,7 @@ export function attackWithWeapon(
   targetId?: string,
   targetType: 'minion' | 'hero' = 'hero'
 ): GameState {
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   // Get the weapon
   const weapon = newState.players[attackingPlayerType].weapon;
@@ -236,7 +236,7 @@ export function attackWithWeapon(
  */
 export function processWeaponsAtTurnEnd(state: GameState): GameState {
   // Make a deep copy of the state to avoid mutations
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Reset attack counter for both players
   newState.players.player.attacksPerformedThisTurn = 0;
@@ -354,7 +354,7 @@ export function buffWeapon(
   durabilityBuff: number = 0
 ): GameState {
   // Make a deep copy of the state to avoid mutations
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   const weapon = newState.players[playerType].weapon;
   

@@ -69,7 +69,7 @@ export function summonColossalParts(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Deep clone the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   // Find the main minion
   const playerField = newState.players[playerType].battlefield;
@@ -183,7 +183,7 @@ export function handleColossalMinionDeath(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Deep clone the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   // Find the minion that died
   const playerField = newState.players[playerType].battlefield;

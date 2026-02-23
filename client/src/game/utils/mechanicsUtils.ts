@@ -438,7 +438,7 @@ export const handleSecretTrigger = (
   triggeringPlayer: 'player' | 'opponent',
   targetCardId?: string
 ): GameState => {
-  let newGameState = JSON.parse(JSON.stringify(gameState)) as GameState;
+  let newGameState = structuredClone(gameState) as GameState;
 
   // Determine which player's secrets we're checking (the opponent of who triggered it)
   const secretOwner = triggeringPlayer === 'player' ? 'opponent' : 'player';

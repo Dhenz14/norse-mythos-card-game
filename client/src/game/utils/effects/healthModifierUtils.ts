@@ -30,22 +30,22 @@ export function applyHealthAndDeckSizeModifier(
   cardId: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Apply health modifier - add to base health
   const additionalHealth = effect.healthValue || 0;
   if (additionalHealth > 0) {
-    newState.players[playerType].maxHealth += additionalHealth;
+    (newState.players[playerType] as any).maxHealth += additionalHealth;
     newState.players[playerType].health += additionalHealth;
     newState.players[playerType].heroHealth = newState.players[playerType].health;
-    
+
     // Log the health increase
     newState.gameLog.push(
       createGameLogEvent(
         newState,
         'start_of_game_effect' as any,
         playerType,
-        `Prince Renathal increases ${playerType}'s maximum Health to ${newState.players[playerType].maxHealth}.`,
+        `Prince Renathal increases ${playerType}'s maximum Health to ${(newState.players[playerType] as any).maxHealth}.`,
         { cardId }
       )
     );
@@ -83,10 +83,10 @@ export function setHeroHealth(
   cardId: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Set max health to the specified value
-  newState.players[playerType].maxHealth = healthValue;
+  (newState.players[playerType] as any).maxHealth = healthValue;
   
   // Set current health to the max value (keep both fields in sync)
   newState.players[playerType].health = healthValue;
@@ -121,14 +121,14 @@ export function replaceHero(
   heroId: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // When implementing the full functionality, this would:
   // 1. Store information about the new hero (health, hero power, etc.)
   // 2. Replace the current hero with the new one
   
   // For now, we just set health to Lord Jaraxxus's health (15)
-  newState.players[playerType].maxHealth = 15;
+  (newState.players[playerType] as any).maxHealth = 15;
   newState.players[playerType].health = Math.min(newState.players[playerType].health, 15);
   newState.players[playerType].heroHealth = Math.min(newState.players[playerType].heroHealth ?? newState.players[playerType].health, 15);
   
@@ -156,7 +156,7 @@ export function replaceHero(
  */
 export function applyAllStartOfGameEffects(state: GameState): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Process for both players
   (['player', 'opponent'] as const).forEach((playerType) => {
@@ -169,14 +169,14 @@ export function applyAllStartOfGameEffects(state: GameState): GameState {
     
     // Find all cards with start of game effects
     const startOfGameCards = allCards.filter(
-      (card: CardInstance) => 
-        card.card.keywords && 
-        card.card.keywords.includes('start_of_game') && 
+      (card: any) =>
+        card.card?.keywords &&
+        card.card.keywords.includes('start_of_game') &&
         card.card.startOfGameEffect
     );
-    
+
     // Apply each start of game effect
-    startOfGameCards.forEach((card: CardInstance) => {
+    startOfGameCards.forEach((card: any) => {
       if (card.card.startOfGameEffect) {
         const effect = card.card.startOfGameEffect;
         

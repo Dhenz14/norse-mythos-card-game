@@ -55,7 +55,7 @@ export function applyPoisonousEffect(
   }
   
   // Create a copy of the state to avoid mutation
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Determine which player owns the defender
   const defenderOwner = state.players.player.battlefield.some(c => c.instanceId === defenderId) ? 'player' : 'opponent';

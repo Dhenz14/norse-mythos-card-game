@@ -24,7 +24,7 @@ export function executeComboSpellEffect(
   targetType?: 'minion' | 'hero'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = JSON.parse(JSON.stringify(state));
+  let newState = structuredClone(state);
   
   // Get the current player
   const currentPlayer = newState.currentTurn;
@@ -41,12 +41,12 @@ export function executeComboSpellEffect(
   const comboCard = playerHand[cardIndex];
   
   // Check if the card has a combo effect
-  if (!comboCard.card.comboEffect) {
+  if (!(comboCard.card as any).comboEffect) {
     debug.error(`Card ${cardInstanceId} has no combo effect`);
     return newState;
   }
-  
-  const comboEffect = comboCard.card.comboEffect;
+
+  const comboEffect = (comboCard.card as any).comboEffect;
   
   // Check if combo should be active (player played at least one other card this turn)
   const isComboActive = newState.players[currentPlayer].cardsPlayedThisTurn > 0;

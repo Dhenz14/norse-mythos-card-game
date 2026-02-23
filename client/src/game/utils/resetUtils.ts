@@ -18,7 +18,7 @@ import { debug } from '../config/debugConfig';
 export function resetMinionsForTurn(state: GameState): GameState {
   const currentPlayer = state.currentTurn;
   // Deep clone to avoid mutation issues
-  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+  const newState = structuredClone(state) as GameState;
   
   // Get player object based on whose turn it is
   const player = newState.players[currentPlayer];
@@ -80,7 +80,7 @@ export function applyOverload(state: GameState): GameState {
  */
 export function performTurnStartResets(state: GameState): GameState {
   // Deep clone to avoid mutation issues
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   debug.state(`[performTurnStartResets] Starting resets for ${newState.currentTurn}'s turn`);
   

@@ -48,7 +48,7 @@ export function applyLifestealHealing(
   }
 
   // Create a deep copy of the state to avoid direct mutations
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
 
   // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[attackerOwner];
@@ -85,7 +85,7 @@ export function processSpellLifesteal(
   }
 
   // Create a deep copy of the state to avoid direct mutations
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
 
   // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[casterOwner];
@@ -122,7 +122,7 @@ export function processWeaponLifesteal(
   }
 
   // Create a deep copy of the state to avoid direct mutations
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
 
   // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[attackerOwner];

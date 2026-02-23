@@ -68,7 +68,7 @@ export function isValidRushTarget(attackerCard: CardInstance, targetType: 'minio
  */
 export function processRushAtTurnEnd(state: GameState): GameState {
   // Create a deep copy of the state
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   // Process rush minions for the current player
   const currentPlayer = state.currentTurn;
