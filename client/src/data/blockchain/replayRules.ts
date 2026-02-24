@@ -10,6 +10,7 @@
 
 import { putCard, putMatch, getCard } from './replayDB';
 import type { HiveCardAsset, HiveMatchResult } from '../schemas/HiveTypes';
+import { hiveEvents } from '../HiveEvents';
 
 export interface RawOp {
 	id: string;           // custom_json id, e.g. 'rp_match_result'
@@ -39,6 +40,8 @@ export async function applyOp(op: RawOp): Promise<void> {
 			return applyCardTransfer(op, payload);
 		case 'rp_pack_open':
 			return applyPackOpen(op, payload);
+		case 'rp_xp_update':
+			return applyXpUpdate(op, payload);
 		case 'rp_team_submit':
 			return; // informational only, no IndexedDB state change
 		case 'rp_reward_claim':
@@ -103,6 +106,7 @@ async function applyMatchResult(
 	};
 
 	await putMatch(match);
+	hiveEvents.emitMatchEnded(match);
 }
 
 // ---------------------------------------------------------------------------
@@ -129,6 +133,32 @@ async function applyCardTransfer(
 	};
 
 	await putCard(updated);
+	hiveEvents.emitCardTransferred(card_uid as string, op.broadcaster, to as string);
+}
+
+// ---------------------------------------------------------------------------
+// rp_xp_update — persist card XP and level changes earned from matches
+// ---------------------------------------------------------------------------
+
+async function applyXpUpdate(
+	op: RawOp,
+	payload: Record<string, unknown>,
+): Promise<void> {
+	// Accept both camelCase (in-memory) and snake_case (chain convention) keys
+	const cardUid = (payload.cardUid ?? payload.card_uid) as string | undefined;
+	if (typeof cardUid !== 'string') return;
+
+	const existing = await getCard(cardUid);
+	if (!existing) return;
+
+	// Only the card owner may submit XP updates
+	if (existing.ownerId !== op.broadcaster) return;
+
+	const xpAfter = Number(payload.xpAfter ?? payload.xp_after ?? existing.xp);
+	const levelAfter = Number(payload.levelAfter ?? payload.level_after ?? existing.level);
+
+	const updated: HiveCardAsset = { ...existing, xp: xpAfter, level: levelAfter };
+	await putCard(updated);
 }
 
 // ---------------------------------------------------------------------------
@@ -149,26 +179,22 @@ function lcgNext(seed: number): number {
 	return (seed * 16807) % 2147483647;
 }
 
-function pickFromPool(pool: number[], seed: number, count: number): number[] {
-	let s = Math.max(seed, 1); // LCG seed must be >= 1
-	return Array.from({ length: count }, () => {
-		s = lcgNext(s);
-		return pool[s % pool.length];
-	});
-}
+// Card ID ranges by pack type — from ID_RANGES.md (CLAUDE.md):
+//   1000–3999: neutral cards
+//   4000–8999: class cards
+//   20000–29999: Norse set cards
+// Using range math avoids allocating large arrays.
+const CARD_RANGES: Record<string, [number, number]> = {
+	starter:  [1000, 1999],   // basic neutrals
+	standard: [1000, 3999],   // all neutrals
+	class:    [4000, 8999],   // class cards
+	mega:     [1000, 8999],   // neutrals + class
+	norse:    [20000, 29999], // Norse expansion
+};
 
-// Card ID pools by pack type — derived from ID_RANGES.md
-// Starter: low-cost common neutrals (IDs 1000–1099)
-// Standard/Mega: full neutral range (IDs 1000–3999)
-function getCardPool(packType: string): number[] {
-	const [start, end] =
-		packType === 'starter'
-			? [1000, 1099]
-			: [1000, 3999];
-
-	const pool: number[] = [];
-	for (let i = start; i <= end; i++) pool.push(i);
-	return pool;
+function mintedCardId(packType: string, lcgValue: number): number {
+	const [start, end] = CARD_RANGES[packType] ?? CARD_RANGES.standard;
+	return start + (lcgValue % (end - start + 1));
 }
 
 async function applyPackOpen(
@@ -178,13 +204,17 @@ async function applyPackOpen(
 	const packType = (payload.pack_type as string) ?? 'standard';
 	const quantity = Math.min(Number(payload.quantity ?? 1), 10);
 	const cardCount = (PACK_SIZES[packType] ?? 5) * quantity;
-	const pool = getCardPool(packType);
 
 	// Derive deterministic seed from first 8 hex chars of trxId
 	const seedHex = op.trxId.replace(/[^0-9a-f]/gi, '').slice(0, 8);
 	const seed = parseInt(seedHex || '1', 16);
 
-	const cardIds = pickFromPool(pool, seed, cardCount);
+	// Generate card IDs using range math — no large array allocation needed
+	let s = Math.max(seed, 1);
+	const cardIds: number[] = Array.from({ length: cardCount }, () => {
+		s = lcgNext(s);
+		return mintedCardId(packType, s);
+	});
 
 	// Gold foil: ~5% chance, derived from seed
 	const isGold = (lcgNext(seed) % 20) === 0;

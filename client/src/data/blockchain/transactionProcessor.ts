@@ -20,6 +20,8 @@
 import { useTransactionQueueStore } from './transactionQueueStore';
 import { getDataLayerMode } from '@/game/config/featureFlags';
 import type { TransactionEntry, PackagedMatchResult, CardXPReward } from './types';
+import { hiveSync } from '../HiveSync';
+import type { RagnarokTransactionType } from '../schemas/HiveTypes';
 
 const POLL_INTERVAL_MS = 2000;
 const MOCK_API_BASE = '/api/mock-blockchain';
@@ -146,18 +148,52 @@ async function submitToMockServer(tx: TransactionEntry): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Real Hive submission ('hive' mode) — stub for future implementation
+// Real Hive submission ('hive' mode)
 // ---------------------------------------------------------------------------
 
-async function submitToHive(tx: TransactionEntry): Promise<void> {
-	// TODO: Implement Hive Keychain broadcasting
-	// Pattern will be:
-	//   1. Build custom_json operation
-	//   2. window.hive_keychain.requestCustomJson(username, appId, 'Posting', json, displayMsg, callback)
-	//   3. On success: mark confirmed with real trxId + blockNum
-	//   4. On failure/rejection: mark failed
+// Maps internal BlockchainActionType to Hive custom_json op id
+const ACTION_TO_OP_ID: Partial<Record<string, RagnarokTransactionType>> = {
+	match_result:  'rp_match_result',
+	xp_update:     'rp_xp_update',
+	card_transfer: 'rp_card_transfer',
+	nft_mint:      'rp_pack_open',
+};
 
-	throw new Error(`Hive submission not yet implemented for action: ${tx.actionType}`);
+// Card transfers require Active key; everything else uses Posting key
+const ACTIVE_KEY_ACTIONS = new Set(['card_transfer']);
+
+async function submitToHive(tx: TransactionEntry): Promise<void> {
+	const store = useTransactionQueueStore.getState();
+
+	const username = hiveSync.getUsername();
+	if (!username) {
+		throw new Error('No Hive username — user must log in with Keychain first');
+	}
+	if (!hiveSync.isKeychainAvailable()) {
+		throw new Error('Hive Keychain extension not installed');
+	}
+
+	const opId = ACTION_TO_OP_ID[tx.actionType];
+	if (!opId) {
+		throw new Error(`No chain op mapped for action type: ${tx.actionType}`);
+	}
+
+	const useActiveKey = ACTIVE_KEY_ACTIONS.has(tx.actionType);
+
+	const result = await hiveSync.broadcastCustomJson(
+		opId,
+		tx.payload as Record<string, unknown>,
+		useActiveKey,
+	);
+
+	if (!result.success) {
+		throw new Error(result.error ?? 'Keychain broadcast rejected');
+	}
+
+	store.updateStatus(tx.id, 'confirmed', {
+		trxId: result.trxId ?? null,
+		blockNum: result.blockNum ?? null,
+	});
 }
 
 // ---------------------------------------------------------------------------

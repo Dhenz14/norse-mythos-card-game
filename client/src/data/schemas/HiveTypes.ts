@@ -23,7 +23,8 @@ export type RagnarokTransactionType =
   | 'rp_match_result'
   | 'rp_card_transfer'
   | 'rp_pack_open'
-  | 'rp_reward_claim';
+  | 'rp_reward_claim'
+  | 'rp_xp_update';
 
 export interface HiveUserRecord {
   hiveUsername: string;
