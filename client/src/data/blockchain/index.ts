@@ -56,3 +56,25 @@ export {
 	resetMockBlockchain,
 	dumpMockBlockchain,
 } from './transactionProcessor';
+
+export type { SyncCursor } from './replayDB';
+export {
+	getCard,
+	putCard,
+	deleteCard,
+	getCardsByOwner,
+	putMatch,
+	getMatchesByAccount,
+	getSyncCursor,
+	putSyncCursor,
+} from './replayDB';
+
+export { applyOp } from './replayRules';
+export type { RawOp } from './replayRules';
+
+export {
+	syncAccount,
+	startSync,
+	stopSync,
+	forceSync,
+} from './replayEngine';
