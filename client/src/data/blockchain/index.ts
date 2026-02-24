@@ -67,6 +67,8 @@ export {
 	getMatchesByAccount,
 	getSyncCursor,
 	putSyncCursor,
+	getTokenBalance,
+	putTokenBalance,
 } from './replayDB';
 
 export { applyOp } from './replayRules';
@@ -78,3 +80,23 @@ export {
 	stopSync,
 	forceSync,
 } from './replayEngine';
+
+export type { PoWConfig, PoWResult } from './proofOfWork';
+export {
+	POW_CONFIG,
+	computePoW,
+	verifyPoW,
+	deriveChallenge,
+} from './proofOfWork';
+
+export type { MatchAnchorPayload, MatchAnchorResult } from './matchAnchor';
+export {
+	broadcastMatchAnchor,
+	waitForOpponentAnchor,
+} from './matchAnchor';
+
+export type { SlashReason, SlashEvidenceParams } from './slashEvidence';
+export {
+	submitSlashEvidence,
+	findExistingMatchResult,
+} from './slashEvidence';

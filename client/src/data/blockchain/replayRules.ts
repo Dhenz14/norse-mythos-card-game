@@ -8,7 +8,7 @@
  * Op payloads are validated minimally: reject malformed, accept partial data.
  */
 
-import { putCard, putMatch, getCard } from './replayDB';
+import { putCard, putMatch, getCard, getTokenBalance, putTokenBalance } from './replayDB';
 import type { HiveCardAsset, HiveMatchResult } from '../schemas/HiveTypes';
 import { hiveEvents } from '../HiveEvents';
 
@@ -45,7 +45,7 @@ export async function applyOp(op: RawOp): Promise<void> {
 		case 'rp_team_submit':
 			return; // informational only, no IndexedDB state change
 		case 'rp_reward_claim':
-			return; // token accounting reserved for future implementation
+			return applyRewardClaim(op, payload);
 		default:
 			return; // unknown prefix op — ignore
 	}
@@ -159,6 +159,34 @@ async function applyXpUpdate(
 
 	const updated: HiveCardAsset = { ...existing, xp: xpAfter, level: levelAfter };
 	await putCard(updated);
+}
+
+// ---------------------------------------------------------------------------
+// rp_reward_claim — accumulate RUNE / VALKYRIE / SEASON_POINTS token rewards
+// ---------------------------------------------------------------------------
+
+const VALID_TOKEN_TYPES = new Set(['RUNE', 'VALKYRIE', 'SEASON_POINTS']);
+
+async function applyRewardClaim(
+	op: RawOp,
+	payload: Record<string, unknown>,
+): Promise<void> {
+	const rewardType = (payload.reward_type as string)?.toUpperCase();
+	const amount = Number(payload.amount ?? 0);
+
+	if (!rewardType || !VALID_TOKEN_TYPES.has(rewardType) || amount <= 0) return;
+
+	const balance = await getTokenBalance(op.broadcaster);
+
+	const updated = { ...balance };
+	if (rewardType === 'RUNE') updated.RUNE += amount;
+	else if (rewardType === 'VALKYRIE') updated.VALKYRIE += amount;
+	else if (rewardType === 'SEASON_POINTS') updated.SEASON_POINTS += amount;
+
+	updated.lastClaimTimestamp = op.timestamp;
+	await putTokenBalance(updated);
+
+	hiveEvents.emitTokenUpdate(rewardType, updated[rewardType as keyof typeof updated] as number, amount);
 }
 
 // ---------------------------------------------------------------------------

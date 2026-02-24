@@ -2,17 +2,19 @@
  * replayDB.ts - IndexedDB layer for Hive chain replay
  *
  * Object stores:
- *   cards         keyed by uid       — HiveCardAsset rows
- *   matches       keyed by matchId   — HiveMatchResult rows
- *   sync_cursors  keyed by account   — replay progress per account
+ *   cards           keyed by uid       — HiveCardAsset rows
+ *   matches         keyed by matchId   — HiveMatchResult rows
+ *   sync_cursors    keyed by account   — replay progress per account
+ *   token_balances  keyed by username  — RUNE/VALKYRIE/SEASON_POINTS per account
  *
  * All writes are idempotent — safe to re-apply the same op.
  */
 
-import type { HiveCardAsset, HiveMatchResult } from '../schemas/HiveTypes';
+import type { HiveCardAsset, HiveMatchResult, HiveTokenBalance } from '../schemas/HiveTypes';
+import { DEFAULT_TOKEN_BALANCE } from '../schemas/HiveTypes';
 
 const DB_NAME = 'ragnarok-chain-v1';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // bumped for token_balances store addition
 
 let _db: IDBDatabase | null = null;
 
@@ -56,6 +58,10 @@ function openDB(): Promise<IDBDatabase> {
 
 			if (!db.objectStoreNames.contains('sync_cursors')) {
 				db.createObjectStore('sync_cursors', { keyPath: 'account' });
+			}
+
+			if (!db.objectStoreNames.contains('token_balances')) {
+				db.createObjectStore('token_balances', { keyPath: 'hiveUsername' });
 			}
 		};
 
@@ -175,3 +181,15 @@ export const getSyncCursor = (account: string): Promise<SyncCursor | undefined> 
 
 export const putSyncCursor = (cursor: SyncCursor): Promise<void> =>
 	idbPut('sync_cursors', cursor);
+
+// ---------------------------------------------------------------------------
+// Token Balances API
+// ---------------------------------------------------------------------------
+
+export async function getTokenBalance(username: string): Promise<HiveTokenBalance> {
+	const stored = await idbGet<HiveTokenBalance>('token_balances', username);
+	return stored ?? { ...DEFAULT_TOKEN_BALANCE, hiveUsername: username };
+}
+
+export const putTokenBalance = (balance: HiveTokenBalance): Promise<void> =>
+	idbPut('token_balances', balance);

@@ -46,6 +46,14 @@ declare global {
         displayName: string,
         callback: (response: HiveKeychainResponse) => void
       ) => void;
+      requestSignBuffer: (
+        username: string,
+        message: string,
+        keyType: 'Active' | 'Posting' | 'Memo',
+        callback: (response: HiveKeychainResponse) => void,
+        rpc?: string,
+        title?: string
+      ) => void;
     };
   }
 }
@@ -139,6 +147,36 @@ export class HiveSync {
     return this.broadcastCustomJson('rp_reward_claim', {
       reward_type: rewardType,
       reward_id: rewardId,
+    });
+  }
+
+  /**
+   * Verify account ownership via Keychain requestSignBuffer.
+   * Signs a timestamped message with the user's Posting key — no transaction posted.
+   */
+  async login(username: string): Promise<HiveBroadcastResult> {
+    if (!this.isKeychainAvailable()) {
+      return { success: false, error: 'Hive Keychain extension not installed' };
+    }
+
+    const message = `ragnarok-login:${username}:${Date.now()}`;
+
+    return new Promise((resolve) => {
+      window.hive_keychain!.requestSignBuffer(
+        username,
+        message,
+        'Posting',
+        (response) => {
+          if (response.success) {
+            this.username = username;
+            resolve({ success: true });
+          } else {
+            resolve({ success: false, error: response.error || response.message });
+          }
+        },
+        undefined,
+        'Log in to Ragnarok Cards'
+      );
     });
   }
 

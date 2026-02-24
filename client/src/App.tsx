@@ -15,6 +15,7 @@ import CollectionPage from "./game/components/collection/CollectionPage";
 import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
 import { initializeGameStoreIntegration } from "./game/stores/gameStoreIntegration";
 import initEffectSystem from "./game/effects/initEffectSystem";
+import { HiveKeychainLogin } from "./game/components/HiveKeychainLogin";
 
 function HomePage() {
   const bgOverlayRef = useRef<HTMLDivElement>(null);
@@ -27,10 +28,15 @@ function HomePage() {
 
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden homepage-container">
-      <div 
+      <div
         ref={bgOverlayRef}
         className="absolute inset-0 opacity-20 homepage-bg-overlay"
       />
+
+      {/* Hive Wallet — top-right corner */}
+      <div className="absolute top-4 right-4 z-20">
+        <HiveKeychainLogin />
+      </div>
       
       <div className="relative z-10 flex flex-col items-center">
         <div className="relative mb-12 group">

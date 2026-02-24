@@ -19,6 +19,7 @@ import {
 	putSyncCursor,
 	getCardsByOwner,
 	getMatchesByAccount,
+	getTokenBalance,
 } from './replayDB';
 import { useHiveDataStore } from '../HiveDataLayer';
 
@@ -216,14 +217,16 @@ async function _doSync(username: string): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function hydrateStore(username: string): Promise<void> {
-	const [cards, matches] = await Promise.all([
+	const [cards, matches, tokenBalance] = await Promise.all([
 		getCardsByOwner(username),
 		getMatchesByAccount(username),
+		getTokenBalance(username),
 	]);
 
 	useHiveDataStore.getState().loadFromHive({
 		cardCollection: cards,
 		recentMatches: matches.slice(0, 100),
+		tokenBalance,
 	});
 }
 
