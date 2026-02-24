@@ -57,7 +57,15 @@ export const HandFan: React.FC<HandFanProps> = ({
 }) => {
   const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [shakingCardId, setShakingCardId] = useState<string | null>(null);
+  const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevCardCount = useRef<number>(0);
+
+  const triggerCardShake = (instanceId: string) => {
+    if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
+    setShakingCardId(instanceId);
+    shakeTimerRef.current = setTimeout(() => setShakingCardId(null), 450);
+  };
 
   const elementalBuff = useElementalBuff();
   const atkBuff = elementalBuff.playerBuff?.attackBonus ?? 0;
@@ -123,7 +131,7 @@ export const HandFan: React.FC<HandFanProps> = ({
   const getCardStyle = (index: number): React.CSSProperties => {
     const baseTransform = getCardTransform(index);
     const isHovered = hoveredIndex === index;
-    const springTransition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    const springTransition = 'transform 0.35s cubic-bezier(0.34, 1.18, 0.64, 1)';
     const smoothTransition = 'transform 0.3s cubic-bezier(0.19, 1, 0.22, 1)';
     
     // Hovered card gets lifted and scaled - z-index must exceed betting zone (200)
@@ -170,12 +178,15 @@ export const HandFan: React.FC<HandFanProps> = ({
         const canPlay = isPlayerTurn && !isInteractionDisabled && manaCost <= currentMana;
         const isHovered = hoveredIndex === index;
         
+        const isShaking = shakingCardId === card.instanceId;
+
         return (
           <div
             key={card.instanceId || card.card.id}
-            className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''}`}
+            className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''}`}
             style={getCardStyle(index)}
             onDoubleClick={() => { if (canPlay) handleCardPlay(card); }}
+            onClick={() => { if (!canPlay && isPlayerTurn && !isInteractionDisabled) triggerCardShake(card.instanceId); }}
             onMouseEnter={() => {
               setHoveredCard(card.card);
               setHoveredIndex(index);

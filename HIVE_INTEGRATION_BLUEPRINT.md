@@ -18,86 +18,77 @@ The game works 100% without blockchain. Hive integration is additive — it laye
 
 ## 2. Architecture
 
-### Three-Layer Design
+### Zero-Cost Client-Only Design
 
-```
-┌─────────────────────────────────────────────────┐
-│                  GAME CLIENT                     │
-│  (React / Zustand / Combat / Cards / UI)         │
-│                                                   │
-│  Existing game logic — UNCHANGED                  │
-└──────────────┬────────────────────────────────────┘
-               │ match result
-               ▼
-┌─────────────────────────────────────────────────┐
-│              SYNC MANAGER (Layer 3)              │
-│                                                   │
-│  • Packages match results into on-chain format    │
-│  • Manages broadcast queue with retry logic       │
-│  • Writes to database AND broadcasts to chain     │
-│  • Recovery mode: rebuilds DB from chain scan     │
-└──────┬───────────────────┬────────────────────────┘
-       │                   │
-       ▼                   ▼
-┌──────────────┐   ┌──────────────────────────────┐
-│ HIVE GATEWAY │   │      GAME LEDGER (Layer 2)   │
-│  (Layer 1)   │   │                              │
-│              │   │  PostgreSQL via Drizzle ORM   │
-│  hive-tx lib │   │                              │
-│  Keychain    │   │  • match_results table       │
-│  Public APIs │   │  • player_stats table        │
-│              │   │  • nft_cards table            │
-│  Reads/Writes│   │  • broadcast_queue table      │
-│  to Hive     │   │                              │
-│  blockchain  │   │  Fast indexed queries for     │
-│              │   │  leaderboards, history, etc.  │
-└──────────────┘   └──────────────────────────────┘
+**$0/month infrastructure.** No servers, no databases, no hosted services. Everything runs in the player's browser using public Hive API nodes (free) and local IndexedDB storage.
+
+```text
+┌─────────────────────────────────────────────────────┐
+│                    GAME CLIENT                       │
+│   (React / Zustand / Combat / Cards / UI)            │
+│                                                       │
+│   Existing game logic — UNCHANGED                     │
+│                                                       │
+│   ┌───────────────────────────────────────────────┐  │
+│   │          BLOCKCHAIN LAYER (in-browser)         │  │
+│   │                                                 │  │
+│   │  Chain Replay Engine → IndexedDB (local ledger) │  │
+│   │  Hive Keychain → sign & broadcast custom_json   │  │
+│   │  Transaction Queue → retry logic (Zustand)      │  │
+│   │  Match Packager → dual-sig match results        │  │
+│   └──────────────┬──────────────────────────────────┘  │
+│                  │                                      │
+└──────────────────┼──────────────────────────────────────┘
+                   │ reads / writes
+                   ▼
+    ┌──────────────────────────────┐
+    │     PUBLIC HIVE API NODES    │
+    │                              │
+    │  api.hive.blog               │
+    │  api.deathwing.me            │
+    │  api.openhive.network        │
+    │  rpc.mahdiyari.info          │
+    │                              │
+    │  Free, community-operated    │
+    │  Redundant (client failover) │
+    └──────────────────────────────┘
 ```
 
-### Layer 1: Hive Gateway
+### Hive Gateway (client-side module)
 
 **Purpose:** All blockchain I/O passes through this single module. Nothing else in the game touches the chain.
 
-**Technology:** `hive-tx` v7 (TypeScript, 29KB, MIT license)
+**Technology:** `hive-tx` v7 (TypeScript, 29KB, MIT license) or `dhive`
 
 **Responsibilities:**
-- Broadcast `custom_json` operations (match results, NFT mints, NFT transfers)
-- Query chain data via public API nodes (account info, transaction history)
-- Handle node failover automatically (hive-tx has built-in multi-node support)
-- Integrate with Hive Keychain for client-side player authentication
+- Broadcast `custom_json` operations (match results, NFT transfers) via Hive Keychain
+- Query chain data via public API nodes (account history, transaction verification)
+- Handle node failover automatically (built-in multi-node support)
 
-**Public API Nodes (built into hive-tx):**
-- `api.hive.blog`
-- `api.deathwing.me`
-- `api.openhive.network`
-- `rpc.mahdiyari.info`
+### Local Ledger (IndexedDB)
 
-**This layer is replaceable.** If we ever move to HAF or a different chain, only this module changes.
+**Purpose:** Fast, indexed, local storage for all game data derived from chain replay. This is what the game actually queries.
 
-### Layer 2: Game Ledger
+**Technology:** IndexedDB (browser-native, persists across sessions)
 
-**Purpose:** Fast, indexed, searchable storage for all game data. This is what the game actually queries.
+**Object stores:**
+- `nft_ownership` — current card ownership (derived from chain replay)
+- `nft_transfers` — transfer history (append-only)
+- `supply_counters` — rarity caps and minted counts
+- `match_results` — match history (from on-chain dual-signed results)
+- `sync_meta` — last processed block number, sync timestamps
 
-**Technology:** PostgreSQL with Drizzle ORM (existing stack)
+**Every record is derived from on-chain data.** If IndexedDB is cleared, the replay engine rebuilds it from scratch by re-reading the chain.
 
-**Tables (new):**
-- `match_results` — every completed match with on-chain reference
-- `player_stats` — aggregated win/loss/rank per player
-- `nft_cards` — card ownership ledger
-- `nft_transactions` — mint/transfer history
-- `broadcast_queue` — pending/failed chain broadcasts awaiting retry
+### Chain Replay Engine (in-browser)
 
-**Every record includes `hive_tx_id` and `hive_block_num`** — linking the local record to its on-chain proof.
-
-### Layer 3: Sync Manager
-
-**Purpose:** Keeps the database and blockchain in agreement. Handles the "write to both" flow and recovery.
+**Purpose:** Reads chain history, applies deterministic rules, populates IndexedDB.
 
 **Responsibilities:**
-- After match resolution: package result → broadcast to Hive → write to database
-- If broadcast fails: queue for retry (exponential backoff, max 10 attempts)
-- Recovery mode: scan chain from genesis block, rebuild database from `custom_json` history
-- Verify database integrity against chain records on demand
+- On game launch: sync from last processed block to chain head
+- Apply ownership rules (mint, transfer, burn, seal) in block order
+- Rebuild from genesis block if IndexedDB is empty (first launch or cleared cache)
+- Rules are hash-pinned at genesis — the code that interprets the chain is immutable
 
 ---
 
@@ -109,11 +100,11 @@ The game works 100% without blockchain. Hive integration is additive — it laye
 2. Game calls Hive Keychain browser extension to request a signature challenge
 3. Keychain prompts the player to approve (they never share their private key)
 4. Game receives a signed message proving the player controls that Hive account
-5. Game creates/updates a session tied to the Hive username
+5. Game stores the session in Zustand (persisted to localStorage)
 
 ### Flow
 
-```
+```text
 Player clicks Login
         │
         ▼
@@ -134,25 +125,27 @@ Keychain popup asks player to approve
 Callback receives signed challenge
         │
         ▼
-Server verifies signature against player's public posting key
+Client verifies signature against player's public posting key
+   (fetched from public API: condenser_api.get_accounts)
         │
         ▼
-Session created — player is authenticated
+Session stored in Zustand store — player is authenticated
 ```
 
 ### Key Points
 
 - **No passwords stored.** The player's Hive account IS their identity.
+- **No server involved.** Signature verification happens client-side using the player's public key fetched from public API nodes.
 - **Posting key only.** We never need the active key (which controls funds). Posting authority is enough for `custom_json` operations and authentication.
 - **Hive Keychain** is a browser extension (Chrome/Firefox/Brave) and mobile app. It's the standard wallet for Hive apps.
 - **Fallback:** If Keychain is not installed, show a prompt directing the player to install it. No fallback to password-based auth.
 
 ### Session Management
 
-- Sessions are stored server-side (express-session or JWT)
-- Session includes: `hiveUsername`, `loginTimestamp`, `sessionExpiry`
-- Sessions expire after 24 hours of inactivity
-- Re-authentication required for sensitive actions (NFT transfers)
+- Sessions are stored client-side in Zustand with `persist` middleware (localStorage)
+- Session includes: `hiveUsername`, `publicPostingKey`, `loginTimestamp`
+- Sessions expire after 24 hours of inactivity (client-enforced)
+- Re-authentication via Keychain required for sensitive actions (NFT transfers)
 
 ---
 
@@ -162,7 +155,7 @@ Every `custom_json` operation uses the protocol ID `ragnarok_poker`. All payload
 
 ### 4.1 Match Result
 
-Broadcast by the **game server account** (`@ragnarokpoker`) after each match.
+Broadcast by **both players** (dual-signed). Each player broadcasts their own copy via Hive Keychain. A match result is only considered valid by the replay engine when both signatures exist on-chain.
 
 ```json
 {
@@ -193,17 +186,27 @@ Broadcast by the **game server account** (`@ragnarokpoker`) after each match.
     "total_hands": 5,
     "duration_seconds": 420,
     "mode": "ranked"
+  },
+  "transcript_merkle_root": "sha256:0x...",
+  "move_count": 87,
+  "opponent_sig": "sha256:0x...",
+  "pow": {
+    "nonces": [9182, 43201, 7823, 55102, 12947, 890],
+    "count": 64,
+    "difficulty": 4
   }
 }
 ```
 
-**Size:** ~500 bytes — well within the 8,192-byte limit.
+**`transcript_merkle_root`:** Root of a Merkle tree over all `SignedMove` hashes. Enables single-move dispute verification without the full transcript — submit only the disputed move + 7 sibling hashes.
 
-**Signed by:** Game server account only. Players cannot forge match results.
+**Size:** ~700 bytes — well within the 8,192-byte limit.
+
+**Signed by:** Both players independently broadcast the same result. The replay engine only counts a match when it finds matching `match_id` results from both the winner and loser accounts, with a valid dual-anchored `match_start` and valid PoW.
 
 ### 4.2 Player Stat Update (Profile Metadata)
 
-Written to each player's Hive account `posting_json_metadata` after their stats change.
+Optionally written to each player's own Hive account `posting_json_metadata` for display.
 
 ```json
 {
@@ -228,11 +231,11 @@ Written to each player's Hive account `posting_json_metadata` after their stats 
 }
 ```
 
-**Note:** Profile metadata is a convenience cache. It is NOT the source of truth. The source of truth is the chain of `match_result` custom_json operations signed by the game account.
+**Note:** Profile metadata is a convenience cache. It is NOT the source of truth. The source of truth is the chain of dual-signed `match_result` custom_json operations. Any player's replay engine can recompute stats from scratch.
 
 ### 4.3 NFT Mint
 
-Broadcast by the **game server account** when a card is minted as an NFT.
+Broadcast by the **Ragnarok game account** during genesis airdrop only.
 
 ```json
 {
@@ -296,181 +299,332 @@ Broadcast by the **current owner** (via Hive Keychain signing).
 }
 ```
 
+### 4.6 Match Start Anchor (Dual-Signature)
+
+Broadcast by **both players** before gameplay begins. Creates an on-chain proof that a match was initiated, binding both accounts and the battle ID with a cryptographic hash. Enables disconnect accountability.
+
+```json
+{
+  "protocol": "ragnarok_poker",
+  "version": 1,
+  "action": "match_start",
+  "match_id": "uuid-v4",
+  "player_a": "alice",
+  "player_b": "bob",
+  "match_hash": "sha256:0x...",
+  "deck_hash_a": "sha256:0x...",
+  "deck_hash_b": "sha256:0x...",
+  "timestamp": 1707350000,
+  "pow": {
+    "nonces": [12847, 9234, 45123, 7891, 33201, 4102],
+    "count": 32,
+    "difficulty": 4
+  }
+}
+```
+
+**`match_hash` computation:** `sha256(match_id + player_a + player_b + timestamp)` — deterministic from handshake data, both clients produce the same hash.
+
+**Validation rules:**
+
+- Both players must broadcast matching `match_id` and `match_hash`
+- Must include valid PoW (see Section 4.7)
+- `match_id` must not already exist as a dual-anchored match
+- A `match_result` is only valid if a dual-anchored `match_start` exists for that `match_id`
+
+**Size:** ~400 bytes — well within the 8,192-byte limit.
+
+### 4.7 Proof of Work (Required on Broadcasts)
+
+Every `match_start`, `match_result`, and `queue_join` operation must include a `pow` field. This is computed entirely in the player's browser via **multiple parallel sub-challenges** — no server issues challenges.
+
+```json
+{
+  "pow": {
+    "nonces": [12847, 9234, 45123, 7891, 33201, 4102],
+    "count": 32,
+    "difficulty": 4
+  }
+}
+```
+
+**Multi-challenge design:** Instead of one large SHA256 problem, we solve many small ones in parallel. Each sub-challenge is derived deterministically from the payload — still fully serverless, but now parallelizable across CPU cores via Web Workers.
+
+**How it works:**
+
+1. Remove the `pow` field from the payload
+2. Compute `seed = sha256(JSON.stringify(payload, keys.sort()))`
+3. For each `i` in `[0, count)`: derive `challenge_i = sha256(seed + ':' + i)`
+4. For each challenge: increment `nonce_i` until `sha256(challenge_i + ':' + nonce_i)` has `difficulty` leading zero bits
+5. Steps 3-4 run across Web Workers in parallel — all CPU cores used simultaneously
+
+**Difficulty tiers:**
+
+| Operation | Count | Bits each | Avg hashes total | Wall time |
+| --- | --- | --- | --- | --- |
+| `queue_join` | 32 | 4 | ~256 | <0.1s |
+| `match_start` | 32 | 4 | ~256 | <0.1s |
+| `match_result` | 64 | 6 | ~2,048 | ~0.5s |
+
+**Purpose:** Anti-bot, anti-spam. A script can't flood the queue — each op costs real CPU. Honest players experience no noticeable delay. Bots needing to spam thousands of ops hit a hard computational wall.
+
+**Verification:** The replay engine re-derives all challenge seeds from the on-chain payload and checks every nonce. Any failing nonce invalidates the entire op — silently ignored, no state change.
+
+### 4.8 Slash Evidence (Permissionless)
+
+Broadcast by **anyone** who observes contradictory on-chain ops from the same account. No admin needed — any honest player can submit.
+
+```json
+{
+  "protocol": "ragnarok_poker",
+  "version": 1,
+  "action": "slash_evidence",
+  "account": "cheater_hive",
+  "tx_a": "abc123def456",
+  "tx_b": "def456abc123",
+  "reason": "contradictory_match_results",
+  "submitted_by": "honest_observer"
+}
+```
+
+**Valid `reason` types:**
+
+- `contradictory_match_results` — same `match_id`, different winner in two broadcasts
+- `double_queue_entry` — two active `queue_join` with no `queue_leave` between
+- `deck_hash_mismatch` — `match_result` deck hash differs from committed `match_start` deck hash
+
+**Replay engine behavior:** Fetches both referenced transactions, verifies signatures and contradiction, then marks `account` as slashed in IndexedDB. Slashed accounts are excluded from matchmaking and queue polling by all clients independently.
+
 ---
 
-## 5. Database Schema (New Tables)
+## 5. Local Data Schema (IndexedDB)
 
-### 5.1 hive_players
+All data is stored locally in the player's browser via IndexedDB. There is no server database. If IndexedDB is cleared, the replay engine rebuilds everything from the chain.
 
-Links Hive accounts to game sessions.
+### 5.1 nft_ownership (object store)
 
-```
-hive_players
-├── id                  SERIAL PRIMARY KEY
-├── hive_username       TEXT NOT NULL UNIQUE
-├── posting_pub_key     TEXT NOT NULL
-├── first_login         TIMESTAMP DEFAULT NOW()
-├── last_login          TIMESTAMP DEFAULT NOW()
-├── rank                TEXT DEFAULT 'Thrall'
-├── rank_points         INTEGER DEFAULT 0
-├── total_wins          INTEGER DEFAULT 0
-├── total_losses        INTEGER DEFAULT 0
-├── total_draws         INTEGER DEFAULT 0
-├── current_streak      INTEGER DEFAULT 0
-├── best_streak         INTEGER DEFAULT 0
-└── profile_synced_at   TIMESTAMP  -- last time profile metadata was pushed to chain
-```
+Current ownership state. Built by replaying mint + transfer chain history.
 
-### 5.2 match_results
-
-Every completed match. Each row links to an on-chain `custom_json`.
-
-```
-match_results
-├── id                  SERIAL PRIMARY KEY
-├── match_id            TEXT NOT NULL UNIQUE  -- UUID
-├── winner_username     TEXT NOT NULL
-├── loser_username      TEXT NOT NULL
-├── winner_hero_id      TEXT NOT NULL
-├── loser_hero_id       TEXT NOT NULL
-├── winner_final_hp     INTEGER NOT NULL
-├── loser_final_hp      INTEGER NOT NULL
-├── total_hands         INTEGER NOT NULL
-├── duration_seconds    INTEGER
-├── mode                TEXT DEFAULT 'casual'  -- casual, ranked, tournament
-├── match_data          JSONB  -- full match details (hands won, biggest hand, etc.)
-├── hive_tx_id          TEXT   -- transaction ID on chain (NULL if not yet broadcast)
-├── hive_block_num      INTEGER -- block number (NULL if not yet broadcast)
-├── broadcast_status    TEXT DEFAULT 'pending'  -- pending, confirmed, failed
-├── created_at          TIMESTAMP DEFAULT NOW()
-└── broadcast_at        TIMESTAMP  -- when successfully broadcast
+```typescript
+interface NFTOwnership {
+  nftId: string;          // keyPath — e.g. "rp-card-96001-001"
+  cardId: number;
+  cardName: string;
+  rarity: string;
+  nftRarity: string;
+  edition: string;
+  serialNumber: number;
+  maxSupply: number;
+  currentOwner: string;   // Hive username
+  mintTxId: string;
+  mintBlockNum: number;
+  isBurned: boolean;
+  mintedAt: number;
+}
+// Indexes: currentOwner, cardId, rarity
 ```
 
-### 5.3 nft_cards
-
-Current ownership state. Built from processing mint + transfer chain history.
-
-```
-nft_cards
-├── id                  SERIAL PRIMARY KEY
-├── nft_id              TEXT NOT NULL UNIQUE  -- rp-card-{cardId}-{serial}
-├── card_id             INTEGER NOT NULL
-├── card_name           TEXT NOT NULL
-├── rarity              TEXT NOT NULL
-├── nft_rarity          TEXT NOT NULL
-├── edition             TEXT NOT NULL
-├── serial_number       INTEGER NOT NULL
-├── max_supply          INTEGER NOT NULL
-├── current_owner       TEXT NOT NULL  -- hive username
-├── mint_tx_id          TEXT NOT NULL  -- chain reference for the mint
-├── mint_block_num      INTEGER NOT NULL
-├── is_burned           BOOLEAN DEFAULT FALSE
-├── minted_at           TIMESTAMP NOT NULL
-└── updated_at          TIMESTAMP DEFAULT NOW()
-```
-
-### 5.4 nft_transactions
+### 5.2 nft_transfers (object store)
 
 Audit trail for all NFT operations (mints, transfers, burns).
 
-```
-nft_transactions
-├── id                  SERIAL PRIMARY KEY
-├── nft_id              TEXT NOT NULL
-├── action              TEXT NOT NULL  -- mint, transfer, burn
-├── from_user           TEXT  -- NULL for mints
-├── to_user             TEXT  -- NULL for burns
-├── memo                TEXT
-├── hive_tx_id          TEXT NOT NULL
-├── hive_block_num      INTEGER NOT NULL
-├── created_at          TIMESTAMP DEFAULT NOW()
+```typescript
+interface NFTTransfer {
+  id: string;             // keyPath — nftId + txId
+  nftId: string;
+  action: 'mint' | 'transfer' | 'burn';
+  fromUser: string | null;  // null for mints
+  toUser: string | null;    // null for burns
+  memo: string;
+  hiveTxId: string;
+  hiveBlockNum: number;
+  timestamp: number;
+}
+// Indexes: nftId, fromUser, toUser, hiveBlockNum
 ```
 
-### 5.5 broadcast_queue
+### 5.3 match_results (object store)
 
-Failed or pending broadcasts awaiting retry.
+Dual-signed match results from chain replay.
 
+```typescript
+interface LocalMatchResult {
+  matchId: string;        // keyPath
+  winnerUsername: string;
+  loserUsername: string;
+  winnerHeroId: string;
+  loserHeroId: string;
+  winnerFinalHp: number;
+  loserFinalHp: number;
+  totalHands: number;
+  durationSeconds: number;
+  mode: 'casual' | 'ranked' | 'tournament';
+  matchData: object;      // full match details
+  winnerTxId: string;     // winner's broadcast tx
+  loserTxId: string;      // loser's broadcast tx
+  blockNum: number;
+  dualSigned: boolean;    // true only when BOTH players' ops found
+}
+// Indexes: winnerUsername, loserUsername, blockNum, mode
 ```
-broadcast_queue
-├── id                  SERIAL PRIMARY KEY
-├── payload             JSONB NOT NULL  -- the full custom_json payload
-├── operation_type      TEXT NOT NULL  -- match_result, nft_mint, nft_transfer
-├── reference_id        TEXT NOT NULL  -- match_id or nft_id
-├── attempts            INTEGER DEFAULT 0
-├── max_attempts        INTEGER DEFAULT 10
-├── last_attempt_at     TIMESTAMP
-├── last_error          TEXT
-├── status              TEXT DEFAULT 'pending'  -- pending, processing, confirmed, failed
-├── created_at          TIMESTAMP DEFAULT NOW()
-└── confirmed_at        TIMESTAMP
+
+### 5.4 match_anchors (object store)
+
+On-chain match start anchors. Links `match_start` to `match_result`.
+
+```typescript
+interface MatchAnchor {
+  matchId: string;        // keyPath
+  playerA: string;        // Hive username
+  playerB: string;        // Hive username
+  matchHash: string;      // sha256(match_id + player_a + player_b + timestamp)
+  anchorTxA: string | null;  // player A's match_start tx
+  anchorTxB: string | null;  // player B's match_start tx
+  anchorBlockA: number | null;
+  anchorBlockB: number | null;
+  dualAnchored: boolean;  // true when BOTH players' match_start ops found
+  resultMatchId: string | null; // links to match_result once game ends
+  timestamp: number;
+}
+// Indexes: playerA, playerB, dualAnchored
+```
+
+### 5.5 broadcast_queue (object store)
+
+Pending broadcasts from this player (persisted via Zustand + localStorage).
+
+```typescript
+interface BroadcastQueueEntry {
+  id: string;             // keyPath
+  payload: object;        // the full custom_json payload
+  operationType: 'match_result' | 'nft_transfer' | 'xp_update';
+  referenceId: string;    // match_id or nft_id
+  attempts: number;
+  maxAttempts: number;
+  lastAttemptAt: number;
+  lastError: string | null;
+  status: 'pending' | 'processing' | 'confirmed' | 'failed';
+  createdAt: number;
+}
+```
+
+### 5.6 sync_meta (object store)
+
+Tracks replay engine progress.
+
+```typescript
+interface SyncMeta {
+  key: 'main';           // keyPath — single record
+  lastProcessedBlock: number;
+  lastSyncTimestamp: number;
+  genesisBlock: number;  // hardcoded constant
+  totalOpsProcessed: number;
+}
 ```
 
 ---
 
 ## 6. Operational Flows
 
-### 6.1 Match Result Recording
+All flows run entirely in the player's browser. No server is involved.
 
+### 6.1 Match Anchor Broadcast (Before Gameplay)
+
+```text
+P2P handshake completes (WebRTC connection open)
+        │
+        ▼
+Both clients agree on match_id, match_hash
+   (deterministic: sha256(match_id + player_a + player_b + timestamp))
+        │
+        ▼
+Each client computes PoW for match_start payload
+   (~0.5 seconds, runs in background during handshake UI)
+        │
+        ├──── Player A's client ──────────────┐
+        │                                      │
+        ▼                                      ▼
+Player A signs via Keychain             Player B signs via Keychain
+   custom_json: match_start               custom_json: match_start
+   required_posting_auths:                 required_posting_auths:
+     ["player_a"]                            ["player_b"]
+        │                                      │
+        ▼                                      ▼
+Broadcast to Hive                        Broadcast to Hive
+        │                                      │
+        └──────────┬───────────────────────────┘
+                   │
+                   ▼
+Both ops appear on-chain (within 3-6 seconds)
+                   │
+                   ▼
+Both clients verify the other's match_start appeared
+   → Proceed to deck commitment + gameplay
+                   │
+                   ▼
+If opponent's match_start NOT seen within 30 seconds:
+   → Match aborted. The anchored player has on-chain proof they showed up.
 ```
+
+### 6.2 Match Result Recording (Dual-Signature)
+
+```text
 Combat ends (resolvePokerCombat / hero death)
         │
         ▼
-Game client sends result to server endpoint
-   POST /api/hive/match-result
+Both players' clients produce identical match result
+   (same match_id, same stats — deterministic from WASM engine)
         │
-        ▼
-Server validates the result
-   (checks both players are in active session, match_id is valid)
-        │
-        ├──────────────────────────────┐
-        ▼                              ▼
-Write to match_results table    Broadcast custom_json
-   (hive_tx_id = NULL,            via hive-tx, signed by
-    status = 'pending')            @ragnarokpoker account
-        │                              │
-        │                         ┌────┴────┐
-        │                     SUCCESS     FAIL
-        │                         │         │
-        │                         ▼         ▼
-        │                    Update row   Add to
-        │                    with tx_id   broadcast_queue
-        │                    & block_num  for retry
-        │                         │
-        ▼                         ▼
-   Update player_stats      Update player profile
-   in hive_players table    metadata on chain
-                            (convenience cache)
+        ├──── Player A's client ────────┐
+        │                               │
+        ▼                               ▼
+Player A signs via Keychain       Player B signs via Keychain
+   custom_json: match_result        custom_json: match_result
+   required_posting_auths:          required_posting_auths:
+     ["player_a"]                     ["player_b"]
+        │                               │
+        ▼                               ▼
+Broadcast to Hive                 Broadcast to Hive
+        │                               │
+        └───────────┬───────────────────┘
+                    │
+                    ▼
+          Both ops on chain
+                    │
+                    ▼
+   Any player's replay engine sees both ops
+   with matching match_id → valid dual-signed result
+   → Updates local match_results in IndexedDB
 ```
 
-### 6.2 NFT Minting
+### 6.3 NFT Minting (Genesis Airdrop Only)
 
-```
-Game server decides to mint (pack opening, reward, etc.)
+```text
+Ragnarok account executes airdrop (one-time, pre-seal)
         │
         ▼
-Check card_supply table — is supply available?
-        │
-        ├── NO → reject mint
-        │
-        ├── YES
-        ▼
-Broadcast custom_json: action = "nft_mint"
-   signed by @ragnarokpoker
+For each recipient in airdrop list:
+   Broadcast custom_json: action = "nft_mint"
+   signed by @ragnarok-cards account
+   { "to": "recipient", "cards": [...] }
         │
         ▼
-On success:
-   • Insert into nft_cards (owner = recipient)
-   • Insert into nft_transactions (action = 'mint')
-   • Decrement card_supply.remaining_supply
+After all mints complete:
+   Broadcast custom_json: action = "seal"
+   → No further mints accepted by any replay engine, ever
 ```
 
-### 6.3 NFT Transfer (Player-to-Player)
+### 6.4 NFT Transfer (Player-to-Player)
 
-```
+```text
 Player clicks "Transfer Card" in game UI
         │
         ▼
-Game builds the custom_json payload
+Client verifies ownership in local IndexedDB
+   → currentOwner matches logged-in Hive account
+        │
+        ▼
+Client builds custom_json payload
         │
         ▼
 Calls Hive Keychain to sign with player's posting key
@@ -483,114 +637,92 @@ Keychain prompts player to approve
 Keychain broadcasts directly to chain
         │
         ▼
-Game server detects the transfer by:
-   Option A: Polling account history for ragnarok_poker ops
-   Option B: Player sends tx_id to server after broadcast
-        │
-        ▼
-Server validates:
-   • Signer matches current_owner in nft_cards
-   • NFT exists and is not burned
-   • Recipient is a valid Hive account
-        │
-        ▼
-On valid:
-   • Update nft_cards.current_owner
-   • Insert into nft_transactions (action = 'transfer')
+On next sync cycle (or immediate re-fetch):
+   Replay engine picks up the transfer op
+   → Updates nft_ownership in IndexedDB
+   → Both sender and recipient see the change
 ```
 
-### 6.4 Retry Queue Processing
+### 6.5 Broadcast Retry Queue
 
-```
-Background job runs every 30 seconds
+```text
+Zustand broadcast queue store (persisted to localStorage)
         │
         ▼
-SELECT from broadcast_queue
-   WHERE status = 'pending'
-   AND attempts < max_attempts
-   ORDER BY created_at ASC
-   LIMIT 5
+On game launch + every 30 seconds:
+   Check queue for entries with status = 'pending'
+   AND attempts < maxAttempts
         │
         ▼
 For each queued item:
-   • Attempt broadcast via hive-tx
-   • On success: update broadcast_queue status = 'confirmed',
-     update the source table with hive_tx_id
-   • On failure: increment attempts, record error,
-     set last_attempt_at
-   • If attempts >= max_attempts: status = 'failed',
-     alert admin
+   • Attempt broadcast via Hive Keychain
+   • On success: status = 'confirmed', record txId
+   • On failure: increment attempts, record error
+   • If attempts >= maxAttempts: status = 'failed'
+     (player sees notification to retry manually)
 ```
 
 ---
 
-## 7. Recovery System
+## 7. Chain Replay & Recovery
 
 ### The Promise
 
-If the database is completely destroyed, 100% of match history and NFT ownership can be reconstructed from the blockchain alone.
+If a player clears their browser storage, 100% of their collection and match history can be reconstructed from the blockchain alone. No backup needed. No server to restore from.
 
-### Prerequisites
+### How It Works
 
-One number must be stored outside the database: **GENESIS_BLOCK** — the block number where the first-ever `ragnarok_poker` custom_json was broadcast. Store this in:
-- Environment variable (`HIVE_GENESIS_BLOCK`)
-- The `replit.md` file
-- Hardcoded in the recovery script as a constant
+The **GENESIS_BLOCK** number is hardcoded in the game client as a constant. This is the block number of the first-ever `ragnarok-cards` custom_json operation.
 
-### Recovery Process
-
+```typescript
+// Hardcoded in the game client — never changes
+const GENESIS_BLOCK = 89_000_000; // example — set at launch
 ```
-1. Start from GENESIS_BLOCK (or last known good block from backup)
 
-2. For each block from start to current head:
-   │
-   ├── Call: condenser_api.get_ops_in_block(blockNum)
-   │
-   ├── Filter: custom_json ops where id = 'ragnarok_poker'
-   │
-   ├── For each matching operation:
-   │   │
-   │   ├── Parse JSON payload
-   │   │
-   │   ├── Verify required_posting_auths includes '@ragnarokpoker'
-   │   │   (for match_result, nft_mint — only trust game-signed ops)
-   │   │
-   │   ├── Switch on action:
-   │   │   ├── "match_result" → INSERT into match_results
-   │   │   ├── "nft_mint"     → INSERT into nft_cards + nft_transactions
-   │   │   ├── "nft_transfer" → UPDATE nft_cards.current_owner,
-   │   │   │                     INSERT into nft_transactions
-   │   │   │                     (verify from_user = current_owner)
-   │   │   └── "nft_burn"     → UPDATE nft_cards.is_burned = true
-   │   │
-   │   └── Record hive_tx_id and hive_block_num
-   │
-   └── Continue to next block
+### Replay Process
 
-3. After all blocks processed:
+```text
+1. Read sync_meta from IndexedDB
+   → lastProcessedBlock = N (or GENESIS_BLOCK if empty)
+
+2. Call: condenser_api.get_account_history("ragnarok-cards-account", ...)
+   → Returns all custom_json ops from the game account
+
+3. For each operation (in block order):
    │
-   ├── Rebuild player_stats by aggregating match_results
-   │   (COUNT wins/losses per username)
+   ├── Parse JSON payload
    │
-   └── Verify nft_cards ownership chain integrity
-       (every transfer has valid prior ownership)
+   ├── Switch on action:
+   │   ├── "genesis"      → Initialize supply counters
+   │   ├── "mint"         → INSERT nft_ownership + nft_transfers
+   │   │                    (only if broadcaster == ragnarok account
+   │   │                     AND pre-seal AND supply not exhausted)
+   │   ├── "transfer"     → UPDATE nft_ownership.currentOwner
+   │   │                    INSERT nft_transfers
+   │   │                    (only if broadcaster == from_account)
+   │   ├── "burn"         → Mark nft_ownership.isBurned = true
+   │   ├── "seal"         → Set genesis sealed — reject future mints
+   │   ├── "match_start"  → Verify PoW, INSERT match_anchors
+   │   │                    (set dualAnchored when both players' ops found)
+   │   ├── "match_result" → Verify PoW, INSERT match_results
+   │   │                    (only if dual-signed AND dual-anchored
+   │   │                     match_start exists for this match_id)
+   │   ├── "queue_join"   → Verify PoW, add to active queue
+   │   ├── "queue_leave"  → Remove from active queue
+   │   └── anything else  → Silently ignored
+   │
+   └── Update sync_meta.lastProcessedBlock
+
+4. IndexedDB is now up to date — game queries read locally
 ```
 
 ### Performance Expectations
 
-- Hive produces ~28,800 blocks per day (1 every 3 seconds)
-- Scanning via public API: ~100-500 blocks/second depending on node
-- Full day recovery: ~1-5 minutes
-- Full year recovery: ~6-30 hours
-- **With daily database backups: only scan hours of blocks, not years**
-
-### Recovery Command
-
-```bash
-npm run hive:recover -- --from-block=GENESIS_BLOCK
-npm run hive:recover -- --from-block=last_backup_block
-npm run hive:recover -- --verify-only  # check DB against chain without modifying
-```
+- `get_account_history` returns only game-relevant ops (not the whole chain)
+- First-ever sync (500K minted cards): ~30-60 seconds
+- Returning player (1 day behind): ~2-5 seconds
+- Already synced: instant (read IndexedDB directly)
+- Sync runs in background — game is playable while catching up
 
 ---
 
@@ -600,24 +732,33 @@ npm run hive:recover -- --verify-only  # check DB against chain without modifyin
 
 | Threat | Mitigation |
 |--------|-----------|
-| Player forges a win | Match results are signed by `@ragnarokpoker` game account, not players. Players cannot broadcast valid match results. |
-| Player edits profile stats | Profile metadata is a convenience cache. Real stats are computed from match_result chain records signed by the game. |
-| Player transfers NFT they don't own | Game validates `required_posting_auths` signer matches `current_owner` in the ledger before honoring a transfer. |
-| Player replays an old transfer | Each transaction has a unique `hive_tx_id`. The game deduplicates by tx_id. |
-| Player mints fake NFTs | Only `@ragnarokpoker` can broadcast valid `nft_mint` actions. Player-signed mints are ignored. |
-| Database tampered with | Database can be rebuilt from chain. Chain records are immutable and signed. |
-| Game server compromised | The `@ragnarokpoker` posting key is the critical secret. Rotate immediately if compromised. All prior records remain valid. |
+| Player forges a win | Match results require dual signatures — both winner AND loser must broadcast matching results. A player cannot fake a win without their opponent's cooperation. |
+| Player edits profile stats | Profile metadata is a convenience cache. Real stats are computed by replaying dual-signed match_result ops from the chain. |
+| Player transfers NFT they don't own | Replay engine validates `required_posting_auths` signer matches `currentOwner`. Invalid transfers are ignored. |
+| Player replays an old transfer | Each transaction has a unique `hive_tx_id`. Replay engine deduplicates by tx_id. |
+| Player mints fake NFTs | Only the Ragnarok game account can broadcast valid `nft_mint` actions (pre-seal). Player-signed mints are ignored by the replay rules. |
+| IndexedDB tampered with | IndexedDB is a local cache. Clearing it triggers a full chain replay from genesis — the chain is the source of truth. |
+| Modified game client | Opponent's WASM engine rejects illegal moves — refuses to countersign. See detailed blueprint Section 8. |
+| Randomness manipulation | Commit-reveal scheme — neither player controls the seed. See detailed blueprint Section 7. |
+| Bot spam (mass queue floods) | Multi-challenge PoW (32-64 parallel sub-challenges). Bots hit hard computational wall per op. See Section 4.7. |
+| Fake disconnect claims | `match_start` anchor proves whether a match was initiated. No anchor = no match ever happened. See Section 4.6. |
+| Result without match start | Replay engine rejects `match_result` unless a dual-anchored `match_start` exists for that `match_id`. |
+| Pre-computed move sequences | `hive_block_ref` in every `SignedMove` anchors each move to a real chain block that didn't exist at attack plan time. |
+| Double-broadcast fraud | Anyone submits `slash_evidence` with two contradictory tx IDs. Replay engine auto-slashes — permissionless. See Section 4.8. |
+| Single-move dispute | Merkle proof for the disputed move alone — no full transcript download needed. See Section 4.1 (`transcript_merkle_root`). |
 
 ### Trust Hierarchy
 
-```
+```text
 MOST TRUSTED
     │
     ├── Hive blockchain (immutable, public, verifiable by anyone)
     │
-    ├── Game server (@ragnarokpoker account — signs match results)
+    ├── WASM game engine (hash-pinned, deterministic, both clients verify)
     │
-    ├── Game database (fast cache, rebuildable from chain)
+    ├── Dual-signature match results (both players must agree)
+    │
+    ├── Local IndexedDB (fast cache, rebuildable from chain replay)
     │
     └── Player profile metadata (convenience display, player-writable)
     │
@@ -627,12 +768,13 @@ LEAST TRUSTED
 ### Verification
 
 Anyone can independently verify a player's record:
-1. Scan the chain for all `ragnarok_poker` custom_json ops signed by `@ragnarokpoker`
-2. Filter for match results containing the player's username
+
+1. Replay the chain for all `ragnarok-cards` custom_json ops
+2. Filter for dual-signed match results containing the player's username
 3. Count wins and losses
 4. Compare against the player's displayed profile stats
 
-This is fully transparent and requires zero trust in the game operator's database.
+This is fully transparent and requires zero trust in any server or database.
 
 ---
 
@@ -642,158 +784,222 @@ This is fully transparent and requires zero trust in the game operator's databas
 
 There is exactly **one** integration point in the existing game code:
 
-```
+```text
 resolvePokerCombat() or hero death
         │
         ▼
-handleCombatEnd() in useRagnarokCombatController.ts
+BlockchainSubscriber (already implemented)
+   listens for gamePhase → 'game_over'
         │
         ▼
-NEW: if (hiveSession.isAuthenticated) {
-       hiveSyncManager.recordMatchResult(resolution, combatState)
-     }
+if (hiveSession.isAuthenticated) {
+   packageMatchResult() → transactionQueueStore.enqueue()
+   → Keychain broadcasts dual-signed result to Hive
+}
 ```
 
-Everything else is in the new `hive/` module. The existing combat system, card effects, poker mechanics, UI — none of it changes.
+Everything else is in the blockchain module. The existing combat system, card effects, poker mechanics, UI — none of it changes.
 
-### New Server Endpoints
+### No Server Endpoints
 
+There are **zero server endpoints** for blockchain integration. All operations happen client-side:
+
+- **Auth**: Hive Keychain → client-side signature verification
+- **Stats**: Replay engine → IndexedDB queries (local)
+- **NFT ownership**: Replay engine → IndexedDB queries (local)
+- **Match recording**: Both players broadcast via Keychain → chain
+- **Leaderboard**: Computed locally from IndexedDB match_results
+
+### File Structure (Client-Only)
+
+```text
+client/src/
+├── data/
+│   ├── blockchain/                      # Already exists (partially built)
+│   │   ├── types.ts                     — NFT, Transfer, MatchResult types
+│   │   ├── transactionQueueStore.ts     — Zustand broadcast queue with retry
+│   │   ├── cardXPSystem.ts              — XP calculations per rarity
+│   │   ├── matchResultPackager.ts       — Package match into on-chain format
+│   │   ├── nftMetadataGenerator.ts      — Generate immutable NFT metadata
+│   │   ├── hashUtils.ts                 — SHA-256 hashing
+│   │   ├── replayEngine.ts             — NEW: chain replay → IndexedDB
+│   │   ├── replayRules.ts             — NEW: deterministic ownership rules
+│   │   ├── replayDB.ts               — NEW: IndexedDB schema + queries
+│   │   ├── proofOfWork.ts             — NEW: multi-challenge PoW with Web Workers
+│   │   ├── matchAnchor.ts             — NEW: match_start broadcast + verification
+│   │   ├── transcriptMerkle.ts        — NEW: Merkle tree over SignedMoves, proof gen/verify
+│   │   ├── slashEvidence.ts           — NEW: detect + broadcast slash_evidence ops
+│   │   └── matchmakingOnChain.ts      — NEW: on-chain queue polling
+│   ├── HiveDataLayer.ts                — Zustand store for Hive state
+│   ├── HiveSync.ts                     — Keychain integration
+│   └── schemas/HiveTypes.ts            — Type definitions
+│
+├── game/
+│   ├── subscribers/
+│   │   └── BlockchainSubscriber.ts      — Already built: game-end → package → queue
+│   └── components/
+│       └── hive/
+│           ├── HiveLoginButton.tsx      — Keychain login UI
+│           ├── HiveProfileBadge.tsx     — Shows Hive username + rank
+│           └── HiveMatchHistory.tsx     — Match history from IndexedDB
 ```
-POST   /api/hive/auth/login          — Initiate Keychain login challenge
-POST   /api/hive/auth/verify         — Verify signed challenge, create session
-POST   /api/hive/auth/logout         — End session
 
-GET    /api/hive/player/:username     — Get player stats
-GET    /api/hive/matches/:username    — Get match history (from DB)
-GET    /api/hive/leaderboard          — Top players by rank points
+**What's NOT here:**
 
-POST   /api/hive/match-result         — Record match (server-internal, not player-facing)
-
-GET    /api/hive/nft/:nftId           — Get NFT details and ownership
-GET    /api/hive/nft/owner/:username  — Get all NFTs owned by player
-POST   /api/hive/nft/mint             — Mint NFT (admin/game-triggered)
-GET    /api/hive/nft/verify/:nftId    — Verify ownership against chain
-
-GET    /api/hive/recovery/status      — Check sync status
-POST   /api/hive/recovery/scan        — Trigger chain recovery scan (admin)
-```
-
-### New File Structure
-
-```
-client/src/hive/
-├── components/
-│   ├── HiveLoginButton.tsx        — Keychain login UI
-│   ├── HiveProfileBadge.tsx       — Shows Hive username + rank
-│   └── HiveMatchHistory.tsx       — On-chain verified match history
-├── hooks/
-│   ├── useHiveAuth.ts             — Authentication state + Keychain calls
-│   └── useHiveProfile.ts          — Player stats from API
-└── stores/
-    └── hiveStore.ts               — Zustand store for Hive session state
-
-server/
-├── hive/
-│   ├── gateway.ts                 — Layer 1: hive-tx wrapper (broadcast, query)
-│   ├── sync.ts                    — Layer 3: broadcast + retry + recovery logic
-│   ├── auth.ts                    — Keychain challenge/verify
-│   ├── contracts.ts               — Data contract schemas + validation
-│   └── recovery.ts                — Chain scan + DB rebuild
-├── routes/
-│   └── hiveRoutes.ts              — Express routes for /api/hive/*
-```
+- No `server/hive/` — no server involvement
+- No Express routes — no API endpoints
+- No PostgreSQL tables — IndexedDB only
+- No admin dashboard — every player is their own admin
 
 ---
 
-## 10. Environment Variables
+## 10. Configuration Constants
 
+No environment variables needed. All configuration is hardcoded in the client as constants (since there's no server).
+
+```typescript
+// client/src/data/blockchain/config.ts
+
+export const HIVE_CONFIG = {
+  // Protocol
+  CUSTOM_JSON_ID: 'ragnarok-cards',
+  PROTOCOL_VERSION: 1,
+
+  // Genesis
+  GENESIS_BLOCK: 0, // Set at launch — block of first ragnarok-cards op
+  GAME_ACCOUNT: 'ragnarok-cards', // Hive account used for genesis minting
+
+  // API nodes (free, community-operated, redundant)
+  API_NODES: [
+    'https://api.hive.blog',
+    'https://api.deathwing.me',
+    'https://api.openhive.network',
+    'https://rpc.mahdiyari.info',
+  ],
+
+  // Replay engine
+  SYNC_INTERVAL_MS: 30_000, // Background sync every 30s
+  MAX_OPS_PER_FETCH: 1000,  // Batch size for get_account_history
+
+  // Broadcast queue
+  MAX_RETRIES: 3,
+  RETRY_INTERVAL_MS: 30_000,
+  TX_EXPIRY_MS: 24 * 60 * 60 * 1000, // 24 hours
+
+  // Proof of Work — multi-challenge parallel design
+  // Each op solves `count` sub-challenges of `difficulty` leading zero bits
+  // Sub-challenges are solved in parallel via Web Workers
+  POW_COUNT_QUEUE_JOIN: 32,          // 32 sub-challenges, 4 bits each = ~256 hashes avg
+  POW_COUNT_MATCH_START: 32,
+  POW_COUNT_MATCH_RESULT: 64,        // 64 sub-challenges, 6 bits each = ~2048 hashes avg
+  POW_DIFFICULTY_PER_CHALLENGE: 4,   // bits per sub-challenge (queue/start)
+  POW_DIFFICULTY_RESULT: 6,          // bits per sub-challenge (match result — heavier)
+
+  // Match anchor
+  MATCH_START_TIMEOUT_MS: 30_000,    // Abort if opponent's anchor not seen
+} as const;
 ```
-# Game's Hive account credentials (SECRET — never expose)
-HIVE_ACCOUNT_USERNAME=ragnarokpoker
-HIVE_POSTING_KEY=5J...                    # posting private key for broadcasting
 
-# Chain configuration
-HIVE_GENESIS_BLOCK=<block number>         # first-ever ragnarok_poker broadcast
-HIVE_CUSTOM_JSON_ID=ragnarok_poker        # protocol identifier
-HIVE_PROTOCOL_VERSION=1                   # current data contract version
-
-# Optional: preferred API nodes (defaults built into hive-tx)
-HIVE_API_NODES=https://api.hive.blog,https://api.deathwing.me
-```
+The **only secret** is the Ragnarok game account's posting key — used once during genesis airdrop, then irrelevant. It is never stored in the client or in any deployed code.
 
 ---
 
 ## 11. Implementation Phases
 
-### Phase 1: Foundation (Build First)
-- [ ] Install `hive-tx` package
-- [ ] Create Hive Gateway module (broadcast + query wrapper)
-- [ ] Create database tables (hive_players, match_results, broadcast_queue)
-- [ ] Build Sync Manager with retry queue
-- [ ] Add match result recording after combat resolution
-- [ ] Set up `@ragnarokpoker` Hive account
+### Phase 1: Foundation
+
+- [ ] Set up `@ragnarok-cards` Hive account
+- [ ] Install `hive-tx` or `dhive` package
+- [ ] Build chain replay engine (replayEngine.ts + replayRules.ts + replayDB.ts)
+- [ ] Build IndexedDB schema and query layer
+- [ ] Wire BlockchainSubscriber to broadcast queue (already partially done)
 
 ### Phase 2: Player Identity
-- [ ] Hive Keychain login flow (challenge/verify)
-- [ ] Session management tied to Hive username
+
+- [ ] Hive Keychain login flow (client-side challenge/verify)
+- [ ] Session management in Zustand (persisted to localStorage)
 - [ ] HiveLoginButton component
-- [ ] Player profile display (stats from DB)
+- [ ] Player profile display (stats from IndexedDB)
 
-### Phase 3: On-Chain Stats
-- [ ] Profile metadata push (win/loss to player's Hive account)
-- [ ] Leaderboard from match_results table
-- [ ] Match history page with chain verification links
+### Phase 3: Match Recording
 
-### Phase 4: NFT Cards
-- [ ] NFT mint flow (pack opening → chain broadcast)
-- [ ] NFT ownership verification
+- [ ] Multi-challenge PoW module (`proofOfWork.ts`: parallel sub-challenges via Web Workers)
+- [ ] Match anchor protocol (`matchAnchor.ts`: dual-sig `match_start` broadcast)
+- [ ] Both players broadcast `match_start` before gameplay via Keychain
+- [ ] `SignedMove` with `hive_block_ref` temporal anchor per move
+- [ ] Merkle transcript builder (`transcriptMerkle.ts`: root computation + proof gen/verify)
+- [ ] Dual-signature match result with `transcript_merkle_root` and PoW
+- [ ] Both players broadcast matching results via Keychain
+- [ ] Replay engine validates PoW + `match_start` linkage + `slash_evidence` processing
+- [ ] Slash evidence module (`slashEvidence.ts`: detect contradictions, broadcast, auto-apply)
+- [ ] Replay engine processes `match_result` ops into IndexedDB
+- [ ] Leaderboard computed from local match_results
+
+### Phase 4: Genesis Airdrop & NFTs
+
+- [ ] Execute genesis airdrop (batch mint ops from game account)
+- [ ] Broadcast seal after distribution complete
+- [ ] NFT ownership verification from IndexedDB
 - [ ] NFT transfer via Keychain
 - [ ] Collection view filtered by ownership
-- [ ] Integration with ImmutableRunes for card art storage
+- [ ] Deck verification at P2P handshake
 
-### Phase 5: Recovery & Verification
-- [ ] Chain recovery script (rebuild DB from genesis block)
-- [ ] Integrity verification (compare DB against chain)
-- [ ] Admin dashboard for broadcast queue monitoring
-- [ ] Public verification endpoint (anyone can audit a player's record)
+### Phase 5: On-Chain Matchmaking
+
+- [ ] `queue_join` / `queue_leave` custom_json ops
+- [ ] Client polls for queue ops, initiates P2P connections
+- [ ] Ranked ladder from dual-signed match results
 
 ---
 
 ## 12. Dependencies
 
-| Package | Purpose | Size |
-|---------|---------|------|
-| `hive-tx` | Blockchain I/O (broadcast, query, key management) | 29KB |
-| `drizzle-orm` | Database ORM (already installed) | existing |
-| `pg` | PostgreSQL driver (already installed) | existing |
+| Package   | Purpose                                          | Size   |
+|-----------|--------------------------------------------------|--------|
+| `hive-tx` | Blockchain I/O (broadcast, query, key management) | 29KB   |
+| `idb`     | IndexedDB wrapper (optional, for cleaner API)     | ~3KB   |
 
-No new system dependencies required. Hive Keychain is a browser extension installed by the player — it's not a code dependency.
+No server dependencies. No PostgreSQL. No Drizzle ORM. Hive Keychain is a browser extension installed by the player — it's not a code dependency.
 
 ---
 
 ## 13. Security Checklist
 
-- [ ] `HIVE_POSTING_KEY` stored as a Replit secret, never in code or logs
-- [ ] Match results only accepted from authenticated game server sessions
-- [ ] NFT transfers validated: signer must be current owner
+- [ ] Ragnarok game account posting key used ONLY during genesis airdrop, then discarded
+- [ ] No private keys stored in client code, environment variables, or deployed assets
+- [ ] NFT transfers validated by replay engine: signer must match currentOwner
+- [ ] Match results require dual signatures — single-signed results ignored
+- [ ] Match results require a dual-anchored `match_start` — results without anchors ignored
+- [ ] All broadcast ops (`match_start`, `match_result`, `queue_join`) include valid multi-challenge PoW
+- [ ] PoW sub-challenge count and bit-difficulty reviewed for anti-bot effectiveness without UX impact
+- [ ] Every `SignedMove` includes `hive_block_ref` — verified against chain before dispute admission
+- [ ] `transcript_merkle_root` replaces flat hash — Merkle proofs enable single-move dispute resolution
+- [ ] `slash_evidence` submissions verified independently by replay engine — no admin trust required
 - [ ] All `custom_json` payloads validated against schema before broadcast
-- [ ] Rate limiting on broadcast endpoints
-- [ ] Recovery script validates `required_posting_auths` matches `@ragnarokpoker` for match/mint ops
+- [ ] Replay engine rules are deterministic and hash-pinned at genesis
 - [ ] No active key operations — posting authority only
 - [ ] Hive Keychain handles all player key management (game never sees private keys)
+- [ ] IndexedDB is a local cache only — clearing it triggers safe rebuild from chain
 
 ---
 
 ## 14. Glossary
 
-| Term | Meaning |
-|------|---------|
-| `custom_json` | A Hive blockchain operation for broadcasting arbitrary JSON data (max 8,192 bytes) |
-| `posting key` | Lower-privilege Hive key used for social actions and custom_json. Cannot move funds. |
-| `active key` | Higher-privilege Hive key that can transfer tokens. We never use this. |
-| `Hive Keychain` | Browser extension that securely manages Hive keys and signs transactions |
-| `Resource Credits (RC)` | Hive's rate-limiting system. Broadcasting costs RC, which regenerates based on Hive Power |
-| `hive-tx` | Lightweight TypeScript library for building and broadcasting Hive transactions |
-| `HAF` | Hive Application Framework — full blockchain indexer. Overkill for our current needs but available for future scale. |
-| `ImmutableRunes` | Partner NFT protocol for storing card art immutably on Hive |
-| `genesis block` | The block number where our first `custom_json` was broadcast. Used as scan starting point for recovery. |
+| Term                   | Meaning                                                                                        |
+|------------------------|------------------------------------------------------------------------------------------------|
+| `custom_json`          | A Hive blockchain operation for broadcasting arbitrary JSON data (max 8,192 bytes)             |
+| `posting key`          | Lower-privilege Hive key used for social actions and custom_json. Cannot move funds.           |
+| `active key`           | Higher-privilege Hive key that can transfer tokens. We never use this.                         |
+| `Hive Keychain`        | Browser extension that securely manages Hive keys and signs transactions                       |
+| `Resource Credits (RC)`| Hive's rate-limiting system. Broadcasting costs RC, which regenerates based on Hive Power      |
+| `hive-tx`              | Lightweight TypeScript library for building and broadcasting Hive transactions                  |
+| `IndexedDB`            | Browser-native local database. Persists across sessions. Used as the local game ledger.        |
+| `replay engine`        | Client-side module that reads chain history and reconstructs ownership state in IndexedDB       |
+| `dual signature`       | Both players must independently broadcast matching match results for the result to be valid     |
+| `match anchor`         | A `match_start` custom_json broadcast by both players before gameplay, proving the match was initiated |
+| `proof of work (PoW)`  | Multi-challenge SHA256 computation solved in parallel via Web Workers before broadcasting. Anti-spam measure. |
+| `hive_block_ref`       | SHA256 of a recent Hive block header included in every `SignedMove` — temporal anchor, prevents pre-computed attacks |
+| `transcript_merkle_root` | Merkle tree root over all `SignedMove` hashes — enables single-move proof without full transcript download |
+| `slash evidence`       | A permissionless on-chain report citing two contradictory ops by the same account. Triggers auto-ban via replay engine. |
+| `genesis block`        | The block number where our first `custom_json` was broadcast. Hardcoded in client config.      |
+| `seal`                 | A one-time broadcast that permanently disables all future minting. Irreversible.               |

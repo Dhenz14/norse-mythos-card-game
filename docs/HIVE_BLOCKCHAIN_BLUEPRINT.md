@@ -11,13 +11,13 @@
 1. [System Overview](#1-system-overview)
 2. [Layer 1 NFT Architecture](#2-layer-1-nft-architecture)
 3. [Genesis Distribution](#3-genesis-distribution)
-4. [Ownership Reader / HAF Indexer](#4-ownership-reader--haf-indexer)
+4. [In-Browser Chain Replay Engine](#4-in-browser-chain-replay-engine)
 5. [Player-Signed Transfers](#5-player-signed-transfers)
 6. [WASM Game Logic Module](#6-wasm-game-logic-module)
 7. [Cryptographic Match Protocol](#7-cryptographic-match-protocol)
 8. [Anti-Cheat Design](#8-anti-cheat-design)
 9. [P2P Integration with Existing Architecture](#9-p2p-integration-with-existing-architecture)
-10. [Pack Sales & Economy](#10-pack-sales--economy)
+10. [Community Airdrop & Economy](#10-community-airdrop--economy)
 11. [Implementation Phases](#11-implementation-phases)
 12. [File Structure](#12-file-structure)
 13. [Key Design Invariants](#13-key-design-invariants)
@@ -30,12 +30,14 @@ Ragnarok uses Hive Layer 1 custom JSON operations as an immutable ledger for car
 
 ### Core Principle
 
-```
+```text
 Blockchain = the ledger (what happened, immutable)
-Reader     = the interpreter (what it means, open-source, deterministic)
-Client     = the UI (what you see, WASM-verified)
+Reader     = the interpreter (runs IN the browser, open-source, deterministic)
+Client     = the UI + reader + verifier (what you see, WASM-verified)
 P2P        = the gameplay (what you do, cryptographically signed)
 ```
+
+**Zero-cost model:** No servers, no databases, no hosted services. Every player's browser replays the chain and maintains its own local copy of the ownership ledger in IndexedDB. Public Hive API nodes (free) provide chain data.
 
 ### Trust Model
 
@@ -72,6 +74,11 @@ This namespaces all operations. Any Hive node can filter for this app ID and rec
 { "app": "ragnarok-cards", "action": "transfer",  ... }
 { "app": "ragnarok-cards", "action": "burn",      ... }
 { "app": "ragnarok-cards", "action": "seal",      ... }
+{ "app": "ragnarok-cards", "action": "match_start",    ... }
+{ "app": "ragnarok-cards", "action": "match_result",   ... }
+{ "app": "ragnarok-cards", "action": "queue_join",     ... }
+{ "app": "ragnarok-cards", "action": "queue_leave",    ... }
+{ "app": "ragnarok-cards", "action": "slash_evidence", ... }
 ```
 
 The reader processes these in block order. State is fully reproducible by replaying from block 0.
@@ -151,84 +158,158 @@ After this block, the reader hard-ignores all future mint operations from any ac
 
 ---
 
-## 4. Ownership Reader / HAF Indexer
+## 4. In-Browser Chain Replay Engine
 
-### 4.1 What the Reader Does
+### 4.1 Zero-Cost Architecture
 
-The reader is an open-source Node.js service that:
-1. Streams Hive blocks via HAF (Hive Application Framework)
+There is no server. Every player's browser IS the reader. The replay engine:
+1. Calls `condenser_api.get_account_history` on **public Hive API nodes** (free, no auth)
 2. Filters for `app: "ragnarok-cards"` custom JSON operations
 3. Applies the ruleset defined in the genesis broadcast
-4. Maintains a PostgreSQL ownership table
-5. Exposes a read-only HTTP API for the game client
+4. Stores derived state in **IndexedDB** (player's local browser storage)
+5. Exposes ownership/collection queries to the game client via a local API module
+
+**Cost: $0/month.** No servers, no databases, no hosted services. Public Hive API nodes are free community infrastructure run by Hive witnesses.
 
 ### 4.2 Reader Rules (encoded in v1.0)
 
 ```
-VALID mint:    broadcaster == ragnarok_account AND pre-seal AND supply not exhausted
-VALID transfer: broadcaster == from_account AND nft_id owned by from_account
-VALID burn:    broadcaster == owner_account AND nft_id owned by owner_account
-INVALID:       anything else — silently ignored, no state change
+VALID mint:         broadcaster == ragnarok_account AND pre-seal AND supply not exhausted
+VALID transfer:     broadcaster == from_account AND nft_id owned by from_account
+VALID burn:         broadcaster == owner_account AND nft_id owned by owner_account
+VALID match_start:  broadcaster == one of { player_a, player_b } AND valid PoW AND no duplicate match_id
+VALID match_result: broadcaster == one of { winner, loser } AND matching match_start exists AND valid PoW
+VALID queue_join:   valid PoW AND no existing active queue entry for this account
+VALID queue_leave:  broadcaster has active queue entry
+VALID slash_evidence: anyone can submit; tx_a and tx_b must be verifiable contradictory ops by same account
+INVALID:            anything else — silently ignored, no state change
 ```
 
-These rules are fixed at genesis. The reader software version is pinned by hash in the genesis broadcast. Anyone can verify they're running the canonical reader.
+**PoW validation:** Every `match_start`, `match_result`, and `queue_join` op must include a valid proof-of-work field. The replay engine verifies the PoW before processing. Ops without valid PoW are silently ignored (see Section 8.4).
 
-### 4.3 Database Schema
+These rules are fixed at genesis. The reader source code version is pinned by hash in the genesis broadcast. Anyone can verify the game client runs the canonical reader logic.
 
-```sql
--- Core ownership table
-CREATE TABLE nft_ownership (
-  nft_id          TEXT PRIMARY KEY,
-  card_id         TEXT NOT NULL,          -- e.g. "einherjar-warrior"
-  rarity          TEXT NOT NULL,
-  owner_account   TEXT NOT NULL,          -- Hive username
-  minted_at_block BIGINT NOT NULL,
-  minted_in_pack  TEXT NOT NULL,
-  genesis_version TEXT NOT NULL DEFAULT '1.0'
-);
+### 4.3 IndexedDB Schema
 
--- Transfer history (append-only)
-CREATE TABLE nft_transfers (
-  id              BIGSERIAL PRIMARY KEY,
-  nft_id          TEXT NOT NULL,
-  from_account    TEXT,                   -- NULL for genesis mint
-  to_account      TEXT NOT NULL,
-  block_num       BIGINT NOT NULL,
-  tx_id           TEXT NOT NULL,
-  timestamp       TIMESTAMPTZ NOT NULL
-);
+```typescript
+// Stored locally in each player's browser via IndexedDB
 
--- Supply tracking
-CREATE TABLE supply_counters (
-  rarity          TEXT PRIMARY KEY,
-  cap             INTEGER NOT NULL,
-  minted          INTEGER NOT NULL DEFAULT 0
-);
+interface NFTOwnership {
+  nftId: string;          // PRIMARY KEY — e.g. "gen1-rare-000001"
+  cardId: string;         // e.g. "einherjar-warrior"
+  rarity: string;
+  ownerAccount: string;   // Current Hive username
+  mintedAtBlock: number;
+  mintedInPack: string;
+  genesisVersion: string; // "1.0"
+}
 
--- Seal state
-CREATE TABLE genesis_state (
-  version         TEXT PRIMARY KEY,
-  sealed          BOOLEAN NOT NULL DEFAULT false,
-  sealed_at_block BIGINT,
-  final_supply    INTEGER
-);
+interface NFTTransfer {
+  id: string;             // AUTO — nftId + blockNum + txId
+  nftId: string;
+  fromAccount: string | null; // null for genesis mint
+  toAccount: string;
+  blockNum: number;
+  txId: string;
+  timestamp: number;
+}
+
+interface SupplyCounter {
+  rarity: string;         // PRIMARY KEY
+  cap: number;
+  minted: number;
+}
+
+interface GenesisState {
+  version: string;        // "1.0"
+  sealed: boolean;
+  sealedAtBlock: number | null;
+  finalSupply: number | null;
+}
+
+interface MatchAnchor {
+  matchId: string;        // PRIMARY KEY — e.g. "match-20260223-alice-bob-001"
+  playerA: string;        // Hive username
+  playerB: string;        // Hive username
+  matchHash: string;      // sha256(match_id + player_a + player_b + timestamp)
+  anchorBlockA: number | null;  // Block where player A's match_start appeared
+  anchorBlockB: number | null;  // Block where player B's match_start appeared
+  anchorTxA: string | null;
+  anchorTxB: string | null;
+  dualAnchored: boolean;  // true when BOTH players' match_start ops found
+  resultMatchId: string | null; // Links to match_result once game ends
+  timestamp: number;
+}
+
+interface SyncMeta {
+  lastProcessedBlock: number;
+  lastSyncTimestamp: number;
+  genesisBlock: number;   // Hardcoded starting block
+}
 ```
 
-### 4.4 Reader API
+### 4.4 Replay Engine Flow
 
 ```
-GET /owner/:nft_id              → { owner, card_id, rarity, minted_at_block }
-GET /collection/:hive_account   → [{ nft_id, card_id, rarity }, ...]
-GET /card/:card_id/supply       → { cap, minted, remaining }
-GET /genesis                    → { version, sealed, final_supply, reader_hash }
-GET /verify/:nft_id/:account    → { owns: true/false }
+Game client launches
+        │
+        ▼
+Read SyncMeta from IndexedDB
+   → lastProcessedBlock = N (or GENESIS_BLOCK on first run)
+        │
+        ▼
+Call condenser_api.get_account_history("ragnarok-cards-account", ...)
+   → Returns all custom_json ops from block N+1 to chain head
+   → Uses public API nodes: api.hive.blog, api.deathwing.me, etc.
+        │
+        ▼
+For each op (in block order):
+   ├── action: "genesis"      → Initialize supply counters
+   ├── action: "mint"         → Insert NFTOwnership + NFTTransfer, increment supply
+   ├── action: "transfer"     → Update NFTOwnership.ownerAccount, insert NFTTransfer
+   ├── action: "burn"         → Delete from NFTOwnership, insert NFTTransfer
+   ├── action: "seal"         → Set GenesisState.sealed = true
+   ├── action: "match_start"  → Validate PoW, insert MatchAnchor (see Section 7.0)
+   ├── action: "match_result" → Validate PoW, require matching match_start, insert MatchResult
+   ├── action: "queue_join"   → Validate PoW, add to active matchmaking queue
+   ├── action: "queue_leave"  → Remove from active matchmaking queue
+   └── anything else          → Silently ignored
+        │
+        ▼
+Update SyncMeta.lastProcessedBlock = chain head
+        │
+        ▼
+Game queries IndexedDB for collection/ownership — instant, local reads
 ```
 
-All endpoints are read-only. The reader never writes to Hive — it only reads.
+### 4.5 Performance
 
-### 4.5 Redundancy
+| Scenario | Time | Data |
+|---|---|---|
+| First-ever sync (500K cards minted) | ~30-60 seconds | ~50MB of ops |
+| Returning player (1 day behind) | ~2-5 seconds | ~1MB of ops |
+| Already synced | Instant | 0 (read IndexedDB) |
 
-Run multiple reader instances (community-operated nodes welcome). The game client can be configured to query any reader, or fall back to a list. Since all readers process the same immutable chain, they all converge to the same state. Disagreement between readers = one is behind on block sync, not a data conflict.
+**Why this is fast enough:**
+- `get_account_history` returns only the game account's ops — not the entire blockchain
+- IndexedDB persists across sessions — only catch up from where you left off
+- Background sync after initial load — game is playable while syncing
+
+### 4.6 Redundancy & Trust
+
+Every player running the game has an independent copy of the ownership ledger. No single reader can lie — any player can verify any other player's collection by replaying the same chain data.
+
+If a public API node is slow or down, the client falls back to the next node in the list. Since all nodes serve the same immutable chain, they all return the same data.
+
+```typescript
+const API_NODES = [
+  'https://api.hive.blog',
+  'https://api.deathwing.me',
+  'https://api.openhive.network',
+  'https://rpc.mahdiyari.info',
+];
+// Client tries each in order, falls back on timeout/error
+```
 
 ---
 
@@ -351,6 +432,76 @@ The React stores (`gameStore.ts`, `pokerCombatSlice.ts`) become thin wrappers th
 
 This eliminates the 1v1 consensus problem. Neither player can fake a game result without the other's cryptographic cooperation.
 
+### 7.0 Match Anchor (`match_start`) — Before Gameplay Begins
+
+Before any cards are dealt, both players broadcast a `match_start` transaction to Hive. This creates an immutable on-chain proof that a match was initiated, binding both accounts and the battle ID with a cryptographic hash.
+
+**Why this is needed:**
+- Without a `match_start`, there's no on-chain proof a match was ever initiated — only the result exists
+- If a player disconnects, the opponent has no on-chain evidence the match started
+- Enables disconnect accountability: if `match_start` exists but no `match_result`, the replay engine can flag the disconnector
+
+**Dual-signature anchor (both players broadcast independently):**
+
+```json
+{
+  "app": "ragnarok-cards",
+  "action": "match_start",
+  "match_id": "match-20260223-alice-bob-001",
+  "player_a": "alice",
+  "player_b": "bob",
+  "match_hash": "sha256:0x...",
+  "deck_hash_a": "sha256:0x...",
+  "deck_hash_b": "sha256:0x...",
+  "timestamp": 1707350000,
+  "pow": {
+    "nonces": [12847, 9234, 45123, 7891, 33201, 4102],
+    "count": 32,
+    "difficulty": 4
+  }
+}
+```
+
+**`match_hash` computation:**
+```typescript
+match_hash = sha256(match_id + player_a + player_b + timestamp)
+```
+
+Both players must agree on the same `match_id` and `match_hash` — the P2P handshake generates these deterministically. Each player then broadcasts their own `match_start` via Hive Keychain.
+
+**Flow:**
+
+```text
+P2P handshake completes (WebRTC connection open)
+        │
+        ▼
+Both clients agree on match_id, match_hash (deterministic from handshake)
+        │
+        ├──── Alice's client ──────────────┐
+        │                                   │
+        ▼                                   ▼
+Alice computes PoW for match_start    Bob computes PoW for match_start
+Alice broadcasts via Keychain         Bob broadcasts via Keychain
+        │                                   │
+        ▼                                   ▼
+Both ops appear on Hive (within 3-6 seconds, one block apart at worst)
+        │
+        ▼
+Both clients verify the other's match_start appeared on-chain
+   → Proceed to deck commitment (Section 7.1)
+        │
+        ▼
+If opponent's match_start does NOT appear within 30 seconds:
+   → Match aborted — the anchored player has on-chain proof they showed up
+```
+
+**Replay engine rules for `match_start`:**
+- Must include a valid PoW (see Section 8.4)
+- `match_id` must not already exist as a dual-anchored match
+- Both `player_a` and `player_b` must broadcast matching `match_id` and `match_hash`
+- A `match_start` with only one player's broadcast is stored but flagged as incomplete
+- `match_result` ops are only valid if a dual-anchored `match_start` exists for that `match_id`
+
 ### 7.1 Deck Commitment (before cards are revealed)
 
 ```
@@ -384,28 +535,61 @@ Every game action is signed by the acting player and countersigned by the oppone
 
 ```typescript
 interface SignedMove {
-  move_id:        number;              // Sequential
-  player:         'alice' | 'bob';
-  action:         GameAction;          // play_card, attack, end_turn, etc.
+  move_id:         number;              // Sequential
+  player:          'alice' | 'bob';
+  action:          GameAction;          // play_card, attack, end_turn, etc.
   prev_state_hash: string;             // sha256 of state before this move
   new_state_hash:  string;             // sha256 of state after this move
-  player_sig:     string;              // Acting player's signature
-  opponent_sig?:  string;              // Opponent confirms state transition
+  hive_block_ref:  string;             // sha256 of recent Hive block header — temporal anchor
+  player_sig:      string;             // Acting player's signature
+  opponent_sig?:   string;             // Opponent confirms state transition
 }
 ```
 
+**`hive_block_ref` purpose:** Each move is anchored to the most recent Hive block at the time of the move. This:
+- Proves the move happened **after** that block (cannot be pre-computed offline)
+- Creates a wall-clock timeline for every move — critical for disconnect disputes
+- Prevents pre-computed move sequences (the block hash didn't exist when the attack could have been pre-planned)
+
 Opponent signs only after their local WASM produces the same `new_state_hash`. If hashes disagree, a cheating attempt is detected and the match is terminated.
 
-### 7.3 Match Transcript
+### 7.3 Match Transcript (Merkle Tree)
 
-The complete ordered list of `SignedMove` objects is the match transcript. It is:
-- Self-verifying (each move references the previous hash)
+The complete ordered list of `SignedMove` objects is the match transcript. Rather than a single flat hash, moves are organized into a **Merkle tree**:
+
+```
+transcript_merkle_root = MerkleRoot([
+  sha256(move_0),
+  sha256(move_1),
+  ...
+  sha256(move_N)
+])
+```
+
+**Why Merkle over a flat hash:**
+
+| Property | Flat hash | Merkle tree |
+|---|---|---|
+| Verify entire transcript | Yes | Yes |
+| Verify single move without full transcript | No | Yes (~7 hashes) |
+| Dispute resolution (submit only disputed moves) | No | Yes |
+| Proof size for 128-move game | Full transcript | ~7 × 32 bytes |
+
+**For dispute resolution:** If Player A claims move #42 was illegal, they submit:
+1. `SignedMove` #42 (the disputed move)
+2. A Merkle proof (7 sibling hashes) proving move #42 is in the agreed root
+3. The root is already on-chain in the `match_result`
+
+Any observer can verify the proof without downloading the full game. The transcript is:
+
+- Self-verifying (each move references the previous state hash)
 - Mutually authenticated (both signatures on every state)
 - Replay-auditable (anyone can reconstruct the full game)
+- Partially verifiable (Merkle proofs for individual moves)
 
 ### 7.4 Result Broadcast to Hive
 
-At game end, both players co-sign the result:
+At game end, both players co-sign the result. **A `match_result` is only valid if a dual-anchored `match_start` exists for that `match_id`.**
 
 ```json
 {
@@ -415,23 +599,48 @@ At game end, both players co-sign the result:
   "winner": "alice",
   "loser": "bob",
   "final_state_hash": "sha256:0xABCDEF...",
-  "transcript_hash": "sha256:0x123456...",
-  "transcript_ipfs": "ipfs://Qm...",
+  "transcript_merkle_root": "sha256:0x123456...",
+  "move_count": 87,
   "alice_sig": "...",
   "bob_sig": "...",
-  "played_at_block": 89234600
+  "played_at_block": 89234600,
+  "pow": {
+    "nonces": [9182, 43201, 7823, 55102, 12947, 890],
+    "count": 64,
+    "difficulty": 4
+  }
 }
 ```
 
-This goes on Hive as an immutable record. Ladder rankings, ban systems, and reward distributions read from this log. A result without both signatures is ignored by the reader.
+**`transcript_merkle_root`** is the root of a Merkle tree over all `SignedMove` hashes (see Section 7.3). This replaces the old flat `transcript_hash` and enables partial transcript verification without downloading the full game log.
+
+This goes on Hive as an immutable record. Ladder rankings, ban systems, and reward distributions read from this log. A result is ignored by the reader if:
+
+- It lacks both player signatures (dual-signed requirement)
+- No matching dual-anchored `match_start` exists for the `match_id`
+- The PoW is missing or invalid (see Section 8.4)
 
 ### 7.5 Dispute: One Player Disconnects
 
-If a player disconnects mid-match:
-- The partial transcript proves who was winning and who disconnected
-- The remaining player broadcasts the partial transcript
-- The reader awards a win to the player who stayed
-- The disconnector's Hive account is flagged (configurable penalty system)
+The `match_start` anchor enables provable disconnect accountability:
+
+```text
+Case 1: match_start exists (dual-anchored) but NO match_result
+   → Both players showed up, one disconnected mid-game
+   → The remaining player broadcasts a partial transcript with their signature
+   → Replay engine sees: dual match_start + single-signed partial result
+   → Disconnector's account flagged with a penalty (configurable)
+
+Case 2: match_start from Player A only (not dual-anchored)
+   → Player B never showed up or connected too late
+   → No penalty — match simply never started
+   → Player A's queue entry is released
+
+Case 3: match_start (dual-anchored) + match_result (dual-signed)
+   → Normal completed match — no dispute
+```
+
+The `match_start` anchor is what makes disconnect detection trustworthy. Without it, a malicious player could claim their opponent disconnected when no match ever happened.
 
 ---
 
@@ -447,6 +656,12 @@ If a player disconnects mid-match:
 | Sybil attack (fake accounts) | Hive account creation has PoW cost; karma/RC system |
 | Deck cheating (using unowned cards) | Deck verified against reader at handshake before match starts |
 | Randomness manipulation | Commit-reveal scheme — neither player controls the seed |
+| Bot spam (mass fake queue ops) | Multi-challenge PoW (32×4-bit, parallelized) — computational cost deters automation at scale |
+| Fake disconnect claims | `match_start` anchor proves whether a match was actually initiated |
+| Result without match | `match_result` rejected by replay engine unless dual-anchored `match_start` exists |
+| Pre-computed move sequences | `hive_block_ref` in every `SignedMove` — block hash didn't exist when attack was pre-planned |
+| Double-broadcast fraud (contradictory results) | Anyone can submit `slash_evidence` citing two conflicting on-chain ops — auto-ban, permissionless |
+| Single-move dispute (claim illegal move) | Merkle proof for that move alone — no need to submit full transcript |
 
 ### 8.2 What Client-Side Checks Still Do
 
@@ -473,11 +688,112 @@ Security comes from the **cryptographic protocol** (opponent won't countersign i
 
 The game client reads the ban list from Hive at startup. Banned accounts cannot find matches. Ban evidence is public and auditable — anyone can verify the proof.
 
+### 8.4 Client-Side Proof of Work (Anti-Spam)
+
+Every `match_start`, `match_result`, and `queue_join` operation must include a valid proof-of-work. This runs entirely in the player's browser — no server is involved.
+
+**Why PoW:**
+- **Anti-bot:** Automating thousands of fake ops becomes computationally expensive
+- **Anti-spam:** Each op costs real CPU — a script can't flood the queue with garbage
+- **Zero cost to honest players:** Total computation takes <1 second, imperceptible during gameplay
+- **No centralization:** Challenges derive deterministically from the payload — no server needed
+
+**Multi-challenge design (inspired by Hashcash, improved with parallelism):**
+
+Instead of one large challenge (single 16-bit problem), we use many small parallel challenges. Same total work, but:
+
+- **Parallelizable via Web Workers** — solved across all available CPU cores simultaneously
+- **Predictable timing** — law of large numbers smooths out variance (no unlucky 30-second waits)
+- **WASM-friendly** — SHA256 inner loop can run in the game's existing WASM binary
+
+```typescript
+interface ProofOfWork {
+  nonces:     number[];   // one nonce per sub-challenge
+  count:      number;     // number of sub-challenges (32 or 64)
+  difficulty: number;     // leading zero bits per challenge (4-6)
+}
+
+// Serverless: all challenges derived from payload hash — no server needed
+function computePoW(payload: object, count: number, difficulty: number): ProofOfWork {
+  // Derive per-challenge seeds deterministically from payload
+  const seed = sha256(JSON.stringify(payload, Object.keys(payload).sort()));
+  const nonces: number[] = new Array(count);
+
+  // Spawn Web Workers — each worker solves a subset in parallel
+  // Single-threaded fallback shown here for clarity:
+  for (let i = 0; i < count; i++) {
+    const challenge = sha256(seed + ':' + i);
+    let nonce = 0;
+    while (countLeadingZeroBits(sha256(challenge + ':' + nonce)) < difficulty) nonce++;
+    nonces[i] = nonce;
+  }
+  return { nonces, count, difficulty };
+}
+
+function verifyPoW(payload: object, pow: ProofOfWork): boolean {
+  const seed = sha256(JSON.stringify(payload, Object.keys(payload).sort()));
+  for (let i = 0; i < pow.count; i++) {
+    const challenge = sha256(seed + ':' + i);
+    const hash = sha256(challenge + ':' + pow.nonces[i]);
+    if (countLeadingZeroBits(hash) < pow.difficulty) return false;
+  }
+  return true;
+}
+```
+
+**Difficulty tiers:**
+
+| Operation | Sub-challenges | Bits each | Total work (avg hashes) | Wall time |
+|---|---|---|---|---|
+| `queue_join` | 32 | 4 | 32 × 8 = 256 | <0.1s |
+| `match_start` | 32 | 4 | 32 × 8 = 256 | <0.1s |
+| `match_result` | 64 | 6 | 64 × 32 = 2,048 | ~0.5s |
+
+**Why this is resistant to ASICs/GPUs:** A single attacker with GPU hardware can solve large single challenges very fast. Many small independent challenges don't parallelize as efficiently on GPU — each challenge requires a separate seed derivation. A bot farm would need one SHA256 computation per challenge per op, making mass automation linearly expensive.
+
+**Replay engine enforcement:** Verifies all `count` nonces independently. Any nonce that fails the leading-zero check invalidates the entire op — silently ignored, no state change.
+
+### 8.5 Slash Conditions (Permissionless Double-Broadcast Detection)
+
+If any player submits contradictory on-chain ops (e.g., broadcasts two different `match_result` ops for overlapping matches, or claims to be in two queue positions simultaneously), **any observer** — not just the Ragnarok account — can submit slash evidence:
+
+```json
+{
+  "app": "ragnarok-cards",
+  "action": "slash_evidence",
+  "account": "cheater_hive",
+  "tx_a": "abc123def456",
+  "tx_b": "def456abc123",
+  "reason": "contradictory_match_results",
+  "submitted_by": "honest_observer"
+}
+```
+
+**Replay engine behavior on valid slash evidence:**
+
+```text
+1. Fetch tx_a and tx_b from chain — verify both are real
+2. Verify both ops are signed by `account`
+3. Check contradiction logic for the `reason` type:
+   contradictory_match_results → same match_id, different winner
+   double_queue_entry          → two active queue_join with no queue_leave between
+   deck_hash_mismatch          → match_result deck_hash differs from match_start deck_hash
+4. If contradiction confirmed → mark account as slashed in IndexedDB
+5. Slashed accounts cannot find matches, cannot join queue
+```
+
+**Why this is powerful:**
+- **Permissionless:** Any honest player who spots a contradiction can submit evidence — no admin needed
+- **Trustless:** The replay engine verifies the proof independently, from on-chain data only
+- **Automatic:** Slashing happens at the IndexedDB level — no central ban list to corrupt
+- **Incentive-compatible:** Honest players are motivated to submit evidence (cleans up the pool)
+- **Ethereum analogy:** Same mechanism as PoS slashing — provable misbehavior = automatic penalty
+
 ---
 
 ## 9. P2P Integration with Existing Architecture
 
-The game currently uses PeerJS (WebRTC) for P2P. The Hive layer adds:
+The game currently uses PeerJS (WebRTC) for P2P. The Hive layer adds on-chain matchmaking and deck verification — all running in the player's browser with zero server involvement.
 
 ```
 Current flow:
@@ -488,36 +804,82 @@ New flow:
        │                                      │
        └──── Hive L1 (match result) ──────────┘
        │                                      │
-       └──── HAF Reader (deck verify) ────────┘
+       └──── Local IndexedDB (deck verify) ───┘
+       │                                      │
+       └──── Hive L1 (matchmaking queue) ─────┘
 ```
 
-### 9.1 Matchmaking Integration
+### 9.1 On-Chain Matchmaking (Replaces Express Server)
 
-Add to existing `matchmakingRoutes.ts`:
+The current Express matchmaking server is replaced with Hive custom_json operations. No server needed.
+
+**Queue join:**
+```json
+{
+  "app": "ragnarok-cards",
+  "action": "queue_join",
+  "mode": "ranked",
+  "elo": 1200,
+  "peer_id": "peerjs-uuid-abc123",
+  "deck_hash": "sha256:0x...",
+  "timestamp": 1707350000,
+  "pow": {
+    "nonces": [4821, 19203, 7741, 33012, 9982, 15634],
+    "count": 32,
+    "difficulty": 4
+  }
+}
+```
+
+**Queue leave:**
+```json
+{
+  "app": "ragnarok-cards",
+  "action": "queue_leave"
+}
+```
+
+**How matching works:**
+1. Player broadcasts `queue_join` via Hive Keychain (costs only RC, no fees)
+2. Every game client polls recent `ragnarok-cards` ops (or subscribes via `condenser_api`)
+3. Client sees another player in the queue with compatible ELO → initiates WebRTC connection using the `peer_id` from the queue op
+4. Both players verify each other's deck ownership locally (IndexedDB lookup)
+5. Match begins via existing PeerJS P2P flow
+
+**Latency:** Hive blocks are 3 seconds apart. Worst case, a queue_join takes 3 seconds to appear. Acceptable for ranked matchmaking.
+
+**Fallback:** For instant casual matches, players can still share PeerJS peer IDs directly (invite link). On-chain matchmaking is only needed for anonymous ranked queue.
+
+### 9.2 Local Deck Verification (Replaces Reader API)
 
 ```typescript
-// Before allowing a match to start, verify both players' decks
-async function verifyDecksOnChain(
-  playerAccount: string,
+// Runs entirely in the player's browser — no server call
+async function verifyDeckOwnership(
+  hiveAccount: string,
   deck: CardInstance[]
 ): Promise<boolean> {
+  const db = await openReplayDB(); // IndexedDB
   for (const card of deck) {
     if (!card.nft_id) continue; // Skip non-NFT cards (dev mode)
-    const owned = await readerApi.verify(card.nft_id, playerAccount);
-    if (!owned) return false;
+    const ownership = await db.get('nft_ownership', card.nft_id);
+    if (!ownership || ownership.ownerAccount !== hiveAccount) return false;
   }
   return true;
 }
 ```
 
-### 9.2 P2P Message Protocol Extension
+Both players verify each other's deck at P2P handshake. If either player's deck contains cards they don't own (according to the local chain replay), the match is refused.
+
+### 9.3 P2P Message Protocol Extension
 
 Add to existing `useP2PSync.ts` message types:
 
 ```typescript
 type P2PMessage =
   | { type: 'engine_handshake'; wasm_hash: string; hive_account: string }
-  | { type: 'deck_commit';      deck_hash: string }
+  | { type: 'match_anchor';     match_id: string; match_hash: string }
+  | { type: 'match_anchor_ack'; tx_id: string }
+  | { type: 'deck_commit';      deck_hash: string; deck_nft_ids: string[] }
   | { type: 'seed_commit';      seed_hash: string }
   | { type: 'seed_reveal';      seed: string }
   | { type: 'signed_move';      move: SignedMove }
@@ -525,7 +887,7 @@ type P2PMessage =
   // ... existing message types
 ```
 
-### 9.3 Non-Breaking: NFT Cards Alongside Normal Cards
+### 9.4 Non-Breaking: NFT Cards Alongside Normal Cards
 
 During the transition period, not all cards need to be NFTs. Add `nft_id?: string` to the card instance type:
 
@@ -537,48 +899,54 @@ interface CardInstance {
 ```
 
 The deck verifier skips cards without `nft_id`. This lets the game run in both modes:
+
 - **Dev/demo mode**: All cards, no blockchain
 - **NFT mode**: Deck must be verified on-chain before ranked matches
 
 ---
 
-## 10. Pack Sales & Economy
+## 10. Community Airdrop & Economy
 
-### 10.1 Purchase Flow
+### 10.1 Distribution Model
+
+This is a **community airdrop, not a for-profit sale**. Cards are distributed freely to players.
 
 ```
-1. Player connects Hive Keychain
-2. Player selects pack type and quantity
-3. Client shows pack price in HIVE or HBD
-4. Player approves transfer via Keychain:
-     Transfer X HIVE from player_account to ragnarok-account
-     Memo: "pack:genesis:3"  ← 3 genesis packs
-5. Server detects the transfer on Hive
-6. Server broadcasts mint transaction for each pack:
-     { "action": "mint", "to": "player_account", "cards": [...] }
-7. Client queries reader: collection updated
-8. Pack opening animation plays with the actual NFT card IDs
+1. Ragnarok account pre-mints all 500,000 genesis cards via batch mint ops
+2. Cards are assigned to airdrop recipients based on:
+   - Hive community participation (HP holders, active posters)
+   - Early testers and contributors
+   - Game launch event participants
+3. Each recipient gets a mint batch: { "action": "mint", "to": "recipient", "cards": [...] }
+4. After all distribution is complete, broadcast "seal" — no more minting ever
+5. Players trade cards peer-to-peer using "transfer" ops signed via Keychain
 ```
 
-### 10.2 Pricing
+### 10.2 No Token, No Fees
 
-Prices are set in HIVE/HBD (stableish pegged asset). No new token needed. No speculation on a game token. Players just use their existing Hive wallets.
+- No game token. No speculation. No Hive Engine.
+- Card transfers cost only Hive Resource Credits (free, regenerates with HP)
+- The Ragnarok account needs minimal HP for broadcasting mints during genesis
+- After the seal, the Ragnarok account's authority is irrelevant
 
 ### 10.3 Supply Scarcity by Design
 
 ```
-Genesis pack contents (example):
-  5 cards per pack
-  Guaranteed rarity distribution per pack:
-    3 commons    (from 295,000 total)
-    1 rare       (from 150,000 total)
-    1 epic/legendary (1-in-20 chance legendary, from 50,000 / 5,000 total)
+Genesis distribution (500,000 total):
+  Legendary:   5,000  cards
+  Epic:       50,000  cards
+  Rare:      150,000  cards
+  Common:    295,000  cards
 
-Once 50,000 epics are minted: no more epic packs possible
-Once 5,000 legendaries are minted: no more legendary drops possible
+Once sealed: no new cards ever. Scarcity is permanent and verifiable.
+Burns reduce circulating supply further (optional crafting mechanic).
 
-This is enforced by the reader — Ragnarok cannot override it.
+This is enforced by every player's replay engine — no one can override it.
 ```
+
+### 10.4 Secondary Market
+
+Players trade cards freely using Hive Keychain-signed `transfer` ops. The game client can include a built-in trade UI, or players can trade via any Hive-compatible tool that understands the `ragnarok-cards` protocol. No marketplace fees, no intermediary.
 
 ---
 
@@ -588,8 +956,7 @@ This is enforced by the reader — Ragnarok cannot override it.
 
 - [ ] Set up Ragnarok Hive account
 - [ ] Write and publish genesis design doc as Hive post (public commitment)
-- [ ] Build reader v1.0 (Node.js + PostgreSQL + HAF)
-- [ ] Implement reader API endpoints
+- [ ] Build in-browser chain replay engine (TypeScript + IndexedDB)
 - [ ] Add `nft_id` field to card types (non-breaking)
 - [ ] Build Hive Keychain connection in client (`useHiveKeychain.ts`)
 - [ ] Test mint/transfer/verify on Hive testnet
@@ -597,68 +964,79 @@ This is enforced by the reader — Ragnarok cannot override it.
 ### Phase 2B — Match Protocol (est. 3-5 weeks)
 
 - [ ] Extract game rule engine to pure TypeScript module (no React deps)
+- [ ] Implement multi-challenge PoW module (`proofOfWork.ts`: `computePoW`, `verifyPoW` with Web Workers)
+- [ ] Implement `match_start` anchor broadcast (dual-sig, with PoW)
 - [ ] Implement commit-reveal deck seeding
+- [ ] Implement `SignedMove` with `hive_block_ref` (temporal anchor per move)
+- [ ] Implement Merkle tree transcript builder (`transcriptBuilder.ts`)
 - [ ] Implement `SignedMove` protocol in P2P layer
 - [ ] Add WASM hash check at P2P handshake
-- [ ] Test full match with transcript generation
-- [ ] Implement match result broadcast to Hive
+- [ ] Test full match with transcript generation and Merkle root
+- [ ] Implement dual-signature `match_result` with `transcript_merkle_root` and PoW
+- [ ] Add PoW and `slash_evidence` processing to replay engine rules
 
 ### Phase 2C — Genesis Launch (est. 2-3 weeks)
 
 - [ ] Compile game engine to WASM
 - [ ] Pin WASM hash in genesis broadcast
-- [ ] Deploy HAF reader to production (minimum 2 instances)
 - [ ] Broadcast genesis transaction on Hive mainnet
-- [ ] Open pack sales
+- [ ] Execute community airdrop (batch mint ops)
+- [ ] Broadcast seal after distribution complete
 
-### Phase 2D — Anti-Cheat & Ladder (est. ongoing)
+### Phase 2D — On-Chain Matchmaking & Ladder (est. ongoing)
 
-- [ ] Ban system (on-chain evidence, reader-enforced)
-- [ ] Ranked ladder using on-chain match results
-- [ ] Community reader nodes (documentation + Docker image)
-- [ ] Dispute resolution process
+- [ ] Implement on-chain matchmaking queue (`queue_join` / `queue_leave` ops)
+- [ ] Ban system (on-chain evidence, client-enforced)
+- [ ] Ranked ladder computed from on-chain match results
+- [ ] Dispute resolution process (partial transcript proof)
 
 ---
 
 ## 12. File Structure
 
-New files to create:
+All new files live in the client. There is no server component, no reader service, no database.
 
 ```
 client/src/
 ├── blockchain/
 │   ├── HiveKeychainProvider.tsx     # Keychain context + auth
 │   ├── useHiveKeychain.ts           # Hook for signing operations
-│   ├── useNFTCollection.ts          # Query reader for player's cards
-│   ├── useDeckVerification.ts       # Verify deck ownership before match
-│   └── types.ts                     # NFT, Transfer, MatchResult types
-
+│   ├── useNFTCollection.ts          # Query IndexedDB for player's cards
+│   ├── useDeckVerification.ts       # Verify deck ownership (local IndexedDB)
+│   ├── types.ts                     # NFT, Transfer, MatchResult types (exists)
+│   ├── replayEngine.ts             # Chain replay: fetch ops → apply rules → IndexedDB
+│   ├── replayRules.ts              # Deterministic rules (v1.0, hash-pinned at genesis)
+│   ├── replayDB.ts                 # IndexedDB schema + queries (ownership, supply, sync)
+│   ├── proofOfWork.ts              # Multi-challenge PoW with Web Workers: computePoW, verifyPoW
+│   ├── matchAnchor.ts              # match_start broadcast + verification logic
+│   ├── slashEvidence.ts            # Detect contradictions, broadcast slash_evidence, apply slashing
+│   └── matchmakingOnChain.ts       # Poll for queue_join ops, initiate P2P connections
+│
 ├── game/
 │   ├── engine/
 │   │   ├── ragnarok-engine.wasm     # Compiled game logic
 │   │   ├── wasmLoader.ts            # WASM init + hash verification
 │   │   └── engineBridge.ts          # TypeScript ↔ WASM interface
 │   └── protocol/
-│       ├── matchProtocol.ts          # SignedMove, commit-reveal logic
-│       ├── transcriptBuilder.ts      # Assemble + verify transcripts
-│       └── resultBroadcaster.ts     # Publish match_result to Hive
-
-server/
-├── blockchain/
-│   ├── hiveMintService.ts           # Detect HIVE transfers, broadcast mints
-│   ├── packOpeningService.ts        # Assign cards to packs, call mint
-│   └── genesisManager.ts            # Track supply, enforce seal
-
-reader/ (separate service)
-├── index.ts                         # HAF stream processor
-├── rules.ts                         # Ownership rules (v1.0, immutable)
-├── db/
-│   ├── schema.sql
-│   └── queries.ts
-├── api/
-│   └── routes.ts                    # Read-only HTTP API
-└── Dockerfile
+│       ├── matchProtocol.ts         # SignedMove (with hive_block_ref), commit-reveal logic
+│       ├── transcriptBuilder.ts     # Assemble SignedMoves into Merkle tree
+│       ├── transcriptMerkle.ts      # Merkle root computation + proof generation/verification
+│       └── resultBroadcaster.ts     # Publish dual-signed match_result to Hive
+│
+├── data/
+│   └── blockchain/                  # Already exists — transaction queue, XP, types
+│       ├── transactionQueueStore.ts # Zustand + persist (IndexedDB/localStorage)
+│       ├── cardXPSystem.ts          # XP calculations
+│       ├── matchResultPackager.ts   # Package match into on-chain format
+│       └── types.ts                 # Shared blockchain types
 ```
+
+**What's NOT here:**
+
+- No `server/blockchain/` — no server involvement after genesis
+- No `reader/` service — every client IS the reader
+- No `Dockerfile` — nothing to deploy except static files
+- No PostgreSQL — IndexedDB is the local database
 
 ---
 
@@ -668,25 +1046,36 @@ These rules must never be violated, regardless of future development:
 
 1. **The genesis broadcast is final.** Total supply, rarity caps, and reader version are set once and never changed.
 
-2. **The reader is append-only.** It reads chain history and builds state. It never writes to Hive.
+2. **The reader is append-only and runs in every player's browser.** It reads chain history and builds state in IndexedDB. It never writes to Hive. There is no server-side reader.
 
 3. **Card transfers require the owner's key.** The Ragnarok account cannot move a card after it has been distributed. Only the holder's Hive private key can sign a transfer.
 
-4. **Match results require both signatures.** A result signed by only one player is invalid and ignored by all readers.
+4. **Every match starts with a dual-anchored `match_start`.** Both players broadcast before gameplay begins. A `match_result` without a matching `match_start` is ignored by all readers.
 
-5. **The WASM module hash is the version.** Two clients with different hashes cannot play each other. There is no fallback.
+5. **Match results require both signatures.** A result signed by only one player is invalid and ignored by all readers.
 
-6. **Mints after the seal are ignored, always.** No exception, no admin override. The reader code that enforces this is pinned by hash at genesis.
+6. **Every broadcast requires multi-challenge proof of work.** `match_start`, `match_result`, and `queue_join` ops must include valid PoW (array of nonces, one per sub-challenge). Challenges derive from the payload — no server needed. Ops with any failing nonce are silently ignored.
 
-7. **All rules are public.** The reader source code, the genesis broadcast, the WASM module, and this design document are all publicly accessible. Security comes from cryptography, not obscurity.
+7. **Every `SignedMove` is block-anchored.** The `hive_block_ref` field pins each move to a real point in Hive chain history. Moves without a valid block reference are inadmissible in dispute resolution.
+
+8. **Match transcripts use Merkle trees.** The `transcript_merkle_root` in `match_result` enables single-move verification without the full transcript. Dispute resolution requires only the disputed move + a Merkle proof.
+
+9. **Slash evidence is permissionless.** Any observer can submit `slash_evidence` citing contradictory on-chain ops. The replay engine enforces slashing deterministically — no admin approval needed.
+
+10. **The WASM module hash is the version.** Two clients with different hashes cannot play each other. There is no fallback.
+
+11. **Mints after the seal are ignored, always.** No exception, no admin override. The replay engine code that enforces this is pinned by hash at genesis and runs locally in every player's browser.
+
+12. **All rules are public.** The reader source code, the genesis broadcast, the WASM module, and this design document are all publicly accessible. Security comes from cryptography, not obscurity.
 
 ---
 
 ## References
 
-- Hive custom JSON documentation: https://developers.hive.io/
-- HAF (Hive Application Framework): https://gitlab.syncad.com/hive/haf
-- dhive (Hive JS library): https://github.com/openhive-network/dhive
-- Hive Keychain API: https://github.com/hive-keychain/hive-keychain-extension
+- [Hive custom JSON documentation](https://developers.hive.io/)
+- [dhive (Hive JS library)](https://github.com/openhive-network/dhive)
+- [hive-tx (lightweight Hive TX library)](https://github.com/nickelHive/hive-tx-js)
+- [Hive Keychain API](https://github.com/hive-keychain/hive-keychain-extension)
+- [IndexedDB API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 - Mental poker (commit-reveal): Shamir, Rivest, Adleman (1979)
-- Splinterlands architecture (reference implementation on Hive): https://splinterlands.com
+- [Splinterlands architecture (reference implementation on Hive)](https://splinterlands.com)

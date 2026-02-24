@@ -8,6 +8,7 @@
 
 import React, { useMemo } from 'react';
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
+import { getCardArtPath } from '../utils/art/artMapping';
 import './SimpleCard.css';
 
 export interface SimpleCardData {
@@ -127,6 +128,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   const isWeapon = card.type === 'weapon';
 
   const classColor = getClassColor(card.cardClass);
+  const artPath = getCardArtPath(card.name);
 
   const nameClass = card.name.length > 18 ? 'name-very-long' : card.name.length > 13 ? 'name-long' : '';
   
@@ -193,11 +195,18 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
         <div className="evolution-stars">{evolutionStars}</div>
       )}
       
-      {/* Card Art Area - styled background with icon */}
-      <div className="card-art-container" style={{ background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}>
-        <div className="card-art-icon">
-          <span>{getCardTypeIcon(card.type)}</span>
-        </div>
+      {/* Card Art Area */}
+      <div
+        className="card-art-container"
+        style={artPath ? undefined : { background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}
+      >
+        {artPath ? (
+          <img src={artPath} alt="" className="card-art-image" draggable={false} />
+        ) : (
+          <div className="card-art-icon">
+            <span>{getCardTypeIcon(card.type)}</span>
+          </div>
+        )}
       </div>
       
       {/* Card Name */}

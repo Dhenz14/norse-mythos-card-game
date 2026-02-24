@@ -1,17 +1,21 @@
 /**
  * Hive Data Types - Core 5 On-Chain Items
- * 
+ *
  * Simplified schema for P2E Hive integration.
  * Based on Splinterlands pattern with 'rp_' prefix (Ragnarok Poker).
- * 
+ *
  * On-Chain Data:
  * 1. User Records
  * 2. Player Stats
  * 3. Match Results
  * 4. Card Ownership
  * 5. Token Balances
- * 
- * Status: BLUEPRINT ONLY - Ready for implementation when Hive integration begins.
+ *
+ * Architecture: Hive L1 only, no Hive Engine, no server.
+ * All data derived from chain replay (custom_json with app id "ragnarok-cards").
+ * Stored locally in IndexedDB, queried via HiveDataLayer Zustand store.
+ *
+ * Status: BLUEPRINT ONLY - Types ready, pending chain replay engine implementation.
  */
 
 export type RagnarokTransactionType =

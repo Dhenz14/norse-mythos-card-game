@@ -134,7 +134,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   ${cardHasTaunt ? 'has-taunt' : ''}
                   ${hasElementalBuff ? 'elemental-buffed' : ''}
                 `}
-                initial={{ opacity: 0, scale: 0.15, y: 50 }}
+                initial={{ opacity: 0, scale: 0.15, y: side === 'player' ? 80 : -80 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{
                   opacity: 0,
@@ -188,18 +188,30 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
     });
   };
 
+  const playerSlots = useMemo(
+    () => renderSlots(playerCards, 'player', onCardClick),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [playerCards, onCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt, handleCardMouseEnter, handleCardMouseLeave]
+  );
+
+  const opponentSlots = useMemo(
+    () => renderSlots(opponentCards, 'opponent', onOpponentCardClick),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [opponentCards, onOpponentCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt, handleCardMouseEnter, handleCardMouseLeave]
+  );
+
   return (
     <>
       <div className="simple-battlefield">
         {showOpponent && (
           <div className="bf-row opponent-row">
-            {renderSlots(opponentCards, 'opponent', onOpponentCardClick)}
+            {opponentSlots}
           </div>
         )}
-        
+
         {showPlayer && (
           <div className="bf-row player-row">
-            {renderSlots(playerCards, 'player', onCardClick)}
+            {playerSlots}
           </div>
         )}
       </div>

@@ -12,6 +12,95 @@
 
 @import './styles/index.css';
 
+/* Attack mode banner — floats above the player field when a minion is selected as attacker */
+.attack-mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  margin: 4px auto;
+  width: fit-content;
+  max-width: 480px;
+  background: linear-gradient(135deg, rgba(30,20,5,0.92) 0%, rgba(60,35,5,0.92) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.75);
+  border-radius: 8px;
+  box-shadow:
+    0 0 18px rgba(251, 191, 36, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.55);
+  animation: attackBannerIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+@keyframes attackBannerIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.attack-mode-icon {
+  font-size: 18px;
+  filter: drop-shadow(0 0 6px rgba(251,191,36,0.8));
+  animation: swordPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes swordPulse {
+  0%, 100% { transform: rotate(-5deg); }
+  50%       { transform: rotate(5deg); }
+}
+
+.attack-mode-text {
+  font-size: 13px;
+  color: rgba(253, 230, 138, 0.95);
+  letter-spacing: 0.3px;
+}
+
+.attack-mode-text strong {
+  color: #fde68a;
+  font-weight: 700;
+}
+
+.attack-mode-cancel {
+  margin-left: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(253, 230, 138, 0.8);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(251,191,36,0.4);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+/* Turn transition flash — full-arena overlay that fades out immediately */
+.turn-flash-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  animation: turnFlashFade 0.5s ease-out forwards;
+}
+
+.turn-flash-player {
+  background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.28) 0%, transparent 70%);
+}
+
+.turn-flash-opponent {
+  background: radial-gradient(ellipse at center, rgba(239, 68, 68, 0.22) 0%, transparent 70%);
+}
+
+@keyframes turnFlashFade {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.attack-mode-cancel:hover {
+  background: rgba(239,68,68,0.25);
+  color: #fca5a5;
+  border-color: rgba(239,68,68,0.5);
+}
+
 /* ========================================
    RESPONSIVE BREAKPOINTS
    

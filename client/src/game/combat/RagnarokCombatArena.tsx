@@ -50,6 +50,7 @@ import { useRagnarokCombatController } from './hooks/useRagnarokCombatController
 import type { ShowdownCelebration as ShowdownCelebrationState } from './hooks/useCombatEvents';
 import { isCardInWinningHand } from './utils/combatArenaUtils';
 import { debug } from '../config/debugConfig';
+import { playSound } from '../utils/soundUtils';
 
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
@@ -292,6 +293,19 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const [screenShakeClass, setScreenShakeClass] = useState('');
   const screenShakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Turn transition flash
+  const [turnFlash, setTurnFlash] = useState<'player' | 'opponent' | null>(null);
+  const prevIsPlayerTurnRef = useRef(isPlayerTurn);
+  useEffect(() => {
+    let id: ReturnType<typeof setTimeout> | undefined;
+    if (prevIsPlayerTurnRef.current !== isPlayerTurn) {
+      setTurnFlash(isPlayerTurn ? 'player' : 'opponent');
+      id = setTimeout(() => setTurnFlash(null), 500);
+      prevIsPlayerTurnRef.current = isPlayerTurn;
+    }
+    return () => { if (id !== undefined) clearTimeout(id); };
+  }, [isPlayerTurn]);
+
   const triggerScreenShake = useCallback((damage: number) => {
     if (damage < 5) return;
     const shakeClass = damage >= 8 ? 'screen-shake-strong' : 'screen-shake-mild';
@@ -314,6 +328,11 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         });
       }, 300);
       triggerScreenShake(damage);
+      if (targetId === 'player-hero' || targetId === 'opponent-hero') {
+        playSound('damage');
+      }
+    } else if (targetId === 'player-hero' || targetId === 'opponent-hero') {
+      playSound('heal');
     }
   }, [triggerScreenShake]);
 
@@ -481,6 +500,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           selectAttacker(card);
         } else {
           debug.combat('[Attack Debug] Card cannot attack - summoning sickness or exhausted');
+          setShakingTargets(prev => new Set(prev).add(card.instanceId));
+          setTimeout(() => setShakingTargets(prev => { const n = new Set(prev); n.delete(card.instanceId); return n; }), 500);
         }
       }
     }
@@ -612,6 +633,11 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 
   return (
     <div className="unified-combat-arena" ref={battlefieldRef as React.RefObject<HTMLDivElement>}>
+      {/* Turn transition flash overlay */}
+      {turnFlash && (
+        <div className={`turn-flash-overlay turn-flash-${turnFlash}`} />
+      )}
+
       {/* Activity Logs - Top Right Overlay */}
       <div className="activity-logs-dock">
         <PokerActivityLog />
@@ -772,6 +798,23 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           isInteractionDisabled={gameState?.gamePhase === 'game_over'}
         />
       </div>
+
+      {/* Attack mode banner — shown while a minion is selected as attacker */}
+      {attackingCard && (
+        <div className="attack-mode-banner">
+          <span className="attack-mode-icon">⚔</span>
+          <span className="attack-mode-text">
+            <strong>{attackingCard.card?.name}</strong> is attacking — click a target
+          </span>
+          <button
+            type="button"
+            className="attack-mode-cancel"
+            onClick={() => selectAttacker(null)}
+          >
+            ✕ Cancel
+          </button>
+        </div>
+      )}
 
       {/* Info Row: End Turn Button + Last Action Log */}
       <div className="unified-info-row">

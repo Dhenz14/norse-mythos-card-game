@@ -1,14 +1,19 @@
 /**
  * HiveDataLayer - Central Data Store for P2E
- * 
+ *
  * Zustand store for the 5 core on-chain items:
  * 1. User Records
  * 2. Player Stats
  * 3. Match Results
  * 4. Card Ownership
  * 5. Token Balances
- * 
- * Status: BLUEPRINT ONLY - Ready for implementation when Hive integration begins.
+ *
+ * Architecture: Zero-cost, fully client-side. No server, no PostgreSQL.
+ * Data is derived from Hive L1 chain replay into IndexedDB.
+ * This store reads from IndexedDB and provides reactive state to React.
+ * See HIVE_INTEGRATION_BLUEPRINT.md and docs/HIVE_BLOCKCHAIN_BLUEPRINT.md.
+ *
+ * Status: BLUEPRINT ONLY - Store structure ready, pending chain replay engine.
  */
 
 import { create } from 'zustand';
