@@ -33,12 +33,12 @@ interface ArmySelectionProps {
 const PIECE_ORDER: ChessPieceType[] = ['king', 'queen', 'rook', 'bishop', 'knight'];
 
 const PIECE_DISPLAY_INFO: Record<ChessPieceType, { name: string; icon: string; color: string; domain: string; rune: string }> = {
-  king: { name: 'King', icon: '♔', color: '#FFD700', domain: "Odin's Domain", rune: 'ᚲ' },
-  queen: { name: 'Queen', icon: '♕', color: '#69CCF0', domain: "Freya's Domain", rune: 'ᛗ' },
-  rook: { name: 'Rook', icon: '♖', color: '#C79C6E', domain: "Thor's Domain", rune: 'ᚦ' },
-  bishop: { name: 'Bishop', icon: '♗', color: '#FFFFFF', domain: "Frigg's Domain", rune: 'ᛒ' },
-  knight: { name: 'Knight', icon: '♘', color: '#FFF569', domain: "Loki's Domain", rune: 'ᛚ' },
-  pawn: { name: 'Pawn', icon: '♙', color: '#999999', domain: 'Common Folk', rune: 'ᛈ' }
+  king: { name: 'Protogenoi', icon: '♔', color: '#FFD700', domain: "Odin's Domain", rune: 'ᚲ' },
+  queen: { name: 'Sovereign', icon: '♕', color: '#69CCF0', domain: "Freya's Domain", rune: 'ᛗ' },
+  rook: { name: 'Shaper', icon: '♖', color: '#C79C6E', domain: "Thor's Domain", rune: 'ᚦ' },
+  bishop: { name: 'Luminary', icon: '♗', color: '#FFFFFF', domain: "Frigg's Domain", rune: 'ᛒ' },
+  knight: { name: 'Ethereal', icon: '♘', color: '#FFF569', domain: "Loki's Domain", rune: 'ᛚ' },
+  pawn: { name: 'Demigod', icon: '♙', color: '#999999', domain: 'Common Folk', rune: 'ᛈ' }
 };
 
 const MAJOR_PIECES: PieceType[] = ['queen', 'rook', 'bishop', 'knight'];
@@ -283,7 +283,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
             </div>
           </div>
           <span className={`norse-spell-badge ${pieceHasSpells(selectedPieceType) ? 'has-spells' : 'no-spells'}`}>
-            {pieceHasSpells(selectedPieceType) ? '10 Signature Cards' : 'No Spells (King)'}
+            {pieceHasSpells(selectedPieceType) ? '10 Signature Cards' : 'No Spells (Protogenoi)'}
           </span>
         </div>
         

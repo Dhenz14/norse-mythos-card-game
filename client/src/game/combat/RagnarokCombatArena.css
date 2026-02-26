@@ -2617,6 +2617,23 @@
   margin-left: 2px;
 }
 
+/* Artifact Badge - shown below hero portrait when artifact equipped */
+.artifact-badge {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #6b21a8, #9333ea);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(147, 51, 234, 0.6);
+  white-space: nowrap;
+  z-index: 40;
+}
+
 /* Hero Power Tooltip - appears on portrait hover */
 .hero-portrait-tooltip {
   position: absolute;

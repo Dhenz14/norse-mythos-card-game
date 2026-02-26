@@ -2,7 +2,6 @@ import type { HiveCardAsset } from '../schemas/HiveTypes';
 
 export type BlockchainActionType =
 	| 'match_result'
-	| 'xp_update'
 	| 'level_up'
 	| 'card_transfer'
 	| 'nft_mint';
@@ -67,6 +66,17 @@ export interface PackagedMatchResult {
 	result_nonce: number; // monotonic per-account nonce — prevents re-broadcasting old results
 	signatures?: { broadcaster: string; counterparty: string };
 	transcriptRoot?: string;
+}
+
+export interface PackagedMatchResultOnChain {
+	m: string;
+	w: string;
+	l: string;
+	n: number;
+	h: string;
+	s: string;
+	v: number;
+	sig?: { b: string; c: string };
 }
 
 export interface CardXPReward {

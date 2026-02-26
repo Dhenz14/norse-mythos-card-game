@@ -810,55 +810,6 @@ export const druidCards: CardData[] = [
     collectible: true,
     set: "core"
   },
-  // === Migrated from additionalClassMinions.ts ===
-  {
-    id: 40009,
-    name: "Grove Warden",
-    manaCost: 4,
-    attack: 2,
-    health: 2,
-    type: "minion",
-    rarity: "rare",
-    description: "Choose One - Deal 2 damage; or Silence a minion.",
-    flavorText: "Wardens of sacred groves choose their path with wisdom.",
-    keywords: ["choose_one"],
-    class: "Druid",
-    chooseOneOptions: [
-      {
-        id: 40009.1,
-        name: "Keeper of the Grove: Damage",
-        manaCost: 4,
-        type: "spell",
-        rarity: "rare",
-        description: "Deal 2 damage.",
-        class: "Druid",
-        collectible: false,
-        spellEffect: {
-          type: "damage",
-          value: 2,
-          requiresTarget: true,
-          targetType: "any"
-        }
-      },
-      {
-        id: 40009.2,
-        name: "Keeper of the Grove: Silence",
-        manaCost: 4,
-        type: "spell",
-        rarity: "rare",
-        description: "Silence a minion.",
-        class: "Druid",
-        collectible: false,
-        spellEffect: {
-          type: "silence",
-          requiresTarget: true,
-          targetType: "any_minion"
-        }
-      }
-    ],
-    collectible: true,
-    set: "core"
-  },
   {
     id: 40010,
     name: "Ancient of Wisdom",

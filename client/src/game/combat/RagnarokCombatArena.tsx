@@ -36,6 +36,7 @@ import { HeroDeathAnimation } from './components/HeroDeathAnimation';
 import { PlayingCard } from './components/PlayingCard';
 import { HoleCardsOverlay } from './components/HoleCardsOverlay';
 import { BattlefieldHero } from './components/BattlefieldHero';
+import HeroGearPanel from './components/HeroGearPanel';
 import { ElementBuffPopup } from './components/ElementBuffPopup';
 import { ElementMatchupBanner } from './components/ElementMatchupBanner';
 import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
@@ -157,6 +158,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const isPlayerTurn = gameState?.currentTurn === 'player';
   
   const [communityCardsRevealed, setCommunityCardsRevealed] = useState(false);
+  const [showGearPanel, setShowGearPanel] = useState(false);
 
   useEffect(() => {
     if (combatState?.phase === CombatPhase.SPELL_PET || combatState?.phase === CombatPhase.MULLIGAN || combatState?.phase === CombatPhase.PRE_FLOP) {
@@ -846,7 +848,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   pet={enrichedPlayerPet}
                   hpCommitted={playerHpCommitted}
                   level={playerLevel}
-                  onClick={onPlayerHeroClick}
+                  onClick={() => { onPlayerHeroClick?.(); setShowGearPanel(true); }}
                   isTargetable={isPlayerTargetable}
                   isOpponent={false}
                   secrets={playerSecrets}
@@ -856,6 +858,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   onHeroPowerClick={onHeroPowerClick}
                   onWeaponUpgradeClick={onWeaponUpgradeClick}
                   isWeaponUpgraded={isWeaponUpgraded}
+                  artifact={gameState?.players?.player?.artifact ? {
+                    name: gameState.players.player.artifact.card.name,
+                    attack: (gameState.players.player.artifact.card as any).attack || 0
+                  } : undefined}
                 />
                 <div className="player-mana-display">
                   <ManaBar 
@@ -930,12 +936,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 
                const actualCallAmount = Math.min(toCall, availableHP);
 
-               const betOrRaiseLabel = hasBetToCall
-                 ? `RAISE to ${toCall + effectiveBet} HP`
-                 : `BET ${effectiveBet} HP`;
+               const betOrRaiseLabel = `ATTACK ${hasBetToCall ? toCall + effectiveBet : effectiveBet} HP`;
                const callLabel = isAllIn
                  ? `ALL-IN ${actualCallAmount} HP`
-                 : `CALL ${toCall} HP`;
+                 : `ENGAGE ${toCall} HP`;
 
                return (
                  <div className="action-buttons-group">
@@ -955,7 +959,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      onClick={() => wrappedOnAction(canCall ? CombatAction.ENGAGE : CombatAction.DEFEND)}
                      disabled={isDisabled || (!canCall && !canCheck)}
                    >
-                     <span className="btn-text">{canCall ? callLabel : 'CHECK'}</span>
+                     <span className="btn-text">{canCall ? callLabel : 'DEFEND'}</span>
                    </button>
 
                    <button
@@ -963,7 +967,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      onClick={() => wrappedOnAction(CombatAction.BRACE)}
                      disabled={isDisabled || !canFold}
                    >
-                     <span className="btn-text">FOLD</span>
+                     <span className="btn-text">BRACE</span>
                    </button>
                  </div>
                );
@@ -983,6 +987,16 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           onComplete={() => removeDamageAnimation(anim.id)}
         />
       ))}
+
+      {/* Hero Gear Panel - shows artifact + armor slots when hero clicked */}
+      {showGearPanel && gameState?.players?.player && (
+        <HeroGearPanel
+          artifact={gameState.players.player.artifact}
+          armorGear={gameState.players.player.armorGear}
+          artifactState={gameState.players.player.artifactState}
+          onClose={() => setShowGearPanel(false)}
+        />
+      )}
     </div>
   );
 };
@@ -1298,6 +1312,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         onPlayAgain={onCombatEnd ? () => onCombatEnd(gameWinner === 'player' ? 'player' : 'opponent') : undefined}
         onMainMenu={() => { window.location.href = '/'; }}
       />
+
     </div>
     </GameViewport>
   );

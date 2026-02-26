@@ -1,6 +1,7 @@
 import type { GameState } from '../../game/types';
 import type {
 	PackagedMatchResult,
+	PackagedMatchResultOnChain,
 	MatchPackagerInput,
 	CardXPReward,
 	MatchPlayerData,
@@ -138,4 +139,20 @@ export async function packageMatchResult(
 	const hash = await hashMatchResult(resultWithoutHash);
 
 	return { ...resultWithoutHash, hash };
+}
+
+export function packMatchResultForChain(result: PackagedMatchResult): PackagedMatchResultOnChain {
+	const packed: PackagedMatchResultOnChain = {
+		m: result.matchId,
+		w: result.winner.username,
+		l: result.loser.username,
+		n: result.result_nonce,
+		h: result.hash,
+		s: result.seed,
+		v: result.version,
+	};
+	if (result.signatures) {
+		packed.sig = { b: result.signatures.broadcaster, c: result.signatures.counterparty };
+	}
+	return packed;
 }

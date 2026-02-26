@@ -152,10 +152,10 @@
 
 .hero-portrait-frame {
   position: relative;
-  width: 96px;
-  height: 112px;
+  width: 140px;
+  height: 175px;
   border-radius: 10px;
-  overflow: visible;
+  overflow: hidden;
   border: 3px solid rgba(180, 160, 120, 0.8);
   box-shadow:
     0 0 0 2px rgba(100, 80, 50, 0.6),
@@ -167,6 +167,13 @@
   background: linear-gradient(145deg, #2a2520 0%, #1a1510 100%);
   z-index: 1;
 }
+
+.hero-portrait-frame[data-element="fire"] { border-color: rgba(255, 69, 0, 0.7); }
+.hero-portrait-frame[data-element="water"] { border-color: rgba(0, 191, 255, 0.7); }
+.hero-portrait-frame[data-element="wind"] { border-color: rgba(50, 205, 50, 0.7); }
+.hero-portrait-frame[data-element="earth"] { border-color: rgba(205, 133, 63, 0.7); }
+.hero-portrait-frame[data-element="holy"] { border-color: rgba(255, 215, 0, 0.8); }
+.hero-portrait-frame[data-element="shadow"] { border-color: rgba(153, 50, 204, 0.7); }
 
 .hero-portrait-frame::before {
   content: '';
@@ -204,6 +211,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 15%;
   border-radius: 7px;
   z-index: 1;
 }
@@ -335,59 +343,88 @@
 .divine-command-btn {
   position: relative;
   padding: 14px 28px;
-  background: linear-gradient(135deg, #92400e 0%, #b45309 30%, #d97706 50%, #b45309 70%, #92400e 100%);
-  border: 2px solid rgba(251, 191, 36, 0.7);
-  border-radius: 8px;
-  color: #fef3c7;
+  background: linear-gradient(180deg, #3a3530 0%, #2a2520 40%, #1e1a15 100%);
+  border: 2px solid rgba(120, 100, 70, 0.6);
+  border-radius: 6px;
+  color: #d4c4a0;
   font-weight: 800;
   font-size: 1.05rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7), 0 0 10px rgba(251, 191, 36, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(251, 191, 36, 0.2);
   cursor: pointer;
   overflow: visible;
   transition: transform 0.2s ease, filter 0.2s ease;
   animation: runicBorderPulse 3s ease-in-out infinite;
   z-index: 1;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 -2px 4px rgba(0, 0, 0, 0.4) inset;
 }
 
 .divine-command-btn::before {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 130%;
-  height: 130%;
-  border-radius: 50%;
+  inset: 0;
+  border-radius: inherit;
   pointer-events: none;
-  z-index: -1;
-  animation: divineParticle1 4s linear infinite;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, transparent 70%);
-  width: 6px;
-  height: 6px;
+  z-index: 1;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, transparent 20%, rgba(255, 140, 50, 0.06) 40%, transparent 60%),
+    linear-gradient(45deg, transparent 30%, rgba(255, 100, 20, 0.04) 50%, transparent 70%);
+  animation: stone-crack-glow 4s ease-in-out infinite;
 }
 
 .divine-command-btn::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+  inset: 0;
+  border-radius: inherit;
   pointer-events: none;
-  z-index: -1;
-  animation: divineParticle2 4s linear infinite 1s;
-  background: radial-gradient(circle, rgba(253, 224, 71, 0.7) 0%, transparent 70%);
+  z-index: 0;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0, 0, 0, 0.08) 3px, rgba(0, 0, 0, 0.08) 4px),
+    repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(0, 0, 0, 0.05) 5px, rgba(0, 0, 0, 0.05) 6px);
+  opacity: 0.6;
+}
+
+@keyframes stone-crack-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
 }
 
 .divine-command-btn:hover:not(:disabled) {
-  transform: scale(1.06) translateY(-2px);
-  filter: brightness(1.15);
+  transform: scale(1.04) translateY(-2px);
+  filter: brightness(1.2);
+  border-color: rgba(180, 150, 80, 0.8);
 }
 
 .divine-command-btn:active:not(:disabled) {
   transform: scale(1.02) translateY(0);
+}
+
+.divine-command-full {
+  border-color: rgba(251, 191, 36, 0.8);
+  animation: divine-full-breathe 2s ease-in-out infinite;
+}
+
+@keyframes divine-full-breathe {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(251, 191, 36, 0.4),
+      0 0 30px rgba(255, 165, 0, 0.2),
+      0 4px 12px rgba(0, 0, 0, 0.6);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(251, 191, 36, 0.6),
+      0 0 50px rgba(255, 165, 0, 0.3),
+      0 0 70px rgba(251, 191, 36, 0.1),
+      0 4px 12px rgba(0, 0, 0, 0.6);
+  }
 }
 
 

@@ -154,7 +154,7 @@ async function _doSync(username: string): Promise<void> {
 			// We only care about our app's custom_json ops
 			if (entry.op[0] !== 'custom_json') continue;
 			const opData = entry.op[1] as CustomJsonOpData;
-			if (!opData.id?.startsWith('rp_') && opData.id !== 'ragnarok-cards') continue;
+			if (!opData.id?.startsWith('rp_') && opData.id !== 'ragnarok-cards' && opData.id !== 'ragnarok_level_up') continue;
 
 			const broadcaster =
 				opData.required_posting_auths?.[0] ??
@@ -199,6 +199,8 @@ async function _doSync(username: string): Promise<void> {
 				const parsed = JSON.parse(opData.json) as { action?: string };
 				if (parsed.action) opId = `rp_${parsed.action}`;
 			} catch { /* use raw id */ }
+		} else if (opId === 'ragnarok_level_up') {
+			opId = 'rp_level_up';
 		}
 
 		const op: RawOp = {

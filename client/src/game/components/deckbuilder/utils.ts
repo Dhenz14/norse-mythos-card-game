@@ -11,7 +11,7 @@ export const MAX_COPIES = 2;
 export const MAX_LEGENDARY_COPIES = 1;
 
 export type SortOption = 'cost' | 'name' | 'type';
-export type FilterType = 'all' | 'minion' | 'spell' | 'weapon';
+export type FilterType = 'all' | 'minion' | 'spell' | 'weapon' | 'artifact' | 'armor';
 
 export interface CardFilters {
   searchTerm: string;

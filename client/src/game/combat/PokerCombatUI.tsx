@@ -300,7 +300,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
   } = permissions;
   
   // Bet/Raise label changes based on context
-  const betLabel = hasBetToCall ? 'Raise' : 'Bet';
+  const betLabel = 'Attack';
   
   // Effective bet amount clamped to available range
   const maxSlider = maxBetAmount;
@@ -420,7 +420,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
               onClick={() => handleAction(CombatAction.ATTACK, effectiveBet)}
               disabled={disabled || effectiveBet > availableHP}
             >
-              Bet ({effectiveBet} HP)
+              Attack ({effectiveBet} HP)
             </button>
           )}
           
@@ -431,7 +431,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
               onClick={() => handleAction(CombatAction.COUNTER_ATTACK, effectiveBet)}
               disabled={disabled}
             >
-              Raise (+{effectiveBet} HP, total {raiseTotal})
+              Attack (+{effectiveBet} HP, total {raiseTotal})
             </button>
           )}
           
@@ -442,7 +442,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
               onClick={() => handleAction(CombatAction.ENGAGE)}
               disabled={disabled}
             >
-              {isAllIn ? `All-In (${actualCallAmount} HP)` : `Call (${toCall} HP)`}
+              {isAllIn ? `All-In (${actualCallAmount} HP)` : `Engage (${toCall} HP)`}
             </button>
           )}
           
@@ -453,18 +453,18 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
               onClick={() => handleAction(CombatAction.DEFEND)}
               disabled={disabled}
             >
-              Check
+              Defend
             </button>
           )}
-          
-          {/* Fold - available when there's a bet to call (in any phase) */}
+
+          {/* Brace - available when there's a bet to call (in any phase) */}
           {canFold && (
-            <button 
+            <button
               className="action-btn brace"
               onClick={() => handleAction(CombatAction.BRACE)}
               disabled={disabled}
             >
-              Fold
+              Brace
             </button>
           )}
           

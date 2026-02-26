@@ -6,6 +6,7 @@
 
 import { GameState } from '../types';
 import { debug } from '../config/debugConfig';
+import { resetArtifactTurnState } from './artifactUtils';
 
 /**
  * Resets all minions' attack state at the start of a player's turn
@@ -95,6 +96,9 @@ export function performTurnStartResets(state: GameState): GameState {
   
   // Reset hero power usage
   newState.players[newState.currentTurn].heroPower.used = false;
+
+  // Reset artifact per-turn state (firstSpell, damagePrevented, heroDamaged)
+  resetArtifactTurnState(newState, newState.currentTurn);
   
   debug.state(`[performTurnStartResets] Resets complete. Player minions:`, 
     newState.players[newState.currentTurn].battlefield.map(m => ({

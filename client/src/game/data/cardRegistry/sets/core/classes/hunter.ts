@@ -634,25 +634,6 @@ export const hunterCards: CardData[] = [
     collectible: true,
     set: "core"
   },
-  // === Migrated from additionalSpellCards.ts ===
-  {
-    id: 7520,
-    name: "Skadi's Mark",
-    manaCost: 1,
-    type: "spell",
-    rarity: "common",
-    description: "Change a minion's Health to 1.",
-    flavorText: "The hunt begins when the prey is marked.",
-    class: "Hunter",
-    spellEffect: {
-      type: "set_health",
-      value: 1,
-      requiresTarget: true,
-      targetType: "any_minion"
-    },
-    collectible: true,
-    set: "core"
-  },
   // === Quest Cards ===
   {
     id: 70005,

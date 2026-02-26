@@ -273,6 +273,20 @@
   50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
 }
 
+.god-piece-aura {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: god-aura-breathe 3s ease-in-out infinite;
+}
+
+@keyframes god-aura-breathe {
+  0%, 100% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
 .element-piece {
   transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
@@ -287,6 +301,18 @@
 .element-piece-earth:hover { box-shadow: 0 0 35px #cd853f, 0 0 70px rgba(205, 133, 63, 0.8), 0 0 100px rgba(139, 69, 19, 0.5) !important; }
 .element-piece-holy:hover { box-shadow: 0 0 40px #ffd700, 0 0 80px rgba(255, 215, 0, 0.9), 0 0 120px rgba(255, 255, 100, 0.6) !important; }
 .element-piece-shadow:hover { box-shadow: 0 0 35px #9932cc, 0 0 70px rgba(153, 50, 204, 0.8), 0 0 100px rgba(75, 0, 130, 0.5) !important; }
+
+.chess-piece[data-piece-type="king"],
+.chess-piece[data-piece-type="queen"],
+.chess-piece[data-piece-type="rook"],
+.chess-piece[data-piece-type="bishop"],
+.chess-piece[data-piece-type="knight"] {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.chess-piece[data-piece-type="pawn"] {
+  opacity: 0.88;
+}
 
 .matchup-pulse-advantage {
   animation: matchup-advantage-pulse 1.2s ease-in-out infinite !important;

@@ -474,27 +474,6 @@ export const paladinCards: CardData[] = [
     collectible: true,
     set: "core"
   },
-  // === Migrated from additionalSpellCards.ts ===
-  {
-    id: 8509,
-    name: "Odin's Vengeance",
-    manaCost: 6,
-    type: "spell",
-    rarity: "epic",
-    description: "Deal 8 damage randomly split among all enemies.",
-    flavorText: "Divine fury rains from above.",
-    class: "Paladin",
-    spellEffect: {
-      type: "damage",
-      value: 8,
-      requiresTarget: false,
-      targetType: "all_enemy_minions_and_hero",
-      isRandom: true,
-      isSplit: true
-    },
-    collectible: true,
-    set: "core"
-  },
   // === New Holy Spell ===
   {
     id: 8520,

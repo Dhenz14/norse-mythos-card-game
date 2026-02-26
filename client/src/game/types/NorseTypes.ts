@@ -50,7 +50,8 @@ export type KingPassiveEffectType =
   | 'heal_all_friendly' // Heal all friendly minions
   | 'summon_token'      // Summon a token minion
   | 'freeze_random'     // Freeze a random enemy
-  | 'grant_attack_on_heal'; // Give attack when healed
+  | 'grant_attack_on_heal' // Give attack when healed
+  | 'damage_all';          // Deal damage to ALL minions (friendly + enemy)
 
 /**
  * Single King passive effect
@@ -63,7 +64,8 @@ export interface KingPassiveEffect {
   effectType: KingPassiveEffectType;
   value: number;
   isAura: boolean;  // If true, effect is removed when King dies
-  
+  affectsAll?: boolean; // If true, affects both friendly AND enemy minions
+
   // For summon effects
   summonData?: {
     name: string;

@@ -14,9 +14,9 @@ export const NORSE_KINGS: Record<string, NorseKing> = {
     id: 'king-ymir',
     name: 'Ymir',
     title: 'The Primordial Jotunn',
-    description: 'The first being in Norse mythology, from whose body the world was created.',
+    description: 'The first being in Norse mythology, born from the collision of fire and ice alongside his brother Brimir. From his body the world was created.',
     role: 'Tempo Pressure / Attack Skew',
-    designIntent: 'Ymir forces combat. He compresses the game timeline and punishes slow setups. If you hesitate, Ymir wins.',
+    designIntent: 'Ymir forces combat. He compresses the game timeline and punishes slow setups. If you hesitate, Ymir wins. Where Brimir is blood and fury, Ymir is frost and inevitability.',
     hasSpells: false,
     passives: [
       {
@@ -201,19 +201,19 @@ export const NORSE_KINGS: Record<string, NorseKing> = {
     ]
   },
 
-  // ==================== 7. BLAINN ====================
-  'king-blainn': {
-    id: 'king-blainn',
-    name: 'Blainn',
-    title: 'The Dark One',
-    description: 'A primordial dwarf associated with darkness and the forging of fate.',
+  // ==================== 7. GAIA ====================
+  'king-gaia': {
+    id: 'king-gaia',
+    name: 'Gaia',
+    title: 'Mother Earth',
+    description: 'The primordial goddess of the Earth — patient, nurturing, and terrifyingly powerful when roused to anger.',
     role: 'Control / Disruption',
-    designIntent: 'Blainn wins by denial, not force. You don\'t lose your army — you lose your momentum.',
+    designIntent: 'Gaia wins by denial, not force. The earth endures while all others wither.',
     hasSpells: false,
     passives: [
       {
-        id: 'blainn-passive-1',
-        name: "Shadow's Embrace",
+        id: 'gaia-king-passive-1',
+        name: "Earth's Embrace",
         description: 'All friendly minions gain +1 Health.',
         trigger: 'always',
         effectType: 'buff_health',
@@ -221,8 +221,8 @@ export const NORSE_KINGS: Record<string, NorseKing> = {
         isAura: true
       },
       {
-        id: 'blainn-passive-2',
-        name: "Fate's Chains",
+        id: 'gaia-king-passive-2',
+        name: "Wither and Root",
         description: 'At the start of your turn, a random enemy minion loses 1 Attack permanently.',
         trigger: 'start_of_turn',
         effectType: 'debuff_attack',
@@ -237,9 +237,9 @@ export const NORSE_KINGS: Record<string, NorseKing> = {
     id: 'king-brimir',
     name: 'Brimir',
     title: 'The Bloody Moisture',
-    description: 'A primordial being from whose blood and bones the world was shaped.',
+    description: 'Brother of Ymir, born alongside him from the primordial collision of fire and ice. Where Ymir became flesh and bone, Brimir became blood and marrow — the violent half of creation.',
     role: 'Aggression Through Death',
-    designIntent: 'Brimir turns loss into pressure. Blood spills both ways.',
+    designIntent: 'Brimir turns loss into pressure. Blood spills both ways. As Ymir\'s brother, he represents the destructive cost of creation — the price paid in blood for every world that was shaped from their shared origin.',
     hasSpells: false,
     passives: [
       {
@@ -287,6 +287,40 @@ export const NORSE_KINGS: Record<string, NorseKing> = {
           health: 1,
           randomKeyword: true
         }
+      }
+    ]
+  }
+  ,
+
+  // ==================== 10. TARTARUS ====================
+  'king-tartarus': {
+    id: 'king-tartarus',
+    name: 'Tartarus',
+    title: 'The Abyss Below',
+    description: 'The prison beneath the underworld where even gods fear to tread. Titans and the worst souls are chained in his depths, guarded by hundred-handed giants for eternity.',
+    role: 'Attrition / Symmetrical Drain',
+    designIntent: 'Tartarus punishes everything equally. The abyss does not distinguish friend from foe — it swallows all. Build high-health minions to outlast the constant drain while your enemy crumbles.',
+    hasSpells: false,
+    passives: [
+      {
+        id: 'tartarus-passive-1',
+        name: 'Abyssal Gravity',
+        description: 'ALL minions (friendly and enemy) have -1 Attack.',
+        trigger: 'always',
+        effectType: 'debuff_attack',
+        value: 1,
+        isAura: true,
+        affectsAll: true
+      },
+      {
+        id: 'tartarus-passive-2',
+        name: 'Eternal Imprisonment',
+        description: 'At the end of each turn, deal 1 damage to ALL minions.',
+        trigger: 'end_of_turn',
+        effectType: 'damage_all',
+        value: 1,
+        isAura: false,
+        affectsAll: true
       }
     ]
   }

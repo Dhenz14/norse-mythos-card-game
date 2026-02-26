@@ -64,7 +64,7 @@ export type SoundEffectType =
 /**
  * Valid card types
  */
-export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'secret' | 'location' | 'poker_spell';
+export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'secret' | 'location' | 'poker_spell' | 'artifact' | 'armor';
 
 /**
  * Valid game zones (areas where cards can be located)
@@ -336,6 +336,32 @@ export interface PokerSpellCardData extends BaseCardData {
   overload?: { amount: number };
 }
 
+export interface ArtifactCardData extends BaseCardData {
+  type: 'artifact';
+  attack?: number;
+  heroId: string;
+  artifactEffect?: {
+    type: string;
+    [key: string]: any;
+  };
+  categories?: string[];
+  overload?: { amount: number };
+}
+
+export interface ArmorCardData extends BaseCardData {
+  type: 'armor';
+  armorSlot: 'helm' | 'chest' | 'greaves';
+  armorValue: number;
+  setId?: string;
+  armorPassive?: {
+    type: string;
+    value?: number;
+    condition?: string;
+  };
+  categories?: string[];
+  overload?: { amount: number };
+}
+
 /**
  * Union type for all card data types with discriminated union based on type field
  */
@@ -346,7 +372,9 @@ export type CardData =
   | HeroCardData
   | SecretCardData
   | LocationCardData
-  | PokerSpellCardData;
+  | PokerSpellCardData
+  | ArtifactCardData
+  | ArmorCardData;
 
 /**
  * Type for card transform objects that should not be treated as cards
@@ -615,6 +643,61 @@ export interface HeroState {
   isImmune?: boolean;
 }
 
+export interface ArtifactRuntimeState {
+  souls?: number;
+  firstSpellCastThisTurn?: boolean;
+  damagePrevented?: boolean;
+  heroWasDamagedThisTurn?: boolean;
+  lethalPrevented?: boolean;
+  permanentAttackBonus?: number;
+  venom?: number;
+  seeds?: number;
+  escalatingDamage?: number;
+  totalHeroAttacks?: number;
+  extraTurnUsed?: boolean;
+  resurrectionCharges?: number;
+  attacksThisTurn?: number;
+  spellsCastThisTurn?: number;
+  cardsPlayedThisTurn?: number;
+  minionsDiedThisGame?: string[];
+  totalDamageTaken?: number;
+  oncePerTurn?: Record<string, boolean>;
+  oncePerGame?: Record<string, boolean>;
+}
+
+export type ArmorSlot = 'helm' | 'chest' | 'greaves';
+
+export type ArmorPassiveType =
+  | 'spell_cost_reduction'
+  | 'aoe_damage_reduction'
+  | 'attack_while_damaged'
+  | 'overkill_to_hero'
+  | 'on_death_mana'
+  | 'freeze_extend'
+  | 'first_summon_buff'
+  | 'illusion_rush'
+  | 'spell_power'
+  | 'lifesteal_percent'
+  | 'status_resistance';
+
+export interface ArmorPassive {
+  type: ArmorPassiveType;
+  value?: number;
+  condition?: string;
+}
+
+export interface ArmorPiece {
+  id: number;
+  name: string;
+  slot: ArmorSlot;
+  armorValue: number;
+  passive?: ArmorPassive;
+  setId?: string;
+  heroClass?: HeroClass;
+  rarity: CardRarity;
+  manaCost: number;
+}
+
 /**
  * Game player information - matches actual runtime structure
  */
@@ -627,6 +710,13 @@ export interface Player {
   graveyard: CardInstance[];
   secrets: CardInstance[];
   weapon?: CardInstance;
+  artifact?: CardInstance;
+  artifactState?: ArtifactRuntimeState;
+  armorGear?: {
+    helm?: ArmorPiece;
+    chest?: ArmorPiece;
+    greaves?: ArmorPiece;
+  };
   mana: ManaPool;
   health: number;
   heroHealth?: number;
@@ -765,7 +855,12 @@ export type GameLogEventType =
   | 'equip_weapon'
   | 'weapon_break'
   | 'hero_attack'
-  | 'dormant_awaken';
+  | 'dormant_awaken'
+  | 'equip_artifact'
+  | 'artifact_destroyed'
+  | 'artifact_trigger'
+  | 'equip_armor'
+  | 'armor_removed';
 
 /**
  * Animation parameters for card animations

@@ -16,7 +16,10 @@ Reserved ID ranges for card organization:
 | 8000-8999 | Other Classes | Paladin, Priest, Rogue, etc. |
 | 9000-9099 | Tokens | Non-collectible token cards |
 | 9100-9199 | Poker Spells | Spells that affect poker combat (Ragnarok Chess) |
-| 20000-29999 | Norse Mythology Set | Norse mythology themed cards |
+| 20000-29799 | Norse Mythology Set | Norse mythology themed cards |
+| 29800-29809 | Hero Artifacts | Legendary hero-specific artifacts |
+| 29810-29899 | Armor Gear | Helm/Chest/Greaves armor cards |
+| 29900-29967 | Hero Artifacts (Extended) | Lore-accurate artifacts for all 78 heroes |
 
 ## Poker Spell ID Sub-Ranges
 

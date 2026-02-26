@@ -32,6 +32,15 @@ type ElementType = ElementTypeImport;
  */
 export type ChessPieceType = 'king' | 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn';
 
+export const PIECE_DISPLAY_NAMES: Record<ChessPieceType, string> = {
+	king: 'Protogenoi',
+	queen: 'Sovereign',
+	rook: 'Shaper',
+	bishop: 'Luminary',
+	knight: 'Ethereal',
+	pawn: 'Einherjar'
+};
+
 /**
  * Player side (similar to chess black/white)
  */
@@ -300,9 +309,10 @@ export type KingChessAbilityType =
   | 'borr_ancestral_path'   // Full rank or file (7 tiles)
   | 'yggdrasil_root_spread' // Cross pattern (5 tiles)
   | 'audumbla_nourish_trap' // 2x2 square
-  | 'blainn_shadow_snare'   // L-shape like knight movement
+  | 'gaia_earthen_snare'    // L-shape like knight movement
   | 'brimir_tidal_wave'     // Wave pattern (diagonal sweep)
-  | 'ginnungagap_void_rift'; // Random 3 scattered tiles
+  | 'ginnungagap_void_rift' // Random 3 scattered tiles
+  | 'tartarus_abyss_rupture'; // X-shape diagonal pattern
 
 /**
  * King rarity tiers affect STA penalty and coverage

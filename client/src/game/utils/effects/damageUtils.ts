@@ -11,6 +11,7 @@ import { destroyCard } from '../zoneUtils';
 import { calculateDamageTaken } from './statusEffectUtils';
 import { isMinion, getHealth } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
+import { processArtifactOnHeroDamaged, processArtifactOnLethal } from '../artifactTriggerProcessor';
 
 /**
  * Utility function to handle damage dealing to heroes or minions
@@ -50,9 +51,9 @@ export function dealDamageToHero(
   sourceCardId?: number,
   sourcePlayerId?: 'player' | 'opponent'
 ): GameState {
-  const newState = { ...state };
+  let newState = { ...state };
   const targetPlayer = newState.players[targetPlayerId];
-  
+
   // First check if player has armor
   const armorAmount = targetPlayer.heroArmor || 0;
   let remainingDamage = amount;
@@ -77,10 +78,15 @@ export function dealDamageToHero(
   if (remainingDamage > 0) {
     targetPlayer.heroHealth = Math.max(0, (targetPlayer.heroHealth ?? 0) - remainingDamage);
   }
-  
+
+  // Process artifact on-hero-damaged triggers (Aegis prevention, Oathblade tracking)
+  if (remainingDamage > 0) {
+    newState = processArtifactOnHeroDamaged(newState, targetPlayerId, remainingDamage);
+  }
+
   // Add to game log
   if (!newState.gameLog) newState.gameLog = [];
-  
+
   newState.gameLog.push({
     id: uuidv4(),
     type: 'damage',
@@ -89,21 +95,26 @@ export function dealDamageToHero(
     timestamp: Date.now(),
     turn: newState.turnNumber,
   });
-  
+
   // Check for game over
   if ((targetPlayer.heroHealth ?? 0) <= 0) {
     newState.gamePhase = 'game_over';
     newState.winner = targetPlayerId === 'player' ? 'opponent' : 'player';
-    
-    // Add game over event to log
-    newState.gameLog.push({
-      id: uuidv4(),
-      type: 'effect',
-      player: sourcePlayerId ?? 'player',
-      text: `Game over! ${newState.winner} wins!`,
-      timestamp: Date.now(),
-      turn: newState.turnNumber
-    });
+
+    // Process artifact lethal prevention (Oathblade)
+    newState = processArtifactOnLethal(newState, targetPlayerId);
+
+    // Only log game over if lethal was NOT prevented
+    if (newState.gamePhase === 'game_over') {
+      newState.gameLog.push({
+        id: uuidv4(),
+        type: 'effect',
+        player: sourcePlayerId ?? 'player',
+        text: `Game over! ${newState.winner} wins!`,
+        timestamp: Date.now(),
+        turn: newState.turnNumber
+      });
+    }
   }
   
   return newState;

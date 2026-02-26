@@ -8,6 +8,7 @@ import { logCardDraw, logCardDeath } from './gameLogUtils';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';
 import { processAllOnMinionDeathEffects, isNorseActive } from './norseIntegration';
+import { processArtifactOnMinionDeath } from './artifactTriggerProcessor';
 import { isMinion, getHealth } from './cards/typeGuards';
 import { createCardInstance } from './cards/cardUtils';
 
@@ -233,6 +234,9 @@ export function destroyCard(
     if (isNorseActive()) {
       newState = processAllOnMinionDeathEffects(newState, playerId, cardId);
     }
+
+    // Process artifact on-minion-death triggers (Helm of the Underworld)
+    newState = processArtifactOnMinionDeath(newState, playerId);
     
     // Process any pending deathrattles that were queued (from AOE damage deaths, etc.)
     newState = processPendingDeathrattles(newState);

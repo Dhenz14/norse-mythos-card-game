@@ -492,7 +492,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     <div className="chess-board-container flex flex-col items-center">
       <div className={`chess-turn-banner chess-banner-enter ${currentTurn === 'player' ? 'chess-turn-player' : 'chess-turn-opponent'}`}>
         <span className="chess-turn-text">
-          {currentTurn === 'player' ? 'Your Turn' : "Opponent's Turn"}
+          {currentTurn === 'player' ? 'ᚱ YOUR COMMAND ᚱ' : 'ᚱ FOE STIRS ᚱ'}
         </span>
         {gameStatus === 'combat' && (
           <span className="ml-2 text-yellow-400 animate-pulse">⚔ Combat!</span>
@@ -516,22 +516,24 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
         </motion.div>
       )}
       
-      <div className="relative">
-        <motion.div 
+      <div className="relative" style={{ perspective: '1200px' }}>
+        <motion.div
           ref={boardRef}
           className="chess-board rounded-lg overflow-hidden"
-          animate={screenShake ? { 
-            x: [0, -5, 5, -5, 5, 0],
-            y: [0, 2, -2, 2, -2, 0]
-          } : {}}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
           style={{
             display: 'grid',
             gridTemplateRows: `repeat(${BOARD_ROWS}, 1fr)`,
             gridTemplateColumns: `repeat(${BOARD_COLS}, 1fr)`,
             width: 'min(500px, 85vw)',
-            aspectRatio: `${BOARD_COLS}/${BOARD_ROWS}`
+            aspectRatio: `${BOARD_COLS}/${BOARD_ROWS}`,
+            transform: 'rotateX(2deg)',
+            transformOrigin: 'center bottom'
           }}
+          animate={screenShake ? {
+            x: [0, -5, 5, -5, 5, 0],
+            y: [0, 2, -2, 2, -2, 0]
+          } : {}}
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
         >
           {cells}
         </motion.div>

@@ -870,6 +870,47 @@
 }
 
 /* ==========================================================================
+   ARTIFACT CARD STYLING - Purple mythic theme
+   ========================================================================== */
+.simple-card.card-type-artifact {
+  background: linear-gradient(180deg, #2A1040 0%, #1A0A2A 40%, #0F0518 100%);
+}
+
+.simple-card.card-type-artifact .card-art-container {
+  background: linear-gradient(180deg, #3A1860 0%, #251040 100%);
+}
+
+.simple-card.card-type-artifact .card-name-banner {
+  background: rgba(30,10,50,0.5);
+}
+
+.simple-card.card-type-artifact .card-attack {
+  background: radial-gradient(circle, #9333ea, #6b21a8);
+}
+
+.simple-card.card-type-artifact::before {
+  box-shadow:
+    0 0 20px rgba(147,51,234,0.5),
+    0 0 40px rgba(147,51,234,0.25),
+    inset 0 0 12px rgba(147,51,234,0.1);
+}
+
+/* ==========================================================================
+   ARMOR CARD STYLING - Steel/iron theme
+   ========================================================================== */
+.simple-card.card-type-armor {
+  background: linear-gradient(180deg, #1E2830 0%, #141C22 40%, #0A1015 100%);
+}
+
+.simple-card.card-type-armor .card-art-container {
+  background: linear-gradient(180deg, #2A3A45 0%, #1C2830 100%);
+}
+
+.simple-card.card-type-armor .card-name-banner {
+  background: rgba(15,25,35,0.5);
+}
+
+/* ==========================================================================
    ANIMATIONS - Rarity glows (static — no repaint animation needed)
    ========================================================================== */
 

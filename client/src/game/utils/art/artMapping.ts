@@ -400,7 +400,7 @@ const HERO_TO_CHARACTER: Record<string, string> = {
   'hero-demeter': 'hronn',
   'hero-persephone': 'drofn',
   'hero-hera': 'dufa',
-  'hero-gaia': 'udr',
+  'hero-blainn': 'udr',
   'hero-hestia': 'blodughadda',
   'hero-nyx': 'siren',
   
@@ -434,7 +434,7 @@ const KING_TO_CHARACTER: Record<string, string> = {
   'king-borr': 'borr',
   'king-yggdrasil': 'yggdrasil-world-tree',  // Custom art - tree being humanoid
   'king-audumbla': 'audumbla-cow',
-  'king-blainn': 'dwarves',
+  'king-gaia': 'dwarves',
   'king-brimir': 'brimir',
   'king-ginnungagap': 'ginnungagap-void',
 };
@@ -582,6 +582,9 @@ const MINION_CARD_TO_ART: Record<string, string> = {
 
   // ========== BOVINE ARTWORK (1) - ONE card ==========
   "audhumla, the primordial cow": "valhallagrazer",// valhallagrazer → primordial cow
+
+  // ========== DEMON/ABYSS ARTWORKS ==========
+  "demon lord of helheim": "/art/demon_lord_helheim.png",
 
   // ========== GIANT/APE ARTWORKS (2) - ONE card each ==========
   "elder gorilla of the forest": "bergrisigorilla",// bergrisigorilla → gorilla

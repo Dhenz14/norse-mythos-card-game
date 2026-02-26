@@ -29,7 +29,6 @@ export type RagnarokAction =
   | 'team_submit'
   | 'pack_open'
   | 'card_transfer'
-  | 'xp_update'
   | 'level_up'
   | 'reward_claim';
 
@@ -39,8 +38,8 @@ export type RagnarokTransactionType =
   | 'rp_card_transfer'
   | 'rp_pack_open'
   | 'rp_reward_claim'
-  | 'rp_xp_update'
   | 'rp_level_up'
+  | 'ragnarok_level_up'
   | 'rp_queue_join'
   | 'rp_queue_leave';
 

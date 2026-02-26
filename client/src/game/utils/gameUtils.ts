@@ -5,6 +5,9 @@ import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { getDefaultHeroPower, resetHeroPower } from './heroPowerUtils';
 import { requiresBattlecryTarget, executeBattlecry } from './battlecryUtils';
 import { equipWeapon } from './weaponUtils';
+import { equipArtifact, canPlayArtifact, resetArtifactTurnState } from './artifactUtils';
+import { equipArmorPiece, armorPieceFromCard } from './armorGearUtils';
+import { processArtifactOnSpellCast, processArtifactOnMinionPlay, processArtifactEndOfTurn, processArtifactStartOfTurn, processArtifactOnEnemyMinionPlayed, getArtifactSpellCostReduction } from './artifactTriggerProcessor';
 import { moveCard, drawCardFromDeck, destroyCard, removeDeadMinions } from './zoneUtils';
 import { playSecret } from './secretUtils';
 import { executeSpell, requiresSpellTarget } from './spells/spellUtils';
@@ -277,8 +280,14 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   // Save the original card data for reference (before we remove it from hand)
   const originalCardData = structuredClone(card.card);
   
+  // Apply artifact spell cost reduction (Gungnir)
+  let effectiveManaCost = card.card.manaCost || 0;
+  if (card.card.type === 'spell') {
+    effectiveManaCost = Math.max(0, effectiveManaCost - getArtifactSpellCostReduction(newState, currentPlayer));
+  }
+
   // Check if player has enough mana to play the card
-  if ((card.card.manaCost || 0) > player.mana.current) {
+  if (effectiveManaCost > player.mana.current) {
     return state;
   }
   
@@ -322,7 +331,33 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     // Create weapon card instance
     return equipWeapon(newState, currentPlayer, card);
   }
-  
+
+  // 2b. Handle Artifact cards
+  if (card.card.type === 'artifact') {
+    player.hand.splice(index, 1);
+    player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
+    player.mana.current -= (card.card.manaCost || 0);
+    player.mana.pendingOverload = pendingOverload;
+    return equipArtifact(newState, currentPlayer, card);
+  }
+
+  // 2c. Handle Armor cards
+  if (card.card.type === 'armor') {
+    const armorData = card.card as any;
+    const slot = armorData.armorSlot;
+    if (slot) {
+      player.hand.splice(index, 1);
+      player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
+      player.mana.current -= (card.card.manaCost || 0);
+      player.mana.pendingOverload = pendingOverload;
+      const piece = armorPieceFromCard(armorData);
+      if (piece) {
+        return equipArmorPiece(newState, currentPlayer, piece, slot);
+      }
+    }
+    return newState;
+  }
+
   // 3. Handle Spell cards
   if (card.card.type === 'spell') {
     // Check if the spell requires a target
@@ -335,46 +370,49 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     if (isQuestCard(card.card)) {
       // Remove card from hand
       player.hand.splice(index, 1);
-      
+
       // Update player state
       player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-      player.mana.current -= (card.card.manaCost || 0);
+      player.mana.current -= effectiveManaCost;
       player.mana.pendingOverload = pendingOverload;
-      
+
       // Activate the quest via utility layer
       const questData = extractQuestData(card.card);
       if (questData) {
         const questOwner = currentPlayer === 'player' ? 'player' : 'opponent';
         activateQuest(questOwner, questData);
       }
-      
+
       return newState;
     }
-    
+
     // Remove card from hand
     player.hand.splice(index, 1);
-    
+
     // Update player state
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-    player.mana.current -= (card.card.manaCost || 0);
+    player.mana.current -= effectiveManaCost;
     player.mana.pendingOverload = pendingOverload;
-    
+
     // Track quest progress for spell casts
     const spellQuestOwner = currentPlayer === 'player' ? 'player' : 'opponent';
     trackQuestProgress(spellQuestOwner, 'cast_spell', card.card);
-    
+
     // Execute the spell effect
-    
+
     // Process Norse Hero on-spell-cast passives (Ragnarok Poker integration)
     if (isNorseActive()) {
       newState = processHeroOnSpellCast(newState, currentPlayer);
     }
-    
+
+    // Process artifact on-spell-cast triggers (Gungnir, Master Bolt)
+    newState = processArtifactOnSpellCast(newState, currentPlayer);
+
     // If combo is active and the card has a combo effect, execute that instead
     if (isComboActive && card.card.comboEffect) {
       return executeComboSpellEffect(newState, cardInstanceId, targetId, targetType);
     }
-    
+
     return executeSpell(newState, card, targetId, targetType);
   }
   
@@ -483,7 +521,13 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     const minionElement = (playedCard.card as any).element;
     newState = processAllOnMinionPlayEffects(newState, currentPlayer, playedCard.instanceId, minionElement);
   }
-  
+
+  // Process artifact on-minion-play triggers (Brisingamen, Dagger of Deceit, Aegis)
+  newState = processArtifactOnMinionPlay(newState, currentPlayer, playedCard.instanceId);
+
+  // Process opponent's artifact reaction to this minion being played (Ran debuff, Hera destroy, Thrymr copy)
+  newState = processArtifactOnEnemyMinionPlayed(newState, currentPlayer, playedCard.instanceId);
+
   // Handle colossal minions - summon additional parts
   const playedKeywords = playedCard.card.keywords || [];
   const isColossalMinion = Array.isArray(playedKeywords) && playedKeywords.includes('colossal');
@@ -732,7 +776,10 @@ function applyTurnStartPipeline(state: GameState, player: 'player' | 'opponent')
   if (isNorseActive()) {
     newState = processAllStartOfTurnEffects(newState, player);
   }
-  
+
+  // 3b. Process artifact start-of-turn triggers (Khepri armor, Gerd freeze, Idunn buff, etc.)
+  newState = processArtifactStartOfTurn(newState, player);
+
   // 4. Reset minions for the turn (clears summoning sickness, attack counters, etc.)
   newState = performTurnStartResets(newState);
   
@@ -762,6 +809,9 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
     state = processAllEndOfTurnEffects(state, currentPlayer);
   }
   
+  // Process artifact end-of-turn triggers (Oathblade armor)
+  state = processArtifactEndOfTurn(state, currentPlayer);
+
   // Process Echo cards - mark them as expired at the end of turn
   state = expireEchoCardsAtEndOfTurn(state);
   

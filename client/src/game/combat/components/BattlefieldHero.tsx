@@ -50,6 +50,8 @@ export interface BattlefieldHeroProps {
   onWeaponUpgradeClick?: () => void;
   /** Whether the weapon has been upgraded */
   isWeaponUpgraded?: boolean;
+  /** Equipped artifact card data (if any) */
+  artifact?: { name: string; attack: number };
 }
 
 const getSecretColor = (heroClass: string) => {
@@ -79,8 +81,9 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   mana = 0, 
   maxMana = 10, 
   onHeroPowerClick,
-  onWeaponUpgradeClick, 
-  isWeaponUpgraded = false
+  onWeaponUpgradeClick,
+  isWeaponUpgraded = false,
+  artifact
 }) => {
   const heroElement = useMemo(() => {
     if (elementProp) return elementProp;
@@ -220,6 +223,11 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
               <div className={`portrait-power-badge ${canAffordPower ? 'affordable' : 'expensive'} ${isWeaponUpgraded ? 'upgraded' : ''}`}>
                 <span className="power-cost">{heroPower.cost}</span>
                 {isWeaponUpgraded && <span className="upgraded-icon">⚔</span>}
+              </div>
+            )}
+            {artifact && (
+              <div className="artifact-badge">
+                🔱 {artifact.name.split(' ')[0]} {artifact.attack > 0 ? `+${artifact.attack}` : ''}
               </div>
             )}
           </div>

@@ -10,7 +10,7 @@ import {
   DeathrattleEffectType 
 } from './EffectTypes';
 
-export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'hero_power' | 'poker_spell';
+export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'hero_power' | 'poker_spell' | 'artifact' | 'armor';
 export type CardRarity = 'common' | 'rare' | 'epic' | 'legendary' | 'token' | 'basic' | 'free';
 export type HeroClass = 
   | 'neutral' 
@@ -186,6 +186,26 @@ export interface HeroPowerCard extends Card {
 export interface PokerSpellCard extends Card {
   type: 'poker_spell';
   pokerSpellEffect: PokerSpellEffect;
+}
+
+// Artifact card interface
+export interface ArtifactCard extends Card {
+  type: 'artifact';
+  attack: number;
+  heroId: string;
+}
+
+// Armor card interface
+export interface ArmorCard extends Card {
+  type: 'armor';
+  armorSlot: 'helm' | 'chest' | 'greaves';
+  armorValue: number;
+  setId?: string;
+  armorPassive?: {
+    type: string;
+    value?: number;
+    condition?: string;
+  };
 }
 
 // Card instance with game state

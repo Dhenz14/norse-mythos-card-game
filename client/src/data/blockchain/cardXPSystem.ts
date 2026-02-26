@@ -7,53 +7,22 @@ import type {
 	HiveCardAsset
 } from './types';
 
+export const MAX_CARD_LEVEL = 3;
+
 export const XP_CONFIG: XPConfigMap = {
-	free:      { rarity: 'free',      xpPerWin: 5,  xpPerMvp: 0,  maxLevel: 5,  thresholds: [0, 20, 50, 100, 180] },
-	basic:     { rarity: 'basic',     xpPerWin: 5,  xpPerMvp: 0,  maxLevel: 5,  thresholds: [0, 20, 50, 100, 180] },
-	common:    { rarity: 'common',    xpPerWin: 10, xpPerMvp: 3,  maxLevel: 10, thresholds: [0, 25, 60, 110, 180, 270, 380, 510, 660, 830] },
-	rare:      { rarity: 'rare',      xpPerWin: 15, xpPerMvp: 5,  maxLevel: 8,  thresholds: [0, 40, 100, 190, 310, 460, 640, 850] },
-	epic:      { rarity: 'epic',      xpPerWin: 20, xpPerMvp: 8,  maxLevel: 6,  thresholds: [0, 60, 160, 320, 540, 820] },
-	legendary: { rarity: 'legendary', xpPerWin: 25, xpPerMvp: 10, maxLevel: 4,  thresholds: [0, 100, 300, 600] },
+	free:      { rarity: 'free',      xpPerWin: 5,  xpPerMvp: 0,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 20, 50] },
+	basic:     { rarity: 'basic',     xpPerWin: 5,  xpPerMvp: 0,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 20, 50] },
+	common:    { rarity: 'common',    xpPerWin: 10, xpPerMvp: 3,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 50, 150] },
+	rare:      { rarity: 'rare',      xpPerWin: 15, xpPerMvp: 5,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 100, 300] },
+	epic:      { rarity: 'epic',      xpPerWin: 20, xpPerMvp: 8,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 160, 480] },
+	legendary: { rarity: 'legendary', xpPerWin: 25, xpPerMvp: 10, maxLevel: MAX_CARD_LEVEL, thresholds: [0, 200, 500] },
 };
 
-const LEVEL_BONUSES: Record<string, CardLevelBonus[]> = {
-	common: [
-		{ level: 1, attackBonus: 0, healthBonus: 0 },
-		{ level: 2, attackBonus: 0, healthBonus: 0 },
-		{ level: 3, attackBonus: 0, healthBonus: 0 },
-		{ level: 4, attackBonus: 0, healthBonus: 0 },
-		{ level: 5, attackBonus: 0, healthBonus: 0 },
-		{ level: 6, attackBonus: 0, healthBonus: 0 },
-		{ level: 7, attackBonus: 0, healthBonus: 0 },
-		{ level: 8, attackBonus: 0, healthBonus: 0 },
-		{ level: 9, attackBonus: 0, healthBonus: 0 },
-		{ level: 10, attackBonus: 0, healthBonus: 0 },
-	],
-	rare: [
-		{ level: 1, attackBonus: 0, healthBonus: 0 },
-		{ level: 2, attackBonus: 0, healthBonus: 0 },
-		{ level: 3, attackBonus: 0, healthBonus: 0 },
-		{ level: 4, attackBonus: 0, healthBonus: 0 },
-		{ level: 5, attackBonus: 0, healthBonus: 0 },
-		{ level: 6, attackBonus: 0, healthBonus: 0 },
-		{ level: 7, attackBonus: 0, healthBonus: 0 },
-		{ level: 8, attackBonus: 0, healthBonus: 0 },
-	],
-	epic: [
-		{ level: 1, attackBonus: 0, healthBonus: 0 },
-		{ level: 2, attackBonus: 0, healthBonus: 0 },
-		{ level: 3, attackBonus: 0, healthBonus: 0 },
-		{ level: 4, attackBonus: 0, healthBonus: 0 },
-		{ level: 5, attackBonus: 0, healthBonus: 0 },
-		{ level: 6, attackBonus: 0, healthBonus: 0 },
-	],
-	legendary: [
-		{ level: 1, attackBonus: 0, healthBonus: 0 },
-		{ level: 2, attackBonus: 0, healthBonus: 0 },
-		{ level: 3, attackBonus: 0, healthBonus: 0 },
-		{ level: 4, attackBonus: 0, healthBonus: 0 },
-	],
-};
+const LEVEL_BONUSES: CardLevelBonus[] = [
+	{ level: 1, attackBonus: 0, healthBonus: 0 },
+	{ level: 2, attackBonus: 0, healthBonus: 0 },
+	{ level: 3, attackBonus: 0, healthBonus: 0 },
+];
 
 function getConfig(rarity: string): CardXPConfig {
 	return XP_CONFIG[rarity.toLowerCase()] || XP_CONFIG.common;
@@ -98,11 +67,9 @@ export function calculateXPGain(rarity: string, isWin: boolean, isMvp: boolean):
 	return xp;
 }
 
-export function getLevelBonuses(rarity: string, level: number): CardLevelBonus {
-	const key = rarity.toLowerCase();
-	const bonuses = LEVEL_BONUSES[key] || LEVEL_BONUSES.common;
-	const idx = Math.max(0, Math.min(level - 1, bonuses.length - 1));
-	return bonuses[idx];
+export function getLevelBonuses(_rarity: string, level: number): CardLevelBonus {
+	const idx = Math.max(0, Math.min(level - 1, LEVEL_BONUSES.length - 1));
+	return LEVEL_BONUSES[idx];
 }
 
 export function calculateXPRewards(

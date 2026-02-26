@@ -87,8 +87,6 @@ export async function applyOp(op: RawOp): Promise<void> {
 			return applySlashEvidence(op, payload);
 		case 'rp_pack_open':
 			return applyPackOpen(op, payload);
-		case 'rp_xp_update':
-			return applyXpUpdate(op, payload);
 		case 'rp_level_up':
 			return applyLevelUp(op, payload);
 		case 'rp_team_submit':
@@ -304,126 +302,90 @@ async function applyMatchResult(
 	op: RawOp,
 	payload: Record<string, unknown>,
 ): Promise<void> {
-	const { matchId, player1, player2, winnerId, matchType, duration, totalRounds, seed } = payload;
+	// Support both compact (m/w/l/n/h/s/v) and legacy verbose formats
+	const isCompact = typeof payload.m === 'string';
+	const mId = (isCompact ? payload.m : payload.matchId) as string;
+	const winner = (isCompact ? payload.w : payload.winnerId) as string;
+	const loser = (isCompact ? payload.l : null) as string | null;
+	const nonce = Number(isCompact ? payload.n : payload.result_nonce ?? 0);
+	const seed = (isCompact ? payload.s : payload.seed) as string ?? '';
 
-	if (
-		typeof matchId !== 'string' ||
-		typeof winnerId !== 'string' ||
-		!player1 ||
-		!player2
-	) { rejectOp(op, 'missing required match fields'); return; }
+	if (!mId || !winner) { rejectOp(op, 'missing required match fields'); return; }
 
-	const p1 = player1 as Record<string, unknown>;
-	const p2 = player2 as Record<string, unknown>;
+	// For legacy format, extract player usernames from nested objects
+	let p1Username: string;
+	let p2Username: string;
+	if (isCompact) {
+		p1Username = winner;
+		p2Username = loser ?? '';
+	} else {
+		const p1 = payload.player1 as Record<string, unknown> | undefined;
+		const p2 = payload.player2 as Record<string, unknown> | undefined;
+		if (!p1 || !p2) { rejectOp(op, 'missing player data (legacy format)'); return; }
+		p1Username = p1.hiveUsername as string;
+		p2Username = p2.hiveUsername as string;
+	}
 
-	const p1Username = p1.hiveUsername as string;
-	const p2Username = p2.hiveUsername as string;
-
-	// Reject self-play: same account on both sides (ELO/RUNE farming)
 	if (!p1Username || !p2Username || p1Username === p2Username) {
 		rejectOp(op, `self-play or empty username (p1=${p1Username}, p2=${p2Username})`);
 		return;
 	}
 
-	// Only a participant may submit a match result
-	const isParticipant =
-		op.broadcaster === p1Username ||
-		op.broadcaster === p2Username;
+	const isParticipant = op.broadcaster === p1Username || op.broadcaster === p2Username;
 	if (!isParticipant) { rejectOp(op, 'broadcaster is not a participant'); return; }
 
-	// Anti-replay: result_nonce must be strictly increasing per broadcaster
-	const resultNonce = Number(payload.result_nonce ?? 0);
-	const nonceOk = await advancePlayerNonce(op.broadcaster, resultNonce);
-	if (!nonceOk) { rejectOp(op, `nonce ${resultNonce} is not higher than last seen`); return; }
+	const nonceOk = await advancePlayerNonce(op.broadcaster, nonce);
+	if (!nonceOk) { rejectOp(op, `nonce ${nonce} is not higher than last seen`); return; }
 
-	// Dual-signature validation: ranked matches require both signatures
-	const sigs = payload.signatures as { broadcaster?: string; counterparty?: string } | undefined;
-	if (matchType === 'ranked' && (!sigs?.broadcaster || !sigs?.counterparty)) {
-		rejectOp(op, 'ranked match missing dual signatures');
-		return;
+	// Dual-signature validation (compact: sig.b/sig.c, legacy: signatures.broadcaster/counterparty)
+	const matchType = (isCompact ? 'ranked' : (payload.matchType as string)) ?? 'casual';
+	if (isCompact) {
+		const sig = payload.sig as { b?: string; c?: string } | undefined;
+		if (matchType === 'ranked' && (!sig?.b || !sig?.c)) {
+			rejectOp(op, 'ranked match missing dual signatures');
+			return;
+		}
+	} else {
+		const sigs = payload.signatures as { broadcaster?: string; counterparty?: string } | undefined;
+		if (matchType === 'ranked' && (!sigs?.broadcaster || !sigs?.counterparty)) {
+			rejectOp(op, 'ranked match missing dual signatures');
+			return;
+		}
 	}
 
-	// Transcript root validation: ranked matches should include a Merkle transcript root
-	const transcriptRoot = payload.transcriptRoot as string | undefined;
-	if (matchType === 'ranked' && !transcriptRoot) {
-		rejectOp(op, 'ranked match missing transcript root');
-		return;
-	}
+	const emptyPlayerData = { hiveUsername: '', heroIds: [] as string[], kingId: '', finalHp: 0, damageDealt: 0, pokerHandsWon: 0 };
 
 	const match: HiveMatchResult = {
-		matchId: matchId as string,
+		matchId: mId,
 		timestamp: op.timestamp,
 		blockNum: op.blockNum,
 		trxId: op.trxId,
-		player1: {
-			hiveUsername: p1.hiveUsername as string,
-			heroIds: (p1.heroIds as string[]) ?? [],
-			kingId: (p1.kingId as string) ?? '',
-			finalHp: Number(p1.finalHp ?? 0),
-			damageDealt: Number(p1.damageDealt ?? 0),
-			pokerHandsWon: Number(p1.pokerHandsWon ?? 0),
-		},
-		player2: {
-			hiveUsername: p2.hiveUsername as string,
-			heroIds: (p2.heroIds as string[]) ?? [],
-			kingId: (p2.kingId as string) ?? '',
-			finalHp: Number(p2.finalHp ?? 0),
-			damageDealt: Number(p2.damageDealt ?? 0),
-			pokerHandsWon: Number(p2.pokerHandsWon ?? 0),
-		},
-		winnerId: winnerId as string,
-		matchType: (matchType as HiveMatchResult['matchType']) ?? 'casual',
-		duration: Number(duration ?? 0),
-		totalRounds: Number(totalRounds ?? 0),
-		seed: (seed as string) ?? '',
+		player1: isCompact
+			? { ...emptyPlayerData, hiveUsername: p1Username }
+			: buildLegacyPlayer(payload.player1 as Record<string, unknown>),
+		player2: isCompact
+			? { ...emptyPlayerData, hiveUsername: p2Username }
+			: buildLegacyPlayer(payload.player2 as Record<string, unknown>),
+		winnerId: winner,
+		matchType: matchType as HiveMatchResult['matchType'],
+		duration: Number(payload.duration ?? 0),
+		totalRounds: Number(payload.totalRounds ?? 0),
+		seed,
 	};
 
 	await putMatch(match);
 	hiveEvents.emitMatchEnded(match);
+}
 
-	// Award RUNE to the broadcaster based on win/loss outcome
-	const runeRewards = payload.runeRewards as { winner?: number; loser?: number } | undefined;
-	if (runeRewards) {
-		const isWinner = op.broadcaster === (winnerId as string);
-		const runeEarned = isWinner ? (runeRewards.winner ?? 0) : (runeRewards.loser ?? 0);
-		if (runeEarned > 0) {
-			const existing = await getTokenBalance(op.broadcaster);
-			await putTokenBalance({
-				hiveUsername: op.broadcaster,
-				RUNE: (existing?.RUNE ?? 0) + runeEarned,
-				VALKYRIE: existing?.VALKYRIE ?? 0,
-				SEASON_POINTS: existing?.SEASON_POINTS ?? 0,
-				lastClaimTimestamp: Date.now(),
-			});
-		}
-	}
-
-	// Apply XP awards embedded in the match result (no separate xp_update ops needed)
-	const xpRewards = payload.xpRewards as Array<{
-		cardUid?: string; card_uid?: string;
-		xpGained?: number; xp_gained?: number;
-		xpAfter?: number; xp_after?: number;
-		levelAfter?: number; level_after?: number;
-	}> | undefined;
-
-	if (Array.isArray(xpRewards)) {
-		for (const reward of xpRewards) {
-			const uid = (reward.cardUid ?? reward.card_uid) as string;
-			if (!uid) continue;
-
-			const card = await getCard(uid);
-			if (!card) continue;
-
-			const xpGained = Number(reward.xpGained ?? reward.xp_gained ?? 0);
-			if (xpGained <= 0) continue;
-
-			const newXp = card.xp + xpGained;
-			const rarity = card.rarity || 'common';
-			const newLevel = getLevelForXP(rarity, newXp);
-
-			await putCard({ ...card, xp: newXp, level: newLevel });
-		}
-	}
+function buildLegacyPlayer(p: Record<string, unknown>): HiveMatchResult['player1'] {
+	return {
+		hiveUsername: (p.hiveUsername as string) ?? '',
+		heroIds: (p.heroIds as string[]) ?? [],
+		kingId: (p.kingId as string) ?? '',
+		finalHp: Number(p.finalHp ?? 0),
+		damageDealt: Number(p.damageDealt ?? 0),
+		pokerHandsWon: Number(p.pokerHandsWon ?? 0),
+	};
 }
 
 // ---------------------------------------------------------------------------
@@ -542,57 +504,46 @@ async function applyCardTransfer(
 }
 
 // ---------------------------------------------------------------------------
-// rp_xp_update — persist card XP and level changes earned from matches
-// ---------------------------------------------------------------------------
-
-async function applyXpUpdate(
-	op: RawOp,
-	payload: Record<string, unknown>,
-): Promise<void> {
-	const cardUid = (payload.cardUid ?? payload.card_uid) as string | undefined;
-	if (typeof cardUid !== 'string') return;
-
-	const existing = await getCard(cardUid);
-	if (!existing) return;
-	if (existing.ownerId !== op.broadcaster) return;
-
-	const xpAfter = Number(payload.xpAfter ?? payload.xp_after ?? existing.xp);
-	const claimedLevel = Number(payload.levelAfter ?? payload.level_after ?? existing.level);
-
-	// Cap level to what the XP actually warrants — prevent overclaim
-	const rarity = existing.rarity || 'common';
-	const maxLevelForXp = getLevelForXP(rarity, xpAfter);
-	const levelAfter = Math.min(claimedLevel, maxLevelForXp);
-
-	if (claimedLevel > maxLevelForXp) {
-		rejectOp(op, `xp_update level overclaim: claimed=${claimedLevel}, max=${maxLevelForXp} for xp=${xpAfter}`);
-	}
-
-	const updated: HiveCardAsset = { ...existing, xp: xpAfter, level: levelAfter };
-	await putCard(updated);
-}
-
-// ---------------------------------------------------------------------------
-// rp_level_up — explicit on-chain record of a card leveling up
+// rp_level_up — permanent stamp when a card levels up (max 3 per card ever)
+//
+// Accepts two payload formats:
+//   Verbose: { nft_id, card_id, new_level }
+//   Compact (hex-packed): { v: 1, d: "<uid>:<cardId_hex>:<level_hex>" }
 // ---------------------------------------------------------------------------
 
 async function applyLevelUp(
 	op: RawOp,
 	payload: Record<string, unknown>,
 ): Promise<void> {
-	const nftId = (payload.nft_id ?? payload.cardUid) as string;
-	if (typeof nftId !== 'string') return;
+	let nftId: string;
+	let newLevel: number;
+
+	if (typeof payload.d === 'string' && payload.v === 1) {
+		const parts = (payload.d as string).split(':');
+		if (parts.length < 3) return;
+		nftId = parts[0];
+		newLevel = parseInt(parts[2], 16);
+	} else {
+		nftId = (payload.nft_id ?? payload.cardUid) as string;
+		newLevel = Number(payload.new_level ?? 0);
+	}
+
+	if (typeof nftId !== 'string' || !nftId) return;
+	if (!newLevel || newLevel <= 0) return;
+
+	// Hard cap: max level 3 for ALL rarities
+	if (newLevel > 3) {
+		rejectOp(op, `level_up exceeds hard cap: claimed=${newLevel}, max=3`);
+		return;
+	}
 
 	const card = await getCard(nftId);
 	if (!card) return;
 	if (card.ownerId !== op.broadcaster) return;
-
-	const oldLevel = Number(payload.old_level ?? card.level);
-	const newLevel = Number(payload.new_level ?? oldLevel + 1);
 	if (newLevel <= card.level) return; // already at or past this level (idempotent)
 
-	// Validate: the card's accumulated XP must actually warrant this level
-	const rarity = card.rarity || (payload.rarity as string) || 'common';
+	// Validate: the card's accumulated local XP must actually warrant this level
+	const rarity = card.rarity || 'common';
 	const expectedLevel = getLevelForXP(rarity, card.xp);
 	if (newLevel > expectedLevel) {
 		rejectOp(op, `level_up overclaim: claimed=${newLevel}, max=${expectedLevel} for xp=${card.xp} rarity=${rarity}`);

@@ -647,25 +647,6 @@ export const mageCards: CardData[] = [
     collectible: true,
     set: "core"
   },
-  // === Migrated from additionalClassMinions.ts ===
-  {
-    id: 40002,
-    name: "Runescribe Initiate",
-    manaCost: 2,
-    attack: 3,
-    health: 2,
-    type: "minion",
-    rarity: "common",
-    description: "Your spells cost (1) less.",
-    flavorText: "A student of Norse rune magic, channeling ancient power.",
-    class: "Mage",
-    aura: {
-      type: "spell_cost_reduction",
-      value: 1
-    },
-    collectible: true,
-    set: "core"
-  },
   // === Quest Cards ===
   {
     id: 70001,

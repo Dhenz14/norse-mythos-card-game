@@ -2,11 +2,13 @@ import { GameEventBus } from '@/core/events/GameEventBus';
 import type { GameEndedEvent } from '@/core/events/GameEvents';
 import { useGameStore } from '../stores/gameStore';
 import { useTransactionQueueStore } from '@/data/blockchain/transactionQueueStore';
-import { packageMatchResult } from '@/data/blockchain/matchResultPackager';
+import { packageMatchResult, packMatchResultForChain } from '@/data/blockchain/matchResultPackager';
 import { isBlockchainPackagingEnabled } from '../config/featureFlags';
 import { generateMatchId, useHiveDataStore } from '@/data/HiveDataLayer';
 import { debug } from '../config/debugConfig';
 import type { CardUidMapping, PackagedMatchResult } from '@/data/blockchain/types';
+import { getCard, putCard } from '@/data/blockchain/replayDB';
+import { getLevelForXP } from '@/data/blockchain/cardXPSystem';
 import { usePeerStore } from '../stores/peerStore';
 import { hiveSync } from '@/data/HiveSync';
 import { getActiveTranscript, clearTranscript } from '@/data/blockchain/transcriptBuilder';
@@ -241,35 +243,53 @@ function waitForCountersign(timeoutMs: number): Promise<string | null> {
 	});
 }
 
+async function applyLocalXPAndStampLevelUps(result: PackagedMatchResult): Promise<number> {
+	let levelUpCount = 0;
+	const queue = useTransactionQueueStore.getState();
+
+	for (const xpReward of result.xpRewards) {
+		const card = await getCard(xpReward.cardUid);
+		if (!card) continue;
+
+		const oldLevel = getLevelForXP(card.rarity, card.xp);
+		card.xp = xpReward.xpAfter;
+		card.level = xpReward.levelAfter;
+		await putCard(card);
+
+		if (xpReward.levelAfter > oldLevel) {
+			queue.enqueue('level_up', {
+				nft_id: xpReward.cardUid,
+				card_id: xpReward.cardId,
+				new_level: xpReward.levelAfter,
+			}, `${result.hash}_levelup_${xpReward.cardUid}`);
+			levelUpCount++;
+		}
+	}
+
+	return levelUpCount;
+}
+
 function enqueueResult(result: PackagedMatchResult, playerCardCount: number, startTime: number): void {
 	const queue = useTransactionQueueStore.getState();
 
-	// Single match_result tx carries everything: stats, ELO, RUNE, and XP awards.
-	// The replay engine derives card XP/levels from the embedded xpRewards array —
-	// no separate xp_update ops needed.
-	queue.enqueue('match_result', result, result.hash);
+	// Broadcast compact match_result (matchId, winner, loser, nonce, hash, seed only)
+	const compactResult = packMatchResultForChain(result);
+	queue.enqueue('match_result', compactResult, result.hash);
 
-	// Broadcast level_up for each card that crossed a level threshold.
-	// This creates an on-chain record for quick lookups without full replay.
-	for (const xp of result.xpRewards) {
-		if (xp.didLevelUp) {
-			queue.enqueue('level_up', {
-				nft_id: xp.cardUid,
-				card_id: xp.cardId,
-				old_level: xp.levelBefore,
-				new_level: xp.levelAfter,
-				xp_total: xp.xpAfter,
-				match_id: result.matchId,
-			}, `${result.hash}_levelup_${xp.cardUid}`);
-		}
-	}
+	// Write XP locally to IndexedDB; stamp level-ups on chain
+	applyLocalXPAndStampLevelUps(result)
+		.then((levelUpCount) => {
+			debug.combat('[BlockchainSubscriber] Local XP applied, level-ups stamped:', levelUpCount);
+		})
+		.catch((err) => {
+			debug.error('[BlockchainSubscriber] Failed to apply local XP:', err);
+		});
 
 	debug.combat('[BlockchainSubscriber] Packaged and queued:', {
 		matchId: result.matchId,
 		winner: result.winner.username,
 		eloChange: result.eloChanges.winner.delta,
 		xpRewards: result.xpRewards.length,
-		levelUps: result.xpRewards.filter(x => x.didLevelUp).length,
 		playerCards: playerCardCount,
 		dualSig: !!(result.signatures?.broadcaster && result.signatures?.counterparty),
 		duration: Math.round((Date.now() - startTime) / 1000) + 's',

@@ -33,7 +33,7 @@ export const HERO_SUPER_MINION_LINKS: Record<string, number> = {
   'hero-thryma': 95013,
   'hero-hades': 95014,
   'hero-dionysus': 95015,
-  'hero-tartarus': 95016,
+  'king-tartarus': 95016,
   'hero-persephone': 95017,
   
   // QUEEN - Necromancer (3)
@@ -76,7 +76,7 @@ export const HERO_SUPER_MINION_LINKS: Record<string, number> = {
   'hero-fjorgyn': 95044,
   'hero-sigyn': 95045,
   'hero-demeter': 95046,
-  'hero-gaia': 95047,
+  'hero-blainn': 95047,
   
   // BISHOP - Shaman (5)
   'hero-gerd': 95048,
@@ -594,7 +594,7 @@ export const heroSuperMinions: CardData[] = [
     heroClass: "warlock",
     class: "Warlock",
     race: "titan",
-    linkedHeroId: "hero-tartarus",
+    linkedHeroId: "king-tartarus",
     isSuperMinion: true,
     battlecry: {
       type: "destroy_extremes_gain_stats",
@@ -1350,7 +1350,7 @@ export const heroSuperMinions: CardData[] = [
   },
   {
     id: 95047,
-    name: "Titan of the Primordial Earth",
+    name: "Colossus of the Dark Forge",
     manaCost: 12,
     attack: 10,
     health: 12,
@@ -1361,7 +1361,7 @@ export const heroSuperMinions: CardData[] = [
     heroClass: "druid",
     class: "Druid",
     race: "elemental",
-    linkedHeroId: "hero-gaia",
+    linkedHeroId: "hero-blainn",
     isSuperMinion: true,
     battlecry: {
       type: "buff_self_summon_from_enemies",

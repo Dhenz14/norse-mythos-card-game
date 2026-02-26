@@ -75,12 +75,12 @@ interface ChessPieceProps {
 }
 
 const PIECE_TYPE_NAMES: Record<PieceType, string> = {
-  king: 'King',
-  queen: 'Queen',
-  rook: 'Rook',
-  bishop: 'Bishop',
-  knight: 'Knight',
-  pawn: 'Pawn'
+  king: 'Protogenoi',
+  queen: 'Sovereign',
+  rook: 'Shaper',
+  bishop: 'Luminary',
+  knight: 'Ethereal',
+  pawn: 'Einherjar'
 };
 
 const ELEMENT_NAMES: Record<ElementType, string> = {
@@ -107,6 +107,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
   const canSelect = isPlayerTurn && isPlayer;
   const isPawn = piece.type === 'pawn';
   const isKing = piece.type === 'king';
+  const isGod = !isPawn;
   const healthPercent = (isPawn || isKing) ? 100 : (piece.health / piece.maxHealth) * 100;
   const elementGlow = piece.element ? ELEMENT_GLOW[piece.element] : ELEMENT_GLOW.neutral;
   const hasElement = piece.element && piece.element !== 'neutral';
@@ -136,10 +137,11 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
   
   return (
     <motion.div
+      data-piece-type={piece.type}
       className={`
         chess-piece w-full h-full flex flex-col items-center justify-center
         rounded-xl cursor-pointer transition-all relative
-        ${isPlayer ? 'bg-gradient-to-b from-blue-800 to-blue-950' : 'bg-gradient-to-b from-red-800 to-red-950'}
+        ${isPlayer ? 'bg-gradient-to-b from-blue-900 to-blue-950' : 'bg-gradient-to-b from-red-900 to-red-950'}
         ${isSelected ? 'ring-4 ring-yellow-400 z-20' : ''}
         ${canSelect ? 'hover:brightness-110' : ''}
         ${hasElement ? `element-piece element-piece-${piece.element}` : ''}
@@ -153,7 +155,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
       whileHover={canSelect ? { scale: 1.08 } : {}}
       whileTap={canSelect ? { scale: 0.95 } : {}}
       initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
+      animate={{ scale: isKing ? 1.05 : 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       style={{
         ...(hasElement ? { boxShadow: elementGlow.shadow } : undefined),
@@ -265,12 +267,19 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
         </div>
       )}
 
-      <span 
-        className={`text-4xl relative z-20 drop-shadow-lg ${isPlayer ? '' : 'transform rotate-180'}`}
-        style={{ 
+      {isGod && hasElement && (
+        <div
+          className="god-piece-aura"
+          style={{ background: `radial-gradient(circle, ${elementGlow.color}40 0%, ${elementGlow.color}15 50%, transparent 70%)` }}
+        />
+      )}
+
+      <span
+        className={`${isPawn ? 'text-3xl' : 'text-4xl'} relative z-20 drop-shadow-lg ${isPlayer ? '' : 'transform rotate-180'}`}
+        style={{
           color: PIECE_COLORS[piece.type],
-          textShadow: hasElement 
-            ? `0 0 12px ${elementGlow.color}, 0 0 24px ${elementGlow.color}` 
+          textShadow: hasElement
+            ? `0 0 12px ${elementGlow.color}, 0 0 24px ${elementGlow.color}`
             : '2px 2px 4px rgba(0,0,0,0.5)'
         }}
       >

@@ -18,7 +18,7 @@ export interface SimpleCardData {
   attack?: number;
   health?: number;
   description?: string;
-  type: 'minion' | 'spell' | 'weapon';
+  type: 'minion' | 'spell' | 'weapon' | 'artifact' | 'armor';
   rarity?: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
   tribe?: string;
   cardClass?: string;
@@ -55,6 +55,8 @@ const getCardTypeIcon = (type: string): string => {
   switch (type) {
     case 'spell': return '✨';
     case 'weapon': return '⚔️';
+    case 'artifact': return '🔱';
+    case 'armor': return '🛡️';
     default: return '👤';
   }
 };
@@ -127,13 +129,15 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   const isMinion = card.type === 'minion';
   const isSpell = card.type === 'spell';
   const isWeapon = card.type === 'weapon';
+  const isArtifact = card.type === 'artifact';
+  const isArmor = card.type === 'armor';
 
   const classColor = getClassColor(card.cardClass);
   const artPath = getCardArtPath(card.name);
 
   const nameClass = card.name.length > 18 ? 'name-very-long' : card.name.length > 13 ? 'name-long' : '';
   
-  const cardTypeClass = isSpell ? 'card-type-spell' : isWeapon ? 'card-type-weapon' : 'card-type-minion';
+  const cardTypeClass = isSpell ? 'card-type-spell' : isWeapon ? 'card-type-weapon' : isArtifact ? 'card-type-artifact' : isArmor ? 'card-type-armor' : 'card-type-minion';
 
   const evolutionClass = card.evolutionLevel === 1 ? 'evolution-mortal'
     : card.evolutionLevel === 2 ? 'evolution-ascended'
@@ -217,7 +221,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       {descriptionContent}
       
       {/* Stats (Attack/Health for minions, Attack/Durability for weapons) */}
-      {(isMinion || isWeapon) && (
+      {(isMinion || isWeapon || isArtifact) && (
         <>
           <div className="card-attack">
             <span className={`stat-value ${attackBuff > 0 ? 'stat-buffed' : ''}`}>

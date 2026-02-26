@@ -20,6 +20,8 @@ import {
 import { debug } from '../config/debugConfig';
 import { destroyCard } from './zoneUtils';
 import { dealDamage } from './effects/damageUtils';
+import { processArtifactOnHeroAttack, processArtifactOnHeroAttackTarget, processArtifactOnHeroKill } from './artifactTriggerProcessor';
+import { getArtifactAttackBonus } from './artifactUtils';
 
 /**
  * Equip a weapon for a player
@@ -120,8 +122,9 @@ export function attackWithWeapon(
   // Determine the defending player
   const defendingPlayerType = attackingPlayerType === 'player' ? 'opponent' : 'player';
   
-  // Get the weapon attack value
-  const attackDamage = getAttack(weapon.card);
+  // Get the weapon attack value + artifact bonus
+  const artifactBonus = getArtifactAttackBonus(newState, attackingPlayerType);
+  const attackDamage = getAttack(weapon.card) + artifactBonus;
   
   // If no targetId is specified, attack the enemy hero directly
   if (!targetId || targetType === 'hero') {
@@ -157,9 +160,14 @@ export function attackWithWeapon(
       if ((newState.players[defendingPlayerType].battlefield[targetIndex].currentHealth || 0) <= 0) {
         const deadMinionId = targetMinion.instanceId;
         newState = destroyCard(newState, deadMinionId, defendingPlayerType);
+        // Process artifact on-hero-kill trigger (Blade of Carnage)
+        newState = processArtifactOnHeroKill(newState, attackingPlayerType);
       }
+
+      // Process artifact on-hero-attack-target triggers (Trident freeze)
+      newState = processArtifactOnHeroAttackTarget(newState, attackingPlayerType, targetId!, defendingPlayerType);
     }
-    
+
     // Hero also takes damage from attacking the minion
     const minionAttack = getAttack(targetMinion.card);
     if (minionAttack > 0) {
@@ -222,6 +230,9 @@ export function attackWithWeapon(
   
   newState.gameLog.push(logEvent);
   
+  // Process artifact on-hero-attack triggers (Mjolnir AoE, Blade self-damage)
+  newState = processArtifactOnHeroAttack(newState, attackingPlayerType);
+
   // Process "after hero attacks" effects (like Battlefiend gaining +1 Attack)
   newState = processAfterHeroAttackEffects(newState, attackingPlayerType);
   

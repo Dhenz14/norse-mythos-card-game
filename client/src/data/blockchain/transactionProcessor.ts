@@ -19,7 +19,7 @@
 
 import { useTransactionQueueStore } from './transactionQueueStore';
 import { getDataLayerMode } from '@/game/config/featureFlags';
-import type { TransactionEntry, PackagedMatchResult, CardXPReward } from './types';
+import type { TransactionEntry, PackagedMatchResult } from './types';
 import { hiveSync } from '../HiveSync';
 import type { RagnarokTransactionType } from '../schemas/HiveTypes';
 
@@ -109,11 +109,6 @@ async function submitToMockServer(tx: TransactionEntry): Promise<void> {
 			body = tx.payload as PackagedMatchResult;
 			break;
 
-		case 'xp_update':
-			endpoint = `${MOCK_API_BASE}/xp-update`;
-			body = tx.payload as CardXPReward;
-			break;
-
 		case 'card_transfer':
 			endpoint = `${MOCK_API_BASE}/transfer`;
 			body = tx.payload;
@@ -159,8 +154,7 @@ async function submitToMockServer(tx: TransactionEntry): Promise<void> {
 // Maps internal BlockchainActionType to Hive custom_json op id
 const ACTION_TO_OP_ID: Partial<Record<string, RagnarokTransactionType>> = {
 	match_result:  'rp_match_result',
-	xp_update:     'rp_xp_update',
-	level_up:      'rp_level_up',
+	level_up:      'ragnarok_level_up',
 	card_transfer: 'rp_card_transfer',
 	nft_mint:      'rp_pack_open',
 };

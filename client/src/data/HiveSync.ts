@@ -206,6 +206,42 @@ export class HiveSync {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 16)}`;
   }
 
+  async stampLevelUp(cardUid: string, cardId: number, newLevel: number): Promise<HiveBroadcastResult> {
+    if (!this.username) {
+      return { success: false, error: 'No username set' };
+    }
+    if (!this.isKeychainAvailable()) {
+      return { success: false, error: 'Hive Keychain not available' };
+    }
+
+    const hexPayload = `${cardUid}:${cardId.toString(16)}:${newLevel.toString(16)}`;
+    const jsonStr = JSON.stringify({ v: 1, d: hexPayload });
+
+    const keychainPromise = new Promise<HiveBroadcastResult>((resolve) => {
+      window.hive_keychain!.requestCustomJson(
+        this.username!,
+        'ragnarok_level_up',
+        'Posting',
+        jsonStr,
+        `Ragnarok: level up card ${cardUid}`,
+        (response) => {
+          resolve({
+            success: response.success,
+            trxId: response.result?.id,
+            blockNum: response.result?.block_num,
+            error: response.error || response.message,
+          });
+        }
+      );
+    });
+
+    const timeout = new Promise<HiveBroadcastResult>((resolve) =>
+      setTimeout(() => resolve({ success: false, error: 'Keychain timeout (60s)' }), KEYCHAIN_TIMEOUT_MS)
+    );
+
+    return Promise.race([keychainPromise, timeout]);
+  }
+
   async signResultHash(hash: string): Promise<string> {
     if (!this.username) {
       throw new Error('No username set');

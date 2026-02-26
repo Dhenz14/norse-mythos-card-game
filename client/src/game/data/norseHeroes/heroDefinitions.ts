@@ -1134,65 +1134,55 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
   'hero-ve': {
     id: 'hero-ve',
     name: 'Ve',
-    title: 'God of Holiness',
-    element: 'grass',
-    weakness: 'electric',
+    title: 'God of Sacred Fury',
+    element: 'light',
+    weakness: 'dark',
     startingHealth: 100,
-    description: 'Brother of Odin who gave humans speech and senses.',
-    lore: 'The third creator god who gave humanity the gift of speech and the five senses. With Odin and Vili, he shaped the world from Ymir\'s colossal corpse.',
+    description: 'Brother of Odin who channels divine wrath to purge darkness.',
+    lore: 'The third creator god who gave humanity the gift of speech and the five senses. But Ve\'s true nature was always war — a burning fury tempered by divine purpose. When demons crawled from the cracks between worlds, Ve took up the blade.',
     gender: 'male',
     hasSpells: true,
-    fixedCardIds: [4374], // Verdant Behemoth
+    heroClass: 'demonhunter',
+    fixedCardIds: [],
     heroPower: {
       id: 've-power',
-      name: 'Gift of Life',
-      description: 'Summon a 1/2 Plant with Taunt.',
+      name: 'Sacred Strike',
+      description: 'Give your hero +2 Attack this turn.',
       cost: 2,
       targetType: 'none',
-      effectType: 'summon',
-      summonData: {
-        name: 'Plant',
-        attack: 1,
-        health: 2,
-        keywords: ['taunt']
-      }
+      effectType: 'buff_hero',
+      value: 2
     },
     weaponUpgrade: {
       id: 90020,
-      name: 'Staff of Creation',
+      name: 'Blade of the Third God',
       heroId: 'hero-ve',
       manaCost: 5,
-      description: 'Summon three 2/2 Treants. Permanently upgrade your hero power.',
+      description: 'Give your hero +4 Attack this turn. Deal 2 damage to all enemy minions. Permanently upgrade your hero power.',
       immediateEffect: {
-        type: 'summon_multiple',
-        value: 3,
-        description: 'Summon three 2/2 Treants.'
+        type: 'damage_aoe',
+        value: 2,
+        description: 'Give your hero +4 Attack this turn. Deal 2 damage to all enemy minions.'
       },
       upgradedPowerId: 've-power-upgraded'
     },
     upgradedHeroPower: {
       id: 've-power-upgraded',
-      name: 'Gift of Life+',
-      description: 'Summon a 2/3 Plant with Taunt.',
+      name: 'Sacred Strike+',
+      description: 'Give your hero +3 Attack this turn.',
       cost: 2,
       targetType: 'none',
-      effectType: 'summon',
-      summonData: {
-        name: 'Plant',
-        attack: 2,
-        health: 3,
-        keywords: ['taunt']
-      },
+      effectType: 'buff_hero',
+      value: 3,
       isUpgraded: true,
       baseHeroPowerId: 've-power'
     },
     passive: {
       id: 've-passive',
-      name: "Nature's Bounty",
-      description: 'Grass minions have +1 Health.',
-      trigger: 'always',
-      condition: { minionElement: 'grass' },
-      effectType: 'buff_health',
+      name: 'Fury of the Creator',
+      description: 'After your hero attacks, gain +1 Attack permanently.',
+      trigger: 'on_damage_dealt',
+      effectType: 'buff_hero_attack',
       value: 1
     }
   },
@@ -2600,28 +2590,28 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     }
   },
 
-  // ==================== 45. GAIA ====================
-  'hero-gaia': {
-    id: 'hero-gaia',
-    name: 'Gaia',
-    title: 'Mother Earth',
-    element: 'grass',
-    weakness: 'electric',
+  // ==================== 45. BLAINN ====================
+  'hero-blainn': {
+    id: 'hero-blainn',
+    name: 'Blainn',
+    title: 'The Dark Craftsman',
+    element: 'dark',
+    weakness: 'light',
     startingHealth: 100,
-    description: 'The primordial goddess of the Earth and mother of all life.',
-    lore: 'The great mother from whose body all titans, gods, and monsters were born. She is the earth itself—patient, nurturing, and terrifyingly powerful when roused to anger.',
+    description: 'A primordial dwarf associated with darkness and the forging of fate.',
+    lore: 'Blainn shaped the first shadows into solid form, hammering darkness on an anvil of silence. Where other dwarves forged metal, he forged absence — voids that walk, hollows that guard, and darkness that endures.',
     hasSpells: true,
     heroClass: 'druid',
     fixedCardIds: [4402, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     heroPower: {
-      id: 'gaia-power',
-      name: "Earth's Bounty",
-      description: 'Summon a 1/2 Plant with Taunt.',
+      id: 'blainn-power',
+      name: "Shadow Craft",
+      description: 'Summon a 1/2 Shade with Taunt.',
       cost: 2,
       targetType: 'none',
       effectType: 'summon',
       summonData: {
-        name: 'Plant',
+        name: 'Shade',
         attack: 1,
         health: 2,
         keywords: ['taunt']
@@ -2629,40 +2619,40 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     },
     weaponUpgrade: {
       id: 90045,
-      name: "Titan's Roots",
-      heroId: 'hero-gaia',
+      name: "Anvil of Silence",
+      heroId: 'hero-blainn',
       manaCost: 5,
-      description: 'Summon three 2/3 Plants with Taunt. Permanently upgrade your hero power.',
+      description: 'Summon three 2/3 Shades with Taunt. Permanently upgrade your hero power.',
       immediateEffect: {
         type: 'summon_multiple',
         value: 3,
-        summonData: { name: 'Plant', attack: 2, health: 3, keywords: ['taunt'] },
-        description: 'Summon three 2/3 Plants with Taunt.'
+        summonData: { name: 'Shade', attack: 2, health: 3, keywords: ['taunt'] },
+        description: 'Summon three 2/3 Shades with Taunt.'
       },
-      upgradedPowerId: 'gaia-power-upgraded'
+      upgradedPowerId: 'blainn-power-upgraded'
     },
     upgradedHeroPower: {
-      id: 'gaia-power-upgraded',
-      name: "Earth's Bounty+",
-      description: 'Summon a 2/3 Plant with Taunt.',
+      id: 'blainn-power-upgraded',
+      name: "Shadow Craft+",
+      description: 'Summon a 2/3 Shade with Taunt.',
       cost: 2,
       targetType: 'none',
       effectType: 'summon',
       summonData: {
-        name: 'Plant',
+        name: 'Shade',
         attack: 2,
         health: 3,
         keywords: ['taunt']
       },
       isUpgraded: true,
-      baseHeroPowerId: 'gaia-power'
+      baseHeroPowerId: 'blainn-power'
     },
     passive: {
-      id: 'gaia-passive',
-      name: 'Mother of All',
-      description: 'Grass minions have +1 health.',
+      id: 'blainn-passive',
+      name: 'Forgemaster of Shadows',
+      description: 'Dark minions have +1 health.',
       trigger: 'always',
-      condition: { minionElement: 'grass' },
+      condition: { minionElement: 'dark' },
       effectType: 'buff_health',
       value: 1
     }
@@ -2721,65 +2711,6 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
       trigger: 'on_minion_attack',
       condition: { minionElement: 'light' },
       effectType: 'buff_attack',
-      value: 1
-    }
-  },
-
-  // ==================== 47. TARTARUS ====================
-  'hero-tartarus': {
-    id: 'hero-tartarus',
-    name: 'Tartarus',
-    title: 'The Abyss Below',
-    element: 'dark',
-    weakness: 'light',
-    startingHealth: 100,
-    description: 'The primordial god of the deep abyss, a pit of eternal darkness.',
-    lore: 'The prison beneath the underworld where even gods fear to tread. Titans and the worst souls are chained in his depths, guarded by hundred-handed giants for eternity.',
-    hasSpells: true,
-    heroClass: 'warlock',
-    fixedCardIds: [4404, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    heroPower: {
-      id: 'tartarus-power',
-      name: 'Pit of Punishment',
-      description: 'Deal 2 damage to an enemy minion, reduce its attack by 1.',
-      cost: 2,
-      targetType: 'enemy_minion',
-      effectType: 'damage_single',
-      value: 2,
-      secondaryValue: 1
-    },
-    weaponUpgrade: {
-      id: 90047,
-      name: 'Chains of the Abyss',
-      heroId: 'hero-tartarus',
-      manaCost: 5,
-      description: 'Deal 3 damage to all enemies, reduce their attack by 2. Permanently upgrade your hero power.',
-      immediateEffect: {
-        type: 'damage_aoe',
-        value: 3,
-        description: 'Deal 3 damage to all enemies, reduce their attack by 2.'
-      },
-      upgradedPowerId: 'tartarus-power-upgraded'
-    },
-    upgradedHeroPower: {
-      id: 'tartarus-power-upgraded',
-      name: 'Pit of Punishment+',
-      description: 'Deal 3 damage to an enemy minion, reduce its attack by 2.',
-      cost: 2,
-      targetType: 'enemy_minion',
-      effectType: 'damage_single',
-      value: 3,
-      secondaryValue: 2,
-      isUpgraded: true,
-      baseHeroPowerId: 'tartarus-power'
-    },
-    passive: {
-      id: 'tartarus-passive',
-      name: 'Eternal Darkness',
-      description: 'Dark minions take 1 less damage from enemies.',
-      trigger: 'always',
-      condition: { minionElement: 'dark' },
-      effectType: 'damage_reduction',
       value: 1
     }
   },

@@ -40,8 +40,11 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, piece
       transition={{ duration: 0.5, delay: 0.2 }}
       className={`flex flex-col items-center ${isPlayer ? 'mr-6' : 'ml-6'}`}
     >
-      <div className={`hero-portrait-frame ${isPlayer ? 'hero-portrait-player' : 'hero-portrait-opponent'}`}>
-        <img 
+      <div
+        className={`hero-portrait-frame ${isPlayer ? 'hero-portrait-player' : 'hero-portrait-opponent'}`}
+        data-element={king.element || (isPlayer ? 'holy' : 'shadow')}
+      >
+        <img
           src={kingPortrait}
           alt={king.name}
           className="w-full h-full object-cover"
@@ -53,11 +56,11 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, piece
           }}
         />
       </div>
-      
+
       <div className="hero-nameplate">
         <div className="hero-nameplate-text">{king.name}</div>
         <div className="hero-nameplate-subtitle">
-          {isPlayer ? 'Champion' : 'Adversary'}
+          {isPlayer ? 'Aesir Commander' : 'Jotun Warlord'}
         </div>
       </div>
       
@@ -155,7 +158,7 @@ const DivineCommandButton: React.FC<DivineCommandButtonProps> = ({ playerArmy, i
         <button
           onClick={handleClick}
           disabled={isDisabled}
-          className={`divine-command-btn ${isPlacementMode ? 'divine-command-active' : isDisabled ? 'divine-command-disabled' : ''}`}
+          className={`divine-command-btn ${isPlacementMode ? 'divine-command-active' : isDisabled ? 'divine-command-disabled' : ''} ${minesRemaining === 5 && !isPlacementMode && !isDisabled ? 'divine-command-full' : ''}`}
         >
           <div className="flex items-center gap-2">
             <span className="text-xl">{isPlacementMode ? '✕' : '⚡'}</span>
@@ -678,7 +681,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   }, [boardState.pieces, playSoundEffect]);
 
   return (
-    <div className="ragnarok-chess-game w-full h-full overflow-hidden" style={{ background: 'transparent' }}>
+    <div className="ragnarok-chess-game w-full h-full overflow-hidden">
       {/* Army Selection renders OUTSIDE AnimatePresence to avoid transform breaking fixed positioning */}
       {phase === 'army_selection' && (
         <ArmySelectionComponent onComplete={handleArmyComplete} onQuickStart={handleQuickStart} />

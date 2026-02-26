@@ -766,6 +766,183 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
       effectType: 'buff',
       value: 1
     }
+  },
+
+  // ==================== GREEK HEROES (Alt-skins — preserved from mythology expansion) ====================
+
+  // ==================== 15. SELENE ====================
+  'hero-selene': {
+    id: 'hero-selene',
+    name: 'Selene',
+    title: 'Titaness of the Moon',
+    element: 'dark',
+    weakness: 'light',
+    startingHealth: 100,
+    description: 'The Greek Titaness who personifies the moon and drives her silver chariot across the night sky.',
+    lore: 'Selene rises each night to illuminate the world with her gentle silver light. Her moonbeams grant concealment to those who walk in shadow, and her love for the mortal Endymion led her to beg Zeus to grant him eternal sleep — that she might gaze upon his beauty forever.',
+    gender: 'female',
+    hasSpells: true,
+    fixedCardIds: [],
+    heroClass: 'rogue',
+    heroPower: {
+      id: 'selene-power',
+      name: 'Lunar Veil',
+      description: 'Give a friendly minion Stealth until your next turn.',
+      cost: 2,
+      targetType: 'friendly_minion',
+      effectType: 'grant_keyword',
+      grantKeyword: 'stealth',
+      duration: 'next_turn'
+    },
+    weaponUpgrade: {
+      id: 90060,
+      name: 'Silver Chariot',
+      heroId: 'hero-selene',
+      manaCost: 5,
+      description: 'Give all friendly minions Stealth and +1 Attack. Permanently upgrade your hero power.',
+      immediateEffect: {
+        type: 'stealth_and_buff_all',
+        value: 1,
+        description: 'Give all friendly minions Stealth and +1 Attack.'
+      },
+      upgradedPowerId: 'selene-power-upgraded'
+    },
+    upgradedHeroPower: {
+      id: 'selene-power-upgraded',
+      name: 'Lunar Veil+',
+      description: 'Give a friendly minion Stealth and +2 Attack until your next turn.',
+      cost: 2,
+      targetType: 'friendly_minion',
+      effectType: 'grant_keyword',
+      grantKeyword: 'stealth',
+      value: 2,
+      duration: 'next_turn',
+      isUpgraded: true,
+      baseHeroPowerId: 'selene-power'
+    },
+    passive: {
+      id: 'selene-passive',
+      name: "Selene's Shroud",
+      description: 'Dark minions have +1 Health.',
+      trigger: 'always',
+      condition: { minionElement: 'dark' },
+      effectType: 'buff_health',
+      value: 1
+    }
+  },
+
+  // ==================== 16. HECATE ====================
+  'hero-hecate': {
+    id: 'hero-hecate',
+    name: 'Hecate',
+    title: 'Goddess of Magic',
+    element: 'dark',
+    weakness: 'light',
+    startingHealth: 100,
+    description: 'The Greek goddess of magic, crossroads, and the restless dead.',
+    lore: 'Hecate stands at the crossroads between worlds, wielding power over magic and spirits. She guides lost souls and punishes the wicked with her spectral torches. Even Zeus honored her authority, for her power predates the Olympians.',
+    gender: 'female',
+    hasSpells: true,
+    fixedCardIds: [],
+    heroClass: 'warlock',
+    heroPower: {
+      id: 'hecate-power',
+      name: 'Claim Soul',
+      description: 'Destroy an enemy minion with 2 or less Attack.',
+      cost: 2,
+      targetType: 'enemy_minion',
+      effectType: 'conditional_destroy',
+      condition: { maxAttack: 2 }
+    },
+    weaponUpgrade: {
+      id: 90061,
+      name: 'Torches of Hecate',
+      heroId: 'hero-hecate',
+      manaCost: 5,
+      description: 'Destroy all enemy minions with 3 or less Attack. Permanently upgrade your hero power.',
+      immediateEffect: {
+        type: 'conditional_destroy_all',
+        condition: { maxAttack: 3 },
+        description: 'Destroy all enemy minions with 3 or less Attack.'
+      },
+      upgradedPowerId: 'hecate-power-upgraded'
+    },
+    upgradedHeroPower: {
+      id: 'hecate-power-upgraded',
+      name: 'Claim Soul+',
+      description: 'Destroy an enemy minion with 3 or less Attack.',
+      cost: 2,
+      targetType: 'enemy_minion',
+      effectType: 'conditional_destroy',
+      condition: { maxAttack: 3 },
+      isUpgraded: true,
+      baseHeroPowerId: 'hecate-power'
+    },
+    passive: {
+      id: 'hecate-passive',
+      name: "Crossroads' Curse",
+      description: 'Restore 1 health to your hero when an enemy minion dies.',
+      trigger: 'on_enemy_death',
+      effectType: 'heal_hero',
+      value: 1
+    }
+  },
+
+  // ==================== 17. HELIOS ====================
+  'hero-helios': {
+    id: 'hero-helios',
+    name: 'Helios',
+    title: 'Titan of the Sun',
+    element: 'light',
+    weakness: 'dark',
+    startingHealth: 100,
+    description: 'The Greek Titan who drives the sun chariot across the sky each day, seeing all from his golden vantage.',
+    lore: 'Helios sees all from his golden chariot. Each dawn he rises from the east, bringing light and warmth to the world, and each night he descends into the western sea. He bore witness to the abduction of Persephone and the affairs of Ares, for nothing escapes his burning gaze.',
+    gender: 'male',
+    hasSpells: true,
+    fixedCardIds: [],
+    heroClass: 'priest',
+    heroPower: {
+      id: 'helios-power',
+      name: 'Divine Radiance',
+      description: 'Restore 2 health to a friendly minion.',
+      cost: 2,
+      targetType: 'friendly_minion',
+      effectType: 'heal',
+      value: 2
+    },
+    weaponUpgrade: {
+      id: 90062,
+      name: 'Chariot of the Sun',
+      heroId: 'hero-helios',
+      manaCost: 5,
+      description: 'Restore 4 health to all friendly minions. Permanently upgrade your hero power.',
+      immediateEffect: {
+        type: 'heal_all_friendly',
+        value: 4,
+        description: 'Restore 4 health to all friendly minions.'
+      },
+      upgradedPowerId: 'helios-power-upgraded'
+    },
+    upgradedHeroPower: {
+      id: 'helios-power-upgraded',
+      name: 'Divine Radiance+',
+      description: 'Restore 3 health to a friendly minion.',
+      cost: 2,
+      targetType: 'friendly_minion',
+      effectType: 'heal',
+      value: 3,
+      isUpgraded: true,
+      baseHeroPowerId: 'helios-power'
+    },
+    passive: {
+      id: 'helios-passive',
+      name: 'Solar Blessing',
+      description: 'At the start of your turn, restore 1 health to all friendly minions.',
+      trigger: 'start_of_turn',
+      effectType: 'heal_all_friendly',
+      value: 1
+    }
   }
 };
 

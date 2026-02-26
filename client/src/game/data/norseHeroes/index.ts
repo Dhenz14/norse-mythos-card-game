@@ -144,50 +144,49 @@ export function getHeroConfigKey(norseHeroId: string): string | undefined {
  * This is the authoritative source for class-specific icons.
  */
 export const HERO_ID_TO_CLASS: Record<string, string> = {
-  // QUEEN - Mage (10 heroes)
+  // QUEEN - Mage (8 heroes)
   'hero-odin': 'mage',
   'hero-bragi': 'mage',
   'hero-kvasir': 'mage',
-  'hero-eldrin': 'mage',
-  'hero-logi': 'mage',
   'hero-zeus': 'mage',
   'hero-athena': 'mage',
   'hero-hyperion': 'mage',
   'hero-uranus': 'mage',
   'hero-chronos': 'mage',
-  
-  // QUEEN - Warlock (7 heroes)
+
+  // QUEEN - Warlock (6 heroes)
   'hero-forseti': 'warlock',
   'hero-mani': 'warlock',
-  'hero-thryma': 'warlock',
   'hero-hades': 'warlock',
   'hero-dionysus': 'warlock',
-  'hero-tartarus': 'warlock',
   'hero-persephone': 'warlock',
-  
+
   // QUEEN - Necromancer (3 heroes)
   'hero-sol': 'necromancer',
   'hero-sinmara': 'necromancer',
   'hero-hel': 'necromancer',
-  
-  // ROOK - Warrior (6 heroes)
+
+  // ROOK - Warrior (7 heroes)
   'hero-thor': 'warrior',
   'hero-thorgrim': 'warrior',
   'hero-valthrud': 'warrior',
   'hero-vili': 'warrior',
   'hero-ares': 'warrior',
   'hero-hephaestus': 'warrior',
-  
-  // ROOK - Death Knight (2 heroes)
+  'hero-logi': 'warrior',
+
+  // ROOK - Death Knight (3 heroes)
   'hero-magni': 'deathknight',
   'hero-brakki': 'deathknight',
-  
-  // ROOK - Paladin (5 heroes)
+  'hero-thryma': 'deathknight',
+
+  // ROOK - Paladin (6 heroes)
   'hero-tyr': 'paladin',
   'hero-vidar': 'paladin',
   'hero-heimdall': 'paladin',
   'hero-baldur': 'paladin',
   'hero-solvi': 'paladin',
+  'hero-eldrin': 'paladin',
   
   // BISHOP - Priest (8 heroes)
   'hero-freya': 'priest',
@@ -201,11 +200,11 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   
   // BISHOP - Druid (6 heroes)
   'hero-idunn': 'druid',
-  'hero-ve': 'druid',
+  'hero-ve': 'demonhunter',
   'hero-fjorgyn': 'druid',
   'hero-sigyn': 'druid',
   'hero-demeter': 'druid',
-  'hero-gaia': 'druid',
+  'hero-blainn': 'druid',
   
   // BISHOP - Shaman (5 heroes)
   'hero-gerd': 'shaman',
@@ -245,8 +244,13 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-ammit': 'warlock',      // Devourer of Souls - conditional destroy
   'hero-maat': 'priest',        // Goddess of Balance - stat transformation
   'hero-serqet': 'rogue',       // Scorpion Goddess - poison
-  'hero-khepri': 'priest',      // Scarab of Dawn - healing
+  'hero-khepri': 'demonhunter',  // Scarab of Wrath - aggro
   'hero-shu': 'mage',           // God of Air - bounce
+
+  // GREEK ALT-SKIN HEROES (3 heroes — preserved from mythology expansion)
+  'hero-selene': 'rogue',       // Titaness of the Moon - stealth
+  'hero-hecate': 'warlock',     // Goddess of Magic - conditional destroy
+  'hero-helios': 'priest',      // Titan of the Sun - healing
 };
 
 /**
@@ -254,7 +258,7 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
  * Uses authoritative HERO_ID_TO_CLASS mapping.
  */
 export function getHeroClass(norseHeroId: string): string {
-  // Check direct mapping first (covers all 66 heroes)
+  // Check direct mapping first (covers all 69 heroes)
   if (HERO_ID_TO_CLASS[norseHeroId]) {
     return HERO_ID_TO_CLASS[norseHeroId];
   }

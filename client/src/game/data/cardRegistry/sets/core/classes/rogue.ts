@@ -760,60 +760,6 @@ export const rogueCards: CardData[] = [
     collectible: true,
     set: "core"
   },
-  // === Migrated from additionalSpellCards.ts ===
-  {
-    id: 31035,
-    name: "Mist of Niflheim",
-    manaCost: 2,
-    type: "spell",
-    rarity: "common",
-    description: "Return an enemy minion to your opponent's hand.",
-    flavorText: "A temporary setback for the opponent.",
-    class: "Rogue",
-    spellEffect: {
-      type: "return_to_hand",
-      requiresTarget: true,
-      targetType: "enemy_minion"
-    },
-    collectible: true,
-    set: "core"
-  },
-  {
-    id: 31036,
-    name: "Jörmungandr Venom",
-    manaCost: 1,
-    type: "spell",
-    rarity: "common",
-    description: "Give your weapon +2 Attack.",
-    flavorText: "A few drops of venom can make all the difference.",
-    class: "Rogue",
-    spellEffect: {
-      type: "buff_weapon",
-      buffAttack: 2,
-      requiresTarget: false,
-      targetType: "none"
-    },
-    collectible: true,
-    set: "core"
-  },
-  {
-    id: 31037,
-    name: "Hel's Path",
-    manaCost: 0,
-    type: "spell",
-    rarity: "common",
-    description: "Return a friendly minion to your hand. It costs (2) less.",
-    flavorText: "Into the shadows, out of sight.",
-    class: "Rogue",
-    spellEffect: {
-      type: "return_to_hand",
-      requiresTarget: true,
-      targetType: "friendly_minion",
-      manaReduction: 2
-    },
-    collectible: true,
-    set: "core"
-  },
   // === Quest Cards ===
   {
     id: 70003,

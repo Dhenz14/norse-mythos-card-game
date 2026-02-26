@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChessPiece } from '../../types/ChessTypes';
+import { ChessPiece, ChessPieceType, PIECE_DISPLAY_NAMES } from '../../types/ChessTypes';
 import './VSScreen.css';
 
 interface VSScreenProps {
@@ -96,7 +96,7 @@ const VSScreen: React.FC<VSScreenProps> = ({
                 {attacker.owner === 'player' ? 'PLAYER' : 'OPPONENT'}
               </span>
               <span className="vs-fighter-name">{getPieceTitle(attacker)}</span>
-              <span className="vs-fighter-type">{attacker.type.toUpperCase()}</span>
+              <span className="vs-fighter-type">{PIECE_DISPLAY_NAMES[attacker.type as ChessPieceType].toUpperCase()}</span>
               <div className="vs-fighter-stats">
                 <span className="vs-stat">❤️ {attacker.health}</span>
               </div>
@@ -148,7 +148,7 @@ const VSScreen: React.FC<VSScreenProps> = ({
                 {defender.owner === 'player' ? 'PLAYER' : 'OPPONENT'}
               </span>
               <span className="vs-fighter-name">{getPieceTitle(defender)}</span>
-              <span className="vs-fighter-type">{defender.type.toUpperCase()}</span>
+              <span className="vs-fighter-type">{PIECE_DISPLAY_NAMES[defender.type as ChessPieceType].toUpperCase()}</span>
               <div className="vs-fighter-stats">
                 <span className="vs-stat">❤️ {defender.health}</span>
               </div>

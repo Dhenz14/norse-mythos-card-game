@@ -109,24 +109,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       norseHeroId: 'hero-sinmara',
       portrait: '/portraits/heroes/sinmara.png'
     },
-    {
-      id: 'hero-eldrin',
-      name: 'Eldrin',
-      heroClass: 'mage',
-      description: 'Ember Mage: Burn enemies with escalating fire damage.',
-      fixedCardIds: [],
-      element: 'fire',
-      norseHeroId: 'hero-eldrin'
-    },
-    {
-      id: 'hero-thryma',
-      name: 'Thryma',
-      heroClass: 'warlock',
-      description: 'Storm Caller: Deal damage and bounce surviving enemies.',
-      fixedCardIds: [],
-      element: 'electric',
-      norseHeroId: 'hero-thryma'
-    },
     // ===== GREEK HEROES =====
     {
       id: 'hero-zeus',
@@ -197,16 +179,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       norseHeroId: 'hero-dionysus'
     },
     {
-      id: 'hero-tartarus',
-      name: 'Tartarus',
-      heroClass: 'warlock',
-      description: 'Primordial Abyss: Imprison enemies in eternal darkness.',
-      fixedCardIds: [],
-      element: 'dark',
-      norseHeroId: 'hero-tartarus',
-      portrait: '/portraits/heroes/tartarus.png'
-    },
-    {
       id: 'hero-persephone',
       name: 'Persephone',
       heroClass: 'warlock',
@@ -225,16 +197,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       norseHeroId: 'hero-hel',
       portrait: '/portraits/heroes/persephone.png'
     },
-    {
-      id: 'hero-logi',
-      name: 'Logi',
-      heroClass: 'mage',
-      description: 'Fire Giant: The consuming flame incarnate, dealing random fire damage.',
-      fixedCardIds: [],
-      element: 'fire',
-      norseHeroId: 'hero-logi',
-      portrait: '/portraits/heroes/logi.png'
-    },
     // ===== JAPANESE (SHINTO) HEROES =====
     {
       id: 'hero-izanami',
@@ -251,7 +213,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       heroClass: 'mage',
       description: 'Wind God: Control the battlefield with gusts and storms.',
       fixedCardIds: [],
-      element: 'grass',
+      element: 'electric',
       norseHeroId: 'hero-fujin'
     },
     // ===== EGYPTIAN HEROES =====
@@ -270,7 +232,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       heroClass: 'mage',
       description: 'God of Air: Bounce enemies to their hand with powerful gusts.',
       fixedCardIds: [],
-      element: 'light',
+      element: 'electric',
       norseHeroId: 'hero-shu'
     }
   ],
@@ -411,8 +373,37 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       heroClass: 'paladin',
       description: 'Earthly Kami: Divine protection and guiding light for allies.',
       fixedCardIds: [],
-      element: 'grass',
+      element: 'light',
       norseHeroId: 'hero-sarutahiko'
+    },
+    // ===== NORSE HEROES (promoted from Queen) =====
+    {
+      id: 'hero-logi',
+      name: 'Logi',
+      heroClass: 'warrior',
+      description: 'Fire Giant: The consuming flame incarnate, burning everything in his path.',
+      fixedCardIds: [],
+      element: 'fire',
+      norseHeroId: 'hero-logi',
+      portrait: '/portraits/heroes/logi.png'
+    },
+    {
+      id: 'hero-thryma',
+      name: 'Thryma',
+      heroClass: 'deathknight',
+      description: 'Storm Caller: Channel lightning and frost to shatter enemy lines.',
+      fixedCardIds: [],
+      element: 'electric',
+      norseHeroId: 'hero-thryma'
+    },
+    {
+      id: 'hero-eldrin',
+      name: 'Eldrin',
+      heroClass: 'paladin',
+      description: 'Ember Judge: Purifying flames that weaken the unworthy.',
+      fixedCardIds: [],
+      element: 'fire',
+      norseHeroId: 'hero-eldrin'
     }
   ],
   bishop: [
@@ -456,15 +447,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       element: 'grass',
       norseHeroId: 'hero-idunn',
       portrait: '/portraits/heroes/idunn.png'
-    },
-    {
-      id: 'hero-ve',
-      name: 'Ve',
-      heroClass: 'druid',
-      description: 'God of Holiness: Buff all allies and grant keywords.',
-      fixedCardIds: [],
-      element: 'grass',
-      norseHeroId: 'hero-ve'
     },
     {
       id: 'hero-gerd',
@@ -564,13 +546,13 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       norseHeroId: 'hero-demeter'
     },
     {
-      id: 'hero-gaia',
-      name: 'Gaia',
+      id: 'hero-blainn',
+      name: 'Blainn',
       heroClass: 'druid',
-      description: 'Mother Earth: Command the primordial forces of nature.',
+      description: 'Dark Craftsman: Shape shadow and root into living fortifications.',
       fixedCardIds: [],
-      element: 'grass',
-      norseHeroId: 'hero-gaia'
+      element: 'dark',
+      norseHeroId: 'hero-blainn'
     },
     {
       id: 'hero-njord',
@@ -607,7 +589,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       heroClass: 'shaman',
       description: 'Divine Creator: Heal allies and restore life to the battlefield.',
       fixedCardIds: [],
-      element: 'grass',
+      element: 'water',
       norseHeroId: 'hero-kamimusubi'
     },
     // ===== EGYPTIAN HEROES =====
@@ -620,15 +602,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       element: 'light',
       norseHeroId: 'hero-maat'
     },
-    {
-      id: 'hero-khepri',
-      name: 'Khepri',
-      heroClass: 'priest',
-      description: 'Scarab of Dawn: Heal allies at the start of each turn.',
-      fixedCardIds: [],
-      element: 'light',
-      norseHeroId: 'hero-khepri'
-    }
   ],
   knight: [
     // ===== NORSE HEROES - KNIGHT (Stealth/Agility) =====
@@ -783,6 +756,25 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'dark',
       norseHeroId: 'hero-serqet'
+    },
+    // ===== PROMOTED FROM BISHOP =====
+    {
+      id: 'hero-ve',
+      name: 'Ve',
+      heroClass: 'demonhunter',
+      description: 'God of Sacred Fury: Channel divine wrath into devastating strikes.',
+      fixedCardIds: [],
+      element: 'light',
+      norseHeroId: 'hero-ve'
+    },
+    {
+      id: 'hero-khepri',
+      name: 'Khepri',
+      heroClass: 'demonhunter',
+      description: 'Scarab of Wrath: Consume enemy souls and empower with stolen life.',
+      fixedCardIds: [],
+      element: 'light',
+      norseHeroId: 'hero-khepri'
     }
   ],
   king: [
@@ -845,14 +837,14 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       chessAbility: 'king-audumbla'
     },
     {
-      id: 'king-blainn',
-      name: 'Blainn',
+      id: 'king-gaia',
+      name: 'Gaia',
       heroClass: 'neutral',
-      description: 'Dark Craftsman: Enemy minions have -1 Attack. Whenever a minion dies, summon a 1/1 Shadow token.',
+      description: 'Mother Earth: All friendly minions gain +1 Health. At the start of your turn, a random enemy minion loses 1 Attack permanently.',
       fixedCardIds: [],
-      passiveEffect: 'blainn_passives',
-      chessAbility: 'king-blainn',
-      portrait: '/portraits/kings/blainn.png'
+      passiveEffect: 'gaia_passives',
+      chessAbility: 'king-gaia',
+      portrait: '/portraits/kings/gaia.png'
     },
     {
       id: 'king-brimir',
@@ -872,12 +864,22 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'ginnungagap_passives',
       chessAbility: 'king-ginnungagap'
+    },
+    {
+      id: 'king-tartarus',
+      name: 'Tartarus',
+      heroClass: 'neutral',
+      description: 'The Abyss Below: ALL minions (friendly and enemy) have -1 Attack. At end of turn, deal 1 damage to ALL minions.',
+      fixedCardIds: [],
+      passiveEffect: 'tartarus_passives',
+      chessAbility: 'king-tartarus',
+      portrait: '/portraits/heroes/tartarus.png'
     }
   ],
   pawn: [
     {
       id: 'pawn-recruit',
-      name: 'Silver Hand Recruit',
+      name: 'Einherjar',
       heroClass: 'neutral',
       description: 'Basic pawn unit. No spells.',
       fixedCardIds: []

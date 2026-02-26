@@ -127,16 +127,16 @@ export const KING_ABILITY_CONFIGS: Record<string, KingChessAbilityConfig> = {
     },
     description: 'Nourish Trap: 2x2 square trap. Lasts 1 turn. +1 mana next PvP.'
   },
-  'king-blainn': {
-    kingId: 'king-blainn',
-    abilityType: 'blainn_shadow_snare',
+  'king-gaia': {
+    kingId: 'king-gaia',
+    abilityType: 'gaia_earthen_snare',
     rarity: 'rare',
     maxUsesPerGame: 5,
     staPenalty: 2,
     turnDuration: 1,
     manaBoost: 1,
     shape: {
-      type: 'blainn_shadow_snare',
+      type: 'gaia_earthen_snare',
       relativeTiles: [
         { row: -2, col: -1 }, { row: -2, col: 1 },
         { row: -1, col: -2 }, { row: -1, col: 2 },
@@ -144,7 +144,7 @@ export const KING_ABILITY_CONFIGS: Record<string, KingChessAbilityConfig> = {
         { row: 2, col: -1 },  { row: 2, col: 1 }
       ]
     },
-    description: 'Shadow Snare: Knight-square traps. Lasts 1 turn. +1 mana next PvP.'
+    description: 'Earthen Snare: Knight-square traps. Lasts 1 turn. +1 mana next PvP.'
   },
   'king-brimir': {
     kingId: 'king-brimir',
@@ -178,6 +178,24 @@ export const KING_ABILITY_CONFIGS: Record<string, KingChessAbilityConfig> = {
       isRandom: true
     },
     description: 'Void Rift: 3 random tiles on enemy half. -3 STA each. Lasts 2 turns. +2 mana next PvP.'
+  },
+  'king-tartarus': {
+    kingId: 'king-tartarus',
+    abilityType: 'tartarus_abyss_rupture',
+    rarity: 'epic',
+    maxUsesPerGame: 5,
+    staPenalty: 2,
+    turnDuration: 2,
+    manaBoost: 1,
+    shape: {
+      type: 'tartarus_abyss_rupture',
+      relativeTiles: [
+        { row: -1, col: -1 }, { row: -1, col: 1 },
+        { row: 0, col: 0 },
+        { row: 1, col: -1 },  { row: 1, col: 1 }
+      ]
+    },
+    description: 'Abyss Rupture: X-shaped trap (5 tiles). Lasts 2 turns. +1 mana next PvP.'
   }
 };
 
@@ -255,7 +273,7 @@ export function getMineShapeTiles(
 
     case 'yggdrasil_root_spread':
     case 'audumbla_nourish_trap':
-    case 'blainn_shadow_snare':
+    case 'gaia_earthen_snare':
       for (const offset of config.shape.relativeTiles) {
         const pos = {
           row: centerPosition.row + offset.row,

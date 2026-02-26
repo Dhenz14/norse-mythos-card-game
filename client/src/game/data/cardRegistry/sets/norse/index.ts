@@ -1,5 +1,7 @@
 import { CardData } from '../../../../types';
 import { BattlecryTargetType } from '../../../../types';
+import norseArtifacts from './artifacts';
+import norseArmorCards from './armorCards';
 
 // ============================================
 // NORSE MYTHOLOGY SET
@@ -2236,6 +2238,8 @@ export const norseMythologyCards: CardData[] = [
   ...lightMinions,
   ...neutralMinions,
   ...greekLegendaries,
+  ...(norseArtifacts as unknown as CardData[]),
+  ...(norseArmorCards as unknown as CardData[]),
 ];
 
 export default norseMythologyCards;
