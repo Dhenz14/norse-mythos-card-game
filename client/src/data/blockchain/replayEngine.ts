@@ -236,7 +236,7 @@ async function hydrateStore(username: string): Promise<void> {
 
 	useHiveDataStore.getState().loadFromHive({
 		cardCollection: cards,
-		recentMatches: matches.slice(0, 100),
+		recentMatches: matches,
 		tokenBalance,
 	});
 }

@@ -26,6 +26,7 @@ interface TransactionQueueActions {
 	getNext: () => TransactionEntry | null;
 	cleanupExpired: () => number;
 	cleanupConfirmed: (olderThanMs?: number) => number;
+	cleanupFailed: (olderThanMs?: number) => number;
 	clear: () => void;
 	getQueueStats: () => {
 		total: number;
@@ -158,6 +159,17 @@ export const useTransactionQueueStore = create<TransactionQueueStore>()(
 				return before - get().transactions.length;
 			},
 
+			cleanupFailed: (olderThanMs = 7 * 24 * 60 * 60 * 1000): number => {
+				const cutoff = Date.now() - olderThanMs;
+				const before = get().transactions.length;
+				set((state) => ({
+					transactions: state.transactions.filter(tx =>
+						tx.status !== 'failed' || tx.updatedAt > cutoff
+					),
+				}));
+				return before - get().transactions.length;
+			},
+
 			clear: () => {
 				set({ transactions: [] });
 			},
@@ -184,4 +196,12 @@ export const useTransactionQueueStore = create<TransactionQueueStore>()(
 	)
 );
 
-useTransactionQueueStore.getState().cleanupExpired();
+// Auto-cleanup on load and periodically
+const _doCleanup = () => {
+	const store = useTransactionQueueStore.getState();
+	store.cleanupExpired();
+	store.cleanupConfirmed(60 * 60 * 1000); // confirmed > 1 hour
+	store.cleanupFailed(7 * 24 * 60 * 60 * 1000); // failed > 7 days
+};
+_doCleanup();
+setInterval(_doCleanup, 5 * 60 * 1000); // every 5 minutes

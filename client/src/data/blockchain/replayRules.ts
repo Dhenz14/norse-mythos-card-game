@@ -41,19 +41,27 @@ export interface RawOp {
 // Dispatch
 // ---------------------------------------------------------------------------
 
+function rejectOp(op: RawOp, reason: string): void {
+	console.warn(`[replayRules] REJECTED ${op.id} from ${op.broadcaster} (trx=${op.trxId.slice(0, 12)}): ${reason}`);
+}
+
 export async function applyOp(op: RawOp): Promise<void> {
 	let payload: Record<string, unknown>;
 	try {
 		payload = JSON.parse(op.json) as Record<string, unknown>;
 	} catch {
-		return; // malformed JSON — skip silently
+		rejectOp(op, 'malformed JSON');
+		return;
 	}
 
 	// Slashed accounts cannot perform any game actions (transfers still allowed)
 	const gameActions = new Set([
 		'rp_match_start', 'rp_match_result', 'rp_queue_join',
 	]);
-	if (gameActions.has(op.id) && await isAccountSlashed(op.broadcaster)) return;
+	if (gameActions.has(op.id) && await isAccountSlashed(op.broadcaster)) {
+		rejectOp(op, 'account is slashed');
+		return;
+	}
 
 	switch (op.id) {
 		case 'rp_genesis':
@@ -162,6 +170,7 @@ async function applyMint(
 			ownerId: to,
 			edition: 'alpha',
 			foil: 'standard',
+			rarity: card.rarity || 'common',
 			level: 1,
 			xp: 0,
 			lastTransferBlock: op.blockNum,
@@ -259,7 +268,14 @@ async function applyMatchStart(
 		// Second anchor — complete the dual-sig
 		const isPlayerA = op.broadcaster === existing.playerA;
 		const isPlayerB = op.broadcaster === existing.playerB;
-		if (!isPlayerA && !isPlayerB) return; // unrelated account
+		if (!isPlayerA && !isPlayerB) { rejectOp(op, 'match_start from unrelated account'); return; }
+
+		// Verify match hash matches the first anchor
+		const incomingHash = (payload.match_hash as string) ?? '';
+		if (existing.matchHash && incomingHash && existing.matchHash !== incomingHash) {
+			rejectOp(op, `match_start hash mismatch: first="${existing.matchHash.slice(0, 12)}" second="${incomingHash.slice(0, 12)}"`);
+			return;
+		}
 
 		const updated: MatchAnchor = { ...existing };
 		if (isPlayerA && !updated.anchorBlockA) {
@@ -295,29 +311,44 @@ async function applyMatchResult(
 		typeof winnerId !== 'string' ||
 		!player1 ||
 		!player2
-	) return;
+	) { rejectOp(op, 'missing required match fields'); return; }
 
 	const p1 = player1 as Record<string, unknown>;
 	const p2 = player2 as Record<string, unknown>;
 
+	const p1Username = p1.hiveUsername as string;
+	const p2Username = p2.hiveUsername as string;
+
+	// Reject self-play: same account on both sides (ELO/RUNE farming)
+	if (!p1Username || !p2Username || p1Username === p2Username) {
+		rejectOp(op, `self-play or empty username (p1=${p1Username}, p2=${p2Username})`);
+		return;
+	}
+
 	// Only a participant may submit a match result
 	const isParticipant =
-		op.broadcaster === (p1.hiveUsername as string) ||
-		op.broadcaster === (p2.hiveUsername as string);
-	if (!isParticipant) return;
+		op.broadcaster === p1Username ||
+		op.broadcaster === p2Username;
+	if (!isParticipant) { rejectOp(op, 'broadcaster is not a participant'); return; }
 
 	// Anti-replay: result_nonce must be strictly increasing per broadcaster
 	const resultNonce = Number(payload.result_nonce ?? 0);
 	const nonceOk = await advancePlayerNonce(op.broadcaster, resultNonce);
-	if (!nonceOk) return; // duplicate or replayed result — reject
+	if (!nonceOk) { rejectOp(op, `nonce ${resultNonce} is not higher than last seen`); return; }
 
 	// Dual-signature validation: ranked matches require both signatures
 	const sigs = payload.signatures as { broadcaster?: string; counterparty?: string } | undefined;
-	if (matchType === 'ranked' && (!sigs?.broadcaster || !sigs?.counterparty)) return;
+	if (matchType === 'ranked' && (!sigs?.broadcaster || !sigs?.counterparty)) {
+		rejectOp(op, 'ranked match missing dual signatures');
+		return;
+	}
 
 	// Transcript root validation: ranked matches should include a Merkle transcript root
 	const transcriptRoot = payload.transcriptRoot as string | undefined;
-	if (matchType === 'ranked' && !transcriptRoot) return;
+	if (matchType === 'ranked' && !transcriptRoot) {
+		rejectOp(op, 'ranked match missing transcript root');
+		return;
+	}
 
 	const match: HiveMatchResult = {
 		matchId: matchId as string,
@@ -387,7 +418,7 @@ async function applyMatchResult(
 			if (xpGained <= 0) continue;
 
 			const newXp = card.xp + xpGained;
-			const rarity = card.edition === 'alpha' ? 'rare' : 'common';
+			const rarity = card.rarity || 'common';
 			const newLevel = getLevelForXP(rarity, newXp);
 
 			await putCard({ ...card, xp: newXp, level: newLevel });
@@ -485,11 +516,20 @@ async function applyCardTransfer(
 ): Promise<void> {
 	const nftId = (payload.nft_id ?? payload.card_uid) as string;
 	const to = (payload.to as string);
-	if (typeof nftId !== 'string' || typeof to !== 'string') return;
+	if (typeof nftId !== 'string' || typeof to !== 'string') { rejectOp(op, 'missing nft_id or to'); return; }
+
+	// Validate destination: must be non-empty, at least 3 chars (Hive minimum), no spaces
+	if (!to || to.length < 3 || /\s/.test(to)) {
+		rejectOp(op, `invalid transfer destination: "${to}"`);
+		return;
+	}
+
+	// Cannot transfer to yourself
+	if (to === op.broadcaster) { rejectOp(op, 'cannot transfer to self'); return; }
 
 	const existing = await getCard(nftId);
-	if (!existing) return;
-	if (existing.ownerId !== op.broadcaster) return;
+	if (!existing) { rejectOp(op, `card ${nftId} not found`); return; }
+	if (existing.ownerId !== op.broadcaster) { rejectOp(op, `card ${nftId} not owned by broadcaster`); return; }
 
 	const updated: HiveCardAsset = {
 		...existing,
@@ -517,7 +557,16 @@ async function applyXpUpdate(
 	if (existing.ownerId !== op.broadcaster) return;
 
 	const xpAfter = Number(payload.xpAfter ?? payload.xp_after ?? existing.xp);
-	const levelAfter = Number(payload.levelAfter ?? payload.level_after ?? existing.level);
+	const claimedLevel = Number(payload.levelAfter ?? payload.level_after ?? existing.level);
+
+	// Cap level to what the XP actually warrants — prevent overclaim
+	const rarity = existing.rarity || 'common';
+	const maxLevelForXp = getLevelForXP(rarity, xpAfter);
+	const levelAfter = Math.min(claimedLevel, maxLevelForXp);
+
+	if (claimedLevel > maxLevelForXp) {
+		rejectOp(op, `xp_update level overclaim: claimed=${claimedLevel}, max=${maxLevelForXp} for xp=${xpAfter}`);
+	}
 
 	const updated: HiveCardAsset = { ...existing, xp: xpAfter, level: levelAfter };
 	await putCard(updated);
@@ -543,9 +592,12 @@ async function applyLevelUp(
 	if (newLevel <= card.level) return; // already at or past this level (idempotent)
 
 	// Validate: the card's accumulated XP must actually warrant this level
-	const rarity = (payload.rarity as string) ?? 'common';
+	const rarity = card.rarity || (payload.rarity as string) || 'common';
 	const expectedLevel = getLevelForXP(rarity, card.xp);
-	if (newLevel > expectedLevel) return; // overclaim — reject
+	if (newLevel > expectedLevel) {
+		rejectOp(op, `level_up overclaim: claimed=${newLevel}, max=${expectedLevel} for xp=${card.xp} rarity=${rarity}`);
+		return;
+	}
 
 	await putCard({ ...card, level: newLevel });
 }
@@ -613,8 +665,17 @@ async function applyPackOpen(
 	const quantity = Math.min(Number(payload.quantity ?? 1), 10);
 	const cardCount = (PACK_SIZES[packType] ?? 5) * quantity;
 
-	const seedHex = op.trxId.replace(/[^0-9a-f]/gi, '').slice(0, 8);
-	const seed = parseInt(seedHex || '1', 16);
+	// Extract hex chars from trxId for LCG seed; use full trxId hash if too few hex chars
+	let seedHex = op.trxId.replace(/[^0-9a-f]/gi, '').slice(0, 8);
+	if (seedHex.length < 4) {
+		// Fallback: hash the trxId bytes to get a usable seed instead of fixed '1'
+		let hash = 0;
+		for (let i = 0; i < op.trxId.length; i++) {
+			hash = ((hash << 5) - hash + op.trxId.charCodeAt(i)) | 0;
+		}
+		seedHex = (Math.abs(hash) >>> 0).toString(16).slice(0, 8);
+	}
+	const seed = parseInt(seedHex || 'a7f3', 16);
 
 	let s = Math.max(seed, 1);
 	const cardIds: number[] = Array.from({ length: cardCount }, () => {
@@ -627,12 +688,17 @@ async function applyPackOpen(
 
 	for (let i = 0; i < cardIds.length; i++) {
 		const uid = `${op.trxId}-${i}`;
+		// Derive rarity from a secondary LCG roll per card
+		s = lcgNext(s);
+		const rarityRoll = s % 100;
+		const rarity = rarityRoll < 1 ? 'legendary' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
 		const card: HiveCardAsset = {
 			uid,
 			cardId: cardIds[i],
 			ownerId: op.broadcaster,
 			edition,
 			foil: isGold ? 'gold' : 'standard',
+			rarity,
 			level: 1,
 			xp: 0,
 			lastTransferBlock: op.blockNum,

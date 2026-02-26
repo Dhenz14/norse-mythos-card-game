@@ -59,6 +59,8 @@ declare global {
   }
 }
 
+const KEYCHAIN_TIMEOUT_MS = 60_000;
+
 export class HiveSync {
   private username: string | null = null;
 
@@ -91,16 +93,15 @@ export class HiveSync {
       return { success: false, error: 'Hive Keychain not available' };
     }
 
-    return new Promise((resolve) => {
-      // Canonical format: single "ragnarok-cards" app ID, action in payload
-      const action = type.replace(RAGNAROK_CUSTOM_JSON_PREFIX, '');
-      const jsonStr = JSON.stringify({
-        ...payload,
-        app: RAGNAROK_APP_ID,
-        action,
-        timestamp: Date.now(),
-      });
+    const action = type.replace(RAGNAROK_CUSTOM_JSON_PREFIX, '');
+    const jsonStr = JSON.stringify({
+      ...payload,
+      app: RAGNAROK_APP_ID,
+      action,
+      timestamp: Date.now(),
+    });
 
+    const keychainPromise = new Promise<HiveBroadcastResult>((resolve) => {
       window.hive_keychain!.requestCustomJson(
         this.username!,
         RAGNAROK_APP_ID,
@@ -117,6 +118,12 @@ export class HiveSync {
         }
       );
     });
+
+    const timeout = new Promise<HiveBroadcastResult>((resolve) =>
+      setTimeout(() => resolve({ success: false, error: 'Keychain timeout (60s)' }), KEYCHAIN_TIMEOUT_MS)
+    );
+
+    return Promise.race([keychainPromise, timeout]);
   }
 
   async submitTeam(matchId: string, heroIds: string[], kingId: string, deckHash: string): Promise<HiveBroadcastResult> {
@@ -165,7 +172,7 @@ export class HiveSync {
 
     const message = `ragnarok-login:${username}:${Date.now()}`;
 
-    return new Promise((resolve) => {
+    const keychainPromise = new Promise<HiveBroadcastResult>((resolve) => {
       window.hive_keychain!.requestSignBuffer(
         username,
         message,
@@ -182,6 +189,12 @@ export class HiveSync {
         'Log in to Ragnarok Cards'
       );
     });
+
+    const timeout = new Promise<HiveBroadcastResult>((resolve) =>
+      setTimeout(() => resolve({ success: false, error: 'Keychain timeout (60s)' }), KEYCHAIN_TIMEOUT_MS)
+    );
+
+    return Promise.race([keychainPromise, timeout]);
   }
 
   hashDeck(cardIds: number[]): string {
@@ -201,7 +214,7 @@ export class HiveSync {
       throw new Error('Hive Keychain not available');
     }
 
-    return new Promise((resolve, reject) => {
+    const keychainPromise = new Promise<string>((resolve, reject) => {
       window.hive_keychain!.requestSignBuffer(
         this.username!,
         hash,
@@ -217,6 +230,12 @@ export class HiveSync {
         'Sign match result'
       );
     });
+
+    const timeout = new Promise<string>((_, reject) =>
+      setTimeout(() => reject(new Error('Keychain signing timeout (60s)')), KEYCHAIN_TIMEOUT_MS)
+    );
+
+    return Promise.race([keychainPromise, timeout]);
   }
 }
 

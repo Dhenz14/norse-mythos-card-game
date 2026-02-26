@@ -105,6 +105,7 @@ export interface HiveCardAsset {
   ownerId: string;
   edition: 'alpha' | 'beta' | 'promo';
   foil: 'standard' | 'gold';
+  rarity: string;
   level: number;
   xp: number;
   lastTransferBlock?: number;
