@@ -109,11 +109,12 @@ export function completeMulligan(state: GameState): GameState {
       playerSelectedCards.length
     );
     
-    // Update hand and deck
-    newState.players.player.hand = [...newState.players.player.hand, ...drawnCards];
+    // Update hand and deck — cap at 7
+    const combined = [...newState.players.player.hand, ...drawnCards];
+    newState.players.player.hand = combined.slice(0, 7);
     newState.players.player.deck = remainingDeck;
   }
-  
+
   // Do the same for AI opponent
   if (opponentSelectedCards.length > 0) {
     // Remove selected cards from hand
@@ -136,8 +137,9 @@ export function completeMulligan(state: GameState): GameState {
       opponentSelectedCards.length
     );
     
-    // Update hand and deck
-    newState.players.opponent.hand = [...newState.players.opponent.hand, ...drawnCards];
+    // Update hand and deck — cap at 7
+    const combined = [...newState.players.opponent.hand, ...drawnCards];
+    newState.players.opponent.hand = combined.slice(0, 7);
     newState.players.opponent.deck = remainingDeck;
   }
   

@@ -15,6 +15,7 @@ export interface CardInstance {
   cardId: number;
   owner: string; // heroKey (e.g., 'mage-jaina') or 'neutral'
   location: 'deck' | 'hand' | 'played' | 'burned';
+  nft_id?: string; // Hive L1 NFT identifier; absent for demo/dev cards
 }
 
 export interface SharedDeckState {

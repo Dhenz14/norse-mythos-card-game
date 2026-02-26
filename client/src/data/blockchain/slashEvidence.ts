@@ -78,7 +78,7 @@ export async function submitSlashEvidence(
 	}
 
 	const payload: SlashEvidencePayload = {
-		app: 'ragnarok-cards/1.0',
+		app: 'ragnarok-cards',
 		type: 'rp_slash_evidence',
 		match_id: matchId,
 		offender,

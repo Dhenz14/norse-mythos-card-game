@@ -10,7 +10,7 @@ import { logActivity } from '../stores/activityLogStore';
 import { processAllOnMinionDeathEffects, isNorseActive } from './norseIntegration';
 import { isMinion, getHealth } from './cards/typeGuards';
 
-const MAX_HAND_SIZE = 9;
+const MAX_HAND_SIZE = 7;
 
 function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent') {
   try {
@@ -197,27 +197,8 @@ export function drawCardFromDeck(
     attacksPerformed: 0
   };
   
-  // Check if hand is already at max capacity (9 cards like Hearthstone)
   if (player.hand.length >= MAX_HAND_SIZE) {
-    // Card is burned (discarded) when hand is full - trigger animation and log
-    queueCardBurnAnimation(cardData.name, playerId);
-    
-    // Add to graveyard instead of hand
-    if (!player.graveyard) {
-      player.graveyard = [];
-    }
-    player.graveyard.push(cardInstance);
-    
-    // Add to game log - card was drawn but burned
-    const updatedState = logCardDraw(
-      newState,
-      playerId,
-      cardInstance.instanceId,
-      true, // burned flag
-      false // not fatigue
-    );
-    
-    return updatedState;
+    return newState; // hand full — draw is missed, card stays in deck
   }
   
   // Add the card to the hand if there's room

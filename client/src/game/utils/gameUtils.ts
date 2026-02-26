@@ -409,8 +409,8 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   }
 
   // Check if battlefield is full before removing card from hand
-  if (player.battlefield.length >= 7) {
-    debug.error(`Cannot play ${card.card.name}: Battlefield is full (7 minions maximum)`);
+  if (player.battlefield.length >= 5) {
+    debug.error(`Cannot play ${card.card.name}: Battlefield is full (5 minions maximum)`);
     return state;
   }
 

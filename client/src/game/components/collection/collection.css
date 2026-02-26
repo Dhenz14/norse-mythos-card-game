@@ -1,5 +1,36 @@
 /* Collection Page — Premium Collector Styles */
 
+/* ========== Mastery Badges ========== */
+.mastery-badge {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 1;
+	pointer-events: none;
+	z-index: 2;
+}
+
+.mastery-tier-2 {
+	color: #c4b5fd;
+	text-shadow: 0 0 6px rgba(168, 85, 247, 0.8);
+}
+
+.mastery-tier-3 {
+	color: #fde68a;
+	text-shadow: 0 0 8px rgba(245, 158, 11, 0.9);
+}
+
+.mastery-badge-modal {
+	display: inline-block;
+	font-size: 16px;
+	font-weight: 700;
+	letter-spacing: 2px;
+	padding: 2px 10px;
+	border-radius: 6px;
+}
+
 /* ========== Mint Badge (Etched Serial Number) ========== */
 .mint-badge {
 	font-family: 'Courier New', 'Consolas', monospace;

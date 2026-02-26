@@ -7107,7 +7107,7 @@ function executeFillBoardSpell(
   const currentPlayer = state.currentTurn || 'player';
   const side = currentPlayer === 'player' ? 'player' : 'opponent' as const;
   const playerState = newState.players[side];
-  const maxBoardSize = 7;
+  const maxBoardSize = 5;
   const slotsAvailable = maxBoardSize - playerState.battlefield.length;
 
   if (slotsAvailable <= 0) return newState;

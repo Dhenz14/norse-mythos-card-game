@@ -807,7 +807,7 @@ function executeAddRandomToHandDeathrattle(
   const count = deathrattle.value || 1;
 
   for (let i = 0; i < count; i++) {
-    if (player.hand.length >= 9) break;
+    if (player.hand.length >= 7) break;
     if (allCards.length === 0) break;
     const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
     const instance = createCardInstance(randomCard);
@@ -966,7 +966,7 @@ function executeGiveSparePartDeathrattle(
   const count = deathrattle.value || 1;
 
   for (let i = 0; i < count; i++) {
-    if (player.hand.length >= 9) break;
+    if (player.hand.length >= 7) break;
     if (allCards.length === 0) break;
     const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
     const instance = createCardInstance(randomCard);

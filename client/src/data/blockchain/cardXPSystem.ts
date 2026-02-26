@@ -19,39 +19,39 @@ export const XP_CONFIG: XPConfigMap = {
 const LEVEL_BONUSES: Record<string, CardLevelBonus[]> = {
 	common: [
 		{ level: 1, attackBonus: 0, healthBonus: 0 },
-		{ level: 2, attackBonus: 0, healthBonus: 1 },
-		{ level: 3, attackBonus: 1, healthBonus: 1 },
-		{ level: 4, attackBonus: 1, healthBonus: 2 },
-		{ level: 5, attackBonus: 1, healthBonus: 2 },
-		{ level: 6, attackBonus: 2, healthBonus: 3 },
-		{ level: 7, attackBonus: 2, healthBonus: 3 },
-		{ level: 8, attackBonus: 2, healthBonus: 4 },
-		{ level: 9, attackBonus: 3, healthBonus: 4 },
-		{ level: 10, attackBonus: 3, healthBonus: 5 },
+		{ level: 2, attackBonus: 0, healthBonus: 0 },
+		{ level: 3, attackBonus: 0, healthBonus: 0 },
+		{ level: 4, attackBonus: 0, healthBonus: 0 },
+		{ level: 5, attackBonus: 0, healthBonus: 0 },
+		{ level: 6, attackBonus: 0, healthBonus: 0 },
+		{ level: 7, attackBonus: 0, healthBonus: 0 },
+		{ level: 8, attackBonus: 0, healthBonus: 0 },
+		{ level: 9, attackBonus: 0, healthBonus: 0 },
+		{ level: 10, attackBonus: 0, healthBonus: 0 },
 	],
 	rare: [
 		{ level: 1, attackBonus: 0, healthBonus: 0 },
-		{ level: 2, attackBonus: 0, healthBonus: 1 },
-		{ level: 3, attackBonus: 1, healthBonus: 1 },
-		{ level: 4, attackBonus: 1, healthBonus: 2 },
-		{ level: 5, attackBonus: 2, healthBonus: 2 },
-		{ level: 6, attackBonus: 2, healthBonus: 3 },
-		{ level: 7, attackBonus: 3, healthBonus: 3 },
-		{ level: 8, attackBonus: 3, healthBonus: 4 },
+		{ level: 2, attackBonus: 0, healthBonus: 0 },
+		{ level: 3, attackBonus: 0, healthBonus: 0 },
+		{ level: 4, attackBonus: 0, healthBonus: 0 },
+		{ level: 5, attackBonus: 0, healthBonus: 0 },
+		{ level: 6, attackBonus: 0, healthBonus: 0 },
+		{ level: 7, attackBonus: 0, healthBonus: 0 },
+		{ level: 8, attackBonus: 0, healthBonus: 0 },
 	],
 	epic: [
 		{ level: 1, attackBonus: 0, healthBonus: 0 },
-		{ level: 2, attackBonus: 1, healthBonus: 1 },
-		{ level: 3, attackBonus: 1, healthBonus: 2 },
-		{ level: 4, attackBonus: 2, healthBonus: 2 },
-		{ level: 5, attackBonus: 2, healthBonus: 3 },
-		{ level: 6, attackBonus: 3, healthBonus: 4 },
+		{ level: 2, attackBonus: 0, healthBonus: 0 },
+		{ level: 3, attackBonus: 0, healthBonus: 0 },
+		{ level: 4, attackBonus: 0, healthBonus: 0 },
+		{ level: 5, attackBonus: 0, healthBonus: 0 },
+		{ level: 6, attackBonus: 0, healthBonus: 0 },
 	],
 	legendary: [
 		{ level: 1, attackBonus: 0, healthBonus: 0 },
-		{ level: 2, attackBonus: 1, healthBonus: 2 },
-		{ level: 3, attackBonus: 2, healthBonus: 3 },
-		{ level: 4, attackBonus: 3, healthBonus: 5 },
+		{ level: 2, attackBonus: 0, healthBonus: 0 },
+		{ level: 3, attackBonus: 0, healthBonus: 0 },
+		{ level: 4, attackBonus: 0, healthBonus: 0 },
 	],
 };
 
@@ -140,4 +140,12 @@ export function calculateXPRewards(
 	}
 
 	return rewards;
+}
+
+export function getMasteryTier(xp: number, rarity: string): 0 | 2 | 3 {
+	const level = getLevelForXP(rarity, xp);
+	const config = getConfig(rarity);
+	if (level <= 1) return 0;
+	if (level >= config.maxLevel) return 3;
+	return 2;
 }

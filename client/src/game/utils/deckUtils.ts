@@ -5,7 +5,7 @@ import { getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
 
-const MAX_HAND_SIZE = 9;
+const MAX_HAND_SIZE = 7;
 
 function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent') {
   try {
@@ -54,12 +54,8 @@ export function drawCard(state: GameState, playerType: 'player' | 'opponent'): G
     return newState;
   }
   
-  // Check if the hand is full (max 9 cards like Hearthstone)
   if (player.hand.length >= MAX_HAND_SIZE) {
-    const burnedCard = player.deck[0];
-    queueCardBurnAnimation(burnedCard.name, playerType);
-    player.deck.shift();
-    return newState;
+    return newState; // hand full — draw is missed, card stays in deck
   }
   
   // Draw the top card from the deck

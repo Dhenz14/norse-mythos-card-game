@@ -96,10 +96,35 @@
   display: none;
 }
 
-/* Attack/health gem overlay for battlefield minions */
+/* Give description clearance above the hanging bf-card-stats gems.
+   bf-card-stats: bottom:-10px, size clamp(26-34px).
+   bottom:18% + align top ensures icons stay well above the gem zone.
+   overflow:visible lets icons slightly overhang the box without touching gems. */
+.bf-card-wrapper .card-description {
+  bottom: 18%;
+  background: transparent;
+  border: none;
+  align-items: flex-start;
+  padding: 1px 3px;
+  overflow: visible;
+}
+
+.bf-card-wrapper .keyword-icons-container {
+  gap: 3px;
+  padding: 0;
+  flex-wrap: nowrap;
+}
+
+.bf-card-wrapper .keyword-icon-badge {
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+}
+
+/* Attack/health gem overlay for battlefield minions — hang below card frame */
 .bf-card-stats {
   position: absolute;
-  bottom: 0;
+  bottom: -10px;
   left: 0;
   right: 0;
   display: flex;

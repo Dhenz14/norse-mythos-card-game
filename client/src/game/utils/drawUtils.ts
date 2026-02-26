@@ -5,7 +5,7 @@ import { logActivity } from '../stores/activityLogStore';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
 
-const MAX_HAND_SIZE = 9;
+const MAX_HAND_SIZE = 7;
 
 function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent') {
   try {
@@ -58,8 +58,7 @@ export function drawCardFromDeck(
   player.deck.splice(0, 1);
   
   if (player.hand.length >= MAX_HAND_SIZE) {
-    queueCardBurnAnimation(cardData.name, playerId);
-    return newState;
+    return newState; // hand full — card stays in deck, draw is missed
   }
   
   const cardInstance: CardInstance = {

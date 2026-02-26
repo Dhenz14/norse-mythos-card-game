@@ -1,6 +1,6 @@
 # Ragnarok — Hive Blockchain Integration Blueprint
 
-**Status**: Phase 2 Design Document
+**Status**: Phase 2 — 2A/2B foundation + 2D pre-launch complete. Phase 2C (genesis broadcast) is next.
 **Layer**: Hive Layer 1 (no Hive-Engine dependency)
 **Model**: Fixed-supply NFT cards, decentralized P2P gameplay, cryptographic anti-cheat
 
@@ -952,20 +952,31 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 
 ## 11. Implementation Phases
 
-### Phase 2A — Foundation (est. 2-4 weeks)
+### Phase 2A — Foundation (COMPLETE)
 
 - [ ] Set up Ragnarok Hive account
 - [ ] Write and publish genesis design doc as Hive post (public commitment)
-- [ ] Build in-browser chain replay engine (TypeScript + IndexedDB)
-- [ ] Add `nft_id` field to card types (non-breaking)
-- [ ] Build Hive Keychain connection in client (`useHiveKeychain.ts`)
+- [x] Build in-browser chain replay engine (TypeScript + IndexedDB)
+- [x] Add `nft_id` field to card types (non-breaking)
+- [x] Build Hive Keychain connection in client (`HiveSync.ts`)
+- [x] Build replay DB (IndexedDB schema + CRUD)
+- [x] Build replay rules engine (deterministic op dispatch)
+- [x] Build multi-challenge PoW module (`proofOfWork.ts`)
+- [x] Build match anchor broadcast (`matchAnchor.ts`)
+- [x] Build slash evidence broadcaster (`slashEvidence.ts`)
+- [x] Build transaction queue + processor (local/test/hive modes)
+- [x] Build card XP system + NFT metadata generator
+- [x] Build match result packager (ELO, XP, rune rewards)
+- [x] Build mock blockchain server for testing
+- [x] Build Keychain login UI component
+- [x] Build blockchain subscriber (game end → queue)
 - [ ] Test mint/transfer/verify on Hive testnet
 
-### Phase 2B — Match Protocol (est. 3-5 weeks)
+### Phase 2B — Match Protocol (partially complete — PoW + anchors done; SignedMove/transcript deferred)
 
 - [ ] Extract game rule engine to pure TypeScript module (no React deps)
-- [ ] Implement multi-challenge PoW module (`proofOfWork.ts`: `computePoW`, `verifyPoW` with Web Workers)
-- [ ] Implement `match_start` anchor broadcast (dual-sig, with PoW)
+- [x] Implement multi-challenge PoW module (`proofOfWork.ts`: `computePoW`, `verifyPoW` with Web Workers)
+- [x] Implement `match_start` anchor broadcast (dual-sig, with PoW)
 - [ ] Implement commit-reveal deck seeding
 - [ ] Implement `SignedMove` with `hive_block_ref` (temporal anchor per move)
 - [ ] Implement Merkle tree transcript builder (`transcriptBuilder.ts`)
@@ -973,9 +984,9 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [ ] Add WASM hash check at P2P handshake
 - [ ] Test full match with transcript generation and Merkle root
 - [ ] Implement dual-signature `match_result` with `transcript_merkle_root` and PoW
-- [ ] Add PoW and `slash_evidence` processing to replay engine rules
+- [x] Add PoW and `slash_evidence` processing to replay engine rules
 
-### Phase 2C — Genesis Launch (est. 2-3 weeks)
+### Phase 2C — Genesis Launch (NEXT — requires mainnet Hive account)
 
 - [ ] Compile game engine to WASM
 - [ ] Pin WASM hash in genesis broadcast
@@ -985,9 +996,11 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 
 ### Phase 2D — On-Chain Matchmaking & Ladder (est. ongoing)
 
-- [ ] Implement on-chain matchmaking queue (`queue_join` / `queue_leave` ops)
-- [ ] Ban system (on-chain evidence, client-enforced)
-- [ ] Ranked ladder computed from on-chain match results
+- [x] Implement on-chain matchmaking queue (`queue_join` / `queue_leave` ops) — `matchmakingOnChain.ts`: PoW broadcast, ELO window matching, 5s poller
+- [x] Ban system (on-chain evidence, client-enforced) — `slashEvidence.ts` + `replayRules.ts` blocks slashed accounts at dispatch
+- [x] `result_nonce` anti-replay — monotonic per-account nonce in `matchResultPackager` + validated by `applyMatchResult`
+- [x] Deck ownership verification at P2P handshake — `deckVerification.ts` + `deck_verify` message in `useP2PSync.ts`
+- [ ] Ranked ladder UI computed from on-chain match results
 - [ ] Dispute resolution process (partial transcript proof)
 
 ---
@@ -998,37 +1011,55 @@ All new files live in the client. There is no server component, no reader servic
 
 ```
 client/src/
-├── blockchain/
-│   ├── HiveKeychainProvider.tsx     # Keychain context + auth
-│   ├── useHiveKeychain.ts           # Hook for signing operations
-│   ├── useNFTCollection.ts          # Query IndexedDB for player's cards
-│   ├── useDeckVerification.ts       # Verify deck ownership (local IndexedDB)
-│   ├── types.ts                     # NFT, Transfer, MatchResult types (exists)
-│   ├── replayEngine.ts             # Chain replay: fetch ops → apply rules → IndexedDB
-│   ├── replayRules.ts              # Deterministic rules (v1.0, hash-pinned at genesis)
-│   ├── replayDB.ts                 # IndexedDB schema + queries (ownership, supply, sync)
-│   ├── proofOfWork.ts              # Multi-challenge PoW with Web Workers: computePoW, verifyPoW
-│   ├── matchAnchor.ts              # match_start broadcast + verification logic
-│   ├── slashEvidence.ts            # Detect contradictions, broadcast slash_evidence, apply slashing
-│   └── matchmakingOnChain.ts       # Poll for queue_join ops, initiate P2P connections
+├── data/
+│   ├── blockchain/                    # Chain replay, PoW, anti-cheat (BUILT)
+│   │   ├── types.ts                   # NFT, Transfer, MatchResult, TransactionEntry types
+│   │   ├── replayEngine.ts            # Chain replay: fetch ops → apply rules → IndexedDB
+│   │   ├── replayRules.ts             # Deterministic rules (v1.0, hash-pinned at genesis)
+│   │   ├── replayDB.ts                # IndexedDB schema + queries (ownership, supply, sync)
+│   │   ├── proofOfWork.ts             # Multi-challenge PoW: computePoW, verifyPoW
+│   │   ├── hashUtils.ts              # SHA256, canonical JSON, match/NFT hashing
+│   │   ├── matchAnchor.ts            # match_start broadcast + verification logic
+│   │   ├── slashEvidence.ts          # Permissionless slash evidence broadcaster
+│   │   ├── transactionQueueStore.ts  # Zustand + persist (IndexedDB/localStorage)
+│   │   ├── transactionProcessor.ts   # Mode-aware submission (local/test/hive)
+│   │   ├── cardXPSystem.ts           # XP calculations per rarity
+│   │   ├── matchResultPackager.ts    # Package match into on-chain format (result_nonce anti-replay)
+│   │   ├── nftMetadataGenerator.ts   # NFT metadata from card definitions
+│   │   ├── deckVerification.ts       # verifyDeckOwnership, computeDeckHash (IndexedDB, no server)
+│   │   ├── matchmakingOnChain.ts     # broadcastQueueJoin, startQueuePoller, ELO window matching
+│   │   └── index.ts                  # Barrel exports
+│   │
+│   ├── HiveSync.ts                    # Keychain integration: login, broadcast, transfer
+│   ├── HiveDataLayer.ts              # Zustand store: user, stats, collection, tokens
+│   ├── HiveEvents.ts                 # Event bus for chain state changes
+│   └── schemas/
+│       └── HiveTypes.ts              # Core Hive types: HiveCardAsset, HiveMatchResult, etc.
 │
 ├── game/
-│   ├── engine/
-│   │   ├── ragnarok-engine.wasm     # Compiled game logic
-│   │   ├── wasmLoader.ts            # WASM init + hash verification
-│   │   └── engineBridge.ts          # TypeScript ↔ WASM interface
-│   └── protocol/
-│       ├── matchProtocol.ts         # SignedMove (with hive_block_ref), commit-reveal logic
-│       ├── transcriptBuilder.ts     # Assemble SignedMoves into Merkle tree
-│       ├── transcriptMerkle.ts      # Merkle root computation + proof generation/verification
-│       └── resultBroadcaster.ts     # Publish dual-signed match_result to Hive
+│   ├── engine/                        # WASM game logic (PLANNED — Phase 2C)
+│   │   ├── ragnarok-engine.wasm       # Compiled game logic
+│   │   ├── wasmLoader.ts              # WASM init + hash verification
+│   │   └── engineBridge.ts            # TypeScript ↔ WASM interface
+│   │
+│   ├── protocol/                      # Cryptographic match protocol (PLANNED — Phase 2B)
+│   │   ├── matchProtocol.ts           # SignedMove (with hive_block_ref), commit-reveal
+│   │   ├── transcriptBuilder.ts       # Assemble SignedMoves into Merkle tree
+│   │   ├── transcriptMerkle.ts        # Merkle root computation + proof generation
+│   │   └── resultBroadcaster.ts       # Publish dual-signed match_result to Hive
+│   │
+│   ├── components/
+│   │   └── HiveKeychainLogin.tsx      # Keychain login UI component
+│   │
+│   ├── subscribers/
+│   │   └── BlockchainSubscriber.ts    # Game end → match packaging → queue
+│   │
+│   └── config/
+│       └── featureFlags.ts            # DATA_LAYER_MODE, BLOCKCHAIN_PACKAGING_ENABLED
 │
-├── data/
-│   └── blockchain/                  # Already exists — transaction queue, XP, types
-│       ├── transactionQueueStore.ts # Zustand + persist (IndexedDB/localStorage)
-│       ├── cardXPSystem.ts          # XP calculations
-│       ├── matchResultPackager.ts   # Package match into on-chain format
-│       └── types.ts                 # Shared blockchain types
+└── server/
+    └── routes/
+        └── mockBlockchainRoutes.ts    # In-memory mock blockchain (testing only)
 ```
 
 **What's NOT here:**
@@ -1070,6 +1101,59 @@ These rules must never be violated, regardless of future development:
 
 ---
 
+## 14. Design Philosophy: Ordinals-Style Reader Model
+
+Ragnarok's NFT system follows the same philosophical model as Bitcoin Ordinals: **the data layer is dumb text; the reader gives it meaning.**
+
+### How it works
+
+Hive's `custom_json` operation stores arbitrary text on an immutable blockchain. By itself, `{ "action": "mint", "nft_id": "gen1-rare-001" }` is meaningless — it's just a JSON string in a block. The **reader** (our replay engine running in every player's browser) is what interprets this text as "a rare NFT card now exists and belongs to this account."
+
+This means:
+- **Anything can be an NFT** if the reader says it is. The chain stores data; the reader assigns semantics.
+- **The reader IS the protocol.** Two readers running the same rules will always agree on ownership state. A reader running different rules will disagree — and that's fine, because the genesis broadcast pins the canonical reader version by hash.
+- **No smart contracts needed.** The "contract" is the reader code itself, version-locked at genesis. It can't be upgraded, paused, or rugged — it's just a function: `(chain_history) → ownership_state`.
+- **Composability is open.** Any third party can write their own reader for `ragnarok-cards` ops. A marketplace, a stats tracker, a tournament organizer — all possible by reading the same public chain data with the same deterministic rules.
+
+### Why this is stronger than smart contracts for fixed-supply collections
+
+| Property | Smart contract (Hive-Engine/ETH) | Reader model (Ragnarok/Ordinals) |
+|---|---|---|
+| Upgrade risk | Contract owner can change rules | Rules frozen at genesis, reader hash-pinned |
+| Runtime dependency | Needs contract VM / sidechain nodes | Runs in any browser, no dependency |
+| Audit surface | Contract code + VM + sidechain | Reader code only (small, static) |
+| Cost | Gas / sidechain fees | Zero (Hive RC only) |
+| Finality | Subject to chain reorgs / upgrades | Hive L1 finality (irreversible after 60 blocks) |
+| Offline verification | Requires node connection | IndexedDB cache works offline |
+
+### The social contract
+
+The genesis broadcast is a permanent, public, on-chain commitment. It says: "here are the rules, here is the reader hash, here is the total supply." Any player can verify their client runs the canonical reader. If someone forks the reader to claim they own cards they don't, every other player's reader will disagree — and majority consensus wins, just like Bitcoin.
+
+---
+
+## 15. Anti-Cheat Hardening Notes
+
+Additional protections beyond the core protocol:
+
+### 15.1 Replay Nonce for Match Results
+
+Each `match_result` should include a monotonic `result_nonce` per account. The replay engine tracks the highest nonce seen per player. Results with a nonce <= the previous highest are rejected. This prevents replay attacks where an old winning result is re-broadcast.
+
+### 15.2 Deck Hash Consistency
+
+The `match_start` anchor includes a `deck_hash`. The `match_result` should also include the same `deck_hash`. The replay engine can cross-reference: if the deck hash in the result doesn't match the deck hash in the anchor, the result is suspicious. Players who consistently submit mismatched deck hashes can be flagged.
+
+### 15.3 Time-Window Validation
+
+`queue_join` entries older than 10 minutes should be auto-expired by the replay engine. This prevents stale queue entries from accumulating and being used for delayed match manipulation.
+
+### 15.4 Rate Limiting via PoW Scaling
+
+If the replay engine detects an account submitting ops at an unusually high rate (e.g., >10 `queue_join` ops per hour), future PoW difficulty for that account's ops can be scaled up. This is enforced locally by every reader — no coordination needed.
+
+---
+
 ## References
 
 - [Hive custom JSON documentation](https://developers.hive.io/)
@@ -1079,3 +1163,4 @@ These rules must never be violated, regardless of future development:
 - [IndexedDB API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 - Mental poker (commit-reveal): Shamir, Rivest, Adleman (1979)
 - [Splinterlands architecture (reference implementation on Hive)](https://splinterlands.com)
+- [Bitcoin Ordinals theory](https://docs.ordinals.com/) — reader-interprets-data model

@@ -10,8 +10,11 @@ import { MATCH_RESULT_VERSION } from './types';
 import { hashMatchResult } from './hashUtils';
 import { calculateXPRewards } from './cardXPSystem';
 import type { HiveCardAsset } from '../schemas/HiveTypes';
+import { getPlayerNonce, advancePlayerNonce } from './replayDB';
 
 const ELO_K_FACTOR = 32;
+const RUNE_WIN_RANKED  = 10;
+const RUNE_LOSS_RANKED = 3;
 
 // Typed game log entry for damage calculation
 interface DamageLogEntry {
@@ -105,7 +108,16 @@ export async function packageMatchResult(
 		xpRewards = calculateXPRewards(winnerCardUids, cardCollection, cardRarities, null);
 	}
 
+	const runeRewards = input.matchType === 'ranked'
+		? { winner: RUNE_WIN_RANKED, loser: RUNE_LOSS_RANKED }
+		: { winner: 0, loser: 0 };
+
 	const duration = Math.max(0, Date.now() - input.startTime);
+
+	// Monotonic anti-replay nonce. Advance locally so the next call gets +2, etc.
+	const nonceRecord = await getPlayerNonce(input.playerUsername);
+	const result_nonce = nonceRecord.highestMatchNonce + 1;
+	await advancePlayerNonce(input.playerUsername, result_nonce);
 
 	const resultWithoutHash: Omit<PackagedMatchResult, 'hash'> = {
 		matchId: input.matchId,
@@ -117,8 +129,10 @@ export async function packageMatchResult(
 		totalRounds: gameState.turnNumber,
 		eloChanges: { winner: winnerElo, loser: loserElo },
 		xpRewards,
+		runeRewards,
 		seed: input.seed,
 		version: MATCH_RESULT_VERSION,
+		result_nonce,
 	};
 
 	const hash = await hashMatchResult(resultWithoutHash);

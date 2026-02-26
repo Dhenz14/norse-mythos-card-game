@@ -273,7 +273,7 @@ export function executeNZothBattlecry(
   }
   
   // Get available battlefield slots
-  const maxMinions = 7;
+  const maxMinions = 5;
   const currentMinions = newState.players[playerType].battlefield.length;
   const availableSlots = Math.max(0, maxMinions - currentMinions);
   

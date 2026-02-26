@@ -466,7 +466,7 @@ export function executeKrulBattlecry(
   
   // Check if the battlefield is full
   const battlefield = newState.players[playerType].battlefield;
-  const maxMinions = 7;
+  const maxMinions = 5;
   const availableSlots = maxMinions - battlefield.length;
   
   // Limit demons to available slots

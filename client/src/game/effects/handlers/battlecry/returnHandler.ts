@@ -55,7 +55,7 @@ export function executeReturnReturn(
   const targetMinion = currentPlayer.battlefield[targetIndex];
   
   // Check if hand is full (max 9 cards like Hearthstone)
-  if (currentPlayer.hand.length >= 9) {
+  if (currentPlayer.hand.length >= 7) {
     
     // Log the effect for debugging
     newState.gameLog = newState.gameLog || [];

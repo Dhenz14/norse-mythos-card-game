@@ -15,6 +15,7 @@ import {
   HiveMatchResult,
   RagnarokTransactionType,
   RAGNAROK_CUSTOM_JSON_PREFIX,
+  RAGNAROK_APP_ID,
 } from './schemas/HiveTypes';
 
 export interface HiveBroadcastResult {
@@ -91,18 +92,21 @@ export class HiveSync {
     }
 
     return new Promise((resolve) => {
+      // Canonical format: single "ragnarok-cards" app ID, action in payload
+      const action = type.replace(RAGNAROK_CUSTOM_JSON_PREFIX, '');
       const jsonStr = JSON.stringify({
         ...payload,
-        app: 'ragnarok-poker/1.0',
+        app: RAGNAROK_APP_ID,
+        action,
         timestamp: Date.now(),
       });
 
       window.hive_keychain!.requestCustomJson(
         this.username!,
-        type,
+        RAGNAROK_APP_ID,
         useActiveKey ? 'Active' : 'Posting',
         jsonStr,
-        `Ragnarok Poker: ${type.replace(RAGNAROK_CUSTOM_JSON_PREFIX, '').replace(/_/g, ' ')}`,
+        `Ragnarok: ${action.replace(/_/g, ' ')}`,
         (response) => {
           resolve({
             success: response.success,
@@ -187,6 +191,32 @@ export class HiveSync {
 
   generateMatchSeed(): string {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 16)}`;
+  }
+
+  async signResultHash(hash: string): Promise<string> {
+    if (!this.username) {
+      throw new Error('No username set');
+    }
+    if (!this.isKeychainAvailable()) {
+      throw new Error('Hive Keychain not available');
+    }
+
+    return new Promise((resolve, reject) => {
+      window.hive_keychain!.requestSignBuffer(
+        this.username!,
+        hash,
+        'Posting',
+        (response) => {
+          if (response.success && response.result) {
+            resolve(String(response.result));
+          } else {
+            reject(new Error(response.error || response.message || 'Signing failed'));
+          }
+        },
+        undefined,
+        'Sign match result'
+      );
+    });
   }
 }
 

@@ -592,6 +592,9 @@ export interface CardInstance {
 
   // Evolution system
   evolutionLevel?: 1 | 2 | 3;
+
+  // NFT — present if this is a Hive L1 NFT card; absent for demo/dev cards
+  nft_id?: string;
 }
 
 /**

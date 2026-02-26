@@ -6,7 +6,9 @@ import { packageMatchResult } from '@/data/blockchain/matchResultPackager';
 import { isBlockchainPackagingEnabled } from '../config/featureFlags';
 import { generateMatchId, useHiveDataStore } from '@/data/HiveDataLayer';
 import { debug } from '../config/debugConfig';
-import type { CardUidMapping } from '@/data/blockchain/types';
+import type { CardUidMapping, PackagedMatchResult } from '@/data/blockchain/types';
+import { usePeerStore } from '../stores/peerStore';
+import { hiveSync } from '@/data/HiveSync';
 
 type UnsubscribeFn = () => void;
 
@@ -150,8 +152,7 @@ function handleGameEnded(_event: GameEndedEvent): void {
 		playerHeroId: gameState.players.player.heroId ?? '',
 		opponentHeroId: gameState.players.opponent.heroId ?? '',
 		startTime,
-		// TODO (Phase 2B): replace with commit-reveal seed from P2P handshake
-		seed: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+		seed: useGameStore.getState().matchSeed ?? `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
 		playerCardUids,
 		opponentCardUids,
 		playerEloBefore,
@@ -163,28 +164,86 @@ function handleGameEnded(_event: GameEndedEvent): void {
 	const collection = hiveData.cardCollection?.length ? hiveData.cardCollection : null;
 
 	packageMatchResult(gameState, input, collection ?? undefined, cardRarities)
-		.then((result) => {
-			const queue = useTransactionQueueStore.getState();
-
-			queue.enqueue('match_result', result, result.hash);
-
-			for (const xpReward of result.xpRewards) {
-				// Use per-card hash so each XP entry deduplicates independently
-				queue.enqueue('xp_update', xpReward, `${result.hash}_xp_${xpReward.cardUid}`);
-			}
-
-			debug.combat('[BlockchainSubscriber] Packaged and queued:', {
-				matchId: result.matchId,
-				winner: result.winner.username,
-				eloChange: result.eloChanges.winner.delta,
-				xpRewards: result.xpRewards.length,
-				playerCards: playerCardUids.length,
-				duration: Math.round((Date.now() - startTime) / 1000) + 's',
-			});
+		.then(async (result) => {
+			const finalResult = await attemptDualSig(result);
+			enqueueResult(finalResult, playerCardUids.length, startTime);
 		})
 		.catch((err) => {
 			debug.error('[BlockchainSubscriber] Failed to package match result:', err);
 		});
+}
+
+// ---------------------------------------------------------------------------
+// Dual-signature proposal (P2P ranked matches)
+// ---------------------------------------------------------------------------
+
+const DUAL_SIG_TIMEOUT_MS = 30_000;
+
+async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatchResult> {
+	const peer = usePeerStore.getState();
+	if (peer.connectionState !== 'connected' || !peer.isHost) return result;
+	if (result.matchType !== 'ranked') return result;
+
+	try {
+		const broadcasterSig = await hiveSync.signResultHash(result.hash);
+		peer.send({ type: 'result_propose', result, hash: result.hash, broadcasterSig });
+
+		const counterpartySig = await waitForCountersign(DUAL_SIG_TIMEOUT_MS);
+		if (counterpartySig) {
+			return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: counterpartySig } };
+		}
+
+		debug.warn('[BlockchainSubscriber] Dual-sig timeout/rejected — single-sig fallback');
+		return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: '' } };
+	} catch (err) {
+		debug.warn('[BlockchainSubscriber] Dual-sig signing failed — broadcasting unsigned:', err);
+		return result;
+	}
+}
+
+function waitForCountersign(timeoutMs: number): Promise<string | null> {
+	return new Promise((resolve) => {
+		const conn = usePeerStore.getState().connection;
+		if (!conn) { resolve(null); return; }
+
+		let settled = false;
+		const c = conn; // capture non-null ref for closures
+
+		const timer = setTimeout(() => {
+			if (!settled) { settled = true; c.off('data', handler); resolve(null); }
+		}, timeoutMs);
+
+		function handler(data: unknown) {
+			const msg = data as Record<string, unknown>;
+			if (msg.type === 'result_countersign' && typeof msg.counterpartySig === 'string') {
+				if (!settled) { settled = true; clearTimeout(timer); c.off('data', handler); resolve(msg.counterpartySig); }
+			} else if (msg.type === 'result_reject') {
+				if (!settled) { settled = true; clearTimeout(timer); c.off('data', handler); resolve(null); }
+			}
+		}
+
+		c.on('data', handler);
+	});
+}
+
+function enqueueResult(result: PackagedMatchResult, playerCardCount: number, startTime: number): void {
+	const queue = useTransactionQueueStore.getState();
+
+	queue.enqueue('match_result', result, result.hash);
+
+	for (const xpReward of result.xpRewards) {
+		queue.enqueue('xp_update', xpReward, `${result.hash}_xp_${xpReward.cardUid}`);
+	}
+
+	debug.combat('[BlockchainSubscriber] Packaged and queued:', {
+		matchId: result.matchId,
+		winner: result.winner.username,
+		eloChange: result.eloChanges.winner.delta,
+		xpRewards: result.xpRewards.length,
+		playerCards: playerCardCount,
+		dualSig: !!(result.signatures?.broadcaster && result.signatures?.counterparty),
+		duration: Math.round((Date.now() - startTime) / 1000) + 's',
+	});
 }
 
 // ---------------------------------------------------------------------------

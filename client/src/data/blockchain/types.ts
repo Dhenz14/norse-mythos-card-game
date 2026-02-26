@@ -59,9 +59,12 @@ export interface PackagedMatchResult {
 		loser: EloChange;
 	};
 	xpRewards: CardXPReward[];
+	runeRewards: { winner: number; loser: number };
 	seed: string;
 	hash: string;
 	version: number;
+	result_nonce: number; // monotonic per-account nonce — prevents re-broadcasting old results
+	signatures?: { broadcaster: string; counterparty: string };
 }
 
 export interface CardXPReward {

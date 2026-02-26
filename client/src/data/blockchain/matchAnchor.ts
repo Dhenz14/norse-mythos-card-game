@@ -107,7 +107,7 @@ export async function broadcastMatchAnchor(params: {
 	const pow = await computePoW(payloadHash, POW_CONFIG.MATCH_START);
 
 	const payload: MatchAnchorPayload = {
-		app: 'ragnarok-cards/1.0',
+		app: 'ragnarok-cards',
 		type: 'rp_match_start',
 		match_id: matchId,
 		opponent,

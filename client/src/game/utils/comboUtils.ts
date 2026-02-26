@@ -264,7 +264,7 @@ function handleComboSummon(
   
   // Check if the battlefield is full
   const battlefield = newState.players[playerType].battlefield;
-  if (battlefield.length >= 7) {
+  if (battlefield.length >= 5) {
     newState.gameLog.push(
       createGameLogEvent(
         newState,

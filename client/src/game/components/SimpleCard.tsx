@@ -19,7 +19,7 @@ export interface SimpleCardData {
   health?: number;
   description?: string;
   type: 'minion' | 'spell' | 'weapon';
-  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
   tribe?: string;
   cardClass?: string;
   keywords?: string[];
@@ -43,6 +43,7 @@ interface SimpleCardProps {
 
 const getRarityClass = (rarity?: string): string => {
   switch (rarity) {
+    case 'mythic': return 'rarity-mythic';
     case 'legendary': return 'rarity-legendary';
     case 'epic': return 'rarity-epic';
     case 'rare': return 'rarity-rare';
@@ -165,8 +166,6 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
                 </div>
               ))}
             </div>
-          ) : card.description ? (
-            <span className="truncated-desc">{card.description.slice(0, 30)}...</span>
           ) : null
         )}
       </div>
@@ -214,13 +213,6 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
         <span className={`card-name ${nameClass}`}>{card.name}</span>
       </div>
       
-      {/* Card Type/Tribe */}
-      {card.tribe && (
-        <div className="card-tribe">
-          <span>{card.tribe}</span>
-        </div>
-      )}
-      
       {/* Description area - shows icons or text based on size and content */}
       {descriptionContent}
       
@@ -253,6 +245,11 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       {/* Foil overlay for Rare cards - Blue shimmer */}
       {card.rarity === 'rare' && (
         <div className="foil-overlay rare-foil" />
+      )}
+
+      {/* Foil overlay for Mythic cards - Rainbow holographic */}
+      {card.rarity === 'mythic' && (
+        <div className="foil-overlay mythic-foil" />
       )}
     </div>
   );

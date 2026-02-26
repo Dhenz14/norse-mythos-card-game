@@ -10,7 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 
-const MAX_HAND_SIZE = 10;
+const MAX_HAND_SIZE = 7;
 
 /**
  * Execute a draw_multiple battlecry effect

@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { routes } from '../../../lib/routes';
 import { getRarityColor, getRarityBackground, getTypeIcon } from '../../utils/rarityUtils';
 import type { OwnedCard, InventoryResponse, InventoryCard } from '../packs/types';
+import { useHiveDataStore } from '../../../data/HiveDataLayer';
+import { getMasteryTier } from '../../../data/blockchain/cardXPSystem';
 import './collection.css';
 
 type FilterRarity = 'all' | 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
@@ -72,6 +74,8 @@ function getShimmerClass(rarity: string): string {
 }
 
 export default function CollectionPage() {
+	const hiveCards = useHiveDataStore((s) => s.cardCollection);
+
 	const [cards, setCards] = useState<OwnedCard[]>([]);
 	const [stats, setStats] = useState<CollectionStats | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -154,6 +158,11 @@ export default function CollectionPage() {
 			debug.error('Error fetching stats:', err);
 		}
 	};
+
+	const hiveCardMap = useMemo(
+		() => new Map(hiveCards.map(c => [c.cardId, c])),
+		[hiveCards],
+	);
 
 	const filteredAndSorted = useMemo(() => {
 		let result = cards.filter(card => {
@@ -397,7 +406,10 @@ export default function CollectionPage() {
 					<>
 						{/* Card Grid */}
 						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-							{filteredAndSorted.map((card, index) => (
+							{filteredAndSorted.map((card, index) => {
+								const hiveAsset = hiveCardMap.get(card.id);
+								const masteryTier = hiveAsset ? getMasteryTier(hiveAsset.xp, card.rarity) : 0;
+								return (
 								<motion.div
 									key={`${card.id}-${index}`}
 									initial={{ opacity: 0, scale: 0.9 }}
@@ -410,6 +422,13 @@ export default function CollectionPage() {
 									{/* Foil Shimmer */}
 									{card.rarity !== 'common' && (
 										<div className={getShimmerClass(card.rarity)} />
+									)}
+
+									{/* Mastery Badge */}
+									{masteryTier >= 2 && (
+										<div className={`mastery-badge mastery-tier-${masteryTier}`}>
+											{'★'.repeat(masteryTier)}
+										</div>
 									)}
 
 									<div className="relative p-3">
@@ -457,7 +476,8 @@ export default function CollectionPage() {
 										</div>
 									</div>
 								</motion.div>
-							))}
+							);
+							})}
 						</div>
 
 						{/* Pagination */}
@@ -618,6 +638,21 @@ export default function CollectionPage() {
 										</div>
 									</div>
 								)}
+
+								{/* Mastery Tier */}
+								{(() => {
+									const a = hiveCardMap.get(selectedCard.id);
+									const mt = a ? getMasteryTier(a.xp, selectedCard.rarity) : 0;
+									if (mt < 2) return null;
+									return (
+										<div className="text-center mb-3">
+											<span className={`mastery-badge-modal mastery-tier-${mt}`}>
+												{'★'.repeat(mt)} {mt === 3 ? 'Divine' : 'Ascended'}
+											</span>
+											<div className="text-[10px] text-gray-500 mt-1">NFT Mastery</div>
+										</div>
+									);
+								})()} 
 
 								{/* Owned Count */}
 								<div className="text-center text-gray-400 text-sm mb-4">

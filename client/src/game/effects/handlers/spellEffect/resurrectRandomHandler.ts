@@ -44,7 +44,7 @@ export function executeResurrectRandomResurrectRandom(
   }
 
   const battlefield = [...(player.battlefield || [])];
-  const maxMinions = 7;
+  const maxMinions = 5;
   const availableSlots = maxMinions - battlefield.length;
   const resurrectionCount = Math.min(count, deadMinions.length, availableSlots);
 

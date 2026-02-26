@@ -439,7 +439,13 @@ export const createChessCombatSlice: StateCreator<
       }
     }
     
-    return { moves: safeMoves, attacks: safeAttacks };
+    // Kings cannot be directly attacked — win condition is checkmate only
+    const finalAttacks = safeAttacks.filter(pos => {
+      const target = pieces.find(p => p.position.row === pos.row && p.position.col === pos.col);
+      return !target || target.type !== 'king';
+    });
+
+    return { moves: safeMoves, attacks: finalAttacks };
   },
 
   getPieceAt: (position: ChessBoardPosition): ChessPiece | null => {

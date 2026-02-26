@@ -1,22 +1,36 @@
 /**
- * Hive Data Types - Core 5 On-Chain Items
- *
- * Simplified schema for P2E Hive integration.
- * Based on Splinterlands pattern with 'rp_' prefix (Ragnarok Poker).
- *
- * On-Chain Data:
- * 1. User Records
- * 2. Player Stats
- * 3. Match Results
- * 4. Card Ownership
- * 5. Token Balances
+ * Hive Data Types - On-Chain Items
  *
  * Architecture: Hive L1 only, no Hive Engine, no server.
- * All data derived from chain replay (custom_json with app id "ragnarok-cards").
+ * All data derived from chain replay (custom_json with id "ragnarok-cards").
  * Stored locally in IndexedDB, queried via HiveDataLayer Zustand store.
  *
- * Status: BLUEPRINT ONLY - Types ready, pending chain replay engine implementation.
+ * Canonical op format:
+ *   custom_json id = "ragnarok-cards"
+ *   json = { "app": "ragnarok-cards", "action": "<action>", ... }
+ *
+ * Legacy format (backward compat, read-only):
+ *   custom_json id = "rp_<action>"
  */
+
+export const RAGNAROK_APP_ID = 'ragnarok-cards';
+
+export type RagnarokAction =
+  | 'genesis'
+  | 'mint'
+  | 'transfer'
+  | 'burn'
+  | 'seal'
+  | 'match_start'
+  | 'match_result'
+  | 'queue_join'
+  | 'queue_leave'
+  | 'slash_evidence'
+  | 'team_submit'
+  | 'pack_open'
+  | 'card_transfer'
+  | 'xp_update'
+  | 'reward_claim';
 
 export type RagnarokTransactionType =
   | 'rp_team_submit'
@@ -24,7 +38,9 @@ export type RagnarokTransactionType =
   | 'rp_card_transfer'
   | 'rp_pack_open'
   | 'rp_reward_claim'
-  | 'rp_xp_update';
+  | 'rp_xp_update'
+  | 'rp_queue_join'
+  | 'rp_queue_leave';
 
 export interface HiveUserRecord {
   hiveUsername: string;

@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { routes } from '../../../lib/routes';
 import PackOpeningAnimation from './PackOpeningAnimation';
 import { getRarityColor } from '../../utils/rarityUtils';
+import { useHiveDataStore } from '../../../data/HiveDataLayer';
+import { hiveSync } from '../../../data/HiveSync';
 import type {
 	PackType,
 	PackTypeResponse,
@@ -19,6 +21,13 @@ import type {
 import './packs.css';
 
 const RARITY_ORDER = ['mythic', 'legendary', 'epic', 'rare', 'common'] as const;
+
+const RUNE_COST: Record<string, number> = {
+	starter:   50,
+	booster:  100,
+	premium:  250,
+	legendary: 500,
+};
 
 const RARITY_COLORS: Record<string, string> = {
 	mythic: '#ec4899',
@@ -64,6 +73,11 @@ function parseNum(v: string | number): number {
 }
 
 export default function PacksPage() {
+	const tokenBalance = useHiveDataStore((s) => s.tokenBalance);
+	const user = useHiveDataStore((s) => s.user);
+	const updateTokenBalance = useHiveDataStore((s) => s.updateTokenBalance);
+	const runeBalance = tokenBalance?.RUNE ?? 0;
+
 	const [packTypes, setPackTypes] = useState<PackType[]>([]);
 	const [supplyStats, setSupplyStats] = useState<SupplyStats | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -72,6 +86,7 @@ export default function PacksPage() {
 	const [revealedCards, setRevealedCards] = useState<RevealedCard[]>([]);
 	const [isOpening, setIsOpening] = useState(false);
 	const [packError, setPackError] = useState<string | null>(null);
+	const [runeOpening, setRuneOpening] = useState<string | null>(null);
 
 	useEffect(() => {
 		fetchData();
@@ -224,6 +239,27 @@ export default function PacksPage() {
 		fetchData();
 	};
 
+	const handleOpenWithRune = async (pack: PackType) => {
+		const packKey = pack.name.split(' ')[0].toLowerCase();
+		const cost = RUNE_COST[packKey] ?? 100;
+		if (runeBalance < cost) return;
+		if (!user) return;
+
+		setRuneOpening(pack.id.toString());
+		const result = await hiveSync.broadcastCustomJson(
+			'rp_pack_open',
+			{ app: 'ragnarok-cards/1.0', type: 'rp_pack_open', pack_type: packKey, quantity: 1 },
+			false,
+		);
+		setRuneOpening(null);
+
+		if (result.success) {
+			updateTokenBalance({ RUNE: runeBalance - cost });
+		} else {
+			setPackError(result.error ?? 'RUNE pack open failed. Please try again.');
+		}
+	};
+
 	if (loading) {
 		return (
 			<div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-950 to-gray-900 flex items-center justify-center">
@@ -300,15 +336,24 @@ export default function PacksPage() {
 							<span>Back to Home</span>
 						</motion.button>
 					</Link>
-					<Link to={routes.collection}>
-						<motion.button
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-							className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg border border-indigo-400 transition-colors"
-						>
-							View Collection →
-						</motion.button>
-					</Link>
+					<div className="flex items-center gap-3">
+						{user && (
+							<div className="flex items-center gap-2 px-4 py-2 bg-amber-900/40 border border-amber-600/40 rounded-lg text-sm">
+								<span className="text-amber-400">⚡</span>
+								<span className="text-amber-200 font-bold">{runeBalance.toLocaleString()}</span>
+								<span className="text-amber-500 text-xs">RUNE</span>
+							</div>
+						)}
+						<Link to={routes.collection}>
+							<motion.button
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg border border-indigo-400 transition-colors"
+							>
+								View Collection →
+							</motion.button>
+						</Link>
+					</div>
 				</div>
 
 				{/* Title */}
@@ -524,6 +569,29 @@ export default function PacksPage() {
 										>
 											Open Pack
 										</motion.button>
+
+										{/* Open with RUNE */}
+										{user && (() => {
+											const packKey = pack.name.split(' ')[0].toLowerCase();
+											const cost = RUNE_COST[packKey] ?? 100;
+											const canAfford = runeBalance >= cost;
+											const isLoading = runeOpening === pack.id.toString();
+											return (
+												<motion.button
+													whileHover={{ scale: canAfford ? 1.02 : 1 }}
+													whileTap={{ scale: canAfford ? 0.98 : 1 }}
+													onClick={() => canAfford && !isLoading && handleOpenWithRune(pack)}
+													disabled={!canAfford || isLoading}
+													className={`w-full mt-2 py-2 rounded-lg text-sm font-semibold transition-all border ${
+														canAfford
+															? 'bg-amber-900/50 hover:bg-amber-800/60 text-amber-300 border-amber-600/50'
+															: 'bg-gray-800/30 text-gray-500 border-gray-700/30 cursor-not-allowed'
+													}`}
+												>
+													{isLoading ? '···' : `⚡ ${cost} RUNE`}
+												</motion.button>
+											);
+										})()}
 									</div>
 								</motion.div>
 							);

@@ -1,16 +1,37 @@
 /**
  * SimpleCard.css
- * 
+ *
  * Premium card styling with deep contrast, beveled stat gems,
  * metallic edges, and bold rarity glows. Clean and readable.
  */
+
+/* ==========================================================================
+   ANIMATED BORDER PROPERTIES
+   @property enables smooth animation of conic-gradient angles.
+   Fallback: browsers without @property get static first-frame borders.
+   ========================================================================== */
+
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-rotate {
+  to { --border-angle: 360deg; }
+}
+
+@keyframes rare-shimmer {
+  0%, 100% { background-position: 0% 0%; }
+  50%      { background-position: 100% 100%; }
+}
 
 /* Base card container - Deep premium dark theme */
 .simple-card {
   position: relative;
   background: linear-gradient(180deg, #1E1E2E 0%, #151520 40%, #0C0C14 100%);
   border-radius: 10px;
-  overflow: hidden;
+  overflow: visible; /* Allows stat gems to hang below the card frame */
   cursor: grab;
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease-out;
   box-shadow:
@@ -87,21 +108,29 @@
   box-shadow:
     0 4px 8px rgba(0,0,0,0.5),
     0 14px 28px rgba(0,0,0,0.7),
-    0 0 20px rgba(59,130,246,0.4);
+    0 0 24px rgba(59,130,246,0.5);
 }
 
 .simple-card.rarity-epic:hover {
   box-shadow:
     0 4px 8px rgba(0,0,0,0.5),
     0 14px 28px rgba(0,0,0,0.7),
-    0 0 24px rgba(168,85,247,0.5);
+    0 0 28px rgba(168,85,247,0.55);
 }
 
 .simple-card.rarity-legendary:hover {
   box-shadow:
     0 4px 8px rgba(0,0,0,0.5),
     0 14px 28px rgba(0,0,0,0.7),
-    0 0 28px rgba(245,158,11,0.6);
+    0 0 32px rgba(245,158,11,0.65);
+}
+
+.simple-card.rarity-mythic:hover {
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.5),
+    0 14px 28px rgba(0,0,0,0.7),
+    0 0 28px rgba(168,85,247,0.4),
+    0 0 28px rgba(245,158,11,0.3);
 }
 
 /* Active/click press-down feel */
@@ -123,37 +152,98 @@
 }
 
 /* ==========================================================================
-   RARITY BORDERS - Bold glows with metallic sheen
+   RARITY BORDERS - Animated gradient borders via mask-composite
+   Common: static gunmetal | Rare: shimmer sweep | Epic: purple rotation
+   Legendary: gold rotation + white flash | Mythic: rainbow aurora
    ========================================================================== */
 
+/* --- Common: clean gunmetal steel, no animation --- */
 .simple-card.rarity-common::before {
-  border: 3px solid #4A5568;
+  border: 2px solid #4A5568;
   box-shadow: inset 0 0 12px rgba(0,0,0,0.4);
 }
 
+/* --- Rare: blue shimmer sweep across border --- */
 .simple-card.rarity-rare::before {
-  border: 3px solid #3B82F6;
-  box-shadow:
-    0 0 16px rgba(59,130,246,0.55),
-    0 0 32px rgba(59,130,246,0.25),
-    inset 0 0 12px rgba(59,130,246,0.1);
+  inset: -2px;
+  padding: 2px;
+  border-radius: 12px;
+  border: none;
+  background:
+    linear-gradient(
+      135deg,
+      #1E3A8A 0%,
+      #3B82F6 20%,
+      #93C5FD 45%,
+      #BFDBFE 50%,
+      #93C5FD 55%,
+      #3B82F6 80%,
+      #1E3A8A 100%
+    );
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: rare-shimmer 4s ease-in-out infinite;
 }
 
+/* --- Epic: slow rotating purple crystalline --- */
 .simple-card.rarity-epic::before {
-  border: 3px solid #A855F7;
-  box-shadow:
-    0 0 18px rgba(168,85,247,0.6),
-    0 0 36px rgba(168,85,247,0.3),
-    inset 0 0 12px rgba(168,85,247,0.1);
+  inset: -2px;
+  padding: 2px;
+  border-radius: 12px;
+  border: none;
+  background: conic-gradient(
+    from var(--border-angle),
+    #581C87, #7C3AED, #A855F7, #C084FC,
+    #E9D5FF,
+    #C084FC, #A855F7, #7C3AED, #581C87
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: border-rotate 6s linear infinite;
 }
 
+/* --- Legendary: fast rotating gold with white flash --- */
 .simple-card.rarity-legendary::before {
-  border: 3px solid #F59E0B;
-  box-shadow:
-    0 0 22px rgba(245,158,11,0.7),
-    0 0 44px rgba(245,158,11,0.3),
-    0 0 8px rgba(255,200,50,0.4),
-    inset 0 0 12px rgba(245,158,11,0.1);
+  inset: -3px;
+  padding: 3px;
+  border-radius: 13px;
+  border: none;
+  background: conic-gradient(
+    from var(--border-angle),
+    #92400E, #B45309, #F59E0B, #FDE68A,
+    #FFFBEB,
+    #FDE68A, #F59E0B, #B45309, #92400E
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: border-rotate 4s linear infinite;
+}
+
+/* --- Mythic: iridescent rainbow aurora --- */
+.simple-card.rarity-mythic::before {
+  inset: -3px;
+  padding: 3px;
+  border-radius: 13px;
+  border: none;
+  background: conic-gradient(
+    from var(--border-angle),
+    #ef4444, #f97316, #f59e0b,
+    #22c55e, #06b6d4,
+    #3b82f6, #8b5cf6,
+    #a855f7, #ec4899, #ef4444
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: border-rotate 3s linear infinite;
 }
 
 /* ==========================================================================
@@ -220,29 +310,39 @@
 
 .card-art-container {
   position: absolute;
-  top: 8%;
-  left: 6%;
-  right: 6%;
-  height: 48%;
-  border-radius: 6px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-radius: 10px;
   overflow: hidden;
   background: linear-gradient(180deg, #08080F 0%, #141428 100%);
-  border: 2px solid rgba(255, 255, 255, 0.12);
   box-shadow:
     inset 0 0 30px rgba(0,0,0,0.8),
-    inset 0 4px 12px rgba(0,0,0,0.6),
     inset 0 -4px 12px rgba(0,0,0,0.4),
     inset 6px 0 12px rgba(0,0,0,0.3),
     inset -6px 0 12px rgba(0,0,0,0.3);
 }
 
+/* Fade art into the nameplate — creates smooth nameplate-on-art transition */
+.card-art-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.88) 100%);
+  pointer-events: none;
+}
+
 .simple-card.large .card-art-container {
-  height: 40%;
+  height: 100%;
 }
 
 .simple-card.preview .card-art-container {
-  top: 8%;
-  height: 42%;
+  top: 0;
+  height: 100%;
 }
 
 /* Card art image */
@@ -250,7 +350,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 20%;
   display: block;
 }
 
@@ -280,37 +380,35 @@
 
 .card-name-banner {
   position: absolute;
-  top: 57%;
+  top: 64%;
   left: 4%;
   right: 4%;
-  height: 14%;
-  background: linear-gradient(180deg, #3D4763 0%, #252D42 50%, #1A1F30 100%);
+  height: 11%;
+  background: rgba(10,12,24,0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px 6px;
-  border: 1px solid rgba(255,215,100,0.18);
-  box-shadow:
-    0 2px 8px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    inset 0 -1px 0 rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,215,100,0.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   z-index: 18;
   overflow: hidden;
 }
 
 .simple-card.medium .card-name-banner {
-  height: 16%;
   padding: 2px 4px;
 }
 
 .simple-card.large .card-name-banner {
-  top: 49%;
+  top: 64%;
+  border-top: none;
 }
 
 .simple-card.preview .card-name-banner {
-  top: 51%;
-  height: 9%;
+  top: 64%;
 }
 
 /* Card name text - High contrast, slightly larger */
@@ -388,64 +486,53 @@
   text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(147,197,253,0.3);
 }
 
-/* Card tribe */
-.card-tribe {
-  position: absolute;
-  bottom: 26%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  padding: 2px 8px;
-  border-radius: 8px;
-  font-size: 9px;
-  color: #FCD34D;
-  text-transform: uppercase;
-  font-weight: 600;
-  border: 1px solid rgba(252,211,77,0.3);
-}
-
-.simple-card.preview .card-tribe {
-  font-size: 11px;
-  bottom: 21%;
-}
 
 /* Card description - Clear and readable */
 .card-description {
   position: absolute;
-  top: 72%;
+  top: 76%;
   left: 5%;
   right: 5%;
-  bottom: 12%;
-  min-height: 18%;
+  bottom: 4%;
+  min-height: 14%;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   text-align: center;
   padding: 4px 6px;
-  background: linear-gradient(180deg, rgba(28,28,44,0.98) 0%, rgba(14,14,22,1) 100%);
+  background: transparent;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   z-index: 15;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .simple-card.small .card-description {
-  top: 74%;
-  bottom: 14%;
-  min-height: 14%;
+  top: 76%;
+  bottom: 18px;
+  background: transparent;
+  border: none;
+  align-items: flex-start;
+  padding: 1px 2px;
+  overflow: visible;
 }
 
 .simple-card.large .card-description {
-  top: 64%;
-  bottom: 19%;
-  min-height: 14%;
-  overflow: hidden;
+  top: 76%;
+  bottom: 36px;
+  background: transparent;
+  border: none;
+  align-items: flex-start;
+  overflow: visible;
 }
 
 .simple-card.preview .card-description {
-  top: 61%;
-  bottom: 13%;
-  min-height: 22%;
+  top: 76%;
+  bottom: 36px;
+  background: transparent;
+  border: none;
+  align-items: flex-start;
+  overflow: visible;
 }
 
 .card-description span {
@@ -503,14 +590,41 @@
   transform: scale(1.15);
 }
 
+/* Small card: tight icon size */
 .simple-card.small .keyword-icons-container {
-  gap: 4px;
-  padding: 2px;
+  gap: 3px;
+  padding: 0;
+  flex-wrap: nowrap;
 }
 
 .simple-card.small .keyword-icon-badge {
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+}
+
+/* Medium card: reduced icons to clear the 32px stat gems at bottom:-10px
+   Gem top = card_height(185) + 10 - 32 = 163px.
+   Icons top-aligned at ~140px end at ~158px — clear of 163px gem. */
+.simple-card.medium .card-description {
+  top: 76%;
+  bottom: 26px;
+  background: transparent;
+  border: none;
+  align-items: flex-start;
+  padding: 1px 4px;
+  overflow: visible;
+}
+
+.simple-card.medium .keyword-icons-container {
+  gap: 4px;
+  padding: 0;
+  flex-wrap: nowrap;
+}
+
+.simple-card.medium .keyword-icon-badge {
+  width: 18px;
+  height: 18px;
   font-size: 11px;
 }
 
@@ -535,7 +649,7 @@
 
 .card-attack {
   position: absolute;
-  bottom: 2px;
+  bottom: -10px;
   left: 2px;
   width: 32px;
   height: 32px;
@@ -557,7 +671,7 @@
 .simple-card.small .card-attack {
   width: 24px;
   height: 24px;
-  bottom: 1px;
+  bottom: -6px;
   left: 1px;
 }
 
@@ -565,7 +679,7 @@
 .simple-card.preview .card-attack {
   width: 42px;
   height: 42px;
-  bottom: 4px;
+  bottom: -14px;
   left: 4px;
 }
 
@@ -575,7 +689,7 @@
 
 .card-health {
   position: absolute;
-  bottom: 2px;
+  bottom: -10px;
   right: 2px;
   width: 32px;
   height: 32px;
@@ -597,7 +711,7 @@
 .simple-card.small .card-health {
   width: 24px;
   height: 24px;
-  bottom: 1px;
+  bottom: -6px;
   right: 1px;
 }
 
@@ -605,7 +719,7 @@
 .simple-card.preview .card-health {
   width: 42px;
   height: 42px;
-  bottom: 4px;
+  bottom: -14px;
   right: 4px;
 }
 
@@ -669,9 +783,19 @@
     rgba(59,130,246,0.06) 100%);
 }
 
+.foil-overlay.mythic-foil {
+  background: linear-gradient(135deg,
+    rgba(236,72,153,0.08) 0%,
+    rgba(168,85,247,0.10) 25%,
+    rgba(59,130,246,0.10) 50%,
+    rgba(34,197,94,0.08) 75%,
+    rgba(245,158,11,0.08) 100%);
+}
+
 .simple-card:hover .foil-overlay.legendary-foil { opacity: 1; }
 .simple-card:hover .foil-overlay.epic-foil { opacity: 1; }
 .simple-card:hover .foil-overlay.rare-foil { opacity: 0.8; }
+.simple-card:hover .foil-overlay.mythic-foil { opacity: 1; }
 
 /* Highlighted state - white glow ring, lifted */
 .simple-card.highlighted {
@@ -686,10 +810,16 @@
 }
 
 .simple-card.highlighted::before {
-  border-color: rgba(255, 255, 255, 0.7) !important;
-  box-shadow:
-    0 0 20px rgba(255, 255, 255, 0.4),
-    0 0 40px rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  border: none !important;
+  inset: -2px !important;
+  padding: 2px !important;
+  border-radius: 12px !important;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+  mask-composite: exclude !important;
+  animation: none !important;
 }
 
 /* ==========================================================================
@@ -705,7 +835,7 @@
 }
 
 .simple-card.card-type-spell .card-name-banner {
-  background: linear-gradient(180deg, #3D3666 0%, #2D2650 50%, #221E40 100%);
+  background: rgba(20,14,40,0.5);
 }
 
 .simple-card.card-type-spell.rarity-epic {
@@ -736,20 +866,31 @@
 }
 
 .simple-card.card-type-weapon .card-name-banner {
-  background: linear-gradient(180deg, #4A4A4A 0%, #383838 50%, #2A2A2A 100%);
+  background: rgba(30,30,30,0.5);
 }
 
 /* ==========================================================================
    ANIMATIONS - Rarity glows (static — no repaint animation needed)
    ========================================================================== */
 
-/* Static glows: legendary/epic identity is fixed, pulsing adds CPU cost with no UX benefit */
-.simple-card.rarity-legendary {
-  box-shadow: 0 0 22px rgba(245,158,11,0.7), 0 0 44px rgba(245,158,11,0.28);
+/* Static outer glows per rarity — on the card element (mask clips ::before box-shadow) */
+.simple-card.rarity-rare {
+  box-shadow: 0 0 12px rgba(59,130,246,0.4), 0 0 24px rgba(59,130,246,0.15);
 }
 
 .simple-card.rarity-epic {
-  box-shadow: 0 0 18px rgba(168,85,247,0.65), 0 0 36px rgba(168,85,247,0.28);
+  box-shadow: 0 0 16px rgba(168,85,247,0.45), 0 0 32px rgba(168,85,247,0.2);
+}
+
+.simple-card.rarity-legendary {
+  box-shadow: 0 0 20px rgba(245,158,11,0.5), 0 0 40px rgba(245,158,11,0.22);
+}
+
+.simple-card.rarity-mythic {
+  box-shadow:
+    0 0 20px rgba(168,85,247,0.35),
+    0 0 20px rgba(236,72,153,0.3),
+    0 0 40px rgba(59,130,246,0.2);
 }
 
 /* Playable card glow indicator — static shadow + GPU-composited scale pulse */
@@ -823,9 +964,8 @@
     transition: none;
   }
 
-  .simple-card.rarity-legendary,
-  .simple-card.rarity-epic {
-    animation: none;
+  .simple-card::before {
+    animation: none !important;
   }
 
   .simple-card.playable {

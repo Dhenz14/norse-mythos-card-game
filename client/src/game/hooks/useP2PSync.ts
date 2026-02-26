@@ -3,6 +3,11 @@ import { toast } from 'sonner';
 import { usePeerStore } from '../stores/peerStore';
 import { useGameStore } from '../stores/gameStore';
 import { GameState } from '../types';
+import { verifyDeckOwnership } from '../../data/blockchain/deckVerification';
+import { sha256Hash } from '../../data/blockchain/hashUtils';
+import { hiveSync } from '../../data/HiveSync';
+import type { PackagedMatchResult } from '../../data/blockchain/types';
+import { createSeededRng, seededShuffle } from '../utils/seededRng';
 
 /**
  * Flip the game state so the client sees themselves as 'player' and the host as 'opponent'.
@@ -31,6 +36,12 @@ function translateTargetForHost(targetId: string | undefined): string | undefine
 	return targetId;
 }
 
+function generateSalt(): string {
+	const bytes = new Uint8Array(32);
+	crypto.getRandomValues(bytes);
+	return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export type P2PMessage =
 	| { type: 'init'; gameState: GameState; isHost: boolean }
 	| { type: 'playCard'; cardId: string; targetId?: string; targetType?: 'minion' | 'hero' }
@@ -40,7 +51,15 @@ export type P2PMessage =
 	| { type: 'gameState'; gameState: GameState }
 	| { type: 'opponentDisconnected' }
 	| { type: 'ping' }
-	| { type: 'pong' };
+	| { type: 'pong' }
+	| { type: 'deck_verify'; hiveAccount: string; nftIds: string[] }
+	| { type: 'seed_commit'; commitment: string }
+	| { type: 'seed_reveal'; salt: string }
+	| { type: 'result_propose'; result: PackagedMatchResult; hash: string; broadcasterSig: string }
+	| { type: 'result_countersign'; counterpartySig: string }
+	| { type: 'result_reject'; reason: string };
+
+const RESULT_SIGN_TIMEOUT_MS = 30_000;
 
 export function useP2PSync() {
 	const { connection, connectionState, isHost, send } = usePeerStore();
@@ -49,24 +68,51 @@ export function useP2PSync() {
 	const isProcessingRef = useRef(false);
 	const initSentRef = useRef(false);
 
-	// When host's data connection opens, send authoritative game state to client
+	// Commit-reveal seed exchange state
+	const mySaltRef = useRef<string | null>(null);
+	const theirCommitmentRef = useRef<string | null>(null);
+	const seedResolvedRef = useRef(false);
+
+	// Dual-sig result state
+	const pendingResultRef = useRef<{
+		result: PackagedMatchResult;
+		hash: string;
+		broadcasterSig: string;
+		resolve: (sigs: { broadcaster: string; counterparty: string }) => void;
+		reject: (err: Error) => void;
+	} | null>(null);
+
+	// Seed exchange: generate salt and send commitment when connection opens
+	useEffect(() => {
+		if (!connection || connectionState !== 'connected') {
+			mySaltRef.current = null;
+			theirCommitmentRef.current = null;
+			seedResolvedRef.current = false;
+			return;
+		}
+
+		const salt = generateSalt();
+		mySaltRef.current = salt;
+
+		sha256Hash(salt).then(commitment => {
+			send({ type: 'seed_commit', commitment });
+		});
+	}, [connection, connectionState, send]);
+
+	// Host sends init AFTER seed exchange completes (replaces old 200ms timer)
 	useEffect(() => {
 		if (!connection || !isHost || connectionState !== 'connected') {
 			initSentRef.current = false;
 			return;
 		}
 		if (initSentRef.current) return;
+		if (!seedResolvedRef.current) return;
+
 		initSentRef.current = true;
-
-		// Small delay so the client's data listener is registered before init arrives
-		const timer = setTimeout(() => {
-			const currentState = useGameStore.getState().gameState;
-			if (currentState) {
-				send({ type: 'init', gameState: currentState, isHost: true });
-			}
-		}, 200);
-
-		return () => clearTimeout(timer);
+		const currentState = useGameStore.getState().gameState;
+		if (currentState) {
+			send({ type: 'init', gameState: currentState, isHost: true });
+		}
 	}, [connection, isHost, connectionState, send]);
 
 	// Detect when connection closes and notify the player
@@ -90,15 +136,74 @@ export function useP2PSync() {
 	useEffect(() => {
 		if (!connection || connectionState !== 'connected') return;
 
-		const handleMessage = (data: P2PMessage) => {
+		const handleMessage = async (data: P2PMessage) => {
 			if (isProcessingRef.current) return;
 			isProcessingRef.current = true;
 
 			try {
 				switch (data.type) {
+					case 'seed_commit':
+						theirCommitmentRef.current = data.commitment;
+						// Now reveal our salt (we already sent our commitment)
+						if (mySaltRef.current) {
+							send({ type: 'seed_reveal', salt: mySaltRef.current });
+						}
+						break;
+
+					case 'seed_reveal': {
+						const theirSalt = data.salt;
+						const theirCommitment = theirCommitmentRef.current;
+						if (!theirCommitment) {
+							console.warn('[useP2PSync] Received seed_reveal before seed_commit');
+							break;
+						}
+
+						// Verify commitment
+						const expectedCommitment = await sha256Hash(theirSalt);
+						if (expectedCommitment !== theirCommitment) {
+							console.error('[useP2PSync] Seed commitment mismatch — possible cheating');
+							toast.error('Seed verification failed. Disconnecting.', { duration: 5000 });
+							usePeerStore.getState().disconnect();
+							break;
+						}
+
+						// Derive joint seed — sort by peerId for determinism
+						const myPeerId = usePeerStore.getState().myPeerId ?? '';
+						const remotePeerId = usePeerStore.getState().remotePeerId ?? '';
+						const mySalt = mySaltRef.current ?? '';
+						const [first, second] = myPeerId < remotePeerId
+							? [mySalt, theirSalt]
+							: [theirSalt, mySalt];
+						const matchSeed = await sha256Hash(first + second);
+
+						useGameStore.setState({ matchSeed });
+						seedResolvedRef.current = true;
+
+						// Host: re-shuffle both decks with the agreed seed, then send init
+						if (isHost) {
+							const rng = createSeededRng(matchSeed);
+							const gs = useGameStore.getState().gameState;
+							if (gs) {
+								const reshuffled = {
+									...gs,
+									players: {
+										player: { ...gs.players.player, deck: seededShuffle(gs.players.player.deck, rng) },
+										opponent: { ...gs.players.opponent, deck: seededShuffle(gs.players.opponent.deck, rng) },
+									},
+								};
+								useGameStore.setState({ gameState: reshuffled });
+							}
+
+							initSentRef.current = true;
+							const updatedState = useGameStore.getState().gameState;
+							if (updatedState) {
+								send({ type: 'init', gameState: updatedState, isHost: true });
+							}
+						}
+						break;
+					}
+
 					case 'init':
-						// Client receives the host's authoritative game state — flip perspective so
-						// client sees themselves as 'player' (bottom) and host as 'opponent' (top)
 						if (!isHost) {
 							useGameStore.setState({ gameState: flipGameState(data.gameState) });
 						}
@@ -106,7 +211,6 @@ export function useP2PSync() {
 
 					case 'playCard':
 						if (isHost) {
-							// Translate target IDs: client's 'opponent-hero' = host's 'player-hero'
 							gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType);
 							setTimeout(() => syncGameState(), 50);
 						}
@@ -152,6 +256,78 @@ export function useP2PSync() {
 						send({ type: 'pong' });
 						break;
 
+					case 'deck_verify':
+						verifyDeckOwnership(
+							data.hiveAccount,
+							data.nftIds.map(id => ({ nft_id: id })),
+						).then(result => {
+							if (!result.valid) {
+								toast.warning(`Opponent deck verification failed`, {
+									description: `${result.invalidCards.length} card(s) not owned by ${data.hiveAccount}. Match may be invalid.`,
+									duration: 8000,
+								});
+							}
+						}).catch(() => { /* IndexedDB unavailable in dev mode — skip */ });
+						break;
+
+					case 'result_propose': {
+						// Client receives a match result proposal from the host
+						const gs = useGameStore.getState().gameState;
+						const myWinner = gs?.winner;
+
+						// Flip perspective: client sees 'player' as winner, but host's result
+						// uses the host perspective where host=player, client=opponent
+						const expectedHostWinner = myWinner === 'player' ? 'opponent' : 'player';
+						const proposedWinner = data.result.winner.username;
+						const hostUsername = data.result.matchType === 'ranked'
+							? (expectedHostWinner === 'player' ? data.result.winner.username : data.result.loser.username)
+							: proposedWinner;
+
+						// Basic check: the result agrees on who won
+						const clientUsername = hiveSync.getUsername();
+						const iAmWinner = myWinner === 'player';
+						const resultSaysIWon = data.result.winner.username === clientUsername;
+						const resultSaysILost = data.result.loser.username === clientUsername;
+
+						if ((iAmWinner && resultSaysIWon) || (!iAmWinner && resultSaysILost)) {
+							// Result agrees with our view — counter-sign
+							try {
+								const sig = await hiveSync.signResultHash(data.hash);
+								send({ type: 'result_countersign', counterpartySig: sig });
+							} catch {
+								// Keychain unavailable or user rejected — send reject
+								send({ type: 'result_reject', reason: 'signing_failed' });
+							}
+						} else if (!clientUsername) {
+							// No Hive account (dev mode) — accept anyway
+							send({ type: 'result_reject', reason: 'no_hive_account' });
+						} else {
+							send({ type: 'result_reject', reason: 'winner_mismatch' });
+						}
+						break;
+					}
+
+					case 'result_countersign': {
+						const pending = pendingResultRef.current;
+						if (pending) {
+							pending.resolve({
+								broadcaster: pending.broadcasterSig,
+								counterparty: data.counterpartySig,
+							});
+							pendingResultRef.current = null;
+						}
+						break;
+					}
+
+					case 'result_reject': {
+						const pending = pendingResultRef.current;
+						if (pending) {
+							pending.reject(new Error(`Result rejected: ${data.reason}`));
+							pendingResultRef.current = null;
+						}
+						break;
+					}
+
 					default:
 						console.warn('[useP2PSync] Unknown message type:', (data as any).type);
 				}
@@ -181,7 +357,6 @@ export function useP2PSync() {
 
 	const wrappedPlayCard = useCallback((cardId: string, targetId?: string, targetType?: 'minion' | 'hero') => {
 		if (connectionState === 'connected' && !isHost) {
-			// Translate target IDs before sending to host
 			send({ type: 'playCard', cardId, targetId: translateTargetForHost(targetId), targetType });
 		} else {
 			gameStore.playCard(cardId, targetId, targetType);
@@ -234,12 +409,54 @@ export function useP2PSync() {
 		return () => clearInterval(interval);
 	}, [connectionState, isHost, send]);
 
+	// Send our deck's NFT IDs to the opponent for ownership verification
+	const sendDeckVerification = useCallback((hiveAccount: string, nftIds: string[]) => {
+		if (connectionState === 'connected') {
+			send({ type: 'deck_verify', hiveAccount, nftIds });
+		}
+	}, [connectionState, send]);
+
+	/**
+	 * Propose a match result to the opponent for dual-signature verification.
+	 * Returns the signatures object if the opponent counter-signs within 30s,
+	 * or null if they reject/timeout (single-sig fallback).
+	 */
+	const proposeResult = useCallback(async (
+		result: PackagedMatchResult,
+		hash: string,
+		broadcasterSig: string,
+	): Promise<{ broadcaster: string; counterparty: string } | null> => {
+		if (connectionState !== 'connected') return null;
+
+		return new Promise((resolve) => {
+			pendingResultRef.current = {
+				result,
+				hash,
+				broadcasterSig,
+				resolve: (sigs) => resolve(sigs),
+				reject: () => resolve(null),
+			};
+
+			send({ type: 'result_propose', result, hash, broadcasterSig });
+
+			// 30s timeout — fall back to single-sig
+			setTimeout(() => {
+				if (pendingResultRef.current) {
+					pendingResultRef.current = null;
+					resolve(null);
+				}
+			}, RESULT_SIGN_TIMEOUT_MS);
+		});
+	}, [connectionState, send]);
+
 	return {
 		syncGameState,
 		playCard: wrappedPlayCard,
 		attackWithCard: wrappedAttack,
 		endTurn: wrappedEndTurn,
 		useHeroPower: wrappedUseHeroPower,
+		sendDeckVerification,
+		proposeResult,
 		isConnected: connectionState === 'connected',
 		isHost,
 	};

@@ -100,3 +100,38 @@ export {
 	submitSlashEvidence,
 	findExistingMatchResult,
 } from './slashEvidence';
+
+export type { CardRef, DeckVerificationResult } from './deckVerification';
+export {
+	verifyDeckOwnership,
+	isDeckOwned,
+	computeDeckHash,
+} from './deckVerification';
+
+export type { QueueJoinParams, MatchFound } from './matchmakingOnChain';
+export {
+	broadcastQueueJoin,
+	broadcastQueueLeave,
+	findMatchInQueue,
+	startQueuePoller,
+} from './matchmakingOnChain';
+
+export type { PlayerNonce, QueueEntry, GenesisState, SupplyCounter, MatchAnchor, SlashedAccount } from './replayDB';
+export {
+	getAllQueueEntries,
+	getPlayerNonce,
+	putPlayerNonce,
+	advancePlayerNonce,
+	getGenesisState,
+	putGenesisState,
+	getSupplyCounter,
+	putSupplyCounter,
+	getMatchAnchor,
+	putMatchAnchor,
+	getQueueEntry,
+	putQueueEntry,
+	deleteQueueEntry,
+	getSlashedAccount,
+	putSlashedAccount,
+	isAccountSlashed,
+} from './replayDB';

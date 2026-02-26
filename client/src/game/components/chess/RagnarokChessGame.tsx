@@ -594,13 +594,17 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
 
   useEffect(() => {
     if (boardState.gameStatus === 'player_wins' || boardState.gameStatus === 'opponent_wins') {
-      setPhase('game_over');
       const winner = boardState.gameStatus === 'player_wins' ? 'player' : 'opponent';
       playSoundEffect(winner === 'player' ? 'victory' : 'defeat');
-      if (onGameEnd) {
-        onGameEnd(winner);
-      }
+      const timer = setTimeout(() => {
+        setPhase('game_over');
+        if (onGameEnd) {
+          onGameEnd(winner);
+        }
+      }, 1500);
+      return () => clearTimeout(timer);
     }
+    return undefined;
   }, [boardState.gameStatus, onGameEnd, playSoundEffect]);
 
   useEffect(() => {

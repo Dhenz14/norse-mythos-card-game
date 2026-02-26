@@ -31,7 +31,7 @@ interface SimpleBattlefieldProps {
   isInteractionDisabled?: boolean;
 }
 
-const MAX_SLOTS = 7;
+const MAX_SLOTS = 5;
 const EMPTY_SET = new Set<string>();
 
 export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({

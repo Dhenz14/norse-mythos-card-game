@@ -51,6 +51,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
   const [minePlacementEffect, setMinePlacementEffect] = useState<MinePlacementEffect | null>(null);
   const [mineTriggerEffect, setMineTriggerEffect] = useState<MineTriggerEffect | null>(null);
   const [screenShake, setScreenShake] = useState(false);
+  const [fallingKingId, setFallingKingId] = useState<string | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const [boardRect, setBoardRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const {
@@ -104,6 +105,19 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     
     return () => clearTimeout(timeoutId);
   }, [lastMineTriggered, clearMineTriggered, playSoundEffect]);
+
+  useEffect(() => {
+    const { gameStatus: gs, pieces: ps } = boardState;
+    if (gs === 'player_wins' || gs === 'opponent_wins') {
+      const losingSide = gs === 'player_wins' ? 'opponent' : 'player';
+      const losingKing = ps.find(p => p.type === 'king' && p.owner === losingSide);
+      if (losingKing) {
+        setFallingKingId(losingKing.id);
+      }
+    } else {
+      setFallingKingId(null);
+    }
+  }, [boardState.gameStatus]);
 
   const handleAnimationComplete = useCallback(() => {
     const animation = pendingAttackAnimation;
@@ -413,6 +427,14 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
               key={piece.id}
               className="absolute inset-1"
               layoutId={piece.id}
+              animate={piece.id === fallingKingId
+                ? { rotate: 90, opacity: 0.45, y: 10 }
+                : undefined
+              }
+              transition={piece.id === fallingKingId
+                ? { duration: 1.0, ease: 'easeIn' }
+                : undefined
+              }
             >
               <ChessPieceComponent
                 piece={piece}

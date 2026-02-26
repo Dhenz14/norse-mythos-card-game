@@ -13,7 +13,7 @@ import cardDatabase from '../../../services/cardDatabase';
 import { v4 as uuidv4 } from 'uuid';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
 
-const MAX_BOARD_SIZE = 7;
+const MAX_BOARD_SIZE = 5;
 
 /**
  * Execute a fill_board battlecry effect

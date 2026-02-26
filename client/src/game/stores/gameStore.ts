@@ -122,6 +122,7 @@ function showMinionNotification(cardName: string, attack?: number, health?: numb
 interface GameStore {
   // Game state
   gameState: GameState;
+  matchSeed: string | null;
   selectedCard: CardInstance | null;
   // For tracking attack selection
   attackingCard: CardInstance | null;
@@ -163,6 +164,7 @@ let isAttackProcessing = false;
 // Create store with subscribeWithSelector middleware for precise battlefield monitoring
 export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get) => ({
   gameState: initializeGame(),
+  matchSeed: null,
   selectedCard: null,
   hoveredCard: null,
   attackingCard: null,
@@ -216,8 +218,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         throw new Error(`Not enough mana. Need ${cardCost} but only have ${player.mana.current}`);
       }
 
-      // HEARTHSTONE RULE: Maximum 7 minions on battlefield
-      const MAX_BATTLEFIELD_SIZE = 7;
+      // Maximum 5 minions on battlefield
+      const MAX_BATTLEFIELD_SIZE = 5;
       if (cardInstance.card.type === 'minion' && player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
         throw new Error(`Battlefield is full! Maximum ${MAX_BATTLEFIELD_SIZE} minions allowed.`);
       }
@@ -962,7 +964,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const player = gameState.players.player;
       const opponent = gameState.players.opponent;
       
-      const MAX_HAND_SIZE = 9;
+      const MAX_HAND_SIZE = 7;
       const MAX_MANA = 10;
       
       // Draw a card for player from deck to hand

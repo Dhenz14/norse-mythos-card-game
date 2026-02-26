@@ -154,7 +154,7 @@ async function _doSync(username: string): Promise<void> {
 			// We only care about our app's custom_json ops
 			if (entry.op[0] !== 'custom_json') continue;
 			const opData = entry.op[1] as CustomJsonOpData;
-			if (!opData.id?.startsWith('rp_')) continue;
+			if (!opData.id?.startsWith('rp_') && opData.id !== 'ragnarok-cards') continue;
 
 			const broadcaster =
 				opData.required_posting_auths?.[0] ??
@@ -190,8 +190,19 @@ async function _doSync(username: string): Promise<void> {
 	let highestIdx = lastIndex;
 	for (const { idx, entry, broadcaster } of opsToApply) {
 		const opData = entry.op[1] as CustomJsonOpData;
+
+		// Normalize op id: canonical "ragnarok-cards" format extracts action from JSON,
+		// legacy "rp_*" format uses the id directly.
+		let opId = opData.id;
+		if (opId === 'ragnarok-cards') {
+			try {
+				const parsed = JSON.parse(opData.json) as { action?: string };
+				if (parsed.action) opId = `rp_${parsed.action}`;
+			} catch { /* use raw id */ }
+		}
+
 		const op: RawOp = {
-			id: opData.id,
+			id: opId,
 			json: opData.json,
 			broadcaster,
 			trxId: entry.trx_id,

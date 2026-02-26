@@ -1110,7 +1110,7 @@ function executeSummonBattlecry(
   return state;
 }
 
-const MAX_BOARD_SIZE = 7;
+const MAX_BOARD_SIZE = 5;
 
 function executeSummonRandomBattlecry(
   state: GameState,
@@ -1959,7 +1959,7 @@ function executeAddToHandBattlecry(
     
     // Add the specific card to hand
     for (let i = 0; i < numCards; i++) {
-      if (state.players.player.hand.length >= 9) {
+      if (state.players.player.hand.length >= 7) {
         break;
       }
       
@@ -1971,7 +1971,7 @@ function executeAddToHandBattlecry(
     // Add random cards (like a discovery/random generation effect)
     // For now, just adding random cards from the database as a placeholder
     for (let i = 0; i < numCards; i++) {
-      if (state.players.player.hand.length >= 9) {
+      if (state.players.player.hand.length >= 7) {
         break;
       }
       
@@ -2153,7 +2153,7 @@ function executeReturnToHandBattlecry(
     const targetIndex = targetInfo.index;
     
     // Check if hand is full (max 9 cards)
-    if (state.players.player.hand.length >= 9) {
+    if (state.players.player.hand.length >= 7) {
       state.players.player.battlefield.splice(targetIndex, 1);
       return state;
     }
@@ -2552,7 +2552,7 @@ function executeAddRandomToHandBattlecry(
   if (candidates.length === 0) return state;
 
   for (let i = 0; i < count; i++) {
-    if (state.players.player.hand.length >= 9) break;
+    if (state.players.player.hand.length >= 7) break;
     const randomIdx = Math.floor(Math.random() * candidates.length);
     const cardInstance = createCardInstance(candidates[randomIdx]);
     state.players.player.hand.push(cardInstance);
@@ -3307,7 +3307,7 @@ function executeStealFromDeckBattlecry(
   if (!opponentDeck || opponentDeck.length === 0) return state;
 
   for (let i = 0; i < count; i++) {
-    if (state.players.player.hand.length >= 9) break;
+    if (state.players.player.hand.length >= 7) break;
     if (opponentDeck.length === 0) break;
     const randomIdx = Math.floor(Math.random() * opponentDeck.length);
     const stolen = opponentDeck.splice(randomIdx, 1)[0];
@@ -3479,7 +3479,7 @@ function executeSummonAndDrawBattlecry(
   const drawCount = (battlecry as any).drawCount || 1;
   for (let i = 0; i < drawCount; i++) {
     if (state.players.player.deck.length === 0) break;
-    if (state.players.player.hand.length >= 9) break;
+    if (state.players.player.hand.length >= 7) break;
     const drawn = state.players.player.deck.shift()!;
     const instance = createCardInstance(drawn);
     state.players.player.hand.push(instance);
