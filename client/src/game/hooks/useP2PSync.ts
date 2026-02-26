@@ -8,6 +8,10 @@ import { sha256Hash } from '../../data/blockchain/hashUtils';
 import { hiveSync } from '../../data/HiveSync';
 import type { PackagedMatchResult } from '../../data/blockchain/types';
 import { createSeededRng, seededShuffle } from '../utils/seededRng';
+import { startNewTranscript, getActiveTranscript, clearTranscript } from '../../data/blockchain/transcriptBuilder';
+import type { GameMove } from '../../data/blockchain/signedMove';
+
+declare const __BUILD_HASH__: string;
 
 /**
  * Flip the game state so the client sees themselves as 'player' and the host as 'opponent'.
@@ -42,6 +46,21 @@ function generateSalt(): string {
 	return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
 }
 
+let moveCounter = 0;
+
+function recordMove(action: string, payload: Record<string, unknown>, playerId: string): void {
+	const transcript = getActiveTranscript();
+	if (!transcript) return;
+	const move: GameMove = {
+		moveNumber: moveCounter++,
+		action,
+		payload,
+		playerId,
+		timestamp: Date.now(),
+	};
+	transcript.addMove(move);
+}
+
 export type P2PMessage =
 	| { type: 'init'; gameState: GameState; isHost: boolean }
 	| { type: 'playCard'; cardId: string; targetId?: string; targetType?: 'minion' | 'hero' }
@@ -57,7 +76,8 @@ export type P2PMessage =
 	| { type: 'seed_reveal'; salt: string }
 	| { type: 'result_propose'; result: PackagedMatchResult; hash: string; broadcasterSig: string }
 	| { type: 'result_countersign'; counterpartySig: string }
-	| { type: 'result_reject'; reason: string };
+	| { type: 'result_reject'; reason: string }
+	| { type: 'version_check'; buildHash: string };
 
 const RESULT_SIGN_TIMEOUT_MS = 30_000;
 
@@ -83,11 +103,14 @@ export function useP2PSync() {
 	} | null>(null);
 
 	// Seed exchange: generate salt and send commitment when connection opens
+	// Also send version_check and start a new transcript
 	useEffect(() => {
 		if (!connection || connectionState !== 'connected') {
 			mySaltRef.current = null;
 			theirCommitmentRef.current = null;
 			seedResolvedRef.current = false;
+			clearTranscript();
+			moveCounter = 0;
 			return;
 		}
 
@@ -97,6 +120,11 @@ export function useP2PSync() {
 		sha256Hash(salt).then(commitment => {
 			send({ type: 'seed_commit', commitment });
 		});
+
+		const hash = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev';
+		send({ type: 'version_check', buildHash: hash });
+
+		startNewTranscript();
 	}, [connection, connectionState, send]);
 
 	// Host sends init AFTER seed exchange completes (replaces old 200ms timer)
@@ -142,6 +170,17 @@ export function useP2PSync() {
 
 			try {
 				switch (data.type) {
+					case 'version_check': {
+						const myHash = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev';
+						if (data.buildHash !== myHash && data.buildHash !== 'dev' && myHash !== 'dev') {
+							toast.warning('Client version mismatch', {
+								description: `Your build: ${myHash.slice(0, 7)}, opponent: ${data.buildHash.slice(0, 7)}. Results may differ.`,
+								duration: 8000,
+							});
+						}
+						break;
+					}
+
 					case 'seed_commit':
 						theirCommitmentRef.current = data.commitment;
 						// Now reveal our salt (we already sent our commitment)
@@ -211,6 +250,7 @@ export function useP2PSync() {
 
 					case 'playCard':
 						if (isHost) {
+							recordMove('playCard', { cardId: data.cardId, targetId: data.targetId, targetType: data.targetType }, 'opponent');
 							gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType);
 							setTimeout(() => syncGameState(), 50);
 						}
@@ -218,6 +258,7 @@ export function useP2PSync() {
 
 					case 'attack':
 						if (isHost) {
+							recordMove('attack', { attackerId: data.attackerId, defenderId: data.defenderId }, 'opponent');
 							gameStore.attackWithCard(data.attackerId, translateTargetForHost(data.defenderId) ?? data.defenderId);
 							setTimeout(() => syncGameState(), 50);
 						}
@@ -225,6 +266,7 @@ export function useP2PSync() {
 
 					case 'endTurn':
 						if (isHost) {
+							recordMove('endTurn', {}, 'opponent');
 							gameStore.endTurn();
 							setTimeout(() => syncGameState(), 50);
 						}
@@ -232,6 +274,7 @@ export function useP2PSync() {
 
 					case 'useHeroPower':
 						if (isHost) {
+							recordMove('useHeroPower', { targetId: data.targetId }, 'opponent');
 							gameStore.useHeroPower(translateTargetForHost(data.targetId));
 							setTimeout(() => syncGameState(), 50);
 						}
@@ -357,8 +400,10 @@ export function useP2PSync() {
 
 	const wrappedPlayCard = useCallback((cardId: string, targetId?: string, targetType?: 'minion' | 'hero') => {
 		if (connectionState === 'connected' && !isHost) {
+			recordMove('playCard', { cardId, targetId, targetType }, 'player');
 			send({ type: 'playCard', cardId, targetId: translateTargetForHost(targetId), targetType });
 		} else {
+			recordMove('playCard', { cardId, targetId, targetType }, 'player');
 			gameStore.playCard(cardId, targetId, targetType);
 			if (isHost) setTimeout(() => syncGameState(), 50);
 		}
@@ -366,8 +411,10 @@ export function useP2PSync() {
 
 	const wrappedAttack = useCallback((attackerId: string, defenderId: string) => {
 		if (connectionState === 'connected' && !isHost) {
+			recordMove('attack', { attackerId, defenderId }, 'player');
 			send({ type: 'attack', attackerId, defenderId: translateTargetForHost(defenderId) ?? defenderId });
 		} else {
+			recordMove('attack', { attackerId, defenderId }, 'player');
 			gameStore.attackWithCard(attackerId, defenderId);
 			if (isHost) setTimeout(() => syncGameState(), 50);
 		}
@@ -375,8 +422,10 @@ export function useP2PSync() {
 
 	const wrappedEndTurn = useCallback(() => {
 		if (connectionState === 'connected' && !isHost) {
+			recordMove('endTurn', {}, 'player');
 			send({ type: 'endTurn' });
 		} else {
+			recordMove('endTurn', {}, 'player');
 			gameStore.endTurn();
 			if (isHost) setTimeout(() => syncGameState(), 50);
 		}
@@ -384,8 +433,10 @@ export function useP2PSync() {
 
 	const wrappedUseHeroPower = useCallback((targetId?: string) => {
 		if (connectionState === 'connected' && !isHost) {
+			recordMove('useHeroPower', { targetId }, 'player');
 			send({ type: 'useHeroPower', targetId: translateTargetForHost(targetId) });
 		} else {
+			recordMove('useHeroPower', { targetId }, 'player');
 			gameStore.useHeroPower(targetId);
 			if (isHost) setTimeout(() => syncGameState(), 50);
 		}

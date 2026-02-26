@@ -135,3 +135,19 @@ export {
 	putSlashedAccount,
 	isAccountSlashed,
 } from './replayDB';
+
+export type { GameMove, MoveRecord, MerkleProof } from './signedMove';
+
+export {
+	TranscriptBuilder,
+	getActiveTranscript,
+	startNewTranscript,
+	clearTranscript,
+} from './transcriptBuilder';
+
+export type { DisputeEvidence } from './disputeResolution';
+export {
+	verifyMoveInTranscript,
+	submitMoveDispute,
+	buildDisputeEvidence,
+} from './disputeResolution';

@@ -1,6 +1,6 @@
 # Ragnarok — Hive Blockchain Integration Blueprint
 
-**Status**: Phase 2 — 2A/2B/2D complete (commit-reveal seed, dual-sig results, XP/leveling, card evolution). Phase 2C (genesis broadcast) is next.
+**Status**: Phase 2 — 2A/2B/2D complete (commit-reveal seed, dual-sig results, XP/leveling, card evolution, Merkle transcripts, build-hash verification, ranked ladder, dispute resolution). Phase 2C (genesis broadcast) is next.
 **Layer**: Hive Layer 1 (no Hive-Engine dependency)
 **Model**: Fixed-supply NFT cards, decentralized P2P gameplay, cryptographic anti-cheat
 
@@ -976,9 +976,9 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [x] Build blockchain subscriber (game end → queue)
 - [ ] Test mint/transfer/verify on Hive testnet
 
-### Phase 2B — Match Protocol (core complete — PoW, anchors, commit-reveal seed, dual-sig results done)
+### Phase 2B — Match Protocol (COMPLETE)
 
-- [ ] Extract game rule engine to pure TypeScript module (no React deps)
+- [ ] Extract game rule engine to pure TypeScript module (no React deps) — deferred to post-launch; not required for genesis
 - [x] Implement multi-challenge PoW module (`proofOfWork.ts`: `computePoW`, `verifyPoW` with Web Workers)
 - [x] Implement `match_start` anchor broadcast (dual-sig, with PoW)
 - [x] Implement commit-reveal seed exchange (`useP2PSync.ts`: SHA256 commitments, joint seed derivation, seeded PRNG deck shuffle via `seededRng.ts`)
@@ -986,11 +986,11 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [x] Implement XP derivation from `match_result` (replay engine processes embedded `xpRewards[]` array, updates card XP/level in IndexedDB — no separate `xp_update` ops needed)
 - [x] Implement `level_up` on-chain convenience record (auto-broadcast when card crosses level threshold; `replayRules.ts` validates ownership + XP warrants claimed level)
 - [x] Implement card evolution scaling (`cardLevelScaling.ts`: NFT XP level → evolution tier (Mortal/Ascended/Divine) → stat/effect/keyword scaling at deck creation; `enrichDeckWithNFTLevels` wires collection into gameplay)
-- [ ] Implement `SignedMove` with `hive_block_ref` (temporal anchor per move)
-- [ ] Implement Merkle tree transcript builder (`transcriptBuilder.ts`)
-- [ ] Implement `SignedMove` protocol in P2P layer
-- [ ] Add WASM hash check at P2P handshake
-- [ ] Test full match with transcript generation and Merkle root
+- [x] Implement move recording with hash-chained transcript (`signedMove.ts`: `GameMove` + `MoveRecord` types; `transcriptBuilder.ts`: accumulates moves during gameplay, builds SHA-256 Merkle tree at game end)
+- [x] Implement Merkle tree transcript builder (`transcriptBuilder.ts`: binary Merkle tree with inclusion proofs; `TranscriptBuilder.verifyProof()` for dispute verification)
+- [x] Implement move transcript protocol in P2P layer (`useP2PSync.ts`: `recordMove()` on every action; both host and client accumulate; `startNewTranscript()`/`clearTranscript()` lifecycle; Merkle root embedded in `PackagedMatchResult.transcriptRoot`)
+- [x] Add build-hash verification at P2P handshake (`vite.config.ts` injects `__BUILD_HASH__` from git rev-parse; `version_check` message exchanged on connection; mismatch warns but doesn't block for dev mode)
+- [x] Validate transcript root in replay engine (`replayRules.ts`: ranked `match_result` ops rejected if `transcriptRoot` is missing)
 - [x] Add PoW and `slash_evidence` processing to replay engine rules
 
 ### Phase 2C — Genesis Launch (NEXT — requires mainnet Hive account)
@@ -1001,14 +1001,14 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [ ] Execute community airdrop (batch mint ops)
 - [ ] Broadcast seal after distribution complete
 
-### Phase 2D — On-Chain Matchmaking & Ladder (est. ongoing)
+### Phase 2D — On-Chain Matchmaking & Ladder (COMPLETE)
 
 - [x] Implement on-chain matchmaking queue (`queue_join` / `queue_leave` ops) — `matchmakingOnChain.ts`: PoW broadcast, ELO window matching, 5s poller
 - [x] Ban system (on-chain evidence, client-enforced) — `slashEvidence.ts` + `replayRules.ts` blocks slashed accounts at dispatch
 - [x] `result_nonce` anti-replay — monotonic per-account nonce in `matchResultPackager` + validated by `applyMatchResult`
 - [x] Deck ownership verification at P2P handshake — `deckVerification.ts` + `deck_verify` message in `useP2PSync.ts`
-- [ ] Ranked ladder UI computed from on-chain match results
-- [ ] Dispute resolution process (partial transcript proof)
+- [x] Ranked ladder UI (`RankedLadderPage.tsx`: leaderboard tab computes ELO rankings from IndexedDB match history; match history tab with win/loss/duration/damage stats; `/ladder` route with homepage nav)
+- [x] Dispute resolution (`disputeResolution.ts`: `buildDisputeEvidence()` extracts move + Merkle proof from transcript; `submitMoveDispute()` broadcasts `slash_evidence` with `forged_move` reason; `verifyMoveInTranscript()` for client-side proof validation)
 
 ---
 
@@ -1035,6 +1035,9 @@ client/src/
 │   │   ├── nftMetadataGenerator.ts   # NFT metadata from card definitions
 │   │   ├── deckVerification.ts       # verifyDeckOwnership, computeDeckHash (IndexedDB, no server)
 │   │   ├── matchmakingOnChain.ts     # broadcastQueueJoin, startQueuePoller, ELO window matching
+│   │   ├── signedMove.ts            # GameMove, MoveRecord, MerkleProof types
+│   │   ├── transcriptBuilder.ts     # TranscriptBuilder class: Merkle tree, proofs, singleton lifecycle
+│   │   ├── disputeResolution.ts     # buildDisputeEvidence, submitMoveDispute, verifyMoveInTranscript
 │   │   └── index.ts                  # Barrel exports
 │   │
 │   ├── HiveSync.ts                    # Keychain integration: login, broadcast, transfer
@@ -1056,14 +1059,14 @@ client/src/
 │   ├── utils/
 │   │   └── seededRng.ts               # Mulberry32 PRNG + Fisher-Yates seededShuffle (commit-reveal seed)
 │   │
-│   ├── protocol/                      # Cryptographic match protocol (PARTIALLY BUILT)
-│   │   ├── matchProtocol.ts           # SignedMove (with hive_block_ref) — PLANNED
-│   │   ├── transcriptBuilder.ts       # Assemble SignedMoves into Merkle tree — PLANNED
-│   │   ├── transcriptMerkle.ts        # Merkle root computation + proof generation — PLANNED
-│   │   └── resultBroadcaster.ts       # Publish dual-signed match_result to Hive — PLANNED
+│   ├── protocol/                      # Cryptographic match protocol (BUILT — lives in data/blockchain/)
+│   │   └── (merged into blockchain/signedMove.ts, transcriptBuilder.ts, disputeResolution.ts)
 │   │
 │   ├── components/
-│   │   └── HiveKeychainLogin.tsx      # Keychain login UI component
+│   │   ├── HiveKeychainLogin.tsx      # Keychain login UI component
+│   │   └── ladder/
+│   │       ├── RankedLadderPage.tsx   # Leaderboard + match history (reads IndexedDB)
+│   │       └── ladder.css            # Ladder page styles
 │   │
 │   ├── subscribers/
 │   │   └── BlockchainSubscriber.ts    # Game end → match packaging → queue

@@ -315,6 +315,10 @@ async function applyMatchResult(
 	const sigs = payload.signatures as { broadcaster?: string; counterparty?: string } | undefined;
 	if (matchType === 'ranked' && (!sigs?.broadcaster || !sigs?.counterparty)) return;
 
+	// Transcript root validation: ranked matches should include a Merkle transcript root
+	const transcriptRoot = payload.transcriptRoot as string | undefined;
+	if (matchType === 'ranked' && !transcriptRoot) return;
+
 	const match: HiveMatchResult = {
 		matchId: matchId as string,
 		timestamp: op.timestamp,

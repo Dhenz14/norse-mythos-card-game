@@ -66,6 +66,7 @@ export interface PackagedMatchResult {
 	version: number;
 	result_nonce: number; // monotonic per-account nonce — prevents re-broadcasting old results
 	signatures?: { broadcaster: string; counterparty: string };
+	transcriptRoot?: string;
 }
 
 export interface CardXPReward {

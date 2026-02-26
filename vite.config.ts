@@ -2,15 +2,26 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 import glsl from "vite-plugin-glsl";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+let buildHash = "dev";
+try {
+  buildHash = execSync("git rev-parse --short HEAD").toString().trim();
+} catch {
+  buildHash = Date.now().toString(36);
+}
+
 export default defineConfig({
+  define: {
+    __BUILD_HASH__: JSON.stringify(buildHash),
+  },
   plugins: [
     react(),
-    
+
     glsl(), // Add GLSL shader support
   ],
   resolve: {

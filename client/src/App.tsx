@@ -12,6 +12,7 @@ import RagnarokChessGame from "./game/components/chess/RagnarokChessGame";
 import { MultiplayerGame } from "./game/components/multiplayer/MultiplayerGame";
 import PacksPage from "./game/components/packs/PacksPage";
 import CollectionPage from "./game/components/collection/CollectionPage";
+import RankedLadderPage from "./game/components/ladder/RankedLadderPage";
 import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
 import { initializeGameStoreIntegration } from "./game/stores/gameStoreIntegration";
 import initEffectSystem from "./game/effects/initEffectSystem";
@@ -72,6 +73,12 @@ function HomePage() {
               My Collection
             </Button>
           </Link>
+
+          <Link to={routes.ladder}>
+            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
+              Ranked Ladder
+            </Button>
+          </Link>
         </div>
       </div>
       
@@ -100,6 +107,7 @@ function App() {
           <Route path={routes.multiplayer} element={<MultiplayerGame />} />
           <Route path={routes.packs} element={<PacksPage />} />
           <Route path={routes.collection} element={<CollectionPage />} />
+          <Route path={routes.ladder} element={<RankedLadderPage />} />
         </Routes>
       </BrowserRouter>
     </CardTransformProvider>

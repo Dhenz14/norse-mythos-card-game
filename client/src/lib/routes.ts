@@ -4,4 +4,5 @@ export const routes = {
   multiplayer: '/multiplayer',
   packs: '/packs',
   collection: '/collection',
+  ladder: '/ladder',
 };

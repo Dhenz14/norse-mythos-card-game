@@ -9,6 +9,7 @@ import { debug } from '../config/debugConfig';
 import type { CardUidMapping, PackagedMatchResult } from '@/data/blockchain/types';
 import { usePeerStore } from '../stores/peerStore';
 import { hiveSync } from '@/data/HiveSync';
+import { getActiveTranscript, clearTranscript } from '@/data/blockchain/transcriptBuilder';
 
 type UnsubscribeFn = () => void;
 
@@ -165,7 +166,21 @@ function handleGameEnded(_event: GameEndedEvent): void {
 
 	packageMatchResult(gameState, input, collection ?? undefined, cardRarities)
 		.then(async (result) => {
-			const finalResult = await attemptDualSig(result);
+			// Compute Merkle transcript root and embed in result
+			const transcript = getActiveTranscript();
+			let enrichedResult = result;
+			if (transcript && transcript.getMoveCount() > 0) {
+				try {
+					const transcriptRoot = await transcript.buildMerkleTree();
+					enrichedResult = { ...result, transcriptRoot };
+					debug.combat('[BlockchainSubscriber] Transcript root:', transcriptRoot.slice(0, 16) + '...', 'moves:', transcript.getMoveCount());
+				} catch (err) {
+					debug.warn('[BlockchainSubscriber] Failed to build transcript Merkle tree:', err);
+				}
+			}
+			clearTranscript();
+
+			const finalResult = await attemptDualSig(enrichedResult);
 			enqueueResult(finalResult, playerCardUids.length, startTime);
 		})
 		.catch((err) => {
