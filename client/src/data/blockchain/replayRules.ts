@@ -22,6 +22,7 @@ import type { GenesisState, SupplyCounter, MatchAnchor } from './replayDB';
 import type { HiveCardAsset, HiveMatchResult } from '../schemas/HiveTypes';
 import { hiveEvents } from '../HiveEvents';
 import { verifyPoW, type PoWResult } from './proofOfWork';
+import { getLevelForXP } from './cardXPSystem';
 
 // The Ragnarok account that can mint during genesis. Set once from the genesis op.
 // For now, hardcoded — will be configurable via genesis broadcast.
@@ -80,6 +81,8 @@ export async function applyOp(op: RawOp): Promise<void> {
 			return applyPackOpen(op, payload);
 		case 'rp_xp_update':
 			return applyXpUpdate(op, payload);
+		case 'rp_level_up':
+			return applyLevelUp(op, payload);
 		case 'rp_team_submit':
 			return; // informational only, no IndexedDB state change
 		case 'rp_reward_claim':
@@ -359,6 +362,33 @@ async function applyMatchResult(
 			});
 		}
 	}
+
+	// Apply XP awards embedded in the match result (no separate xp_update ops needed)
+	const xpRewards = payload.xpRewards as Array<{
+		cardUid?: string; card_uid?: string;
+		xpGained?: number; xp_gained?: number;
+		xpAfter?: number; xp_after?: number;
+		levelAfter?: number; level_after?: number;
+	}> | undefined;
+
+	if (Array.isArray(xpRewards)) {
+		for (const reward of xpRewards) {
+			const uid = (reward.cardUid ?? reward.card_uid) as string;
+			if (!uid) continue;
+
+			const card = await getCard(uid);
+			if (!card) continue;
+
+			const xpGained = Number(reward.xpGained ?? reward.xp_gained ?? 0);
+			if (xpGained <= 0) continue;
+
+			const newXp = card.xp + xpGained;
+			const rarity = card.edition === 'alpha' ? 'rare' : 'common';
+			const newLevel = getLevelForXP(rarity, newXp);
+
+			await putCard({ ...card, xp: newXp, level: newLevel });
+		}
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -487,6 +517,33 @@ async function applyXpUpdate(
 
 	const updated: HiveCardAsset = { ...existing, xp: xpAfter, level: levelAfter };
 	await putCard(updated);
+}
+
+// ---------------------------------------------------------------------------
+// rp_level_up — explicit on-chain record of a card leveling up
+// ---------------------------------------------------------------------------
+
+async function applyLevelUp(
+	op: RawOp,
+	payload: Record<string, unknown>,
+): Promise<void> {
+	const nftId = (payload.nft_id ?? payload.cardUid) as string;
+	if (typeof nftId !== 'string') return;
+
+	const card = await getCard(nftId);
+	if (!card) return;
+	if (card.ownerId !== op.broadcaster) return;
+
+	const oldLevel = Number(payload.old_level ?? card.level);
+	const newLevel = Number(payload.new_level ?? oldLevel + 1);
+	if (newLevel <= card.level) return; // already at or past this level (idempotent)
+
+	// Validate: the card's accumulated XP must actually warrant this level
+	const rarity = (payload.rarity as string) ?? 'common';
+	const expectedLevel = getLevelForXP(rarity, card.xp);
+	if (newLevel > expectedLevel) return; // overclaim — reject
+
+	await putCard({ ...card, level: newLevel });
 }
 
 // ---------------------------------------------------------------------------

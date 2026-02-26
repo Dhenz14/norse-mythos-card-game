@@ -229,10 +229,24 @@ function waitForCountersign(timeoutMs: number): Promise<string | null> {
 function enqueueResult(result: PackagedMatchResult, playerCardCount: number, startTime: number): void {
 	const queue = useTransactionQueueStore.getState();
 
+	// Single match_result tx carries everything: stats, ELO, RUNE, and XP awards.
+	// The replay engine derives card XP/levels from the embedded xpRewards array —
+	// no separate xp_update ops needed.
 	queue.enqueue('match_result', result, result.hash);
 
-	for (const xpReward of result.xpRewards) {
-		queue.enqueue('xp_update', xpReward, `${result.hash}_xp_${xpReward.cardUid}`);
+	// Broadcast level_up for each card that crossed a level threshold.
+	// This creates an on-chain record for quick lookups without full replay.
+	for (const xp of result.xpRewards) {
+		if (xp.didLevelUp) {
+			queue.enqueue('level_up', {
+				nft_id: xp.cardUid,
+				card_id: xp.cardId,
+				old_level: xp.levelBefore,
+				new_level: xp.levelAfter,
+				xp_total: xp.xpAfter,
+				match_id: result.matchId,
+			}, `${result.hash}_levelup_${xp.cardUid}`);
+		}
 	}
 
 	debug.combat('[BlockchainSubscriber] Packaged and queued:', {
@@ -240,6 +254,7 @@ function enqueueResult(result: PackagedMatchResult, playerCardCount: number, sta
 		winner: result.winner.username,
 		eloChange: result.eloChanges.winner.delta,
 		xpRewards: result.xpRewards.length,
+		levelUps: result.xpRewards.filter(x => x.didLevelUp).length,
 		playerCards: playerCardCount,
 		dualSig: !!(result.signatures?.broadcaster && result.signatures?.counterparty),
 		duration: Math.round((Date.now() - startTime) / 1000) + 's',

@@ -3,6 +3,7 @@ import type { HiveCardAsset } from '../schemas/HiveTypes';
 export type BlockchainActionType =
 	| 'match_result'
 	| 'xp_update'
+	| 'level_up'
 	| 'card_transfer'
 	| 'nft_mint';
 

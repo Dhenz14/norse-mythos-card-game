@@ -1,4 +1,5 @@
 import type { CardData, BattlecryEffect, SpellEffect, DeathrattleEffect } from '../../types';
+import type { HiveCardAsset } from '../../../data/schemas/HiveTypes';
 
 export const EVOLUTION_LEVELS = { MORTAL: 1, ASCENDED: 2, DIVINE: 3 } as const;
 export type EvolutionLevel = 1 | 2 | 3;
@@ -173,4 +174,32 @@ export function getEvolutionLevel(xpLevel: number, rarity: string): EvolutionLev
 
 export function getEvolutionStars(level: EvolutionLevel): string {
 	return '★'.repeat(level);
+}
+
+export function enrichDeckWithNFTLevels(
+	deck: CardData[],
+	collection: HiveCardAsset[]
+): CardData[] {
+	if (!collection || collection.length === 0) return deck;
+
+	const bestLevelByCardId = new Map<number, number>();
+	for (const asset of collection) {
+		const existing = bestLevelByCardId.get(asset.cardId);
+		if (existing === undefined || asset.level > existing) {
+			bestLevelByCardId.set(asset.cardId, asset.level);
+		}
+	}
+
+	return deck.map(card => {
+		const cardId = typeof card.id === 'string' ? parseInt(card.id, 10) : card.id;
+		const nftLevel = bestLevelByCardId.get(cardId);
+		if (nftLevel === undefined) return card;
+
+		const rarity = (card.rarity ?? 'common').toLowerCase();
+		const evoLevel = getEvolutionLevel(nftLevel, rarity);
+		if (evoLevel >= 3) return card;
+
+		const enriched = { ...card, _evolutionLevel: evoLevel };
+		return enriched as CardData;
+	});
 }

@@ -119,6 +119,11 @@ async function submitToMockServer(tx: TransactionEntry): Promise<void> {
 			body = tx.payload;
 			break;
 
+		case 'level_up':
+			endpoint = `${MOCK_API_BASE}/level-up`;
+			body = tx.payload;
+			break;
+
 		case 'nft_mint':
 			endpoint = `${MOCK_API_BASE}/mint`;
 			body = tx.payload;
@@ -155,6 +160,7 @@ async function submitToMockServer(tx: TransactionEntry): Promise<void> {
 const ACTION_TO_OP_ID: Partial<Record<string, RagnarokTransactionType>> = {
 	match_result:  'rp_match_result',
 	xp_update:     'rp_xp_update',
+	level_up:      'rp_level_up',
 	card_transfer: 'rp_card_transfer',
 	nft_mint:      'rp_pack_open',
 };

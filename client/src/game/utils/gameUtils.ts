@@ -50,6 +50,8 @@ import {
 } from './norseIntegration';
 import { processOnAttackStatusEffect } from '../effects/handlers/onAttackStatusHandler';
 import { isSuperMinion, shouldGetHeroBonus } from '../data/sets/superMinions/heroSuperMinions';
+import { enrichDeckWithNFTLevels } from './cards/cardLevelScaling';
+import { useHiveDataStore } from '../../data/HiveDataLayer';
 
 /**
  * Initialize a new game state
@@ -96,8 +98,13 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
     playerDeck = createClassDeck(playerClass, 30);
   }
   
-  // Create opponent deck
-  // Use a class-specific deck with no test cards for the opponent
+  // Apply NFT card levels from collection (lower-level NFTs get weaker stats)
+  const hiveCollection = useHiveDataStore.getState().cardCollection;
+  if (hiveCollection?.length) {
+    playerDeck = enrichDeckWithNFTLevels(playerDeck, hiveCollection);
+  }
+
+  // Create opponent deck (AI always gets max-level cards)
   const opponentClass: HeroClass = 'hunter';
   const opponentDeck = createClassDeck(opponentClass, 30);
   

@@ -4,6 +4,7 @@ import { logActivity } from '../stores/activityLogStore';
 import { getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
+import { createCardInstance } from './cards/cardUtils';
 
 const MAX_HAND_SIZE = 7;
 
@@ -60,19 +61,10 @@ export function drawCard(state: GameState, playerType: 'player' | 'opponent'): G
   
   // Draw the top card from the deck
   const drawnCard = player.deck.shift() as CardData;
-  
+
   // Add the card to the player's hand
-  const cardInstance = {
-    instanceId: `${playerType}_card_${Date.now()}`,
-    card: drawnCard,
-    currentHealth: getHealth(drawnCard) || 1,
-    canAttack: false,
-    isPlayed: false,
-    isSummoningSick: true,
-    attacksPerformed: 0,
-    hasDivineShield: drawnCard.keywords?.includes('divine_shield') || false
-  };
-  
+  const cardInstance = createCardInstance(drawnCard);
+
   player.hand.push(cardInstance);
   
   return newState;
@@ -91,18 +83,9 @@ export function addCardToHand(state: GameState, playerType: 'player' | 'opponent
     return newState;
   }
   
-  // Add the card to the player's hand
-  const cardInstance = {
-    instanceId: `${playerType}_card_${Date.now()}`,
-    card: cardData,
-    currentHealth: getHealth(cardData) || 1,
-    canAttack: false,
-    isPlayed: false,
-    isSummoningSick: true,
-    attacksPerformed: 0,
-    hasDivineShield: cardData.keywords?.includes('divine_shield') || false
-  };
-  
+  // Add the card to the player's hand (generated cards → level 3 default)
+  const cardInstance = createCardInstance(cardData);
+
   player.hand.push(cardInstance);
   
   return newState;

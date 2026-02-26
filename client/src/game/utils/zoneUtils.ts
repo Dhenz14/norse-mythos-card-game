@@ -9,6 +9,7 @@ import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';
 import { processAllOnMinionDeathEffects, isNorseActive } from './norseIntegration';
 import { isMinion, getHealth } from './cards/typeGuards';
+import { createCardInstance } from './cards/cardUtils';
 
 const MAX_HAND_SIZE = 7;
 
@@ -53,15 +54,7 @@ export function moveCard(
   let sourceZone: CardInstance[] = [];
   switch (fromZone) {
     case 'deck':
-      sourceZone = player.deck.map(card => ({
-        instanceId: uuidv4(),
-        card: card,
-        currentHealth: getHealth(card),
-        canAttack: false,
-        isPlayed: false,
-        isSummoningSick: true,
-        attacksPerformed: 0
-      }));
+      sourceZone = player.deck.map(card => createCardInstance(card));
       break;
     case 'hand':
       sourceZone = player.hand;
@@ -187,15 +180,7 @@ export function drawCardFromDeck(
   player.deck.splice(0, 1);
   
   // Create a card instance for the hand
-  const cardInstance: CardInstance = {
-    instanceId: uuidv4(),
-    card: cardData,
-    currentHealth: getHealth(cardData),
-    canAttack: false,
-    isPlayed: false,
-    isSummoningSick: true,
-    attacksPerformed: 0
-  };
+  const cardInstance = createCardInstance(cardData);
   
   if (player.hand.length >= MAX_HAND_SIZE) {
     return newState; // hand full — draw is missed, card stays in deck
@@ -323,15 +308,7 @@ export function getCardsInZone(
       return player.graveyard || [];
     case 'deck':
       // For deck, we have to create instances on the fly since deck stores CardData
-      return player.deck.map(card => ({
-        instanceId: uuidv4(), // Temporary ID for the purpose of display
-        card,
-        currentHealth: getHealth(card),
-        canAttack: false,
-        isPlayed: false,
-        isSummoningSick: true,
-        attacksPerformed: 0
-      }));
+      return player.deck.map(card => createCardInstance(card));
     default:
       debug.error(`Unknown zone: ${zone}`);
       return [];

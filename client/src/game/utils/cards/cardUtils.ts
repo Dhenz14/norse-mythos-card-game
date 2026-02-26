@@ -17,7 +17,7 @@ import { getCardAtLevel, type EvolutionLevel } from './cardLevelScaling';
  * Creates a new card instance from card data
  */
 export function createCardInstance(card: CardData, evolutionLevel?: EvolutionLevel): CardInstance {
-  const level = evolutionLevel ?? 3;
+  const level = evolutionLevel ?? (card as any)._evolutionLevel ?? 3;
   const scaledCard = level !== 3 ? getCardAtLevel(card, level) : card;
 
   // Check if the card has Charge, which allows it to attack immediately

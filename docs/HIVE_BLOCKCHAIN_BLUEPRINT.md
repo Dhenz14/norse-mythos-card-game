@@ -1,6 +1,6 @@
 # Ragnarok — Hive Blockchain Integration Blueprint
 
-**Status**: Phase 2 — 2A/2B foundation + 2D pre-launch complete. Phase 2C (genesis broadcast) is next.
+**Status**: Phase 2 — 2A/2B/2D complete (commit-reveal seed, dual-sig results, XP/leveling, card evolution). Phase 2C (genesis broadcast) is next.
 **Layer**: Hive Layer 1 (no Hive-Engine dependency)
 **Model**: Fixed-supply NFT cards, decentralized P2P gameplay, cryptographic anti-cheat
 
@@ -21,6 +21,9 @@
 11. [Implementation Phases](#11-implementation-phases)
 12. [File Structure](#12-file-structure)
 13. [Key Design Invariants](#13-key-design-invariants)
+14. [Design Philosophy: Ordinals-Style Reader Model](#14-design-philosophy-ordinals-style-reader-model)
+15. [Anti-Cheat Hardening Notes](#15-anti-cheat-hardening-notes)
+16. [Card XP, Leveling & Evolution System](#16-card-xp-leveling--evolution-system)
 
 ---
 
@@ -76,6 +79,7 @@ This namespaces all operations. Any Hive node can filter for this app ID and rec
 { "app": "ragnarok-cards", "action": "seal",      ... }
 { "app": "ragnarok-cards", "action": "match_start",    ... }
 { "app": "ragnarok-cards", "action": "match_result",   ... }
+{ "app": "ragnarok-cards", "action": "level_up",       ... }
 { "app": "ragnarok-cards", "action": "queue_join",     ... }
 { "app": "ragnarok-cards", "action": "queue_leave",    ... }
 { "app": "ragnarok-cards", "action": "slash_evidence", ... }
@@ -972,18 +976,21 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [x] Build blockchain subscriber (game end → queue)
 - [ ] Test mint/transfer/verify on Hive testnet
 
-### Phase 2B — Match Protocol (partially complete — PoW + anchors done; SignedMove/transcript deferred)
+### Phase 2B — Match Protocol (core complete — PoW, anchors, commit-reveal seed, dual-sig results done)
 
 - [ ] Extract game rule engine to pure TypeScript module (no React deps)
 - [x] Implement multi-challenge PoW module (`proofOfWork.ts`: `computePoW`, `verifyPoW` with Web Workers)
 - [x] Implement `match_start` anchor broadcast (dual-sig, with PoW)
-- [ ] Implement commit-reveal deck seeding
+- [x] Implement commit-reveal seed exchange (`useP2PSync.ts`: SHA256 commitments, joint seed derivation, seeded PRNG deck shuffle via `seededRng.ts`)
+- [x] Implement dual-signature `match_result` (`BlockchainSubscriber.ts`: host signs → proposes via P2P → opponent verifies + counter-signs → 30s timeout single-sig fallback; `replayRules.ts` rejects ranked results without both sigs)
+- [x] Implement XP derivation from `match_result` (replay engine processes embedded `xpRewards[]` array, updates card XP/level in IndexedDB — no separate `xp_update` ops needed)
+- [x] Implement `level_up` on-chain convenience record (auto-broadcast when card crosses level threshold; `replayRules.ts` validates ownership + XP warrants claimed level)
+- [x] Implement card evolution scaling (`cardLevelScaling.ts`: NFT XP level → evolution tier (Mortal/Ascended/Divine) → stat/effect/keyword scaling at deck creation; `enrichDeckWithNFTLevels` wires collection into gameplay)
 - [ ] Implement `SignedMove` with `hive_block_ref` (temporal anchor per move)
 - [ ] Implement Merkle tree transcript builder (`transcriptBuilder.ts`)
 - [ ] Implement `SignedMove` protocol in P2P layer
 - [ ] Add WASM hash check at P2P handshake
 - [ ] Test full match with transcript generation and Merkle root
-- [ ] Implement dual-signature `match_result` with `transcript_merkle_root` and PoW
 - [x] Add PoW and `slash_evidence` processing to replay engine rules
 
 ### Phase 2C — Genesis Launch (NEXT — requires mainnet Hive account)
@@ -1023,7 +1030,7 @@ client/src/
 │   │   ├── slashEvidence.ts          # Permissionless slash evidence broadcaster
 │   │   ├── transactionQueueStore.ts  # Zustand + persist (IndexedDB/localStorage)
 │   │   ├── transactionProcessor.ts   # Mode-aware submission (local/test/hive)
-│   │   ├── cardXPSystem.ts           # XP calculations per rarity
+│   │   ├── cardXPSystem.ts           # XP calculations per rarity (thresholds, getLevelForXP)
 │   │   ├── matchResultPackager.ts    # Package match into on-chain format (result_nonce anti-replay)
 │   │   ├── nftMetadataGenerator.ts   # NFT metadata from card definitions
 │   │   ├── deckVerification.ts       # verifyDeckOwnership, computeDeckHash (IndexedDB, no server)
@@ -1042,11 +1049,18 @@ client/src/
 │   │   ├── wasmLoader.ts              # WASM init + hash verification
 │   │   └── engineBridge.ts            # TypeScript ↔ WASM interface
 │   │
-│   ├── protocol/                      # Cryptographic match protocol (PLANNED — Phase 2B)
-│   │   ├── matchProtocol.ts           # SignedMove (with hive_block_ref), commit-reveal
-│   │   ├── transcriptBuilder.ts       # Assemble SignedMoves into Merkle tree
-│   │   ├── transcriptMerkle.ts        # Merkle root computation + proof generation
-│   │   └── resultBroadcaster.ts       # Publish dual-signed match_result to Hive
+│   ├── utils/cards/
+│   │   ├── cardLevelScaling.ts        # Evolution tiers (Mortal/Ascended/Divine), stat scaling, enrichDeckWithNFTLevels
+│   │   └── cardUtils.ts               # createCardInstance (auto-reads _evolutionLevel from CardData)
+│   │
+│   ├── utils/
+│   │   └── seededRng.ts               # Mulberry32 PRNG + Fisher-Yates seededShuffle (commit-reveal seed)
+│   │
+│   ├── protocol/                      # Cryptographic match protocol (PARTIALLY BUILT)
+│   │   ├── matchProtocol.ts           # SignedMove (with hive_block_ref) — PLANNED
+│   │   ├── transcriptBuilder.ts       # Assemble SignedMoves into Merkle tree — PLANNED
+│   │   ├── transcriptMerkle.ts        # Merkle root computation + proof generation — PLANNED
+│   │   └── resultBroadcaster.ts       # Publish dual-signed match_result to Hive — PLANNED
 │   │
 │   ├── components/
 │   │   └── HiveKeychainLogin.tsx      # Keychain login UI component
@@ -1151,6 +1165,84 @@ The `match_start` anchor includes a `deck_hash`. The `match_result` should also 
 ### 15.4 Rate Limiting via PoW Scaling
 
 If the replay engine detects an account submitting ops at an unusually high rate (e.g., >10 `queue_join` ops per hour), future PoW difficulty for that account's ops can be scaled up. This is enforced locally by every reader — no coordination needed.
+
+---
+
+## 16. Card XP, Leveling & Evolution System
+
+Cards gain XP from ranked matches. XP accumulates on-chain and determines the card's evolution tier, which directly affects gameplay stats.
+
+### 16.1 XP Flow
+
+```
+match_result (on-chain)
+  └── xpRewards[] array (embedded in payload)
+        └── replay engine reads each reward
+              └── updates card.xp + card.level in IndexedDB
+```
+
+XP is **derived from match_result during replay** — no separate `xp_update` ops needed. The `xpRewards[]` array is computed by `cardXPSystem.ts` at match packaging time and embedded in the `match_result` payload. Every reader processes it identically.
+
+### 16.2 Level Thresholds (per rarity)
+
+| Rarity    | Max Level | XP per level (approx) |
+|-----------|-----------|----------------------|
+| Free      | 5         | Low thresholds       |
+| Basic     | 5         | Low thresholds       |
+| Common    | 10        | Moderate thresholds  |
+| Rare      | 8         | Higher thresholds    |
+| Epic      | 6         | High thresholds      |
+| Legendary | 4         | Very high thresholds |
+
+Thresholds defined in `cardXPSystem.ts:XP_CONFIG`.
+
+### 16.3 Evolution Tiers (gameplay impact)
+
+XP levels map to 3 evolution tiers that scale card stats:
+
+| Tier      | Attack | Health | Effects | Keywords |
+|-----------|--------|--------|---------|----------|
+| Mortal    | 60%    | 70%    | 60%     | Basic only (taunt, charge, rush, etc.) |
+| Ascended  | 80%    | 90%    | 80%     | All keywords |
+| Divine    | 100%   | 100%   | 100%    | All keywords |
+
+Tier thresholds by rarity (`EVOLUTION_TIER_MAP` in `cardLevelScaling.ts`):
+
+| Rarity    | Mortal (levels) | Ascended (levels) | Divine (levels) |
+|-----------|-----------------|--------------------|-----------------|
+| Common    | 1-3             | 4-7                | 8-10            |
+| Rare      | 1-3             | 4-6                | 7-8             |
+| Epic      | 1-2             | 3-4                | 5-6             |
+| Legendary | 1               | 2-3                | 4               |
+
+### 16.4 How Scaling is Applied
+
+1. At deck creation, `enrichDeckWithNFTLevels(deck, collection)` looks up the player's best NFT for each cardId
+2. Each card's XP level is mapped to an evolution tier via `getEvolutionLevel(xpLevel, rarity)`
+3. The tier is attached to the `CardData` as `_evolutionLevel`
+4. When cards are drawn/instantiated, `createCardInstance` reads the tier and applies `getCardAtLevel`
+5. `getCardAtLevel` scales attack, health, effect values, descriptions, and keywords
+
+Summoned/generated cards (battlecries, deathrattles) always spawn at Divine (level 3). Only cards from the player's NFT collection are affected.
+
+### 16.5 `level_up` On-Chain Record
+
+When a card crosses a level threshold, the client auto-broadcasts a `level_up` op:
+
+```json
+{
+  "app": "ragnarok-cards",
+  "action": "level_up",
+  "nft_id": "gen1-rare-042",
+  "card_id": 2001,
+  "old_level": 3,
+  "new_level": 4,
+  "xp_total": 1250,
+  "match_id": "abc123..."
+}
+```
+
+The replay engine validates: card exists, broadcaster owns it, card XP warrants the claimed level. This op is a convenience index for quick lookups — the canonical XP state is always derivable from replaying `match_result` ops.
 
 ---
 

@@ -1,9 +1,9 @@
 import { GameState, CardData, CardInstance } from '../types';
-import { v4 as uuidv4 } from 'uuid';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
+import { createCardInstance } from './cards/cardUtils';
 
 const MAX_HAND_SIZE = 7;
 
@@ -56,21 +56,13 @@ export function drawCardFromDeck(
   
   const cardData = player.deck[0];
   player.deck.splice(0, 1);
-  
+
   if (player.hand.length >= MAX_HAND_SIZE) {
     return newState; // hand full — card stays in deck, draw is missed
   }
-  
-  const cardInstance: CardInstance = {
-    instanceId: uuidv4(),
-    card: cardData,
-    currentHealth: 'health' in cardData ? (cardData.health || 0) : 0,
-    canAttack: false,
-    isPlayed: false,
-    isSummoningSick: true,
-    attacksPerformed: 0
-  };
-  
+
+  const cardInstance = createCardInstance(cardData);
+
   player.hand.push(cardInstance);
   
   
