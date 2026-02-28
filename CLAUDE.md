@@ -37,6 +37,16 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - 76 playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
+- Single-player campaign (40 missions across 4 factions)
+- Tournament system (Swiss + single elimination brackets)
+- Card crafting & trading (dust economy)
+- Spectator mode (read-only P2P connection)
+- Match replay viewer with playback controls
+- Daily quest system (18 quest templates)
+- Friends list with presence polling
+- Deck import/export via shareable codes
+- Settings with audio, visual, gameplay configuration
+- Tutorial overlay for new players
 
 ## Project Structure
 
@@ -58,13 +68,51 @@ client/src/
 │   ├── HiveDataLayer.ts        # Zustand store: collection, stats, tokens
 │   └── schemas/HiveTypes.ts    # Core Hive types
 ├── game/
-│   ├── components/         # Card, combat, chess components
+│   ├── components/         # Card, combat, chess, UI components
+│   │   ├── campaign/       # CampaignPage (world map + mission briefing)
+│   │   ├── collection/     # CollectionPage (with crafting integration)
+│   │   ├── crafting/       # CraftingPanel (dust craft/disenchant)
+│   │   ├── replay/         # MatchHistoryPage + ReplayViewer
+│   │   ├── settings/       # SettingsPage + SettingsPanel
+│   │   ├── social/         # FriendsPanel (presence + challenges)
+│   │   ├── spectator/      # SpectatorView (read-only P2P)
+│   │   ├── tournament/     # TournamentListPage (brackets + standings)
+│   │   ├── trading/        # TradingPage (card/dust trade offers)
+│   │   ├── tutorial/       # TutorialOverlay (step-by-step onboarding)
+│   │   ├── quests/         # DailyQuestPanel (3 daily quests)
+│   │   └── ui/             # LoadingScreen + shared UI
 │   ├── stores/             # Zustand state stores
-│   │   └── gameStore.ts    # Main game store
+│   │   ├── gameStore.ts    # Main game store
+│   │   ├── settingsStore.ts # Settings (audio, visual, gameplay)
+│   │   ├── dailyQuestStore.ts # Daily quest progress + refresh
+│   │   ├── friendStore.ts  # Friends list + online status
+│   │   ├── tradeStore.ts   # Trade offers + selections
+│   │   └── replayStore.ts  # Match history + replay playback
 │   ├── data/               # Card definitions, heroes
 │   │   ├── allCards.ts     # Single source of truth (1300 cards)
 │   │   ├── cardRegistry/   # Card sets by ID ranges
+│   │   ├── dailyQuestPool.ts # 18 quest templates
+│   │   ├── keywordDefinitions.ts # All keyword names + descriptions
 │   │   └── norseHeroes/    # 76 playable heroes
+│   ├── campaign/           # Campaign system
+│   │   ├── campaignTypes.ts # Mission, chapter, AI profile types
+│   │   ├── campaignStore.ts # Progress tracking (Zustand + persist)
+│   │   ├── chapters/       # 4 faction chapters (10 missions each)
+│   │   └── index.ts        # Barrel exports + ALL_CHAPTERS
+│   ├── crafting/           # Crafting economy
+│   │   ├── craftingConstants.ts # Dust values + craft costs
+│   │   └── craftingStore.ts # Dust balance (Zustand + persist)
+│   ├── tournament/         # Tournament system
+│   │   ├── tournamentTypes.ts # Tournament, match, bracket types
+│   │   └── tournamentStore.ts # Tournament state (Zustand)
+│   ├── spectator/          # Spectator mode
+│   │   ├── spectatorFilter.ts # Strip hidden info for spectators
+│   │   └── useSpectatorSync.ts # Read-only PeerJS connection
+│   ├── tutorial/           # Tutorial system
+│   │   └── tutorialStore.ts # 15 steps (Zustand + persist)
+│   ├── engine/             # WASM game engine (TypeScript fallback)
+│   │   ├── wasmLoader.ts   # Load + hash-verify WASM module
+│   │   └── engineBridge.ts # TS ↔ WASM interface
 │   ├── combat/             # Combat system + poker mechanics
 │   │   ├── RagnarokCombatArena.tsx
 │   │   ├── PokerCombatStore.ts
@@ -74,11 +122,12 @@ client/src/
 │   │   └── modules/        # Hand evaluator, betting
 │   ├── effects/            # Effect handlers
 │   │   └── handlers/       # battlecry/, deathrattle/, spellEffect/
-│   ├── subscribers/        # BlockchainSubscriber (game end → chain packaging)
+│   ├── subscribers/        # BlockchainSubscriber, DailyQuestSubscriber
 │   ├── types/              # TypeScript type definitions
 │   └── utils/              # Game utilities
 │       ├── game/           # Game state utilities
 │       ├── cards/          # Card level scaling, evolution tiers
+│       ├── deckCode.ts     # Deck import/export (base64 encoding)
 │       ├── battlecry/      # Battlecry utilities
 │       └── spells/         # Spell utilities
 ├── components/ui/          # Shadcn/Radix UI components
@@ -89,10 +138,14 @@ server/
 ├── routes/
 │   ├── chainRoutes.ts      # REST: leaderboard, ELO, cards, deck verify
 │   ├── matchmakingRoutes.ts # ELO-proximity matchmaking queue
+│   ├── socialRoutes.ts     # Friends: heartbeat, challenges, presence
+│   ├── tradeRoutes.ts      # Trading: create/accept/decline/cancel offers
+│   ├── tournamentRoutes.ts # Tournaments: CRUD, register, results, brackets
 │   └── mockBlockchainRoutes.ts # In-memory mock (dev only)
 ├── services/
 │   ├── chainIndexer.ts     # Server-side chain replay (optional convenience)
 │   ├── chainState.ts       # In-memory account state for global queries
+│   ├── tournamentManager.ts # Swiss/elimination pairing logic
 │   └── hiveAuth.ts         # Hive signature verification for server auth
 └── storage.ts              # Database interface
 ```
@@ -228,6 +281,23 @@ vercel --prod                 # Deploy to Vercel
 # or upload dist/ to any static host
 ```
 
+## Route Structure
+
+```text
+/              → HomePage (quests, friends, navigation)
+/game          → RagnarokChessGame (single-player)
+/campaign      → CampaignPage (40 missions, 4 factions)
+/multiplayer   → MultiplayerGame (P2P ranked)
+/tournaments   → TournamentListPage (brackets, registration)
+/packs         → PacksPage (open card packs)
+/collection    → CollectionPage (with crafting)
+/trading       → TradingPage (card/dust trade offers)
+/ladder        → RankedLadderPage (ELO leaderboard)
+/history       → MatchHistoryPage (replay viewer)
+/spectate/:id  → SpectatorView (read-only P2P)
+/settings      → SettingsPage (audio, visual, gameplay)
+```
+
 ## Roadmap
 
 ### Completed (Phase 2A-2E)
@@ -243,8 +313,28 @@ vercel --prod                 # Deploy to Vercel
 - Server-side chain indexer (leaderboard, ELO, deck verify)
 - Anti-cheat: PoW, slash evidence, nonce anti-replay
 
+### Completed (Full Product Launch)
+
+- Settings system (audio, visual, gameplay, keybindings)
+- Deck import/export via shareable base64 codes
+- Daily quest system (18 templates, 3 active, daily refresh)
+- Friends list (presence polling, challenge invites)
+- Single-player campaign (40 missions, 4 factions, difficulty scaling)
+- Card crafting (dust economy: disenchant/craft, 8:1 cost ratio)
+- Card trading (P2P trade offers with dust + cards)
+- Tournament system (Swiss + elimination, server-managed brackets)
+- Spectator mode (filtered P2P read-only connection)
+- Match replay viewer (action timeline, playback controls)
+- WASM engine infrastructure (loader, bridge, TypeScript fallback)
+- Block reference cache (3s Hive polling, per-move anchoring)
+- Per-move state hashing (SHA-256 state hash after each action)
+- Loading screen (Norse lore quotes, rune spinner)
+- Tutorial overlay (15-step onboarding walkthrough)
+- Keyword definitions (30+ keywords with descriptions)
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account
 - Upload card art to CDN
+- Build AssemblyScript WASM module (deterministic game engine)
 - Broadcast genesis + seal on Hive mainnet (two Keychain clicks, then admin key irrelevant)

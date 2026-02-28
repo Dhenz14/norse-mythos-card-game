@@ -27,6 +27,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     app.use('/api/mock-blockchain', mockBlockchainRoutes);
   }
 
+  // Social / friends routes (presence, challenges)
+  const socialRoutes = (await import("./routes/socialRoutes")).default;
+  app.use('/api/friends', socialRoutes);
+
+  // Trading routes (card/dust trade offers)
+  const tradeRoutes = (await import("./routes/tradeRoutes")).default;
+  app.use('/api/trades', tradeRoutes);
+
+  // Tournament routes (brackets, registration, results)
+  const tournamentRoutes = (await import("./routes/tournamentRoutes")).default;
+  app.use('/api/tournaments', tournamentRoutes);
+
   // Chain indexer routes — global state derived from Hive L1 ops
   const chainRoutes = (await import("./routes/chainRoutes")).default;
   app.use('/api/chain', chainRoutes);

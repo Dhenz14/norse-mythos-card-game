@@ -7,6 +7,8 @@ import { getRarityColor, getRarityBackground, getTypeIcon } from '../../utils/ra
 import type { OwnedCard, InventoryResponse, InventoryCard } from '../packs/types';
 import { useHiveDataStore } from '../../../data/HiveDataLayer';
 import { getMasteryTier } from '../../../data/blockchain/cardXPSystem';
+import { useCraftingStore } from '../../crafting/craftingStore';
+import { getDustValue, getCraftCost } from '../../crafting/craftingConstants';
 import './collection.css';
 
 type FilterRarity = 'all' | 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
@@ -75,6 +77,10 @@ function getShimmerClass(rarity: string): string {
 
 export default function CollectionPage() {
 	const hiveCards = useHiveDataStore((s) => s.cardCollection);
+	const dust = useCraftingStore(s => s.dust);
+	const addDust = useCraftingStore(s => s.addDust);
+	const spendDust = useCraftingStore(s => s.spendDust);
+	const [craftConfirm, setCraftConfirm] = useState<'craft' | 'disenchant' | null>(null);
 
 	const [cards, setCards] = useState<OwnedCard[]>([]);
 	const [stats, setStats] = useState<CollectionStats | null>(null);
@@ -210,6 +216,10 @@ export default function CollectionPage() {
 							<span>←</span> Back to Home
 						</motion.button>
 					</Link>
+					<div className="flex items-center gap-2 px-4 py-2 bg-blue-900/30 border border-blue-700/40 rounded-lg">
+						<span className="text-blue-400 font-bold text-sm">{dust}</span>
+						<span className="text-gray-400 text-xs">Dust</span>
+					</div>
 					<Link to={routes.packs}>
 						<motion.button
 							whileHover={{ scale: 1.05 }}
@@ -541,7 +551,7 @@ export default function CollectionPage() {
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						onClick={() => setSelectedCard(null)}
+						onClick={() => { setSelectedCard(null); setCraftConfirm(null); }}
 						className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm"
 					>
 						<motion.div
@@ -660,11 +670,73 @@ export default function CollectionPage() {
 									{selectedCard.quantity > 1 && <span className="text-gray-500"> copies</span>}
 								</div>
 
+								{/* Crafting Actions */}
+								{(() => {
+									const dustVal = getDustValue(selectedCard.rarity);
+									const craftCostVal = getCraftCost(selectedCard.rarity);
+									const canAfford = dust >= craftCostVal && craftCostVal > 0;
+
+									if (craftConfirm) {
+										return (
+											<div className="bg-gray-800/60 border border-gray-700/50 rounded-lg p-3 mb-3">
+												<p className="text-xs text-gray-400 mb-2 text-center">
+													{craftConfirm === 'disenchant'
+														? `Disenchant ${selectedCard.name} for ${dustVal} dust?`
+														: `Craft ${selectedCard.name} for ${craftCostVal} dust?`}
+												</p>
+												<div className="flex gap-2">
+													<button
+														onClick={() => {
+															if (craftConfirm === 'disenchant') {
+																addDust(dustVal);
+															} else {
+																spendDust(craftCostVal);
+															}
+															setCraftConfirm(null);
+														}}
+														className="flex-1 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-semibold transition-colors"
+													>
+														Confirm
+													</button>
+													<button
+														onClick={() => setCraftConfirm(null)}
+														className="flex-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs transition-colors"
+													>
+														Cancel
+													</button>
+												</div>
+											</div>
+										);
+									}
+
+									return (
+										<div className="flex gap-2 mb-3">
+											{selectedCard.quantity > 0 && dustVal > 0 && (
+												<button
+													onClick={() => setCraftConfirm('disenchant')}
+													className="flex-1 px-3 py-2 bg-red-900/50 hover:bg-red-800/60 text-red-300 rounded-lg text-xs font-medium border border-red-700/40 transition-colors"
+												>
+													Disenchant ({dustVal} dust)
+												</button>
+											)}
+											{craftCostVal > 0 && (
+												<button
+													onClick={() => canAfford && setCraftConfirm('craft')}
+													disabled={!canAfford}
+													className="flex-1 px-3 py-2 bg-blue-900/50 hover:bg-blue-800/60 disabled:bg-gray-800/40 disabled:text-gray-600 text-blue-300 rounded-lg text-xs font-medium border border-blue-700/40 transition-colors"
+												>
+													Craft ({craftCostVal} dust)
+												</button>
+											)}
+										</div>
+									);
+								})()}
+
 								{/* Close Button */}
 								<motion.button
 									whileHover={{ scale: 1.02 }}
 									whileTap={{ scale: 0.98 }}
-									onClick={() => setSelectedCard(null)}
+									onClick={() => { setSelectedCard(null); setCraftConfirm(null); }}
 									className="w-full py-3 bg-gray-700/80 hover:bg-gray-600/80 text-white font-semibold rounded-xl transition-all text-sm"
 								>
 									Close

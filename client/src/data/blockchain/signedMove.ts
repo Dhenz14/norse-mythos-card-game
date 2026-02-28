@@ -20,6 +20,8 @@ export interface GameMove {
 
 export interface MoveRecord extends GameMove {
 	hash: string;
+	stateHashAfter?: string;
+	hiveBlockRef?: string;
 }
 
 export interface MerkleProof {

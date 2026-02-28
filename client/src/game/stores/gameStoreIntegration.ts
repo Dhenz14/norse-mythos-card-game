@@ -18,6 +18,7 @@ import { initializeAudioSubscriber } from '@/game/subscribers/AudioSubscriber';
 import { initializeNotificationSubscriber } from '@/game/subscribers/NotificationSubscriber';
 import { initializeAnimationSubscriber } from '@/game/subscribers/AnimationSubscriber';
 import { initializeBlockchainSubscriber } from '@/game/subscribers/BlockchainSubscriber';
+import { initializeDailyQuestSubscriber } from '@/game/subscribers/DailyQuestSubscriber';
 import { startTransactionProcessor, stopTransactionProcessor } from '@/data/blockchain/transactionProcessor';
 import { isBlockchainPackagingEnabled } from '../config/featureFlags';
 import { debug } from '../config/debugConfig';
@@ -41,6 +42,7 @@ export function initializeGameStoreIntegration(): () => void {
   cleanupFunctions.push(initializeAudioSubscriber());
   cleanupFunctions.push(initializeNotificationSubscriber());
   cleanupFunctions.push(initializeAnimationSubscriber());
+  cleanupFunctions.push(initializeDailyQuestSubscriber());
 
   // Initialize blockchain subscriber + transaction processor when enabled
   if (isBlockchainPackagingEnabled()) {

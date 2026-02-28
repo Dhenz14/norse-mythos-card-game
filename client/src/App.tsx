@@ -17,6 +17,14 @@ import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
 import { initializeGameStoreIntegration } from "./game/stores/gameStoreIntegration";
 import initEffectSystem from "./game/effects/initEffectSystem";
 import { HiveKeychainLogin } from "./game/components/HiveKeychainLogin";
+import SettingsPage from "./game/components/settings/SettingsPage";
+import DailyQuestPanel from "./game/components/quests/DailyQuestPanel";
+import FriendsPanel from "./game/components/social/FriendsPanel";
+import CampaignPage from "./game/components/campaign/CampaignPage";
+import TradingPage from "./game/components/trading/TradingPage";
+import TournamentListPage from "./game/components/tournament/TournamentListPage";
+import SpectatorView from "./game/components/spectator/SpectatorView";
+import MatchHistoryPage from "./game/components/replay/MatchHistoryPage";
 
 function HomePage() {
   const bgOverlayRef = useRef<HTMLDivElement>(null);
@@ -38,6 +46,16 @@ function HomePage() {
       <div className="absolute top-4 right-4 z-20">
         <HiveKeychainLogin />
       </div>
+
+      {/* Daily Quests — top-left corner */}
+      <div className="absolute top-4 left-4 z-20">
+        <DailyQuestPanel />
+      </div>
+
+      {/* Friends — bottom-right corner */}
+      <div className="absolute bottom-8 right-4 z-20">
+        <FriendsPanel />
+      </div>
       
       <div className="relative z-10 flex flex-col items-center">
         <div className="relative mb-12 group">
@@ -53,6 +71,12 @@ function HomePage() {
           <Link to={routes.game}>
             <Button className="homepage-btn-primary w-full py-8 text-2xl font-bold tracking-wider uppercase border-2">
               Play Game
+            </Button>
+          </Link>
+
+          <Link to={routes.campaign}>
+            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
+              Campaign
             </Button>
           </Link>
 
@@ -74,9 +98,33 @@ function HomePage() {
             </Button>
           </Link>
 
+          <Link to={routes.trading}>
+            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
+              Trading
+            </Button>
+          </Link>
+
+          <Link to={routes.tournaments}>
+            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
+              Tournaments
+            </Button>
+          </Link>
+
           <Link to={routes.ladder}>
             <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
               Ranked Ladder
+            </Button>
+          </Link>
+
+          <Link to={routes.history}>
+            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
+              Match History
+            </Button>
+          </Link>
+
+          <Link to={routes.settings}>
+            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
+              Settings
             </Button>
           </Link>
         </div>
@@ -104,10 +152,16 @@ function App() {
         <Routes>
           <Route path={routes.home} element={<HomePage />} />
           <Route path={routes.game} element={<RagnarokChessGame />} />
+          <Route path={routes.campaign} element={<CampaignPage />} />
           <Route path={routes.multiplayer} element={<MultiplayerGame />} />
           <Route path={routes.packs} element={<PacksPage />} />
           <Route path={routes.collection} element={<CollectionPage />} />
           <Route path={routes.ladder} element={<RankedLadderPage />} />
+          <Route path={routes.trading} element={<TradingPage />} />
+          <Route path={routes.tournaments} element={<TournamentListPage />} />
+          <Route path={routes.spectate} element={<SpectatorView />} />
+          <Route path={routes.history} element={<MatchHistoryPage />} />
+          <Route path={routes.settings} element={<SettingsPage />} />
         </Routes>
       </BrowserRouter>
     </CardTransformProvider>
