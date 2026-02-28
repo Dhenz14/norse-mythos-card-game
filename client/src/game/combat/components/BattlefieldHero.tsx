@@ -65,6 +65,16 @@ const getSecretColor = (heroClass: string) => {
   }
 };
 
+const QUESTION_MARK_STYLE: React.CSSProperties = { color: 'white', fontWeight: 'bold', fontSize: '16px' };
+const SECRET_COUNT_STYLE: React.CSSProperties = {
+  position: 'absolute', bottom: '-4px', right: '-4px',
+  backgroundColor: '#dc2626', color: 'white', fontSize: '10px',
+  fontWeight: 'bold', width: '16px', height: '16px', borderRadius: '50%',
+  display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid white'
+};
+const SECRET_HEADER_STYLE_BASE: React.CSSProperties = { fontWeight: 'bold', marginBottom: '4px' };
+const SECRET_TEXT_STYLE: React.CSSProperties = { opacity: 0.8 };
+
 /**
  * BattlefieldHero displays an enhanced hero card on the battlefield
  * with interactive hero powers, elemental effects, and detailed stats
@@ -143,6 +153,39 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   const norseHero = pet.norseHeroId ? ALL_NORSE_HEROES[pet.norseHeroId] : null;
   const heroPower = norseHero?.heroPower;
   const weaponUpgrade = norseHero?.weaponUpgrade;
+
+  const secretColor = getSecretColor(heroClass);
+
+  const secretIndicatorStyle = useMemo((): React.CSSProperties => ({
+    backgroundColor: secretColor,
+    position: 'absolute',
+    top: isOpponent ? 'auto' : '-12px',
+    bottom: isOpponent ? '-12px' : 'auto',
+    right: '50%', transform: 'translateX(50%)',
+    width: '28px', height: '28px', borderRadius: '50%',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    border: '2px solid white',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+    cursor: 'help', zIndex: 10
+  }), [secretColor, isOpponent]);
+
+  const secretTooltipStyle = useMemo((): React.CSSProperties => ({
+    position: 'absolute',
+    top: isOpponent ? '100%' : 'auto',
+    bottom: isOpponent ? 'auto' : '100%',
+    left: '50%', transform: 'translateX(-50%)',
+    backgroundColor: 'rgba(0,0,0,0.9)', color: 'white',
+    padding: '8px 12px', borderRadius: '6px', fontSize: '12px',
+    whiteSpace: 'nowrap', zIndex: 100,
+    marginTop: isOpponent ? '8px' : '0',
+    marginBottom: isOpponent ? '0' : '8px',
+    border: `2px solid ${secretColor}`,
+    boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+  }), [secretColor, isOpponent]);
+
+  const secretHeaderStyle = useMemo((): React.CSSProperties => ({
+    ...SECRET_HEADER_STYLE_BASE, color: secretColor
+  }), [secretColor]);
 
   const elementMatchups = useMemo(() => {
     const norseEl = norseHero?.element as NorseElement | undefined;
@@ -380,12 +423,12 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
           )}
         
           <div className="hero-stat-bar hp-bar">
-            <div className="stat-bar-fill hp-fill" style={{ width: `${healthPercent}%` }} />
+            <div className="stat-bar-fill hp-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
             <span className="stat-bar-text">{Math.round(currentHP)}/{Math.round(maxHP)}</span>
           </div>
         
           <div className="hero-stat-bar sta-bar">
-            <div className="stat-bar-fill sta-fill" style={{ width: `${staminaPercent}%` }} />
+            <div className="stat-bar-fill sta-fill" style={{ transform: `scaleX(${staminaPercent / 100})` }} />
             <span className="stat-bar-text">⚡{currentSta}/{maxSta}</span>
           </div>
         
@@ -425,47 +468,15 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
           )}
         
           {secrets && secrets.length > 0 && (
-            <div 
+            <div
               className="hero-secret-indicator"
               onMouseEnter={() => setShowSecretTooltip(true)}
               onMouseLeave={() => setShowSecretTooltip(false)}
-              style={{ 
-                backgroundColor: getSecretColor(heroClass),
-                position: 'absolute',
-                top: isOpponent ? 'auto' : '-12px',
-                bottom: isOpponent ? '-12px' : 'auto',
-                right: '50%',
-                transform: 'translateX(50%)',
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '2px solid white',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                cursor: 'help',
-                zIndex: 10
-              }}
+              style={secretIndicatorStyle}
             >
-              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>?</span>
+              <span style={QUESTION_MARK_STYLE}>?</span>
               {secrets.length > 1 && (
-                <span style={{
-                  position: 'absolute',
-                  bottom: '-4px',
-                  right: '-4px',
-                  backgroundColor: '#dc2626',
-                  color: 'white',
-                  fontSize: '10px',
-                  fontWeight: 'bold',
-                  width: '16px',
-                  height: '16px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid white'
-                }}>
+                <span style={SECRET_COUNT_STYLE}>
                   {secrets.length}
                 </span>
               )}
@@ -473,31 +484,11 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
           )}
         
           {showSecretTooltip && secrets && secrets.length > 0 && (
-            <div 
-              className="secret-tooltip"
-              style={{
-                position: 'absolute',
-                top: isOpponent ? '100%' : 'auto',
-                bottom: isOpponent ? 'auto' : '100%',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                backgroundColor: 'rgba(0,0,0,0.9)',
-                color: 'white',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                fontSize: '12px',
-                whiteSpace: 'nowrap',
-                zIndex: 100,
-                marginTop: isOpponent ? '8px' : '0',
-                marginBottom: isOpponent ? '0' : '8px',
-                border: `2px solid ${getSecretColor(heroClass)}`,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
-              }}
-            >
-              <div style={{ fontWeight: 'bold', marginBottom: '4px', color: getSecretColor(heroClass) }}>
+            <div className="secret-tooltip" style={secretTooltipStyle}>
+              <div style={secretHeaderStyle}>
                 Secret Active
               </div>
-              <div style={{ opacity: 0.8 }}>
+              <div style={SECRET_TEXT_STYLE}>
                 {secrets.length === 1 ? '1 secret in play' : `${secrets.length} secrets in play`}
               </div>
             </div>

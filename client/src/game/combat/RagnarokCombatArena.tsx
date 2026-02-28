@@ -23,6 +23,7 @@ import './GameViewport.css';
 import { MinionActivityLog, PokerActivityLog } from '../components/ActivityLog';
 import { LastActionLog } from '../components/LastActionLog';
 import AIAttackAnimationProcessor from '../components/AIAttackAnimationProcessor';
+import { PixiParticleCanvas } from '../animations/PixiParticleCanvas';
 import { AnimationOverlay } from '../components/AnimationOverlay';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { ShowdownCelebration } from './components/ShowdownCelebration';
@@ -54,6 +55,33 @@ import { debug } from '../config/debugConfig';
 import { playSound } from '../utils/soundUtils';
 import { GameLog } from '../components/GameLog';
 import { useGameLogIntegration } from '../hooks/useGameLogIntegration';
+
+const SwordIcon = () => (
+	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+		<path d="M16.5 1l-1 3.5-1.2 1.2-5.8 5.8-1.4-1.4 5.8-5.8L14 3.1 15.5 1h1zM7.6 11l1.4 1.4-2.3 2.3 1.1 1.1a1 1 0 01-1.4 1.4l-1.1-1.1-1.8 1.8a1 1 0 01-1.4-1.4l1.8-1.8-1.1-1.1a1 1 0 011.4-1.4l1.1 1.1L7.6 11z"/>
+	</svg>
+);
+
+const CrossedSwordsIcon = () => (
+	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+		<path d="M3.5 1l1 3.5 1.2 1.2 4.3 4.3 4.3-4.3L15.5 4.5l1-3.5h1L16 5.3l-1.2 1.2L10 11.3l-1.5 1.5 1.1 1.1a1 1 0 01-1.4 1.4l-1.1-1.1-1.8 1.8a1 1 0 01-1.4-1.4l1.8-1.8-1.1-1.1a1 1 0 011.4-1.4l1.1 1.1L8.6 10 4.3 5.7 3.1 4.5 1 5.5V4.5L2.5 1h1z"/>
+		<path d="M11.4 12.4l1.5-1.5 4.8 4.8-1.2 1.2L18 18.5a1 1 0 01-1.4 1.4l-1.6-1.6-1.2 1.2-4.8-4.8z" opacity="0.85"/>
+	</svg>
+);
+
+const ShieldIcon = () => (
+	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+		<path d="M10 1L3 4v5c0 4.5 3 8.3 7 9.8 4-1.5 7-5.3 7-9.8V4l-7-3zm0 2.2L15 5.8v3.4c0 3.5-2.2 6.5-5 7.8-2.8-1.3-5-4.3-5-7.8V5.8L10 3.2z"/>
+		<circle cx="10" cy="9.5" r="2.5" opacity="0.6"/>
+	</svg>
+);
+
+const HelmIcon = () => (
+	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+		<path d="M10 2C6.5 2 3.5 4.5 3 8v3c0 .6.4 1 1 1h1v2.5c0 .8.7 1.5 1.5 1.5h1c.6 0 1-.3 1.2-.8L10 13l1.3 2.2c.2.5.6.8 1.2.8h1c.8 0 1.5-.7 1.5-1.5V12h1c.6 0 1-.4 1-1V8c-.5-3.5-3.5-6-7-6zM5 8.5c.3-2.5 2.5-4.5 5-4.5s4.7 2 5 4.5V10H5V8.5z"/>
+		<path d="M9.2 7h1.6v3H9.2V7z" opacity="0.5"/>
+	</svg>
+);
 
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
@@ -936,12 +964,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                const effectiveBet = maxSlider >= minBet ? Math.min(Math.max(minBet, clampedBet), maxSlider) : 0;
                const actualCanRaise = canRaise && maxSlider >= minBet && effectiveBet >= minBet;
 
-               const actualCallAmount = Math.min(toCall, availableHP);
-
-               const betOrRaiseLabel = `ATTACK ${hasBetToCall ? toCall + effectiveBet : effectiveBet} HP`;
-               const callLabel = isAllIn
-                 ? `ALL-IN ${actualCallAmount} HP`
-                 : `ENGAGE ${toCall} HP`;
+               const attackHP = hasBetToCall ? toCall + effectiveBet : effectiveBet;
+               const callHP = Math.min(toCall, availableHP);
 
                return (
                  <div className="action-buttons-group">
@@ -952,24 +976,35 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                        effectiveBet
                      )}
                      disabled={isDisabled || (hasBetToCall ? !actualCanRaise : !canBet)}
+                     title="Attack"
                    >
-                     <span className="btn-text">{betOrRaiseLabel}</span>
+                     <SwordIcon />
+                     <span className="btn-text">{attackHP} HP</span>
                    </button>
 
                    <button
                      className="poker-btn call-btn"
                      onClick={() => wrappedOnAction(canCall ? CombatAction.ENGAGE : CombatAction.DEFEND)}
                      disabled={isDisabled || (!canCall && !canCheck)}
+                     title={canCall ? 'Engage' : 'Defend'}
                    >
-                     <span className="btn-text">{canCall ? callLabel : 'DEFEND'}</span>
+                     {canCall ? (
+                       <>
+                         <CrossedSwordsIcon />
+                         <span className="btn-text">{isAllIn ? `ALL-IN ${callHP}` : `${callHP} HP`}</span>
+                       </>
+                     ) : (
+                       <HelmIcon />
+                     )}
                    </button>
 
                    <button
                      className="poker-btn fold-btn"
                      onClick={() => wrappedOnAction(CombatAction.BRACE)}
                      disabled={isDisabled || !canFold}
+                     title="Brace"
                    >
-                     <span className="btn-text">BRACE</span>
+                     <ShieldIcon />
                    </button>
                  </div>
                );
@@ -1197,6 +1232,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       <CardBurnOverlay />
       <ActionAnnouncement />
       <AIAttackAnimationProcessor />
+      <PixiParticleCanvas />
       <AnimationOverlay />
       
       {/* First Strike Animation - plays when attacker deals initial damage */}

@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useAIAttackAnimationStore, AIAttackEvent } from '../stores/aiAttackAnimationStore';
 import { useGameStore } from '../stores/gameStore';
 import { applyDamageToState, CombatStep } from '../services/AttackResolutionService';
 import { CombatEventBus } from '../services/CombatEventBus';
+import { playHeroAttackFX } from '../animations/HeroAttackFX';
 import { debug } from '../config/debugConfig';
 import './AIAttackAnimation.css';
 
@@ -133,6 +134,16 @@ const AIAttackAnimationProcessor: React.FC = () => {
     return null;
   };
 
+  const getCardElement = useCallback((instanceId: string): HTMLElement | null => {
+    return document.querySelector(`[data-instance-id="${instanceId}"]`);
+  }, []);
+
+  const getHeroElement = (hero: 'player' | 'opponent'): HTMLElement | null => {
+    return document.querySelector(`.${hero}-hero-zone, .battlefield-hero-square.${hero}`);
+  };
+
+  const fxTimelineRef = useRef<gsap.core.Timeline | null>(null);
+
   useEffect(() => {
     debug.animation(`[AI-ATTACK-ANIM-PROC] useEffect triggered: pendingAttacks=${pendingAttacks.length}, isAnimating=${isAnimating}`);
     if (pendingAttacks.length > 0 && !isAnimating) {
@@ -140,28 +151,57 @@ const AIAttackAnimationProcessor: React.FC = () => {
       debug.animation(`[AI-ATTACK-ANIM-PROC] Starting animation event:`, event?.attackerName, '->', event?.targetName);
       if (event) {
         setDisplayEvent(event);
-        
+
+        // Use GSAP+Pixi FX for hero attacks
+        const attackerEl = getCardElement(event.attackerId);
+        const targetHero = event.targetType === 'hero'
+          ? (event.attackerSide === 'opponent' ? 'player' : 'opponent')
+          : null;
+        const targetEl = targetHero ? getHeroElement(targetHero) : null;
+
+        if (attackerEl && targetEl && event.targetType === 'hero') {
+          setAnimState({ attackerPos: null, targetPos: null, phase: 'charging' });
+          fxTimelineRef.current = playHeroAttackFX({
+            attackerEl,
+            targetEl,
+            damage: event.damage,
+            element: 'neutral',
+            onImpact: () => {
+              setAnimState(prev => ({ ...prev, phase: 'impact' }));
+              applyDamageFromEvent(event);
+            },
+            onComplete: () => {
+              setAnimState({ attackerPos: null, targetPos: null, phase: 'idle' });
+              setDisplayEvent(null);
+              fxTimelineRef.current = null;
+              completeAnimation();
+            }
+          });
+          return;
+        }
+
+        // Fallback: SVG line animation for minion-to-minion or missing elements
         const attackerPos = getCardPosition(event.attackerId);
         let targetPos: { x: number; y: number } | null = null;
-        
+
         if (event.targetType === 'hero') {
-          targetPos = getHeroPosition('player');
+          targetPos = getHeroPosition(event.attackerSide === 'opponent' ? 'player' : 'opponent');
         } else if (event.targetId) {
           targetPos = getCardPosition(event.targetId);
         }
-        
+
         if (attackerPos && targetPos) {
           setAnimState({ attackerPos, targetPos, phase: 'charging' });
-          
+
           setTimeout(() => {
             setAnimState(prev => ({ ...prev, phase: 'impact' }));
             applyDamageFromEvent(event);
           }, 600);
-          
+
           setTimeout(() => {
             setAnimState(prev => ({ ...prev, phase: 'returning' }));
           }, 1200);
-          
+
           setTimeout(() => {
             setAnimState({ attackerPos: null, targetPos: null, phase: 'idle' });
             setDisplayEvent(null);
@@ -171,7 +211,7 @@ const AIAttackAnimationProcessor: React.FC = () => {
           setTimeout(() => {
             applyDamageFromEvent(event);
           }, 300);
-          
+
           setTimeout(() => {
             setDisplayEvent(null);
             completeAnimation();
@@ -179,7 +219,7 @@ const AIAttackAnimationProcessor: React.FC = () => {
         }
       }
     }
-  }, [pendingAttacks.length, isAnimating, startAnimation, completeAnimation, getCardPosition, applyDamageFromEvent]);
+  }, [pendingAttacks.length, isAnimating, startAnimation, completeAnimation, getCardPosition, getCardElement, applyDamageFromEvent]);
 
   if (!displayEvent) return null;
 

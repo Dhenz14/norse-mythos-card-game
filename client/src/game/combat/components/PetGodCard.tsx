@@ -78,8 +78,8 @@ export const PetGodCard: React.FC<PetGodCardProps> = ({
       
       <div className="pet-god-health">
         <div className="health-bar">
-          <div className="health-committed" style={{ width: `${committedPercent}%` }} />
-          <div className="health-fill" style={{ width: `${healthPercent}%` }} />
+          <div className="health-committed" style={{ transform: `scaleX(${committedPercent / 100})` }} />
+          <div className="health-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
         </div>
         <span className="health-text">{pet.stats.currentHealth} HP ({hpCommitted > 0 ? `${hpCommitted} bet` : 'none bet'})</span>
       </div>

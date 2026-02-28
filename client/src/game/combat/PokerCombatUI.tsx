@@ -137,7 +137,7 @@ const PetCard: React.FC<{ pet: any; heroArmor?: number }> = ({ pet, heroArmor = 
       
       <div className="health-bar-container">
         <div className="health-bar">
-          <div className="health-fill" style={{ width: `${healthPercent}%` }} />
+          <div className="health-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
         </div>
         <div className="health-text">
           {heroArmor > 0 && (

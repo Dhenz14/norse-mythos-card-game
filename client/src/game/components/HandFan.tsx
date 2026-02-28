@@ -4,7 +4,7 @@
  * Self-contained component using CSS variables for responsive sizing.
  * Uses flexbox with negative margins for tight overlapping fan effect.
  */
-import React, { useRef, useEffect, useMemo, useState } from 'react';
+import React, { useRef, useEffect, useMemo, useState, useCallback } from 'react';
 import { CardInstance } from '../types';
 import { toast } from 'sonner';
 import { playSound } from '../utils/soundUtils';
@@ -29,6 +29,9 @@ interface HandFanProps {
 
 const MAX_ROTATION = 4;
 const MAX_Y_OFFSET = 15;
+const PUSH_AMOUNTS = [0, 35, 20, 10];
+const HOVERED_CONTAINER_STYLE: React.CSSProperties = { zIndex: 9000, position: 'relative' };
+const NOOP_REGISTER = () => {};
 
 export const HandFan: React.FC<HandFanProps> = ({
   cards: originalCards,
@@ -74,21 +77,24 @@ export const HandFan: React.FC<HandFanProps> = ({
     prevCardCount.current = adaptedCards.length;
   }, [adaptedCards.length]);
 
-  const handleCardPlay = (card: CardInstanceWithCardData, position?: Position) => {
+  const handleCardPlay = useCallback((card: CardInstanceWithCardData, position?: Position) => {
     if (!onCardPlay) return;
-    
-    const originalCard = originalCards.find(c => 
-      (card.instanceId === (c as any).instanceId) || 
+
+    const originalCard = originalCards.find(c =>
+      (card.instanceId === (c as any).instanceId) ||
       (card.card.id === (c as any).card?.id)
     );
-    
+
     if (originalCard) {
       setPlayedCardData({ name: card.card.name, manaCost: card.card.manaCost || 0, rarity: (card.card as any).rarity });
       setPlayCounter(prev => prev + 1);
       playSound('card_play');
       onCardPlay(originalCard, position);
     }
-  };
+  }, [onCardPlay, originalCards]);
+
+  const clearHover = useCallback(() => setHoveredIndex(null), []);
+  const stableRegisterPosition = registerCardPosition || NOOP_REGISTER;
 
   const cardCount = adaptedCards.length;
   const centerIndex = (cardCount - 1) / 2;
@@ -140,9 +146,7 @@ export const HandFan: React.FC<HandFanProps> = ({
       // Push cards with decreasing intensity based on distance (up to 3 cards away)
       if (absDistance > 0 && absDistance <= 3) {
         const pushDirection = distance < 0 ? -1 : 1;
-        // Weighted push: closer cards push more (35px for adjacent, 20px for 2nd, 10px for 3rd)
-        const pushAmounts = [0, 35, 20, 10];
-        const pushAmount = pushDirection * pushAmounts[absDistance];
+        const pushAmount = pushDirection * PUSH_AMOUNTS[absDistance];
         
         return {
           ...baseTransform,
@@ -159,7 +163,7 @@ export const HandFan: React.FC<HandFanProps> = ({
   };
 
   return (
-    <div className="hand-fan-container" style={hoveredIndex !== null ? { zIndex: 9000, position: 'relative' } : undefined}>
+    <div className="hand-fan-container" style={hoveredIndex !== null ? HOVERED_CONTAINER_STYLE : undefined}>
       <CardDrawAnimation drawCount={drawCounter} />
       <CardPlayAnimation playedCard={playedCardData} playCount={playCounter} />
       {adaptedCards.map((card, index) => {
@@ -189,7 +193,7 @@ export const HandFan: React.FC<HandFanProps> = ({
               }
             }}
             onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
+            onMouseLeave={clearHover}
           >
             <CardWithDrag
               card={card}
@@ -198,7 +202,7 @@ export const HandFan: React.FC<HandFanProps> = ({
               onClick={canPlay ? () => handleCardPlay(card) : undefined}
               onValidDrop={canPlay ? (position) => handleCardPlay(card, position) : undefined}
               boardRef={battlefieldRef}
-              registerPosition={registerCardPosition || (() => {})}
+              registerPosition={stableRegisterPosition}
               attackBuff={card.card?.type === 'minion' ? atkBuff : 0}
               healthBuff={card.card?.type === 'minion' ? hpBuff : 0}
             />

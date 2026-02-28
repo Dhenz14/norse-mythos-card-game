@@ -38,7 +38,10 @@
     #4d0000 100%
   );
   border-radius: 1px;
-  transition: width 0.3s ease-out;
+  transition: transform 0.3s ease-out;
+  transform-origin: left;
+  will-change: transform;
+  right: 1px;
   box-shadow: 
     0 0 8px rgba(200, 0, 0, 0.7),
     inset 0 1px 0 rgba(255, 100, 100, 0.4),

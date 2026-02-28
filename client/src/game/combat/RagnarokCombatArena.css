@@ -2838,10 +2838,13 @@
 
 .stat-bar-fill {
   height: 100%;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   left: 0;
   top: 0;
+  right: 0;
+  transform-origin: left;
+  will-change: transform;
 }
 
 .stat-bar-fill.hp-fill {
@@ -3658,7 +3661,9 @@
 .hand-strength-fill {
   height: 100%;
   border-radius: 3px;
-  transition: width 0.4s ease, background 0.4s ease;
+  transition: transform 0.4s ease, background 0.4s ease;
+  transform-origin: left;
+  will-change: transform;
 }
 
 /* ========================================

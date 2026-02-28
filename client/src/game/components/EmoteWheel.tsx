@@ -27,18 +27,21 @@ export const EmoteWheel: React.FC<EmoteWheelProps> = ({ onEmote, position = 'rig
 	const [isOpen, setIsOpen] = useState(false);
 	const [cooldown, setCooldown] = useState(false);
 	const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const cooldownTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const handleEmoteClick = useCallback((emote: Emote) => {
 		if (cooldown) return;
 		onEmote(emote);
 		setIsOpen(false);
 		setCooldown(true);
-		setTimeout(() => setCooldown(false), 3000);
+		if (cooldownTimer.current) clearTimeout(cooldownTimer.current);
+		cooldownTimer.current = setTimeout(() => setCooldown(false), 3000);
 	}, [onEmote, cooldown]);
 
 	useEffect(() => {
 		return () => {
 			if (closeTimer.current) clearTimeout(closeTimer.current);
+			if (cooldownTimer.current) clearTimeout(cooldownTimer.current);
 		};
 	}, []);
 

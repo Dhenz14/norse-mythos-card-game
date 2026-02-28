@@ -62,8 +62,8 @@ export const HeroBridge: React.FC<HeroBridgeProps> = ({
         <div className="hero-bridge-stats">
           <div className="hero-bridge-hp">
             <div className="hero-hp-bar">
-              <div className="hero-hp-committed" style={{ width: `${committedPercent}%` }} />
-              <div className="hero-hp-fill" style={{ width: `${healthPercent}%` }} />
+              <div className="hero-hp-committed" style={{ transform: `scaleX(${committedPercent / 100})` }} />
+              <div className="hero-hp-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
             </div>
             <span className="hero-hp-text">{currentHP}/{maxHP} HP</span>
           </div>

@@ -30,7 +30,10 @@
     #92400e 100%
   );
   border-radius: 2px;
-  transition: width 0.3s ease-out;
+  transition: transform 0.3s ease-out;
+  transform-origin: left;
+  will-change: transform;
+  right: 2px;
   box-shadow: 
     0 0 8px rgba(245, 158, 11, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.3),

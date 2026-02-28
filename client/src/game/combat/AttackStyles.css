@@ -7,10 +7,12 @@
 /* Cards that can attack get a pulsing border effect */
 .card-attackable {
   border: 2px solid #ffc107;
+  box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.7);
   animation: pulse-border 1.5s infinite;
   cursor: pointer;
   position: relative;
   z-index: 2;
+  will-change: opacity;
 }
 
 /* Slight shimmer-glow for cards that can attack */
@@ -45,8 +47,10 @@
 /* Valid attack targets get a red highlight */
 .valid-target {
   border: 2px dashed #f44336;
+  box-shadow: 0 0 0 5px rgba(244, 67, 54, 0.7);
   cursor: crosshair;
   animation: pulse-target 1.5s infinite;
+  will-change: opacity;
 }
 
 /* Taunt minions get a shield icon */
@@ -63,27 +67,13 @@
 
 /* Animation keyframes */
 @keyframes pulse-border {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 5px rgba(255, 193, 7, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 @keyframes pulse-target {
-  0% {
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 5px rgba(244, 67, 54, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @keyframes shimmer {
