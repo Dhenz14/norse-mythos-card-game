@@ -14,6 +14,7 @@
   z-index: 0;
   opacity: 1;
   transition: opacity 0.3s ease;
+  will-change: opacity, transform;
 }
 
 /* Particle effects container - inside card frame, above portrait */
@@ -256,17 +257,17 @@
 }
 
 .hero-particles.element-dark .p1,
-.hero-particles.element-shadow .p1 { width: 12px; height: 12px; left: 5%; top: 30%; animation-delay: 0s; filter: blur(2px); }
+.hero-particles.element-shadow .p1 { width: 12px; height: 12px; left: 5%; top: 30%; animation-delay: 0s; }
 .hero-particles.element-dark .p2,
-.hero-particles.element-shadow .p2 { width: 8px; height: 8px; left: 85%; top: 20%; animation-delay: 0.7s; filter: blur(1px); }
+.hero-particles.element-shadow .p2 { width: 8px; height: 8px; left: 85%; top: 20%; animation-delay: 0.7s; }
 .hero-particles.element-dark .p3,
-.hero-particles.element-shadow .p3 { width: 15px; height: 15px; left: 15%; top: 70%; animation-delay: 1.4s; filter: blur(3px); }
+.hero-particles.element-shadow .p3 { width: 15px; height: 15px; left: 15%; top: 70%; animation-delay: 1.4s; }
 .hero-particles.element-dark .p4,
-.hero-particles.element-shadow .p4 { width: 10px; height: 10px; left: 75%; top: 80%; animation-delay: 2.1s; filter: blur(2px); }
+.hero-particles.element-shadow .p4 { width: 10px; height: 10px; left: 75%; top: 80%; animation-delay: 2.1s; }
 .hero-particles.element-dark .p5,
-.hero-particles.element-shadow .p5 { width: 6px; height: 6px; left: 50%; top: 5%; animation-delay: 2.8s; filter: blur(1px); }
+.hero-particles.element-shadow .p5 { width: 6px; height: 6px; left: 50%; top: 5%; animation-delay: 2.8s; }
 .hero-particles.element-dark .p6,
-.hero-particles.element-shadow .p6 { width: 14px; height: 14px; left: 40%; top: 50%; animation-delay: 0.35s; filter: blur(4px); }
+.hero-particles.element-shadow .p6 { width: 14px; height: 14px; left: 40%; top: 50%; animation-delay: 0.35s; }
 
 @keyframes darkAuraPulse {
   0%, 100% { opacity: 0.5; transform: scale(1); }
@@ -408,14 +409,13 @@
   align-items: center;
   gap: 2px;
   padding: 2px 7px;
-  background: rgba(6, 6, 14, 0.88);
+  background: rgba(6, 6, 14, 0.94);
   border: 1px solid rgba(100, 100, 150, 0.4);
   border-radius: 20px;
   white-space: nowrap;
   z-index: 6;
   pointer-events: auto;
   cursor: help;
-  backdrop-filter: blur(6px);
 }
 
 /* ▼ / ▲ direction arrows */

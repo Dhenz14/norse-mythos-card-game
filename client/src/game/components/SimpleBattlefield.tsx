@@ -9,12 +9,10 @@
  */
 
 import { debug } from '../config/debugConfig';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import CardRenderer from './CardRendering/CardRenderer';
-import { UnifiedCardTooltip, TooltipCardData } from './ui/UnifiedCardTooltip';
-import { getCardDataSafely } from '../utils/cards/cardInstanceAdapter';
 import './SimpleBattlefield.css';
 
 interface SimpleBattlefieldProps {
@@ -45,10 +43,6 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
   shakingTargets = EMPTY_SET,
   isInteractionDisabled = false
 }) => {
-  // Tooltip state for hover
-  const [hoveredCard, setHoveredCard] = useState<TooltipCardData | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
-
   const showOpponent = renderMode === 'both' || renderMode === 'opponent';
   const showPlayer = renderMode === 'both' || renderMode === 'player';
 
@@ -61,36 +55,6 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
     if (!attackingCard) return false;
     return !opponentHasTaunt || card.card?.keywords?.includes('taunt');
   };
-
-  // Handle card hover for tooltip
-  const handleCardMouseEnter = useCallback((card: CardInstanceWithCardData, e: React.MouseEvent) => {
-    const cardData = getCardDataSafely(card);
-    if (cardData) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setHoveredCard({
-        id: cardData.id,
-        name: cardData.name,
-        manaCost: cardData.manaCost,
-        attack: cardData.attack,
-        health: cardData.health,
-        description: cardData.description,
-        type: cardData.type,
-        rarity: cardData.rarity,
-        tribe: cardData.tribe,
-        cardClass: cardData.cardClass || cardData.class,
-        keywords: cardData.keywords || []
-      });
-      setTooltipPosition({
-        x: rect.left + rect.width / 2,
-        y: rect.top
-      });
-    }
-  }, []);
-
-  const handleCardMouseLeave = useCallback(() => {
-    setHoveredCard(null);
-    setTooltipPosition(null);
-  }, []);
 
   const renderSlots = (
     cards: CardInstanceWithCardData[], 
@@ -156,14 +120,11 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   });
                   !isInteractionDisabled && onClick?.(card);
                 }}
-                onMouseEnter={(e) => handleCardMouseEnter(card, e)}
-                onMouseLeave={handleCardMouseLeave}
               >
                 <CardRenderer
                   card={card}
                   isPlayable={true}
                   isHighlighted={isAttacking || canAttack || isTarget}
-                  onClick={() => !isInteractionDisabled && onClick?.(card)}
                   size="medium"
                 />
                 {(() => {
@@ -191,39 +152,29 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
   const playerSlots = useMemo(
     () => renderSlots(playerCards, 'player', onCardClick),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [playerCards, onCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt, handleCardMouseEnter, handleCardMouseLeave]
+    [playerCards, onCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt]
   );
 
   const opponentSlots = useMemo(
     () => renderSlots(opponentCards, 'opponent', onOpponentCardClick),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [opponentCards, onOpponentCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt, handleCardMouseEnter, handleCardMouseLeave]
+    [opponentCards, onOpponentCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt]
   );
 
   return (
-    <>
-      <div className="simple-battlefield">
-        {showOpponent && (
-          <div className="bf-row opponent-row">
-            {opponentSlots}
-          </div>
-        )}
+    <div className="simple-battlefield">
+      {showOpponent && (
+        <div className="bf-row opponent-row">
+          {opponentSlots}
+        </div>
+      )}
 
-        {showPlayer && (
-          <div className="bf-row player-row">
-            {playerSlots}
-          </div>
-        )}
-      </div>
-
-      {/* Unified tooltip for all battlefield cards */}
-      <UnifiedCardTooltip
-        card={hoveredCard}
-        position={tooltipPosition}
-        visible={!!hoveredCard}
-        placement="above"
-      />
-    </>
+      {showPlayer && (
+        <div className="bf-row player-row">
+          {playerSlots}
+        </div>
+      )}
+    </div>
   );
 });
 

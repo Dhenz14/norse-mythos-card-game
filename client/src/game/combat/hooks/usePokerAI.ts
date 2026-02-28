@@ -151,23 +151,23 @@ export function usePokerAI(options: UsePokerAIOptions): void {
         if (aiDecision.action === CombatAction.ATTACK) {
           const amount = aiDecision.betAmount || freshState.currentBet || 0;
           fireAnnouncement('poker_bet', `${heroName} attacks for ${amount} HP!`, {
-            subtitle: 'Match or fold!',
+            subtitle: 'Match or brace!',
             duration: 2500
           });
         } else if (aiDecision.action === CombatAction.COUNTER_ATTACK) {
           const amount = aiDecision.betAmount || 0;
-          fireAnnouncement('poker_bet', `${heroName} raises ${amount} HP!`, {
+          fireAnnouncement('poker_bet', `${heroName} counter-attacks ${amount} HP!`, {
             subtitle: 'The stakes grow higher!',
             duration: 2500
           });
         } else if (aiDecision.action === CombatAction.ENGAGE) {
-          fireAnnouncement('poker_call', `${heroName} calls!`, {
-            subtitle: 'Matched your bet',
+          fireAnnouncement('poker_call', `${heroName} engages!`, {
+            subtitle: 'Matched your attack',
             duration: 1800
           });
         } else if (aiDecision.action === CombatAction.BRACE) {
-          fireAnnouncement('poker_fold', `${heroName} folds!`, {
-            subtitle: 'They couldn\'t take the heat',
+          fireAnnouncement('poker_fold', `${heroName} braces!`, {
+            subtitle: 'They yield the round',
             duration: 1800
           });
         }

@@ -775,14 +775,14 @@ export function useRagnarokCombatController(
     }
     
     if (action === CombatAction.DEFEND) {
-      fireAnnouncement('poker_check', 'Check', { subtitle: '+1 ⚡ STA', duration: 1200 });
+      fireAnnouncement('poker_check', 'Defend', { subtitle: '+1 ⚡ STA', duration: 1200 });
     } else if (action === CombatAction.ATTACK) {
       const staminaCost = hp ? Math.ceil(hp / 10) : 0;
-      fireAnnouncement('poker_bet', hp ? `Bet ${hp} HP` : 'Bet', { subtitle: staminaCost > 0 ? `-${staminaCost} ⚡ STA` : undefined, duration: 1200 });
+      fireAnnouncement('poker_bet', hp ? `Attack ${hp} HP` : 'Attack', { subtitle: staminaCost > 0 ? `-${staminaCost} ⚡ STA` : undefined, duration: 1200 });
     } else if (action === CombatAction.ENGAGE) {
-      fireAnnouncement('poker_call', 'Call', { duration: 1200 });
+      fireAnnouncement('poker_call', 'Engage', { duration: 1200 });
     } else if (action === CombatAction.BRACE) {
-      fireAnnouncement('poker_fold', 'Fold', { duration: 1200 });
+      fireAnnouncement('poker_fold', 'Brace', { duration: 1200 });
     }
     
     performAction(combatState.player.playerId, action, hp);

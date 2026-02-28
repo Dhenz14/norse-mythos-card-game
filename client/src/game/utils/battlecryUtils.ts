@@ -1596,14 +1596,19 @@ function executeDrawBattlecry(
         duration: 2500
       } as any);
 
-      if (cardType === 'murloc') {
-        const audio = new Audio('/sounds/tribes/murloc_summon.mp3');
-        audio.volume = 0.7;
-        audio.play().catch(() => {});
-      } else if (cardType === 'beast') {
-        const audio = new Audio('/sounds/tribes/beast_summon.mp3');
-        audio.volume = 0.7;
-        audio.play().catch(() => {});
+      if (cardType === 'murloc' || cardType === 'beast') {
+        const src = cardType === 'murloc' ? '/sounds/tribes/murloc_summon.mp3' : '/sounds/tribes/beast_summon.mp3';
+        try {
+          const a = document.querySelector<HTMLAudioElement>(`audio[data-pool="${src}"]`) || (() => {
+            const el = new Audio(src);
+            el.setAttribute('data-pool', src);
+            el.preload = 'auto';
+            return el;
+          })();
+          a.volume = 0.7;
+          a.currentTime = 0;
+          a.play().catch(() => {});
+        } catch { /* no audio */ }
       }
     }, 100);
   }

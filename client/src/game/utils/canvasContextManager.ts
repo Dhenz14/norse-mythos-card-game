@@ -49,37 +49,50 @@ class CanvasContextManager {
   private sharedMaterials: Map<string, THREE.Material> = new Map();
   
   private textureLoader: THREE.TextureLoader;
-  private maxTextures: number = 100; // Maximum textures to keep in memory
+  private maxTextures: number = 100;
   private static instance: CanvasContextManager;
+  private cleanupIntervalId: ReturnType<typeof setInterval> | null = null;
+  private boundVisibilityChange = () => this.handleVisibilityChange();
+  private boundWindowFocus = () => this.handleWindowFocus();
+  private boundWindowBlur = () => this.handleWindowBlur();
 
-  // Singleton pattern
   public static getInstance(): CanvasContextManager {
     if (!CanvasContextManager.instance) {
       CanvasContextManager.instance = new CanvasContextManager();
     }
     return CanvasContextManager.instance;
   }
-  
+
   private constructor() {
-    // Initialize texture loader with optimized settings
     this.textureLoader = new THREE.TextureLoader();
     this.textureLoader.setCrossOrigin('anonymous');
-    
-    // Add event listener for window visibility changes
+
     if (typeof document !== 'undefined') {
-      document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
-      window.addEventListener('focus', () => this.handleWindowFocus());
-      window.addEventListener('blur', () => this.handleWindowBlur());
+      document.addEventListener('visibilitychange', this.boundVisibilityChange);
+      window.addEventListener('focus', this.boundWindowFocus);
+      window.addEventListener('blur', this.boundWindowBlur);
     }
-    
-    // Schedule periodic cleanups
+
     if (typeof window !== 'undefined') {
-      setInterval(() => {
+      this.cleanupIntervalId = setInterval(() => {
         this.cleanupStaleContexts();
         this.cleanupTextures();
         this.cleanupGeometries();
-      }, 60000); // Clean up every minute
+      }, 60000);
     }
+  }
+
+  public dispose(): void {
+    if (this.cleanupIntervalId !== null) {
+      clearInterval(this.cleanupIntervalId);
+      this.cleanupIntervalId = null;
+    }
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.boundVisibilityChange);
+      window.removeEventListener('focus', this.boundWindowFocus);
+      window.removeEventListener('blur', this.boundWindowBlur);
+    }
+    this.reset();
   }
   
   // Handle document visibility changes to optimize rendering
@@ -330,15 +343,16 @@ class CanvasContextManager {
         
         // If it's loading, wait for it
         if (cachedTexture.state === 'loading') {
-          // Wait for load to complete
+          let elapsed = 0;
           const checkInterval = setInterval(() => {
+            elapsed += 100;
             const current = this.textureCache.get(url);
-            if (!current) {
+            if (!current || elapsed > 30000) {
               clearInterval(checkInterval);
-              reject(new Error('Texture was removed while waiting'));
+              reject(new Error('Texture load timed out or was removed'));
               return;
             }
-            
+
             if (current.state === 'loaded' && current.texture) {
               clearInterval(checkInterval);
               resolve(current.texture);

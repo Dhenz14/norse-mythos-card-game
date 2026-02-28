@@ -5,36 +5,17 @@
  * Uses flexbox with negative margins for tight overlapping fan effect.
  */
 import React, { useRef, useEffect, useMemo, useState } from 'react';
-import { CardInstance, CardData } from '../types';
+import { CardInstance } from '../types';
 import { toast } from 'sonner';
 import { playSound } from '../utils/soundUtils';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
 import CardWithDrag from './CardWithDrag';
 import { Position } from '../types/Position';
-import CardHoverPreview from './CardHoverPreview';
 import { useElementalBuff } from '../combat/hooks/useElementalBuff';
 import { CardDrawAnimation } from './CardDrawAnimation';
 import { CardPlayAnimation } from './CardPlayAnimation';
 import './HandFan.css';
-
-interface HandFanTooltipProps {
-  card: CardData | null;
-}
-
-const HandFanTooltip: React.FC<HandFanTooltipProps> = ({ card }) => {
-  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-
-  useEffect(() => {
-    if (!card) return;
-    const handleMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
-    window.addEventListener('mousemove', handleMove);
-    return () => window.removeEventListener('mousemove', handleMove);
-  }, [card]);
-
-  if (!card) return null;
-  return <CardHoverPreview card={card} mousePosition={mousePos} />;
-};
 
 interface HandFanProps {
   cards: CardInstance[];
@@ -58,7 +39,6 @@ export const HandFan: React.FC<HandFanProps> = ({
   registerCardPosition,
   battlefieldRef
 }) => {
-  const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [shakingCardId, setShakingCardId] = useState<string | null>(null);
   const [drawCounter, setDrawCounter] = useState(0);
@@ -208,14 +188,8 @@ export const HandFan: React.FC<HandFanProps> = ({
                 }
               }
             }}
-            onMouseEnter={() => {
-              setHoveredCard(card.card);
-              setHoveredIndex(index);
-            }}
-            onMouseLeave={() => {
-              setHoveredCard(null);
-              setHoveredIndex(null);
-            }}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
           >
             <CardWithDrag
               card={card}
@@ -231,8 +205,6 @@ export const HandFan: React.FC<HandFanProps> = ({
           </div>
         );
       })}
-      
-      <HandFanTooltip card={hoveredCard} />
     </div>
   );
 };

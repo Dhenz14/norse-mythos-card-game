@@ -52,7 +52,6 @@ export const MulliganCard: React.FC<MulliganCardProps> = ({ card, isSelected, on
         card={simpleCardData}
         size="large"
         showDescription={false}
-        onClick={onClick}
       />
 
       {isSelected && (

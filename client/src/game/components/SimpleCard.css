@@ -1091,3 +1091,71 @@
 .simple-card.evolution-divine::after {
   background: linear-gradient(90deg, transparent 0%, rgba(255,215,0,0.15) 30%, rgba(255,215,0,0.25) 50%, rgba(255,215,0,0.15) 70%, transparent 100%);
 }
+
+/* ==========================================================================
+   KEYWORD BADGE TOOLTIP — Minimal, elegant portal tooltip
+   Shows keyword name + card-specific effect on badge hover
+   ========================================================================== */
+
+.keyword-badge-tooltip {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  max-width: 220px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(18, 18, 30, 0.97) 0%, rgba(10, 10, 18, 0.99) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.85),
+    0 0 1px rgba(255, 255, 255, 0.1),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translate(-50%, -100%);
+  animation: kbt-enter 0.12s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes kbt-enter {
+  from { opacity: 0; transform: translate(-50%, -100%) scale(0.92) translateY(4px); }
+  to   { opacity: 1; transform: translate(-50%, -100%) scale(1) translateY(0); }
+}
+
+.kbt-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kbt-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+.kbt-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px currentColor;
+}
+
+.kbt-effect {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #d1d5db;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Responsive — smaller on mobile */
+@media (max-width: 768px) {
+  .keyword-badge-tooltip {
+    max-width: 180px;
+    padding: 6px 10px;
+  }
+
+  .kbt-name { font-size: 10px; }
+  .kbt-effect { font-size: 10px; }
+}

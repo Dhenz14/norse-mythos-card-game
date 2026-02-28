@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { CombatPhase, PokerCombatState, PokerCard } from '../../types/PokerCombatTypes';
 import { initializeCombatEventSubscribers, cleanupCombatEventSubscribers } from '../../services/CombatEventSubscribers';
 import { useGameStore } from '../../stores/gameStore';
@@ -35,16 +35,24 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
   const { combatState, isActive, onShowdownCelebration, onHeroDeath, resolveCombat, setResolution } = options;
 
   const cardGameMulliganActive = useGameStore(state => state.gameState?.mulligan?.active);
+  const hasResolvedRef = useRef(false);
+
+  useEffect(() => {
+    if (combatState?.phase !== CombatPhase.RESOLUTION) {
+      hasResolvedRef.current = false;
+    }
+  }, [combatState?.phase]);
 
   useEffect(() => {
     initializeCombatEventSubscribers();
-    
+
     return () => {
       cleanupCombatEventSubscribers();
     };
   }, []);
 
   useEffect(() => {
+    if (hasResolvedRef.current) return;
     if (!combatState || !isActive) return;
     if (combatState.phase !== CombatPhase.RESOLUTION) return;
     if (cardGameMulliganActive) return;
@@ -54,6 +62,7 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
       return;
     }
 
+    hasResolvedRef.current = true;
     const result = resolveCombat();
     if (result) {
       const matchOver = result.playerFinalHealth <= 0 || result.opponentFinalHealth <= 0;

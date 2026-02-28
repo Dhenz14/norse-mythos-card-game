@@ -25,16 +25,13 @@
     radial-gradient(2px 2px at 25% 65%, rgba(255, 180, 40, 0.7), transparent),
     radial-gradient(3px 3px at 40% 90%, rgba(255, 210, 60, 0.6), transparent),
     radial-gradient(2px 2px at 55% 75%, rgba(255, 190, 50, 0.8), transparent),
-    radial-gradient(2px 2px at 70% 85%, rgba(255, 200, 40, 0.7), transparent),
-    radial-gradient(3px 3px at 85% 70%, rgba(255, 215, 50, 0.6), transparent),
-    radial-gradient(2px 2px at 15% 95%, rgba(255, 180, 60, 0.7), transparent),
-    radial-gradient(2px 2px at 60% 60%, rgba(255, 200, 45, 0.5), transparent),
-    radial-gradient(2px 2px at 90% 92%, rgba(255, 190, 55, 0.6), transparent),
-    radial-gradient(3px 3px at 35% 50%, rgba(255, 210, 40, 0.5), transparent);
+    radial-gradient(2px 2px at 70% 85%, rgba(255, 200, 40, 0.7), transparent);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   animation: ember-drift-up 18s linear infinite;
   opacity: 0.7;
+  will-change: transform;
+  contain: strict;
 }
 
 .game-viewport::after {
@@ -50,15 +47,13 @@
     radial-gradient(4px 4px at 8% 85%, rgba(200, 80, 30, 0.5), transparent),
     radial-gradient(5px 5px at 22% 70%, rgba(180, 60, 20, 0.4), transparent),
     radial-gradient(4px 4px at 45% 92%, rgba(210, 90, 40, 0.45), transparent),
-    radial-gradient(5px 5px at 65% 78%, rgba(190, 70, 25, 0.4), transparent),
-    radial-gradient(4px 4px at 80% 88%, rgba(200, 85, 35, 0.5), transparent),
-    radial-gradient(5px 5px at 50% 55%, rgba(180, 65, 30, 0.35), transparent),
-    radial-gradient(4px 4px at 92% 65%, rgba(210, 80, 40, 0.4), transparent),
-    radial-gradient(5px 5px at 30% 95%, rgba(195, 75, 30, 0.45), transparent);
+    radial-gradient(5px 5px at 65% 78%, rgba(190, 70, 25, 0.4), transparent);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   animation: ember-drift-diagonal 28s linear infinite;
   opacity: 0.5;
+  will-change: transform;
+  contain: strict;
 }
 
 @keyframes ember-drift-up {
@@ -189,48 +184,25 @@
 
 .ragnarok-combat-arena.player-turn .unified-player-area .battlefield-hero-square {
   box-shadow:
-    0 0 12px 4px rgba(212, 175, 55, 0.5),
-    0 0 30px 8px rgba(212, 175, 55, 0.3),
-    0 0 50px 16px rgba(212, 175, 55, 0.15);
-  animation: player-turn-glow 2.5s ease-in-out infinite;
+    0 0 18px 6px rgba(212, 175, 55, 0.6),
+    0 0 40px 12px rgba(212, 175, 55, 0.35),
+    0 0 60px 18px rgba(212, 175, 55, 0.15);
+  animation: turn-glow-pulse 2.5s ease-in-out infinite;
+  will-change: opacity;
 }
 
 .ragnarok-combat-arena.opponent-turn .unified-opponent-hero .battlefield-hero-square {
   box-shadow:
-    0 0 12px 4px rgba(220, 38, 38, 0.45),
-    0 0 30px 8px rgba(220, 38, 38, 0.25),
-    0 0 50px 16px rgba(220, 38, 38, 0.1);
-  animation: opponent-turn-glow 2.5s ease-in-out infinite;
+    0 0 18px 6px rgba(220, 38, 38, 0.55),
+    0 0 40px 12px rgba(220, 38, 38, 0.3),
+    0 0 60px 18px rgba(220, 38, 38, 0.12);
+  animation: turn-glow-pulse 2.5s ease-in-out infinite;
+  will-change: opacity;
 }
 
-@keyframes player-turn-glow {
-  0%, 100% {
-    box-shadow:
-      0 0 12px 4px rgba(212, 175, 55, 0.5),
-      0 0 30px 8px rgba(212, 175, 55, 0.3),
-      0 0 50px 16px rgba(212, 175, 55, 0.15);
-  }
-  50% {
-    box-shadow:
-      0 0 18px 6px rgba(212, 175, 55, 0.7),
-      0 0 40px 12px rgba(212, 175, 55, 0.45),
-      0 0 65px 20px rgba(212, 175, 55, 0.2);
-  }
-}
-
-@keyframes opponent-turn-glow {
-  0%, 100% {
-    box-shadow:
-      0 0 12px 4px rgba(220, 38, 38, 0.45),
-      0 0 30px 8px rgba(220, 38, 38, 0.25),
-      0 0 50px 16px rgba(220, 38, 38, 0.1);
-  }
-  50% {
-    box-shadow:
-      0 0 18px 6px rgba(220, 38, 38, 0.6),
-      0 0 40px 12px rgba(220, 38, 38, 0.35),
-      0 0 65px 20px rgba(220, 38, 38, 0.15);
-  }
+@keyframes turn-glow-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -396,7 +368,7 @@
   transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background 0.2s;
 }
 
-/* Call/Check button - solid shield-block feel */
+/* Engage/Defend button - solid shield-block feel */
 .poker-btn.call-btn:active:not(:disabled) {
   transform: scale(0.95) translateY(1px);
   box-shadow: 
@@ -457,30 +429,19 @@
 .pot-display-container {
   --pot-glow: rgba(212, 175, 55, calc(0.2 + var(--pot-intensity, 0) * 0.5));
   border: 1px solid rgba(212, 175, 55, calc(0.3 + var(--pot-intensity, 0) * 0.4)) !important;
-  box-shadow: 
-    0 0 calc(8px + var(--pot-intensity, 0) * 20px) var(--pot-glow),
-    0 0 calc(4px + var(--pot-intensity, 0) * 40px) rgba(212, 175, 55, calc(0.05 + var(--pot-intensity, 0) * 0.15)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+  box-shadow:
+    0 0 calc(10px + var(--pot-intensity, 0) * 22px) var(--pot-glow),
+    0 0 calc(6px + var(--pot-intensity, 0) * 45px) rgba(212, 175, 55, calc(0.06 + var(--pot-intensity, 0) * 0.18)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 -1px 0 rgba(0, 0, 0, 0.3);
   animation: pot-ambient 3s ease-in-out infinite;
   transition: box-shadow 0.5s ease-out, border-color 0.5s ease-out;
+  will-change: opacity;
 }
 
 @keyframes pot-ambient {
-  0%, 100% { 
-    box-shadow: 
-      0 0 calc(8px + var(--pot-intensity, 0) * 20px) var(--pot-glow),
-      0 0 calc(4px + var(--pot-intensity, 0) * 40px) rgba(212, 175, 55, calc(0.05 + var(--pot-intensity, 0) * 0.15)),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  }
-  50% { 
-    box-shadow: 
-      0 0 calc(12px + var(--pot-intensity, 0) * 25px) var(--pot-glow),
-      0 0 calc(8px + var(--pot-intensity, 0) * 50px) rgba(212, 175, 55, calc(0.08 + var(--pot-intensity, 0) * 0.2)),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  }
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

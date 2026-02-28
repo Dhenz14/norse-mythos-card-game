@@ -107,18 +107,27 @@
   align-items: flex-start;
   padding: 1px 3px;
   overflow: visible;
+  pointer-events: auto;
+  z-index: 30;
 }
 
 .bf-card-wrapper .keyword-icons-container {
   gap: 3px;
   padding: 0;
   flex-wrap: nowrap;
+  pointer-events: auto;
+  position: relative;
+  z-index: 40;
 }
 
 .bf-card-wrapper .keyword-icon-badge {
-  width: 14px;
-  height: 14px;
-  font-size: 9px;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  cursor: help;
+  pointer-events: auto;
+  position: relative;
+  z-index: 50;
 }
 
 /* Attack/health gem overlay for battlefield minions — hang below card frame */
@@ -317,42 +326,88 @@
   transform: translateY(-4px) scale(1.02);
 }
 
-/* Valid target state - strong red glow on ::after (GPU composited opacity animation) */
+/* Valid target state — AAA layered threat glow with animated rotating border
+   Multi-layer: inner highlight + animated conic border + outer atmospheric glow */
 .bf-card-wrapper.valid-target {
-  border: 2px solid rgba(239, 68, 68, 0.9);
-  border-radius: 6px;
+  border: none;
+  border-radius: 8px;
   cursor: crosshair;
 }
 
+/* Animated conic gradient border — rotating crimson energy ring */
+.bf-card-wrapper.valid-target::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 10px;
+  padding: 3px;
+  background: conic-gradient(
+    from var(--border-angle, 0deg),
+    #7f1d1d, #dc2626, #ef4444, #fca5a5,
+    #fff1f2,
+    #fca5a5, #ef4444, #dc2626, #7f1d1d
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: border-rotate 3s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Outer atmospheric glow — deep red falloff with soft pulse */
 .bf-card-wrapper.valid-target::after {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: 8px;
+  inset: -4px;
+  border-radius: 10px;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
   box-shadow:
-    0 0 22px 7px rgba(239, 68, 68, 0.9),
-    0 0 48px 14px rgba(239, 68, 68, 0.38);
-  animation: validTargetGlow 1.1s ease-in-out infinite;
+    /* Inner fire ring */
+    0 0 8px 2px rgba(239, 68, 68, 0.7),
+    /* Mid glow — warm crimson */
+    0 0 20px 6px rgba(220, 38, 38, 0.5),
+    /* Outer atmosphere — deep spread */
+    0 0 40px 12px rgba(185, 28, 28, 0.3),
+    /* Far ambient — barely visible */
+    0 0 60px 20px rgba(127, 29, 29, 0.15),
+    /* Inner highlight for depth */
+    inset 0 0 12px 2px rgba(239, 68, 68, 0.15);
+  animation: validTargetGlow 2s ease-in-out infinite;
 }
 
 @keyframes validTargetGlow {
-  0%, 100% { opacity: 0.55; }
+  0%, 100% { opacity: 0.6; }
   50%       { opacity: 1; }
 }
 
 .bf-card-wrapper.valid-target:hover {
-  border-color: rgba(239, 68, 68, 1);
   transform: translateY(-16px) scale(1.12);
+}
+
+.bf-card-wrapper.valid-target:hover::before {
+  animation: border-rotate 1.5s linear infinite;
+  background: conic-gradient(
+    from var(--border-angle, 0deg),
+    #991b1b, #ef4444, #f87171, #fecaca,
+    #ffffff,
+    #fecaca, #f87171, #ef4444, #991b1b
+  );
+  inset: -4px;
+  padding: 4px;
 }
 
 .bf-card-wrapper.valid-target:hover::after {
   animation: none;
   opacity: 1;
   box-shadow:
-    0 0 36px 12px rgba(239, 68, 68, 1),
-    0 0 70px 20px rgba(239, 68, 68, 0.55);
+    0 0 12px 4px rgba(248, 113, 113, 0.9),
+    0 0 28px 10px rgba(239, 68, 68, 0.65),
+    0 0 50px 18px rgba(220, 38, 38, 0.4),
+    0 0 80px 28px rgba(185, 28, 28, 0.2),
+    inset 0 0 16px 4px rgba(239, 68, 68, 0.2);
 }
 
 /* Currently attacking */
@@ -451,10 +506,7 @@
 }
 
 .bf-card-wrapper.has-taunt.valid-target {
-  border-color: rgba(239, 68, 68, 0.7);
-  box-shadow:
-    inset 0 0 8px rgba(239, 68, 68, 0.2),
-    0 0 12px 3px rgba(239, 68, 68, 0.6);
+  border-color: transparent;
 }
 
 /* Summon flash - plays once on mount */
@@ -600,5 +652,15 @@
   .player-row .bf-card-wrapper.attacking,
   .opponent-row .bf-card-wrapper.attacking {
     animation: none;
+  }
+
+  .bf-card-wrapper.valid-target::before {
+    animation: none;
+    background: rgba(239, 68, 68, 0.8);
+  }
+
+  .bf-card-wrapper.valid-target::after {
+    animation: none;
+    opacity: 1;
   }
 }

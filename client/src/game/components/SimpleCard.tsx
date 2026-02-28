@@ -1,12 +1,14 @@
 /**
  * SimpleCard.tsx
- * 
+ *
  * A clean, elegant 2D card component inspired by Hearthstone.
  * No 3D effects, no complex transforms - just clear, readable cards.
  * Uses simple color-based backgrounds with rarity styling.
+ * Keyword badges show small ability tooltips on hover.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
 import { getCardArtPath } from '../utils/art/artMapping';
 import './SimpleCard.css';
@@ -85,8 +87,7 @@ const getClassColor = (cardClass?: string): string => {
 const getCardKeywordIcons = (description?: string, keywords?: string[]): { icon: string; color: string; keyword: string }[] => {
   const icons: { icon: string; color: string; keyword: string }[] = [];
   const addedKeywords = new Set<string>();
-  
-  // First, add icons from explicit keywords array
+
   if (keywords && keywords.length > 0) {
     for (const keyword of keywords) {
       const key = keyword.toLowerCase();
@@ -97,8 +98,7 @@ const getCardKeywordIcons = (description?: string, keywords?: string[]): { icon:
       }
     }
   }
-  
-  // Then, parse description for additional keywords
+
   if (description) {
     const desc = description.toLowerCase();
     for (const [keyword, def] of Object.entries(KEYWORD_DEFINITIONS)) {
@@ -108,9 +108,37 @@ const getCardKeywordIcons = (description?: string, keywords?: string[]): { icon:
       }
     }
   }
-  
-  return icons.slice(0, 4); // Limit to 4 icons max
+
+  return icons.slice(0, 4);
 };
+
+/**
+ * Extract the specific effect text for a keyword from a card description.
+ * e.g. "Battlecry: Equip a random weapon" → "Equip a random weapon"
+ */
+const extractKeywordEffect = (keyword: string, description: string): string | null => {
+  const lower = description.toLowerCase();
+  const idx = lower.indexOf(keyword.toLowerCase());
+  if (idx === -1) return description;
+
+  let start = idx + keyword.length;
+  if (description[start] === ':') start++;
+  while (start < description.length && description[start] === ' ') start++;
+
+  let end = description.indexOf('.', start);
+  if (end === -1) end = description.length;
+
+  const effect = description.slice(start, end).trim();
+  return effect || null;
+};
+
+interface BadgeTooltipState {
+  keyword: string;
+  icon: string;
+  color: string;
+  x: number;
+  y: number;
+}
 
 export const SimpleCard: React.FC<SimpleCardProps> = ({
   card,
@@ -136,7 +164,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   const artPath = getCardArtPath(card.name);
 
   const nameClass = card.name.length > 18 ? 'name-very-long' : card.name.length > 13 ? 'name-long' : '';
-  
+
   const cardTypeClass = isSpell ? 'card-type-spell' : isWeapon ? 'card-type-weapon' : isArtifact ? 'card-type-artifact' : isArmor ? 'card-type-armor' : 'card-type-minion';
 
   const evolutionClass = card.evolutionLevel === 1 ? 'evolution-mortal'
@@ -144,6 +172,28 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
     : card.evolutionLevel === 3 ? 'evolution-divine' : '';
 
   const evolutionStars = card.evolutionLevel ? '★'.repeat(card.evolutionLevel) : '';
+
+  const [badgeTooltip, setBadgeTooltip] = useState<BadgeTooltipState | null>(null);
+
+  const handleBadgeEnter = useCallback((e: React.MouseEvent, effect: { icon: string; color: string; keyword: string }) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setBadgeTooltip({
+      keyword: effect.keyword,
+      icon: effect.icon,
+      color: effect.color,
+      x: rect.left + rect.width / 2,
+      y: rect.top
+    });
+  }, []);
+
+  const handleBadgeLeave = useCallback(() => {
+    setBadgeTooltip(null);
+  }, []);
+
+  const tooltipEffectText = useMemo(() => {
+    if (!badgeTooltip || !card.description) return null;
+    return extractKeywordEffect(badgeTooltip.keyword, card.description);
+  }, [badgeTooltip, card.description]);
 
   const descriptionContent = useMemo(() => {
     const effectIcons = getCardKeywordIcons(card.description, card.keywords);
@@ -165,6 +215,8 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
                     boxShadow: `0 2px 8px rgba(0,0,0,0.6), 0 0 6px ${effect.color}88`,
                   }}
                   data-keyword={effect.keyword}
+                  onMouseEnter={(e) => handleBadgeEnter(e, effect)}
+                  onMouseLeave={handleBadgeLeave}
                 >
                   {effect.icon}
                 </div>
@@ -174,7 +226,23 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
         )}
       </div>
     );
-  }, [card.description, card.keywords, showDescription]);
+  }, [card.description, card.keywords, showDescription, handleBadgeEnter, handleBadgeLeave]);
+
+  const tooltipStyle = useMemo<React.CSSProperties>(() => {
+    if (!badgeTooltip) return {};
+    const margin = 12;
+    const tooltipWidth = 200;
+    let left = badgeTooltip.x;
+    let top = badgeTooltip.y - margin;
+
+    left = Math.max(margin, Math.min(left, window.innerWidth - tooltipWidth / 2 - margin));
+    top = Math.max(margin + 60, top);
+
+    return {
+      left: `${left}px`,
+      top: `${top}px`,
+    };
+  }, [badgeTooltip]);
 
   return (
     <div
@@ -188,17 +256,14 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       data-card-type={card.type}
       data-evolution-level={card.evolutionLevel}
     >
-      {/* Mana Cost */}
       <div className="card-mana">
         <span className="mana-value">{card.manaCost}</span>
       </div>
 
-      {/* Evolution Stars */}
       {evolutionStars && (
         <div className="evolution-stars">{evolutionStars}</div>
       )}
-      
-      {/* Card Art Area */}
+
       <div
         className="card-art-container"
         style={artPath ? undefined : { background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}
@@ -211,16 +276,13 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
           </div>
         )}
       </div>
-      
-      {/* Card Name */}
+
       <div className="card-name-banner">
         <span className={`card-name ${nameClass}`}>{card.name}</span>
       </div>
-      
-      {/* Description area - shows icons or text based on size and content */}
+
       {descriptionContent}
-      
-      {/* Stats (Attack/Health for minions, Attack/Durability for weapons) */}
+
       {(isMinion || isWeapon || isArtifact) && (
         <>
           <div className="card-attack">
@@ -235,25 +297,36 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
           </div>
         </>
       )}
-      
-      {/* Foil overlay for Legendary cards - Gold foil */}
+
       {card.rarity === 'legendary' && (
         <div className="foil-overlay legendary-foil" />
       )}
-      
-      {/* Foil overlay for Epic cards - Purple holographic */}
+
       {card.rarity === 'epic' && (
         <div className="foil-overlay epic-foil" />
       )}
-      
-      {/* Foil overlay for Rare cards - Blue shimmer */}
+
       {card.rarity === 'rare' && (
         <div className="foil-overlay rare-foil" />
       )}
 
-      {/* Foil overlay for Mythic cards - Rainbow holographic */}
       {card.rarity === 'mythic' && (
         <div className="foil-overlay mythic-foil" />
+      )}
+
+      {badgeTooltip && createPortal(
+        <div className="keyword-badge-tooltip" style={tooltipStyle}>
+          <div className="kbt-header">
+            <span className="kbt-icon">{badgeTooltip.icon}</span>
+            <span className="kbt-name" style={{ color: badgeTooltip.color }}>
+              {badgeTooltip.keyword.charAt(0).toUpperCase() + badgeTooltip.keyword.slice(1)}
+            </span>
+          </div>
+          {tooltipEffectText && (
+            <div className="kbt-effect">{tooltipEffectText}</div>
+          )}
+        </div>,
+        document.body
       )}
     </div>
   );

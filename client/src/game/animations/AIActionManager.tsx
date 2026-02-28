@@ -3,6 +3,26 @@ import { CardInstance, GameState } from '../types';
 import { useAnimation, useAnimationStore } from './AnimationManager';
 import { debug } from '../config/debugConfig';
 
+const audioPool: Map<string, HTMLAudioElement[]> = new Map();
+const POOL_SIZE = 3;
+
+function playPooledAudio(src: string, volume = 0.6, playbackRate = 1.0) {
+  let pool = audioPool.get(src);
+  if (!pool) {
+    pool = Array.from({ length: POOL_SIZE }, () => {
+      const a = new Audio(src);
+      a.preload = 'auto';
+      return a;
+    });
+    audioPool.set(src, pool);
+  }
+  const available = pool.find(a => a.paused || a.ended) || pool[0];
+  available.volume = volume;
+  available.playbackRate = playbackRate;
+  available.currentTime = 0;
+  available.play().catch(e => debug.error("Failed to play sound:", e));
+}
+
 /**
  * Types of actions the AI can take
  */
@@ -167,25 +187,16 @@ export const useAIActionManager = ({
                     return;
                   }
                   
-                  // Play card sound effect with randomized pitch for variation
                   const cardPlaySounds = [
                     '/sounds/card_play.mp3',
                     '/sounds/card_place.mp3'
                   ];
-                  const audio = new Audio(cardPlaySounds[Math.floor(Math.random() * cardPlaySounds.length)]);
-                  audio.volume = 0.6;
-                  
-                  // Randomize pitch slightly for more natural feel
-                  const playbackRate = 0.9 + Math.random() * 0.3; // Between 0.9 and 1.2
-                  audio.playbackRate = playbackRate;
-                  audio.play().catch(e => debug.error("Failed to play sound:", e));
-                  
-                  // Add extra "whoosh" sound for dramatic effect on expensive cards
+                  const playbackRate = 0.9 + Math.random() * 0.3;
+                  playPooledAudio(cardPlaySounds[Math.floor(Math.random() * cardPlaySounds.length)], 0.6, playbackRate);
+
                   if (manaCost >= 5) {
                     setTimeout(() => {
-                      const whooshSound = new Audio('/sounds/card_whoosh.mp3');
-                      whooshSound.volume = 0.4;
-                      whooshSound.play().catch(e => debug.error("Failed to play whoosh sound:", e));
+                      playPooledAudio('/sounds/card_whoosh.mp3', 0.4);
                     }, 100);
                   }
                   
@@ -324,9 +335,7 @@ export const useAIActionManager = ({
                     '/sounds/card_attack.mp3'
                   ];
                   const randomSound = attackSounds[Math.floor(Math.random() * attackSounds.length)];
-                  const audio = new Audio(randomSound);
-                  audio.volume = 0.6;
-                  audio.play().catch(e => debug.error("Failed to play sound:", e));
+                  playPooledAudio(randomSound, 0.6);
                   
                   // Add camera shake for impact
                   const intensity = Math.random() * 5 + 5; // Between 5-10px shake
@@ -473,10 +482,7 @@ export const useAIActionManager = ({
               // After "thinking", use the hero power with enhanced effects
               setTimeout(() => {
                 // Play hero power sound with slightly randomized pitch for variety
-                const audio = new Audio('/sounds/hero_power.mp3');
-                audio.volume = 0.6;
-                audio.playbackRate = 0.95 + Math.random() * 0.2; // Subtle variation
-                audio.play().catch(e => debug.error("Failed to play sound:", e));
+                playPooledAudio('/sounds/hero_power.mp3', 0.6, 0.95 + Math.random() * 0.2);
                 
                 // Add dramatic glow around hero
                 addAnimation({
@@ -587,9 +593,7 @@ export const useAIActionManager = ({
             const { addAnimation } = useAnimationStore.getState();
             
             // Play end turn sound
-            const audio = new Audio('/sounds/end_turn.mp3');
-            audio.volume = 0.5;
-            audio.play().catch(e => debug.error("Failed to play end turn sound:", e));
+            playPooledAudio('/sounds/end_turn.mp3', 0.5);
             
             // Get the end turn button position (approximate)
             const endTurnButtonPosition = {

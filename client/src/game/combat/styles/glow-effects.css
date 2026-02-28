@@ -45,13 +45,14 @@
   opacity: 0.5;
   transition: opacity 0.3s ease;
   animation: enhancedAuraGlow 5s ease-in-out infinite;
-  background: 
+  background:
     radial-gradient(ellipse 200% 180% at 50% 50%,
       rgba(0, 255, 204, 0.15) 0%,
       rgba(34, 197, 94, 0.08) 40%,
       transparent 70%
     );
   filter: blur(10px);
+  will-change: opacity;
 }
 
 /* Improved Particle System - Floating upward particles */
@@ -222,18 +223,8 @@
 }
 
 @keyframes enhancedAuraGlow {
-  0% {
-    opacity: 0.7;
-    filter: blur(8px) brightness(1);
-  }
-  50% {
-    opacity: 0.95;
-    filter: blur(12px) brightness(1.15);
-  }
-  100% {
-    opacity: 0.7;
-    filter: blur(8px) brightness(1);
-  }
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.85; }
 }
 
 @keyframes particleFloat {

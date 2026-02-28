@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PokerCard } from '../../types/PokerCombatTypes';
 import { getCombinedHandName } from '../../types/PokerCombatTypes';
 import { PokerCombatAnimation } from './PokerCombatAnimation';
+import { proceduralAudio } from '../../audio/proceduralAudio';
 
 interface ShowdownCelebrationProps {
 	resolution: {
@@ -52,11 +53,18 @@ export const ShowdownCelebration: React.FC<ShowdownCelebrationProps> = ({
 	// Auto-dismiss 1500ms after combat animation completes (badge display time)
 	useEffect(() => {
 		if (!combatAnimDone) return;
+		if (resolution.winner === 'draw') {
+			proceduralAudio.play('sword_clash');
+		} else if (resolution.winner === 'player') {
+			proceduralAudio.play('victory');
+		} else {
+			proceduralAudio.play('defeat');
+		}
 		const timer = setTimeout(() => {
 			onCompleteRef.current();
 		}, 1500);
 		return () => clearTimeout(timer);
-	}, [combatAnimDone]);
+	}, [combatAnimDone, resolution.winner]);
 
 	// Determine attacker/defender and damage for the combat animation
 	const getAnimationProps = () => {

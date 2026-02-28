@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { getHeroAnimationProfile, ELEMENT_COLORS } from '../data/heroAnimationProfiles';
 import type { AnimationArchetype } from '../data/heroAnimationProfiles';
+import { proceduralAudio } from '../../audio/proceduralAudio';
 import '../styles/combat-animations.css';
 
 interface PokerCombatAnimationProps {
@@ -109,15 +110,31 @@ export const PokerCombatAnimation: React.FC<PokerCombatAnimationProps> = ({
 
 		let elapsed = 0;
 
-		addTimer(() => setPhase('windup'), 100);
+		addTimer(() => {
+			setPhase('windup');
+			proceduralAudio.play(isFold ? 'combat_brace' : 'attack_prepare');
+		}, 100);
 		elapsed = 100;
 
 		const windupEnd = elapsed + 400;
-		addTimer(() => setPhase('attack'), windupEnd);
+		addTimer(() => {
+			setPhase('attack');
+			proceduralAudio.playCombatSound(
+				attackerProfile.archetype,
+				attackerProfile.element,
+				tier.tier === 'heavy' ? 1.0 : tier.tier === 'medium' ? 0.8 : 0.6
+			);
+		}, windupEnd);
 		elapsed = windupEnd;
 
 		const attackEnd = elapsed + attackDuration;
-		addTimer(() => setPhase('impact'), attackEnd);
+		addTimer(() => {
+			setPhase('impact');
+			proceduralAudio.play(damage >= 30 ? 'damage_hero' : 'damage');
+			if (!isFold && tier.tier === 'heavy') {
+				addTimer(() => proceduralAudio.play('norse_horn'), 100);
+			}
+		}, attackEnd);
 		elapsed = attackEnd;
 
 		const impactEnd = elapsed + 200;
