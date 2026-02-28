@@ -125,5 +125,8 @@ client/src/**/*.js
 # 4. NEVER include one-off test/fix scripts
 # 5. Always verify with: git status --ignored
 
+# Server-side chain indexer state (runtime data)
+data/chain-state.json
+
 # Claude Code local settings
 .claude/

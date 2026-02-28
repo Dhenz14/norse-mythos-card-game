@@ -64,13 +64,18 @@ export function spawnSlashTrail(
 			onComplete: () => {
 				gsap.to(g, {
 					alpha: 0,
-					pixi: { scaleX: 0.3, scaleY: 0.3 },
 					duration: 0.3,
 					ease: 'power2.out',
 					onComplete: () => {
 						trailContainer?.removeChild(g);
 						g.destroy();
 					}
+				});
+				gsap.to(g.scale, {
+					x: 0.3,
+					y: 0.3,
+					duration: 0.3,
+					ease: 'power2.out',
 				});
 			}
 		});
@@ -127,7 +132,6 @@ export function spawnImpactRing(
 	burstContainer.addChild(ring);
 
 	gsap.to(ring, {
-		pixi: { scaleX: 2.5, scaleY: 2.5 },
 		alpha: 0,
 		duration: 0.35,
 		ease: 'power2.out',
@@ -135,6 +139,12 @@ export function spawnImpactRing(
 			burstContainer?.removeChild(ring);
 			ring.destroy();
 		}
+	});
+	gsap.to(ring.scale, {
+		x: 2.5,
+		y: 2.5,
+		duration: 0.35,
+		ease: 'power2.out',
 	});
 }
 

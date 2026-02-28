@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { usePokerCombatAdapter, getPokerCombatAdapterState, getActionPermissions } from '../hooks/usePokerCombatAdapter';
 import {
   CombatPhase,
@@ -216,39 +216,49 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
     }
   }, [combatState?.phase, resolveCombat, resolution]);
 
+  const isProcessingRef = useRef(false);
+
   const handleAction = useCallback((action: CombatAction, hp?: number) => {
-    if (!combatState) return;
+    if (isProcessingRef.current || !combatState) return;
+    isProcessingRef.current = true;
+    requestAnimationFrame(() => { isProcessingRef.current = false; });
+
     performAction(combatState.player.playerId, action, hp);
-    
+
     // If player folded, skip AI response - hand is already over
     if (action === CombatAction.BRACE) {
       return;
     }
-    
+
     // AI responds after delay - read fresh state to avoid stale closure issues
     setTimeout(() => {
       // Get fresh state from adapter to avoid stale closure
       const freshState = getPokerCombatAdapterState().combatState;
       if (!freshState) return;
-      
+
       // Skip if AI already acted (isReady = true)
       if (freshState.opponent.isReady) {
         return;
       }
-      
+
       // Skip if a fold already happened
       if (freshState.foldWinner) {
         return;
       }
-      
+
       // Skip if we're in resolution phase
       if (freshState.phase === CombatPhase.RESOLUTION) {
         return;
       }
-      
+
+      // Skip if it's not the opponent's turn to act
+      if (freshState.activePlayerId !== freshState.opponent.playerId) {
+        return;
+      }
+
       // Use SmartAI for intelligent decision making
       const aiDecision = getSmartAIAction(freshState, false);
-      
+
       performAction(freshState.opponent.playerId, aiDecision.action, aiDecision.betAmount);
     }, 1000);
   }, [combatState, performAction]);
@@ -330,7 +340,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
       </div>
 
       <div className="battle-arena">
-        <div className="opponent-section">
+        <div className={`opponent-section ${waitingForOpponent ? 'active-turn' : ''}`}>
           <div className="player-label">{combatState.opponent.playerName}</div>
           <PetCard pet={combatState.opponent.pet} heroArmor={combatState.opponent.heroArmor} />
           <div className="commitment-display">Committed: {combatState.opponent.hpCommitted} HP</div>
@@ -380,7 +390,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
         <div className="player-section">
           <div className="player-label">{combatState.player.playerName}</div>
           <PetCard pet={combatState.player.pet} heroArmor={combatState.player.heroArmor} />
-          <div className="hole-cards">
+          <div className={`hole-cards ${isMyTurnToAct ? 'active-turn' : ''}`}>
             {combatState.player.holeCards.map((card, idx) => (
               <PlayingCard key={`hole-${idx}`} card={card} small />
             ))}

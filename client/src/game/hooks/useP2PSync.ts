@@ -11,6 +11,8 @@ import type { PackagedMatchResult } from '../../data/blockchain/types';
 import { createSeededRng, seededShuffle } from '../utils/seededRng';
 import { startNewTranscript, getActiveTranscript, clearTranscript } from '../../data/blockchain/transcriptBuilder';
 import type { GameMove } from '../../data/blockchain/signedMove';
+import { getWasmHash, isWasmAvailable, loadWasmEngine } from '../engine/wasmLoader';
+import { computeStateHash } from '../engine/engineBridge';
 
 declare const __BUILD_HASH__: string;
 
@@ -87,7 +89,10 @@ export type P2PMessage =
 	| { type: 'result_propose'; result: PackagedMatchResult; hash: string; broadcasterSig: string }
 	| { type: 'result_countersign'; counterpartySig: string }
 	| { type: 'result_reject'; reason: string }
-	| { type: 'version_check'; buildHash: string };
+	| { type: 'version_check'; buildHash: string }
+	| { type: 'wasm_hash_check'; wasmHash: string }
+	| { type: 'hash_check'; stateHash: string; turnNumber: number }
+	| { type: 'hash_mismatch'; turnNumber: number; myHash: string };
 
 const RESULT_SIGN_TIMEOUT_MS = 30_000;
 
@@ -125,6 +130,11 @@ export function useP2PSync() {
 			moveCounter = 0;
 			return;
 		}
+
+		loadWasmEngine().then(() => {
+			const wasmHash = getWasmHash();
+			send({ type: 'wasm_hash_check', wasmHash });
+		});
 
 		const salt = generateSalt();
 		mySaltRef.current = salt;
@@ -188,6 +198,41 @@ export function useP2PSync() {
 					}
 					break;
 				}
+
+				case 'wasm_hash_check': {
+					const myWasmHash = getWasmHash();
+					const theirWasmHash = data.wasmHash;
+					if (theirWasmHash !== myWasmHash && theirWasmHash !== 'dev' && myWasmHash !== 'dev' && theirWasmHash !== 'unavailable' && myWasmHash !== 'unavailable') {
+						toast.error('WASM engine mismatch — ranked play blocked', {
+							description: `Your engine: ${myWasmHash.slice(0, 12)}…, opponent: ${theirWasmHash.slice(0, 12)}…`,
+							duration: 10000,
+						});
+					}
+					break;
+				}
+
+				case 'hash_check': {
+					const gs = useGameStore.getState().gameState;
+					if (!gs || !isWasmAvailable()) break;
+					const myHash = await computeStateHash(gs);
+					if (myHash !== data.stateHash) {
+						console.error(`[useP2PSync] State hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
+						send({ type: 'hash_mismatch', turnNumber: data.turnNumber, myHash });
+						toast.error('State verification failed', {
+							description: 'Game state diverged from opponent. Possible cheating detected.',
+							duration: 8000,
+						});
+					}
+					break;
+				}
+
+				case 'hash_mismatch':
+					console.error(`[useP2PSync] Opponent reports hash mismatch at turn ${data.turnNumber}: theirHash=${data.myHash.slice(0, 16)}`);
+					toast.error('State verification failed', {
+						description: 'Opponent detected state divergence. Game integrity compromised.',
+						duration: 8000,
+					});
+					break;
 
 				case 'seed_commit':
 					theirCommitmentRef.current = data.commitment;
@@ -526,6 +571,18 @@ export function useP2PSync() {
 		const interval = setInterval(() => {
 			send({ type: 'ping' });
 		}, 10_000);
+		return () => clearInterval(interval);
+	}, [connectionState, isHost, send]);
+
+	// Host sends state hash check every 2s for anti-cheat verification
+	useEffect(() => {
+		if (connectionState !== 'connected' || !isHost || !isWasmAvailable()) return;
+		const interval = setInterval(async () => {
+			const gs = useGameStore.getState().gameState;
+			if (!gs || gs.gamePhase === 'game_over') return;
+			const stateHash = await computeStateHash(gs);
+			send({ type: 'hash_check', stateHash, turnNumber: gs.turnNumber });
+		}, 2000);
 		return () => clearInterval(interval);
 	}, [connectionState, isHost, send]);
 

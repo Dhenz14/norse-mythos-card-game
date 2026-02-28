@@ -1,67 +1,55 @@
 /**
  * wasmLoader.ts - WASM module loader with hash verification
  *
- * Loads the deterministic game engine WASM module and verifies its hash
- * against the expected value. Both P2P players must have matching WASM hashes
- * to ensure deterministic gameplay.
- *
- * Until the AssemblyScript build is set up, this module provides a stub
- * that uses the TypeScript engine as a fallback.
+ * Loads the deterministic game engine WASM module, initializes it with
+ * card data, and verifies its hash. Both P2P players must have matching
+ * WASM hashes to ensure deterministic gameplay.
  */
 
-let wasmModule: WebAssembly.Module | null = null;
-let wasmInstance: WebAssembly.Instance | null = null;
-let wasmHash: string | null = null;
-let loadError: string | null = null;
+import {
+	initializeWasm,
+	getWasmBinaryHash,
+	isWasmReady,
+	getWasmLoadError as getInterfaceError,
+	loadCardDataIntoWasm,
+} from './wasmInterface';
 
-async function computeModuleHash(bytes: ArrayBuffer): Promise<string> {
-	const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
-	const hashArray = new Uint8Array(hashBuffer);
-	return Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+let initialized = false;
+let cardCount = 0;
 
 export async function loadWasmEngine(): Promise<boolean> {
-	if (wasmModule) return true;
+	if (initialized && isWasmReady()) return true;
+
+	const success = await initializeWasm();
+	if (!success) return false;
 
 	try {
-		const response = await fetch('/engine.wasm');
-		if (!response.ok) {
-			loadError = 'WASM module not found — using TypeScript fallback';
-			return false;
-		}
-
-		const bytes = await response.arrayBuffer();
-		wasmHash = await computeModuleHash(bytes);
-		wasmModule = await WebAssembly.compile(bytes);
-		wasmInstance = await WebAssembly.instantiate(wasmModule, {
-			env: {
-				abort: () => { throw new Error('WASM abort'); },
-			},
-		});
-
-		return true;
-	} catch (err) {
-		loadError = err instanceof Error ? err.message : 'Failed to load WASM';
-		return false;
+		const { cardRegistry } = await import('../data/cardRegistry');
+		cardCount = await loadCardDataIntoWasm(cardRegistry);
+	} catch {
+		// Card data loading is non-fatal — hashing still works
 	}
+
+	initialized = true;
+	return true;
 }
 
 export function getWasmHash(): string {
-	if (wasmHash) return wasmHash;
+	if (isWasmReady()) return getWasmBinaryHash();
 	if (typeof __BUILD_HASH__ !== 'undefined') return __BUILD_HASH__;
 	return 'dev';
 }
 
 declare const __BUILD_HASH__: string;
 
-export function getWasmInstance(): WebAssembly.Instance | null {
-	return wasmInstance;
-}
-
 export function isWasmAvailable(): boolean {
-	return wasmModule !== null;
+	return isWasmReady();
 }
 
 export function getWasmLoadError(): string | null {
-	return loadError;
+	return getInterfaceError();
+}
+
+export function getLoadedCardCount(): number {
+	return cardCount;
 }

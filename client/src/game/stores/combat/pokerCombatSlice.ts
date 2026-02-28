@@ -461,9 +461,19 @@ export const createPokerCombatSlice: StateCreator<
     if (!state.pokerCombatState) return;
     
     const newState = { ...state.pokerCombatState };
+
+    // Store-level turn validation: reject out-of-turn actions
+    // (SPELL_PET allows both players to act freely)
+    if (newState.activePlayerId !== null &&
+        newState.activePlayerId !== playerId &&
+        newState.phase !== PokerCombatPhase.SPELL_PET) {
+      debug.combat('[performPokerAction] REJECTED: not this player turn', { playerId, activePlayerId: newState.activePlayerId });
+      return;
+    }
+
     const isPlayer = playerId === newState.player.playerId;
     const playerState = isPlayer ? newState.player : newState.opponent;
-    
+
     playerState.currentAction = action;
     
     switch (action) {

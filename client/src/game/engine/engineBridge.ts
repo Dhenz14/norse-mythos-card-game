@@ -1,15 +1,20 @@
 /**
  * engineBridge.ts - TypeScript ↔ WASM bridge
  *
- * Provides a unified interface for game state transitions. When the WASM
- * engine is available, operations are forwarded to WASM for deterministic
- * execution. When unavailable, falls back to the TypeScript game logic.
+ * Provides a unified interface for game state transitions and verification.
+ * After each action (applied via the TS game engine), the state is
+ * canonically serialized and hashed through the WASM module for P2P
+ * anti-cheat verification.
  *
- * This bridge is the single entry point for all state-modifying operations
- * during P2P matches, ensuring both players compute identical states.
+ * Anti-cheat mechanism:
+ * 1. Both peers verify identical WASM binary hash at handshake
+ * 2. After each action, both independently hash game state via WASM
+ * 3. Hash mismatch → cheat detected (modified game logic)
  */
 
-import { isWasmAvailable, getWasmInstance } from './wasmLoader';
+import { isWasmAvailable } from './wasmLoader';
+import { isWasmReady, hashGameState } from './wasmInterface';
+import { serializeGameState } from './stateSerializer';
 import type { GameState } from '../types';
 
 export type EngineAction =
@@ -24,8 +29,8 @@ export interface EngineResult {
 	engine: 'wasm' | 'typescript';
 }
 
-async function hashState(state: GameState): Promise<string> {
-	const serialized = JSON.stringify(state);
+async function hashStateTypescript(state: GameState): Promise<string> {
+	const serialized = serializeGameState(state);
 	const encoded = new TextEncoder().encode(serialized);
 	const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
 	const hashArray = new Uint8Array(hashBuffer);
@@ -36,53 +41,36 @@ export async function applyAction(
 	state: GameState,
 	action: EngineAction,
 ): Promise<EngineResult> {
-	if (isWasmAvailable()) {
-		return applyActionWasm(state, action);
-	}
-	return applyActionTypeScript(state, action);
-}
+	// Game logic runs via the existing TS engine (gameStore actions).
+	// This function computes the post-action state hash for P2P verification.
+	// When WASM is available, hash is computed through the tamper-proof WASM
+	// SHA-256 implementation. Otherwise, falls back to browser crypto.
+	const hash = await computeStateHash(state);
+	const engine = isWasmReady() ? 'wasm' as const : 'typescript' as const;
 
-async function applyActionWasm(
-	state: GameState,
-	action: EngineAction,
-): Promise<EngineResult> {
-	const instance = getWasmInstance();
-	if (!instance) {
-		return applyActionTypeScript(state, action);
-	}
-
-	// WASM interface: serialize state + action to JSON, pass to WASM,
-	// get back new state JSON. This is the interface contract for when
-	// the AssemblyScript engine is built.
-	//
-	// For now, fall back to TypeScript since WASM module doesn't exist yet.
-	return applyActionTypeScript(state, action);
-}
-
-async function applyActionTypeScript(
-	state: GameState,
-	_action: EngineAction,
-): Promise<EngineResult> {
-	// In the TypeScript path, the action is applied via the existing
-	// gameStore.ts / gameUtils.ts functions. This bridge simply wraps
-	// the state with a hash for verification.
-	//
-	// The actual state mutation happens in gameStore actions (playCard,
-	// processAttack, endTurn, etc.) — this function just computes the
-	// post-action hash for the P2P verification protocol.
-	const stateHash = await hashState(state);
-
-	return {
-		state,
-		hash: stateHash,
-		engine: 'typescript',
-	};
+	return { state, hash, engine };
 }
 
 export async function computeStateHash(state: GameState): Promise<string> {
-	return hashState(state);
+	if (isWasmReady()) {
+		try {
+			return hashGameState(state);
+		} catch {
+			// WASM hash failed — fall back to TS
+		}
+	}
+	return hashStateTypescript(state);
 }
 
 export function getEngineType(): 'wasm' | 'typescript' {
 	return isWasmAvailable() ? 'wasm' : 'typescript';
+}
+
+export function computeStateHashSync(state: GameState): string | null {
+	if (!isWasmReady()) return null;
+	try {
+		return hashGameState(state);
+	} catch {
+		return null;
+	}
 }

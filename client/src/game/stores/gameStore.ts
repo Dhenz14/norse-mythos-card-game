@@ -29,6 +29,7 @@ import { logActivity } from './activityLogStore';
 import { CombatEventBus } from '../services/CombatEventBus';
 import { getAttack } from '../utils/cards/typeGuards';
 import { usePeerStore } from './peerStore';
+import { computeStateHash } from '../engine/engineBridge';
 
 // ============== BATTLEFIELD DEBUG MONITOR ==============
 // Track battlefield changes with stack traces to identify root cause of minion disappearance
@@ -124,6 +125,7 @@ interface GameStore {
   // Game state
   gameState: GameState;
   matchSeed: string | null;
+  lastStateHash: string | null;
   selectedCard: CardInstance | null;
   // For tracking attack selection
   attackingCard: CardInstance | null;
@@ -150,7 +152,10 @@ interface GameStore {
   
   // Poker hand rewards - give mana crystal and draw a card
   grantPokerHandRewards: () => void;
-  
+
+  // WASM state hash
+  updateStateHash: () => void;
+
   // UI actions
   setHoveredCard: (card: CardInstance | CardInstanceWithCardData | null) => void;
   hoveredCard: CardInstance | null;
@@ -166,6 +171,7 @@ let isAttackProcessing = false;
 export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get) => ({
   gameState: initializeGame(),
   matchSeed: null,
+  lastStateHash: null,
   selectedCard: null,
   hoveredCard: null,
   attackingCard: null,
@@ -1075,7 +1081,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     } catch (error) {
       debug.error('[PokerRewards] Error granting rewards:', error);
     }
-  }
+  },
+
+  updateStateHash: () => {
+    const { gameState } = get();
+    if (!gameState) return;
+    computeStateHash(gameState).then(hash => {
+      set({ lastStateHash: hash });
+    }).catch(() => {});
+  },
 })));
 
 // Subscribe to battlefield changes to trace when minions disappear

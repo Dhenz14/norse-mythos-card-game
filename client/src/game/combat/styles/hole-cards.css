@@ -262,3 +262,53 @@
 .arena-poker-card.norse .card-inner {
   color: var(--suit-accent, #2d4a3d);
 }
+
+/* ========================================
+   ACTIVE TURN GLOW & PULSE
+   Shows whose turn it is to act
+   ======================================== */
+
+@keyframes activeTurnPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(251, 191, 36, 0.4),
+      0 0 24px rgba(251, 191, 36, 0.2),
+      0 0 0 1px rgba(251, 191, 36, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(251, 191, 36, 0.7),
+      0 0 40px rgba(251, 191, 36, 0.35),
+      0 0 0 2px rgba(251, 191, 36, 0.5);
+  }
+}
+
+.hole-cards.active-turn .arena-poker-card,
+.hole-cards.active-turn .poker-card {
+  animation: activeTurnPulse 2s ease-in-out infinite;
+  border-color: rgba(251, 191, 36, 0.6);
+}
+
+.opponent-section.active-turn .pet-card {
+  animation: activeTurnPulse 2s ease-in-out infinite;
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+@keyframes opponentTurnPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(239, 68, 68, 0.4),
+      0 0 24px rgba(239, 68, 68, 0.2),
+      0 0 0 1px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(239, 68, 68, 0.7),
+      0 0 40px rgba(239, 68, 68, 0.35),
+      0 0 0 2px rgba(239, 68, 68, 0.5);
+  }
+}
+
+.opponent-section.active-turn .pet-card {
+  animation: opponentTurnPulse 2s ease-in-out infinite;
+}
