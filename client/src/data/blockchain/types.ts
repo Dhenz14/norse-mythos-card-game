@@ -76,6 +76,8 @@ export interface PackagedMatchResultOnChain {
 	h: string;
 	s: string;
 	v: number;
+	c?: string;  // hex-encoded winner card IDs (4 hex chars each, sorted)
+	ch?: string; // sha256(canonical({m,w,l,n,s,v,c})) truncated to 16 hex chars — verifiable by replay engine
 	sig?: { b: string; c: string };
 }
 
@@ -106,6 +108,12 @@ export interface CardLevelBonus {
 	healthBonus: number;
 }
 
+export interface NFTAttribute {
+	trait_type: string;
+	value: string | number;
+	display_type?: 'number' | 'boost_number' | 'boost_percentage';
+}
+
 export interface NFTMetadata {
 	uid: string;
 	cardId: number;
@@ -128,6 +136,17 @@ export interface NFTMetadata {
 	mintedAt: number;
 	mintedBy: string;
 	hash: string;
+	image: string;
+	externalUrl: string;
+	race: string;
+	set: string;
+	flavorText: string;
+	collectible: boolean;
+	collection: {
+		name: string;
+		family: string;
+	};
+	attributes: NFTAttribute[];
 }
 
 export interface MutableCardState {

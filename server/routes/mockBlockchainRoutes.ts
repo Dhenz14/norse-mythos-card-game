@@ -145,6 +145,10 @@ interface MintCardInput {
 	edition?: 'alpha' | 'beta' | 'promo';
 	foil?: 'standard' | 'gold';
 	maxSupply?: number;
+	race?: string;
+	set?: string;
+	flavorText?: string;
+	collectible?: boolean;
 }
 
 router.post('/mint', async (req: Request, res: Response) => {
@@ -181,7 +185,7 @@ router.post('/mint', async (req: Request, res: Response) => {
 		const metaWithoutHash: Omit<NFTMetadata, 'hash'> = {
 			uid,
 			cardId: card.cardId,
-			templateVersion: 1,
+			templateVersion: 2,
 			name: card.name,
 			type: card.type,
 			rarity: card.rarity,
@@ -199,6 +203,19 @@ router.post('/mint', async (req: Request, res: Response) => {
 			maxSupply,
 			mintedAt: blockNum,
 			mintedBy: 'ragnarok',
+			image: '',
+			externalUrl: `https://ragnarok.cards/card/${card.cardId}`,
+			race: card.race ?? 'none',
+			set: card.set ?? 'core',
+			flavorText: card.flavorText ?? '',
+			collectible: card.collectible !== false,
+			collection: { name: 'Ragnarok Cards', family: 'Genesis' },
+			attributes: [
+				{ trait_type: 'Rarity', value: card.rarity },
+				{ trait_type: 'Type', value: card.type },
+				{ trait_type: 'Class', value: card.heroClass ?? 'neutral' },
+				{ trait_type: 'Edition', value: edition },
+			],
 		};
 		// Use the same canonical SHA-256 as the client's hashNFTMetadata()
 		const hash = hashObject(metaWithoutHash);

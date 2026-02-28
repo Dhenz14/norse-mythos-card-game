@@ -154,7 +154,7 @@ async function submitToMockServer(tx: TransactionEntry): Promise<void> {
 // Maps internal BlockchainActionType to Hive custom_json op id
 const ACTION_TO_OP_ID: Partial<Record<string, RagnarokTransactionType>> = {
 	match_result:  'rp_match_result',
-	level_up:      'ragnarok_level_up',
+	level_up:      'rp_level_up',
 	card_transfer: 'rp_card_transfer',
 	nft_mint:      'rp_pack_open',
 };
@@ -225,9 +225,15 @@ export async function fetchMockCollection(username: string): Promise<unknown> {
 	if (getDataLayerMode() !== 'test') {
 		throw new Error('fetchMockCollection only available in test mode');
 	}
-	const res = await fetch(`${MOCK_API_BASE}/collection/${username}`);
-	if (!res.ok) throw new Error(`HTTP ${res.status}`);
-	return res.json();
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), 10_000);
+	try {
+		const res = await fetch(`${MOCK_API_BASE}/collection/${username}`, { signal: controller.signal });
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+		return res.json();
+	} finally {
+		clearTimeout(timer);
+	}
 }
 
 /**
@@ -237,9 +243,15 @@ export async function fetchMockStats(username: string): Promise<unknown> {
 	if (getDataLayerMode() !== 'test') {
 		throw new Error('fetchMockStats only available in test mode');
 	}
-	const res = await fetch(`${MOCK_API_BASE}/stats/${username}`);
-	if (!res.ok) throw new Error(`HTTP ${res.status}`);
-	return res.json();
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), 10_000);
+	try {
+		const res = await fetch(`${MOCK_API_BASE}/stats/${username}`, { signal: controller.signal });
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+		return res.json();
+	} finally {
+		clearTimeout(timer);
+	}
 }
 
 /**
@@ -249,8 +261,14 @@ export async function resetMockBlockchain(): Promise<void> {
 	if (getDataLayerMode() !== 'test') {
 		throw new Error('resetMockBlockchain only available in test mode');
 	}
-	const res = await fetch(`${MOCK_API_BASE}/reset`, { method: 'POST' });
-	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), 10_000);
+	try {
+		const res = await fetch(`${MOCK_API_BASE}/reset`, { method: 'POST', signal: controller.signal });
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	} finally {
+		clearTimeout(timer);
+	}
 }
 
 /**
@@ -260,7 +278,13 @@ export async function dumpMockBlockchain(): Promise<unknown> {
 	if (getDataLayerMode() !== 'test') {
 		throw new Error('dumpMockBlockchain only available in test mode');
 	}
-	const res = await fetch(`${MOCK_API_BASE}/dump`);
-	if (!res.ok) throw new Error(`HTTP ${res.status}`);
-	return res.json();
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), 10_000);
+	try {
+		const res = await fetch(`${MOCK_API_BASE}/dump`, { signal: controller.signal });
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+		return res.json();
+	} finally {
+		clearTimeout(timer);
+	}
 }

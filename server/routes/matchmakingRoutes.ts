@@ -1,11 +1,15 @@
 import { Router, Request, Response } from 'express';
 import fs from 'fs';
+import fsPromises from 'fs/promises';
 import path from 'path';
+import { verifyHiveAuth, isValidHiveUsername, isTimestampFresh } from '../services/hiveAuth';
 
 const router = Router();
 
 interface QueuedPlayer {
 	peerId: string;
+	username?: string;
+	elo: number;
 	timestamp: number;
 	socket?: any;
 }
@@ -16,32 +20,41 @@ const activeMatches = new Map<string, { player1: string; player2: string; create
 const QUEUE_STALE_MS = 5 * 60 * 1000; // 5 minutes
 const QUEUE_FILE = path.join(process.cwd(), 'data', 'matchmaking-queue.json');
 
-function ensureDataDir() {
+let dataDirEnsured = false;
+async function ensureDataDir() {
+	if (dataDirEnsured) return;
 	const dir = path.dirname(QUEUE_FILE);
-	if (!fs.existsSync(dir)) {
-		fs.mkdirSync(dir, { recursive: true });
-	}
+	try {
+		await fsPromises.mkdir(dir, { recursive: true });
+		dataDirEnsured = true;
+	} catch { /* already exists */ }
 }
 
+let saveQueued = false;
 function saveQueue() {
-	try {
-		ensureDataDir();
-		const serializable = matchmakingQueue.map(({ peerId, timestamp }) => ({ peerId, timestamp }));
-		fs.writeFileSync(QUEUE_FILE, JSON.stringify(serializable), 'utf8');
-	} catch (err) {
-		console.warn('[Matchmaking] Failed to save queue:', err);
-	}
+	if (saveQueued) return;
+	saveQueued = true;
+	queueMicrotask(async () => {
+		saveQueued = false;
+		try {
+			await ensureDataDir();
+			const serializable = matchmakingQueue.map(({ peerId, username, elo, timestamp }) => ({ peerId, username, elo, timestamp }));
+			await fsPromises.writeFile(QUEUE_FILE, JSON.stringify(serializable), 'utf8');
+		} catch (err) {
+			console.warn('[Matchmaking] Failed to save queue:', err);
+		}
+	});
 }
 
 function loadQueue() {
 	try {
 		if (!fs.existsSync(QUEUE_FILE)) return;
 		const raw = fs.readFileSync(QUEUE_FILE, 'utf8');
-		const entries: { peerId: string; timestamp: number }[] = JSON.parse(raw);
+		const entries: { peerId: string; username?: string; elo?: number; timestamp: number }[] = JSON.parse(raw);
 		const now = Date.now();
 		for (const entry of entries) {
 			if (now - entry.timestamp < QUEUE_STALE_MS) {
-				matchmakingQueue.push(entry);
+				matchmakingQueue.push({ ...entry, elo: entry.elo ?? 1000 });
 			}
 		}
 		if (matchmakingQueue.length > 0) {
@@ -72,11 +85,68 @@ function removeStaleQueueEntries() {
 // Clean stale entries every 60 seconds
 setInterval(removeStaleQueueEntries, 60_000);
 
-router.post('/queue', (req: Request, res: Response) => {
-	const { peerId } = req.body;
+function findBestEloMatch(newPlayer: QueuedPlayer): QueuedPlayer | null {
+	if (matchmakingQueue.length === 0) return null;
+
+	const now = Date.now();
+	const waitMs = now - newPlayer.timestamp;
+
+	// Expand ELO range the longer you wait: ±200 initially, ±500 after 30s, anyone after 60s
+	let maxEloDiff = 200;
+	if (waitMs > 60_000) maxEloDiff = Infinity;
+	else if (waitMs > 30_000) maxEloDiff = 500;
+
+	let bestIdx = -1;
+	let bestDiff = Infinity;
+
+	for (let i = 0; i < matchmakingQueue.length; i++) {
+		const candidate = matchmakingQueue[i];
+		if (candidate.peerId === newPlayer.peerId) continue;
+
+		const diff = Math.abs(candidate.elo - newPlayer.elo);
+		if (diff <= maxEloDiff && diff < bestDiff) {
+			bestDiff = diff;
+			bestIdx = i;
+		}
+	}
+
+	// If no ELO match found, check if anyone in the queue has waited 60s+ (match anyone)
+	if (bestIdx === -1) {
+		for (let i = 0; i < matchmakingQueue.length; i++) {
+			const candidate = matchmakingQueue[i];
+			if (candidate.peerId === newPlayer.peerId) continue;
+			if (now - candidate.timestamp > 60_000) {
+				return matchmakingQueue.splice(i, 1)[0];
+			}
+		}
+		return null;
+	}
+
+	return matchmakingQueue.splice(bestIdx, 1)[0];
+}
+
+router.post('/queue', async (req: Request, res: Response) => {
+	const { peerId, username, timestamp, signature } = req.body;
 
 	if (!peerId || typeof peerId !== 'string') {
 		return res.status(400).json({ success: false, error: 'peerId required' });
+	}
+
+	if (username && typeof username === 'string') {
+		if (!isValidHiveUsername(username)) {
+			return res.status(400).json({ success: false, error: 'Invalid Hive username format' });
+		}
+		if (!signature || !timestamp) {
+			return res.status(401).json({ success: false, error: 'Hive signature required for authenticated matchmaking' });
+		}
+		if (!isTimestampFresh(timestamp)) {
+			return res.status(401).json({ success: false, error: 'Timestamp expired' });
+		}
+		const message = `ragnarok-queue:${username}:${timestamp}`;
+		const valid = await verifyHiveAuth(username, message, signature);
+		if (!valid) {
+			return res.status(401).json({ success: false, error: 'Invalid Hive signature' });
+		}
 	}
 
 	removeStaleQueueEntries();
@@ -86,38 +156,59 @@ router.post('/queue', (req: Request, res: Response) => {
 		return res.json({ success: true, status: 'queued', position: existingIndex + 1 });
 	}
 
-	matchmakingQueue.push({
+	let elo = 1000;
+	if (username && typeof username === 'string') {
+		try {
+			const { getPlayer, registerAccount } = require('../services/chainState');
+			registerAccount(username);
+			const player = getPlayer(username);
+			if (player) elo = player.elo;
+		} catch { /* chain state not available, use default */ }
+	}
+
+	const newPlayer: QueuedPlayer = {
 		peerId,
+		username: typeof username === 'string' ? username : undefined,
+		elo,
 		timestamp: Date.now(),
-	});
+	};
+
+	// Try ELO-based matching against existing queue
+	matchmakingQueue.push(newPlayer);
 
 	if (matchmakingQueue.length >= 2) {
-		const player1 = matchmakingQueue.shift()!;
-		const player2 = matchmakingQueue.shift()!;
-		saveQueue();
+		const opponent = findBestEloMatch(newPlayer);
+		if (opponent) {
+			// Remove the new player from the queue too
+			const newIdx = matchmakingQueue.findIndex(p => p.peerId === peerId);
+			if (newIdx !== -1) matchmakingQueue.splice(newIdx, 1);
+			saveQueue();
 
-		const matchId = `${player1.peerId}-${player2.peerId}`;
-		activeMatches.set(matchId, {
-			player1: player1.peerId,
-			player2: player2.peerId,
-			createdAt: Date.now(),
-		});
+			const matchId = `${opponent.peerId}-${newPlayer.peerId}`;
+			activeMatches.set(matchId, {
+				player1: opponent.peerId,
+				player2: newPlayer.peerId,
+				createdAt: Date.now(),
+			});
 
-		setTimeout(() => {
-			activeMatches.delete(matchId);
-		}, 3600000);
+			setTimeout(() => {
+				activeMatches.delete(matchId);
+			}, 3600000);
 
-		return res.json({
-			success: true,
-			status: 'matched',
-			matchId,
-			opponentPeerId: player1.peerId === peerId ? player2.peerId : player1.peerId,
-			isHost: player1.peerId === peerId,
-		});
+			return res.json({
+				success: true,
+				status: 'matched',
+				matchId,
+				opponentPeerId: opponent.peerId,
+				opponentElo: opponent.elo,
+				opponentUsername: opponent.username,
+				isHost: false,
+			});
+		}
 	}
 
 	saveQueue();
-	return res.json({ success: true, status: 'queued', position: matchmakingQueue.length });
+	return res.json({ success: true, status: 'queued', position: matchmakingQueue.length, elo });
 });
 
 router.post('/leave', (req: Request, res: Response) => {

@@ -2,47 +2,30 @@
  * featureFlags.ts
  *
  * Feature flags to control game features.
- * Allows enabling/disabling features without code changes.
- * 
- * Added from Enrique's fork - Jan 31, 2026
+ * Driven by Vite env vars at build time (VITE_DATA_LAYER_MODE, VITE_BLOCKCHAIN_PACKAGING).
+ * Defaults to safe local/off values when env vars are not set.
  */
 
 export type DataLayerMode = 'local' | 'test' | 'hive';
 
+function resolveDataLayerMode(): DataLayerMode {
+	const raw = import.meta.env.VITE_DATA_LAYER_MODE as string | undefined;
+	if (raw === 'hive' || raw === 'test' || raw === 'local') return raw;
+	return 'local';
+}
+
+function resolveBlockchainPackaging(): boolean {
+	const raw = import.meta.env.VITE_BLOCKCHAIN_PACKAGING as string | undefined;
+	return raw === 'true' || raw === '1';
+}
+
 export const FeatureFlags = {
-	/**
-	 * Data layer mode:
-	 * - 'local': Uses localStorage only (default, offline mode). No server calls.
-	 * - 'test':  Local Express mock-blockchain endpoints (/api/mock-blockchain).
-	 *            Simulates Hive L1 minting/ownership/match-recording without real chain.
-	 *            Enable BLOCKCHAIN_PACKAGING_ENABLED=true to drain the tx queue to mock server.
-	 * - 'hive':  Real Hive blockchain via Keychain (production).
-	 */
-	DATA_LAYER_MODE: 'local' as DataLayerMode,
-
-	/**
-	 * Enables battle history tracking.
-	 * Stores last N battles locally.
-	 */
+	DATA_LAYER_MODE: resolveDataLayerMode(),
 	BATTLE_HISTORY_ENABLED: true,
-
-	/**
-	 * Maximum number of battles to keep in history.
-	 */
 	BATTLE_HISTORY_MAX_SIZE: 5,
-
-	/**
-	 * Debug mode for data layer.
-	 * Shows detailed logs for storage operations.
-	 */
 	DATA_LAYER_DEBUG: false,
-
-	/**
-	 * Enables blockchain data packaging.
-	 * When true, match results and XP updates are queued for chain submission.
-	 */
-	BLOCKCHAIN_PACKAGING_ENABLED: false as boolean,
-} as const;
+	BLOCKCHAIN_PACKAGING_ENABLED: resolveBlockchainPackaging(),
+};
 
 export type FeatureFlagsType = typeof FeatureFlags;
 

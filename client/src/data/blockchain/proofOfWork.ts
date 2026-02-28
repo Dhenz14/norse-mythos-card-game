@@ -89,14 +89,49 @@ async function solveSingleChallenge(challenge: string, difficulty: number): Prom
 // Public API
 // ---------------------------------------------------------------------------
 
-/**
- * Compute a multi-challenge PoW over a payload hash.
- * Returns an array of nonces — one per sub-challenge.
- *
- * This runs serially. For heavy configs, a Web Worker version would
- * run each sub-challenge in parallel for ~count× speedup.
- */
-export async function computePoW(payloadHash: string, config: PoWConfig): Promise<PoWResult> {
+const WORKER_COUNT = Math.min(navigator?.hardwareConcurrency ?? 4, 4);
+
+function computePoWWithWorkers(payloadHash: string, config: PoWConfig): Promise<PoWResult> {
+	return new Promise((resolve, reject) => {
+		const allNonces = new Array<number>(config.count);
+		let completedChunks = 0;
+		const chunkSize = Math.ceil(config.count / WORKER_COUNT);
+		const workers: Worker[] = [];
+
+		for (let w = 0; w < WORKER_COUNT; w++) {
+			const startIndex = w * chunkSize;
+			const endIndex = Math.min(startIndex + chunkSize, config.count);
+			if (startIndex >= config.count) break;
+
+			const worker = new Worker(
+				new URL('./powWorker.ts', import.meta.url),
+				{ type: 'module' },
+			);
+			workers.push(worker);
+
+			worker.onmessage = (e: MessageEvent<{ startIndex: number; nonces: number[] }>) => {
+				const { startIndex: si, nonces } = e.data;
+				for (let i = 0; i < nonces.length; i++) {
+					allNonces[si + i] = nonces[i];
+				}
+				completedChunks++;
+				worker.terminate();
+				if (completedChunks === workers.length) {
+					resolve({ nonces: allNonces });
+				}
+			};
+
+			worker.onerror = (err) => {
+				workers.forEach(w2 => w2.terminate());
+				reject(err);
+			};
+
+			worker.postMessage({ payloadHash, startIndex, endIndex, difficulty: config.difficulty });
+		}
+	});
+}
+
+async function computePoWSerial(payloadHash: string, config: PoWConfig): Promise<PoWResult> {
 	const nonces: number[] = [];
 	for (let i = 0; i < config.count; i++) {
 		const challenge = await deriveChallenge(payloadHash, i);
@@ -104,6 +139,17 @@ export async function computePoW(payloadHash: string, config: PoWConfig): Promis
 		nonces.push(nonce);
 	}
 	return { nonces };
+}
+
+export async function computePoW(payloadHash: string, config: PoWConfig): Promise<PoWResult> {
+	if (typeof Worker !== 'undefined') {
+		try {
+			return await computePoWWithWorkers(payloadHash, config);
+		} catch {
+			return computePoWSerial(payloadHash, config);
+		}
+	}
+	return computePoWSerial(payloadHash, config);
 }
 
 /**

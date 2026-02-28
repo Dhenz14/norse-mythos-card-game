@@ -10,6 +10,7 @@ export type {
 	XPConfigMap,
 	CardLevelBonus,
 	NFTMetadata,
+	NFTAttribute,
 	MutableCardState,
 	CardUidMapping,
 	MintInfo,
@@ -71,7 +72,7 @@ export {
 	putTokenBalance,
 } from './replayDB';
 
-export { applyOp } from './replayRules';
+export { applyOp, retryPendingSlashes } from './replayRules';
 export type { RawOp } from './replayRules';
 
 export {
@@ -80,6 +81,16 @@ export {
 	stopSync,
 	forceSync,
 } from './replayEngine';
+
+export { HIVE_NODES, RAGNAROK_ACCOUNT, NFT_ART_BASE_URL, EXTERNAL_URL_BASE } from './hiveConfig';
+
+export {
+	broadcastGenesis,
+	broadcastSeal,
+	broadcastMint,
+	SUPPLY_CAPS,
+	TOTAL_SUPPLY,
+} from './genesisAdmin';
 
 export type { PoWConfig, PoWResult } from './proofOfWork';
 export {
@@ -116,7 +127,7 @@ export {
 	startQueuePoller,
 } from './matchmakingOnChain';
 
-export type { PlayerNonce, QueueEntry, GenesisState, SupplyCounter, MatchAnchor, SlashedAccount } from './replayDB';
+export type { PlayerNonce, QueueEntry, GenesisState, SupplyCounter, MatchAnchor, SlashedAccount, EloRating, PendingSlash, RewardClaim } from './replayDB';
 export {
 	getAllQueueEntries,
 	getPlayerNonce,
@@ -134,6 +145,14 @@ export {
 	getSlashedAccount,
 	putSlashedAccount,
 	isAccountSlashed,
+	getEloRating,
+	putEloRating,
+	getPendingSlash,
+	putPendingSlash,
+	deletePendingSlash,
+	getAllPendingSlashes,
+	getRewardClaim,
+	putRewardClaim,
 } from './replayDB';
 
 export type { GameMove, MoveRecord, MerkleProof } from './signedMove';
@@ -151,3 +170,15 @@ export {
 	submitMoveDispute,
 	buildDisputeEvidence,
 } from './disputeResolution';
+
+export {
+	verifyHiveSignature,
+	fetchAccountKeys,
+	clearKeyCache,
+} from './hiveSignatureVerifier';
+
+export type { RewardConditionType, RewardCondition, RewardCardDef, TournamentReward } from './tournamentRewards';
+export {
+	TOURNAMENT_REWARDS,
+	getRewardById,
+} from './tournamentRewards';

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useMatchmakingStore } from '../stores/matchmakingStore';
 import { usePeerStore } from '../stores/peerStore';
+import { useHiveDataStore } from '../../data/HiveDataLayer';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export function useMatchmaking() {
 	const { myPeerId } = usePeerStore();
+	const hiveUsername = useHiveDataStore(s => s.user?.hiveUsername);
 	const {
 		status,
 		queuePosition,
@@ -34,7 +36,7 @@ export function useMatchmaking() {
 			const response = await fetch(`${API_BASE}/api/matchmaking/queue`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ peerId: myPeerId }),
+				body: JSON.stringify({ peerId: myPeerId, username: hiveUsername }),
 			}).catch(() => {
 				throw new Error('Matchmaking service unavailable. Please use manual match.');
 			});
@@ -80,7 +82,7 @@ export function useMatchmaking() {
 			setError(err.message || 'Failed to join matchmaking queue');
 			setStatus('error');
 		}
-	}, [myPeerId, setStatus, setError, setQueuePosition, setOpponent]);
+	}, [myPeerId, hiveUsername, setStatus, setError, setQueuePosition, setOpponent]);
 
 	const leaveQueue = useCallback(async () => {
 		if (!myPeerId) return;

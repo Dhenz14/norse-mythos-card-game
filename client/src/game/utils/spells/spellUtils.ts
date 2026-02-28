@@ -1076,12 +1076,10 @@ function executeHealSpell(
     // Heal a hero
     if (targetId === 'opponent' || targetId === 'opponent-hero') {
       const opp = newState.players.opponent;
-      const oppMaxHp = (opp as any).maxHealth || 30;
-      opp.heroHealth = Math.min((opp.heroHealth ?? opp.health ?? oppMaxHp) + healAmount, oppMaxHp);
+      opp.heroHealth = Math.min((opp.heroHealth ?? opp.health ?? opp.maxHealth) + healAmount, opp.maxHealth);
     } else if (targetId === 'player' || targetId === 'player-hero') {
       const plr = newState.players.player;
-      const plrMaxHp = (plr as any).maxHealth || 30;
-      plr.heroHealth = Math.min((plr.heroHealth ?? plr.health ?? plrMaxHp) + healAmount, plrMaxHp);
+      plr.heroHealth = Math.min((plr.heroHealth ?? plr.health ?? plr.maxHealth) + healAmount, plr.maxHealth);
     } else {
       debug.error(`Unknown hero target ID: ${targetId}`);
     }
@@ -2807,12 +2805,10 @@ function executeDestroySpell(
       const currentPlayer = state.currentTurn || 'player';
       if (currentPlayer === 'player') {
         const p = newState.players.player;
-        const pMaxHp = (p as any).maxHealth || 30;
-        p.heroHealth = Math.min(pMaxHp, (p.heroHealth ?? p.health ?? pMaxHp) + effect.secondaryValue);
+        p.heroHealth = Math.min(p.maxHealth, (p.heroHealth ?? p.health ?? p.maxHealth) + effect.secondaryValue);
       } else {
         const p = newState.players.opponent;
-        const pMaxHp = (p as any).maxHealth || 30;
-        p.heroHealth = Math.min(pMaxHp, (p.heroHealth ?? p.health ?? pMaxHp) + effect.secondaryValue);
+        p.heroHealth = Math.min(p.maxHealth, (p.heroHealth ?? p.health ?? p.maxHealth) + effect.secondaryValue);
       }
     }
   }
@@ -5537,8 +5533,8 @@ function executeArmorBasedOnMissingHealthSpell(
   const currentPlayer = state.currentTurn || 'player';
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
 
-  const maxHp = (playerState as any).maxHealth || 30;
-  const currentHealth = playerState.heroHealth ?? (playerState as any).health ?? maxHp;
+  const maxHp = playerState.maxHealth;
+  const currentHealth = playerState.heroHealth ?? playerState.health ?? maxHp;
   const missingHealth = Math.max(0, maxHp - currentHealth);
 
   playerState.heroArmor = (playerState.heroArmor || 0) + missingHealth;
@@ -7043,8 +7039,7 @@ function executeAoEWithOnKillSpell(
     if (healValue > 0) {
       const totalHeal = healValue * killed;
       const hero = newState.players[friendlyType];
-      const heroMaxHp = (hero as any).maxHealth || 30;
-      hero.heroHealth = Math.min((hero.heroHealth ?? hero.health ?? heroMaxHp) + totalHeal, heroMaxHp);
+      hero.heroHealth = Math.min((hero.heroHealth ?? hero.health ?? hero.maxHealth) + totalHeal, hero.maxHealth);
     }
     if (drawOnKill > 0) {
       for (let i = 0; i < drawOnKill * killed; i++) {

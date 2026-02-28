@@ -24,6 +24,7 @@
 
 import { hiveSync } from '../HiveSync';
 import type { HiveBroadcastResult } from '../HiveSync';
+import { HIVE_NODES } from './hiveConfig';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -108,14 +109,10 @@ export async function findExistingMatchResult(
 	matchId: string,
 	hiveUsername: string,
 ): Promise<string | null> {
-	const HIVE_NODES = [
-		'https://api.hive.blog',
-		'https://api.deathwing.me',
-		'https://api.openhive.network',
-	];
-
 	for (const node of HIVE_NODES) {
 		try {
+			const controller = new AbortController();
+			const timer = setTimeout(() => controller.abort(), 8000);
 			const res = await fetch(node, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -125,7 +122,9 @@ export async function findExistingMatchResult(
 					params: [hiveUsername, -1, 200],
 					id: 1,
 				}),
+				signal: controller.signal,
 			});
+			clearTimeout(timer);
 
 			const data = await res.json() as {
 				result?: [number, {

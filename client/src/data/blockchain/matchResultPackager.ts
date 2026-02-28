@@ -8,10 +8,11 @@ import type {
 	EloChange,
 } from './types';
 import { MATCH_RESULT_VERSION } from './types';
-import { hashMatchResult } from './hashUtils';
+import { hashMatchResult, sha256Hash, canonicalStringify } from './hashUtils';
 import { calculateXPRewards } from './cardXPSystem';
 import type { HiveCardAsset } from '../schemas/HiveTypes';
 import { getPlayerNonce, advancePlayerNonce } from './replayDB';
+import { useUnifiedCombatStore } from '../../game/stores/unifiedCombatStore';
 
 const ELO_K_FACTOR = 32;
 const RUNE_WIN_RANKED  = 10;
@@ -47,8 +48,8 @@ function extractPlayerData(
 	const isPlayerSide = side === 'player';
 
 	const cardIds = [
-		...player.battlefield.map(c => (c.card as any)?.id),
-		...player.graveyard.map(c => (c.card as any)?.id),
+		...player.battlefield.map(c => c.card?.id),
+		...player.graveyard.map(c => c.card?.id),
 	].filter((id): id is number => typeof id === 'number');
 
 	const uniqueCardIds = [...new Set(cardIds)];
@@ -64,9 +65,11 @@ function extractPlayerData(
 		username: isPlayerSide ? input.playerUsername : input.opponentUsername,
 		heroClass: player.heroClass || 'unknown',
 		heroId: isPlayerSide ? input.playerHeroId : input.opponentHeroId,
-		finalHp: (player as any).heroHealth ?? player.health ?? 0,
+		finalHp: player.heroHealth ?? player.health ?? 0,
 		damageDealt,
-		pokerHandsWon: 0, // TODO (Phase 2B): wire from pokerCombatSlice hand resolution counter
+		pokerHandsWon: side === 'player'
+			? useUnifiedCombatStore.getState().pokerHandsWonPlayer
+			: useUnifiedCombatStore.getState().pokerHandsWonOpponent,
 		cardsUsed: uniqueCardIds,
 	};
 }
@@ -141,7 +144,20 @@ export async function packageMatchResult(
 	return { ...resultWithoutHash, hash };
 }
 
-export function packMatchResultForChain(result: PackagedMatchResult): PackagedMatchResultOnChain {
+export function encodeCardIds(cardIds: number[]): string {
+	const sorted = [...new Set(cardIds)].sort((a, b) => a - b);
+	return sorted.map(id => id.toString(16).padStart(4, '0')).join('');
+}
+
+export function decodeCardIds(hex: string): number[] {
+	const ids: number[] = [];
+	for (let i = 0; i + 4 <= hex.length; i += 4) {
+		ids.push(parseInt(hex.slice(i, i + 4), 16));
+	}
+	return ids;
+}
+
+export async function packMatchResultForChain(result: PackagedMatchResult): Promise<PackagedMatchResultOnChain> {
 	const packed: PackagedMatchResultOnChain = {
 		m: result.matchId,
 		w: result.winner.username,
@@ -151,6 +167,14 @@ export function packMatchResultForChain(result: PackagedMatchResult): PackagedMa
 		s: result.seed,
 		v: result.version,
 	};
+	if (result.winner.cardsUsed.length > 0) {
+		packed.c = encodeCardIds(result.winner.cardsUsed);
+	}
+	// Compact hash: covers only on-chain fields so the replay engine can verify integrity.
+	// Tampering with `c` without updating `ch` → caught immediately.
+	// Tampering with both → caught once dual-sig verification on `ch` is added.
+	const chInput = { m: packed.m, w: packed.w, l: packed.l, n: packed.n, s: packed.s, v: packed.v, c: packed.c ?? '' };
+	packed.ch = (await sha256Hash(canonicalStringify(chInput))).slice(0, 16);
 	if (result.signatures) {
 		packed.sig = { b: result.signatures.broadcaster, c: result.signatures.counterparty };
 	}

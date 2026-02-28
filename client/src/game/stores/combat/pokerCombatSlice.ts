@@ -80,6 +80,8 @@ export const createPokerCombatSlice: StateCreator<
   pokerIsActive: false,
   mulliganComplete: false,
   isTransitioningHand: false,
+  pokerHandsWonPlayer: 0,
+  pokerHandsWonOpponent: 0,
 
   initializePoker: () => {
     set({
@@ -321,7 +323,9 @@ export const createPokerCombatSlice: StateCreator<
       pokerIsActive: true,
       mulliganComplete: skipMulligan,
       isTransitioningHand: false,
-      combatPhase: 'POKER_BETTING'
+      combatPhase: 'POKER_BETTING',
+      pokerHandsWonPlayer: 0,
+      pokerHandsWonOpponent: 0,
     });
     
     get().addLogEntry({
@@ -859,7 +863,7 @@ export const createPokerCombatSlice: StateCreator<
       
       const currentState = get();
       if (!currentState.pokerCombatState) return resolution;
-      
+
       set({
         pokerCombatState: {
           ...currentState.pokerCombatState,
@@ -891,7 +895,9 @@ export const createPokerCombatSlice: StateCreator<
               }
             }
           }
-        }
+        },
+        pokerHandsWonPlayer: winner === 'player' ? currentState.pokerHandsWonPlayer + 1 : currentState.pokerHandsWonPlayer,
+        pokerHandsWonOpponent: winner === 'opponent' ? currentState.pokerHandsWonOpponent + 1 : currentState.pokerHandsWonOpponent,
       });
       
       get().addLogEntry({
@@ -1046,7 +1052,9 @@ export const createPokerCombatSlice: StateCreator<
               }
             }
           }
-        }
+        },
+        pokerHandsWonPlayer: winner === 'player' ? stateForUpdate.pokerHandsWonPlayer + 1 : stateForUpdate.pokerHandsWonPlayer,
+        pokerHandsWonOpponent: winner === 'opponent' ? stateForUpdate.pokerHandsWonOpponent + 1 : stateForUpdate.pokerHandsWonOpponent,
       });
     }
     

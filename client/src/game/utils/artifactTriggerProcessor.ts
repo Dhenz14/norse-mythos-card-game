@@ -889,7 +889,7 @@ export function processArtifactStartOfTurn(
 			// Bonus at full health
 			if (effect.startOfTurn.bonusAtFullHealth) {
 				const player = state.players[playerType];
-				const maxHp = (player as any).maxHealth || 30;
+				const maxHp = player.maxHealth;
 				if ((player.heroHealth ?? 0) >= maxHp) {
 					if (effect.startOfTurn.bonusAtFullHealth.attack) {
 						target.currentAttack = (target.currentAttack ?? 0) + effect.startOfTurn.bonusAtFullHealth.attack;
@@ -937,7 +937,7 @@ export function processArtifactEndOfTurn(
 				(m.card as any).health ?? m.currentHealth ?? 0
 			);
 		}
-		const maxHp = (player as any).maxHealth || 30;
+		const maxHp = player.maxHealth;
 		player.heroHealth = Math.min((player.heroHealth ?? 0) + healAmt, maxHp);
 		logArtifactTrigger(state, playerType, `${name} restores ${healAmt} Health to all friendly characters`);
 	}
@@ -945,7 +945,7 @@ export function processArtifactEndOfTurn(
 	// Heal hero (Hera, Hestia)
 	if (eot.healHero) {
 		const healAmt = eot.healHero;
-		const maxHp = (player as any).maxHealth || 30;
+		const maxHp = player.maxHealth;
 		player.heroHealth = Math.min((player.heroHealth ?? 0) + healAmt, maxHp);
 		logArtifactTrigger(state, playerType, `${name} restores ${healAmt} Health to hero`);
 	}
@@ -1157,7 +1157,7 @@ export function processArtifactEndOfTurn(
 
 	// Full health armor (Hestia)
 	if (effect.fullHealthArmor) {
-		const maxHp = (player as any).maxHealth || 30;
+		const maxHp = player.maxHealth;
 		if ((player.heroHealth ?? 0) >= maxHp) {
 			player.heroArmor = (player.heroArmor || 0) + effect.fullHealthArmor;
 			logArtifactTrigger(state, playerType, `${name}: full Health — +${effect.fullHealthArmor} Armor`);
@@ -1177,7 +1177,7 @@ export function processArtifactEndOfTurn(
 
 	// Minion buff at full health (Gjallarhorn)
 	if (effect.minionBuffAtFullHealth) {
-		const maxHp = (player as any).maxHealth || 30;
+		const maxHp = player.maxHealth;
 		if ((player.heroHealth ?? 0) >= maxHp) {
 			const buff = effect.minionBuffAtFullHealth;
 			for (const m of player.battlefield) {

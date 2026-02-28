@@ -214,7 +214,7 @@ export function executeNorseHeroPower(
 
   // Handle secondary effects (e.g., heal hero after buff)
   if (power.secondaryValue && power.effectType === 'buff_single') {
-    const maxHp = (player as any).maxHealth || 30;
+    const maxHp = player.maxHealth;
     player.heroHealth = Math.min((player.heroHealth || maxHp) + power.secondaryValue, maxHp);
   }
 
@@ -308,7 +308,7 @@ function executeHealSingle(
   const player = state.players[playerType];
 
   if (targetId === 'hero') {
-    const maxHp = (player as any).maxHealth || 30;
+    const maxHp = player.maxHealth;
     player.heroHealth = Math.min((player.heroHealth || maxHp) + (power.value || 0), maxHp);
   } else if (targetId) {
     const targetMinion = player.battlefield.find(m => m.instanceId === targetId);
@@ -674,10 +674,10 @@ function executeHeal(
   if (!targetId) return state;
 
   if (targetId === 'hero' || targetId === 'friendly_hero') {
-    const maxHp = (player as any).maxHealth || 30;
+    const maxHp = player.maxHealth;
     player.heroHealth = Math.min((player.heroHealth || maxHp) + healAmount, maxHp);
   } else if (targetId === 'enemy_hero') {
-    const oppMaxHp = (opponent as any).maxHealth || 30;
+    const oppMaxHp = opponent.maxHealth;
     opponent.heroHealth = Math.min((opponent.heroHealth || oppMaxHp) + healAmount, oppMaxHp);
   } else {
     const friendlyMinion = player.battlefield.find(m => m.instanceId === targetId);
@@ -1466,7 +1466,7 @@ function executeHealAllFriendly(
   const player = state.players[playerType];
   const healAmount = power.value || 0;
 
-  const maxHp = (player as any).maxHealth || 30;
+  const maxHp = player.maxHealth;
   player.heroHealth = Math.min((player.heroHealth || maxHp) + healAmount, maxHp);
 
   player.battlefield.forEach(minion => {

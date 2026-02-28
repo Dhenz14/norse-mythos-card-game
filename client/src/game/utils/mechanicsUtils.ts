@@ -243,7 +243,7 @@ export const handleInspireEffects = (
         // Heal effect (e.g., Tournament Medic)
         if (inspireEffect.targetType === 'friendly_hero' && inspireEffect.value) {
           // Heal hero
-          const inspireMaxHp = (newGameState.players[player] as any).maxHealth || 30;
+          const inspireMaxHp = newGameState.players[player].maxHealth;
           newGameState.players[player].heroHealth = Math.min(
             inspireMaxHp,
             (newGameState.players[player].heroHealth ?? newGameState.players[player].health) + inspireEffect.value

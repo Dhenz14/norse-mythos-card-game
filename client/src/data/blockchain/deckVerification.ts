@@ -14,6 +14,8 @@
  */
 
 import { getCard } from './replayDB';
+import { sha256Hash } from './hashUtils';
+import { isHiveMode } from '@/game/config/featureFlags';
 
 export interface CardRef {
 	nft_id?: string;
@@ -38,8 +40,14 @@ export async function verifyDeckOwnership(
 	const invalidCards: string[] = [];
 	let checkedCount = 0;
 
+	const requireNft = isHiveMode();
 	for (const card of deck) {
-		if (!card.nft_id) continue; // dev/demo card — skip
+		if (!card.nft_id) {
+			if (requireNft) {
+				invalidCards.push(`no-nft:${card.cardId ?? 'unknown'}`);
+			}
+			continue;
+		}
 		checkedCount++;
 
 		const stored = await getCard(card.nft_id);
@@ -68,15 +76,14 @@ export async function isDeckOwned(
 
 /**
  * Compute a deterministic deck hash for the match_start anchor.
- * Sorted by nft_id so order doesn't matter.
+ * Uses SHA-256 truncated to 32 hex chars. Sorted by nft_id so order doesn't matter.
  * Non-NFT cards are included as their cardId string.
  */
-export function computeDeckHash(deck: CardRef[]): string {
+export async function computeDeckHash(deck: CardRef[]): Promise<string> {
 	const ids = deck
 		.map(c => c.nft_id ?? `card:${c.cardId ?? 'unknown'}`)
 		.sort()
 		.join(',');
-	// Sync hash for deck commitment — use btoa for a compact representation
-	// For async SHA-256, see hashUtils.sha256Hash
-	return btoa(ids).replace(/[=+/]/g, c => ({ '=': '', '+': '-', '/': '_' }[c] ?? c));
+	const fullHash = await sha256Hash(ids);
+	return fullHash.slice(0, 32);
 }

@@ -130,7 +130,7 @@ export function executeFrenzyEffect(
       // Heal the specified target
       if (effect.targetType === 'friendly_hero') {
         const healAmount = effect.value || 1;
-        const maxHp = (updatedState.players[playerId] as any).maxHealth || 30;
+        const maxHp = updatedState.players[playerId].maxHealth;
         updatedState.players[playerId].heroHealth = Math.min(
           maxHp,
           (updatedState.players[playerId].heroHealth ?? updatedState.players[playerId].health) + healAmount

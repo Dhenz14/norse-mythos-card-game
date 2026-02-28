@@ -1,14 +1,10 @@
 /**
- * HiveSync - Blockchain Communication (Core 5 Only)
- * 
- * Handles Hive Keychain integration for the 5 core transaction types:
- * - rp_team_submit
- * - rp_match_result
- * - rp_card_transfer
- * - rp_pack_open
- * - rp_reward_claim
- * 
- * Status: BLUEPRINT ONLY - Ready for implementation when Hive integration begins.
+ * HiveSync - Hive Keychain integration
+ *
+ * Handles broadcasting via Hive Keychain for core transaction types:
+ * rp_team_submit, rp_match_result, rp_card_transfer, rp_pack_open, rp_level_up
+ *
+ * Also provides login (requestSignBuffer) and signResultHash (dual-sig).
  */
 
 import {
@@ -76,10 +72,6 @@ export class HiveSync {
     return this.username;
   }
 
-  private generateTrxId(): string {
-    return `${RAGNAROK_CUSTOM_JSON_PREFIX}${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
   async broadcastCustomJson(
     type: RagnarokTransactionType,
     payload: Record<string, unknown>,
@@ -98,7 +90,6 @@ export class HiveSync {
       ...payload,
       app: RAGNAROK_APP_ID,
       action,
-      timestamp: Date.now(),
     });
 
     const keychainPromise = new Promise<HiveBroadcastResult>((resolve) => {
@@ -154,13 +145,6 @@ export class HiveSync {
     });
   }
 
-  async claimReward(rewardType: string, rewardId: string): Promise<HiveBroadcastResult> {
-    return this.broadcastCustomJson('rp_reward_claim', {
-      reward_type: rewardType,
-      reward_id: rewardId,
-    });
-  }
-
   /**
    * Verify account ownership via Keychain requestSignBuffer.
    * Signs a timestamped message with the user's Posting key — no transaction posted.
@@ -197,49 +181,18 @@ export class HiveSync {
     return Promise.race([keychainPromise, timeout]);
   }
 
-  hashDeck(cardIds: number[]): string {
-    const sorted = [...cardIds].sort((a, b) => a - b);
-    return btoa(sorted.join(',')).replace(/=/g, '');
-  }
-
-  generateMatchSeed(): string {
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 16)}`;
-  }
-
   async stampLevelUp(cardUid: string, cardId: number, newLevel: number): Promise<HiveBroadcastResult> {
-    if (!this.username) {
-      return { success: false, error: 'No username set' };
-    }
-    if (!this.isKeychainAvailable()) {
-      return { success: false, error: 'Hive Keychain not available' };
-    }
-
-    const hexPayload = `${cardUid}:${cardId.toString(16)}:${newLevel.toString(16)}`;
-    const jsonStr = JSON.stringify({ v: 1, d: hexPayload });
-
-    const keychainPromise = new Promise<HiveBroadcastResult>((resolve) => {
-      window.hive_keychain!.requestCustomJson(
-        this.username!,
-        'ragnarok_level_up',
-        'Posting',
-        jsonStr,
-        `Ragnarok: level up card ${cardUid}`,
-        (response) => {
-          resolve({
-            success: response.success,
-            trxId: response.result?.id,
-            blockNum: response.result?.block_num,
-            error: response.error || response.message,
-          });
-        }
-      );
+    return this.broadcastCustomJson('rp_level_up', {
+      nft_id: cardUid,
+      card_id: cardId,
+      new_level: newLevel,
     });
+  }
 
-    const timeout = new Promise<HiveBroadcastResult>((resolve) =>
-      setTimeout(() => resolve({ success: false, error: 'Keychain timeout (60s)' }), KEYCHAIN_TIMEOUT_MS)
-    );
-
-    return Promise.race([keychainPromise, timeout]);
+  async claimReward(rewardId: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('rp_reward_claim', {
+      reward_id: rewardId,
+    });
   }
 
   async signResultHash(hash: string): Promise<string> {

@@ -19,7 +19,7 @@ import type { HiveCardAsset, HiveMatchResult, HiveTokenBalance } from '../schema
 import { DEFAULT_TOKEN_BALANCE } from '../schemas/HiveTypes';
 
 const DB_NAME = 'ragnarok-chain-v1';
-const DB_VERSION = 4;
+const DB_VERSION = 6;
 
 let _db: IDBDatabase | null = null;
 
@@ -91,6 +91,18 @@ function openDB(): Promise<IDBDatabase> {
 
 			if (!db.objectStoreNames.contains('player_nonces')) {
 				db.createObjectStore('player_nonces', { keyPath: 'account' });
+			}
+
+			if (!db.objectStoreNames.contains('elo_ratings')) {
+				db.createObjectStore('elo_ratings', { keyPath: 'account' });
+			}
+
+			if (!db.objectStoreNames.contains('pending_slashes')) {
+				db.createObjectStore('pending_slashes', { keyPath: 'evidenceKey' });
+			}
+
+			if (!db.objectStoreNames.contains('reward_claims')) {
+				db.createObjectStore('reward_claims', { keyPath: 'claimKey' });
 			}
 		};
 
@@ -385,13 +397,112 @@ export const putPlayerNonce = (record: PlayerNonce): Promise<void> =>
 	idbPut('player_nonces', record);
 
 /**
- * Validate and advance nonce. Returns true if the nonce is higher than
- * previously seen (valid), false if it's a replay or duplicate.
- * Writes the new high-water mark when valid.
+ * Validate and advance nonce atomically. Returns true if the nonce is higher
+ * than previously seen (valid), false if it's a replay or duplicate.
+ * Uses a single IDB readwrite transaction to prevent race conditions.
  */
 export async function advancePlayerNonce(account: string, nonce: number): Promise<boolean> {
-	const current = await getPlayerNonce(account);
-	if (nonce <= current.highestMatchNonce) return false;
-	await putPlayerNonce({ account, highestMatchNonce: nonce });
-	return true;
+	const db = await openDB();
+	return new Promise((resolve, reject) => {
+		const tx = db.transaction('player_nonces', 'readwrite');
+		const store = tx.objectStore('player_nonces');
+		const getReq = store.get(account);
+		getReq.onsuccess = () => {
+			const current = (getReq.result as PlayerNonce | undefined) ?? { account, highestMatchNonce: 0 };
+			if (nonce <= current.highestMatchNonce) {
+				resolve(false);
+				return;
+			}
+			store.put({ account, highestMatchNonce: nonce });
+			resolve(true);
+		};
+		getReq.onerror = () => reject(getReq.error);
+		tx.onerror = () => reject(tx.error);
+	});
 }
+
+// ---------------------------------------------------------------------------
+// ELO Ratings API — chain-derived ELO per account
+// ---------------------------------------------------------------------------
+
+export interface EloRating {
+	account: string;
+	elo: number;
+	wins: number;
+	losses: number;
+	lastMatchBlock: number;
+}
+
+export async function getEloRating(account: string): Promise<EloRating> {
+	const stored = await idbGet<EloRating>('elo_ratings', account);
+	return stored ?? { account, elo: 1000, wins: 0, losses: 0, lastMatchBlock: 0 };
+}
+
+export const putEloRating = (rating: EloRating): Promise<void> =>
+	idbPut('elo_ratings', rating);
+
+// ---------------------------------------------------------------------------
+// Pending Slashes API — queued for retry when RPC was unreachable
+// ---------------------------------------------------------------------------
+
+export interface PendingSlash {
+	evidenceKey: string;
+	offender: string;
+	reason: string;
+	txA: string;
+	txB: string;
+	submittedBy: string;
+	blockNum: number;
+	timestamp: number;
+	retries: number;
+}
+
+export const getPendingSlash = (evidenceKey: string): Promise<PendingSlash | undefined> =>
+	idbGet<PendingSlash>('pending_slashes', evidenceKey);
+
+export const putPendingSlash = (slash: PendingSlash): Promise<void> =>
+	idbPut('pending_slashes', slash);
+
+export const deletePendingSlash = (evidenceKey: string): Promise<void> =>
+	idbDelete('pending_slashes', evidenceKey);
+
+export function getAllPendingSlashes(): Promise<PendingSlash[]> {
+	return openDB().then(
+		(db) =>
+			new Promise((resolve, reject) => {
+				const results: PendingSlash[] = [];
+				const req = db.transaction('pending_slashes', 'readonly')
+					.objectStore('pending_slashes')
+					.openCursor();
+				req.onsuccess = (e) => {
+					const cursor = (e.target as IDBRequest<IDBCursorWithValue>).result;
+					if (cursor) {
+						results.push(cursor.value as PendingSlash);
+						cursor.continue();
+					} else {
+						resolve(results);
+					}
+				};
+				req.onerror = () => reject(req.error);
+			}),
+	);
+}
+
+// ---------------------------------------------------------------------------
+// Reward Claims API — tracks which rewards each account has claimed
+// ---------------------------------------------------------------------------
+
+export interface RewardClaim {
+	claimKey: string; // `${account}:${rewardId}`
+	account: string;
+	rewardId: string;
+	claimedAt: number;
+	blockNum: number;
+	trxId: string;
+}
+
+export const getRewardClaim = (account: string, rewardId: string): Promise<RewardClaim | undefined> =>
+	idbGet<RewardClaim>('reward_claims', `${account}:${rewardId}`);
+
+export const putRewardClaim = (claim: RewardClaim): Promise<void> =>
+	idbPut('reward_claims', claim);

@@ -35,7 +35,7 @@ export function applyHealthAndDeckSizeModifier(
   // Apply health modifier - add to base health
   const additionalHealth = effect.healthValue || 0;
   if (additionalHealth > 0) {
-    (newState.players[playerType] as any).maxHealth += additionalHealth;
+    newState.players[playerType].maxHealth += additionalHealth;
     newState.players[playerType].health += additionalHealth;
     newState.players[playerType].heroHealth = newState.players[playerType].health;
 
@@ -45,7 +45,7 @@ export function applyHealthAndDeckSizeModifier(
         newState,
         'start_of_game_effect' as any,
         playerType,
-        `Prince Renathal increases ${playerType}'s maximum Health to ${(newState.players[playerType] as any).maxHealth}.`,
+        `Prince Renathal increases ${playerType}'s maximum Health to ${newState.players[playerType].maxHealth}.`,
         { cardId }
       )
     );
@@ -86,7 +86,7 @@ export function setHeroHealth(
   let newState = structuredClone(state);
   
   // Set max health to the specified value
-  (newState.players[playerType] as any).maxHealth = healthValue;
+  newState.players[playerType].maxHealth = healthValue;
   
   // Set current health to the max value (keep both fields in sync)
   newState.players[playerType].health = healthValue;
@@ -128,7 +128,7 @@ export function replaceHero(
   // 2. Replace the current hero with the new one
   
   // For now, we just set health to Lord Jaraxxus's health (15)
-  (newState.players[playerType] as any).maxHealth = 15;
+  newState.players[playerType].maxHealth = 15;
   newState.players[playerType].health = Math.min(newState.players[playerType].health, 15);
   newState.players[playerType].heroHealth = Math.min(newState.players[playerType].heroHealth ?? newState.players[playerType].health, 15);
   

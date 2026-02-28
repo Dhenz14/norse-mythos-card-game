@@ -28,6 +28,7 @@ import { useTargetingStore, predictAttackOutcome } from './targetingStore';
 import { logActivity } from './activityLogStore';
 import { CombatEventBus } from '../services/CombatEventBus';
 import { getAttack } from '../utils/cards/typeGuards';
+import { usePeerStore } from './peerStore';
 
 // ============== BATTLEFIELD DEBUG MONITOR ==============
 // Track battlefield changes with stack traces to identify root cause of minion disappearance
@@ -171,14 +172,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   heroTargetMode: false,
 
   initGame: () => {
+    isAttackProcessing = false;
     // Get selectedDeck and selectedHero from useGame store
     const { selectedDeck, selectedHero, selectedHeroId } = useGame.getState();
     // Convert null to undefined for function compatibility
     const deckId = selectedDeck === null ? undefined : selectedDeck;
     const hero = selectedHero === null ? undefined : selectedHero;
     const heroId = selectedHeroId === null ? undefined : selectedHeroId;
-    
-    set({ 
+
+    set({
       gameState: initializeGame(deckId, hero, heroId),
       selectedCard: null,
       hoveredCard: null,
@@ -404,11 +406,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       });
 
       // Phase 2: After AI thinking delay, process AI turn and switch back to player
+      // Skip AI processing if opponent is a real human (P2P connected)
       const aiDelay = 800 + Math.random() * 700; // 800-1500ms
       setTimeout(() => {
         const { gameState: currentState } = get();
         if (currentState.currentTurn !== 'opponent') return;
         if (currentState.gamePhase === 'game_over') return;
+
+        // If P2P connected, the opponent is a real human — do NOT run AI
+        if (usePeerStore.getState().connectionState === 'connected') return;
 
         const finalState = processAITurn(currentState);
 
@@ -565,92 +571,99 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const impactDelay = Math.round(attackAnimationDuration * 0.6);
       
       setTimeout(() => {
-        const { gameState: freshState } = get();
+        try {
+          const { gameState: freshState } = get();
 
-        const freshAttackerCard = freshState.players.player.battlefield.find(
-          c => c.instanceId === attackerId
-        );
+          const freshAttackerCard = freshState.players.player.battlefield.find(
+            c => c.instanceId === attackerId
+          );
 
-        if (!freshAttackerCard) {
+          if (!freshAttackerCard) {
+            targetingStore.cancelTargeting();
+            set({ attackingCard: null, selectedCard: null });
+            isAttackProcessing = false;
+            return;
+          }
+
+          const newState = processAttack(freshState, attackerId, defenderId);
+
+          // If the state changed, it means the attack was successful
+          if (newState !== freshState) {
+            // Play sound effect at impact time
+            if (audioStore && typeof audioStore.playSoundEffect === 'function') {
+              audioStore.playSoundEffect('attack');
+            }
+
+            // PROFESSIONAL EVENT-DRIVEN DAMAGE: Emit IMPACT_PHASE event
+            // All subscribers (PokerCombatStore, animations, sound, etc.) react independently
+            // This replaces the old direct bridge call for a cleaner architecture
+            if (freshAttackerCard) {
+              const damage = getAttack(freshAttackerCard.card);
+              const targetMinion = freshState.players.opponent.battlefield.find(c => c.instanceId === defenderId);
+              const counterDamage = targetMinion ? getAttack(targetMinion.card) : 0;
+
+              // Determine target type
+              const isHeroTarget = !defenderId || defenderId === 'opponent-hero';
+
+              // Emit impact phase event - all subscribers will react
+              CombatEventBus.emitImpactPhase({
+                attackerId: attackerId,
+                targetId: defenderId || 'opponent-hero',
+                damageToTarget: damage,
+                damageToAttacker: isHeroTarget ? 0 : counterDamage
+              });
+
+              // Emit damage resolved for complete event chain
+              CombatEventBus.emitDamageResolved({
+                sourceId: attackerId,
+                sourceType: 'minion',
+                targetId: defenderId || 'opponent-hero',
+                targetType: isHeroTarget ? 'hero' : 'minion',
+                actualDamage: damage,
+                damageSource: 'minion_attack',
+                attackerOwner: 'player',
+                defenderOwner: 'opponent',
+                targetHealthBefore: 0,
+                targetHealthAfter: 0,
+                targetDied: false,
+                counterDamage: isHeroTarget ? undefined : counterDamage
+              });
+            }
+
+            // Log attack to saga feed
+            if (freshAttackerCard) {
+              const targetName = defenderId === 'opponent-hero' || !defenderId
+                ? 'enemy hero'
+                : freshState.players.opponent.battlefield.find(c => c.instanceId === defenderId)?.card.name || 'enemy minion';
+
+              logActivity('attack', 'player', `${freshAttackerCard.card.name} attacked ${targetName}`, {
+                cardName: freshAttackerCard.card.name,
+                targetName: targetName,
+                value: getAttack(freshAttackerCard.card)
+              });
+            }
+
+            // Clear targeting state - attack completed
+            targetingStore.cancelTargeting();
+
+            // Update game state
+            set({
+              gameState: newState,
+              attackingCard: null,
+              selectedCard: null
+            });
+          } else {
+            // Attack failed - clear targeting
+            targetingStore.cancelTargeting();
+            set({ attackingCard: null });
+          }
+        } catch (err) {
+          debug.error('Error in attack setTimeout callback:', err);
           targetingStore.cancelTargeting();
           set({ attackingCard: null, selectedCard: null });
+        } finally {
           isAttackProcessing = false;
-          return;
         }
-        
-        const newState = processAttack(freshState, attackerId, defenderId);
-        
-        // If the state changed, it means the attack was successful
-        if (newState !== freshState) {
-          // Play sound effect at impact time
-          if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-            audioStore.playSoundEffect('attack');
-          }
-          
-          // PROFESSIONAL EVENT-DRIVEN DAMAGE: Emit IMPACT_PHASE event
-          // All subscribers (PokerCombatStore, animations, sound, etc.) react independently
-          // This replaces the old direct bridge call for a cleaner architecture
-          if (freshAttackerCard) {
-            const damage = getAttack(freshAttackerCard.card);
-            const targetMinion = freshState.players.opponent.battlefield.find(c => c.instanceId === defenderId);
-            const counterDamage = targetMinion ? getAttack(targetMinion.card) : 0;
-            
-            // Determine target type
-            const isHeroTarget = !defenderId || defenderId === 'opponent-hero';
-            
-            // Emit impact phase event - all subscribers will react
-            CombatEventBus.emitImpactPhase({
-              attackerId: attackerId,
-              targetId: defenderId || 'opponent-hero',
-              damageToTarget: damage,
-              damageToAttacker: isHeroTarget ? 0 : counterDamage
-            });
-            
-            // Emit damage resolved for complete event chain
-            CombatEventBus.emitDamageResolved({
-              sourceId: attackerId,
-              sourceType: 'minion',
-              targetId: defenderId || 'opponent-hero',
-              targetType: isHeroTarget ? 'hero' : 'minion',
-              actualDamage: damage,
-              damageSource: 'minion_attack',
-              attackerOwner: 'player',
-              defenderOwner: 'opponent',
-              targetHealthBefore: 0,
-              targetHealthAfter: 0,
-              targetDied: false,
-              counterDamage: isHeroTarget ? undefined : counterDamage
-            });
-          }
-          
-          // Log attack to saga feed
-          if (freshAttackerCard) {
-            const targetName = defenderId === 'opponent-hero' || !defenderId 
-              ? 'enemy hero' 
-              : freshState.players.opponent.battlefield.find(c => c.instanceId === defenderId)?.card.name || 'enemy minion';
-            
-            logActivity('attack', 'player', `${freshAttackerCard.card.name} attacked ${targetName}`, {
-              cardName: freshAttackerCard.card.name,
-              targetName: targetName,
-              value: getAttack(freshAttackerCard.card)
-            });
-          }
-          
-          // Clear targeting state - attack completed
-          targetingStore.cancelTargeting();
-
-          // Update game state
-          set({
-            gameState: newState,
-            attackingCard: null,
-            selectedCard: null
-          });
-        } else {
-          // Attack failed - clear targeting
-          targetingStore.cancelTargeting();
-          set({ attackingCard: null });
-        }
-        isAttackProcessing = false;
       }, impactDelay);
 
     } catch (error) {

@@ -92,7 +92,7 @@ export function healTarget(
   if (targetId === 'hero') {
     const p = updatedState.players[playerId];
     const currentHealth = p.heroHealth ?? p.health;
-    const maxHealth = (p as any).maxHealth || 30;
+    const maxHealth = p.maxHealth;
 
     p.heroHealth = Math.min(currentHealth + healAmount, maxHealth);
     

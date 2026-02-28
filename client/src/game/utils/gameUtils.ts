@@ -135,6 +135,7 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
       pendingOverload: 0
     },
     health: 30,
+    maxHealth: 30,
     heroHealth: 30,
     heroArmor: playerClass === 'warrior' ? 5 : 0, // Warriors start with armor
     armor: playerClass === 'warrior' ? 5 : 0, // Alternative property for armor
@@ -144,7 +145,7 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
     cardsPlayedThisTurn: 0, // Initialize cards played counter
     attacksPerformedThisTurn: 0 // Initialize attacks performed with weapon
   };
-  
+
   const opponent: Player = {
     id: 'opponent',
     name: 'Opponent',
@@ -154,13 +155,14 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
     graveyard: [], // Initialize empty graveyard
     secrets: [], // Initialize empty secrets
     weapon: undefined, // No weapon equipped initially
-    mana: { 
-      current: 1, 
+    mana: {
+      current: 1,
       max: 1,
       overloaded: 0,
       pendingOverload: 0
     },
     health: 30,
+    maxHealth: 30,
     heroHealth: 30,
     heroArmor: (opponentClass as string) === 'warrior' ? 5 : 0, // Warriors start with armor
     armor: (opponentClass as string) === 'warrior' ? 5 : 0, // Alternative property for armor

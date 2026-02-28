@@ -97,7 +97,7 @@ export function executeRenoJacksonBattlecry(
   
   // Get the player's current and maximum health
   const currentHealth = (newState.players[playerType].hero as any)?.health ?? newState.players[playerType].health;
-  const maxHealth = (newState.players[playerType].hero as any)?.maxHealth ?? (newState.players[playerType] as any).maxHealth ?? 30;
+  const maxHealth = newState.players[playerType].maxHealth;
   const healAmount = maxHealth - currentHealth;
 
   // Apply the full heal

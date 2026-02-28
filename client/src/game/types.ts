@@ -719,6 +719,7 @@ export interface Player {
   };
   mana: ManaPool;
   health: number;
+  maxHealth: number;
   heroHealth?: number;
   heroArmor?: number;
   armor?: number;
@@ -729,6 +730,7 @@ export interface Player {
   hero?: HeroState;
   deckSize?: number;
   heroId?: string;
+  hiveUsername?: string;
   tempStats?: {
     attack?: number;
     armor?: number;

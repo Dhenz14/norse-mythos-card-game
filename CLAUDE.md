@@ -17,6 +17,7 @@ npm run lint:fix  # ESLint with auto-fix
 
 - **[RULEBOOK.md](docs/RULEBOOK.md)** - Complete game rules, mechanics, and keywords
 - **[GAME_FLOW.md](docs/GAME_FLOW.md)** - Game flow diagrams and state management
+- **[HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md)** - Hive NFT architecture, chain replay, anti-cheat
 
 ## Architecture Overview
 
@@ -28,7 +29,8 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - **Styling**: Tailwind CSS 3.4
 - **3D/Effects**: React Three Fiber, Framer Motion, React Spring
 - **Backend**: Express + TypeScript (optional for static deploy)
-- **Database**: PostgreSQL with Drizzle ORM (optional)
+- **Database**: PostgreSQL with Drizzle ORM (optional) + IndexedDB for local chain replay
+- **Blockchain**: Hive Layer 1 NFTs (custom_json ops, deterministic reader, Keychain auth)
 
 ### Game Features
 - 1,300+ collectible cards across 4 mythological factions
@@ -42,6 +44,19 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 client/src/
 ├── core/                       # Pure game logic (migration in progress)
 │   └── index.ts                # Re-exports from game/ for future separation
+├── data/
+│   ├── blockchain/             # Hive NFT system (15 op types, 13 IDB stores)
+│   │   ├── replayEngine.ts     # Chain replay: fetch ops → apply rules → IndexedDB
+│   │   ├── replayRules.ts      # Deterministic rules (hash-pinned at genesis)
+│   │   ├── replayDB.ts         # IndexedDB v6: cards, matches, rewards, ELO, etc.
+│   │   ├── genesisAdmin.ts     # Admin: broadcastGenesis, broadcastSeal (one-time)
+│   │   ├── hiveConfig.ts       # Config: HIVE_NODES, RAGNAROK_ACCOUNT, NFT_ART_BASE_URL
+│   │   ├── tournamentRewards.ts # 11 milestone rewards (wins/ELO/matches → cards + RUNE)
+│   │   ├── nftMetadataGenerator.ts # ERC-1155 metadata with attributes
+│   │   └── index.ts            # Barrel exports
+│   ├── HiveSync.ts             # Keychain: login, broadcast, claimReward
+│   ├── HiveDataLayer.ts        # Zustand store: collection, stats, tokens
+│   └── schemas/HiveTypes.ts    # Core Hive types
 ├── game/
 │   ├── components/         # Card, combat, chess components
 │   ├── stores/             # Zustand state stores
@@ -59,17 +74,26 @@ client/src/
 │   │   └── modules/        # Hand evaluator, betting
 │   ├── effects/            # Effect handlers
 │   │   └── handlers/       # battlecry/, deathrattle/, spellEffect/
+│   ├── subscribers/        # BlockchainSubscriber (game end → chain packaging)
 │   ├── types/              # TypeScript type definitions
 │   └── utils/              # Game utilities
 │       ├── game/           # Game state utilities
+│       ├── cards/          # Card level scaling, evolution tiers
 │       ├── battlecry/      # Battlecry utilities
 │       └── spells/         # Spell utilities
 ├── components/ui/          # Shadcn/Radix UI components
 └── lib/                    # Utilities and helpers
 
 server/
-├── routes.ts               # API routes (packs, inventory)
-├── routes/                 # Route handlers
+├── routes.ts               # API routes + mount points
+├── routes/
+│   ├── chainRoutes.ts      # REST: leaderboard, ELO, cards, deck verify
+│   ├── matchmakingRoutes.ts # ELO-proximity matchmaking queue
+│   └── mockBlockchainRoutes.ts # In-memory mock (dev only)
+├── services/
+│   ├── chainIndexer.ts     # Server-side chain replay (optional convenience)
+│   ├── chainState.ts       # In-memory account state for global queries
+│   └── hiveAuth.ts         # Hive signature verification for server auth
 └── storage.ts              # Database interface
 ```
 
@@ -104,6 +128,15 @@ server/
 - `types.ts` - Main type definitions (CardData, GameState, Player)
 - `CardTypes.ts` - Card-specific types
 - `PokerCombatTypes.ts` - Poker combat types
+
+### Blockchain/NFT System (`data/blockchain/`)
+
+- **Chain Replay**: `replayEngine.ts` fetches ops from Hive → `replayRules.ts` applies deterministic rules → IndexedDB stores state
+- **15 op types**: genesis, mint, seal, transfer, burn, pack_open, reward_claim, match_start, match_result, level_up, queue_join, queue_leave, slash_evidence, team_submit, card_transfer
+- **13 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes
+- **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
+- **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
+- **Supply caps**: 16,000 total (10K common, 4K rare, 1.5K epic, 500 legendary)
 
 ## Bundle Architecture
 
@@ -145,6 +178,11 @@ client/src/game/types/CardTypes.ts
 # CSS Architecture - Only zones.css for positioning changes
 client/src/game/combat/styles/zones.css
 client/src/game/combat/styles/tokens.css
+
+# Blockchain layer - Deterministic rules locked at genesis
+client/src/data/blockchain/replayRules.ts
+client/src/data/blockchain/replayDB.ts
+client/src/data/blockchain/tournamentRewards.ts
 ```
 
 ## Known Architecture Decisions
@@ -160,6 +198,15 @@ client/src/game/combat/styles/tokens.css
 ### Highlander Support
 - `highlanderUtils.ts` implements deck duplicate checking
 - Supports Reno/Kazakus/Solia/Raza/Krul effects
+
+### Hive NFT System
+
+- Chain replay is client-side (browser runs deterministic rules, builds IndexedDB)
+- Server indexer is optional convenience (leaderboard, ELO lookup, cross-account queries)
+- Admin authority ends at seal — no ongoing admin key needed
+- Reward claims are self-serve (players verify own stats, no admin distribution)
+- ELO is chain-derived (K=32, computed from match_result history)
+- Supply caps hard-enforced by every reader
 
 ## Known Issues & Fixes
 
@@ -181,8 +228,23 @@ vercel --prod                 # Deploy to Vercel
 # or upload dist/ to any static host
 ```
 
-## Roadmap (Phase 2)
+## Roadmap
 
-- Hive Keychain authentication
-- NFT card ownership on Hive blockchain
-- Multiplayer via WebSocket/PartyKit
+### Completed (Phase 2A-2E)
+
+- Hive Keychain authentication + login
+- NFT card ownership on Hive Layer 1 (chain replay engine)
+- P2P multiplayer via WebRTC (PeerJS)
+- Commit-reveal seed exchange + seeded PRNG
+- Dual-signature match results + Merkle transcripts
+- On-chain matchmaking (queue_join/leave, ELO ladder)
+- Card XP/leveling/evolution system (chain-derived)
+- Self-serve tournament rewards (11 milestones)
+- Server-side chain indexer (leaderboard, ELO, deck verify)
+- Anti-cheat: PoW, slash evidence, nonce anti-replay
+
+### Next (Genesis Launch)
+
+- Create @ragnarok Hive account
+- Upload card art to CDN
+- Broadcast genesis + seal on Hive mainnet (two Keychain clicks, then admin key irrelevant)

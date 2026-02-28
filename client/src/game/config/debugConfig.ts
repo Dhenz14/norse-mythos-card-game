@@ -111,8 +111,8 @@ export const isAISimulationMode = (): boolean => {
   if (_isAISimulation) return true;
   if (typeof window === 'undefined') return false;
   try {
-    return window.location.pathname.includes('ai') || 
-           window.location.href.includes('ai-game');
+    const path = window.location.pathname;
+    return path === '/ai-game' || path === '/ai' || path.startsWith('/ai-game/');
   } catch {
     return false;
   }

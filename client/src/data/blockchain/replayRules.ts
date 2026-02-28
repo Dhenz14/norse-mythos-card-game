@@ -17,16 +17,22 @@ import {
 	getGenesisState, putGenesisState, getSupplyCounter, putSupplyCounter,
 	getMatchAnchor, putMatchAnchor, getQueueEntry, putQueueEntry,
 	deleteQueueEntry, putSlashedAccount, isAccountSlashed, advancePlayerNonce,
+	getCardsByOwner, getEloRating, putEloRating,
+	putPendingSlash, getAllPendingSlashes, deletePendingSlash,
+	getRewardClaim, putRewardClaim,
 } from './replayDB';
 import type { GenesisState, SupplyCounter, MatchAnchor } from './replayDB';
 import type { HiveCardAsset, HiveMatchResult } from '../schemas/HiveTypes';
 import { hiveEvents } from '../HiveEvents';
-import { verifyPoW, type PoWResult } from './proofOfWork';
-import { getLevelForXP } from './cardXPSystem';
-
-// The Ragnarok account that can mint during genesis. Set once from the genesis op.
-// For now, hardcoded — will be configurable via genesis broadcast.
-const RAGNAROK_ACCOUNT = 'ragnarok';
+import { verifyPoW, POW_CONFIG, type PoWResult, type PoWConfig } from './proofOfWork';
+import { getLevelForXP, calculateXPGain } from './cardXPSystem';
+import { decodeCardIds } from './matchResultPackager';
+import { sha256Hash, canonicalStringify } from './hashUtils';
+import { verifyHiveSignature } from './hiveSignatureVerifier';
+import { RAGNAROK_ACCOUNT, NFT_ART_BASE_URL } from './hiveConfig';
+import { getCardById } from '../../game/data/allCards';
+import { getCardArtPath } from '../../game/utils/art/artMapping';
+import { getRewardById } from './tournamentRewards';
 
 export interface RawOp {
 	id: string;           // normalized to "rp_<action>" by replay engine
@@ -89,10 +95,10 @@ export async function applyOp(op: RawOp): Promise<void> {
 			return applyPackOpen(op, payload);
 		case 'rp_level_up':
 			return applyLevelUp(op, payload);
-		case 'rp_team_submit':
-			return; // informational only, no IndexedDB state change
 		case 'rp_reward_claim':
 			return applyRewardClaim(op, payload);
+		case 'rp_team_submit':
+			return; // informational only, no IndexedDB state change
 		default:
 			return; // unknown op — ignore
 	}
@@ -148,7 +154,10 @@ async function applyMint(
 	if (genesis.sealed) return; // post-seal: all mints permanently ignored
 
 	const to = payload.to as string;
-	const cards = payload.cards as Array<{ nft_id: string; card_id: string; rarity: string }> | undefined;
+	const cards = payload.cards as Array<{
+		nft_id: string; card_id: string; rarity: string;
+		name?: string; type?: string; race?: string; image?: string; foil?: string;
+	}> | undefined;
 	if (!to || !cards || !Array.isArray(cards)) return;
 
 	for (const card of cards) {
@@ -162,16 +171,25 @@ async function applyMint(
 		const existing = await getCard(card.nft_id);
 		if (existing) continue;
 
+		const parsedCardId = typeof card.card_id === 'number' ? card.card_id : parseInt(card.card_id, 10) || 0;
+		const cardDef = getCardById(parsedCardId);
+		const cardName = (card.name as string) || cardDef?.name || '';
+		const artPath = card.image || (cardName ? getCardArtPath(cardName) : null);
+
 		const asset: HiveCardAsset = {
 			uid: card.nft_id,
-			cardId: typeof card.card_id === 'number' ? card.card_id : parseInt(card.card_id, 10) || 0,
+			cardId: parsedCardId,
 			ownerId: to,
 			edition: 'alpha',
-			foil: 'standard',
+			foil: (card.foil as HiveCardAsset['foil']) || 'standard',
 			rarity: card.rarity || 'common',
 			level: 1,
 			xp: 0,
 			lastTransferBlock: op.blockNum,
+			name: cardName,
+			type: (card.type as string) || cardDef?.type || 'minion',
+			race: card.race || cardDef?.race || undefined,
+			image: artPath ? (artPath.startsWith('http') ? artPath : `${NFT_ART_BASE_URL}${artPath}`) : undefined,
 		};
 
 		await putCard(asset);
@@ -232,14 +250,13 @@ async function applyMatchStart(
 	const matchId = (payload.match_id as string);
 	if (!matchId) return;
 
-	// Validate PoW if present
+	// PoW REQUIRED for match_start (32 challenges × 4-bit)
 	const pow = payload.pow as { nonces?: number[] } | undefined;
-	if (pow?.nonces) {
-		const payloadForPow = { ...payload };
-		delete payloadForPow.pow;
-		const valid = await verifyPoWFromPayload(payloadForPow, pow.nonces, 32, 4);
-		if (!valid) return; // invalid PoW — silently ignored
-	}
+	if (!pow?.nonces) { rejectOp(op, 'match_start missing required PoW'); return; }
+	const payloadForPow = { ...payload };
+	delete payloadForPow.pow;
+	const powValid = await verifyPoWFromPayload(payloadForPow, pow.nonces, POW_CONFIG.MATCH_START);
+	if (!powValid) { rejectOp(op, 'match_start PoW verification failed'); return; }
 
 	const existing = await getMatchAnchor(matchId);
 
@@ -337,22 +354,74 @@ async function applyMatchResult(
 	const nonceOk = await advancePlayerNonce(op.broadcaster, nonce);
 	if (!nonceOk) { rejectOp(op, `nonce ${nonce} is not higher than last seen`); return; }
 
-	// Dual-signature validation (compact: sig.b/sig.c, legacy: signatures.broadcaster/counterparty)
-	const matchType = (isCompact ? 'ranked' : (payload.matchType as string)) ?? 'casual';
-	if (isCompact) {
-		const sig = payload.sig as { b?: string; c?: string } | undefined;
-		if (matchType === 'ranked' && (!sig?.b || !sig?.c)) {
-			rejectOp(op, 'ranked match missing dual signatures');
-			return;
-		}
-	} else {
-		const sigs = payload.signatures as { broadcaster?: string; counterparty?: string } | undefined;
-		if (matchType === 'ranked' && (!sigs?.broadcaster || !sigs?.counterparty)) {
-			rejectOp(op, 'ranked match missing dual signatures');
+	// PoW validation — REQUIRED for match_result (64 challenges × 6-bit)
+	const pow = payload.pow as { nonces?: number[] } | undefined;
+	if (!pow?.nonces) {
+		rejectOp(op, 'match_result missing required PoW');
+		return;
+	}
+	const payloadForPow = { ...payload };
+	delete payloadForPow.pow;
+	const powValid = await verifyPoWFromPayload(payloadForPow, pow.nonces, POW_CONFIG.MATCH_RESULT);
+	if (!powValid) { rejectOp(op, 'match_result PoW verification failed'); return; }
+
+	// Compact hash verification BEFORE persisting — recompute sha256 and compare to `ch`
+	const cardHex = (isCompact ? payload.c : undefined) as string | undefined;
+	const compactHash = (isCompact ? payload.ch : undefined) as string | undefined;
+	const version = Number(isCompact ? payload.v : 0);
+
+	if (isCompact && compactHash && cardHex) {
+		const chInput = { m: mId, w: winner, l: loser ?? '', n: nonce, s: seed, v: version, c: cardHex };
+		const expectedCh = (await sha256Hash(canonicalStringify(chInput))).slice(0, 16);
+		if (expectedCh !== compactHash) {
+			rejectOp(op, `compact hash mismatch: expected=${expectedCh}, got=${compactHash}`);
 			return;
 		}
 	}
 
+	// Cryptographic dual-signature verification for ranked matches
+	const matchType = (isCompact ? 'ranked' : (payload.matchType as string)) ?? 'casual';
+	const counterparty = op.broadcaster === p1Username ? p2Username : p1Username;
+
+	if (matchType === 'ranked') {
+		const sigMessage = isCompact
+			? `${mId}:${winner}:${loser ?? ''}:${nonce}`
+			: `${mId}:${winner}`;
+
+		let broadcasterSig: string | undefined;
+		let counterpartySig: string | undefined;
+
+		if (isCompact) {
+			const sig = payload.sig as { b?: string; c?: string } | undefined;
+			broadcasterSig = sig?.b;
+			counterpartySig = sig?.c;
+		} else {
+			const sigs = payload.signatures as { broadcaster?: string; counterparty?: string } | undefined;
+			broadcasterSig = sigs?.broadcaster;
+			counterpartySig = sigs?.counterparty;
+		}
+
+		if (!broadcasterSig || !counterpartySig) {
+			rejectOp(op, 'ranked match missing dual signatures');
+			return;
+		}
+
+		const [broadcasterValid, counterpartyValid] = await Promise.all([
+			verifyHiveSignature(op.broadcaster, sigMessage, broadcasterSig),
+			verifyHiveSignature(counterparty, sigMessage, counterpartySig),
+		]);
+
+		if (!broadcasterValid) {
+			rejectOp(op, `broadcaster signature verification failed for ${op.broadcaster}`);
+			return;
+		}
+		if (!counterpartyValid) {
+			rejectOp(op, `counterparty signature verification failed for ${counterparty}`);
+			return;
+		}
+	}
+
+	// All validation passed — NOW persist the match
 	const emptyPlayerData = { hiveUsername: '', heroIds: [] as string[], kingId: '', finalHp: 0, damageDealt: 0, pokerHandsWon: 0 };
 
 	const match: HiveMatchResult = {
@@ -375,6 +444,61 @@ async function applyMatchResult(
 
 	await putMatch(match);
 	hiveEvents.emitMatchEnded(match);
+
+	// Deterministic ELO derivation (K=32 standard)
+	if (matchType === 'ranked' && p2Username) {
+		const winnerElo = await getEloRating(winner);
+		const loserAccount = winner === p1Username ? p2Username : p1Username;
+		const loserElo = await getEloRating(loserAccount);
+
+		const expectedWinner = 1 / (1 + Math.pow(10, (loserElo.elo - winnerElo.elo) / 400));
+		const expectedLoser = 1 - expectedWinner;
+		const K = 32;
+
+		const newWinnerElo = Math.round(winnerElo.elo + K * (1 - expectedWinner));
+		const newLoserElo = Math.round(loserElo.elo + K * (0 - expectedLoser));
+
+		await putEloRating({
+			...winnerElo,
+			elo: newWinnerElo,
+			wins: winnerElo.wins + 1,
+			lastMatchBlock: op.blockNum,
+		});
+		await putEloRating({
+			...loserElo,
+			elo: Math.max(newLoserElo, 100),
+			losses: loserElo.losses + 1,
+			lastMatchBlock: op.blockNum,
+		});
+	}
+
+	// Deterministic RUNE reward derivation (10 RUNE win, 3 RUNE loss for ranked)
+	if (matchType === 'ranked') {
+		const winnerBalance = await getTokenBalance(winner);
+		await putTokenBalance({ ...winnerBalance, RUNE: winnerBalance.RUNE + 10 });
+		hiveEvents.emitTokenUpdate('RUNE', winnerBalance.RUNE + 10, 10);
+
+		if (p2Username) {
+			const loserAccount = winner === p1Username ? p2Username : p1Username;
+			const loserBalance = await getTokenBalance(loserAccount);
+			await putTokenBalance({ ...loserBalance, RUNE: loserBalance.RUNE + 3 });
+		}
+	}
+
+	// Chain-derived XP: parse `c` field (hex-encoded winner card IDs) and
+	// accumulate XP on every NFT the winner owns with a matching cardId.
+	if (cardHex && winner) {
+		const winnerCardIds = new Set(decodeCardIds(cardHex));
+		const winnerNFTs = await getCardsByOwner(winner);
+
+		for (const nft of winnerNFTs) {
+			if (!winnerCardIds.has(nft.cardId)) continue;
+			const rarity = nft.rarity || 'common';
+			const xpGain = calculateXPGain(rarity, true, false);
+			if (xpGain <= 0) continue;
+			await putCard({ ...nft, xp: nft.xp + xpGain });
+		}
+	}
 }
 
 function buildLegacyPlayer(p: Record<string, unknown>): HiveMatchResult['player1'] {
@@ -396,14 +520,13 @@ async function applyQueueJoin(
 	op: RawOp,
 	payload: Record<string, unknown>,
 ): Promise<void> {
-	// Validate PoW
+	// PoW REQUIRED for queue_join (32 challenges × 4-bit)
 	const pow = payload.pow as { nonces?: number[] } | undefined;
-	if (pow?.nonces) {
-		const payloadForPow = { ...payload };
-		delete payloadForPow.pow;
-		const valid = await verifyPoWFromPayload(payloadForPow, pow.nonces, 32, 4);
-		if (!valid) return;
-	}
+	if (!pow?.nonces) { rejectOp(op, 'queue_join missing required PoW'); return; }
+	const payloadForPow = { ...payload };
+	delete payloadForPow.pow;
+	const powValid = await verifyPoWFromPayload(payloadForPow, pow.nonces, POW_CONFIG.QUEUE_JOIN);
+	if (!powValid) { rejectOp(op, 'queue_join PoW verification failed'); return; }
 
 	// No duplicate queue entries (auto-expire stale entries after 10 minutes)
 	const QUEUE_EXPIRY_MS = 10 * 60 * 1000;
@@ -416,10 +539,13 @@ async function applyQueueJoin(
 		}
 	}
 
+	// Use chain-derived ELO, not client-reported (prevents spoofing)
+	const chainElo = await getEloRating(op.broadcaster);
+
 	await putQueueEntry({
 		account: op.broadcaster,
 		mode: (payload.mode as string) ?? 'ranked',
-		elo: Number(payload.elo ?? 1000),
+		elo: chainElo.elo,
 		peerId: (payload.peer_id as string) ?? '',
 		deckHash: (payload.deck_hash as string) ?? '',
 		timestamp: op.timestamp,
@@ -450,22 +576,147 @@ async function applySlashEvidence(
 
 	if (!offender || !reason || !txA || !txB) return;
 	if (txA === txB) return;
-
-	// Already slashed — idempotent
 	if (await isAccountSlashed(offender)) return;
 
-	// NOTE: Full cross-chain verification (fetching tx_a and tx_b to confirm
-	// contradiction) requires an async chain lookup. For now, the replay engine
-	// trusts that the evidence was submitted honestly. A future enhancement can
-	// add on-chain tx verification here before applying the slash.
-	await putSlashedAccount({
-		account: offender,
-		reason,
-		evidenceTxA: txA,
-		evidenceTxB: txB,
-		slashedAtBlock: op.blockNum,
-		submittedBy: op.broadcaster,
-	});
+	const verified = await verifySlashEvidenceOnChain(offender, txA, txB);
+	if (verified === 'confirmed') {
+		await putSlashedAccount({
+			account: offender,
+			reason,
+			evidenceTxA: txA,
+			evidenceTxB: txB,
+			slashedAtBlock: op.blockNum,
+			submittedBy: op.broadcaster,
+		});
+	} else if (verified === 'rpc_unreachable') {
+		const evidenceKey = `${txA}:${txB}`;
+		await putPendingSlash({
+			evidenceKey,
+			offender,
+			reason,
+			txA,
+			txB,
+			submittedBy: op.broadcaster,
+			blockNum: op.blockNum,
+			timestamp: op.timestamp,
+			retries: 0,
+		});
+	}
+	// verified === 'invalid' → silently rejected
+}
+
+const SLASH_VERIFY_NODES = [
+	'https://api.hive.blog',
+	'https://api.deathwing.me',
+	'https://api.openhive.network',
+];
+const SLASH_FETCH_TIMEOUT = 8000;
+
+async function fetchHiveTx(trxId: string): Promise<Record<string, unknown> | null> {
+	for (const node of SLASH_VERIFY_NODES) {
+		const controller = new AbortController();
+		const timer = setTimeout(() => controller.abort(), SLASH_FETCH_TIMEOUT);
+		try {
+			const res = await fetch(node, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					jsonrpc: '2.0',
+					method: 'condenser_api.get_transaction',
+					params: [trxId],
+					id: 1,
+				}),
+				signal: controller.signal,
+			});
+			const data = await res.json();
+			clearTimeout(timer);
+			if (data.result) return data.result as Record<string, unknown>;
+			return null;
+		} catch {
+			clearTimeout(timer);
+		}
+	}
+	return null;
+}
+
+async function verifySlashEvidenceOnChain(
+	offender: string,
+	txA: string,
+	txB: string,
+): Promise<'confirmed' | 'invalid' | 'rpc_unreachable'> {
+	try {
+		const [resultA, resultB] = await Promise.all([fetchHiveTx(txA), fetchHiveTx(txB)]);
+		if (!resultA || !resultB) return 'rpc_unreachable';
+
+		const opsA = (resultA.operations as Array<[string, Record<string, unknown>]>) ?? [];
+		const opsB = (resultB.operations as Array<[string, Record<string, unknown>]>) ?? [];
+
+		const ragOpsA = opsA.filter(([type, data]) =>
+			type === 'custom_json' && (
+				(data.id as string)?.startsWith('rp_') ||
+				(data.id as string) === 'ragnarok-cards'
+			) && (
+				(data.required_posting_auths as string[])?.includes(offender) ||
+				(data.required_auths as string[])?.includes(offender)
+			)
+		);
+		const ragOpsB = opsB.filter(([type, data]) =>
+			type === 'custom_json' && (
+				(data.id as string)?.startsWith('rp_') ||
+				(data.id as string) === 'ragnarok-cards'
+			) && (
+				(data.required_posting_auths as string[])?.includes(offender) ||
+				(data.required_auths as string[])?.includes(offender)
+			)
+		);
+
+		if (ragOpsA.length === 0 || ragOpsB.length === 0) return 'invalid';
+
+		// Both txs must contain ragnarok ops from the offender
+		// and must represent contradictory state (e.g. two match_result for same match)
+		const jsonA = ragOpsA[0][1].json as string;
+		const jsonB = ragOpsB[0][1].json as string;
+		try {
+			const parsedA = JSON.parse(jsonA) as Record<string, unknown>;
+			const parsedB = JSON.parse(jsonB) as Record<string, unknown>;
+			const matchA = (parsedA.m ?? parsedA.matchId ?? parsedA.match_id) as string;
+			const matchB = (parsedB.m ?? parsedB.matchId ?? parsedB.match_id) as string;
+			if (matchA && matchB && matchA === matchB) return 'confirmed';
+		} catch { /* malformed JSON */ }
+
+		return 'invalid';
+	} catch {
+		return 'rpc_unreachable';
+	}
+}
+
+export async function retryPendingSlashes(): Promise<void> {
+	const MAX_RETRIES = 3;
+	const pending = await getAllPendingSlashes();
+
+	for (const slash of pending) {
+		if (slash.retries >= MAX_RETRIES) {
+			await deletePendingSlash(slash.evidenceKey);
+			continue;
+		}
+
+		const verified = await verifySlashEvidenceOnChain(slash.offender, slash.txA, slash.txB);
+		if (verified === 'confirmed') {
+			await putSlashedAccount({
+				account: slash.offender,
+				reason: slash.reason,
+				evidenceTxA: slash.txA,
+				evidenceTxB: slash.txB,
+				slashedAtBlock: slash.blockNum,
+				submittedBy: slash.submittedBy,
+			});
+			await deletePendingSlash(slash.evidenceKey);
+		} else if (verified === 'invalid') {
+			await deletePendingSlash(slash.evidenceKey);
+		} else {
+			await putPendingSlash({ ...slash, retries: slash.retries + 1 });
+		}
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -542,7 +793,7 @@ async function applyLevelUp(
 	if (card.ownerId !== op.broadcaster) return;
 	if (newLevel <= card.level) return; // already at or past this level (idempotent)
 
-	// Validate: the card's accumulated local XP must actually warrant this level
+	// Validate: chain-derived XP (accumulated by applyMatchResult from `c` field)
 	const rarity = card.rarity || 'common';
 	const expectedLevel = getLevelForXP(rarity, card.xp);
 	if (newLevel > expectedLevel) {
@@ -551,34 +802,6 @@ async function applyLevelUp(
 	}
 
 	await putCard({ ...card, level: newLevel });
-}
-
-// ---------------------------------------------------------------------------
-// rp_reward_claim — accumulate RUNE / VALKYRIE / SEASON_POINTS token rewards
-// ---------------------------------------------------------------------------
-
-const VALID_TOKEN_TYPES = new Set(['RUNE', 'VALKYRIE', 'SEASON_POINTS']);
-
-async function applyRewardClaim(
-	op: RawOp,
-	payload: Record<string, unknown>,
-): Promise<void> {
-	const rewardType = (payload.reward_type as string)?.toUpperCase();
-	const amount = Number(payload.amount ?? 0);
-
-	if (!rewardType || !VALID_TOKEN_TYPES.has(rewardType) || amount <= 0) return;
-
-	const balance = await getTokenBalance(op.broadcaster);
-
-	const updated = { ...balance };
-	if (rewardType === 'RUNE') updated.RUNE += amount;
-	else if (rewardType === 'VALKYRIE') updated.VALKYRIE += amount;
-	else if (rewardType === 'SEASON_POINTS') updated.SEASON_POINTS += amount;
-
-	updated.lastClaimTimestamp = op.timestamp;
-	await putTokenBalance(updated);
-
-	hiveEvents.emitTokenUpdate(rewardType, updated[rewardType as keyof typeof updated] as number, amount);
 }
 
 // ---------------------------------------------------------------------------
@@ -643,6 +866,14 @@ async function applyPackOpen(
 		s = lcgNext(s);
 		const rarityRoll = s % 100;
 		const rarity = rarityRoll < 1 ? 'legendary' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
+
+		// Supply cap enforcement — check before minting each card
+		const counter = await getSupplyCounter(rarity);
+		if (counter && counter.minted >= counter.cap) continue;
+
+		const cardDef = getCardById(cardIds[i]);
+		const artPath = cardDef ? getCardArtPath(cardDef.name) : null;
+
 		const card: HiveCardAsset = {
 			uid,
 			cardId: cardIds[i],
@@ -653,8 +884,111 @@ async function applyPackOpen(
 			level: 1,
 			xp: 0,
 			lastTransferBlock: op.blockNum,
+			name: cardDef?.name ?? '',
+			type: cardDef?.type ?? 'minion',
+			race: cardDef?.race || undefined,
+			image: artPath ? `${NFT_ART_BASE_URL}${artPath}` : undefined,
 		};
 		await putCard(card);
+
+		if (counter) {
+			await putSupplyCounter({ ...counter, minted: counter.minted + 1 });
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
+// rp_reward_claim — self-serve milestone reward claiming
+// ---------------------------------------------------------------------------
+
+async function applyRewardClaim(
+	op: RawOp,
+	payload: Record<string, unknown>,
+): Promise<void> {
+	const rewardId = payload.reward_id as string;
+	if (!rewardId) { rejectOp(op, 'missing reward_id'); return; }
+
+	const genesis = await getGenesisState();
+	if (!genesis.version) { rejectOp(op, 'no genesis — rewards unavailable'); return; }
+
+	const reward = getRewardById(rewardId);
+	if (!reward) { rejectOp(op, `unknown reward: ${rewardId}`); return; }
+
+	const existing = await getRewardClaim(op.broadcaster, rewardId);
+	if (existing) return; // already claimed — idempotent
+
+	const elo = await getEloRating(op.broadcaster);
+	if (!checkRewardCondition(reward.condition, elo)) {
+		rejectOp(op, `condition not met for ${rewardId} (needs ${reward.condition.type} >= ${reward.condition.value})`);
+		return;
+	}
+
+	const edition: HiveCardAsset['edition'] = op.blockNum < 1_000_000 ? 'alpha' : 'beta';
+
+	for (let i = 0; i < reward.cards.length; i++) {
+		const rewardCard = reward.cards[i];
+		const uid = `reward-${rewardId}-${op.broadcaster}-${i}`;
+
+		const existingCard = await getCard(uid);
+		if (existingCard) continue; // idempotent
+
+		const counter = await getSupplyCounter(rewardCard.rarity);
+		if (counter && counter.minted >= counter.cap) continue;
+
+		const gameDef = getCardById(rewardCard.cardId);
+		const artPath = gameDef ? getCardArtPath(gameDef.name) : null;
+
+		const card: HiveCardAsset = {
+			uid,
+			cardId: rewardCard.cardId,
+			ownerId: op.broadcaster,
+			edition,
+			foil: rewardCard.foil ?? 'standard',
+			rarity: rewardCard.rarity,
+			level: 1,
+			xp: 0,
+			lastTransferBlock: op.blockNum,
+			name: gameDef?.name ?? '',
+			type: gameDef?.type ?? 'minion',
+			race: gameDef?.race || undefined,
+			image: artPath ? `${NFT_ART_BASE_URL}${artPath}` : undefined,
+		};
+		await putCard(card);
+
+		if (counter) {
+			await putSupplyCounter({ ...counter, minted: counter.minted + 1 });
+		}
+	}
+
+	if (reward.runeBonus > 0) {
+		const balance = await getTokenBalance(op.broadcaster);
+		await putTokenBalance({ ...balance, RUNE: balance.RUNE + reward.runeBonus });
+		hiveEvents.emitTokenUpdate('RUNE', balance.RUNE + reward.runeBonus, reward.runeBonus);
+	}
+
+	await putRewardClaim({
+		claimKey: `${op.broadcaster}:${rewardId}`,
+		account: op.broadcaster,
+		rewardId,
+		claimedAt: op.timestamp,
+		blockNum: op.blockNum,
+		trxId: op.trxId,
+	});
+}
+
+function checkRewardCondition(
+	condition: { type: string; value: number },
+	elo: { elo: number; wins: number; losses: number },
+): boolean {
+	switch (condition.type) {
+		case 'wins_milestone':
+			return elo.wins >= condition.value;
+		case 'elo_milestone':
+			return elo.elo >= condition.value;
+		case 'matches_played':
+			return (elo.wins + elo.losses) >= condition.value;
+		default:
+			return false;
 	}
 }
 
@@ -665,15 +999,12 @@ async function applyPackOpen(
 async function verifyPoWFromPayload(
 	payload: Record<string, unknown>,
 	nonces: number[],
-	count: number,
-	difficulty: number,
+	config: PoWConfig,
 ): Promise<boolean> {
 	try {
-		const { sha256Hash } = await import('./hashUtils');
-		const { canonicalStringify } = await import('./hashUtils');
 		const payloadHash = await sha256Hash(canonicalStringify(payload));
 		const result: PoWResult = { nonces };
-		return verifyPoW(payloadHash, result, { count, difficulty });
+		return verifyPoW(payloadHash, result, config);
 	} catch {
 		return false;
 	}

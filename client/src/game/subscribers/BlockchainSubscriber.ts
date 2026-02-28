@@ -3,7 +3,7 @@ import type { GameEndedEvent } from '@/core/events/GameEvents';
 import { useGameStore } from '../stores/gameStore';
 import { useTransactionQueueStore } from '@/data/blockchain/transactionQueueStore';
 import { packageMatchResult, packMatchResultForChain } from '@/data/blockchain/matchResultPackager';
-import { isBlockchainPackagingEnabled } from '../config/featureFlags';
+import { isBlockchainPackagingEnabled, isHiveMode } from '../config/featureFlags';
 import { generateMatchId, useHiveDataStore } from '@/data/HiveDataLayer';
 import { debug } from '../config/debugConfig';
 import type { CardUidMapping, PackagedMatchResult } from '@/data/blockchain/types';
@@ -12,6 +12,9 @@ import { getLevelForXP } from '@/data/blockchain/cardXPSystem';
 import { usePeerStore } from '../stores/peerStore';
 import { hiveSync } from '@/data/HiveSync';
 import { getActiveTranscript, clearTranscript } from '@/data/blockchain/transcriptBuilder';
+import { registerAccount, fetchPlayerElo } from '@/data/chainAPI';
+import { computePoW, POW_CONFIG } from '@/data/blockchain/proofOfWork';
+import { sha256Hash, canonicalStringify } from '@/data/blockchain/hashUtils';
 
 type UnsubscribeFn = () => void;
 
@@ -31,7 +34,7 @@ let lastProcessedMatchKey = '';
 
 /**
  * Builds a CardUidMapping array from all card instances a player used.
- * Uses nft_uid if the card is a real NFT, otherwise synthesizes a
+ * Uses nft_id if the card is a real NFT, otherwise synthesizes a
  * deterministic test UID so XP calculations produce real data in test mode.
  */
 function extractCardUidsFromGameState(side: 'player' | 'opponent'): CardUidMapping[] {
@@ -50,14 +53,15 @@ function extractCardUidsFromGameState(side: 'player' | 'opponent'): CardUidMappi
 		...(player.hand ?? []),
 	];
 
+	const hiveMode = isHiveMode();
 	for (const instance of allInstances) {
-		const cardId = (instance.card as any)?.id;
+		const cardId = instance.card?.id;
 		if (typeof cardId !== 'number') continue;
 
-		// Real NFT uid takes priority; fall back to deterministic test uid
-		const uid: string =
-			(instance as any).nft_uid ??
-			`test_${side}_${cardId}_${instance.instanceId ?? '0'}`;
+		const nftUid: string | undefined = instance.nft_id;
+		if (hiveMode && !nftUid) continue;
+
+		const uid: string = nftUid ?? `test_${side}_${cardId}_${instance.instanceId ?? '0'}`;
 
 		if (seenUids.has(uid)) continue;
 		seenUids.add(uid);
@@ -95,9 +99,9 @@ function buildCardRarities(
 		];
 
 		for (const instance of allInstances) {
-			const cardId = (instance.card as any)?.id;
+			const cardId = instance.card?.id;
 			if (typeof cardId !== 'number' || !relevantIds.has(cardId) || rarities.has(cardId)) continue;
-			const rarity: string = (instance.card as any)?.rarity ?? 'common';
+			const rarity: string = instance.card?.rarity ?? 'common';
 			rarities.set(cardId, rarity.toLowerCase());
 		}
 	}
@@ -109,7 +113,7 @@ function buildCardRarities(
 // Main handler
 // ---------------------------------------------------------------------------
 
-function handleGameEnded(_event: GameEndedEvent): void {
+async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 	if (!isBlockchainPackagingEnabled()) return;
 
 	const gameState = useGameStore.getState().gameState;
@@ -138,7 +142,7 @@ function handleGameEnded(_event: GameEndedEvent): void {
 
 	// Opponent identifier: real Hive username in P2P, heroId for AI games
 	const opponentUsername =
-		(gameState.players.opponent as any).hiveUsername ??
+		gameState.players.opponent.hiveUsername ??
 		gameState.players.opponent.heroId ??
 		'ai-opponent';
 
@@ -146,6 +150,17 @@ function handleGameEnded(_event: GameEndedEvent): void {
 	const playerCardUids = extractCardUidsFromGameState('player');
 	const opponentCardUids = extractCardUidsFromGameState('opponent');
 	const cardRarities = buildCardRarities(playerCardUids, opponentCardUids);
+
+	// Look up opponent ELO from the chain indexer (non-blocking, falls back to 1000)
+	let opponentEloBefore = 1000;
+	if (opponentUsername && opponentUsername !== 'ai-opponent') {
+		try {
+			const { elo } = await fetchPlayerElo(opponentUsername);
+			opponentEloBefore = elo;
+		} catch {
+			// Chain indexer unreachable — use default
+		}
+	}
 
 	const input = {
 		matchId: generateMatchId(),
@@ -159,8 +174,7 @@ function handleGameEnded(_event: GameEndedEvent): void {
 		playerCardUids,
 		opponentCardUids,
 		playerEloBefore,
-		// TODO: look up opponent ELO from HAF reader in P2P mode
-		opponentEloBefore: 1000,
+		opponentEloBefore,
 	};
 
 	// Pass collection only if non-empty (calculateXPRewards handles null gracefully)
@@ -269,11 +283,18 @@ async function applyLocalXPAndStampLevelUps(result: PackagedMatchResult): Promis
 	return levelUpCount;
 }
 
-function enqueueResult(result: PackagedMatchResult, playerCardCount: number, startTime: number): void {
+async function enqueueResult(result: PackagedMatchResult, playerCardCount: number, startTime: number): Promise<void> {
 	const queue = useTransactionQueueStore.getState();
 
-	// Broadcast compact match_result (matchId, winner, loser, nonce, hash, seed only)
-	const compactResult = packMatchResultForChain(result);
+	// Broadcast compact match_result with PoW (64 challenges × 6-bit)
+	const compactResult = await packMatchResultForChain(result);
+	try {
+		const payloadHash = await sha256Hash(canonicalStringify(compactResult));
+		const pow = await computePoW(payloadHash, { count: 64, difficulty: 6 });
+		(compactResult as unknown as Record<string, unknown>).pow = { nonces: pow.nonces };
+	} catch (err) {
+		debug.error('[BlockchainSubscriber] PoW computation failed:', err);
+	}
 	queue.enqueue('match_result', compactResult, result.hash);
 
 	// Write XP locally to IndexedDB; stamp level-ups on chain
@@ -294,6 +315,10 @@ function enqueueResult(result: PackagedMatchResult, playerCardCount: number, sta
 		dualSig: !!(result.signatures?.broadcaster && result.signatures?.counterparty),
 		duration: Math.round((Date.now() - startTime) / 1000) + 's',
 	});
+
+	// Register both players with the chain indexer for global ELO tracking
+	registerAccount(result.winner.username).catch(() => {});
+	registerAccount(result.loser.username).catch(() => {});
 }
 
 // ---------------------------------------------------------------------------
@@ -314,7 +339,7 @@ export function initializeBlockchainSubscriber(): UnsubscribeFn {
 	// Watch game phase transitions:
 	//   mulligan → playing  : capture real game start time
 	//   any      → game_over: fire GAME_ENDED event (single emitter)
-	let prevPhase: string | undefined;
+	let prevPhase: string | undefined = useGameStore.getState().gameState?.gamePhase;
 	gamePhaseUnsub = useGameStore.subscribe((state) => {
 		const currentPhase = state.gameState?.gamePhase;
 

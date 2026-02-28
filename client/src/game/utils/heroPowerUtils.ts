@@ -526,7 +526,7 @@ function executeNorseHeroPower(
       
       // Heal hero if secondaryValue specified for that purpose (like Freya)
       if (power.secondaryValue && hero.id === 'hero-freya') {
-        const freyaMaxHp = (player as any).maxHealth || 30;
+        const freyaMaxHp = player.maxHealth;
         player.heroHealth = Math.min((player.heroHealth || freyaMaxHp) + power.secondaryValue, freyaMaxHp);
         debug.log(`[Hero Power] Restored ${power.secondaryValue} health to hero`);
       }
@@ -568,7 +568,7 @@ function executeNorseHeroPower(
       
       if (targetType === 'hero' || targetId === 'player' || targetId === 'opponent') {
         const targetPlayer = targetId === 'opponent' ? opponent : player;
-        const tpMaxHp = (targetPlayer as any).maxHealth || 30;
+        const tpMaxHp = targetPlayer.maxHealth;
         targetPlayer.heroHealth = Math.min((targetPlayer.heroHealth || tpMaxHp) + healAmount, tpMaxHp);
         debug.log(`[Hero Power] Restored ${healAmount} health to hero`);
       } else {
@@ -1237,7 +1237,7 @@ function executeWarriorPower(state: GameState, playerType: 'player' | 'opponent'
   player.heroPower.used = true;
   
   // Gain 2 health (simplified version of armor)
-  const warlockMaxHp = (player as any).maxHealth || 30;
+  const warlockMaxHp = player.maxHealth;
   player.heroHealth = Math.min((player.heroHealth || warlockMaxHp) + 2, warlockMaxHp);
   
   return state;
@@ -1359,7 +1359,7 @@ function executePriestPower(
     const targetHero = targetId === 'player' ? state.players.player : state.players.opponent;
     
     // Heal the hero
-    const heroMaxHp = (targetHero as any).maxHealth || 30;
+    const heroMaxHp = targetHero.maxHealth;
     targetHero.heroHealth = Math.min((targetHero.heroHealth || heroMaxHp) + 2, heroMaxHp);
   } else {
     // Find the target card

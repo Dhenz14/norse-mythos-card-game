@@ -23,13 +23,9 @@
 import { hiveSync } from '../HiveSync';
 import { sha256Hash, canonicalStringify } from './hashUtils';
 import { computePoW, POW_CONFIG } from './proofOfWork';
+import { HIVE_NODES } from './hiveConfig';
 
 const MATCH_START_TIMEOUT_MS = 30_000;
-const HIVE_NODES = [
-	'https://api.hive.blog',
-	'https://api.deathwing.me',
-	'https://api.openhive.network',
-];
 
 // ---------------------------------------------------------------------------
 // Types
@@ -60,6 +56,8 @@ export interface MatchAnchorResult {
 async function getHeadBlockRef(): Promise<string> {
 	for (const node of HIVE_NODES) {
 		try {
+			const controller = new AbortController();
+			const timer = setTimeout(() => controller.abort(), 5000);
 			const res = await fetch(node, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -69,8 +67,9 @@ async function getHeadBlockRef(): Promise<string> {
 					params: [],
 					id: 1,
 				}),
-				signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined,
+				signal: controller.signal,
 			});
+			clearTimeout(timer);
 			const data = await res.json() as { result?: { head_block_id?: string } };
 			if (data.result?.head_block_id) return data.result.head_block_id;
 		} catch {
@@ -151,6 +150,8 @@ async function checkOpponentAnchorOnChain(
 ): Promise<boolean> {
 	for (const node of HIVE_NODES) {
 		try {
+			const controller = new AbortController();
+			const timer = setTimeout(() => controller.abort(), 8000);
 			const res = await fetch(node, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -160,7 +161,9 @@ async function checkOpponentAnchorOnChain(
 					params: [opponentUsername, -1, 50],
 					id: 1,
 				}),
+				signal: controller.signal,
 			});
+			clearTimeout(timer);
 			const data = await res.json() as { result?: [number, { op: [string, { id: string; json: string }] }][] };
 			if (!data.result) continue;
 

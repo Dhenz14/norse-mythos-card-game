@@ -13,25 +13,17 @@
  *   stopSync()                      — cancel polling
  */
 
-import { applyOp, type RawOp } from './replayRules';
+import { applyOp, retryPendingSlashes, type RawOp } from './replayRules';
 import {
 	getSyncCursor,
 	putSyncCursor,
 	getCardsByOwner,
 	getMatchesByAccount,
 	getTokenBalance,
+	getEloRating,
 } from './replayDB';
 import { useHiveDataStore } from '../HiveDataLayer';
-
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-const HIVE_NODES = [
-	'https://api.hive.blog',
-	'https://api.deathwing.me',
-	'https://api.openhive.network',
-];
+import { HIVE_NODES } from './hiveConfig';
 
 const HISTORY_PAGE_SIZE = 1000;
 const NODE_TIMEOUT_MS = 8000;
@@ -181,6 +173,9 @@ async function _doSync(username: string): Promise<void> {
 			lastHistoryIndex: lastIndex,
 			lastSyncedAt: Date.now(),
 		});
+		// Still hydrate store from IndexedDB (first sync after login may have no new ops
+		// but IndexedDB already has data from a previous session)
+		await hydrateStore(username);
 		return;
 	}
 
@@ -221,6 +216,11 @@ async function _doSync(username: string): Promise<void> {
 		lastSyncedAt: Date.now(),
 	});
 
+	// Retry any pending slash evidence that couldn't be verified due to RPC issues
+	await retryPendingSlashes().catch((err) =>
+		console.warn('[replayEngine] retryPendingSlashes error:', err)
+	);
+
 	// Hydrate Zustand store from freshly-written IndexedDB data
 	await hydrateStore(username);
 }
@@ -230,16 +230,24 @@ async function _doSync(username: string): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function hydrateStore(username: string): Promise<void> {
-	const [cards, matches, tokenBalance] = await Promise.all([
+	const [cards, matches, tokenBalance, eloRating] = await Promise.all([
 		getCardsByOwner(username),
 		getMatchesByAccount(username),
 		getTokenBalance(username),
+		getEloRating(username),
 	]);
 
-	useHiveDataStore.getState().loadFromHive({
+	const store = useHiveDataStore.getState();
+	store.loadFromHive({
 		cardCollection: cards,
 		recentMatches: matches,
 		tokenBalance,
+	});
+	store.updateStats({
+		odinsEloRating: eloRating.elo,
+		wins: eloRating.wins,
+		losses: eloRating.losses,
+		totalGamesPlayed: eloRating.wins + eloRating.losses,
 	});
 }
 

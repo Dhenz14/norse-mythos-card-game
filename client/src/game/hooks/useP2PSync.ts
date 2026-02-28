@@ -5,6 +5,7 @@ import { useGameStore } from '../stores/gameStore';
 import { GameState } from '../types';
 import { verifyDeckOwnership } from '../../data/blockchain/deckVerification';
 import { sha256Hash } from '../../data/blockchain/hashUtils';
+import { verifyDeck as verifyDeckOnServer } from '../../data/chainAPI';
 import { hiveSync } from '../../data/HiveSync';
 import type { PackagedMatchResult } from '../../data/blockchain/types';
 import { createSeededRng, seededShuffle } from '../utils/seededRng';
@@ -27,6 +28,15 @@ function flipGameState(state: GameState): GameState {
 		},
 		currentTurn: state.currentTurn === 'player' ? 'opponent' : 'player',
 		winner: state.winner === 'player' ? 'opponent' : state.winner === 'opponent' ? 'player' : state.winner,
+		fatigueCount: state.fatigueCount ? {
+			player: state.fatigueCount.opponent ?? 0,
+			opponent: state.fatigueCount.player ?? 0,
+		} : state.fatigueCount,
+		mulligan: state.mulligan ? {
+			...state.mulligan,
+			playerReady: (state.mulligan as any).opponentReady ?? false,
+			opponentReady: (state.mulligan as any).playerReady ?? false,
+		} : state.mulligan,
 	};
 }
 
@@ -85,6 +95,7 @@ export function useP2PSync() {
 	const { connection, connectionState, isHost, send } = usePeerStore();
 	const gameStore = useGameStore();
 	const lastSyncRef = useRef<number>(0);
+	const messageQueueRef = useRef<P2PMessage[]>([]);
 	const isProcessingRef = useRef(false);
 	const initSentRef = useRef(false);
 
@@ -164,221 +175,260 @@ export function useP2PSync() {
 	useEffect(() => {
 		if (!connection || connectionState !== 'connected') return;
 
-		const handleMessage = async (data: P2PMessage) => {
+		const processMessage = async (data: P2PMessage) => {
+			switch (data.type) {
+				case 'version_check': {
+					const myHash = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev';
+					if (data.buildHash !== myHash && data.buildHash !== 'dev' && myHash !== 'dev') {
+						toast.warning('Client version mismatch', {
+							description: `Your build: ${myHash.slice(0, 7)}, opponent: ${data.buildHash.slice(0, 7)}. Results may differ.`,
+							duration: 8000,
+						});
+					}
+					break;
+				}
+
+				case 'seed_commit':
+					theirCommitmentRef.current = data.commitment;
+					if (mySaltRef.current) {
+						send({ type: 'seed_reveal', salt: mySaltRef.current });
+					}
+					break;
+
+				case 'seed_reveal': {
+					const theirSalt = data.salt;
+					const theirCommitment = theirCommitmentRef.current;
+					if (!theirCommitment) {
+						console.warn('[useP2PSync] Received seed_reveal before seed_commit');
+						break;
+					}
+
+					const expectedCommitment = await sha256Hash(theirSalt);
+					if (expectedCommitment !== theirCommitment) {
+						console.error('[useP2PSync] Seed commitment mismatch — possible cheating');
+						toast.error('Seed verification failed. Disconnecting.', { duration: 5000 });
+						usePeerStore.getState().disconnect();
+						break;
+					}
+
+					const myPeerId = usePeerStore.getState().myPeerId ?? '';
+					const remotePeerId = usePeerStore.getState().remotePeerId ?? '';
+					const mySalt = mySaltRef.current ?? '';
+					const [first, second] = myPeerId < remotePeerId
+						? [mySalt, theirSalt]
+						: [theirSalt, mySalt];
+					const matchSeed = await sha256Hash(first + second);
+
+					useGameStore.setState({ matchSeed });
+					seedResolvedRef.current = true;
+
+					if (isHost) {
+						const rng = createSeededRng(matchSeed);
+						const gs = useGameStore.getState().gameState;
+						if (gs) {
+							const reshuffled = {
+								...gs,
+								players: {
+									player: { ...gs.players.player, deck: seededShuffle(gs.players.player.deck, rng) },
+									opponent: { ...gs.players.opponent, deck: seededShuffle(gs.players.opponent.deck, rng) },
+								},
+							};
+							useGameStore.setState({ gameState: reshuffled });
+						}
+
+						initSentRef.current = true;
+						const updatedState = useGameStore.getState().gameState;
+						if (updatedState) {
+							send({ type: 'init', gameState: updatedState, isHost: true });
+						}
+					}
+					break;
+				}
+
+				case 'init':
+					if (!isHost) {
+						useGameStore.setState({ gameState: flipGameState(data.gameState) });
+					}
+					break;
+
+				case 'playCard':
+					if (isHost) {
+						const gs = useGameStore.getState().gameState;
+						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
+						recordMove('playCard', { cardId: data.cardId, targetId: data.targetId, targetType: data.targetType }, 'opponent');
+						gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType);
+						setTimeout(() => syncGameState(), 50);
+					}
+					break;
+
+				case 'attack':
+					if (isHost) {
+						const gs = useGameStore.getState().gameState;
+						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
+						recordMove('attack', { attackerId: data.attackerId, defenderId: data.defenderId }, 'opponent');
+						gameStore.attackWithCard(data.attackerId, translateTargetForHost(data.defenderId) ?? data.defenderId);
+						setTimeout(() => syncGameState(), 50);
+					}
+					break;
+
+				case 'endTurn':
+					if (isHost) {
+						const gs = useGameStore.getState().gameState;
+						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
+						recordMove('endTurn', {}, 'opponent');
+						gameStore.endTurn();
+						setTimeout(() => syncGameState(), 50);
+					}
+					break;
+
+				case 'useHeroPower':
+					if (isHost) {
+						const gs = useGameStore.getState().gameState;
+						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
+						recordMove('useHeroPower', { targetId: data.targetId }, 'opponent');
+						gameStore.useHeroPower(translateTargetForHost(data.targetId));
+						setTimeout(() => syncGameState(), 50);
+					}
+					break;
+
+				case 'gameState':
+					if (!isHost) {
+						const flipped = flipGameState(data.gameState);
+						const currentState = useGameStore.getState().gameState;
+						if (JSON.stringify(currentState) !== JSON.stringify(flipped)) {
+							useGameStore.setState({ gameState: flipped });
+						}
+					}
+					break;
+
+				case 'opponentDisconnected':
+					console.warn('[useP2PSync] Opponent disconnected from game');
+					toast.error('Opponent disconnected.', { duration: 8000 });
+					break;
+
+				case 'ping':
+					send({ type: 'pong' });
+					break;
+
+				case 'deck_verify': {
+					let checkedCount = 0;
+					verifyDeckOwnership(
+						data.hiveAccount,
+						data.nftIds.map(id => ({ nft_id: id })),
+					).then(result => {
+						checkedCount++;
+						if (!result.valid) {
+							toast.error(`Opponent deck verification failed`, {
+								description: `${result.invalidCards.length} card(s) not owned by ${data.hiveAccount}. Disconnecting.`,
+								duration: 5000,
+							});
+							if (checkedCount > 0) {
+								setTimeout(() => usePeerStore.getState().disconnect(), 2000);
+							}
+						}
+					}).catch(() => { /* IndexedDB unavailable in dev mode — skip */ });
+
+					if (data.hiveAccount && data.nftIds.length > 0) {
+						const cardIds = data.nftIds.map(id => parseInt(id, 10)).filter(n => !isNaN(n));
+						if (cardIds.length > 0) {
+							verifyDeckOnServer(data.hiveAccount, cardIds)
+								.then(sv => {
+									checkedCount++;
+									if (!sv.verified) {
+										toast.error('Server deck verification failed', {
+											description: `${sv.missing.length} card(s) not found on-chain for ${data.hiveAccount}. Disconnecting.`,
+											duration: 5000,
+										});
+										if (checkedCount > 0) {
+											setTimeout(() => usePeerStore.getState().disconnect(), 2000);
+										}
+									}
+								})
+								.catch(() => { /* Chain indexer unavailable — skip */ });
+						}
+					}
+					break;
+				}
+
+				case 'result_propose': {
+					if (!data.result || !data.hash || typeof data.hash !== 'string' ||
+						!data.result.winner?.username || !data.result.loser?.username) {
+						send({ type: 'result_reject', reason: 'malformed_proposal' });
+						break;
+					}
+					const gs = useGameStore.getState().gameState;
+					const myWinner = gs?.winner;
+
+					const expectedHostWinner = myWinner === 'player' ? 'opponent' : 'player';
+					const proposedWinner = data.result.winner.username;
+					const hostUsername = data.result.matchType === 'ranked'
+						? (expectedHostWinner === 'player' ? data.result.winner.username : data.result.loser.username)
+						: proposedWinner;
+
+					const clientUsername = hiveSync.getUsername();
+					const iAmWinner = myWinner === 'player';
+					const resultSaysIWon = data.result.winner.username === clientUsername;
+					const resultSaysILost = data.result.loser.username === clientUsername;
+
+					if ((iAmWinner && resultSaysIWon) || (!iAmWinner && resultSaysILost)) {
+						try {
+							const sig = await hiveSync.signResultHash(data.hash);
+							send({ type: 'result_countersign', counterpartySig: sig });
+						} catch {
+							send({ type: 'result_reject', reason: 'signing_failed' });
+						}
+					} else if (!clientUsername) {
+						send({ type: 'result_reject', reason: 'no_hive_account' });
+					} else {
+						send({ type: 'result_reject', reason: 'winner_mismatch' });
+					}
+					break;
+				}
+
+				case 'result_countersign': {
+					const pending = pendingResultRef.current;
+					if (pending) {
+						pending.resolve({
+							broadcaster: pending.broadcasterSig,
+							counterparty: data.counterpartySig,
+						});
+						pendingResultRef.current = null;
+					}
+					break;
+				}
+
+				case 'result_reject': {
+					const pending = pendingResultRef.current;
+					if (pending) {
+						pending.reject(new Error(`Result rejected: ${data.reason}`));
+						pendingResultRef.current = null;
+					}
+					break;
+				}
+
+				default:
+					console.warn('[useP2PSync] Unknown message type:', (data as any).type);
+			}
+		};
+
+		const processQueue = async () => {
 			if (isProcessingRef.current) return;
 			isProcessingRef.current = true;
-
 			try {
-				switch (data.type) {
-					case 'version_check': {
-						const myHash = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev';
-						if (data.buildHash !== myHash && data.buildHash !== 'dev' && myHash !== 'dev') {
-							toast.warning('Client version mismatch', {
-								description: `Your build: ${myHash.slice(0, 7)}, opponent: ${data.buildHash.slice(0, 7)}. Results may differ.`,
-								duration: 8000,
-							});
-						}
-						break;
-					}
-
-					case 'seed_commit':
-						theirCommitmentRef.current = data.commitment;
-						// Now reveal our salt (we already sent our commitment)
-						if (mySaltRef.current) {
-							send({ type: 'seed_reveal', salt: mySaltRef.current });
-						}
-						break;
-
-					case 'seed_reveal': {
-						const theirSalt = data.salt;
-						const theirCommitment = theirCommitmentRef.current;
-						if (!theirCommitment) {
-							console.warn('[useP2PSync] Received seed_reveal before seed_commit');
-							break;
-						}
-
-						// Verify commitment
-						const expectedCommitment = await sha256Hash(theirSalt);
-						if (expectedCommitment !== theirCommitment) {
-							console.error('[useP2PSync] Seed commitment mismatch — possible cheating');
-							toast.error('Seed verification failed. Disconnecting.', { duration: 5000 });
-							usePeerStore.getState().disconnect();
-							break;
-						}
-
-						// Derive joint seed — sort by peerId for determinism
-						const myPeerId = usePeerStore.getState().myPeerId ?? '';
-						const remotePeerId = usePeerStore.getState().remotePeerId ?? '';
-						const mySalt = mySaltRef.current ?? '';
-						const [first, second] = myPeerId < remotePeerId
-							? [mySalt, theirSalt]
-							: [theirSalt, mySalt];
-						const matchSeed = await sha256Hash(first + second);
-
-						useGameStore.setState({ matchSeed });
-						seedResolvedRef.current = true;
-
-						// Host: re-shuffle both decks with the agreed seed, then send init
-						if (isHost) {
-							const rng = createSeededRng(matchSeed);
-							const gs = useGameStore.getState().gameState;
-							if (gs) {
-								const reshuffled = {
-									...gs,
-									players: {
-										player: { ...gs.players.player, deck: seededShuffle(gs.players.player.deck, rng) },
-										opponent: { ...gs.players.opponent, deck: seededShuffle(gs.players.opponent.deck, rng) },
-									},
-								};
-								useGameStore.setState({ gameState: reshuffled });
-							}
-
-							initSentRef.current = true;
-							const updatedState = useGameStore.getState().gameState;
-							if (updatedState) {
-								send({ type: 'init', gameState: updatedState, isHost: true });
-							}
-						}
-						break;
-					}
-
-					case 'init':
-						if (!isHost) {
-							useGameStore.setState({ gameState: flipGameState(data.gameState) });
-						}
-						break;
-
-					case 'playCard':
-						if (isHost) {
-							recordMove('playCard', { cardId: data.cardId, targetId: data.targetId, targetType: data.targetType }, 'opponent');
-							gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType);
-							setTimeout(() => syncGameState(), 50);
-						}
-						break;
-
-					case 'attack':
-						if (isHost) {
-							recordMove('attack', { attackerId: data.attackerId, defenderId: data.defenderId }, 'opponent');
-							gameStore.attackWithCard(data.attackerId, translateTargetForHost(data.defenderId) ?? data.defenderId);
-							setTimeout(() => syncGameState(), 50);
-						}
-						break;
-
-					case 'endTurn':
-						if (isHost) {
-							recordMove('endTurn', {}, 'opponent');
-							gameStore.endTurn();
-							setTimeout(() => syncGameState(), 50);
-						}
-						break;
-
-					case 'useHeroPower':
-						if (isHost) {
-							recordMove('useHeroPower', { targetId: data.targetId }, 'opponent');
-							gameStore.useHeroPower(translateTargetForHost(data.targetId));
-							setTimeout(() => syncGameState(), 50);
-						}
-						break;
-
-					case 'gameState':
-						if (!isHost) {
-							const flipped = flipGameState(data.gameState);
-							const currentState = useGameStore.getState().gameState;
-							if (JSON.stringify(currentState) !== JSON.stringify(flipped)) {
-								useGameStore.setState({ gameState: flipped });
-							}
-						}
-						break;
-
-					case 'opponentDisconnected':
-						console.warn('[useP2PSync] Opponent disconnected from game');
-						toast.error('Opponent disconnected.', { duration: 8000 });
-						break;
-
-					case 'ping':
-						send({ type: 'pong' });
-						break;
-
-					case 'deck_verify':
-						verifyDeckOwnership(
-							data.hiveAccount,
-							data.nftIds.map(id => ({ nft_id: id })),
-						).then(result => {
-							if (!result.valid) {
-								toast.warning(`Opponent deck verification failed`, {
-									description: `${result.invalidCards.length} card(s) not owned by ${data.hiveAccount}. Match may be invalid.`,
-									duration: 8000,
-								});
-							}
-						}).catch(() => { /* IndexedDB unavailable in dev mode — skip */ });
-						break;
-
-					case 'result_propose': {
-						// Client receives a match result proposal from the host
-						const gs = useGameStore.getState().gameState;
-						const myWinner = gs?.winner;
-
-						// Flip perspective: client sees 'player' as winner, but host's result
-						// uses the host perspective where host=player, client=opponent
-						const expectedHostWinner = myWinner === 'player' ? 'opponent' : 'player';
-						const proposedWinner = data.result.winner.username;
-						const hostUsername = data.result.matchType === 'ranked'
-							? (expectedHostWinner === 'player' ? data.result.winner.username : data.result.loser.username)
-							: proposedWinner;
-
-						// Basic check: the result agrees on who won
-						const clientUsername = hiveSync.getUsername();
-						const iAmWinner = myWinner === 'player';
-						const resultSaysIWon = data.result.winner.username === clientUsername;
-						const resultSaysILost = data.result.loser.username === clientUsername;
-
-						if ((iAmWinner && resultSaysIWon) || (!iAmWinner && resultSaysILost)) {
-							// Result agrees with our view — counter-sign
-							try {
-								const sig = await hiveSync.signResultHash(data.hash);
-								send({ type: 'result_countersign', counterpartySig: sig });
-							} catch {
-								// Keychain unavailable or user rejected — send reject
-								send({ type: 'result_reject', reason: 'signing_failed' });
-							}
-						} else if (!clientUsername) {
-							// No Hive account (dev mode) — accept anyway
-							send({ type: 'result_reject', reason: 'no_hive_account' });
-						} else {
-							send({ type: 'result_reject', reason: 'winner_mismatch' });
-						}
-						break;
-					}
-
-					case 'result_countersign': {
-						const pending = pendingResultRef.current;
-						if (pending) {
-							pending.resolve({
-								broadcaster: pending.broadcasterSig,
-								counterparty: data.counterpartySig,
-							});
-							pendingResultRef.current = null;
-						}
-						break;
-					}
-
-					case 'result_reject': {
-						const pending = pendingResultRef.current;
-						if (pending) {
-							pending.reject(new Error(`Result rejected: ${data.reason}`));
-							pendingResultRef.current = null;
-						}
-						break;
-					}
-
-					default:
-						console.warn('[useP2PSync] Unknown message type:', (data as any).type);
+				while (messageQueueRef.current.length > 0) {
+					const msg = messageQueueRef.current.shift()!;
+					await processMessage(msg);
 				}
 			} catch (err) {
 				console.error('[useP2PSync] Error processing message:', err);
 			} finally {
 				isProcessingRef.current = false;
 			}
+		};
+
+		const handleMessage = (data: P2PMessage) => {
+			messageQueueRef.current.push(data);
+			processQueue();
 		};
 
 		const handleMessageWrapper = (data: unknown) => handleMessage(data as P2PMessage);

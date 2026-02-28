@@ -53,7 +53,7 @@ export function applyLifestealHealing(
   // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[attackerOwner];
   const currentHp = player.heroHealth ?? player.health;
-  const maxHp = (player as any).maxHealth || 30;
+  const maxHp = player.maxHealth;
   player.heroHealth = Math.min(maxHp, currentHp + damageDealt);
 
   // Log the heal event
@@ -90,7 +90,7 @@ export function processSpellLifesteal(
   // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[casterOwner];
   const currentHp = player.heroHealth ?? player.health;
-  const maxHp = (player as any).maxHealth || 30;
+  const maxHp = player.maxHealth;
   player.heroHealth = Math.min(maxHp, currentHp + damageDealt);
 
   // Log the heal event
@@ -127,7 +127,7 @@ export function processWeaponLifesteal(
   // Apply the healing to the hero (use heroHealth as canonical field)
   const player = newState.players[attackerOwner];
   const currentHp = player.heroHealth ?? player.health;
-  const maxHp = (player as any).maxHealth || 30;
+  const maxHp = player.maxHealth;
   player.heroHealth = Math.min(maxHp, currentHp + damageDealt);
 
   // Log the heal event

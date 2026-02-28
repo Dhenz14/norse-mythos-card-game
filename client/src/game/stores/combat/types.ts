@@ -124,6 +124,8 @@ export interface PokerCombatSliceState {
   pokerIsActive: boolean;
   mulliganComplete: boolean;
   isTransitioningHand: boolean;
+  pokerHandsWonPlayer: number;
+  pokerHandsWonOpponent: number;
 }
 
 export interface PokerCombatSliceActions {

@@ -1,6 +1,6 @@
 # Ragnarok — Hive Blockchain Integration Blueprint
 
-**Status**: Phase 2 — 2A/2B/2D complete (commit-reveal seed, dual-sig results, XP/leveling, card evolution, Merkle transcripts, build-hash verification, ranked ladder, dispute resolution). Phase 2C (genesis broadcast) is next.
+**Status**: Phase 2 — 2A/2B/2D/2E complete + security hardening + production hardening + self-serve reward system. Server-side chain indexer (ELO, leaderboard, deck verification) with rate limiting + Hive auth. Genesis launch (broadcast genesis + seal on Hive mainnet) is next. See "Current vs Planned" section for details.
 **Layer**: Hive Layer 1 (no Hive-Engine dependency)
 **Model**: Fixed-supply NFT cards, decentralized P2P gameplay, cryptographic anti-cheat
 
@@ -47,9 +47,11 @@ P2P        = the gameplay (what you do, cryptographically signed)
 | Actor | Can do | Cannot do |
 |---|---|---|
 | Ragnarok account | Mint during genesis window only | Mint after seal, move player cards |
-| Players | Transfer their own cards | Transfer cards they don't own |
+| Players | Transfer cards, open packs, claim rewards | Transfer cards they don't own, claim unearned rewards |
 | Reader | Interpret ownership from chain | Override chain history |
 | Anyone | Audit all transactions | Falsify Hive blockchain history |
+
+**Admin lifecycle:** Genesis (one broadcast) -> Seal (one broadcast) -> Admin key permanently irrelevant. All ongoing operations (packs, rewards, transfers, matches) are player-driven.
 
 ---
 
@@ -72,20 +74,23 @@ This namespaces all operations. Any Hive node can filter for this app ID and rec
 ### Operation Types
 
 ```json
-{ "app": "ragnarok-cards", "action": "genesis",   ... }
-{ "app": "ragnarok-cards", "action": "mint",      ... }
-{ "app": "ragnarok-cards", "action": "transfer",  ... }
-{ "app": "ragnarok-cards", "action": "burn",      ... }
-{ "app": "ragnarok-cards", "action": "seal",      ... }
-{ "app": "ragnarok-cards", "action": "match_start",    ... }
-{ "app": "ragnarok-cards", "action": "match_result",   ... }
-{ "app": "ragnarok-cards", "action": "level_up",       ... }
-{ "app": "ragnarok-cards", "action": "queue_join",     ... }
-{ "app": "ragnarok-cards", "action": "queue_leave",    ... }
-{ "app": "ragnarok-cards", "action": "slash_evidence", ... }
+{ "app": "ragnarok-cards", "action": "genesis",        ... }  // Admin: set supply caps (one-time)
+{ "app": "ragnarok-cards", "action": "mint",           ... }  // Admin: batch mint (pre-seal only)
+{ "app": "ragnarok-cards", "action": "seal",           ... }  // Admin: permanently lock minting (one-time)
+{ "app": "ragnarok-cards", "action": "transfer",       ... }  // Player: move card to another account
+{ "app": "ragnarok-cards", "action": "burn",           ... }  // Player: permanently remove card
+{ "app": "ragnarok-cards", "action": "pack_open",      ... }  // Player: open pack → deterministic LCG mint
+{ "app": "ragnarok-cards", "action": "reward_claim",   ... }  // Player: claim milestone reward (self-serve)
+{ "app": "ragnarok-cards", "action": "match_start",    ... }  // Player: dual-sig match anchor
+{ "app": "ragnarok-cards", "action": "match_result",   ... }  // Player: record match + derive ELO/RUNE/XP
+{ "app": "ragnarok-cards", "action": "level_up",       ... }  // Player: stamp card level-up (XP-gated)
+{ "app": "ragnarok-cards", "action": "queue_join",     ... }  // Player: enter matchmaking queue
+{ "app": "ragnarok-cards", "action": "queue_leave",    ... }  // Player: leave matchmaking queue
+{ "app": "ragnarok-cards", "action": "slash_evidence", ... }  // Anyone: permissionless cheat report
+{ "app": "ragnarok-cards", "action": "team_submit",    ... }  // Player: informational deck commitment
 ```
 
-The reader processes these in block order. State is fully reproducible by replaying from block 0.
+15 operation types total. The reader processes these in block order. State is fully reproducible by replaying from block 0.
 
 ---
 
@@ -100,29 +105,26 @@ The Ragnarok account broadcasts a single genesis transaction before any minting 
   "app": "ragnarok-cards",
   "action": "genesis",
   "version": "1.0",
-  "total_supply": 500000,
+  "total_supply": 16000,
   "card_distribution": {
-    "legendary":  5000,
-    "epic":       50000,
-    "rare":       150000,
-    "common":     295000
+    "common":     10000,
+    "rare":        4000,
+    "epic":        1500,
+    "legendary":    500
   },
-  "card_set": "genesis",
-  "seal_on_exhaustion": true,
-  "reader_version": "1.0",
-  "reader_hash": "sha256:<hash_of_reader_v1.0_source>",
-  "announced_at": "https://hive.blog/@ragnarok/genesis-announcement"
+  "reader_hash": "sha256:<hash_of_reader_source>"
 }
 ```
 
 **What this commits to:**
-- Total supply is hard-capped at 500,000 cards, ever
+
+- Total supply is hard-capped at 16,000 cards, ever
 - The reader version that interprets ownership is pinned by hash
-- `seal_on_exhaustion: true` means the reader stops accepting mint operations once the count reaches 500,000 — even from the Ragnarok account
+- Supply counters enforce caps per rarity — even from the Ragnarok account
 
-### 3.2 Mint Batch (during pack sales only)
+### 3.2 Mint Batch (admin only, pre-seal)
 
-Each time a player buys a pack, Ragnarok broadcasts:
+The Ragnarok account can batch mint cards before seal. After seal, no more admin mints ever.
 
 ```json
 {
@@ -143,22 +145,47 @@ Each time a player buys a pack, Ragnarok broadcasts:
 - The reader tracks running totals per rarity — mint rejected if cap exceeded
 - Only transactions broadcast by the Ragnarok account are valid mints; anyone else's mint is ignored
 
-### 3.3 Seal Broadcast
+### 3.3 Pack Opening (player self-serve, no admin key)
 
-After all packs are sold (or manually), Ragnarok broadcasts:
+Players broadcast `rp_pack_open` with their own Keychain. Cards are deterministically generated by the replay engine using an LCG seeded from the transaction ID. No admin account involved.
 
 ```json
 {
   "app": "ragnarok-cards",
-  "action": "seal",
-  "genesis_version": "1.0",
-  "final_supply": 498350,
-  "sealed_at_block": 89234567,
-  "note": "All genesis cards distributed. No further minting possible."
+  "action": "pack_open",
+  "pack_type": "standard",
+  "quantity": 1
 }
 ```
 
-After this block, the reader hard-ignores all future mint operations from any account. The Ragnarok account's signing key is now irrelevant — there is nothing left to mint and nothing to steal.
+The replay engine derives card IDs, rarities, and foil status from the trxId seed. Card metadata (name, type, race, image) is resolved from the card registry at mint time. Supply caps are enforced per card.
+
+### 3.4 Reward Claiming (player self-serve, no admin key)
+
+Players broadcast `rp_reward_claim` to claim milestone rewards. The replay engine verifies their on-chain stats (wins, ELO, matches played) and mints the reward card directly to them.
+
+```json
+{
+  "app": "ragnarok-cards",
+  "action": "reward_claim",
+  "reward_id": "champion_50"
+}
+```
+
+11 milestone rewards are defined in `tournamentRewards.ts`: 5 win-based, 3 ELO-based, 2 matches-played. Each can only be claimed once per account. Reward cards mint from the same supply pool as packs.
+
+### 3.5 Seal Broadcast (one-time, permanent)
+
+After genesis, Ragnarok broadcasts seal to permanently lock admin minting:
+
+```json
+{
+  "app": "ragnarok-cards",
+  "action": "seal"
+}
+```
+
+After this block, the reader hard-ignores all future `rp_mint` operations from any account. The Ragnarok account's signing key is now irrelevant. Pack opening and reward claiming continue to work — they are player-driven and don't require admin authority.
 
 ---
 
@@ -178,15 +205,18 @@ There is no server. Every player's browser IS the reader. The replay engine:
 ### 4.2 Reader Rules (encoded in v1.0)
 
 ```
-VALID mint:         broadcaster == ragnarok_account AND pre-seal AND supply not exhausted
-VALID transfer:     broadcaster == from_account AND nft_id owned by from_account
-VALID burn:         broadcaster == owner_account AND nft_id owned by owner_account
-VALID match_start:  broadcaster == one of { player_a, player_b } AND valid PoW AND no duplicate match_id
-VALID match_result: broadcaster == one of { winner, loser } AND matching match_start exists AND valid PoW
-VALID queue_join:   valid PoW AND no existing active queue entry for this account
-VALID queue_leave:  broadcaster has active queue entry
+VALID mint:           broadcaster == ragnarok_account AND pre-seal AND supply not exhausted
+VALID transfer:       broadcaster == from_account AND nft_id owned by from_account
+VALID burn:           broadcaster == owner_account AND nft_id owned by owner_account
+VALID pack_open:      supply not exhausted (deterministic LCG mint from trxId seed)
+VALID reward_claim:   reward exists AND not already claimed AND condition met (wins/ELO/matches)
+VALID match_start:    broadcaster == one of { player_a, player_b } AND valid PoW AND no duplicate match_id
+VALID match_result:   broadcaster == one of { winner, loser } AND valid PoW AND valid nonce
+VALID level_up:       broadcaster == card owner AND chain-derived XP sufficient for claimed level
+VALID queue_join:     valid PoW AND no existing active queue entry for this account
+VALID queue_leave:    broadcaster has active queue entry
 VALID slash_evidence: anyone can submit; tx_a and tx_b must be verifiable contradictory ops by same account
-INVALID:            anything else — silently ignored, no state change
+INVALID:              anything else — silently ignored, no state change
 ```
 
 **PoW validation:** Every `match_start`, `match_result`, and `queue_join` op must include a valid proof-of-work field. The replay engine verifies the PoW before processing. Ops without valid PoW are silently ignored (see Section 8.4).
@@ -195,61 +225,53 @@ These rules are fixed at genesis. The reader source code version is pinned by ha
 
 ### 4.3 IndexedDB Schema
 
+Database: `ragnarok-chain-v1` version 6, with 13 object stores:
+
 ```typescript
 // Stored locally in each player's browser via IndexedDB
 
-interface NFTOwnership {
-  nftId: string;          // PRIMARY KEY — e.g. "gen1-rare-000001"
-  cardId: string;         // e.g. "einherjar-warrior"
+// cards (keyed by uid) — NFT card assets
+interface HiveCardAsset {
+  uid: string;            // PRIMARY KEY — e.g. "trxId-0" or "reward-first_victory-alice-0"
+  cardId: number;         // numeric card definition ID
+  ownerId: string;        // current Hive username
+  edition: 'alpha' | 'beta' | 'promo';
+  foil: 'standard' | 'gold';
   rarity: string;
-  ownerAccount: string;   // Current Hive username
-  mintedAtBlock: number;
-  mintedInPack: string;
-  genesisVersion: string; // "1.0"
+  level: number;
+  xp: number;
+  lastTransferBlock?: number;
+  name: string;           // card name from registry
+  type: string;           // minion, spell, weapon, hero
+  race?: string;          // beast, dragon, etc.
+  image?: string;         // CDN art URL
 }
 
-interface NFTTransfer {
-  id: string;             // AUTO — nftId + blockNum + txId
-  nftId: string;
-  fromAccount: string | null; // null for genesis mint
-  toAccount: string;
-  blockNum: number;
-  txId: string;
-  timestamp: number;
-}
+// supply_counters (keyed by rarity)
+interface SupplyCounter { rarity: string; cap: number; minted: number; }
 
-interface SupplyCounter {
-  rarity: string;         // PRIMARY KEY
-  cap: number;
-  minted: number;
-}
-
+// genesis_state (keyed by 'singleton')
 interface GenesisState {
-  version: string;        // "1.0"
-  sealed: boolean;
-  sealedAtBlock: number | null;
-  finalSupply: number | null;
+  version: string; totalSupply: number; cardDistribution: Record<string, number>;
+  sealed: boolean; sealedAtBlock: number | null; readerHash: string; genesisBlock: number;
 }
 
-interface MatchAnchor {
-  matchId: string;        // PRIMARY KEY — e.g. "match-20260223-alice-bob-001"
-  playerA: string;        // Hive username
-  playerB: string;        // Hive username
-  matchHash: string;      // sha256(match_id + player_a + player_b + timestamp)
-  anchorBlockA: number | null;  // Block where player A's match_start appeared
-  anchorBlockB: number | null;  // Block where player B's match_start appeared
-  anchorTxA: string | null;
-  anchorTxB: string | null;
-  dualAnchored: boolean;  // true when BOTH players' match_start ops found
-  resultMatchId: string | null; // Links to match_result once game ends
-  timestamp: number;
-}
+// matches (keyed by matchId, indexed by participants[])
+interface HiveMatchResult { matchId: string; player1: {...}; player2: {...}; winnerId: string; ... }
 
-interface SyncMeta {
-  lastProcessedBlock: number;
-  lastSyncTimestamp: number;
-  genesisBlock: number;   // Hardcoded starting block
-}
+// match_anchors (keyed by matchId)
+interface MatchAnchor { matchId: string; playerA: string; playerB: string; dualAnchored: boolean; ... }
+
+// elo_ratings (keyed by account)
+interface EloRating { account: string; elo: number; wins: number; losses: number; lastMatchBlock: number; }
+
+// token_balances (keyed by hiveUsername)
+interface HiveTokenBalance { hiveUsername: string; RUNE: number; VALKYRIE: number; SEASON_POINTS: number; }
+
+// reward_claims (keyed by claimKey = account:rewardId)
+interface RewardClaim { claimKey: string; account: string; rewardId: string; claimedAt: number; blockNum: number; }
+
+// Also: sync_cursors, queue_entries, slashed_accounts, player_nonces, pending_slashes
 ```
 
 ### 4.4 Replay Engine Flow
@@ -268,16 +290,20 @@ Call condenser_api.get_account_history("ragnarok-cards-account", ...)
         │
         ▼
 For each op (in block order):
-   ├── action: "genesis"      → Initialize supply counters
-   ├── action: "mint"         → Insert NFTOwnership + NFTTransfer, increment supply
-   ├── action: "transfer"     → Update NFTOwnership.ownerAccount, insert NFTTransfer
-   ├── action: "burn"         → Delete from NFTOwnership, insert NFTTransfer
-   ├── action: "seal"         → Set GenesisState.sealed = true
-   ├── action: "match_start"  → Validate PoW, insert MatchAnchor (see Section 7.0)
-   ├── action: "match_result" → Validate PoW, require matching match_start, insert MatchResult
-   ├── action: "queue_join"   → Validate PoW, add to active matchmaking queue
-   ├── action: "queue_leave"  → Remove from active matchmaking queue
-   └── anything else          → Silently ignored
+   ├── action: "genesis"       → Initialize supply counters (admin only, one-time)
+   ├── action: "mint"          → Batch mint NFTs, increment supply (admin only, pre-seal)
+   ├── action: "seal"          → Set sealed = true, lock minting permanently (admin only)
+   ├── action: "transfer"      → Update card owner (sender must own card)
+   ├── action: "burn"          → Delete card (owner only)
+   ├── action: "pack_open"     → Deterministic LCG mint from trxId seed (player self-serve)
+   ├── action: "reward_claim"  → Verify stats, mint reward card (player self-serve)
+   ├── action: "match_start"   → Validate PoW, insert dual-sig MatchAnchor
+   ├── action: "match_result"  → Validate PoW + nonce + sigs, derive ELO/RUNE/XP
+   ├── action: "level_up"      → Validate XP threshold, stamp card level
+   ├── action: "queue_join"    → Validate PoW, add to matchmaking queue
+   ├── action: "queue_leave"   → Remove from matchmaking queue
+   ├── action: "slash_evidence" → Verify contradictory ops, ban offender
+   └── anything else           → Silently ignored
         │
         ▼
 Update SyncMeta.lastProcessedBlock = chain head
@@ -995,11 +1021,13 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 
 ### Phase 2C — Genesis Launch (NEXT — requires mainnet Hive account)
 
-- [ ] Compile game engine to WASM
-- [ ] Pin WASM hash in genesis broadcast
-- [ ] Broadcast genesis transaction on Hive mainnet
-- [ ] Execute community airdrop (batch mint ops)
-- [ ] Broadcast seal after distribution complete
+- [ ] Create @ragnarok Hive account
+- [ ] Upload card art to CDN/IPFS (559 webp files)
+- [ ] Update `NFT_ART_BASE_URL` in `hiveConfig.ts` to production CDN
+- [ ] Broadcast genesis transaction via `broadcastGenesis()` (one Keychain click)
+- [ ] Broadcast seal via `broadcastSeal()` (one Keychain click)
+- [ ] Admin key permanently irrelevant after seal
+- [ ] Test mint/transfer/verify on Hive testnet
 
 ### Phase 2D — On-Chain Matchmaking & Ladder (COMPLETE)
 
@@ -1010,11 +1038,53 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [x] Ranked ladder UI (`RankedLadderPage.tsx`: leaderboard tab computes ELO rankings from IndexedDB match history; match history tab with win/loss/duration/damage stats; `/ladder` route with homepage nav)
 - [x] Dispute resolution (`disputeResolution.ts`: `buildDisputeEvidence()` extracts move + Merkle proof from transcript; `submitMoveDispute()` broadcasts `slash_evidence` with `forged_move` reason; `verifyMoveInTranscript()` for client-side proof validation)
 
+### Phase 2E — Server-Side Chain Indexer (COMPLETE)
+
+- [x] In-memory global chain state with JSON file persistence (`server/services/chainState.ts`)
+- [x] Server-side Hive RPC poller for all known accounts (`server/services/chainIndexer.ts`)
+- [x] REST endpoints: leaderboard, player profile, ELO, cards, match history, deck verify, register, status (`server/routes/chainRoutes.ts`)
+- [x] ELO-proximity matchmaking (±200 expanding to ±500) replacing FIFO queue (`server/routes/matchmakingRoutes.ts`)
+- [x] Client fetch wrapper for all chain API endpoints (`client/src/data/chainAPI.ts`)
+- [x] Matchmaking wired to pass Hive username for ELO lookup (`useMatchmaking.ts`)
+- [x] Opponent ELO lookup from chain indexer at match end (`BlockchainSubscriber.ts`)
+- [x] Server-side deck verification cross-check (`useP2PSync.ts`)
+- [x] Auto-register both players with indexer after match (`BlockchainSubscriber.ts`)
+
+### Current vs Planned — Accuracy Notes
+
+| Blueprint Section | Status | Notes |
+| --- | --- | --- |
+| Section 6 (WASM) | **NOT IMPLEMENTED** | Planned for Phase 2C. Game logic runs in TypeScript. Build-hash verification provides version checking. |
+| Section 7.2 (Move Signing) | **PARTIAL** | Moves are recorded into a Merkle transcript but NOT individually signed with `player_sig`/`opponent_sig` or block-anchored with `hive_block_ref`. |
+| Section 7.4 (Result Broadcast) | **IMPLEMENTED** | Dual-sig with 30s timeout + **cryptographic verification via `hive-tx`**. Replay engine recovers public keys from signatures and checks against Hive account posting keys. |
+| Section 8.4 (PoW) | **IMPLEMENTED — REQUIRED** | PoW is now **mandatory** for `match_start`, `match_result`, and `queue_join`. Ops without valid PoW are rejected (not silently ignored). `match_result` uses 64 challenges × 6-bit difficulty. |
+| Section 9.1 (On-Chain Matchmaking) | **HYBRID** | Both on-chain (`queue_join`/`queue_leave`) and server-side ELO matchmaking exist. **ELO in queue entries is now chain-derived** (not client-reported). |
+| Signature Verification | **IMPLEMENTED** | `hiveSignatureVerifier.ts` uses `hive-tx` to fetch posting keys via `condenser_api.get_accounts` (3-node fallback, 8s timeout, 5-min cache) and verify signatures cryptographically. |
+| Slash Evidence Verification | **IMPLEMENTED** | `applySlashEvidence` now fetches referenced transactions from public Hive RPC and verifies both are ragnarok ops from the offender. Unreachable RPC queues to `pending_slashes` IDB store (max 3 retries). |
+| ELO Derivation | **CHAIN-DERIVED** | ELO is computed deterministically from `match_result` history (K=32). Stored in `elo_ratings` IDB store. `queue_join` ignores client-reported ELO — uses chain-derived values. |
+| RUNE Rewards | **CHAIN-DERIVED + CLAIMABLE** | Match RUNE: derived inside `applyMatchResult` (10 win / 3 loss for ranked). Milestone RUNE: awarded via `rp_reward_claim` alongside reward cards (self-serve). |
+| Supply Cap (Pack Open) | **ENFORCED** | `applyPackOpen` checks `getSupplyCounter()` before minting each card. Cards exceeding the cap are skipped. |
+| Deck Hash | **SHA-256** | `computeDeckHash` now uses SHA-256 (truncated to 32 hex chars) instead of reversible base64. |
+| P2P Turn Validation | **IMPLEMENTED** | Host validates `currentTurn === 'opponent'` before executing remote actions. Messages are queued (not dropped) when busy. AI guard prevents `processAITurn` from running when P2P connected. |
+| Invariant #7 (Block-anchored moves) | **NOT IMPLEMENTED** | Per-move `hive_block_ref` is a design goal. Current implementation uses unsigned Merkle transcripts. |
+| Invariant #10 (WASM hash) | **NOT IMPLEMENTED** | Uses `__BUILD_HASH__` (git rev-parse) instead. WASM compilation deferred to Phase 2C. |
+| Feature Flags | **ENV-VAR DRIVEN** | `VITE_DATA_LAYER_MODE` and `VITE_BLOCKCHAIN_PACKAGING` read from env vars. `.env.production` sets `hive` / `true`. |
+| Mock Blockchain Routes | **PRODUCTION-GUARDED** | `mockBlockchainRoutes` only mounted when `NODE_ENV !== 'production'`. |
+| Server Rate Limiting | **IMPLEMENTED** | `express-rate-limit` on all `/api` routes: 120 req/min per IP. |
+| Matchmaking Auth | **IMPLEMENTED** | Server-side Hive signature verification via `hive-tx`. Validates `ragnarok-queue:{username}:{timestamp}` signed with Posting key. 5-min timestamp drift window. |
+| Username Validation | **IMPLEMENTED** | All chain/matchmaking endpoints validate Hive username format (`/^[a-z][a-z0-9.-]{2,15}$/`). |
+| Account Registry Cap | **ENFORCED** | Max 10,000 known accounts in server chain indexer. |
+| Demo Card Guard | **ENFORCED** | In hive mode, cards without `nft_uid` are excluded from chain packaging. Deck verification rejects non-NFT cards. |
+| PoW Web Worker | **IMPLEMENTED** | `computePoW` dispatches to up to 4 Web Workers in parallel. Falls back to serial if Workers unavailable. |
+| Poker Hands Won | **WIRED** | `pokerHandsWon` counter tracked per player/opponent in `PokerCombatSlice` and read by `matchResultPackager`. |
+| stampLevelUp | **CANONICAL FORMAT** | Uses `broadcastCustomJson` with `ragnarok-cards` app ID instead of legacy `ragnarok_level_up` custom_json id. |
+| Dead Code Cleanup | **DONE** | Removed `hashDeck(btoa)`, `generateMatchSeed`, `generateTrxId` from HiveSync. Removed unused multer import from server routes. |
+
 ---
 
 ## 12. File Structure
 
-All new files live in the client. There is no server component, no reader service, no database.
+Client-side files live alongside the game code. A thin server-side chain indexer provides global state (leaderboard, opponent ELO, cross-account deck verification) that per-account browser replay can't provide.
 
 ```
 client/src/
@@ -1033,14 +1103,20 @@ client/src/
 │   │   ├── cardXPSystem.ts           # XP calculations per rarity (thresholds, getLevelForXP)
 │   │   ├── matchResultPackager.ts    # Package match into on-chain format (result_nonce anti-replay)
 │   │   ├── nftMetadataGenerator.ts   # NFT metadata from card definitions
-│   │   ├── deckVerification.ts       # verifyDeckOwnership, computeDeckHash (IndexedDB, no server)
+│   │   ├── deckVerification.ts       # verifyDeckOwnership, computeDeckHash (SHA-256, IndexedDB, no server)
+│   │   ├── hiveSignatureVerifier.ts  # verifyHiveSignature, fetchAccountKeys (hive-tx, 3-node fallback)
 │   │   ├── matchmakingOnChain.ts     # broadcastQueueJoin, startQueuePoller, ELO window matching
 │   │   ├── signedMove.ts            # GameMove, MoveRecord, MerkleProof types
 │   │   ├── transcriptBuilder.ts     # TranscriptBuilder class: Merkle tree, proofs, singleton lifecycle
 │   │   ├── disputeResolution.ts     # buildDisputeEvidence, submitMoveDispute, verifyMoveInTranscript
+│   │   ├── genesisAdmin.ts          # Admin: broadcastGenesis, broadcastSeal, broadcastMint (one-time)
+│   │   ├── hiveConfig.ts            # Config: HIVE_NODES, RAGNAROK_ACCOUNT, NFT_ART_BASE_URL
+│   │   ├── tournamentRewards.ts     # 11 milestone rewards: wins/ELO/matches → cards + RUNE
+│   │   ├── powWorker.ts             # Web Worker for parallel PoW computation
 │   │   └── index.ts                  # Barrel exports
 │   │
-│   ├── HiveSync.ts                    # Keychain integration: login, broadcast, transfer
+│   ├── chainAPI.ts                    # Client fetch wrapper for /api/chain/* server endpoints
+│   ├── HiveSync.ts                    # Keychain integration: login, broadcast, transfer, claimReward
 │   ├── HiveDataLayer.ts              # Zustand store: user, stats, collection, tokens
 │   ├── HiveEvents.ts                 # Event bus for chain state changes
 │   └── schemas/
@@ -1073,18 +1149,19 @@ client/src/
 │   │
 │   └── config/
 │       └── featureFlags.ts            # DATA_LAYER_MODE, BLOCKCHAIN_PACKAGING_ENABLED
-│
-└── server/
-    └── routes/
-        └── mockBlockchainRoutes.ts    # In-memory mock blockchain (testing only)
+
+server/
+├── services/
+│   ├── chainState.ts                  # In-memory global state (players, cards, matches) + JSON persistence
+│   └── chainIndexer.ts                # Polls Hive RPC for known accounts, processes ops server-side
+├── routes/
+│   ├── chainRoutes.ts                 # REST: leaderboard, ELO, cards, deck verify, register, status
+│   ├── matchmakingRoutes.ts           # ELO-proximity matchmaking queue
+│   └── mockBlockchainRoutes.ts        # In-memory mock blockchain (testing only)
+└── routes.ts                          # Mount points + indexer startup
 ```
 
-**What's NOT here:**
-
-- No `server/blockchain/` — no server involvement after genesis
-- No `reader/` service — every client IS the reader
-- No `Dockerfile` — nothing to deploy except static files
-- No PostgreSQL — IndexedDB is the local database
+**Architecture note:** The server-side chain indexer is a **convenience layer**, not a trust dependency. It polls the same public Hive RPC data that every browser replays independently. If the server is down, clients still function via their local IndexedDB replay — they just lose global queries (leaderboard, opponent ELO lookup, cross-account deck verification).
 
 ---
 
@@ -1094,27 +1171,31 @@ These rules must never be violated, regardless of future development:
 
 1. **The genesis broadcast is final.** Total supply, rarity caps, and reader version are set once and never changed.
 
-2. **The reader is append-only and runs in every player's browser.** It reads chain history and builds state in IndexedDB. It never writes to Hive. There is no server-side reader.
+2. **The reader is append-only and runs in every player's browser.** It reads chain history and builds state in IndexedDB. It never writes to Hive. A thin server-side chain indexer provides global convenience queries (leaderboard, opponent ELO) but is NOT a trust dependency — every browser can independently verify all state.
 
 3. **Card transfers require the owner's key.** The Ragnarok account cannot move a card after it has been distributed. Only the holder's Hive private key can sign a transfer.
 
 4. **Every match starts with a dual-anchored `match_start`.** Both players broadcast before gameplay begins. A `match_result` without a matching `match_start` is ignored by all readers.
 
-5. **Match results require both signatures.** A result signed by only one player is invalid and ignored by all readers.
+5. **Ranked match results require both cryptographically verified signatures.** Both broadcaster and counterparty signatures are verified by recovering the public key (via `hive-tx`) and checking it against the account's posting keys fetched from `condenser_api.get_accounts`. A ranked result with invalid or missing signatures is rejected. Casual matches may use single-sig.
 
-6. **Every broadcast requires multi-challenge proof of work.** `match_start`, `match_result`, and `queue_join` ops must include valid PoW (array of nonces, one per sub-challenge). Challenges derive from the payload — no server needed. Ops with any failing nonce are silently ignored.
+6. **Every broadcast requires multi-challenge proof of work.** `match_start`, `match_result`, and `queue_join` ops MUST include valid PoW — ops without PoW are **rejected** (not silently ignored). `match_result` uses 64 challenges × 6-bit difficulty. Challenges derive from the payload — no server needed.
 
-7. **Every `SignedMove` is block-anchored.** The `hive_block_ref` field pins each move to a real point in Hive chain history. Moves without a valid block reference are inadmissible in dispute resolution.
+7. **Move transcripts are Merkle-anchored.** _(Note: per-move Hive block anchoring (`hive_block_ref`) is described in Section 7.2 as a design goal but is NOT yet implemented. Current implementation records moves into a Merkle transcript without individual block references or cryptographic signatures per move. The Merkle root of all moves is embedded in the `match_result` on chain.)_
 
 8. **Match transcripts use Merkle trees.** The `transcript_merkle_root` in `match_result` enables single-move verification without the full transcript. Dispute resolution requires only the disputed move + a Merkle proof.
 
-9. **Slash evidence is permissionless.** Any observer can submit `slash_evidence` citing contradictory on-chain ops. The replay engine enforces slashing deterministically — no admin approval needed.
+9. **Slash evidence is permissionless and verified.** Any observer can submit `slash_evidence` citing contradictory on-chain ops. The replay engine fetches both referenced transactions from public Hive RPC (3-node fallback, 8s timeout), verifies they are ragnarok ops from the offender, and confirms contradiction before applying the slash. If RPC is unreachable, evidence is queued to `pending_slashes` for retry (max 3 attempts).
 
-10. **The WASM module hash is the version.** Two clients with different hashes cannot play each other. There is no fallback.
+10. **The build hash is the version.** _(Note: WASM compilation is planned for Phase 2C but not yet implemented. Currently, a git-derived `__BUILD_HASH__` is exchanged at P2P handshake via the `version_check` message. Mismatches warn but don't block in dev mode. Once WASM is compiled, the WASM module hash will replace the build hash as the canonical version identifier.)_
 
 11. **Mints after the seal are ignored, always.** No exception, no admin override. The replay engine code that enforces this is pinned by hash at genesis and runs locally in every player's browser.
 
 12. **All rules are public.** The reader source code, the genesis broadcast, the WASM module, and this design document are all publicly accessible. Security comes from cryptography, not obscurity.
+
+13. **Tournament rewards are self-serve.** Players claim rewards by broadcasting `rp_reward_claim` with their own Keychain. The replay engine verifies on-chain stats (wins, ELO, matches played). No admin distribution, no server, no manual intervention. One claim per account per reward.
+
+14. **Admin authority ends at seal.** After `rp_seal`, the Ragnarok account cannot mint, cannot distribute, cannot intervene. Pack opening and reward claiming are player-driven and work without any admin key.
 
 ---
 
@@ -1168,6 +1249,10 @@ The `match_start` anchor includes a `deck_hash`. The `match_result` should also 
 ### 15.4 Rate Limiting via PoW Scaling
 
 If the replay engine detects an account submitting ops at an unusually high rate (e.g., >10 `queue_join` ops per hour), future PoW difficulty for that account's ops can be scaled up. This is enforced locally by every reader — no coordination needed.
+
+### 15.5 Reward Claim Anti-Replay
+
+Each reward can only be claimed once per account. The replay engine stores `{account}:{rewardId}` in the `reward_claims` IndexedDB store. Duplicate claims are silently ignored (idempotent). Conditions are verified against chain-derived stats (ELO rating, win count, matches played) — not client-reported values.
 
 ---
 

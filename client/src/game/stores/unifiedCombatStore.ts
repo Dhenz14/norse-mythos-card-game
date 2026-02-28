@@ -72,6 +72,8 @@ export const useUnifiedCombatStore = create<UnifiedCombatStore>()((set, get, api
       pokerIsActive: false,
       mulliganComplete: false,
       isTransitioningHand: false,
+      pokerHandsWonPlayer: 0,
+      pokerHandsWonOpponent: 0,
       playerKingAbility: null,
       opponentKingAbility: null,
       allActiveMines: [],

@@ -391,8 +391,7 @@ function executeHealDeathrattle(
     });
     
     // Heal friendly hero
-    const cpMaxHp = (currentPlayer as any).maxHealth || 30;
-    currentPlayer.heroHealth = Math.min((currentPlayer.heroHealth ?? currentPlayer.health) + healAmount, cpMaxHp);
+    currentPlayer.heroHealth = Math.min((currentPlayer.heroHealth ?? currentPlayer.health) + healAmount, currentPlayer.maxHealth);
   } else if (targets === 'all') {
     // Heal all minions and heroes
     for (const playerKey of ['player', 'opponent'] as const) {
@@ -403,14 +402,12 @@ function executeHealDeathrattle(
       });
 
       const p = newState.players[playerKey];
-      const pMaxHp = (p as any).maxHealth || 30;
-      p.heroHealth = Math.min((p.heroHealth ?? p.health) + healAmount, pMaxHp);
+      p.heroHealth = Math.min((p.heroHealth ?? p.health) + healAmount, p.maxHealth);
     }
   } else if (targets === 'friendly_hero') {
     // Heal friendly hero only
     const p = newState.players[playerId];
-    const pMaxHp = (p as any).maxHealth || 30;
-    p.heroHealth = Math.min((p.heroHealth ?? p.health) + healAmount, pMaxHp);
+    p.heroHealth = Math.min((p.heroHealth ?? p.health) + healAmount, p.maxHealth);
   }
   
   return newState;
