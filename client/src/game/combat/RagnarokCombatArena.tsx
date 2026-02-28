@@ -52,6 +52,8 @@ import type { ShowdownCelebration as ShowdownCelebrationState } from './hooks/us
 import { isCardInWinningHand } from './utils/combatArenaUtils';
 import { debug } from '../config/debugConfig';
 import { playSound } from '../utils/soundUtils';
+import { GameLog } from '../components/GameLog';
+import { useGameLogIntegration } from '../hooks/useGameLogIntegration';
 
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
@@ -1003,7 +1005,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 
 export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onCombatEnd }) => {
   useCombatLayout();
-  
+  useGameLogIntegration();
+
   const {
     combatState,
     isActive,
@@ -1266,6 +1269,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             whoFolded: resolution?.whoFolded || showdownCelebration.resolution.whoFolded,
             foldPenalty: resolution?.foldPenalty || showdownCelebration.resolution.foldPenalty
           }}
+          playerHeroId={combatState?.player?.pet?.norseHeroId || 'hero-odin'}
+          opponentHeroId={combatState?.opponent?.pet?.norseHeroId || 'hero-loki'}
           onComplete={() => {
             // Clear backup timer - animation completed normally
             if (showdownBackupTimerRef.current) {
@@ -1312,6 +1317,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         onPlayAgain={onCombatEnd ? () => onCombatEnd(gameWinner === 'player' ? 'player' : 'opponent') : undefined}
         onMainMenu={() => { window.location.href = '/'; }}
       />
+
+      <GameLog />
 
     </div>
     </GameViewport>

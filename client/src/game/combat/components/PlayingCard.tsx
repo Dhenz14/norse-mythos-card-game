@@ -53,8 +53,15 @@ export const PlayingCard: React.FC<PlayingCardProps> = ({
 		return (
 			<div className={`arena-poker-card norse face-down ${large ? 'large' : ''}`}>
 				<div className="card-back">
-					<div className="norse-pattern">
-						<div className="valknut">᛭</div>
+					<div className="card-back-border">
+						<div className="corner-rune tl">ᚱ</div>
+						<div className="corner-rune tr">ᚦ</div>
+						<div className="corner-rune bl">ᛉ</div>
+						<div className="corner-rune br">ᛟ</div>
+						<div className="card-back-center">
+							<div className="yggdrasil-symbol">ᛇ</div>
+						</div>
+						<div className="card-back-shimmer" />
 					</div>
 				</div>
 			</div>

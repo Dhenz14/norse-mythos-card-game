@@ -30,18 +30,13 @@
   font-family: var(--tooltip-font-family);
   color: #F7FAFC;
   pointer-events: none;
-  animation: tooltipFadeIn 0.15s ease-out;
+  animation: tooltip-enter 0.15s ease-out;
+  transform-origin: center bottom;
 }
 
-@keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes tooltip-enter {
+  0% { opacity: 0; transform: scale(0.92) translateY(6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* Rarity-specific border colors */
@@ -148,6 +143,12 @@
   background: rgba(0, 0, 0, 0.3);
   border-radius: 4px;
   border-left: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.keyword-highlight {
+  font-weight: 600;
+  text-shadow: 0 0 4px currentColor;
+  cursor: help;
 }
 
 /* Keywords section */

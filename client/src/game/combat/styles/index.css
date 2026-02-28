@@ -42,7 +42,11 @@
 @import './glow-effects.css';
 @import './elemental-glows.css';
 @import './hero-death.css';
+@import './hero-reactions.css';
 @import './showdown.css';
 
 /* Atmosphere */
 @import './norse-atmosphere.css';
+
+/* Cursors */
+@import './cursors.css';

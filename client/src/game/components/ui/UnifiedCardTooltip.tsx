@@ -103,6 +103,36 @@ export function extractKeywords(card: TooltipCardData): { keyword: string; icon:
   return foundKeywords.slice(0, 6); // Limit to 6 keywords max
 }
 
+function highlightKeywords(text: string): React.ReactNode[] {
+	const sortedKeywords = Object.keys(KEYWORD_DEFINITIONS).sort((a, b) => b.length - a.length);
+	const pattern = new RegExp(`\\b(${sortedKeywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi');
+	const parts: React.ReactNode[] = [];
+	let lastIndex = 0;
+	let match: RegExpExecArray | null;
+
+	while ((match = pattern.exec(text)) !== null) {
+		if (match.index > lastIndex) {
+			parts.push(text.slice(lastIndex, match.index));
+		}
+		const keyword = match[1].toLowerCase();
+		const def = KEYWORD_DEFINITIONS[keyword];
+		if (def) {
+			parts.push(
+				<span key={match.index} className="keyword-highlight" style={{ color: def.color, fontWeight: 600 }}>
+					{match[1]}
+				</span>
+			);
+		} else {
+			parts.push(match[1]);
+		}
+		lastIndex = pattern.lastIndex;
+	}
+	if (lastIndex < text.length) {
+		parts.push(text.slice(lastIndex));
+	}
+	return parts;
+}
+
 /**
  * UnifiedCardTooltip - Portal-based tooltip for consistent card info display
  */
@@ -194,7 +224,7 @@ export const UnifiedCardTooltip: React.FC<UnifiedCardTooltipProps> = ({
       {/* Description */}
       {card.description && (
         <div className="tooltip-description">
-          {card.description}
+          {highlightKeywords(card.description)}
         </div>
       )}
 

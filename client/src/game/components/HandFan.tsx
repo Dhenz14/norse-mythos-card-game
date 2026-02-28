@@ -13,6 +13,8 @@ import CardWithDrag from './CardWithDrag';
 import { Position } from '../types/Position';
 import CardHoverPreview from './CardHoverPreview';
 import { useElementalBuff } from '../combat/hooks/useElementalBuff';
+import { CardDrawAnimation } from './CardDrawAnimation';
+import { CardPlayAnimation } from './CardPlayAnimation';
 import './HandFan.css';
 
 interface HandFanTooltipProps {
@@ -58,6 +60,9 @@ export const HandFan: React.FC<HandFanProps> = ({
   const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [shakingCardId, setShakingCardId] = useState<string | null>(null);
+  const [drawCounter, setDrawCounter] = useState(0);
+  const [playedCardData, setPlayedCardData] = useState<{ name: string; manaCost: number; rarity?: string } | null>(null);
+  const [playCounter, setPlayCounter] = useState(0);
   const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevCardCount = useRef<number>(0);
 
@@ -83,6 +88,7 @@ export const HandFan: React.FC<HandFanProps> = ({
   useEffect(() => {
     if (adaptedCards.length > prevCardCount.current) {
       playSound('card_draw');
+      setDrawCounter(prev => prev + 1);
     }
     prevCardCount.current = adaptedCards.length;
   }, [adaptedCards.length]);
@@ -96,6 +102,8 @@ export const HandFan: React.FC<HandFanProps> = ({
     );
     
     if (originalCard) {
+      setPlayedCardData({ name: card.card.name, manaCost: card.card.manaCost || 0, rarity: (card.card as any).rarity });
+      setPlayCounter(prev => prev + 1);
       playSound('card_play');
       onCardPlay(originalCard, position);
     }
@@ -171,6 +179,8 @@ export const HandFan: React.FC<HandFanProps> = ({
 
   return (
     <div className="hand-fan-container" style={hoveredIndex !== null ? { zIndex: 9000, position: 'relative' } : undefined}>
+      <CardDrawAnimation drawCount={drawCounter} />
+      <CardPlayAnimation playedCard={playedCardData} playCount={playCounter} />
       {adaptedCards.map((card, index) => {
         if (!card || !card.card) return null;
         

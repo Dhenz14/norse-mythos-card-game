@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { playSound } from '../utils/soundUtils';
+import './ManaBar.css';
 
 const MAX_MANA_SLOTS = 9;
 const CRYSTAL_SIZE = 14; // Compact size for player hero zone
@@ -114,15 +116,41 @@ interface ManaCrystalProps {
   size?: number;
 }
 
-const ManaCrystal: React.FC<ManaCrystalProps> = ({ 
-  isLocked, 
-  isAvailable, 
+const ManaCrystal: React.FC<ManaCrystalProps> = ({
+  isLocked,
+  isAvailable,
   isSpent,
   isOverloaded,
   index,
   size = CRYSTAL_SIZE
 }) => {
-  
+  const [prevAvailable, setPrevAvailable] = useState(isAvailable);
+  const [animClass, setAnimClass] = useState<'filling' | 'spending' | null>(null);
+  const soundDebounceRef = useRef<number>(0);
+
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout> | undefined;
+    if (isAvailable && !prevAvailable) {
+      setAnimClass('filling');
+      const now = Date.now();
+      if (now - soundDebounceRef.current > 100) {
+        playSound('mana_fill');
+        soundDebounceRef.current = now;
+      }
+      t = setTimeout(() => setAnimClass(null), 500);
+    } else if (!isAvailable && prevAvailable && !isLocked) {
+      setAnimClass('spending');
+      const now = Date.now();
+      if (now - soundDebounceRef.current > 100) {
+        playSound('mana_spend');
+        soundDebounceRef.current = now;
+      }
+      t = setTimeout(() => setAnimClass(null), 400);
+    }
+    setPrevAvailable(isAvailable);
+    return () => { if (t) clearTimeout(t); };
+  }, [isAvailable, prevAvailable, isLocked]);
+
   let fillColor = '#1e3a5f';
   let glowColor = 'none';
   let opacity = 1;
@@ -142,6 +170,7 @@ const ManaCrystal: React.FC<ManaCrystalProps> = ({
   
   return (
     <motion.div
+      className={`mana-crystal ${animClass || ''}`}
       initial={{ scale: 0.8 }}
       animate={{ scale: 1 }}
       transition={{ delay: index * 0.02, duration: 0.2 }}

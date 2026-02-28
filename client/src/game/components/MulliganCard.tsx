@@ -8,9 +8,11 @@ interface MulliganCardProps {
   card: CardInstance;
   isSelected: boolean;
   onClick: () => void;
+  onMouseEnter?: (e: React.MouseEvent) => void;
+  onMouseLeave?: () => void;
 }
 
-export const MulliganCard: React.FC<MulliganCardProps> = ({ card, isSelected, onClick }) => {
+export const MulliganCard: React.FC<MulliganCardProps> = ({ card, isSelected, onClick, onMouseEnter, onMouseLeave }) => {
   const cardData = card?.card;
 
   if (!cardData) {
@@ -43,6 +45,8 @@ export const MulliganCard: React.FC<MulliganCardProps> = ({ card, isSelected, on
       whileHover={isSelected ? {} : { scale: 1.06, y: -8 }}
       transition={{ type: 'spring', stiffness: 360, damping: 26 }}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <SimpleCard
         card={simpleCardData}

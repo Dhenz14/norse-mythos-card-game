@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CardInstance, MulliganState } from '../types';
 import { MulliganCard } from './MulliganCard';
 import { useGameStore } from '../stores/gameStore';
+import { UnifiedCardTooltip, TooltipCardData } from './ui/UnifiedCardTooltip';
 import './mulligan.css';
 
 interface MulliganScreenProps {
@@ -19,6 +20,34 @@ export const MulliganScreen: React.FC<MulliganScreenProps> = ({
   const toggleMulliganCard = useGameStore(state => state.toggleMulliganCard);
   const confirmMulliganChoice = useGameStore(state => state.confirmMulligan);
   const skipMulliganChoice = useGameStore(state => state.skipMulligan);
+
+  const [hoveredCard, setHoveredCard] = useState<TooltipCardData | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
+
+  const handleCardHoverEnter = useCallback((card: CardInstance, e: React.MouseEvent) => {
+    const cd = card?.card as any;
+    if (!cd) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHoveredCard({
+      id: cd.id || 0,
+      name: cd.name || 'Unknown',
+      manaCost: cd.manaCost || 0,
+      attack: cd.attack,
+      health: cd.health,
+      description: cd.description || '',
+      type: cd.type || 'minion',
+      rarity: cd.rarity || 'common',
+      tribe: cd.tribe || cd.race,
+      cardClass: cd.cardClass || cd.class,
+      keywords: cd.keywords || []
+    });
+    setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+  }, []);
+
+  const handleCardHoverLeave = useCallback(() => {
+    setHoveredCard(null);
+    setTooltipPosition(null);
+  }, []);
 
   if (!mulligan || !mulligan.active) return null;
 
@@ -92,6 +121,8 @@ export const MulliganScreen: React.FC<MulliganScreenProps> = ({
                   card={card}
                   isSelected={!!mulligan.playerSelections[card.instanceId]}
                   onClick={() => handleCardClick(card)}
+                  onMouseEnter={(e) => handleCardHoverEnter(card, e)}
+                  onMouseLeave={handleCardHoverLeave}
                 />
               </motion.div>
             ))}
@@ -147,6 +178,13 @@ export const MulliganScreen: React.FC<MulliganScreenProps> = ({
             )}
           </AnimatePresence>
         </motion.div>
+
+        <UnifiedCardTooltip
+          card={hoveredCard}
+          position={tooltipPosition}
+          visible={!!hoveredCard}
+          placement="above"
+        />
       </motion.div>
     </AnimatePresence>
   );

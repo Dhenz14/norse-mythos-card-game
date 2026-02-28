@@ -1,0 +1,89 @@
+.hero-card-wrapper.hero-damaged {
+	animation: hero-damage-flash 0.5s ease-out;
+}
+
+@keyframes hero-damage-flash {
+	0% { filter: brightness(1); transform: scale(1); }
+	10% { filter: brightness(2) saturate(0.5) sepia(1) hue-rotate(-30deg); transform: scale(1.05); }
+	20% { filter: brightness(1.5) saturate(0.8); transform: scale(0.97) translateX(-3px); }
+	35% { transform: scale(1.02) translateX(2px); }
+	50% { filter: brightness(1.2); transform: scale(0.99) translateX(-1px); }
+	100% { filter: brightness(1); transform: scale(1) translateX(0); }
+}
+
+.hero-card-wrapper.hero-damaged::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(ellipse at center, transparent 30%, rgba(220, 38, 38, 0.4) 100%);
+	pointer-events: none;
+	animation: hero-damage-vignette 0.5s ease-out forwards;
+	z-index: 5;
+}
+
+@keyframes hero-damage-vignette {
+	0% { opacity: 0; }
+	15% { opacity: 1; }
+	100% { opacity: 0; }
+}
+
+.hero-card-wrapper.hero-healed {
+	animation: hero-heal-glow 0.6s ease-out;
+}
+
+@keyframes hero-heal-glow {
+	0% { filter: brightness(1); }
+	20% { filter: brightness(1.3) saturate(1.2) hue-rotate(80deg); }
+	100% { filter: brightness(1); }
+}
+
+.hero-card-wrapper.hero-healed::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(ellipse at center, rgba(34, 197, 94, 0.3) 0%, transparent 70%);
+	pointer-events: none;
+	animation: hero-heal-vignette 0.6s ease-out forwards;
+	z-index: 5;
+}
+
+@keyframes hero-heal-vignette {
+	0% { opacity: 0; }
+	20% { opacity: 1; }
+	100% { opacity: 0; }
+}
+
+.hero-portrait.power-activating {
+	animation: hero-power-burst 0.5s ease-out;
+}
+
+@keyframes hero-power-burst {
+	0% { box-shadow: inset 0 0 0 0 rgba(250, 204, 21, 0); }
+	30% { box-shadow: inset 0 0 30px 10px rgba(250, 204, 21, 0.6), 0 0 20px rgba(250, 204, 21, 0.4); }
+	100% { box-shadow: inset 0 0 0 0 rgba(250, 204, 21, 0); }
+}
+
+.hero-armor-badge.armor-gained {
+	animation: armor-gain-flash 0.4s ease-out;
+}
+
+@keyframes armor-gain-flash {
+	0% { transform: scale(1); filter: brightness(1); }
+	30% { transform: scale(1.4); filter: brightness(1.8); }
+	100% { transform: scale(1); filter: brightness(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hero-card-wrapper.hero-damaged,
+	.hero-card-wrapper.hero-healed,
+	.hero-portrait.power-activating,
+	.hero-armor-badge.armor-gained {
+		animation: none;
+	}
+	.hero-card-wrapper.hero-damaged::after,
+	.hero-card-wrapper.hero-healed::after {
+		display: none;
+	}
+}

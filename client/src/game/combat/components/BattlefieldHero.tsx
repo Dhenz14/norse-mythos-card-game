@@ -17,6 +17,7 @@ import { createPortal } from 'react-dom';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
 import { getElementColor, getElementIcon, ELEMENT_LABELS, ELEMENT_WEAKNESSES, ELEMENT_STRENGTHS, type ElementType } from '../../utils/elements';
 import { NORSE_TO_GAME_ELEMENT, type NorseElement } from '../../types/NorseTypes';
+import '../styles/hero-reactions.css';
 
 /**
  * Props for the BattlefieldHero component
@@ -118,9 +119,24 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   const [showMatchupTooltip, setShowMatchupTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
   const [matchupTooltipPos, setMatchupTooltipPos] = useState<{ top: number; left: number } | null>(null);
+  const [damageReaction, setDamageReaction] = useState<'damaged' | 'healed' | null>(null);
+  const [powerActivating, setPowerActivating] = useState(false);
+  const prevHealthRef = useRef(currentHP);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
   const matchupBadgeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (prevHealthRef.current === currentHP) return;
+    if (currentHP < prevHealthRef.current) {
+      setDamageReaction('damaged');
+    } else {
+      setDamageReaction('healed');
+    }
+    prevHealthRef.current = currentHP;
+    const timer = setTimeout(() => setDamageReaction(null), 600);
+    return () => clearTimeout(timer);
+  }, [currentHP]);
   
   const elementClass = heroElement ? `element-${heroElement.toLowerCase()}` : '';
   
@@ -162,6 +178,8 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
       clickTimeoutRef.current = null;
       if (onHeroPowerClick) {
         onHeroPowerClick();
+        setPowerActivating(true);
+        setTimeout(() => setPowerActivating(false), 500);
       }
     }, 300);
   }, [isOpponent, onHeroPowerClick, onWeaponUpgradeClick, canUpgrade]);
@@ -179,7 +197,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
       className={`battlefield-hero-square ${isOpponent ? 'opponent' : 'player'} ${isTargetable ? 'targetable' : ''} ${onClick ? 'clickable' : ''}`}
       onClick={onClick}
     >
-      <div className={`hero-card-wrapper ${elementClass} premium-glow`}>
+      <div className={`hero-card-wrapper ${elementClass} premium-glow ${damageReaction ? `hero-${damageReaction}` : ''}`}>
         <div className={`hero-elemental-aura ${elementClass} premium-glow`} />
         
         <div className={`hero-card-frame ${elementClass} premium-glow`}>
@@ -197,7 +215,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
           </div>
           <div 
             ref={portraitRef}
-            className={`hero-portrait hero-portrait-interactive ${!isOpponent && heroPower ? 'has-power' : ''} ${!isPowerDisabled ? 'power-ready' : ''} ${canUpgrade ? 'upgrade-ready' : ''} ${isWeaponUpgraded ? 'upgraded' : ''}`}
+            className={`hero-portrait hero-portrait-interactive ${!isOpponent && heroPower ? 'has-power' : ''} ${!isPowerDisabled ? 'power-ready' : ''} ${canUpgrade ? 'upgrade-ready' : ''} ${isWeaponUpgraded ? 'upgraded' : ''} ${powerActivating ? 'power-activating' : ''}`}
             style={portraitBgStyle}
             onClick={(e) => {
               handlePortraitClick(e);

@@ -928,7 +928,7 @@ export function useRagnarokCombatController(
         debug.warn('[RagnarokCombatArena] Showdown backup timer fired - forcing combat end', { hasResolution: !!resolution });
         setShowdownCelebration(null);
         handleCombatEnd();
-      }, 4000);
+      }, 6000);
     }
     
     return () => {
