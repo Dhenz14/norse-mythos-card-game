@@ -98,6 +98,7 @@ export function useP2PSync() {
 	const messageQueueRef = useRef<P2PMessage[]>([]);
 	const isProcessingRef = useRef(false);
 	const initSentRef = useRef(false);
+	const pendingSyncRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	// Commit-reveal seed exchange state
 	const mySaltRef = useRef<string | null>(null);
@@ -257,7 +258,7 @@ export function useP2PSync() {
 						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
 						recordMove('playCard', { cardId: data.cardId, targetId: data.targetId, targetType: data.targetType }, 'opponent');
 						gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType);
-						setTimeout(() => syncGameState(), 50);
+						debouncedSync();
 					}
 					break;
 
@@ -267,7 +268,7 @@ export function useP2PSync() {
 						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
 						recordMove('attack', { attackerId: data.attackerId, defenderId: data.defenderId }, 'opponent');
 						gameStore.attackWithCard(data.attackerId, translateTargetForHost(data.defenderId) ?? data.defenderId);
-						setTimeout(() => syncGameState(), 50);
+						debouncedSync();
 					}
 					break;
 
@@ -277,7 +278,7 @@ export function useP2PSync() {
 						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
 						recordMove('endTurn', {}, 'opponent');
 						gameStore.endTurn();
-						setTimeout(() => syncGameState(), 50);
+						debouncedSync();
 					}
 					break;
 
@@ -287,7 +288,7 @@ export function useP2PSync() {
 						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
 						recordMove('useHeroPower', { targetId: data.targetId }, 'opponent');
 						gameStore.useHeroPower(translateTargetForHost(data.targetId));
-						setTimeout(() => syncGameState(), 50);
+						debouncedSync();
 					}
 					break;
 
@@ -295,7 +296,17 @@ export function useP2PSync() {
 					if (!isHost) {
 						const flipped = flipGameState(data.gameState);
 						const currentState = useGameStore.getState().gameState;
-						if (JSON.stringify(currentState) !== JSON.stringify(flipped)) {
+						const changed = !currentState ||
+							currentState.turnNumber !== flipped.turnNumber ||
+							currentState.gamePhase !== flipped.gamePhase ||
+							currentState.currentTurn !== flipped.currentTurn ||
+							currentState.players?.player?.heroHealth !== flipped.players?.player?.heroHealth ||
+							currentState.players?.opponent?.heroHealth !== flipped.players?.opponent?.heroHealth ||
+							currentState.players?.player?.mana?.current !== flipped.players?.player?.mana?.current ||
+							currentState.players?.player?.hand?.length !== flipped.players?.player?.hand?.length ||
+							currentState.players?.player?.battlefield?.length !== flipped.players?.player?.battlefield?.length ||
+							currentState.players?.opponent?.battlefield?.length !== flipped.players?.opponent?.battlefield?.length;
+						if (changed) {
 							useGameStore.setState({ gameState: flipped });
 						}
 					}
@@ -448,6 +459,14 @@ export function useP2PSync() {
 		send({ type: 'gameState', gameState: currentState });
 	}, [connectionState, isHost, send]);
 
+	const debouncedSync = useCallback(() => {
+		if (pendingSyncRef.current) clearTimeout(pendingSyncRef.current);
+		pendingSyncRef.current = setTimeout(() => {
+			syncGameState();
+			pendingSyncRef.current = null;
+		}, 25);
+	}, [syncGameState]);
+
 	const wrappedPlayCard = useCallback((cardId: string, targetId?: string, targetType?: 'minion' | 'hero') => {
 		if (connectionState === 'connected' && !isHost) {
 			recordMove('playCard', { cardId, targetId, targetType }, 'player');
@@ -455,9 +474,9 @@ export function useP2PSync() {
 		} else {
 			recordMove('playCard', { cardId, targetId, targetType }, 'player');
 			gameStore.playCard(cardId, targetId, targetType);
-			if (isHost) setTimeout(() => syncGameState(), 50);
+			if (isHost) debouncedSync();
 		}
-	}, [connectionState, isHost, send, gameStore, syncGameState]);
+	}, [connectionState, isHost, send, gameStore, debouncedSync]);
 
 	const wrappedAttack = useCallback((attackerId: string, defenderId: string) => {
 		if (connectionState === 'connected' && !isHost) {
@@ -466,9 +485,9 @@ export function useP2PSync() {
 		} else {
 			recordMove('attack', { attackerId, defenderId }, 'player');
 			gameStore.attackWithCard(attackerId, defenderId);
-			if (isHost) setTimeout(() => syncGameState(), 50);
+			if (isHost) debouncedSync();
 		}
-	}, [connectionState, isHost, send, gameStore, syncGameState]);
+	}, [connectionState, isHost, send, gameStore, debouncedSync]);
 
 	const wrappedEndTurn = useCallback(() => {
 		if (connectionState === 'connected' && !isHost) {
@@ -477,9 +496,9 @@ export function useP2PSync() {
 		} else {
 			recordMove('endTurn', {}, 'player');
 			gameStore.endTurn();
-			if (isHost) setTimeout(() => syncGameState(), 50);
+			if (isHost) debouncedSync();
 		}
-	}, [connectionState, isHost, send, gameStore, syncGameState]);
+	}, [connectionState, isHost, send, gameStore, debouncedSync]);
 
 	const wrappedUseHeroPower = useCallback((targetId?: string) => {
 		if (connectionState === 'connected' && !isHost) {
@@ -488,9 +507,9 @@ export function useP2PSync() {
 		} else {
 			recordMove('useHeroPower', { targetId }, 'player');
 			gameStore.useHeroPower(targetId);
-			if (isHost) setTimeout(() => syncGameState(), 50);
+			if (isHost) debouncedSync();
 		}
-	}, [connectionState, isHost, send, gameStore, syncGameState]);
+	}, [connectionState, isHost, send, gameStore, debouncedSync]);
 
 	// Host broadcasts state every 500ms as heartbeat sync
 	useEffect(() => {

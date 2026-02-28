@@ -6,6 +6,7 @@
  */
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { CardInstance, CardData } from '../types';
+import { toast } from 'sonner';
 import { playSound } from '../utils/soundUtils';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
@@ -196,7 +197,17 @@ export const HandFan: React.FC<HandFanProps> = ({
             className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''}`}
             style={getCardStyle(index)}
             onDoubleClick={() => { if (canPlay) handleCardPlay(card); }}
-            onClick={() => { if (!canPlay && isPlayerTurn && !isInteractionDisabled) triggerCardShake(card.instanceId); }}
+            onClick={() => {
+              if (!canPlay && isPlayerTurn && !isInteractionDisabled) {
+                triggerCardShake(card.instanceId);
+                playSound('error');
+                const cost = card.card?.manaCost || 0;
+                const deficit = cost - currentMana;
+                if (deficit > 0) {
+                  toast.error(`Need ${deficit} more mana`, { duration: 1500 });
+                }
+              }
+            }}
             onMouseEnter={() => {
               setHoveredCard(card.card);
               setHoveredIndex(index);

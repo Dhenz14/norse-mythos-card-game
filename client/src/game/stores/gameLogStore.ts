@@ -25,13 +25,17 @@ interface GameLogState {
 export const useGameLogStore = create<GameLogState>((set) => ({
 	entries: [],
 	isOpen: false,
-	addEntry: (entry) => set((state) => ({
-		entries: [...state.entries.slice(-99), {
+	addEntry: (entry) => set((state) => {
+		const entries = state.entries.length >= 100
+			? state.entries.slice(1)
+			: [...state.entries];
+		entries.push({
 			...entry,
 			id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
 			timestamp: Date.now()
-		}]
-	})),
+		});
+		return { entries };
+	}),
 	toggleLog: () => set((state) => ({ isOpen: !state.isOpen })),
 	clearLog: () => set({ entries: [] })
 }));

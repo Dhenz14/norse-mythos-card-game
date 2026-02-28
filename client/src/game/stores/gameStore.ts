@@ -1102,3 +1102,46 @@ useGameStore.subscribe((state, prevState) => {
   // Update snapshot for next comparison
   prevBattlefieldSnapshot = { player: currPlayerCards, opponent: currOpponentCards };
 });
+
+// Auto-end-turn when player has no possible actions
+let autoEndTurnTimer: ReturnType<typeof setTimeout> | null = null;
+
+useGameStore.subscribe((state, prevState) => {
+	if (autoEndTurnTimer) {
+		clearTimeout(autoEndTurnTimer);
+		autoEndTurnTimer = null;
+	}
+
+	const gs = state.gameState;
+	if (!gs || gs.currentTurn !== 'player' || gs.gamePhase !== 'playing') return;
+
+	const player = gs.players?.player;
+	if (!player) return;
+
+	const currentMana = player.mana?.current ?? 0;
+	const hand = player.hand || [];
+	const battlefield = player.battlefield || [];
+
+	const hasPlayableCard = hand.some((c: CardInstance) => {
+		const cost = c.card?.manaCost ?? 999;
+		return cost <= currentMana;
+	});
+
+	const hasAvailableAttacker = battlefield.some((m: CardInstance) => {
+		if (m.hasAttacked || m.isFrozen || m.isSummoningSick) return false;
+		const atk = m.currentAttack ?? getAttack(m.card);
+		return atk > 0;
+	});
+
+	const heroPower = player.heroPower;
+	const canUseHeroPower = heroPower && !heroPower.used && currentMana >= heroPower.cost;
+
+	if (!hasPlayableCard && !hasAvailableAttacker && !canUseHeroPower) {
+		autoEndTurnTimer = setTimeout(() => {
+			const currentGs = useGameStore.getState().gameState;
+			if (currentGs?.currentTurn === 'player' && currentGs?.gamePhase === 'playing') {
+				useGameStore.getState().endTurn();
+			}
+		}, 3000);
+	}
+});
