@@ -16,6 +16,7 @@ try {
 }
 
 export default defineConfig({
+  base: '/norse-mythos-card-game/',
   define: {
     __BUILD_HASH__: JSON.stringify(buildHash),
   },

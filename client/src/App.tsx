@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import { routes } from './lib/routes';
 import { Button } from './components/ui/button';
 import UnifiedCardSystem from "./game/components/UnifiedCardSystem";
@@ -148,7 +148,7 @@ function App() {
       <CardTransformBridgeInitializer />
       <UnifiedCardSystem />
       
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route path={routes.home} element={<HomePage />} />
           <Route path={routes.game} element={<RagnarokChessGame />} />
@@ -163,7 +163,7 @@ function App() {
           <Route path={routes.history} element={<MatchHistoryPage />} />
           <Route path={routes.settings} element={<SettingsPage />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </CardTransformProvider>
   );
 }
