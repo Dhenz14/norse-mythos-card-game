@@ -48,21 +48,22 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
     if (!combatState || !isActive) return;
     if (combatState.phase !== CombatPhase.RESOLUTION) return;
     if (cardGameMulliganActive) return;
-    
-    if (!combatState.player.isReady || !combatState.opponent.isReady) {
+
+    const hasFold = !!combatState.foldWinner;
+    if (!hasFold && (!combatState.player.isReady || !combatState.opponent.isReady)) {
       return;
     }
-    
+
     const result = resolveCombat();
     if (result) {
       const matchOver = result.playerFinalHealth <= 0 || result.opponentFinalHealth <= 0;
-      
+
       if (matchOver) {
         const isPlayerDead = result.playerFinalHealth <= 0;
-        const deadHeroName = isPlayerDead 
+        const deadHeroName = isPlayerDead
           ? (combatState?.player?.pet?.name || 'Hero')
           : (combatState?.opponent?.pet?.name || 'Enemy');
-        
+
         onHeroDeath({
           isAnimating: true,
           deadHeroName,
@@ -71,20 +72,21 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
         });
       } else {
         setResolution(result);
-        
+
         const winningCards = result.winner === 'draw'
           ? [...(result.playerHand?.cards || []), ...(result.opponentHand?.cards || [])]
           : result.winner === 'player'
             ? result.playerHand?.cards || []
             : result.opponentHand?.cards || [];
-        
+
         onShowdownCelebration({
           resolution: {
             winner: result.winner,
             resolutionType: result.resolutionType,
             playerHand: result.playerHand,
             opponentHand: result.opponentHand,
-            whoFolded: result.whoFolded
+            whoFolded: result.whoFolded,
+            foldPenalty: result.foldPenalty
           },
           winningCards
         });

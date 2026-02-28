@@ -105,10 +105,10 @@ export function useDeckBuilder({
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   
-  // Derived: Valid cards for this hero's class
+  // Derived: Valid cards for this hero's class (artifacts filtered by heroId)
   const validCards = useMemo(() => {
-    return filterCardsByClass(cardRegistry, normalizedHeroClass);
-  }, [normalizedHeroClass]);
+    return filterCardsByClass(cardRegistry, normalizedHeroClass, heroId);
+  }, [normalizedHeroClass, heroId]);
   
   // Derived: Filtered and sorted cards
   const filteredAndSortedCards = useMemo(() => {

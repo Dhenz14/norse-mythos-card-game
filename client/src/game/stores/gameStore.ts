@@ -967,7 +967,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     }
     
     if (gameState?.discovery?.active) {
-      debug.log('[PokerRewards] Blocked: discovery active, will grant after selection');
+      debug.combat('[PokerRewards] Deferred: discovery selection in progress');
       return;
     }
     

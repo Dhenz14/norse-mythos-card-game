@@ -77,13 +77,19 @@ export function isClassCard(card: CardData): boolean {
 
 /**
  * Filter cards by hero class (returns neutral + matching class cards)
+ * Artifacts are further restricted to their specific heroId.
  */
-export function filterCardsByClass(cards: CardData[], heroClass: string): CardData[] {
+export function filterCardsByClass(cards: CardData[], heroClass: string, heroId?: string): CardData[] {
   const normalizedHeroClass = heroClass.toLowerCase();
   return cards.filter(card => {
     if (card.collectible === false || card.type === 'hero') return false;
     const cardClass = getCardClass(card);
-    return cardClass === 'neutral' || cardClass === normalizedHeroClass;
+    const classMatch = cardClass === 'neutral' || cardClass === normalizedHeroClass;
+    if (!classMatch) return false;
+    if (card.type === 'artifact' && (card as any).heroId && heroId) {
+      return (card as any).heroId === heroId;
+    }
+    return true;
   });
 }
 

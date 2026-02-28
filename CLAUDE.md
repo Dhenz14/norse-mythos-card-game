@@ -252,6 +252,14 @@ client/src/data/blockchain/tournamentRewards.ts
 - `highlanderUtils.ts` implements deck duplicate checking
 - Supports Reno/Kazakus/Solia/Raza/Krul effects
 
+### Artifact & Armor System
+
+- **Artifacts** (IDs 29800-29809, 29900-29967): Legendary hero-specific equipment with `heroId` field
+- **Armor** (IDs 29810-29899): Equippable gear with `armorSlot` (helm/chest/greaves) and set bonuses
+- Card type validation: `cardRegistry/validation.ts` validates both types
+- Deck builder filtering: artifacts restricted to matching `heroId` via `filterCardsByClass(cards, heroClass, heroId)`
+- Game logic: `artifactUtils.ts` (equip/destroy/attack bonus), `armorGearUtils.ts` (equip/unequip/set bonuses)
+
 ### Hive NFT System
 
 - Chain replay is client-side (browser runs deterministic rules, builds IndexedDB)
@@ -265,8 +273,11 @@ client/src/data/blockchain/tournamentRewards.ts
 
 ### Poker Combat Freeze (Fixed)
 - **Problem**: Game froze after resolving poker hand
-- **Solution**: Added backup timer in `RagnarokCombatArena.tsx` (line ~1541)
-- **Details**: `showdownBackupTimerRef` ensures `handleCombatEnd` is called even if ShowdownCelebration unmounts
+- **Solution**: Three-layer safety net in `useRagnarokCombatController.ts`:
+  1. `useCombatEvents` triggers showdown celebration (handles both showdown + fold via `foldWinner` check)
+  2. `showdownBackupTimerRef` (4s) forces combat end if celebration animation hangs
+  3. `resolutionEscapeRef` (3s) forces next hand if RESOLUTION phase is stuck without celebration
+- **Details**: `handleCombatEnd` retries every 500ms if discovery selection is in progress
 
 ### Type Adapter Placeholders
 - **File**: `client/src/game/utils/typeAdapters.ts`

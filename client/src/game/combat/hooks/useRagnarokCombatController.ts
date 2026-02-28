@@ -898,19 +898,20 @@ export function useRagnarokCombatController(
     }
     const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
     if (mulliganStillActive) return;
-    
+
     const discoveryActive = useGameStore.getState().gameState?.discovery?.active;
     if (discoveryActive) {
-      debug.combat('[handleCombatEnd] Blocked: discovery active, deferring hand-end processing');
+      debug.combat('[handleCombatEnd] Discovery active — will retry in 500ms');
+      setTimeout(() => handleCombatEnd(), 500);
       return;
     }
-    
+
     handEndProcessedRef.current = true;
-    
+
     advanceTurnPhase();
-    
+
     grantPokerHandRewards();
-    
+
     getPokerCombatAdapterState().startNextHandDelayed(resolution);
     setResolution(null);
   }, [resolution, grantPokerHandRewards, advanceTurnPhase]);
@@ -927,7 +928,7 @@ export function useRagnarokCombatController(
         debug.warn('[RagnarokCombatArena] Showdown backup timer fired - forcing combat end', { hasResolution: !!resolution });
         setShowdownCelebration(null);
         handleCombatEnd();
-      }, 8000);
+      }, 4000);
     }
     
     return () => {
@@ -938,7 +939,7 @@ export function useRagnarokCombatController(
     };
   }, [showdownCelebration, heroDeathState?.isAnimating, handleCombatEnd, resolution]);
 
-  // RESOLUTION phase escape timer — catches freezes where showdown never triggers
+  // RESOLUTION phase escape timer — safety net for rare freezes where showdown never triggers
   const resolutionEscapeRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     const phase = combatState?.phase;
@@ -948,15 +949,13 @@ export function useRagnarokCombatController(
         const adapter = getPokerCombatAdapterState();
         const currentPhase = adapter.combatState?.phase;
         if (currentPhase === CombatPhase.RESOLUTION) {
-          debug.warn('[ResolutionEscape] Stuck in RESOLUTION for 8s — forcing next hand');
-          // Reset stuck transitioning flag and start next hand directly
+          debug.warn('[ResolutionEscape] Stuck in RESOLUTION for 3s — forcing next hand');
           adapter.setTransitioning(false);
           advanceTurnPhase();
           grantPokerHandRewards();
-          // startNextHand with no resolution uses current stored HP values
           adapter.startNextHand();
         }
-      }, 8000);
+      }, 3000);
     } else {
       if (resolutionEscapeRef.current) {
         clearTimeout(resolutionEscapeRef.current);

@@ -20,8 +20,8 @@ interface RawCardInput {
 }
 
 function isValidCardType(type: unknown): type is CardType {
-  return typeof type === 'string' && 
-    ['minion', 'spell', 'weapon', 'hero', 'secret', 'location', 'poker_spell'].includes(type);
+  return typeof type === 'string' &&
+    ['minion', 'spell', 'weapon', 'hero', 'secret', 'location', 'poker_spell', 'artifact', 'armor'].includes(type);
 }
 
 export function validateCard(input: unknown): ValidationResult {
@@ -58,6 +58,21 @@ export function validateCard(input: unknown): ValidationResult {
     }
     if (card.health === undefined || typeof card.health !== 'number') {
       errors.push(`Minion ${cardId} missing or invalid health`);
+    }
+  }
+
+  if (cardType === 'artifact') {
+    if (!card.heroId || typeof card.heroId !== 'string') {
+      warnings.push(`Artifact ${cardId} missing heroId`);
+    }
+  }
+
+  if (cardType === 'armor') {
+    if (!card.armorSlot || typeof card.armorSlot !== 'string') {
+      warnings.push(`Armor ${cardId} missing armorSlot`);
+    }
+    if (card.armorValue === undefined || typeof card.armorValue !== 'number') {
+      warnings.push(`Armor ${cardId} missing armorValue`);
     }
   }
   

@@ -42,6 +42,8 @@ const TYPE_ICONS: Record<string, string> = {
 	minion: '\u2694',
 	spell: '\u2728',
 	weapon: '\uD83D\uDDE1',
+	artifact: '\uD83D\uDD31',
+	armor: '\uD83D\uDEE1',
 };
 
 function getClassColor(heroClass: string): string {
@@ -192,6 +194,8 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 									<option value="minion">Minions</option>
 									<option value="spell">Spells</option>
 									<option value="weapon">Weapons</option>
+									<option value="artifact">Artifacts</option>
+									<option value="armor">Armor</option>
 								</select>
 								<select
 									value={db.sortBy}
@@ -308,6 +312,22 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 																	<span className="db-stat db-stat-health">
 																		<span className="db-stat-icon">{'\u2665'}</span>
 																		{(card as any).health ?? 0}
+																	</span>
+																</div>
+															)}
+															{card.type === 'artifact' && (
+																<div className="db-stat-row">
+																	<span className="db-stat db-stat-attack">
+																		<span className="db-stat-icon">{'\u2694'}</span>
+																		{(card as any).attack ?? 0}
+																	</span>
+																</div>
+															)}
+															{card.type === 'armor' && (
+																<div className="db-stat-row">
+																	<span className="db-stat db-stat-health">
+																		<span className="db-stat-icon">{'\uD83D\uDEE1'}</span>
+																		{(card as any).armorValue ?? 0}
 																	</span>
 																</div>
 															)}
@@ -519,6 +539,36 @@ const CardPreviewContent: React.FC<{ card: CardData; classColor: string; showArt
 					{(card as any).race && (
 						<div className="db-preview-stat db-preview-stat-race">
 							<span className="db-preview-stat-label" style={{ color: 'rgba(180,200,230,0.7)' }}>{(card as any).race}</span>
+						</div>
+					)}
+				</div>
+			)}
+
+			{card.type === 'artifact' && (
+				<div className="db-preview-stats">
+					<div className="db-preview-stat">
+						<span className="db-preview-stat-val" style={{ color: '#fbbf24' }}>{(card as any).attack ?? 0}</span>
+						<span className="db-preview-stat-label">Attack</span>
+					</div>
+					<div className="db-preview-stat db-preview-stat-race">
+						<span className="db-preview-stat-label" style={{ color: '#c084fc' }}>{(card as any).heroId?.replace('hero-', '') || 'Unknown'}</span>
+					</div>
+				</div>
+			)}
+
+			{card.type === 'armor' && (
+				<div className="db-preview-stats">
+					<div className="db-preview-stat">
+						<span className="db-preview-stat-val" style={{ color: '#60a5fa' }}>{(card as any).armorValue ?? 0}</span>
+						<span className="db-preview-stat-label">Armor</span>
+					</div>
+					<div className="db-preview-stat">
+						<span className="db-preview-stat-val" style={{ color: '#94a3b8', fontSize: '0.75rem' }}>{(card as any).armorSlot || '?'}</span>
+						<span className="db-preview-stat-label">Slot</span>
+					</div>
+					{(card as any).setId && (
+						<div className="db-preview-stat db-preview-stat-race">
+							<span className="db-preview-stat-label" style={{ color: '#fbbf24' }}>{(card as any).setId} set</span>
 						</div>
 					)}
 				</div>
