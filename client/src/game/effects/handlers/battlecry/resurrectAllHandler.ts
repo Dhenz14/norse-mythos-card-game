@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 export default function executeResurrectAll(
   context: GameContext,
@@ -40,7 +41,7 @@ export default function executeResurrectAll(
     }
     
     const resurrectedMinions: CardInstance[] = [];
-    const availableSlots = 7 - context.currentPlayer.board.length;
+    const availableSlots = MAX_BATTLEFIELD_SIZE - context.currentPlayer.board.length;
     const countToResurrect = Math.min(deadMinions.length, maxCount, availableSlots);
     
     const uniqueMinions = new Map<number | string, CardInstance>();
@@ -53,7 +54,7 @@ export default function executeResurrectAll(
     const minionsToResurrect = Array.from(uniqueMinions.values()).slice(0, countToResurrect);
     
     for (const deadMinion of minionsToResurrect) {
-      if (context.currentPlayer.board.length >= 7) break;
+      if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) break;
       
       const resurrectedMinion: CardInstance = {
         instanceId: `resurrected-${deadMinion.card.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

@@ -12,6 +12,7 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { getGraveyard, getGraveyardByRace } from '../../../data/cardManagement/graveyardTracker';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { v4 as uuidv4 } from 'uuid';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a resurrect deathrattle effect
@@ -50,7 +51,7 @@ export default function executeResurrectResurrect(
     const toResurrect = graveyard.slice(0, count);
     
     for (const graveyardMinion of toResurrect) {
-      if (context.currentPlayer.board.length >= 7) {
+      if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
         context.logGameEvent(`Board is full, cannot resurrect more minions`);
         break;
       }

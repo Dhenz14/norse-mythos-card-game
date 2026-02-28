@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 export default function executeSummonCopyFromDeck(
   context: GameContext, 
@@ -40,7 +41,7 @@ export default function executeSummonCopyFromDeck(
     let summonedCount = 0;
     
     for (let i = 0; i < count && minionsInDeck.length > 0; i++) {
-      if (currentPlayer.board.length >= 7) {
+      if (currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
         context.logGameEvent(`Board is full, cannot summon more minions`);
         break;
       }

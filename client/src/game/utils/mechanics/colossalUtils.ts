@@ -11,6 +11,7 @@ import { findCardInstance, findCardById } from '../cards/cardUtils';
 import { isMinion, getHealth, getAttack } from '../cards/typeGuards';
 import { trackQuestProgress } from '../quests/questProgress';
 import { debug } from '../../config/debugConfig';
+import { MAX_BATTLEFIELD_SIZE } from '../../constants/gameConstants';
 
 /**
  * Check if a card is a colossal minion
@@ -113,9 +114,8 @@ export function summonColossalParts(
     } as any);
   }
   
-  // Check if there's space on the battlefield (max 7 minions)
   const battlefieldCount = playerField.length;
-  const availableSpace = 7 - battlefieldCount;
+  const availableSpace = MAX_BATTLEFIELD_SIZE - battlefieldCount;
   
   if (availableSpace <= 0) {
     return newState;

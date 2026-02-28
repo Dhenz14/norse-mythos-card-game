@@ -6,6 +6,7 @@ import allCards from '../data/allCards';
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 
 /**
  * Execute deathrattle effects for a card
@@ -198,7 +199,7 @@ function executeSummonDeathrattle(
   const player = newState.players[playerId];
   
   // Check if there's room on the battlefield (max 7 minions)
-  if (player.battlefield.length >= 7) {
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return newState;
   }
   
@@ -208,7 +209,7 @@ function executeSummonDeathrattle(
   // Create and add instances for each summon, up to the battlefield limit
   for (let i = 0; i < summonCount; i++) {
     // Check battlefield space again on each iteration
-    if (player.battlefield.length >= 7) {
+    if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
       break;
     }
     
@@ -529,7 +530,7 @@ function executeMindControlDeathrattle(
     }
     
     // Check if current player has room for a new minion
-    if (currentPlayer.battlefield && currentPlayer.battlefield.length >= 7) {
+    if (currentPlayer.battlefield && currentPlayer.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
       return newState;
     }
     
@@ -669,7 +670,7 @@ function executeRecruitDeathrattle(
   const newState = structuredClone(state) as GameState;
   const player = newState.players[playerId];
 
-  if (player.battlefield.length >= 7) return newState;
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
 
   const minionIndices: number[] = [];
   player.deck.forEach((cardData, i) => {
@@ -701,7 +702,7 @@ function executeSummonSplittingDeathrattle(
   if (!cardData) return newState;
 
   for (let i = 0; i < 2; i++) {
-    if (player.battlefield.length >= 7) break;
+    if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
     const instance = createCardInstance(cardData);
     player.battlefield.push(instance);
     trackQuestProgress(playerId, 'summon_minion', instance.card);
@@ -722,7 +723,7 @@ function executeSummonMultipleDeathrattle(
 
   if (summonCardIds.length > 0) {
     for (const cardId of summonCardIds) {
-      if (player.battlefield.length >= 7) break;
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
       const cardData = allCards.find(c => c.id === cardId);
       if (!cardData) continue;
       const instance = createCardInstance(cardData);
@@ -734,7 +735,7 @@ function executeSummonMultipleDeathrattle(
     if (!cardData) return newState;
     const count = deathrattle.value || 1;
     for (let i = 0; i < count; i++) {
-      if (player.battlefield.length >= 7) break;
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
       const instance = createCardInstance(cardData);
       player.battlefield.push(instance);
       trackQuestProgress(playerId, 'summon_minion', instance.card);
@@ -752,7 +753,7 @@ function executeSummonIfOtherDiedDeathrattle(
   const newState = structuredClone(state) as GameState;
   const player = newState.players[playerId];
 
-  if (player.battlefield.length >= 7) return newState;
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
   if (!deathrattle.summonCardId) return newState;
 
   const graveyard = player.graveyard || [];
@@ -778,7 +779,7 @@ function executeSummonForOpponentDeathrattle(
   const opponentId = playerId === 'player' ? 'opponent' : 'player';
   const opponent = newState.players[opponentId];
 
-  if (opponent.battlefield.length >= 7) return newState;
+  if (opponent.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
   if (!deathrattle.summonCardId) return newState;
 
   const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
@@ -786,7 +787,7 @@ function executeSummonForOpponentDeathrattle(
 
   const count = deathrattle.value || 1;
   for (let i = 0; i < count; i++) {
-    if (opponent.battlefield.length >= 7) break;
+    if (opponent.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
     const instance = createCardInstance(cardData);
     opponent.battlefield.push(instance);
   }
@@ -822,7 +823,7 @@ function executeSummonRandomLegendaryDeathrattle(
   const newState = structuredClone(state) as GameState;
   const player = newState.players[playerId];
 
-  if (player.battlefield.length >= 7) return newState;
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
 
   const legendaries = allCards.filter(c => c.type === 'minion' && c.rarity === 'legendary');
   if (legendaries.length === 0) return newState;
@@ -843,7 +844,7 @@ function executeSummonFromHandDeathrattle(
   const newState = structuredClone(state) as GameState;
   const player = newState.players[playerId];
 
-  if (player.battlefield.length >= 7) return newState;
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
 
   const minionIndices: number[] = [];
   player.hand.forEach((card, i) => {

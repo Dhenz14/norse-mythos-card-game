@@ -13,6 +13,7 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { isMinion, getHealth } from '../../../utils/cards/typeGuards';
 import { v4 as uuidv4 } from 'uuid';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a summon deathrattle effect
@@ -47,7 +48,7 @@ export default function executeSummonSummon(
     const summonedMinions: CardInstance[] = [];
     
     for (let i = 0; i < summonCount; i++) {
-      if (board.length >= 7) {
+      if (board.length >= MAX_BATTLEFIELD_SIZE) {
         context.logGameEvent(`Board is full, cannot summon more minions`);
         break;
       }

@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a Conditional Buff effect
@@ -139,10 +140,10 @@ function checkCondition(context: GameContext, condition: string, sourceCard: any
       return context.currentPlayer.deck.length === 0;
     
     case 'enemy_board_full':
-      return context.opponentPlayer.board.length >= 7;
+      return context.opponentPlayer.board.length >= MAX_BATTLEFIELD_SIZE;
     
     case 'friendly_board_full':
-      return context.currentPlayer.board.length >= 7;
+      return context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE;
     
     case 'has_weapon':
       return (context.currentPlayer as any).weapon !== undefined;

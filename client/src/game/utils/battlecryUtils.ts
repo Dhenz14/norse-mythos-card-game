@@ -12,6 +12,7 @@ import {
 } from '../types';
 import { debug } from '../config/debugConfig';
 import { trackQuestProgress } from './quests/questProgress';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { useAnimationStore } from '../animations/AnimationManager';
 import allCards from '../data/allCards';
 import { 
@@ -1074,7 +1075,7 @@ function executeSummonBattlecry(
   battlecry: BattlecryEffect
 ): GameState {
   // Check board limit before summoning
-  if (state.players.player.battlefield.length >= 7) {
+  if (state.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return state;
   }
   
@@ -2086,7 +2087,7 @@ function executeCopyBattlecry(
   battlecry: BattlecryEffect,
   targetId?: string
 ): GameState {
-  if (state.players.player.battlefield.length >= 7) {
+  if (state.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return state;
   }
 
@@ -2305,7 +2306,7 @@ function executeMindControlBattlecry(
   }
   
   // Check if player board is full
-  if (state.players.player.battlefield.length >= 7) {
+  if (state.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     // Board is full, send the minion to graveyard instead
     if (!state.players.player.graveyard) {
       state.players.player.graveyard = [];

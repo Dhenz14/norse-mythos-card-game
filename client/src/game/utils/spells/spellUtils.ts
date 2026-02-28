@@ -16,6 +16,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { isMinion, isSpell, isWeapon, getAttack, getHealth, hasAttack, hasHealth } from '../cards/typeGuards';
 import { trackQuestProgress } from '../quests/questProgress';
 import { debug } from '../../config/debugConfig';
+import { MAX_BATTLEFIELD_SIZE } from '../../constants/gameConstants';
 
 function getSpellEffectType(effectType: string): SpellEffectType {
   const typeMap: Record<string, SpellEffectType> = {
@@ -1303,14 +1304,14 @@ function executeSummonSpell(
   // Add the summoned minion to the current player's battlefield
   if (currentPlayer === 'player') {
     // Check if battlefield is full (Hearthstone has a limit of 7 minions)
-    if (newState.players.player.battlefield.length < 7) {
+    if (newState.players.player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
       newState.players.player.battlefield.push(summonedInstance);
       trackQuestProgress('player', 'summon_minion', summonedInstance.card);
     } else {
     }
   } else {
     // Check if battlefield is full
-    if (newState.players.opponent.battlefield.length < 7) {
+    if (newState.players.opponent.battlefield.length < MAX_BATTLEFIELD_SIZE) {
       newState.players.opponent.battlefield.push(summonedInstance);
       trackQuestProgress('opponent', 'summon_minion', summonedInstance.card);
     } else {
@@ -3381,7 +3382,7 @@ function executeSummonJadeGolemSpell(
   };
   
   // Check battlefield limit
-  if (playerState.battlefield.length < 7) {
+  if (playerState.battlefield.length < MAX_BATTLEFIELD_SIZE) {
     playerState.battlefield.push(jadeGolem);
     
     // Track quest progress for summoned jade golem
@@ -3434,7 +3435,7 @@ function executeSummonRandomSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   // Check battlefield limit
-  if (playerState.battlefield.length >= 7) {
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return newState;
   }
   
@@ -3506,7 +3507,7 @@ function executeSummonCopiesSpell(
   
   // Summon copies
   for (let i = 0; i < effect.count; i++) {
-    if (playerState.battlefield.length >= 7) {
+    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
       break;
     }
     
@@ -3553,7 +3554,7 @@ function executeSummonTokenSpell(
   
   // Summon tokens
   for (let i = 0; i < effect.count; i++) {
-    if (playerState.battlefield.length >= 7) {
+    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
       break;
     }
     
@@ -3587,7 +3588,7 @@ function executeSummonFromGraveyardSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   // Check battlefield limit
-  if (playerState.battlefield.length >= 7) {
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return newState;
   }
   
@@ -3628,7 +3629,7 @@ function executeSummonHighestCostFromGraveyardSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   // Check battlefield limit
-  if (playerState.battlefield.length >= 7) {
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return newState;
   }
   
@@ -3694,7 +3695,7 @@ function executeSummonRushMinionsSpell(
   
   // Summon random rush minions
   for (let i = 0; i < effect.count; i++) {
-    if (playerState.battlefield.length >= 7) {
+    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
       break;
     }
     
@@ -3735,7 +3736,7 @@ function executeSummonStoredSpell(
   
   // Summon each stored minion
   for (const storedMinion of effect.storedMinions) {
-    if (playerState.battlefield.length >= 7) {
+    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
       break;
     }
     
@@ -3780,7 +3781,7 @@ function executeResurrectMultipleSpell(
   // Resurrect multiple minions
   let resurrectedCount = 0;
   for (let i = 0; i < effect.count && graveyard.length > 0; i++) {
-    if (playerState.battlefield.length >= 7) {
+    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
       break;
     }
     
@@ -3817,7 +3818,7 @@ function executeResurrectDeathrattleSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   // Check battlefield limit
-  if (playerState.battlefield.length >= 7) {
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return newState;
   }
   
@@ -5221,7 +5222,7 @@ function executeMindControlRandomSpell(
     return newState;
   }
   
-  if (playerState.battlefield.length >= 7) {
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return newState;
   }
   
@@ -5316,7 +5317,7 @@ function executeSummonFromHandSpell(
   const currentPlayer = state.currentTurn || 'player';
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
-  if (playerState.battlefield.length >= 7) {
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return newState;
   }
   
@@ -5629,7 +5630,7 @@ function executeResurrectSpell(
   }
   
   // Check board space (reuse playerState, don't redeclare)
-  if (playerState.battlefield.length >= 7) {
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     debug.log('[executeResurrectSpell] Board is full');
     return newState;
   }
@@ -5671,7 +5672,7 @@ function executeSummonMultipleSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   for (let i = 0; i < count && i < minionIds.length; i++) {
-    if (playerState.battlefield.length >= 7) break;
+    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
     
     const minionId = minionIds[i];
     const cardData = allCards.find(c => c.id === minionId);
@@ -6778,7 +6779,7 @@ function executeSummonCopySpell(
   
   // Check board space
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
-  if (playerState.battlefield.length >= 7) return newState;
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
   
   // Create copy
   const copy: CardInstance = {

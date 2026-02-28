@@ -11,6 +11,7 @@ import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
 import { v4 as uuidv4 } from 'uuid';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 let jadeGolemCounter = 1;
 
@@ -34,7 +35,7 @@ export default function executeSummonJadeGolemSummonJadeGolem(
     const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
     context.logGameEvent(`Executing deathrattle:summon_jade_golem for ${cardName}`);
     
-    if (context.currentPlayer.board.length >= 7) {
+    if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
       context.logGameEvent(`Board is full, cannot summon Jade Golem`);
       return { success: false, error: 'Board is full' };
     }

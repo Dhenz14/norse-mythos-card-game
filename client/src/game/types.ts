@@ -618,6 +618,8 @@ export interface CardInstance {
   isVulnerable?: boolean;      // Takes +3 damage from all sources
   isMarked?: boolean;          // Can always be targeted (ignores stealth/protection)
 
+  hasReborn?: boolean;
+
   // Evolution system
   evolutionLevel?: 1 | 2 | 3;
 

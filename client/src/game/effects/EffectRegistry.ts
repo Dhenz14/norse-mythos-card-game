@@ -1,8 +1,8 @@
 /**
- * Effect Registry System
- * 
- * This module provides a centralized registry for all card effect handlers.
- * It manages the registration and execution of battlecry, deathrattle, spell effects and more.
+ * @deprecated Not currently integrated into the game flow.
+ * The game uses battlecryUtils/deathrattleUtils/spellUtils directly.
+ * Handlers here mutate GameContext in-place but the modified context is never
+ * written back to GameState — see UnifiedEffectProcessor for details.
  */
 import { GameContext } from '../GameContext';
 import { Card, SpellEffect, BattlecryEffect, DeathrattleEffect } from '../types/CardTypes';

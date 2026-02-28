@@ -16,7 +16,7 @@ import { debug } from '../config/debugConfig';
 // Track all created canvas elements and their contexts
 const canvasRegistry = new Map<HTMLCanvasElement, {
   contextType: string;
-  context: RenderingContext | null;
+  context: any;
 }>();
 
 // Track active WebGL contexts
@@ -114,8 +114,8 @@ export function patchCanvasGetContext(): void {
   // Replace with our patched version
   (HTMLCanvasElement.prototype as any).getContext = function(
     contextType: string,
-    contextAttributes?: WebGLContextAttributes | CanvasRenderingContext2DSettings
-  ): RenderingContext | CanvasRenderingContext2D | null {
+    contextAttributes?: any
+  ): any {
     // Check if this canvas already has a context of a different type
     const existingRegistration = canvasRegistry.get(this);
     if (existingRegistration && existingRegistration.contextType !== contextType) {
@@ -147,7 +147,7 @@ export function patchCanvasGetContext(): void {
     
     // Try to get the context normally
     try {
-      const context = originalGetContext.call(this, contextType, contextAttributes);
+      const context = (originalGetContext as Function).call(this, contextType, contextAttributes);
       
       // Register this canvas and context
       if (context) {
@@ -181,7 +181,7 @@ export function patchCanvasGetContext(): void {
         
         // Try again with the new canvas
         try {
-          const context = originalGetContext.call(replacementCanvas, contextType, contextAttributes);
+          const context = (originalGetContext as Function).call(replacementCanvas, contextType, contextAttributes);
           
           // Register this canvas and context
           if (context) {

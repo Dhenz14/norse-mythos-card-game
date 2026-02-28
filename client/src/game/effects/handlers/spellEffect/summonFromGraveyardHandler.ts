@@ -12,6 +12,7 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { getGraveyard, getRandomGraveyardMinion } from '../../../data/cardManagement/graveyardTracker';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a spell effect that summons a random minion from the graveyard
@@ -51,7 +52,7 @@ function executeSummonFromGraveyardSummonFromGraveyard(
     }
     
     // Check if there's space on the board
-    if (context.currentPlayer.board.length >= 7) {
+    if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
       return { 
         success: false, 
         error: 'No board space available to summon minion' 

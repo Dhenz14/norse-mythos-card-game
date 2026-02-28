@@ -711,6 +711,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
               faceDown={!(combatState.isAllInShowdown || showdownCelebration?.resolution.resolutionType === 'showdown')}
               winningCards={showdownCelebration?.winningCards}
               isShowdown={showdownCelebration?.resolution.resolutionType === 'showdown'}
+              activeTurn={!!basePermissions?.waitingForOpponent}
             />
             <div className="opponent-hero-mana">
               <ManaBar 
@@ -907,6 +908,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   variant="player"
                   winningCards={showdownCelebration?.winningCards}
                   isShowdown={showdownCelebration?.resolution.resolutionType === 'showdown'}
+                  activeTurn={!!basePermissions?.isMyTurnToAct}
                 />
               </div>
             </div>

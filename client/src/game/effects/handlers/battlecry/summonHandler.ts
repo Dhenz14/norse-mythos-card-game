@@ -7,6 +7,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a Summon effect
@@ -111,13 +112,13 @@ export default function executeSummonSummon(
     );
     
     // Check if the board is full
-    if (context.currentPlayer.board.length >= 7) {
+    if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
       context.logGameEvent(`Summon failed: Board is full`);
       return { success: false, error: 'Board is full' };
     }
     
     // Limit by available board space
-    const availableSpaces = 7 - context.currentPlayer.board.length;
+    const availableSpaces = MAX_BATTLEFIELD_SIZE - context.currentPlayer.board.length;
     const actualCount = Math.min(count, availableSpaces);
     
     if (actualCount < count) {

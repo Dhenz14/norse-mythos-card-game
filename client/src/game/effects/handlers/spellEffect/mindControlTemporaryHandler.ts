@@ -10,6 +10,7 @@
  */
 import { GameState, CardInstance, GameLogEvent } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a mind_control_temporary spellEffect effect
@@ -51,7 +52,7 @@ export function executeMindControlTemporaryMindControlTemporary(
   }
 
   const currentBattlefield = currentPlayer.battlefield || [];
-  if (currentBattlefield.length >= 7) {
+  if (currentBattlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return state;
   }
 

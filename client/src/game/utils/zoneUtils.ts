@@ -11,6 +11,7 @@ import { processAllOnMinionDeathEffects, isNorseActive } from './norseIntegratio
 import { processArtifactOnMinionDeath } from './artifactTriggerProcessor';
 import { isMinion, getHealth } from './cards/typeGuards';
 import { createCardInstance } from './cards/cardUtils';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 
 const MAX_HAND_SIZE = 7;
 
@@ -240,8 +241,24 @@ export function destroyCard(
     
     // Process any pending deathrattles that were queued (from AOE damage deaths, etc.)
     newState = processPendingDeathrattles(newState);
+
+    // Reborn: resummon a fresh copy with 1 HP (after all deathrattle processing)
+    const hadReborn = cardToDestroy?.card?.keywords?.includes('reborn') ||
+                      (cardToDestroy as any)?.hasReborn;
+
+    if (hadReborn && newState.players[playerId].battlefield.length < MAX_BATTLEFIELD_SIZE) {
+      const rebornCopy = createCardInstance(cardToDestroy!.card);
+      rebornCopy.currentHealth = 1;
+      rebornCopy.hasReborn = false;
+      rebornCopy.card = { ...rebornCopy.card };
+      rebornCopy.card.keywords = (rebornCopy.card.keywords || []).filter((k: string) => k !== 'reborn');
+      rebornCopy.isSummoningSick = true;
+      rebornCopy.canAttack = false;
+      newState.players[playerId].battlefield.push(rebornCopy);
+      debug.state(`[Reborn] ${cardToDestroy!.card.name} resummoned with 1 HP for ${playerId}`);
+    }
   }
-  
+
   return newState;
 }
 

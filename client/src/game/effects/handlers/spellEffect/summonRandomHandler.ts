@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 export default function executeSummonRandom(
   context: GameContext, 
@@ -33,7 +34,7 @@ export default function executeSummonRandom(
     let summonedCount = 0;
     
     for (let i = 0; i < count; i++) {
-      if (targetPlayer.board.length >= 7) {
+      if (targetPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
         context.logGameEvent(`Board is full, cannot summon more minions`);
         break;
       }

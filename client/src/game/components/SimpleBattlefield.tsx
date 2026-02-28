@@ -13,6 +13,7 @@ import React, { useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import CardRenderer from './CardRendering/CardRenderer';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import './SimpleBattlefield.css';
 
 interface SimpleBattlefieldProps {
@@ -29,7 +30,7 @@ interface SimpleBattlefieldProps {
   isInteractionDisabled?: boolean;
 }
 
-const MAX_SLOTS = 5;
+const MAX_SLOTS = MAX_BATTLEFIELD_SIZE;
 const EMPTY_SET = new Set<string>();
 
 export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({

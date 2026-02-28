@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 export default function executeKillAndSummon(
   context: GameContext, 
@@ -47,7 +48,7 @@ export default function executeKillAndSummon(
     if (summonCardId) {
       for (let i = 0; i < summonCount; i++) {
         const boardSpace = context.currentPlayer.board.length;
-        if (boardSpace < 7) {
+        if (boardSpace < MAX_BATTLEFIELD_SIZE) {
           const summonedMinion = contextAny.summonMinion(summonCardId, context.currentPlayer);
           if (summonedMinion) {
             minionsSummoned++;

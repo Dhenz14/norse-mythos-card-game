@@ -24,6 +24,7 @@ import { isAISimulationMode, debug, getDebugConfig } from '../config/debugConfig
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
 import { useUnifiedCombatStore } from './unifiedCombatStore';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { useTargetingStore, predictAttackOutcome } from './targetingStore';
 import { logActivity } from './activityLogStore';
 import { CombatEventBus } from '../services/CombatEventBus';
@@ -226,8 +227,6 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         throw new Error(`Not enough mana. Need ${cardCost} but only have ${player.mana.current}`);
       }
 
-      // Maximum 5 minions on battlefield
-      const MAX_BATTLEFIELD_SIZE = 5;
       if (cardInstance.card.type === 'minion' && player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
         throw new Error(`Battlefield is full! Maximum ${MAX_BATTLEFIELD_SIZE} minions allowed.`);
       }

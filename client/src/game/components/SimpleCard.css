@@ -316,6 +316,7 @@
   height: 100%;
   border-radius: 10px;
   overflow: hidden;
+  pointer-events: none;
   background: linear-gradient(180deg, #08080F 0%, #141428 100%);
   box-shadow:
     inset 0 0 30px rgba(0,0,0,0.8),
@@ -505,6 +506,7 @@
   border: none;
   z-index: 15;
   overflow: visible;
+  pointer-events: auto;
 }
 
 .simple-card.small .card-description {
@@ -569,6 +571,9 @@
   flex-wrap: wrap;
   padding: 4px;
   width: 100%;
+  pointer-events: auto;
+  position: relative;
+  z-index: 20;
 }
 
 .keyword-icon-badge {
@@ -582,12 +587,16 @@
   border: 2px solid currentColor;
   font-size: 14px;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
-  cursor: default;
+  cursor: help;
+  pointer-events: auto;
+  position: relative;
+  z-index: 20;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .keyword-icon-badge:hover {
-  transform: scale(1.15);
+  transform: scale(1.2);
+  box-shadow: 0 0 12px currentColor;
 }
 
 /* Small card: tight icon size */
@@ -1099,7 +1108,7 @@
 
 .keyword-badge-tooltip {
   position: fixed;
-  z-index: 10000;
+  z-index: 15000;
   pointer-events: none;
   max-width: 220px;
   padding: 8px 12px;

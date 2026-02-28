@@ -13,6 +13,7 @@ import { getGraveyard, GraveyardMinion } from '../../../data/cardManagement/grav
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
 import { v4 as uuidv4 } from 'uuid';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a deathrattle that summons the highest cost minion from the graveyard
@@ -66,7 +67,7 @@ export default function executeSummonHighestCostFromGraveyardSummonHighestCostFr
         // Check if there's space on the board
         const board = context.currentPlayer.board;
         
-        if (board.length >= 7) {
+        if (board.length >= MAX_BATTLEFIELD_SIZE) {
           context.logGameEvent(`Cannot summon ${highestCostMinion.name} - board is full`);
           return { 
             success: false, 

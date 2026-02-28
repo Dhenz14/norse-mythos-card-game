@@ -11,6 +11,7 @@ import { dealDamage } from './effects/damageUtils';
 import { getRandomInt } from './randomUtils';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 
 interface CThunState {
   baseAttack: number;
@@ -438,7 +439,7 @@ export function executeYShaarjEffect(
   }
   
   // Check if the battlefield is full
-  if (newState.players[playerType].battlefield.length >= 7) {
+  if (newState.players[playerType].battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     newState.gameLog.push(
       createGameLogEvent({
         type: 'yshaarj_effect_failed' as GameLogEventType,

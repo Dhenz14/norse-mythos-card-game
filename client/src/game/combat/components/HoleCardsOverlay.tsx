@@ -8,6 +8,7 @@ interface HoleCardsOverlayProps {
   faceDown?: boolean;
   winningCards?: PokerCard[];
   isShowdown?: boolean;
+  activeTurn?: boolean;
 }
 
 const FACE_DOWN_CARD: PokerCard = {
@@ -26,7 +27,8 @@ export const HoleCardsOverlay: React.FC<HoleCardsOverlayProps> = ({
   variant,
   faceDown = false,
   winningCards,
-  isShowdown = false
+  isShowdown = false,
+  activeTurn = false
 }) => {
   const isOpponent = variant === 'opponent';
   const displayCards = cards.length > 0 ? cards : [FACE_DOWN_CARD, FACE_DOWN_CARD];
@@ -42,6 +44,7 @@ export const HoleCardsOverlay: React.FC<HoleCardsOverlayProps> = ({
         flex flex-row items-center justify-center
         pointer-events-none z-[0] gap-1
         ${positionClass}
+        ${activeTurn ? 'hole-cards-active-turn' : ''}
       `}
     >
       {displayCards.map((card, idx) => {

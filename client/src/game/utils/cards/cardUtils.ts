@@ -47,6 +47,7 @@ export function createCardInstance(card: CardData, evolutionLevel?: EvolutionLev
     mechAttachments: [],
     // Evolution level
     evolutionLevel: level,
+    hasReborn: scaledCard.keywords?.includes('reborn') || false,
   } as CardInstance;
   
   // Apply additional card-specific initializations

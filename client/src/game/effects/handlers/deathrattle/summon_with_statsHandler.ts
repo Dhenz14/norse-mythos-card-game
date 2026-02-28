@@ -9,6 +9,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, CardInstance, DeathrattleEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { v4 as uuidv4 } from 'uuid';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a summon_with_stats deathrattle effect
@@ -96,7 +97,7 @@ export default function executeSummonWithStatsSummonWithStats(
     }
     
     // Don't summon if the board is full
-    if (board.length >= 7) {
+    if (board.length >= MAX_BATTLEFIELD_SIZE) {
       context.logGameEvent(`Cannot summon ${minionName} - board is full`);
       return { 
         success: false, 

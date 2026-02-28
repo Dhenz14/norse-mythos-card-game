@@ -283,17 +283,16 @@
   }
 }
 
+/* Player's turn — gold glow on their hole cards */
 .hole-cards.active-turn .arena-poker-card,
-.hole-cards.active-turn .poker-card {
+.hole-cards.active-turn .poker-card,
+.hole-cards-active-turn .arena-poker-card,
+.hole-cards-active-turn .poker-card {
   animation: activeTurnPulse 2s ease-in-out infinite;
   border-color: rgba(251, 191, 36, 0.6);
 }
 
-.opponent-section.active-turn .pet-card {
-  animation: activeTurnPulse 2s ease-in-out infinite;
-  border-color: rgba(239, 68, 68, 0.6);
-}
-
+/* Opponent's turn — red glow on their hole cards */
 @keyframes opponentTurnPulse {
   0%, 100% {
     box-shadow:
@@ -309,6 +308,9 @@
   }
 }
 
-.opponent-section.active-turn .pet-card {
+.opponent-section.active-turn .pet-card,
+.hole-cards-active-turn .arena-poker-card.norse.face-down,
+.hole-cards-active-turn .poker-card.norse.face-down {
   animation: opponentTurnPulse 2s ease-in-out infinite;
+  border-color: rgba(239, 68, 68, 0.6);
 }

@@ -20,6 +20,7 @@ import {
   HeroClass
 } from '../types';
 import { addGameLogEvent } from './gameLogUtils';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { v4 as uuidv4 } from 'uuid';
 import { createCardInstance } from './cards/cardUtils';
 import { 
@@ -285,7 +286,7 @@ export const handleInspireEffects = (
           const summonedMinion = createCardInstance(cardToSummon);
           
           // Add to battlefield
-          if (newGameState.players[player].battlefield.length < 7) { // Max 7 minions
+          if (newGameState.players[player].battlefield.length < MAX_BATTLEFIELD_SIZE) {
             newGameState.players[player].battlefield.push(summonedMinion);
           }
         }
@@ -479,7 +480,7 @@ export const handleSecretTrigger = (
           const summonedMinion = createCardInstance(cardToSummon);
           
           // Add to battlefield
-          if (newGameState.players[secretOwner].battlefield.length < 7) { // Max 7 minions
+          if (newGameState.players[secretOwner].battlefield.length < MAX_BATTLEFIELD_SIZE) {
             newGameState.players[secretOwner].battlefield.push(summonedMinion);
           }
         }
@@ -812,7 +813,7 @@ export const handleRecruit = (
     const summonedMinion = createCardInstance(recruitedMinion);
     
     // Add to battlefield if there's space
-    if (newGameState.players[player].battlefield.length < 7) { // Max 7 minions
+    if (newGameState.players[player].battlefield.length < MAX_BATTLEFIELD_SIZE) {
       newGameState.players[player].battlefield.push(summonedMinion);
       
       // Log the recruit

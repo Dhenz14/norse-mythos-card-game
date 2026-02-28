@@ -10,6 +10,7 @@ import { isMinion, isWeapon, isSpell, isHero, getAttack, getHealth, getDurabilit
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 
 // Type for animation callback function
 // Used to trigger animations when hero power is used
@@ -630,7 +631,7 @@ function executeNorseHeroPower(
 
     // ==================== SUMMON EFFECTS ====================
     case 'summon': {
-      if (player.battlefield.length >= 7) {
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
         debug.log('[Hero Power] Battlefield is full');
         return state;
       }
@@ -677,7 +678,7 @@ function executeNorseHeroPower(
     }
 
     case 'summon_random': {
-      if (player.battlefield.length >= 7) {
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
         debug.log('[Hero Power] Battlefield is full');
         return state;
       }
@@ -746,7 +747,7 @@ function executeNorseHeroPower(
         return state;
       }
       
-      if (player.battlefield.length >= 7) {
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
         debug.log('[Hero Power] Battlefield is full');
         return state;
       }
@@ -1039,7 +1040,7 @@ function executeNorseHeroPower(
         
         // Summon replacement
         const summonData = power.summonData;
-        if (summonData && player.battlefield.length < 7) {
+        if (summonData && player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
           const minion: CardInstance = {
             instanceId: `${playerType}_shade_${Date.now()}`,
             card: {
@@ -1248,9 +1249,9 @@ function executeWarriorPower(state: GameState, playerType: 'player' | 'opponent'
  */
 function executePaladinPower(state: GameState, playerType: 'player' | 'opponent'): GameState {
   const player = state.players[playerType];
-  
+
   // Check if the battlefield is full (max 7 minions)
-  if (player.battlefield.length >= 7) {
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     debug.error('Battlefield is full, cannot summon recruit');
     return state;
   }
@@ -1420,9 +1421,9 @@ function executeWarlockPower(state: GameState, playerType: 'player' | 'opponent'
  */
 function executeShamanPower(state: GameState, playerType: 'player' | 'opponent'): GameState {
   const player = state.players[playerType];
-  
+
   // Check if the battlefield is full (max 7 minions)
-  if (player.battlefield.length >= 7) {
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     debug.error('Battlefield is full, cannot summon totem');
     return state;
   }

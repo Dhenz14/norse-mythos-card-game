@@ -192,7 +192,9 @@ export function useRagnarokCombatController(
   
   const cardPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const handEndProcessedRef = useRef(false);
-  
+  const heroPowerProcessingRef = useRef(false);
+  const weaponUpgradeProcessingRef = useRef(false);
+
   const sharedRegisterCardPosition = useCallback((card: any, position: { x: number; y: number }) => {
     const cardId = card?.instanceId || card?.id;
     if (cardId && position) {
@@ -428,10 +430,14 @@ export function useRagnarokCombatController(
   }, [applyDirectDamage, setHeroPowerUsedThisTurn, setHeroPowerTargeting]);
   
   const handleHeroPower = useCallback(() => {
+    if (heroPowerProcessingRef.current) return;
+    heroPowerProcessingRef.current = true;
+    requestAnimationFrame(() => { heroPowerProcessingRef.current = false; });
+
     if (COMBAT_DEBUG.PHASES) {
       debug.combat('[handleHeroPower] Called!');
     }
-    
+
     const currentGameState = useGameStore.getState();
     const playerHeroPower = currentGameState.gameState?.players?.player?.heroPower;
     if (playerHeroPower?.used) {
@@ -522,6 +528,10 @@ export function useRagnarokCombatController(
   }, [heroPowerTargeting]);
   
   const handleWeaponUpgrade = useCallback(() => {
+    if (weaponUpgradeProcessingRef.current) return;
+    weaponUpgradeProcessingRef.current = true;
+    requestAnimationFrame(() => { weaponUpgradeProcessingRef.current = false; });
+
     const norseHeroId = combatState?.player?.pet?.norseHeroId;
     if (!norseHeroId) {
       return;

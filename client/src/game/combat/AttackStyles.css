@@ -24,6 +24,7 @@
   right: -4px;
   bottom: -4px;
   background: linear-gradient(45deg, rgba(255, 193, 7, 0.2), rgba(255, 255, 255, 0.2), rgba(255, 193, 7, 0.2));
+  background-size: 200% 100%;
   border-radius: inherit;
   z-index: -1;
   animation: shimmer 2s linear infinite;

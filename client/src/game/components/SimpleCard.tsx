@@ -215,6 +215,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
                     boxShadow: `0 2px 8px rgba(0,0,0,0.6), 0 0 6px ${effect.color}88`,
                   }}
                   data-keyword={effect.keyword}
+                  title={`${effect.keyword.charAt(0).toUpperCase() + effect.keyword.slice(1)}: ${KEYWORD_DEFINITIONS[effect.keyword]?.description || ''}`}
                   onMouseEnter={(e) => handleBadgeEnter(e, effect)}
                   onMouseLeave={handleBadgeLeave}
                 >

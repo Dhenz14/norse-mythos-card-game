@@ -236,8 +236,9 @@ export interface CardInstance {
   isSilenced?: boolean;        // Cannot use abilities
   isBurning?: boolean;         // Takes 3 damage when attacking, deals +3 damage
   
+  hasReborn?: boolean;
   isPlayerOwned?: boolean;
-  
+
   // Extension fields
   animationPosition?: {
     x: number;

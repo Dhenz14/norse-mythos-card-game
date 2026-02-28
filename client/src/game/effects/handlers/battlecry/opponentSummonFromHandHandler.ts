@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 export default function executeOpponentSummonFromHand(
   context: GameContext,
@@ -29,7 +30,7 @@ export default function executeOpponentSummonFromHand(
       return { success: true, additionalData: { summonedMinions: [] } };
     }
     
-    if (context.opponentPlayer.board.length >= 7) {
+    if (context.opponentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
       context.logGameEvent("Opponent's board is full.");
       return { success: true, additionalData: { summonedMinions: [], boardFull: true } };
     }
@@ -37,7 +38,7 @@ export default function executeOpponentSummonFromHand(
     const summonedMinions: CardInstance[] = [];
     
     for (let i = 0; i < count && minionsInHand.length > 0; i++) {
-      if (context.opponentPlayer.board.length >= 7) break;
+      if (context.opponentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) break;
       
       const randomIndex = Math.floor(Math.random() * minionsInHand.length);
       const minionToSummon = minionsInHand[randomIndex];

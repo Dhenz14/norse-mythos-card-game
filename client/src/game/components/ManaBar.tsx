@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
 import { motion } from 'framer-motion';
 import { playSound } from '../utils/soundUtils';
 import './ManaBar.css';
@@ -23,6 +23,7 @@ const ManaBar: React.FC<ManaBarProps> = ({
   registerPosition,
   vertical = false
 }) => {
+  const manaBarId = useId();
   const manaBarRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -90,7 +91,7 @@ const ManaBar: React.FC<ManaBarProps> = ({
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
       }}>
         {crystals.map((crystal) => (
-          <ManaCrystal key={crystal.index} {...crystal} size={CRYSTAL_SIZE} />
+          <ManaCrystal key={crystal.index} {...crystal} size={CRYSTAL_SIZE} uid={manaBarId} />
         ))}
       </div>
       
@@ -114,6 +115,7 @@ interface ManaCrystalProps {
   isOverloaded: boolean;
   index: number;
   size?: number;
+  uid?: string;
 }
 
 const ManaCrystal: React.FC<ManaCrystalProps> = ({
@@ -122,8 +124,10 @@ const ManaCrystal: React.FC<ManaCrystalProps> = ({
   isSpent,
   isOverloaded,
   index,
-  size = CRYSTAL_SIZE
+  size = CRYSTAL_SIZE,
+  uid = ''
 }) => {
+  const gradId = `crystal-grad-${uid}-${index}`;
   const [prevAvailable, setPrevAvailable] = useState(isAvailable);
   const [animClass, setAnimClass] = useState<'filling' | 'spending' | null>(null);
   const soundDebounceRef = useRef<number>(0);
@@ -183,7 +187,7 @@ const ManaCrystal: React.FC<ManaCrystalProps> = ({
     >
       <svg width={size} height={size} viewBox="0 0 20 20">
         <defs>
-          <linearGradient id={`crystal-grad-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={`${gradId}`} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor={isAvailable ? '#60a5fa' : fillColor} />
             <stop offset="100%" stopColor={fillColor} />
           </linearGradient>

@@ -1,8 +1,9 @@
 /**
- * Unified Effect Processor
- * 
- * This centralizes all card effect processing while maintaining backward compatibility
- * with existing utility files. It provides a single entry point for all effect execution.
+ * @deprecated Not currently integrated into the game flow.
+ * The game uses battlecryUtils/deathrattleUtils/spellUtils directly.
+ * This was an incomplete migration — do not wire up without first fixing
+ * the context isolation issue: handlers mutate GameContext but modifications
+ * are never written back to GameState (see battlecryBridge.syncContextToState).
  */
 
 import { GameState, CardInstance } from '../types';

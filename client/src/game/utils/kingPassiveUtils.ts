@@ -8,6 +8,7 @@
 import { GameState, CardInstance, CardData } from '../types';
 import { NorseKing, KingPassiveTrigger, KingPassiveEffect, PassiveExecutionContext } from '../types/NorseTypes';
 import { NORSE_KINGS } from '../data/norseKings/kingDefinitions';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 
 const RANDOM_KEYWORDS = ['taunt', 'divine_shield', 'stealth', 'rush', 'charge', 'poisonous', 'lifesteal', 'windfury'];
 
@@ -143,7 +144,7 @@ export function executeKingPassive(
         break;
 
       case 'summon_token':
-        if (passive.summonData && owner.battlefield.length < 7) {
+        if (passive.summonData && owner.battlefield.length < MAX_BATTLEFIELD_SIZE) {
           const keywords = passive.summonData.randomKeyword 
             ? [RANDOM_KEYWORDS[Math.floor(Math.random() * RANDOM_KEYWORDS.length)]]
             : (passive.summonData.keywords || []);

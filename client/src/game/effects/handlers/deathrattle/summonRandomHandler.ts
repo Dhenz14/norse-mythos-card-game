@@ -11,6 +11,7 @@ import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
 import { getCardsByPredicate, getAllCards } from '../../../data/cardManagement/cardRegistry';
 import { v4 as uuidv4 } from 'uuid';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a summon_random deathrattle effect
@@ -24,7 +25,7 @@ export default function executeSummonRandomSummonRandom(
     const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
     context.logGameEvent(`Executing deathrattle:summon_random for ${cardName}`);
     
-    if (context.currentPlayer.board.length >= 7) {
+    if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
       context.logGameEvent(`Board is full, cannot summon minion`);
       return { success: false, error: 'Board is full' };
     }
@@ -59,7 +60,7 @@ export default function executeSummonRandomSummonRandom(
     const summonedMinions: CardInstance[] = [];
     
     for (let i = 0; i < count; i++) {
-      if (context.currentPlayer.board.length >= 7) {
+      if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
         context.logGameEvent(`Board is full, cannot summon more minions`);
         break;
       }

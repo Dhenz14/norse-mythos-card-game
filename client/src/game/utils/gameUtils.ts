@@ -27,6 +27,7 @@ import { performTurnStartResets } from './resetUtils';
 import { hasEcho, createEchoCopy, expireEchoCardsAtEndOfTurn } from './mechanics/echoUtils';
 import { processAfterAttackEffects, processAfterHeroAttackEffects } from './mechanics/afterAttackUtils';
 import { dealDamage } from './effects/damageUtils';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { canMagnetize, applyMagnetization, isValidMagneticTarget } from './mechanics/magneticUtils';
 import allCards from '../data/allCards';
 import { trackQuestProgress, activateQuest } from './quests/questProgress';
@@ -919,7 +920,7 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
         isSummoningSick: true,
         canAttack: false,
         isPlayerOwned: otherPid === 'player'
-      })).filter((_, i) => (targetPlayer.battlefield.length + i) < 7);
+      })).filter((_, i) => (targetPlayer.battlefield.length + i) < MAX_BATTLEFIELD_SIZE);
 
       newState = {
         ...newState,
@@ -1566,6 +1567,12 @@ function processAttackForOpponent(
           // Mark the attacker as having used all its attacks this turn
           newState.players.opponent.battlefield[updatedAttackerIndex].canAttack = false;
         }
+
+        // Remove stealth after attacking
+        const aiStealthIdx = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
+        if (aiStealthIdx !== undefined && aiStealthIdx !== -1) {
+          newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx, 1);
+        }
       }
 
       // Game over is handled by dealDamage above
@@ -1623,15 +1630,21 @@ function processAttackForOpponent(
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
         
         newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
-        
+
         if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
           newState.players.opponent.battlefield[updatedAttackerIndex].canAttack = false;
         }
+
+        // Remove stealth after attacking
+        const aiStealthIdx2 = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
+        if (aiStealthIdx2 !== undefined && aiStealthIdx2 !== -1) {
+          newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx2, 1);
+        }
       }
-      
+
       return newState;
     }
-    
+
     // Non-deferred damage application (legacy path)
     // Track minions that take damage for Frenzy mechanic
     const damagedMinionIds: string[] = [];
@@ -1698,13 +1711,19 @@ function processAttackForOpponent(
       const maxAttacksAllowed = hasWindfury ? 2 : 1;
       
       newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
-      
+
       if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
         // Mark the attacker as having used all its attacks this turn
         newState.players.opponent.battlefield[updatedAttackerIndex].canAttack = false;
       }
+
+      // Remove stealth after attacking
+      const aiStealthIdx3 = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
+      if (aiStealthIdx3 !== undefined && aiStealthIdx3 !== -1) {
+        newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx3, 1);
+      }
     }
-    
+
     // Process frenzy effects for any damaged minions that survived
     if (damagedMinionIds.length > 0) {
       // Process frenzy effects using the imported function
@@ -1901,15 +1920,21 @@ function processAttackForPlayer(
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
         
         newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
-        
+
         if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
           newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
         }
+
+        // Remove stealth after attacking
+        const stealthIdx = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
+        if (stealthIdx !== undefined && stealthIdx !== -1) {
+          newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx, 1);
+        }
       }
-      
+
       return newState;
     }
-    
+
     // Non-deferred damage application (legacy path)
     const damagedMinionIds: string[] = [];
     
@@ -1955,16 +1980,22 @@ function processAttackForPlayer(
       const maxAttacksAllowed = hasWindfury ? 2 : 1;
       
       newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
-      
+
       if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
         newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
       }
+
+      // Remove stealth after attacking
+      const stealthIdx2 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
+      if (stealthIdx2 !== undefined && stealthIdx2 !== -1) {
+        newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx2, 1);
+      }
     }
-    
+
     if (damagedMinionIds.length > 0) {
       newState = processFrenzyEffects(newState, damagedMinionIds.map(id => ({ id, playerId: 'player' })));
     }
-    
+
     if (attacker.card.type === 'minion') {
       newState = processAfterAttackEffects(newState, 'minion', attacker.instanceId, 'player');
     }
@@ -2252,6 +2283,12 @@ export function processAttack(
         // Mark the attacker as having used all its attacks this turn
         newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
       }
+
+      // Remove stealth after attacking
+      const stealthIdx3 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
+      if (stealthIdx3 !== undefined && stealthIdx3 !== -1) {
+        newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx3, 1);
+      }
     }
 
     return newState;
@@ -2350,6 +2387,12 @@ export function processAttack(
     if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
       // Mark the attacker as having used all its attacks this turn
       newState.players.player.battlefield[updatedAttackerIndex].canAttack = false;
+    }
+
+    // Remove stealth after attacking
+    const stealthIdx4 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
+    if (stealthIdx4 !== undefined && stealthIdx4 !== -1) {
+      newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx4, 1);
     }
   }
   

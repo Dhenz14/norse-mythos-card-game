@@ -11,6 +11,7 @@ import { ALL_NORSE_HEROES, getAnyHeroById } from '../data/norseHeroes';
 import { debug } from '../config/debugConfig';
 import { destroyCard } from './zoneUtils';
 import { dealDamage } from './effects/damageUtils';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 
 /**
  * Helper to safely get attack from card data
@@ -454,7 +455,7 @@ function executeSummon(
 ): GameState {
   const player = state.players[playerType];
 
-  if (!power.summonData || player.battlefield.length >= 7) return state;
+  if (!power.summonData || player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return state;
 
   const token: CardInstance = {
     instanceId: `${playerType}_hero_summon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -725,7 +726,7 @@ function executeSummonRandom(
 ): GameState {
   const player = state.players[playerType];
 
-  if (!power.summonPool || power.summonPool.length === 0 || player.battlefield.length >= 7) {
+  if (!power.summonPool || power.summonPool.length === 0 || player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return state;
   }
 
@@ -862,7 +863,7 @@ function executeSelfDamageAndSummon(
     player.heroHealth = Math.max(0, (player.heroHealth ?? player.health ?? 30) - selfDamageAmount);
   }
 
-  if (power.summonData && player.battlefield.length < 7) {
+  if (power.summonData && player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
     const token: CardInstance = {
       instanceId: `${playerType}_selfdmg_summon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       card: {
@@ -915,7 +916,7 @@ function executeSacrificeSummon(
     state = destroyCard(state, sacrificed.instanceId, playerType);
   }
 
-  if (power.summonData && player.battlefield.length < 7) {
+  if (power.summonData && player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
     const token: CardInstance = {
       instanceId: `${playerType}_sacrifice_summon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       card: {
