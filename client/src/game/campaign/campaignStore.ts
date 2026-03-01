@@ -22,6 +22,7 @@ interface CampaignActions {
 	isMissionCompleted: (missionId: string) => boolean;
 	isMissionUnlocked: (missionId: string, prerequisites: string[]) => boolean;
 	getChapterProgress: (chapterId: string, missionIds: string[]) => number;
+	isAllBaseChaptersComplete: (chapterMissionIds: Record<string, string[]>) => boolean;
 	clearCurrent: () => void;
 	reset: () => void;
 }
@@ -74,6 +75,13 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 			getChapterProgress: (_chapterId, missionIds) => {
 				const completed = get().completedMissions;
 				return missionIds.filter(id => !!completed[id]).length;
+			},
+
+			isAllBaseChaptersComplete: (chapterMissionIds) => {
+				const completed = get().completedMissions;
+				return Object.values(chapterMissionIds).every(
+					ids => ids.every(id => !!completed[id])
+				);
 			},
 
 			clearCurrent: () => set({ currentMission: null }),

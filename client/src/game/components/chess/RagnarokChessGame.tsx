@@ -3,6 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArmySelection as ArmySelectionType, ChessPiece } from '../../types/ChessTypes';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection, buildCombatDeck } from '../../data/ChessPieceConfig';
+import { useCampaignStore, getMission } from '../../campaign';
+import { buildCampaignArmy } from '../../campaign/campaignArmyBuilder';
+import { useNavigate } from 'react-router-dom';
+import { routes } from '../../../lib/routes';
 import ArmySelectionComponent from '../ArmySelection';
 import ChessBoard from './ChessBoard';
 import RagnarokCombatArena from '../../combat/RagnarokCombatArena';
@@ -315,13 +319,23 @@ interface RagnarokChessGameProps {
 
 const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initialArmy = null }) => {
   const { playSoundEffect } = useAudio();
-  const [phase, setPhase] = useState<GamePhase>(initialArmy ? 'chess' : 'army_selection');
+  const navigate = useNavigate();
+
+  const campaignMissionId = useCampaignStore(s => s.currentMission);
+  const campaignDifficulty = useCampaignStore(s => s.currentDifficulty);
+  const completeMission = useCampaignStore(s => s.completeMission);
+  const clearCurrent = useCampaignStore(s => s.clearCurrent);
+  const campaignData = campaignMissionId ? getMission(campaignMissionId) : null;
+  const isCampaign = !!campaignData;
+
+  const [phase, setPhase] = useState<GamePhase>(initialArmy || isCampaign ? 'chess' : 'army_selection');
   const [playerArmy, setPlayerArmy] = useState<ArmySelectionType | null>(initialArmy);
   const [sharedDeckCardIds, setSharedDeckCardIds] = useState<number[]>([]);
   const [combatPieces, setCombatPieces] = useState<{ attackerId: string; defenderId: string } | null>(null);
   const [vsScreenPieces, setVsScreenPieces] = useState<{ attacker: ChessPiece; defender: ChessPiece } | null>(null);
-  const [pokerSlotsSwapped, setPokerSlotsSwapped] = useState(false); // True when AI attacks human (poker "player" = chess defender)
-  
+  const [pokerSlotsSwapped, setPokerSlotsSwapped] = useState(false);
+  const [turnCount, setTurnCount] = useState(0);
+
   const {
     boardState,
     initializeBoard,
@@ -341,7 +355,9 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
 
   const { initializeCombat, endCombat, combatState } = usePokerCombatAdapter();
 
-  const opponentArmy = getDefaultArmySelection();
+  const opponentArmy = isCampaign
+    ? buildCampaignArmy(campaignData!.mission)
+    : getDefaultArmySelection();
 
   const createPetFromChessPiece = useCallback((
     piece: typeof boardState.pieces[0],
@@ -401,6 +417,17 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
       initializeBoard(initialArmy, opponentArmy);
     }
   }, [initialArmy, opponentArmy, initializeBoard]);
+
+  // Campaign auto-init: skip army selection, use default player army
+  useEffect(() => {
+    if (isCampaign && !playerArmy && !initialArmy) {
+      const defaultArmy = getDefaultArmySelection();
+      setPlayerArmy(defaultArmy);
+      initializeBoard(defaultArmy, opponentArmy);
+      setPhase('chess');
+      playSoundEffect('game_start');
+    }
+  }, [isCampaign]);
 
   const handleQuickStart = useCallback((army: ArmySelectionType, deckCardIds: number[]) => {
     setPlayerArmy(army);
@@ -602,6 +629,9 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
       const winner = boardState.gameStatus === 'player_wins' ? 'player' : 'opponent';
       playSoundEffect(winner === 'player' ? 'victory' : 'defeat');
       const timer = setTimeout(() => {
+        if (isCampaign && winner === 'player' && campaignMissionId) {
+          completeMission(campaignMissionId, campaignDifficulty, turnCount);
+        }
         setPhase('game_over');
         if (onGameEnd) {
           onGameEnd(winner);
@@ -611,6 +641,12 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     }
     return undefined;
   }, [boardState.gameStatus, onGameEnd, playSoundEffect]);
+
+  useEffect(() => {
+    if (phase === 'chess' && boardState.currentTurn === 'player' && boardState.gameStatus === 'playing') {
+      setTurnCount(t => t + 1);
+    }
+  }, [phase, boardState.currentTurn, boardState.gameStatus]);
 
   useEffect(() => {
     if (phase === 'chess' && boardState.currentTurn === 'opponent' && boardState.gameStatus === 'playing') {
@@ -657,12 +693,33 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   }, [phase, boardState.currentTurn, boardState.gameStatus, boardState.pieces]);
 
   const handleRestart = useCallback(() => {
+    if (isCampaign) {
+      clearCurrent();
+    }
     resetBoard();
     setPlayerArmy(null);
     setSharedDeckCardIds([]);
     setCombatPieces(null);
+    setTurnCount(0);
     setPhase('army_selection');
-  }, [resetBoard]);
+  }, [resetBoard, isCampaign, clearCurrent]);
+
+  const handleBackToCampaign = useCallback(() => {
+    clearCurrent();
+    navigate(routes.campaign);
+  }, [clearCurrent, navigate]);
+
+  const handleRetryMission = useCallback(() => {
+    resetBoard();
+    setPlayerArmy(null);
+    setCombatPieces(null);
+    setTurnCount(0);
+    const defaultArmy = getDefaultArmySelection();
+    setPlayerArmy(defaultArmy);
+    initializeBoard(defaultArmy, opponentArmy);
+    setPhase('chess');
+    playSoundEffect('game_start');
+  }, [resetBoard, opponentArmy, initializeBoard, playSoundEffect]);
 
   const handleBattleMode = useCallback(() => {
     const playerPieces = boardState.pieces.filter(p => p.owner === 'player' && p.type !== 'pawn' && p.type !== 'king');
@@ -732,22 +789,60 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
             animate={{ opacity: 1, scale: 1 }}
             className="w-full h-full flex flex-col items-center justify-center"
           >
-            <div className={`text-6xl font-bold mb-8 ${
+            <div className={`text-6xl font-bold mb-4 ${
               boardState.gameStatus === 'player_wins' ? 'text-green-400' : 'text-red-400'
             }`}>
               {boardState.gameStatus === 'player_wins' ? 'VICTORY!' : 'DEFEAT'}
             </div>
-            <p className="text-xl text-gray-300 mb-8">
-              {boardState.gameStatus === 'player_wins' 
-                ? 'Checkmate! The enemy King has no escape!' 
-                : 'Checkmate... Your King has been cornered.'}
-            </p>
-            <button
-              onClick={handleRestart}
-              className="px-8 py-4 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg text-xl"
-            >
-              Play Again
-            </button>
+
+            {isCampaign && campaignData ? (
+              <>
+                <p className="text-lg text-gray-300 mb-2 max-w-lg text-center italic">
+                  {boardState.gameStatus === 'player_wins'
+                    ? (campaignData.mission.narrativeVictory || campaignData.mission.narrativeAfter)
+                    : (campaignData.mission.narrativeDefeat || 'The enemy stands triumphant. But your story is not yet over...')}
+                </p>
+                {boardState.gameStatus === 'player_wins' && campaignData.mission.rewards.length > 0 && (
+                  <div className="flex gap-3 mb-6 mt-2">
+                    {campaignData.mission.rewards.map((r, i) => (
+                      <div key={i} className="px-3 py-1 bg-yellow-900/40 border border-yellow-700/50 rounded-lg text-yellow-300 text-sm">
+                        +{r.amount || 1} {r.type}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-4 mt-4">
+                  <button
+                    onClick={handleBackToCampaign}
+                    className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg text-lg"
+                  >
+                    Back to Campaign
+                  </button>
+                  {boardState.gameStatus !== 'player_wins' && (
+                    <button
+                      onClick={handleRetryMission}
+                      className="px-6 py-3 bg-red-700 hover:bg-red-600 text-white font-bold rounded-lg text-lg"
+                    >
+                      Retry Mission
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-xl text-gray-300 mb-8">
+                  {boardState.gameStatus === 'player_wins'
+                    ? 'Checkmate! The enemy King has no escape!'
+                    : 'Checkmate... Your King has been cornered.'}
+                </p>
+                <button
+                  onClick={handleRestart}
+                  className="px-8 py-4 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg text-xl"
+                >
+                  Play Again
+                </button>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

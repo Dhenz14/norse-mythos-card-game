@@ -20,6 +20,14 @@ export interface CampaignReward {
 	amount?: number;
 }
 
+export interface CampaignArmy {
+	king?: string;
+	queen?: string;
+	rook?: string;
+	bishop?: string;
+	knight?: string;
+}
+
 export interface CampaignMission {
 	id: string;
 	chapterId: string;
@@ -28,6 +36,8 @@ export interface CampaignMission {
 	description: string;
 	narrativeBefore: string;
 	narrativeAfter: string;
+	narrativeVictory?: string;
+	narrativeDefeat?: string;
 	aiHeroId: string;
 	aiHeroClass: string;
 	aiDeckCardIds: number[];
@@ -36,12 +46,13 @@ export interface CampaignMission {
 	prerequisiteIds: string[];
 	rewards: CampaignReward[];
 	realm?: string;
+	campaignArmy?: CampaignArmy;
 }
 
 export interface CampaignChapter {
 	id: string;
 	name: string;
-	faction: 'norse' | 'greek' | 'egyptian' | 'celtic';
+	faction: 'norse' | 'greek' | 'egyptian' | 'celtic' | 'eastern';
 	description: string;
 	missions: CampaignMission[];
 	chapterReward: CampaignReward[];
