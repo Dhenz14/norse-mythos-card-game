@@ -325,15 +325,17 @@ server/
 
 ## Element System
 
-```
-      Fire 🔥
-     ↙       ↘
-Earth 🌍 ←── Water 💧
-     ↖       ↗
-      Wind 🌪️
+Every hero and minion has an element. Each element is **strong against 2** and **weak against 2**, creating a web of matchups — not a simple circle.
 
-   Holy ✨ ⟷ Shadow 🌑
-```
+| Element | Strong Against | Weak Against | Color |
+|---------|---------------|-------------|-------|
+| 🔥 **Fire** | Earth, Wind | Water, Holy | `#ff6b35` |
+| 💧 **Water** | Fire, Shadow | Earth, Wind | `#4fc3f7` |
+| 🌪️ **Wind** | Water, Holy | Fire, Earth | `#81c784` |
+| 🌍 **Earth** | Wind, Shadow | Fire, Water | `#a1887f` |
+| ✨ **Holy** | Fire, Shadow | Wind, Shadow | `#ffd54f` |
+| 🌑 **Shadow** | Holy, Wind | Water, Earth | `#9c27b0` |
+| ⚪ **Neutral** | — | — | `#9e9e9e` |
 
 Attacking with elemental advantage grants **+2 Attack, +2 Health, +20 Armor**.
 
