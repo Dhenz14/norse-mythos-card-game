@@ -2,15 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChessPiece as ChessPieceType, ChessPieceType as PieceType, ELEMENT_COLORS, ELEMENT_ICONS, ElementType } from '../../types/ChessTypes';
 import type { MatchupGlow } from '../../utils/chess/elementMatchupUtils';
+import { assetPath } from '../../utils/assetPath';
 import './ChessPiece.css';
 
 const ELEMENT_IMAGES: Record<ElementType, string | null> = {
-  fire: '/textures/elements/fire.png',
-  water: '/textures/elements/water.png',
-  wind: '/textures/elements/wind.png',
-  earth: '/textures/elements/earth.png',
-  holy: '/textures/elements/holy.png',
-  shadow: '/textures/elements/shadow.png',
+  fire: assetPath('/textures/elements/fire.png'),
+  water: assetPath('/textures/elements/water.png'),
+  wind: assetPath('/textures/elements/wind.png'),
+  earth: assetPath('/textures/elements/earth.png'),
+  holy: assetPath('/textures/elements/holy.png'),
+  shadow: assetPath('/textures/elements/shadow.png'),
   neutral: null
 };
 

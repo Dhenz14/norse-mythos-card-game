@@ -68,6 +68,17 @@ function HomePage() {
         </div>
 
         <div className="flex flex-col gap-4 w-full max-w-md px-4">
+          <a
+            href="https://github.com/Dhenz14/norse-mythos-card-game/archive/refs/heads/main.zip"
+            className="w-full"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="homepage-btn-download w-full py-6 text-lg font-bold tracking-wide uppercase border-2">
+              Download Full Game
+            </Button>
+          </a>
+
           <Link to={routes.game}>
             <Button className="homepage-btn-primary w-full py-8 text-2xl font-bold tracking-wider uppercase border-2">
               Play Game

@@ -17,6 +17,7 @@ import { createPortal } from 'react-dom';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
 import { getElementColor, getElementIcon, ELEMENT_LABELS, ELEMENT_WEAKNESSES, ELEMENT_STRENGTHS, type ElementType } from '../../utils/elements';
 import { NORSE_TO_GAME_ELEMENT, type NorseElement } from '../../types/NorseTypes';
+import { assetPath } from '../../utils/assetPath';
 import '../styles/hero-reactions.css';
 
 /**
@@ -105,7 +106,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   }, [pet.norseHeroId, elementProp]);
 
   const portraitUrl = useMemo(
-    () => `/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png`,
+    () => assetPath(`/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png`),
     [pet.name]
   );
 

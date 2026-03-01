@@ -1,4 +1,5 @@
 import { debug } from '../../config/debugConfig';
+import { assetPath } from '../assetPath';
 /**
  * Art Mapping Utility
  * Maps game hero/king IDs to artwork IDs from metadata
@@ -627,7 +628,7 @@ export function getKingArtId(kingId: string): string | null {
 export function getHeroArtPath(heroId: string): string | null {
   const artId = getHeroArtId(heroId);
   if (!artId) return null;
-  return `/art/${artId}.webp`;
+  return assetPath(`/art/${artId}.webp`);
 }
 
 /**
@@ -636,7 +637,7 @@ export function getHeroArtPath(heroId: string): string | null {
 export function getKingArtPath(kingId: string): string | null {
   const artId = getKingArtId(kingId);
   if (!artId) return null;
-  return `/art/${artId}.webp`;
+  return assetPath(`/art/${artId}.webp`);
 }
 
 /**
@@ -1079,7 +1080,7 @@ export function getCardArtPath(cardName: string): string | null {
         return null;
       }
     }
-    result = vercelUrl;
+    result = assetPath(vercelUrl);
     _artPathCache.set(lowerName, result);
     return result;
   }
@@ -1105,7 +1106,7 @@ export function getCardArtPath(cardName: string): string | null {
     return null;
   }
 
-  result = `/art/${artId}.webp`;
+  result = assetPath(`/art/${artId}.webp`);
   _artPathCache.set(lowerName, result);
   return result;
 }

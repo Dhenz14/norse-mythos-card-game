@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Howl } from 'howler';
 import { proceduralAudio, type SoundType } from '../../game/audio/proceduralAudio';
+import { assetPath } from '../../game/utils/assetPath';
 
 export type BackgroundMusicTrack = 'main_menu' | 'battle_theme' | 'victory' | 'defeat';
 export type SoundEffectType =
@@ -72,10 +73,10 @@ export const useAudio = create<AudioState>((set, get) => ({
 	musicVolume: 0.5,
 
 	musicTracks: {
-		main_menu: createMusicTrack('/assets/audio/main_menu.mp3', true, 0.5),
-		battle_theme: createMusicTrack('/assets/audio/battle_theme.mp3', true, 0.5),
-		victory: createMusicTrack('/assets/audio/victory_music.mp3', false, 0.5),
-		defeat: createMusicTrack('/assets/audio/defeat_music.mp3', false, 0.5),
+		main_menu: createMusicTrack(assetPath('/assets/audio/main_menu.mp3'), true, 0.5),
+		battle_theme: createMusicTrack(assetPath('/assets/audio/battle_theme.mp3'), true, 0.5),
+		victory: createMusicTrack(assetPath('/assets/audio/victory_music.mp3'), false, 0.5),
+		defeat: createMusicTrack(assetPath('/assets/audio/defeat_music.mp3'), false, 0.5),
 	},
 
 	toggleSound: () => {

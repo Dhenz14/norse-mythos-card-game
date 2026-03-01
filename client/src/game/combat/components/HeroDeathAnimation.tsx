@@ -7,6 +7,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Howl } from 'howler';
+import { assetPath } from '../../utils/assetPath';
 
 interface HeroDeathAnimationProps {
 	heroName: string;
@@ -29,13 +30,13 @@ export const HeroDeathAnimation: React.FC<HeroDeathAnimationProps> = ({
 	
 	useEffect(() => {
 		const hitSound = new Howl({
-			src: ['/sounds/hit.mp3'],
+			src: [assetPath('/sounds/hit.mp3')],
 			volume: 0.8,
 			rate: 0.6,
 		});
-		
+
 		const impactSound = new Howl({
-			src: ['/sounds/hit.mp3'],
+			src: [assetPath('/sounds/hit.mp3')],
 			volume: 0.6,
 			rate: 0.4,
 		});

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CardData, Position } from '../types';
 import { Howl } from 'howler';
+import { assetPath } from '../utils/assetPath';
 
 interface EnhancedDeathAnimationProps {
   position: Position;
@@ -26,19 +27,19 @@ const EnhancedDeathAnimation: React.FC<EnhancedDeathAnimationProps> = ({
     // Play enhanced death sound with multiple layers for a more dramatic effect
     // Create sound instances
     const deathSound = new Howl({
-      src: ['/sounds/death.mp3', '/sounds/death.ogg'],
+      src: [assetPath('/sounds/death.mp3'), assetPath('/sounds/death.ogg')],
       volume: 0.8,
       rate: 0.85, // Slow down the sound for a dramatic effect
     });
     
     const impactSound = new Howl({
-      src: ['/sounds/explosion.mp3', '/sounds/explosion.ogg'],
+      src: [assetPath('/sounds/explosion.mp3'), assetPath('/sounds/explosion.ogg')],
       volume: 0.6,
       rate: 0.9,
     });
     
     const magicSound = new Howl({
-      src: ['/sounds/spell_cast.mp3', '/sounds/spell_cast.ogg'],
+      src: [assetPath('/sounds/spell_cast.mp3'), assetPath('/sounds/spell_cast.ogg')],
       volume: 0.4,
       rate: 0.7,
     });

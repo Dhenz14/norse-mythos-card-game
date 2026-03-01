@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { assetPath } from '../utils/assetPath';
 import './HolographicEffect.css';
 
 // Preload the foil texture image
 const foilTexture = new Image();
-foilTexture.src = '/textures/foil.png';
+foilTexture.src = assetPath('/textures/foil.png');
 
 interface SimpleHolographicCardProps {
   card: {
@@ -707,7 +708,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundImage: `url('/textures/foil.png')`,
+            backgroundImage: `url('${assetPath('/textures/foil.png')}')`,
             backgroundSize: '200%',
             backgroundPosition: `${50 + rotation.y * 1.2}% ${50 + rotation.x * 1.2}%`,
             mixBlendMode: 'overlay',
@@ -939,7 +940,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 right: 0,
                 bottom: 0,
                 borderRadius: '12px',
-                backgroundImage: `url('/textures/foil.png')`,
+                backgroundImage: `url('${assetPath('/textures/foil.png')}')`,
                 backgroundSize: 'cover',
                 backgroundPosition: `${50 + rotation.y * 0.7}% ${50 + rotation.x * 0.7}%`,
                 mixBlendMode: 'color-dodge',
@@ -963,7 +964,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 background: card.rarity.toLowerCase() === 'legendary' 
                   ? 'radial-gradient(circle at 30% 30%, rgba(255,215,0,0.05) 0%, rgba(255,105,180,0.05) 60%, rgba(65,105,225,0.05) 100%)'
                   : card.rarity.toLowerCase() === 'epic'
-                    ? `url('/textures/epic_holographic2.png')`
+                    ? `url('${assetPath('/textures/epic_holographic2.png')}')`
                     : card.rarity.toLowerCase() === 'rare' 
                       ? 'radial-gradient(circle at 30% 30%, rgba(0,112,221,0.05) 0%, rgba(28,132,255,0.05) 60%, rgba(84,183,255,0.05) 100%)'
                       : 'radial-gradient(circle at 30% 30%, rgba(200,200,200,0.05) 0%, rgba(230,230,230,0.05) 60%, rgba(180,180,180,0.05) 100%)',

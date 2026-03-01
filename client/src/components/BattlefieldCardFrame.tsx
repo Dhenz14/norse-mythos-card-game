@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { assetPath } from '../game/utils/assetPath';
 import '../game/components/CardEnhancements.css';
 import '../game/components/HolographicEffect.css';
 
@@ -267,7 +268,7 @@ const BattlefieldCardFrame: React.FC<BattlefieldCardFrameProps> = ({
             position: 'absolute',
             inset: 0,
             borderRadius: '10px',
-            backgroundImage: "url('/textures/foil.png')",
+            backgroundImage: `url('${assetPath('/textures/foil.png')}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             opacity: 0.5,
@@ -284,7 +285,7 @@ const BattlefieldCardFrame: React.FC<BattlefieldCardFrameProps> = ({
             position: 'absolute',
             inset: 0,
             borderRadius: '10px',
-            backgroundImage: "url('/textures/epic_holographic.png')",
+            backgroundImage: `url('${assetPath('/textures/epic_holographic.png')}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             opacity: 0.4,
@@ -301,7 +302,7 @@ const BattlefieldCardFrame: React.FC<BattlefieldCardFrameProps> = ({
             position: 'absolute',
             inset: 0,
             borderRadius: '10px',
-            backgroundImage: "url('/textures/foil.png')",
+            backgroundImage: `url('${assetPath('/textures/foil.png')}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             opacity: 0.3,

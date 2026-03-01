@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { CardInstance, GameState } from '../types';
 import { useAnimation, useAnimationStore } from './AnimationManager';
 import { debug } from '../config/debugConfig';
+import { assetPath } from '../utils/assetPath';
 
 const audioPool: Map<string, HTMLAudioElement[]> = new Map();
 const POOL_SIZE = 3;
@@ -188,15 +189,15 @@ export const useAIActionManager = ({
                   }
                   
                   const cardPlaySounds = [
-                    '/sounds/card_play.mp3',
-                    '/sounds/card_place.mp3'
+                    assetPath('/sounds/card_play.mp3'),
+                    assetPath('/sounds/card_place.mp3')
                   ];
                   const playbackRate = 0.9 + Math.random() * 0.3;
                   playPooledAudio(cardPlaySounds[Math.floor(Math.random() * cardPlaySounds.length)], 0.6, playbackRate);
 
                   if (manaCost >= 5) {
                     setTimeout(() => {
-                      playPooledAudio('/sounds/card_whoosh.mp3', 0.4);
+                      playPooledAudio(assetPath('/sounds/card_whoosh.mp3'), 0.4);
                     }, 100);
                   }
                   
@@ -330,9 +331,9 @@ export const useAIActionManager = ({
                 setTimeout(() => {
                   // Play attack sound effect - with random variations
                   const attackSounds = [
-                    '/sounds/attack.mp3',
-                    '/sounds/sword_attack.mp3',
-                    '/sounds/card_attack.mp3'
+                    assetPath('/sounds/attack.mp3'),
+                    assetPath('/sounds/sword_attack.mp3'),
+                    assetPath('/sounds/card_attack.mp3')
                   ];
                   const randomSound = attackSounds[Math.floor(Math.random() * attackSounds.length)];
                   playPooledAudio(randomSound, 0.6);
@@ -482,7 +483,7 @@ export const useAIActionManager = ({
               // After "thinking", use the hero power with enhanced effects
               setTimeout(() => {
                 // Play hero power sound with slightly randomized pitch for variety
-                playPooledAudio('/sounds/hero_power.mp3', 0.6, 0.95 + Math.random() * 0.2);
+                playPooledAudio(assetPath('/sounds/hero_power.mp3'), 0.6, 0.95 + Math.random() * 0.2);
                 
                 // Add dramatic glow around hero
                 addAnimation({
@@ -593,7 +594,7 @@ export const useAIActionManager = ({
             const { addAnimation } = useAnimationStore.getState();
             
             // Play end turn sound
-            playPooledAudio('/sounds/end_turn.mp3', 0.5);
+            playPooledAudio(assetPath('/sounds/end_turn.mp3'), 0.5);
             
             // Get the end turn button position (approximate)
             const endTurnButtonPosition = {

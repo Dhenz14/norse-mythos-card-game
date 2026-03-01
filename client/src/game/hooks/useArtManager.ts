@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { assetPath } from '../utils/assetPath';
 import type { ArtCard, ArtMetadata, CharacterGroup, ArtFilters } from '../utils/art';
 import { 
   groupByCharacter, 
@@ -63,7 +64,7 @@ export function useArtManager(options: UseArtManagerOptions = {}): UseArtManager
         setIsLoading(true);
         setError(null);
         
-        const response = await fetch('/art/metadata.json');
+        const response = await fetch(assetPath('/art/metadata.json'));
         if (!response.ok) {
           throw new Error(`Failed to load art metadata: ${response.status}`);
         }

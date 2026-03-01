@@ -9,6 +9,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
+import { assetPath } from '../../utils/assetPath';
 
 interface Card3DProps {
   cardId: string;
@@ -35,9 +36,9 @@ export const Card3D: React.FC<Card3DProps> = ({
 }) => {
   // Try to load textures, use fallbacks if needed
   const textures = useTexture({
-    front: frontTexture || '/assets/images/card-front-default.png',
-    back: backTexture || '/assets/images/card-back.png',
-    glow: '/assets/images/glow-effect.png',
+    front: frontTexture || assetPath('/assets/images/card-front-default.png'),
+    back: backTexture || assetPath('/assets/images/card-back.png'),
+    glow: assetPath('/assets/images/glow-effect.png'),
   }, (textures) => {
     // Improve texture quality
     Object.values(textures).forEach(texture => {

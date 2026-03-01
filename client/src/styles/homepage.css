@@ -41,6 +41,28 @@
   outline-offset: 2px;
 }
 
+.homepage-btn-download {
+  background: linear-gradient(180deg, #1a4a2a 0%, #0d3318 50%, #071f0e 100%);
+  border-color: #2a7a3a;
+  color: #a0f0b0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1), 0 0 30px rgba(40,180,80,0.15);
+  transition: all 0.3s ease;
+}
+
+.homepage-btn-download:hover,
+.homepage-btn-download:focus-visible {
+  background: linear-gradient(180deg, #2a5a3a 0%, #1a4328 50%, #0d2d14 100%);
+  box-shadow: 0 6px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 50px rgba(40,180,80,0.3);
+  transform: translateY(-2px);
+  color: #c0ffd0;
+  outline: none;
+}
+
+.homepage-btn-download:focus-visible {
+  outline: 2px solid rgba(40,180,80,0.6);
+  outline-offset: 2px;
+}
+
 /* Homepage container background */
 .homepage-container {
   background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 50%, #050508 100%);

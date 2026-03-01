@@ -15,7 +15,10 @@ export const CLASS_ATTACK_ICONS: Record<string, string> = {
   demon_hunter: '/icons/class/demon_hunter_fel_glaive_icon.png',
 };
 
+import { assetPath } from '../utils/assetPath';
+
 export const getClassAttackIcon = (heroClass: string): string | null => {
   const normalizedClass = heroClass.toLowerCase().replace(/[_\s]/g, '');
-  return CLASS_ATTACK_ICONS[normalizedClass] || CLASS_ATTACK_ICONS[heroClass.toLowerCase()] || null;
+  const icon = CLASS_ATTACK_ICONS[normalizedClass] || CLASS_ATTACK_ICONS[heroClass.toLowerCase()] || null;
+  return icon ? assetPath(icon) : null;
 };

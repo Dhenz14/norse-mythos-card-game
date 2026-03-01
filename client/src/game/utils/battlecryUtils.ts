@@ -11,6 +11,7 @@ import {
   WeaponCardData
 } from '../types';
 import { debug } from '../config/debugConfig';
+import { assetPath } from './assetPath';
 import { trackQuestProgress } from './quests/questProgress';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { useAnimationStore } from '../animations/AnimationManager';
@@ -1598,7 +1599,7 @@ function executeDrawBattlecry(
       } as any);
 
       if (cardType === 'murloc' || cardType === 'beast') {
-        const src = cardType === 'murloc' ? '/sounds/tribes/murloc_summon.mp3' : '/sounds/tribes/beast_summon.mp3';
+        const src = cardType === 'murloc' ? assetPath('/sounds/tribes/murloc_summon.mp3') : assetPath('/sounds/tribes/beast_summon.mp3');
         try {
           const a = document.querySelector<HTMLAudioElement>(`audio[data-pool="${src}"]`) || (() => {
             const el = new Audio(src);

@@ -13,6 +13,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { useAudio } from '../../lib/stores/useAudio';
 import { Howl, Howler } from 'howler';
+import { assetPath } from '../utils/assetPath';
 
 const DynamicAudioLayer: React.FC = () => {
   const gameState = useGameStore(s => s.gameState);
@@ -102,7 +103,7 @@ const DynamicAudioLayer: React.FC = () => {
   useEffect(() => {
     // Battle ambient (main gameplay)
     ambientTracksRef.current.battle = new Howl({
-      src: ['/audio/ambient/battle_ambient.mp3'],
+      src: [assetPath('/audio/ambient/battle_ambient.mp3')],
       loop: true,
       volume: 0.4,
       preload: true,
@@ -111,7 +112,7 @@ const DynamicAudioLayer: React.FC = () => {
     
     // Tension ambient (low health, many minions, late game)
     ambientTracksRef.current.tension = new Howl({
-      src: ['/audio/ambient/tension_ambient.mp3'],
+      src: [assetPath('/audio/ambient/tension_ambient.mp3')],
       loop: true,
       volume: 0.5,
       preload: true,
@@ -120,7 +121,7 @@ const DynamicAudioLayer: React.FC = () => {
     
     // Victory fanfare
     ambientTracksRef.current.victory = new Howl({
-      src: ['/audio/ambient/victory_fanfare.mp3'],
+      src: [assetPath('/audio/ambient/victory_fanfare.mp3')],
       loop: false,
       volume: 0.6,
       preload: true,
@@ -129,7 +130,7 @@ const DynamicAudioLayer: React.FC = () => {
     
     // Defeat ambient
     ambientTracksRef.current.defeat = new Howl({
-      src: ['/audio/ambient/defeat_ambient.mp3'],
+      src: [assetPath('/audio/ambient/defeat_ambient.mp3')],
       loop: false,
       volume: 0.5,
       preload: true,

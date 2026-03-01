@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import HexagonBadge from './HexagonBadge';
 import { CardBaseProps } from './types';
+import { assetPath } from '../../game/utils/assetPath';
 import '../../game/components/CardEnhancements.css';
 import '../../game/components/HolographicEffect.css';
 
@@ -251,7 +252,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
             width: '100%',
             height: '100%',
             borderRadius: '12px',
-            backgroundImage: `url('/textures/foil.png')`,
+            backgroundImage: `url('${assetPath('/textures/foil.png')}')`,
             backgroundSize: 'cover',
             opacity: 0.3,
             mixBlendMode: 'hard-light',
@@ -272,7 +273,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
             width: '100%',
             height: '100%',
             borderRadius: '12px',
-            backgroundImage: `url('/textures/epic_holographic.png')`,
+            backgroundImage: `url('${assetPath('/textures/epic_holographic.png')}')`,
             backgroundSize: 'cover',
             opacity: 0.4,
             mixBlendMode: 'color-dodge',
@@ -336,7 +337,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
             bottom: 0,
             width: '100%',
             height: '100%',
-            backgroundImage: `url('/textures/foil.png')`,
+            backgroundImage: `url('${assetPath('/textures/foil.png')}')`,
             backgroundSize: 'cover',
             borderRadius: '12px',
             opacity: 0.5,
@@ -380,7 +381,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
               bottom: 0,
               width: '100%',
               height: '100%',
-              backgroundImage: `url('/textures/epic_holographic.png')`,
+              backgroundImage: `url('${assetPath('/textures/epic_holographic.png')}')`,
               backgroundSize: 'cover',
               borderRadius: '12px',
               opacity: 0.7,

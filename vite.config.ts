@@ -15,8 +15,8 @@ try {
   buildHash = Date.now().toString(36);
 }
 
-export default defineConfig({
-  base: '/norse-mythos-card-game/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/norse-mythos-card-game/' : '/',
   define: {
     __BUILD_HASH__: JSON.stringify(buildHash),
   },
@@ -56,4 +56,4 @@ export default defineConfig({
   },
   // Add support for large models and audio files
   assetsInclude: ["**/*.gltf", "**/*.glb", "**/*.mp3", "**/*.ogg", "**/*.wav"],
-});
+}));

@@ -17,6 +17,7 @@ import { getKingAbilityConfig, getAbilityDescription, requiresDirectionSelection
 import { Tooltip } from '../ui/Tooltip';
 import { debug } from '../../config/debugConfig';
 import { resolveHeroPortrait } from '../../utils/art/artMapping';
+import { assetPath } from '../../utils/assetPath';
 import './HeroPortraitEnhanced.css';
 
 type GamePhase = 'army_selection' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
@@ -29,8 +30,8 @@ interface HeroPortraitPanelProps {
 
 const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, pieceCount }) => {
   const king = army.king;
-  const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || `/portraits/kings/${king.id?.replace('king-', '')}.png`;
-  const fallbackPortrait = `/portraits/heroes/${king.heroClass}.png`;
+  const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || assetPath(`/portraits/kings/${king.id?.replace('king-', '')}.png`);
+  const fallbackPortrait = assetPath(`/portraits/heroes/${king.heroClass}.png`);
   const isPlayer = side === 'player';
   
   return (
@@ -365,7 +366,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     return {
       id: piece.id,
       name: heroName,
-      imageUrl: `/assets/heroes/${piece.heroClass}.png`,
+      imageUrl: assetPath(`/assets/heroes/${piece.heroClass}.png`),
       rarity: piece.type === 'king' ? 'legendary' : 
               piece.type === 'queen' ? 'epic' :
               piece.type === 'pawn' ? 'common' : 'rare',
