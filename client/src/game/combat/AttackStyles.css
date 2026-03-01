@@ -4,31 +4,16 @@
  * CSS styles for the attack system visual indicators and interactions
  */
 
-/* Cards that can attack get a pulsing border effect */
+/* Cards that can attack — subtle warm bronze outline */
 .card-attackable {
-  border: 2px solid #ffc107;
-  box-shadow: 0 0 0 5px rgba(255, 193, 7, 0.7);
-  animation: pulse-border 1.5s infinite;
+  border: 1.5px solid rgba(205, 170, 100, 0.7);
+  box-shadow:
+    0 0 4px rgba(205, 170, 100, 0.3),
+    0 0 8px rgba(205, 170, 100, 0.15);
+  animation: ready-pulse 2.5s ease-in-out infinite;
   cursor: pointer;
   position: relative;
   z-index: 2;
-  will-change: opacity;
-}
-
-/* Slight shimmer-glow for cards that can attack */
-.card-attackable::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  background: linear-gradient(45deg, rgba(255, 193, 7, 0.2), rgba(255, 255, 255, 0.2), rgba(255, 193, 7, 0.2));
-  background-size: 200% 100%;
-  border-radius: inherit;
-  z-index: -1;
-  animation: shimmer 2s linear infinite;
-  pointer-events: none;
 }
 
 /* Cards that can't attack get a muted appearance */
@@ -37,21 +22,24 @@
   filter: saturate(0.8);
 }
 
-/* Currently selected attacker gets a stronger highlight */
+/* Currently selected attacker — bright gold lift */
 .active-attacker {
-  border: 3px solid #ff9800 !important;
-  box-shadow: 0 0 10px #ff9800 !important;
-  transform: translateY(-5px) scale(1.05);
+  border: 2px solid rgba(218, 185, 107, 0.9) !important;
+  box-shadow:
+    0 0 6px rgba(218, 185, 107, 0.5),
+    0 0 14px rgba(218, 185, 107, 0.2) !important;
+  transform: translateY(-4px) scale(1.03);
   z-index: 10;
 }
 
-/* Valid attack targets get a red highlight */
+/* Valid attack targets — subtle red indicator */
 .valid-target {
-  border: 2px dashed #f44336;
-  box-shadow: 0 0 0 5px rgba(244, 67, 54, 0.7);
+  border: 1.5px solid rgba(220, 80, 60, 0.7);
+  box-shadow:
+    0 0 4px rgba(220, 80, 60, 0.35),
+    0 0 10px rgba(220, 80, 60, 0.15);
   cursor: crosshair;
-  animation: pulse-target 1.5s infinite;
-  will-change: opacity;
+  animation: target-pulse 2s ease-in-out infinite;
 }
 
 /* Taunt minions get a shield icon */
@@ -67,22 +55,33 @@
 }
 
 /* Animation keyframes */
-@keyframes pulse-border {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-@keyframes pulse-target {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
+@keyframes ready-pulse {
+  0%, 100% {
+    border-color: rgba(205, 170, 100, 0.7);
+    box-shadow:
+      0 0 4px rgba(205, 170, 100, 0.3),
+      0 0 8px rgba(205, 170, 100, 0.15);
   }
-  100% {
-    background-position: 200% 0;
+  50% {
+    border-color: rgba(205, 170, 100, 0.4);
+    box-shadow:
+      0 0 3px rgba(205, 170, 100, 0.15),
+      0 0 6px rgba(205, 170, 100, 0.08);
+  }
+}
+
+@keyframes target-pulse {
+  0%, 100% {
+    border-color: rgba(220, 80, 60, 0.7);
+    box-shadow:
+      0 0 4px rgba(220, 80, 60, 0.35),
+      0 0 10px rgba(220, 80, 60, 0.15);
+  }
+  50% {
+    border-color: rgba(220, 80, 60, 0.4);
+    box-shadow:
+      0 0 3px rgba(220, 80, 60, 0.15),
+      0 0 6px rgba(220, 80, 60, 0.08);
   }
 }
 
