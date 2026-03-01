@@ -15,6 +15,7 @@ import { getActiveTranscript, clearTranscript } from '@/data/blockchain/transcri
 import { registerAccount, fetchPlayerElo } from '@/data/chainAPI';
 import { computePoW, POW_CONFIG } from '@/data/blockchain/proofOfWork';
 import { sha256Hash, canonicalStringify } from '@/data/blockchain/hashUtils';
+import { useSeasonStore } from '../stores/seasonStore';
 
 type UnsubscribeFn = () => void;
 
@@ -319,6 +320,18 @@ async function enqueueResult(result: PackagedMatchResult, playerCardCount: numbe
 	// Register both players with the chain indexer for global ELO tracking
 	registerAccount(result.winner.username).catch(() => {});
 	registerAccount(result.loser.username).catch(() => {});
+
+	// Record season stats for ranked matches
+	if (result.matchType === 'ranked') {
+		const playerUsername = useHiveDataStore.getState().user?.hiveUsername;
+		if (playerUsername) {
+			const isWin = result.winner.username === playerUsername;
+			const newElo = isWin
+				? result.eloChanges.winner.after
+				: result.eloChanges.loser.after;
+			useSeasonStore.getState().recordSeasonMatch(isWin, newElo);
+		}
+	}
 }
 
 // ---------------------------------------------------------------------------

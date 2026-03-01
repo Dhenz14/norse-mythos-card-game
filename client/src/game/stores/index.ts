@@ -23,6 +23,8 @@ export {
   type CombatLogEntry,
 } from './unifiedCombatStore';
 
+export { useSeasonStore } from './seasonStore';
+
 export {
   useUnifiedUIStore,
   type AnimationType,

@@ -50,6 +50,10 @@ self.addEventListener('fetch', function(event) {
 
 	if (request.method !== 'GET') return;
 
+	// Only handle http/https — skip chrome-extension://, etc.
+	var url = new URL(request.url);
+	if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
 	if (request.mode === 'navigate') {
 		event.respondWith(
 			fetch(request).catch(function() {

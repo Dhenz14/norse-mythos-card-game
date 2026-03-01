@@ -7,6 +7,7 @@ import PackOpeningAnimation from './PackOpeningAnimation';
 import { getRarityColor } from '../../utils/rarityUtils';
 import { useHiveDataStore } from '../../../data/HiveDataLayer';
 import { hiveSync } from '../../../data/HiveSync';
+import { cardRegistry } from '../../data/cardRegistry';
 import type {
 	PackType,
 	PackTypeResponse,
@@ -46,6 +47,51 @@ const PACK_THEMES: Record<string, { seal: string; btn: string; card: string; ico
 
 function getPackTheme(name: string) {
 	return PACK_THEMES[name] || PACK_THEMES['Starter Pack'];
+}
+
+const FALLBACK_PACKS: PackType[] = [
+	{ id: 1, name: 'Starter Pack', description: '5 cards with guaranteed rare or better', price: 100, cardCount: 5, rarityOdds: { common: 60, rare: 25, epic: 10, legendary: 4, mythic: 1 } },
+	{ id: 2, name: 'Booster Pack', description: '5 cards with improved rare odds', price: 200, cardCount: 5, rarityOdds: { common: 45, rare: 30, epic: 15, legendary: 8, mythic: 2 } },
+	{ id: 3, name: 'Premium Pack', description: '7 cards with guaranteed epic or better', price: 500, cardCount: 7, rarityOdds: { common: 30, rare: 30, epic: 25, legendary: 12, mythic: 3 } },
+	{ id: 4, name: 'Legendary Pack', description: '7 cards with guaranteed legendary', price: 1000, cardCount: 7, rarityOdds: { common: 15, rare: 25, epic: 30, legendary: 25, mythic: 5 } },
+];
+
+const CARD_POOL = cardRegistry.filter(c => c.rarity && c.name && c.id >= 1000);
+
+function openPackLocally(pack: PackType): RevealedCard[] {
+	const byRarity: Record<string, typeof CARD_POOL> = {};
+	for (const c of CARD_POOL) {
+		const r = (c.rarity ?? 'common').toLowerCase();
+		(byRarity[r] ??= []).push(c);
+	}
+	const pick = (rarity: string) => {
+		const pool = byRarity[rarity] ?? byRarity['common'] ?? [];
+		if (pool.length === 0) return null;
+		return pool[Math.floor(Math.random() * pool.length)];
+	};
+	const odds = pack.rarityOdds;
+	const totalWeight = odds.common + odds.rare + odds.epic + odds.legendary + odds.mythic;
+	const rollRarity = () => {
+		let roll = Math.random() * totalWeight;
+		if ((roll -= odds.mythic) < 0) return 'mythic';
+		if ((roll -= odds.legendary) < 0) return 'legendary';
+		if ((roll -= odds.epic) < 0) return 'epic';
+		if ((roll -= odds.rare) < 0) return 'rare';
+		return 'common';
+	};
+	const cards: RevealedCard[] = [];
+	for (let i = 0; i < pack.cardCount; i++) {
+		const rarity = rollRarity();
+		const card = pick(rarity);
+		if (card) {
+			cards.push({
+				id: card.id, name: card.name,
+				rarity: (card.rarity ?? 'common').toLowerCase(),
+				type: card.type ?? 'minion', heroClass: card.heroClass ?? 'neutral',
+			});
+		}
+	}
+	return cards;
 }
 
 function getScarcityInfo(percentRemaining: number): { label: string; class: string } {
@@ -119,8 +165,7 @@ export default function PacksPage() {
 				}));
 				setPackTypes(mappedPacks);
 			} else {
-				setError('Failed to load packs. Please try again.');
-				setPackTypes([]);
+				setPackTypes(FALLBACK_PACKS);
 			}
 
 			if (statsRes.ok) {
@@ -181,10 +226,10 @@ export default function PacksPage() {
 				setSupplyStats(null);
 			}
 		} catch (err) {
-			debug.error('Error fetching pack data:', err);
-			setError('Failed to load packs. Please try again.');
-			setPackTypes([]);
+			debug.warn('Pack API unavailable, using client-side packs:', err);
+			setPackTypes(FALLBACK_PACKS);
 			setSupplyStats(null);
+			setError(null);
 		} finally {
 			setLoading(false);
 		}
@@ -214,21 +259,27 @@ export default function PacksPage() {
 				}));
 				if (mappedCards.length > 0) {
 					setRevealedCards(mappedCards);
-				} else {
-					setPackError('No cards received from the server. Please try again.');
-					setIsOpening(false);
-					setOpeningPack(null);
+					return;
 				}
+			}
+			// API unavailable or empty — fall back to client-side
+			const localCards = openPackLocally(pack);
+			if (localCards.length > 0) {
+				setRevealedCards(localCards);
 			} else {
-				setPackError('Failed to open pack. Please try again.');
+				setPackError('Could not generate pack. Please try again.');
 				setIsOpening(false);
 				setOpeningPack(null);
 			}
-		} catch (err) {
-			debug.error('Error opening pack:', err);
-			setPackError('Failed to open pack. Please try again.');
-			setIsOpening(false);
-			setOpeningPack(null);
+		} catch {
+			const localCards = openPackLocally(pack);
+			if (localCards.length > 0) {
+				setRevealedCards(localCards);
+			} else {
+				setPackError('Could not generate pack. Please try again.');
+				setIsOpening(false);
+				setOpeningPack(null);
+			}
 		}
 	};
 
