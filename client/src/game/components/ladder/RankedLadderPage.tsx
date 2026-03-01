@@ -4,6 +4,8 @@ import { routes } from '../../../lib/routes';
 import { useHiveDataStore } from '../../../data/HiveDataLayer';
 import { getMatchesByAccount } from '../../../data/blockchain/replayDB';
 import type { HiveMatchResult } from '../../../data/schemas/HiveTypes';
+import { getSeasonInfo, formatTimeRemaining } from '../../utils/seasonUtils';
+import { useSeasonStore } from '../../stores/seasonStore';
 import './ladder.css';
 
 interface LadderEntry {
@@ -122,6 +124,15 @@ export default function RankedLadderPage() {
 		[allMatches],
 	);
 
+	const seasonInfo = useMemo(() => getSeasonInfo(), []);
+	const seasonStore = useSeasonStore();
+
+	useEffect(() => {
+		if (myEntry) {
+			seasonStore.checkAndApplyReset(myEntry.elo);
+		}
+	}, [myEntry?.elo]);
+
 	if (loading) {
 		return (
 			<div className="ladder-container flex items-center justify-center">
@@ -164,6 +175,42 @@ export default function RankedLadderPage() {
 					</div>
 				)}
 			</div>
+
+			{/* Season Banner */}
+			{seasonInfo.seasonNumber > 0 ? (
+				<div className="ladder-season-banner">
+					<div>
+						<div className="ladder-season-name">{seasonInfo.seasonName}</div>
+						<div className="ladder-season-number">Season {seasonInfo.seasonNumber}</div>
+					</div>
+					<div className="ladder-season-stats">
+						<div className="ladder-season-stat">
+							<div className="ladder-season-stat-label">Season ELO</div>
+							<div className="ladder-season-stat-value">{seasonStore.seasonElo}</div>
+						</div>
+						<div className="ladder-season-stat">
+							<div className="ladder-season-stat-label">Record</div>
+							<div className="ladder-season-stat-value">
+								<span style={{ color: '#22c55e' }}>{seasonStore.seasonWins}W</span>
+								{' / '}
+								<span style={{ color: '#ef4444' }}>{seasonStore.seasonLosses}L</span>
+							</div>
+						</div>
+						<div className="ladder-season-stat">
+							<div className="ladder-season-stat-label">Ends In</div>
+							<div className="ladder-season-timer">
+								{formatTimeRemaining(seasonInfo.timeRemainingMs)}
+							</div>
+						</div>
+					</div>
+				</div>
+			) : (
+				<div className="ladder-season-banner">
+					<div className="ladder-season-preseason">
+						Pre-Season &mdash; Season 1 begins {new Date(seasonInfo.endDate).toLocaleDateString()}
+					</div>
+				</div>
+			)}
 
 			{/* Tabs */}
 			<div className="px-6 py-3 flex gap-2">

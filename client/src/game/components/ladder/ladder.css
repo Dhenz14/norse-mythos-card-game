@@ -160,3 +160,71 @@
 .ladder-match-loss {
 	border-left: 3px solid #ef4444;
 }
+
+/* Season Banner */
+.ladder-season-banner {
+	margin: 0 24px 4px;
+	padding: 14px 20px;
+	background: linear-gradient(135deg, rgba(217, 119, 6, 0.12) 0%, rgba(180, 83, 9, 0.08) 100%);
+	border: 1px solid rgba(217, 119, 6, 0.25);
+	border-top: 2px solid rgba(251, 191, 36, 0.5);
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.ladder-season-name {
+	font-size: 15px;
+	font-weight: 700;
+	background: linear-gradient(135deg, #fbbf24, #d97706);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+.ladder-season-number {
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #92702a;
+	font-weight: 600;
+}
+
+.ladder-season-stats {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.ladder-season-stat {
+	text-align: center;
+}
+
+.ladder-season-stat-label {
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: rgba(217, 119, 6, 0.6);
+}
+
+.ladder-season-stat-value {
+	font-size: 15px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	color: #fbbf24;
+}
+
+.ladder-season-timer {
+	font-size: 12px;
+	color: #92702a;
+	font-variant-numeric: tabular-nums;
+}
+
+.ladder-season-preseason {
+	font-size: 12px;
+	color: #6b7280;
+	font-style: italic;
+}

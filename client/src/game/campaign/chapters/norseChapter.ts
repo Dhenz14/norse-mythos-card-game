@@ -18,6 +18,7 @@ export const norseChapter: CampaignChapter = {
 			aiDeckCardIds: [20001,20001,20002,20002,20003,20003,20004,20004,20005,20005,20010,20010,20011,20011,20012,20012,20013,20013,20014,20014,20015,20015,20020,20020,20021,20021,20022,20022,20023,20023],
 			aiProfile: AI_PROFILES.easy, bossRules: [], prerequisiteIds: [],
 			rewards: [{ type: 'rune', amount: 20 }],
+			realm: 'niflheim',
 		},
 		{
 			id: 'norse-2', chapterId: 'norse', missionNumber: 2,
@@ -29,6 +30,7 @@ export const norseChapter: CampaignChapter = {
 			aiDeckCardIds: [20030,20030,20031,20031,20032,20032,20033,20033,20034,20034,20035,20035,20036,20036,20037,20037,20038,20038,20039,20039,20040,20040,20041,20041,20042,20042,20043,20043,20044,20044],
 			aiProfile: AI_PROFILES.easy, bossRules: [], prerequisiteIds: ['norse-1'],
 			rewards: [{ type: 'rune', amount: 25 }],
+			realm: 'jotunheim',
 		},
 		{
 			id: 'norse-3', chapterId: 'norse', missionNumber: 3,
@@ -40,6 +42,7 @@ export const norseChapter: CampaignChapter = {
 			aiDeckCardIds: [20050,20050,20051,20051,20052,20052,20053,20053,20054,20054,20055,20055,20056,20056,20057,20057,20058,20058,20059,20059,20060,20060,20061,20061,20062,20062,20063,20063,20064,20064],
 			aiProfile: AI_PROFILES.medium, bossRules: [], prerequisiteIds: ['norse-2'],
 			rewards: [{ type: 'rune', amount: 30 }],
+			realm: 'asgard',
 		},
 		{
 			id: 'norse-4', chapterId: 'norse', missionNumber: 4,
@@ -53,6 +56,7 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [{ type: 'bonus_draw', value: 1, description: 'Ratatosk draws an extra card each turn' }],
 			prerequisiteIds: ['norse-3'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'dust', amount: 50 }],
+			realm: 'midgard',
 		},
 		{
 			id: 'norse-5', chapterId: 'norse', missionNumber: 5,
@@ -66,6 +70,7 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [{ type: 'extra_mana', value: 1, description: 'Brokkr starts with +1 mana crystal' }],
 			prerequisiteIds: ['norse-4'],
 			rewards: [{ type: 'rune', amount: 40 }],
+			realm: 'svartalfheim',
 		},
 		{
 			id: 'norse-6', chapterId: 'norse', missionNumber: 6,
@@ -82,6 +87,7 @@ export const norseChapter: CampaignChapter = {
 			],
 			prerequisiteIds: ['norse-5'],
 			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 20200 }],
+			realm: 'helheim',
 		},
 		{
 			id: 'norse-7', chapterId: 'norse', missionNumber: 7,
@@ -95,6 +101,7 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [{ type: 'extra_health', value: 15, description: 'Jormungandr has 45 health' }],
 			prerequisiteIds: ['norse-6'],
 			rewards: [{ type: 'rune', amount: 55 }],
+			realm: 'midgard',
 		},
 		{
 			id: 'norse-8', chapterId: 'norse', missionNumber: 8,
@@ -108,6 +115,7 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [{ type: 'bonus_draw', value: 2, description: 'Loki draws 2 extra cards each turn' }],
 			prerequisiteIds: ['norse-7'],
 			rewards: [{ type: 'rune', amount: 60 }, { type: 'dust', amount: 100 }],
+			realm: 'jotunheim',
 		},
 		{
 			id: 'norse-9', chapterId: 'norse', missionNumber: 9,
@@ -124,6 +132,7 @@ export const norseChapter: CampaignChapter = {
 			],
 			prerequisiteIds: ['norse-8'],
 			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 20250 }],
+			realm: 'asgard',
 		},
 		{
 			id: 'norse-10', chapterId: 'norse', missionNumber: 10,
@@ -141,6 +150,7 @@ export const norseChapter: CampaignChapter = {
 			],
 			prerequisiteIds: ['norse-9'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20300 }, { type: 'pack', amount: 2 }],
+			realm: 'asgard',
 		},
 	],
 };

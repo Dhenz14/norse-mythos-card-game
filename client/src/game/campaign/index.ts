@@ -5,6 +5,8 @@ export { celticChapter } from './chapters/celticChapter';
 export type { CampaignChapter, CampaignMission, AIBehaviorProfile, BossRule, CampaignReward, Difficulty } from './campaignTypes';
 export { AI_PROFILES } from './campaignTypes';
 export { useCampaignStore } from './campaignStore';
+export { NINE_REALMS, REALM_MAP, MISSION_REALM_MAP, getMissionsForRealm, getRealmProgress } from './nineRealms';
+export type { Realm } from './nineRealms';
 
 import { norseChapter } from './chapters/norseChapter';
 import { greekChapter } from './chapters/greekChapter';

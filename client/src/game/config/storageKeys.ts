@@ -34,6 +34,9 @@ export const StorageKeys = {
 	GAME_SETTINGS: 'ragnarok-settings',
 	AUDIO_SETTINGS: 'ragnarok-audio',
 
+	// Seasons
+	SEASON_DATA: 'ragnarok-season',
+
 	// Asset Cache
 	ASSET_CACHE: 'ragnarok-asset-cache',
 } as const;

@@ -35,6 +35,7 @@ export interface CampaignMission {
 	bossRules: BossRule[];
 	prerequisiteIds: string[];
 	rewards: CampaignReward[];
+	realm?: string;
 }
 
 export interface CampaignChapter {
