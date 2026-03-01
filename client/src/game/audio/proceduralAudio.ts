@@ -78,17 +78,17 @@ export class ProceduralAudio {
 	private createReverb(ctx: AudioContext): ConvolverNode {
 		const convolver = ctx.createConvolver();
 		const rate = ctx.sampleRate;
-		const length = rate * 2.0;
+		const length = rate * 3.0;
 		const impulse = ctx.createBuffer(2, length, rate);
 		for (let ch = 0; ch < 2; ch++) {
 			const data = impulse.getChannelData(ch);
 			for (let i = 0; i < length; i++) {
-				data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.0);
+				data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 1.6);
 			}
 		}
 		convolver.buffer = impulse;
 		const wet = ctx.createGain();
-		wet.gain.value = 0.35;
+		wet.gain.value = 0.45;
 		convolver.connect(wet);
 		wet.connect(this.masterGain!);
 		return convolver;
@@ -454,69 +454,69 @@ export class ProceduralAudio {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Main horn — sawtooth through ascending fifths
+		// Main horn — deep sawtooth through ascending fifths (octave lower)
 		const horn = ctx.createOscillator();
 		const hornGain = ctx.createGain();
 		horn.type = 'sawtooth';
-		horn.frequency.setValueAtTime(110, now);
-		horn.frequency.linearRampToValueAtTime(165, now + 0.8);
-		horn.frequency.linearRampToValueAtTime(220, now + 1.5);
-		horn.frequency.linearRampToValueAtTime(165, now + 2.2);
+		horn.frequency.setValueAtTime(55, now);
+		horn.frequency.linearRampToValueAtTime(82, now + 1.0);
+		horn.frequency.linearRampToValueAtTime(110, now + 2.0);
+		horn.frequency.linearRampToValueAtTime(82, now + 3.0);
 		hornGain.gain.setValueAtTime(0, now);
-		hornGain.gain.linearRampToValueAtTime(0.22, now + 0.4);
-		hornGain.gain.linearRampToValueAtTime(0.28, now + 1.0);
-		hornGain.gain.linearRampToValueAtTime(0.18, now + 2.0);
-		hornGain.gain.linearRampToValueAtTime(0, now + 2.5);
+		hornGain.gain.linearRampToValueAtTime(0.25, now + 0.5);
+		hornGain.gain.linearRampToValueAtTime(0.3, now + 1.2);
+		hornGain.gain.linearRampToValueAtTime(0.2, now + 2.8);
+		hornGain.gain.linearRampToValueAtTime(0, now + 3.5);
 		const hornFilter = ctx.createBiquadFilter();
 		hornFilter.type = 'lowpass';
-		hornFilter.frequency.setValueAtTime(600, now);
-		hornFilter.frequency.linearRampToValueAtTime(1200, now + 1.0);
-		hornFilter.frequency.linearRampToValueAtTime(800, now + 2.5);
+		hornFilter.frequency.setValueAtTime(400, now);
+		hornFilter.frequency.linearRampToValueAtTime(800, now + 1.2);
+		hornFilter.frequency.linearRampToValueAtTime(500, now + 3.5);
 		horn.connect(hornFilter);
 		hornFilter.connect(hornGain);
 		hornGain.connect(this.getMaster());
 		hornGain.connect(this.getReverb());
 		horn.start(now);
-		horn.stop(now + 2.5);
+		horn.stop(now + 3.5);
 
-		// Sub-bass foundation
+		// Sub-bass foundation (very deep)
 		const sub = ctx.createOscillator();
 		const subGain = ctx.createGain();
 		sub.type = 'sine';
-		sub.frequency.value = 55;
+		sub.frequency.value = 30;
 		subGain.gain.setValueAtTime(0, now);
-		subGain.gain.linearRampToValueAtTime(0.2, now + 0.3);
-		subGain.gain.linearRampToValueAtTime(0.12, now + 1.5);
-		subGain.gain.linearRampToValueAtTime(0, now + 2.5);
+		subGain.gain.linearRampToValueAtTime(0.25, now + 0.4);
+		subGain.gain.linearRampToValueAtTime(0.15, now + 2.0);
+		subGain.gain.linearRampToValueAtTime(0, now + 3.5);
 		sub.connect(subGain);
 		subGain.connect(this.getMaster());
 		sub.start(now);
-		sub.stop(now + 2.5);
+		sub.stop(now + 3.5);
 
 		// Breath noise (horn air)
 		const breath = ctx.createBufferSource();
-		breath.buffer = this.createNoise(2.5);
+		breath.buffer = this.createNoise(3.5);
 		const breathFilter = ctx.createBiquadFilter();
 		breathFilter.type = 'bandpass';
-		breathFilter.frequency.setValueAtTime(300, now);
-		breathFilter.frequency.linearRampToValueAtTime(600, now + 1.0);
-		breathFilter.frequency.linearRampToValueAtTime(300, now + 2.5);
-		breathFilter.Q.value = 2;
+		breathFilter.frequency.setValueAtTime(200, now);
+		breathFilter.frequency.linearRampToValueAtTime(400, now + 1.2);
+		breathFilter.frequency.linearRampToValueAtTime(200, now + 3.5);
+		breathFilter.Q.value = 1.5;
 		const breathGain = ctx.createGain();
 		breathGain.gain.setValueAtTime(0, now);
-		breathGain.gain.linearRampToValueAtTime(0.08, now + 0.3);
-		breathGain.gain.linearRampToValueAtTime(0.05, now + 2.0);
-		breathGain.gain.linearRampToValueAtTime(0, now + 2.5);
+		breathGain.gain.linearRampToValueAtTime(0.06, now + 0.4);
+		breathGain.gain.linearRampToValueAtTime(0.04, now + 2.8);
+		breathGain.gain.linearRampToValueAtTime(0, now + 3.5);
 		breath.connect(breathFilter);
 		breathFilter.connect(breathGain);
 		breathGain.connect(this.getMaster());
 		breath.start(now);
-		breath.stop(now + 2.5);
+		breath.stop(now + 3.5);
 
-		// Drum hits
-		this.playFilteredNoiseBurst(now + 0.05, 0.12, 150, 'lowpass', 0.35);
-		this.playFilteredNoiseBurst(now + 0.8, 0.1, 150, 'lowpass', 0.25);
-		this.playFilteredNoiseBurst(now + 1.5, 0.1, 150, 'lowpass', 0.3);
+		// Deep drum hits
+		this.playFilteredNoiseBurst(now + 0.05, 0.15, 100, 'lowpass', 0.4);
+		this.playFilteredNoiseBurst(now + 1.0, 0.12, 100, 'lowpass', 0.3);
+		this.playFilteredNoiseBurst(now + 2.0, 0.12, 100, 'lowpass', 0.35);
 	}
 
 	// ═══════════════════════════════════════════
@@ -1189,26 +1189,26 @@ export class ProceduralAudio {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Gentle chime triad (C-E-G)
-		const notes = [523.25, 659.25, 783.99];
+		// Deep chime triad (C-E-G, octave lower)
+		const notes = [262, 330, 392];
 		notes.forEach((freq, i) => {
-			const t = now + i * 0.1;
+			const t = now + i * 0.12;
 			const osc = ctx.createOscillator();
 			const gain = ctx.createGain();
 			osc.type = 'triangle';
 			osc.frequency.value = freq;
 			gain.gain.setValueAtTime(0, t);
-			gain.gain.linearRampToValueAtTime(0.15, t + 0.03);
-			gain.gain.linearRampToValueAtTime(0, t + 0.25);
+			gain.gain.linearRampToValueAtTime(0.15, t + 0.04);
+			gain.gain.linearRampToValueAtTime(0, t + 0.3);
 			osc.connect(gain);
 			gain.connect(this.getMaster());
 			gain.connect(this.getReverb());
 			osc.start(t);
-			osc.stop(t + 0.25);
+			osc.stop(t + 0.3);
 		});
 
 		// Nature wind breath
-		this.playFilteredNoiseBurst(now, 0.3, 800, 'bandpass', 0.04, this.getReverb(), 2);
+		this.playFilteredNoiseBurst(now, 0.35, 500, 'bandpass', 0.04, this.getReverb(), 2);
 	}
 
 	private soundSpell(): void {
@@ -1353,189 +1353,189 @@ export class ProceduralAudio {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Metal clink — two staccato strikes
+		// Heavy gold coin clink
 		const t1 = ctx.createOscillator();
 		const g1 = ctx.createGain();
 		t1.type = 'triangle';
-		t1.frequency.value = 1500;
+		t1.frequency.value = 800;
 		g1.gain.setValueAtTime(0.25, now);
-		g1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+		g1.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
 		t1.connect(g1);
 		g1.connect(this.getMaster());
 		t1.start(now);
-		t1.stop(now + 0.08);
+		t1.stop(now + 0.1);
 
 		const t2 = ctx.createOscillator();
 		const g2 = ctx.createGain();
 		t2.type = 'triangle';
-		t2.frequency.value = 2200;
-		g2.gain.setValueAtTime(0.2, now + 0.05);
-		g2.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+		t2.frequency.value = 1200;
+		g2.gain.setValueAtTime(0.2, now + 0.06);
+		g2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
 		t2.connect(g2);
 		g2.connect(this.getMaster());
-		t2.start(now + 0.05);
-		t2.stop(now + 0.15);
+		t2.start(now + 0.06);
+		t2.stop(now + 0.18);
 
-		// Brief ring tail
-		this.playScheduledTone(now + 0.05, 1800, 0.1, 'sine', 0.06, this.getReverb());
+		// Brief low ring tail
+		this.playScheduledTone(now + 0.06, 1000, 0.12, 'sine', 0.06, this.getReverb());
 	}
 
 	private soundFreeze(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Ice crackle — rapid high sine pings
-		for (let i = 0; i < 8; i++) {
-			const t = now + i * 0.04;
-			const freq = 2500 + Math.random() * 4000;
-			this.playScheduledTone(t, freq, 0.04, 'sine', 0.1);
+		// Ice cracks — deliberate mid-frequency tones (not random high pings)
+		for (let i = 0; i < 5; i++) {
+			const t = now + i * 0.06;
+			const freq = 800 + Math.random() * 1200;
+			this.playScheduledTone(t, freq, 0.05, 'sine', 0.1);
 		}
 
-		// Crystalline noise
-		this.playFilteredNoiseBurst(now, 0.3, 6000, 'highpass', 0.12);
+		// Crystalline noise (lower)
+		this.playFilteredNoiseBurst(now, 0.3, 3000, 'highpass', 0.1);
 
 		// Cold air
-		this.playFilteredNoiseBurst(now + 0.1, 0.25, 2000, 'bandpass', 0.06, this.getReverb(), 4);
+		this.playFilteredNoiseBurst(now + 0.1, 0.3, 1500, 'bandpass', 0.06, this.getReverb(), 3);
 	}
 
 	private soundLegendary(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Mini norse horn fanfare
+		// Deep norse horn fanfare
 		const horn = ctx.createOscillator();
 		const hornGain = ctx.createGain();
 		const hornFilter = ctx.createBiquadFilter();
 		horn.type = 'sawtooth';
-		horn.frequency.setValueAtTime(110, now);
-		horn.frequency.linearRampToValueAtTime(165, now + 0.4);
-		horn.frequency.linearRampToValueAtTime(220, now + 0.8);
+		horn.frequency.setValueAtTime(55, now);
+		horn.frequency.linearRampToValueAtTime(82, now + 0.5);
+		horn.frequency.linearRampToValueAtTime(110, now + 1.0);
 		hornFilter.type = 'lowpass';
-		hornFilter.frequency.setValueAtTime(400, now);
-		hornFilter.frequency.linearRampToValueAtTime(1000, now + 0.5);
+		hornFilter.frequency.setValueAtTime(300, now);
+		hornFilter.frequency.linearRampToValueAtTime(600, now + 0.6);
 		hornGain.gain.setValueAtTime(0, now);
-		hornGain.gain.linearRampToValueAtTime(0.2, now + 0.2);
-		hornGain.gain.linearRampToValueAtTime(0.12, now + 0.8);
-		hornGain.gain.linearRampToValueAtTime(0, now + 1.2);
+		hornGain.gain.linearRampToValueAtTime(0.22, now + 0.25);
+		hornGain.gain.linearRampToValueAtTime(0.14, now + 1.0);
+		hornGain.gain.linearRampToValueAtTime(0, now + 1.6);
 		horn.connect(hornFilter);
 		hornFilter.connect(hornGain);
 		hornGain.connect(this.getMaster());
 		hornGain.connect(this.getReverb());
 		horn.start(now);
-		horn.stop(now + 1.2);
+		horn.stop(now + 1.6);
 
-		// Shimmer
-		const shimmer = ctx.createOscillator();
-		const shimmerGain = ctx.createGain();
-		shimmer.type = 'sine';
-		shimmer.frequency.setValueAtTime(2000, now + 0.3);
-		shimmer.frequency.linearRampToValueAtTime(4000, now + 1.0);
-		shimmerGain.gain.setValueAtTime(0, now + 0.3);
-		shimmerGain.gain.linearRampToValueAtTime(0.06, now + 0.5);
-		shimmerGain.gain.linearRampToValueAtTime(0, now + 1.2);
-		shimmer.connect(shimmerGain);
-		shimmerGain.connect(this.getReverb());
-		shimmer.start(now + 0.3);
-		shimmer.stop(now + 1.2);
+		// Sub-bass
+		const sub = ctx.createOscillator();
+		const subGain = ctx.createGain();
+		sub.type = 'sine';
+		sub.frequency.value = 30;
+		subGain.gain.setValueAtTime(0, now);
+		subGain.gain.linearRampToValueAtTime(0.18, now + 0.2);
+		subGain.gain.linearRampToValueAtTime(0, now + 1.2);
+		sub.connect(subGain);
+		subGain.connect(this.getMaster());
+		sub.start(now);
+		sub.stop(now + 1.2);
 
-		// Sub drum
-		this.playFilteredNoiseBurst(now, 0.1, 150, 'lowpass', 0.3);
+		// Deep drum
+		this.playFilteredNoiseBurst(now, 0.12, 100, 'lowpass', 0.35);
 	}
 
 	private soundLegendaryEntrance(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Full norse horn
-		this.playFilteredNoiseBurst(now, 0.15, 150, 'lowpass', 0.4);
+		// Deep drum impact
+		this.playFilteredNoiseBurst(now, 0.18, 100, 'lowpass', 0.45);
 
+		// Main deep horn
 		const horn1 = ctx.createOscillator();
 		const horn1Gain = ctx.createGain();
 		const horn1Filter = ctx.createBiquadFilter();
 		horn1.type = 'sawtooth';
-		horn1.frequency.setValueAtTime(110, now + 0.1);
-		horn1.frequency.linearRampToValueAtTime(165, now + 0.6);
-		horn1.frequency.linearRampToValueAtTime(220, now + 1.0);
+		horn1.frequency.setValueAtTime(55, now + 0.1);
+		horn1.frequency.linearRampToValueAtTime(82, now + 0.8);
+		horn1.frequency.linearRampToValueAtTime(110, now + 1.4);
 		horn1Filter.type = 'lowpass';
-		horn1Filter.frequency.setValueAtTime(400, now + 0.1);
-		horn1Filter.frequency.linearRampToValueAtTime(1200, now + 0.8);
+		horn1Filter.frequency.setValueAtTime(300, now + 0.1);
+		horn1Filter.frequency.linearRampToValueAtTime(800, now + 1.0);
 		horn1Gain.gain.setValueAtTime(0, now + 0.1);
-		horn1Gain.gain.linearRampToValueAtTime(0.22, now + 0.4);
-		horn1Gain.gain.linearRampToValueAtTime(0.15, now + 1.2);
-		horn1Gain.gain.linearRampToValueAtTime(0, now + 1.8);
+		horn1Gain.gain.linearRampToValueAtTime(0.25, now + 0.5);
+		horn1Gain.gain.linearRampToValueAtTime(0.18, now + 1.6);
+		horn1Gain.gain.linearRampToValueAtTime(0, now + 2.5);
 		horn1.connect(horn1Filter);
 		horn1Filter.connect(horn1Gain);
 		horn1Gain.connect(this.getMaster());
 		horn1Gain.connect(this.getReverb());
 		horn1.start(now + 0.1);
-		horn1.stop(now + 1.8);
+		horn1.stop(now + 2.5);
 
-		// Harmony fifth
+		// Harmony fifth (low)
 		const chord = ctx.createOscillator();
 		const chordGain = ctx.createGain();
 		const chordFilter = ctx.createBiquadFilter();
 		chord.type = 'sawtooth';
-		chord.frequency.value = 330;
+		chord.frequency.value = 165;
 		chordFilter.type = 'lowpass';
-		chordFilter.frequency.value = 1000;
-		chordGain.gain.setValueAtTime(0, now + 0.5);
-		chordGain.gain.linearRampToValueAtTime(0.1, now + 0.8);
-		chordGain.gain.linearRampToValueAtTime(0, now + 1.8);
+		chordFilter.frequency.value = 600;
+		chordGain.gain.setValueAtTime(0, now + 0.7);
+		chordGain.gain.linearRampToValueAtTime(0.1, now + 1.0);
+		chordGain.gain.linearRampToValueAtTime(0, now + 2.5);
 		chord.connect(chordFilter);
 		chordFilter.connect(chordGain);
 		chordGain.connect(this.getMaster());
 		chordGain.connect(this.getReverb());
-		chord.start(now + 0.5);
-		chord.stop(now + 1.8);
+		chord.start(now + 0.7);
+		chord.stop(now + 2.5);
 
-		// Shimmer
-		const shimmer = ctx.createOscillator();
-		const shimmerGain = ctx.createGain();
-		shimmer.type = 'sine';
-		shimmer.frequency.setValueAtTime(2500, now + 0.4);
-		shimmer.frequency.linearRampToValueAtTime(5000, now + 1.5);
-		shimmerGain.gain.setValueAtTime(0, now + 0.4);
-		shimmerGain.gain.linearRampToValueAtTime(0.07, now + 0.7);
-		shimmerGain.gain.linearRampToValueAtTime(0, now + 1.8);
-		shimmer.connect(shimmerGain);
-		shimmerGain.connect(this.getReverb());
-		shimmer.start(now + 0.4);
-		shimmer.stop(now + 1.8);
+		// Sub-bass
+		const sub = ctx.createOscillator();
+		const subGain = ctx.createGain();
+		sub.type = 'sine';
+		sub.frequency.value = 30;
+		subGain.gain.setValueAtTime(0, now);
+		subGain.gain.linearRampToValueAtTime(0.22, now + 0.3);
+		subGain.gain.linearRampToValueAtTime(0.1, now + 2.0);
+		subGain.gain.linearRampToValueAtTime(0, now + 2.5);
+		sub.connect(subGain);
+		subGain.connect(this.getMaster());
+		sub.start(now);
+		sub.stop(now + 2.5);
 
 		// Drum sequence
-		this.playFilteredNoiseBurst(now + 0.8, 0.1, 150, 'lowpass', 0.25);
-		this.playFilteredNoiseBurst(now + 1.2, 0.08, 150, 'lowpass', 0.2);
+		this.playFilteredNoiseBurst(now + 1.0, 0.12, 100, 'lowpass', 0.3);
+		this.playFilteredNoiseBurst(now + 1.6, 0.1, 100, 'lowpass', 0.25);
 	}
 
 	private soundBattlecry(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// War shout — ascending sawtooth
+		// Deep war shout — ascending sawtooth
 		const shout = ctx.createOscillator();
 		const shoutGain = ctx.createGain();
 		const shoutFilter = ctx.createBiquadFilter();
 		shout.type = 'sawtooth';
-		shout.frequency.setValueAtTime(110, now);
-		shout.frequency.linearRampToValueAtTime(330, now + 0.2);
-		shout.frequency.linearRampToValueAtTime(250, now + 0.4);
+		shout.frequency.setValueAtTime(55, now);
+		shout.frequency.linearRampToValueAtTime(165, now + 0.25);
+		shout.frequency.linearRampToValueAtTime(120, now + 0.5);
 		shoutFilter.type = 'lowpass';
-		shoutFilter.frequency.setValueAtTime(500, now);
-		shoutFilter.frequency.linearRampToValueAtTime(1500, now + 0.15);
-		shoutFilter.frequency.linearRampToValueAtTime(800, now + 0.4);
+		shoutFilter.frequency.setValueAtTime(300, now);
+		shoutFilter.frequency.linearRampToValueAtTime(800, now + 0.2);
+		shoutFilter.frequency.linearRampToValueAtTime(500, now + 0.5);
 		shoutGain.gain.setValueAtTime(0, now);
-		shoutGain.gain.linearRampToValueAtTime(0.25, now + 0.06);
-		shoutGain.gain.linearRampToValueAtTime(0.15, now + 0.25);
-		shoutGain.gain.linearRampToValueAtTime(0, now + 0.4);
+		shoutGain.gain.linearRampToValueAtTime(0.28, now + 0.08);
+		shoutGain.gain.linearRampToValueAtTime(0.18, now + 0.3);
+		shoutGain.gain.linearRampToValueAtTime(0, now + 0.5);
 		shout.connect(shoutFilter);
 		shoutFilter.connect(shoutGain);
 		shoutGain.connect(this.getMaster());
 		shoutGain.connect(this.getReverb());
 		shout.start(now);
-		shout.stop(now + 0.4);
+		shout.stop(now + 0.5);
 
-		// Crowd roar
-		this.playFilteredNoiseBurst(now, 0.3, 400, 'lowpass', 0.15);
+		// Deep crowd roar
+		this.playFilteredNoiseBurst(now, 0.4, 250, 'lowpass', 0.18);
 	}
 
 	private soundDeathrattle(): void {
@@ -1576,11 +1576,10 @@ export class ProceduralAudio {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// 3 ascending rune whispers
-		const freqs = [800, 1000, 1200];
+		// 3 ascending low rune whispers
+		const freqs = [400, 500, 600];
 		freqs.forEach((freq, i) => {
-			const t = now + i * 0.12;
-			// Detuned pair
+			const t = now + i * 0.14;
 			const s1 = ctx.createOscillator();
 			const s2 = ctx.createOscillator();
 			const gain = ctx.createGain();
@@ -1589,14 +1588,14 @@ export class ProceduralAudio {
 			s2.type = 'sine';
 			s2.frequency.value = freq + 3;
 			gain.gain.setValueAtTime(0, t);
-			gain.gain.linearRampToValueAtTime(0.12, t + 0.02);
-			gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+			gain.gain.linearRampToValueAtTime(0.12, t + 0.03);
+			gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
 			s1.connect(gain);
 			s2.connect(gain);
 			gain.connect(this.getMaster());
 			gain.connect(this.getReverb());
-			s1.start(t); s1.stop(t + 0.18);
-			s2.start(t); s2.stop(t + 0.18);
+			s1.start(t); s1.stop(t + 0.2);
+			s2.start(t); s2.stop(t + 0.2);
 		});
 	}
 
@@ -1604,28 +1603,28 @@ export class ProceduralAudio {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Noise sweep up (rune reveal)
+		// Low noise sweep (rune reveal)
 		const noise = ctx.createBufferSource();
-		noise.buffer = this.createNoise(0.3);
+		noise.buffer = this.createNoise(0.35);
 		const nf = ctx.createBiquadFilter();
 		nf.type = 'bandpass';
-		nf.frequency.setValueAtTime(500, now);
-		nf.frequency.linearRampToValueAtTime(4000, now + 0.25);
+		nf.frequency.setValueAtTime(300, now);
+		nf.frequency.linearRampToValueAtTime(2000, now + 0.3);
 		nf.Q.value = 2;
 		const ng = ctx.createGain();
 		ng.gain.setValueAtTime(0, now);
 		ng.gain.linearRampToValueAtTime(0.2, now + 0.15);
-		ng.gain.linearRampToValueAtTime(0, now + 0.3);
+		ng.gain.linearRampToValueAtTime(0, now + 0.35);
 		noise.connect(nf);
 		nf.connect(ng);
 		ng.connect(this.getMaster());
 		noise.start(now);
-		noise.stop(now + 0.3);
+		noise.stop(now + 0.35);
 
-		// Bright chord reveal
-		const chord = [800, 1200, 1600];
+		// Deep chord reveal
+		const chord = [400, 600, 800];
 		chord.forEach(freq => {
-			this.playScheduledTone(now + 0.15, freq, 0.3, 'sine', 0.1, this.getReverb());
+			this.playScheduledTone(now + 0.15, freq, 0.35, 'sine', 0.1, this.getReverb());
 		});
 	}
 
@@ -1637,12 +1636,12 @@ export class ProceduralAudio {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Triumphant ascending horn fifths
+		// Triumphant ascending deep horn fifths
 		const notes = [
-			{ freq: 110, time: 0, dur: 0.4 },
-			{ freq: 165, time: 0.3, dur: 0.4 },
-			{ freq: 220, time: 0.6, dur: 0.6 },
-			{ freq: 330, time: 1.0, dur: 0.8 },
+			{ freq: 55, time: 0, dur: 0.5 },
+			{ freq: 82, time: 0.4, dur: 0.5 },
+			{ freq: 110, time: 0.8, dur: 0.7 },
+			{ freq: 165, time: 1.3, dur: 1.0 },
 		];
 
 		notes.forEach(n => {
@@ -1653,10 +1652,10 @@ export class ProceduralAudio {
 			horn.type = 'sawtooth';
 			horn.frequency.value = n.freq;
 			hornFilter.type = 'lowpass';
-			hornFilter.frequency.value = n.freq * 4;
+			hornFilter.frequency.value = n.freq * 3;
 			hornGain.gain.setValueAtTime(0, t);
-			hornGain.gain.linearRampToValueAtTime(0.18, t + 0.08);
-			hornGain.gain.linearRampToValueAtTime(0.1, t + n.dur * 0.7);
+			hornGain.gain.linearRampToValueAtTime(0.2, t + 0.1);
+			hornGain.gain.linearRampToValueAtTime(0.12, t + n.dur * 0.7);
 			hornGain.gain.linearRampToValueAtTime(0, t + n.dur);
 			horn.connect(hornFilter);
 			hornFilter.connect(hornGain);
@@ -1666,84 +1665,84 @@ export class ProceduralAudio {
 			horn.stop(t + n.dur);
 		});
 
-		// Drum hits
-		this.playFilteredNoiseBurst(now, 0.1, 150, 'lowpass', 0.35);
-		this.playFilteredNoiseBurst(now + 0.3, 0.08, 150, 'lowpass', 0.25);
-		this.playFilteredNoiseBurst(now + 0.6, 0.1, 150, 'lowpass', 0.3);
-		this.playFilteredNoiseBurst(now + 1.0, 0.12, 150, 'lowpass', 0.35);
+		// Deep drum hits
+		this.playFilteredNoiseBurst(now, 0.12, 100, 'lowpass', 0.4);
+		this.playFilteredNoiseBurst(now + 0.4, 0.1, 100, 'lowpass', 0.3);
+		this.playFilteredNoiseBurst(now + 0.8, 0.12, 100, 'lowpass', 0.35);
+		this.playFilteredNoiseBurst(now + 1.3, 0.15, 100, 'lowpass', 0.4);
 
-		// Crowd shimmer
-		const shimmer = ctx.createOscillator();
-		const shimmerGain = ctx.createGain();
-		shimmer.type = 'sine';
-		shimmer.frequency.setValueAtTime(3000, now + 0.5);
-		shimmer.frequency.linearRampToValueAtTime(5000, now + 1.5);
-		shimmerGain.gain.setValueAtTime(0, now + 0.5);
-		shimmerGain.gain.linearRampToValueAtTime(0.05, now + 0.8);
-		shimmerGain.gain.linearRampToValueAtTime(0, now + 1.8);
-		shimmer.connect(shimmerGain);
-		shimmerGain.connect(this.getReverb());
-		shimmer.start(now + 0.5);
-		shimmer.stop(now + 1.8);
+		// Sub-bass swell
+		const sub = ctx.createOscillator();
+		const subGain = ctx.createGain();
+		sub.type = 'sine';
+		sub.frequency.value = 30;
+		subGain.gain.setValueAtTime(0, now);
+		subGain.gain.linearRampToValueAtTime(0.2, now + 0.5);
+		subGain.gain.linearRampToValueAtTime(0.15, now + 1.8);
+		subGain.gain.linearRampToValueAtTime(0, now + 2.3);
+		sub.connect(subGain);
+		subGain.connect(this.getMaster());
+		sub.start(now);
+		sub.stop(now + 2.3);
 	}
 
 	private soundDefeat(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Mournful descending horn (minor)
-		const notes = [220, 196, 165]; // A-G-E (minor descent)
+		// Mournful descending deep horn (minor)
+		const notes = [110, 98, 82]; // A-G-E minor descent (octave lower)
 		notes.forEach((freq, i) => {
-			const t = now + i * 0.3;
+			const t = now + i * 0.4;
 			const horn = ctx.createOscillator();
 			const hornGain = ctx.createGain();
 			const hornFilter = ctx.createBiquadFilter();
 			horn.type = 'sawtooth';
 			horn.frequency.value = freq;
 			hornFilter.type = 'lowpass';
-			hornFilter.frequency.value = 600;
+			hornFilter.frequency.value = 400;
 			hornGain.gain.setValueAtTime(0, t);
-			hornGain.gain.linearRampToValueAtTime(0.15, t + 0.05);
-			hornGain.gain.linearRampToValueAtTime(0.08, t + 0.25);
-			hornGain.gain.linearRampToValueAtTime(0, t + 0.4);
+			hornGain.gain.linearRampToValueAtTime(0.18, t + 0.06);
+			hornGain.gain.linearRampToValueAtTime(0.1, t + 0.35);
+			hornGain.gain.linearRampToValueAtTime(0, t + 0.5);
 			horn.connect(hornFilter);
 			hornFilter.connect(hornGain);
 			hornGain.connect(this.getMaster());
 			hornGain.connect(this.getReverb());
 			horn.start(t);
-			horn.stop(t + 0.4);
+			horn.stop(t + 0.5);
 		});
 
-		// Low rumble
+		// Deep rumble
 		const rumble = ctx.createOscillator();
 		const rumbleGain = ctx.createGain();
 		rumble.type = 'sine';
-		rumble.frequency.value = 40;
-		rumbleGain.gain.setValueAtTime(0.15, now);
-		rumbleGain.gain.linearRampToValueAtTime(0, now + 1.2);
+		rumble.frequency.value = 25;
+		rumbleGain.gain.setValueAtTime(0.2, now);
+		rumbleGain.gain.linearRampToValueAtTime(0, now + 1.5);
 		rumble.connect(rumbleGain);
 		rumbleGain.connect(this.getMaster());
 		rumble.start(now);
-		rumble.stop(now + 1.2);
+		rumble.stop(now + 1.5);
 
-		// Fading noise
-		this.playFilteredNoiseBurst(now, 0.8, 300, 'lowpass', 0.06, this.getReverb());
+		// Fading low noise
+		this.playFilteredNoiseBurst(now, 1.0, 200, 'lowpass', 0.08, this.getReverb());
 	}
 
 	private soundHeroPower(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Rune activation — rising chord
+		// Deep rune activation chord
 		const root = ctx.createOscillator();
 		const fifth = ctx.createOscillator();
 		const chordGain = ctx.createGain();
 		root.type = 'sine';
-		root.frequency.setValueAtTime(220, now);
-		root.frequency.linearRampToValueAtTime(330, now + 0.3);
+		root.frequency.setValueAtTime(110, now);
+		root.frequency.linearRampToValueAtTime(165, now + 0.3);
 		fifth.type = 'sine';
-		fifth.frequency.setValueAtTime(330, now);
-		fifth.frequency.linearRampToValueAtTime(440, now + 0.3);
+		fifth.frequency.setValueAtTime(165, now);
+		fifth.frequency.linearRampToValueAtTime(220, now + 0.3);
 		chordGain.gain.setValueAtTime(0, now);
 		chordGain.gain.linearRampToValueAtTime(0.15, now + 0.1);
 		chordGain.gain.linearRampToValueAtTime(0.1, now + 0.3);
@@ -1755,19 +1754,16 @@ export class ProceduralAudio {
 		root.start(now); root.stop(now + 0.5);
 		fifth.start(now); fifth.stop(now + 0.5);
 
-		// Shimmer
-		this.playScheduledTone(now + 0.15, 2000, 0.3, 'sine', 0.05, this.getReverb());
-
-		// Subtle horn
+		// Deep subtle horn
 		const horn = ctx.createOscillator();
 		const hornGain = ctx.createGain();
 		const hornFilter = ctx.createBiquadFilter();
 		horn.type = 'sawtooth';
-		horn.frequency.value = 165;
+		horn.frequency.value = 82;
 		hornFilter.type = 'lowpass';
-		hornFilter.frequency.value = 500;
+		hornFilter.frequency.value = 350;
 		hornGain.gain.setValueAtTime(0, now + 0.1);
-		hornGain.gain.linearRampToValueAtTime(0.06, now + 0.2);
+		hornGain.gain.linearRampToValueAtTime(0.08, now + 0.2);
 		hornGain.gain.linearRampToValueAtTime(0, now + 0.5);
 		horn.connect(hornFilter);
 		hornFilter.connect(hornGain);
@@ -1816,72 +1812,72 @@ export class ProceduralAudio {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Single horn note
+		// Single deep horn note
 		const horn = ctx.createOscillator();
 		const hornGain = ctx.createGain();
 		const hornFilter = ctx.createBiquadFilter();
 		horn.type = 'sawtooth';
-		horn.frequency.value = 220;
+		horn.frequency.value = 110;
 		hornFilter.type = 'lowpass';
-		hornFilter.frequency.value = 800;
+		hornFilter.frequency.value = 500;
 		hornGain.gain.setValueAtTime(0, now);
-		hornGain.gain.linearRampToValueAtTime(0.15, now + 0.05);
-		hornGain.gain.linearRampToValueAtTime(0.08, now + 0.3);
-		hornGain.gain.linearRampToValueAtTime(0, now + 0.4);
+		hornGain.gain.linearRampToValueAtTime(0.15, now + 0.06);
+		hornGain.gain.linearRampToValueAtTime(0.08, now + 0.35);
+		hornGain.gain.linearRampToValueAtTime(0, now + 0.5);
 		horn.connect(hornFilter);
 		hornFilter.connect(hornGain);
 		hornGain.connect(this.getMaster());
 		hornGain.connect(this.getReverb());
 		horn.start(now);
-		horn.stop(now + 0.4);
+		horn.stop(now + 0.5);
 
-		// Soft drum hit
-		this.playFilteredNoiseBurst(now, 0.08, 150, 'lowpass', 0.2);
+		// Deep drum hit
+		this.playFilteredNoiseBurst(now, 0.1, 100, 'lowpass', 0.25);
 	}
 
 	private soundTurnEnd(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Descending horn note
+		// Descending deep horn note
 		const horn = ctx.createOscillator();
 		const hornGain = ctx.createGain();
 		const hornFilter = ctx.createBiquadFilter();
 		horn.type = 'sawtooth';
-		horn.frequency.setValueAtTime(220, now);
-		horn.frequency.linearRampToValueAtTime(165, now + 0.25);
+		horn.frequency.setValueAtTime(110, now);
+		horn.frequency.linearRampToValueAtTime(82, now + 0.3);
 		hornFilter.type = 'lowpass';
-		hornFilter.frequency.value = 600;
-		hornGain.gain.setValueAtTime(0.1, now);
-		hornGain.gain.linearRampToValueAtTime(0, now + 0.3);
+		hornFilter.frequency.value = 400;
+		hornGain.gain.setValueAtTime(0.12, now);
+		hornGain.gain.linearRampToValueAtTime(0, now + 0.35);
 		horn.connect(hornFilter);
 		hornFilter.connect(hornGain);
 		hornGain.connect(this.getMaster());
 		horn.start(now);
-		horn.stop(now + 0.3);
+		horn.stop(now + 0.35);
 	}
 
 	private soundCardHover(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Very quiet rune whisper
+		// Very quiet low rune whisper
 		const s1 = ctx.createOscillator();
 		const s2 = ctx.createOscillator();
 		const gain = ctx.createGain();
 		s1.type = 'sine';
-		s1.frequency.value = 800;
+		s1.frequency.value = 400;
 		s2.type = 'sine';
-		s2.frequency.value = 803;
+		s2.frequency.value = 403;
 		gain.gain.setValueAtTime(0.03, now);
-		gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+		gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 		s1.connect(gain);
 		s2.connect(gain);
 		gain.connect(this.getMaster());
 		s1.start(now);
 		s2.start(now);
-		s1.stop(now + 0.04);
-		s2.stop(now + 0.04);
+		s1.stop(now + 0.05);
+		s2.stop(now + 0.05);
 	}
 
 	private soundCardClick(): void {
@@ -1927,51 +1923,51 @@ export class ProceduralAudio {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Dissonant minor second buzz
+		// Deep dissonant buzz
 		const o1 = ctx.createOscillator();
 		const o2 = ctx.createOscillator();
 		const gain = ctx.createGain();
 		o1.type = 'sawtooth';
-		o1.frequency.value = 300;
+		o1.frequency.value = 150;
 		o2.type = 'sawtooth';
-		o2.frequency.value = 315;
+		o2.frequency.value = 158;
 		gain.gain.setValueAtTime(0.15, now);
-		gain.gain.linearRampToValueAtTime(0, now + 0.25);
+		gain.gain.linearRampToValueAtTime(0, now + 0.3);
 
 		const filter = ctx.createBiquadFilter();
 		filter.type = 'lowpass';
-		filter.frequency.value = 1200;
+		filter.frequency.value = 600;
 		o1.connect(filter);
 		o2.connect(filter);
 		filter.connect(gain);
 		gain.connect(this.getMaster());
 		o1.start(now);
 		o2.start(now);
-		o1.stop(now + 0.25);
-		o2.stop(now + 0.25);
+		o1.stop(now + 0.3);
+		o2.stop(now + 0.3);
 	}
 
 	private soundManaFill(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Crystal chime
+		// Deep rune chime
 		const osc = ctx.createOscillator();
 		const gain = ctx.createGain();
 		osc.type = 'sine';
-		osc.frequency.setValueAtTime(1200, now);
-		osc.frequency.linearRampToValueAtTime(1600, now + 0.2);
+		osc.frequency.setValueAtTime(600, now);
+		osc.frequency.linearRampToValueAtTime(800, now + 0.2);
 		gain.gain.setValueAtTime(0, now);
 		gain.gain.linearRampToValueAtTime(0.12, now + 0.03);
-		gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+		gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
 		osc.connect(gain);
 		gain.connect(this.getMaster());
 		gain.connect(this.getReverb());
 		osc.start(now);
-		osc.stop(now + 0.3);
+		osc.stop(now + 0.35);
 
-		// Harmonic
-		this.playScheduledTone(now + 0.02, 2400, 0.2, 'sine', 0.04, this.getReverb());
+		// Low harmonic
+		this.playScheduledTone(now + 0.02, 1200, 0.25, 'sine', 0.04, this.getReverb());
 	}
 
 	private soundManaSpend(): void {
@@ -1979,63 +1975,63 @@ export class ProceduralAudio {
 		const now = ctx.currentTime;
 
 		// Soft descending spend
-		this.playSweep(1000, 600, 0.15, 'sine', 0.01, 0.13, 0.1);
-		this.playFilteredNoiseBurst(now, 0.06, 3000, 'highpass', 0.05);
+		this.playSweep(600, 350, 0.15, 'sine', 0.01, 0.13, 0.1);
+		this.playFilteredNoiseBurst(now, 0.06, 1500, 'highpass', 0.04);
 	}
 
 	private soundFatigue(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Low warning drone
+		// Deep warning drone
 		const drone = ctx.createOscillator();
 		const droneGain = ctx.createGain();
 		drone.type = 'sine';
-		drone.frequency.value = 50;
-		droneGain.gain.setValueAtTime(0.2, now);
-		droneGain.gain.linearRampToValueAtTime(0, now + 0.6);
+		drone.frequency.value = 40;
+		droneGain.gain.setValueAtTime(0.22, now);
+		droneGain.gain.linearRampToValueAtTime(0, now + 0.7);
 		drone.connect(droneGain);
 		droneGain.connect(this.getMaster());
 		drone.start(now);
-		drone.stop(now + 0.6);
+		drone.stop(now + 0.7);
 
-		// Dissonant sawtooth
+		// Deep dissonant sawtooth
 		const warn = ctx.createOscillator();
 		const warnGain = ctx.createGain();
 		const warnFilter = ctx.createBiquadFilter();
 		warn.type = 'sawtooth';
-		warn.frequency.value = 440;
+		warn.frequency.value = 220;
 		warnFilter.type = 'lowpass';
-		warnFilter.frequency.value = 800;
+		warnFilter.frequency.value = 500;
 		warnGain.gain.setValueAtTime(0, now + 0.1);
 		warnGain.gain.linearRampToValueAtTime(0.12, now + 0.15);
-		warnGain.gain.linearRampToValueAtTime(0, now + 0.35);
+		warnGain.gain.linearRampToValueAtTime(0, now + 0.4);
 		warn.connect(warnFilter);
 		warnFilter.connect(warnGain);
 		warnGain.connect(this.getMaster());
 		warn.start(now + 0.1);
-		warn.stop(now + 0.35);
+		warn.stop(now + 0.4);
 	}
 
 	private soundEmote(): void {
 		const ctx = this.getContext();
 		const now = ctx.currentTime;
 
-		// Quick horn pip
+		// Quick deep horn pip
 		const horn = ctx.createOscillator();
 		const hornGain = ctx.createGain();
 		const hornFilter = ctx.createBiquadFilter();
 		horn.type = 'sawtooth';
-		horn.frequency.value = 330;
+		horn.frequency.value = 165;
 		hornFilter.type = 'lowpass';
-		hornFilter.frequency.value = 800;
+		hornFilter.frequency.value = 500;
 		hornGain.gain.setValueAtTime(0.12, now);
-		hornGain.gain.linearRampToValueAtTime(0, now + 0.1);
+		hornGain.gain.linearRampToValueAtTime(0, now + 0.12);
 		horn.connect(hornFilter);
 		hornFilter.connect(hornGain);
 		hornGain.connect(this.getMaster());
 		horn.start(now);
-		horn.stop(now + 0.1);
+		horn.stop(now + 0.12);
 	}
 }
 
