@@ -1,403 +1,241 @@
-# Norse Mythos Card Game
+# Ragnarok: Norse Mythos Card Game
 
 <p align="center">
-  <strong>A strategic digital card game combining Norse mythology, poker combat, and Hearthstone-style mechanics</strong>
+  <img src="client/public/ragnarok-logo.jpg" alt="Ragnarok" width="480" />
 </p>
 
 <p align="center">
-  <a href="#quick-start">Quick Start</a> •
-  <a href="#game-rules">Game Rules</a> •
-  <a href="#poker-combat">Poker Combat</a> •
-  <a href="#heroes--classes">Heroes</a> •
-  <a href="#contributing">Contributing</a>
+  <strong>A strategic digital card game where gods collide on the battlefield.<br/>Poker combat. Chess tactics. Five mythologies. One war.</strong>
+</p>
+
+<p align="center">
+  <a href="#the-game">The Game</a>&ensp;&bull;&ensp;
+  <a href="#features">Features</a>&ensp;&bull;&ensp;
+  <a href="#ragnarok-chess">Ragnarok Chess</a>&ensp;&bull;&ensp;
+  <a href="#poker-combat">Poker Combat</a>&ensp;&bull;&ensp;
+  <a href="#campaign">Campaign</a>&ensp;&bull;&ensp;
+  <a href="#quick-start">Quick Start</a>&ensp;&bull;&ensp;
+  <a href="#tech-stack">Tech Stack</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/cards-1%2C300%2B-gold?style=flat-square" />
+  <img src="https://img.shields.io/badge/heroes-76-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/mythologies-5-red?style=flat-square" />
+  <img src="https://img.shields.io/badge/campaign_missions-50-green?style=flat-square" />
+  <img src="https://img.shields.io/badge/react-18-61DAFB?style=flat-square&logo=react&logoColor=white" />
+  <img src="https://img.shields.io/badge/typescript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/blockchain-hive-E31337?style=flat-square" />
 </p>
 
 ---
 
-## Overview
+## The Game
 
-Norse Mythos Card Game is a multi-mythology digital collectible card game featuring:
+Ragnarok is a collectible card game that fuses three systems into one: **Hearthstone-style card battling**, a **7x5 strategic chess board**, and **Texas Hold'em poker combat** where HP is your betting currency. Choose your army of gods, maneuver them across the board, and when pieces collide — play poker with your life.
 
-- **76 Playable Heroes** across 12 classes, each with unique Hero Powers
-- **1,300+ Collectible Cards** with battlecry, deathrattle, combo, and spell effects
-- **2 Mythological Factions**: Norse, Greek
-- **Poker Combat System**: Texas Hold'em inspired betting using HP as stakes
-- **Ragnarok Chess**: Strategic 7x5 chess variant where piece collisions trigger poker combat
-- **Premium Card Effects**: Holographic, legendary, and 3D card visuals
+Five mythological pantheons clash for supremacy. Norse frost giants wage war against Greek Olympians. Egyptian pharaohs face Celtic druids. And when all four campaigns fall, a secret Eastern chapter awaits — where Chinese dragons, Japanese kami, and Hindu devas unite for the final battle.
 
 ---
 
-## Table of Contents
+## Features
 
-1. [Quick Start](#quick-start)
-2. [Game Rules](#game-rules)
-   - [Game Modes](#game-modes)
-   - [Standard Match Rules](#standard-match-rules)
-   - [Ragnarok Chess](#ragnarok-chess)
-3. [Poker Combat System](#poker-combat-system)
-   - [Combat Phases](#combat-phases)
-   - [Betting Actions](#betting-actions)
-   - [Hand Rankings](#hand-rankings)
-   - [HP & Damage Resolution](#hp--damage-resolution)
-   - [Fold Penalty](#fold-penalty)
-4. [Heroes & Classes](#heroes--classes)
-5. [Card System](#card-system)
-6. [Keywords & Abilities](#keywords--abilities)
-7. [Status Effects](#status-effects)
-8. [Element System](#element-system)
-9. [Deck Building](#deck-building)
-10. [Tech Stack](#tech-stack)
-11. [Project Structure](#project-structure)
-12. [Contributing](#contributing)
-13. [License](#license)
+### Core Gameplay
+- **1,300+ collectible cards** with battlecry, deathrattle, combo, discover, and 30+ keyword mechanics
+- **76 playable heroes** across 12 classes — Mage, Warrior, Priest, Rogue, Paladin, Hunter, Druid, Warlock, Shaman, Demon Hunter, Death Knight, Necromancer
+- **Ragnarok Chess** — 7x5 board where god-pieces maneuver and collisions trigger poker combat
+- **Texas Hold'em poker combat** — bet HP, read bluffs, and resolve battles with Norse-themed hand rankings
+- **8 status effects** with themed visual overlays — Poison, Bleed, Burn, Freeze, Paralysis, Weakness, Vulnerable, Marked
+- **Element system** — Fire, Water, Wind, Earth, Holy, Shadow with advantage bonuses
 
----
+### Campaign: War of the Pantheons
+- **50 hand-crafted missions** across 5 mythological chapters
+- **Nine Realms constellation map** — navigate Asgard, Midgard, Niflheim, Muspelheim, Jotunheim, Vanaheim, Alfheim, Svartalfheim, Helheim
+- **Greek Olympus world map** — 8 locations from Mount Olympus to the Underworld
+- **Themed AI enemies** — fight gods and monsters matching each realm's mythology
+- **Boss rules** — extra health, bonus mana, passive damage, minion summons
+- **Secret Eastern chapter** — 10 boss-tier missions unlocked after completing all campaigns, featuring Chinese, Japanese, and Hindu mythology
+- **Escalating difficulty** with unique AI behavior profiles per mission
 
-## Quick Start
+### Multiplayer & Social
+- **P2P multiplayer** via WebRTC (PeerJS) — no server bottleneck
+- **Ranked matchmaking** with ELO-based ladder
+- **Tournament system** — Swiss + single elimination brackets
+- **Spectator mode** — watch live matches (read-only P2P)
+- **Match replay viewer** — action timeline with playback controls
+- **Friends list** with online presence and challenge invites
+- **Deck import/export** via shareable base64 codes
 
-```bash
-# Clone the repository
-git clone https://github.com/Ragnaroknfthive/Ragnarok-Card-.git
-cd Ragnarok-Card-
+### Economy & Progression
+- **Card crafting** — dust economy with disenchant/craft (8:1 cost ratio)
+- **Card trading** — P2P trade offers with cards and dust
+- **Card evolution** — 3 tiers: Mortal (60-70%) → Ascended (80-90%) → Divine (100%)
+- **Daily quest system** — 18 quest templates, 3 active per day
+- **Pack opening** with rarity-weighted pulls and premium animations
 
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your actual database credentials (see Environment Setup below)
-
-# Push database schema
-npm run db:push
-
-# Start development server (serves on port 5000)
-npm run dev
-```
-
-### Environment Setup
-
-1. Copy `.env.example` to `.env`
-2. Set up a PostgreSQL database (Neon recommended) and fill in `DATABASE_URL` and `PG*` variables
-3. Generate a random `SESSION_SECRET` (any long random string)
-4. Cloudinary variables are optional (used for card art hosting)
-
-### Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server on port 5000 |
-| `npm run build` | Build for production (Vite + esbuild) |
-| `npm start` | Run production build |
-| `npm run check` | TypeScript type checking |
-| `npm run db:push` | Push database schema via Drizzle |
+### Blockchain (Hive Layer 1)
+- **NFT card ownership** on Hive blockchain with deterministic client-side chain replay
+- **15 operation types** — mint, transfer, burn, pack_open, match_result, level_up, and more
+- **Dual-signature match results** with Merkle transcript anchoring
+- **Self-serve tournament rewards** — 11 milestones, players claim via Keychain
+- **Supply caps** — 16,000 total (10K common, 4K rare, 1.5K epic, 500 legendary)
+- **Anti-cheat** — WASM engine hash verification, PoW, slash evidence, nonce anti-replay
 
 ---
 
-## Game Rules
+## Ragnarok Chess
 
-### Game Modes
-
-#### Ragnarok Chess Mode
-
-A strategic chess variant where pieces represent heroes. When major pieces collide, combat is resolved through the Poker Combat System.
+A strategic chess variant on a 7x5 grid where your army of gods battles for supremacy.
 
 ```
-Main Menu → Mode Selection → Ragnarok Chess → Army Selection → Chess Board → Attack → Poker Combat → Resolution → Victory
+Row 6: Rook  │ Bishop│ King  │ Queen │ Knight    ← Opponent
+Row 5: Pawn  │ Pawn  │ Pawn  │ Pawn  │ Pawn
+Row 4: ░░░░░ │ ░░░░░ │ ░░░░░ │ ░░░░░ │ ░░░░░
+Row 3: ░░░░░ │ ░░░░░ │ ░░░░░ │ ░░░░░ │ ░░░░░
+Row 2: ░░░░░ │ ░░░░░ │ ░░░░░ │ ░░░░░ │ ░░░░░
+Row 1: Pawn  │ Pawn  │ Pawn  │ Pawn  │ Pawn
+Row 0: Knight│ Queen │ King  │ Bishop│ Rook      ← Player
 ```
 
-#### Standard Match Mode
+### Army Selection
 
-Classic Hearthstone-style 1v1 card battles without the chess layer.
+| Slot | Role | Hero Pool |
+|------|------|-----------|
+| **King** | 9 Primordial Norse Kings | Ymir, Buri, Surtr, Borr, Yggdrasil, Audumbla, Gaia, Brimir, Ginnungagap, Tartarus |
+| **Queen** | Mage / Warlock / Necromancer | Zeus, Odin, Hades, Chronos, Izanami, Ammit... |
+| **Rook** | Warrior / Paladin | Ares, Thor, Hephaestus, Sarutahiko... |
+| **Bishop** | Priest / Druid | Poseidon, Aphrodite, Ma'at, Kamimusubi... |
+| **Knight** | Rogue / Hunter | Hermes, Artemis, Nyx, Tsukuyomi, Serqet... |
 
-```
-Main Menu → Mode Selection → Standard Match → Hero Selection → Deck Building → Mulligan → Turn Loop → Victory/Defeat
-```
+### Combat Resolution
+
+| Attacker → Defender | Result |
+|---------------------|--------|
+| Pawn or King → Any | Instant kill (Valkyrie Weapon) |
+| Any → Pawn | Instant kill |
+| Major → Major | **Poker Combat** |
+
+### Stamina System
+
+Each piece has **Stamina = HP / 10**. Moving a piece grants **+1 STA to all allies**. Stamina caps your maximum bet: **1 STA = 10 HP max wager**.
+
+### King Divine Commands
+
+Each King places invisible landmine traps that drain enemy Stamina:
+
+| King | Mine Pattern | Penalty |
+|------|-------------|---------|
+| Ymir | Single tile | -2 STA |
+| Surtr | 3x3 area | -2 center, -1 edges |
+| Yggdrasil | Cross pattern | -2 STA |
+| Ginnungagap | Random scatter | -3 STA |
 
 ---
 
-### Standard Match Rules
+## Poker Combat
 
-#### Setup
+When major pieces collide, combat is resolved through Texas Hold'em — but **HP is your chips**.
 
-1. Each player starts with **100 HP**
-2. Draw **3 cards** (going first) or **4 cards + The Coin** (going second)
-3. **Mulligan phase**: Replace unwanted cards
+### Phases
 
-#### Turn Structure
+| Phase | Name | What Happens |
+|-------|------|------------|
+| 0 | **First Strike** | Attacker deals 15 damage |
+| 1 | **Mulligan** | Replace hole cards |
+| 2 | **Blinds** | SB: 5 HP, BB: 10 HP, Ante: 0.5 HP each |
+| 3 | **Faith** (Flop) | 3 community cards revealed |
+| 4 | **Foresight** (Turn) | 4th card revealed |
+| 5 | **Destiny** (River) | 5th card revealed |
+| 6 | **Resolution** | Compare hands, heal winner, punish loser |
 
-| Phase | Actions |
-|-------|---------|
-| **Start of Turn** | Draw a card, gain a mana crystal (max 10), refresh mana, unfreeze minions |
-| **Main Phase** | Play cards, attack with minions/hero, use Hero Power (2 mana), activate effects |
-| **End of Turn** | Trigger end-of-turn effects, opponent's turn begins |
+### Norse Hand Rankings
 
-#### Mana System
-
-- Start with **1 mana crystal**
-- Gain **+1 mana crystal** per turn
-- Maximum **10 mana crystals**
-- All mana refreshes at start of turn
-
-#### Board Limits
-
-| Limit | Value |
-|-------|-------|
-| Minions per side | 7 |
-| Hand limit | 10 cards |
-| Deck size | 30 cards |
-
----
-
-### Ragnarok Chess
-
-#### Board Layout (7x5 Grid)
-
-```
-Rows 0-1: Player's pieces
-Rows 2-4: Empty (strategic maneuvering)
-Rows 5-6: Opponent's pieces
-
-Player Starting Position (Row 0-1):
-Row 0: Knight | Queen | King | Bishop | Rook
-Row 1: Pawn  | Pawn  | Pawn | Pawn   | Pawn
-
-Opponent Position (Row 5-6) - Mirrored:
-Row 5: Pawn  | Pawn  | Pawn | Pawn   | Pawn
-Row 6: Rook  | Bishop| King | Queen  | Knight
-```
-
-#### Piece Stats
-
-| Piece | Base HP | Spell Slots | Movement |
-|-------|---------|-------------|----------|
-| **King** | 100 | 0 | Any direction, 1 square |
-| **Queen** | 100 | 33 | Any direction, unlimited |
-| **Rook** | 100 | 30 | Horizontal/vertical, unlimited |
-| **Bishop** | 100 | 30 | Diagonal only, unlimited |
-| **Knight** | 100 | 30 | L-shape (2+1), can jump |
-| **Pawn** | 100 | 0 | Forward only, 1 square |
-
-#### Combat Rules
-
-| Attacker | Defender | Result |
-|----------|----------|--------|
-| Pawn or King | Any piece | **Instant kill** (Valkyrie Weapon) |
-| Any piece | Pawn | **Instant kill** |
-| Major piece | Major piece | **Poker Combat** |
-
-#### Stamina System
-
-- **Stamina = HP ÷ 10** (e.g., 100 HP = 10 Stamina)
-- Moving a piece grants **+1 Stamina** to ALL friendly pieces
-- Stamina caps maximum bet: **1 STA = 10 HP max bet**
-
-#### Victory Conditions
-
-- Capture the enemy King (checkmate)
-- Eliminate all enemy pieces
-
----
-
-## Poker Combat System
-
-When major pieces collide in Ragnarok Chess, combat is resolved through a Texas Hold'em inspired system where **HP is your betting currency**.
-
-### First Strike
-
-When a piece attacks in Ragnarok Chess, the **attacker deals 15 damage** before poker betting begins. This represents the tactical advantage of striking first.
-
-- First Strike damage is dealt at the start of combat
-- Applies before any poker betting or showdown
-- Cannot be blocked or reduced
-
-### Combat Phases
-
-| Phase | Poker Equivalent | Description |
-|-------|------------------|-------------|
-| **First Strike** | - | Attacker deals 15 damage |
-| **Mulligan** | Pre-game | Replace hole cards (optional) |
-| **Blinds** | Blinds | Forced bets posted |
-| **Faith** | Flop | 3 community cards revealed |
-| **Foresight** | Turn | 4th community card revealed |
-| **Destiny** | River | 5th community card revealed |
-| **Resolution** | Showdown | Compare hands, resolve HP changes |
-
-### Blind Structure
-
-| Blind | HP Cost |
-|-------|---------|
-| Small Blind (SB) | 5 HP |
-| Big Blind (BB) | 10 HP |
-| Ante (per player) | 0.5 HP |
-
-**Starting Pot**: 16 HP (SB 5 + BB 10 + Ante 0.5 × 2)
+| Rank | Name | Poker Equivalent | Multiplier |
+|------|------|------------------|------------|
+| 10 | **RAGNAROK** | Royal Flush | 2.0x |
+| 9 | **Divine Alignment** | Straight Flush | 1.8x |
+| 8 | **Godly Power** | Four of a Kind | 1.6x |
+| 7 | **Valhalla's Blessing** | Full House | 1.4x |
+| 6 | **Odin's Eye** | Flush | 1.3x |
+| 5 | **Fate's Path** | Straight | 1.2x |
+| 4 | **Thor's Hammer** | Three of a Kind | 1.15x |
+| 3 | **Dual Runes** | Two Pair | 1.1x |
+| 2 | **Rune Mark** | One Pair | 1.05x |
+| 1 | **High Card** | High Card | 1.0x |
 
 ### Betting Actions
 
-| Action | Poker Term | Effect | Cost |
-|--------|------------|--------|------|
-| **Attack** | Bet | Commit HP as wager | Variable |
-| **Counter Attack** | Raise | Increase HP commitment | Variable |
-| **Engage** | Call | Match opponent's wager | Match amount |
-| **Brace** | Fold | Exit combat, forfeit committed HP | -1 STA |
-| **Defend** | Check | Pass action (no active bet) | Free (+1 STA) |
+| Action | Poker Term | Effect |
+|--------|-----------|--------|
+| **Attack** | Bet | Commit HP as wager |
+| **Counter Attack** | Raise | Increase commitment |
+| **Engage** | Call | Match opponent's wager |
+| **Brace** | Fold | Forfeit committed HP, -1 STA |
+| **Defend** | Check | Pass action, +1 STA |
 
-### Hand Rankings
+### Resolution
 
-Norse-themed hand rankings from highest to lowest:
-
-| Rank | Norse Name | Poker Equivalent | Multiplier |
-|------|------------|------------------|------------|
-| 10 | **RAGNAROK** | Royal Flush | 2.0× |
-| 9 | **Divine Alignment** | Straight Flush | 1.8× |
-| 8 | **Godly Power** | Four of a Kind | 1.6× |
-| 7 | **Valhalla's Blessing** | Full House | 1.4× |
-| 6 | **Odin's Eye** | Flush | 1.3× |
-| 5 | **Fate's Path** | Straight | 1.2× |
-| 4 | **Thor's Hammer** | Three of a Kind | 1.15× |
-| 3 | **Dual Runes** | Two Pair | 1.1× |
-| 2 | **Rune Mark** | One Pair | 1.05× |
-| 1 | **High Card** | High Card | 1.0× |
-
-### HP & Damage Resolution
-
-**Option A Rules** (Current Implementation):
-
-This is a **survival-based** poker system where the winner recovers and the loser suffers:
-
-| Outcome | Winner | Loser |
-|---------|--------|-------|
-| **Showdown** | Heals own committed HP | Loses own committed HP |
-| **Fold** | Heals own committed HP | Loses own committed HP + fold penalty |
-
-**Key Mechanics**:
-
-1. **HP is deducted during betting** - When you commit HP to the pot, it's immediately subtracted from your health
-2. **Winner heals own HP** - The winner recovers only what they personally committed
-3. **Loser keeps their loss** - The loser does not recover their committed HP
-4. **Pot is for tracking only** - The pot shows total stakes but isn't "won" by either player
-
-**Example Showdown**:
-```
-Player commits: 30 HP → Player HP: 100 → 70
-AI commits: 20 HP → AI HP: 100 → 80
-
-Player wins with Odin's Eye (Flush):
-- Player heals 30 HP → Player HP: 70 → 100
-- AI keeps loss → AI HP: 80 (lost 20 HP permanently)
-```
-
-### Fold Penalty
-
-When a player folds (Brace):
-
-1. **Immediate loss of committed HP** - Already deducted during betting
-2. **No recovery** - Folder does not get their HP back
-3. **Winner heals** - Winner recovers their own committed HP
-4. **Stamina penalty** - Folder loses 1 STA
-5. **Armor absorbs first** - Any fold-specific penalty is absorbed by armor before HP
-
-**Example Fold**:
-```
-Player commits 20 HP, then folds:
-- Player HP: 100 → 80 (20 HP lost permanently)
-- Winner heals their committed HP
-- Player loses 1 STA
-```
+The winner **heals back their committed HP**. The loser **keeps their loss permanently**. Folding forfeits all committed HP plus a stamina penalty.
 
 ---
 
-## Heroes & Classes
+## Campaign
 
-### The 12 Classes
+### War of the Pantheons
 
-| Class | Primary Role | Hero Examples |
-|-------|--------------|---------------|
-| **Mage** | Spell damage, AoE | Odin, Zeus, Athena |
-| **Warrior** | Armor, weapons | Thor, Ares, Tyr |
-| **Priest** | Healing, buffs | Baldur, Apollo, Eir |
-| **Rogue** | Stealth, combos | Loki, Hermes, Heimdall |
-| **Paladin** | Divine shield, buffs | Freyr, Helios |
-| **Hunter** | Beast synergy, direct damage | Skadi, Artemis, Ullr |
-| **Druid** | Ramp, choose one | Freya, Demeter |
-| **Warlock** | Self-damage, demons | Hel, Hades, Fenrir |
-| **Shaman** | Overload, totems | Njord, Poseidon |
-| **Demon Hunter** | Attack buffs, outcast | Surtr, Muspel |
-| **Death Knight** | Undead, corpses | Angrboda, Thanatos |
-| **Necromancer** | Resurrection, death synergy | Sinmara, Persephone |
+Five mythological campaigns, each with 10 hand-crafted missions featuring unique narratives, themed AI armies, and escalating boss mechanics.
 
-### Hero Components
+#### Norse — The Nine Realms
+Navigate the World Tree through Asgard, Midgard, Jotunheim, Niflheim, Muspelheim, and more. Face Fenrir, the Midgard Serpent, frost giants, and ultimately Odin himself.
 
-Each hero has three unique abilities:
+#### Greek — Olympus
+Journey from the Underworld to Mount Olympus across 8 locations. Battle Cerberus, the Minotaur, Medusa, the Hydra, Ares, Poseidon, Hades, Athena, the Titan Kronos, and Zeus.
 
-| Ability | Cost | Description |
-|---------|------|-------------|
-| **Hero Power** | 2 mana | Repeatable, once per turn |
-| **Weapon Upgrade** | One-time | Equips a weapon to the hero |
-| **Passive Ability** | Free | Always-active effect |
+#### Egyptian — The Afterlife
+Walk the path of the dead through Ma'at's judgment hall, Ra's sun barge, and the throne of the Pharaoh. Face Ammit the Devourer, Set's storms, the serpent Apophis.
 
-### Mythological Factions
+#### Celtic — The Otherworld
+Enter the misty realm of druids, the Morrigan's battlefield, Cu Chulainn's rage, Balor's evil eye, and the Wild Hunt. End at the Battle of Mag Tuired.
 
-- **Norse**: Odin, Thor, Loki, Freya, Baldur, Hel, Fenrir, Tyr, Heimdall
-- **Greek**: Zeus, Athena, Hades, Poseidon, Ares, Apollo, Artemis, Hermes
+#### Eastern — The Celestial Gate (Secret)
+*Unlocked after completing all four base campaigns.* 10 boss-tier missions spanning Chinese dragons, Japanese kami (Amaterasu, Susanoo, Izanami), Hindu devas (Ganesha, Kali), and a final battle where ALL mythologies collide: **Ragnarok of All Worlds**.
 
 ---
 
-## Card System
+## Status Effects
 
-### Card Types
+Every status effect has full visual feedback — themed glows, overlays, and icon badges on affected minions.
 
-| Type | Description |
-|------|-------------|
-| **Minion** | Creatures with Attack and Health. Can attack and be attacked. |
-| **Spell** | One-time effects, discarded after use. |
-| **Weapon** | Hero equipment with Attack and Durability. |
-| **Hero Card** | Replaces your hero with a new one (new power, armor). |
-
-### Card Rarity
-
-| Rarity | Color | Deck Limit |
-|--------|-------|------------|
-| Common | Gray | 2 copies |
-| Rare | Blue | 2 copies |
-| Epic | Purple | 2 copies |
-| Legendary | Orange | 1 copy |
-| Token | Dark Gray | Non-collectible |
-
-### Card ID Ranges
-
-| Range | Category |
-|-------|----------|
-| 1000-1999 | Base Neutral Minions |
-| 2000-2999 | Rare/Epic Neutrals |
-| 3000-3999 | Epic Neutrals & Giants |
-| 4000-4999 | Class Cards (Necromancer, Spells) |
-| 5000-8999 | Class Cards (Warrior, Mage, Hunter, etc.) |
-| 9000-9999 | Tokens (non-collectible) |
-| 20000-29999 | Norse Mythology Set |
-| 90000-99999 | Hero Cards |
+| Icon | Effect | Damage/Impact | Visual |
+|------|--------|---------------|--------|
+| ☠️ | **Poison** | 3 damage per turn | Toxic green mist rising |
+| 🩸 | **Bleed** | +3 damage taken on hit | Crimson drip pulse |
+| 🔥 | **Burn** | +3 Attack, 3 self-damage on attack | Orange flame flicker |
+| ❄️ | **Freeze** | Cannot act (clears end of turn) | Ice blue frost overlay |
+| ⚡ | **Paralysis** | 50% chance to fail actions | Electric indigo crackle |
+| ⬇️ | **Weakness** | -3 Attack | Muted purple dim |
+| 🎯 | **Vulnerable** | +3 damage taken from all sources | Red vignette glow |
+| 👁️ | **Marked** | Can always be targeted (ignores Stealth) | Gold highlight |
 
 ---
 
 ## Keywords & Abilities
 
-### Triggered Effects
-
-| Keyword | Description |
-|---------|-------------|
+### Triggered
+| Keyword | Effect |
+|---------|--------|
 | **Battlecry** | Triggers when played from hand |
 | **Deathrattle** | Triggers when the minion dies |
-| **Combo** | Bonus effect if another card was played first |
-| **Inspire** | Triggers when you use your Hero Power |
+| **Combo** | Bonus if another card was played first |
+| **Inspire** | Triggers on Hero Power use |
 | **Frenzy** | Triggers first time this survives damage |
 | **Spellburst** | Triggers once after you cast a spell |
-| **Overkill** | Triggers when dealing excess lethal damage |
+| **Overkill** | Triggers on excess lethal damage |
 | **Outcast** | Bonus if leftmost or rightmost in hand |
 
-### Persistent Effects
-
-| Keyword | Description |
-|---------|-------------|
+### Persistent
+| Keyword | Effect |
+|---------|--------|
 | **Taunt** | Enemies must attack this first |
 | **Divine Shield** | First damage is ignored |
 | **Stealth** | Cannot be targeted until it attacks |
@@ -405,174 +243,179 @@ Each hero has three unique abilities:
 | **Lifesteal** | Damage dealt heals your hero |
 | **Poisonous** | Destroys any minion damaged by this |
 | **Reborn** | Returns to life with 1 Health |
-
-### Action Keywords
-
-| Keyword | Description |
-|---------|-------------|
-| **Charge** | Can attack immediately (any target) |
+| **Charge** | Can attack immediately |
 | **Rush** | Can attack minions immediately |
-| **Freeze** | Target loses next attack |
-| **Silence** | Removes all card text and enchantments |
-| **Discover** | Choose one of three random cards |
 
-### Resource Keywords
+---
 
-| Keyword | Description |
+## Quick Start
+
+```bash
+git clone https://github.com/Dhenz14/norse-mythos-card-game.git
+cd norse-mythos-card-game
+npm install
+npm run dev
+```
+
+Opens at `http://localhost:5000`. No database required for single-player — PostgreSQL is optional for server features.
+
+### Commands
+
+| Command | Description |
 |---------|-------------|
-| **Overload** | Locks mana crystals next turn |
-| **Spell Damage** | Your spells deal extra damage |
-| **Echo** | Can be played multiple times per turn |
-
----
-
-## Status Effects
-
-| Effect | Icon | Description | Duration |
-|--------|------|-------------|----------|
-| **Poison** | ☠️ | 3% max HP damage per turn | Until cleared |
-| **Bleed** | 🩸 | +3 damage taken when damaged | Until cleared |
-| **Paralysis** | ⚡ | 50% chance to fail actions | Until cleared |
-| **Weakness** | ⬇️ | -3 Attack | Until cleared |
-| **Vulnerable** | 🎯 | +3 damage taken | Until cleared |
-| **Marked** | 👁️ | Can always be targeted (ignores Stealth) | Until cleared |
-| **Burn** | 🔥 | +3 Attack, take 3 self-damage on attack | Until cleared |
-| **Freeze** | ❄️ | Cannot act | Clears end of turn |
-
----
-
-## Element System
-
-### Element Wheel
-
-```
-Fire → Earth → Wind → Water → Fire
-
-Holy ⟷ Shadow (mutual counter)
-Neutral → No advantage
-```
-
-### Elemental Matchups
-
-| Element | Strong Against | Weak Against | Color |
-|---------|----------------|--------------|-------|
-| Fire 🔥 | Earth | Water | #ff6b35 |
-| Water 💧 | Fire | Wind | #4fc3f7 |
-| Wind 🌪️ | Water | Earth | #81c784 |
-| Earth 🌍 | Wind | Fire | #a1887f |
-| Holy ✨ | Shadow | Shadow | #ffd54f |
-| Shadow 🌑 | Holy | Holy | #9c27b0 |
-| Neutral ⚪ | None | None | #9e9e9e |
-
-### Elemental Advantage Bonus
-
-When attacking with elemental advantage:
-- **+2 Attack** bonus
-- **+2 Health** bonus to minions
-- **+20 Armor** (absorbs damage before HP)
-
----
-
-## Deck Building
-
-### Basic Rules
-
-| Rule | Value |
-|------|-------|
-| Hand size | 9 cards (max) |
-| Card copies | 2 per card (1 for Legendaries) |
-| Class restriction | Own class + Neutral only |
-| Deck size | 30 cards |
-
-### Deck Archetypes
-
-| Archetype | Strategy |
-|-----------|----------|
-| **Aggro** | Fast, cheap minions. Win before turn 7. |
-| **Midrange** | Balanced curve. Contest board, then finish. |
-| **Control** | Removal and healing. Outlast opponent. |
-| **Combo** | Build to specific card combination. |
-| **Tempo** | Efficient trades. Maximize mana each turn. |
-
-### Army Selection (Ragnarok Chess)
-
-| Slot | Class Options |
-|------|---------------|
-| King | Choose from 9 Norse Kings (passive abilities) |
-| Queen | Mage, Warlock, or Necromancer |
-| Rook | Warrior or Paladin |
-| Bishop | Priest or Druid |
-| Knight | Rogue or Hunter |
-
-### King Divine Command System
-
-Each of the 9 Primordial Norse Kings possesses a unique **Divine Command** - the power to place hidden landmine traps that drain enemy Stamina.
-
-| King | Mine Shape | STA Penalty |
-|------|------------|-------------|
-| **Ymir** | Single Tile | -2 STA |
-| **Buri** | 4-Tile Line | -2 STA |
-| **Surtr** | 3×3 Area | -2 center, -1 edges |
-| **Borr** | Full Rank/File | -2 STA |
-| **Yggdrasil** | Cross Pattern | -2 STA |
-| **Auðumbla** | L-Shape | -2 STA |
-| **Blainn** | Diagonal Line | -2 STA |
-| **Brimir** | Circle Pattern | -2 STA |
-| **Ginnungagap** | Random Scatter | -3 STA |
-
-**Rules:** 5 uses per game, 1 per turn, mines expire after 2 turns if not triggered, invisible to opponents.
+| `npm run dev` | Development server (Vite + Express) |
+| `npm run build` | Production build |
+| `npm run check` | TypeScript type checking |
+| `npm run build:wasm` | Build WASM anti-cheat engine |
 
 ---
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Framework** | React 18 + TypeScript |
-| **Build** | Vite 5 |
-| **State** | Zustand 5 |
-| **Styling** | Tailwind CSS 3.4 |
-| **3D/Effects** | React Three Fiber, Framer Motion, React Spring |
-| **UI Components** | Radix UI (shadcn/ui) |
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | React 18, TypeScript 5, Vite 5 |
+| **State** | Zustand 5 (20+ specialized stores) |
+| **Styling** | Tailwind CSS 3.4, CSS custom properties |
+| **Effects** | Framer Motion, React Spring, React Three Fiber |
+| **UI** | Radix UI (shadcn/ui) |
+| **Multiplayer** | PeerJS (WebRTC P2P) |
 | **Backend** | Express + TypeScript |
-| **Database** | PostgreSQL + Drizzle ORM |
-| **Multiplayer** | PeerJS (WebRTC peer-to-peer) |
-| **Blockchain** | hive-tx v7 (Hive NFTs) |
+| **Database** | PostgreSQL + Drizzle ORM (optional) |
+| **Local Storage** | IndexedDB (13 stores for chain replay) |
+| **Blockchain** | Hive Layer 1 via hive-tx v7 |
+| **Anti-Cheat** | AssemblyScript WASM (35KB binary, SHA-256 hash verification) |
+| **Caching** | Service Worker asset cache |
 
----
-
-## Project Structure
+### Architecture
 
 ```
 client/src/
 ├── game/
-│   ├── components/        # Card, combat, chess components
-│   ├── stores/            # Zustand state management
-│   │   └── combat/        # Combat store slices
-│   ├── data/              # Card definitions, heroes
-│   │   ├── allCards.ts    # 1,300+ cards (single source)
-│   │   ├── cardRegistry/  # Cards organized by ID range
-│   │   └── norseHeroes/   # 76 playable heroes
-│   ├── combat/            # Poker combat system
-│   │   ├── RagnarokCombatArena.tsx
-│   │   ├── hooks/         # Combat hooks
-│   │   └── modules/       # Hand evaluator, betting
-│   ├── effects/           # Effect handlers (182 total)
-│   │   └── handlers/      # battlecry/, deathrattle/, spellEffect/
-│   └── types/             # TypeScript definitions
-├── components/ui/         # Shared UI components
-└── lib/                   # Utilities and helpers
+│   ├── campaign/          # 50 missions, 5 chapters, 2 world maps
+│   ├── combat/            # Poker combat arena + hooks
+│   ├── components/        # Card, chess, campaign, collection, trading UI
+│   ├── crafting/          # Dust economy
+│   ├── data/              # 1,300 cards + 76 heroes
+│   ├── effects/           # 182 effect handlers (battlecry, deathrattle, spell)
+│   ├── engine/            # WASM loader + TypeScript fallback
+│   ├── spectator/         # Read-only P2P viewer
+│   ├── stores/            # 20+ Zustand stores
+│   ├── tournament/        # Swiss + elimination brackets
+│   └── tutorial/          # 15-step onboarding
+├── data/blockchain/       # Hive NFT replay engine (15 op types, 13 IDB stores)
+└── components/ui/         # Radix/shadcn components
 
 server/
-├── routes.ts              # API routes
-└── storage.ts             # Database operations
-
-docs/
-├── RULEBOOK.md            # Detailed rulebook
-├── GAME_FLOW.md           # Game flow diagrams
-├── DESIGN_PHILOSOPHY.md   # Design decisions
-└── RAGNAROK_GAME_RULES.md # P2E integration rules
+├── routes/                # Matchmaking, social, trading, tournaments
+└── services/              # Chain indexer, tournament manager, auth
 ```
+
+### Bundle Sizes (gzipped)
+
+| Chunk | Size |
+|-------|------|
+| Initial load | ~20 KB |
+| React vendor | ~43 KB |
+| UI vendor | ~38 KB |
+| Game (lazy) | ~223 KB |
+| Three.js (lazy) | ~14 KB |
+
+---
+
+## Element System
+
+```
+      Fire 🔥
+     ↙       ↘
+Earth 🌍 ←── Water 💧
+     ↖       ↗
+      Wind 🌪️
+
+   Holy ✨ ⟷ Shadow 🌑
+```
+
+Attacking with elemental advantage grants **+2 Attack, +2 Health, +20 Armor**.
+
+---
+
+## Card System
+
+### 1,300+ Cards Across 4 Factions
+
+| Range | Category |
+|-------|----------|
+| 1000-3999 | Neutral minions (common → epic) |
+| 4000-8999 | Class cards (12 classes) |
+| 9000-9999 | Tokens (non-collectible) |
+| 20000-29999 | Norse Mythology set |
+| 29800-29899 | Artifacts & Armor |
+| 90000-99999 | Hero cards |
+
+### Rarities
+
+| Rarity | Deck Limit | Craft Cost | Disenchant |
+|--------|-----------|------------|------------|
+| Common | 2 copies | 40 dust | 5 dust |
+| Rare | 2 copies | 100 dust | 20 dust |
+| Epic | 2 copies | 400 dust | 100 dust |
+| Legendary | 1 copy | 1,600 dust | 400 dust |
+
+---
+
+## Blockchain: Hive NFT System
+
+All card ownership, match results, and rewards live on Hive Layer 1 as `custom_json` operations. The client runs a deterministic chain replay engine — no centralized server needed.
+
+```
+Genesis → Seal → Admin key irrelevant forever
+              ↓
+    Players claim rewards via Keychain
+    ELO derived from match_result history
+    Supply caps hard-enforced by every reader
+```
+
+- **Chain replay**: Browser fetches ops from Hive → applies deterministic rules → builds IndexedDB
+- **Merkle transcripts**: SHA-256 tree root anchored in each match_result
+- **Dual signatures**: Host signs → client counter-signs → both on-chain
+- **Supply**: 16,000 total NFTs (10K C / 4K R / 1.5K E / 500 L)
+
+---
+
+## Roadmap
+
+### Completed
+
+- [x] 1,300+ cards with 182 effect handlers
+- [x] 76 heroes across 12 classes and 4 factions
+- [x] Ragnarok Chess (7x5 board with poker combat collisions)
+- [x] Texas Hold'em poker combat with Norse hand rankings
+- [x] 50-mission campaign across 5 mythological chapters
+- [x] Nine Realms constellation map + Greek Olympus world map
+- [x] Secret Eastern chapter (Chinese/Japanese/Hindu)
+- [x] P2P multiplayer via WebRTC
+- [x] Ranked matchmaking with ELO ladder
+- [x] Tournament system (Swiss + elimination)
+- [x] Card crafting & trading
+- [x] Spectator mode + match replay viewer
+- [x] Daily quest system (18 templates)
+- [x] Friends list with presence + challenges
+- [x] Hive NFT blockchain integration
+- [x] WASM anti-cheat engine with hash verification
+- [x] 8 status effects with visual overlays
+- [x] Service Worker asset caching
+- [x] Deck import/export via shareable codes
+- [x] Tutorial overlay (15-step onboarding)
+- [x] Settings system (audio, visual, gameplay, keybindings)
+- [x] Card evolution (Mortal → Ascended → Divine)
+- [x] Artifact & armor equipment system
+
+### Next: Genesis Launch
+
+- [ ] Create @ragnarok Hive account
+- [ ] Upload card art to CDN
+- [ ] Broadcast genesis + seal on Hive mainnet
+- [ ] Public beta
 
 ---
 
@@ -582,73 +425,38 @@ docs/
 |----------|-------------|
 | [RULEBOOK.md](docs/RULEBOOK.md) | Complete game rules with examples |
 | [GAME_FLOW.md](docs/GAME_FLOW.md) | Game flow diagrams and state management |
-| [DESIGN_PHILOSOPHY.md](docs/DESIGN_PHILOSOPHY.md) | Design decisions and architecture |
-| [CLAUDE.md](CLAUDE.md) | Technical documentation for AI assistants |
-| [replit.md](replit.md) | Project configuration and preferences |
+| [RAGNAROK_GAME_RULES.md](docs/RAGNAROK_GAME_RULES.md) | Detailed P2E rules and status effects |
+| [HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md) | Hive NFT architecture and chain replay |
+| [CLAUDE.md](CLAUDE.md) | Technical architecture reference |
 
 ---
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Follow coding standards in `CLAUDE.md` and `replit.md`
-4. Ensure `npm run check` passes (TypeScript validation)
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+```bash
+# Fork → Clone → Branch
+git checkout -b feature/your-feature
 
-### Coding Standards
+# Develop
+npm run dev       # Hot reload at localhost:5000
+npm run check     # TypeScript validation
+npm run build     # Production build test
 
-- **Tabs** for indentation
-- **camelCase** for functions/variables
-- **PascalCase** for components
-- **Small functions** (20-30 lines max)
-- **No magic strings** - use constants
-- **Feature-First Architecture** - 4-5 files max per feature
-
-### Architecture Pattern
-
-```
-TSX Component (presentation only)
-     ↓ imports from
-Custom Hook (React logic)
-     ↓ imports from
-Zustand Store (global state)
-     ↓ imports from
-Pure Utilities (business logic)
+# Submit
+git push origin feature/your-feature
+# Open a Pull Request
 ```
 
----
-
-## Roadmap
-
-### Current (Phase 1)
-
-- [x] Core card game mechanics
-- [x] 76 heroes across 12 classes
-- [x] 1,300+ cards with effects
-- [x] Poker combat system
-- [x] Ragnarok Chess mode
-- [x] AI opponents
-- [x] Deck builder
-
-### Planned (Phase 2)
-
-- [ ] Hive Keychain authentication
-- [ ] NFT card ownership on Hive blockchain
-- [ ] Peer-to-peer multiplayer via PeerJS/WebRTC (package installed)
-- [ ] Tournament system
-- [ ] Ranked matchmaking
+**Standards**: Tabs, camelCase, PascalCase components, 20-30 line functions, Zustand over Context.
 
 ---
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
 <p align="center">
-  Built with React, TypeScript, and Norse mythology.
+  <sub>Built with React, TypeScript, and the fury of the Norse gods.</sub>
 </p>
