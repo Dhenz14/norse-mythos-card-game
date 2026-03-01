@@ -33,6 +33,9 @@ export const StorageKeys = {
 	// Settings
 	GAME_SETTINGS: 'ragnarok-settings',
 	AUDIO_SETTINGS: 'ragnarok-audio',
+
+	// Asset Cache
+	ASSET_CACHE: 'ragnarok-asset-cache',
 } as const;
 
 export type StorageKey = (typeof StorageKeys)[keyof typeof StorageKeys];
