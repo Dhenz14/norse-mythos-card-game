@@ -203,11 +203,12 @@ export const Hero: React.FC<HeroProps> = ({
         
         {/* Hero portrait image */}
         {!imageError ? (
-          <img 
-            src={imageSource} 
+          <img
+            src={imageSource}
             alt={heroName}
-            className="w-full h-full object-cover" 
+            className="w-full h-full object-cover"
             onError={handleImageError}
+            loading="lazy"
           />
         ) : (
           <div className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-b from-gray-800 to-gray-900 bg-opacity-90">

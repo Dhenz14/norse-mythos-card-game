@@ -53,6 +53,7 @@ export function HeroPortrait({
             (e.target as HTMLImageElement).style.display = 'none';
             (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
           }}
+          loading="lazy"
         />
       ) : null}
       <span className={artPath ? 'hidden' : 'text-gray-300'}>{initial}</span>

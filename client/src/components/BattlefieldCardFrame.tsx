@@ -340,8 +340,8 @@ const BattlefieldCardFrame: React.FC<BattlefieldCardFrameProps> = ({
           
           {/* Actual image */}
           {imageSrc && !imageError && (
-            <img 
-              src={imageSrc} 
+            <img
+              src={imageSrc}
               alt=""
               style={{
                 position: 'absolute',
@@ -354,6 +354,7 @@ const BattlefieldCardFrame: React.FC<BattlefieldCardFrameProps> = ({
               }}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
+              loading="lazy"
             />
           )}
           

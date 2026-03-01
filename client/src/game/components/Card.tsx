@@ -672,10 +672,11 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
             <div className="card-image-container relative w-full h-[65%] overflow-hidden mt-7">
               <img
                 src={cardImage}
-                alt="Card Artwork" 
+                alt="Card Artwork"
                 className="w-full h-full object-cover rounded-lg"
                 onLoad={() => setImageLoaded(true)}
                 style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.3s ease' }}
+                loading="lazy"
               />
             </div>
           ) : (

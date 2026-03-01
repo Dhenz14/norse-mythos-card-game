@@ -161,10 +161,11 @@ export const HeroPowerButton: React.FC<HeroPowerButtonProps> = ({
         </div>
         <div className="hero-power-btn-icon">
           {classIcon ? (
-            <img 
-              src={classIcon} 
-              alt={`${heroClass} power`} 
+            <img
+              src={classIcon}
+              alt={`${heroClass} power`}
               className="class-attack-icon"
+              loading="lazy"
             />
           ) : (
             <span className="icon-symbol">{isWeaponUpgraded ? '⚔' : '⚡'}</span>

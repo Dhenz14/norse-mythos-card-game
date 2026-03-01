@@ -43,9 +43,6 @@ export function LegendaryCardModel({
     if (card && card.id) {
       const cardId = typeof card.id === 'string' ? parseInt(card.id, 10) : card.id;
       const path = modelMap[cardId];
-      if (path) {
-        useGLTF.preload(path);
-      }
       setModelPath(path || null);
     }
   }, [card]);

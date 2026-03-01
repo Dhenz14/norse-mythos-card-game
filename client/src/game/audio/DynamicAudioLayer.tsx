@@ -106,40 +106,43 @@ const DynamicAudioLayer: React.FC = () => {
       src: [assetPath('/audio/ambient/battle_ambient.mp3')],
       loop: true,
       volume: 0.4,
-      preload: true,
+      preload: false,
       html5: true
     });
-    
+
     // Tension ambient (low health, many minions, late game)
     ambientTracksRef.current.tension = new Howl({
       src: [assetPath('/audio/ambient/tension_ambient.mp3')],
       loop: true,
       volume: 0.5,
-      preload: true,
+      preload: false,
       html5: true
     });
-    
+
     // Victory fanfare
     ambientTracksRef.current.victory = new Howl({
       src: [assetPath('/audio/ambient/victory_fanfare.mp3')],
       loop: false,
       volume: 0.6,
-      preload: true,
+      preload: false,
       html5: true
     });
-    
+
     // Defeat ambient
     ambientTracksRef.current.defeat = new Howl({
       src: [assetPath('/audio/ambient/defeat_ambient.mp3')],
       loop: false,
       volume: 0.5,
-      preload: true,
+      preload: false,
       html5: true
     });
-    
+
     // Start with battle ambient by default
     if (ambientTracksRef.current.battle) {
-      ambientTracksRef.current.battle.play();
+      ambientTracksRef.current.battle.once('load', () => {
+        ambientTracksRef.current.battle?.play();
+      });
+      ambientTracksRef.current.battle.load();
       setCurrentAmbient('battle');
     }
     

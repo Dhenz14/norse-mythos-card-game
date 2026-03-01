@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { assetPath } from '../utils/assetPath';
 import './HolographicEffect.css';
 
-// Preload the foil texture image
-const foilTexture = new Image();
-foilTexture.src = assetPath('/textures/foil.png');
 
 interface SimpleHolographicCardProps {
   card: {

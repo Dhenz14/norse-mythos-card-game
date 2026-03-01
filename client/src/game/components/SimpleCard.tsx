@@ -270,7 +270,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
         style={artPath ? undefined : { background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}
       >
         {artPath ? (
-          <img src={artPath} alt="" className="card-art-image" draggable={false} />
+          <img src={artPath} alt="" className="card-art-image" draggable={false} loading="lazy" />
         ) : (
           <div className="card-art-icon">
             <span>{getCardTypeIcon(card.type)}</span>

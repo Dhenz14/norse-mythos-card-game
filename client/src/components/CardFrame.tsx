@@ -434,8 +434,8 @@ const CardFrame: React.FC<CardFrameProps> = ({
             ? 'inset 0 0 5px rgba(163, 53, 238, 0.3)'
             : 'inset 0 0 5px rgba(0, 0, 0, 0.5)'
         }}>
-          <img 
-            src={imageSrc} 
+          <img
+            src={imageSrc}
             alt={name}
             style={{
               width: '100%',
@@ -443,6 +443,7 @@ const CardFrame: React.FC<CardFrameProps> = ({
               objectFit: 'cover',
               objectPosition: 'center'
             }}
+            loading="lazy"
           />
         </div>
         

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { lazy, Suspense, useEffect, useRef } from 'react';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import { routes } from './lib/routes';
 import { Button } from './components/ui/button';
@@ -8,23 +8,25 @@ import "./index.css";
 import "./styles/homepage.css";
 import { CardTransformProvider } from "./game/context/CardTransformContext";
 import CardTransformBridgeInitializer from "./game/components/CardTransformBridgeInitializer";
-import RagnarokChessGame from "./game/components/chess/RagnarokChessGame";
-import { MultiplayerGame } from "./game/components/multiplayer/MultiplayerGame";
-import PacksPage from "./game/components/packs/PacksPage";
-import CollectionPage from "./game/components/collection/CollectionPage";
-import RankedLadderPage from "./game/components/ladder/RankedLadderPage";
 import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
 import { initializeGameStoreIntegration } from "./game/stores/gameStoreIntegration";
 import initEffectSystem from "./game/effects/initEffectSystem";
 import { HiveKeychainLogin } from "./game/components/HiveKeychainLogin";
-import SettingsPage from "./game/components/settings/SettingsPage";
 import DailyQuestPanel from "./game/components/quests/DailyQuestPanel";
 import FriendsPanel from "./game/components/social/FriendsPanel";
-import CampaignPage from "./game/components/campaign/CampaignPage";
-import TradingPage from "./game/components/trading/TradingPage";
-import TournamentListPage from "./game/components/tournament/TournamentListPage";
-import SpectatorView from "./game/components/spectator/SpectatorView";
-import MatchHistoryPage from "./game/components/replay/MatchHistoryPage";
+import LoadingScreen from "./game/components/ui/LoadingScreen";
+
+const RagnarokChessGame = lazy(() => import('./game/components/chess/RagnarokChessGame'));
+const MultiplayerGame = lazy(() => import('./game/components/multiplayer/MultiplayerGame').then(m => ({ default: m.MultiplayerGame })));
+const PacksPage = lazy(() => import('./game/components/packs/PacksPage'));
+const CollectionPage = lazy(() => import('./game/components/collection/CollectionPage'));
+const RankedLadderPage = lazy(() => import('./game/components/ladder/RankedLadderPage'));
+const CampaignPage = lazy(() => import('./game/components/campaign/CampaignPage'));
+const TradingPage = lazy(() => import('./game/components/trading/TradingPage'));
+const TournamentListPage = lazy(() => import('./game/components/tournament/TournamentListPage'));
+const SpectatorView = lazy(() => import('./game/components/spectator/SpectatorView'));
+const MatchHistoryPage = lazy(() => import('./game/components/replay/MatchHistoryPage'));
+const SettingsPage = lazy(() => import('./game/components/settings/SettingsPage'));
 
 function HomePage() {
   const bgOverlayRef = useRef<HTMLDivElement>(null);
@@ -160,20 +162,22 @@ function App() {
       <UnifiedCardSystem />
       
       <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Routes>
-          <Route path={routes.home} element={<HomePage />} />
-          <Route path={routes.game} element={<RagnarokChessGame />} />
-          <Route path={routes.campaign} element={<CampaignPage />} />
-          <Route path={routes.multiplayer} element={<MultiplayerGame />} />
-          <Route path={routes.packs} element={<PacksPage />} />
-          <Route path={routes.collection} element={<CollectionPage />} />
-          <Route path={routes.ladder} element={<RankedLadderPage />} />
-          <Route path={routes.trading} element={<TradingPage />} />
-          <Route path={routes.tournaments} element={<TournamentListPage />} />
-          <Route path={routes.spectate} element={<SpectatorView />} />
-          <Route path={routes.history} element={<MatchHistoryPage />} />
-          <Route path={routes.settings} element={<SettingsPage />} />
-        </Routes>
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            <Route path={routes.home} element={<HomePage />} />
+            <Route path={routes.game} element={<RagnarokChessGame />} />
+            <Route path={routes.campaign} element={<CampaignPage />} />
+            <Route path={routes.multiplayer} element={<MultiplayerGame />} />
+            <Route path={routes.packs} element={<PacksPage />} />
+            <Route path={routes.collection} element={<CollectionPage />} />
+            <Route path={routes.ladder} element={<RankedLadderPage />} />
+            <Route path={routes.trading} element={<TradingPage />} />
+            <Route path={routes.tournaments} element={<TournamentListPage />} />
+            <Route path={routes.spectate} element={<SpectatorView />} />
+            <Route path={routes.history} element={<MatchHistoryPage />} />
+            <Route path={routes.settings} element={<SettingsPage />} />
+          </Routes>
+        </Suspense>
       </HashRouter>
     </CardTransformProvider>
   );

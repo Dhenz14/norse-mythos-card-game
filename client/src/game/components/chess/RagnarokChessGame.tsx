@@ -55,6 +55,7 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, piece
               target.src = fallbackPortrait;
             }
           }}
+          loading="lazy"
         />
       </div>
 

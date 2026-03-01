@@ -673,6 +673,7 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
                   src={resolvedPortrait}
                   alt={hero.name}
                   style={{ objectPosition: portraitPos }}
+                  loading="lazy"
                 />
               )}
             </div>

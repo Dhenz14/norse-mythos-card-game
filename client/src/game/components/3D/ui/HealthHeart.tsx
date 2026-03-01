@@ -36,8 +36,6 @@ export function HealthHeart({
   glowIntensity = 1,
   healthPercentage = 1
 }: HealthHeartProps) {
-  useGLTF.preload('/models/health_heart_new.glb');
-  
   const { nodes } = useGLTF('/models/health_heart_new.glb') as GLTFResult;
   
   const groupRef = useRef<THREE.Group>(null);

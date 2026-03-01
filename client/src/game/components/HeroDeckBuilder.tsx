@@ -124,7 +124,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 					<div className="db-header-portrait">
 						{heroPortrait ? (
 							<>
-								<img src={heroPortrait} alt={heroName} />
+								<img src={heroPortrait} alt={heroName} loading="lazy" />
 								<div className="db-header-portrait-overlay" />
 							</>
 						) : (
@@ -517,7 +517,7 @@ const CardPreviewContent: React.FC<{ card: CardData; classColor: string; showArt
 
 			{showArt && cardArtPath && (
 				<div className="db-preview-art">
-					<img src={cardArtPath} alt="" />
+					<img src={cardArtPath} alt="" loading="lazy" />
 				</div>
 			)}
 			{showArt && !cardArtPath && (

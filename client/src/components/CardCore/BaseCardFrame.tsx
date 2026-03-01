@@ -445,8 +445,8 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
             marginTop: '15px', // Space for mana cost
           }}>
             {imageSrc ? (
-              <img 
-                src={imageSrc} 
+              <img
+                src={imageSrc}
                 alt={name}
                 style={{
                   width: '100%',
@@ -454,6 +454,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
                   objectFit: 'cover',
                   objectPosition: 'center'
                 }}
+                loading="lazy"
               />
             ) : (
               <div style={{
