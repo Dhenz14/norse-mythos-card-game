@@ -58,7 +58,8 @@ export type AnnouncementType =
   | 'effect_failed'
   | 'condition_not_met'
   | 'warning'
-  | 'info';
+  | 'info'
+  | 'status_effect';
 
 export interface ActionAnnouncement {
   id: string;
@@ -105,7 +106,8 @@ export function getAnnouncementConfig(type: AnnouncementType): { icon: string; c
     effect_failed: { icon: '❌', color: '#95A5A6' },
     condition_not_met: { icon: '⚠️', color: '#F39C12' },
     warning: { icon: '⚠️', color: '#FF9800' },
-    info: { icon: 'ℹ️', color: '#2196F3' }
+    info: { icon: 'ℹ️', color: '#2196F3' },
+    status_effect: { icon: '🔮', color: '#A855F7' }
   };
   
   return configs[type] || { icon: '✨', color: '#FFFFFF' };

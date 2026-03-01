@@ -79,6 +79,16 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
       const cardHasTaunt = !!(card?.card?.keywords?.includes('taunt'));
       const hasElementalBuff = !!(card as any)?.hasElementalBuff;
 
+      const statusPoisoned = !!(card as any)?.isPoisonedDoT;
+      const statusBleeding = !!(card as any)?.isBleeding;
+      const statusParalyzed = !!(card as any)?.isParalyzed;
+      const statusWeakened = !!(card as any)?.isWeakened;
+      const statusVulnerable = !!(card as any)?.isVulnerable;
+      const statusFrozen = !!(card as any)?.isFrozen;
+      const statusMarked = !!(card as any)?.isMarked;
+      const statusBurning = !!(card as any)?.isBurning;
+      const hasAnyStatus = statusPoisoned || statusBleeding || statusParalyzed || statusWeakened || statusVulnerable || statusFrozen || statusMarked || statusBurning;
+
       return (
         <div
           key={`${side}-slot-${index}`}
@@ -98,6 +108,14 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   ${isExhausted ? 'exhausted' : ''}
                   ${cardHasTaunt ? 'has-taunt' : ''}
                   ${hasElementalBuff ? 'elemental-buffed' : ''}
+                  ${statusPoisoned ? 'status-poisoned' : ''}
+                  ${statusBleeding ? 'status-bleeding' : ''}
+                  ${statusParalyzed ? 'status-paralyzed' : ''}
+                  ${statusWeakened ? 'status-weakened' : ''}
+                  ${statusVulnerable ? 'status-vulnerable' : ''}
+                  ${statusFrozen ? 'status-frozen' : ''}
+                  ${statusMarked ? 'status-marked' : ''}
+                  ${statusBurning ? 'status-burning' : ''}
                 `}
                 initial={{ opacity: 0, scale: 0.15, y: side === 'player' ? 80 : -80 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -142,6 +160,18 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                     </div>
                   );
                 })()}
+                {hasAnyStatus && (
+                  <div className="bf-status-badges">
+                    {statusPoisoned && <span className="status-badge badge-poison" title="Poison: 3 damage per turn">☠️</span>}
+                    {statusBleeding && <span className="status-badge badge-bleed" title="Bleed: +3 damage taken">🩸</span>}
+                    {statusBurning && <span className="status-badge badge-burn" title="Burn: +3 Attack, 3 self-damage">🔥</span>}
+                    {statusFrozen && <span className="status-badge badge-frozen" title="Frozen: Cannot act">❄️</span>}
+                    {statusParalyzed && <span className="status-badge badge-paralysis" title="Paralysis: 50% chance to fail">⚡</span>}
+                    {statusWeakened && <span className="status-badge badge-weakness" title="Weakness: -3 Attack">⬇️</span>}
+                    {statusVulnerable && <span className="status-badge badge-vulnerable" title="Vulnerable: +3 damage taken">🎯</span>}
+                    {statusMarked && <span className="status-badge badge-marked" title="Marked: Ignores Stealth">👁️</span>}
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
