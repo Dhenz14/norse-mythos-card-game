@@ -1,5 +1,7 @@
 import { debug } from '../../config/debugConfig';
 import { assetPath } from '../assetPath';
+
+export const DEFAULT_PORTRAIT = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256' viewBox='0 0 256 256'%3E%3Crect fill='%231a1a2e' width='256' height='256'/%3E%3Cpath d='M128 60l-40 80h80z' fill='%23c9a84c' opacity='0.6'/%3E%3Ccircle cx='128' cy='170' r='30' fill='none' stroke='%23c9a84c' stroke-width='2' opacity='0.4'/%3E%3Ctext x='128' y='178' text-anchor='middle' fill='%23c9a84c' font-size='24' opacity='0.7'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E";
 /**
  * Art Mapping Utility
  * Maps game hero/king IDs to artwork IDs from metadata

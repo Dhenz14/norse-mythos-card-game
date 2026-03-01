@@ -18,6 +18,7 @@ import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
 import { getElementColor, getElementIcon, ELEMENT_LABELS, ELEMENT_WEAKNESSES, ELEMENT_STRENGTHS, type ElementType } from '../../utils/elements';
 import { NORSE_TO_GAME_ELEMENT, type NorseElement } from '../../types/NorseTypes';
 import { assetPath } from '../../utils/assetPath';
+import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../utils/art/artMapping';
 import '../styles/hero-reactions.css';
 
 /**
@@ -105,18 +106,29 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
     return 'neutral';
   }, [pet.norseHeroId, elementProp]);
 
-  const portraitUrl = useMemo(
-    () => assetPath(`/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png`),
-    [pet.name]
-  );
+  const portraitUrl = useMemo(() => {
+    const artMapped = pet.norseHeroId ? resolveHeroPortrait(pet.norseHeroId) : null;
+    if (artMapped) return artMapped;
+    return assetPath(`/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png`);
+  }, [pet.name, pet.norseHeroId]);
+
+  const [resolvedPortrait, setResolvedPortrait] = useState(portraitUrl);
+
+  useEffect(() => {
+    setResolvedPortrait(portraitUrl);
+    if (portraitUrl.startsWith('data:')) return;
+    const img = new Image();
+    img.src = portraitUrl;
+    img.onerror = () => setResolvedPortrait(DEFAULT_PORTRAIT);
+  }, [portraitUrl]);
 
   const portraitBgStyle = useMemo((): React.CSSProperties => ({
-    backgroundImage: `url('${portraitUrl}')`,
+    backgroundImage: `url('${resolvedPortrait}')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center top',
     cursor: !isOpponent ? 'pointer' : 'default',
     pointerEvents: 'auto'
-  }), [portraitUrl, isOpponent]);
+  }), [resolvedPortrait, isOpponent]);
   
   const currentHP = pet.stats.currentHealth;
   const maxHP = pet.stats.maxHealth;

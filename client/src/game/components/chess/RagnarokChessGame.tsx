@@ -20,7 +20,7 @@ import { useUnifiedCombatStore } from '../../stores/unifiedCombatStore';
 import { getKingAbilityConfig, getAbilityDescription, requiresDirectionSelection, getAvailableDirections, MineDirection } from '../../utils/chess/kingAbilityUtils';
 import { Tooltip } from '../ui/Tooltip';
 import { debug } from '../../config/debugConfig';
-import { resolveHeroPortrait } from '../../utils/art/artMapping';
+import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../utils/art/artMapping';
 import { assetPath } from '../../utils/assetPath';
 import './HeroPortraitEnhanced.css';
 
@@ -36,6 +36,7 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, piece
   const king = army.king;
   const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || assetPath(`/portraits/kings/${king.id?.replace('king-', '')}.png`);
   const fallbackPortrait = assetPath(`/portraits/heroes/${king.heroClass}.png`);
+  const safeFallback = DEFAULT_PORTRAIT;
   const isPlayer = side === 'player';
   
   return (
@@ -55,8 +56,10 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, piece
           className="w-full h-full object-cover"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            if (target.src !== fallbackPortrait) {
+            if (!target.src.includes(fallbackPortrait) && !target.src.startsWith('data:')) {
               target.src = fallbackPortrait;
+            } else if (!target.src.startsWith('data:')) {
+              target.src = safeFallback;
             }
           }}
           loading="lazy"
@@ -380,10 +383,14 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
       debug.chess(`createPetFromChessPiece: Skipping norseHeroId - piece.type=${piece.type}, isPawn=${piece.type === 'pawn'}, hasArmyEntry=${!!army[piece.type as keyof ArmySelectionType]}`);
     }
     
+    const heroPortrait = norseHeroId
+      ? resolveHeroPortrait(norseHeroId) || assetPath(`/portraits/heroes/${heroName.split(' ')[0].toLowerCase()}.png`)
+      : assetPath(`/portraits/heroes/${heroName.split(' ')[0].toLowerCase()}.png`);
+
     return {
       id: piece.id,
       name: heroName,
-      imageUrl: assetPath(`/assets/heroes/${piece.heroClass}.png`),
+      imageUrl: heroPortrait || DEFAULT_PORTRAIT,
       rarity: piece.type === 'king' ? 'legendary' : 
               piece.type === 'queen' ? 'epic' :
               piece.type === 'pawn' ? 'common' : 'rare',
