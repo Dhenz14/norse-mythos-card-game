@@ -9,6 +9,7 @@
 
 import { KING_ABILITY_CONFIGS, getKingAbilityConfig } from './kingAbilityUtils';
 import { KingRarity, KingChessAbilityConfig } from '../../types/ChessTypes';
+import { getHeroRarity, RARITY_COLORS, type HeroRarity } from '../heroRarity';
 
 /**
  * Display-friendly info about a king's Divine Command ability
@@ -123,13 +124,14 @@ export function getKingAbilityDisplayInfo(kingId: string): KingAbilityDisplayInf
     return null;
   }
   
+  const pieceRarity = getHeroRarity(kingId);
   return {
     kingId,
     abilityName: formatAbilityName(config.abilityType),
     description: config.description,
-    rarity: config.rarity,
-    rarityLabel: getRarityLabel(config.rarity),
-    rarityColor: getRarityColor(config.rarity),
+    rarity: pieceRarity as KingRarity,
+    rarityLabel: getRarityLabel(pieceRarity as KingRarity),
+    rarityColor: getRarityColor(pieceRarity as KingRarity),
     staPenalty: config.staPenalty,
     turnDuration: config.turnDuration,
     manaBoost: config.manaBoost,
