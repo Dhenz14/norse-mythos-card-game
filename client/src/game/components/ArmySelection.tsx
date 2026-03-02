@@ -317,9 +317,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                       </div>
                     }
                   />
-                  {(rarity === 'mythic' || rarity === 'epic') && (
-                    <div className={`norse-foil-overlay rarity-${rarity}`} />
-                  )}
+                  <div className={`norse-foil-overlay rarity-${rarity}`} />
                   <div className="norse-hero-gradient-overlay" />
                   {rarity !== 'common' && (
                     <span className={`norse-rarity-badge rarity-${rarity}`}>

@@ -26,6 +26,21 @@
   50%      { background-position: 100% 100%; }
 }
 
+@keyframes epic-sweep {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+@keyframes rare-glint {
+  0%, 85%  { background-position: -100% 0; }
+  100%     { background-position: 200% 0; }
+}
+
+@keyframes common-breathe {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 0.45; }
+}
+
 /* Base card container - Deep premium dark theme */
 .simple-card {
   position: relative;
@@ -756,17 +771,41 @@
 }
 
 .foil-overlay.epic-foil {
-  background: linear-gradient(135deg,
-    rgba(168,85,247,0.08) 0%,
-    rgba(192,132,252,0.12) 50%,
-    rgba(168,85,247,0.08) 100%);
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(88, 28, 135, 0.08) 15%,
+    rgba(124, 58, 237, 0.15) 30%,
+    rgba(192, 132, 252, 0.22) 50%,
+    rgba(124, 58, 237, 0.15) 70%,
+    rgba(88, 28, 135, 0.08) 85%,
+    transparent 100%
+  );
+  background-size: 300% 300%;
+  opacity: 0.3;
+  animation: epic-sweep 4s ease-in-out infinite;
 }
 
 .foil-overlay.rare-foil {
-  background: linear-gradient(135deg,
-    rgba(59,130,246,0.06) 0%,
-    rgba(96,165,250,0.10) 50%,
-    rgba(59,130,246,0.06) 100%);
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.12) 46%,
+    rgba(147, 197, 253, 0.22) 50%,
+    rgba(255, 255, 255, 0.12) 54%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 300% 100%;
+  opacity: 0.5;
+  animation: rare-glint 5s ease-in-out infinite;
+}
+
+.foil-overlay.common-foil {
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(156, 163, 175, 0.06) 70%, rgba(120, 130, 145, 0.1) 100%);
+  opacity: 0.3;
+  animation: common-breathe 6s ease-in-out infinite;
 }
 
 .foil-overlay.mythic-foil {
@@ -778,9 +817,10 @@
     rgba(245,158,11,0.08) 100%);
 }
 
-.simple-card:hover .foil-overlay.epic-foil { opacity: 1; }
+.simple-card:hover .foil-overlay.epic-foil { opacity: 0.55; }
 .simple-card:hover .foil-overlay.rare-foil { opacity: 0.8; }
 .simple-card:hover .foil-overlay.mythic-foil { opacity: 1; }
+.simple-card:hover .foil-overlay.common-foil { opacity: 0.5; }
 
 /* Highlighted state - white glow ring, lifted */
 .simple-card.highlighted {

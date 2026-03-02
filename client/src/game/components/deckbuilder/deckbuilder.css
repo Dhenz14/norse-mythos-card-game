@@ -25,6 +25,21 @@
 	50% { opacity: 0.55; }
 }
 
+@keyframes db-epic-sweep {
+	0%   { background-position: 0% 0%; }
+	100% { background-position: 100% 100%; }
+}
+
+@keyframes db-rare-glint {
+	0%, 85%  { background-position: -100% 0; }
+	100%     { background-position: 200% 0; }
+}
+
+@keyframes db-common-breathe {
+	0%, 100% { opacity: 0.2; }
+	50%      { opacity: 0.45; }
+}
+
 /* ===== Card Grid ===== */
 .db-card-grid {
 	display: grid;
@@ -207,10 +222,45 @@
 }
 .db-card:hover .db-foil-overlay.rarity-mythic { opacity: 0.7; }
 .db-foil-overlay.rarity-epic {
-	background: linear-gradient(135deg, rgba(168, 85, 247, 0.06) 0%, rgba(192, 132, 252, 0.1) 50%, rgba(168, 85, 247, 0.06) 100%);
-	opacity: 0;
+	background: linear-gradient(
+		135deg,
+		transparent 0%,
+		rgba(88, 28, 135, 0.08) 15%,
+		rgba(124, 58, 237, 0.15) 30%,
+		rgba(192, 132, 252, 0.22) 50%,
+		rgba(124, 58, 237, 0.15) 70%,
+		rgba(88, 28, 135, 0.08) 85%,
+		transparent 100%
+	);
+	background-size: 300% 300%;
+	opacity: 0.3;
+	animation: db-epic-sweep 4s ease-in-out infinite;
 }
-.db-card:hover .db-foil-overlay.rarity-epic { opacity: 1; }
+.db-card:hover .db-foil-overlay.rarity-epic { opacity: 0.55; }
+
+.db-foil-overlay.rarity-rare {
+	background: linear-gradient(
+		105deg,
+		transparent 0%,
+		transparent 40%,
+		rgba(255, 255, 255, 0.12) 46%,
+		rgba(147, 197, 253, 0.22) 50%,
+		rgba(255, 255, 255, 0.12) 54%,
+		transparent 60%,
+		transparent 100%
+	);
+	background-size: 300% 100%;
+	opacity: 0.5;
+	animation: db-rare-glint 5s ease-in-out infinite;
+}
+.db-card:hover .db-foil-overlay.rarity-rare { opacity: 0.8; }
+
+.db-foil-overlay.rarity-common {
+	background: radial-gradient(ellipse at center, transparent 40%, rgba(156, 163, 175, 0.06) 70%, rgba(120, 130, 145, 0.1) 100%);
+	opacity: 0.3;
+	animation: db-common-breathe 6s ease-in-out infinite;
+}
+.db-card:hover .db-foil-overlay.rarity-common { opacity: 0.5; }
 
 .db-card.not-playable {
 	opacity: 0.45;

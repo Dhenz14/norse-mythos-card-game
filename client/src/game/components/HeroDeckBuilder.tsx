@@ -278,9 +278,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 															</div>
 														)}
 
-														{(rarityKey === 'mythic' || rarityKey === 'epic') && (
-															<div className={`db-foil-overlay rarity-${rarityKey}`} />
-														)}
+														<div className={`db-foil-overlay rarity-${rarityKey}`} />
 
 														{/* Mana Badge */}
 														<div className="db-mana-badge">{card.manaCost ?? 0}</div>
@@ -644,9 +642,7 @@ const CardDetailFlip: React.FC<{ card: CardData; classColor: string; onClose: ()
 								</div>
 							)}
 
-							{(rarityKey === 'mythic' || rarityKey === 'epic') && (
-								<div className={`cd-front-foil rarity-${rarityKey}`} />
-							)}
+							<div className={`cd-front-foil rarity-${rarityKey}`} />
 						</div>
 
 						{/* Mana gem */}

@@ -309,6 +309,10 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
         <div className="foil-overlay mythic-foil" />
       )}
 
+      {(card.rarity === 'common' || card.rarity === 'basic') && (
+        <div className="foil-overlay common-foil" />
+      )}
+
       {badgeTooltip && createPortal(
         <div className="keyword-badge-tooltip" style={tooltipStyle}>
           <div className="kbt-header">
