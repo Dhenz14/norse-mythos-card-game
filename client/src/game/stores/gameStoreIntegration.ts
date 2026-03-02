@@ -17,9 +17,7 @@ import { GameEventBus } from '@/core/events/GameEventBus';
 import { initializeAudioSubscriber } from '@/game/subscribers/AudioSubscriber';
 import { initializeNotificationSubscriber } from '@/game/subscribers/NotificationSubscriber';
 import { initializeAnimationSubscriber } from '@/game/subscribers/AnimationSubscriber';
-import { initializeBlockchainSubscriber } from '@/game/subscribers/BlockchainSubscriber';
 import { initializeDailyQuestSubscriber } from '@/game/subscribers/DailyQuestSubscriber';
-import { startTransactionProcessor, stopTransactionProcessor } from '@/data/blockchain/transactionProcessor';
 import { isBlockchainPackagingEnabled } from '../config/featureFlags';
 import { debug } from '../config/debugConfig';
 
@@ -44,12 +42,16 @@ export function initializeGameStoreIntegration(): () => void {
   cleanupFunctions.push(initializeAnimationSubscriber());
   cleanupFunctions.push(initializeDailyQuestSubscriber());
 
-  // Initialize blockchain subscriber + transaction processor when enabled
   if (isBlockchainPackagingEnabled()) {
-    cleanupFunctions.push(initializeBlockchainSubscriber());
-    startTransactionProcessor();
-    cleanupFunctions.push(stopTransactionProcessor);
-    debug.log('[GameStoreIntegration] Blockchain subscriber + transaction processor started');
+    Promise.all([
+      import('@/game/subscribers/BlockchainSubscriber'),
+      import('@/data/blockchain/transactionProcessor'),
+    ]).then(([{ initializeBlockchainSubscriber }, { startTransactionProcessor, stopTransactionProcessor }]) => {
+      cleanupFunctions.push(initializeBlockchainSubscriber());
+      startTransactionProcessor();
+      cleanupFunctions.push(stopTransactionProcessor);
+      debug.log('[GameStoreIntegration] Blockchain subscriber + transaction processor started');
+    });
   }
 
   isInitialized = true;

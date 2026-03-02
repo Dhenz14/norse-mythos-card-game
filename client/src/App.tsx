@@ -9,13 +9,12 @@ import "./styles/homepage.css";
 import { CardTransformProvider } from "./game/context/CardTransformContext";
 import CardTransformBridgeInitializer from "./game/components/CardTransformBridgeInitializer";
 import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
-import { initializeGameStoreIntegration } from "./game/stores/gameStoreIntegration";
-import initEffectSystem from "./game/effects/initEffectSystem";
-import { HiveKeychainLogin } from "./game/components/HiveKeychainLogin";
-import DailyQuestPanel from "./game/components/quests/DailyQuestPanel";
-import FriendsPanel from "./game/components/social/FriendsPanel";
 import LoadingScreen from "./game/components/ui/LoadingScreen";
 import AssetDownloadButton from "./game/components/ui/AssetDownloadButton";
+
+const HiveKeychainLogin = lazy(() => import("./game/components/HiveKeychainLogin").then(m => ({ default: m.HiveKeychainLogin })));
+const DailyQuestPanel = lazy(() => import("./game/components/quests/DailyQuestPanel"));
+const FriendsPanel = lazy(() => import("./game/components/social/FriendsPanel"));
 
 const RagnarokChessGame = lazy(() => import('./game/components/chess/RagnarokChessGame'));
 const MultiplayerGame = lazy(() => import('./game/components/multiplayer/MultiplayerGame').then(m => ({ default: m.MultiplayerGame })));
@@ -159,11 +158,17 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
 }
 
 function App() {
-  // Initialize event-driven architecture on app startup (Enrique integration)
   useEffect(() => {
-    initEffectSystem();
-    const cleanup = initializeGameStoreIntegration();
-    return cleanup;
+    let cleanup: (() => void) | undefined;
+    (async () => {
+      const [{ default: initEffectSystem }, { initializeGameStoreIntegration }] = await Promise.all([
+        import("./game/effects/initEffectSystem"),
+        import("./game/stores/gameStoreIntegration"),
+      ]);
+      initEffectSystem();
+      cleanup = initializeGameStoreIntegration();
+    })();
+    return () => { cleanup?.(); };
   }, []);
 
   return (

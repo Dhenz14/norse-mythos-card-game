@@ -54,6 +54,7 @@ export default defineConfig(({ command }) => ({
             '@radix-ui/react-popover',
           ],
           'state-vendor': ['zustand', '@tanstack/react-query'],
+          'anim-vendor': ['gsap'],
         },
       },
     },
