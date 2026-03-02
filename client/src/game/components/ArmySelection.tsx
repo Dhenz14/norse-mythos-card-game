@@ -16,6 +16,7 @@ import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { HeroPortrait } from './ui/HeroPortrait';
 import { HeroArtImage } from './ui/HeroArtImage';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
+import { getHeroRarity, RARITY_COLORS } from '../utils/heroRarity';
 import './styles/ArmySelectionNorse.css';
 import { debug } from '../config/debugConfig';
 import { useMatchmaking } from '../hooks/useMatchmaking';
@@ -290,7 +291,8 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
         <div className="norse-hero-grid">
           {currentHeroOptions.map((hero) => {
             const isCurrentSelection = currentSelection?.id === hero.id;
-            
+            const rarity = getHeroRarity(hero.id);
+
             return (
               <motion.div
                 key={hero.id}
@@ -299,7 +301,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                   setPopupHero(hero);
                   playSoundEffect('button_click');
                 }}
-                className={`norse-hero-card ${isCurrentSelection ? 'selected' : ''}`}
+                className={`norse-hero-card rarity-${rarity} ${isCurrentSelection ? 'selected' : ''}`}
               >
                 <div className="norse-hero-media">
                   <HeroArtImage
@@ -315,7 +317,15 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                       </div>
                     }
                   />
+                  {(rarity === 'mythic' || rarity === 'epic') && (
+                    <div className={`norse-foil-overlay rarity-${rarity}`} />
+                  )}
                   <div className="norse-hero-gradient-overlay" />
+                  {rarity !== 'common' && (
+                    <span className={`norse-rarity-badge rarity-${rarity}`}>
+                      {RARITY_COLORS[rarity].label}
+                    </span>
+                  )}
                   <div className="norse-hero-name-overlay">
                     <div className="norse-hero-name">{hero.name}</div>
                     {hero.heroClass.toLowerCase() !== 'neutral' && (

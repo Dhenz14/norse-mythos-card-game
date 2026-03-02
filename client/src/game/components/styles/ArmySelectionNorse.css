@@ -10,6 +10,29 @@
    ===================================================== */
 
 /* ============================================
+   RARITY ANIMATIONS — conic-gradient border rotation
+   ============================================ */
+@property --hero-border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes hero-border-rotate {
+  to { --hero-border-angle: 360deg; }
+}
+
+@keyframes hero-rare-shimmer {
+  0%, 100% { background-position: 0% 0%; }
+  50%      { background-position: 100% 100%; }
+}
+
+@keyframes hero-mythic-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.55; }
+}
+
+/* ============================================
    ROOT CONTAINER - CSS Grid Layout
    ============================================ */
 .norse-army-selection {
@@ -384,6 +407,266 @@
   z-index: 10;
 }
 
+/* ============================================
+   RARITY BLING — Per-tier visual hierarchy
+   ============================================ */
+
+/* Base ::before for animated border technique */
+.norse-army-selection .norse-hero-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* --- MYTHIC: rainbow aurora border + golden glow --- */
+.norse-army-selection .norse-hero-card.rarity-mythic {
+  border-color: transparent;
+  background: linear-gradient(180deg, #2a1f10 0%, #1a1008 100%);
+  box-shadow:
+    0 0 18px rgba(245, 158, 11, 0.4),
+    0 0 36px rgba(236, 72, 153, 0.2),
+    0 0 54px rgba(139, 92, 246, 0.15);
+}
+
+.norse-army-selection .norse-hero-card.rarity-mythic::before {
+  inset: -3px;
+  padding: 3px;
+  border-radius: 12px;
+  border: none;
+  background: conic-gradient(
+    from var(--hero-border-angle),
+    #ef4444, #f97316, #f59e0b,
+    #22c55e, #06b6d4,
+    #3b82f6, #8b5cf6,
+    #a855f7, #ec4899, #ef4444
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: hero-border-rotate 3s linear infinite;
+}
+
+.norse-army-selection .norse-hero-card.rarity-mythic:hover {
+  border-color: transparent;
+  box-shadow:
+    0 0 24px rgba(245, 158, 11, 0.6),
+    0 0 48px rgba(236, 72, 153, 0.35),
+    0 0 72px rgba(139, 92, 246, 0.25),
+    0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.norse-army-selection .norse-hero-card.rarity-mythic .norse-hero-name {
+  color: #FCD34D;
+  text-shadow:
+    0 0 10px rgba(252, 211, 77, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* --- EPIC: purple crystalline border + purple glow --- */
+.norse-army-selection .norse-hero-card.rarity-epic {
+  border-color: transparent;
+  background: linear-gradient(180deg, #1e1530 0%, #110e20 100%);
+  box-shadow:
+    0 0 14px rgba(168, 85, 247, 0.35),
+    0 0 28px rgba(168, 85, 247, 0.15);
+}
+
+.norse-army-selection .norse-hero-card.rarity-epic::before {
+  inset: -2px;
+  padding: 2px;
+  border-radius: 11px;
+  border: none;
+  background: conic-gradient(
+    from var(--hero-border-angle),
+    #581C87, #7C3AED, #A855F7, #C084FC,
+    #E9D5FF,
+    #C084FC, #A855F7, #7C3AED, #581C87
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: hero-border-rotate 6s linear infinite;
+}
+
+.norse-army-selection .norse-hero-card.rarity-epic:hover {
+  border-color: transparent;
+  box-shadow:
+    0 0 22px rgba(168, 85, 247, 0.55),
+    0 0 44px rgba(168, 85, 247, 0.25),
+    0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.norse-army-selection .norse-hero-card.rarity-epic .norse-hero-name {
+  color: #C084FC;
+  text-shadow:
+    0 0 8px rgba(192, 132, 252, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* --- RARE: blue shimmer sweep border + blue glow --- */
+.norse-army-selection .norse-hero-card.rarity-rare {
+  border-color: transparent;
+  box-shadow:
+    0 0 10px rgba(59, 130, 246, 0.3),
+    0 0 20px rgba(59, 130, 246, 0.12);
+}
+
+.norse-army-selection .norse-hero-card.rarity-rare::before {
+  inset: -2px;
+  padding: 2px;
+  border-radius: 11px;
+  border: none;
+  background:
+    linear-gradient(
+      135deg,
+      #1E3A8A 0%,
+      #3B82F6 20%,
+      #93C5FD 45%,
+      #BFDBFE 50%,
+      #93C5FD 55%,
+      #3B82F6 80%,
+      #1E3A8A 100%
+    );
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: hero-rare-shimmer 4s ease-in-out infinite;
+}
+
+.norse-army-selection .norse-hero-card.rarity-rare:hover {
+  border-color: transparent;
+  box-shadow:
+    0 0 18px rgba(59, 130, 246, 0.5),
+    0 0 36px rgba(59, 130, 246, 0.2),
+    0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.norse-army-selection .norse-hero-card.rarity-rare .norse-hero-name {
+  color: #93C5FD;
+  text-shadow:
+    0 0 8px rgba(147, 197, 253, 0.4),
+    0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* --- COMMON: keep existing static border (default) --- */
+.norse-army-selection .norse-hero-card.rarity-common {
+  /* No changes — inherits base .norse-hero-card styles */
+}
+
+/* --- Rarity badge — top-left pill over portrait --- */
+.norse-army-selection .norse-rarity-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 10;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.norse-army-selection .norse-rarity-badge.rarity-mythic {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(255, 140, 0, 0.9));
+  color: #fff;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.norse-army-selection .norse-rarity-badge.rarity-epic {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.85), rgba(168, 85, 247, 0.85));
+  color: #fff;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+}
+
+.norse-army-selection .norse-rarity-badge.rarity-rare {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.8));
+  color: #fff;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.35);
+}
+
+/* --- Foil overlay — iridescent shimmer on portrait area --- */
+.norse-army-selection .norse-foil-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  transition: opacity 0.3s ease;
+}
+
+.norse-army-selection .norse-foil-overlay.rarity-mythic {
+  background: linear-gradient(
+    135deg,
+    rgba(236, 72, 153, 0.1) 0%,
+    rgba(168, 85, 247, 0.12) 25%,
+    rgba(59, 130, 246, 0.12) 50%,
+    rgba(34, 197, 94, 0.1) 75%,
+    rgba(245, 158, 11, 0.1) 100%
+  );
+  opacity: 0.4;
+  animation: hero-mythic-pulse 3s ease-in-out infinite;
+}
+
+.norse-army-selection .norse-hero-card:hover .norse-foil-overlay.rarity-mythic {
+  opacity: 0.7;
+}
+
+.norse-army-selection .norse-foil-overlay.rarity-epic {
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.06) 0%,
+    rgba(192, 132, 252, 0.1) 50%,
+    rgba(168, 85, 247, 0.06) 100%
+  );
+  opacity: 0;
+}
+
+.norse-army-selection .norse-hero-card:hover .norse-foil-overlay.rarity-epic {
+  opacity: 1;
+}
+
+/* Selected state should still override rarity borders */
+.norse-army-selection .norse-hero-card.selected.rarity-mythic,
+.norse-army-selection .norse-hero-card.selected.rarity-epic,
+.norse-army-selection .norse-hero-card.selected.rarity-rare {
+  border-color: #22c55e;
+}
+
+.norse-army-selection .norse-hero-card.selected.rarity-mythic::before,
+.norse-army-selection .norse-hero-card.selected.rarity-epic::before,
+.norse-army-selection .norse-hero-card.selected.rarity-rare::before {
+  /* Keep animated border but add green tint to glow */
+}
+
+.norse-army-selection .norse-hero-card.selected.rarity-mythic {
+  box-shadow:
+    0 0 18px rgba(245, 158, 11, 0.3),
+    0 0 20px rgba(34, 197, 94, 0.4),
+    0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.norse-army-selection .norse-hero-card.selected.rarity-epic {
+  box-shadow:
+    0 0 14px rgba(168, 85, 247, 0.25),
+    0 0 20px rgba(34, 197, 94, 0.4),
+    0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.norse-army-selection .norse-hero-card.selected.rarity-rare {
+  box-shadow:
+    0 0 10px rgba(59, 130, 246, 0.2),
+    0 0 20px rgba(34, 197, 94, 0.4),
+    0 8px 25px rgba(0, 0, 0, 0.5);
+}
 
 /* ============================================
    RIGHT SIDEBAR - Army/Deck Panel (276px = 260px + 16px margin)

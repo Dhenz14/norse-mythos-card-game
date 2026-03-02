@@ -278,8 +278,18 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 															</div>
 														)}
 
+														{(rarityKey === 'mythic' || rarityKey === 'epic') && (
+															<div className={`db-foil-overlay rarity-${rarityKey}`} />
+														)}
+
 														{/* Mana Badge */}
 														<div className="db-mana-badge">{card.manaCost ?? 0}</div>
+
+														{rarityKey !== 'common' && rarityKey !== 'basic' && (
+															<span className={`db-rarity-badge rarity-${rarityKey}`}>
+																{rarityKey === 'mythic' ? 'MYTHIC' : rarityKey === 'epic' ? 'EPIC' : 'RARE'}
+															</span>
+														)}
 
 														{/* Super Minion Badge */}
 														{isLinkedSuper && (
@@ -440,27 +450,14 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 				/>
 			)}
 
-			{/* Card Detail Modal (right-click) */}
+			{/* Card Detail Flip (right-click) */}
 			<AnimatePresence>
 				{db.selectedCard && (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						className="fixed inset-0 z-[55] flex items-center justify-center db-detail-backdrop"
-						onClick={() => db.setSelectedCard(null)}
-					>
-						<motion.div
-							initial={{ scale: 0.9, opacity: 0 }}
-							animate={{ scale: 1, opacity: 1 }}
-							exit={{ scale: 0.9, opacity: 0 }}
-							className="db-preview-panel db-detail-modal"
-							onClick={e => e.stopPropagation()}
-						>
-							<CardPreviewContent card={db.selectedCard} classColor={classColor} showArt />
-							<div className="db-detail-hint">Click outside to close</div>
-						</motion.div>
-					</motion.div>
+					<CardDetailFlip
+						card={db.selectedCard}
+						classColor={classColor}
+						onClose={() => db.setSelectedCard(null)}
+					/>
 				)}
 			</AnimatePresence>
 		</motion.div>
@@ -586,6 +583,213 @@ const CardPreviewContent: React.FC<{ card: CardData; classColor: string; showArt
 				</div>
 			)}
 		</>
+	);
+};
+
+const RARITY_LABELS: Record<string, string> = {
+	mythic: 'MYTHIC',
+	epic: 'EPIC',
+	rare: 'RARE',
+	common: 'COMMON',
+	basic: 'BASIC',
+};
+
+const CardDetailFlip: React.FC<{ card: CardData; classColor: string; onClose: () => void }> = ({ card, classColor, onClose }) => {
+	const [isFlipped, setIsFlipped] = useState(false);
+	const [isFlipping, setIsFlipping] = useState(false);
+
+	const rarityKey = (card.rarity || 'common').toLowerCase();
+	const cardArtPath = getCardArtPath(card.name);
+	const isMinion = card.type === 'minion';
+	const keywords = (card as any).keywords as string[] | undefined;
+	const flavorText = (card as any).flavorText as string | undefined;
+
+	const handleFlip = useCallback((e: React.MouseEvent) => {
+		e.stopPropagation();
+		if (isFlipping) return;
+		setIsFlipping(true);
+		setIsFlipped(prev => !prev);
+		setTimeout(() => setIsFlipping(false), 700);
+	}, [isFlipping]);
+
+	const flipTransition = isFlipping
+		? 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)'
+		: 'none';
+
+	return (
+		<motion.div
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			exit={{ opacity: 0 }}
+			className="fixed inset-0 z-[55] db-detail-backdrop"
+			onClick={onClose}
+		>
+			<div className="cd-scene">
+				<div
+					className="cd-inner"
+					style={{
+						transform: `rotateY(${isFlipped ? 180 : 0}deg)`,
+						transition: flipTransition,
+					}}
+					onClick={handleFlip}
+				>
+					{/* FRONT FACE */}
+					<div className={`cd-front rarity-${rarityKey}`}>
+						<div className="cd-front-art">
+							{cardArtPath ? (
+								<img src={cardArtPath} alt="" />
+							) : (
+								<div className="cd-front-art-fallback" style={{ background: `linear-gradient(135deg, ${classColor}25, ${classColor}08)` }}>
+									{TYPE_ICONS[card.type] || '\u2726'}
+								</div>
+							)}
+
+							{(rarityKey === 'mythic' || rarityKey === 'epic') && (
+								<div className={`cd-front-foil rarity-${rarityKey}`} />
+							)}
+						</div>
+
+						{/* Mana gem */}
+						<div className="cd-front-mana"><span>{card.manaCost ?? 0}</span></div>
+
+						{/* Rarity badge */}
+						{rarityKey !== 'common' && rarityKey !== 'basic' && (
+							<span className={`cd-front-badge rarity-${rarityKey}`}>
+								{RARITY_LABELS[rarityKey] || rarityKey.toUpperCase()}
+							</span>
+						)}
+
+						{/* Name plate */}
+						<div className="cd-front-plate">
+							<div className="cd-front-name">{card.name}</div>
+							<div className="cd-front-type">
+								{card.type}{isClassCard(card) ? ` \u2605 Class` : ''}
+							</div>
+						</div>
+
+						{/* Stat gems for minions */}
+						{isMinion && (
+							<>
+								<div className="cd-front-stat attack">{(card as any).attack ?? 0}</div>
+								<div className="cd-front-stat health">{(card as any).health ?? 0}</div>
+							</>
+						)}
+
+						{/* Flip hint */}
+						<div className="cd-front-hint">Click to flip</div>
+					</div>
+
+					{/* BACK FACE */}
+					<div className="cd-back">
+						<div className="cd-back-header">
+							<div>
+								<div className="cd-back-name">{card.name}</div>
+								<div className="cd-back-subtitle">
+									{card.type}{(card as any).race ? ` \u2022 ${(card as any).race}` : ''}
+									{isClassCard(card) ? ' \u2022 Class Card' : ''}
+								</div>
+							</div>
+							<button type="button" className="cd-back-flip-btn" onClick={handleFlip} title="Flip back">
+								&#x21BB;
+							</button>
+						</div>
+
+						<div className="cd-back-scroll">
+							{/* Stats */}
+							{isMinion && (
+								<div className="cd-back-stats">
+									<div className="cd-back-stat">
+										<span className="cd-back-stat-val" style={{ color: '#2563eb' }}>{card.manaCost ?? 0}</span>
+										<span className="cd-back-stat-label">Mana</span>
+									</div>
+									<div className="cd-back-stat">
+										<span className="cd-back-stat-val" style={{ color: '#fbbf24' }}>{(card as any).attack ?? 0}</span>
+										<span className="cd-back-stat-label">Attack</span>
+									</div>
+									<div className="cd-back-stat">
+										<span className="cd-back-stat-val" style={{ color: '#f87171' }}>{(card as any).health ?? 0}</span>
+										<span className="cd-back-stat-label">Health</span>
+									</div>
+								</div>
+							)}
+
+							{card.type === 'spell' && (
+								<div className="cd-back-stats">
+									<div className="cd-back-stat">
+										<span className="cd-back-stat-val" style={{ color: '#2563eb' }}>{card.manaCost ?? 0}</span>
+										<span className="cd-back-stat-label">Mana</span>
+									</div>
+									<div className="cd-back-stat">
+										<span className={`cd-back-rarity rarity-${rarityKey}`}>{RARITY_LABELS[rarityKey] || rarityKey}</span>
+									</div>
+								</div>
+							)}
+
+							{card.type === 'artifact' && (
+								<div className="cd-back-stats">
+									<div className="cd-back-stat">
+										<span className="cd-back-stat-val" style={{ color: '#2563eb' }}>{card.manaCost ?? 0}</span>
+										<span className="cd-back-stat-label">Mana</span>
+									</div>
+									<div className="cd-back-stat">
+										<span className="cd-back-stat-val" style={{ color: '#fbbf24' }}>{(card as any).attack ?? 0}</span>
+										<span className="cd-back-stat-label">Attack</span>
+									</div>
+								</div>
+							)}
+
+							{card.type === 'armor' && (
+								<div className="cd-back-stats">
+									<div className="cd-back-stat">
+										<span className="cd-back-stat-val" style={{ color: '#60a5fa' }}>{(card as any).armorValue ?? 0}</span>
+										<span className="cd-back-stat-label">Armor</span>
+									</div>
+									<div className="cd-back-stat">
+										<span className="cd-back-stat-val" style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{(card as any).armorSlot || '?'}</span>
+										<span className="cd-back-stat-label">Slot</span>
+									</div>
+								</div>
+							)}
+
+							{/* Description */}
+							{card.description && (
+								<>
+									<div className="cd-back-divider">Effect</div>
+									<div className="cd-back-desc">{card.description}</div>
+								</>
+							)}
+
+							{/* Keywords */}
+							{keywords && keywords.length > 0 && (
+								<>
+									<div className="cd-back-divider">Keywords</div>
+									<div className="cd-back-keywords">
+										{keywords.map((kw: string) => (
+											<span key={kw} className="cd-back-keyword">{kw}</span>
+										))}
+									</div>
+								</>
+							)}
+
+							{/* Flavor text */}
+							{flavorText && (
+								<div className="cd-back-flavor">"{flavorText}"</div>
+							)}
+						</div>
+					</div>
+				</div>
+
+				{/* Close button */}
+				<button
+					type="button"
+					className="cd-close"
+					onClick={(e) => { e.stopPropagation(); onClose(); }}
+					title="Close"
+				>
+					&#x2715;
+				</button>
+			</div>
+		</motion.div>
 	);
 };
 
