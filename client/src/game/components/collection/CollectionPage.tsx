@@ -11,7 +11,7 @@ import { useCraftingStore } from '../../crafting/craftingStore';
 import { getDustValue, getCraftCost } from '../../crafting/craftingConstants';
 import './collection.css';
 
-type FilterRarity = 'all' | 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
+type FilterRarity = 'all' | 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
 type FilterType = 'all' | 'hero' | 'minion' | 'spell' | 'weapon';
 type SortBy = 'recent' | 'name' | 'rarity' | 'mint';
 
@@ -24,15 +24,15 @@ interface CollectionStats {
 	byType: { type: string; uniqueCards: number; totalCards: number }[];
 }
 
-const RARITY_ORDER: Record<string, number> = { mythic: 0, legendary: 1, epic: 2, rare: 3, common: 4 };
+const RARITY_ORDER: Record<string, number> = { mythic: 0, epic: 1, rare: 2, common: 3, basic: 4 };
 
 const RARITY_PILLS: { value: FilterRarity; label: string; color: string; activeColor: string }[] = [
 	{ value: 'all', label: 'All', color: 'rgba(255,255,255,0.06)', activeColor: 'rgba(139,92,246,0.5)' },
 	{ value: 'mythic', label: 'Mythic', color: 'rgba(236,72,153,0.15)', activeColor: 'rgba(236,72,153,0.6)' },
-	{ value: 'legendary', label: 'Legendary', color: 'rgba(251,191,36,0.15)', activeColor: 'rgba(251,191,36,0.5)' },
 	{ value: 'epic', label: 'Epic', color: 'rgba(147,51,234,0.15)', activeColor: 'rgba(147,51,234,0.5)' },
 	{ value: 'rare', label: 'Rare', color: 'rgba(59,130,246,0.15)', activeColor: 'rgba(59,130,246,0.5)' },
 	{ value: 'common', label: 'Common', color: 'rgba(107,114,128,0.15)', activeColor: 'rgba(107,114,128,0.5)' },
+	{ value: 'basic', label: 'Basic', color: 'rgba(156,163,175,0.15)', activeColor: 'rgba(156,163,175,0.5)' },
 ];
 
 const TYPE_PILLS: { value: FilterType; label: string; icon: string }[] = [
@@ -69,7 +69,6 @@ function getShimmerClass(rarity: string): string {
 	switch (rarity) {
 		case 'rare': return 'foil-shimmer foil-shimmer-rare';
 		case 'epic': return 'foil-shimmer foil-shimmer-epic';
-		case 'legendary': return 'foil-shimmer foil-shimmer-legendary';
 		case 'mythic': return 'foil-shimmer foil-shimmer-mythic';
 		default: return '';
 	}
@@ -273,7 +272,7 @@ export default function CollectionPage() {
 							<div className="bg-gray-800/40 rounded-xl p-4 border border-gray-700/50">
 								<div className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">By Rarity</div>
 								<div className="flex flex-wrap gap-2">
-									{(['mythic', 'legendary', 'epic', 'rare', 'common'] as const).map(rarity => {
+									{(['mythic', 'epic', 'rare', 'common', 'basic'] as const).map(rarity => {
 										const rs = stats.byRarity.find(r => r.rarity === rarity);
 										return (
 											<div key={rarity} className="rarity-stat-card" style={{ background: `rgba(255,255,255,0.03)` }}>
@@ -459,8 +458,7 @@ export default function CollectionPage() {
 										>
 											<span className="text-4xl opacity-80">
 												{card.rarity === 'mythic' ? '🌟' :
-												 card.rarity === 'legendary' ? '⚡' :
-												 card.type === 'hero' ? '👑' :
+												 												 card.type === 'hero' ? '👑' :
 												 card.type === 'spell' ? '✨' :
 												 card.type === 'weapon' ? '🗡️' : '⚔️'}
 											</span>
@@ -583,8 +581,7 @@ export default function CollectionPage() {
 								>
 									<span className="text-7xl opacity-80">
 										{selectedCard.rarity === 'mythic' ? '🌟' :
-										 selectedCard.rarity === 'legendary' ? '⚡' :
-										 selectedCard.type === 'hero' ? '👑' :
+										 										 selectedCard.type === 'hero' ? '👑' :
 										 selectedCard.type === 'spell' ? '✨' :
 										 selectedCard.type === 'weapon' ? '🗡️' : '⚔️'}
 									</span>

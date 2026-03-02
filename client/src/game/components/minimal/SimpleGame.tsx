@@ -9,11 +9,11 @@ import { getAttack, getHealth } from '../../utils/cards/typeGuards';
 // Function to get rarity color
 const getRarityColor = (rarity: CardRarity | undefined) => {
   switch (rarity) {
-    case 'free': return 'bg-gray-200';
+    case 'basic': return 'bg-gray-200';
     case 'common': return 'bg-gray-100';
     case 'rare': return 'bg-blue-400';
     case 'epic': return 'bg-purple-500';
-    case 'legendary': return 'bg-orange-400';
+    case 'mythic': return 'bg-orange-400';
     default: return 'bg-gray-100';
   }
 };

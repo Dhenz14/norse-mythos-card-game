@@ -26,7 +26,7 @@
 .card-hover-tooltip.rarity-common { border-color: rgba(150, 150, 150, 0.6); }
 .card-hover-tooltip.rarity-rare { border-color: rgba(30, 144, 255, 0.7); }
 .card-hover-tooltip.rarity-epic { border-color: rgba(163, 53, 238, 0.7); }
-.card-hover-tooltip.rarity-legendary { border-color: rgba(255, 165, 0, 0.8); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 165, 0, 0.3); }
+.card-hover-tooltip.rarity-mythic { border-color: rgba(255, 165, 0, 0.8); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 165, 0, 0.3); }
 
 @keyframes tooltip-appear {
   from { opacity: 0; transform: translateY(8px); }

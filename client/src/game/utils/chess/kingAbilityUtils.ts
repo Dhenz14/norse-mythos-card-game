@@ -149,7 +149,7 @@ export const KING_ABILITY_CONFIGS: Record<string, KingChessAbilityConfig> = {
   'king-brimir': {
     kingId: 'king-brimir',
     abilityType: 'brimir_tidal_wave',
-    rarity: 'super_rare',
+    rarity: 'mythic',
     maxUsesPerGame: 5,
     staPenalty: 3,
     turnDuration: 2,
@@ -167,7 +167,7 @@ export const KING_ABILITY_CONFIGS: Record<string, KingChessAbilityConfig> = {
   'king-ginnungagap': {
     kingId: 'king-ginnungagap',
     abilityType: 'ginnungagap_void_rift',
-    rarity: 'super_rare',
+    rarity: 'mythic',
     maxUsesPerGame: 5,
     staPenalty: 3,
     turnDuration: 2,

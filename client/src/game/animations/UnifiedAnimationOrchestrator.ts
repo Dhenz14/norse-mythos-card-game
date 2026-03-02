@@ -227,14 +227,14 @@ export const useAnimationOrchestrator = create<AnimationOrchestratorState>((set,
 export function scheduleSummonEffect(
   position: Position,
   cardName: string,
-  rarity: 'common' | 'rare' | 'epic' | 'legendary',
+  rarity: 'basic' | 'common' | 'rare' | 'epic' | 'mythic',
   phase?: string
 ): string {
-  const duration = rarity === 'legendary' ? 2000 : 1200;
-  
+  const duration = rarity === 'mythic' ? 2000 : 1200;
+
   return useAnimationOrchestrator.getState().scheduleEffect({
     category: 'summon',
-    priority: rarity === 'legendary' ? 'high' : 'normal',
+    priority: rarity === 'mythic' ? 'high' : 'normal',
     position,
     duration,
     phase,

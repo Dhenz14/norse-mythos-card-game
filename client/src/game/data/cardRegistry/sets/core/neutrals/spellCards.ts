@@ -21,7 +21,7 @@ export const priestSpells: CardData[] = [
     name: "Spirit Echo",
     manaCost: 7,
     type: "spell",
-    rarity: "legendary",
+    rarity: "epic",
     description: "Summon copies of enemy minions. They have 1 Health remaining.",
     keywords: [],
     heroClass: "priest",

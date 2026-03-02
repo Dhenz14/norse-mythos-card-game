@@ -18,7 +18,7 @@ const SUPPLY_CAPS: Record<string, number> = {
 	common:    10_000,
 	rare:       4_000,
 	epic:       1_500,
-	legendary:    500,
+	mythic:      500,
 };
 
 const TOTAL_SUPPLY = Object.values(SUPPLY_CAPS).reduce((a, b) => a + b, 0);

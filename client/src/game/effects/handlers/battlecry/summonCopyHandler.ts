@@ -9,9 +9,9 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 import { v4 as uuidv4 } from 'uuid';
 
-const MAX_BOARD_SIZE = 7;
 
 /**
  * Check if a condition is met for the summon copy effect
@@ -57,7 +57,7 @@ export default function executeSummonCopy(
     const count = effect.count || 1;
     
     const currentBoardSize = context.currentPlayer.board.length;
-    const availableSlots = MAX_BOARD_SIZE - currentBoardSize;
+    const availableSlots = MAX_BATTLEFIELD_SIZE - currentBoardSize;
     
     if (availableSlots <= 0) {
       context.logGameEvent(`Board is full, cannot summon copy`);

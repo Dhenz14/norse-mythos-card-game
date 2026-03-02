@@ -93,7 +93,7 @@ export function registerDeathKnightCards(): void {
     .description("After your hero attacks and kills a minion, summon that minion to your side.")
     .flavorText("Whomsoever takes up this blade shall wield power eternal. Just as the blade rends flesh, so must power scar the spirit.")
     .type("weapon")
-    .rarity("legendary")
+    .rarity("mythic")
     .class("Deathknight")
     .customProperty("onKillEffect", {
       type: "raise_enemy"
@@ -185,7 +185,7 @@ export function registerDeathKnightCards(): void {
     .description("Battlecry: Equip Frostmourne and gain 5 Armor.")
     .flavorText("When a prince becomes a death knight, it's a royal pain.")
     .type("hero")
-    .rarity("legendary")
+    .rarity("mythic")
     .customProperty("armor", 5)
     .class("Deathknight")
     .addKeyword("battlecry")

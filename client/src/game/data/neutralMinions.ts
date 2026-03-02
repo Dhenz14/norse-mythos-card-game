@@ -1051,7 +1051,7 @@ export const   neutralMinions: CardData[] = [{
       type: "minion",
       rarity: "epic",
 
-      description: "Deathrattle: Add a random Legendary minion to your hand.",
+      description: "Deathrattle: Add a random Mythic minion to your hand.",
       keywords: ["deathrattle"],
 
       heroClass: "neutral",

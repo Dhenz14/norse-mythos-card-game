@@ -33,11 +33,11 @@ type UnsubscribeFn = () => void;
  * Audio mapping for card rarities
  */
 const RARITY_SOUNDS: Record<string, SoundEffectType> = {
-  legendary: 'legendary',
+  mythic: 'legendary',
   epic: 'spell',
   rare: 'card_play',
   common: 'card_play',
-  free: 'card_play'
+  basic: 'card_play'
 };
 
 /**
@@ -62,8 +62,8 @@ export function initializeAudioSubscriber(): UnsubscribeFn {
     GameEventBus.subscribe<CardPlayedEvent>('CARD_PLAYED', (event) => {
       const audioStore = useAudio.getState();
 
-      // Play rarity-specific sound for legendaries
-      if (event.rarity === 'legendary') {
+      // Play rarity-specific sound for mythics
+      if (event.rarity === 'mythic') {
         audioStore.playSoundEffect('legendary');
       } else {
         const sound = CARD_TYPE_SOUNDS[event.cardType] ?? 'card_play';

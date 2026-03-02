@@ -186,12 +186,12 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
   },
 
 {
-      id: 'legendary',
+      id: 'mythic',
 
-      name: 'Legendary',
-      description: 'Discover a Legendary minion',
+      name: 'Mythic',
+      description: 'Discover a Mythic minion',
 
-      filter: (card: CardData): boolean => Boolean(card.type === 'minion' && card.rarity === 'legendary')
+      filter: (card: CardData): boolean => Boolean(card.type === 'minion' && card.rarity === 'mythic')
   },
 
 {

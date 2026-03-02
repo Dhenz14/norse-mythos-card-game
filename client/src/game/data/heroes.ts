@@ -44,7 +44,7 @@ const heroes: HeroData[] = [
       name: "Jaina Proudmoore",
       class: "mage",
 
-      description: "The Archmage of the Kirin Tor and former leader of the Kirin Tor.",
+      description: "The Archmage of the Rune Council and former leader of the Mystical Order.",
       heroPowers: [{
 
           id: 101,
@@ -68,7 +68,7 @@ const heroes: HeroData[] = [
           id: 1002,
 
           name: "Khadgar",
-          description: "Archmage of the Kirin Tor and apprentice of Óðinn's Prophet."
+          description: "Archmage of the Rune Council and apprentice of Óðinn's Prophet."
 
            },
 
@@ -76,7 +76,7 @@ const heroes: HeroData[] = [
           id: 1003,
 
           name: "Varden Dawngrasp",
-          description: "Neutral mage from Dalaran who has joined the Horde in Kalimdor."
+          description: "Neutral mage from Alfheim who has joined the Aesir in Midgard."
 
            },
 
@@ -110,7 +110,7 @@ const heroes: HeroData[] = [
       name: "Kratos Battleborn",
       class: "warrior",
 
-      description: "Legendary warrior known for his battle fury and unyielding rage.",
+      description: "Famed warrior known for his battle fury and unyielding rage.",
       heroPowers: [{
 
           id: 102,
@@ -149,7 +149,7 @@ const heroes: HeroData[] = [
           id: 2004,
 
           name: "Rokara",
-          description: "Young orcish warrior from the Frostwolf Clan with exceptional combat skills."
+          description: "Young einherjar warrior from the Ulfhednar Clan with exceptional combat skills."
       }]
 
   },
@@ -266,7 +266,7 @@ const heroes: HeroData[] = [
           id: 4005,
 
           name: "Hemet Nesingwary",
-          description: "Legendary big game hunter and safari guide in Azeroth."
+          description: "Famed big game hunter and safari guide across the Nine Realms."
       }],
       collectible: true
   },
@@ -336,7 +336,7 @@ const heroes: HeroData[] = [
       name: "Anduin Wrynn",
       class: "priest",
 
-      description: "King of Stormwind and son of Varian Wrynn.",
+      description: "High Priest of Asgard and son of Varian the Valiant.",
       heroPowers: [{
 
           id: 106,
@@ -543,7 +543,7 @@ const heroes: HeroData[] = [
           id: 9003,
 
           name: "Tess Greymane",
-          description: "Princess of Gilneas and expert in espionage and stealth tactics."
+          description: "Princess of Svartalfheim and expert in espionage and stealth tactics."
 
            },
 
@@ -551,7 +551,7 @@ const heroes: HeroData[] = [
           id: 9004,
 
           name: "Scabbs Cutterbutter",
-          description: "SI:7 operative known for his espionage skills and acrobatic abilities."
+          description: "Shadow operative known for his espionage skills and acrobatic abilities."
 
            },
 
@@ -622,7 +622,7 @@ const heroes: HeroData[] = [
           id: 11001,
 
           name: "Darion Mograine",
-          description: "Highlord of the Ebon Blade and former Death Knight of the Scourge."
+          description: "Highlord of the Black Riders and former Death Knight of Hel's army."
 
            },
 
@@ -630,7 +630,7 @@ const heroes: HeroData[] = [
           id: 11002,
 
           name: "Thassarian",
-          description: "The first of the death knights to rejoin the Alliance after breaking free from the Scourge."
+          description: "The first of the death knights to rejoin the Aesir after breaking free from Hel's dominion."
 
            },
 

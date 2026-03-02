@@ -9,9 +9,9 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext, Player } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 import { v4 as uuidv4 } from 'uuid';
 
-const MAX_BOARD_SIZE = 7;
 const MAX_JADE_GOLEM_SIZE = 30;
 
 /**
@@ -31,7 +31,7 @@ export default function executeSummonJadeGolem(
     context.logGameEvent(`Executing summon_jade_golem battlecry for ${sourceCard.name}`);
     
     const currentBoardSize = context.currentPlayer.board.length;
-    const availableSlots = MAX_BOARD_SIZE - currentBoardSize;
+    const availableSlots = MAX_BATTLEFIELD_SIZE - currentBoardSize;
     
     if (availableSlots <= 0) {
       context.logGameEvent(`Board is full, cannot summon Jade Golem`);

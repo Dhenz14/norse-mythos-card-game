@@ -12,8 +12,8 @@ import { EffectResult } from '../../../types/EffectTypes';
 import cardDatabase from '../../../services/cardDatabase';
 import { v4 as uuidv4 } from 'uuid';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
-const MAX_BOARD_SIZE = 5;
 
 /**
  * Execute a fill_board battlecry effect
@@ -39,7 +39,7 @@ export default function executeFillBoard(
     const manaCost = effect.manaCost as number | undefined;
     
     const currentBoardSize = context.currentPlayer.board.length;
-    const availableSlots = MAX_BOARD_SIZE - currentBoardSize;
+    const availableSlots = MAX_BATTLEFIELD_SIZE - currentBoardSize;
     
     if (availableSlots <= 0) {
       context.logGameEvent(`Board is already full`);

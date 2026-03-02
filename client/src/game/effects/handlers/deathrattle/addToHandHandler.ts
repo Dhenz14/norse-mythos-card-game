@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -26,7 +27,7 @@ export default function executeAddToHandAddToHand(
     
     context.logGameEvent(`Executing deathrattle:add_to_hand for ${cardName}`);
     
-    if (context.currentPlayer.hand.length >= 10) {
+    if (context.currentPlayer.hand.length >= MAX_HAND_SIZE) {
       context.logGameEvent(`Hand is full, ${cardName} was not returned to hand`);
       return { success: true, additionalData: { burned: true } };
     }

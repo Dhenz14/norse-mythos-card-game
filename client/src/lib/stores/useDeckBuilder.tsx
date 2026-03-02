@@ -180,8 +180,8 @@ const useDeckBuilder = create<DeckBuilderState>()(
           return true; // Card not found, don't allow adding
         }
         
-        // Legendary cards are limited to 1 copy
-        if (card.rarity === 'legendary' && currentCount >= MAX_COPIES_LEGENDARY) {
+        // Mythic cards are limited to 1 copy
+        if (card.rarity === 'mythic' && currentCount >= MAX_COPIES_LEGENDARY) {
           return true;
         }
         

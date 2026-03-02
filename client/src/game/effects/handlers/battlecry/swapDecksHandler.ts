@@ -38,7 +38,7 @@ export default function executeSwapDecks(
           description: "Swap decks with your opponent.",
           manaCost: effect.ransomCost || 5,
           type: 'spell',
-          rarity: 'legendary',
+          rarity: 'mythic',
           heroClass: 'neutral',
           spellEffect: {
             type: 'swap_decks'

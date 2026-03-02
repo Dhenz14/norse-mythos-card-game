@@ -140,7 +140,7 @@ const EnvironmentalEffect: React.FC<EnvironmentalEffectProps> = ({
     if (!card.rarity) return 1.0;
     
     switch (card.rarity.toLowerCase()) {
-      case 'legendary': return 2.0;
+      case 'mythic': return 2.0;
       case 'epic': return 1.5;
       case 'rare': return 1.2;
       default: return 1.0; // common

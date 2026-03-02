@@ -8,9 +8,9 @@ import EffectRegistry from './EffectRegistry';
 // Battlecry handlers
 import executeConditionalBuff from './handlers/battlecry/conditional_buff';
 import executeGainArmorEqualToAttack from './handlers/battlecry/gain_armor_equal_to_attack';
-import executeDamage from './handlers/battlecry/damage';
+import executeDamage from './handlers/battlecry/damageHandler';
 import executeGainArmorConditionalDraw from './handlers/battlecry/gain_armor_conditional_draw';
-import executeBuffWeapon from './handlers/battlecry/buff_weapon';
+import executeBuffWeapon from './handlers/battlecry/buffWeaponHandler';
 import executeEquipWeaponFromDeckGainArmor from './handlers/battlecry/equip_weapon_from_deck_gain_armor';
 
 // Spell effect handlers

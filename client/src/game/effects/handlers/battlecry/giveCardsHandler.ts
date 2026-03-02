@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeGiveCards(
   context: GameContext,
@@ -26,7 +27,7 @@ export default function executeGiveCards(
     const givenCards: CardInstance[] = [];
     
     for (let i = 0; i < cardCount; i++) {
-      if (targetPlayer.hand.length >= 10) {
+      if (targetPlayer.hand.length >= MAX_HAND_SIZE) {
         context.logGameEvent(`${giveToOpponent ? 'Opponent' : 'Your'} hand is full.`);
         break;
       }

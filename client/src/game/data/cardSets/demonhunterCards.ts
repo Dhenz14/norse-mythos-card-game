@@ -110,7 +110,7 @@ export function registerDemonHunterCards(): void {
     .description("Draw 3 cards. Outcast: Reduce their Cost by (3).")
     .flavorText("This might look like a powerful dark artifact to you, but to Typhon it's just a fancy candy dish.")
     .type("spell")
-    .rarity("legendary")
+    .rarity("mythic")
     .class("Demonhunter")
     .addKeyword("outcast")
     .spellEffect({
@@ -157,7 +157,7 @@ export function registerDemonHunterCards(): void {
     .description("After you play the left- or right-most card in your hand, deal 1 damage to all enemies.")
     .flavorText("Being an outcast has some perks. Like sitting anywhere you want in the cafeteria.")
     .type("minion")
-    .rarity("legendary")
+    .rarity("mythic")
     .class("Demonhunter")
     .customProperty("outcastTriggerEffect", {
       type: "damage_all_enemies",
@@ -174,7 +174,7 @@ export function registerDemonHunterCards(): void {
     .description("Swap your Hero Power to \"Deal 4 damage.\" After 2 uses, swap back.")
     .flavorText("It's just a phase.")
     .type("spell")
-    .rarity("legendary")
+    .rarity("mythic")
     .class("Demonhunter")
     .spellEffect({
       type: "swap_hero_power"
@@ -192,7 +192,7 @@ export function registerDemonHunterCards(): void {
     .description("Deal 4 damage.")
     .flavorText("After 2 uses, swap back.")
     .type("spell")
-    .rarity("legendary")
+    .rarity("mythic")
     .class("Demonhunter")
     .spellEffect({
       type: "damage",

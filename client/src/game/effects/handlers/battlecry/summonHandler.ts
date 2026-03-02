@@ -1,176 +1,123 @@
 /**
  * Summon Effect Handler
- * 
+ *
  * This handler implements the battlecry:summon effect.
  */
 import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { getCardById } from '../../../data/cardManagement/cardRegistry';
+import { isMinion, getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
-/**
- * Execute a Summon effect
- * @param context - The game context
- * @param effect - The effect data
- * @param sourceCard - The card that triggered the effect
- * @param effect.summonCardId - The ID of the card to summon
- * @param effect.count - Number of minions to summon
- * @param effect.withStats - Object containing stats for the summoned minion
- * @param effect.withKeywords - Array of keywords to apply to the summoned minion
- * @param effect.adjacent - Whether to summon adjacent to the source minion
- * @returns An object indicating success or failure and any additional data
- */
 export default function executeSummonSummon(
-  context: GameContext, 
-  effect: BattlecryEffect, 
-  sourceCard: Card
+	context: GameContext,
+	effect: BattlecryEffect,
+	sourceCard: Card
 ): EffectResult {
-  // Create a temporary CardInstance for targeting purposes
-  const sourceCardInstance: any = {
-    instanceId: 'temp-' + Date.now(),
-    card: sourceCard,
-    canAttack: false,
-    isPlayed: true,
-    isSummoningSick: false,
-    attacksPerformed: 0
-  };
-  
-  try {
-    // Log the effect execution
-    context.logGameEvent(`Executing battlecry:summon for ${sourceCard.name}`);
-    
-    // Get effect properties with defaults
-    const requiresTarget = effect.requiresTarget === true;
-    const targetType = effect.targetType || 'none';
-    const summonCardId = effect.summonCardId;
-    const count = effect.count || 1;
-    const withStats = effect.withStats;
-    const withKeywords = effect.withKeywords;
-    const adjacent = effect.adjacent === true;
-    
-    // Check if we have the necessary summon information
-    if (!summonCardId) {
-      context.logGameEvent(`Summon failed: No summonCardId specified`);
-      return { success: false, error: 'No summonCardId specified' };
-    }
-    
-    // Log the summon effect details
-    context.logGameEvent(`Summoning ${count}x ${summonCardId}`);
-    
-    // Determine board position for the summon
-    let summonPositions: number[] = [];
-    
-    if (requiresTarget) {
-      // Get targets based on targetType (likely board positions or minions)
-      const targets = context.getTargets(targetType, sourceCardInstance);
-      
-      if (targets.length === 0) {
-        context.logGameEvent(`No valid targets for summon positions`);
-        return { success: false, error: 'No valid targets for summon positions' };
-      }
-      
-      // Extract position information from targets
-      if (targetType === 'board_position') {
-        // If targeting specific board positions
-        summonPositions = targets.map(target => (target as any).position);
-      } else {
-        // If targeting minions, summon adjacent to them
-        targets.forEach(target => {
-          if (target.card.type === 'minion') {
-            const targetPosition = context.currentPlayer.board.findIndex(
-              minion => minion.instanceId === target.instanceId
-            );
-            if (targetPosition >= 0) {
-              summonPositions.push(targetPosition);
-              summonPositions.push(targetPosition + 1);
-            }
-          }
-        });
-      }
-    } else if (adjacent && sourceCard.type === 'minion') {
-      // If summoning adjacent to source minion
-      const sourcePosition = context.currentPlayer.board.findIndex(
-        minion => minion.card.id === sourceCardInstance.card.id
-      );
-      
-      if (sourcePosition >= 0) {
-        summonPositions.push(sourcePosition);
-        summonPositions.push(sourcePosition + 1);
-      } else {
-        // Default to rightmost position if source minion not found
-        summonPositions.push(context.currentPlayer.board.length);
-      }
-    } else {
-      // Default: summon to the right of the board
-      summonPositions.push(context.currentPlayer.board.length);
-    }
-    
-    // Ensure we have unique, valid positions
-    summonPositions = Array.from(new Set(summonPositions)).filter(
-      pos => pos >= 0 && pos <= context.currentPlayer.board.length
-    );
-    
-    // Check if the board is full
-    if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
-      context.logGameEvent(`Summon failed: Board is full`);
-      return { success: false, error: 'Board is full' };
-    }
-    
-    // Limit by available board space
-    const availableSpaces = MAX_BATTLEFIELD_SIZE - context.currentPlayer.board.length;
-    const actualCount = Math.min(count, availableSpaces);
-    
-    if (actualCount < count) {
-      context.logGameEvent(`Only summoning ${actualCount} minions due to board space limitations`);
-    }
-    
-    // Get the card data for the summoned minion
-    // In a real implementation, this would use the cardDatabase to get the card
-    const summonedCards: any[] = [];
-    
-    // Mock implementation for summoning
-    for (let i = 0; i < actualCount; i++) {
-      const summonPosition = (summonPositions[i % summonPositions.length]) || context.currentPlayer.board.length;
-      
-      // Create a summoned minion instance
-      const summonedInstance: any = {
-        instanceId: `summoned-${Date.now()}-${i}`,
-        card: {
-          id: summonCardId,
-          name: `Summoned Minion (${summonCardId})`,
-          type: 'minion',
-          cost: 0,
-          attack: withStats?.attack || 1,
-          health: withStats?.health || 1,
-          maxHealth: withStats?.health || 1,
-          // Required Card properties
-          description: 'Summoned minion',
-          manaCost: 0,
-          rarity: 'common',
-          heroClass: 'neutral',
-          // Apply keywords if provided
-          keywords: withKeywords || []
-        },
-        canAttack: false, // Summoning sickness
-        isPlayed: false,
-        isSummoningSick: true,
-        attacksPerformed: 0
-      };
-      
-      // Add the minion to the board at the specified position
-      context.currentPlayer.board.splice(summonPosition, 0, summonedInstance);
-      summonedCards.push(summonedInstance);
-      
-      context.logGameEvent(`Summoned ${summonedInstance.card.name} at position ${summonPosition}`);
-    }
-    
-    return { success: true };
-  } catch (error) {
-    debug.error(`Error executing battlecry:summon:`, error);
-    return { 
-      success: false, 
-      error: `Error executing battlecry:summon: ${error instanceof Error ? error.message : String(error)}`
-    };
-  }
+	try {
+		context.logGameEvent(`Executing battlecry:summon for ${sourceCard.name}`);
+
+		const summonCardId = effect.summonCardId;
+		const count = effect.summonCount || effect.count || 1;
+		const summonForOpponent = effect.summonForOpponent || false;
+		const adjacent = effect.adjacent === true;
+
+		if (!summonCardId) {
+			context.logGameEvent(`Summon failed: No summonCardId specified`);
+			return { success: false, error: 'No summonCardId specified' };
+		}
+
+		const cardToSummon = getCardById(Number(summonCardId));
+		if (!cardToSummon) {
+			context.logGameEvent(`Card with ID ${summonCardId} not found`);
+			return { success: false, error: `Card with ID ${summonCardId} not found` };
+		}
+
+		if (!isMinion(cardToSummon)) {
+			context.logGameEvent(`Card with ID ${summonCardId} is not a minion`);
+			return { success: false, error: `Card with ID ${summonCardId} is not a minion` };
+		}
+
+		const board = summonForOpponent ? context.opponentPlayer.board : context.currentPlayer.board;
+
+		if (board.length >= MAX_BATTLEFIELD_SIZE) {
+			context.logGameEvent(`Summon failed: Board is full`);
+			return { success: false, error: 'Board is full' };
+		}
+
+		const availableSpaces = MAX_BATTLEFIELD_SIZE - board.length;
+		const actualCount = Math.min(count, availableSpaces);
+
+		let summonPosition = board.length;
+		if (adjacent && !summonForOpponent) {
+			const sourcePosition = context.currentPlayer.board.findIndex(
+				minion => minion.card.id === sourceCard.id
+			);
+			if (sourcePosition >= 0) {
+				summonPosition = sourcePosition + 1;
+			}
+		}
+
+		const summonedCards: any[] = [];
+
+		for (let i = 0; i < actualCount; i++) {
+			if (board.length >= MAX_BATTLEFIELD_SIZE) break;
+
+			const minionHealth = getHealth(cardToSummon);
+			const summonedInstance: any = {
+				instanceId: `summoned-${Date.now()}-${i}`,
+				card: cardToSummon,
+				currentHealth: minionHealth,
+				maxHealth: minionHealth,
+				canAttack: false,
+				isPlayed: true,
+				isSummoningSick: true,
+				attacksPerformed: 0,
+				hasDivineShield: false,
+				isFrozen: false,
+				isSilenced: false,
+			};
+
+			if (cardToSummon.keywords?.includes('taunt')) {
+				summonedInstance.isTaunt = true;
+			}
+			if (cardToSummon.keywords?.includes('divine_shield')) {
+				summonedInstance.hasDivineShield = true;
+			}
+			if (cardToSummon.keywords?.includes('rush')) {
+				summonedInstance.hasRush = true;
+				summonedInstance.canAttack = true;
+			}
+			if (cardToSummon.keywords?.includes('charge')) {
+				summonedInstance.hasCharge = true;
+				summonedInstance.canAttack = true;
+				summonedInstance.isSummoningSick = false;
+			}
+
+			if (adjacent && !summonForOpponent) {
+				board.splice(summonPosition + i, 0, summonedInstance);
+			} else {
+				board.push(summonedInstance);
+			}
+
+			summonedCards.push(summonedInstance);
+			context.logGameEvent(`Summoned ${cardToSummon.name} to the battlefield`);
+		}
+
+		return {
+			success: true,
+			additionalData: {
+				summonedCount: summonedCards.length,
+				summonedCards
+			}
+		};
+	} catch (error) {
+		debug.error(`Error executing battlecry:summon:`, error);
+		return {
+			success: false,
+			error: `Error executing battlecry:summon: ${error instanceof Error ? error.message : String(error)}`
+		};
+	}
 }

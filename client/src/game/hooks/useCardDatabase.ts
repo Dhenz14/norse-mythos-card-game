@@ -77,7 +77,7 @@ export const useCardDatabase = () => {
         health: 3,
         type: 'minion',
         class: 'Neutral',
-        rarity: 'legendary',
+        rarity: 'mythic',
         description: 'This is a test card for debugging purposes.'
       };
     }

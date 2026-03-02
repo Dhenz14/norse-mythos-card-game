@@ -11,7 +11,7 @@ interface CardDetailViewProps {
 export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose }) => {
   // Extract the card data properly, handling both CardInstance and CardData
   const cardData = 'card' in card ? card.card : card;
-  const isLegendary = cardData.rarity === 'legendary';
+  const isLegendary = cardData.rarity === 'mythic';
   
   // Track if 3D view is active
   const [is3DActive, setIs3DActive] = useState(isLegendary);
@@ -19,7 +19,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
   // Get card border color based on rarity
   const getCardBorderColor = () => {
     switch (cardData.rarity) {
-      case 'legendary':
+      case 'mythic':
         return 'border-yellow-400';
       case 'epic':
         return 'border-purple-500';
@@ -33,7 +33,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
   // Get card background color based on rarity
   const getCardBackgroundColor = () => {
     switch (cardData.rarity) {
-      case 'legendary':
+      case 'mythic':
         return 'from-yellow-900 to-amber-700';
       case 'epic':
         return 'from-purple-900 to-purple-700';

@@ -981,7 +981,7 @@ export const additionalSpellCards: CardData[] = [
       name: "Champion's Legacy",
       manaCost: 8,
       type: "spell",
-      rarity: "legendary",
+      rarity: "epic",
       description: "Equip a 5/2 Weapon. Whenever it attacks, gain 5 Armor.",
       keywords: [],
       heroClass: "warrior",

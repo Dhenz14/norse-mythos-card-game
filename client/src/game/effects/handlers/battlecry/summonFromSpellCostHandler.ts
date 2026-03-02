@@ -9,11 +9,11 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 import cardDatabase from '../../../services/cardDatabase';
 import { v4 as uuidv4 } from 'uuid';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
 
-const MAX_BOARD_SIZE = 7;
 
 /**
  * Execute a summon_from_spell_cost battlecry effect
@@ -32,7 +32,7 @@ export default function executeSummonFromSpellCost(
     context.logGameEvent(`Executing summon_from_spell_cost battlecry for ${sourceCard.name}`);
     
     const currentBoardSize = context.currentPlayer.board.length;
-    const availableSlots = MAX_BOARD_SIZE - currentBoardSize;
+    const availableSlots = MAX_BATTLEFIELD_SIZE - currentBoardSize;
     
     if (availableSlots <= 0) {
       context.logGameEvent(`Board is full, cannot summon minion`);

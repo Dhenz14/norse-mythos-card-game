@@ -21,18 +21,17 @@ import type {
 } from './types';
 import './packs.css';
 
-const RARITY_ORDER = ['mythic', 'legendary', 'epic', 'rare', 'common'] as const;
+const RARITY_ORDER = ['mythic', 'epic', 'rare', 'common'] as const;
 
 const RUNE_COST: Record<string, number> = {
 	starter:   50,
 	booster:  100,
 	premium:  250,
-	legendary: 500,
+	mythic:   500,
 };
 
 const RARITY_COLORS: Record<string, string> = {
 	mythic: '#ec4899',
-	legendary: '#fbbf24',
 	epic: '#a855f7',
 	rare: '#3b82f6',
 	common: '#9ca3af',
@@ -42,7 +41,7 @@ const PACK_THEMES: Record<string, { seal: string; btn: string; card: string; ico
 	'Starter Pack': { seal: 'pack-seal-starter', btn: 'open-btn-starter', card: 'pack-card-starter', icon: '石' },
 	'Booster Pack': { seal: 'pack-seal-booster', btn: 'open-btn-booster', card: 'pack-card-booster', icon: '盾' },
 	'Premium Pack': { seal: 'pack-seal-premium', btn: 'open-btn-premium', card: 'pack-card-premium', icon: '冠' },
-	'Legendary Pack': { seal: 'pack-seal-legendary', btn: 'open-btn-legendary', card: 'pack-card-legendary', icon: '龍' },
+	'Mythic Pack': { seal: 'pack-seal-mythic', btn: 'open-btn-mythic', card: 'pack-card-mythic', icon: '龍' },
 };
 
 function getPackTheme(name: string) {
@@ -50,10 +49,10 @@ function getPackTheme(name: string) {
 }
 
 const FALLBACK_PACKS: PackType[] = [
-	{ id: 1, name: 'Starter Pack', description: '5 cards with guaranteed rare or better', price: 100, cardCount: 5, rarityOdds: { common: 60, rare: 25, epic: 10, legendary: 4, mythic: 1 } },
-	{ id: 2, name: 'Booster Pack', description: '5 cards with improved rare odds', price: 200, cardCount: 5, rarityOdds: { common: 45, rare: 30, epic: 15, legendary: 8, mythic: 2 } },
-	{ id: 3, name: 'Premium Pack', description: '7 cards with guaranteed epic or better', price: 500, cardCount: 7, rarityOdds: { common: 30, rare: 30, epic: 25, legendary: 12, mythic: 3 } },
-	{ id: 4, name: 'Legendary Pack', description: '7 cards with guaranteed legendary', price: 1000, cardCount: 7, rarityOdds: { common: 15, rare: 25, epic: 30, legendary: 25, mythic: 5 } },
+	{ id: 1, name: 'Starter Pack', description: '5 cards with guaranteed rare or better', price: 100, cardCount: 5, rarityOdds: { common: 60, rare: 25, epic: 10, mythic: 5 } },
+	{ id: 2, name: 'Booster Pack', description: '5 cards with improved rare odds', price: 200, cardCount: 5, rarityOdds: { common: 45, rare: 30, epic: 15, mythic: 10 } },
+	{ id: 3, name: 'Premium Pack', description: '7 cards with guaranteed epic or better', price: 500, cardCount: 7, rarityOdds: { common: 30, rare: 30, epic: 25, mythic: 15 } },
+	{ id: 4, name: 'Mythic Pack', description: '7 cards with guaranteed mythic', price: 1000, cardCount: 7, rarityOdds: { common: 15, rare: 25, epic: 30, mythic: 30 } },
 ];
 
 const CARD_POOL = cardRegistry.filter(c => c.rarity && c.name && Number(c.id) >= 1000);
@@ -70,11 +69,10 @@ function openPackLocally(pack: PackType): RevealedCard[] {
 		return pool[Math.floor(Math.random() * pool.length)];
 	};
 	const odds = pack.rarityOdds;
-	const totalWeight = odds.common + odds.rare + odds.epic + odds.legendary + odds.mythic;
+	const totalWeight = odds.common + odds.rare + odds.epic + odds.mythic;
 	const rollRarity = () => {
 		let roll = Math.random() * totalWeight;
 		if ((roll -= odds.mythic) < 0) return 'mythic';
-		if ((roll -= odds.legendary) < 0) return 'legendary';
 		if ((roll -= odds.epic) < 0) return 'epic';
 		if ((roll -= odds.rare) < 0) return 'rare';
 		return 'common';
@@ -159,8 +157,7 @@ export default function PacksPage() {
 						common: pack.common_slots * 10,
 						rare: pack.rare_slots * 10,
 						epic: pack.epic_slots * 10,
-						legendary: pack.legendary_chance,
-						mythic: pack.mythic_chance,
+						mythic: (pack.legendary_chance ?? 0) + (pack.mythic_chance ?? 0),
 					}
 				}));
 				setPackTypes(mappedPacks);
@@ -182,17 +179,12 @@ export default function PacksPage() {
 				const totalRewardReserve = parseNum(overall.total_reward_reserve);
 				const totalPulled = totalPackSupply - totalPackRemaining;
 
-				const legendaryStats = rarityList.find((r: RarityStats) => r.nft_rarity === 'legendary');
 				const mythicStats = rarityList.find((r: RarityStats) => r.nft_rarity === 'mythic');
 
-				const legendaryPulled = legendaryStats
-					? parseNum(legendaryStats.pack_supply) - parseNum(legendaryStats.pack_remaining)
-					: 0;
 				const mythicPulled = mythicStats
 					? parseNum(mythicStats.pack_supply) - parseNum(mythicStats.pack_remaining)
 					: 0;
 
-				const legendaryRate = totalPulled > 0 ? ((legendaryPulled / totalPulled) * 100) : 0;
 				const mythicRate = totalPulled > 0 ? ((mythicPulled / totalPulled) * 100) : 0;
 
 				const byRarity: ProcessedRarityStats[] = [];
@@ -218,7 +210,6 @@ export default function PacksPage() {
 					totalRewardReserve: totalRewardReserve,
 					totalCardsOpened: totalPulled,
 					totalPacksOpened: Math.floor(totalPulled / 5),
-					legendaryDropRate: parseFloat(legendaryRate.toFixed(1)),
 					mythicDropRate: parseFloat(mythicRate.toFixed(1)),
 					byRarity,
 				});
@@ -675,7 +666,7 @@ export default function PacksPage() {
 							</div>
 							<div className="bg-gray-800/40 rounded-xl p-4 border border-gray-700/50 text-center">
 								<div className="text-2xl font-bold text-yellow-400">
-									{supplyStats.legendaryDropRate}%
+									{supplyStats.mythicDropRate}%
 								</div>
 								<div className="text-gray-400 text-sm">Legendary Rate</div>
 							</div>

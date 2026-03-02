@@ -217,7 +217,7 @@ export function getCardQualityFromRarity(card: UnifiedCard): CardQuality {
   const cardData = extractCardData(card);
   
   switch (cardData.rarity) {
-    case 'legendary':
+    case 'mythic':
       return 'golden';
     case 'epic':
       return 'premium';
@@ -244,7 +244,7 @@ export function shouldUsePremiumRenderer(card: UnifiedCard, isInHand: boolean = 
   }
   
   // For tokens and other cards, only use premium for special rarities
-  return cardData.rarity === 'legendary' || cardData.rarity === 'epic';
+  return cardData.rarity === 'mythic' || cardData.rarity === 'epic';
 }
 
 /**
@@ -257,7 +257,7 @@ export function getPremiumOptionsForCard(card: UnifiedCard): PremiumCardOptions 
     ...DEFAULT_PREMIUM_OPTIONS,
     quality: getCardQualityFromRarity(card),
     // Special cards get enhanced effects
-    useNoiseEffects: cardData.rarity === 'legendary' || cardData.rarity === 'epic' || DEFAULT_PREMIUM_OPTIONS.useNoiseEffects,
+    useNoiseEffects: cardData.rarity === 'mythic' || cardData.rarity === 'epic' || DEFAULT_PREMIUM_OPTIONS.useNoiseEffects,
     scale: cardData.type === 'minion' ? 0.95 : 0.9 // Slightly smaller scale for non-minions
   };
 }

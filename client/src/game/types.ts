@@ -74,7 +74,7 @@ export type ZoneType = 'deck' | 'hand' | 'battlefield' | 'graveyard';
 /**
  * Valid card rarities
  */
-export type CardRarity = 'free' | 'common' | 'rare' | 'epic' | 'legendary';
+export type CardRarity = 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
 
 /**
  * Base interface with properties common to all cards

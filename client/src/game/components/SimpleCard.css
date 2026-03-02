@@ -118,13 +118,6 @@
     0 0 28px rgba(168,85,247,0.55);
 }
 
-.simple-card.rarity-legendary:hover {
-  box-shadow:
-    0 4px 8px rgba(0,0,0,0.5),
-    0 14px 28px rgba(0,0,0,0.7),
-    0 0 32px rgba(245,158,11,0.65);
-}
-
 .simple-card.rarity-mythic:hover {
   box-shadow:
     0 4px 8px rgba(0,0,0,0.5),
@@ -205,25 +198,6 @@
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   animation: border-rotate 6s linear infinite;
-}
-
-/* --- Legendary: fast rotating gold with white flash --- */
-.simple-card.rarity-legendary::before {
-  inset: -3px;
-  padding: 3px;
-  border-radius: 13px;
-  border: none;
-  background: conic-gradient(
-    from var(--border-angle),
-    #92400E, #B45309, #F59E0B, #FDE68A,
-    #FFFBEB,
-    #FDE68A, #F59E0B, #B45309, #92400E
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  animation: border-rotate 4s linear infinite;
 }
 
 /* --- Mythic: iridescent rainbow aurora --- */
@@ -472,7 +446,7 @@
 }
 
 /* Rarity-based name colors */
-.simple-card.rarity-legendary .card-name {
+.simple-card.rarity-mythic .card-name {
   color: #FCD34D;
   text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(252,211,77,0.3);
 }
@@ -781,13 +755,6 @@
   transition: opacity 0.3s ease;
 }
 
-.foil-overlay.legendary-foil {
-  background: linear-gradient(135deg,
-    rgba(245,158,11,0.08) 0%,
-    rgba(255,200,50,0.12) 50%,
-    rgba(245,158,11,0.08) 100%);
-}
-
 .foil-overlay.epic-foil {
   background: linear-gradient(135deg,
     rgba(168,85,247,0.08) 0%,
@@ -811,7 +778,6 @@
     rgba(245,158,11,0.08) 100%);
 }
 
-.simple-card:hover .foil-overlay.legendary-foil { opacity: 1; }
 .simple-card:hover .foil-overlay.epic-foil { opacity: 1; }
 .simple-card:hover .foil-overlay.rare-foil { opacity: 0.8; }
 .simple-card:hover .foil-overlay.mythic-foil { opacity: 1; }
@@ -868,7 +834,7 @@
     inset 0 0 12px rgba(168,85,247,0.1);
 }
 
-.simple-card.card-type-spell.rarity-legendary {
+.simple-card.card-type-spell.rarity-mythic {
   background: linear-gradient(180deg, #2A1F10 0%, #1F170A 40%, #140F05 100%);
 }
 
@@ -942,10 +908,6 @@
   box-shadow: 0 0 16px rgba(168,85,247,0.45), 0 0 32px rgba(168,85,247,0.2);
 }
 
-.simple-card.rarity-legendary {
-  box-shadow: 0 0 20px rgba(245,158,11,0.5), 0 0 40px rgba(245,158,11,0.22);
-}
-
 .simple-card.rarity-mythic {
   box-shadow:
     0 0 20px rgba(168,85,247,0.35),
@@ -1008,7 +970,6 @@
       0 0 0 2px rgba(72,187,120,0.6);
   }
 
-  .simple-card:hover .foil-overlay.legendary-foil,
   .simple-card:hover .foil-overlay.epic-foil,
   .simple-card:hover .foil-overlay.rare-foil {
     opacity: 0;

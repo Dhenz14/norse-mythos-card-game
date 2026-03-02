@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance, PlayerState } from '../../../types';
 import { BattlecryEffect } from '../../../types/CardTypes';
 import { isMinion, getHealth } from '../../../utils/cards/typeGuards';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a return battlecry effect
@@ -55,7 +56,7 @@ export function executeReturnReturn(
   const targetMinion = currentPlayer.battlefield[targetIndex];
   
   // Check if hand is full (max 9 cards like Hearthstone)
-  if (currentPlayer.hand.length >= 7) {
+  if (currentPlayer.hand.length >= MAX_HAND_SIZE) {
     
     // Log the effect for debugging
     newState.gameLog = newState.gameLog || [];

@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeAddCard(
   context: GameContext,
@@ -28,7 +29,7 @@ export default function executeAddCard(
     const addedCards: CardInstance[] = [];
     
     for (let i = 0; i < cardCount; i++) {
-      if (context.currentPlayer.hand.length >= 10) {
+      if (context.currentPlayer.hand.length >= MAX_HAND_SIZE) {
         context.logGameEvent(`Hand is full, cannot add more cards.`);
         break;
       }

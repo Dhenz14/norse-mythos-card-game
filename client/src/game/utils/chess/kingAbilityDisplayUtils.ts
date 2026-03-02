@@ -32,7 +32,7 @@ export interface KingAbilityDisplayInfo {
  */
 export function getRarityColor(rarity: KingRarity): string {
   switch (rarity) {
-    case 'super_rare':
+    case 'mythic':
       return '#f59e0b';
     case 'epic':
       return '#a855f7';
@@ -48,14 +48,14 @@ export function getRarityColor(rarity: KingRarity): string {
  */
 export function getRarityLabel(rarity: KingRarity): string {
   switch (rarity) {
-    case 'super_rare':
-      return 'Super Rare';
+    case 'mythic':
+      return 'Mythic';
     case 'epic':
       return 'Epic';
     case 'rare':
       return 'Rare';
     default:
-      return 'Standard';
+      return 'Common';
   }
 }
 

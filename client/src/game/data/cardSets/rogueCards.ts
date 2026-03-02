@@ -322,7 +322,7 @@ export function registerRogueCards(): void {
     .attack(2)
     .health(2)
     .description("Combo: Gain +2/+2 for each card played earlier this turn.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .heroClass("rogue")
     .class("Rogue")

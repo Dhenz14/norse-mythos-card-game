@@ -88,7 +88,7 @@ export type InsertReasoningMetric = z.infer<typeof insertMetricsSchema>;
 // ============================================
 
 // Rarity enum for NFT scarcity tiers
-export const nftRarityEnum = ['common', 'rare', 'epic', 'legendary', 'mythic'] as const;
+export const nftRarityEnum = ['basic', 'common', 'rare', 'epic', 'mythic'] as const;
 export type NftRarity = typeof nftRarityEnum[number];
 
 // Card Supply - tracks max and remaining supply for each card

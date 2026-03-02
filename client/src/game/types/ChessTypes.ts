@@ -315,9 +315,9 @@ export type KingChessAbilityType =
   | 'tartarus_abyss_rupture'; // X-shape diagonal pattern
 
 /**
- * King rarity tiers affect STA penalty and coverage
+ * King rarity tiers — unified with CardRarity
  */
-export type KingRarity = 'standard' | 'rare' | 'epic' | 'super_rare';
+export type KingRarity = 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
 
 /**
  * Mine shape configuration - defines the pattern of tiles affected

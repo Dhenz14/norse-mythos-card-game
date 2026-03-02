@@ -68,7 +68,7 @@
 	100% { opacity: 0.6; }
 }
 
-.rarity-legendary .card-play-card { border-color: #f59e0b; }
+.rarity-mythic .card-play-card { border-color: #f59e0b; }
 .rarity-epic .card-play-card { border-color: #a855f7; }
 .rarity-rare .card-play-card { border-color: #3b82f6; }
 

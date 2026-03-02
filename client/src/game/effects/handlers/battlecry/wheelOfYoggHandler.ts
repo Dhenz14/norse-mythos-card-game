@@ -60,7 +60,7 @@ const YOGG_WHEEL_EFFECTS = [
             description: 'Created by the Wheel of Yogg-Saron',
             manaCost: randomStats.cost,
             type: 'minion',
-            rarity: 'legendary',
+            rarity: 'mythic',
             heroClass: 'neutral',
             attack: randomStats.attack,
             health: randomStats.health

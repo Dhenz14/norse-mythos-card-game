@@ -63,7 +63,7 @@ export const deathknightCards: CardData[] = [
     description: "After your hero attacks and kills a minion, summon that minion to your side.",
     flavorText: "Whomsoever takes up this blade shall wield power eternal.",
     type: "weapon",
-    rarity: "legendary",
+    rarity: "mythic",
     class: "Deathknight",
     collectible: true,
     set: "core"
@@ -140,7 +140,7 @@ export const deathknightCards: CardData[] = [
     description: "Battlecry: Equip Frostmourne and gain 5 Armor.",
     flavorText: "When a prince becomes a death knight, it's a royal pain.",
     type: "hero",
-    rarity: "legendary",
+    rarity: "mythic",
     class: "Deathknight",
     keywords: ["battlecry"],
     collectible: true,

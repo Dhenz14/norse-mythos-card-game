@@ -9,6 +9,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -39,7 +40,7 @@ export default function executeAddCardAddCard(
     const addedCards: CardInstance[] = [];
     
     for (let i = 0; i < count; i++) {
-      if (context.currentPlayer.hand.length >= 10) {
+      if (context.currentPlayer.hand.length >= MAX_HAND_SIZE) {
         context.logGameEvent(`Hand is full, cannot add more cards`);
         break;
       }

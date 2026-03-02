@@ -825,10 +825,10 @@ function executeSummonRandomLegendaryDeathrattle(
 
   if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
 
-  const legendaries = allCards.filter(c => c.type === 'minion' && c.rarity === 'legendary');
-  if (legendaries.length === 0) return newState;
+  const mythics = allCards.filter(c => c.type === 'minion' && c.rarity === 'mythic');
+  if (mythics.length === 0) return newState;
 
-  const randomCard = legendaries[Math.floor(Math.random() * legendaries.length)];
+  const randomCard = mythics[Math.floor(Math.random() * mythics.length)];
   const instance = createCardInstance(randomCard);
   player.battlefield.push(instance);
   trackQuestProgress(playerId, 'summon_minion', instance.card);

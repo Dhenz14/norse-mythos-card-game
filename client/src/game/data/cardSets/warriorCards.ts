@@ -112,7 +112,7 @@ export function registerWarriorCards(): void {
     .name("War Horn of Asgard")
     .manaCost(2)
     .description("Your minions can't be reduced below 1 Health this turn. Draw a card.")
-    .flavorText("Soldiers in the Azeroth army must be in pretty good shape to survive all that shouting.")
+    .flavorText("Soldiers in the Asgardian army must be in pretty good shape to survive all that shouting.")
     .type("spell")
     .rarity("rare")
     .class("Warrior")
@@ -225,7 +225,7 @@ export function registerWarriorCards(): void {
     .description("Battlecry: Equip a 4/2 Shadowmourne that also damages adjacent minions.")
     .flavorText("The legendary warrior known for his battle fury and unyielding rage.")
     .type("hero")
-    .rarity("legendary")
+    .rarity("mythic")
     .class("Warrior")
     .addKeyword("battlecry")
     .battlecry({
@@ -245,7 +245,7 @@ export function registerWarriorCards(): void {
     .description("Also damages minions adjacent to whomever your hero attacks.")
     .flavorText("Forged from the shattered shards of Frostmourne by Darion Mograine and wielded by Highlord Darion Mograine.")
     .type("weapon")
-    .rarity("legendary")
+    .rarity("mythic")
     .class("Warrior")
     .customProperty("cleaveEffect", {
       type: "splash_damage",
@@ -624,7 +624,7 @@ export function registerWarriorCards(): void {
     .name("Champion's Legacy")
     .manaCost(8)
     .type("spell")
-    .rarity("legendary")
+    .rarity("mythic")
     .description("Equip a 5/2 Weapon. Whenever it attacks, gain 5 Armor.")
     .class("Warrior")
     .heroClass("warrior")

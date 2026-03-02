@@ -482,7 +482,7 @@ export const GameBoard: React.FC<{}> = () => {
     }
     
     // Check if it's a legendary card and show special entrance animation
-    if (card.card.rarity === 'legendary' && cardPosition) {
+    if (card.card.rarity === 'mythic' && cardPosition) {
       debug.log(`[LEGENDARY-DEBUG] Triggering legendary entrance for ${card.card.name}`);
       
       // Set the legendary card to trigger the animation component
@@ -684,7 +684,7 @@ export const GameBoard: React.FC<{}> = () => {
     // Delay the actual play to let the animation complete
     // This creates the feeling of the card "flying" to the battlefield before taking effect
     // For legendary cards, we use a longer delay to allow the legendary entrance animation to complete
-    const animationDelay = (card.card.rarity === 'legendary') ? 3000 : (cardPosition ? 400 : 0);
+    const animationDelay = (card.card.rarity === 'mythic') ? 3000 : (cardPosition ? 400 : 0);
     
     setTimeout(() => {
       // Regular play card (for minions or spells without special handling)
@@ -853,7 +853,7 @@ export const GameBoard: React.FC<{}> = () => {
         }
         
         // Legendary-specific sound
-        if(battlecryCard.card.rarity === 'legendary') {
+        if(battlecryCard.card.rarity === 'mythic') {
           playSuccess();
         } else {
           // Play appropriate sound effect based on battlecry type
@@ -2149,7 +2149,7 @@ export const GameBoard: React.FC<{}> = () => {
                   setActiveEnvironmentalEffect({
                     card: randomCard.card,
                     duration: 3,
-                    intensity: randomCard.card.rarity === 'legendary' ? 'high' : 'medium'
+                    intensity: randomCard.card.rarity === 'mythic' ? 'high' : 'medium'
                   });
                 }
               }

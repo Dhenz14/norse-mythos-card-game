@@ -217,7 +217,7 @@ export const warlockCards: CardData[] = [
     health: 15,
     type: "minion",
     race: "titan",
-    rarity: "legendary",
+    rarity: "mythic",
     description: "Battlecry: Replace your hero with Erebus, Void Lord.",
     keywords: ["battlecry"],
     heroClass: "warlock",

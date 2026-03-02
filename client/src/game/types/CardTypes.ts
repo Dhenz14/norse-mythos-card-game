@@ -11,7 +11,7 @@ import {
 } from './EffectTypes';
 
 export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'hero_power' | 'poker_spell' | 'artifact' | 'armor';
-export type CardRarity = 'common' | 'rare' | 'epic' | 'legendary' | 'token' | 'basic' | 'free';
+export type CardRarity = 'basic' | 'common' | 'rare' | 'epic' | 'mythic' | 'token';
 export type HeroClass = 
   | 'neutral' 
   | 'mage' 

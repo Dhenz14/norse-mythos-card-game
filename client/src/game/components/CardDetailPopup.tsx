@@ -32,11 +32,11 @@ const CardDetailPopup: React.FC<CardDetailPopupProps> = ({
   
   // Get rarity color for the header
   const rarityColors: Record<string, string> = {
+    basic: '#CCCCCC',
     common: '#FFFFFF',
-    free: '#FFFFFF',
     rare: '#0070DD',
     epic: '#A335EE',
-    legendary: '#FF8000'
+    mythic: '#FF8000'
   };
   
   const headerColor = rarityColors[card.rarity ?? 'common'] || rarityColors.common;
@@ -67,7 +67,7 @@ const CardDetailPopup: React.FC<CardDetailPopupProps> = ({
           {/* Header with card name and close button */}
           <div
             className="flex justify-between items-center px-6 py-4"
-            style={{ backgroundColor: card.rarity === 'legendary' ? '#C41F3B' : '#2C3E50' }}
+            style={{ backgroundColor: card.rarity === 'mythic' ? '#C41F3B' : '#2C3E50' }}
           >
             <h2 
               className="text-2xl font-bold"

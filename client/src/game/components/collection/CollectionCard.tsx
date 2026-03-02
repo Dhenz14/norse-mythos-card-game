@@ -92,7 +92,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
           <CardRenderer
             card={cardData}
             enableHolographic={true}
-            forceHolographic={cardData.rarity === 'legendary' || cardData.rarity === 'epic'}
+            forceHolographic={cardData.rarity === 'mythic' || cardData.rarity === 'epic'}
             renderQuality="medium"
             isPlayable={canAdd && count < maxCount}
           />

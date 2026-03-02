@@ -237,7 +237,7 @@ export interface PetData {
   id: string;
   name: string;
   imageUrl?: string;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity: 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
   petClass: 'pawn' | 'standard' | 'queen' | 'king';
   stats: PetStats;
   abilities: PetAbility[];

@@ -40,10 +40,11 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
 }) => {
   // Rarity colors for the card border and effects
   const rarityColors = {
-    common: '#8c8c8c', // gray
+    basic: '#8c8c8c',  // gray
+    common: '#b0b0b0', // light gray
     rare: '#0070dd',   // blue
     epic: '#a335ee',   // purple
-    legendary: '#ff8000' // orange/gold
+    mythic: '#ff8000'  // orange/gold
   };
   
   // Card dimensions based on size
@@ -66,7 +67,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
     if (isHighlighted) return '0 0 15px rgba(255, 255, 0, 0.8)';
     if (isPlayable) return '0 0 10px rgba(0, 255, 0, 0.7)';
     
-    if (rarity === 'legendary') return '0 0 15px rgba(255, 176, 0, 0.7)';
+    if (rarity === 'mythic') return '0 0 15px rgba(255, 176, 0, 0.7)';
     if (rarity === 'epic') return '0 0 10px rgba(163, 53, 238, 0.7)';
     if (rarity === 'rare') return '0 0 8px rgba(0, 112, 221, 0.5)';
     
@@ -193,7 +194,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
     let classes = 'card-container';
     
     // Add premium-card-container class for the 3D effect
-    if (rarity === 'legendary' || rarity === 'epic' || rarity === 'rare') {
+    if (rarity === 'mythic' || rarity === 'epic' || rarity === 'rare') {
       classes += ' premium-card-container';
       
       // Add hover classes when hovered
@@ -203,7 +204,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
     }
     
     // Add the specific quality class based on rarity
-    if (rarity === 'legendary') {
+    if (rarity === 'mythic') {
       classes += ' golden-quality';
     } else if (rarity === 'epic') {
       classes += ' diamond-quality';
@@ -227,7 +228,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
         width: `${cardWidth}px`,
         height: `${cardHeight}px`,
         borderRadius: '12px',
-        backgroundColor: rarity === 'legendary' ? '#2a1a00' : 
+        backgroundColor: rarity === 'mythic' ? '#2a1a00' : 
                        rarity === 'epic' ? '#2a0a2a' : 
                        rarity === 'rare' ? '#001a33' : '#222',
         boxShadow: getCardGlow(),
@@ -242,7 +243,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
       }}
     >
       {/* Full card background holographic effect for legendary cards - first layer */}
-      {rarity === 'legendary' && (
+      {rarity === 'mythic' && (
         <div 
           className="full-card-holographic" 
           style={{
@@ -286,8 +287,8 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
       {/* Main Card Div with 3D transform for premium cards */}
       <div 
         className={`card-inner ${
-          rarity === 'legendary' 
-            ? 'legendary-card holographic-enabled' 
+          rarity === 'mythic' 
+            ? 'mythic-card holographic-enabled' 
             : rarity === 'epic' 
               ? 'epic-card holographic-enabled' 
               : ''
@@ -300,7 +301,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
           height: '100%',
           borderRadius: '12px',
           transformStyle: 'preserve-3d',
-          transform: (use3D && (rarity === 'legendary' || rarity === 'epic')) ? 
+          transform: (use3D && (rarity === 'mythic' || rarity === 'epic')) ?
             `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) translateZ(5px)` : 
             'none',
           transition: isHovered ? 'none' : 'transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
@@ -317,7 +318,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundImage: rarity === 'legendary' 
+            backgroundImage: rarity === 'mythic' 
               ? 'linear-gradient(135deg, #2a1a00 0%, #4a3000 100%)' 
               : rarity === 'epic'
                 ? 'linear-gradient(135deg, #2a0a2a 0%, #3a1a3a 100%)'
@@ -328,8 +329,8 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
         />
         
         {/* Gold foil background texture for legendary cards */}
-        {rarity === 'legendary' && (
-          <div className="holographic-card card-holographic-effect" data-rarity="legendary" style={{
+        {rarity === 'mythic' && (
+          <div className="holographic-card card-holographic-effect" data-rarity="mythic" style={{
             position: 'absolute',
             top: 0,
             left: 0,
@@ -348,7 +349,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
         )}
         
         {/* Holographic overlay effect for legendary cards */}
-        {rarity === 'legendary' && (
+        {rarity === 'mythic' && (
           <div 
             className="holographic-overlay"
             style={{
@@ -434,7 +435,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
             overflow: 'hidden',
             backgroundColor: '#111',
             border: `1px solid ${
-              rarity === 'legendary' 
+              rarity === 'mythic' 
                 ? 'rgba(255, 176, 0, 0.5)' 
                 : rarity === 'epic' 
                   ? 'rgba(163, 53, 238, 0.4)' 
@@ -487,7 +488,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
             marginTop: '5px',
             padding: '4px 0',
             border: `1px solid ${
-              rarity === 'legendary' 
+              rarity === 'mythic' 
                 ? '#ffb100' 
                 : rarity === 'epic' 
                   ? '#a335ee' 
@@ -526,7 +527,7 @@ const BaseCardFrame: React.FC<CardBaseProps> = ({
             {/* Keywords */}
             {keywords.length > 0 && (
               <div style={{
-                color: rarity === 'legendary' ? '#ffde7a' : 
+                color: rarity === 'mythic' ? '#ffde7a' : 
                       rarity === 'epic' ? '#d8abff' : 
                       '#ffffff',
                 fontSize: size === 'small' ? '8px' : '10px',

@@ -10,12 +10,11 @@ import type {
 export const MAX_CARD_LEVEL = 3;
 
 export const XP_CONFIG: XPConfigMap = {
-	free:      { rarity: 'free',      xpPerWin: 5,  xpPerMvp: 0,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 20, 50] },
 	basic:     { rarity: 'basic',     xpPerWin: 5,  xpPerMvp: 0,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 20, 50] },
 	common:    { rarity: 'common',    xpPerWin: 10, xpPerMvp: 3,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 50, 150] },
 	rare:      { rarity: 'rare',      xpPerWin: 15, xpPerMvp: 5,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 100, 300] },
 	epic:      { rarity: 'epic',      xpPerWin: 20, xpPerMvp: 8,  maxLevel: MAX_CARD_LEVEL, thresholds: [0, 160, 480] },
-	legendary: { rarity: 'legendary', xpPerWin: 25, xpPerMvp: 10, maxLevel: MAX_CARD_LEVEL, thresholds: [0, 200, 500] },
+	mythic:    { rarity: 'mythic',    xpPerWin: 25, xpPerMvp: 10, maxLevel: MAX_CARD_LEVEL, thresholds: [0, 200, 500] },
 };
 
 const LEVEL_BONUSES: CardLevelBonus[] = [

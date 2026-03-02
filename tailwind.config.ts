@@ -17,10 +17,11 @@ export default {
         },
         // Card rarity colors (Hearthstone/Runeterra style)
         rarity: {
-          common: "#9CA3AF",
+          basic: "#9CA3AF",
+          common: "#D1D5DB",
           rare: "#3B82F6",
           epic: "#A855F7",
-          legendary: "#F59E0B",
+          mythic: "#F59E0B",
           token: "#6B7280",
         },
         // Game UI colors

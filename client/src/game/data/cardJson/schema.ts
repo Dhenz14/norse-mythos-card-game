@@ -7,7 +7,7 @@
 import { z } from 'zod';
 
 export const CardTypeSchema = z.enum(['minion', 'spell', 'weapon', 'hero', 'secret', 'location']);
-export const CardRaritySchema = z.enum(['free', 'common', 'rare', 'epic', 'legendary']);
+export const CardRaritySchema = z.enum(['basic', 'common', 'rare', 'epic', 'mythic']);
 
 export const BattlecryEffectSchema = z.object({
   type: z.string(),

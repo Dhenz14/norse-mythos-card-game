@@ -328,7 +328,7 @@ export const   mechanicCards: CardData[] = [{
       health: 5,
 
       type: "minion",
-      rarity: "legendary",
+      rarity: "epic",
 
       description: "Deathrattle: Summon a 4/5 Primordial Calf.",
       keywords: ["deathrattle"],
@@ -745,8 +745,8 @@ export const tokenCards: CardData[] = [
     attack: 4,
     health: 5,
     type: "minion",
-    rarity: "legendary",
-    description: "Legendary warrior of the Horde.",
+    rarity: "epic",
+    description: "Famed warrior of the Nine Realms.",
     keywords: [],
     heroClass: "neutral",
     class: "Neutral",

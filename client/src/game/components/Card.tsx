@@ -693,14 +693,14 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
               className="w-full h-full rounded-md flex items-center justify-center"
               style={{
                 background: `linear-gradient(to bottom, 
-                  ${cardData.rarity === 'legendary' ? '#d9c080' : '#ccc'}, 
-                  ${cardData.rarity === 'legendary' ? '#b09550' : '#999'}, 
-                  ${cardData.rarity === 'legendary' ? '#8f783f' : '#777'})`,
+                  ${cardData.rarity === 'mythic' ? '#d9c080' : '#ccc'}, 
+                  ${cardData.rarity === 'mythic' ? '#b09550' : '#999'}, 
+                  ${cardData.rarity === 'mythic' ? '#8f783f' : '#777'})`,
                 boxShadow: `0 3px 5px rgba(0,0,0,0.5), 
                   inset 0 1px 2px rgba(255,255,255,0.7), 
                   inset 0 -1px 1px rgba(0,0,0,0.3)`,
                 border: `1px solid ${
-                  cardData.rarity === 'legendary' ? '#b39747' :
+                  cardData.rarity === 'mythic' ? '#b39747' :
                   cardData.rarity === 'epic' ? '#9a76b7' : 
                   cardData.rarity === 'rare' ? '#6187a9' : '#8a7654'
                 }`

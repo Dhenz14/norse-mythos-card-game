@@ -79,10 +79,9 @@ router.get('/supply-stats', async (_req: Request, res: Response) => {
 				ORDER BY
 					CASE nft_rarity
 						WHEN 'mythic' THEN 1
-						WHEN 'legendary' THEN 2
-						WHEN 'epic' THEN 3
-						WHEN 'rare' THEN 4
-						WHEN 'common' THEN 5
+						WHEN 'epic' THEN 2
+						WHEN 'rare' THEN 3
+						WHEN 'common' THEN 4
 					END
 			`);
 
@@ -150,11 +149,10 @@ router.post('/open', async (req: Request, res: Response) => {
 		const pulledCards: any[] = [];
 
 		const rarityFallback: Record<string, string[]> = {
-			common: ['common', 'rare', 'legendary', 'mythic'],
-			rare: ['rare', 'legendary', 'mythic'],
-			epic: ['legendary', 'mythic'],
-			legendary: ['legendary', 'mythic'],
-			mythic: ['mythic', 'legendary'],
+			common: ['common', 'rare', 'epic', 'mythic'],
+			rare: ['rare', 'epic', 'mythic'],
+			epic: ['epic', 'mythic'],
+			mythic: ['mythic', 'epic'],
 		};
 
 		async function pullCard(nftRarity: string, preferredType?: string): Promise<any | null> {
@@ -205,14 +203,12 @@ router.post('/open', async (req: Request, res: Response) => {
 			return null;
 		}
 
-		function determineWildcardRarity(legendaryChance: number, mythicChance: number): string {
+		function determineWildcardRarity(mythicChance: number): string {
 			const roll = Math.random() * 100;
 
 			if (roll < mythicChance) {
 				return 'mythic';
-			} else if (roll < mythicChance + legendaryChance) {
-				return 'legendary';
-			} else if (roll < mythicChance + legendaryChance + 20) {
+			} else if (roll < mythicChance + 20) {
 				return 'epic';
 			} else {
 				return 'rare';
@@ -241,7 +237,7 @@ router.post('/open', async (req: Request, res: Response) => {
 
 		// Pull wildcard slots — first prefers hero, rest cycle spell/minion
 		for (let i = 0; i < pack.wildcard_slots; i++) {
-			const rarity = determineWildcardRarity(pack.legendary_chance, pack.mythic_chance);
+			const rarity = determineWildcardRarity((pack.legendary_chance ?? 0) + (pack.mythic_chance ?? 0));
 			const preferredType = WILDCARD_TYPES[i % WILDCARD_TYPES.length];
 			const card = await pullCard(rarity, preferredType);
 			if (card) pulledCards.push(card);

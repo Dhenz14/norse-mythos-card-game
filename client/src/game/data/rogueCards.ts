@@ -441,7 +441,7 @@ export const rogueCards: CardData[] = [
     attack: 2,
     health: 2,
     type: "minion",
-    rarity: "legendary",
+    rarity: "mythic",
     description: "Combo: Gain +2/+2 for each card played earlier this turn.",
     keywords: ["combo"],
     heroClass: "rogue",

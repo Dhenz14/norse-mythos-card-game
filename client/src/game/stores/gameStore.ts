@@ -323,7 +323,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           // Normal card play, no discovery
           
           // Play sound effect based on card type
-          if (cardInstance.card.rarity === 'legendary') {
+          if (cardInstance.card.rarity === 'mythic') {
             if (audioStore && typeof audioStore.playSoundEffect === 'function') {
               audioStore.playSoundEffect('legendary');
             }

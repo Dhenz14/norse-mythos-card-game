@@ -406,7 +406,7 @@ export function registerDruidCards(): void {
     .attack(5)
     .health(8)
     .type("minion")
-    .rarity("legendary")
+    .rarity("epic")
     .description("Choose One - Give your other minions +2/+2; or Summon two 2/2 Treants with Taunt.")
     .flavorText("Cenarius was the patron demigod of all druids... until Surtr incinerated him.")
     .heroClass("druid")

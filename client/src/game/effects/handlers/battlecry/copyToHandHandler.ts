@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeCopyToHand(
   context: GameContext,
@@ -38,7 +39,7 @@ export default function executeCopyToHand(
     
     const target = targets[0];
     
-    if (context.currentPlayer.hand.length >= 10) {
+    if (context.currentPlayer.hand.length >= MAX_HAND_SIZE) {
       context.logGameEvent('Hand is full, cannot add copied card.');
       return { success: false, error: 'Hand is full' };
     }

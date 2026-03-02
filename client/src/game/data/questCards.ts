@@ -11,7 +11,7 @@ export const questRewards: CardData[] = [
       name: "Chronos Warp",
       manaCost: 5,
       description: "Take an extra turn after this one.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "spell",
       keywords: [],
       spellEffect: {
@@ -30,7 +30,7 @@ export const questRewards: CardData[] = [
       attack: 4,
       durability: 2,
       description: "Battlecry: Your Hero Power becomes 'Deal 8 damage'.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "weapon",
       keywords: ["battlecry"],
                   battlecry: {
@@ -53,7 +53,7 @@ export const questRewards: CardData[] = [
       name: "Yggdrasil Core",
       manaCost: 5,
       description: "For the rest of the game, your minions are 4/4.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "spell",
       keywords: [],
       spellEffect: {
@@ -71,7 +71,7 @@ export const questRewards: CardData[] = [
       attack: 8,
       health: 8,
       description: "Taunt.   Battlecry: Set your hero's Health to 40.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "minion",
       keywords: ["taunt", "battlecry"],
                   battlecry: {
@@ -90,7 +90,7 @@ export const questRewards: CardData[] = [
       attack: 8,
       health: 8,
       description: "Battlecry: Shuffle 15 Raptors into your deck. They cost (1) and draw a card when played.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "minion",
       keywords: ["battlecry"],
                   battlecry: {
@@ -110,7 +110,7 @@ export const questRewards: CardData[] = [
       attack: 8,
       health: 8,
       description: "Battlecry: The minions in your deck cost (0).",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "minion",
       keywords: ["battlecry"],
                   battlecry: {
@@ -132,7 +132,7 @@ export const questCards: CardData[] = [
       name: "Open the Bifrost",
       manaCost: 1,
       description: "Quest: Cast 6 spells that didn't start in your deck.   Reward: Chronos Warp.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "spell",
       keywords: ["quest"],
       spellEffect: {
@@ -155,7 +155,7 @@ export const questCards: CardData[] = [
       name: "Surtr's Heart",
       manaCost: 1,
       description: "Quest: Play 7 Taunt minions.   Reward: Mjolnir's Fury.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "spell",
       keywords: ["quest"],
       spellEffect: {
@@ -178,7 +178,7 @@ export const questCards: CardData[] = [
       name: "The Underworld Path",
       manaCost: 1,
       description: "Quest: Play 5 minions with the same name.   Reward: Yggdrasil Core.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "spell",
       keywords: ["quest"],
       spellEffect: {
@@ -201,7 +201,7 @@ export const questCards: CardData[] = [
       name: "Awaken the Titans",
       manaCost: 1,
       description: "Quest: Summon 7 Deathrattle minions. Reward: Elpis, Warden of Hope.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "spell",
       keywords: ["quest"],
       spellEffect: {
@@ -224,7 +224,7 @@ export const questCards: CardData[] = [
       name: "The Hydra Queen",
       manaCost: 1,
       description: "Quest: Play 7 minions that cost (1).   Reward: Queen Echidna.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "spell",
       keywords: ["quest"],
       spellEffect: {
@@ -247,7 +247,7 @@ export const questCards: CardData[] = [
       name: "Titan Giants",
       manaCost: 1,
       description: "Quest: Summon 5 minions with 5 or more Attack.   Reward: Barnabus, Titan Stomper.",
-      rarity: "legendary",
+      rarity: "mythic",
       type: "spell",
       keywords: ["quest"],
       spellEffect: {

@@ -865,7 +865,7 @@ async function applyPackOpen(
 		// Derive rarity from a secondary LCG roll per card
 		s = lcgNext(s);
 		const rarityRoll = s % 100;
-		const rarity = rarityRoll < 1 ? 'legendary' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
+		const rarity = rarityRoll < 1 ? 'mythic' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
 
 		// Supply cap enforcement — check before minting each card
 		const counter = await getSupplyCounter(rarity);

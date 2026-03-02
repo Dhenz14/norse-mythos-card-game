@@ -1071,7 +1071,7 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 	const heroRunes = getRunesForText(hero.name, 3);
 	const scarcity = getMockScarcity(hero.id || hero.name, isKing);
 	const glowColors = getGlowColors(hero, isKing);
-	const rarityLabel = isKing ? 'MYTHIC' : 'LEGENDARY';
+	const rarityLabel = 'MYTHIC';
 
 	const particles = Array.from({ length: 14 }, (_, i) => ({
 		id: i,

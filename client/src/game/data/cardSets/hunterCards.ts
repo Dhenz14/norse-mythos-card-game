@@ -385,7 +385,7 @@ const hunterCards = [
     .attack(5)
     .health(5)
     .class("Hunter")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .addKeyword("battlecry")
     .battlecry({

@@ -73,7 +73,7 @@ export const demonhunterCards: CardData[] = [
     description: "Draw 3 cards. Outcast: Reduce their Cost by (3).",
     flavorText: "The skull of the Titan who defied the gods still pulses with forbidden knowledge.",
     type: "spell",
-    rarity: "legendary",
+    rarity: "mythic",
     class: "Demonhunter",
     keywords: ["outcast"],
     spellEffect: {
@@ -114,7 +114,7 @@ export const demonhunterCards: CardData[] = [
     description: "After you play the left- or right-most card in your hand, deal 1 damage to all enemies.",
     flavorText: "Cast out by the gods, his fire still burns against all who oppose him.",
     type: "minion",
-    rarity: "legendary",
+    rarity: "mythic",
     class: "Demonhunter",
     keywords: ["outcast"],
     collectible: true,
@@ -127,7 +127,7 @@ export const demonhunterCards: CardData[] = [
     description: "Swap your Hero Power to \"Deal 4 damage.\" After 2 uses, swap back.",
     flavorText: "It's just a phase.",
     type: "spell",
-    rarity: "legendary",
+    rarity: "mythic",
     class: "Demonhunter",
     spellEffect: {
       type: "swap_hero_power"
@@ -225,7 +225,7 @@ export const demonhunterCards: CardData[] = [
     description: "Deal 4 damage.",
     flavorText: "After 2 uses, swap back.",
     type: "spell",
-    rarity: "legendary",
+    rarity: "mythic",
     class: "Demonhunter",
     spellEffect: {
       type: "damage",
@@ -258,7 +258,7 @@ export const demonhunterCards: CardData[] = [
     attack: 8,
     health: 8,
     type: "minion",
-    rarity: "legendary",
+    rarity: "mythic",
     description: "Battlecry: Transform into Demon Form, gaining +5 Attack and Lifesteal this turn.",
     flavorText: "Death incarnate, transformed by demonic power.",
     keywords: ["battlecry"],

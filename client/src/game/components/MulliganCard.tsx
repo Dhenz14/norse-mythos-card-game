@@ -30,7 +30,7 @@ export const MulliganCard: React.FC<MulliganCardProps> = ({ card, isSelected, on
     health: cardDataTyped.health,
     description: cardData.description || '',
     type: (cardData.type as 'minion' | 'spell' | 'weapon') || 'minion',
-    rarity: (cardData.rarity as 'common' | 'rare' | 'epic' | 'legendary') || 'common',
+    rarity: (cardData.rarity as 'basic' | 'common' | 'rare' | 'epic' | 'mythic') || 'common',
     tribe: cardDataTyped.tribe || cardDataTyped.race,
     cardClass: (cardDataTyped.cardClass || cardDataTyped.class),
     keywords: cardData.keywords || []

@@ -66,11 +66,11 @@
 	box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3);
 }
 
-.db-card.rarity-legendary {
+.db-card.rarity-mythic {
 	border-color: rgba(249, 115, 22, 0.6);
 	box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
 }
-.db-card.rarity-legendary:hover {
+.db-card.rarity-mythic:hover {
 	border-color: rgba(251, 146, 60, 0.9);
 	box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3);
 }
@@ -384,7 +384,7 @@
 .db-preview-rarity.common { color: rgba(200, 205, 215, 0.6); }
 .db-preview-rarity.rare { color: #60a5fa; }
 .db-preview-rarity.epic { color: #c084fc; }
-.db-preview-rarity.legendary { color: #fb923c; }
+.db-preview-rarity.mythic { color: #fb923c; }
 
 /* ===== Mana Curve in Sidebar ===== */
 .db-mana-curve {
@@ -445,7 +445,7 @@
 .db-deck-card.rarity-common { border-left-color: rgba(150, 155, 165, 0.4); }
 .db-deck-card.rarity-rare { border-left-color: rgba(59, 130, 246, 0.7); }
 .db-deck-card.rarity-epic { border-left-color: rgba(168, 85, 247, 0.7); }
-.db-deck-card.rarity-legendary { border-left-color: rgba(249, 115, 22, 0.7); }
+.db-deck-card.rarity-mythic { border-left-color: rgba(249, 115, 22, 0.7); }
 
 .db-deck-mana {
 	width: 22px;

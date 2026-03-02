@@ -27,12 +27,11 @@ const EFFECT_MULTIPLIERS: Record<EvolutionLevel, number> = {
 };
 
 const EVOLUTION_TIER_MAP: Record<string, [number, number][]> = {
+	basic:     [[1, 2], [3, 4], [5, 5]],
 	common:    [[1, 3], [4, 7], [8, 10]],
 	rare:      [[1, 3], [4, 6], [7, 8]],
 	epic:      [[1, 2], [3, 4], [5, 6]],
-	legendary: [[1, 1], [2, 3], [4, 4]],
-	free:      [[1, 2], [3, 4], [5, 5]],
-	basic:     [[1, 2], [3, 4], [5, 5]],
+	mythic:    [[1, 1], [2, 3], [4, 4]],
 };
 
 function scaleValue(value: number, multiplier: number): number {

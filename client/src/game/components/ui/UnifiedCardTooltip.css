@@ -54,7 +54,7 @@
   box-shadow: var(--tooltip-shadow), 0 0 16px rgba(159, 122, 234, 0.4);
 }
 
-.unified-card-tooltip.rarity-legendary {
+.unified-card-tooltip.rarity-mythic {
   border: 2px solid #F6AD55;
   box-shadow: var(--tooltip-shadow), 0 0 20px rgba(246, 173, 85, 0.5);
 }

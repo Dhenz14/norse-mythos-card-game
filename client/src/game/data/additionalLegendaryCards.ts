@@ -16,7 +16,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 8,
     health: 8,
     type: "minion",
-    rarity: "legendary",
+    rarity: "mythic",
     description: "Battlecry: Set a hero's remaining Health to 15.",
     keywords: [
       "battlecry"
@@ -39,7 +39,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 4,
     health: 12,
     type: "minion",
-    rarity: "legendary",
+    rarity: "epic",
     description: "At the end of your turn, add a Dream Card to your hand.",
     keywords: [],
     heroClass: "neutral",
@@ -54,7 +54,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 12,
     health: 12,
     type: "minion",
-    rarity: "legendary",
+    rarity: "mythic",
     description: "Battlecry: Destroy all other minions and discard your hand.",
     keywords: [
       "battlecry"
@@ -78,7 +78,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 1,
     health: 1,
     type: "minion",
-    rarity: "legendary",
+    rarity: "rare",
     description: "Spell Damage +1. Deathrattle: Draw a card.",
     keywords: [
       "deathrattle"
@@ -100,7 +100,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 6,
     health: 2,
     type: "minion",
-    rarity: "legendary",
+    rarity: "rare",
     description: "Charge. Battlecry: Summon two 1/1 Whelps for your opponent.",
     keywords: [
       "charge",
@@ -125,7 +125,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 4,
     health: 12,
     type: "minion",
-    rarity: "legendary",
+    rarity: "epic",
     description: "Spell Damage +5",
     keywords: [],
     heroClass: "neutral",
@@ -141,7 +141,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 5,
     health: 4,
     type: "minion",
-    rarity: "legendary",
+    rarity: "epic",
     description: "Battlecry: Destroy your opponent's weapon and draw cards equal to its Durability.",
     keywords: [
       "battlecry"
@@ -162,7 +162,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 4,
     health: 5,
     type: "minion",
-    rarity: "legendary",
+    rarity: "epic",
     description: "Battlecry: Destroy an enemy minion with Taunt.",
     keywords: [
       "battlecry"
@@ -183,7 +183,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 3,
     health: 5,
     type: "minion",
-    rarity: "legendary",
+    rarity: "rare",
     description: "Battlecry: Shuffle the 'Map to the Golden Monkey' into your deck.",
     keywords: [
       "battlecry"
@@ -204,7 +204,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 7,
     health: 7,
     type: "minion",
-    rarity: "legendary",
+    rarity: "epic",
     description: "Battlecry: If you played an Elemental last turn, cast an Elemental Invocation.",
     keywords: [
       "battlecry",
@@ -230,7 +230,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 3,
     health: 5,
     type: "minion",
-    rarity: "legendary",
+    rarity: "epic",
     description: "Whenever you cast a spell, add a random Priest spell to your hand.",
     keywords: [],
     heroClass: "priest",
@@ -243,7 +243,7 @@ export const additionalLegendaryCards: CardData[] = [
     name: "Nyx, the Hollow",
     manaCost: 9,
     type: "hero",
-    rarity: "legendary",
+    rarity: "mythic",
     description: "Battlecry: Gain Stealth until your next turn. Passive Hero Power: During your turn, add a Shadow Reflection to your hand.",
     keywords: [
       "battlecry"
@@ -267,7 +267,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 2,
     health: 2,
     type: "minion",
-    rarity: "legendary",
+    rarity: "rare",
     description: "Your cards that summon minions summon twice as many.",
     keywords: [],
     heroClass: "mage",
@@ -281,7 +281,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 8,
     health: 4,
     type: "minion",
-    rarity: "legendary",
+    rarity: "epic",
     description: "Deathrattle: Return this to your hand and summon a 4/4 Undead Warrior.",
     keywords: [
       "deathrattle"
@@ -300,7 +300,7 @@ export const additionalLegendaryCards: CardData[] = [
     name: "Vidar, the Relentless",
     manaCost: 10,
     type: "hero",
-    rarity: "legendary",
+    rarity: "mythic",
     description: "Battlecry: Cast all spells you've played this game (targets chosen randomly).",
     keywords: [
       "battlecry"
@@ -320,7 +320,7 @@ export const additionalLegendaryCards: CardData[] = [
     name: "Skull of Hel",
     manaCost: 6,
     type: "spell",
-    rarity: "legendary",
+    rarity: "epic",
     description: "Draw 3 cards. Outcast: Reduce their Cost by (3).",
     keywords: [
       "outcast"

@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeCopyToHand(
   context: GameContext, 
@@ -61,7 +62,7 @@ export default function executeCopyToHand(
     const copiedCards: string[] = [];
     
     targets.forEach(target => {
-      if (context.currentPlayer.hand.length >= 10) {
+      if (context.currentPlayer.hand.length >= MAX_HAND_SIZE) {
         context.logGameEvent(`Hand is full, couldn't copy ${target.card.name}`);
         return;
       }

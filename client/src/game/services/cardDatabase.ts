@@ -299,7 +299,7 @@ class CardDatabaseService {
         attack: 5,
         health: 7,
         type: 'minion',
-        rarity: 'legendary',
+        rarity: 'mythic',
         class: 'Mage',
         collectible: true
       },
@@ -321,7 +321,7 @@ class CardDatabaseService {
         attack: 4,
         health: 9,
         type: 'minion',
-        rarity: 'legendary',
+        rarity: 'mythic',
         class: 'Warrior',
         collectible: true
       },
@@ -333,7 +333,7 @@ class CardDatabaseService {
         attack: 6,
         health: 6,
         type: 'minion',
-        rarity: 'legendary',
+        rarity: 'mythic',
         class: 'Paladin',
         collectible: true
       },
@@ -367,7 +367,7 @@ class CardDatabaseService {
         attack: 7,
         health: 7,
         type: 'minion',
-        rarity: 'legendary',
+        rarity: 'mythic',
         class: 'Priest',
         collectible: true
       },
@@ -445,7 +445,7 @@ class CardDatabaseService {
         attack: 4,
         health: 12,
         type: 'minion',
-        rarity: 'legendary',
+        rarity: 'mythic',
         class: 'Neutral',
         collectible: true
       },
@@ -457,7 +457,7 @@ class CardDatabaseService {
         attack: 7,
         health: 8,
         type: 'minion',
-        rarity: 'legendary',
+        rarity: 'mythic',
         class: 'Neutral',
         collectible: true
       },
@@ -469,7 +469,7 @@ class CardDatabaseService {
         attack: 1,
         health: 1,
         type: 'minion',
-        rarity: 'legendary',
+        rarity: 'mythic',
         class: 'Neutral',
         collectible: true
       }

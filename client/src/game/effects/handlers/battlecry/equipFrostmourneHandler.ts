@@ -30,7 +30,7 @@ export default function executeEquipFrostmourne(
         description: 'Deathrattle: Summon every minion killed by this weapon.',
         manaCost: 7,
         type: 'weapon',
-        rarity: 'legendary',
+        rarity: 'mythic',
         heroClass: 'deathknight',
         attack: weaponAttack,
         durability: weaponDurability,

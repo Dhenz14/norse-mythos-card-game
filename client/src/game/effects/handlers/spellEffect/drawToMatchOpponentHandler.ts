@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeDrawToMatchOpponent(
   context: GameContext, 
@@ -40,7 +41,7 @@ export default function executeDrawToMatchOpponent(
         break;
       }
       
-      if (currentPlayer.hand.length >= 10) {
+      if (currentPlayer.hand.length >= MAX_HAND_SIZE) {
         context.logGameEvent(`Hand is full, cannot draw more cards`);
         break;
       }

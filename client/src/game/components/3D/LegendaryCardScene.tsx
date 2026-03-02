@@ -97,7 +97,7 @@ export const LegendaryCardScene: React.FC<LegendaryCardSceneProps> = ({
 }) => {
   // Only show fancy 3D effects for legendary cards
   const cardData = 'card' in card ? card.card : card;
-  const isLegendary = cardData.rarity === 'legendary';
+  const isLegendary = cardData.rarity === 'mythic';
   
   return (
     <div style={{ width, height, position: 'relative' }}>

@@ -9,9 +9,9 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 import { v4 as uuidv4 } from 'uuid';
 
-const MAX_BOARD_SIZE = 7;
 
 /**
  * Execute a summon_copy_from_deck battlecry effect
@@ -35,7 +35,7 @@ export default function executeSummonCopyFromDeck(
     const overrideHealth = effect.health as number | undefined;
     
     const currentBoardSize = context.currentPlayer.board.length;
-    const availableSlots = MAX_BOARD_SIZE - currentBoardSize;
+    const availableSlots = MAX_BATTLEFIELD_SIZE - currentBoardSize;
     
     if (availableSlots <= 0) {
       context.logGameEvent(`Board is full, cannot summon minion from deck`);

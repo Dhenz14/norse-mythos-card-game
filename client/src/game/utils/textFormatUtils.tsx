@@ -163,7 +163,7 @@ export const formatCardText = (
       textColor = '#bb99cc'; // Purple/platinum
       textShadow = '0 1px 0 rgba(230,220,255,0.6), 0 -1px 1px rgba(40,0,80,0.5)';
       break;
-    case 'legendary':
+    case 'mythic':
       textColor = '#e6cc80'; // Gold
       textShadow = '0 1px 0 rgba(255,255,200,0.7), 0 -1px 1px rgba(80,60,0,0.5)';
       break;
@@ -761,10 +761,10 @@ export const getRarityTextStyle = (rarity: string = 'common') => {
 
   // Rarity-specific styling with enhanced carved metal effect
   switch (rarity.toLowerCase()) {
-    case 'legendary':
+    case 'mythic':
       return {
         ...baseStyle,
-        color: '#f8df7e', // Rich gold for legendary cards
+        color: '#f8df7e', // Rich gold for mythic cards
         // Enhanced carved effect with stronger highlight and deeper shadow
         textShadow: `
           0 1px 2px rgba(255, 255, 255, 0.7),

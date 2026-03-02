@@ -66,7 +66,7 @@ export function registerMageCards(): void {
     .collectible(true)
     .build();
 
-  // Kirin Tor Mage
+  // Rune Council Mage
   createCard()
     .id(14003)
     .name("Völva of the Arcane")
@@ -113,7 +113,7 @@ export function registerMageCards(): void {
     .attack(5)
     .health(7)
     .description("Whenever you cast a spell, add a 'Surtr's Wrath' spell to your hand.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Mage")
     .addKeyword("spell_trigger")

@@ -13,7 +13,7 @@ import { Position } from '../types/Position';
 interface BoardRippleEffectProps {
   position: Position;
   element?: string; // frost, fire, nature, shadow, holy, or neutral
-  strength?: 'normal' | 'powerful' | 'legendary';
+  strength?: 'normal' | 'powerful' | 'mythic';
 }
 
 // Color map based on element type
@@ -64,7 +64,7 @@ const effectParams = {
     duration: 2,
     repeatCount: 2
   },
-  legendary: {
+  mythic: {
     baseSize: 100,
     maxSize: 300,
     duration: 3,

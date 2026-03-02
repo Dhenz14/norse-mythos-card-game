@@ -2,7 +2,6 @@ export interface RarityOdds {
   common: number;
   rare: number;
   epic: number;
-  legendary: number;
   mythic: number;
 }
 
@@ -134,7 +133,6 @@ export interface SupplyStats {
   totalRewardReserve: number;
   totalCardsOpened: number;
   totalPacksOpened: number;
-  legendaryDropRate: number;
   mythicDropRate: number;
   byRarity: ProcessedRarityStats[];
 }

@@ -3418,7 +3418,7 @@ function executeSummonRandomLegendaryBattlecry(
   if (!state.players.player.battlefield) state.players.player.battlefield = [];
   if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) return state;
 
-  const legendaries = allCards.filter(c => c.type === 'minion' && c.rarity === 'legendary');
+  const legendaries = allCards.filter(c => c.type === 'minion' && c.rarity === 'mythic');
   if (legendaries.length === 0) return state;
 
   const selected = legendaries[Math.floor(Math.random() * legendaries.length)];

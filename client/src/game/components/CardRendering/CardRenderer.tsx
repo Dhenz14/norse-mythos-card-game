@@ -70,7 +70,7 @@ const CardRenderer: React.FC<CardRendererProps> = React.memo(({
     health: processedCard.health,
     description: processedCard.description || '',
     type: (processedCard.type as 'minion' | 'spell' | 'weapon') || 'minion',
-    rarity: (processedCard.rarity as 'common' | 'rare' | 'epic' | 'legendary') || 'common',
+    rarity: (processedCard.rarity as 'basic' | 'common' | 'rare' | 'epic' | 'mythic') || 'common',
     tribe: processedCard.tribe,
     cardClass: processedCard.cardClass || processedCard.class,
     keywords: processedCard.keywords || [],

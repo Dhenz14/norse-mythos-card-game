@@ -225,7 +225,7 @@ const necromancerCards = [
     .attack(4)
     .health(8)
     .class("Necromancer")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .race("Undead")
     .customProperty("endOfTurn", {
@@ -245,7 +245,7 @@ const necromancerCards = [
     .attack(4)
     .health(5)
     .class("Necromancer")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .race("Undead")
     .addKeyword("battlecry")
@@ -385,7 +385,7 @@ const necromancerCards = [
     .name("Soul Harvest")
     .manaCost(0)
     .class("Necromancer")
-    .rarity("free") // Hero power
+    .rarity("basic") // Hero power
     .type("spell")
     .spellEffect({
       type: "hero_power",
@@ -562,7 +562,7 @@ const necromancerCards = [
     .name("Necromancer")
     .manaCost(9)
     .class("Necromancer")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("hero")
     .customProperty("armor", 5)
     .customProperty("heroPower", {

@@ -102,10 +102,11 @@ const CollectionFilters: React.FC<CollectionFiltersProps> = ({
               onChange={(e) => onUpdateFilters({ rarity: e.target.value as CardRarity | 'all' })}
             >
               <option value="all">All Rarities</option>
+              <option value="basic">Basic</option>
               <option value="common">Common</option>
               <option value="rare">Rare</option>
               <option value="epic">Epic</option>
-              <option value="legendary">Legendary</option>
+              <option value="mythic">Mythic</option>
             </select>
           </div>
           

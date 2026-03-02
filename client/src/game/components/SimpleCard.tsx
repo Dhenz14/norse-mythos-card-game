@@ -21,7 +21,7 @@ export interface SimpleCardData {
   health?: number;
   description?: string;
   type: 'minion' | 'spell' | 'weapon' | 'artifact' | 'armor';
-  rarity?: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
+  rarity?: 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
   tribe?: string;
   cardClass?: string;
   keywords?: string[];
@@ -46,7 +46,6 @@ interface SimpleCardProps {
 const getRarityClass = (rarity?: string): string => {
   switch (rarity) {
     case 'mythic': return 'rarity-mythic';
-    case 'legendary': return 'rarity-legendary';
     case 'epic': return 'rarity-epic';
     case 'rare': return 'rarity-rare';
     default: return 'rarity-common';
@@ -296,10 +295,6 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
             </span>
           </div>
         </>
-      )}
-
-      {card.rarity === 'legendary' && (
-        <div className="foil-overlay legendary-foil" />
       )}
 
       {card.rarity === 'epic' && (

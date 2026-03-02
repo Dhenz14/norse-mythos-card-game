@@ -76,7 +76,7 @@ export const additionalClassMinions: CardData[] = [
   },
   {
     id: 40021,
-    name: 'Blackrock Defender',
+    name: 'Muspelheim Defender',
       manaCost: 2,
 
       attack: 2,
@@ -255,7 +255,7 @@ export const additionalClassMinions: CardData[] = [
       health: 6,
 
       type: "minion",
-      rarity: "legendary",
+      rarity: "mythic",
 
       description: "Battlecry: Equip a random weapon from your deck. Gain Armor equal to its Attack.",
       keywords: ["battlecry"],

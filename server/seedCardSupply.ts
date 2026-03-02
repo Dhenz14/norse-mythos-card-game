@@ -15,13 +15,13 @@ import { directDb } from './db';
 const TOTAL_SUPPLY_TARGET = 3_300_000;
 
 const TIER_DISTRIBUTION: Record<string, number> = {
-	mythic: 0.005,
-	legendary: 0.02,
+	mythic: 0.025,
+	epic: 0.075,
 	rare: 0.20,
-	common: 0.775,
+	common: 0.70,
 };
 
-type NftRarity = 'mythic' | 'legendary' | 'rare' | 'common';
+type NftRarity = 'mythic' | 'epic' | 'rare' | 'common';
 
 interface CardData {
 	id: number;
@@ -38,10 +38,10 @@ function mapToNftRarity(card: CardData): NftRarity | null {
 	const rarity = (card.rarity || 'common').toLowerCase();
 	const type = (card.type || '').toLowerCase();
 
-	if (type === 'hero' || rarity === 'legendary') return 'mythic';
-	if (rarity === 'epic') return 'legendary';
+	if (type === 'hero' || rarity === 'mythic') return 'mythic';
+	if (rarity === 'epic') return 'epic';
 	if (rarity === 'rare') return 'rare';
-	if (rarity === 'common' || rarity === 'basic' || rarity === 'free') return 'common';
+	if (rarity === 'common' || rarity === 'basic') return 'common';
 	return 'common';
 }
 

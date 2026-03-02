@@ -113,7 +113,7 @@ export const outcastCards: CardData[] = [
       attack: 4,
       health: 3,
       type: "minion",
-      rarity: "legendary",
+      rarity: "rare",
       description: "Outcast: Look at 3 cards in your opponent's hand. Shuffle one of them into their deck.",
       keywords: ["outcast"],
       heroClass: "demonhunter",

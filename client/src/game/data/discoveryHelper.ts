@@ -48,7 +48,7 @@ const poolOptions: DiscoverPoolOption[] = [
 
 { id: 'windfury', name: 'Windfury',   description: 'Discover a minion with Windfury' },
 
-{ id: 'legendary', name: 'Legendary',   description: 'Discover a Legendary minion' },
+{ id: 'mythic', name: 'Mythic',   description: 'Discover a Mythic minion' },
 
 { id: 'epic', name: 'Epic',   description: 'Discover an Epic card' },
 

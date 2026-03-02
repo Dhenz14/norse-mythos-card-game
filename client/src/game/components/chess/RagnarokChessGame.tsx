@@ -122,8 +122,8 @@ const DivineCommandButton: React.FC<DivineCommandButtonProps> = ({ playerArmy, i
   const abilityName = config?.abilityType 
     ? config.abilityType.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
     : 'Divine Command';
-  const rarityColor = config?.rarity === 'super_rare' ? '#f59e0b' 
-    : config?.rarity === 'epic' ? '#a855f7' 
+  const rarityColor = config?.rarity === 'mythic' ? '#f59e0b'
+    : config?.rarity === 'epic' ? '#a855f7'
     : config?.rarity === 'rare' ? '#10b981'
     : '#3b82f6';
   
@@ -391,7 +391,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
       id: piece.id,
       name: heroName,
       imageUrl: heroPortrait || DEFAULT_PORTRAIT,
-      rarity: piece.type === 'king' ? 'legendary' : 
+      rarity: piece.type === 'king' ? 'mythic' :
               piece.type === 'queen' ? 'epic' :
               piece.type === 'pawn' ? 'common' : 'rare',
       petClass,

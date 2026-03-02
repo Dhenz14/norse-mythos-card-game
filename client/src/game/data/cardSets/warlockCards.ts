@@ -236,7 +236,7 @@ export function registerWarlockCards(): void {
     .health(15)
     .type("minion")
     .race("demon")
-    .rarity("legendary")
+    .rarity("mythic")
     .description("Battlecry: Replace your hero with Erebus, Void Lord.")
     .heroClass("warlock")
     .class("Warlock")

@@ -93,9 +93,11 @@ export const getOutcastCards = (): CardData[] => getCardsByKeyword('outcast');
 // Convenience functions for common type filters
 // ============================================================================
 
-export const getLegendaryCards = (): CardData[] => {
-  return allCards.filter(card => card.rarity === 'legendary');
+export const getMythicCards = (): CardData[] => {
+  return allCards.filter(card => card.rarity === 'mythic');
 };
+
+export const getLegendaryCards = getMythicCards;
 
 export const getSpellCards = (): CardData[] => getCardsByType('spell');
 

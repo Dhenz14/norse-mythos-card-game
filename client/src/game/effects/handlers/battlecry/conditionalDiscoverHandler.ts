@@ -9,6 +9,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 import { getRandomCardsFromPool } from '../../../data/discoverPools';
 import { getDiscoveryOptions } from '../../../utils/discoveryUtils';
 
@@ -82,7 +83,7 @@ function checkCondition(
       return context.currentPlayer.hand.length === 0;
       
     case 'full_hand':
-      return context.currentPlayer.hand.length >= 10;
+      return context.currentPlayer.hand.length >= MAX_HAND_SIZE;
       
     default:
       debug.warn(`Unknown condition type: ${conditionType}, defaulting to true`);

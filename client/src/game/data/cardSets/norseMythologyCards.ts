@@ -23,7 +23,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Battlecry: Summon two 0/5 Jormungandr's Coils with \"At the end of your turn, deal 1 damage to all enemy minions.\" Deathrattle: Destroy all Jormungandr's Coils and deal 2 damage to all enemy minions.",
     flavorText: "The World Serpent circles the realm, lying in wait. When its coils tighten, the end draws near.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -87,7 +87,7 @@ export const norseMythologyCards: CardData[] = [
     health: 7,
     description: "Rush. Battlecry: Destroy an enemy minion. At the end of each turn, gain +1 Attack.",
     flavorText: "The monstrous wolf, destined to break free and devour the gods.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -121,7 +121,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Taunt. Battlecry: Revive a random friendly minion that died this game with +1/+1. When a friendly minion dies, summon a 2/2 Shadow Hound with Taunt.",
     flavorText: "The ferocious guard dog of Hel's gates.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -156,7 +156,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Stealth. Battlecry: Deal 1 damage to all enemy minions. At the end of your turn, if this has Stealth, give another random friendly minion Stealth.",
     flavorText: "The wolf that stalks the moon, bringing eternal night.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -190,7 +190,7 @@ export const norseMythologyCards: CardData[] = [
     health: 8,
     description: "Taunt. Battlecry: Destroy all enemy minions with 2 or less Health. At the end of each turn, deal 1 damage to all enemy minions.",
     flavorText: "The dragon that chews at Yggdrasil's roots, heralding decay.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -224,7 +224,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Stealth. Battlecry: Summon two 2/2 Shadow Wolves with Stealth. Whenever you summon a Shadow Wolf, give it +1/+1.",
     flavorText: "The leader of the pack, its howl commands the night.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -255,7 +255,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Stealth. Battlecry: Destroy an enemy minion with 4 or less Attack and summon a 3/3 Shadow Wolf in its place. After this attacks and kills a minion, summon a 1/1 Shadow Pup with Stealth.",
     flavorText: "A pack leader of the night, its jaws claim the weak.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -288,7 +288,7 @@ export const norseMythologyCards: CardData[] = [
     health: 12,
     description: "Battlecry: Deal 3 damage to ALL other minions. Your spells cost (1) less. Enemy minions take 1 extra damage. Deathrattle: Deal 5 damage to all enemies.",
     flavorText: "The legendary Norse sea monster, shrouded in mist, rising from the depths to engulf ships whole.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -324,7 +324,7 @@ export const norseMythologyCards: CardData[] = [
     health: 14,
     description: "Taunt. Can't be Silenced. Cannot have Attack reduced. Takes 1 less damage. Whenever this attacks, deal 3 damage to all other minions.",
     flavorText: "One of the mighty Hecatoncheires, the hundred-handed giants who helped Zeus overthrow the Titans.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -355,7 +355,7 @@ export const norseMythologyCards: CardData[] = [
     health: 10,
     description: "Battlecry: Summon a Ginnungagap's Fury. The first damage this takes each turn is ignored. Deathrattle: Deal 5 damage to all enemies.",
     flavorText: "Offspring of Typhon, the father of all monsters in Greek mythology, spawned from primordial chaos.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -388,7 +388,7 @@ export const norseMythologyCards: CardData[] = [
     health: 9,
     description: "Lifesteal. Battlecry: Enemy minions have -2 Attack while this is alive. Whenever this deals damage, restore that much Health to your hero.",
     flavorText: "The great wolf destined to swallow the moon during Ragnarök, staining the sky blood-red.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -418,7 +418,7 @@ export const norseMythologyCards: CardData[] = [
     health: 10,
     description: "Whenever this attacks, it attacks twice. After attacking, give a random enemy minion Poisonous this turn.",
     flavorText: "The hundred-headed dragon that guarded the golden apples in the Garden of the Hesperides.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -443,7 +443,7 @@ export const norseMythologyCards: CardData[] = [
     health: 12,
     description: "Taunt. Your opponent's minions have -1 Attack. At the end of your turn, gain +2 Health.",
     flavorText: "The golden rooster perched atop Yggdrasil, ever watchful over the World Tree's sacred branches.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -472,7 +472,7 @@ export const norseMythologyCards: CardData[] = [
     health: 11,
     description: "Flying. Battlecry: Disable all enemy minion abilities until your next turn. Whenever this deals damage, restore 3 Health to it.",
     flavorText: "Monster of the river Ván, whose shadow darkens the heavens when it takes flight.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -500,7 +500,7 @@ export const norseMythologyCards: CardData[] = [
     health: 8,
     description: "Whenever this attacks, deal 2 damage to all enemies. After this survives damage, gain +1 Attack.",
     flavorText: "A fiery incarnation of the Lernaean Hydra, each severed head regrows stronger than before.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -528,7 +528,7 @@ export const norseMythologyCards: CardData[] = [
     health: 7,
     description: "Lifesteal. Whenever a minion dies, gain +1 Attack. After this kills a minion, gain Stealth until your next turn.",
     flavorText: "An undead Norse revenant, cursed to walk between worlds with an insatiable hunger for the living.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -557,7 +557,7 @@ export const norseMythologyCards: CardData[] = [
     health: 13,
     description: "Taunt. Whenever this takes damage, restore 2 Health to it. Battlecry: Destroy a random enemy minion.",
     flavorText: "The six-headed Greek sea monster that devoured sailors passing through the Strait of Messina.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -585,7 +585,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "At the end of your turn, Freeze a random enemy minion. Whenever this attacks a Frozen minion, destroy it.",
     flavorText: "The immortal Gorgon sister whose gaze turns all who meet her eyes to cold, unmoving stone.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -713,7 +713,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Battlecry: Deal 2 damage to all enemy minions. Gain +1 Attack for each minion destroyed.",
     flavorText: "A dragon born of Muspelheim's eternal flames, growing mightier with each soul consumed.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -742,7 +742,7 @@ export const norseMythologyCards: CardData[] = [
     health: 8,
     description: "Taunt. At the end of your turn, deal 1 damage to all enemies.",
     flavorText: "One of the Sons of Muspel, destined to march at Ragnarök and set the world ablaze.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -771,7 +771,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Rush. Battlecry: Give a friendly minion +2/+2 and 'Deathrattle: Summon a 2/2 Glóð's Spark.'",
     flavorText: "The golden boar blessed by magic, spreading its flames to allies.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -803,7 +803,7 @@ export const norseMythologyCards: CardData[] = [
     health: 8,
     description: "Battlecry: Destroy all frozen minions. Deal 3 damage to the enemy hero for each destroyed.",
     flavorText: "A fire giant from Norse legend, its molten form melts ice and stone alike.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -832,7 +832,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Rush. Battlecry: Deal 3 damage to an enemy. If this kills them, gain Immune this turn.",
     flavorText: "The wolf that hunts the sun, swift and merciless.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -881,7 +881,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Taunt. Battlecry: Give adjacent minions +1/+2. When this takes damage, give a random friendly minion +1 Health.",
     flavorText: "The majestic stag of the sacred halls, its presence grants strength to allies.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -916,7 +916,7 @@ export const norseMythologyCards: CardData[] = [
     health: 8,
     description: "Taunt. Battlecry: Gain +1/+1 for each card in your hand. Deathrattle: Draw 2 cards.",
     flavorText: "The ancient dragon who guards the golden riches, hoarding wealth and treasures.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -948,7 +948,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Taunt. Battlecry: Summon a 1/3 Yggdrasil's Tendril with Taunt for each other friendly minion.",
     flavorText: "Dvalinn, one of the four great stags that gnaw upon Yggdrasil's roots.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -978,7 +978,7 @@ export const norseMythologyCards: CardData[] = [
     health: 10,
     description: "Taunt. At the end of your turn, restore 2 Health to this minion and give it +1 Attack.",
     flavorText: "A guardian blessed by Jörð, the Norse goddess of the earth and mother of Thor.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1007,7 +1007,7 @@ export const norseMythologyCards: CardData[] = [
     health: 14,
     description: "Taunt. Battlecry: Restore 5 Health to your hero. At the end of each turn, gain +2 Health.",
     flavorText: "Born from the Élivágar, the eleven primordial rivers that flowed from Niflheim.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1059,7 +1059,7 @@ export const norseMythologyCards: CardData[] = [
     health: 8,
     description: "Taunt. At the start of your turn, restore 2 Health to all friendly minions.",
     flavorText: "The first being, whose milk nourished the gods and giants alike.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1088,7 +1088,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Battlecry: Deal 2 damage to all enemy minions. When this deals damage, restore 1 Health to all friendly minions.",
     flavorText: "Its roar shakes the World Tree.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1117,7 +1117,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Taunt. Can't be targeted by spells or Hero Powers. At the start of your turn, gain +1 Health.",
     flavorText: "It stands firm as the roots of Yggdrasil.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1143,7 +1143,7 @@ export const norseMythologyCards: CardData[] = [
     health: 3,
     description: "Flying. Battlecry: Draw a card. If Muninn is in play, draw 2 instead.",
     flavorText: "Odin's raven of thought, soaring across the Nine Realms to bring knowledge.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1174,7 +1174,7 @@ export const norseMythologyCards: CardData[] = [
     health: 3,
     description: "Flying. Battlecry: Return a card from your graveyard to your hand. If Huginn is in play, return 2 instead.",
     flavorText: "Odin's raven of memory, carrying the wisdom of all that has come before.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1206,7 +1206,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Divine Shield. Battlecry: Give all friendly minions Divine Shield. Deathrattle: Restore 4 Health to your hero.",
     flavorText: "The god of light and beauty, whose divine shield protects all who stand with him.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1238,7 +1238,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "At the start of your turn, restore 2 Health to all friendly characters and deal 1 damage to all enemies.",
     flavorText: "The sun goddess whose warmth heals the faithful and burns the wicked.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1276,7 +1276,7 @@ export const norseMythologyCards: CardData[] = [
     health: 10,
     description: "Taunt. Battlecry: Reveal 3 cards from your deck. Choose one to add to your hand.",
     flavorText: "The guardian of Bifrost, who watches all paths and gates of the Nine Realms.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1305,7 +1305,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Battlecry: Give a friendly minion 'Deathrattle: Summon this minion again with 1 Health.'",
     flavorText: "A commander of the Valkyries, granting her warriors eternal resurrection.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1335,7 +1335,7 @@ export const norseMythologyCards: CardData[] = [
     health: 9,
     description: "Battlecry: Freeze all enemy minions. At the end of your turn, deal 2 damage to all frozen enemies.",
     flavorText: "The ancient tentacled horror from the abyss, bringing eternal winter wherever it dwells.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1368,7 +1368,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Poisonous. Battlecry: Freeze an enemy. If it's already frozen, destroy it instead.",
     flavorText: "The ice serpent of Niflheim, whose frozen fangs bring eternal winter.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1397,7 +1397,7 @@ export const norseMythologyCards: CardData[] = [
     health: 8,
     description: "Battlecry: Summon two 2/3 Rán's Thralls with 'Deathrattle: Freeze a random enemy.'",
     flavorText: "The goddess of the sea, whose drowned servants pull enemies to the depths.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1426,7 +1426,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Stealth. At the start of your turn, transform into a copy of a random enemy minion.",
     flavorText: "The shape-shifting water spirit, taking the form of its enemies to confound them.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1454,7 +1454,7 @@ export const norseMythologyCards: CardData[] = [
     health: 7,
     description: "Battlecry: Draw a card for each frozen enemy. Freeze any unfrozen enemies.",
     flavorText: "The sea god whose domain spans all waters, cold and frozen.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1502,7 +1502,7 @@ export const norseMythologyCards: CardData[] = [
     health: 3,
     description: "Battlecry: Return a minion to its owner's hand. When this returns a minion, deal 1 damage to it.",
     flavorText: "It lures the unwary into the deep.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1529,7 +1529,7 @@ export const norseMythologyCards: CardData[] = [
     health: 3,
     description: "Flying. Charge. Has +1 Attack for each other friendly Lightning minion.",
     flavorText: "Hábrók, named 'best of hawks' in Norse lore, rides the storm winds with deadly precision.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1554,7 +1554,7 @@ export const norseMythologyCards: CardData[] = [
     health: 3,
     description: "Charge. Each time this minion attacks, it gains +1 Attack permanently.",
     flavorText: "Bygul's speed is unmatched, striking twice before the enemy can blink.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1578,7 +1578,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Flying. Your other Flying minions have +1 Attack. Battlecry: Reduce the Attack of all enemy minions by 2 until end of turn.",
     flavorText: "The eagle whose wings whip the world into a frenzy.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1609,7 +1609,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Flying. Battlecry: Deal 3 damage to all enemy minions and stun them for one turn. Gains +1 Attack when dealing damage to multiple enemies.",
     flavorText: "A dragon of the skies, its roar summons tempests.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1638,7 +1638,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Flying. Each time this minion attacks, reduce the cost of your next spell by 1.",
     flavorText: "Kin to Veðrfölnir, the hawk perched between the eyes of the eagle atop Yggdrasil.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1662,7 +1662,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Charge. Whenever this minion attacks, deal 2 damage to all enemy minions.",
     flavorText: "Trjegul's strength surges like a tempest, overwhelming its foes.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1686,7 +1686,7 @@ export const norseMythologyCards: CardData[] = [
     health: 3,
     description: "Charge. When this minion attacks, deal 1 damage to all enemy minions.",
     flavorText: "Tanngrisnir charges into battle, its hooves sparking with lightning.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1710,7 +1710,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Battlecry: Summon a 2/2 Goat with Charge. Whenever you summon a minion with Charge, give it +1 Health.",
     flavorText: "Tanngnjostr calls upon its kin, bolstering the ranks with thunderous allies.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -1987,7 +1987,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Battlecry: Deal 1 damage to a random enemy. At the end of your turn, deal 1 damage to a random enemy.",
     flavorText: "Born of the fire giant's wrath, it burns all in its path.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2016,7 +2016,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "When this deals damage, apply Burn. Passive: When Burn is applied, give a random friendly Fire minion +1 Attack.",
     flavorText: "The fang of Logi, the personification of wildfire in Norse myth, consuming all in its path.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2039,7 +2039,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Flying. Battlecry: Deal 3 damage to all enemy minions.",
     flavorText: "A majestic bird, reborn from the ashes of its former self.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2063,7 +2063,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Charge. Battlecry: Gain +3 Attack this turn and deal 2 damage to a random enemy. When this attacks, deal 1 damage to the enemy hero.",
     flavorText: "Born of the trickster god's flames, mischief and destruction follow in its wake.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2102,7 +2102,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Flying. Battlecry: Deal 2 damage to all enemies.",
     flavorText: "A dreki from Muspelheim, its wings spread the flames of Ragnarök.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2126,7 +2126,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "When this deals damage, apply Burn. Passive: When Burn triggers, deal 1 damage to a random enemy.",
     flavorText: "A fire giant's kin, its rage scorches the Nine Realms.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2149,7 +2149,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Flying. Battlecry: Deal 3 damage to all enemies. When this attacks, deal 1 damage to all enemies.",
     flavorText: "A herald of Muspelheim, its wings spread fire across the realms.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2339,7 +2339,7 @@ export const norseMythologyCards: CardData[] = [
     health: 3,
     description: "When an enemy minion is played, deal 1 damage to it. Battlecry: Deal 2 damage to all enemy minions.",
     flavorText: "A vættr of thunder, the storm spirit that heralds Thor's wrath.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2367,7 +2367,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Charge. When this attacks, deal 1 damage to all enemies. Battlecry: Deal 2 damage to all enemies.",
     flavorText: "The great wolf's fury unleashed, a tempest of fangs and lightning.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2406,7 +2406,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Rush. When this moves, deal 2 damage to a random enemy. Battlecry: Deal 3 damage to an enemy.",
     flavorText: "Odin's eight-legged steed, thundering across the battlefield.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2440,7 +2440,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Rush. When this attacks, deal 1 damage to a random enemy. Battlecry: Deal 2 damage to all enemies.",
     flavorText: "The god of sunshine's wrath, a storm of divine retribution.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2588,7 +2588,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Stealth. Passive: When attacking from Stealth, deal 1 extra damage. Battlecry: Deal 3 damage to an enemy.",
     flavorText: "The steed of Hel herself, galloping forth from the realm of the dead.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2618,7 +2618,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "When this attacks, reduce the target's Attack by 1 permanently. Battlecry: Destroy an enemy minion with 2 or less Attack.",
     flavorText: "A beast of the abyss, devouring light itself.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2649,7 +2649,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "When this attacks, reduce target's Attack by 1. Passive: When this reduces Attack, deal 1 damage to all enemies. Battlecry: Deal 2 damage to all enemies.",
     flavorText: "The howl of Hel's guardian echoes across the battlefield.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2762,7 +2762,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Start of turn: Restore 1 Health to all friendly minions. Battlecry: Give all friendly minions +2 Health this turn.",
     flavorText: "A light elf of Álfheimr, whose radiance brings hope to all who witness it.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -2996,7 +2996,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Taunt. Passive: When attacked, reduce damage taken by 1. Battlecry: Gain +3 Health this turn.",
     flavorText: "A guardian of stone, its bark is as hard as its bite.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3028,7 +3028,7 @@ export const norseMythologyCards: CardData[] = [
     health: 2,
     description: "Battlecry: Give a minion +2 Attack until end of turn. At the start of your turn, give a random friendly minion +1 Attack.",
     flavorText: "The horse whose mane brings the light of day, empowering allies at dawn.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3061,7 +3061,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Battlecry: Restore 5 Health to your hero. When this restores health to your hero, give a random friendly minion +1/+1.",
     flavorText: "Freyja's loyal companion, bringing warmth and blessings to all allies.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3094,7 +3094,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Battlecry: Force an enemy minion to attack an adjacent ally. When an enemy minion attacks this and survives, reduce its Attack by 1 permanently.",
     flavorText: "A beguiling spirit of the forest, her charm leads enemies to their doom.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3127,7 +3127,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Flying. Battlecry: Look at the top 3 cards of your deck. Draw one. When you draw a card, give a random friendly minion +1 Attack.",
     flavorText: "The hawk perched atop the World Tree, seeing all that unfolds.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3161,7 +3161,7 @@ export const norseMythologyCards: CardData[] = [
     health: 1,
     description: "Deathrattle: If you have 7 minions, deal 5 damage to the enemy hero. At the end of your turn, if you have 7 minions, deal 1 damage to the enemy hero.",
     flavorText: "The golden rooster whose crow heralds the end of days.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3192,7 +3192,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "At the end of your turn, restore 2 Health to all friendly minions. When a friendly minion is healed, it gains +1 Health permanently.",
     flavorText: "The goat whose mead sustains the gods, granting vigor to all.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3226,7 +3226,7 @@ export const norseMythologyCards: CardData[] = [
     health: 3,
     description: "Battlecry: Give a minion Stealth until your next turn. At the end of your turn, if you have a minion with Stealth, draw a card.",
     flavorText: "The horse whose mane drips with dew, shrouding allies in night's embrace.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3256,7 +3256,7 @@ export const norseMythologyCards: CardData[] = [
     health: 4,
     description: "Flying. Battlecry: Draw a card. Whenever you draw a card, reveal it. If it's a minion, give it +1/+1 when played.",
     flavorText: "Odin's raven of thought, granting wisdom and power to those it favors.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3289,7 +3289,7 @@ export const norseMythologyCards: CardData[] = [
     health: 5,
     description: "Flying. Deathrattle: Return a random minion from your graveyard to the battlefield with +2/+2. Minions returned from your graveyard gain +2/+2.",
     flavorText: "Odin's raven of memory, recalling the fallen to fight once more.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3322,7 +3322,7 @@ export const norseMythologyCards: CardData[] = [
     health: 6,
     description: "Taunt. Battlecry: Give all friendly minions +1 Attack until end of turn. Whenever a friendly minion with Taunt is attacked, give it +1 Attack.",
     flavorText: "The golden boar forged by dwarves, its brilliance inspires all who stand beside it.",
-    rarity: "legendary",
+    rarity: "mythic",
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
@@ -3365,7 +3365,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Battlecry: Summon two 0/5 Jormungandr's Coils with \"At the end of your turn, deal 1 damage to all enemy minions.\" Deathrattle: Destroy all Jormungandr's Coils and deal 2 damage to all enemy minions.")
     .flavorText("The World Serpent circles the realm, lying in wait. When its coils tighten, the end draws near.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .heroClass("neutral")
     .race("beast")
@@ -3424,7 +3424,7 @@ export function registerNorseMythologyCards(): void {
     .health(7)
     .description("Rush. Battlecry: Destroy an enemy minion. At the end of each turn, gain +1 Attack.")
     .flavorText("The monstrous wolf, destined to break free and devour the gods.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3455,7 +3455,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Taunt. Battlecry: Revive a random friendly minion that died this game with +1/+1. When a friendly minion dies, summon a 2/2 Shadow Hound with Taunt.")
     .flavorText("The ferocious guard dog of Hel's gates.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3487,7 +3487,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Stealth. Battlecry: Deal 1 damage to all enemy minions. At the end of your turn, if this has Stealth, give another random friendly minion Stealth.")
     .flavorText("The wolf that stalks the moon, bringing eternal night.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3518,7 +3518,7 @@ export function registerNorseMythologyCards(): void {
     .health(8)
     .description("Taunt. Battlecry: Destroy all enemy minions with 2 or less Health. At the end of each turn, deal 1 damage to all enemy minions.")
     .flavorText("The dragon that chews at Yggdrasil's roots, heralding decay.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3549,7 +3549,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("Stealth. Battlecry: Summon two 2/2 Shadow Wolves with Stealth. Whenever you summon a Shadow Wolf, give it +1/+1.")
     .flavorText("The leader of the pack, its howl commands the night.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3582,7 +3582,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Stealth. Battlecry: Destroy an enemy minion with 4 or less Attack and summon a 3/3 Shadow Wolf in its place. After this attacks and kills a minion, summon a 1/1 Shadow Pup with Stealth.")
     .flavorText("A pack leader of the night, its jaws claim the weak.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3699,7 +3699,7 @@ export function registerNorseMythologyCards(): void {
     .health(12)
     .description("Battlecry: Deal 3 damage to ALL other minions. Your spells cost (1) less. Enemy minions take 1 extra damage. Deathrattle: Deal 5 damage to all enemies.")
     .flavorText("The legendary Norse sea monster, shrouded in mist, rising from the depths to engulf ships whole.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3737,7 +3737,7 @@ export function registerNorseMythologyCards(): void {
     .health(14)
     .description("Taunt. Can't be Silenced. Cannot have Attack reduced. Takes 1 less damage. Whenever this attacks, deal 3 damage to all other minions.")
     .flavorText("One of the mighty Hecatoncheires, the hundred-handed giants who helped Zeus overthrow the Titans.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3769,7 +3769,7 @@ export function registerNorseMythologyCards(): void {
     .health(10)
     .description("Battlecry: Summon a Ginnungagap's Fury. The first damage this takes each turn is ignored. Deathrattle: Deal 5 damage to all enemies.")
     .flavorText("Offspring of Typhon, the father of all monsters in Greek mythology, spawned from primordial chaos.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3804,7 +3804,7 @@ export function registerNorseMythologyCards(): void {
     .health(9)
     .description("Lifesteal. Battlecry: Enemy minions have -2 Attack while this is alive. Whenever this deals damage, restore that much Health to your hero.")
     .flavorText("The great wolf destined to swallow the moon during Ragnarök, staining the sky blood-red.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3836,7 +3836,7 @@ export function registerNorseMythologyCards(): void {
     .health(10)
     .description("Whenever this attacks, it attacks twice. After attacking, give a random enemy minion Poisonous this turn.")
     .flavorText("The hundred-headed dragon that guarded the golden apples in the Garden of the Hesperides.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3862,7 +3862,7 @@ export function registerNorseMythologyCards(): void {
     .health(12)
     .description("Taunt. Your opponent's minions have -1 Attack. At the end of your turn, gain +2 Health.")
     .flavorText("The golden rooster perched atop Yggdrasil, ever watchful over the World Tree's sacred branches.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3892,7 +3892,7 @@ export function registerNorseMythologyCards(): void {
     .health(11)
     .description("Flying. Battlecry: Disable all enemy minion abilities until your next turn. Whenever this deals damage, restore 3 Health to it.")
     .flavorText("Monster of the river Ván, whose shadow darkens the heavens when it takes flight.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3922,7 +3922,7 @@ export function registerNorseMythologyCards(): void {
     .health(8)
     .description("Whenever this attacks, deal 2 damage to all enemies. After this survives damage, gain +1 Attack.")
     .flavorText("A fiery incarnation of the Lernaean Hydra, each severed head regrows stronger than before.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3951,7 +3951,7 @@ export function registerNorseMythologyCards(): void {
     .health(7)
     .description("Lifesteal. Whenever a minion dies, gain +1 Attack. After this kills a minion, gain Stealth until your next turn.")
     .flavorText("An undead Norse revenant, cursed to walk between worlds with an insatiable hunger for the living.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -3981,7 +3981,7 @@ export function registerNorseMythologyCards(): void {
     .health(13)
     .description("Taunt. Whenever this takes damage, restore 2 Health to it. Battlecry: Destroy a random enemy minion.")
     .flavorText("The six-headed Greek sea monster that devoured sailors passing through the Strait of Messina.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4011,7 +4011,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("At the end of your turn, Freeze a random enemy minion. Whenever this attacks a Frozen minion, destroy it.")
     .flavorText("The immortal Gorgon sister whose gaze turns all who meet her eyes to cold, unmoving stone.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4063,7 +4063,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Battlecry: Deal 2 damage to all enemy minions. Gain +1 Attack for each minion destroyed.")
     .flavorText("A dragon born of Muspelheim's eternal flames, growing mightier with each soul consumed.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4088,7 +4088,7 @@ export function registerNorseMythologyCards(): void {
     .health(8)
     .description("Taunt. At the end of your turn, deal 1 damage to all enemies.")
     .flavorText("One of the Sons of Muspel, destined to march at Ragnarök and set the world ablaze.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4113,7 +4113,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Rush. Battlecry: Give a friendly minion +2/+2 and 'Deathrattle: Summon a 2/2 Glóð's Spark.'")
     .flavorText("The golden boar blessed by magic, spreading its flames to allies.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4142,7 +4142,7 @@ export function registerNorseMythologyCards(): void {
     .health(8)
     .description("Battlecry: Destroy all frozen minions. Deal 3 damage to the enemy hero for each destroyed.")
     .flavorText("A fire giant from Norse legend, its molten form melts ice and stone alike.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4167,7 +4167,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("Rush. Battlecry: Deal 3 damage to an enemy. If this kills them, gain Immune this turn.")
     .flavorText("The wolf that hunts the sun, swift and merciless.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4215,7 +4215,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Taunt. Battlecry: Give adjacent minions +1/+2. When this takes damage, give a random friendly minion +1 Health.")
     .flavorText("The majestic stag of the sacred halls, its presence grants strength to allies.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4247,7 +4247,7 @@ export function registerNorseMythologyCards(): void {
     .health(8)
     .description("Taunt. Battlecry: Gain +1/+1 for each card in your hand. Deathrattle: Draw 2 cards.")
     .flavorText("The ancient dragon who guards the golden riches, hoarding wealth and treasures.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4277,7 +4277,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Taunt. Battlecry: Summon a 1/3 Yggdrasil's Tendril with Taunt for each other friendly minion.")
     .flavorText("Dvalinn, one of the four great stags that gnaw upon Yggdrasil's roots.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4304,7 +4304,7 @@ export function registerNorseMythologyCards(): void {
     .health(10)
     .description("Taunt. At the end of your turn, restore 2 Health to this minion and give it +1 Attack.")
     .flavorText("A guardian blessed by Jörð, the Norse goddess of the earth and mother of Thor.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4329,7 +4329,7 @@ export function registerNorseMythologyCards(): void {
     .health(14)
     .description("Taunt. Battlecry: Restore 5 Health to your hero. At the end of each turn, gain +2 Health.")
     .flavorText("Born from the Élivágar, the eleven primordial rivers that flowed from Niflheim.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4382,7 +4382,7 @@ export function registerNorseMythologyCards(): void {
     .health(3)
     .description("Flying. Battlecry: Draw a card. If Muninn is in play, draw 2 instead.")
     .flavorText("Odin's raven of thought, soaring across the Nine Realms to bring knowledge.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4410,7 +4410,7 @@ export function registerNorseMythologyCards(): void {
     .health(3)
     .description("Flying. Battlecry: Return a card from your graveyard to your hand. If Huginn is in play, return 2 instead.")
     .flavorText("Odin's raven of memory, carrying the wisdom of all that has come before.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4439,7 +4439,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Divine Shield. Battlecry: Give all friendly minions Divine Shield. Deathrattle: Restore 4 Health to your hero.")
     .flavorText("The god of light and beauty, whose divine shield protects all who stand with him.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4469,7 +4469,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("At the start of your turn, restore 2 Health to all friendly characters and deal 1 damage to all enemies.")
     .flavorText("The sun goddess whose warmth heals the faithful and burns the wicked.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4502,7 +4502,7 @@ export function registerNorseMythologyCards(): void {
     .health(10)
     .description("Taunt. Battlecry: Reveal 3 cards from your deck. Choose one to add to your hand.")
     .flavorText("The guardian of Bifrost, who watches all paths and gates of the Nine Realms.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4528,7 +4528,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("Battlecry: Give a friendly minion 'Deathrattle: Summon this minion again with 1 Health.'")
     .flavorText("A commander of the Valkyries, granting her warriors eternal resurrection.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4554,7 +4554,7 @@ export function registerNorseMythologyCards(): void {
     .health(9)
     .description("Battlecry: Freeze all enemy minions. At the end of your turn, deal 2 damage to all frozen enemies.")
     .flavorText("The ancient tentacled horror from the abyss, bringing eternal winter wherever it dwells.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4583,7 +4583,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Poisonous. Battlecry: Freeze an enemy. If it's already frozen, destroy it instead.")
     .flavorText("The ice serpent of Niflheim, whose frozen fangs bring eternal winter.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4609,7 +4609,7 @@ export function registerNorseMythologyCards(): void {
     .health(8)
     .description("Battlecry: Summon two 2/3 Rán's Thralls with 'Deathrattle: Freeze a random enemy.'")
     .flavorText("The goddess of the sea, whose drowned servants pull enemies to the depths.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4634,7 +4634,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Stealth. At the start of your turn, transform into a copy of a random enemy minion.")
     .flavorText("The shape-shifting water spirit, taking the form of its enemies to confound them.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4658,7 +4658,7 @@ export function registerNorseMythologyCards(): void {
     .health(7)
     .description("Battlecry: Draw a card for each frozen enemy. Freeze any unfrozen enemies.")
     .flavorText("The sea god whose domain spans all waters, cold and frozen.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4944,7 +4944,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("Battlecry: Deal 1 damage to a random enemy. At the end of your turn, deal 1 damage to a random enemy.")
     .flavorText("Born of the fire giant's wrath, it burns all in its path.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -4980,7 +4980,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("When this deals damage, apply Burn. Passive: When Burn is applied, give a random friendly Fire minion +1 Attack.")
     .flavorText("The fang of Logi, the personification of wildfire in Norse myth, consuming all in its path.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5012,7 +5012,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("Flying. Battlecry: Deal 3 damage to all enemy minions.")
     .flavorText("A majestic bird, reborn from the ashes of its former self.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5039,7 +5039,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("Charge. Battlecry: Gain +3 Attack this turn and deal 2 damage to a random enemy. When this attacks, deal 1 damage to the enemy hero.")
     .flavorText("Born of the trickster god's flames, mischief and destruction follow in its wake.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5081,7 +5081,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Flying. Battlecry: Deal 2 damage to all enemies.")
     .flavorText("A dreki from Muspelheim, its wings spread the flames of Ragnarök.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5108,7 +5108,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("When this deals damage, apply Burn. Passive: When Burn triggers, deal 1 damage to a random enemy.")
     .flavorText("A fire giant's kin, its rage scorches the Nine Realms.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5140,7 +5140,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Flying. Battlecry: Deal 3 damage to all enemies. When this attacks, deal 1 damage to all enemies.")
     .flavorText("A herald of Muspelheim, its wings spread fire across the realms.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5468,7 +5468,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Taunt. Passive: When this Freezes an enemy, deal 1 damage to it. Battlecry: Freeze an enemy minion and deal 2 damage to it.")
     .flavorText("A monstrous kin of the sea, its breath chills the waves.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5513,7 +5513,7 @@ export function registerNorseMythologyCards(): void {
     .health(4)
     .description("When an enemy attacks, reduce its Attack by 1. Battlecry: Deal 3 damage to all enemy minions with 2 or less Attack.")
     .flavorText("A drake of the depths, commanding the currents.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5545,7 +5545,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("When attacked, Freeze the attacker. Passive: Frozen enemies take +1 damage. Battlecry: Freeze all enemy minions.")
     .flavorText("A spirit of the frozen realm, encasing all in eternal ice.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5579,7 +5579,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Taunt. Passive: When this is healed, deal 1 damage to a random enemy. Battlecry: Restore 3 Health to all friendly minions.")
     .flavorText("The sea god's mount, its healing waves bring destruction to foes.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5614,7 +5614,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("When this attacks, reduce the target's Attack by 1. Passive: When this reduces Attack, deal 1 damage to that minion. Battlecry: Reduce all enemy minions' Attack by 2.")
     .flavorText("The sea god's wrath, drowning enemies in weakening tides.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5653,7 +5653,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Battlecry: Freeze an enemy minion. Passive: When an enemy is Frozen, restore 1 Health to this minion.")
     .flavorText("The sea god's storm, freezing foes while sustaining itself.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5855,7 +5855,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Taunt. Passive: When attacked, gain +1 Health this turn. Battlecry: Restore 3 Health to all friendly minions.")
     .flavorText("A guardian of the grove, its thorns repel all foes.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5896,7 +5896,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("Taunt. Passive: When buffed, restore 1 Health to all friendly minions. Battlecry: Give all friendly minions +2 Health this turn.")
     .flavorText("A branch from the World Tree, channeling life to all it protects.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5933,7 +5933,7 @@ export function registerNorseMythologyCards(): void {
     .health(6)
     .description("When healed, gain +1 Attack. Passive: Adjacent minions have +1 Health. Battlecry: Restore 3 Health to all friendly minions.")
     .flavorText("A majestic stag of Alfheim, its presence strengthens all nearby.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
@@ -5974,7 +5974,7 @@ export function registerNorseMythologyCards(): void {
     .health(5)
     .description("Start of turn: Restore 1 Health to all friendly minions. Passive: When this restores Health, give a random friendly minion +1 Attack.")
     .flavorText("The golden apple of eternal youth, spreading vitality across the battlefield.")
-    .rarity("legendary")
+    .rarity("mythic")
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")

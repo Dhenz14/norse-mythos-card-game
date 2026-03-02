@@ -148,7 +148,7 @@ export const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
           className="premium-card"
           renderQuality="high"
           enableHolographic={true}
-          forceHolographic={cardData.rarity === 'legendary' || cardData.rarity === 'epic'}
+          forceHolographic={cardData.rarity === 'mythic' || cardData.rarity === 'epic'}
         />
       </div>
             
