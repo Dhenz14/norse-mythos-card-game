@@ -56,7 +56,7 @@ const FALLBACK_PACKS: PackType[] = [
 	{ id: 4, name: 'Legendary Pack', description: '7 cards with guaranteed legendary', price: 1000, cardCount: 7, rarityOdds: { common: 15, rare: 25, epic: 30, legendary: 25, mythic: 5 } },
 ];
 
-const CARD_POOL = cardRegistry.filter(c => c.rarity && c.name && c.id >= 1000);
+const CARD_POOL = cardRegistry.filter(c => c.rarity && c.name && Number(c.id) >= 1000);
 
 function openPackLocally(pack: PackType): RevealedCard[] {
 	const byRarity: Record<string, typeof CARD_POOL> = {};
@@ -85,7 +85,7 @@ function openPackLocally(pack: PackType): RevealedCard[] {
 		const card = pick(rarity);
 		if (card) {
 			cards.push({
-				id: card.id, name: card.name,
+				id: Number(card.id), name: card.name,
 				rarity: (card.rarity ?? 'common').toLowerCase(),
 				type: card.type ?? 'minion', heroClass: card.heroClass ?? 'neutral',
 			});
