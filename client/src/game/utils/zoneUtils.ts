@@ -12,6 +12,7 @@ import { processArtifactOnMinionDeath } from './artifactTriggerProcessor';
 import { isMinion, getHealth } from './cards/typeGuards';
 import { createCardInstance } from './cards/cardUtils';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 
 const MAX_HAND_SIZE = 7;
 
@@ -166,39 +167,40 @@ export function drawCardFromDeck(
   state: GameState,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  let newState = structuredClone(state) as GameState;
   const player = newState.players[playerId];
-  
+
   // Check if there are cards left in the deck
   if (player.deck.length === 0) {
-    // In real Hearthstone, taking fatigue damage would happen here
     return newState;
   }
-  
+
   // Get the top card from the deck
   const cardData = player.deck[0];
-  
+
   // Remove the card from the deck
   player.deck.splice(0, 1);
-  
+
   // Create a card instance for the hand
   const cardInstance = createCardInstance(cardData);
-  
+
   if (player.hand.length >= MAX_HAND_SIZE) {
-    return newState; // hand full — draw is missed, card stays in deck
+    return newState;
   }
-  
+
   // Add the card to the hand if there's room
   player.hand.push(cardInstance);
-  
-  
+
+  // Pet evolution: on_draw_card
+  newState = checkPetEvolutionTrigger(newState, 'on_draw_card');
+
   // Add to game log
   const updatedState = logCardDraw(
     newState,
     playerId,
     cardInstance.instanceId
   );
-  
+
   return updatedState;
 }
 

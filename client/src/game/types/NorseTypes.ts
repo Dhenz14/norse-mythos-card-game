@@ -10,7 +10,7 @@ import { ElementType } from './ChessTypes';
 /**
  * Norse element types (extended from base ElementType)
  */
-export type NorseElement = 'fire' | 'water' | 'grass' | 'electric' | 'light' | 'dark' | 'ice';
+export type NorseElement = 'fire' | 'water' | 'grass' | 'electric' | 'light' | 'dark' | 'ice' | 'neutral';
 
 /**
  * Map Norse elements to game ElementType
@@ -22,7 +22,8 @@ export const NORSE_TO_GAME_ELEMENT: Record<NorseElement, ElementType> = {
   electric: 'wind',
   light: 'holy',
   dark: 'shadow',
-  ice: 'water'  // Ice is a variant of Water
+  ice: 'water',  // Ice is a variant of Water
+  neutral: 'neutral'
 };
 
 // ==================== KING TYPES ====================

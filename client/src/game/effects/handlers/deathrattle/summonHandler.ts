@@ -27,7 +27,7 @@ export default function executeSummonSummon(
     const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
     context.logGameEvent(`Executing deathrattle:summon for ${cardName}`);
     
-    const summonCardId = effect.summonCardId || effect.cardId;
+    const summonCardId = effect.summonCardId || effect.cardId || effect.summonId;
     const summonCount = effect.summonCount || effect.count || effect.value || 1;
     const summonForOpponent = effect.summonForOpponent || false;
     

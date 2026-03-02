@@ -41,6 +41,7 @@ import {
 } from './highlanderUtils';
 import { summonColossalParts } from './mechanics/colossalUtils';
 import executeReturnReturn from '../effects/handlers/battlecry/returnHandler';
+import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 
 /**
  * Execute an AoE damage battlecry effect
@@ -129,51 +130,60 @@ function executeAoEDamageBattlecry(
     return state;
   }
   
-  // Process the regular AoE effect for other cards
-  if (battlecry.affectsAllEnemies) {
-    
-    // Apply damage to all enemy minions
-    const opponentBattlefield = state.players.opponent.battlefield || [];
-    const minionsToRemove: number[] = [];
-    
-    // First pass: apply damage and track which minions need to be removed
-    for (let i = 0; i < opponentBattlefield.length; i++) {
-      const minion = opponentBattlefield[i];
-      
-      // Ensure minion has a currentHealth value
+  // Resolve AoE via targetType or legacy affectsAllEnemies flag
+  const aoeTgt = (battlecry as any).targetType as string | undefined;
+  const isEnemyAoE = battlecry.affectsAllEnemies
+    || aoeTgt === 'all_enemy_minions'
+    || aoeTgt === 'all_enemies';
+  const isAllMinionsAoE = aoeTgt === 'all_minions';
+
+  if (isEnemyAoE || isAllMinionsAoE) {
+    // Damage all enemy minions
+    const oppBf = state.players.opponent.battlefield || [];
+    const oppRemove: number[] = [];
+    for (let i = 0; i < oppBf.length; i++) {
+      const minion = oppBf[i];
       if (minion.currentHealth === undefined) {
-        const minionCard = minion.card as MinionCardData;
-        minion.currentHealth = minionCard.health || 1;
+        minion.currentHealth = (minion.card as MinionCardData).health || 1;
       }
-      
-      // Check for Divine Shield
       if (minion.hasDivineShield) {
-        if (state.players.opponent.battlefield) {
-          state.players.opponent.battlefield[i].hasDivineShield = false;
-        }
+        state.players.opponent.battlefield[i].hasDivineShield = false;
       } else {
-        // Apply damage - initialize currentHealth if it's not already defined
-        if (state.players.opponent.battlefield && state.players.opponent.battlefield[i].currentHealth === undefined) {
-          const minionCard = minion.card as MinionCardData;
-          state.players.opponent.battlefield[i].currentHealth = minionCard.health || 0;
-        }
-        
-        // Apply damage
-        if (state.players.opponent.battlefield) {
-          state.players.opponent.battlefield[i].currentHealth! -= damageAmount;
-          
-          // Check if the minion is destroyed
-          if (state.players.opponent.battlefield[i].currentHealth! <= 0) {
-            minionsToRemove.push(i);
-          }
+        state.players.opponent.battlefield[i].currentHealth! -= damageAmount;
+        if (state.players.opponent.battlefield[i].currentHealth! <= 0) {
+          oppRemove.push(i);
         }
       }
     }
-    
-    // Second pass: remove destroyed minions (in reverse order to avoid index shift issues)
-    if (state.players.opponent.battlefield) {
-      for (let i = minionsToRemove.length - 1; i >= 0; i--) {
-        state.players.opponent.battlefield.splice(minionsToRemove[i], 1);
+    for (let i = oppRemove.length - 1; i >= 0; i--) {
+      state.players.opponent.battlefield.splice(oppRemove[i], 1);
+    }
+
+    // For 'all_enemies' also hit enemy hero
+    if (aoeTgt === 'all_enemies') {
+      state = dealDamage(state, 'opponent', 'hero', damageAmount);
+    }
+
+    // For 'all_minions' also hit friendly minions
+    if (isAllMinionsAoE) {
+      const plrBf = state.players.player.battlefield || [];
+      const plrRemove: number[] = [];
+      for (let i = 0; i < plrBf.length; i++) {
+        const minion = plrBf[i];
+        if (minion.currentHealth === undefined) {
+          minion.currentHealth = (minion.card as MinionCardData).health || 1;
+        }
+        if (minion.hasDivineShield) {
+          state.players.player.battlefield[i].hasDivineShield = false;
+        } else {
+          state.players.player.battlefield[i].currentHealth! -= damageAmount;
+          if (state.players.player.battlefield[i].currentHealth! <= 0) {
+            plrRemove.push(i);
+          }
+        }
+      }
+      for (let i = plrRemove.length - 1; i >= 0; i--) {
+        state.players.player.battlefield.splice(plrRemove[i], 1);
       }
     }
   }
@@ -296,10 +306,10 @@ export function executeBattlecry(
         return executeDamageBattlecry(newState, battlecry, targetId, targetType);
         
       case 'heal':
-        return executeHealBattlecry(newState, battlecry, targetId, targetType);
-        
+        return checkPetEvolutionTrigger(executeHealBattlecry(newState, battlecry, targetId, targetType), 'on_heal');
+
       case 'buff':
-        return executeBuffBattlecry(newState, battlecry, targetId);
+        return checkPetEvolutionTrigger(checkPetEvolutionTrigger(executeBuffBattlecry(newState, battlecry, targetId), 'on_buff'), 'on_gain_health');
         
       case 'summon':
         return executeSummonBattlecry(newState, battlecry);
@@ -349,14 +359,23 @@ export function executeBattlecry(
         }
         return transformMinion(newState, targetId, battlecry.value);
         
-      case 'silence':
-        // Check if we have a target ID
+      case 'silence': {
+        const silTarget = (battlecry as any).targetType as string | undefined;
+        if (silTarget === 'random_enemy_minion') {
+          const oppBf = newState.players.opponent.battlefield || [];
+          if (oppBf.length > 0) {
+            const randIdx = Math.floor(Math.random() * oppBf.length);
+            newState = silenceMinion(newState, oppBf[randIdx].instanceId);
+          }
+          return checkPetEvolutionTrigger(newState, 'on_silence');
+        }
         if (!targetId) {
           debug.error('Silence battlecry requires a target');
           return state;
         }
-        return silenceMinion(newState, targetId);
-        
+        return checkPetEvolutionTrigger(silenceMinion(newState, targetId), 'on_silence');
+      }
+
       case 'set_health':
         // Execute a set health battlecry (like Alexstrasza)
         return executeSetHealthBattlecry(newState, battlecry, targetId, targetType);
@@ -698,6 +717,96 @@ export function executeBattlecry(
       case 'summon_defender':
         return executeSummonDefenderBattlecry(newState, battlecry);
 
+      case 'gain_armor': {
+        const armorVal = battlecry.value || 0;
+        newState.players.player.heroArmor = (newState.players.player.heroArmor || 0) + armorVal;
+        return newState;
+      }
+
+      case 'grant_divine_shield':
+        return executeGiveDivineShieldBattlecry(newState, targetId);
+
+      case 'freeze_and_damage': {
+        const frzDmg = battlecry.value || 1;
+        const frzTgt = (battlecry as any).targetType as string | undefined;
+        if (frzTgt === 'all_enemies') {
+          for (let i = 0; i < newState.players.opponent.battlefield.length; i++) {
+            const m = newState.players.opponent.battlefield[i];
+            m.isFrozen = true;
+            if (m.currentHealth === undefined) m.currentHealth = (m.card as MinionCardData).health || 1;
+            if (m.hasDivineShield) {
+              m.hasDivineShield = false;
+            } else {
+              m.currentHealth -= frzDmg;
+            }
+          }
+          newState.players.opponent.battlefield = newState.players.opponent.battlefield.filter(
+            m => (m.currentHealth ?? 1) > 0
+          );
+          newState = dealDamage(newState, 'opponent', 'hero', frzDmg);
+        }
+        return newState;
+      }
+
+      case 'silence_and_damage': {
+        const silDmg = battlecry.value || 1;
+        const silTgt = (battlecry as any).targetType as string | undefined;
+        if (silTgt === 'all_enemy_minions') {
+          for (let i = 0; i < newState.players.opponent.battlefield.length; i++) {
+            const m = newState.players.opponent.battlefield[i];
+            newState = silenceMinion(newState, m.instanceId);
+          }
+          const oppBf = newState.players.opponent.battlefield;
+          for (let i = 0; i < oppBf.length; i++) {
+            if (oppBf[i].currentHealth === undefined) oppBf[i].currentHealth = (oppBf[i].card as MinionCardData).health || 1;
+            if (oppBf[i].hasDivineShield) {
+              oppBf[i].hasDivineShield = false;
+            } else {
+              oppBf[i].currentHealth! -= silDmg;
+            }
+          }
+          newState.players.opponent.battlefield = oppBf.filter(m => (m.currentHealth ?? 1) > 0);
+        }
+        return newState;
+      }
+
+      case 'bounce': {
+        const bncTgt = (battlecry as any).targetType as string | undefined;
+        if (bncTgt === 'enemy_minion' && targetId) {
+          const oppBf = newState.players.opponent.battlefield;
+          const idx = oppBf.findIndex(m => m.instanceId === targetId);
+          if (idx !== -1) {
+            const bounced = oppBf.splice(idx, 1)[0];
+            if (newState.players.opponent.hand.length < 7) {
+              bounced.isPlayed = false;
+              bounced.isSummoningSick = true;
+              bounced.canAttack = false;
+              newState.players.opponent.hand.push(bounced);
+            }
+          }
+        } else if (bncTgt === 'all_enemy_minions_low_attack') {
+          const atkThreshold = battlecry.value || 3;
+          const oppBf = newState.players.opponent.battlefield;
+          const toReturn = oppBf.filter(m => {
+            const atk = m.currentAttack ?? (m.card as MinionCardData).attack ?? 0;
+            return atk <= atkThreshold;
+          });
+          newState.players.opponent.battlefield = oppBf.filter(m => {
+            const atk = m.currentAttack ?? (m.card as MinionCardData).attack ?? 0;
+            return atk > atkThreshold;
+          });
+          for (const card of toReturn) {
+            if (newState.players.opponent.hand.length < 7) {
+              card.isPlayed = false;
+              card.isSummoningSick = true;
+              card.canAttack = false;
+              newState.players.opponent.hand.push(card);
+            }
+          }
+        }
+        return newState;
+      }
+
       default:
         debug.error('Unknown battlecry type: ' + battlecry.type);
         return newState;
@@ -719,7 +828,35 @@ function executeDamageBattlecry(
 ): GameState {
   // Get damage amount, default to 1 if not specified
   const damage = battlecry.value || 1;
-  
+  const dmgTarget = (battlecry as any).targetType as string | undefined;
+
+  // Auto-targeted damage (no player target selection needed)
+  if (dmgTarget === 'random_enemy') {
+    const oppBf = state.players.opponent.battlefield || [];
+    const targets = [...oppBf.map((m, i) => ({ type: 'minion' as const, idx: i })), { type: 'hero' as const, idx: -1 }];
+    if (targets.length > 0) {
+      const pick = targets[Math.floor(Math.random() * targets.length)];
+      if (pick.type === 'hero') {
+        state = dealDamage(state, 'opponent', 'hero', damage);
+      } else {
+        const m = oppBf[pick.idx];
+        if (m.currentHealth === undefined) m.currentHealth = (m.card as MinionCardData).health || 1;
+        if (m.hasDivineShield) {
+          state.players.opponent.battlefield[pick.idx].hasDivineShield = false;
+        } else {
+          state.players.opponent.battlefield[pick.idx].currentHealth! -= damage;
+          if (state.players.opponent.battlefield[pick.idx].currentHealth! <= 0) {
+            state.players.opponent.battlefield.splice(pick.idx, 1);
+          }
+        }
+      }
+    }
+    return state;
+  }
+  if (dmgTarget === 'enemy_hero') {
+    return dealDamage(state, 'opponent', 'hero', damage);
+  }
+
   // If no target is needed, return the state unchanged
   if (!battlecry.requiresTarget) {
     return state;
@@ -820,7 +957,28 @@ function executeHealBattlecry(
 ): GameState {
   // Get heal amount, default to 2 if not specified
   const healAmount = battlecry.value || 2;
-  
+  const healTarget_ = (battlecry as any).targetType as string | undefined;
+
+  // Auto-targeted heals (no player selection needed)
+  if (healTarget_ === 'friendly_hero') {
+    return healTarget(state, 'player', 'hero', healAmount);
+  }
+  if (healTarget_ === 'all_friendly_minions') {
+    const bf = state.players.player.battlefield || [];
+    for (const minion of bf) {
+      state = healTarget(state, 'player', minion.instanceId, healAmount);
+    }
+    return state;
+  }
+  if (healTarget_ === 'all_friendly' || healTarget_ === 'all_friendly_characters') {
+    state = healTarget(state, 'player', 'hero', healAmount);
+    const bf = state.players.player.battlefield || [];
+    for (const minion of bf) {
+      state = healTarget(state, 'player', minion.instanceId, healAmount);
+    }
+    return state;
+  }
+
   // If no target is needed, return the state unchanged
   if (!battlecry.requiresTarget) {
     return state;
@@ -876,15 +1034,63 @@ function executeBuffBattlecry(
   battlecry: BattlecryEffect,
   targetId?: string
 ): GameState {
-  // Get buff values, default to +1/+1 if not specified
-  const attackBuff = battlecry.buffAttack || 1;
-  const healthBuff = battlecry.buffHealth || 1;
-  
+  // Get buff values — default to 0 if grantKeywords exists (pure keyword grant), else 1
+  const grantKeywords = (battlecry as any).grantKeywords as string[] | undefined;
+  const defaultBuff = grantKeywords ? 0 : 1;
+  const attackBuff = battlecry.buffAttack ?? defaultBuff;
+  const healthBuff = battlecry.buffHealth ?? defaultBuff;
+
+  // Handle AoE buffs first (no target required)
+  if (battlecry.targetType === 'all_friendly_minions') {
+    const battlefield = state.players.player.battlefield || [];
+    for (let i = 0; i < battlefield.length; i++) {
+      const minion = battlefield[i];
+      const minionCard = minion.card as MinionCardData;
+      if (minion.currentHealth === undefined) {
+        minion.currentHealth = minionCard.health || 1;
+      }
+      const newAttack = (minionCard.attack || 0) + attackBuff;
+      const newMaxHealth = (minionCard.health || 1) + healthBuff;
+      const newCurrentHealth = (minion.currentHealth || 1) + healthBuff;
+      battlefield[i].card = { ...minionCard, attack: newAttack, health: newMaxHealth } as MinionCardData;
+      battlefield[i].currentHealth = newCurrentHealth;
+      battlefield[i].currentAttack = newAttack;
+      if (grantKeywords) {
+        const existingKeywords = [...(battlefield[i].card.keywords || [])];
+        for (const kw of grantKeywords) {
+          if (!existingKeywords.includes(kw)) existingKeywords.push(kw);
+          if (kw === 'divine_shield') battlefield[i].hasDivineShield = true;
+        }
+        battlefield[i].card = { ...battlefield[i].card, keywords: existingKeywords } as MinionCardData;
+      }
+    }
+    return state;
+  }
+
+  // Handle filtered AoE buffs (e.g., all taunt minions)
+  if (battlecry.targetType === 'all_friendly_taunt_minions') {
+    const battlefield = state.players.player.battlefield || [];
+    for (let i = 0; i < battlefield.length; i++) {
+      const minion = battlefield[i];
+      const kws = minion.card.keywords || [];
+      if (!kws.includes('taunt') && !(minion as any).isTaunt) continue;
+      const minionCard = minion.card as MinionCardData;
+      if (minion.currentHealth === undefined) minion.currentHealth = minionCard.health || 1;
+      const newAttack = (minionCard.attack || 0) + attackBuff;
+      const newMaxHealth = (minionCard.health || 1) + healthBuff;
+      const newCurrentHealth = (minion.currentHealth || 1) + healthBuff;
+      battlefield[i].card = { ...minionCard, attack: newAttack, health: newMaxHealth } as MinionCardData;
+      battlefield[i].currentHealth = newCurrentHealth;
+      battlefield[i].currentAttack = newAttack;
+    }
+    return state;
+  }
+
   // If no target is needed, return the state unchanged
   if (!battlecry.requiresTarget) {
     return state;
   }
-  
+
   // Find target minion based on battlecry target type
   if (battlecry.targetType === 'friendly_minion' || battlecry.targetType === 'any_minion') {
     // Try to find on player's battlefield
@@ -1079,36 +1285,34 @@ function executeSummonBattlecry(
   if (state.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     return state;
   }
-  
-  // Check if a card ID is provided for summoning
-  if (!battlecry.summonCardId) {
+
+  // Support both summonCardId and tokenId field names
+  const cardId = battlecry.summonCardId || (battlecry as any).tokenId;
+  const summonCount = (battlecry as any).count || 1;
+
+  if (!cardId) {
     debug.error('No card ID provided for summon battlecry');
     return state;
   }
-  
-  // Find the card data in the database (both regular and token cards)
-  const cardToSummon = allCards.find(card => card.id === battlecry.summonCardId);
-  
+
+  const cardToSummon = allCards.find(card => card.id === cardId);
+
   if (!cardToSummon) {
-    debug.error(`Card with ID ${battlecry.summonCardId} not found for summoning`);
+    debug.error(`Card with ID ${cardId} not found for summoning`);
     return state;
   }
-  
-  // Create a new instance of the card
-  const summonedCard = createCardInstance(cardToSummon);
-  
-  // Mark the card as already played (it's going directly to battlefield)
-  summonedCard.isPlayed = true;
-  
-  // Add to player's battlefield (ensuring it exists first)
-  if (!state.players.player.battlefield) {
-    state.players.player.battlefield = [];
+
+  for (let i = 0; i < summonCount; i++) {
+    if (state.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+    const summonedCard = createCardInstance(cardToSummon);
+    summonedCard.isPlayed = true;
+    if (!state.players.player.battlefield) {
+      state.players.player.battlefield = [];
+    }
+    state.players.player.battlefield.push(summonedCard);
+    trackQuestProgress('player', 'summon_minion', summonedCard.card);
   }
-  state.players.player.battlefield.push(summonedCard);
-  
-  // Track quest progress for summoned minion
-  trackQuestProgress('player', 'summon_minion', summonedCard.card);
-  
+
   return state;
 }
 
@@ -1584,10 +1788,16 @@ function executeDrawBattlecry(
   } else {
   }
   
+  // Apply armor gain if specified on the draw battlecry
+  const armorGain = (battlecry as any).armor as number | undefined;
+  if (armorGain && armorGain > 0) {
+    state.players.player.heroArmor = (state.players.player.heroArmor || 0) + armorGain;
+  }
+
   if (typeof window !== 'undefined' && drawnCount > 0) {
     setTimeout(() => {
       const animationStore = useAnimationStore.getState();
-      
+
       animationStore.addAnimation({
         id: `draw_cards_player_${Date.now()}`,
         type: 'card_draw_notification',
@@ -2229,6 +2439,24 @@ function executeFreezeBattlecry(
   targetId?: string,
   targetType?: 'minion' | 'hero'
 ): GameState {
+  const frzTarget = (battlecry as any).targetType as string | undefined;
+
+  // Auto-targeted freeze (no player selection needed)
+  if (frzTarget === 'all_enemy_minions') {
+    for (let i = 0; i < state.players.opponent.battlefield.length; i++) {
+      state.players.opponent.battlefield[i].isFrozen = true;
+    }
+    return state;
+  }
+  if (frzTarget === 'random_enemy' || frzTarget === 'random_enemy_minion') {
+    const oppBf = state.players.opponent.battlefield || [];
+    if (oppBf.length > 0) {
+      const idx = Math.floor(Math.random() * oppBf.length);
+      state.players.opponent.battlefield[idx].isFrozen = true;
+    }
+    return state;
+  }
+
   // If no target is needed, return the state unchanged
   if (!battlecry.requiresTarget) {
     return state;
@@ -2462,6 +2690,12 @@ function executeBuffAdjacentBattlecry(
       minion.currentHealth = (minion.currentHealth ?? (minion.card as any).health ?? 0) + buffHealth;
     }
   }
+
+  const armorGain = (battlecry as any).armor as number | undefined;
+  if (armorGain && armorGain > 0) {
+    state.players.player.heroArmor = (state.players.player.heroArmor || 0) + armorGain;
+  }
+
   return state;
 }
 

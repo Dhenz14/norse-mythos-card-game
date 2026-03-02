@@ -147,7 +147,7 @@ Each hero has three unique abilities:
 | 30201-30206 | Einherjar Cards |
 | 30301-30309 | Realm Shift Cards |
 | 30401-30410 | Ragnarok Chain Cards |
-| 50000-50699 | Pet Evolution Cards |
+| 50000-50236 | Pet Evolution Cards (24 families) |
 
 ---
 
@@ -634,42 +634,68 @@ Paired minions with linked destiny mechanics. When one partner dies or triggers,
 
 ### Pet Evolution System
 
-Elemental pet companions that evolve during gameplay when specific conditions are met.
+The **3-3-1 Family-Based Evolution System**: 24 Norse-themed pet families, each with 3 Stage 1 forms across different elements that evolve into 3 Stage 2 forms, converging into 1 Stage 3 master form with 3 stat/ability variants based on evolution path.
 
 #### Elements
 
-| Element | Color | Weakness |
-|---------|-------|----------|
-| Fire | #ff6b35 | Water |
-| Water | #4fc3f7 | Electric |
-| Grass | #66bb6a | Fire |
-| Electric | #fdd835 | Grass |
-| Dark | #9c27b0 | Light |
-| Light | #ffd54f | Dark |
-| Neutral | #9e9e9e | None |
+| Element | Archetype | Color | Weakness |
+|---------|-----------|-------|----------|
+| Fire | Offensive | #ff6b35 | Water |
+| Water | Defensive | #4fc3f7 | Electric |
+| Grass | Sustain | #66bb6a | Fire |
+| Electric | Burst/Speed | #fdd835 | Grass |
+| Dark | Disruptive | #9c27b0 | Light |
+| Light | Support | #ffd54f | Dark |
+| Neutral | Adaptive | #9e9e9e | None |
+
+#### Evolution Stages
+
+| Stage | Rarity | Mana Cost | Cards per Family |
+|-------|--------|-----------|------------------|
+| **Stage 1 (Basic)** | Common | 1-3 mana | 3 (one per element) |
+| **Stage 2 (Adept)** | Rare | **0 mana** (free evolution) | 3 (one per element) |
+| **Stage 3 (Master)** | Mythic | **0 mana** (free evolution) | 1 (with 3 variants) |
 
 #### Evolution Rules
 
 | Rule | Detail |
 |------|--------|
-| **Stages** | Basic -> Evolution (play evolution card when condition met) |
-| **Condition Triggers** | on_deal_damage, on_heal_ally, on_survive_turn, on_destroy, on_summon, on_buff_ally |
-| **Transform** | Evolution card replaces the basic pet on the battlefield |
-| **Health Carry** | Damage taken by the basic form carries over to the evolved form |
+| **Free Evolution** | Stage 2 and Stage 3 cards cost 0 mana — evolution is a reward, not a mana choice |
+| **Trigger Gating** | Evolution requires meeting a condition (e.g., on_deal_damage, on_survive_turn) |
+| **Transform** | Playing an evolution card replaces the pet on the battlefield |
+| **Health Carry** | Damage taken by the previous form carries over (min 1 HP) |
+| **Stage 3 Variants** | The Stage 3 form's stats and abilities depend on which Stage 2 path was taken |
 | **Hero Synergy** | +1 Health bonus when pet element matches hero element |
 | **Element Advantage** | +2 bonus damage when attacking a pet weak to your element |
 
-#### Pet Families (by Element)
+#### Pet Families (24 total, IDs 50000-50236)
 
-| Element | ID Range | Example Basic | Example Evolution |
-|---------|----------|---------------|-------------------|
-| Fire | 50001-50099 | Ember Pup | Inferno Hound |
-| Water | 50100-50199 | Tide Sprite | Ocean Leviathan |
-| Grass | 50200-50299 | Sprout Imp | Ancient Treant |
-| Electric | 50300-50399 | Spark Mote | Thunder Drake |
-| Dark | 50400-50499 | Shadow Wisp | Void Stalker |
-| Light | 50500-50599 | Gleam Sprite | Radiant Seraph |
-| Neutral | 50600-50699 | Stone Golem | Mountain Titan |
+| # | Family | Elements | Stage 3 Name | IDs |
+|---|--------|----------|--------------|-----|
+| 1 | Wolves | Fire / Dark / Neutral | Fenrir Reborn | 50000-50006 |
+| 2 | Serpents | Fire / Water / Electric | Jormungandr's Heir | 50010-50016 |
+| 3 | Ravens | Dark / Electric / Light | Odin's Emissary | 50020-50026 |
+| 4 | Stags | Water / Grass / Light | Eikthyrnir | 50030-50036 |
+| 5 | Bears | Fire / Grass / Neutral | Beorn the Unbroken | 50040-50046 |
+| 6 | Drakes | Fire / Electric / Neutral | Nidhogg's Scion | 50050-50056 |
+| 7 | Ents | Water / Grass / Neutral | Yggdrasil's Warden | 50060-50066 |
+| 8 | Valkyries | Electric / Light / Neutral | Brynhildr Reborn | 50070-50076 |
+| 9 | Draugr | Dark / Grass / Light | Helbound Overlord | 50080-50086 |
+| 10 | Giants | Water / Dark / Neutral | Ymir's Descendant | 50090-50096 |
+| 11 | Muspelheim | Fire / Dark / Electric | Surtr's Herald | 50100-50106 |
+| 12 | Tideborn | Water / Electric / Neutral | Aegir's Leviathan | 50110-50116 |
+| 13 | Rootkin | Grass / Light / Water | Idunn's Blessing | 50120-50126 |
+| 14 | Stormkin | Electric / Fire / Dark | Hraesvelgr's Wrath | 50130-50136 |
+| 15 | Hellhounds | Dark / Fire / Grass | Garmr Unchained | 50140-50146 |
+| 16 | Bifrost | Light / Electric / Neutral | Heimdall's Champion | 50150-50156 |
+| 17 | Freyja's Companions | Electric / Fire / Light | Freyja's Chosen | 50160-50166 |
+| 18 | Celestial Horses | Light / Dark / Neutral | Celestial Stallion | 50170-50176 |
+| 19 | Yggdrasil Watchers | Light / Grass / Neutral | Yggdrasil's Voice | 50180-50186 |
+| 20 | Norse Sea Spirits | Water / Dark / Electric | Spirit of the Deep | 50190-50196 |
+| 21 | Aesir's Beasts | Fire / Electric / Grass | Aesir's Champion | 50200-50206 |
+| 22 | Primordial Beasts | Grass / Dark / Neutral | Primordial Guardian | 50210-50216 |
+| 23 | Doom Heralds | Dark / Electric / Fire | Herald of Ragnarok | 50220-50226 |
+| 24 | War Steeds | Neutral / Fire / Light | Steed of the Gods | 50230-50236 |
 
 ---
 

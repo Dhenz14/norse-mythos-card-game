@@ -21,13 +21,44 @@ Reserved ID ranges for card organization:
 | 29800-29809 | Hero Artifacts | Legendary hero-specific artifacts |
 | 29810-29899 | Armor Gear | Helm/Chest/Greaves armor cards |
 | 29900-29967 | Hero Artifacts (Extended) | Lore-accurate artifacts for all 78 heroes |
-| 50000-50099 | Fire Pets | Fire-element evolution companions |
-| 50100-50199 | Water Pets | Water-element evolution companions |
-| 50200-50299 | Grass Pets | Grass-element evolution companions |
-| 50300-50399 | Electric Pets | Electric-element evolution companions |
-| 50400-50499 | Dark Pets | Dark-element evolution companions |
-| 50500-50599 | Light Pets | Light-element evolution companions |
-| 50600-50699 | Neutral Pets | Neutral evolution companions |
+| 50000-50006 | Wolves Family | Fire / Dark / Neutral — Fenrir Reborn |
+| 50010-50016 | Serpents Family | Fire / Water / Electric — Jormungandr's Heir |
+| 50020-50026 | Ravens Family | Dark / Electric / Light — Odin's Emissary |
+| 50030-50036 | Stags Family | Water / Grass / Light — Eikthyrnir |
+| 50040-50046 | Bears Family | Fire / Grass / Neutral — Beorn the Unbroken |
+| 50050-50056 | Drakes Family | Fire / Electric / Neutral — Nidhogg's Scion |
+| 50060-50066 | Ents Family | Water / Grass / Neutral — Yggdrasil's Warden |
+| 50070-50076 | Valkyries Family | Electric / Light / Neutral — Brynhildr Reborn |
+| 50080-50086 | Draugr Family | Dark / Grass / Light — Helbound Overlord |
+| 50090-50096 | Giants Family | Water / Dark / Neutral — Ymir's Descendant |
+| 50100-50106 | Muspelheim Family | Fire / Dark / Electric — Surtr's Herald |
+| 50110-50116 | Tideborn Family | Water / Electric / Neutral — Aegir's Leviathan |
+| 50120-50126 | Rootkin Family | Grass / Light / Water — Idunn's Blessing |
+| 50130-50136 | Stormkin Family | Electric / Fire / Dark — Hraesvelgr's Wrath |
+| 50140-50146 | Hellhounds Family | Dark / Fire / Grass — Garmr Unchained |
+| 50150-50156 | Bifrost Family | Light / Electric / Neutral — Heimdall's Champion |
+| 50160-50166 | Freyja's Companions | Electric / Fire / Light — Freyja's Chosen |
+| 50170-50176 | Celestial Horses | Light / Dark / Neutral — Celestial Stallion |
+| 50180-50186 | Yggdrasil Watchers | Light / Grass / Neutral — Yggdrasil's Voice |
+| 50190-50196 | Norse Sea Spirits | Water / Dark / Electric — Spirit of the Deep |
+| 50200-50206 | Aesir's Beasts | Fire / Electric / Grass — Aesir's Champion |
+| 50210-50216 | Primordial Beasts | Grass / Dark / Neutral — Primordial Guardian |
+| 50220-50226 | Doom Heralds | Dark / Electric / Fire — Herald of Ragnarok |
+| 50230-50236 | War Steeds | Neutral / Fire / Light — Steed of the Gods |
+| 50240-50246 | Thor's Goats | Fire / Neutral / Light — Tanngrisnir Reborn |
+| 50250-50256 | Dwarven Forgemasters | Fire / Neutral / Electric — Ivaldi's Masterwork |
+| 50260-50266 | Norns | Water / Light / Dark — Norn Triumvirate |
+| 50270-50276 | Trolls | Grass / Water / Neutral — Troll King |
+| 50280-50286 | Ljosalfar | Light / Electric / Neutral — Alfheim's Radiance |
+| 50290-50296 | Svartalfar | Dark / Fire / Grass — Svartalfheim's Shadow |
+| 50300-50306 | Disir | Light / Dark / Neutral — Disir Matriarch |
+| 50310-50316 | Fylgja | Fire / Water / Dark — Fylgja Ascendant |
+| 50320-50326 | Huldrefolk | Dark / Grass / Neutral — Huldra Queen |
+| 50330-50336 | Einherjar Warriors | Fire / Light / Neutral — Einherjar Eternal |
+| 50340-50346 | Ratatoskr's Messengers | Electric / Neutral / Grass — Ratatoskr Prime |
+| 50350-50356 | Naglfar's Crew | Dark / Water / Neutral — Naglfar's Admiral |
+| 50360-50366 | Muspel Phoenixes | Fire / Electric / Light — Muspel Eternal |
+| 9200-9249 | Pet Tokens | Non-collectible tokens summoned by pet abilities |
 
 ## Norse Mechanic Card Ranges
 

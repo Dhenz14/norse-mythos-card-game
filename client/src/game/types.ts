@@ -228,7 +228,7 @@ export interface MinionCardData extends BaseCardData {
     onPartnerPlay?: { type: string; value?: number; keywords?: string[] };
     onBothInPlay?: { type: string; value?: number; keywords?: string[] };
   };
-  petStage?: 'basic' | 'evolution' | 'standalone';
+  petStage?: 'basic' | 'adept' | 'master' | 'evolution' | 'standalone';
   element?: NorseElement;
   weakness?: { element: NorseElement; bonusDamage: number };
   evolvesInto?: number;
@@ -243,6 +243,19 @@ export interface MinionCardData extends BaseCardData {
     trigger: string;
     effect: any;
   };
+  petFamily?: string;
+  petFamilyTier?: 1 | 2 | 3;
+  stage3Variants?: {
+    fromStage2Id: number;
+    attack: number;
+    health: number;
+    manaCost: number;
+    keywords: string[];
+    description: string;
+    battlecry?: any;
+    deathrattle?: any;
+    passiveAbility?: { name: string; description: string; trigger: string; effect: any };
+  }[];
 }
 
 /**
@@ -649,6 +662,7 @@ export interface CardInstance {
 
   // Pet evolution tracking
   petEvolutionMet?: boolean;
+  evolvedFromStage2Id?: number;
 
   // NFT — present if this is a Hive L1 NFT card; absent for demo/dev cards
   nft_id?: string;

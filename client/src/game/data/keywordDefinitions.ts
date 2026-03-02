@@ -175,6 +175,16 @@ export const KEYWORD_DEFINITIONS: Record<string, KeywordDefinition> = {
 		description: 'A hidden enchantment that triggers when a specific condition is met.',
 		icon: 'help-circle',
 	},
+	pet_evolution: {
+		name: 'Pet Evolution',
+		description: 'When the evolution condition is met, play the next stage card to transform this pet on the battlefield.',
+		icon: 'arrow-up-circle',
+	},
+	master_evolution: {
+		name: 'Master Evolution',
+		description: 'The final evolution stage. Play this card to transform any eligible Stage 2 pet from the same family.',
+		icon: 'crown',
+	},
 };
 
 export function getKeywordDefinition(keyword: string): KeywordDefinition | null {

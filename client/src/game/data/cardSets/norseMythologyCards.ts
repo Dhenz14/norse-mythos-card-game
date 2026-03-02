@@ -1775,7 +1775,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // Ember Fox (Basic)
@@ -1799,7 +1799,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // Fire Chick (Basic)
@@ -1824,7 +1824,7 @@ export const norseMythologyCards: CardData[] = [
       summonHealth: 2
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // Magma Imp (Basic)
@@ -1849,7 +1849,7 @@ export const norseMythologyCards: CardData[] = [
       duration: "this_turn"
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // Cinder Whelp (Basic)
@@ -1873,7 +1873,7 @@ export const norseMythologyCards: CardData[] = [
       value: 1
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // Soot Imp (Basic)
@@ -1898,7 +1898,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // Flame Raven (Basic)
@@ -1923,7 +1923,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // ===== FIRE MINIONS (Standalone Pets - Rare) =====
@@ -1948,7 +1948,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "enemy_minions" as BattlecryTargetType
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // Eldbera, the Flame Bear (Standalone)
@@ -1973,7 +1973,7 @@ export const norseMythologyCards: CardData[] = [
       duration: "this_turn"
     },
     categories: ["norse_mythology", "fire_minion"],
-    collectible: true
+    collectible: false
   },
 
   // ===== FIRE MINIONS (Evolution Pets - Legendary) =====
@@ -2004,7 +2004,7 @@ export const norseMythologyCards: CardData[] = [
       value: 1
     },
     categories: ["norse_mythology", "fire_minion", "fire_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Logi's Fang (Evolution)
@@ -2027,7 +2027,7 @@ export const norseMythologyCards: CardData[] = [
       description: "When Burn is applied, give a random friendly Fire minion +1 Attack."
     },
     categories: ["norse_mythology", "fire_minion", "fire_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Phoenix (Evolution)
@@ -2051,7 +2051,7 @@ export const norseMythologyCards: CardData[] = [
       value: 3
     },
     categories: ["norse_mythology", "fire_minion", "fire_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Loki's Ember (Evolution)
@@ -2090,7 +2090,7 @@ export const norseMythologyCards: CardData[] = [
       value: 1
     },
     categories: ["norse_mythology", "fire_minion", "fire_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Muspeldreki (Evolution)
@@ -2114,7 +2114,7 @@ export const norseMythologyCards: CardData[] = [
       value: 2
     },
     categories: ["norse_mythology", "fire_minion", "fire_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Eldjotnar (Evolution)
@@ -2137,7 +2137,7 @@ export const norseMythologyCards: CardData[] = [
       description: "When Burn triggers, deal 1 damage to a random enemy."
     },
     categories: ["norse_mythology", "fire_minion", "fire_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Muspel's Harbinger (Evolution)
@@ -2166,7 +2166,7 @@ export const norseMythologyCards: CardData[] = [
       value: 1
     },
     categories: ["norse_mythology", "fire_minion", "fire_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // ===== LIGHTNING MINIONS =====
@@ -2192,7 +2192,7 @@ export const norseMythologyCards: CardData[] = [
       value: 1
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_common"],
-    collectible: true
+    collectible: false
   },
 
   // Skoll's Pup (Basic - Common)
@@ -2217,7 +2217,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_common"],
-    collectible: true
+    collectible: false
   },
 
   // Þunordreki (Basic - Common)
@@ -2242,7 +2242,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_common"],
-    collectible: true
+    collectible: false
   },
 
   // Sleipnir's Hoof (Basic - Common)
@@ -2267,7 +2267,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_common"],
-    collectible: true
+    collectible: false
   },
 
   // Frey's Bolt (Basic - Common)
@@ -2303,7 +2303,7 @@ export const norseMythologyCards: CardData[] = [
       ]
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_common"],
-    collectible: true
+    collectible: false
   },
 
   // Hrafn Þórs (Standalone - Rare)
@@ -2327,7 +2327,7 @@ export const norseMythologyCards: CardData[] = [
       value: 2
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_rare"],
-    collectible: true
+    collectible: false
   },
 
   // Þundrvættr, the Storm Spirit (Evolution - Legendary)
@@ -2355,7 +2355,7 @@ export const norseMythologyCards: CardData[] = [
       description: "When an enemy minion is played, deal 1 damage to it."
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Skoll's Storm (Evolution - Legendary)
@@ -2394,7 +2394,7 @@ export const norseMythologyCards: CardData[] = [
       ]
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Sleipnir's Charge (Evolution - Legendary)
@@ -2428,7 +2428,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: 'target'
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Frey's Thunder (Evolution - Legendary)
@@ -2467,7 +2467,7 @@ export const norseMythologyCards: CardData[] = [
       ]
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // ===== DARK MINIONS (Pet Cards) =====
@@ -2494,7 +2494,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "dark_minion", "dark_common"],
-    collectible: true
+    collectible: false
   },
 
   // Myrkrkló (Basic - Common)
@@ -2520,7 +2520,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "dark_minion", "dark_common"],
-    collectible: true
+    collectible: false
   },
 
   // Garmr's Pup (Basic - Common)
@@ -2548,7 +2548,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "dark_minion", "dark_common"],
-    collectible: true
+    collectible: false
   },
 
   // Náströnd's Serpent (Standalone - Rare)
@@ -2576,7 +2576,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "dark_minion", "dark_rare"],
-    collectible: true
+    collectible: false
   },
 
   // Hel's Stallion (Evolution - Legendary)
@@ -2606,7 +2606,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "dark_minion", "dark_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Voidfang (Evolution - Legendary)
@@ -2637,7 +2637,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "dark_minion", "dark_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // Garmr's Howl (Evolution - Legendary)
@@ -2674,7 +2674,7 @@ export const norseMythologyCards: CardData[] = [
       value: 2
     },
     categories: ["norse_mythology", "dark_minion", "dark_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // ===== LIGHT MINIONS =====
@@ -2701,7 +2701,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "light_minion", "light_common"],
-    collectible: true
+    collectible: false
   },
 
   // Valkyrie Pegasus (Basic - Common)
@@ -2726,7 +2726,7 @@ export const norseMythologyCards: CardData[] = [
       buffHealth: 0
     },
     categories: ["norse_mythology", "light_minion", "light_common"],
-    collectible: true
+    collectible: false
   },
 
   // Dáinn's Glow (Standalone - Rare)
@@ -2750,7 +2750,7 @@ export const norseMythologyCards: CardData[] = [
       value: 3
     },
     categories: ["norse_mythology", "light_minion", "light_rare"],
-    collectible: true
+    collectible: false
   },
 
   // Ljósálfr (Evolution - Legendary)
@@ -2781,7 +2781,7 @@ export const norseMythologyCards: CardData[] = [
       duration: "this_turn"
     },
     categories: ["norse_mythology", "light_minion", "light_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // ===== NEUTRAL MINIONS =====
@@ -2809,7 +2809,7 @@ export const norseMythologyCards: CardData[] = [
       duration: "this_turn"
     },
     categories: ["norse_mythology", "neutral_minion", "neutral_common"],
-    collectible: true
+    collectible: false
   },
 
   // Mistfang Pup (Basic - Common)
@@ -2835,7 +2835,7 @@ export const norseMythologyCards: CardData[] = [
       buffHealth: 1
     },
     categories: ["norse_mythology", "neutral_minion", "neutral_common"],
-    collectible: true
+    collectible: false
   },
 
   // Stonebleat Buckling (Basic - Common)
@@ -2860,7 +2860,7 @@ export const norseMythologyCards: CardData[] = [
       keyword: "taunt"
     },
     categories: ["norse_mythology", "neutral_minion", "neutral_common"],
-    collectible: true
+    collectible: false
   },
 
   // Trollhound (Basic - Common)
@@ -2886,7 +2886,7 @@ export const norseMythologyCards: CardData[] = [
       buffHealth: 1
     },
     categories: ["norse_mythology", "neutral_minion", "neutral_common"],
-    collectible: true
+    collectible: false
   },
 
   // Runeclaw Wolf (Basic - Common)
@@ -2913,7 +2913,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "neutral_minion", "neutral_common"],
-    collectible: true
+    collectible: false
   },
 
   // Iron Boar (Standalone - Rare)
@@ -2939,7 +2939,7 @@ export const norseMythologyCards: CardData[] = [
       duration: "this_turn"
     },
     categories: ["norse_mythology", "neutral_minion", "neutral_rare"],
-    collectible: true
+    collectible: false
   },
 
   // Hræsvelgr's Kin (Standalone - Rare)
@@ -2965,7 +2965,7 @@ export const norseMythologyCards: CardData[] = [
       requiresTarget: true
     },
     categories: ["norse_mythology", "neutral_minion", "neutral_rare"],
-    collectible: true
+    collectible: false
   },
 
   // Ironhide Sow (Standalone - Rare)
@@ -2984,7 +2984,7 @@ export const norseMythologyCards: CardData[] = [
     race: "beast",
     keywords: ["taunt", "elusive"],
     categories: ["norse_mythology", "neutral_minion", "neutral_rare"],
-    collectible: true
+    collectible: false
   },
 
   // Granite Hound (Evolution - Legendary)
@@ -3014,7 +3014,7 @@ export const norseMythologyCards: CardData[] = [
       duration: "this_turn"
     },
     categories: ["norse_mythology", "neutral_minion", "neutral_legendary"],
-    collectible: true
+    collectible: false
   },
 
   // ===== GREEK GODS LEGENDARY CREATURES =====

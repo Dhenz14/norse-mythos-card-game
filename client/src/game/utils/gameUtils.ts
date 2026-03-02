@@ -59,18 +59,90 @@ import { useHiveDataStore } from '../../data/HiveDataLayer';
 import { NORSE_TO_GAME_ELEMENT } from '../types/NorseTypes';
 import { getElementAdvantage } from './elements/elementAdvantage';
 import { getNorseHeroById } from './norseHeroPowerUtils';
+import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 
-function checkPetEvolutionTrigger(state: GameState, trigger: string, minionId?: string): GameState {
-  for (const side of ['player', 'opponent'] as const) {
-    for (const minion of state.players[side].battlefield) {
-      if (minion.petEvolutionMet) continue;
-      const cond = (minion.card as any).evolutionCondition;
-      if (!cond || cond.trigger !== trigger) continue;
-      if (minionId && minion.instanceId !== minionId) continue;
-      minion.petEvolutionMet = true;
+function attemptPetEvolution(
+  state: GameState,
+  player: Player,
+  card: CardInstance
+): { evolved: boolean; newState: GameState } {
+  const evolvesFromId = (card.card as any).evolvesFrom;
+  const petFamily = (card.card as any).petFamily;
+  const isMaster = (card.card as any).petStage === 'master';
+
+  if (!evolvesFromId && !isMaster) return { evolved: false, newState: state };
+
+  let basicIdx: number;
+  if (isMaster && petFamily) {
+    // Stage 3: accept ANY adept from same family with petEvolutionMet
+    basicIdx = player.battlefield.findIndex(
+      m => (m.card as any).petFamily === petFamily
+        && (m.card as any).petStage === 'adept'
+        && m.petEvolutionMet === true
+    );
+  } else {
+    // Stage 2: match specific Stage 1 by evolvesFrom ID
+    basicIdx = player.battlefield.findIndex(
+      m => m.card.id === evolvesFromId && m.petEvolutionMet === true
+    );
+  }
+
+  if (basicIdx === -1) return { evolved: false, newState: state };
+
+  const basic = player.battlefield[basicIdx];
+  let evolvedCard = { ...card.card } as any;
+
+  // Stage 3 variant selection
+  if (evolvedCard.stage3Variants && Array.isArray(evolvedCard.stage3Variants)) {
+    const stage2Id = basic.card.id;
+    const variant = evolvedCard.stage3Variants.find(
+      (v: any) => v.fromStage2Id === stage2Id
+    );
+    if (variant) {
+      evolvedCard = {
+        ...evolvedCard,
+        attack: variant.attack,
+        health: variant.health,
+        manaCost: variant.manaCost,
+        keywords: variant.keywords,
+        description: variant.description,
+        battlecry: variant.battlecry || undefined,
+        deathrattle: variant.deathrattle || undefined,
+        passiveAbility: variant.passiveAbility || undefined,
+        element: (basic.card as any).element || evolvedCard.element,
+      };
+      delete evolvedCard.stage3Variants;
     }
   }
-  return state;
+
+  // Health carry-over
+  const maxHp = evolvedCard.health || 0;
+  const oldMaxHp = (basic.card as any).health || 0;
+  const damageTaken = Math.max(0, oldMaxHp - (basic.currentHealth || oldMaxHp));
+  const newHealth = Math.max(1, maxHp - damageTaken);
+
+  // Keywords from evolved form
+  const evoKeywords = evolvedCard.keywords || [];
+  const hasCharge = evoKeywords.includes('charge');
+  const hasRush = evoKeywords.includes('rush');
+
+  // Transform: replace on battlefield
+  player.battlefield[basicIdx] = {
+    ...basic,
+    card: evolvedCard,
+    currentAttack: evolvedCard.attack || 0,
+    currentHealth: newHealth,
+    petEvolutionMet: false,
+    evolutionLevel: (evolvedCard.petFamilyTier || 2) as 1 | 2 | 3,
+    evolvedFromStage2Id: basic.card.id as number,
+    canAttack: hasCharge || hasRush,
+    isSummoningSick: !(hasCharge || hasRush),
+    hasRush: hasRush,
+  };
+
+  // Evolution is free — Stage 2/3 cards have manaCost: 0
+
+  return { evolved: true, newState: state };
 }
 
 /**
@@ -500,6 +572,31 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     return state;
   }
 
+  // Pet evolution: check BEFORE battlefield full check (evolution replaces, doesn't add)
+  const evolvesFromId = (card.card as any).evolvesFrom;
+  const isMasterPet = (card.card as any).petStage === 'master';
+  if (evolvesFromId || isMasterPet) {
+    player.hand.splice(index, 1);
+    const evoResult = attemptPetEvolution(newState, player, card);
+    if (evoResult.evolved) {
+      // Execute the evolved form's battlecry if it has one
+      const evolvedMinion = player.battlefield.find(
+        m => m.evolvedFromStage2Id !== undefined
+          && (m.card as any).petFamily === ((card.card as any).petFamily)
+          && ((m.card as any).keywords || []).includes('battlecry')
+          && (m.card as any).battlecry
+      );
+      if (evolvedMinion) {
+        newState = executeBattlecry(newState, evolvedMinion.instanceId, targetId, targetType);
+      }
+      newState = checkPetEvolutionTrigger(newState, 'on_summon');
+      return newState;
+    }
+    // No eligible target — return card to hand
+    player.hand.splice(index, 0, card);
+    return state;
+  }
+
   // Check if battlefield is full before removing card from hand
   if (player.battlefield.length >= 5) {
     debug.error(`Cannot play ${card.card.name}: Battlefield is full (5 minions maximum)`);
@@ -508,32 +605,6 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
   // Remove card from hand - must be done BEFORE battlecry processing to ensure clean state
   player.hand.splice(index, 1);
-
-  // Pet evolution: if this card evolves from a basic pet, transform the basic instead of normal placement
-  const evolvesFromId = (card.card as any).evolvesFrom;
-  if (evolvesFromId) {
-    const basicIdx = player.battlefield.findIndex(
-      m => m.card.id === evolvesFromId && m.petEvolutionMet === true
-    );
-    if (basicIdx !== -1) {
-      const basic = player.battlefield[basicIdx];
-      const maxHp = (card.card as any).health || 0;
-      const oldMaxHp = (basic.card as any).health || 0;
-      const damageTaken = Math.max(0, oldMaxHp - (basic.currentHealth || oldMaxHp));
-      player.battlefield[basicIdx] = {
-        ...basic,
-        card: card.card,
-        currentAttack: (card.card as any).attack || 0,
-        currentHealth: Math.max(1, maxHp - damageTaken),
-        petEvolutionMet: false
-      };
-      player.mana.current -= (card.card.manaCost || 0);
-      return newState;
-    } else {
-      player.hand.splice(index, 0, card);
-      return state;
-    }
-  }
 
   // Mark card as played and handle summoning sickness
   // Cards with the 'charge' keyword can attack immediately
@@ -600,6 +671,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     const hero = getNorseHeroById(player.heroId);
     if (hero && hero.element === petElement) {
       playedCard.currentHealth = (playedCard.currentHealth || (playedCard.card as any).health || 0) + 1;
+      newState = checkPetEvolutionTrigger(newState, 'on_gain_health');
     }
   }
 
@@ -648,12 +720,14 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
           (partner as any).hasDivineShield = true;
         }
       }
+      newState = checkPetEvolutionTrigger(newState, 'on_buff');
     }
     // Nidhogg special: if partner is Ratatoskr already in play, buff Nidhogg attack
     const partnerPlayEff = (playedCard.card as any).chainEffect?.onPartnerPlay;
     if (partnerPlayEff && partner) {
       if (partnerPlayEff.type === 'buff_self') {
         playedCard.currentAttack = (playedCard.currentAttack ?? 0) + (partnerPlayEff.value || 0);
+        newState = checkPetEvolutionTrigger(newState, 'on_buff');
       }
     }
   }
@@ -923,6 +997,7 @@ function applyTurnStartPipeline(state: GameState, player: 'player' | 'opponent')
             minion.currentHealth = Math.min((minion.currentHealth ?? 0) + eff.value, maxHp);
           }
         }
+        newState = checkPetEvolutionTrigger(newState, 'on_heal');
       }
     }
   }
@@ -977,6 +1052,7 @@ function resolveProphecy(state: GameState, prophecy: import('../types').Prophecy
           (minion as any).isFrozen = true;
         }
       }
+      newState = checkPetEvolutionTrigger(newState, 'on_freeze');
       break;
     }
     case 'destroy_all': {
@@ -1855,6 +1931,7 @@ function processAttackForOpponent(
         // Remove stealth after attacking
         const aiStealthIdx = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
         if (aiStealthIdx !== undefined && aiStealthIdx !== -1) {
+          newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.opponent.battlefield[updatedAttackerIndex].instanceId);
           newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx, 1);
         }
       }
@@ -1922,6 +1999,7 @@ function processAttackForOpponent(
         // Remove stealth after attacking
         const aiStealthIdx2 = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
         if (aiStealthIdx2 !== undefined && aiStealthIdx2 !== -1) {
+          newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.opponent.battlefield[updatedAttackerIndex].instanceId);
           newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx2, 1);
         }
       }
@@ -2004,6 +2082,7 @@ function processAttackForOpponent(
       // Remove stealth after attacking
       const aiStealthIdx3 = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
       if (aiStealthIdx3 !== undefined && aiStealthIdx3 !== -1) {
+        newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.opponent.battlefield[updatedAttackerIndex].instanceId);
         newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx3, 1);
       }
     }
@@ -2025,14 +2104,17 @@ function processAttackForOpponent(
     if (updatedAttacker && (updatedAttacker.card as any)?.onAttack?.type === 'apply_status') {
       const targetMinion = newState.players.player.battlefield.find(m => m.instanceId === defenderId);
       if (targetMinion) {
+        const statusType = (updatedAttacker.card as any)?.onAttack?.statusEffect;
         const updatedTarget = processOnAttackStatusEffect(updatedAttacker as any, targetMinion as any);
         const targetIndex = newState.players.player.battlefield.findIndex(m => m.instanceId === defenderId);
         if (targetIndex !== -1) {
           newState.players.player.battlefield[targetIndex] = updatedTarget as any;
         }
+        if (statusType === 'burn') newState = checkPetEvolutionTrigger(newState, 'on_apply_burn');
+        if (statusType === 'poison') newState = checkPetEvolutionTrigger(newState, 'on_apply_poison');
       }
     }
-    
+
     // Apply Burn self-damage if attacker is burning
     if (attacker.isBurning) {
       const burnDamage = 3;
@@ -2212,6 +2294,7 @@ function processAttackForPlayer(
         // Remove stealth after attacking
         const stealthIdx = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
         if (stealthIdx !== undefined && stealthIdx !== -1) {
+          newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.player.battlefield[updatedAttackerIndex].instanceId);
           newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx, 1);
         }
       }
@@ -2272,6 +2355,7 @@ function processAttackForPlayer(
       // Remove stealth after attacking
       const stealthIdx2 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
       if (stealthIdx2 !== undefined && stealthIdx2 !== -1) {
+        newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.player.battlefield[updatedAttackerIndex].instanceId);
         newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx2, 1);
       }
     }
@@ -2289,14 +2373,17 @@ function processAttackForPlayer(
     if (updatedAttacker && (updatedAttacker.card as any)?.onAttack?.type === 'apply_status') {
       const targetMinion = newState.players.opponent.battlefield.find(m => m.instanceId === defenderId);
       if (targetMinion) {
+        const statusType = (updatedAttacker.card as any)?.onAttack?.statusEffect;
         const updatedTarget = processOnAttackStatusEffect(updatedAttacker as any, targetMinion as any);
         const targetIndex = newState.players.opponent.battlefield.findIndex(m => m.instanceId === defenderId);
         if (targetIndex !== -1) {
           newState.players.opponent.battlefield[targetIndex] = updatedTarget as any;
         }
+        if (statusType === 'burn') newState = checkPetEvolutionTrigger(newState, 'on_apply_burn');
+        if (statusType === 'poison') newState = checkPetEvolutionTrigger(newState, 'on_apply_poison');
       }
     }
-    
+
     // Apply Burn self-damage if attacker is burning
     if (attacker.isBurning) {
       const burnDamage = 3;
@@ -2571,6 +2658,7 @@ export function processAttack(
       // Remove stealth after attacking
       const stealthIdx3 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
       if (stealthIdx3 !== undefined && stealthIdx3 !== -1) {
+        newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.player.battlefield[updatedAttackerIndex].instanceId);
         newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx3, 1);
       }
     }
@@ -2702,6 +2790,7 @@ export function processAttack(
     // Remove stealth after attacking
     const stealthIdx4 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
     if (stealthIdx4 !== undefined && stealthIdx4 !== -1) {
+      newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.player.battlefield[updatedAttackerIndex].instanceId);
       newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx4, 1);
     }
   }

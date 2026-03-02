@@ -83,5 +83,50 @@ export const petTokens: CardData[] = [
 		keywords: [],
 		set: 'core',
 		collectible: false
+	},
+	{
+		id: 9205,
+		name: 'Disir Spirit',
+		manaCost: 3,
+		description: 'Summoned by Disir Matriarch.',
+		flavorText: 'An echo of ancestral power.',
+		type: 'minion',
+		rarity: 'common',
+		class: 'Neutral',
+		attack: 3,
+		health: 3,
+		keywords: [],
+		set: 'core',
+		collectible: false
+	},
+	{
+		id: 9206,
+		name: 'Einherjar Phantom',
+		manaCost: 4,
+		description: 'Summoned by Einherjar Eternal.',
+		flavorText: 'A warrior who fights beyond death itself.',
+		type: 'minion',
+		rarity: 'common',
+		class: 'Neutral',
+		attack: 4,
+		health: 4,
+		keywords: [],
+		set: 'core',
+		collectible: false
+	},
+	{
+		id: 9207,
+		name: 'Ghost Sailor',
+		manaCost: 3,
+		description: "Summoned by Naglfar's Admiral.",
+		flavorText: 'Drowned souls bound to the ship of nails.',
+		type: 'minion',
+		rarity: 'common',
+		class: 'Neutral',
+		attack: 3,
+		health: 3,
+		keywords: [],
+		set: 'core',
+		collectible: false
 	}
 ];

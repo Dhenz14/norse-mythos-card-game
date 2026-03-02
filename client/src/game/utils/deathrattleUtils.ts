@@ -48,7 +48,7 @@ export function executeDeathrattle(
 
 
   // Create a deep copy of the state to safely modify
-  const newState = structuredClone(state) as GameState;
+  let newState = structuredClone(state) as GameState;
   
   // Process the deathrattle based on its type
   const deathrattle = minionCard.deathrattle!;
@@ -166,6 +166,90 @@ export function executeDeathrattle(
       return executeSummonDeathrattle(newState, deathrattle, playerId);
     case 'destroy':
       return executeDestroyDeathrattle(newState, deathrattle, playerId);
+    case 'aoe_damage': {
+      const aoeDmgVal = deathrattle.value || 1;
+      const aoeTgt = (deathrattle as any).targetType as string | undefined;
+      const oppId = playerId === 'player' ? 'opponent' : 'player';
+      if (aoeTgt === 'all_enemies' || aoeTgt === 'all_enemy_minions' || !aoeTgt) {
+        const oppBf = newState.players[oppId as 'player' | 'opponent'].battlefield;
+        for (let i = 0; i < oppBf.length; i++) {
+          if (oppBf[i].currentHealth === undefined) {
+            oppBf[i].currentHealth = (oppBf[i].card as MinionCardData).health || 1;
+          }
+          if (oppBf[i].hasDivineShield) {
+            oppBf[i].hasDivineShield = false;
+          } else {
+            oppBf[i].currentHealth! -= aoeDmgVal;
+          }
+        }
+        newState.players[oppId as 'player' | 'opponent'].battlefield = oppBf.filter(m => (m.currentHealth ?? 1) > 0);
+        if (aoeTgt === 'all_enemies') {
+          newState = dealDamage(newState, oppId as 'player' | 'opponent', 'hero', aoeDmgVal);
+        }
+      }
+      return newState;
+    }
+    case 'gain_armor': {
+      const armorVal = deathrattle.value || 0;
+      newState.players[playerId].heroArmor = (newState.players[playerId].heroArmor || 0) + armorVal;
+      return newState;
+    }
+    case 'resummon': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
+        const rebornCopy = createCardInstance(card.card);
+        rebornCopy.currentHealth = (card.card as MinionCardData).health || 1;
+        rebornCopy.isSummoningSick = true;
+        rebornCopy.canAttack = false;
+        player.battlefield.push(rebornCopy);
+      }
+      return newState;
+    }
+    case 'aoe_damage_and_buff': {
+      const aoeDmg = deathrattle.value || 1;
+      const opponent = playerId === 'player' ? 'opponent' : 'player';
+      const oppBf = newState.players[opponent].battlefield;
+      for (let i = 0; i < oppBf.length; i++) {
+        if (oppBf[i].currentHealth === undefined) {
+          oppBf[i].currentHealth = (oppBf[i].card as MinionCardData).health || 1;
+        }
+        if (oppBf[i].hasDivineShield) {
+          oppBf[i].hasDivineShield = false;
+        } else {
+          oppBf[i].currentHealth! -= aoeDmg;
+        }
+      }
+      newState.players[opponent].battlefield = oppBf.filter(m => (m.currentHealth ?? 1) > 0);
+      const buffAtk = (deathrattle as any).buffAttack || 0;
+      const buffHp = (deathrattle as any).buffHealth || 0;
+      if (buffAtk > 0 || buffHp > 0) {
+        const friendlyBf = newState.players[playerId].battlefield;
+        for (let i = 0; i < friendlyBf.length; i++) {
+          const mc = friendlyBf[i].card as MinionCardData;
+          friendlyBf[i].card = { ...mc, attack: (mc.attack || 0) + buffAtk, health: (mc.health || 0) + buffHp } as MinionCardData;
+          friendlyBf[i].currentAttack = (friendlyBf[i].currentAttack ?? mc.attack ?? 0) + buffAtk;
+          friendlyBf[i].currentHealth = (friendlyBf[i].currentHealth ?? mc.health ?? 0) + buffHp;
+        }
+      }
+      return newState;
+    }
+    case 'silence': {
+      const silTgt = (deathrattle as any).targetType as string | undefined;
+      if (silTgt === 'all_enemy_minions') {
+        const opponent = playerId === 'player' ? 'opponent' : 'player';
+        const oppBf = newState.players[opponent].battlefield;
+        for (const minion of oppBf) {
+          minion.card = { ...minion.card, keywords: [], battlecry: undefined, deathrattle: undefined } as any;
+          (minion as any).hasDivineShield = false;
+          (minion as any).isTaunt = false;
+          (minion as any).hasWindfury = false;
+          (minion as any).isStealth = false;
+          (minion as any).hasLifesteal = false;
+          (minion as any).silenced = true;
+        }
+      }
+      return newState;
+    }
     default:
       debug.warn(`Unknown deathrattle type: ${deathrattle.type}`);
       return newState;
@@ -183,13 +267,14 @@ function executeSummonDeathrattle(
   // Deep copy the state to avoid mutation
   const newState = structuredClone(state) as GameState;
   
-  // Find the card to summon based on the specified card ID
-  if (!deathrattle.summonCardId) {
+  // Find the card to summon — support summonCardId, cardId, and summonId
+  const summonId = deathrattle.summonCardId || (deathrattle as any).cardId || (deathrattle as any).summonId;
+  if (!summonId) {
     debug.error("No summon card ID specified in the deathrattle effect");
     return state;
   }
-  
-  const cardToSummon = allCards.find(card => card.id === deathrattle.summonCardId);
+
+  const cardToSummon = allCards.find(card => card.id === summonId);
   
   if (!cardToSummon) {
     debug.error(`Card with ID ${deathrattle.summonCardId} not found in the database`);

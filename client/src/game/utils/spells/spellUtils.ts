@@ -17,6 +17,7 @@ import { isMinion, isSpell, isWeapon, getAttack, getHealth, hasAttack, hasHealth
 import { trackQuestProgress } from '../quests/questProgress';
 import { debug } from '../../config/debugConfig';
 import { MAX_BATTLEFIELD_SIZE } from '../../constants/gameConstants';
+import { checkPetEvolutionTrigger } from '../petEvolutionTriggers';
 
 function getSpellEffectType(effectType: string): SpellEffectType {
   const typeMap: Record<string, SpellEffectType> = {
@@ -776,6 +777,7 @@ export function executeSpell(
                 }
               }
             }
+            state = checkPetEvolutionTrigger(state, 'on_buff');
           } else if (realmEff.type === 'debuff_all_attack') {
             for (const side of ['player', 'opponent'] as const) {
               const isFriendly = side === caster;
@@ -785,6 +787,7 @@ export function executeSpell(
                 }
               }
             }
+            state = checkPetEvolutionTrigger(state, 'on_reduce_attack');
           }
         }
       }
@@ -1175,7 +1178,8 @@ function applyFreezeEffect(
   } else {
     debug.warn(`Unsupported freeze target type: ${targetType}`);
   }
-  
+
+  newState = checkPetEvolutionTrigger(newState, 'on_freeze');
   return newState;
 }
 
@@ -1268,7 +1272,8 @@ function executeHealSpell(
       debug.error(`Unknown hero target ID: ${targetId}`);
     }
   }
-  
+
+  newState = checkPetEvolutionTrigger(newState, 'on_heal');
   return newState;
 }
 
@@ -1435,7 +1440,9 @@ function executeBuffSpell(
   
   // Check and update enrage status after health buffs, as they may remove enrage effects
   newState = updateEnrageEffects(newState);
-  
+
+  newState = checkPetEvolutionTrigger(newState, 'on_buff');
+  newState = checkPetEvolutionTrigger(newState, 'on_gain_health');
   return newState;
 }
 
@@ -1625,7 +1632,8 @@ function executeFreezeSpell(
   
   // Update player's battlefield
   newState.players.player.battlefield = playerBattlefield;
-  
+
+  newState = checkPetEvolutionTrigger(newState, 'on_freeze');
   return newState;
 }
 
@@ -1875,16 +1883,18 @@ function executeSilenceSpell(
         // Use standardized draw function directly
         newState = drawMultipleCards(newState, state.currentTurn, effect.drawCards);
       }
-      
+
+      newState = checkPetEvolutionTrigger(newState, 'on_silence');
       return newState;
     }
-    
+
     // Handle other AoE silence targets if needed
     if (effect.targetType === 'all_minions') {
       // Silence all minions on both sides of the battlefield
       // (Implementation similar to above but for both player and opponent)
     }
-    
+
+    newState = checkPetEvolutionTrigger(newState, 'on_silence');
     return newState;
   }
   
@@ -1979,7 +1989,8 @@ function executeSilenceSpell(
   
   // Update player's battlefield
   newState.players.player.battlefield = playerBattlefield;
-  
+
+  newState = checkPetEvolutionTrigger(newState, 'on_silence');
   return newState;
 }
 
@@ -3107,34 +3118,36 @@ function executeReturnToHandSpell(
     // Update state
     newState.players.player.battlefield = playerBattlefield;
     newState.players.player.hand = playerHand;
-    
+
+    newState = checkPetEvolutionTrigger(newState, 'on_return_to_hand');
     return newState;
   }
-  
+
   // Check opponent's battlefield
   const oppIdx = opponentBattlefield.findIndex(m => m.instanceId === targetId);
   if (oppIdx !== -1) {
     const minion = opponentBattlefield[oppIdx];
-    
+
     // Check if hand is full before adding
     if (opponentHand.length >= 10) {
       debug.warn(`Cannot return ${minion.card.name} to opponent's hand: hand is full (10/10)`);
       return state;
     }
-    
+
     // Remove from battlefield
     opponentBattlefield.splice(oppIdx, 1);
-    
+
     // Reset minion state and add to hand
     minion.currentHealth = getHealth(minion.card);
     minion.isSummoningSick = true;
     minion.canAttack = false;
     opponentHand.push(minion);
-    
+
     // Update state
     newState.players.opponent.battlefield = opponentBattlefield;
     newState.players.opponent.hand = opponentHand;
-    
+
+    newState = checkPetEvolutionTrigger(newState, 'on_return_to_hand');
     return newState;
   }
   

@@ -55,6 +55,15 @@ export default function executeDestroyDestroy(
         context.opponentPlayer.health = 0;
         context.logGameEvent(`${cardName}'s deathrattle destroyed the enemy hero!`);
         return { success: true, additionalData: { destroyedHero: true } };
+      case 'enemy_minions_3_or_less':
+      case 'all_enemy_minions_low_attack': {
+        const atkCap = effect.value || 3;
+        targets = context.getEnemyMinions().filter(m => {
+          const atk = m.currentAttack ?? (m.card as any).attack ?? 0;
+          return atk <= atkCap;
+        });
+        break;
+      }
       default:
         targets = [];
     }
