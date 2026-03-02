@@ -20,7 +20,6 @@ import { useUnifiedUIStore } from '../stores/unifiedUIStore';
 import { ActionAnnouncement } from '../components/ActionAnnouncement';
 import './RagnarokCombatArena.css';
 import './GameViewport.css';
-import { PokerActivityLog } from '../components/ActivityLog';
 import AIAttackAnimationProcessor from '../components/AIAttackAnimationProcessor';
 import { PixiParticleCanvas } from '../animations/PixiParticleCanvas';
 import { AnimationOverlay } from '../components/AnimationOverlay';
@@ -663,10 +662,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         <div className={`turn-flash-overlay turn-flash-${turnFlash}`} />
       )}
 
-      {/* Activity Logs - Top Right Overlay */}
-      <div className="activity-logs-dock">
-        <PokerActivityLog />
-      </div>
       
       {isMulligan && (
         <div className="mulligan-notice">

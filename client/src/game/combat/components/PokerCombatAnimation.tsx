@@ -264,37 +264,19 @@ export const PokerCombatAnimation: React.FC<PokerCombatAnimationProps> = ({
 			className={`poker-combat-animation ${phase === 'impact' ? tier.shakeClass : ''}`}
 			style={{ ['--element-color' as string]: elementColor }}
 		>
-			{phase === 'windup' && (
+			{phase === 'windup' && !isFold && (
 				<>
-					{isFold ? (
-						<>
-							<div className="brace-text">{attackNameText}</div>
-							<div
-								className="brace-shield-glow"
-								style={{
-									left: '50%',
-									top: winner === 'player' ? '30%' : '70%',
-									transform: 'translate(-50%, -50%)',
-									width: 120,
-									height: 120,
-								}}
-							/>
-						</>
-					) : (
-						<>
-							<div className="attack-name-text">{attackNameText}</div>
-							<div
-								className="combat-attacker-glow"
-								style={{
-									left: '50%',
-									top: winner === 'player' ? '70%' : '30%',
-									transform: 'translate(-50%, -50%)',
-									width: 100,
-									height: 100,
-								}}
-							/>
-						</>
-					)}
+					<div className="attack-name-text">{attackNameText}</div>
+					<div
+						className="combat-attacker-glow"
+						style={{
+							left: '50%',
+							top: winner === 'player' ? '70%' : '30%',
+							transform: 'translate(-50%, -50%)',
+							width: 100,
+							height: 100,
+						}}
+					/>
 				</>
 			)}
 
