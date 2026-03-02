@@ -373,7 +373,7 @@ const HERO_TO_CHARACTER: Record<string, string> = {
   'hero-gormr': 'garmr',
   'hero-sinmara': 'sinmara',
   // hero-aegir removed — 'aegir' art identical to chronos portrait
-  'hero-ran': 'kolga',
+  // hero-ran removed — has dedicated ran.png portrait
   'hero-grid': 'grid',
   'hero-thrud': 'thrud',
   'hero-svadilfari': 'svadilfari',
@@ -381,41 +381,27 @@ const HERO_TO_CHARACTER: Record<string, string> = {
   'hero-jarnsaxa': 'jarnsaxa',
   'hero-hyrrokkin': 'hyrrokkin',
   
-  // Alternate heroes (best judgment matches)
+  // Alternate heroes — no dedicated portrait, use closest CDN art
   'hero-njord': 'nerthus',
   'hero-hoenir': 'mimir',
   'hero-ve': 'vidarr',
   'hero-vili': 'vali',
   'hero-fjorgyn': 'frigg',
   'hero-lirien': 'gerd',
-  'hero-magni': 'thor',
   'hero-solvi': 'sol',
-  'hero-myrka': 'nott',
   'hero-ylva': 'ulfhednar',
   'hero-fjora': 'skadi',
-  'hero-logi': 'surtr',
-  
-  // Greek goddesses - using Norse wave maidens (human-looking female artwork)
+  // hero-magni, hero-myrka, hero-logi removed — have dedicated portraits
+
+  // Greek heroes — no dedicated portrait, use closest CDN art
   'hero-ammit': 'nott',
-  'hero-aphrodite': 'bylgja',
   'hero-artemis': 'hefring',
-  'hero-athena': 'himinglaeva',
   'hero-demeter': 'hronn',
-  'hero-persephone': 'drofn',
-  'hero-hera': 'dufa',
   'hero-blainn': 'udr',
-  'hero-hestia': 'blodughadda',
-  'hero-nyx': 'siren',
-  
-  // Greek gods - using Norse warrior artwork (human-looking male artwork)
-  'hero-ares': 'einherjar',
-  'hero-hephaestus': 'chainsbreaker',
-  'hero-zeus': 'valhallaguard',
-  'hero-hades': 'dark-elves',
-  'hero-dionysus': 'vidarr',           // Vidarr (previously used for Yggdrasil)
-  'hero-apollo': 'dellingr',           // Dellingr - god of light
-  'hero-poseidon': 'fornjotr',         // Fornjotr - primordial giant of sea
-  'hero-hermes': 'hrodr',              // Hrodr - swift messenger type
+  'hero-dionysus': 'vidarr',
+  'hero-hermes': 'hrodr',
+  // aphrodite, athena, persephone, hera, hestia, nyx, ares, hephaestus,
+  // zeus, hades, apollo, poseidon removed — have dedicated portraits
   
   // Vikings (historical characters)
   'hero-ragnar': 'ragnar-lothbrok',
