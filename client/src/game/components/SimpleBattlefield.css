@@ -292,6 +292,19 @@
   transform: translateY(-4px) scale(1.02);
 }
 
+/* Keyword icons stay bright and interactive even on sleeping/exhausted minions */
+.bf-card-wrapper.summoning-sick .keyword-icon-badge,
+.bf-card-wrapper.exhausted .keyword-icon-badge {
+  filter: saturate(2.8) brightness(1.3);
+  pointer-events: auto;
+  z-index: 50;
+}
+
+.bf-card-wrapper.summoning-sick .keyword-icon-badge:hover,
+.bf-card-wrapper.exhausted .keyword-icon-badge:hover {
+  filter: saturate(3) brightness(1.5);
+}
+
 .bf-card-wrapper.summoning-sick::after {
   content: 'Zzz';
   position: absolute;

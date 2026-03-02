@@ -3,12 +3,12 @@
 .mulligan-card-wrapper {
   position: relative;
   cursor: pointer;
-  width: 180px;
+  width: clamp(140px, min(22vw, 32vh), 240px);
 }
 
 .mulligan-card-placeholder {
-  width: 180px;
-  height: 260px;
+  width: 100%;
+  aspect-ratio: 9 / 13;
   background: rgba(30, 41, 59, 0.8);
   border-radius: 12px;
   border: 1px solid rgba(100, 116, 139, 0.3);
@@ -216,4 +216,11 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(251, 191, 36, 0.65);
+}
+
+/* Make SimpleCard fill the wrapper instead of using fixed size */
+.mulligan-card-wrapper .simple-card.large {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 9 / 14;
 }

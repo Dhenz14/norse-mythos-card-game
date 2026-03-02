@@ -44,7 +44,8 @@ export type SoundType =
 	| 'combat_brace'
 	| 'norse_horn'
 	| 'sword_clash'
-	| 'rune_whisper';
+	| 'rune_whisper'
+	| 'timer_warning';
 
 export class ProceduralAudio {
 	private ctx: AudioContext | null = null;
@@ -279,6 +280,7 @@ export class ProceduralAudio {
 				case 'norse_horn': this.soundNorseHorn(); break;
 				case 'sword_clash': this.soundSwordClash(); break;
 				case 'rune_whisper': this.soundRuneWhisper(); break;
+				case 'timer_warning': this.soundTimerWarning(); break;
 				default: this.soundButtonClick(); break;
 			}
 		} catch (_) {
@@ -588,6 +590,58 @@ export class ProceduralAudio {
 		s2.start(now);
 		s1.stop(now + 0.15);
 		s2.stop(now + 0.15);
+	}
+
+	// ═══════════════════════════════════════════
+	//  TIMER WARNING — Norse war drum strike
+	//  Deep taiko-style hit for 10-second warning
+	// ═══════════════════════════════════════════
+
+	private soundTimerWarning(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+
+		// Deep drum body — sine sweep from 80Hz down to 40Hz
+		const drum = ctx.createOscillator();
+		const drumGain = ctx.createGain();
+		drum.type = 'sine';
+		drum.frequency.setValueAtTime(80, now);
+		drum.frequency.exponentialRampToValueAtTime(40, now + 0.4);
+		drumGain.gain.setValueAtTime(0.6, now);
+		drumGain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+		drum.connect(drumGain);
+		drumGain.connect(this.getMaster());
+		drum.start(now);
+		drum.stop(now + 0.7);
+
+		// Sub-bass thud — even lower for chest impact
+		const sub = ctx.createOscillator();
+		const subGain = ctx.createGain();
+		sub.type = 'sine';
+		sub.frequency.setValueAtTime(50, now);
+		sub.frequency.exponentialRampToValueAtTime(25, now + 0.5);
+		subGain.gain.setValueAtTime(0.45, now);
+		subGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+		sub.connect(subGain);
+		subGain.connect(this.getMaster());
+		sub.start(now);
+		sub.stop(now + 0.6);
+
+		// Skin slap — filtered noise for the attack transient
+		this.playFilteredNoiseBurst(now, 0.06, 200, 'lowpass', 0.5);
+
+		// Overtone ring — adds warmth and resonance
+		const ring = ctx.createOscillator();
+		const ringGain = ctx.createGain();
+		ring.type = 'triangle';
+		ring.frequency.setValueAtTime(120, now);
+		ring.frequency.exponentialRampToValueAtTime(60, now + 0.3);
+		ringGain.gain.setValueAtTime(0.15, now);
+		ringGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+		ring.connect(ringGain);
+		ringGain.connect(this.getReverb());
+		ring.start(now);
+		ring.stop(now + 0.5);
 	}
 
 	// ═══════════════════════════════════════════

@@ -74,6 +74,13 @@
   }
 }
 
+/* Medium-short screens: reduce hero to prevent hand overlap */
+@media (max-height: 800px) {
+  :root {
+    --hero-card-width: clamp(70px, 10vw, 110px);
+  }
+}
+
 /* Short screens: compact mode */
 @media (max-height: 700px) {
   :root {
@@ -82,6 +89,7 @@
     --hand-zone-height: 20vh;
     --hover-lift-distance: 35px;
     --active-minion-safe-margin: 60px;
+    --hero-card-width: clamp(60px, 9vw, 95px);
   }
 }
 
@@ -187,11 +195,10 @@
    MAX-WIDTH BREAKPOINTS (smaller screens)
    ======================================== */
 
-/* Medium screens: reduce panel width */
+/* Medium screens: reduce panel width (hero-card-width handled in breakpoints above) */
 @media (max-width: 1280px) {
   :root {
     --poker-panel-width: clamp(260px, 32vw, 400px);
-    --hero-card-width: clamp(100px, 14vw, 160px);
     --hand-card-width: clamp(90px, 11vw, 150px);
     --hand-card-height: clamp(126px, 15vw, 210px);
     --battlefield-card-width: clamp(90px, 10vw, 140px);
@@ -203,7 +210,6 @@
 @media (max-width: 1024px) {
   :root {
     --poker-panel-width: clamp(240px, 30vw, 320px);
-    --hero-card-width: clamp(90px, 12vw, 140px);
     --hero-zone-height: clamp(180px, 26vh, 280px);
     --opponent-zone-height: clamp(120px, 16vh, 180px);
     --field-zone-height: clamp(100px, 15vh, 160px);

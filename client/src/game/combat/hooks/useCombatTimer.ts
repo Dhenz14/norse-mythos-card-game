@@ -6,6 +6,7 @@ import { fireAnnouncement } from '../../stores/unifiedUIStore';
 import { useGameStore } from '../../stores/gameStore';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
+import { proceduralAudio } from '../../audio/proceduralAudio';
 
 interface UseCombatTimerOptions {
   combatState: PokerCombatState | null;
@@ -51,7 +52,11 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
       }
       
       if (freshState.turnTimer > 0) {
-        updateTimer(freshState.turnTimer - 1);
+        const newTime = freshState.turnTimer - 1;
+        if (newTime === 10) {
+          proceduralAudio.play('timer_warning');
+        }
+        updateTimer(newTime);
       } else {
         const permissions = getActionPermissions(freshState, true);
         

@@ -61,6 +61,7 @@ export interface TooltipCardData {
   tribe?: string;
   cardClass?: string;
   keywords?: string[];
+  artPath?: string;
 }
 
 interface UnifiedCardTooltipProps {

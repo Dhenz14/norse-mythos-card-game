@@ -191,23 +191,14 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const [showGearPanel, setShowGearPanel] = useState(false);
 
   useEffect(() => {
-    if (combatState?.phase === CombatPhase.SPELL_PET || combatState?.phase === CombatPhase.MULLIGAN || combatState?.phase === CombatPhase.PRE_FLOP) {
+    if (!combatState?.phase) return;
+    const phase = combatState.phase;
+    if (phase === CombatPhase.SPELL_PET || phase === CombatPhase.MULLIGAN || phase === CombatPhase.PRE_FLOP) {
       setCommunityCardsRevealed(false);
-    }
-  }, [combatState?.phase]);
-
-  // In an all-in showdown, phases advance automatically with no player action,
-  // so communityCardsRevealed never gets set via wrappedOnAction. Force it true.
-  useEffect(() => {
-    if (
-      combatState?.isAllInShowdown &&
-      combatState.phase !== CombatPhase.SPELL_PET &&
-      combatState.phase !== CombatPhase.MULLIGAN &&
-      combatState.phase !== CombatPhase.PRE_FLOP
-    ) {
+    } else if (phase === CombatPhase.FAITH || phase === CombatPhase.FORESIGHT || phase === CombatPhase.DESTINY || phase === CombatPhase.RESOLUTION) {
       setCommunityCardsRevealed(true);
     }
-  }, [combatState?.isAllInShowdown, combatState?.phase]);
+  }, [combatState?.phase]);
 
   const wrappedOnAction = useCallback((action: CombatAction, hp?: number) => {
     setCommunityCardsRevealed(true);
