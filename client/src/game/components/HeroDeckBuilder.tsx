@@ -9,7 +9,7 @@
  * - Tokens: ./deckbuilder/tokens.css
  */
 
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PieceType } from '../stores/heroDeckStore';
 import { useDeckBuilder, DECK_SIZE, isClassCard, getMaxCopies } from './deckbuilder';
@@ -31,11 +31,6 @@ interface HeroDeckBuilderProps {
 	heroPortrait?: string;
 	onClose: () => void;
 	onSave?: () => void;
-}
-
-interface HoverInfo {
-	card: CardData;
-	rect: DOMRect;
 }
 
 const TYPE_ICONS: Record<string, string> = {
@@ -75,22 +70,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 }) => {
 	const db = useDeckBuilder({ pieceType, heroId, heroClass, onClose, onSave });
 	const [viewTab, setViewTab] = useState<ViewTab>('cards');
-	const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
-	const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const classColor = getClassColor(heroClass);
-
-	const handleCardMouseEnter = useCallback((card: CardData, e: React.MouseEvent<HTMLDivElement>) => {
-		const rect = e.currentTarget.getBoundingClientRect();
-		if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-		hoverTimeoutRef.current = setTimeout(() => {
-			setHoverInfo({ card, rect });
-		}, 200);
-	}, []);
-
-	const handleCardMouseLeave = useCallback(() => {
-		if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-		setHoverInfo(null);
-	}, []);
 
 	const manaCurve = useMemo(() => {
 		const curve: number[] = new Array(8).fill(0);
@@ -259,10 +239,8 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 											return (
 												<div
 													key={card.id}
-													onClick={() => canAdd && db.handleAddCard(card)}
-													onContextMenu={e => { e.preventDefault(); db.setSelectedCard(card); }}
-													onMouseEnter={e => handleCardMouseEnter(card, e)}
-													onMouseLeave={handleCardMouseLeave}
+													onClick={() => db.setSelectedCard(card)}
+													onContextMenu={e => e.preventDefault()}
 													className={`db-card rarity-${rarityKey} ${isMaxed ? 'not-playable' : ''} ${isLinkedSuper ? 'super-minion-linked' : ''}`}
 												>
 													{/* Art Section */}
@@ -402,7 +380,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 
 						<div className="db-sidebar-list">
 							{db.deckCardsWithCounts.length === 0 ? (
-								<div className="db-sidebar-empty">Click cards to add them to your deck</div>
+								<div className="db-sidebar-empty">Click a card, then use Add to Deck</div>
 							) : (
 								db.deckCardsWithCounts.map(({ card, count }) => {
 									const rarityKey = (card.rarity || 'common').toLowerCase();
@@ -439,148 +417,22 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 				</div>
 			</motion.div>
 
-			{/* Hover Preview Panel */}
-			{hoverInfo && (
-				<HoverPreview
-					card={hoverInfo.card}
-					rect={hoverInfo.rect}
-					classColor={classColor}
-				/>
-			)}
-
-			{/* Card Detail Flip (right-click) */}
+			{/* Card Detail Flip (left-click) */}
 			<AnimatePresence>
 				{db.selectedCard && (
 					<CardDetailFlip
 						card={db.selectedCard}
 						classColor={classColor}
 						onClose={() => db.setSelectedCard(null)}
+						canAdd={db.canAddCard(Number(db.selectedCard.id))}
+						inDeckCount={db.deckCardCounts[Number(db.selectedCard.id)] || 0}
+						maxCopies={getMaxCopies(db.selectedCard)}
+						onAddCard={() => db.handleAddCard(db.selectedCard!)}
+						onRemoveCard={() => db.handleRemoveCard(db.selectedCard!)}
 					/>
 				)}
 			</AnimatePresence>
 		</motion.div>
-	);
-};
-
-const HoverPreview: React.FC<{ card: CardData; rect: DOMRect; classColor: string }> = ({ card, rect, classColor }) => {
-	const panelWidth = 280;
-	const panelHeight = 320;
-	const viewportWidth = window.innerWidth;
-	const viewportHeight = window.innerHeight;
-
-	let left = rect.right + 12;
-	let top = rect.top;
-
-	if (left + panelWidth > viewportWidth - 16) {
-		left = rect.left - panelWidth - 12;
-	}
-	if (left < 16) {
-		left = 16;
-	}
-	if (top + panelHeight > viewportHeight - 16) {
-		top = viewportHeight - panelHeight - 16;
-	}
-	if (top < 16) {
-		top = 16;
-	}
-
-	return (
-		<div className="db-preview-panel" style={{ left, top }}>
-			<CardPreviewContent card={card} classColor={classColor} showArt />
-		</div>
-	);
-};
-
-const CardPreviewContent: React.FC<{ card: CardData; classColor: string; showArt?: boolean }> = ({ card, classColor, showArt }) => {
-	const isMinion = card.type === 'minion';
-	const rarityKey = (card.rarity || 'common').toLowerCase();
-	const cardArtPath = getCardArtPath(card.name);
-	const keywords = (card as any).keywords as string[] | undefined;
-
-	return (
-		<>
-			<div className="db-preview-header">
-				<div className="db-preview-mana">{card.manaCost ?? 0}</div>
-				<div className="db-preview-title">
-					<div className="db-preview-name">{card.name}</div>
-					<div className="db-preview-subtitle">
-						{card.type} &bull; <span className={`db-preview-rarity ${rarityKey}`}>{card.rarity || 'Common'}</span>
-						{isClassCard(card) && <span className="db-preview-class-badge">{'\u2605'} Class</span>}
-					</div>
-				</div>
-			</div>
-
-			{showArt && cardArtPath && (
-				<div className="db-preview-art">
-					<img src={cardArtPath} alt="" loading="lazy" />
-				</div>
-			)}
-			{showArt && !cardArtPath && (
-				<div className="db-preview-art db-preview-art-fallback" style={{ background: `linear-gradient(135deg, ${classColor}25, ${classColor}08)` }}>
-					<span className="db-preview-art-fallback-icon">{TYPE_ICONS[card.type] || '\u2726'}</span>
-				</div>
-			)}
-
-			{isMinion && (
-				<div className="db-preview-stats">
-					<div className="db-preview-stat">
-						<span className="db-preview-stat-val" style={{ color: '#fbbf24' }}>{(card as any).attack ?? 0}</span>
-						<span className="db-preview-stat-label">Attack</span>
-					</div>
-					<div className="db-preview-stat">
-						<span className="db-preview-stat-val" style={{ color: '#f87171' }}>{(card as any).health ?? 0}</span>
-						<span className="db-preview-stat-label">Health</span>
-					</div>
-					{(card as any).race && (
-						<div className="db-preview-stat db-preview-stat-race">
-							<span className="db-preview-stat-label" style={{ color: 'rgba(180,200,230,0.7)' }}>{(card as any).race}</span>
-						</div>
-					)}
-				</div>
-			)}
-
-			{card.type === 'artifact' && (
-				<div className="db-preview-stats">
-					<div className="db-preview-stat">
-						<span className="db-preview-stat-val" style={{ color: '#fbbf24' }}>{(card as any).attack ?? 0}</span>
-						<span className="db-preview-stat-label">Attack</span>
-					</div>
-					<div className="db-preview-stat db-preview-stat-race">
-						<span className="db-preview-stat-label" style={{ color: '#c084fc' }}>{(card as any).heroId?.replace('hero-', '') || 'Unknown'}</span>
-					</div>
-				</div>
-			)}
-
-			{card.type === 'armor' && (
-				<div className="db-preview-stats">
-					<div className="db-preview-stat">
-						<span className="db-preview-stat-val" style={{ color: '#60a5fa' }}>{(card as any).armorValue ?? 0}</span>
-						<span className="db-preview-stat-label">Armor</span>
-					</div>
-					<div className="db-preview-stat">
-						<span className="db-preview-stat-val" style={{ color: '#94a3b8', fontSize: '0.75rem' }}>{(card as any).armorSlot || '?'}</span>
-						<span className="db-preview-stat-label">Slot</span>
-					</div>
-					{(card as any).setId && (
-						<div className="db-preview-stat db-preview-stat-race">
-							<span className="db-preview-stat-label" style={{ color: '#fbbf24' }}>{(card as any).setId} set</span>
-						</div>
-					)}
-				</div>
-			)}
-
-			{card.description && (
-				<div className="db-preview-desc">{card.description}</div>
-			)}
-
-			{keywords && keywords.length > 0 && (
-				<div className="db-preview-keywords">
-					{keywords.map((kw: string) => (
-						<span key={kw} className="db-preview-keyword">{kw}</span>
-					))}
-				</div>
-			)}
-		</>
 	);
 };
 
@@ -592,7 +444,16 @@ const RARITY_LABELS: Record<string, string> = {
 	basic: 'BASIC',
 };
 
-const CardDetailFlip: React.FC<{ card: CardData; classColor: string; onClose: () => void }> = ({ card, classColor, onClose }) => {
+const CardDetailFlip: React.FC<{
+	card: CardData;
+	classColor: string;
+	onClose: () => void;
+	canAdd: boolean;
+	inDeckCount: number;
+	maxCopies: number;
+	onAddCard: () => void;
+	onRemoveCard: () => void;
+}> = ({ card, classColor, onClose, canAdd, inDeckCount, maxCopies, onAddCard, onRemoveCard }) => {
 	const [isFlipped, setIsFlipped] = useState(false);
 	const [isFlipping, setIsFlipping] = useState(false);
 
@@ -604,6 +465,7 @@ const CardDetailFlip: React.FC<{ card: CardData; classColor: string; onClose: ()
 
 	const handleFlip = useCallback((e: React.MouseEvent) => {
 		e.stopPropagation();
+		e.preventDefault();
 		if (isFlipping) return;
 		setIsFlipping(true);
 		setIsFlipped(prev => !prev);
@@ -629,7 +491,8 @@ const CardDetailFlip: React.FC<{ card: CardData; classColor: string; onClose: ()
 						transform: `rotateY(${isFlipped ? 180 : 0}deg)`,
 						transition: flipTransition,
 					}}
-					onClick={handleFlip}
+					onClick={e => e.stopPropagation()}
+					onContextMenu={handleFlip}
 				>
 					{/* FRONT FACE */}
 					<div className={`cd-front rarity-${rarityKey}`}>
@@ -672,7 +535,32 @@ const CardDetailFlip: React.FC<{ card: CardData; classColor: string; onClose: ()
 						)}
 
 						{/* Flip hint */}
-						<div className="cd-front-hint">Click to flip</div>
+						<div className="cd-front-hint">Right-click to flip</div>
+
+						{/* Deck action buttons */}
+						<div className="cd-deck-actions" onClick={e => e.stopPropagation()}>
+							{canAdd && (
+								<button
+									type="button"
+									className="cd-add-btn"
+									onClick={onAddCard}
+								>
+									+ Add to Deck {inDeckCount > 0 ? `(${inDeckCount}/${maxCopies})` : ''}
+								</button>
+							)}
+							{!canAdd && inDeckCount > 0 && (
+								<span className="cd-maxed-label">{inDeckCount}/{maxCopies} in deck</span>
+							)}
+							{inDeckCount > 0 && (
+								<button
+									type="button"
+									className="cd-remove-btn"
+									onClick={onRemoveCard}
+								>
+									- Remove
+								</button>
+							)}
+						</div>
 					</div>
 
 					{/* BACK FACE */}
