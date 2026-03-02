@@ -49,6 +49,7 @@ import { GameViewport } from './GameViewport';
 import { useCombatLayout } from '../hooks/useCombatLayout';
 import CardRenderer from '../components/CardRendering/CardRenderer';
 import { useRagnarokCombatController } from './hooks/useRagnarokCombatController';
+import { HeroBattlePopup } from './components/HeroBattlePopup';
 import type { ShowdownCelebration as ShowdownCelebrationState } from './hooks/useCombatEvents';
 import { isCardInWinningHand } from './utils/combatArenaUtils';
 import { debug } from '../config/debugConfig';
@@ -1071,6 +1072,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     handleCombatEnd,
     handleHeroDeathComplete,
     handleUnifiedEndTurn,
+    heroBattlePopups,
+    removeHeroBattlePopup,
   } = useRagnarokCombatController({ onCombatEnd });
 
   const elementalBuff = useElementalBuff();
@@ -1224,6 +1227,9 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       <TargetingOverlay />
       <CardBurnOverlay />
       <ActionAnnouncement />
+      {heroBattlePopups.map(popup => (
+        <HeroBattlePopup key={popup.id} popup={popup} onComplete={removeHeroBattlePopup} />
+      ))}
       <AIAttackAnimationProcessor />
       <PixiParticleCanvas />
       <AnimationOverlay />

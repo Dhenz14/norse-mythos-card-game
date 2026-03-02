@@ -5,13 +5,14 @@ import { getSmartAIAction } from '../modules/SmartAI';
 import { useGameStore } from '../../stores/gameStore';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
-import { fireAnnouncement } from '../../stores/unifiedUIStore';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
+import type { BattlePopupAction, BattlePopupTarget } from '../components/HeroBattlePopup';
 
 interface UsePokerAIOptions {
   combatState: PokerCombatState | null;
   isActive: boolean;
   aiResponseInProgressRef: React.MutableRefObject<boolean>;
+  addHeroBattlePopup?: (params: { action: BattlePopupAction; target: BattlePopupTarget; text: string; subtitle?: string }) => void;
 }
 
 const AI_RESPONSE_DELAY_MS = 600;
@@ -26,7 +27,7 @@ const AI_TIMEOUT_MS = 5000;
  * - No complex inference from isReady flags
  */
 export function usePokerAI(options: UsePokerAIOptions): void {
-  const { combatState, isActive, aiResponseInProgressRef } = options;
+  const { combatState, isActive, aiResponseInProgressRef, addHeroBattlePopup } = options;
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const watchdogTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -150,26 +151,14 @@ export function usePokerAI(options: UsePokerAIOptions): void {
 
         if (aiDecision.action === CombatAction.ATTACK) {
           const amount = aiDecision.betAmount || freshState.currentBet || 0;
-          fireAnnouncement('poker_bet', `${heroName} attacks for ${amount} HP!`, {
-            subtitle: 'Match or brace!',
-            duration: 2500
-          });
+          addHeroBattlePopup?.({ action: 'attack', target: 'opponent', text: `${heroName} attacks for ${amount} HP!`, subtitle: 'Match or brace!' });
         } else if (aiDecision.action === CombatAction.COUNTER_ATTACK) {
           const amount = aiDecision.betAmount || 0;
-          fireAnnouncement('poker_bet', `${heroName} counter-attacks ${amount} HP!`, {
-            subtitle: 'The stakes grow higher!',
-            duration: 2500
-          });
+          addHeroBattlePopup?.({ action: 'counter_attack', target: 'opponent', text: `${heroName} counters ${amount} HP!`, subtitle: 'The stakes grow higher!' });
         } else if (aiDecision.action === CombatAction.ENGAGE) {
-          fireAnnouncement('poker_call', `${heroName} engages!`, {
-            subtitle: 'Matched your attack',
-            duration: 1800
-          });
+          addHeroBattlePopup?.({ action: 'engage', target: 'both', text: `${heroName} engages!`, subtitle: 'Matched your attack' });
         } else if (aiDecision.action === CombatAction.BRACE) {
-          fireAnnouncement('poker_fold', `${heroName} braces!`, {
-            subtitle: 'They yield the round',
-            duration: 1800
-          });
+          addHeroBattlePopup?.({ action: 'brace', target: 'opponent', text: `${heroName} braces!`, subtitle: 'They yield the round' });
         }
 
         setTimeout(() => {

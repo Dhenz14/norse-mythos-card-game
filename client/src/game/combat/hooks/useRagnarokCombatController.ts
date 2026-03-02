@@ -38,6 +38,7 @@ import { useCombatEvents, ShowdownCelebration as ShowdownCelebrationState, HeroD
 import { useTurnOrchestrator } from './useTurnOrchestrator';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
+import type { HeroBattlePopupData, BattlePopupAction, BattlePopupTarget } from '../components/HeroBattlePopup';
 
 /**
  * Hero power targeting state structure
@@ -125,6 +126,9 @@ export interface UseRagnarokCombatControllerReturn {
   endCombat: () => void;
   performAction: ReturnType<typeof usePokerCombatAdapter>['performAction'];
   applyDirectDamage: ReturnType<typeof usePokerCombatAdapter>['applyDirectDamage'];
+
+  heroBattlePopups: HeroBattlePopupData[];
+  removeHeroBattlePopup: (id: string) => void;
 }
 
 export function useRagnarokCombatController(
@@ -155,14 +159,29 @@ export function useRagnarokCombatController(
   const [heroDeathState, setHeroDeathState] = useState<HeroDeathAnimationState | null>(null);
   
   const [heroPowerTargeting, setHeroPowerTargeting] = useState<HeroPowerTargetingState | null>(null);
-  
+
+  const [heroBattlePopups, setHeroBattlePopups] = useState<HeroBattlePopupData[]>([]);
+
+  const addHeroBattlePopup = useCallback((params: { action: BattlePopupAction; target: BattlePopupTarget; text: string; subtitle?: string }) => {
+    const popup: HeroBattlePopupData = {
+      ...params,
+      id: `hbp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      timestamp: Date.now()
+    };
+    setHeroBattlePopups(prev => [...prev, popup]);
+  }, []);
+
+  const removeHeroBattlePopup = useCallback((id: string) => {
+    setHeroBattlePopups(prev => prev.filter(p => p.id !== id));
+  }, []);
+
   const aiResponseInProgressRef = useRef(false);
-  
-  usePokerAI({ combatState, isActive, aiResponseInProgressRef });
-  
+
+  usePokerAI({ combatState, isActive, aiResponseInProgressRef, addHeroBattlePopup });
+
   usePokerPhases({ combatState, isActive });
-  
-  useCombatTimer({ combatState, isActive, updateTimer });
+
+  useCombatTimer({ combatState, isActive, updateTimer, addHeroBattlePopup });
   
   useCombatEvents({
     combatState,
@@ -785,14 +804,13 @@ export function useRagnarokCombatController(
     }
     
     if (action === CombatAction.DEFEND) {
-      fireAnnouncement('poker_check', 'Defend', { subtitle: '+1 ⚡ STA', duration: 1200 });
+      addHeroBattlePopup({ action: 'defend', target: 'player', text: 'Defend', subtitle: '+1 STA' });
     } else if (action === CombatAction.ATTACK) {
-      const staminaCost = hp ? Math.ceil(hp / 10) : 0;
-      fireAnnouncement('poker_bet', hp ? `Attack ${hp} HP` : 'Attack', { subtitle: staminaCost > 0 ? `-${staminaCost} ⚡ STA` : undefined, duration: 1200 });
+      addHeroBattlePopup({ action: 'attack', target: 'player', text: hp ? `Attacks for ${hp} HP` : 'Attack' });
     } else if (action === CombatAction.ENGAGE) {
-      fireAnnouncement('poker_call', 'Engage', { duration: 1200 });
+      addHeroBattlePopup({ action: 'engage', target: 'both', text: 'Engage!' });
     } else if (action === CombatAction.BRACE) {
-      fireAnnouncement('poker_fold', 'Brace', { duration: 1200 });
+      addHeroBattlePopup({ action: 'brace', target: 'player', text: 'Brace' });
     }
     
     performAction(combatState.player.playerId, action, hp);
@@ -1065,6 +1083,9 @@ export function useRagnarokCombatController(
     grantPokerHandRewards,
     endCombat,
     performAction,
-    applyDirectDamage
+    applyDirectDamage,
+
+    heroBattlePopups,
+    removeHeroBattlePopup
   };
 }

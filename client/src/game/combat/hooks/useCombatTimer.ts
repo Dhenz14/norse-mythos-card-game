@@ -2,20 +2,21 @@ import { useEffect, useRef } from 'react';
 import { CombatPhase, CombatAction, PokerCombatState } from '../../types/PokerCombatTypes';
 import { getPokerCombatAdapterState, getActionPermissions } from '../../hooks/usePokerCombatAdapter';
 import { getSmartAIAction } from '../modules/SmartAI';
-import { fireAnnouncement } from '../../stores/unifiedUIStore';
 import { useGameStore } from '../../stores/gameStore';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
 import { proceduralAudio } from '../../audio/proceduralAudio';
+import type { BattlePopupAction, BattlePopupTarget } from '../components/HeroBattlePopup';
 
 interface UseCombatTimerOptions {
   combatState: PokerCombatState | null;
   isActive: boolean;
   updateTimer: (newTime: number) => void;
+  addHeroBattlePopup?: (params: { action: BattlePopupAction; target: BattlePopupTarget; text: string; subtitle?: string }) => void;
 }
 
 export function useCombatTimer(options: UseCombatTimerOptions): void {
-  const { combatState, isActive, updateTimer } = options;
+  const { combatState, isActive, updateTimer, addHeroBattlePopup } = options;
   const nestedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cardGameMulliganActive = useGameStore(state => state.gameState?.mulligan?.active);
@@ -63,9 +64,9 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
         let autoAction = CombatAction.DEFEND;
         if (permissions?.hasBetToCall) {
           autoAction = CombatAction.BRACE;
-          fireAnnouncement('poker_fold', 'Brace', { subtitle: 'Time expired', duration: 1500 });
+          addHeroBattlePopup?.({ action: 'brace', target: 'player', text: 'Brace', subtitle: 'Time expired' });
         } else {
-          fireAnnouncement('poker_check', 'Defend', { subtitle: 'Time expired', duration: 1500 });
+          addHeroBattlePopup?.({ action: 'defend', target: 'player', text: 'Defend', subtitle: 'Time expired' });
         }
         
         const phaseBeforeAutoAction = freshState.phase;
