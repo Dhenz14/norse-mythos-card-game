@@ -1095,7 +1095,6 @@ const norseArtifacts: ArtifactCardData[] = [
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'mage',
-		heroId: 'hero-uranus',
 		attack: 0,
 		description: 'Your spells cost (1) less. When you take damage, gain Spell Damage +1 this turn. At 10+ total damage taken: spells cost (2) less.',
 		flavorText: 'Ouranos IS the sky. Even severed from the earth, the vault of heaven endures.',

@@ -36,6 +36,7 @@ export type KingPassiveTrigger =
   | 'end_of_turn'      // End of owner's turn
   | 'on_minion_play'   // When owner plays a minion
   | 'on_minion_death'  // When a friendly minion dies
+  | 'on_minion_attack' // When a friendly minion attacks
   | 'on_heal';         // When a friendly minion is healed
 
 /**
@@ -51,7 +52,8 @@ export type KingPassiveEffectType =
   | 'summon_token'      // Summon a token minion
   | 'freeze_random'     // Freeze a random enemy
   | 'grant_attack_on_heal' // Give attack when healed
-  | 'damage_all';          // Deal damage to ALL minions (friendly + enemy)
+  | 'damage_all'           // Deal damage to ALL minions (friendly + enemy)
+  | 'damage_adjacent_random'; // Deal damage to a random adjacent enemy minion
 
 /**
  * Single King passive effect

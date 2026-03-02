@@ -429,14 +429,6 @@ export const HERO_ANIMATION_PROFILES: Record<string, HeroAnimationProfile> = {
 		particleEmoji: '🍃',
 		screenShakeIntensity: 0.4,
 	},
-	'hero-uranus': {
-		heroId: 'hero-uranus',
-		attackName: 'Celestial Judgment',
-		archetype: 'divine_radiance',
-		element: 'light',
-		particleEmoji: '✨',
-		screenShakeIntensity: 0.9,
-	},
 	'hero-eros': {
 		heroId: 'hero-eros',
 		attackName: 'Arrow of Desire',

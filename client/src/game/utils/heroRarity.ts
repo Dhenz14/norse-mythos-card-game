@@ -103,7 +103,6 @@ const RARE_PIECES = new Set([
 	'hero-gerd',
 	'hero-gefjon',
 	// Greek lesser deities / titans
-	'hero-uranus',
 	'hero-eros',
 	'hero-demeter',
 	'hero-hestia',

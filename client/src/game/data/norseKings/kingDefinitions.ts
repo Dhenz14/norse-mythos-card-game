@@ -1,7 +1,7 @@
 /**
  * kingDefinitions.ts
  * 
- * Definitions for the 9 Primordial Kings (Summoners) in Ragnarok Poker.
+ * Definitions for the 11 Primordial Kings (Summoners) in Ragnarok Poker.
  * Kings provide passive army-wide buffs and do not participate in combat directly.
  */
 
@@ -321,6 +321,38 @@ export const NORSE_KINGS: Record<string, NorseKing> = {
         value: 1,
         isAura: false,
         affectsAll: true
+      }
+    ]
+  }
+  ,
+
+  // ==================== 11. URANUS ====================
+  'king-uranus': {
+    id: 'king-uranus',
+    name: 'Uranus',
+    title: 'The Sky Father',
+    description: 'The primordial god of the sky whose body became the eternal dome of stars. His divine blood birthed the Furies and giants — even in defeat, his essence breeds power.',
+    role: 'Aggro / Splash Damage',
+    designIntent: 'Uranus commands from above. His minions strike harder and their blows echo across the battlefield, punishing clustered defenses. The sky does not miss.',
+    hasSpells: false,
+    passives: [
+      {
+        id: 'uranus-passive-1',
+        name: 'Celestial Might',
+        description: 'All friendly minions gain +1 Attack.',
+        trigger: 'always',
+        effectType: 'buff_attack',
+        value: 1,
+        isAura: true
+      },
+      {
+        id: 'uranus-passive-2',
+        name: 'Starfall',
+        description: 'When a friendly minion attacks, deal 1 damage to a random adjacent enemy minion.',
+        trigger: 'on_minion_attack',
+        effectType: 'damage_adjacent_random',
+        value: 1,
+        isAura: false
       }
     ]
   }

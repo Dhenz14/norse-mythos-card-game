@@ -141,15 +141,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       portrait: '/portraits/heroes/hyperion.png'
     },
     {
-      id: 'hero-uranus',
-      name: 'Uranus',
-      heroClass: 'mage',
-      description: 'Primordial Sky: Command the heavens above.',
-      fixedCardIds: [],
-      element: 'light',
-      norseHeroId: 'hero-uranus'
-    },
-    {
       id: 'hero-chronos',
       name: 'Chronos',
       heroClass: 'mage',
@@ -877,6 +868,16 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       passiveEffect: 'tartarus_passives',
       chessAbility: 'king-tartarus',
       portrait: '/portraits/kings/tartarus.png'
+    },
+    {
+      id: 'king-uranus',
+      name: 'Uranus',
+      heroClass: 'neutral',
+      description: 'The Sky Father: All friendly minions gain +1 Attack. When a friendly minion attacks, it deals 1 damage to a random adjacent enemy.',
+      fixedCardIds: [],
+      passiveEffect: 'uranus_passives',
+      chessAbility: 'king-uranus',
+      portrait: '/portraits/kings/uranus.png'
     }
   ],
   pawn: [

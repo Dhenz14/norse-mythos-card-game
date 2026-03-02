@@ -24,7 +24,6 @@ export const HERO_SUPER_MINION_LINKS: Record<string, number> = {
   'hero-zeus': 95006,
   'hero-athena': 95007,
   'hero-hyperion': 95008,
-  'hero-uranus': 95009,
   'hero-chronos': 95010,
   
   // QUEEN - Warlock (7)
@@ -410,29 +409,6 @@ export const heroSuperMinions: CardData[] = [
       trigger: "end_of_turn",
       type: "damage_all_enemies",
       value: 2
-    },
-    collectible: true
-  },
-  {
-    id: 95009,
-    name: "Celestial Primordial",
-    manaCost: 11,
-    attack: 8,
-    health: 10,
-    type: "minion",
-    rarity: "mythic",
-    description: "Battlecry: Freeze all enemy minions for 2 turns. Discover a spell. Your spells cost (2) less.",
-    keywords: ["battlecry"],
-    heroClass: "mage",
-    class: "Mage",
-    race: "elemental",
-    linkedHeroId: "hero-uranus",
-    isSuperMinion: true,
-    battlecry: {
-      type: "freeze_all_and_discover",
-      value: 2,
-      requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
     },
     collectible: true
   },

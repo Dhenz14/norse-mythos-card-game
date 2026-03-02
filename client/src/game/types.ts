@@ -339,7 +339,7 @@ export interface PokerSpellCardData extends BaseCardData {
 export interface ArtifactCardData extends BaseCardData {
   type: 'artifact';
   attack?: number;
-  heroId: string;
+  heroId?: string;
   artifactEffect?: {
     type: string;
     [key: string]: any;

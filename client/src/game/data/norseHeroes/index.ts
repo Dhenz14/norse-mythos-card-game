@@ -151,7 +151,6 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-zeus': 'mage',
   'hero-athena': 'mage',
   'hero-hyperion': 'mage',
-  'hero-uranus': 'mage',
   'hero-chronos': 'mage',
 
   // QUEEN - Warlock (6 heroes)

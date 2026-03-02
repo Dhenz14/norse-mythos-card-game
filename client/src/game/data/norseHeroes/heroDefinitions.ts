@@ -2658,63 +2658,6 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     }
   },
 
-  // ==================== 46. URANUS ====================
-  'hero-uranus': {
-    id: 'hero-uranus',
-    name: 'Uranus',
-    title: 'The Sky Father',
-    element: 'light',
-    weakness: 'dark',
-    startingHealth: 100,
-    description: 'The primordial god of the sky and heavens.',
-    lore: 'The first sky father who was castrated by his son Kronos, his divine blood birthing the Furies and giants. His body became the eternal dome of stars above the world.',
-    hasSpells: true,
-    heroClass: 'mage',
-    fixedCardIds: [4403, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    heroPower: {
-      id: 'uranus-power',
-      name: 'Celestial Gaze',
-      description: "Reveal a random card in opponent's hand.",
-      cost: 2,
-      targetType: 'none',
-      effectType: 'reveal',
-      value: 1
-    },
-    weaponUpgrade: {
-      id: 90046,
-      name: 'Dome of the Heavens',
-      heroId: 'hero-uranus',
-      manaCost: 5,
-      description: "Reveal opponent's hand, give all friendly minions +1 attack. Permanently upgrade your hero power.",
-      immediateEffect: {
-        type: 'buff_aoe',
-        value: 1,
-        description: "Reveal opponent's hand, give all friendly minions +1 attack."
-      },
-      upgradedPowerId: 'uranus-power-upgraded'
-    },
-    upgradedHeroPower: {
-      id: 'uranus-power-upgraded',
-      name: 'Celestial Gaze+',
-      description: "Reveal 2 random cards in opponent's hand.",
-      cost: 2,
-      targetType: 'none',
-      effectType: 'reveal',
-      value: 2,
-      isUpgraded: true,
-      baseHeroPowerId: 'uranus-power'
-    },
-    passive: {
-      id: 'uranus-passive',
-      name: "Sky's Dominion",
-      description: 'Light minions have +1 attack when attacking.',
-      trigger: 'on_minion_attack',
-      condition: { minionElement: 'light' },
-      effectType: 'buff_attack',
-      value: 1
-    }
-  },
-
   // ==================== 48. EROS ====================
   'hero-eros': {
     id: 'hero-eros',
