@@ -4,6 +4,7 @@ import { useGameStore } from '../stores/gameStore';
 import { applyDamageToState, CombatStep } from '../services/AttackResolutionService';
 import { CombatEventBus } from '../services/CombatEventBus';
 import { playHeroAttackFX } from '../animations/HeroAttackFX';
+import gsap from 'gsap';
 import { debug } from '../config/debugConfig';
 import './AIAttackAnimation.css';
 
@@ -110,30 +111,6 @@ const AIAttackAnimationProcessor: React.FC = () => {
     markDamageApplied();
   }, [markDamageApplied]);
 
-  const getCardPosition = useCallback((instanceId: string): { x: number; y: number } | null => {
-    const cardElement = document.querySelector(`[data-instance-id="${instanceId}"]`);
-    if (cardElement) {
-      const rect = cardElement.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-      };
-    }
-    return null;
-  }, []);
-
-  const getHeroPosition = (hero: 'player' | 'opponent'): { x: number; y: number } | null => {
-    const heroElement = document.querySelector(`.${hero}-hero-zone, .battlefield-hero-square.${hero}`);
-    if (heroElement) {
-      const rect = heroElement.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-      };
-    }
-    return null;
-  };
-
   const getCardElement = useCallback((instanceId: string): HTMLElement | null => {
     return document.querySelector(`[data-instance-id="${instanceId}"]`);
   }, []);
@@ -180,33 +157,39 @@ const AIAttackAnimationProcessor: React.FC = () => {
           return;
         }
 
-        // Fallback: SVG line animation for minion-to-minion or missing elements
-        const attackerPos = getCardPosition(event.attackerId);
-        let targetPos: { x: number; y: number } | null = null;
-
+        // GSAP directional lunge for minion-to-minion (or fallback hero) attacks
+        const minionAttackerEl = getCardElement(event.attackerId);
+        let minionTargetEl: HTMLElement | null = null;
         if (event.targetType === 'hero') {
-          targetPos = getHeroPosition(event.attackerSide === 'opponent' ? 'player' : 'opponent');
+          minionTargetEl = getHeroElement(event.attackerSide === 'opponent' ? 'player' : 'opponent');
         } else if (event.targetId) {
-          targetPos = getCardPosition(event.targetId);
+          minionTargetEl = getCardElement(event.targetId);
         }
 
-        if (attackerPos && targetPos) {
-          setAnimState({ attackerPos, targetPos, phase: 'charging' });
+        if (minionAttackerEl && minionTargetEl) {
+          const aRect = minionAttackerEl.getBoundingClientRect();
+          const tRect = minionTargetEl.getBoundingClientRect();
+          const dx = (tRect.left + tRect.width / 2) - (aRect.left + aRect.width / 2);
+          const dy = (tRect.top + tRect.height / 2) - (aRect.top + aRect.height / 2);
+          const lungePercent = event.targetType === 'hero' ? 0.3 : 0.55;
 
-          setTimeout(() => {
-            setAnimState(prev => ({ ...prev, phase: 'impact' }));
-            applyDamageFromEvent(event);
-          }, 600);
+          setAnimState({ attackerPos: null, targetPos: null, phase: 'charging' });
 
-          setTimeout(() => {
-            setAnimState(prev => ({ ...prev, phase: 'returning' }));
-          }, 1200);
-
-          setTimeout(() => {
-            setAnimState({ attackerPos: null, targetPos: null, phase: 'idle' });
-            setDisplayEvent(null);
-            completeAnimation();
-          }, 1800);
+          const tl = gsap.timeline();
+          tl.to(minionAttackerEl, { y: dy > 0 ? 6 : -6, scale: 1.08, duration: 0.12, ease: 'power2.in' })
+            .to(minionAttackerEl, { x: dx * lungePercent, y: dy * lungePercent, scale: 1.05, duration: 0.18, ease: 'power2.out' })
+            .call(() => {
+              setAnimState(prev => ({ ...prev, phase: 'impact' }));
+              applyDamageFromEvent(event);
+            })
+            .to(minionAttackerEl, { duration: 0.08 })
+            .to(minionAttackerEl, { x: 0, y: 0, scale: 1, duration: 0.22, ease: 'power2.inOut' })
+            .call(() => {
+              setAnimState({ attackerPos: null, targetPos: null, phase: 'idle' });
+              setDisplayEvent(null);
+              completeAnimation();
+            });
+          fxTimelineRef.current = tl;
         } else {
           setTimeout(() => {
             applyDamageFromEvent(event);
@@ -219,75 +202,10 @@ const AIAttackAnimationProcessor: React.FC = () => {
         }
       }
     }
-  }, [pendingAttacks.length, isAnimating, startAnimation, completeAnimation, getCardPosition, getCardElement, applyDamageFromEvent]);
+  }, [pendingAttacks.length, isAnimating, startAnimation, completeAnimation, getCardElement, applyDamageFromEvent]);
 
-  if (!displayEvent) return null;
-
-  const { attackerPos, targetPos, phase } = animState;
-
-  return (
-    <div className="ai-attack-animation-overlay">
-      <div className="ai-attack-announcement">
-        <span className="attack-icon">⚔️</span>
-        <span className="attack-text">
-          {displayEvent.attackerName} attacks {displayEvent.targetName}!
-        </span>
-        <span className="damage-text">-{displayEvent.damage}</span>
-      </div>
-      
-      {attackerPos && targetPos && phase !== 'idle' && (
-        <svg className="attack-line-svg" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999 }}>
-          <defs>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          
-          {phase === 'charging' && (
-            <line
-              x1={attackerPos.x}
-              y1={attackerPos.y}
-              x2={(attackerPos.x + targetPos.x) / 2}
-              y2={(attackerPos.y + targetPos.y) / 2}
-              stroke="#ff4444"
-              strokeWidth="4"
-              filter="url(#glow)"
-              className="attack-line charging"
-            />
-          )}
-          
-          {phase === 'impact' && (
-            <>
-              <line
-                x1={attackerPos.x}
-                y1={attackerPos.y}
-                x2={targetPos.x}
-                y2={targetPos.y}
-                stroke="#ff6600"
-                strokeWidth="6"
-                filter="url(#glow)"
-                className="attack-line impact"
-              />
-              <circle
-                cx={targetPos.x}
-                cy={targetPos.y}
-                r="30"
-                fill="none"
-                stroke="#ff0000"
-                strokeWidth="4"
-                filter="url(#glow)"
-                className="impact-circle"
-              />
-            </>
-          )}
-        </svg>
-      )}
-    </div>
-  );
+  // GSAP handles all animations via direct DOM manipulation — no visual overlay needed
+  return null;
 };
 
 export default AIAttackAnimationProcessor;

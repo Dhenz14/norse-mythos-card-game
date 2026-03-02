@@ -140,6 +140,24 @@ function HomePage() {
   );
 }
 
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
+  state = { error: null as Error | null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 40, color: '#ff6b6b', background: '#1a1a2e', minHeight: '100vh', fontFamily: 'monospace' }}>
+          <h1>Runtime Error</h1>
+          <pre style={{ whiteSpace: 'pre-wrap', marginTop: 20 }}>{this.state.error.message}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', marginTop: 10, color: '#888', fontSize: 12 }}>{this.state.error.stack}</pre>
+          <button onClick={() => { this.setState({ error: null }); window.location.hash = '/'; }} style={{ marginTop: 20, padding: '10px 20px', background: '#c9a84c', border: 'none', borderRadius: 6, cursor: 'pointer', color: '#1a1a2e', fontWeight: 'bold' }}>Back to Home</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   // Initialize event-driven architecture on app startup (Enrique integration)
   useEffect(() => {
@@ -149,29 +167,31 @@ function App() {
   }, []);
 
   return (
-    <CardTransformProvider>
-      <CardTransformBridgeInitializer />
-      <UnifiedCardSystem />
-      
-      <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Suspense fallback={<LoadingScreen />}>
-          <Routes>
-            <Route path={routes.home} element={<HomePage />} />
-            <Route path={routes.game} element={<RagnarokChessGame />} />
-            <Route path={routes.campaign} element={<CampaignPage />} />
-            <Route path={routes.multiplayer} element={<MultiplayerGame />} />
-            <Route path={routes.packs} element={<PacksPage />} />
-            <Route path={routes.collection} element={<CollectionPage />} />
-            <Route path={routes.ladder} element={<RankedLadderPage />} />
-            <Route path={routes.trading} element={<TradingPage />} />
-            <Route path={routes.tournaments} element={<TournamentListPage />} />
-            <Route path={routes.spectate} element={<SpectatorView />} />
-            <Route path={routes.history} element={<MatchHistoryPage />} />
-            <Route path={routes.settings} element={<SettingsPage />} />
-          </Routes>
-        </Suspense>
-      </HashRouter>
-    </CardTransformProvider>
+    <ErrorBoundary>
+      <CardTransformProvider>
+        <CardTransformBridgeInitializer />
+        <UnifiedCardSystem />
+
+        <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <Suspense fallback={<LoadingScreen />}>
+            <Routes>
+              <Route path={routes.home} element={<HomePage />} />
+              <Route path={routes.game} element={<RagnarokChessGame />} />
+              <Route path={routes.campaign} element={<CampaignPage />} />
+              <Route path={routes.multiplayer} element={<MultiplayerGame />} />
+              <Route path={routes.packs} element={<PacksPage />} />
+              <Route path={routes.collection} element={<CollectionPage />} />
+              <Route path={routes.ladder} element={<RankedLadderPage />} />
+              <Route path={routes.trading} element={<TradingPage />} />
+              <Route path={routes.tournaments} element={<TournamentListPage />} />
+              <Route path={routes.spectate} element={<SpectatorView />} />
+              <Route path={routes.history} element={<MatchHistoryPage />} />
+              <Route path={routes.settings} element={<SettingsPage />} />
+            </Routes>
+          </Suspense>
+        </HashRouter>
+      </CardTransformProvider>
+    </ErrorBoundary>
   );
 }
 

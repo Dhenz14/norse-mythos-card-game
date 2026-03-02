@@ -424,34 +424,10 @@
     inset 0 0 16px 4px rgba(239, 68, 68, 0.2);
 }
 
-/* Currently attacking */
+/* Currently attacking — gold glow only, GSAP handles the lunge animation */
 .bf-card-wrapper.attacking {
   box-shadow: 0 0 20px 5px rgba(251, 191, 36, 0.8);
   z-index: var(--z-modal, 50);
-}
-
-/* Attack lunge - player minion (bottom row) lunges upward toward opponent */
-.player-row .bf-card-wrapper.attacking {
-  animation: playerLunge 0.7s ease-in-out;
-}
-
-/* Attack lunge - opponent minion (top row) lunges downward toward player */
-.opponent-row .bf-card-wrapper.attacking {
-  animation: opponentLunge 0.7s ease-in-out;
-}
-
-@keyframes playerLunge {
-  0%   { transform: translateY(0) scale(1); }
-  25%  { transform: translateY(-44px) scale(1.13); }
-  55%  { transform: translateY(-38px) scale(1.1); }
-  100% { transform: translateY(0) scale(1); }
-}
-
-@keyframes opponentLunge {
-  0%   { transform: translateY(0) scale(1); }
-  25%  { transform: translateY(44px) scale(1.13); }
-  55%  { transform: translateY(38px) scale(1.1); }
-  100% { transform: translateY(0) scale(1); }
 }
 
 /* Super Minion Hero Bonus - Golden legendary glow */
@@ -934,9 +910,8 @@
     color: #fca5a5;
   }
 
-  .player-row .bf-card-wrapper.attacking,
-  .opponent-row .bf-card-wrapper.attacking {
-    animation: none;
+  .bf-card-wrapper.attacking {
+    box-shadow: 0 0 14px 3px rgba(251, 191, 36, 0.6);
   }
 
   .bf-card-wrapper.valid-target::before {

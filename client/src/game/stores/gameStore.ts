@@ -20,6 +20,7 @@ import { useAudio } from '../../lib/stores/useAudio';
 import useGame from '../../lib/stores/useGame';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { useUnifiedUIStore as useAnnouncementStore, fireAnnouncement } from './unifiedUIStore';
+import gsap from 'gsap';
 import { isAISimulationMode, debug, getDebugConfig } from '../config/debugConfig';
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
@@ -547,33 +548,29 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     const attackAnimationDuration = 800;
     
     try {
-      // Add visual attack animation BEFORE processing the attack
-      if (attackerCard && animationManager && animationManager.addAnimation) {
-        animationManager.addAnimation({
-          id: crypto.randomUUID(),
-          type: 'attack',
-          position: attackerPosition,
-          targetPosition: targetPosition,
-          card: attackerCard.card,
-          duration: attackAnimationDuration,
-          startTime: Date.now()
-        });
+      // GSAP directional lunge — animate the attacker card toward its target
+      const attackerEl = document.querySelector(`[data-instance-id="${attackerId}"]`) as HTMLElement | null;
+      const isHeroAttack = !defenderId || defenderId === 'opponent-hero';
+      const targetEl = isHeroAttack
+        ? document.querySelector('.battlefield-hero-square.opponent, .opponent-hero-zone') as HTMLElement | null
+        : document.querySelector(`[data-instance-id="${defenderId}"]`) as HTMLElement | null;
+
+      if (attackerEl && targetEl) {
+        const aRect = attackerEl.getBoundingClientRect();
+        const tRect = targetEl.getBoundingClientRect();
+        const dx = (tRect.left + tRect.width / 2) - (aRect.left + aRect.width / 2);
+        const dy = (tRect.top + tRect.height / 2) - (aRect.top + aRect.height / 2);
+        const lungePercent = isHeroAttack ? 0.3 : 0.55;
+
+        gsap.timeline()
+          .to(attackerEl, { y: dy > 0 ? 6 : -6, scale: 1.08, duration: 0.12, ease: 'power2.in' })
+          .to(attackerEl, { x: dx * lungePercent, y: dy * lungePercent, scale: 1.05, duration: 0.18, ease: 'power2.out' })
+          .to(attackerEl, { duration: 0.08 })
+          .to(attackerEl, { x: 0, y: 0, scale: 1, duration: 0.22, ease: 'power2.inOut' });
       }
-      
-      // Show attack announcement popup (optional enhancement)
-      if (attackerCard && announcementStore && announcementStore.addAnnouncement) {
-        announcementStore.addAnnouncement({
-          type: 'attack',
-          title: `${attackerCard.card.name} attacks!`,
-          subtitle: defenderId === 'opponent-hero' || !defenderId ? 'Attacking Hero' : 'Attacking Minion',
-          icon: '⚔️',
-          duration: attackAnimationDuration + 200
-        });
-      }
-      
-      // Delay the actual attack processing to allow animation to play
-      // Process at 60% of animation duration for impact feel
-      const impactDelay = Math.round(attackAnimationDuration * 0.6);
+
+      // Delay the actual attack processing to allow lunge to reach target
+      const impactDelay = 380;
       
       setTimeout(() => {
         try {

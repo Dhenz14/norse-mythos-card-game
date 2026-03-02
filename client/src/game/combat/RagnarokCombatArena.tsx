@@ -20,8 +20,7 @@ import { useUnifiedUIStore } from '../stores/unifiedUIStore';
 import { ActionAnnouncement } from '../components/ActionAnnouncement';
 import './RagnarokCombatArena.css';
 import './GameViewport.css';
-import { MinionActivityLog, PokerActivityLog } from '../components/ActivityLog';
-import { LastActionLog } from '../components/LastActionLog';
+import { PokerActivityLog } from '../components/ActivityLog';
 import AIAttackAnimationProcessor from '../components/AIAttackAnimationProcessor';
 import { PixiParticleCanvas } from '../animations/PixiParticleCanvas';
 import { AnimationOverlay } from '../components/AnimationOverlay';
@@ -667,7 +666,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Activity Logs - Top Right Overlay */}
       <div className="activity-logs-dock">
         <PokerActivityLog />
-        <MinionActivityLog />
       </div>
       
       {isMulligan && (
@@ -849,8 +847,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           <div className="poker-info-row">
           </div>
         )}
-        <LastActionLog />
-
         {/* Hearthstone-style End Turn Button - Positioned absolutely within info-row */}
         <button 
           className={`hearthstone-end-turn ${isPlayerTurn ? 'active' : 'inactive'}`}

@@ -27,7 +27,7 @@
 	background: radial-gradient(circle, color-mix(in srgb, var(--hbp-color, #9E9E9E) 30%, transparent) 0%, transparent 70%);
 	color: var(--hbp-color, #9E9E9E);
 	filter: drop-shadow(0 0 6px var(--hbp-color, #9E9E9E));
-	animation: hbp-icon-pulse 0.6s ease-in-out 1;
+	animation: hbp-icon-pulse 1.2s ease-in-out 1;
 }
 
 .hbp-icon-wrap svg {
@@ -88,8 +88,8 @@
 		filter: drop-shadow(0 0 6px var(--hbp-color, #9E9E9E));
 	}
 	40% {
-		transform: scale(1.15);
-		filter: drop-shadow(0 0 14px var(--hbp-color, #9E9E9E));
+		transform: scale(1.06);
+		filter: drop-shadow(0 0 10px var(--hbp-color, #9E9E9E));
 	}
 	100% {
 		transform: scale(1);

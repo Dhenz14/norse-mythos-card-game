@@ -98,6 +98,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
             {card && (
               <motion.div
                 key={card.instanceId}
+                data-instance-id={card.instanceId}
                 className={`bf-card-wrapper
                   ${isShaking ? 'shake' : ''}
                   ${isAttacking ? 'attacking' : ''}
