@@ -136,7 +136,7 @@ interface GameStore {
   
   // Game actions
   initGame: () => void;
-  playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero') => void;
+  playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number) => void;
   attackWithCard: (attackerId: string, defenderId?: string) => void; // If defenderId is undefined, attack hero
   selectAttacker: (card: CardInstance | CardInstanceWithCardData | null) => void; // Select card to attack with
   useHeroPower: (targetId?: string, targetType?: 'card' | 'hero') => void; // Use hero power
@@ -197,7 +197,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     });
   },
 
-  playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero') => {
+  playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number) => {
     const { gameState } = get();
     const audioStore = useAudio.getState();
     
@@ -251,7 +251,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       
       try {
         // Play the card with the target if provided
-        const newState = playCard(gameState, cardId, targetId, targetType);
+        const newState = playCard(gameState, cardId, targetId, targetType, insertionIndex);
         
         // If the card requires a battlecry target but we still don't have a valid game state,
         // it means the battlecry couldn't be executed properly

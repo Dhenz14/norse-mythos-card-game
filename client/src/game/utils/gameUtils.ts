@@ -264,7 +264,7 @@ export function drawCard(state: GameState): GameState {
 /**
  * Play a card from hand to battlefield
  */
-export function playCard(state: GameState, cardInstanceId: string, targetId?: string, targetType?: 'minion' | 'hero'): GameState {
+export function playCard(state: GameState, cardInstanceId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number): GameState {
   // Deep clone the state to avoid mutation
   let newState = structuredClone(state) as GameState;
   
@@ -507,8 +507,12 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     };
   }
   
-  // Add the played card to the battlefield
-  player.battlefield.push(playedCard);
+  // Add the played card to the battlefield at the chosen position
+  if (insertionIndex !== undefined && insertionIndex >= 0 && insertionIndex <= player.battlefield.length) {
+    player.battlefield.splice(insertionIndex, 0, playedCard);
+  } else {
+    player.battlefield.push(playedCard);
+  }
   
   // Update player state
   player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;

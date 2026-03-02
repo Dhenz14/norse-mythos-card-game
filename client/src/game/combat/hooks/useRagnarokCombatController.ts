@@ -246,7 +246,7 @@ export function useRagnarokCombatController(
   const selectCard = useGameStore(state => state.selectCard);
   const playCard = useGameStore(state => state.playCard);
   
-  const sharedHandleCardPlay = useCallback((card: any, position?: { row?: number; col?: number }) => {
+  const sharedHandleCardPlay = useCallback((card: any, position?: { row?: number; col?: number; insertionIndex?: number }) => {
     if (!isPlayerTurn) {
       return;
     }
@@ -254,7 +254,7 @@ export function useRagnarokCombatController(
     if (!cardId) {
       return;
     }
-    playCard(cardId);
+    playCard(cardId, undefined, undefined, position?.insertionIndex);
   }, [isPlayerTurn, playCard]);
   
   const [heroPowerUsedThisTurn, setHeroPowerUsedThisTurn] = useState(false);

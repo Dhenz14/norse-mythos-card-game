@@ -19,6 +19,7 @@ import { debug } from '../config/debugConfig';
 interface Position {
   x: number;
   y: number;
+  insertionIndex?: number;
 }
 
 interface CardDragAnimationProps {
@@ -372,8 +373,32 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
         playSound('card_place');
         setShowPlacementEffect(true);
         setPlacementEffectPosition(currentPosRef.current);
-        onValidDrop(currentPosRef.current);
-        if (onDragEnd) onDragEnd(true, currentPosRef.current);
+
+        // Calculate insertion index from drop X position relative to occupied slots
+        let insertionIndex = 0;
+        const playerRow = boardRef.current?.closest('.simple-battlefield')?.querySelector('.player-row');
+        if (playerRow) {
+          const occupiedSlots = playerRow.querySelectorAll('.bf-slot.occupied');
+          const dropX = dragWrapperRef.current
+            ? dragWrapperRef.current.getBoundingClientRect().left + dragWrapperRef.current.getBoundingClientRect().width / 2
+            : currentPosRef.current.x;
+          const centers: number[] = [];
+          occupiedSlots.forEach(slot => {
+            const rect = slot.getBoundingClientRect();
+            centers.push(rect.left + rect.width / 2);
+          });
+          insertionIndex = centers.length;
+          for (let i = 0; i < centers.length; i++) {
+            if (dropX < centers[i]) {
+              insertionIndex = i;
+              break;
+            }
+          }
+        }
+
+        const dropPosition = { ...currentPosRef.current, insertionIndex };
+        onValidDrop(dropPosition);
+        if (onDragEnd) onDragEnd(true, dropPosition);
       } else {
         playSound('card_return');
         if (startPosRef.current) {

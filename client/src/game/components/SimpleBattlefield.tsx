@@ -9,7 +9,7 @@
  */
 
 import { debug } from '../config/debugConfig';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import CardRenderer from './CardRendering/CardRenderer';
@@ -193,6 +193,67 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
     [opponentCards, onOpponentCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt]
   );
 
+  // ── Drag state: show insertion gaps when a card is being dragged ──
+  const [isDragging, setIsDragging] = useState(false);
+  const [activeGap, setActiveGap] = useState(-1);
+  const playerRowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onDragStart = () => setIsDragging(true);
+    const onDragEnd = () => { setIsDragging(false); setActiveGap(-1); };
+    window.addEventListener('card-drag-start', onDragStart);
+    window.addEventListener('card-drag-end', onDragEnd);
+    return () => {
+      window.removeEventListener('card-drag-start', onDragStart);
+      window.removeEventListener('card-drag-end', onDragEnd);
+    };
+  }, []);
+
+  const handlePointerMoveForGaps = useCallback((e: PointerEvent) => {
+    if (!playerRowRef.current) return;
+    const slots = playerRowRef.current.querySelectorAll('.bf-slot.occupied');
+    const centers: number[] = [];
+    slots.forEach(slot => {
+      const rect = slot.getBoundingClientRect();
+      centers.push(rect.left + rect.width / 2);
+    });
+    let closest = centers.length;
+    for (let i = 0; i < centers.length; i++) {
+      if (e.clientX < centers[i]) { closest = i; break; }
+    }
+    setActiveGap(closest);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('pointermove', handlePointerMoveForGaps);
+    } else {
+      document.removeEventListener('pointermove', handlePointerMoveForGaps);
+    }
+    return () => document.removeEventListener('pointermove', handlePointerMoveForGaps);
+  }, [isDragging, handlePointerMoveForGaps]);
+
+  const occupiedCount = playerCards.length;
+  const isBoardFull = occupiedCount >= MAX_SLOTS;
+  const showGaps = isDragging && !isBoardFull && showPlayer;
+
+  const playerSlotsWithGaps = useMemo(() => {
+    if (!showGaps) return playerSlots;
+    const result: React.ReactNode[] = [];
+    for (let i = 0; i <= occupiedCount; i++) {
+      result.push(
+        <div
+          key={`gap-${i}`}
+          className={`bf-insertion-gap ${activeGap === i ? 'active' : ''}`}
+        />
+      );
+      if (i < MAX_SLOTS && playerSlots[i]) {
+        result.push(playerSlots[i]);
+      }
+    }
+    return result;
+  }, [showGaps, playerSlots, occupiedCount, activeGap]);
+
   return (
     <div className="simple-battlefield">
       {showOpponent && (
@@ -202,8 +263,8 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
       )}
 
       {showPlayer && (
-        <div className="bf-row player-row">
-          {playerSlots}
+        <div ref={playerRowRef} className={`bf-row player-row ${showGaps ? 'dragging' : ''}`}>
+          {playerSlotsWithGaps}
         </div>
       )}
     </div>

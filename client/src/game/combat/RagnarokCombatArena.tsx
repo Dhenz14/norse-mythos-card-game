@@ -633,8 +633,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       selectCard(card);
       return;
     }
-    
-    playCard(cardId);
+
+    playCard(cardId, undefined, undefined, position?.insertionIndex);
   }, [isPlayerTurn, playCard, selectCard, gameState]);
   
   const basePermissions = useMemo(

@@ -63,6 +63,29 @@
   background: transparent;
 }
 
+/* ── Insertion gap indicators — shown while dragging a card ── */
+.bf-insertion-gap {
+  width: 6px;
+  min-height: var(--bf-card-height);
+  border-radius: 3px;
+  background: rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.bf-insertion-gap.active {
+  width: 10px;
+  background: rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.6), 0 0 32px rgba(34, 197, 94, 0.25);
+  opacity: 1;
+}
+
+.bf-row.dragging {
+  gap: 4px;
+}
+
 /* Card wrapper - handles hover and states */
 .bf-card-wrapper {
   position: relative;

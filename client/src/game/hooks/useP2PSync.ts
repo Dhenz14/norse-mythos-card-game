@@ -75,7 +75,7 @@ function recordMove(action: string, payload: Record<string, unknown>, playerId: 
 
 export type P2PMessage =
 	| { type: 'init'; gameState: GameState; isHost: boolean }
-	| { type: 'playCard'; cardId: string; targetId?: string; targetType?: 'minion' | 'hero' }
+	| { type: 'playCard'; cardId: string; targetId?: string; targetType?: 'minion' | 'hero'; insertionIndex?: number }
 	| { type: 'attack'; attackerId: string; defenderId: string }
 	| { type: 'endTurn' }
 	| { type: 'useHeroPower'; targetId?: string }
@@ -301,8 +301,8 @@ export function useP2PSync() {
 					if (isHost) {
 						const gs = useGameStore.getState().gameState;
 						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
-						recordMove('playCard', { cardId: data.cardId, targetId: data.targetId, targetType: data.targetType }, 'opponent');
-						gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType);
+						recordMove('playCard', { cardId: data.cardId, targetId: data.targetId, targetType: data.targetType, insertionIndex: data.insertionIndex }, 'opponent');
+						gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType, data.insertionIndex);
 						debouncedSync();
 					}
 					break;
@@ -512,13 +512,13 @@ export function useP2PSync() {
 		}, 25);
 	}, [syncGameState]);
 
-	const wrappedPlayCard = useCallback((cardId: string, targetId?: string, targetType?: 'minion' | 'hero') => {
+	const wrappedPlayCard = useCallback((cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number) => {
 		if (connectionState === 'connected' && !isHost) {
-			recordMove('playCard', { cardId, targetId, targetType }, 'player');
-			send({ type: 'playCard', cardId, targetId: translateTargetForHost(targetId), targetType });
+			recordMove('playCard', { cardId, targetId, targetType, insertionIndex }, 'player');
+			send({ type: 'playCard', cardId, targetId: translateTargetForHost(targetId), targetType, insertionIndex });
 		} else {
-			recordMove('playCard', { cardId, targetId, targetType }, 'player');
-			gameStore.playCard(cardId, targetId, targetType);
+			recordMove('playCard', { cardId, targetId, targetType, insertionIndex }, 'player');
+			gameStore.playCard(cardId, targetId, targetType, insertionIndex);
 			if (isHost) debouncedSync();
 		}
 	}, [connectionState, isHost, send, gameStore, debouncedSync]);
