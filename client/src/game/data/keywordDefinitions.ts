@@ -111,8 +111,8 @@ export const KEYWORD_DEFINITIONS: Record<string, KeywordDefinition> = {
 		icon: 'copy',
 	},
 	magnetic: {
-		name: 'Magnetic',
-		description: 'Can attach to a Mech to give it stats and text.',
+		name: 'Runic Bond',
+		description: 'Can attach to a friendly Automaton to combine stats and abilities.',
 		icon: 'link',
 	},
 	overkill: {
@@ -149,6 +149,31 @@ export const KEYWORD_DEFINITIONS: Record<string, KeywordDefinition> = {
 		name: 'Colossal',
 		description: 'Summons additional appendage minions when played.',
 		icon: 'maximize',
+	},
+	yggdrasil_golem: {
+		name: 'Yggdrasil Golem',
+		description: 'Summons an Yggdrasil Golem that grows stronger with each one summoned this game.',
+		icon: 'tree-pine',
+	},
+	einherjar: {
+		name: 'Einherjar',
+		description: 'When this dies, shuffle a copy into your deck with +1/+1. Max 3 returns.',
+		icon: 'repeat',
+	},
+	blood_price: {
+		name: 'Blood Price',
+		description: 'Can be played by paying health instead of mana. Right-click to toggle.',
+		icon: 'droplet',
+	},
+	prophecy: {
+		name: 'Prophecy',
+		description: 'Creates a visible countdown. When it reaches 0, the effect triggers.',
+		icon: 'clock',
+	},
+	secret: {
+		name: 'Rune',
+		description: 'A hidden enchantment that triggers when a specific condition is met.',
+		icon: 'help-circle',
 	},
 };
 

@@ -585,7 +585,7 @@ export const handleSecretTrigger = (
       timestamp: Date.now(),
       player: secretOwner,
       cardId: secret.card.id.toString(),
-      text: `${secret.card.name} was triggered`,
+      text: `${secret.card.name} Rune was triggered`,
     });
   }
   

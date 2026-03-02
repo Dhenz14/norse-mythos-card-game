@@ -245,8 +245,8 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
 {
       id: 'secret',
 
-      name: 'Secret',
-      description: 'Discover a Secret',
+      name: 'Rune',
+      description: 'Discover a Rune',
 
       filter: (card: CardData): boolean => Boolean(card.type === 'secret')
   },

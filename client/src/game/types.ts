@@ -7,6 +7,8 @@
  * For adapter functions and unified types that bridge systems, see:
  * /utils/cardTypeAdapter.ts
  */
+import { NorseElement } from './types/NorseTypes';
+
 /**
  * Collection filtering types
  */
@@ -93,6 +95,7 @@ export interface BaseCardData {
   race?: string;
   set?: string;
   keywords?: string[];
+  bloodPrice?: number;
   startOfGameEffect?: {
     type: string;
     healthValue?: number;
@@ -219,6 +222,27 @@ export interface MinionCardData extends BaseCardData {
   onPlayCardEffect?: any;
   minionEffect?: any;
   cantAttack?: boolean;
+  chainPartner?: number;
+  chainEffect?: {
+    onPartnerDeath?: { type: string; value?: number; keywords?: string[] };
+    onPartnerPlay?: { type: string; value?: number; keywords?: string[] };
+    onBothInPlay?: { type: string; value?: number; keywords?: string[] };
+  };
+  petStage?: 'basic' | 'evolution' | 'standalone';
+  element?: NorseElement;
+  weakness?: { element: NorseElement; bonusDamage: number };
+  evolvesInto?: number;
+  evolvesFrom?: number;
+  evolutionCondition?: {
+    trigger: string;
+    description: string;
+  };
+  passiveAbility?: {
+    name: string;
+    description: string;
+    trigger: string;
+    effect: any;
+  };
 }
 
 /**
@@ -623,6 +647,9 @@ export interface CardInstance {
   // Evolution system
   evolutionLevel?: 1 | 2 | 3;
 
+  // Pet evolution tracking
+  petEvolutionMet?: boolean;
+
   // NFT — present if this is a Hive L1 NFT card; absent for demo/dev cards
   nft_id?: string;
 }
@@ -792,6 +819,32 @@ export interface GameState {
   discovery?: DiscoveryState;
   targetingState?: any;
   animations?: AnimationParams[];
+  prophecies?: Prophecy[];
+  activeRealm?: RealmState;
+}
+
+export interface Prophecy {
+  id: string;
+  name: string;
+  description: string;
+  turnsRemaining: number;
+  effect: SpellEffect;
+  owner: 'player' | 'opponent';
+  sourceCardId: number | string;
+}
+
+export interface RealmState {
+  id: string;
+  name: string;
+  description: string;
+  owner: 'player' | 'opponent';
+  effects: RealmEffect[];
+}
+
+export interface RealmEffect {
+  type: 'buff_all_attack' | 'debuff_all_attack' | 'damage_all_end_turn' | 'heal_all_start_turn' | 'cost_increase' | 'keyword_grant' | 'return_to_hand_on_death' | 'stealth_on_play';
+  value: number;
+  target: 'all' | 'friendly' | 'enemy';
 }
 
 /**

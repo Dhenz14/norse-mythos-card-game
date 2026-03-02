@@ -84,7 +84,7 @@ export function getSecretTriggerDescription(triggerType: SecretTriggerType): str
     case 'on_turn_end':
       return 'At the end of your turn';
     default:
-      return 'Secret triggered';
+      return 'Rune triggered';
   }
 }
 
@@ -148,7 +148,7 @@ export function playSecret(gameState: any, cardInstanceId: string): any {
   newState.gameLog.push({
     id: `log-${Date.now()}`,
     type: 'secret_play',
-    text: `${player.name || 'Player'} played a secret.`,
+    text: `${player.name || 'Player'} inscribed a Rune.`,
     timestamp: Date.now(),
     turn: newState.turnNumber,
     source: player.id,

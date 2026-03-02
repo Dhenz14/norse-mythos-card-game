@@ -26,7 +26,7 @@ import { summonColossalParts } from './mechanics/colossalUtils';
 import { performTurnStartResets } from './resetUtils';
 import { hasEcho, createEchoCopy, expireEchoCardsAtEndOfTurn } from './mechanics/echoUtils';
 import { processAfterAttackEffects, processAfterHeroAttackEffects } from './mechanics/afterAttackUtils';
-import { dealDamage } from './effects/damageUtils';
+import { dealDamage, dealDamageToAllEnemyMinions, dealDamageToAllMinions, dealDamageToHero } from './effects/damageUtils';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { canMagnetize, applyMagnetization, isValidMagneticTarget } from './mechanics/magneticUtils';
 import allCards from '../data/allCards';
@@ -56,6 +56,22 @@ import { processOnAttackStatusEffect } from '../effects/handlers/onAttackStatusH
 import { isSuperMinion, shouldGetHeroBonus } from '../data/sets/superMinions/heroSuperMinions';
 import { enrichDeckWithNFTLevels } from './cards/cardLevelScaling';
 import { useHiveDataStore } from '../../data/HiveDataLayer';
+import { NORSE_TO_GAME_ELEMENT } from '../types/NorseTypes';
+import { getElementAdvantage } from './elements/elementAdvantage';
+import { getNorseHeroById } from './norseHeroPowerUtils';
+
+function checkPetEvolutionTrigger(state: GameState, trigger: string, minionId?: string): GameState {
+  for (const side of ['player', 'opponent'] as const) {
+    for (const minion of state.players[side].battlefield) {
+      if (minion.petEvolutionMet) continue;
+      const cond = (minion.card as any).evolutionCondition;
+      if (!cond || cond.trigger !== trigger) continue;
+      if (minionId && minion.instanceId !== minionId) continue;
+      minion.petEvolutionMet = true;
+    }
+  }
+  return state;
+}
 
 /**
  * Initialize a new game state
@@ -264,34 +280,62 @@ export function drawCard(state: GameState): GameState {
 /**
  * Play a card from hand to battlefield
  */
-export function playCard(state: GameState, cardInstanceId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number): GameState {
+export function playCard(state: GameState, cardInstanceId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number, payWithBlood?: boolean): GameState {
   // Deep clone the state to avoid mutation
   let newState = structuredClone(state) as GameState;
-  
+
   const currentPlayer = newState.currentTurn;
   const player = newState.players[currentPlayer];
-  
+
   // Find the card in the player's hand
   const cardResult = findCardInstance(player.hand, cardInstanceId);
   if (!cardResult) {
     debug.error(`Card with ID ${cardInstanceId} not found in player's hand`);
     return state;
   }
-  
+
   const { card, index } = cardResult;
-  
+
   // Save the original card data for reference (before we remove it from hand)
   const originalCardData = structuredClone(card.card);
-  
+
+  // Blood Price: pay health instead of mana
+  const bloodCost = card.card.bloodPrice;
+  const isBloodPayment = payWithBlood && bloodCost && bloodCost > 0;
+
   // Apply artifact spell cost reduction (Gungnir)
   let effectiveManaCost = card.card.manaCost || 0;
   if (card.card.type === 'spell') {
     effectiveManaCost = Math.max(0, effectiveManaCost - getArtifactSpellCostReduction(newState, currentPlayer));
   }
 
-  // Check if player has enough mana to play the card
-  if (effectiveManaCost > player.mana.current) {
-    return state;
+  // Asgard realm: enemy spells cost (1) more
+  if (newState.activeRealm && card.card.type === 'spell') {
+    const realmOwner = newState.activeRealm.owner;
+    const isEnemy = currentPlayer !== realmOwner;
+    if (isEnemy) {
+      for (const eff of newState.activeRealm.effects) {
+        if (eff.type === 'cost_increase' && eff.target === 'enemy') {
+          effectiveManaCost += eff.value;
+        }
+      }
+    }
+  }
+
+  if (isBloodPayment) {
+    // Blood Price: check hero has enough health (must survive)
+    const heroHealth = player.heroHealth ?? player.health ?? 30;
+    if (heroHealth <= bloodCost) {
+      return state;
+    }
+    // Pay with health — deal damage to own hero
+    player.heroHealth = (player.heroHealth ?? player.health ?? 30) - bloodCost;
+    if (player.health !== undefined) player.health = player.heroHealth;
+  } else {
+    // Normal mana payment: check if player has enough mana
+    if (effectiveManaCost > player.mana.current) {
+      return state;
+    }
   }
   
   // Update cards played this turn counter (for Combo)
@@ -376,7 +420,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
       // Update player state
       player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-      player.mana.current -= effectiveManaCost;
+      if (!isBloodPayment) player.mana.current -= effectiveManaCost;
       player.mana.pendingOverload = pendingOverload;
 
       // Activate the quest via utility layer
@@ -394,7 +438,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
     // Update player state
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-    player.mana.current -= effectiveManaCost;
+    if (!isBloodPayment) player.mana.current -= effectiveManaCost;
     player.mana.pendingOverload = pendingOverload;
 
     // Track quest progress for spell casts
@@ -464,7 +508,33 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
   // Remove card from hand - must be done BEFORE battlecry processing to ensure clean state
   player.hand.splice(index, 1);
-  
+
+  // Pet evolution: if this card evolves from a basic pet, transform the basic instead of normal placement
+  const evolvesFromId = (card.card as any).evolvesFrom;
+  if (evolvesFromId) {
+    const basicIdx = player.battlefield.findIndex(
+      m => m.card.id === evolvesFromId && m.petEvolutionMet === true
+    );
+    if (basicIdx !== -1) {
+      const basic = player.battlefield[basicIdx];
+      const maxHp = (card.card as any).health || 0;
+      const oldMaxHp = (basic.card as any).health || 0;
+      const damageTaken = Math.max(0, oldMaxHp - (basic.currentHealth || oldMaxHp));
+      player.battlefield[basicIdx] = {
+        ...basic,
+        card: card.card,
+        currentAttack: (card.card as any).attack || 0,
+        currentHealth: Math.max(1, maxHp - damageTaken),
+        petEvolutionMet: false
+      };
+      player.mana.current -= (card.card.manaCost || 0);
+      return newState;
+    } else {
+      player.hand.splice(index, 0, card);
+      return state;
+    }
+  }
+
   // Mark card as played and handle summoning sickness
   // Cards with the 'charge' keyword can attack immediately
   // Cards with the 'rush' keyword can attack minions immediately but not heroes
@@ -514,6 +584,25 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     player.battlefield.push(playedCard);
   }
   
+  // Svartalfheim realm: newly played minions get stealth
+  if (newState.activeRealm?.effects?.some(e => e.type === 'stealth_on_play')) {
+    (playedCard as any).hasStealth = true;
+  }
+
+  // Alfheim realm: newly played minions get elusive
+  if (newState.activeRealm?.id === 'alfheim') {
+    (playedCard as any).hasElusive = true;
+  }
+
+  // Pet element synergy: +1 Health when pet element matches hero element
+  const petElement = (playedCard.card as any).element;
+  if (petElement && player.heroId) {
+    const hero = getNorseHeroById(player.heroId);
+    if (hero && hero.element === petElement) {
+      playedCard.currentHealth = (playedCard.currentHealth || (playedCard.card as any).health || 0) + 1;
+    }
+  }
+
   // Update player state
   player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
   player.mana.current -= (card.card.manaCost || 0);
@@ -534,6 +623,43 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
   // Process opponent's artifact reaction to this minion being played (Ran debuff, Hera destroy, Thrymr copy)
   newState = processArtifactOnEnemyMinionPlayed(newState, currentPlayer, playedCard.instanceId);
+
+  // Ragnarok Chain: check if partner is already in play → apply onBothInPlay effects
+  const chainPartner = (playedCard.card as any).chainPartner;
+  if (chainPartner) {
+    const bf = newState.players[currentPlayer].battlefield;
+    const partner = bf.find((m: CardInstance) => m.card.id === chainPartner);
+    if (partner) {
+      const playedChainEff = (playedCard.card as any).chainEffect?.onBothInPlay;
+      const partnerChainEff = (partner.card as any).chainEffect?.onBothInPlay;
+      if (playedChainEff) {
+        if (playedChainEff.type === 'buff_self') {
+          playedCard.currentAttack = (playedCard.currentAttack ?? 0) + (playedChainEff.value || 0);
+          playedCard.currentHealth = (playedCard.currentHealth ?? 0) + (playedChainEff.value || 0);
+        } else if (playedChainEff.type === 'grant_divine_shield') {
+          (playedCard as any).hasDivineShield = true;
+        }
+      }
+      if (partnerChainEff) {
+        if (partnerChainEff.type === 'buff_self') {
+          partner.currentAttack = (partner.currentAttack ?? 0) + (partnerChainEff.value || 0);
+          partner.currentHealth = (partner.currentHealth ?? 0) + (partnerChainEff.value || 0);
+        } else if (partnerChainEff.type === 'grant_divine_shield') {
+          (partner as any).hasDivineShield = true;
+        }
+      }
+    }
+    // Nidhogg special: if partner is Ratatoskr already in play, buff Nidhogg attack
+    const partnerPlayEff = (playedCard.card as any).chainEffect?.onPartnerPlay;
+    if (partnerPlayEff && partner) {
+      if (partnerPlayEff.type === 'buff_self') {
+        playedCard.currentAttack = (playedCard.currentAttack ?? 0) + (partnerPlayEff.value || 0);
+      }
+    }
+  }
+
+  // Pet evolution: on_summon when a minion enters the battlefield
+  newState = checkPetEvolutionTrigger(newState, 'on_summon');
 
   // Handle colossal minions - summon additional parts
   const playedKeywords = playedCard.card.keywords || [];
@@ -787,12 +913,139 @@ function applyTurnStartPipeline(state: GameState, player: 'player' | 'opponent')
   // 3b. Process artifact start-of-turn triggers (Khepri armor, Gerd freeze, Idunn buff, etc.)
   newState = processArtifactStartOfTurn(newState, player);
 
+  // 3c. Apply realm start-of-turn effects (e.g., Vanaheim healing)
+  if (newState.activeRealm) {
+    for (const eff of newState.activeRealm.effects) {
+      if (eff.type === 'heal_all_start_turn') {
+        for (const side of ['player', 'opponent'] as const) {
+          for (const minion of newState.players[side].battlefield) {
+            const maxHp = (minion.card as any).health ?? minion.currentHealth ?? 1;
+            minion.currentHealth = Math.min((minion.currentHealth ?? 0) + eff.value, maxHp);
+          }
+        }
+      }
+    }
+  }
+
   // 4. Reset minions for the turn (clears summoning sickness, attack counters, etc.)
   newState = performTurnStartResets(newState);
   
   // 5. Draw a card for the player
   newState = drawCard(newState);
   
+  return newState;
+}
+
+function resolveProphecy(state: GameState, prophecy: import('../types').Prophecy): GameState {
+  let newState = { ...state };
+  const effect = prophecy.effect as any;
+  const owner = prophecy.owner;
+  const enemy = owner === 'player' ? 'opponent' : 'player';
+
+  if (!newState.gameLog) newState.gameLog = [];
+  newState.gameLog.push({
+    id: `prophecy-${Date.now()}`,
+    type: 'effect' as const,
+    player: owner,
+    text: `Prophecy fulfilled: ${prophecy.name} — ${prophecy.description}`,
+    timestamp: Date.now(),
+    turn: newState.turnNumber,
+  });
+
+  switch (effect.type) {
+    case 'destroy_low_attack': {
+      const threshold = effect.threshold || 3;
+      for (const side of ['player', 'opponent'] as const) {
+        const toDestroy = newState.players[side].battlefield
+          .filter((m: CardInstance) => (m.currentAttack ?? (m.card as any).attack ?? 0) <= threshold)
+          .map((m: CardInstance) => m.instanceId);
+        for (const id of toDestroy) {
+          newState = destroyCard(newState, id, side);
+        }
+      }
+      break;
+    }
+    case 'damage_both_heroes': {
+      const dmg = effect.value || 5;
+      newState = dealDamageToHero(newState, 'player', dmg);
+      newState = dealDamageToHero(newState, 'opponent', dmg);
+      break;
+    }
+    case 'freeze_all_minions': {
+      for (const side of ['player', 'opponent'] as const) {
+        for (const minion of newState.players[side].battlefield) {
+          (minion as any).isFrozen = true;
+        }
+      }
+      break;
+    }
+    case 'destroy_all': {
+      for (const side of ['player', 'opponent'] as const) {
+        const ids = newState.players[side].battlefield.map((m: CardInstance) => m.instanceId);
+        for (const id of ids) {
+          newState = destroyCard(newState, id, side);
+        }
+        const player = newState.players[side];
+        if ((player as any).weapon) {
+          (player as any).weapon = null;
+        }
+      }
+      break;
+    }
+    case 'heal': {
+      const amount = effect.value || 8;
+      const healTarget = effect.targetType === 'friendly_hero' ? owner : enemy;
+      const p = newState.players[healTarget];
+      p.heroHealth = Math.min((p.heroHealth ?? p.health ?? 30) + amount, 30);
+      if (p.health !== undefined) p.health = p.heroHealth;
+      break;
+    }
+    case 'summon': {
+      const bf = newState.players[owner].battlefield;
+      if (bf.length < 5) {
+        const kw: string[] = effect.keywords || [];
+        bf.push({
+          instanceId: `prophecy-summon-${Date.now()}`,
+          card: {
+            id: 9999,
+            name: effect.summonName || 'Summoned Minion',
+            type: 'minion' as const,
+            manaCost: 0,
+            attack: effect.summonAttack || 1,
+            health: effect.summonHealth || 1,
+            description: `Summoned by ${prophecy.name}.`,
+            rarity: 'token' as any,
+            class: 'Neutral',
+            keywords: kw,
+            set: 'core',
+            collectible: false,
+          } as any,
+          currentAttack: effect.summonAttack || 1,
+          currentHealth: effect.summonHealth || 1,
+          canAttack: kw.includes('charge'),
+          isPlayed: true,
+          isSummoningSick: !kw.includes('charge'),
+          attacksPerformed: 0,
+          isPlayerOwned: owner === 'player',
+          isTaunt: kw.includes('taunt'),
+          hasLifesteal: kw.includes('lifesteal'),
+          hasDivineShield: kw.includes('divine_shield'),
+          hasRush: kw.includes('rush'),
+        } as any);
+      }
+      break;
+    }
+    case 'aoe_damage': {
+      const dmg = effect.value || 3;
+      if (effect.targetType === 'all_enemy_minions') {
+        newState = dealDamageToAllEnemyMinions(newState, owner, dmg);
+      } else {
+        newState = dealDamageToAllMinions(newState, dmg);
+      }
+      break;
+    }
+  }
+
   return newState;
 }
 
@@ -824,7 +1077,34 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
   
   // Update enrage effects for minions that may have been damaged
   state = updateEnrageEffects(state);
-  
+
+  // Tick prophecies — decrement counters, resolve any that hit 0
+  if (state.prophecies && state.prophecies.length > 0) {
+    const resolved: number[] = [];
+    state.prophecies.forEach((prophecy, idx) => {
+      prophecy.turnsRemaining -= 1;
+      if (prophecy.turnsRemaining <= 0) {
+        resolved.push(idx);
+      }
+    });
+    for (const idx of resolved) {
+      state = resolveProphecy(state, state.prophecies![idx]);
+    }
+    state.prophecies = state.prophecies!.filter((_, idx) => !resolved.includes(idx));
+  }
+
+  // Apply realm end-of-turn effects (e.g., Muspelheim damage)
+  if (state.activeRealm) {
+    for (const eff of state.activeRealm.effects) {
+      if (eff.type === 'damage_all_end_turn') {
+        state = dealDamageToAllMinions(state, eff.value);
+      }
+    }
+  }
+
+  // Pet evolution: on_survive_turn for pets that survived this turn
+  state = checkPetEvolutionTrigger(state, 'on_survive_turn');
+
   // Increment turn number when a full round is completed (both players have played)
   const newTurnNumber = nextPlayer === 'player' ? state.turnNumber + 1 : state.turnNumber;
   
@@ -2358,10 +2638,36 @@ export function processAttack(
     newState = updateEnrageEffects(newState);
   }
   
+  // Pet element advantage: bonus damage when elemental minion attacks another
+  const attackerElement = (attacker.card as any).element;
+  const defenderElement = (defender.card as any).element;
+  if (attackerElement && defenderElement) {
+    const atkGameEl = NORSE_TO_GAME_ELEMENT[attackerElement as keyof typeof NORSE_TO_GAME_ELEMENT];
+    const defGameEl = NORSE_TO_GAME_ELEMENT[defenderElement as keyof typeof NORSE_TO_GAME_ELEMENT];
+    if (atkGameEl && defGameEl) {
+      const advantage = getElementAdvantage(atkGameEl, defGameEl);
+      if (advantage.hasAdvantage) {
+        const bonusDmg = (attacker.card as any).weakness?.bonusDamage ?? 2;
+        const defIdx = newState.players.opponent.battlefield.findIndex(c => c.instanceId === defender.instanceId);
+        if (defIdx !== -1 && !defenderHasDivineShield) {
+          newState.players.opponent.battlefield[defIdx].currentHealth = (newState.players.opponent.battlefield[defIdx].currentHealth || 0) - bonusDmg;
+        }
+      }
+      const reverseAdvantage = getElementAdvantage(defGameEl, atkGameEl);
+      if (reverseAdvantage.hasAdvantage) {
+        const bonusDmg = (defender.card as any).weakness?.bonusDamage ?? 2;
+        const atkIdx = newState.players.player.battlefield.findIndex(c => c.instanceId === attacker.instanceId);
+        if (atkIdx !== -1 && !attackerHasDivineShield) {
+          newState.players.player.battlefield[atkIdx].currentHealth = (newState.players.player.battlefield[atkIdx].currentHealth || 0) - bonusDmg;
+        }
+      }
+    }
+  }
+
   // Store the original attacker and defender IDs before manipulating the state
   const attackerId = attacker.instanceId;
   const defenderId = defender.instanceId;
-  
+
   // Check for defeated defender minion (0 or less health)
   if ((newState.players.opponent.battlefield[defenderIndex]?.currentHealth || 0) <= 0) {
     // Move the defender from the battlefield to the graveyard
@@ -2425,7 +2731,16 @@ export function processAttack(
   // CRITICAL: Clean up any dead minions that weren't caught by explicit death checks
   // This ensures consistent state and prevents minions from lingering at 0 health
   newState = removeDeadMinions(newState);
-  
+
+  // Pet evolution: attacker dealt damage
+  newState = checkPetEvolutionTrigger(newState, 'on_deal_damage', attackerId);
+  // Pet evolution: if defender died and attacker survived, trigger on_destroy
+  const attackerSurvived = newState.players.player.battlefield.some(m => m.instanceId === attackerId);
+  const defenderDied = !newState.players.opponent.battlefield.some(m => m.instanceId === defenderId);
+  if (attackerSurvived && defenderDied) {
+    newState = checkPetEvolutionTrigger(newState, 'on_destroy', attackerId);
+  }
+
   return checkGameOver(newState);
 }
 

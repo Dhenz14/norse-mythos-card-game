@@ -82,6 +82,13 @@ export function isLocation(card: AnyCard): card is LocationCardData {
   return card != null && card.type === 'location';
 }
 
+/**
+ * Type guard for pet cards (minions with a petStage field)
+ */
+export function isPet(card: AnyCard): boolean {
+  return card != null && card.type === 'minion' && !!(card as any).petStage;
+}
+
 // =============================================================================
 // PROPERTY-BASED TYPE GUARDS (For accessing optional properties safely)
 // =============================================================================

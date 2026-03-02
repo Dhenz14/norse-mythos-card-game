@@ -462,7 +462,7 @@ export const warriorCards: CardData[] = [
     health: 8,
     type: "minion",
     rarity: "epic",
-    description: "Magnetic, Can't be targeted by spells or Hero Powers.",
+    description: "Runic Bond, Can't be targeted by spells or Hero Powers.",
     keywords: ["magnetic", "elusive"],
     race: "automaton",
     class: "Warrior",

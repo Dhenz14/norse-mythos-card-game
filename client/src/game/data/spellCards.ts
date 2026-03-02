@@ -48,8 +48,8 @@ export const spellCards: CardData[] = [
     rarity: "common",
     description: "Deal 3 damage to your hero. Return two friendly minions that died this game to your hand.",
     keywords: [],
-    heroClass: "priest",
-    class: "Priest",
+    heroClass: "necromancer",
+    class: "Necromancer",
     spellEffect: {
       type: "damage_hero",
       value: 3,

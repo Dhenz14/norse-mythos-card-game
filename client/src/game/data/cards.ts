@@ -189,7 +189,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 4503,
     name: 'Norns\' Hourglass',
-  description: 'Secret: When your opponent plays a minion, return it to their hand and it costs (2) more.',
+  description: 'Rune: When your opponent plays a minion, return it to their hand and it costs (2) more.',
   flavorText: 'The Norns weave fate at the roots of Yggdrasil.',
   
   type: 'spell',
@@ -493,7 +493,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 7007,
     name: 'Jörmungandr\'s Coils',
-    description: 'Secret: When one of your minions is attacked, summon three 1/1 Snakes.',
+    description: 'Rune: When one of your minions is attacked, summon three 1/1 Snakes.',
       flavorText: 'The World Serpent\'s children slither to your defense.',
 
       type: 'spell',
@@ -745,7 +745,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 7024,
     name: "Chaos-Weaver's Trick",
-    description: 'Secret: When an enemy attacks your hero, instead it attacks another random character.',
+    description: 'Rune: When an enemy attacks your hero, instead it attacks another random character.',
       flavorText: 'Chaos delights in the confusion of battle.',
 
       type: 'spell',
@@ -914,7 +914,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 8014,
     name: 'Sacrifice to the Gods',
-    description: 'Secret: When an enemy attacks, summon a 2/1 Defender as the new target.',
+    description: 'Rune: When an enemy attacks, summon a 2/1 Defender as the new target.',
     flavorText: 'The worthy give their lives for divine protection.',
       type: 'spell',
 
@@ -951,7 +951,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 8016,
     name: 'Wrath of the Furies',
-    description: 'Secret: When your hero takes damage, deal that much damage to the enemy hero.',
+    description: 'Rune: When your hero takes damage, deal that much damage to the enemy hero.',
       flavorText: 'The Furies demand vengeance for every slight.',
 
       type: 'spell',
@@ -972,7 +972,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 8018,
     name: 'Valkyrie\'s Vengeance',
-    description: 'Secret: When one of your minions dies, give a random friendly minion +3/+2.',
+    description: 'Rune: When one of your minions dies, give a random friendly minion +3/+2.',
       flavorText: 'The Valkyries empower those who witness their fallen comrades.',
 
       type: 'spell',
@@ -1086,7 +1086,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 8023,
     name: 'Curse of Nemesis',
-    description: 'Secret: After your opponent plays a minion, reduce its Health to 1.',
+    description: 'Rune: After your opponent plays a minion, reduce its Health to 1.',
       flavorText: 'The goddess of retribution weakens the arrogant.',
 
       type: 'spell',
@@ -3077,7 +3077,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 14007,
     name: 'Rune of Denial',
-    description: 'Secret: When your opponent casts a spell, Counter it.',
+    description: 'Rune: When your opponent casts a spell, Counter it.',
       flavorText: 'Ancient runes that negate all magic.',
 
       type: 'spell',
@@ -3139,7 +3139,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 14012,
     name: 'Vanishing Mist',
-    description: 'Secret: When a minion attacks your hero, destroy it.',
+    description: 'Rune: When a minion attacks your hero, destroy it.',
     flavorText: 'The mists of Niflheim consume the unwary.',
       type: 'spell',
 
@@ -3189,7 +3189,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 14017,
     name: 'Spell Reflection',
-    description: 'Secret: When an enemy casts a spell on a minion, summon a 1/3 as the new target.',
+    description: 'Rune: When an enemy casts a spell on a minion, summon a 1/3 as the new target.',
     flavorText: 'Ancient rune magic redirects hostile spells.',
       type: 'spell',
 

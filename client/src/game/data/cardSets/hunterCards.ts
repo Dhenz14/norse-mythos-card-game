@@ -73,7 +73,7 @@ const hunterCards = [
       type: "gain_durability",
       value: 1
     })
-    .description("Whenever a friendly Secret is revealed, gain +1 Durability.")
+    .description("Whenever a friendly Rune is revealed, gain +1 Durability.")
     .flavorText("The pull is so strong, it can launch an arrow halfway across the battlefield.")
     .collectible(true)
     .build(),
@@ -492,7 +492,7 @@ const hunterCards = [
       value: 2,
       target: "all_enemy_characters"
     })
-    .description("Secret: When your hero is attacked, deal 2 damage to all enemies.")
+    .description("Rune: When your hero is attacked, deal 2 damage to all enemies.")
     .flavorText("A surprise package for unwelcome guests.")
     .collectible(true)
     .build(),
@@ -516,7 +516,7 @@ const hunterCards = [
       target: "attacking_minion",
       costIncrease: 2
     })
-    .description("Secret: When an enemy minion attacks, return it to its owner's hand and it costs (2) more.")
+    .description("Rune: When an enemy minion attacks, return it to its owner's hand and it costs (2) more.")
     .flavorText("Freezing a minion in its tracks is satisfying, but making it cost more is just cold.")
     .collectible(true)
     .build(),
@@ -663,7 +663,7 @@ const hunterCards = [
       value: 4,
       target: "played_minion"
     })
-    .description("Secret: After your opponent plays a minion, deal 4 damage to it.")
+    .description("Rune: After your opponent plays a minion, deal 4 damage to it.")
     .flavorText("A face-down card, a moment of suspense, then BAM!")
     .collectible(true)
     .build(),
@@ -686,7 +686,7 @@ const hunterCards = [
       type: "redirect_attack",
       target: "random_character"
     })
-    .description("Secret: When an enemy attacks your hero, redirect it to a random character.")
+    .description("Rune: When an enemy attacks your hero, redirect it to a random character.")
     .flavorText("Sometimes you're just in the wrong place at the wrong time.")
     .collectible(true)
     .build(),

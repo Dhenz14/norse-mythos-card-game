@@ -11,7 +11,7 @@ export const MAX_COPIES = 2;
 export const MAX_LEGENDARY_COPIES = 1;
 
 export type SortOption = 'cost' | 'name' | 'type';
-export type FilterType = 'all' | 'minion' | 'spell' | 'weapon' | 'artifact' | 'armor';
+export type FilterType = 'all' | 'minion' | 'spell' | 'weapon' | 'artifact' | 'armor' | 'pet';
 
 export interface CardFilters {
   searchTerm: string;
@@ -109,7 +109,9 @@ export function filterCards(cards: CardData[], filters: CardFilters): CardData[]
   }
 
   // Card type filter
-  if (filters.filterType !== 'all') {
+  if (filters.filterType === 'pet') {
+    filtered = filtered.filter(card => !!(card as any).petStage);
+  } else if (filters.filterType !== 'all') {
     filtered = filtered.filter(card => card.type === filters.filterType);
   }
 

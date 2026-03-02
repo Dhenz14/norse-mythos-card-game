@@ -408,7 +408,7 @@ class CardDatabaseService {
       {
         id: '30058',
         name: 'Eaglehorn Bow',
-        description: 'Whenever a friendly Secret is revealed, gain +1 Durability.',
+        description: 'Whenever a friendly Rune is revealed, gain +1 Durability.',
         manaCost: 3,
         attack: 3,
         durability: 2,

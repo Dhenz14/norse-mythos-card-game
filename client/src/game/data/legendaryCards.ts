@@ -246,8 +246,8 @@ export const legendaryCards: CardData[] = [
     rarity: "mythic",
     description: "Battlecry: For each spell in your hand, summon a 3/3 copy of a minion that died this game.",
     keywords: ["battlecry"],
-    heroClass: "priest",
-    class: "Priest",
+    heroClass: "necromancer",
+    class: "Necromancer",
     battlecry: {
       type: "summon",
       requiresTarget: false,

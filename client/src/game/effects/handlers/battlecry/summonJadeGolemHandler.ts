@@ -1,9 +1,9 @@
 /**
- * SummonJadeGolem Battlecry Handler
- * 
- * Implements the "summon_jade_golem" battlecry effect.
- * Summons a Jade Golem with incrementing stats (1/1, 2/2, 3/3, etc. up to 30/30).
- * Example card: Jade Claws (ID: 85004)
+ * Yggdrasil Golem Battlecry Handler
+ *
+ * Implements the "summon_yggdrasil_golem" battlecry effect.
+ * Summons a Yggdrasil Golem with incrementing stats (1/1, 2/2, 3/3, etc. up to 30/30).
+ * Example card: Emerald Talons (ID: 85003)
  */
 import { debug } from '../../../config/debugConfig';
 import { GameContext, Player } from '../../../GameContext';
@@ -12,11 +12,11 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 import { v4 as uuidv4 } from 'uuid';
 
-const MAX_JADE_GOLEM_SIZE = 30;
+const MAX_YGGDRASIL_GOLEM_SIZE = 30;
 
 /**
- * Execute a summon_jade_golem battlecry effect
- * 
+ * Execute a summon_yggdrasil_golem battlecry effect
+ *
  * @param context - The game context
  * @param effect - The effect data
  * @param sourceCard - The card that triggered the effect
@@ -28,27 +28,27 @@ export default function executeSummonJadeGolem(
   sourceCard: Card
 ): EffectResult {
   try {
-    context.logGameEvent(`Executing summon_jade_golem battlecry for ${sourceCard.name}`);
-    
+    context.logGameEvent(`Executing summon_yggdrasil_golem battlecry for ${sourceCard.name}`);
+
     const currentBoardSize = context.currentPlayer.board.length;
     const availableSlots = MAX_BATTLEFIELD_SIZE - currentBoardSize;
-    
+
     if (availableSlots <= 0) {
-      context.logGameEvent(`Board is full, cannot summon Jade Golem`);
+      context.logGameEvent(`Board is full, cannot summon Yggdrasil Golem`);
       return { success: true, additionalData: { summonedCount: 0, boardFull: true } };
     }
-    
-    const player = context.currentPlayer as Player & { jadeGolemCounter?: number };
-    const currentCounter = player.jadeGolemCounter || 0;
-    
-    player.jadeGolemCounter = currentCounter + 1;
-    
-    const golemSize = Math.min(currentCounter + 1, MAX_JADE_GOLEM_SIZE);
-    
-    const jadeGolemCard: Card = {
+
+    const player = context.currentPlayer as Player & { yggdrasilGolemCounter?: number };
+    const currentCounter = player.yggdrasilGolemCounter || 0;
+
+    player.yggdrasilGolemCounter = currentCounter + 1;
+
+    const golemSize = Math.min(currentCounter + 1, MAX_YGGDRASIL_GOLEM_SIZE);
+
+    const golemCard: Card = {
       id: 85100 + golemSize,
-      name: 'Jade Golem',
-      description: `A ${golemSize}/${golemSize} Jade Golem.`,
+      name: 'Yggdrasil Golem',
+      description: `A ${golemSize}/${golemSize} Yggdrasil Golem.`,
       manaCost: Math.min(golemSize, 10),
       type: 'minion',
       rarity: 'token',
@@ -57,10 +57,10 @@ export default function executeSummonJadeGolem(
       health: golemSize,
       keywords: []
     };
-    
-    const jadeGolemInstance: CardInstance = {
+
+    const golemInstance: CardInstance = {
       instanceId: uuidv4(),
-      card: jadeGolemCard,
+      card: golemCard,
       currentHealth: golemSize,
       currentAttack: golemSize,
       canAttack: false,
@@ -68,25 +68,25 @@ export default function executeSummonJadeGolem(
       isSummoningSick: true,
       attacksPerformed: 0
     };
-    
-    context.currentPlayer.board.push(jadeGolemInstance);
-    
-    context.logGameEvent(`Summoned ${golemSize}/${golemSize} Jade Golem (Golem #${currentCounter + 1})`);
-    
-    return { 
-      success: true, 
-      additionalData: { 
+
+    context.currentPlayer.board.push(golemInstance);
+
+    context.logGameEvent(`Summoned ${golemSize}/${golemSize} Yggdrasil Golem (Golem #${currentCounter + 1})`);
+
+    return {
+      success: true,
+      additionalData: {
         summonedCount: 1,
         golemSize,
         golemNumber: currentCounter + 1,
-        summonedMinion: jadeGolemInstance
-      } 
+        summonedMinion: golemInstance
+      }
     };
   } catch (error) {
-    debug.error(`Error executing summon_jade_golem:`, error);
-    return { 
-      success: false, 
-      error: `Error executing summon_jade_golem: ${error instanceof Error ? error.message : String(error)}`
+    debug.error(`Error executing summon_yggdrasil_golem:`, error);
+    return {
+      success: false,
+      error: `Error executing summon_yggdrasil_golem: ${error instanceof Error ? error.message : String(error)}`
     };
   }
 }

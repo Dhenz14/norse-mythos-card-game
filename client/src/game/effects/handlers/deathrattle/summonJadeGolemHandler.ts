@@ -1,9 +1,9 @@
 /**
- * SummonJadeGolem Deathrattle Handler
- * 
- * Implements the "summon_jade_golem" deathrattle effect.
- * Summons a Jade Golem with stats based on jade counter.
- * Example: Jade Swarmer (deathrattle: summon a Jade Golem)
+ * Yggdrasil Golem Deathrattle Handler
+ *
+ * Implements the "summon_yggdrasil_golem" deathrattle effect.
+ * Summons a Yggdrasil Golem with stats based on golem counter.
+ * Example: Yggdrasil Swarmer (deathrattle: summon a Yggdrasil Golem)
  */
 import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
@@ -13,18 +13,18 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
-let jadeGolemCounter = 1;
+let yggdrasilGolemCounter = 1;
 
-export function resetJadeGolemCounter(): void {
-  jadeGolemCounter = 1;
+export function resetYggdrasilGolemCounter(): void {
+  yggdrasilGolemCounter = 1;
 }
 
-export function getJadeGolemCounter(): number {
-  return jadeGolemCounter;
+export function getYggdrasilGolemCounter(): number {
+  return yggdrasilGolemCounter;
 }
 
 /**
- * Execute a summon_jade_golem deathrattle effect
+ * Execute a summon_yggdrasil_golem deathrattle effect
  */
 export default function executeSummonJadeGolemSummonJadeGolem(
   context: GameContext,
@@ -33,22 +33,22 @@ export default function executeSummonJadeGolemSummonJadeGolem(
 ): EffectResult {
   try {
     const cardName = 'card' in sourceCard ? sourceCard.card.name : sourceCard.name;
-    context.logGameEvent(`Executing deathrattle:summon_jade_golem for ${cardName}`);
-    
+    context.logGameEvent(`Executing deathrattle:summon_yggdrasil_golem for ${cardName}`);
+
     if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) {
-      context.logGameEvent(`Board is full, cannot summon Jade Golem`);
+      context.logGameEvent(`Board is full, cannot summon Yggdrasil Golem`);
       return { success: false, error: 'Board is full' };
     }
-    
-    const currentJadeStats = Math.min(jadeGolemCounter, 30);
-    
-    const jadeGolemCard: Card = {
-      id: 85000 + jadeGolemCounter,
-      name: 'Jade Golem',
+
+    const currentStats = Math.min(yggdrasilGolemCounter, 30);
+
+    const golemCard: Card = {
+      id: 85000 + yggdrasilGolemCounter,
+      name: 'Yggdrasil Golem',
       type: 'minion',
-      manaCost: currentJadeStats,
-      attack: currentJadeStats,
-      health: currentJadeStats,
+      manaCost: currentStats,
+      attack: currentStats,
+      health: currentStats,
       rarity: 'common',
       heroClass: 'neutral',
       keywords: [],
@@ -56,35 +56,35 @@ export default function executeSummonJadeGolemSummonJadeGolem(
       collectible: false,
       race: 'elemental'
     };
-    
-    const jadeGolemInstance: CardInstance = {
+
+    const golemInstance: CardInstance = {
       instanceId: uuidv4(),
-      card: jadeGolemCard,
-      currentHealth: currentJadeStats,
+      card: golemCard,
+      currentHealth: currentStats,
       canAttack: false,
       isPlayed: true,
       isSummoningSick: true,
       attacksPerformed: 0
     };
-    
-    context.currentPlayer.board.push(jadeGolemInstance);
-    context.logGameEvent(`Summoned a ${currentJadeStats}/${currentJadeStats} Jade Golem from ${cardName}'s deathrattle`);
-    
-    jadeGolemCounter++;
-    
+
+    context.currentPlayer.board.push(golemInstance);
+    context.logGameEvent(`Summoned a ${currentStats}/${currentStats} Yggdrasil Golem from ${cardName}'s deathrattle`);
+
+    yggdrasilGolemCounter++;
+
     return {
       success: true,
-      additionalData: { 
-        jadeGolemStats: currentJadeStats,
-        nextJadeStats: Math.min(jadeGolemCounter, 30),
-        summonedMinion: jadeGolemInstance
+      additionalData: {
+        golemStats: currentStats,
+        nextGolemStats: Math.min(yggdrasilGolemCounter, 30),
+        summonedMinion: golemInstance
       }
     };
   } catch (error) {
-    debug.error(`Error executing deathrattle:summon_jade_golem:`, error);
+    debug.error(`Error executing deathrattle:summon_yggdrasil_golem:`, error);
     return {
       success: false,
-      error: `Error executing deathrattle:summon_jade_golem: ${error instanceof Error ? error.message : String(error)}`
+      error: `Error executing deathrattle:summon_yggdrasil_golem: ${error instanceof Error ? error.message : String(error)}`
     };
   }
 }

@@ -293,8 +293,8 @@ export function executeSpell(
         queueSpellDamagePopup(spellCard.card.name, armorDamage, 'Armor Damage');
       }
       break;
-    case 'summon_jade_golem':
-      resultState = executeSummonJadeGolemSpell(state);
+    case 'summon_yggdrasil_golem':
+      resultState = executeSummonYggdrasilGolemSpell(state);
       break;
     case 'gain_mana':
     case 'mana_gain':
@@ -729,6 +729,103 @@ export function executeSpell(
     case 'next_spell_costs_health':
       resultState = executeNextSpellCostsHealthSpell(state);
       break;
+    case 'realm_shift': {
+      const eff = effect as any;
+      const caster = state.currentTurn === 'player' ? 'player' : 'opponent';
+      const foe = caster === 'player' ? 'opponent' : 'player';
+      // Remove old realm attack modifiers first
+      if (state.activeRealm) {
+        for (const oldEff of state.activeRealm.effects) {
+          if (oldEff.type === 'buff_all_attack' || oldEff.type === 'debuff_all_attack') {
+            const mod = oldEff.type === 'buff_all_attack' ? -oldEff.value : oldEff.value;
+            for (const side of ['player', 'opponent'] as const) {
+              const isFriendlyToOwner = side === state.activeRealm.owner;
+              if (oldEff.target === 'all' || (oldEff.target === 'friendly' && isFriendlyToOwner) || (oldEff.target === 'enemy' && !isFriendlyToOwner)) {
+                for (const minion of state.players[side].battlefield) {
+                  minion.currentAttack = Math.max(0, (minion.currentAttack ?? 0) + mod);
+                }
+              }
+            }
+          }
+        }
+      }
+      if (eff.realmId === 'midgard') {
+        state.activeRealm = undefined;
+        for (const side of ['player', 'opponent'] as const) {
+          for (const minion of state.players[side].battlefield) {
+            minion.currentAttack = (minion.card as any).attack ?? minion.currentAttack;
+            minion.currentHealth = Math.min(minion.currentHealth ?? 0, (minion.card as any).health ?? minion.currentHealth ?? 0);
+          }
+        }
+      } else {
+        state.activeRealm = {
+          id: eff.realmId,
+          name: eff.realmName,
+          description: eff.realmDescription,
+          owner: caster as 'player' | 'opponent',
+          effects: eff.realmEffects || [],
+        };
+        // Apply new realm attack modifiers immediately
+        for (const realmEff of state.activeRealm.effects) {
+          if (realmEff.type === 'buff_all_attack') {
+            for (const side of ['player', 'opponent'] as const) {
+              const isFriendly = side === caster;
+              if (realmEff.target === 'all' || (realmEff.target === 'friendly' && isFriendly) || (realmEff.target === 'enemy' && !isFriendly)) {
+                for (const minion of state.players[side].battlefield) {
+                  minion.currentAttack = (minion.currentAttack ?? 0) + realmEff.value;
+                }
+              }
+            }
+          } else if (realmEff.type === 'debuff_all_attack') {
+            for (const side of ['player', 'opponent'] as const) {
+              const isFriendly = side === caster;
+              if (realmEff.target === 'all' || (realmEff.target === 'friendly' && isFriendly) || (realmEff.target === 'enemy' && !isFriendly)) {
+                for (const minion of state.players[side].battlefield) {
+                  minion.currentAttack = Math.max(0, (minion.currentAttack ?? 0) - realmEff.value);
+                }
+              }
+            }
+          }
+        }
+      }
+      if (!state.gameLog) state.gameLog = [];
+      state.gameLog.push({
+        id: `realm-shift-${Date.now()}`,
+        type: 'effect' as any,
+        player: state.currentTurn,
+        text: eff.realmId === 'midgard'
+          ? 'The realm shifts back to Midgard — all realm effects removed.'
+          : `Realm shifted to ${eff.realmName}: ${eff.realmDescription}`,
+        timestamp: Date.now(),
+        turn: state.turnNumber,
+      });
+      resultState = state;
+      break;
+    }
+    case 'create_prophecy': {
+      const eff = effect as any;
+      if (!state.prophecies) state.prophecies = [];
+      state.prophecies.push({
+        id: `prophecy-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        name: eff.prophecyName || 'Prophecy',
+        description: eff.prophecyDescription || '',
+        turnsRemaining: eff.turnsRemaining || 3,
+        effect: eff.resolveEffect,
+        owner: state.currentTurn === 'player' ? 'player' : 'opponent',
+        sourceCardId: spellCard.card.id,
+      });
+      if (!state.gameLog) state.gameLog = [];
+      state.gameLog.push({
+        id: `prophecy-cast-${Date.now()}`,
+        type: 'effect' as any,
+        player: state.currentTurn,
+        text: `Prophecy inscribed: ${eff.prophecyName} — ${eff.prophecyDescription} (${eff.turnsRemaining} turns)`,
+        timestamp: Date.now(),
+        turn: state.turnNumber,
+      });
+      resultState = state;
+      break;
+    }
     default:
       debug.error(`Unknown spell effect type: ${effect.type}`);
       return state;
@@ -3430,49 +3527,48 @@ function executeDamageBasedOnArmorSpell(
 }
 
 /**
- * Execute summon jade golem spell
+ * Execute summon Yggdrasil Golem spell
  */
-function executeSummonJadeGolemSpell(
+function executeSummonYggdrasilGolemSpell(
   state: GameState
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
-  // Increment jade counter (using type assertion for optional property)
-  const currentJadeCounter = (playerState as any).jadeCounter || 0;
-  const newJadeCounter = Math.min(currentJadeCounter + 1, 30);
-  (playerState as any).jadeCounter = newJadeCounter;
-  
-  const jadeSize = newJadeCounter;
-  
-  // Create jade golem token
-  const jadeGolem: CardInstance = {
+  // Increment Yggdrasil Golem counter
+  const currentGolemCounter = (playerState as any).yggdrasilGolemCounter || 0;
+  const newGolemCounter = Math.min(currentGolemCounter + 1, 30);
+  (playerState as any).yggdrasilGolemCounter = newGolemCounter;
+
+  const golemSize = newGolemCounter;
+
+  // Create Yggdrasil Golem token
+  const golem: CardInstance = {
     instanceId: uuidv4(),
     card: {
       id: 99999,
-      name: 'Jade Golem',
+      name: 'Yggdrasil Golem',
       type: 'minion',
-      manaCost: jadeSize,
-      attack: jadeSize,
-      health: jadeSize,
+      manaCost: golemSize,
+      attack: golemSize,
+      health: golemSize,
       description: '',
       rarity: 'common',
       class: 'Neutral',
       race: 'Elemental'
     },
-    currentHealth: jadeSize,
+    currentHealth: golemSize,
     canAttack: false,
     isSummoningSick: true,
     attacksPerformed: 0
   };
-  
+
   // Check battlefield limit
   if (playerState.battlefield.length < MAX_BATTLEFIELD_SIZE) {
-    playerState.battlefield.push(jadeGolem);
-    
-    // Track quest progress for summoned jade golem
-    trackQuestProgress(currentPlayer, 'summon_minion', jadeGolem.card);
+    playerState.battlefield.push(golem);
+
+    trackQuestProgress(currentPlayer, 'summon_minion', golem.card);
   }
   
   return newState;

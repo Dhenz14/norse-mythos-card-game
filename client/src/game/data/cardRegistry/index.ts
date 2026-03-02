@@ -38,6 +38,7 @@ import { recruitCards } from '../recruitCards';
 import { spellburstCards } from '../spellburstCards';
 import { secretCards } from '../secretCards';
 import { classMinions } from '../classMinions';
+import { allPetCards } from './sets/core/pets';
 
 // Combine all sets into a single registry
 // Order matters: Norse cards take precedence over duplicates
@@ -65,6 +66,8 @@ const rawRegistry: CardData[] = [
   ...spellburstCards,
   ...secretCards,
   ...classMinions,
+  // Pet cards (element-based evolution companions)
+  ...allPetCards,
 ];
 
 // Validate and deduplicate

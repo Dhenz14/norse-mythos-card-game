@@ -86,7 +86,7 @@ export const druidCards: CardData[] = [
     collectible: false
   },
   
-  // Card from jadeGolemCards.ts
+  // Yggdrasil Golem card
   {
     id: 85002,
     name: "Stone Flower",
@@ -95,10 +95,10 @@ export const druidCards: CardData[] = [
     type: "spell",
     rarity: "common",
     class: "Druid",
-    keywords: ["jade_golem"],
+    keywords: ["yggdrasil_golem"],
     collectible: true,
     spellEffect: {
-      type: "summon_jade_golem",
+      type: "summon_yggdrasil_golem",
       bonusEffect: {
         type: "gain_mana_crystals",
         value: 1,
@@ -477,9 +477,9 @@ export const druidCards: CardData[] = [
   },
   {
     id: 11057,
-    name: "Jade Dragon",
+    name: "Yggdrasil Drake",
     description: "Battlecry: Discover a Dragon.",
-    flavorText: "Green dragons are the most nature-aligned of all dragonkind.",
+    flavorText: "Hatched in the roots of the World Tree, it guards the oldest groves.",
     type: "minion",
     rarity: "common",
     manaCost: 5,

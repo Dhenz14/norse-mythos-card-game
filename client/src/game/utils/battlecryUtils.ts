@@ -313,8 +313,8 @@ export function executeBattlecry(
       case 'fill_board':
         return executeFillBoardBattlecry(newState, battlecry);
 
-      case 'summon_jade_golem':
-        return executeSummonJadeGolemBattlecry(newState);
+      case 'summon_yggdrasil_golem':
+        return executeSummonYggdrasilGolemBattlecry(newState);
 
       case 'summon_random_minions':
         return executeSummonRandomMinionsBattlecry(newState, battlecry);
@@ -1235,21 +1235,21 @@ function executeFillBoardBattlecry(
   return state;
 }
 
-function executeSummonJadeGolemBattlecry(
+function executeSummonYggdrasilGolemBattlecry(
   state: GameState
 ): GameState {
   if (!state.players.player.battlefield) state.players.player.battlefield = [];
   if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) return state;
 
   const player = state.players.player as any;
-  const currentCounter = player.jadeGolemCounter || 0;
-  player.jadeGolemCounter = currentCounter + 1;
+  const currentCounter = player.yggdrasilGolemCounter || 0;
+  player.yggdrasilGolemCounter = currentCounter + 1;
   const golemSize = Math.min(currentCounter + 1, 30);
 
-  const jadeGolemCard: CardData = {
+  const golemCard: CardData = {
     id: 85100 + golemSize,
-    name: 'Jade Golem',
-    description: `A ${golemSize}/${golemSize} Jade Golem.`,
+    name: 'Yggdrasil Golem',
+    description: `A ${golemSize}/${golemSize} Yggdrasil Golem.`,
     manaCost: Math.min(golemSize, 10),
     type: 'minion',
     rarity: 'token' as any,
@@ -1259,7 +1259,7 @@ function executeSummonJadeGolemBattlecry(
     keywords: []
   } as any;
 
-  const instance = createCardInstance(jadeGolemCard);
+  const instance = createCardInstance(golemCard);
   instance.isPlayed = true;
   state.players.player.battlefield.push(instance);
   return state;

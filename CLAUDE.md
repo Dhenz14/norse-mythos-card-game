@@ -33,7 +33,7 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - **Blockchain**: Hive Layer 1 NFTs (custom_json ops, deterministic reader, Keychain auth)
 
 ### Game Features
-- 1,300+ collectible cards across 4 mythological factions
+- 1,400+ collectible cards across 4 mythological factions
 - 76 playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
@@ -153,9 +153,9 @@ server/
 ## Key Subsystems
 
 ### Card System (`game/data/`)
-- **Single source**: `allCards.ts` contains all 1,300 cards
+- **Single source**: `allCards.ts` contains all 1,400+ cards
 - Card registry with ID ranges in `cardRegistry/ID_RANGES.md`
-- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9999 tokens, 20000-29999 Norse set
+- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 50000-50699 pets
 
 ### Combat System (`game/combat/`)
 - `RagnarokCombatArena.tsx` - Main arena component with poker integration
@@ -178,9 +178,28 @@ server/
 - All handlers export default functions and are indexed in their `index.ts`
 
 ### Type System (`game/types/`)
-- `types.ts` - Main type definitions (CardData, GameState, Player)
+- `types.ts` - Main type definitions (CardData, GameState, Player, Prophecy, RealmState)
+- `NorseTypes.ts` - Norse-specific types (NorseElement, NorseHero, NorseKing)
 - `CardTypes.ts` - Card-specific types
 - `PokerCombatTypes.ts` - Poker combat types
+
+### Norse Mechanics (`game/data/cardRegistry/sets/core/neutrals/`)
+
+Six unique Norse-themed mechanics with dedicated card files:
+
+- **Blood Price** (`bloodPriceCards.ts`, IDs 30001-30008): Pay health instead of mana
+- **Einherjar** (`einherjarCards.ts`, IDs 30201-30206): Die and return to deck with +1/+1 (max 3)
+- **Prophecy** (`prophecyCards.ts`, IDs 30101-30107): Visible countdown timers on the board
+- **Realm Shift** (`realmShiftCards.ts`, IDs 30301-30309): Change the active battlefield realm
+- **Ragnarok Chain** (`ragnarokChainCards.ts`, IDs 30401-30410): Paired minions with linked destiny
+- **Pet Evolution** (`pets/`, IDs 50000-50699): Elemental companions that evolve during gameplay
+
+Game logic for these mechanics lives in:
+
+- `gameUtils.ts` — Blood Price payment, pet evolution triggers, chain partner effects, realm buffs
+- `spellUtils.ts` — `realm_shift` and `create_prophecy` spell effect handlers
+- `zoneUtils.ts` — Einherjar shuffle-on-death, chain partner death triggers, Helheim return-to-hand
+- `elements/elementAdvantage.ts` — Pet element advantage/weakness calculations
 
 ### Blockchain/NFT System (`data/blockchain/`)
 
@@ -259,6 +278,19 @@ client/src/data/blockchain/tournamentRewards.ts
 - Card type validation: `cardRegistry/validation.ts` validates both types
 - Deck builder filtering: artifacts restricted to matching `heroId` via `filterCardsByClass(cards, heroClass, heroId)`
 - Game logic: `artifactUtils.ts` (equip/destroy/attack bonus), `armorGearUtils.ts` (equip/unequip/set bonuses)
+
+### Norse Mechanics Architecture
+
+- **Blood Price**: `bloodPrice` field on `BaseCardData`; `playCard()` in `gameUtils.ts` handles health-vs-mana payment
+- **Einherjar**: `einherjar` keyword; `destroyCard()` in `zoneUtils.ts` shuffles +1/+1 copy into deck (max 3 generations)
+- **Prophecy**: `Prophecy` interface on `GameState.prophecies[]`; countdown ticks in `endTurn()`; `resolveProphecy()` handles 7 effect types
+- **Realm Shift**: `RealmState` on `GameState.activeRealm`; `realm_shift` spell effect in `spellUtils.ts`; start/end-of-turn realm effects in `gameUtils.ts`
+- **Ragnarok Chain**: `chainPartner` + `chainEffect` fields on `MinionCardData`; both-in-play buffs in `playCard()`; partner-death triggers in `destroyCard()`
+- **Pet Evolution**: `petStage`, `element`, `evolvesInto/From`, `evolutionCondition` fields; `checkPetEvolutionTrigger()` fires on summon/damage/destroy/survive; evolution cards transform basic pets on the battlefield
+- **Rune** (renamed from Secret): Description text says "Rune" but underlying keyword is still `secret` for backwards compatibility
+- **Runic Bond** (renamed from Magnetic): Description says "Runic Bond" but keyword is still `magnetic`
+- **Yggdrasil Golem** (renamed from Jade Golem): Effect key is `summon_yggdrasil_golem`; handlers still in files named `summonJadeGolemHandler.ts`
+- **Berserker** (renamed from Demon Hunter): Class name updated across all card data
 
 ### Hive NFT System
 
@@ -342,6 +374,22 @@ vercel --prod                 # Deploy to Vercel
 - Loading screen (Norse lore quotes, rune spinner)
 - Tutorial overlay (15-step onboarding walkthrough)
 - Keyword definitions (30+ keywords with descriptions)
+
+### Completed (Norse Mechanics Expansion)
+
+- Blood Price system (8 cards, health-as-mana payment)
+- Einherjar system (6 cards, shuffle-on-death with +1/+1, max 3 returns)
+- Prophecy system (7 cards, visible countdown timers, 7 resolve effect types)
+- Realm Shift system (9 cards, board-wide rule changes across the Nine Realms)
+- Ragnarok Chain system (10 cards, 5 mythological pairs with linked destiny)
+- Pet Evolution system (~112 cards, 7 elements, basic-to-evolution transformation)
+- Vanilla Minions (7 baseline stat cards for evaluation benchmarks)
+- Berserker class rename (formerly Demon Hunter)
+- Rune keyword rename (formerly Secret, display text only)
+- Runic Bond keyword rename (formerly Magnetic, display text only)
+- Yggdrasil Golem rename (formerly Jade Golem, effect key + handlers updated)
+- Element advantage system for pet combat (+2 bonus damage)
+- Hero-pet element synergy (+1 Health when elements match)
 
 ### Next (Genesis Launch)
 

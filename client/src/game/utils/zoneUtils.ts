@@ -257,6 +257,91 @@ export function destroyCard(
       newState.players[playerId].battlefield.push(rebornCopy);
       debug.state(`[Reborn] ${cardToDestroy!.card.name} resummoned with 1 HP for ${playerId}`);
     }
+
+    // Einherjar: shuffle a +1/+1 copy into deck (max 3 returns)
+    const hadEinherjar = cardToDestroy?.card?.keywords?.includes('einherjar');
+    const einherjarGen = (cardToDestroy as any)?.einherjarGeneration || 0;
+
+    if (hadEinherjar && einherjarGen < 3) {
+      const risenCard = { ...cardToDestroy!.card } as any;
+      risenCard.attack = (risenCard.attack || 0) + 1;
+      risenCard.health = (risenCard.health || 0) + 1;
+      const suffix = einherjarGen === 0 ? ' (Risen)' : einherjarGen === 1 ? ' (Risen II)' : ' (Risen III)';
+      if (!risenCard.name.includes('(Risen')) {
+        risenCard.name = risenCard.name + suffix;
+      }
+      (risenCard as any).einherjarGeneration = einherjarGen + 1;
+
+      const deck = newState.players[playerId].deck;
+      const insertIdx = Math.floor(Math.random() * (deck.length + 1));
+      deck.splice(insertIdx, 0, risenCard as any);
+      debug.state(`[Einherjar] ${cardToDestroy!.card.name} shuffled back as ${risenCard.name} (gen ${einherjarGen + 1}) for ${playerId}`);
+    }
+
+    // Ragnarok Chain: process onPartnerDeath for chain partners
+    const deadCardData = cardToDestroy?.card as any;
+    if (deadCardData?.chainPartner) {
+      const partnerId = deadCardData.chainPartner;
+      for (const side of ['player', 'opponent'] as const) {
+        const partner = newState.players[side].battlefield.find(
+          (m: CardInstance) => m.card.id === partnerId
+        );
+        if (partner) {
+          const partnerData = partner.card as any;
+          const chainEff = partnerData?.chainEffect?.onPartnerDeath;
+          if (chainEff) {
+            switch (chainEff.type) {
+              case 'buff_self':
+                partner.currentAttack = (partner.currentAttack ?? 0) + (chainEff.value || 0);
+                partner.currentHealth = (partner.currentHealth ?? 0) + (chainEff.value || 0);
+                if (chainEff.keywords?.includes('rush')) (partner as any).hasRush = true;
+                if (chainEff.keywords?.includes('windfury')) (partner as any).hasWindfury = true;
+                break;
+              case 'draw': {
+                const drawCount = chainEff.value || 1;
+                const deck = newState.players[side].deck;
+                const hand = newState.players[side].hand;
+                for (let i = 0; i < drawCount && deck.length > 0 && hand.length < 7; i++) {
+                  hand.push(deck.shift()! as any);
+                }
+                break;
+              }
+              case 'transform_self':
+                partner.currentAttack = chainEff.value || 6;
+                partner.currentHealth = chainEff.value || 6;
+                break;
+              case 'gain_taunt_and_health':
+                (partner as any).isTaunt = true;
+                partner.currentHealth = (partner.currentHealth ?? 0) + (chainEff.value || 2);
+                break;
+            }
+          }
+        }
+      }
+    }
+
+    // Helheim realm: return dead minion to owner's hand costing more
+    if (newState.activeRealm?.effects?.some(e => e.type === 'return_to_hand_on_death')) {
+      const helEff = newState.activeRealm.effects.find(e => e.type === 'return_to_hand_on_death');
+      if (helEff && cardToDestroy) {
+        const hand = newState.players[playerId].hand;
+        if (hand.length < 7) {
+          const returnedCard = { ...cardToDestroy.card } as any;
+          returnedCard.manaCost = (returnedCard.manaCost || 0) + (helEff.value || 2);
+          hand.push({
+            instanceId: uuidv4(),
+            card: returnedCard,
+            currentAttack: returnedCard.attack || 0,
+            currentHealth: returnedCard.health || 0,
+            canAttack: false,
+            isPlayed: false,
+            isSummoningSick: true,
+            attacksPerformed: 0,
+            isPlayerOwned: playerId === 'player',
+          } as any);
+        }
+      }
+    }
   }
 
   return newState;

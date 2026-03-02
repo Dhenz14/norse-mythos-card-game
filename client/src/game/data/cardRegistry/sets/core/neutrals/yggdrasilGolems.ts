@@ -18,7 +18,7 @@ export const yggdrasilGolemCards: CardData[] = [
     flavorText: "From the roots of the World Tree, a guardian emerges.",
     type: "spell",
     rarity: "common",
-    spellEffect: { type: "summon_jade_golem" },
+    spellEffect: { type: "summon_yggdrasil_golem" },
     collectible: true,
     class: "Neutral",
     set: "core"
@@ -38,18 +38,18 @@ export const yggdrasilGolemCards: CardData[] = [
   },
   {
     id: 85005,
-    name: "Jade Swarmer",
+    name: "Yggdrasil Swarmer",
     manaCost: 2,
     attack: 1,
     health: 1,
     description: "Stealth. Deathrattle: Summon a Yggdrasil Golem.",
-    flavorText: "The jade serpent strikes from the shadows of Yggdrasil.",
+    flavorText: "A root-born creature strikes from the shadows of the World Tree.",
     type: "minion",
     rarity: "common",
     class: "Rogue",
-    keywords: ["stealth", "deathrattle", "jade_golem"],
+    keywords: ["stealth", "deathrattle", "yggdrasil_golem"],
     deathrattle: {
-      type: "summon_jade_golem"
+      type: "summon_yggdrasil_golem"
     },
     set: "core",
     collectible: true

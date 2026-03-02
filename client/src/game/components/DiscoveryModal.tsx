@@ -161,7 +161,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               <option value="minion">Minion</option>
               <option value="spell">Spell</option>
               <option value="weapon">Weapon</option>
-              <option value="secret">Secret</option>
+              <option value="secret">Rune</option>
             </select>
           </div>
           

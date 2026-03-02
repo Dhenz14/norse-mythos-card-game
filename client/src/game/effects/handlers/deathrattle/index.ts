@@ -25,7 +25,7 @@ const deathrattleHandlers: Record<string, Function> = {
 	'add_to_hand': executeAddToHand,
 	'split_damage': executeSplitDamage,
 	'add_card': executeAddCard,
-	'summon_jade_golem': executeSummonJadeGolem,
+	'summon_yggdrasil_golem': executeSummonJadeGolem,
 	'shuffle': executeShuffle,
 	'destroy': executeDestroy,
 	'shuffle_card': executeShuffleCard,

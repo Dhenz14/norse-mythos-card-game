@@ -204,7 +204,7 @@ export const adaptMinions: CardData[] = [
     keywords: ["battlecry", "adapt"],
     class: "Neutral",
     set: "core",
-    collectible: true,
+    collectible: false,
     battlecry: {
       type: "transform",
       requiresTarget: false,
@@ -223,7 +223,7 @@ export const adaptMinions: CardData[] = [
     keywords: ["battlecry", "adapt"],
     class: "Neutral",
     set: "core",
-    collectible: true,
+    collectible: false,
     battlecry: {
       type: "transform",
       requiresTarget: false,
@@ -242,7 +242,7 @@ export const adaptMinions: CardData[] = [
     keywords: ["battlecry", "adapt"],
     class: "Neutral",
     set: "core",
-    collectible: true,
+    collectible: false,
     battlecry: {
       type: "transform",
       requiresTarget: false,
@@ -261,7 +261,7 @@ export const adaptMinions: CardData[] = [
     keywords: ["battlecry", "adapt"],
     class: "Neutral",
     set: "core",
-    collectible: true,
+    collectible: false,
     battlecry: {
       type: "transform",
       requiresTarget: true,
@@ -278,7 +278,7 @@ export const adaptMinions: CardData[] = [
     keywords: ["adapt"],
     class: "Neutral",
     set: "core",
-    collectible: true,
+    collectible: false,
     spellEffect: {
       type: "transform",
       targetType: "friendly_minion",

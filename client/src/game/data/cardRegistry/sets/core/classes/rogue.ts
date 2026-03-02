@@ -808,11 +808,11 @@ export const rogueCards: CardData[] = [
     type: "minion",
     rarity: "common",
     description: "Stealth. Deathrattle: Summon a Yggdrasil Golem.",
-    flavorText: "Silent as jade, deadly as shadow.",
-    keywords: ["stealth", "deathrattle", "jade_golem"],
+    flavorText: "Silent as bark, deadly as shadow.",
+    keywords: ["stealth", "deathrattle", "yggdrasil_golem"],
     class: "Rogue",
     deathrattle: {
-      type: "summon_jade_golem"
+      type: "summon_yggdrasil_golem"
     },
     collectible: true,
     set: "core"

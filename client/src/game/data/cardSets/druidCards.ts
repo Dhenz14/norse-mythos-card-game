@@ -299,7 +299,7 @@ export function registerDruidCards(): void {
     .addCategory("token")
     .build();
 
-  // JADE GOLEM DRUID CARDS
+  // YGGDRASIL GOLEM DRUID CARDS
   createCard()
     .id(85002)
     .name("Stone Flower")
@@ -309,9 +309,9 @@ export function registerDruidCards(): void {
     .description("Summon a Yggdrasil Golem. Gain an empty Mana Crystal.")
     .heroClass("druid")
     .class("Druid")
-    .addKeyword("jade_golem")
+    .addKeyword("yggdrasil_golem")
     .spellEffect({
-      type: "summon_jade_golem",
+      type: "summon_yggdrasil_golem",
       bonusEffect: {
         type: "gain_mana_crystals",
         value: 1,
@@ -319,7 +319,7 @@ export function registerDruidCards(): void {
       }
     })
     .collectible(true)
-    .addCategory("jade_golem")
+    .addCategory("yggdrasil_golem")
     .build();
 
   // CHOOSE ONE CARDS

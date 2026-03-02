@@ -625,7 +625,7 @@ export const   mechanicCards: CardData[] = [{
       type: "minion",
       rarity: "common",
 
-      description: "Deathrattle: Put a Secret from your deck into the battlefield.",
+      description: "Deathrattle: Put a Rune from your deck into the battlefield.",
       keywords: ["deathrattle"],
 
       heroClass: "neutral",

@@ -301,5 +301,168 @@ export const deathknightCards: CardData[] = [
     class: "Deathknight",
     collectible: false,
     set: "core"
+  },
+  {
+    id: 3031,
+    name: "Frozen Acolyte",
+    manaCost: 1,
+    attack: 1,
+    health: 2,
+    description: "Battlecry: Freeze a minion.",
+    flavorText: "She once prayed to the Aesir for warmth. Now she answers with frost.",
+    type: "minion",
+    rarity: "common",
+    class: "Deathknight",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "freeze",
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 3032,
+    name: "Plague Spreader",
+    manaCost: 2,
+    attack: 2,
+    health: 3,
+    description: "Deathrattle: Give adjacent minions -1 Attack.",
+    flavorText: "The draugr carry plagues that felled entire villages along the fjords.",
+    type: "minion",
+    rarity: "common",
+    class: "Deathknight",
+    race: "Undead",
+    keywords: ["deathrattle"],
+    deathrattle: {
+      type: "debuff_adjacent",
+      buffAttack: -1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 3033,
+    name: "Runebound Ghoul",
+    manaCost: 3,
+    attack: 3,
+    health: 3,
+    description: "Gains +1/+1 when an enemy minion dies.",
+    flavorText: "Carved with runes of binding, it feeds on the passing of the slain.",
+    type: "minion",
+    rarity: "rare",
+    class: "Deathknight",
+    race: "Undead",
+    keywords: [],
+    minionEffect: {
+      type: "buff_on_enemy_death",
+      buffAttack: 1,
+      buffHealth: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 3034,
+    name: "Frost Revenant",
+    manaCost: 3,
+    attack: 2,
+    health: 4,
+    description: "Your frozen enemies take +1 damage.",
+    flavorText: "Born in the howling winds of Niflheim, where even the dead shiver.",
+    type: "minion",
+    rarity: "rare",
+    class: "Deathknight",
+    keywords: [],
+    aura: {
+      type: "frozen_damage_bonus",
+      value: 1,
+      targetType: "frozen_enemies"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 3035,
+    name: "Abomination Smith",
+    manaCost: 4,
+    attack: 3,
+    health: 5,
+    description: "Battlecry: Destroy a friendly Undead to gain its stats.",
+    flavorText: "In Helheim's forges, the dead are not mourned — they are repurposed.",
+    type: "minion",
+    rarity: "epic",
+    class: "Deathknight",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "consume_friendly",
+      targetType: "friendly_minion",
+      requiresTarget: true,
+      raceFilter: "Undead",
+      gainStats: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 3036,
+    name: "Deathcharger",
+    manaCost: 4,
+    attack: 5,
+    health: 2,
+    description: "Charge. Deathrattle: Deal 3 damage to your hero.",
+    flavorText: "Sleipnir's shadow breeds steeds that gallop between the realms of the living and the dead.",
+    type: "minion",
+    rarity: "common",
+    class: "Deathknight",
+    race: "Undead",
+    keywords: ["charge", "deathrattle"],
+    deathrattle: {
+      type: "damage_hero",
+      value: 3,
+      targetType: "friendly_hero"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 3037,
+    name: "Val'kyr Shadowguard",
+    manaCost: 5,
+    attack: 4,
+    health: 5,
+    description: "Deathrattle: Resummon this minion with 1 Health.",
+    flavorText: "The Valkyries of shadow do not choose the slain — they refuse to become them.",
+    type: "minion",
+    rarity: "epic",
+    class: "Deathknight",
+    keywords: ["deathrattle"],
+    deathrattle: {
+      type: "resummon_self",
+      health: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 3038,
+    name: "Frost Wyrm",
+    manaCost: 8,
+    attack: 6,
+    health: 8,
+    description: "Battlecry: Freeze all enemy minions.",
+    flavorText: "Nidhogg's lesser kin, reborn in ice atop the peaks of Jotunheim.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Deathknight",
+    race: "Dragon",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "freeze",
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
   }
 ];

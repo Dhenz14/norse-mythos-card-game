@@ -616,12 +616,12 @@ export const druidCards: CardData[] = [
   },
   {
     id: 11057,
-    name: "Jade Dragon",
+    name: "Yggdrasil Drake",
     manaCost: 5,
     attack: 4,
     health: 4,
     description: "Battlecry: Discover a Dragon.",
-    flavorText: "Ancient jade dragons embody the eternal magic of nature.",
+    flavorText: "Hatched in the roots of the World Tree, it guards the oldest groves.",
     type: "minion",
     rarity: "common",
     race: "dragon",
@@ -803,9 +803,9 @@ export const druidCards: CardData[] = [
     type: "spell",
     rarity: "common",
     class: "Druid",
-    keywords: ["jade_golem"],
+    keywords: ["yggdrasil_golem"],
     spellEffect: {
-      type: "summon_jade_golem"
+      type: "summon_yggdrasil_golem"
     },
     collectible: true,
     set: "core"

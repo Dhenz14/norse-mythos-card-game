@@ -61,7 +61,7 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
       'lifesteal': { icon: '💚', desc: 'Damage dealt by this card heals your hero' },
       'poisonous': { icon: '☠️', desc: 'Destroys any minion damaged by this' },
       'stealth': { icon: '👁️', desc: 'Can\'t be targeted until it attacks' },
-      'magnetic': { icon: '🧲', desc: 'Can be attached to a Mech to combine stats' },
+      'magnetic': { icon: '🧲', desc: 'Runic Bond — attaches to a friendly Automaton to combine stats' },
       'echo': { icon: '🔄', desc: 'Can be played multiple times on the same turn' },
       'overkill': { icon: '🔪', desc: 'Triggers an effect when this deals excess damage' },
       'reborn': { icon: '🔄', desc: 'Returns to life with 1 health the first time it dies' }

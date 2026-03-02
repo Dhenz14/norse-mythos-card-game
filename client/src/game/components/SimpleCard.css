@@ -1113,6 +1113,25 @@
 }
 
 /* ==========================================================================
+   ELEMENT BADGE — Small element icon on pet cards
+   ========================================================================== */
+
+.element-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 5;
+  font-size: 0.7em;
+  line-height: 1;
+  border-radius: 50%;
+  width: 1.2em;
+  height: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
    KEYWORD BADGE TOOLTIP — Minimal, elegant portal tooltip
    Shows keyword name + card-specific effect on badge hover
    ========================================================================== */

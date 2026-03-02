@@ -14,10 +14,17 @@
    - [Poker Spells](#poker-spells)
 7. [Standard Match Rules](#standard-match-rules)
 8. [Keywords & Abilities](#keywords--abilities)
-9. [Status Effects](#status-effects)
-10. [Element System](#element-system)
-11. [Deck Building](#deck-building)
-12. [Glossary](#glossary)
+9. [Norse Mechanics](#norse-mechanics)
+   - [Blood Price](#blood-price)
+   - [Einherjar](#einherjar)
+   - [Prophecy](#prophecy)
+   - [Realm Shift](#realm-shift)
+   - [Ragnarok Chain](#ragnarok-chain)
+   - [Pet Evolution System](#pet-evolution-system)
+10. [Status Effects](#status-effects)
+11. [Element System](#element-system)
+12. [Deck Building](#deck-building)
+13. [Glossary](#glossary)
 
 ---
 
@@ -74,7 +81,7 @@ Main Menu → Mode Selection → Standard Match → Hero Selection → Deck Buil
 | **Druid** | Ramp, choose one | Freya, Demeter |
 | **Warlock** | Self-damage, demons | Hel, Hades, Fenrir |
 | **Shaman** | Overload, totems | Njord, Poseidon |
-| **Demon Hunter** | Attack buffs, outcast | Surtr, Muspel |
+| **Berserker** | Attack buffs, outcast | Surtr, Muspel |
 | **Death Knight** | Undead, corpses | Angrboda, Thanatos |
 | **Necromancer** | Resurrection, death synergy | Sinmara, Persephone |
 
@@ -128,8 +135,19 @@ Each hero has three unique abilities:
 | 6000-6999 | Mage Class |
 | 7000-7999 | Hunter Class |
 | 8000-8999 | Other Classes |
-| 9000-9999 | Tokens (non-collectible) |
-| 20000-29999 | Norse Mythology Set |
+| 9000-9099 | Tokens (non-collectible) |
+| 9100-9149 | Poker Spells |
+| 9200-9249 | Pet Tokens |
+| 20000-29799 | Norse Mythology Set |
+| 29800-29809 | Hero Artifacts |
+| 29810-29899 | Armor Gear |
+| 29900-29967 | Hero Artifacts (Extended) |
+| 30001-30008 | Blood Price Cards |
+| 30101-30107 | Prophecy Cards |
+| 30201-30206 | Einherjar Cards |
+| 30301-30309 | Realm Shift Cards |
+| 30401-30410 | Ragnarok Chain Cards |
+| 50000-50699 | Pet Evolution Cards |
 
 ---
 
@@ -501,11 +519,157 @@ Poker Spells are cast during the **Spell/Pet Phase** (before the Faith phase). E
 
 | Keyword | Icon | Description |
 |---------|------|-------------|
-| **Secret** | ❓ | Hidden until a specific action occurs |
+| **Rune** | ❓ | Hidden enchantment that triggers when a specific condition is met |
 | **Dormant** | 💤 | Starts asleep, awakens after 2 turns |
 | **Colossal** | 🦑 | Summons additional appendage minions |
 | **Corrupt** | 🌀 | Upgrades in hand after playing a higher-cost card |
-| **Magnetic** | 🧲 | Attach to a friendly Mech |
+| **Runic Bond** | 🧲 | Attach to a friendly Automaton to combine stats and abilities |
+| **Yggdrasil Golem** | 🌲 | Summons an Yggdrasil Golem that grows stronger with each one summoned |
+| **Einherjar** | 🔁 | When this dies, shuffle a copy into your deck with +1/+1 (max 3 returns) |
+| **Blood Price** | 🩸 | Can be played by paying health instead of mana |
+| **Prophecy** | ⏳ | Creates a visible countdown that triggers an effect when it reaches 0 |
+
+---
+
+## Norse Mechanics
+
+Six unique mechanics inspired by Norse mythology, each adding a distinct strategic layer to gameplay.
+
+### Blood Price
+
+Cards with Blood Price can be played by sacrificing health instead of mana. Right-click a Blood Price card to toggle between mana and health payment.
+
+| Rule | Detail |
+|------|--------|
+| **Payment** | Pay the card's `bloodPrice` value in hero health |
+| **Survival** | Hero must have more health than the blood cost (cannot kill yourself) |
+| **Toggle** | Right-click to switch between mana and blood payment |
+| **Mana** | Blood payment skips mana cost entirely |
+
+**Example**: *Odin's Sacrifice* (Blood Price 8) - Draw 3 cards, gain +2 Spell Damage. Pay 8 health instead of mana.
+
+**Design Theme**: "Odin gave his eye for wisdom. Tyr gave his hand for peace. What will you sacrifice?"
+
+### Einherjar
+
+Einherjar minions embody the Norse warriors who fight, die, and rise again in Valhalla - stronger each time.
+
+| Rule | Detail |
+|------|--------|
+| **On Death** | Shuffle a copy into your deck with +1/+1 |
+| **Max Returns** | Each card can return up to 3 times |
+| **Name Suffix** | Risen, Risen II, Risen III |
+| **Generation Track** | Internal counter prevents infinite loops |
+
+**Example**: *Einherjar Recruit* (1 mana, 1/1) dies, shuffles back as *Einherjar Recruit (Risen)* (1 mana, 2/2).
+
+### Prophecy
+
+Prophecy spells create visible countdown timers on the board. Both players can see and plan around them.
+
+| Rule | Detail |
+|------|--------|
+| **Countdown** | Decrements by 1 at the end of each turn |
+| **Trigger** | Effect fires automatically when countdown reaches 0 |
+| **Visibility** | Both players see the prophecy and its remaining turns |
+| **Owner** | The caster benefits from directional effects |
+
+**Prophecy Cards:**
+
+| Card | Cost | Countdown | Effect |
+|------|------|-----------|--------|
+| Norn's Decree | 3 | 3 turns | Destroy all minions with 3 or less Attack |
+| Ragnarok Herald | 4 | 2 turns | Deal 5 damage to both heroes |
+| Fimbulwinter's Grip | 3 | 3 turns | Freeze all minions |
+| Twilight of the Gods | 8 | 4 turns | Destroy ALL minions and weapons |
+| Idunn's Renewal | 5 | 3 turns | Heal friendly hero for 8 |
+| Einherjar Summons | 6 | 3 turns | Summon a 5/5 Einherjar Champion with Taunt |
+| Skadi's Storm | 4 | 2 turns | Deal 3 damage to all enemy minions |
+
+### Realm Shift
+
+Realm Shift spells change the active battlefield realm, applying board-wide rule changes that affect both players equally. Only one realm can be active at a time.
+
+| Rule | Detail |
+|------|--------|
+| **Active Realm** | Only one realm at a time; new realm replaces old |
+| **Symmetry** | Both players are affected by realm effects |
+| **Persistence** | Realm stays active until replaced or cleared |
+| **Clear** | Gate to Midgard removes the active realm |
+
+**The Nine Realms:**
+
+| Realm | Class | Cost | Effect |
+|-------|-------|------|--------|
+| **Niflheim** | Shaman | 3 | All minions have -2 Attack |
+| **Muspelheim** | Mage | 3 | All minions take 1 damage at end of turn |
+| **Asgard** | Paladin | 4 | Your minions +1 Attack, enemy spells cost (1) more |
+| **Helheim** | Necromancer | 3 | Minions return to owner's hand costing (2) more when they die |
+| **Vanaheim** | Druid | 3 | All minions restore 2 Health at start of turn |
+| **Jotunheim** | Warrior | 4 | All minions +2 Attack but -1 Health |
+| **Alfheim** | Neutral | 2 | All minions have Elusive (can't be targeted by spells) |
+| **Svartalfheim** | Rogue | 3 | Newly played minions have Stealth |
+| **Midgard** | Neutral | 2 | Remove active realm, restore minions to base stats |
+
+### Ragnarok Chain
+
+Paired minions with linked destiny mechanics. When one partner dies or triggers, the other transforms or activates. Both players can see chain links.
+
+| Rule | Detail |
+|------|--------|
+| **Partner Link** | Each chain card references its partner by card ID |
+| **On Both In Play** | Passive buff when both partners are on the battlefield |
+| **On Partner Death** | Triggered effect when the linked partner dies |
+| **Cross-Side** | Chain effects trigger regardless of which side the partner is on |
+
+**The Five Mythological Pairs:**
+
+| Pair | Cards | On Both In Play | On Partner Death |
+|------|-------|-----------------|------------------|
+| **Fenrir & Gleipnir** | 30401, 30402 | - | Fenrir: +5/+5 and Rush |
+| **Skoll & Hati** | 30403, 30404 | - | Survivor: +3/+3 |
+| **Huginn & Muninn** | 30405, 30406 | Both +2/+2 | Draw 2 cards |
+| **Nidhogg & Ratatoskr** | 30407, 30408 | Nidhogg +3 Attack | Nidhogg: transform to 6/6 |
+| **Ask & Embla** | 30409, 30410 | Both gain Divine Shield | Survivor: +2 Health, Taunt |
+
+### Pet Evolution System
+
+Elemental pet companions that evolve during gameplay when specific conditions are met.
+
+#### Elements
+
+| Element | Color | Weakness |
+|---------|-------|----------|
+| Fire | #ff6b35 | Water |
+| Water | #4fc3f7 | Electric |
+| Grass | #66bb6a | Fire |
+| Electric | #fdd835 | Grass |
+| Dark | #9c27b0 | Light |
+| Light | #ffd54f | Dark |
+| Neutral | #9e9e9e | None |
+
+#### Evolution Rules
+
+| Rule | Detail |
+|------|--------|
+| **Stages** | Basic -> Evolution (play evolution card when condition met) |
+| **Condition Triggers** | on_deal_damage, on_heal_ally, on_survive_turn, on_destroy, on_summon, on_buff_ally |
+| **Transform** | Evolution card replaces the basic pet on the battlefield |
+| **Health Carry** | Damage taken by the basic form carries over to the evolved form |
+| **Hero Synergy** | +1 Health bonus when pet element matches hero element |
+| **Element Advantage** | +2 bonus damage when attacking a pet weak to your element |
+
+#### Pet Families (by Element)
+
+| Element | ID Range | Example Basic | Example Evolution |
+|---------|----------|---------------|-------------------|
+| Fire | 50001-50099 | Ember Pup | Inferno Hound |
+| Water | 50100-50199 | Tide Sprite | Ocean Leviathan |
+| Grass | 50200-50299 | Sprout Imp | Ancient Treant |
+| Electric | 50300-50399 | Spark Mote | Thunder Drake |
+| Dark | 50400-50499 | Shadow Wisp | Void Stalker |
+| Light | 50500-50599 | Gleam Sprite | Radiant Seraph |
+| Neutral | 50600-50699 | Stone Golem | Mountain Titan |
 
 ---
 

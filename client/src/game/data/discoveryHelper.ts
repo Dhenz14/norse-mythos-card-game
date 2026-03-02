@@ -60,7 +60,7 @@ const poolOptions: DiscoverPoolOption[] = [
 
 { id: 'damaged_minion', name: 'Damaged Minion',   description: 'Discover a minion that has been damaged' },
 
-{ id: 'secret', name: 'Secret',   description: 'Discover a Secret' },
+{ id: 'secret', name: 'Rune',   description: 'Discover a Rune' },
 
 { id: 'spell', name: 'Spell',   description: 'Discover a Spell' },
 

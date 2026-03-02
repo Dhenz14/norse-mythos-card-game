@@ -39,8 +39,8 @@ export const modernLegendaryCards: CardData[] = [
     rarity: "mythic",
     description: "At the end of your turn, summon a friendly minion that died this game.",
     keywords: [],
-    heroClass: "priest",
-    class: "Priest",
+    heroClass: "necromancer",
+    class: "Necromancer",
     collectible: true,
     endOfTurn: {
       type: "summon",

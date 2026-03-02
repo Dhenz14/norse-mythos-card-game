@@ -32,7 +32,7 @@ const KEYWORDS = [
   'Echo',
   'Magnetic',
   'Immune',
-  'Secret',
+  'Rune',
   'Counter',
   'Start of Game',
   'Freeze'
@@ -73,7 +73,7 @@ const KEYWORD_COLORS: Record<string, string> = {
   'Inspire': '#cd853f', // Peru
   'Choose One': '#3cb371', // Medium sea green
   'Start of Game': '#708090', // Slate gray
-  'Secret': '#ff4500', // Orangered
+  'Rune': '#ff4500', // Orangered
 };
 
 // Background gradients for keywords

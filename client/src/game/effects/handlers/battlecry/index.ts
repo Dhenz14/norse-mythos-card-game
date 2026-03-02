@@ -164,7 +164,7 @@ const battlecryHandlers: Record<string, Function> = {
   'summon_copy': executeSummonCopy,
   'summon_copy_from_deck': executeSummonCopyFromDeck,
   'summon_from_spell_cost': executeSummonFromSpellCost,
-  'summon_jade_golem': executeSummonJadeGolem,
+  'summon_yggdrasil_golem': executeSummonJadeGolem,
   'fill_board': executeFillBoard,
   
   // Discover

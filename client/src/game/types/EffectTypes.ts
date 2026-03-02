@@ -275,7 +275,7 @@ export type SummonEffectType =
   | 'summon_from_graveyard'
   | 'summon_from_hand'
   | 'summon_highest_cost_from_graveyard'
-  | 'summon_jade_golem'
+  | 'summon_yggdrasil_golem'
   | 'summon_minions'
   | 'summon_multiple'
   | 'summon_rush_minions'

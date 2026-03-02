@@ -26,6 +26,8 @@ export interface SimpleCardData {
   cardClass?: string;
   keywords?: string[];
   evolutionLevel?: 1 | 2 | 3;
+  element?: string;
+  petStage?: string;
 }
 
 interface SimpleCardProps {
@@ -60,6 +62,16 @@ const getCardTypeIcon = (type: string): string => {
     case 'armor': return '🛡️';
     default: return '👤';
   }
+};
+
+const ELEMENT_BADGE: Record<string, { icon: string; color: string }> = {
+  fire: { icon: '\u{1F525}', color: '#ff6b35' },
+  water: { icon: '\u{1F4A7}', color: '#4fc3f7' },
+  grass: { icon: '\u{1F33F}', color: '#66bb6a' },
+  electric: { icon: '\u{26A1}', color: '#fdd835' },
+  light: { icon: '\u{2728}', color: '#ffd54f' },
+  dark: { icon: '\u{1F311}', color: '#9c27b0' },
+  ice: { icon: '\u{2744}\u{FE0F}', color: '#81d4fa' }
 };
 
 const getClassColor = (cardClass?: string): string => {
@@ -261,6 +273,12 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
 
       {evolutionStars && (
         <div className="evolution-stars">{evolutionStars}</div>
+      )}
+
+      {card.element && ELEMENT_BADGE[card.element] && (
+        <div className="element-badge">
+          {ELEMENT_BADGE[card.element].icon}
+        </div>
       )}
 
       <div

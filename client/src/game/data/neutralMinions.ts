@@ -265,7 +265,7 @@ export const   neutralMinions: CardData[] = [{
       requiresTarget: false
 
        },
-      collectible: true
+      collectible: false
   },
   {
       id: 30017,
@@ -1690,7 +1690,7 @@ export const   neutralMinions: CardData[] = [{
   type: "minion",
   rarity: "common",
   
-  description: "Magnetic, Rush",
+  description: "Runic Bond, Rush",
   keywords: ["magnetic", "rush"],
   
   heroClass: "neutral", race: "automaton",
@@ -1709,7 +1709,7 @@ export const   neutralMinions: CardData[] = [{
   type: "minion",
   rarity: "common",
   
-  description: "Magnetic, Taunt",
+  description: "Runic Bond, Taunt",
   keywords: ["magnetic", "taunt"],
   
   heroClass: "neutral", race: "automaton",
@@ -2092,7 +2092,7 @@ export const   neutralMinions: CardData[] = [{
         type: "adapt",
         requiresTarget: false
       },
-      collectible: true
+      collectible: false
   },
   {
       id: 30098,

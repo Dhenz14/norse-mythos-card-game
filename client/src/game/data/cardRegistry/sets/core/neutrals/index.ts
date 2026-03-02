@@ -5,6 +5,12 @@ import { allAdaptCards } from './adaptCards';
 import { allMechanicCards } from './mechanicCards';
 import { allLegendaryCards } from './legendaryCards';
 import { allSpellCards } from './spellCards';
+import { vanillaMinions } from './vanillaMinions';
+import { einherjarCards } from './einherjarCards';
+import { bloodPriceCards } from './bloodPriceCards';
+import { prophecyCards } from './prophecyCards';
+import { realmShiftCards } from './realmShiftCards';
+import { ragnarokChainCards } from './ragnarokChainCards';
 
 // Core Set - Neutral Cards
 // Organized by rarity following Hearthstone conventions
@@ -831,7 +837,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 30079,
     name: 'Swift Construct',
-    description: 'Magnetic, Rush',
+    description: 'Runic Bond, Rush',
     flavorText: 'Built for speed and combat.',
     type: 'minion',
     rarity: 'common',
@@ -847,7 +853,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 30080,
     name: 'Bronze Sentinel',
-    description: 'Magnetic, Taunt',
+    description: 'Runic Bond, Taunt',
     flavorText: 'The bronze guardians never tire.',
     type: 'minion',
     rarity: 'common',
@@ -1132,7 +1138,7 @@ const commonNeutralMinions: CardData[] = [
     race: 'Beast',
     class: 'Neutral',
     keywords: ['battlecry'],
-    collectible: true,
+    collectible: false,
     set: 'core',
     battlecry: {
       type: 'adapt',
@@ -2622,7 +2628,7 @@ const epicNeutralSpells: CardData[] = [
   {
     id: 4503,
     name: "Norns' Hourglass",
-    description: 'Secret: When your opponent plays a minion, return it to their hand and it costs (2) more.',
+    description: 'Rune: When your opponent plays a minion, return it to their hand and it costs (2) more.',
     flavorText: 'The Norns weave fate at the roots of Yggdrasil.',
     type: 'spell',
     rarity: 'epic',
@@ -3682,8 +3688,8 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 5003,
-    name: 'Mage Secrets',
-    description: 'Discover a Secret.',
+    name: 'Mage Runes',
+    description: 'Discover a Rune.',
     manaCost: 2,
     type: 'spell',
     rarity: 'common',
@@ -4517,7 +4523,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 5,
     type: 'minion',
     rarity: 'common',
-    description: 'Magnetic',
+    description: 'Runic Bond',
     keywords: ['magnetic'],
     race: 'automaton',
     class: 'Neutral',
@@ -4532,7 +4538,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 1,
     type: 'minion',
     rarity: 'common',
-    description: 'Magnetic, Rush',
+    description: 'Runic Bond, Rush',
     keywords: ['magnetic', 'rush'],
     race: 'automaton',
     class: 'Neutral',
@@ -4547,7 +4553,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 1,
     type: 'minion',
     rarity: 'rare',
-    description: 'Magnetic, Deathrattle: Summon three 1/1 Microbots.',
+    description: 'Runic Bond, Deathrattle: Summon three 1/1 Microbots.',
     keywords: ['magnetic', 'deathrattle'],
     class: 'Neutral',
     set: 'core',
@@ -4568,7 +4574,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 4,
     type: 'minion',
     rarity: 'rare',
-    description: 'Magnetic, At the end of your turn, deal 1 damage to all other characters.',
+    description: 'Runic Bond, At the end of your turn, deal 1 damage to all other characters.',
     keywords: ['magnetic'],
     class: 'Neutral',
     race: 'automaton',
@@ -5468,7 +5474,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 2,
     type: 'minion',
     rarity: 'epic',
-    description: 'Magnetic, Divine Shield, Taunt, Lifesteal, Rush',
+    description: 'Runic Bond, Divine Shield, Taunt, Lifesteal, Rush',
     flavorText: 'The god of the forge crafted this masterwork of divine engineering.',
     keywords: ['magnetic', 'divine_shield', 'taunt', 'lifesteal', 'rush'],
     race: 'Automaton',
@@ -7895,7 +7901,7 @@ const rareBeastMinions: CardData[] = [
     class: 'Neutral',
     set: 'core',
     keywords: ['battlecry'],
-    collectible: true,
+    collectible: false,
     battlecry: {
       type: 'adapt',
       targetType: 'friendly_beast',
@@ -7915,7 +7921,7 @@ const rareBeastMinions: CardData[] = [
     race: 'Beast',
     class: 'Neutral',
     set: 'core',
-    collectible: true
+    collectible: false
   },
   {
     id: 33135,
@@ -10364,7 +10370,13 @@ export const coreNeutralCards: CardData[] = [
   ...allAdaptCards,
   ...allMechanicCards,
   ...allLegendaryCards,
-  ...allSpellCards
+  ...allSpellCards,
+  ...vanillaMinions,
+  ...einherjarCards,
+  ...bloodPriceCards,
+  ...prophecyCards,
+  ...realmShiftCards,
+  ...ragnarokChainCards
 ];
 
 export { allYggdrasilGolemCards, oldGodsCards, allAdaptCards, allMechanicCards, allLegendaryCards, allSpellCards };
