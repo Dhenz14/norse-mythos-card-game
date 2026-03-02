@@ -32,7 +32,7 @@ const HeroSelection: React.FC<HeroSelectionProps> = ({ onHeroSelect, lastPlayedD
     warlock: '#9482C9',
     shaman: '#0070DE',
     rogue: '#FFF569',
-    demonhunter: '#A330C9',
+    berserker: '#A330C9',
     deathknight: '#C41E3A',
     necromancer: '#7B68EE',
     neutral: '#CCCCCC'

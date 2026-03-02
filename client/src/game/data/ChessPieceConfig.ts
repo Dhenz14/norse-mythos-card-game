@@ -10,7 +10,7 @@ import { ChessPieceType, ChessPieceHero, ArmySelection } from '../types/ChessTyp
 import { HeroClass } from '../types';
 
 type LowercaseHeroClass = 'mage' | 'warrior' | 'priest' | 'rogue' | 'paladin' | 
-  'hunter' | 'druid' | 'warlock' | 'shaman' | 'demonhunter' | 'deathknight' | 
+  'hunter' | 'druid' | 'warlock' | 'shaman' | 'berserker' | 'deathknight' | 
   'necromancer' | 'neutral';
 
 /**
@@ -596,7 +596,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
   ],
   knight: [
     // ===== NORSE HEROES - KNIGHT (Stealth/Agility) =====
-    // Uses Rogue, Hunter, and Demon Hunter spell pools
+    // Uses Rogue, Hunter, and Berserker spell pools
     {
       id: 'hero-loki',
       name: 'Loki',
@@ -646,7 +646,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-myrka',
       name: 'Myrka',
-      heroClass: 'demonhunter',
+      heroClass: 'berserker',
       description: 'Bog Witch: Freeze minions and apply debuffs.',
       fixedCardIds: [],
       element: 'water',
@@ -656,7 +656,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-ylva',
       name: 'Ylva',
-      heroClass: 'demonhunter',
+      heroClass: 'berserker',
       description: 'Wolf Mother: Summon wolf tokens with rush.',
       fixedCardIds: [],
       element: 'grass',
@@ -752,7 +752,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-ve',
       name: 'Ve',
-      heroClass: 'demonhunter',
+      heroClass: 'berserker',
       description: 'God of Sacred Fury: Channel divine wrath into devastating strikes.',
       fixedCardIds: [],
       element: 'light',
@@ -761,7 +761,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-khepri',
       name: 'Khepri',
-      heroClass: 'demonhunter',
+      heroClass: 'berserker',
       description: 'Scarab of Wrath: Consume enemy souls and empower with stolen life.',
       fixedCardIds: [],
       element: 'light',

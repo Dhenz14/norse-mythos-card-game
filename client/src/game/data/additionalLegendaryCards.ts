@@ -325,8 +325,8 @@ export const additionalLegendaryCards: CardData[] = [
     keywords: [
       "outcast"
     ],
-    heroClass: "demonhunter",
-    class: "Demonhunter",
+    heroClass: "berserker",
+    class: "Berserker",
     spellEffect: {
       type: "draw",
       value: 3,

@@ -18,7 +18,7 @@ import { registerPriestCards } from '../cardSets/priestCards';
 import { registerShamanCards } from '../cardSets/shamanCards';
 import { registerWarriorCards } from '../cardSets/warriorCards';
 import { registerDeathKnightCards } from '../cardSets/deathknightCards';
-import { registerDemonHunterCards } from '../cardSets/demonhunterCards';
+import { registerBerserkerCards } from '../cardSets/berserkerCards';
 import { registerNecromancerCards } from '../cardSets/necromancerCards';
 import { registerSuperMinionCards } from '../cardSets/superMinionCards';
 
@@ -56,7 +56,7 @@ export function initializeCardDatabase(): void {
   registerShamanCards();
   registerWarriorCards();
   registerDeathKnightCards();
-  registerDemonHunterCards();
+  registerBerserkerCards();
   registerNecromancerCards();
   registerSuperMinionCards();
   

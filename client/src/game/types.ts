@@ -34,7 +34,7 @@ export type HeroClass =
   | 'Warrior' | 'warrior'
   | 'Neutral' | 'neutral'
   | 'Necromancer' | 'necromancer'
-  | 'DemonHunter' | 'demonhunter'
+  | 'Berserker' | 'berserker'
   | 'DeathKnight' | 'deathknight';
 
 /**

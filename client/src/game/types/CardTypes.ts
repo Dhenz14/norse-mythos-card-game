@@ -23,7 +23,7 @@ export type HeroClass =
   | 'warlock' 
   | 'shaman' 
   | 'rogue' 
-  | 'demonhunter' 
+  | 'berserker' 
   | 'deathknight';
 
 export type MinionRace = 

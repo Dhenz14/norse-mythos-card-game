@@ -56,7 +56,7 @@ const getHeroClassColor = (heroClass: HeroClass | undefined): string => {
       return 'from-gray-900 to-gray-700 border-gray-500';
     case 'druid':
       return 'from-amber-800 to-amber-600 border-amber-400';
-    case 'demonhunter':
+    case 'berserker':
       return 'from-emerald-800 to-emerald-600 border-emerald-400';
     case 'deathknight':
       return 'from-sky-900 to-blue-900 border-blue-200';
@@ -73,7 +73,7 @@ const getHeroClassName = (heroClass: HeroClass | undefined): string => {
   if (!heroClass) return "Unknown";
   
   // Special cases
-  if (heroClass === 'demonhunter') return "Demon Hunter";
+  if (heroClass === 'berserker') return "Berserker";
   if (heroClass === 'deathknight') return "Death Knight";
   if (heroClass === 'necromancer') return "Necromancer";
   
@@ -103,7 +103,7 @@ const getHeroImageId = (heroClass: HeroClass | undefined): string => {
       return 'valeera';
     case 'druid':
       return 'malfurion';
-    case 'demonhunter':
+    case 'berserker':
       return 'illidan';
     case 'deathknight':
       return 'arthas';
@@ -175,7 +175,7 @@ export const Hero: React.FC<HeroProps> = ({
         return '🗡️';
       case 'druid':
         return '🐻';
-      case 'demonhunter':
+      case 'berserker':
         return '👿';
       case 'deathknight':
         return '💀';

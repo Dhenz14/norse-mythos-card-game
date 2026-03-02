@@ -16,10 +16,10 @@ const CARD_TYPE_MAP: Record<string, number> = {
 const HERO_CLASS_MAP: Record<string, number> = {
 	neutral: 0, druid: 1, hunter: 2, mage: 3, paladin: 4,
 	priest: 5, rogue: 6, shaman: 7, warlock: 8, warrior: 9,
-	necromancer: 10, demonhunter: 11, deathknight: 12,
+	necromancer: 10, berserker: 11, deathknight: 12,
 	Neutral: 0, Druid: 1, Hunter: 2, Mage: 3, Paladin: 4,
 	Priest: 5, Rogue: 6, Shaman: 7, Warlock: 8, Warrior: 9,
-	Necromancer: 10, DemonHunter: 11, DeathKnight: 12,
+	Necromancer: 10, Berserker: 11, DeathKnight: 12,
 };
 
 function mapEffectToPattern(effect: BattlecryEffect | DeathrattleEffect | SpellEffect | undefined): {

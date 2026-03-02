@@ -471,10 +471,10 @@ const deathknightTokens: CardData[] = [
 const necromancerTokens: CardData[] = [];
 
 // ============================================
-// DEMONHUNTER TOKENS
+// BERSERKER TOKENS
 // ============================================
-// Note: Demonic Blast (9114), Illidari Initiate (9117) are defined in demonhunter.ts
-const demonhunterTokens: CardData[] = [
+// Note: Demonic Blast (9114), Illidari Initiate (9117) are defined in berserker.ts
+const berserkerTokens: CardData[] = [
   {
     id: 9118,
     name: 'Hunter of Artemis',
@@ -485,7 +485,7 @@ const demonhunterTokens: CardData[] = [
     manaCost: 1,
     attack: 1,
     health: 1,
-    class: 'Demonhunter',
+    class: 'Berserker',
     collectible: false
   }
 ];
@@ -798,7 +798,7 @@ export const tokenCards: CardData[] = [
   ...rogueTokens,
   ...deathknightTokens,
   ...necromancerTokens,
-  ...demonhunterTokens,
+  ...berserkerTokens,
   ...warriorTokens,
   ...norseMythologyTokens,
   ...effectTokens

@@ -9,7 +9,7 @@ export { rogueCards } from './rogue';
 export { shamanCards } from './shaman';
 export { warlockCards } from './warlock';
 export { druidCards } from './druid';
-export { demonhunterCards } from './demonhunter';
+export { berserkerCards } from './berserker';
 export { deathknightCards } from './deathknight';
 export { necromancerCards } from './necromancer';
 
@@ -22,7 +22,7 @@ import { rogueCards } from './rogue';
 import { shamanCards } from './shaman';
 import { warlockCards } from './warlock';
 import { druidCards } from './druid';
-import { demonhunterCards } from './demonhunter';
+import { berserkerCards } from './berserker';
 import { deathknightCards } from './deathknight';
 import { necromancerCards } from './necromancer';
 
@@ -36,7 +36,7 @@ export const allClassCards: CardData[] = [
   ...shamanCards,
   ...warlockCards,
   ...druidCards,
-  ...demonhunterCards,
+  ...berserkerCards,
   ...deathknightCards,
   ...necromancerCards
 ];

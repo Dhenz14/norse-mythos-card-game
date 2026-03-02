@@ -52,7 +52,7 @@ function getClassColor(heroClass: string): string {
 		warlock: '#7c3aed',
 		druid: '#854d0e',
 		shaman: '#0891b2',
-		'demon hunter': '#15803d',
+		'berserker': '#15803d',
 		'death knight': '#6366f1',
 		monk: '#65a30d',
 	};

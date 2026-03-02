@@ -39,7 +39,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
     }
   },
   {
-    // Changed from 9101 to 9151 to avoid conflict with Demon Hunter card ID
+    // Changed from 9101 to 9151 to avoid conflict with Berserker card ID
     id: 9151,
     name: 'Fate Peek',
     description: 'Reveal 1 of your opponent\'s hole cards for the duration of this combat.',
@@ -60,7 +60,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
     }
   },
   {
-    // Changed from 9102 to 9152 to avoid conflict with Demon Hunter card ID
+    // Changed from 9102 to 9152 to avoid conflict with Berserker card ID
     id: 9152,
     name: 'Stamina Shield',
     description: 'Your next fold this combat costs 1 less STA.',
@@ -103,7 +103,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
     }
   },
   {
-    // Changed from 9111 to 9161 to avoid conflict with Demon Hunter card ID
+    // Changed from 9111 to 9161 to avoid conflict with Berserker card ID
     id: 9161,
     name: 'Echo Bet',
     description: 'Your next bet action this combat is repeated for free.',
@@ -123,7 +123,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
     }
   },
   {
-    // Changed from 9112 to 9162 to avoid conflict with Demon Hunter card ID
+    // Changed from 9112 to 9162 to avoid conflict with Berserker card ID
     id: 9162,
     name: 'Shadow Fold',
     description: 'If you fold this combat, your hand remains hidden from your opponent.',

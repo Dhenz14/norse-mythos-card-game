@@ -73,7 +73,7 @@ const getClassColor = (cardClass?: string): string => {
     shaman: '#0070DE',
     warlock: '#9482C9',
     druid: '#FF7D0A',
-    demonhunter: '#A330C9',
+    berserker: '#A330C9',
     deathknight: '#C41F3B'
   };
   return colors[cardClass?.toLowerCase() || ''] || '#4a5568';

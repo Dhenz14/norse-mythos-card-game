@@ -6,7 +6,7 @@ const DECK_CODE_VERSION = 1;
 const HERO_CLASSES = [
 	'mage', 'hunter', 'warrior', 'priest', 'rogue',
 	'paladin', 'warlock', 'druid', 'shaman',
-	'death_knight', 'demon_hunter', 'monk',
+	'death_knight', 'berserker', 'monk',
 ] as const;
 
 export function encodeDeck(deck: HeroDeck): string {

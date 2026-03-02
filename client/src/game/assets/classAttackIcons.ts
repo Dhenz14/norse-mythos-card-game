@@ -11,8 +11,7 @@ export const CLASS_ATTACK_ICONS: Record<string, string> = {
   shaman: '/icons/class/shaman_thunder_totem_attack_icon.png',
   rogue: '/icons/class/rogue_shadow_dagger_attack_icon.png',
   hunter: '/icons/class/hunter_beast_fang_attack_icon.png',
-  demonhunter: '/icons/class/demon_hunter_fel_glaive_icon.png',
-  demon_hunter: '/icons/class/demon_hunter_fel_glaive_icon.png',
+  berserker: '/icons/class/berserker_fel_glaive_icon.png',
 };
 
 import { assetPath } from '../utils/assetPath';

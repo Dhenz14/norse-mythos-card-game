@@ -584,10 +584,10 @@ export const additionalClassMinions: CardData[] = [
     rarity: "common",
     description: "After your hero attacks, gain +1 Attack.",
     keywords: [],
-    heroClass: "demonhunter", 
+    heroClass: "berserker", 
     race: "titan",
     // Special handling in game logic for attack gain
-    class: "Demonhunter",
+    class: "Berserker",
     collectible: true
   }
 ];

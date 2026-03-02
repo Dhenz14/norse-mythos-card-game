@@ -746,7 +746,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
-		heroClass: 'demonhunter',
+		heroClass: 'berserker',
 		heroId: 'hero-ve',
 		attack: 1,
 		description: 'First card drawn each turn costs (1) less. End of turn: if you played 3+ cards this turn, draw a card.',
@@ -1020,7 +1020,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 
 	// ═══════════════════════════════════════════════════════════════
-	// NORSE — KNIGHTS (Demon Hunter)
+	// NORSE — KNIGHTS (Berserker)
 	// ═══════════════════════════════════════════════════════════════
 
 	{
@@ -1029,7 +1029,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
-		heroClass: 'demonhunter',
+		heroClass: 'berserker',
 		heroId: 'hero-myrka',
 		attack: 3,
 		description: 'After your hero attacks, destroy all enemy minions with less Attack than damage dealt. Your hero takes 2 self-damage after attacking.',
@@ -1049,7 +1049,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
-		heroClass: 'demonhunter',
+		heroClass: 'berserker',
 		heroId: 'hero-ylva',
 		attack: 2,
 		description: 'After your hero attacks and kills a minion, gain +1 Attack permanently. Your hero can attack the turn this is equipped.',
@@ -1650,7 +1650,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
-		heroClass: 'demonhunter',
+		heroClass: 'berserker',
 		heroId: 'hero-khepri',
 		attack: 1,
 		description: 'When a friendly minion dies, gain +1 resurrection charge. At 3: summon a copy of the strongest dead minion (resets). +1 Armor at start of turn.',

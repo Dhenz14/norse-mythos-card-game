@@ -2763,7 +2763,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
       manaCost: 0,
 
-      class: 'Demonhunter',
+      class: 'Berserker',
       keywords: ['immune'],
       collectible: true,
       spellEffect: {
@@ -2786,7 +2786,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 4,
 
       durability: 2,
-      class: "Demonhunter",
+      class: "Berserker",
       collectible: true,
       weaponEffect: {
       type: 'attack_again',
@@ -2805,7 +2805,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
       manaCost: 5,
 
-      class: "Demonhunter",
+      class: "Berserker",
       collectible: true,
 
       spellEffect: {
@@ -2829,7 +2829,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'mythic',
       manaCost: 6,
 
-      class: 'Demonhunter',
+      class: 'Berserker',
       keywords: ['outcast'],
       collectible: true,
       spellEffect: {
@@ -2858,7 +2858,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 6,
 
       health: 4,
-      class: 'Demonhunter',
+      class: 'Berserker',
 
       keywords: ['battlecry'],
       collectible: true,
@@ -2889,7 +2889,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 4,
 
       health: 3,
-      class: "Demonhunter",
+      class: "Berserker",
   },
   {
     id: 9113,
@@ -2901,7 +2901,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'mythic',
 
       manaCost: 5,
-      class: "Demonhunter",
+      class: "Berserker",
       collectible: true,
       spellEffect: {
         type: 'swap_hero_power',
@@ -2921,7 +2921,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'mythic',
       manaCost: 1,
 
-      class: "Demonhunter",
+      class: "Berserker",
       collectible: false,
 
       spellEffect: {
@@ -2946,7 +2946,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'common',
       manaCost: 3,
 
-      class: "Demonhunter",
+      class: "Berserker",
       collectible: true,
 
       spellEffect: {
@@ -2974,7 +2974,7 @@ export const fullCardDatabase: CardData[] = [
   health: 1,
   
   race: "Titan",
-      class: 'Demonhunter',
+      class: 'Berserker',
   
   keywords: ['rush'],
       collectible: false
@@ -2993,7 +2993,7 @@ export const fullCardDatabase: CardData[] = [
       health: 7,
 
       race: "Titan",
-      class: "Demonhunter",
+      class: "Berserker",
       collectible: true,
       endOfTurn: {
       type: 'damage_split_randomly',
@@ -3016,7 +3016,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 1,
       durability: 2,
 
-      class: 'Demonhunter',
+      class: 'Berserker',
       keywords: ['battlecry'],
       collectible: true,
                   battlecry: {
@@ -3041,7 +3041,7 @@ export const fullCardDatabase: CardData[] = [
       health: 1,
 
       race: "Titan",
-      class: "Demonhunter"
+      class: "Berserker"
   },
   {
     id: 9123,
@@ -3058,7 +3058,7 @@ export const fullCardDatabase: CardData[] = [
       health: 8,
 
       race: "Dragon",
-      class: 'Demonhunter',
+      class: 'Berserker',
 
       keywords: ['battlecry'],
       collectible: true,

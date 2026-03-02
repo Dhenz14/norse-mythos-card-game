@@ -1,13 +1,13 @@
 /**
  * Outcast cards for Hearthstone clone
  * Outcast cards have special effects when played from the leftmost or rightmost position in your hand
- * This mechanic was introduced in the Ashes of Outland expansion for Demon Hunter
+ * This mechanic was introduced in the Ashes of Outland expansion for Berserker
  */
 import { CardData } from '../types';
 
 /**
  * Collection of cards with the Outcast mechanic
- * Primarily Demon Hunter class cards with special effects when played from the leftmost or rightmost position in hand
+ * Primarily Berserker class cards with special effects when played from the leftmost or rightmost position in hand
  */
 export const outcastCards: CardData[] = [
   {
@@ -18,8 +18,8 @@ export const outcastCards: CardData[] = [
       rarity: "rare",
       description: "Deal 3 damage to a minion. Outcast: This costs (1).",
       keywords: ["outcast"],
-      heroClass: "demonhunter", 
-      class: "Demonhunter",
+      heroClass: "berserker", 
+      class: "Berserker",
       spellEffect: {
         type: "damage",
         value: 3,
@@ -41,8 +41,8 @@ export const outcastCards: CardData[] = [
       rarity: "common",
       description: "Draw a card. Outcast: Draw another.",
       keywords: ["outcast"],
-      heroClass: "demonhunter",
-      class: "Demonhunter",
+      heroClass: "berserker",
+      class: "Berserker",
       spellEffect: {
         type: "draw",
         value: 1,
@@ -64,8 +64,8 @@ export const outcastCards: CardData[] = [
       rarity: "common",
       description: "Discover an Outcast card. Outcast: It costs (1) less.",
       keywords: ["discover", "outcast"],
-      heroClass: "demonhunter",
-      class: "Demonhunter",
+      heroClass: "berserker",
+      class: "Berserker",
       spellEffect: {
         type: "discover",
         value: 1,
@@ -89,8 +89,8 @@ export const outcastCards: CardData[] = [
       rarity: "rare",
       description: "Summon three 1/2 Demons with Taunt. Costs (1) less for each minion that died this game.",
       keywords: ["outcast"],
-      heroClass: "demonhunter",
-      class: "Demonhunter",
+      heroClass: "berserker",
+      class: "Berserker",
       spellEffect: {
         type: "summon",
         value: 3,
@@ -116,8 +116,8 @@ export const outcastCards: CardData[] = [
       rarity: "rare",
       description: "Outcast: Look at 3 cards in your opponent's hand. Shuffle one of them into their deck.",
       keywords: ["outcast"],
-      heroClass: "demonhunter",
-      class: "Demonhunter",
+      heroClass: "berserker",
+      class: "Berserker",
       outcastEffect: {
         type: "discover",
         value: 3,
@@ -133,8 +133,8 @@ export const outcastCards: CardData[] = [
       rarity: "common",
       description: "Silence a minion. Outcast: Draw a card.",
       keywords: ["outcast"],
-      heroClass: "demonhunter",
-      class: "Demonhunter",
+      heroClass: "berserker",
+      class: "Berserker",
       spellEffect: {
         type: "silence",
         requiresTarget: true,
@@ -155,8 +155,8 @@ export const outcastCards: CardData[] = [
       rarity: "common",
       description: "Give your hero +1 Attack this turn. Outcast: Add a Second Slice to your hand.",
       keywords: ["outcast"],
-      heroClass: "demonhunter",
-      class: "Demonhunter",
+      heroClass: "berserker",
+      class: "Berserker",
       spellEffect: {
         type: "buff",
         value: 1,

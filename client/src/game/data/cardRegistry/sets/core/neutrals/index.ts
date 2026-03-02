@@ -5199,12 +5199,12 @@ const legendaryNeutralMinions: CardData[] = [
     health: 4,
     type: 'minion',
     rarity: 'rare',
-    description: "Dual-Class: Hunter/Demon Hunter. Your other characters are Immune while attacking.",
+    description: "Dual-Class: Hunter/Berserker. Your other characters are Immune while attacking.",
     flavorText: "The goddess of the hunt protects her companions from harm.",
     keywords: ['dual_class'],
     class: 'Neutral',
     dualClassInfo: {
-      classes: ['hunter', 'demonhunter']
+      classes: ['hunter', 'berserker']
     },
     collectible: true,
     set: 'core'

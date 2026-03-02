@@ -753,9 +753,9 @@ const rogueHeroes: CardData[] = [
 ];
 
 // ============================================
-// DEMON HUNTER HEROES
+// BERSERKER HEROES
 // ============================================
-const demonHunterHeroes: CardData[] = [
+const berserkerHeroes: CardData[] = [
   {
     id: 90090,
     name: 'Surtr the Destroyer',
@@ -765,7 +765,7 @@ const demonHunterHeroes: CardData[] = [
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Demonhunter',
+    class: 'Berserker',
     set: 'core',
     collectible: true
   },
@@ -773,12 +773,12 @@ const demonHunterHeroes: CardData[] = [
     id: 90091,
     name: 'Kayn Sunfury',
     description: 'Hero Power: Demon Claws - Gain +1 Attack this turn.',
-    flavorText: 'A powerful elven demon hunter and disciple of the Betrayer.',
+    flavorText: 'A powerful elven berserker and disciple of the Betrayer.',
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Demonhunter',
+    class: 'Berserker',
     set: 'core',
     collectible: true
   },
@@ -786,12 +786,12 @@ const demonHunterHeroes: CardData[] = [
     id: 90092,
     name: 'Kurtrus Ashfallen',
     description: 'Hero Power: Demon Claws - Gain +1 Attack this turn.',
-    flavorText: 'A devoted demon hunter who survived the destruction of his village by demons.',
+    flavorText: 'A devoted berserker who survived the destruction of his village by demons.',
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Demonhunter',
+    class: 'Berserker',
     set: 'core',
     collectible: true
   }
@@ -937,7 +937,7 @@ export const heroCards: CardData[] = [
   ...warlockHeroes,
   ...shamanHeroes,
   ...rogueHeroes,
-  ...demonHunterHeroes,
+  ...berserkerHeroes,
   ...deathKnightHeroes,
   ...necromancerHeroes,
   ...allDeathKnightHeroCards

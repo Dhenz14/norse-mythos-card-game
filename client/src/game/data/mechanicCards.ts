@@ -804,8 +804,8 @@ export const tokenCards: CardData[] = [
     rarity: "common",
     description: "Give your hero +1 Attack this turn.",
     keywords: [],
-    heroClass: "demonhunter",
-    class: "Demonhunter",
+    heroClass: "berserker",
+    class: "Berserker",
     spellEffect: {
       type: "buff",
       buffAttack: 1,

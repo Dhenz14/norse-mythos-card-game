@@ -1,15 +1,15 @@
 import { CardData } from '../../../../../types';
 
-export const demonhunterCards: CardData[] = [
+export const berserkerCards: CardData[] = [
   {
     id: 9101,
     name: "Chaos Strike",
     manaCost: 2,
     description: "Give your hero +2 Attack this turn. Draw a card.",
-    flavorText: "First lesson of Demon Hunter training: Hit face.",
+    flavorText: "First lesson of Berserker training: Hit face.",
     type: "spell",
     rarity: "common",
-    class: "Demonhunter",
+    class: "Berserker",
     spellEffect: {
       type: "hero_attack_buff",
       value: 2
@@ -25,7 +25,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "It's like a hot knife through butter, except the knife is demonic.",
     type: "spell",
     rarity: "common",
-    class: "Demonhunter",
+    class: "Berserker",
     spellEffect: {
       type: "multi_target_damage_heal",
       value: 2,
@@ -39,10 +39,10 @@ export const demonhunterCards: CardData[] = [
     name: "Blur",
     manaCost: 0,
     description: "Your hero can't take damage this turn.",
-    flavorText: "The first rule of Demon Hunter fight club is: you can't hit what you can't see.",
+    flavorText: "The first rule of Berserker fight club is: you can't hit what you can't see.",
     type: "spell",
     rarity: "rare",
-    class: "Demonhunter",
+    class: "Berserker",
     spellEffect: {
       type: "grant_immunity",
       targetType: "friendly_hero"
@@ -58,7 +58,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "The best defense is a good offense.",
     type: "spell",
     rarity: "rare",
-    class: "Demonhunter",
+    class: "Berserker",
     spellEffect: {
       type: "reduce_opponent_mana",
       value: 2
@@ -74,7 +74,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "The skull of the Titan who defied the gods still pulses with forbidden knowledge.",
     type: "spell",
     rarity: "mythic",
-    class: "Demonhunter",
+    class: "Berserker",
     keywords: ["outcast"],
     spellEffect: {
       type: "draw",
@@ -93,7 +93,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "She bound her glaives so she would stop losing them around the house.",
     type: "minion",
     rarity: "rare",
-    class: "Demonhunter",
+    class: "Berserker",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
@@ -115,7 +115,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "Cast out by the gods, his fire still burns against all who oppose him.",
     type: "minion",
     rarity: "mythic",
-    class: "Demonhunter",
+    class: "Berserker",
     keywords: ["outcast"],
     collectible: true,
     set: "core"
@@ -128,7 +128,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "It's just a phase.",
     type: "spell",
     rarity: "mythic",
-    class: "Demonhunter",
+    class: "Berserker",
     spellEffect: {
       type: "swap_hero_power"
     },
@@ -143,7 +143,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "The Illidari coordinate all their attacks because otherwise they look very silly.",
     type: "spell",
     rarity: "common",
-    class: "Demonhunter",
+    class: "Berserker",
     spellEffect: {
       type: "summon",
       value: 3,
@@ -160,7 +160,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "The great wolf's eyes pierce through the darkness of Ragnarok.",
     type: "spell",
     rarity: "rare",
-    class: "Demonhunter",
+    class: "Berserker",
     keywords: ["outcast", "lifesteal"],
     spellEffect: {
       type: "damage",
@@ -179,7 +179,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "He sacrificed his eye for wisdom - but gained sight beyond mortal ken.",
     type: "spell",
     rarity: "common",
-    class: "Demonhunter",
+    class: "Berserker",
     keywords: ["outcast"],
     spellEffect: {
       type: "draw",
@@ -198,7 +198,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "It's a whirlwind of burning fel destruction. Doubles as a pizza cutter.",
     type: "weapon",
     rarity: "epic",
-    class: "Demonhunter",
+    class: "Berserker",
     collectible: true,
     set: "core"
   },
@@ -212,7 +212,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "Chained by the Olympians, the spawn of the Titans awaits its moment of vengeance.",
     type: "minion",
     rarity: "rare",
-    class: "Demonhunter",
+    class: "Berserker",
     race: "titan",
     keywords: ["dormant"],
     collectible: true,
@@ -226,7 +226,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "After 2 uses, swap back.",
     type: "spell",
     rarity: "mythic",
-    class: "Demonhunter",
+    class: "Berserker",
     spellEffect: {
       type: "damage",
       value: 4,
@@ -246,7 +246,7 @@ export const demonhunterCards: CardData[] = [
     flavorText: "They're very eager to prove themselves.",
     type: "minion",
     rarity: "common",
-    class: "Demonhunter",
+    class: "Berserker",
     keywords: ["rush"],
     collectible: false,
     set: "core"
@@ -262,7 +262,7 @@ export const demonhunterCards: CardData[] = [
     description: "Battlecry: Transform into Demon Form, gaining +5 Attack and Lifesteal this turn.",
     flavorText: "Death incarnate, transformed by demonic power.",
     keywords: ["battlecry"],
-    class: "Demonhunter",
+    class: "Berserker",
     collectible: true,
     set: "core",
     battlecry: {
@@ -286,7 +286,7 @@ export const demonhunterCards: CardData[] = [
     description: "Dormant for 2 turns. When this awakens, equip a 3/2 Flamereaper.",
     flavorText: "Shackled in the forges of Hephaestus, it yearns to craft once more.",
     keywords: ["dormant"],
-    class: "Demonhunter",
+    class: "Berserker",
     collectible: true,
     set: "core",
     dormantTurns: 2,
@@ -308,7 +308,7 @@ export const demonhunterCards: CardData[] = [
     race: "titan",
     description: "After your hero attacks, gain +1 Attack.",
     flavorText: "Born for battle, it grows stronger with each strike.",
-    class: "Demonhunter",
+    class: "Berserker",
     minionEffect: {
       type: "buff_on_hero_attack",
       buffAttack: 1
@@ -327,7 +327,7 @@ export const demonhunterCards: CardData[] = [
     rarity: "rare",
     description: "Rush. Outcast: Gain +2/+2.",
     flavorText: "Chosen warriors from Valhalla, eternally hungry for battle.",
-    class: "Demonhunter",
+    class: "Berserker",
     keywords: ["rush", "outcast"],
     collectible: true,
     set: "core"
@@ -342,7 +342,7 @@ export const demonhunterCards: CardData[] = [
     rarity: "rare",
     description: "At the end of your turn, deal 6 damage randomly split among all enemies.",
     flavorText: "She serves the goddess of divine retribution with unyielding fury.",
-    class: "Demonhunter",
+    class: "Berserker",
     collectible: true,
     set: "core"
   },
@@ -356,7 +356,7 @@ export const demonhunterCards: CardData[] = [
     rarity: "common",
     description: "Taunt. Whenever this minion takes damage, deal 1 damage to all enemies.",
     flavorText: "Touch his spines at your own peril - the frost giant feels no pain.",
-    class: "Demonhunter",
+    class: "Berserker",
     keywords: ["taunt"],
     collectible: true,
     set: "core"

@@ -24,7 +24,7 @@ The card data system has significant duplication and architectural fragmentation
 | `cardRegistry/sets/core/classes/priest.ts` | 40 | minion, spell | **PRIMARY** |
 | `cardRegistry/sets/core/classes/paladin.ts` | 31 | minion, spell, weapon | **PRIMARY** |
 | `cardRegistry/sets/core/classes/necromancer.ts` | 28 | minion, spell | **PRIMARY** |
-| `cardRegistry/sets/core/classes/demonhunter.ts` | 21 | minion, spell | **PRIMARY** |
+| `cardRegistry/sets/core/classes/berserker.ts` | 21 | minion, spell | **PRIMARY** |
 | `cardRegistry/sets/core/classes/deathknight.ts` | 18 | minion, spell | **PRIMARY** |
 | `cardRegistry/sets/core/heroes/index.ts` | 65 | hero | **PRIMARY** |
 | `cardRegistry/sets/norse/index.ts` | 79 | minion (legendary) | **PRIMARY** |

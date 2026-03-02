@@ -196,7 +196,7 @@ export const EGYPTIAN_HEROES: Record<string, NorseHero> = {
 		gender: 'male',
 		hasSpells: true,
 		fixedCardIds: [],
-		heroClass: 'demonhunter',
+		heroClass: 'berserker',
 		heroPower: {
 			id: 'khepri-power',
 			name: 'Soul Devour',

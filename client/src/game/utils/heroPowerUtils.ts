@@ -106,13 +106,13 @@ export function getDefaultHeroPower(heroClass: HeroClass): HeroPower {
         used: false,
         class: 'rogue'
       };
-    case 'demonhunter':
+    case 'berserker':
       return {
         name: 'Demon Claws',
         description: 'Gain +1 Attack this turn.',
-        cost: 1, // Demon Hunter's hero power costs 1 mana
+        cost: 1, // Berserker's hero power costs 1 mana
         used: false,
-        class: 'demonhunter'
+        class: 'berserker'
       };
     default:
       // Default to mage if something goes wrong
@@ -226,13 +226,13 @@ export function getUpgradedHeroPower(heroClass: HeroClass): HeroPower {
         class: 'rogue',
         isUpgraded: true
       };
-    case 'demonhunter':
+    case 'berserker':
       return {
         name: 'Demon\'s Bite',
         description: 'Gain +2 Attack this turn.',
         cost: 1,
         used: false,
-        class: 'demonhunter',
+        class: 'berserker',
         isUpgraded: true
       };
     default:
@@ -313,8 +313,8 @@ export function executeHeroPower(
       case 'rogue':
         updatedState = executeRoguePower(newState, playerType);
         break;
-      case 'demonhunter':
-        updatedState = executeDemonHunterPower(newState, playerType);
+      case 'berserker':
+        updatedState = executeBerserkerPower(newState, playerType);
         break;
       default:
         debug.error('Unknown hero class');
@@ -1107,7 +1107,7 @@ function executeNorseHeroPower(
         case 'warlock': return executeWarlockPower(state, playerType);
         case 'shaman': return executeShamanPower(state, playerType);
         case 'rogue': return executeRoguePower(state, playerType);
-        case 'demonhunter': return executeDemonHunterPower(state, playerType);
+        case 'berserker': return executeBerserkerPower(state, playerType);
         default: return state;
       }
   }
@@ -1558,9 +1558,9 @@ function executeRoguePower(state: GameState, playerType: 'player' | 'opponent'):
 }
 
 /**
- * Demon Hunter hero power: Gain +1 Attack this turn
+ * Berserker hero power: Gain +1 Attack this turn
  */
-function executeDemonHunterPower(state: GameState, playerType: 'player' | 'opponent'): GameState {
+function executeBerserkerPower(state: GameState, playerType: 'player' | 'opponent'): GameState {
   const player = state.players[playerType];
   
   // Apply cost

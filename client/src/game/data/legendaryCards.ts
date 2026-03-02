@@ -143,8 +143,8 @@ export const legendaryCards: CardData[] = [
     rarity: "mythic",
     description: "Battlecry: Transform into Demon Form, gaining +5 Attack and Lifesteal this turn.",
     keywords: ["battlecry"],
-    heroClass: "demonhunter",
-    class: "Demonhunter",
+    heroClass: "berserker",
+    class: "Berserker",
     battlecry: {
       type: "buff",
       requiresTarget: false,

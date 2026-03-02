@@ -1142,7 +1142,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     lore: 'The third creator god who gave humanity the gift of speech and the five senses. But Ve\'s true nature was always war — a burning fury tempered by divine purpose. When demons crawled from the cracks between worlds, Ve took up the blade.',
     gender: 'male',
     hasSpells: true,
-    heroClass: 'demonhunter',
+    heroClass: 'berserker',
     fixedCardIds: [],
     heroPower: {
       id: 've-power',

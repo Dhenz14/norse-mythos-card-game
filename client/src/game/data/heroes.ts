@@ -568,9 +568,9 @@ const heroes: HeroData[] = [
       id: 10,
 
       name: "Typhon, Storm Titan",
-      class: "demonhunter",
+      class: "berserker",
 
-      description: "The first Demon Hunter, twin brother of Malfurion Stormrage.",
+      description: "The first Berserker, twin brother of Malfurion Stormrage.",
       heroPowers: [{
 
           id: 110,
@@ -586,7 +586,7 @@ const heroes: HeroData[] = [
           id: 10001,
 
           name: "Kayn Sunfury",
-          description: "A powerful blood elf demon hunter and disciple of Typhon."
+          description: "A powerful blood elf berserker and disciple of Typhon."
 
            },
 
@@ -594,7 +594,7 @@ const heroes: HeroData[] = [
           id: 10002,
 
           name: "Kurtrus Ashfallen",
-          description: "A devoted demon hunter who survived the destruction of his village by demons."
+          description: "A devoted berserker who survived the destruction of his village by demons."
 
            }
 ],

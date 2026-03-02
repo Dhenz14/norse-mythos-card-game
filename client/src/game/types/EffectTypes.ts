@@ -435,7 +435,7 @@ export type SpecialEffectType =
 
 /** Class identifiers used in some effect switches */
 export type ClassEffectType =
-  | 'demonhunter'
+  | 'berserker'
   | 'druid'
   | 'hunter'
   | 'mage'

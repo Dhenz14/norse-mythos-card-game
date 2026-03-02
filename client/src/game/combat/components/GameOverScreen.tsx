@@ -19,7 +19,7 @@ const PARTICLE_COLORS = ['#fbbf24', '#f59e0b', '#d97706', '#fcd34d', '#fef08a', 
 const CLASS_COLORS: Record<string, string> = {
 	warrior: '#b45309', mage: '#3b82f6', paladin: '#eab308', hunter: '#22c55e',
 	rogue: '#94a3b8', shaman: '#6366f1', warlock: '#a855f7', priest: '#e5e7eb',
-	druid: '#d97706', deathknight: '#60a5fa', demonhunter: '#4ade80',
+	druid: '#d97706', deathknight: '#60a5fa', berserker: '#4ade80',
 	neutral: '#64748b',
 };
 

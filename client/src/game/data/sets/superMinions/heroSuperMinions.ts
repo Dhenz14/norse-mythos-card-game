@@ -100,7 +100,7 @@ export const HERO_SUPER_MINION_LINKS: Record<string, number> = {
   'hero-apollo': 95063,
   'hero-artemis': 95064,
   
-  // KNIGHT - Demon Hunter (2)
+  // KNIGHT - Berserker (2)
   'hero-myrka': 95065,
   'hero-ylva': 95066,
   
@@ -1750,7 +1750,7 @@ export const heroSuperMinions: CardData[] = [
   },
 
   // ═══════════════════════════════════════════════════════════════
-  // KNIGHT - DEMON HUNTER CLASS (2 Super Minions)
+  // KNIGHT - BERSERKER CLASS (2 Super Minions)
   // ═══════════════════════════════════════════════════════════════
   
   {
@@ -1763,8 +1763,8 @@ export const heroSuperMinions: CardData[] = [
     rarity: "mythic",
     description: "Rush, Lifesteal. Battlecry: Deal 6 damage to all enemies. Draw cards equal to enemy minions killed.",
     keywords: ["rush", "lifesteal", "battlecry"],
-    heroClass: "demonhunter",
-    class: "DemonHunter",
+    heroClass: "berserker",
+    class: "Berserker",
     race: "titan",
     linkedHeroId: "hero-myrka",
     isSuperMinion: true,
@@ -1786,8 +1786,8 @@ export const heroSuperMinions: CardData[] = [
     rarity: "mythic",
     description: "Rush. Battlecry: Summon a 3/3 Wolf with Rush for each Beast that died this game (max 5). Give all Wolves +2 Attack.",
     keywords: ["rush", "battlecry"],
-    heroClass: "demonhunter",
-    class: "DemonHunter",
+    heroClass: "berserker",
+    class: "Berserker",
     race: "beast",
     linkedHeroId: "hero-ylva",
     isSuperMinion: true,

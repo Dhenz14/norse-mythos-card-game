@@ -1,8 +1,8 @@
 /**
- * Demon Hunter Cards Collection
+ * Berserker Cards Collection
  * 
- * This file contains Demon Hunter-specific cards using the card builder API.
- * Demon Hunter cards focus on aggressive attack strategies, outcast mechanics, and fel magic.
+ * This file contains Berserker-specific cards using the card builder API.
+ * Berserker cards focus on aggressive attack strategies, outcast mechanics, and fel magic.
  * 
  * Core Mechanics:
  * - Outcast: Special effects when played from leftmost or rightmost position
@@ -17,15 +17,15 @@ import { createCard } from "../cardManagement/cardBuilder";
 const IS_DEV = import.meta.env?.DEV ?? false;
 
 /**
- * Register all Demon Hunter cards in the registry
+ * Register all Berserker cards in the registry
  * Card IDs:
- * - Demon Hunter minion cards: 90xx series
- * - Demon Hunter spell cards: 91xx series
- * - Demon Hunter weapons: 92xx series
- * - Demon Hunter tokens: 99xx series
+ * - Berserker minion cards: 90xx series
+ * - Berserker spell cards: 91xx series
+ * - Berserker weapons: 92xx series
+ * - Berserker tokens: 99xx series
  */
-export function registerDemonHunterCards(): void {
-  if (IS_DEV) debug.card('Registering Demon Hunter cards...');
+export function registerBerserkerCards(): void {
+  if (IS_DEV) debug.card('Registering Berserker cards...');
 
   // Chaos Strike
   createCard()
@@ -33,10 +33,10 @@ export function registerDemonHunterCards(): void {
     .name("Chaos Strike")
     .manaCost(2)
     .description("Give your hero +2 Attack this turn. Draw a card.")
-    .flavorText("First lesson of Demon Hunter training: Hit face.")
+    .flavorText("First lesson of Berserker training: Hit face.")
     .type("spell")
     .rarity("common")
-    .class("Demonhunter")
+    .class("Berserker")
     .spellEffect({
       type: "hero_attack_buff",
       value: 2
@@ -55,7 +55,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("It's like a hot knife through butter, except the knife is demonic, the butter is souls, and you're stabbing everyone.")
     .type("spell")
     .rarity("common")
-    .class("Demonhunter")
+    .class("Berserker")
     .spellEffect({
       type: "multi_target_damage_heal",
       value: 2,
@@ -72,10 +72,10 @@ export function registerDemonHunterCards(): void {
     .name("Blur")
     .manaCost(0)
     .description("Your hero can't take damage this turn.")
-    .flavorText("The first rule of Demon Hunter fight club is: you can't hit what you can't see.")
+    .flavorText("The first rule of Berserker fight club is: you can't hit what you can't see.")
     .type("spell")
     .rarity("rare")
-    .class("Demonhunter")
+    .class("Berserker")
     .spellEffect({
       type: "grant_immunity",
       targetType: "friendly_hero" as SpellTargetType
@@ -93,7 +93,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("The best defense is a good offense, and the best offense is making sure your opponent can't play anything.")
     .type("spell")
     .rarity("rare")
-    .class("Demonhunter")
+    .class("Berserker")
     .spellEffect({
       type: "reduce_opponent_mana",
       value: 2
@@ -111,7 +111,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("This might look like a powerful dark artifact to you, but to Typhon it's just a fancy candy dish.")
     .type("spell")
     .rarity("mythic")
-    .class("Demonhunter")
+    .class("Berserker")
     .addKeyword("outcast")
     .spellEffect({
       type: "draw",
@@ -135,7 +135,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("She bound her glaives so she would stop losing them around the house.")
     .type("minion")
     .rarity("rare")
-    .class("Demonhunter")
+    .class("Berserker")
     .addKeyword("battlecry")
     .battlecry({
       type: "damage",
@@ -158,7 +158,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("Being an outcast has some perks. Like sitting anywhere you want in the cafeteria.")
     .type("minion")
     .rarity("mythic")
-    .class("Demonhunter")
+    .class("Berserker")
     .customProperty("outcastTriggerEffect", {
       type: "damage_all_enemies",
       value: 1
@@ -175,7 +175,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("It's just a phase.")
     .type("spell")
     .rarity("mythic")
-    .class("Demonhunter")
+    .class("Berserker")
     .spellEffect({
       type: "swap_hero_power"
     })
@@ -193,7 +193,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("After 2 uses, swap back.")
     .type("spell")
     .rarity("mythic")
-    .class("Demonhunter")
+    .class("Berserker")
     .spellEffect({
       type: "damage",
       value: 4,
@@ -212,7 +212,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("The Illidari coordinate all their attacks because otherwise they look very silly.")
     .type("spell")
     .rarity("common")
-    .class("Demonhunter")
+    .class("Berserker")
     .spellEffect({
       type: "summon",
       value: 3,
@@ -232,7 +232,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("They're very eager to prove themselves. Sometimes a little too eager.")
     .type("minion")
     .rarity("common")
-    .class("Demonhunter")
+    .class("Berserker")
     .addKeyword("rush")
     .collectible(false)
     .build();
@@ -246,7 +246,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("Typhon's optometrist suggested he get glasses. Typhon suggested the optometrist get a new career.")
     .type("spell")
     .rarity("rare")
-    .class("Demonhunter")
+    .class("Berserker")
     .addKeyword("outcast")
     .spellEffect({
       type: "damage",
@@ -271,7 +271,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("When you sacrifice your eyes for power, you develop other ways of seeing. Like echolocation. Or really good hearing.")
     .type("spell")
     .rarity("common")
-    .class("Demonhunter")
+    .class("Berserker")
     .addKeyword("outcast")
     .spellEffect({
       type: "draw",
@@ -295,7 +295,7 @@ export function registerDemonHunterCards(): void {
     .flavorText("It's a whirlwind of burning fel destruction. Doubles as a pizza cutter.")
     .type("weapon")
     .rarity("epic")
-    .class("Demonhunter")
+    .class("Berserker")
     .customProperty("cleaveEffect", {
       type: "attack_adjacent",
       value: 3
@@ -315,7 +315,7 @@ export function registerDemonHunterCards(): void {
     .type("minion")
     .rarity("rare")
     .race("demon")
-    .class("Demonhunter")
+    .class("Berserker")
     .addKeyword("dormant")
     .customProperty("dormantTurns", 2)
     .customProperty("awakenEffect", {
@@ -329,5 +329,5 @@ export function registerDemonHunterCards(): void {
     .collectible(true)
     .build();
 
-  if (IS_DEV) debug.card('Demon Hunter cards registered successfully.');
+  if (IS_DEV) debug.card('Berserker cards registered successfully.');
 }

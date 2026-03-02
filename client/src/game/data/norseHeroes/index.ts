@@ -125,8 +125,8 @@ export const HERO_ID_TO_CONFIG_KEY: Record<string, string> = {
   'hero-mani': 'warlock-tamsin',
   // Death Knight heroes
   'hero-magni': 'deathknight-arthas',
-  // Demon Hunter heroes
-  'hero-myrka': 'demonhunter-illidan',
+  // Berserker heroes
+  'hero-myrka': 'berserker-illidan',
   // Necromancer heroes
   'hero-sol': 'necromancer-lilian',
   'hero-sinmara': 'necromancer-helcular',
@@ -199,7 +199,7 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   
   // BISHOP - Druid (6 heroes)
   'hero-idunn': 'druid',
-  'hero-ve': 'demonhunter',
+  'hero-ve': 'berserker',
   'hero-fjorgyn': 'druid',
   'hero-sigyn': 'druid',
   'hero-demeter': 'druid',
@@ -228,9 +228,9 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-apollo': 'hunter',
   'hero-artemis': 'hunter',
   
-  // KNIGHT - Demon Hunter (2 heroes)
-  'hero-myrka': 'demonhunter',
-  'hero-ylva': 'demonhunter',
+  // KNIGHT - Berserker (2 heroes)
+  'hero-myrka': 'berserker',
+  'hero-ylva': 'berserker',
   
   // JAPANESE HEROES (5 heroes)
   'hero-izanami': 'warlock',
@@ -243,7 +243,7 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-ammit': 'warlock',      // Devourer of Souls - conditional destroy
   'hero-maat': 'priest',        // Goddess of Balance - stat transformation
   'hero-serqet': 'rogue',       // Scorpion Goddess - poison
-  'hero-khepri': 'demonhunter',  // Scarab of Wrath - aggro
+  'hero-khepri': 'berserker',  // Scarab of Wrath - aggro
   'hero-shu': 'mage',           // God of Air - bounce
 
   // GREEK ALT-SKIN HEROES (3 heroes — preserved from mythology expansion)
