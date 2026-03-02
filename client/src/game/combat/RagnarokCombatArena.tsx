@@ -50,12 +50,14 @@ import { useCombatLayout } from '../hooks/useCombatLayout';
 import CardRenderer from '../components/CardRendering/CardRenderer';
 import { useRagnarokCombatController } from './hooks/useRagnarokCombatController';
 import { HeroBattlePopup } from './components/HeroBattlePopup';
+import { KingPassivePopup } from './components/KingPassivePopup';
 import type { ShowdownCelebration as ShowdownCelebrationState } from './hooks/useCombatEvents';
 import { isCardInWinningHand } from './utils/combatArenaUtils';
 import { debug } from '../config/debugConfig';
 import { playSound } from '../utils/soundUtils';
 import { GameLog } from '../components/GameLog';
 import { useGameLogIntegration } from '../hooks/useGameLogIntegration';
+import { useKingPassiveEventStore } from '../stores/kingPassiveEventStore';
 
 const SwordIcon = () => (
 	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -1035,6 +1037,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onCombatEnd }) => {
   useCombatLayout();
   useGameLogIntegration();
+  const resetKingEvents = useKingPassiveEventStore(s => s.reset);
 
   const {
     combatState,
@@ -1087,6 +1090,10 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       setShowMatchupBanner(true);
     }
   }, [combatState]);
+
+  useEffect(() => {
+    return () => { resetKingEvents(); };
+  }, [resetKingEvents]);
 
   // HUD selectors
   const gamePhase = useGameStore(state => state.gameState?.gamePhase);
@@ -1230,6 +1237,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       {heroBattlePopups.map(popup => (
         <HeroBattlePopup key={popup.id} popup={popup} onComplete={removeHeroBattlePopup} />
       ))}
+      <KingPassivePopup />
       <AIAttackAnimationProcessor />
       <PixiParticleCanvas />
       <AnimationOverlay />

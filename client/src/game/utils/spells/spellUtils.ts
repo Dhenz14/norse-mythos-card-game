@@ -298,6 +298,7 @@ export function executeSpell(
       break;
     case 'gain_mana':
     case 'mana_gain':
+    case 'gain_temporary_mana':
       resultState = executeGainManaSpell(state, effect);
       break;
     case 'summon_random':
@@ -642,6 +643,91 @@ export function executeSpell(
       break;
     case 'hero_attack_buff':
       resultState = executeHeroAttackBuffSpell(state, effect);
+      break;
+    case 'polymorph':
+      resultState = executeTransformSpell(state, effect, targetId);
+      break;
+    case 'enchant':
+    case 'buff_and_enchant':
+      resultState = executeBuffSpell(state, effect, targetId);
+      break;
+    case 'give_divine_shield':
+      resultState = executeGainDivineShieldSpell(state, effect, targetId);
+      break;
+    case 'copy_to_hand':
+      resultState = executeCopyCardSpell(state, effect, targetId);
+      break;
+    case 'copy_from_opponent':
+      resultState = executeCopyFromOpponentDeckSpell(state, effect);
+      break;
+    case 'discover_from_deck':
+      resultState = executeDiscoverSpell(state, { ...effect, discoveryType: 'from_deck' }, spellCard.instanceId);
+      break;
+    case 'draw_to_match_opponent':
+      resultState = executeDrawToMatchOpponentSpell(state);
+      break;
+    case 'freeze_and_draw':
+      resultState = executeFreezeAndDrawSpell(state, effect, targetId, targetType);
+      break;
+    case 'armor_to_aoe_damage':
+      resultState = executeArmorToAoeDamageSpell(state);
+      break;
+    case 'damage_and_heal_hero':
+      resultState = executeDamageAndHealHeroSpell(state, effect, targetId, targetType);
+      break;
+    case 'damage_and_buff':
+      resultState = executeDamageAndBuffSpell(state, effect, targetId, targetType);
+      break;
+    case 'damage_based_on_missing_health':
+      resultState = executeDmgBasedOnMissingHpSpell(state, effect, targetId, targetType);
+      break;
+    case 'damage_draw_if_survives':
+      resultState = executeDamageDrawIfSurvivesSpell(state, effect, targetId, targetType);
+      break;
+    case 'damage_with_adjacent':
+      resultState = executeDamageWithAdjacentSpell(state, effect, targetId);
+      break;
+    case 'discover_and_summon':
+      resultState = executeDiscoverAndSummonSpell(state, effect, spellCard.instanceId);
+      break;
+    case 'draw_and_reduce_cost':
+      resultState = executeDrawAndReduceCostSpell(state, effect);
+      break;
+    case 'draw_and_repeat':
+      resultState = executeDrawAndRepeatSpell(state, effect);
+      break;
+    case 'gain_armor_and_recruit':
+      resultState = executeGainArmorAndRecruitSpell(state, effect);
+      break;
+    case 'recruit':
+      resultState = executeRecruitSpell(state, effect);
+      break;
+    case 'summon_copy_from_hand':
+      resultState = executeSummonCopyFromHandSpell(state);
+      break;
+    case 'summon_from_both_hands':
+      resultState = executeSummonFromBothHandsSpell(state);
+      break;
+    case 'attack_equals_health':
+      resultState = executeAttackEqualsHealthSpell(state, targetId);
+      break;
+    case 'buff_all_with_deathrattle':
+      resultState = executeBuffAllWithDeathrattleSpell(state, effect);
+      break;
+    case 'buff_and_immune':
+      resultState = executeBuffAndImmuneSpell(state, effect, targetId);
+      break;
+    case 'buff_then_destroy':
+      resultState = executeBuffThenDestroySpell(state, effect, targetId);
+      break;
+    case 'commanding_shout':
+      resultState = executeCommandingShoutSpell(state);
+      break;
+    case 'conditional_freeze_or_damage':
+      resultState = executeConditionalFreezeOrDamageSpell(state, effect, targetId, targetType);
+      break;
+    case 'next_spell_costs_health':
+      resultState = executeNextSpellCostsHealthSpell(state);
       break;
     default:
       debug.error(`Unknown spell effect type: ${effect.type}`);
@@ -7165,5 +7251,417 @@ function executeHeroAttackBuffSpell(
   }
   newState.players = { ...newState.players, [side]: updatedPlayer };
 
+  return newState;
+}
+
+// ==================== NEWLY WIRED SPELL HANDLERS ====================
+
+function executeDrawToMatchOpponentSpell(state: GameState): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const myHand = currentPlayer === 'player' ? state.players.player.hand : state.players.opponent.hand;
+  const oppHand = currentPlayer === 'player' ? state.players.opponent.hand : state.players.player.hand;
+  const deficit = oppHand.length - myHand.length;
+  if (deficit <= 0) return state;
+  return drawMultipleCards(newState, currentPlayer, deficit);
+}
+
+function executeFreezeAndDrawSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string,
+  targetType?: 'minion' | 'hero'
+): GameState {
+  let newState = executeFreezeSpell(state, effect, targetId, targetType);
+  const drawCount = (effect as any).drawCount || effect.value || 1;
+  return drawMultipleCards(newState, newState.currentTurn || 'player', drawCount);
+}
+
+function executeArmorToAoeDamageSpell(state: GameState): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+  const armor = playerState.heroArmor || 0;
+  if (armor <= 0) return state;
+  playerState.heroArmor = 0;
+  return applyAoEDamage(newState, armor, 'all');
+}
+
+function executeDamageAndHealHeroSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string,
+  targetType?: 'minion' | 'hero'
+): GameState {
+  let newState = executeDamageSpell(state, effect, targetId, targetType);
+  const currentPlayer = newState.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+  const healAmount = (effect as any).healValue || effect.value || 0;
+  const maxHp = playerState.maxHealth || 30;
+  const currentHp = playerState.heroHealth ?? playerState.health ?? maxHp;
+  if (currentPlayer === 'player') {
+    newState.players.player.heroHealth = Math.min(currentHp + healAmount, maxHp);
+    newState.players.player.health = newState.players.player.heroHealth;
+  } else {
+    newState.players.opponent.heroHealth = Math.min(currentHp + healAmount, maxHp);
+    newState.players.opponent.health = newState.players.opponent.heroHealth;
+  }
+  return newState;
+}
+
+function executeDamageAndBuffSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string,
+  targetType?: 'minion' | 'hero'
+): GameState {
+  let newState = executeDamageSpell(state, effect, targetId, targetType);
+  const currentPlayer = newState.currentTurn || 'player';
+  const battlefield = currentPlayer === 'player' ? newState.players.player.battlefield : newState.players.opponent.battlefield;
+  const buffAttack = (effect as any).buffAttack || 0;
+  const buffHealth = (effect as any).buffHealth || 0;
+  if (buffAttack || buffHealth) {
+    battlefield.forEach((m: CardInstance) => {
+      if (buffAttack) m.currentAttack = (m.currentAttack || getAttack(m.card) || 0) + buffAttack;
+      if (buffHealth) m.currentHealth = (m.currentHealth || getHealth(m.card) || 0) + buffHealth;
+    });
+  }
+  return newState;
+}
+
+function executeDmgBasedOnMissingHpSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string,
+  targetType?: 'minion' | 'hero'
+): GameState {
+  const currentPlayer = state.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? state.players.player : state.players.opponent;
+  const maxHp = playerState.maxHealth || 30;
+  const currentHp = playerState.heroHealth ?? playerState.health ?? maxHp;
+  const missingHp = Math.max(0, maxHp - currentHp);
+  if (missingHp <= 0) return state;
+  const damageEffect: SpellEffect = { type: 'damage', value: missingHp, requiresTarget: true };
+  return executeDamageSpell(state, damageEffect, targetId, targetType);
+}
+
+function executeDamageDrawIfSurvivesSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string,
+  targetType?: 'minion' | 'hero'
+): GameState {
+  let newState = executeDamageSpell(state, effect, targetId, targetType);
+  if (targetType === 'minion' && targetId) {
+    const allMinions = [...newState.players.player.battlefield, ...newState.players.opponent.battlefield];
+    const target = allMinions.find((m: CardInstance) => m.instanceId === targetId);
+    if (target && (target.currentHealth || 0) > 0) {
+      const drawCount = (effect as any).drawCount || 1;
+      newState = drawMultipleCards(newState, newState.currentTurn || 'player', drawCount);
+    }
+  }
+  return newState;
+}
+
+function executeDamageWithAdjacentSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string
+): GameState {
+  if (!targetId || !effect.value) return state;
+  let newState = { ...state };
+  const damageAmount = effect.value;
+  const sides = ['player', 'opponent'] as const;
+  for (const side of sides) {
+    const battlefield = newState.players[side].battlefield;
+    const idx = battlefield.findIndex((m: CardInstance) => m.instanceId === targetId);
+    if (idx === -1) continue;
+    const targets = [idx];
+    if (idx > 0) targets.push(idx - 1);
+    if (idx < battlefield.length - 1) targets.push(idx + 1);
+    for (const ti of targets) {
+      const m = battlefield[ti];
+      if (m.hasDivineShield) { m.hasDivineShield = false; }
+      else { m.currentHealth = (m.currentHealth || getHealth(m.card) || 0) - damageAmount; }
+    }
+    break;
+  }
+  return newState;
+}
+
+function executeDiscoverAndSummonSpell(
+  state: GameState,
+  effect: SpellEffect,
+  sourceCardId: string
+): GameState {
+  let pool = allCards.filter(c => c.type === 'minion');
+  const condition = (effect as any).discoverCondition;
+  if (condition === 'cost_8_or_more') pool = pool.filter(c => (c.manaCost || 0) >= 8);
+  else if (condition === 'cost_4_or_less') pool = pool.filter(c => (c.manaCost || 0) <= 4);
+  const options = pool.sort(() => 0.5 - Math.random()).slice(0, 3);
+  if (options.length === 0) return state;
+  return {
+    ...state,
+    discovery: {
+      active: true,
+      options,
+      allOptions: [...options],
+      sourceCardId,
+      filters: { type: 'minion' as any, rarity: 'any', manaCost: 'any' },
+      callback: (selectedCard: CardData | null) => {
+        const { gameState: currentState } = useGameStore.getState();
+        if (!selectedCard || !isMinion(selectedCard)) return currentState;
+        const updatedState = { ...currentState };
+        const currentPlayer = updatedState.currentTurn || 'player';
+        const playerState = currentPlayer === 'player' ? updatedState.players.player : updatedState.players.opponent;
+        if (playerState.battlefield.length < MAX_BATTLEFIELD_SIZE) {
+          const instance: CardInstance = {
+            instanceId: uuidv4(),
+            card: selectedCard,
+            currentHealth: getHealth(selectedCard) || 1,
+            currentAttack: getAttack(selectedCard) || 0,
+            canAttack: false,
+            isPlayed: true,
+            isSummoningSick: true,
+            attacksPerformed: 0
+          };
+          playerState.battlefield.push(instance);
+          trackQuestProgress(currentPlayer, 'summon_minion', selectedCard);
+        }
+        return updatedState;
+      }
+    }
+  };
+}
+
+function executeDrawAndReduceCostSpell(state: GameState, effect: SpellEffect): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const drawCount = (effect as any).drawCount || 1;
+  const costReduction = (effect as any).costReduction || 3;
+  newState = drawMultipleCards(newState, currentPlayer, drawCount);
+  const hand = currentPlayer === 'player' ? newState.players.player.hand : newState.players.opponent.hand;
+  if (hand.length > 0) {
+    const lastDrawn = hand[hand.length - 1];
+    lastDrawn.card = { ...lastDrawn.card, manaCost: Math.max(0, (lastDrawn.card.manaCost || 0) - costReduction) };
+  }
+  return newState;
+}
+
+function executeDrawAndRepeatSpell(state: GameState, effect: SpellEffect): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const condition = (effect as any).condition || 'has_deathrattle';
+  const maxRepeats = 10;
+  for (let i = 0; i < maxRepeats; i++) {
+    const handBefore = currentPlayer === 'player' ? newState.players.player.hand.length : newState.players.opponent.hand.length;
+    newState = drawMultipleCards(newState, currentPlayer, 1);
+    const hand = currentPlayer === 'player' ? newState.players.player.hand : newState.players.opponent.hand;
+    if (hand.length <= handBefore) break;
+    const drawnCard = hand[hand.length - 1];
+    const keywords = drawnCard.card.keywords || [];
+    const hasDeathrattle = condition === 'has_deathrattle' && (keywords.includes('deathrattle') || keywords.includes('Deathrattle'));
+    if (!hasDeathrattle) break;
+  }
+  return newState;
+}
+
+function executeRecruitSpell(state: GameState, effect: SpellEffect): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) return state;
+  const condition = (effect as any).recruitCondition;
+  let eligible = playerState.deck.filter((entry: any) => {
+    const card = entry.card ? entry.card : entry;
+    if (card.type !== 'minion') return false;
+    if (condition === 'cost_4_or_less' && (card.manaCost || 0) > 4) return false;
+    if (condition === 'cost_3_or_less' && (card.manaCost || 0) > 3) return false;
+    return true;
+  });
+  if (eligible.length === 0) return state;
+  const picked = eligible[Math.floor(Math.random() * eligible.length)];
+  const cardData = (picked as any).card ? (picked as any).card : picked;
+  const idx = playerState.deck.indexOf(picked);
+  if (idx !== -1) playerState.deck.splice(idx, 1);
+  const instance: CardInstance = {
+    instanceId: uuidv4(),
+    card: cardData,
+    currentHealth: getHealth(cardData) || 1,
+    currentAttack: getAttack(cardData) || 0,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: true,
+    attacksPerformed: 0
+  };
+  playerState.battlefield.push(instance);
+  trackQuestProgress(currentPlayer, 'summon_minion', cardData);
+  return newState;
+}
+
+function executeGainArmorAndRecruitSpell(state: GameState, effect: SpellEffect): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+  const armorAmount = (effect as any).armorValue || effect.value || 0;
+  playerState.heroArmor = (playerState.heroArmor || 0) + armorAmount;
+  return executeRecruitSpell(newState, effect);
+}
+
+function executeSummonCopyFromHandSpell(state: GameState): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) return state;
+  const minionsInHand = playerState.hand.filter((c: CardInstance) => c.card.type === 'minion');
+  if (minionsInHand.length === 0) return state;
+  const picked = minionsInHand[Math.floor(Math.random() * minionsInHand.length)];
+  const instance: CardInstance = {
+    instanceId: uuidv4(),
+    card: { ...picked.card },
+    currentHealth: getHealth(picked.card) || 1,
+    currentAttack: getAttack(picked.card) || 0,
+    canAttack: false,
+    isPlayed: true,
+    isSummoningSick: true,
+    attacksPerformed: 0
+  };
+  playerState.battlefield.push(instance);
+  trackQuestProgress(currentPlayer, 'summon_minion', picked.card);
+  return newState;
+}
+
+function executeSummonFromBothHandsSpell(state: GameState): GameState {
+  let newState = { ...state };
+  const sides = ['player', 'opponent'] as const;
+  for (const side of sides) {
+    const playerState = newState.players[side];
+    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) continue;
+    const minionsInHand = playerState.hand.filter((c: CardInstance) => c.card.type === 'minion');
+    if (minionsInHand.length === 0) continue;
+    const picked = minionsInHand[Math.floor(Math.random() * minionsInHand.length)];
+    playerState.hand = playerState.hand.filter((c: CardInstance) => c.instanceId !== picked.instanceId);
+    const instance: CardInstance = {
+      instanceId: picked.instanceId,
+      card: picked.card,
+      currentHealth: getHealth(picked.card) || 1,
+      currentAttack: getAttack(picked.card) || 0,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    playerState.battlefield.push(instance);
+    trackQuestProgress(side, 'summon_minion', picked.card);
+  }
+  return newState;
+}
+
+function executeAttackEqualsHealthSpell(state: GameState, targetId?: string): GameState {
+  if (!targetId) return state;
+  let newState = { ...state };
+  const sides = ['player', 'opponent'] as const;
+  for (const side of sides) {
+    const idx = newState.players[side].battlefield.findIndex((m: CardInstance) => m.instanceId === targetId);
+    if (idx !== -1) {
+      const m = newState.players[side].battlefield[idx];
+      m.currentAttack = m.currentHealth || getHealth(m.card) || 1;
+      break;
+    }
+  }
+  return newState;
+}
+
+function executeBuffAllWithDeathrattleSpell(state: GameState, effect: SpellEffect): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const battlefield = currentPlayer === 'player' ? newState.players.player.battlefield : newState.players.opponent.battlefield;
+  const buffAttack = effect.buffAttack || (effect as any).attack || 0;
+  const buffHealth = effect.buffHealth || (effect as any).health || 0;
+  battlefield.forEach((m: CardInstance) => {
+    const keywords = m.card.keywords || [];
+    if (keywords.includes('deathrattle') || keywords.includes('Deathrattle')) {
+      if (buffAttack) m.currentAttack = (m.currentAttack || getAttack(m.card) || 0) + buffAttack;
+      if (buffHealth) m.currentHealth = (m.currentHealth || getHealth(m.card) || 0) + buffHealth;
+    }
+  });
+  return newState;
+}
+
+function executeBuffAndImmuneSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string
+): GameState {
+  let newState = executeBuffSpell(state, effect, targetId);
+  const currentPlayer = newState.currentTurn || 'player';
+  if (targetId) {
+    const sides = ['player', 'opponent'] as const;
+    for (const side of sides) {
+      const m = newState.players[side].battlefield.find((m: CardInstance) => m.instanceId === targetId);
+      if (m) { (m as any).isImmune = true; break; }
+    }
+  } else {
+    const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+    (playerState as any).isImmune = true;
+  }
+  return newState;
+}
+
+function executeBuffThenDestroySpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string
+): GameState {
+  let newState = executeBuffSpell(state, effect, targetId);
+  if (targetId) {
+    const sides = ['player', 'opponent'] as const;
+    for (const side of sides) {
+      const idx = newState.players[side].battlefield.findIndex((m: CardInstance) => m.instanceId === targetId);
+      if (idx !== -1) {
+        newState.players[side].battlefield[idx].currentHealth = 0;
+        break;
+      }
+    }
+  }
+  return newState;
+}
+
+function executeCommandingShoutSpell(state: GameState): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const battlefield = currentPlayer === 'player' ? newState.players.player.battlefield : newState.players.opponent.battlefield;
+  battlefield.forEach((m: CardInstance) => {
+    if ((m.currentHealth || 0) < 1) m.currentHealth = 1;
+    (m as any).minHealth = 1;
+  });
+  return newState;
+}
+
+function executeConditionalFreezeOrDamageSpell(
+  state: GameState,
+  effect: SpellEffect,
+  targetId?: string,
+  targetType?: 'minion' | 'hero'
+): GameState {
+  if (!targetId) return state;
+  let shouldFreeze = false;
+  if (targetType === 'minion') {
+    const allMinions = [...state.players.player.battlefield, ...state.players.opponent.battlefield];
+    const target = allMinions.find((m: CardInstance) => m.instanceId === targetId);
+    if (target?.isFrozen) shouldFreeze = false;
+    else shouldFreeze = true;
+  }
+  if (shouldFreeze) {
+    return executeFreezeSpell(state, effect, targetId, targetType);
+  }
+  return executeDamageSpell(state, effect, targetId, targetType);
+}
+
+function executeNextSpellCostsHealthSpell(state: GameState): GameState {
+  let newState = { ...state };
+  const currentPlayer = state.currentTurn || 'player';
+  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
+  (playerState as any).nextSpellCostsHealth = true;
   return newState;
 }

@@ -15,6 +15,7 @@ import {
   PokerCard,
   PetData,
 } from '../types/PokerCombatTypes';
+import { initializeNorseContext, resetNorseContext } from '../utils/norseIntegration';
 
 export interface ActionPermissions {
   isPreForesight: boolean;
@@ -189,6 +190,13 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
         firstStrikeTarget
       );
 
+      initializeNorseContext(
+        playerKingId || null,
+        opponentKingId || null,
+        playerPet.norseHeroId || null,
+        opponentPet.norseHeroId || null
+      );
+
       initializeCombat(
         [{
           id: 'player-king',
@@ -224,6 +232,7 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
     },
 
     endCombat: () => {
+      resetNorseContext();
       endPokerCombat();
     },
 
@@ -308,6 +317,12 @@ export function getPokerCombatAdapterState(): PokerCombatAdapter {
         opponentKingId,
         firstStrikeTarget
       );
+      initializeNorseContext(
+        playerKingId || null,
+        opponentKingId || null,
+        playerPet.norseHeroId || null,
+        opponentPet.norseHeroId || null
+      );
       getStore().initializeCombat(
         [{
           id: 'player-king',
@@ -351,6 +366,7 @@ export function getPokerCombatAdapterState(): PokerCombatAdapter {
     },
 
     endCombat: () => {
+      resetNorseContext();
       getStore().endPokerCombat();
     },
 

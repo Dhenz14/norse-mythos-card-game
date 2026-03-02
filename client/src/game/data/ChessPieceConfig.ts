@@ -825,7 +825,8 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       description: 'World Tree: Whenever a minion is healed, it gains +1 Attack permanently. End of turn heals all allies 1.',
       fixedCardIds: [],
       passiveEffect: 'yggdrasil_passives',
-      chessAbility: 'king-yggdrasil'
+      chessAbility: 'king-yggdrasil',
+      portrait: '/portraits/kings/yggdrasil.webp'
     },
     {
       id: 'king-audumbla',
@@ -834,7 +835,8 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       description: 'Primordial Cow: All friendly minions have +2 Health. Whenever healed, they gain +1 Attack.',
       fixedCardIds: [],
       passiveEffect: 'audumbla_passives',
-      chessAbility: 'king-audumbla'
+      chessAbility: 'king-audumbla',
+      portrait: '/portraits/kings/audumbla.webp'
     },
     {
       id: 'king-gaia',
@@ -863,7 +865,8 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       description: 'Primordial Void: Enemy minions have -2 Attack. Whenever you play a minion, summon a random keyword token.',
       fixedCardIds: [],
       passiveEffect: 'ginnungagap_passives',
-      chessAbility: 'king-ginnungagap'
+      chessAbility: 'king-ginnungagap',
+      portrait: '/portraits/kings/ginnungagap.webp'
     },
     {
       id: 'king-tartarus',
@@ -873,7 +876,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'tartarus_passives',
       chessAbility: 'king-tartarus',
-      portrait: '/portraits/heroes/tartarus.png'
+      portrait: '/portraits/kings/tartarus.png'
     }
   ],
   pawn: [

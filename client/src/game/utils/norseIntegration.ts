@@ -11,14 +11,15 @@
  */
 
 import { GameState, CardInstance } from '../types';
-import { 
-  executeKingPassive, 
+import {
+  executeKingPassive,
   executeStartOfTurnKingPassives,
   executeEndOfTurnKingPassives,
   executeOnMinionDeathKingPassives,
   executeOnMinionPlayKingPassives,
   executeOnHealKingPassives,
   applyKingAuraBuffs,
+  applyKingAuraToMinion,
   getKingPetBuffs
 } from './kingPassiveUtils';
 import { 
@@ -29,6 +30,8 @@ import {
   getNorseHeroById
 } from './norseHeroPowerUtils';
 import { HeroPassiveTrigger } from '../types/NorseTypes';
+import { emitKingPassiveEvent } from '../stores/kingPassiveEventStore';
+import { getKingById } from './kingPassiveUtils';
 
 // Store references for current combat context
 interface NorseGameContext {
@@ -63,6 +66,21 @@ export function initializeNorseContext(
     opponentHeroId,
     isInitialized: true
   };
+
+  announceKingAuras(playerKingId, 'player');
+  announceKingAuras(opponentKingId, 'opponent');
+}
+
+function announceKingAuras(kingId: string | null, ownerType: 'player' | 'opponent'): void {
+  if (!kingId) return;
+  const king = getKingById(kingId);
+  if (!king) return;
+  const auraPassive = king.passives.find(p => p.trigger === 'always' && p.isAura);
+  if (auraPassive) {
+    setTimeout(() => {
+      emitKingPassiveEvent(kingId, king.name, auraPassive.name, auraPassive.description, ownerType);
+    }, ownerType === 'player' ? 1500 : 2500);
+  }
 }
 
 /**
@@ -379,15 +397,23 @@ export function processAllOnMinionPlayEffects(
   minionElement?: string
 ): GameState {
   if (!norseContext.isInitialized) return state;
-  
+
   let newState = state;
-  
-  // Process King on-minion-play
+
+  // Apply king aura buffs permanently to the newly played minion
+  if (norseContext.playerKingId) {
+    newState = applyKingAuraToMinion(newState, norseContext.playerKingId, 'player', playerType, minionInstanceId);
+  }
+  if (norseContext.opponentKingId) {
+    newState = applyKingAuraToMinion(newState, norseContext.opponentKingId, 'opponent', playerType, minionInstanceId);
+  }
+
+  // Process King on-minion-play triggered effects (e.g. Audumbla heal)
   newState = processKingOnMinionPlay(newState, playerType, minionInstanceId);
-  
+
   // Process Hero on-minion-play
   newState = processHeroOnMinionPlay(newState, playerType, minionInstanceId, minionElement);
-  
+
   return newState;
 }
 

@@ -133,6 +133,7 @@ const spellEffectHandlers = {
   'summon_random': executeSummonRandom,
   'swap_hero_power': executeSwapHeroPower,
   'temp_mana': executeTempMana,
+  'gain_temporary_mana': executeTempMana,
   'transform_all': executeTransformAll,
   'betrayal': executeBetrayal,
   'commanding_shout': executeCommandingShout,
