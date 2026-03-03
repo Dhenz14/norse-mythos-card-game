@@ -16,7 +16,7 @@ export const legendaryCards: CardData[] = [
     description: "At the end of your turn, deal 2 damage to ALL other characters.",
     keywords: [],
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     collectible: true,
     class: "Neutral"
   },
@@ -72,7 +72,7 @@ export const legendaryCards: CardData[] = [
     description: "Charge",
     keywords: ["charge"],
     heroClass: "hunter",
-    race: "beast",
+    race: "Beast",
     class: "Hunter",
     collectible: true
   },
@@ -88,7 +88,7 @@ export const legendaryCards: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "warlock",
     class: "Warlock",
-    race: "titan",
+    race: "Titan",
     battlecry: {
       type: "change_hero_power",
       requiresTarget: false,
@@ -108,7 +108,7 @@ export const legendaryCards: CardData[] = [
     description: "Windfury, Charge, Divine Shield, Taunt",
     keywords: ["windfury", "charge", "divine_shield", "taunt"],
     heroClass: "shaman",
-    race: "elemental",
+    race: "Elemental",
     class: "Shaman",
     collectible: true
   },
@@ -193,7 +193,7 @@ export const legendaryCards: CardData[] = [
     description: "Colossal +1. Lifesteal.",
     keywords: ["colossal", "lifesteal"],
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     class: "Neutral",
     collectible: true
   },
@@ -432,7 +432,7 @@ export const legendaryCards: CardData[] = [
     description: "Freeze any character damaged by this minion.",
     flavorText: "A spectral being of pure cold, summoned by Skadi, Frost Queen.",
     keywords: [],
-    race: "elemental",
+    race: "Elemental",
     heroClass: "mage",
     class: "Mage",
     collectible: true

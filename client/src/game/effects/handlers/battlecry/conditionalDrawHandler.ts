@@ -25,7 +25,7 @@ function checkCondition(
       return context.currentPlayer.cardsPlayedThisTurn > 0;
       
     case 'holding_dragon':
-      return context.currentPlayer.hand.some(ci => ci.card.race === 'dragon');
+      return context.currentPlayer.hand.some(ci => (ci.card.race || '').toLowerCase() === 'dragon');
       
     case 'holding_spell':
       return context.currentPlayer.hand.some(ci => ci.card.type === 'spell');
@@ -90,30 +90,45 @@ function checkCondition(
       return (context.currentPlayer.mana.overloaded || 0) > 0;
       
     case 'control_elemental':
-      return context.currentPlayer.board.some(ci => ci.card.race === 'elemental');
-      
+      return context.currentPlayer.board.some(ci => (ci.card.race || '').toLowerCase() === 'elemental');
+
     case 'control_beast':
-      return context.currentPlayer.board.some(ci => ci.card.race === 'beast');
-      
+      return context.currentPlayer.board.some(ci => (ci.card.race || '').toLowerCase() === 'beast');
+
     case 'control_mech':
     case 'control_automaton':
-      return context.currentPlayer.board.some(ci => ci.card.race === 'automaton' || ci.card.race === 'mech');
-      
+      return context.currentPlayer.board.some(ci => {
+        const r = (ci.card.race || '').toLowerCase();
+        return r === 'automaton' || r === 'mech';
+      });
+
     case 'control_demon':
     case 'control_titan':
-      return context.currentPlayer.board.some(ci => ci.card.race === 'titan' || ci.card.race === 'demon');
-      
+      return context.currentPlayer.board.some(ci => {
+        const r = (ci.card.race || '').toLowerCase();
+        return r === 'titan' || r === 'demon';
+      });
+
     case 'control_murloc':
     case 'control_naga':
-      return context.currentPlayer.board.some(ci => ci.card.race === 'naga' || ci.card.race === 'murloc');
-      
+      return context.currentPlayer.board.some(ci => {
+        const r = (ci.card.race || '').toLowerCase();
+        return r === 'naga' || r === 'murloc';
+      });
+
     case 'control_pirate':
     case 'control_einherjar':
-      return context.currentPlayer.board.some(ci => ci.card.race === 'einherjar' || ci.card.race === 'pirate');
-      
+      return context.currentPlayer.board.some(ci => {
+        const r = (ci.card.race || '').toLowerCase();
+        return r === 'einherjar' || r === 'pirate';
+      });
+
     case 'control_totem':
     case 'control_spirit':
-      return context.currentPlayer.board.some(ci => ci.card.race === 'spirit' || ci.card.race === 'totem');
+      return context.currentPlayer.board.some(ci => {
+        const r = (ci.card.race || '').toLowerCase();
+        return r === 'spirit' || r === 'totem';
+      });
       
     default:
       debug.warn(`Unknown condition: ${condition}`);

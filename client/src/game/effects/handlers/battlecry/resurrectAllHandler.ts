@@ -28,7 +28,7 @@ export default function executeResurrectAll(
     );
     
     if (race && race !== 'all') {
-      deadMinions = deadMinions.filter(card => card.card.race === race);
+      deadMinions = deadMinions.filter(card => (card.card.race || '').toLowerCase() === race.toLowerCase());
     }
     
     if (hasDeathrattle) {

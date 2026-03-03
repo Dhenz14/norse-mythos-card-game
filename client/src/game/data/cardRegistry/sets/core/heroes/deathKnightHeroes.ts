@@ -2,7 +2,7 @@
  * Death Knight Hero Cards
  * 
  * Migrated from client/src/game/data/heroCards.ts on 2026-02-02
- * Contains hero transformation cards from Knights of the Frozen Throne expansion
+ * Contains hero transformation cards (Death Knight variants)
  * These cards replace your current hero and hero power when played
  * 
  * ID Range: 10501-10603
@@ -25,7 +25,7 @@ const frostLichHeroPower: HeroPower = {
   class: "mage"
 };
 
-const scourgelordHeroPower: HeroPower = {
+const helheimWarlordHeroPower: HeroPower = {
   name: "Bladestorm",
   description: "Deal 1 damage to all minions.",
   cost: 2,
@@ -44,10 +44,10 @@ const lightforgedHeroPower: HeroPower = {
 export const deathKnightHeroCards: CardData[] = [
   {
     id: 10501,
-    name: "Deathstalker Rexxar",
+    name: "Skoll, Death-Hunter",
     manaCost: 6,
     description: "Battlecry: Deal 2 damage to all enemy minions.",
-    flavorText: "The eternal hunter becomes one with death itself.",
+    flavorText: "The eternal hunter becomes one with death itself — tracking prey across all Nine Realms.",
     rarity: "mythic",
     type: "hero",
     class: "Hunter",
@@ -72,21 +72,21 @@ export const deathKnightHeroCards: CardData[] = [
     id: 10503,
     name: "Helheim's Warlord",
     manaCost: 8,
-    description: "Battlecry: Equip a 4/3 Shadowmourne that also damages adjacent minions.",
+    description: "Battlecry: Equip a 4/3 Helgrind's Cleaver that also damages adjacent minions.",
     flavorText: "The warchief embraces the power of Helheim.",
     rarity: "mythic",
     type: "hero",
     class: "Warrior",
     set: "core",
     collectible: true,
-    heroPower: scourgelordHeroPower
+    heroPower: helheimWarlordHeroPower
   },
   {
     id: 10504,
-    name: "Uther of the Ebon Blade",
+    name: "Baldr, Fallen Radiance",
     manaCost: 9,
     description: "Battlecry: Equip a 5/3 Lifesteal weapon.",
-    flavorText: "The paladin falls, reborn as a champion of darkness.",
+    flavorText: "The god of light falls, reborn as a champion of Helheim's darkness.",
     rarity: "mythic",
     type: "hero",
     class: "Paladin",
@@ -99,12 +99,12 @@ export const deathKnightHeroCards: CardData[] = [
 export const deathKnightHeroTokens: CardData[] = [
   {
     id: 10601,
-    name: "Shadowmourne",
+    name: "Helgrind's Cleaver",
     manaCost: 8,
     attack: 4,
     durability: 3,
     description: "Also damages minions adjacent to whomever your hero attacks.",
-    flavorText: "Forged from the souls of the innocent.",
+    flavorText: "Forged in Helheim's deepest forge from the wails of the dishonored dead.",
     rarity: "mythic",
     type: "weapon",
     keywords: [],
@@ -118,7 +118,7 @@ export const deathKnightHeroTokens: CardData[] = [
     manaCost: 9,
     attack: 5,
     durability: 3,
-    description: "Wielded by Uther of the Ebon Blade.",
+    description: "Wielded by Baldr, Fallen Radiance.",
     flavorText: "A blade cursed with the power to drain life.",
     rarity: "mythic",
     type: "weapon",
@@ -133,7 +133,7 @@ export const deathKnightHeroTokens: CardData[] = [
     manaCost: 2,
     attack: 2,
     health: 2,
-    description: "Summoned by Uther of the Ebon Blade's hero power.",
+    description: "Summoned by Baldr, Fallen Radiance's hero power.",
     flavorText: "One of the Four Horsemen of the Apocalypse.",
     rarity: "mythic",
     type: "minion",

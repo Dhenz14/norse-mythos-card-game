@@ -43,7 +43,7 @@ export default function executeDrawByType(
         const card = cardInstance.card;
         
         const matchesType = card.type === typeOrRace;
-        const matchesRace = card.race === typeOrRace;
+        const matchesRace = (card.race || '').toLowerCase() === typeOrRace.toLowerCase();
         const matchesKeyword = card.keywords?.includes(typeOrRace);
         
         if (matchesType || matchesRace || matchesKeyword) {

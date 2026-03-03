@@ -27,7 +27,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "summon",
@@ -91,7 +91,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "destroy",
@@ -125,7 +125,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "resurrect_random_buffed",
@@ -160,7 +160,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "damage_all",
@@ -194,7 +194,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "destroy_low_health",
@@ -228,7 +228,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "summon",
@@ -259,7 +259,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "destroy_and_summon",
@@ -292,7 +292,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "damage_all",
@@ -359,7 +359,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "summon",
@@ -392,7 +392,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["lifesteal", "battlecry"],
     battlecry: {
       type: "aura_debuff",
@@ -422,7 +422,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["windfury"],
     onAttack: {
       type: "grant_keyword",
@@ -447,7 +447,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     aura: {
       type: "attack_debuff",
@@ -476,7 +476,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "silence_all",
@@ -504,7 +504,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     onAttack: {
       type: "damage",
       targetType: "all_enemies",
@@ -561,7 +561,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     onDamageTaken: {
       type: "heal_self",
@@ -589,7 +589,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     endOfTurn: {
       type: "freeze",
       targetType: "random_enemy_minion"
@@ -617,7 +617,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     categories: ["norse_mythology", "token"],
     collectible: false
@@ -636,7 +636,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth"],
     categories: ["norse_mythology", "token"],
     collectible: false
@@ -655,7 +655,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth"],
     categories: ["norse_mythology", "token"],
     collectible: false
@@ -674,7 +674,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth"],
     categories: ["norse_mythology", "token"],
     collectible: false
@@ -717,7 +717,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_and_scale",
@@ -746,7 +746,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     endOfTurn: {
       type: "damage",
@@ -775,7 +775,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_and_grant_deathrattle",
@@ -807,7 +807,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "destroy_frozen_and_damage",
@@ -836,7 +836,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "conditional_damage",
@@ -885,7 +885,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_adjacent",
@@ -920,7 +920,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["taunt", "battlecry", "deathrattle"],
     battlecry: {
       type: "buff_by_hand_size",
@@ -952,7 +952,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "summon_by_condition",
@@ -982,7 +982,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     endOfTurn: {
       type: "buff_self_with_heal",
@@ -1011,7 +1011,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "heal_hero",
@@ -1063,7 +1063,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     startOfTurn: {
       type: "heal_all",
@@ -1092,7 +1092,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_all",
@@ -1121,7 +1121,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "elusive"],
     startOfTurn: {
       type: "buff_self",
@@ -1147,7 +1147,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "draw_conditional",
@@ -1178,7 +1178,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "resurrect_conditional",
@@ -1339,7 +1339,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "freeze_all",
@@ -1372,7 +1372,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["poisonous", "battlecry"],
     battlecry: {
       type: "freeze_or_destroy",
@@ -1430,7 +1430,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["stealth"],
     startOfTurn: {
       type: "transform_random_enemy",
@@ -1506,7 +1506,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "bounce_and_damage",
@@ -1533,7 +1533,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "charge"],
     aura: {
       type: "self_buff_per_ally",
@@ -1558,7 +1558,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge"],
     onAttack: {
       type: "buff_self",
@@ -1582,7 +1582,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "battlecry"],
     aura: {
       type: "buff_friendly",
@@ -1613,7 +1613,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_and_stun",
@@ -1642,7 +1642,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying"],
     onAttack: {
       type: "reduce_spell_cost",
@@ -1666,7 +1666,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge"],
     onAttack: {
       type: "damage_all",
@@ -1690,7 +1690,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge"],
     onAttack: {
       type: "damage_all",
@@ -1714,7 +1714,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "summon",
@@ -1745,7 +1745,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge"],
     categories: ["norse_mythology", "lightning_legendary", "token"],
     collectible: false
@@ -1766,7 +1766,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
@@ -1791,7 +1791,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "apply_burn",
@@ -1815,7 +1815,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["deathrattle"],
     deathrattle: {
       type: "summon",
@@ -1840,7 +1840,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "titan",
+    race: "Titan",
     keywords: ["charge", "battlecry"],
     battlecry: {
       type: "buff_self_temporary",
@@ -1865,7 +1865,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_all",
@@ -1889,7 +1889,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "titan",
+    race: "Titan",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_and_burn",
@@ -1914,7 +1914,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage",
@@ -1941,7 +1941,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "apply_burn_all",
@@ -1964,7 +1964,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_self_temporary",
@@ -1991,7 +1991,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_random",
@@ -2020,7 +2020,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["burn_on_damage"],
     passive: {
       type: "on_burn_applied",
@@ -2043,7 +2043,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "reborn", "battlecry"],
     battlecry: {
       type: "damage_all",
@@ -2067,7 +2067,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "titan",
+    race: "Titan",
     keywords: ["charge", "battlecry"],
     battlecry: {
       type: "compound",
@@ -2106,7 +2106,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_all",
@@ -2130,7 +2130,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["burn_on_damage"],
     passive: {
       type: "on_burn_trigger",
@@ -2153,7 +2153,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_all",
@@ -2184,7 +2184,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
@@ -2208,7 +2208,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge", "battlecry"],
     battlecry: {
       type: "damage",
@@ -2233,7 +2233,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
@@ -2258,7 +2258,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
@@ -2283,7 +2283,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "compound",
@@ -2319,7 +2319,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage",
@@ -2343,7 +2343,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_all",
@@ -2371,7 +2371,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge", "battlecry"],
     battlecry: {
       type: "damage_all",
@@ -2410,7 +2410,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "damage",
@@ -2444,7 +2444,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "damage_all",
@@ -2485,7 +2485,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "damage",
@@ -2510,7 +2510,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "debuff",
@@ -2536,7 +2536,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "compound",
@@ -2564,7 +2564,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["poisonous", "battlecry"],
     battlecry: {
       type: "compound",
@@ -2592,7 +2592,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     passive: {
       type: "stealth_bonus_damage",
@@ -2622,7 +2622,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     onAttack: {
       type: "debuff",
@@ -2653,7 +2653,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     onAttack: {
       type: "debuff",
@@ -2692,7 +2692,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "heal",
@@ -2717,7 +2717,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["divine_shield", "charge"],
     onAttack: {
       type: "buff",
@@ -2742,7 +2742,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "heal_self",
@@ -2766,7 +2766,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     startOfTurn: {
       type: "heal_all",
@@ -2799,7 +2799,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_temporary_self",
@@ -2825,7 +2825,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_buff_self",
@@ -2851,7 +2851,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_grant_keyword",
@@ -2876,7 +2876,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_buff_self",
@@ -2902,7 +2902,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "buff",
@@ -2929,7 +2929,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_temporary_self",
@@ -2955,7 +2955,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_conditional",
@@ -2981,7 +2981,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "elusive"],
     categories: ["norse_mythology", "neutral_minion", "neutral_rare"],
     collectible: false
@@ -3000,7 +3000,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     passive: {
       type: "damage_reduction",
@@ -3032,7 +3032,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "buff_temporary",
@@ -3065,7 +3065,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "heal_hero",
@@ -3098,7 +3098,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "force_attack_adjacent",
@@ -3131,7 +3131,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "discover",
@@ -3165,7 +3165,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["deathrattle"],
     deathrattle: {
       type: "damage_conditional",
@@ -3196,7 +3196,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: [],
     endOfTurn: {
       type: "heal_all",
@@ -3230,7 +3230,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "grant_stealth_temporary",
@@ -3260,7 +3260,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "draw",
@@ -3293,7 +3293,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["deathrattle", "flying"],
     deathrattle: {
       type: "resurrect_buffed",
@@ -3326,7 +3326,7 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_temporary_all",

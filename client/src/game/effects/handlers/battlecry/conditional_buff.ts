@@ -103,10 +103,10 @@ export default function executeConditionalBuff(
 function checkCondition(context: GameContext, condition: string, sourceCard: any): boolean {
   switch (condition) {
     case 'holding_dragon':
-      return context.currentPlayer.hand.some(c => c.card.race === 'dragon');
-    
+      return context.currentPlayer.hand.some(c => (c.card.race || '').toLowerCase() === 'dragon');
+
     case 'holding_beast':
-      return context.currentPlayer.hand.some(c => c.card.race === 'beast');
+      return context.currentPlayer.hand.some(c => (c.card.race || '').toLowerCase() === 'beast');
     
     case 'holding_spell':
       return context.currentPlayer.hand.some(c => c.card.type === 'spell');

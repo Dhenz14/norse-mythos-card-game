@@ -51,7 +51,7 @@ export const colossalMinionCards: CardData[] = [
         requiresTarget: false,
         targetType: 'none',
         
-        cardType: 'murloc'
+        cardType: 'naga'
       },
       collectible: true,
       class: "Neutral"

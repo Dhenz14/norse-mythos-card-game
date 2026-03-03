@@ -847,7 +847,7 @@ export const chooseOneCards: CardData[] = [
     chooseOneOptions: [
       {
         id: "draw",
-        name: "Ancient of Lore: Draw",
+        name: "Ancient of Wisdom: Draw",
         description: "Draw 2 cards.",
         effect: {
           type: "draw",
@@ -858,7 +858,7 @@ export const chooseOneCards: CardData[] = [
       },
       {
         id: "heal",
-        name: "Ancient of Lore: Heal",
+        name: "Ancient of Wisdom: Heal",
         description: "Restore 5 Health.",
         effect: {
           type: "heal",

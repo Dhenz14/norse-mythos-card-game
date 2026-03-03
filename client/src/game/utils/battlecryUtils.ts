@@ -21,7 +21,7 @@ import {
   createCardInstance, 
   getCardTribe, 
   isCardOfTribe, 
-  isMurlocCard,
+  isNagaCard,
   instanceToCardData,
   getCardKeywords
 } from './cards/cardUtils';
@@ -376,6 +376,24 @@ export function executeBattlecry(
         return checkPetEvolutionTrigger(silenceMinion(newState, targetId), 'on_silence');
       }
 
+      case 'silence_or_destroy_automaton': {
+        if (!targetId) {
+          debug.error('silence_or_destroy_automaton battlecry requires a target');
+          return state;
+        }
+        newState = silenceMinion(newState, targetId);
+        const allMinions = [...(newState.players.player.battlefield || []), ...(newState.players.opponent.battlefield || [])];
+        const targetMinion = findCardInstance(allMinions, targetId);
+        if (targetMinion) {
+          const race = (targetMinion.card.card.race || '').toLowerCase();
+          if (race === 'automaton' || race === 'mech') {
+            const ownerKey = (newState.players.player.battlefield || []).some(m => m.instanceId === targetId) ? 'player' : 'opponent';
+            newState = destroyCard(newState, targetId, ownerKey as 'player' | 'opponent');
+          }
+        }
+        return checkPetEvolutionTrigger(newState, 'on_silence');
+      }
+
       case 'set_health':
         // Execute a set health battlecry (like Alexstrasza)
         return executeSetHealthBattlecry(newState, battlecry, targetId, targetType);
@@ -678,8 +696,8 @@ export function executeBattlecry(
       case 'swap_hands':
         return executeSwapHandsBattlecry(newState);
 
-      case 'adapt_murlocs':
-        return executeAdaptMurlocsBattlecry(newState);
+      case 'adapt_nagas':
+        return executeAdaptNagasBattlecry(newState);
 
       case 'zephrys_wish':
         return executeDiscoverBattlecry(newState, cardInstanceId, battlecry);
@@ -1363,7 +1381,7 @@ function executeSummonRandomBattlecry(
       candidates = candidates.filter(c => c.manaCost === manaCostFilter);
     }
     if (raceFilter) {
-      candidates = candidates.filter(c => (c as any).race === raceFilter);
+      candidates = candidates.filter(c => ((c as any).race || '').toLowerCase() === raceFilter.toLowerCase());
     }
   }
 
@@ -1511,7 +1529,7 @@ function executeSummonRandomMinionsBattlecry(
   if (manaCostFilter !== undefined) candidates = candidates.filter(c => c.manaCost === manaCostFilter);
   if (minManaCost !== undefined) candidates = candidates.filter(c => (c.manaCost ?? 0) >= minManaCost);
   if (maxManaCost !== undefined) candidates = candidates.filter(c => (c.manaCost ?? 0) <= maxManaCost);
-  if (raceFilter) candidates = candidates.filter(c => (c as any).race === raceFilter);
+  if (raceFilter) candidates = candidates.filter(c => ((c as any).race || '').toLowerCase() === raceFilter.toLowerCase());
   if (rarityFilter) candidates = candidates.filter(c => c.rarity === rarityFilter);
 
   if (candidates.length === 0) return state;
@@ -1722,13 +1740,12 @@ function executeDrawBattlecry(
     });
     
     // Use our new utility functions for consistent tribe/race checking
-    if (cardType === 'murloc') {
-      eligibleCards = state.players.player.deck.filter(card => isMurlocCard(card));
-    } else if (cardType === 'beast' || cardType === 'dragon' || 
-               cardType === 'mech' || cardType === 'demon' || 
-               cardType === 'elemental' || cardType === 'totem' || 
-               cardType === 'pirate') {
-      // For other tribes/races, use the generic isCardOfTribe utility
+    if (cardType === 'naga' || cardType === 'murloc') {
+      eligibleCards = state.players.player.deck.filter(card => isNagaCard(card));
+    } else if (cardType === 'beast' || cardType === 'dragon' ||
+               cardType === 'automaton' || cardType === 'mech' || cardType === 'demon' ||
+               cardType === 'elemental' || cardType === 'totem' ||
+               cardType === 'pirate' || cardType === 'einherjar') {
       eligibleCards = state.players.player.deck.filter(card => isCardOfTribe(card, cardType));
     } else {
       // For non-tribe filtering (like card types: spell, weapon, etc.)
@@ -1747,12 +1764,12 @@ function executeDrawBattlecry(
     if (eligibleCards.length === 0) {
       
       // Check hand for matching cards using our new utility functions
-      if (cardType === 'murloc') {
-        const handMurlocs = state.players.player.hand
-          .filter(cardInstance => isMurlocCard(cardInstance))
+      if (cardType === 'naga' || cardType === 'murloc') {
+        const handNagas = state.players.player.hand
+          .filter(cardInstance => isNagaCard(cardInstance))
           .map(instance => instance.card);
-        
-        eligibleCards = [...handMurlocs];
+
+        eligibleCards = [...handNagas];
       } else {
         const handTribes = state.players.player.hand
           .filter(cardInstance => isCardOfTribe(cardInstance, cardType))
@@ -1763,10 +1780,9 @@ function executeDrawBattlecry(
       
       if (eligibleCards.length === 0) {
         
-        // For Murlocs specifically
-        if (cardType === 'murloc') {
-          const murlocCards = allCards.filter((card: CardData) => isMurlocCard(card));
-          eligibleCards = murlocCards.slice(0, cardsToDraw);
+        if (cardType === 'naga' || cardType === 'murloc') {
+          const nagaCards = allCards.filter((card: CardData) => isNagaCard(card));
+          eligibleCards = nagaCards.slice(0, cardsToDraw);
         }
       }
     }
@@ -2251,7 +2267,7 @@ function executeDestroyBattlecry(
   
   // Otherwise find and destroy the targeted minion
   // First check if this is a tribe-specific destroy (like "Destroy a Beast")
-  const tribeTargets = ['beast', 'mech', 'murloc', 'dragon', 'demon', 'pirate', 'totem', 'elemental', 'undead'];
+  const tribeTargets = ['beast', 'mech', 'automaton', 'murloc', 'naga', 'dragon', 'demon', 'titan', 'pirate', 'einherjar', 'totem', 'spirit', 'elemental', 'undead', 'draugr'];
   const isTribeTarget = tribeTargets.includes(battlecry.targetType || '');
   
   if (isTribeTarget || battlecry.targetType === 'enemy_minion' || battlecry.targetType === 'any_minion') {
@@ -2638,11 +2654,18 @@ export function isValidBattlecryTarget(
     'beast': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
     'dragon': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
     'mech': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
+    'automaton': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
     'murloc': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
+    'naga': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
     'demon': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
+    'titan': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
     'pirate': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
+    'einherjar': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
     'elemental': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
-    'totem': { validTypes: ['minion'], validOwners: ['player', 'opponent'] }
+    'totem': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
+    'spirit': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
+    'undead': { validTypes: ['minion'], validOwners: ['player', 'opponent'] },
+    'draugr': { validTypes: ['minion'], validOwners: ['player', 'opponent'] }
   };
   
   const battlecryTargetType = minionCard.battlecry.targetType || 'none';
@@ -3590,12 +3613,12 @@ function executeSwapHandsBattlecry(
   return state;
 }
 
-function executeAdaptMurlocsBattlecry(
+function executeAdaptNagasBattlecry(
   state: GameState
 ): GameState {
   const battlefield = state.players.player.battlefield || [];
-  const murlocs = battlefield.filter(m => isCardOfTribe(m.card, 'murloc'));
-  if (murlocs.length === 0) return state;
+  const nagas = battlefield.filter(m => isCardOfTribe(m.card, 'naga'));
+  if (nagas.length === 0) return state;
 
   const adaptations = [
     { type: 'stats', attack: 1, health: 1 },
@@ -3610,7 +3633,7 @@ function executeAdaptMurlocsBattlecry(
 
   const chosen = adaptations[Math.floor(Math.random() * adaptations.length)];
 
-  for (const minion of murlocs) {
+  for (const minion of nagas) {
     if (chosen.type === 'stats') {
       (minion.card as any).attack = ((minion.card as any).attack || 0) + (chosen.attack || 0);
       (minion.card as any).health = ((minion.card as any).health || 0) + (chosen.health || 0);
@@ -3859,7 +3882,7 @@ function executeSummonAllTotemsBattlecry(
       heroClass: 'shaman',
       attack: totemDef.attack,
       health: totemDef.health,
-      race: 'totem',
+      race: 'Spirit',
       keywords: totemDef.keywords
     } as any;
     const instance = createCardInstance(tokenCard);

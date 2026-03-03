@@ -603,9 +603,9 @@ const shamanHeroes: CardData[] = [
   },
   {
     id: 90071,
-    name: 'Morgl the Oracle',
+    name: 'Aegir the Tidecaller',
     description: 'Hero Power: Totemic Call - Summon a random Basic Totem.',
-    flavorText: 'A wise murloc shaman who has mastered the elements.',
+    flavorText: 'A wise naga shaman who commands the tides of the Nine Seas.',
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,

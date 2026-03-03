@@ -178,17 +178,18 @@ export function createStartingDeck(size: number = 20): CardData[] {
     .sort(() => 0.5 - Math.random())
     .slice(0, numColossalCards);
   
-  // Get Murloc cards for testing Giga-Fin's battlecry
-  const murlocCards = allCards.filter((card: CardData) => {
+  // Get Naga cards for testing Giga-Fin's battlecry
+  const nagaCards = allCards.filter((card: CardData) => {
     const cardAny = card as any;
-    return cardAny.race?.toLowerCase() === 'murloc' || cardAny.tribe?.toLowerCase() === 'murloc';
+    const r = (cardAny.race || cardAny.tribe || '').toLowerCase();
+    return r === 'naga' || r === 'murloc';
   });
-  
-  // Make sure we include enough Murloc cards
-  const numMurlocCards = Math.min(4, murlocCards.length);
-  const selectedMurlocCards = murlocCards
+
+  // Make sure we include enough Naga cards
+  const numNagaCards = Math.min(4, nagaCards.length);
+  const selectedNagaCards = nagaCards
     .sort(() => 0.5 - Math.random())
-    .slice(0, numMurlocCards);
+    .slice(0, numNagaCards);
   
   // Get random cards for the rest of the deck
   const specialCardIds = [
@@ -199,13 +200,13 @@ export function createStartingDeck(size: number = 20): CardData[] {
     ...selectedManaCards,
     ...selectedFrenzyCards,
     ...selectedColossalCards,
-    ...selectedMurlocCards
+    ...selectedNagaCards
   ].map(card => card.id);
   
   const remainingCards = allCards
     .filter((card: CardData) => !specialCardIds.includes(card.id))
     .sort(() => 0.5 - Math.random())
-    .slice(0, size - numDeathrattleCards - numAoECards - numTauntCards - numOverloadCards - numManaCards - numFrenzyCards - numColossalCards - numMurlocCards);
+    .slice(0, size - numDeathrattleCards - numAoECards - numTauntCards - numOverloadCards - numManaCards - numFrenzyCards - numColossalCards - numNagaCards);
   
   // Combine and shuffle the deck
   return [
@@ -216,7 +217,7 @@ export function createStartingDeck(size: number = 20): CardData[] {
     ...selectedManaCards,
     ...selectedFrenzyCards,
     ...selectedColossalCards,
-    ...selectedMurlocCards,
+    ...selectedNagaCards,
     ...remainingCards
   ].sort(() => 0.5 - Math.random());
 }
@@ -371,10 +372,10 @@ export function isCardOfTribe(card: CardData | CardInstance, tribeName: string):
 }
 
 /**
- * Check if a card is a Murloc
+ * Check if a card is a Naga
  */
-export function isMurlocCard(card: CardData | CardInstance): boolean {
-  return isCardOfTribe(card, 'murloc');
+export function isNagaCard(card: CardData | CardInstance): boolean {
+  return isCardOfTribe(card, 'naga');
 }
 
 // ============================================================================

@@ -399,7 +399,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 5101,
     name: 'Mythic War-Sovereign',
-      description: 'Battlecry: Equip a 4/2 Shadowmourne that also damages adjacent minions.',
+      description: 'Battlecry: Equip a 4/2 Helgrind\'s Cleaver that also damages adjacent minions.',
 
       flavorText: 'A master of battle and heroic glory.',
       type: 'hero',
@@ -3625,7 +3625,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 0,
   
   health: 3,
-  race: 'automaton',
+  race: 'Automaton',
   
   
   
@@ -3644,7 +3644,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 1,
   
   health: 4,
-  race: 'automaton',
+  race: 'Automaton',
   class: "Neutral",
       collectible: true
   },
@@ -3706,7 +3706,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 1,
   health: 1,
   
-  race: "beast",
+  race: "Beast",
       class: 'Neutral',
   
   keywords: ['windfury'],
@@ -3726,7 +3726,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 4,
   health: 2,
   
-  race: "beast",
+  race: "Beast",
       class: 'Neutral',
   
   keywords: ['stealth'],
@@ -3822,7 +3822,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 2,
 
       health: 1,
-      race: "automaton",
+      race: "Automaton",
       class: "Neutral"
   },
   {
@@ -3985,7 +3985,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 3,
       health: 5,
 
-      race: "beast",
+      race: "Beast",
       class: 'Neutral',
 
       keywords: ['battlecry'],
@@ -4030,7 +4030,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 1,
   health: 4,
   
-  race: "beast",
+  race: "Beast",
       class: 'Neutral',
   
   keywords: ['taunt'],
@@ -4050,7 +4050,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 3,
   health: 3,
   
-  race: "beast",
+  race: "Beast",
       class: 'Neutral',
   
   keywords: ['taunt'],
@@ -4070,7 +4070,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 2,
   health: 7,
   
-  race: "beast",
+  race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -4144,7 +4144,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 1,
   health: 1,
   
-  race: 'naga',
+  race: 'Naga',
   class: "Neutral",
       collectible: true
   },
@@ -4162,7 +4162,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 2,
       health: 1,
 
-      race: "naga",
+      race: "Naga",
       class: 'Neutral',
 
       keywords: ['battlecry'],
@@ -4188,7 +4188,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 1,
 
       health: 1,
-      race: "naga",
+      race: "Naga",
       class: "Neutral"
   },
   {
@@ -4285,7 +4285,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 5,
       health: 5,
 
-      race: "elemental",
+      race: "Elemental",
       class: 'Neutral',
 
       keywords: ['battlecry'],
@@ -4346,7 +4346,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 1,
   health: 1,
   
-  race: "beast",
+  race: "Beast",
       class: "Neutral",
       collectible: false
   },

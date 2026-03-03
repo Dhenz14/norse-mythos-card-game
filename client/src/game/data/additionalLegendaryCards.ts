@@ -23,7 +23,7 @@ export const additionalLegendaryCards: CardData[] = [
     ],
     heroClass: "neutral",
     class: "Neutral",
-    race: "dragon",
+    race: "Dragon",
     battlecry: {
       type: "set_health",
       value: 15,
@@ -44,7 +44,7 @@ export const additionalLegendaryCards: CardData[] = [
     keywords: [],
     heroClass: "neutral",
     class: "Neutral",
-    race: "dragon",
+    race: "Dragon",
     collectible: true
   },
 {
@@ -61,7 +61,7 @@ export const additionalLegendaryCards: CardData[] = [
     ],
     heroClass: "neutral",
     class: "Neutral",
-    race: "dragon",
+    race: "Dragon",
     battlecry: {
       type: "destroy",
       requiresTarget: false,
@@ -130,7 +130,7 @@ export const additionalLegendaryCards: CardData[] = [
     keywords: [],
     heroClass: "neutral",
     class: "Neutral",
-    race: "dragon",
+    race: "Dragon",
     spellPower: 5,
     collectible: true
   },
@@ -212,7 +212,7 @@ export const additionalLegendaryCards: CardData[] = [
     ],
     heroClass: "shaman",
     class: "Shaman",
-    race: "elemental",
+    race: "Elemental",
     battlecry: {
       type: "discover",
       requiresTarget: false,
@@ -235,7 +235,7 @@ export const additionalLegendaryCards: CardData[] = [
     keywords: [],
     heroClass: "priest",
     class: "Priest",
-    race: "elemental",
+    race: "Elemental",
     collectible: true
   },
 {

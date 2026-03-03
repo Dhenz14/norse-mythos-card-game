@@ -96,7 +96,7 @@ export const expansionLegendaryCards: CardData[] = [{
       heroClass: "druid",
       class: "Druid",
 
-      race: "beast",
+      race: "Beast",
       collectible: true,
 
       deathrattle: {
@@ -217,7 +217,7 @@ export const expansionLegendaryCards: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "beast",
+      race: "Beast",
 
       deathrattle: {
         type: "add_card",
@@ -374,7 +374,7 @@ export const expansionLegendaryCards: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "automaton",
+      race: "Automaton",
 
                   battlecry: {
         type: "random_weapon",
@@ -423,7 +423,7 @@ export const expansionLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "neutral",
-  race: "automaton",
+  race: "Automaton",
   
   // Special handling for V-07-TR-0N transformation
   class: "Neutral",
@@ -474,7 +474,7 @@ export const expansionLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "neutral",
-  race: "automaton",
+  race: "Automaton",
   
   // Special handling for Leper Gnome summoning
   class: "Neutral",
@@ -496,7 +496,7 @@ export const expansionLegendaryCards: CardData[] = [{
   keywords: [],
   
   heroClass: "neutral",
-  race: "automaton",
+  race: "Automaton",
   
   // Special handling for cleave attack
   class: "Neutral",
@@ -520,7 +520,7 @@ export const expansionLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
       collectible: true,
       deathrattle: {
         type: "summon",
@@ -635,7 +635,7 @@ export const expansionLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
                   battlecry: {
         type: "give_cards",
 
@@ -665,7 +665,7 @@ export const expansionLegendaryCards: CardData[] = [{
     keywords: ["battlecry", "deathrattle"],
       heroClass: "rogue",
       class: "Rogue",
-      race: "beast",
+      race: "Beast",
 
                   battlecry: {
         type: "give_cards",
@@ -779,7 +779,7 @@ export const expansionLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "hunter",
-  race: "beast",
+  race: "Beast",
   
   // Special handling for excess damage to face
   class: "Hunter",

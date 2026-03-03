@@ -392,7 +392,7 @@ export const rogueCards: CardData[] = [
     description: "Battlecry and Deathrattle: Add a random Toxin card to your hand.",
     flavorText: "Touched by the gorgon's venom, it carries deadly gifts.",
     keywords: ["battlecry", "deathrattle"],
-    race: "beast",
+    race: "Beast",
     class: "Rogue",
     collectible: true,
     set: "core",
@@ -411,7 +411,7 @@ export const rogueCards: CardData[] = [
   },
   // === Combo Cards ===
   {
-    id: 31001,
+    id: 85001,
     name: "Shady Dealer",
     manaCost: 3,
     attack: 3,
@@ -431,7 +431,7 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31002,
+    id: 85002,
     name: "Niflheim's Touch",
     manaCost: 1,
     type: "spell",
@@ -454,13 +454,13 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31003,
+    id: 85003,
     name: "Shadow Panther",
     manaCost: 4,
     attack: 4,
     health: 3,
     type: "minion",
-    race: "beast",
+    race: "Beast",
     rarity: "common",
     description: "Combo: Gain Stealth until your next turn.",
     keywords: ["combo"],
@@ -473,7 +473,7 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31004,
+    id: 85004,
     name: "Sabotage",
     manaCost: 4,
     type: "spell",
@@ -493,7 +493,7 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31005,
+    id: 85005,
     name: "Helheim Valiant",
     manaCost: 2,
     attack: 3,
@@ -514,7 +514,7 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31006,
+    id: 85006,
     name: "Shadow Strike",
     manaCost: 3,
     type: "spell",
@@ -536,7 +536,7 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31007,
+    id: 85007,
     name: "Cutpurse",
     manaCost: 2,
     attack: 2,
@@ -550,12 +550,12 @@ export const rogueCards: CardData[] = [
     set: "core",
     combo: {
       type: "add_card_to_hand",
-      cardId: 31501,
+      cardId: 9050,
       count: 1
     }
   },
   {
-    id: 31008,
+    id: 85008,
     name: "Loki's Veil",
     manaCost: 1,
     type: "spell",
@@ -576,7 +576,7 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31009,
+    id: 85009,
     name: "Swift Poisoner",
     manaCost: 3,
     attack: 2,
@@ -595,7 +595,7 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31010,
+    id: 85010,
     name: "Nyxshade Assassin",
     manaCost: 9,
     type: "hero",
@@ -621,7 +621,7 @@ export const rogueCards: CardData[] = [
     }
   },
   {
-    id: 31501,
+    id: 9050,
     name: "The Coin",
     manaCost: 0,
     type: "spell",

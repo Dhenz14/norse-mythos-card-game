@@ -213,7 +213,7 @@ export const berserkerCards: CardData[] = [
     type: "minion",
     rarity: "rare",
     class: "Berserker",
-    race: "titan",
+    race: "Titan",
     keywords: ["dormant"],
     collectible: true,
     set: "core"
@@ -282,7 +282,7 @@ export const berserkerCards: CardData[] = [
     health: 2,
     type: "minion",
     rarity: "common",
-    race: "titan",
+    race: "Titan",
     description: "Dormant for 2 turns. When this awakens, equip a 3/2 Flamereaper.",
     flavorText: "Shackled in the forges of Hephaestus, it yearns to craft once more.",
     keywords: ["dormant"],
@@ -305,7 +305,7 @@ export const berserkerCards: CardData[] = [
     health: 2,
     type: "minion",
     rarity: "common",
-    race: "titan",
+    race: "Titan",
     description: "After your hero attacks, gain +1 Attack.",
     flavorText: "Born for battle, it grows stronger with each strike.",
     class: "Berserker",
@@ -347,7 +347,7 @@ export const berserkerCards: CardData[] = [
     set: "core"
   },
   {
-    id: 50007,
+    id: 8501,
     name: "Jötunn Thornback",
     manaCost: 5,
     attack: 2,

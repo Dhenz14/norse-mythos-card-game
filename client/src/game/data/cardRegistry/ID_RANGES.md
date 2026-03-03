@@ -58,6 +58,7 @@ Reserved ID ranges for card organization:
 | 50340-50346 | Ratatoskr's Messengers | Electric / Neutral / Grass — Ratatoskr Prime |
 | 50350-50356 | Naglfar's Crew | Dark / Water / Neutral — Naglfar's Admiral |
 | 50360-50366 | Muspel Phoenixes | Fire / Electric / Light — Muspel Eternal |
+| 50370-50376 | Ivaldi's Constructs | Fire / Electric / Neutral — Ivaldi's Colossus |
 | 9200-9249 | Pet Tokens | Non-collectible tokens summoned by pet abilities |
 
 ## Expansion Card Ranges (Gap-Filling)
@@ -73,6 +74,9 @@ Reserved ID ranges for card organization:
 | 31601-31602 | Hunter Expansion | Board clear and removal spells |
 | 31701-31702 | Druid Expansion | AOE board clear spells |
 | 31801-31806 | Rogue Combo Expansion | Combo keyword depth |
+| 85001-85010 | Rogue Combo/Class Cards | Rogue combo minions and spells |
+| 9050 | The Coin | Token spell (Rogue Cutpurse combo) |
+| 8501 | Berserker Misc | Jötunn Thornback (re-IDed from pet range) |
 
 ## Norse Mechanic Card Ranges
 

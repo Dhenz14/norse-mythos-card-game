@@ -464,7 +464,7 @@ export const warriorCards: CardData[] = [
     rarity: "epic",
     description: "Runic Bond, Can't be targeted by spells or Hero Powers.",
     keywords: ["magnetic", "elusive"],
-    race: "automaton",
+    race: "Automaton",
     class: "Warrior",
     collectible: true,
     set: "core"

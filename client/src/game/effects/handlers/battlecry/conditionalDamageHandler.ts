@@ -23,7 +23,7 @@ function checkCondition(context: GameContext, condition: string): boolean {
       return context.currentPlayer.cardsPlayedThisTurn > 0;
     
     case 'holding_dragon':
-      return context.currentPlayer.hand.some(card => card.card.race === 'dragon');
+      return context.currentPlayer.hand.some(card => (card.card.race || '').toLowerCase() === 'dragon');
     
     case 'holding_spell':
       return context.currentPlayer.hand.some(card => card.card.type === 'spell');

@@ -5546,7 +5546,7 @@ function executeBuffTribeSpell(
   
   playerState.battlefield = playerState.battlefield.map(minion => {
     const minionCard = minion.card as any;
-    if (minionCard.race === tribe || minionCard.tribe === tribe) {
+    if ((minionCard.race || '').toLowerCase() === tribe.toLowerCase() || (minionCard.tribe || '').toLowerCase() === tribe.toLowerCase()) {
       return {
         ...minion,
         currentAttack: (minion.currentAttack || getAttack(minion.card)) + (effect.attack || effect.value || 0),
@@ -6221,7 +6221,7 @@ function executeDrawSpecificSpell(
       if (cardType === 'weapon') return cardData.type === 'weapon';
       // Check for tribe/race on minion cards
       if (isMinion(cardData)) {
-        return (cardData as any).tribe === cardType || (cardData as any).race === cardType;
+        return ((cardData as any).tribe || '').toLowerCase() === cardType.toLowerCase() || ((cardData as any).race || '').toLowerCase() === cardType.toLowerCase();
       }
       return false;
     });

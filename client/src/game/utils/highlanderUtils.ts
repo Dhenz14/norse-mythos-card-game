@@ -444,20 +444,21 @@ export function executeKrulBattlecry(
     return newState;
   }
   
-  // Find all demons in hand
+  // Find all titans (formerly demons) in hand
   const hand = newState.players[playerType].hand;
-  const demonsInHand = hand.filter((card: CardInstance) => 
-    card.card.type === 'minion' && (card.card as any).race === 'demon'
-  );
-  
-  // If no demons in hand, return unchanged state
-  if (demonsInHand.length === 0) {
+  const titansInHand = hand.filter((card: CardInstance) => {
+    const r = ((card.card as any).race || '').toLowerCase();
+    return card.card.type === 'minion' && (r === 'titan' || r === 'demon');
+  });
+
+  // If no titans in hand, return unchanged state
+  if (titansInHand.length === 0) {
     newState.gameLog.push(
       createGameLogEvent(
       newState,
       'krul_no_demons' as GameLogEventType,
       playerType,
-      `The Unshackled found no demons to summon from your hand.`,
+      `The Unshackled found no titans to summon from your hand.`,
       { cardId: '70005' }
     )
     );
@@ -469,35 +470,35 @@ export function executeKrulBattlecry(
   const maxMinions = 5;
   const availableSlots = maxMinions - battlefield.length;
   
-  // Limit demons to available slots
-  const demonsToSummon = demonsInHand.slice(0, availableSlots);
-  
-  // Remove demons from hand
-  newState.players[playerType].hand = hand.filter((card: CardInstance) => 
-    !demonsToSummon.some((demon: CardInstance) => demon.instanceId === card.instanceId)
+  // Limit titans to available slots
+  const titansToSummon = titansInHand.slice(0, availableSlots);
+
+  // Remove titans from hand
+  newState.players[playerType].hand = hand.filter((card: CardInstance) =>
+    !titansToSummon.some((titan: CardInstance) => titan.instanceId === card.instanceId)
   );
-  
-  // Add demons to battlefield
-  for (const demon of demonsToSummon) {
+
+  // Add titans to battlefield
+  for (const titan of titansToSummon) {
     // Create a modified version for the battlefield
-    const summonedDemon = {
-      ...demon,
+    const summonedTitan = {
+      ...titan,
       isSummoningSick: true,
       attacksPerformed: 0,
       isPlayed: false
     };
     
     // Add to battlefield
-    newState.players[playerType].battlefield.push(summonedDemon);
-    
+    newState.players[playerType].battlefield.push(summonedTitan);
+
     // Log the summon
     newState.gameLog.push(
       createGameLogEvent(
       newState,
       'summon' as GameLogEventType,
       playerType,
-      `The Unshackled summons ${demon.card.name} from your hand.`,
-      { cardId: demon.card.id.toString() }
+      `The Unshackled summons ${titan.card.name} from your hand.`,
+      { cardId: titan.card.id.toString() }
     )
     );
   }

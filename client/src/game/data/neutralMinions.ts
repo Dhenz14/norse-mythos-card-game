@@ -88,7 +88,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "naga",
+      race: "Naga",
 
                   battlecry: {
         type: "draw_both",
@@ -195,7 +195,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "dragon",
+      race: "Dragon",
 
                   battlecry: {
         type: "health_per_card",
@@ -256,12 +256,12 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
 
                   battlecry: {
         type: "adapt",
 
-        targetType: "friendly_murlocs",
+        targetType: "friendly_nagas",
       requiresTarget: false
 
        },
@@ -363,7 +363,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "titan",
+      race: "Titan",
 
                   battlecry: {
         type: "swap_stats",
@@ -416,7 +416,7 @@ export const   neutralMinions: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "dragon",
+      race: "Dragon",
                   battlecry: {
         type: "damage",
       value: 2,
@@ -461,7 +461,7 @@ export const   neutralMinions: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "beast",
+      race: "Beast",
                   battlecry: {
         type: "limit_attack_target",
       targetType: "minions_only",
@@ -604,7 +604,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "elemental",
+      race: "Elemental",
 
                   battlecry: {
         type: "conditional_damage",
@@ -759,7 +759,7 @@ export const   neutralMinions: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "elemental",
+      race: "Elemental",
       deathrattle: {
         type: "summon",
       targetType: "none",
@@ -783,7 +783,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Taunt",
   keywords: ["taunt"],
   
-  heroClass: "neutral", race: "elemental",
+  heroClass: "neutral", race: "Elemental",
       class: "Neutral",
       collectible: true
   },
@@ -823,7 +823,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
 
                   battlecry: {
         type: "conditional_damage",
@@ -1028,7 +1028,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
 
       deathrattle: {
         type: "summon_random",
@@ -1056,7 +1056,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
 
       deathrattle: {
         type: "add_to_hand",
@@ -1085,7 +1085,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
 
       deathrattle: {
         type: "split_damage",
@@ -1159,7 +1159,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Frozen. When this minion is Frozen, it has +2/+2.",
   keywords: ["frozen"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
   
   // Effect handled in game logic,
       class: "Neutral",
@@ -1246,7 +1246,7 @@ export const   neutralMinions: CardData[] = [{
   rarity: "common",
   
   description: "A small mechanical servant.",
-  heroClass: "neutral", race: "automaton",
+  heroClass: "neutral", race: "Automaton",
       class: "Neutral",
       collectible: false
   },
@@ -1287,7 +1287,7 @@ export const   neutralMinions: CardData[] = [{
   rarity: "common",
   
   description: "A wild beast of the hunt.",
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: false
   },
@@ -1332,7 +1332,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Whenever a minion dies, gain +1 Attack.",
   keywords: ["on_minion_death"],
   
-  heroClass: "neutral", race: "undead",
+  heroClass: "neutral", race: "Undead",
       class: "Neutral",
       collectible: true
   },
@@ -1351,7 +1351,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Adjacent minions have +1 Attack.",
   keywords: ["aura"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -1408,7 +1408,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Stealth",
   keywords: ["stealth"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -1427,7 +1427,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Taunt",
   keywords: ["taunt"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -1446,7 +1446,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Taunt",
   keywords: ["taunt"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -1501,7 +1501,7 @@ export const   neutralMinions: CardData[] = [{
   rarity: "common",
   
   description: "A deadly predator from the swamps.",
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -1518,7 +1518,7 @@ export const   neutralMinions: CardData[] = [{
   rarity: "common",
   
   description: "A scaled guardian of the rivers.",
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -1602,7 +1602,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
                   battlecry: {
         type: "summon_multiple",
         summonCardId: 30076,
@@ -1627,7 +1627,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
       deathrattle: {
         type: "deal_damage",
         targetType: BattlecryTargetType.ENEMY_HERO,
@@ -1674,7 +1674,7 @@ export const   neutralMinions: CardData[] = [{
   rarity: "common",
   
   description: "A mechanical construct awaiting enhancement.",
-  heroClass: "neutral", race: "automaton",
+  heroClass: "neutral", race: "Automaton",
       class: "Neutral",
       collectible: true
   },
@@ -1693,7 +1693,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Runic Bond, Rush",
   keywords: ["magnetic", "rush"],
   
-  heroClass: "neutral", race: "automaton",
+  heroClass: "neutral", race: "Automaton",
       class: "Neutral",
       collectible: true
   },
@@ -1712,7 +1712,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Runic Bond, Taunt",
   keywords: ["magnetic", "taunt"],
   
-  heroClass: "neutral", race: "automaton",
+  heroClass: "neutral", race: "Automaton",
       class: "Neutral",
       collectible: true
   },
@@ -1733,7 +1733,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
                   battlecry: {
         type: "self_damage",
         value: 5,
@@ -1758,7 +1758,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
                   battlecry: {
         type: "deal_damage",
         targetType: BattlecryTargetType.ANY,
@@ -1784,7 +1784,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
                   battlecry: {
         type: "add_to_hand",
         cardId: 30084
@@ -1806,7 +1806,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Rush",
   keywords: ["rush"],
   
-  heroClass: "neutral", race: "elemental",
+  heroClass: "neutral", race: "Elemental",
       class: "Neutral",
       collectible: false
   },
@@ -1827,7 +1827,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
                   battlecry: {
         type: "gain_stealth_until_next_turn",
         requiresTarget: false
@@ -2022,7 +2022,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Overkill: Gain +5 Attack.",
   keywords: ["overkill"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -2043,7 +2043,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
                   battlecry: {
         type: "deal_damage_to_hero",
         value: 5,
@@ -2087,7 +2087,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
                   battlecry: {
         type: "adapt",
         requiresTarget: false
@@ -2135,7 +2135,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
                   battlecry: {
         type: "conditional_gain_taunt",
         condition: "control_2_minions",
@@ -2158,7 +2158,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Stealth",
   keywords: ["stealth"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -2179,7 +2179,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
                   battlecry: {
         type: "conditional_adapt",
         condition: "played_elemental_last_turn",
@@ -2202,7 +2202,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Taunt",
   keywords: ["taunt"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -2223,7 +2223,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "elemental",
+      race: "Elemental",
       deathrattle: {
         type: "deal_damage",
         targetType: "random_enemy_minion",
@@ -2244,7 +2244,7 @@ export const   neutralMinions: CardData[] = [{
   rarity: "common",
   
   description: "A ferocious beast cloaked in shadow.",
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -2263,7 +2263,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Your spells cost (2) more.",
   keywords: ["aura"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -2282,7 +2282,7 @@ export const   neutralMinions: CardData[] = [{
   description: "Taunt. Poisonous.",
   keywords: ["taunt", "poisonous"],
   
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: true
   },
@@ -2303,7 +2303,7 @@ export const   neutralMinions: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
       deathrattle: {
           type: "shuffle_card",
         cardId: "30109"
@@ -2323,7 +2323,7 @@ export const   neutralMinions: CardData[] = [{
   rarity: "common",
   
   description: "A mighty prehistoric predator.",
-  heroClass: "neutral", race: "beast",
+  heroClass: "neutral", race: "Beast",
       class: "Neutral",
       collectible: false
   }

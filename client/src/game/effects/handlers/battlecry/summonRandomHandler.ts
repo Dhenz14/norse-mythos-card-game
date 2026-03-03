@@ -57,7 +57,7 @@ export default function executeSummonRandom(
       }
       
       if (race) {
-        allMinions = allMinions.filter(card => (card as any).race === race);
+        allMinions = allMinions.filter(card => ((card as any).race || '').toLowerCase() === race.toLowerCase());
       }
       
       candidateCards = allMinions;

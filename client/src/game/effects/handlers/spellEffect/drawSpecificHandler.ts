@@ -32,7 +32,7 @@ export default function executeDrawSpecific(
     }
     
     if (race) {
-      eligibleCards = eligibleCards.filter(c => c.card.race === race);
+      eligibleCards = eligibleCards.filter(c => (c.card.race || '').toLowerCase() === race.toLowerCase());
     }
     
     if (minManaCost !== undefined) {

@@ -2018,7 +2018,7 @@ const rareNeutralMinions: CardData[] = [
     collectible: true,
     set: 'core',
     battlecry: {
-      type: 'silence_or_destroy_mech',
+      type: 'silence_or_destroy_automaton',
       requiresTarget: true,
       targetType: 'minion'
     }
@@ -2275,11 +2275,11 @@ const epicNeutralMinions: CardData[] = [
     set: 'core',
     battlecry: {
       type: 'destroy_and_buff',
-      condition: 'murloc',
+      condition: 'naga',
       buffAttack: 2,
       buffHealth: 2,
       requiresTarget: true,
-      targetType: 'murloc'
+      targetType: 'naga'
     }
   },
   {
@@ -3047,7 +3047,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Rush. Battlecry: Summon a 4/4 Wolf with Rush.',
     flavorText: 'The wolves that chase the sun and moon.',
     keywords: ['rush', 'battlecry'],
-    race: 'beast',
+    race: 'Beast',
     class: 'Neutral',
     collectible: true,
     set: 'core',
@@ -3255,7 +3255,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Taunt. At the end of your turn, summon a 2/2 Hell Pup.',
     flavorText: 'The three-headed guardian of the underworld gates.',
     keywords: ['taunt'],
-    race: 'beast',
+    race: 'Beast',
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -3313,7 +3313,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Also damages the minions next to whomever this attacks. When this takes damage, gain +2 Attack.',
     flavorText: 'Cut off one head, two more take its place.',
     keywords: [],
-    race: 'beast',
+    race: 'Beast',
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -3329,7 +3329,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Deathrattle: Return this to your hand. It costs (1) more.',
     flavorText: 'From ashes, it is reborn eternally.',
     keywords: ['deathrattle'],
-    race: 'elemental',
+    race: 'Elemental',
     class: 'Neutral',
     collectible: true,
     set: 'core',
@@ -3371,7 +3371,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'At the end of your turn, deal 3 damage to a random enemy.',
     flavorText: 'Lion, goat, and serpent combined into one fearsome beast.',
     keywords: [],
-    race: 'beast',
+    race: 'Beast',
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -3408,7 +3408,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Windfury. Divine Shield.',
     flavorText: 'The majestic beast guards the treasures of the gods.',
     keywords: ['windfury', 'divine_shield'],
-    race: 'beast',
+    race: 'Beast',
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -3424,7 +3424,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Battlecry: Deal 4 damage to 2 random enemy minions.',
     flavorText: 'Even the gods fear its emergence from the abyss.',
     keywords: ['battlecry'],
-    race: 'beast',
+    race: 'Beast',
     class: 'Neutral',
     collectible: true,
     set: 'core',
@@ -3623,7 +3623,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Battlecry: If you\'re holding a Dragon, deal 8 damage to all enemy minions.',
     flavorText: 'Born of the primordial void between worlds.',
     keywords: ['battlecry'],
-    race: 'dragon',
+    race: 'Dragon',
     class: 'Neutral',
     collectible: true,
     set: 'core',
@@ -4259,7 +4259,7 @@ const legendaryNeutralMinions: CardData[] = [
     type: 'minion',
     rarity: 'common',
     class: 'Neutral',
-    race: 'titan',
+    race: 'Titan',
     keywords: ['dormant', 'rush'],
     description: 'Dormant for 2 turns. Rush',
     flavorText: 'Shackled in the depths of Niflheim, awaiting release.',
@@ -4276,7 +4276,7 @@ const legendaryNeutralMinions: CardData[] = [
     type: 'minion',
     rarity: 'rare',
     class: 'Neutral',
-    race: 'titan',
+    race: 'Titan',
     keywords: ['dormant'],
     description: 'Dormant. After you play 3 minions in a turn, destroy all other minions and awaken.',
     collectible: true,
@@ -4305,7 +4305,7 @@ const legendaryNeutralMinions: CardData[] = [
     type: 'minion',
     rarity: 'common',
     class: 'Neutral',
-    race: 'beast',
+    race: 'Beast',
     keywords: ['frenzy'],
     description: 'Frenzy: Attack a random enemy.',
     collectible: true,
@@ -4384,14 +4384,14 @@ const legendaryNeutralMinions: CardData[] = [
     rarity: 'common',
     description: 'Battlecry: Give your other Nagas +2 Health.',
     keywords: ['battlecry'],
-    race: 'naga',
+    race: 'Naga',
     battlecry: {
       type: 'buff',
       buffAttack: 0,
       buffHealth: 2,
       requiresTarget: false,
       targetType: 'none',
-      cardType: 'murloc'
+      cardType: 'naga'
     },
     collectible: true,
     class: 'Neutral',
@@ -4408,7 +4408,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Whenever you summon a Naga, gain +1 Attack.',
     flavorText: 'Calling upon the power of Aegir, lord of the sea.',
     keywords: [],
-    race: 'naga',
+    race: 'Naga',
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -4423,7 +4423,7 @@ const legendaryNeutralMinions: CardData[] = [
     rarity: 'common',
     description: 'Reborn',
     keywords: ['reborn'],
-    race: 'naga',
+    race: 'Naga',
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -4515,7 +4515,7 @@ const legendaryNeutralMinions: CardData[] = [
     rarity: 'common',
     description: '',
     keywords: [],
-    race: 'automaton',
+    race: 'Automaton',
     class: 'Neutral',
     collectible: false,
     set: 'core'
@@ -4530,7 +4530,7 @@ const legendaryNeutralMinions: CardData[] = [
     rarity: 'common',
     description: 'Runic Bond',
     keywords: ['magnetic'],
-    race: 'automaton',
+    race: 'Automaton',
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -4545,7 +4545,7 @@ const legendaryNeutralMinions: CardData[] = [
     rarity: 'common',
     description: 'Runic Bond, Rush',
     keywords: ['magnetic', 'rush'],
-    race: 'automaton',
+    race: 'Automaton',
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -4563,7 +4563,7 @@ const legendaryNeutralMinions: CardData[] = [
     class: 'Neutral',
     set: 'core',
     collectible: true,
-    race: 'automaton',
+    race: 'Automaton',
     deathrattle: {
       type: 'summon',
       summonCardId: 20502,
@@ -4582,7 +4582,7 @@ const legendaryNeutralMinions: CardData[] = [
     description: 'Runic Bond, At the end of your turn, deal 1 damage to all other characters.',
     keywords: ['magnetic'],
     class: 'Neutral',
-    race: 'automaton',
+    race: 'Automaton',
     collectible: true,
     set: 'core'
   },
@@ -4837,7 +4837,7 @@ const legendaryNeutralMinions: CardData[] = [
     class: 'Neutral',
     set: 'core',
     collectible: true,
-    race: 'dragon',
+    race: 'Dragon',
     spellburstEffect: {
       type: 'discover',
       value: 2,
@@ -5069,7 +5069,7 @@ const legendaryNeutralMinions: CardData[] = [
       value: 3,
       requiresTarget: false,
       targetType: 'none',
-      cardType: 'murloc'
+      cardType: 'naga'
     },
     collectible: true,
     set: 'core'
@@ -5164,7 +5164,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 3,
     type: 'minion',
     rarity: 'common',
-    race: 'einherjar',
+    race: 'Einherjar',
     description: "Battlecry: Gain Attack equal to the Attack of your weapon.",
     flavorText: "Undead Norse raiders still hunger for gold.",
     keywords: ['battlecry'],
@@ -5185,7 +5185,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 2,
     type: 'minion',
     rarity: 'rare',
-    race: 'einherjar',
+    race: 'Einherjar',
     description: "Battlecry: Remove 1 Durability from your opponent's weapon.",
     flavorText: "Sailing the whirlpool's edge, they strip ships of their arms.",
     keywords: ['battlecry'],
@@ -6288,11 +6288,11 @@ const legendaryNeutralMinions: CardData[] = [
 ];
 
 // ============================================
-// HEARTHSTONE-INSPIRED NEUTRAL CARDS (32051-32075)
-// Norse/Greek mythology themed versions of iconic Hearthstone cards
+// MYTHOLOGY-THEMED NEUTRAL CARDS (32051-32075)
+// Norse/Greek mythology themed neutral cards
 // ============================================
 
-const hearthstoneInspiredSpells: CardData[] = [
+const mythologySpells: CardData[] = [
   {
     id: 32051,
     name: "Odin's Binding",
@@ -6312,7 +6312,7 @@ const hearthstoneInspiredSpells: CardData[] = [
   }
 ];
 
-const hearthstoneInspiredCommonMinions: CardData[] = [
+const mythologyCommonMinions: CardData[] = [
   {
     id: 32052,
     name: 'Pesterer of Loki',
@@ -6393,7 +6393,7 @@ const hearthstoneInspiredCommonMinions: CardData[] = [
   }
 ];
 
-const hearthstoneInspiredRareMinions: CardData[] = [
+const mythologyRareMinions: CardData[] = [
   {
     id: 32053,
     name: 'Iron Golem of Sindri',
@@ -6530,7 +6530,7 @@ const hearthstoneInspiredRareMinions: CardData[] = [
   }
 ];
 
-const hearthstoneInspiredEpicMinions: CardData[] = [
+const mythologyEpicMinions: CardData[] = [
   {
     id: 32055,
     name: 'Skeletal Steed of Hel',
@@ -6621,7 +6621,7 @@ const hearthstoneInspiredEpicMinions: CardData[] = [
   }
 ];
 
-const hearthstoneInspiredLegendaryMinions: CardData[] = [
+const mythologyLegendaryMinions: CardData[] = [
   {
     id: 32056,
     name: 'Vidar the Undying',
@@ -6797,7 +6797,7 @@ const hearthstoneInspiredLegendaryMinions: CardData[] = [
 // HEARTHSTONE-INSPIRED NORSE/GREEK MYTHOLOGY CARDS
 // Iconic Hearthstone cards reimagined with Norse/Greek theming
 // ============================================
-const hearthstoneInspiredNorseMythCards: CardData[] = [
+const mythologyNorseCards: CardData[] = [
   {
     id: 32081,
     name: "Fenrir's Shadowblade",
@@ -7209,7 +7209,7 @@ const hearthstoneInspiredNorseMythCards: CardData[] = [
     collectible: true,
     set: 'core',
     battlecry: {
-      type: 'adapt_murlocs',
+      type: 'adapt_nagas',
       requiresTarget: false
     }
   }
@@ -7859,9 +7859,9 @@ const commonBeastMinions: CardData[] = [
   },
   {
     id: 33131,
-    name: 'Stranglethorn Tiger of Artemis',
+    name: 'Skogkatt Stalker',
     description: 'Stealth',
-    flavorText: 'Blessed by the goddess of the hunt, these tigers stalk their prey unseen.',
+    flavorText: 'The forest cats of Freya hunt unseen among Yggdrasil\'s roots.',
     type: 'minion',
     rarity: 'common',
     manaCost: 5,
@@ -8275,7 +8275,7 @@ const beastTokens: CardData[] = [
 ];
 
 // Token cards for Hearthstone-inspired cards
-const hearthstoneInspiredTokens: CardData[] = [
+const mythologyTokens: CardData[] = [
   {
     id: 32076,
     name: 'Broken Dwarf-Construct',
@@ -10312,8 +10312,8 @@ const synergyPackageCards: CardData[] = [
 const commonNeutrals: CardData[] = [
   ...commonNeutralMinions,
   ...commonNeutralSpells,
-  ...hearthstoneInspiredSpells,
-  ...hearthstoneInspiredCommonMinions,
+  ...mythologySpells,
+  ...mythologyCommonMinions,
   ...commonDragonMinions,
   ...commonBeastMinions
 ];
@@ -10321,7 +10321,7 @@ const commonNeutrals: CardData[] = [
 const rareNeutrals: CardData[] = [
   ...rareNeutralMinions,
   ...rareNeutralSpells,
-  ...hearthstoneInspiredRareMinions,
+  ...mythologyRareMinions,
   ...rareDragonMinions,
   ...rareBeastMinions
 ];
@@ -10329,26 +10329,26 @@ const rareNeutrals: CardData[] = [
 const epicNeutrals: CardData[] = [
   ...epicNeutralMinions,
   ...epicNeutralSpells,
-  ...hearthstoneInspiredEpicMinions,
+  ...mythologyEpicMinions,
   ...epicDragonMinions,
   ...epicBeastMinions
 ];
 
 const legendaryNeutrals: CardData[] = [
   ...legendaryNeutralMinions,
-  ...hearthstoneInspiredLegendaryMinions,
+  ...mythologyLegendaryMinions,
   ...legendaryDragonMinions,
   ...legendaryBeastMinions
 ];
 
 const tokenNeutrals: CardData[] = [
-  ...hearthstoneInspiredTokens,
+  ...mythologyTokens,
   ...dragonTokens,
   ...beastTokens
 ];
 
 const norseMythNeutrals: CardData[] = [
-  ...hearthstoneInspiredNorseMythCards
+  ...mythologyNorseCards
 ];
 
 // Combo/Draw Engine cards combined

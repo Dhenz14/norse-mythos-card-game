@@ -178,7 +178,7 @@ export const modernLegendaryCards: CardData[] = [
 
       heroClass: "priest",
       class: "Priest",
-      race: "dragon",
+      race: "Dragon",
       collectible: true,
                   battlecry: {
         type: "extra_turns",
@@ -409,7 +409,7 @@ export const modernLegendaryCards: CardData[] = [
       heroClass: "warrior",
       class: "Warrior",
 
-      race: "dwarf",
+      race: "Dwarf",
       collectible: true,
 
                   battlecry: {
@@ -486,7 +486,7 @@ export const modernLegendaryCards: CardData[] = [
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "naga",
+      race: "Naga",
 
                   battlecry: {
         type: "discover",
@@ -600,7 +600,7 @@ export const modernLegendaryCards: CardData[] = [
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "beast",
+      race: "Beast",
       collectible: true
     },
   {
@@ -652,7 +652,7 @@ export const modernLegendaryCards: CardData[] = [
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "dragon",
+      race: "Dragon",
                   battlecry: {
         type: "add_card",
         requiresTarget: false,
@@ -774,7 +774,7 @@ export const modernLegendaryCards: CardData[] = [
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "naga",
+      race: "Naga",
 
                   battlecry: {
         type: "eat_opponent_card",
@@ -852,7 +852,7 @@ export const modernLegendaryCards: CardData[] = [
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "dragon",
+      race: "Dragon",
 
                   battlecry: {
         type: "summon",
@@ -881,7 +881,7 @@ export const modernLegendaryCards: CardData[] = [
   flavorText: "A fast baby dragon. What could be cuter... or more dangerous?",
   
   keywords: ["rush"],
-  heroClass: "neutral", race: "dragon",
+  heroClass: "neutral", race: "Dragon",
       class: "Neutral",
       collectible: false
   },

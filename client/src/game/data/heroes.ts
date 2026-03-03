@@ -467,8 +467,8 @@ const heroes: HeroData[] = [
 
           id: 8001,
 
-          name: "Morgl the Oracle",
-          description: "A wise murloc shaman who has mastered the elements."
+          name: "Aegir the Tidecaller",
+          description: "A wise naga shaman who commands the tides of the Nine Seas."
 
            },
 
@@ -604,7 +604,7 @@ const heroes: HeroData[] = [
       id: 11,
 
       name: "The Draugr King",
-      class: "deathknight",
+      class: "DeathKnight",
 
       description: "The Draugr King, a fallen prince of Asgard who embraced death.",
       heroPowers: [{

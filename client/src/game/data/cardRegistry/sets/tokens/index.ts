@@ -587,7 +587,7 @@ const norseMythologyTokens: CardData[] = [
     type: 'minion',
     class: 'Neutral',
     heroClass: 'neutral',
-    race: 'beast',
+    race: 'Beast',
     keywords: ['taunt'],
     categories: ['norse_mythology', 'token'],
     collectible: false
@@ -604,7 +604,7 @@ const norseMythologyTokens: CardData[] = [
     type: 'minion',
     class: 'Neutral',
     heroClass: 'neutral',
-    race: 'beast',
+    race: 'Beast',
     keywords: ['stealth'],
     categories: ['norse_mythology', 'token'],
     collectible: false
@@ -621,7 +621,7 @@ const norseMythologyTokens: CardData[] = [
     type: 'minion',
     class: 'Neutral',
     heroClass: 'neutral',
-    race: 'beast',
+    race: 'Beast',
     keywords: ['stealth'],
     categories: ['norse_mythology', 'token'],
     collectible: false
@@ -638,7 +638,7 @@ const norseMythologyTokens: CardData[] = [
     type: 'minion',
     class: 'Neutral',
     heroClass: 'neutral',
-    race: 'beast',
+    race: 'Beast',
     keywords: ['stealth'],
     categories: ['norse_mythology', 'token'],
     collectible: false
@@ -725,7 +725,7 @@ const norseMythologyTokens: CardData[] = [
     type: 'minion',
     class: 'Neutral',
     heroClass: 'neutral',
-    race: 'beast',
+    race: 'Beast',
     keywords: ['charge'],
     categories: ['norse_mythology', 'lightning_legendary', 'token'],
     collectible: false

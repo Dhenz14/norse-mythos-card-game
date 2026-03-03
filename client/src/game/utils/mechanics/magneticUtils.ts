@@ -1,6 +1,6 @@
 /**
- * Utilities for handling the Magnetic mechanic in Hearthstone
- * Magnetic allows a minion to be attached to a Mech, combining their stats and effects
+ * Utilities for handling the Runic Bond (Magnetic) mechanic
+ * Runic Bond allows a minion to be attached to an Automaton, combining their stats and effects
  */
 import { CardInstance, GameState } from '../../types';
 import { isMinion, getAttack, getHealth, hasOverload } from '../cards/typeGuards';
@@ -28,8 +28,9 @@ export function canMagnetize(card: CardInstance, target: CardInstance | null): b
     return false;
   }
   
-  // Target must be a Mech
-  if (target.card.race !== 'mech') {
+  // Target must be an Automaton (accepts legacy 'mech' or 'Automaton'/'automaton')
+  const targetRace = (target.card.race || '').toLowerCase();
+  if (targetRace !== 'mech' && targetRace !== 'automaton') {
     return false;
   }
   
@@ -134,7 +135,8 @@ export function applyMagnetization(
  * @returns Boolean indicating if the card is a valid magnetization target
  */
 export function isValidMagneticTarget(card: CardInstance): boolean {
-  return card.card.type === 'minion' && card.card.race === 'mech';
+  const race = (card.card.race || '').toLowerCase();
+  return card.card.type === 'minion' && (race === 'mech' || race === 'automaton');
 }
 
 /**

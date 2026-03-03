@@ -129,7 +129,7 @@ export class CardBuilder {
   }
   
   /**
-   * Set the card race/tribe (murloc, beast, etc.)
+   * Set the card race/tribe (naga, beast, etc.)
    * @param race - Race/tribe of the card
    */
   race(race: string): CardBuilder {

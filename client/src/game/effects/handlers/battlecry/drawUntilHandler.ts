@@ -83,7 +83,7 @@ export default function executeDrawUntil(
           break;
           
         case 'until_race':
-          if (cardInstance.card.race === targetRace) {
+          if ((cardInstance.card.race || '').toLowerCase() === (targetRace || '').toLowerCase()) {
             context.logGameEvent(`Drew a ${targetRace} - stopping`);
             conditionMet = true;
           }

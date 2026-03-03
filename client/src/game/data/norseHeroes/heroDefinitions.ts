@@ -2368,7 +2368,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
       cost: 2,
       targetType: 'none',
       effectType: 'summon',
-      summonData: { name: 'Hunting Hound', attack: 1, health: 1, keywords: ['charge'], race: 'beast' }
+      summonData: { name: 'Hunting Hound', attack: 1, health: 1, keywords: ['charge'], race: 'Beast' }
     },
     weaponUpgrade: {
       id: 90041,
@@ -2379,7 +2379,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
       immediateEffect: {
         type: 'summon_multiple',
         value: 3,
-        summonData: { name: 'Wolf', attack: 2, health: 2, keywords: ['charge'], race: 'beast' },
+        summonData: { name: 'Wolf', attack: 2, health: 2, keywords: ['charge'], race: 'Beast' },
         description: 'Summon three 2/2 Wolves with Charge.'
       },
       upgradedPowerId: 'artemis-power-upgraded'
@@ -2391,7 +2391,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
       cost: 2,
       targetType: 'none',
       effectType: 'summon',
-      summonData: { name: 'Hunting Hound', attack: 2, health: 2, keywords: ['charge'], race: 'beast' },
+      summonData: { name: 'Hunting Hound', attack: 2, health: 2, keywords: ['charge'], race: 'Beast' },
       isUpgraded: true,
       baseHeroPowerId: 'artemis-power'
     },

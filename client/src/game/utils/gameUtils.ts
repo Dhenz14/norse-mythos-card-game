@@ -553,12 +553,13 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
       targetMech = friendlyTargetInfo.card;
       isFriendlyTarget = true;
       
-      // Check if target is a mech
-      if (targetMech.card.race === 'mech') {
+      // Check if target is an Automaton (accepts legacy 'mech' or 'automaton')
+      const targetRace = (targetMech.card.race || '').toLowerCase();
+      if (targetRace === 'mech' || targetRace === 'automaton') {
         // Apply magnetization
         return applyMagnetization(newState, currentPlayer, cardInstanceId, targetId);
       } else {
-        debug.error('Magnetize target is not a mech');
+        debug.error('Magnetize target is not an Automaton');
         return state;
       }
     }

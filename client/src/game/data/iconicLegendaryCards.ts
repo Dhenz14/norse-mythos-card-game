@@ -75,7 +75,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "neutral",
-  race: "einherjar",
+  race: "Einherjar",
   
   // Special handling in game logic for summoning from deck
   class: "Neutral"
@@ -132,7 +132,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "neutral",
-  race: "titan",
+  race: "Titan",
   
   // Special handling in game logic for start-of-game effect
   class: "Neutral"
@@ -154,7 +154,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   
   keywords: ["stealth"],
   heroClass: "neutral",
-  race: "naga",
+  race: "Naga",
   
   
   // Special handling in game logic for on-kill effect
@@ -314,7 +314,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   keywords: [],
   
   heroClass: "neutral",
-  race: "dragon",
+  race: "Dragon",
   
   
   // Special handling in game logic for card copying
@@ -340,7 +340,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "dragon",
+      race: "Dragon",
       collectible: true,
 
                   battlecry: {
@@ -374,7 +374,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "dragon",
+      race: "Dragon",
 
       deathrattle: {
         type: "damage",
@@ -403,7 +403,7 @@ export const   iconicLegendaryCards: CardData[] = [{
 
       heroClass: "mage",
       class: "Mage",
-      race: "elemental",
+      race: "Elemental",
       deathrattle: {
         type: "damage",
       targetType: "all_minions",
@@ -462,7 +462,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "shaman",
-  race: "elemental",
+  race: "Elemental",
   
   // Special handling in game logic for healing effect
   class: "Shaman",
@@ -514,7 +514,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "automaton",
+      race: "Automaton",
 
                   battlecry: {
         type: "draw_by_type",
@@ -522,7 +522,7 @@ export const   iconicLegendaryCards: CardData[] = [{
           requiresTarget: false,
       targetType: "none",
 
-      drawTypes: ["beast", "dragon", "murloc"],
+      drawTypes: ["beast", "dragon", "naga"],
     }
     },
   {
@@ -691,7 +691,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "dragon",
+      race: "Dragon",
       collectible: true,
 
                   battlecry: {
@@ -720,7 +720,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   keywords: [],
   
   heroClass: "neutral",
-  race: "dragon",
+  race: "Dragon",
       class: "Neutral"
   },
   {
@@ -780,7 +780,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   keywords: [],
   
   heroClass: "neutral",
-  race: "titan",
+  race: "Titan",
   
   
   // Special handling in game logic for Flame summoning
@@ -806,7 +806,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
 
-      race: "beast",
+      race: "Beast",
       collectible: true,
 
       deathrattle: {
@@ -856,7 +856,7 @@ export const   iconicLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
       collectible: true,
                   battlecry: {
         type: "give_cards",
@@ -917,7 +917,7 @@ export const   iconicLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "einherjar",
+      race: "Einherjar",
       collectible: true,
                   battlecry: {
         type: "buff_weapon",

@@ -26,7 +26,7 @@ export const battlecryMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "neutral",
     class: "Neutral",
-    race: "beast",
+    race: "Beast",
     set: "core",
     collectible: true,
     battlecry: {
@@ -102,7 +102,7 @@ export const deathrattleMinions: CardData[] = [
     }
   },
   {
-    id: 40016,
+    id: 40050,
     name: "Mechanical Whelp",
     manaCost: 6,
     attack: 2,
@@ -113,7 +113,7 @@ export const deathrattleMinions: CardData[] = [
     keywords: ["deathrattle"],
     heroClass: "neutral",
     class: "Neutral",
-    race: "automaton",
+    race: "Automaton",
     set: "core",
     collectible: true,
     deathrattle: {
@@ -123,7 +123,7 @@ export const deathrattleMinions: CardData[] = [
     }
   },
   {
-    id: 40017,
+    id: 40051,
     name: "Explosive Sheep",
     manaCost: 2,
     attack: 1,
@@ -134,7 +134,7 @@ export const deathrattleMinions: CardData[] = [
     keywords: ["deathrattle"],
     heroClass: "neutral",
     class: "Neutral",
-    race: "automaton",
+    race: "Automaton",
     set: "core",
     collectible: true,
     deathrattle: {

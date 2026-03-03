@@ -28,7 +28,7 @@ function checkCondition(context: GameContext, condition: string | undefined, sou
     case 'has_divine_shield':
       return context.currentPlayer.board.some(m => m.hasDivineShield);
     case 'holding_dragon':
-      return context.currentPlayer.hand.some(c => (c.card as any).race === 'dragon');
+      return context.currentPlayer.hand.some(c => ((c.card as any).race || '').toLowerCase() === 'dragon');
     case 'combo':
       return (context.currentPlayer.cardsPlayedThisTurn || 0) > 0;
     default:

@@ -155,7 +155,7 @@ server/
 ### Card System (`game/data/`)
 - **Single source**: `allCards.ts` contains all 1,400+ cards
 - Card registry with ID ranges in `cardRegistry/ID_RANGES.md`
-- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 31001-31806 expansion gap-fill, 50000-50366 pets (37 families)
+- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 31001-31806 expansion gap-fill, 50000-50376 pets (38 families), 85001-85010 rogue
 
 ### Combat System (`game/combat/`)
 - `RagnarokCombatArena.tsx` - Main arena component with poker integration
@@ -192,7 +192,7 @@ Six unique Norse-themed mechanics with dedicated card files:
 - **Prophecy** (`prophecyCards.ts`, IDs 30101-30107): Visible countdown timers on the board
 - **Realm Shift** (`realmShiftCards.ts`, IDs 30301-30309): Change the active battlefield realm
 - **Ragnarok Chain** (`ragnarokChainCards.ts`, IDs 30401-30410): Paired minions with linked destiny
-- **Pet Evolution** (`pets/`, IDs 50000-50366): 37 Norse families, 3-3-1 evolution (Stage 2/3 cost 0 mana)
+- **Pet Evolution** (`pets/`, IDs 50000-50376): 38 Norse families, 3-3-1 evolution (Stage 2/3 cost 0 mana)
 
 Game logic for these mechanics lives in:
 
@@ -382,7 +382,7 @@ vercel --prod                 # Deploy to Vercel
 - Prophecy system (7 cards, visible countdown timers, 7 resolve effect types)
 - Realm Shift system (9 cards, board-wide rule changes across the Nine Realms)
 - Ragnarok Chain system (10 cards, 5 mythological pairs with linked destiny)
-- Pet Evolution system (259 cards, 37 families, 3-3-1 evolution, Stage 2/3 cost 0 mana, evolve info icon, "?" stats on unevolved Stage 3)
+- Pet Evolution system (266 cards, 38 families, 3-3-1 evolution, Stage 2/3 cost 0 mana, evolve info icon, "?" stats on unevolved Stage 3)
 - Vanilla Minions (7 baseline stat cards for evaluation benchmarks)
 - Berserker class rename (formerly Demon Hunter)
 - Rune keyword rename (formerly Secret, display text only)
@@ -408,6 +408,24 @@ vercel --prod                 # Deploy to Vercel
 - Cross-Norse-mechanic synergy cards (5 cards: Weaver of Fates, Seidr Channeler, Bifrost Resonator, Einherjar Oath-Keeper, Ragnarok Harbinger)
 - Deepened thin keywords: Overkill +3, Frenzy +3, Inspire +4, Echo +3 cards
 - Expansion card IDs: 31001-31806 (see ID_RANGES.md)
+
+### Completed (Card Data Integrity Audit)
+
+- Fixed 22 duplicate card IDs: rogue combo cards re-IDed to 85001-85010, The Coin to 9050, mechanicCards to 40050-40051, Jötunn Thornback to 8501
+- Fixed Runic Bond (Magnetic) race check: `magneticUtils.ts` and `gameUtils.ts` now accept both `'mech'` and `'Automaton'` (case-insensitive)
+- Fixed DeathKnight class casing: 26 cards `"Deathknight"` → `"DeathKnight"`, heroes.ts `"deathknight"` → `"DeathKnight"`
+- Renamed remaining Warcraft IP: Deathstalker Rexxar → Skoll Death-Hunter, Uther of the Ebon Blade → Baldr Fallen Radiance, Shadowmourne → Helgrind's Cleaver, Morgl → Aegir the Tidecaller, Stranglethorn Tiger → Skogkatt Stalker, Ancient of Lore → Ancient of Wisdom (sub-options)
+- Fixed all murloc→naga effect references: 15 edits across 9 files (battlecry conditions, targetTypes, cardTypes, drawTypes, adapt handler)
+- Renamed `isMurlocCard()` → `isNagaCard()` in cardUtils.ts + all callers in battlecryUtils.ts
+- Fixed `silence_or_destroy_mech` → `silence_or_destroy_automaton` on card 27004 + added handler in battlecryUtils.ts
+- Fixed Krul/The Unshackled in highlanderUtils.ts: demon → titan race check (case-insensitive)
+- All race comparisons in effect handlers made case-insensitive: 10 handler files + battlecryUtils + spellUtils
+- Standardized race casing to Title Case: ~300+ fixes across 20+ files (Beast, Dragon, Automaton, Naga, Elemental, Titan, Einherjar, Spirit, Undead)
+- Updated tribe targets and targetTypeValidation in battlecryUtils.ts: added automaton, naga, titan, einherjar, spirit, draugr, undead
+- Summoned totem race `'totem'` → `'Spirit'` (Norse rename)
+- Created Ivaldi's Constructs pet family (#38): 7 cards, IDs 50370-50376, Fire/Electric/Neutral Automaton evolution
+- Renamed `hearthstoneInspired*` variables → `mythology*` in neutrals/index.ts (7 variable renames)
+- Added 13 missing keyword definitions: choose_one, outcast, quest, sidequest, spellburst, enrage, tradeable, recruit, cleave, aura, flying
 
 ### Next (Genesis Launch)
 

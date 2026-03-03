@@ -222,7 +222,7 @@ export function registerWarriorCards(): void {
     .manaCost(9)
     .health(30)
     .customProperty("armor", 5)
-    .description("Battlecry: Equip a 4/2 Shadowmourne that also damages adjacent minions.")
+    .description("Battlecry: Equip a 4/2 Helgrind's Cleaver that also damages adjacent minions.")
     .flavorText("The legendary warrior known for his battle fury and unyielding rage.")
     .type("hero")
     .rarity("mythic")
@@ -235,10 +235,10 @@ export function registerWarriorCards(): void {
     .collectible(true)
     .build();
 
-  // Shadowmourne
+  // Helgrind's Cleaver
   createCard()
     .id(5021)
-    .name("Shadowmourne")
+    .name("Helgrind's Cleaver")
     .manaCost(7)
     .attack(4)
     .durability(2)

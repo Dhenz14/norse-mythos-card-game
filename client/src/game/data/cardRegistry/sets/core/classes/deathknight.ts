@@ -9,7 +9,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "The prime currency of Helheim. Trades particularly well against life.",
     type: "spell",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "death_coil",
       value: 3,
@@ -27,7 +27,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Like a good neighbor, the undead are there!",
     type: "spell",
     rarity: "epic",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "summon",
       summonCardId: 3003,
@@ -45,7 +45,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "The bitter cold of Niflheim seeps into the marrow of its victims' bones.",
     type: "spell",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "freeze_and_damage",
       value: 2,
@@ -64,7 +64,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Whomsoever takes up this blade shall wield power eternal.",
     type: "weapon",
     rarity: "mythic",
-    class: "Deathknight",
+    class: "DeathKnight",
     collectible: true,
     set: "core"
   },
@@ -76,7 +76,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Boiling blood is a staple in the death knight diet.",
     type: "spell",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "aoe_with_on_kill",
       value: 1,
@@ -95,7 +95,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Enchanted with runes of power.",
     type: "weapon",
     rarity: "epic",
-    class: "Deathknight",
+    class: "DeathKnight",
     collectible: true,
     set: "core"
   },
@@ -107,7 +107,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Death knights can encase themselves in an icy fortress of invulnerability.",
     type: "spell",
     rarity: "epic",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "gain_armor_and_immunity",
       value: 5,
@@ -124,7 +124,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Death knights are masters of manipulation.",
     type: "spell",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "mind_control_temporary",
       targetType: "enemy_minion",
@@ -141,7 +141,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "When a prince becomes a death knight, it's a royal pain.",
     type: "hero",
     rarity: "mythic",
-    class: "Deathknight",
+    class: "DeathKnight",
     keywords: ["battlecry"],
     collectible: true,
     set: "core"
@@ -154,7 +154,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Death knights can open portals to the realm of the dead.",
     type: "spell",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "resurrect_random",
       value: 1,
@@ -171,7 +171,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "A shield made of bones. Pretty self-explanatory, actually.",
     type: "spell",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "buff_and_enchant",
       buffHealth: 2,
@@ -189,7 +189,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Blood death knights are vampiric fighters.",
     type: "spell",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "gain_armor_and_lifesteal",
       value: 4,
@@ -206,7 +206,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Frost death knights bring the bitter cold of Niflheim with them.",
     type: "spell",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "freeze_adjacent",
       targetType: "enemy_minion",
@@ -225,7 +225,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "A basic runeblade, the iconic weapon of the death knight.",
     type: "weapon",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     collectible: true,
     set: "core"
   },
@@ -237,7 +237,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Death knights can conjure chains of pure ice to bind their opponents.",
     type: "spell",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     spellEffect: {
       type: "freeze_and_draw",
       targetType: "any_enemy",
@@ -257,7 +257,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Every death knight starts somewhere.",
     type: "minion",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     keywords: ["battlecry"],
     battlecry: {
       type: "buff_weapon",
@@ -276,7 +276,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Champions of Helheim command legions of undead.",
     type: "minion",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     keywords: ["battlecry"],
     battlecry: {
       type: "buff_and_taunt",
@@ -298,7 +298,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Just your average, run-of-the-mill undead skeleton.",
     type: "minion",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     collectible: false,
     set: "core"
   },
@@ -312,7 +312,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "She once prayed to the Aesir for warmth. Now she answers with frost.",
     type: "minion",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     keywords: ["battlecry"],
     battlecry: {
       type: "freeze",
@@ -332,7 +332,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "The draugr carry plagues that felled entire villages along the fjords.",
     type: "minion",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     race: "Undead",
     keywords: ["deathrattle"],
     deathrattle: {
@@ -352,7 +352,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Carved with runes of binding, it feeds on the passing of the slain.",
     type: "minion",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     race: "Undead",
     keywords: [],
     minionEffect: {
@@ -373,7 +373,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Born in the howling winds of Niflheim, where even the dead shiver.",
     type: "minion",
     rarity: "rare",
-    class: "Deathknight",
+    class: "DeathKnight",
     keywords: [],
     aura: {
       type: "frozen_damage_bonus",
@@ -393,7 +393,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "In Helheim's forges, the dead are not mourned — they are repurposed.",
     type: "minion",
     rarity: "epic",
-    class: "Deathknight",
+    class: "DeathKnight",
     keywords: ["battlecry"],
     battlecry: {
       type: "consume_friendly",
@@ -415,7 +415,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Sleipnir's shadow breeds steeds that gallop between the realms of the living and the dead.",
     type: "minion",
     rarity: "common",
-    class: "Deathknight",
+    class: "DeathKnight",
     race: "Undead",
     keywords: ["charge", "deathrattle"],
     deathrattle: {
@@ -436,7 +436,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "The Valkyries of shadow do not choose the slain — they refuse to become them.",
     type: "minion",
     rarity: "epic",
-    class: "Deathknight",
+    class: "DeathKnight",
     keywords: ["deathrattle"],
     deathrattle: {
       type: "resummon_self",
@@ -455,7 +455,7 @@ export const deathknightCards: CardData[] = [
     flavorText: "Nidhogg's lesser kin, reborn in ice atop the peaks of Jotunheim.",
     type: "minion",
     rarity: "mythic",
-    class: "Deathknight",
+    class: "DeathKnight",
     race: "Dragon",
     keywords: ["battlecry"],
     battlecry: {

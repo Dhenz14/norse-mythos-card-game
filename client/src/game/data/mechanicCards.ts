@@ -70,7 +70,7 @@ export const   mechanicCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "beast",
+      race: "Beast",
 
                   battlecry: {
         type: "silence",
@@ -253,7 +253,7 @@ export const   mechanicCards: CardData[] = [{
 
       heroClass: "shaman",
       class: "Shaman",
-      race: "elemental",
+      race: "Elemental",
 
                   battlecry: {
         type: "damage",
@@ -307,7 +307,7 @@ export const   mechanicCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
 
       deathrattle: {
         type: "summon",
@@ -386,7 +386,7 @@ export const   mechanicCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
 
       deathrattle: {
         type: "summon",
@@ -414,7 +414,7 @@ export const   mechanicCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
 
       deathrattle: {
         type: "damage",
@@ -493,7 +493,7 @@ export const   mechanicCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
 
       deathrattle: {
         type: "heal",
@@ -521,7 +521,7 @@ export const   mechanicCards: CardData[] = [{
 
       heroClass: "rogue",
       class: "Rogue",
-      race: "beast",
+      race: "Beast",
 
                   battlecry: {
         type: "transform", // Special handling to copy deathrattle
@@ -574,7 +574,7 @@ export const   mechanicCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
-      race: "automaton",
+      race: "Automaton",
 
       deathrattle: {
         type: "summon",
@@ -678,7 +678,7 @@ export const   mechanicCards: CardData[] = [{
       keywords: ["deathrattle"],
       heroClass: "warlock",
       class: "Warlock",
-      race: "titan",
+      race: "Titan",
       deathrattle: {
         type: "summon",
         targetType: "none",
@@ -705,7 +705,7 @@ export const tokenCards: CardData[] = [
     keywords: ["charge"],
     heroClass: "hunter",
     class: 'Hunter',
-    race: "beast",
+    race: "Beast",
     collectible: false
   },
   // Token for Fenrir's Call (formerly Feral Spirit)
@@ -735,7 +735,7 @@ export const tokenCards: CardData[] = [
     keywords: [],
     heroClass: "neutral",
     class: "Neutral",
-    race: "automaton",
+    race: "Automaton",
     collectible: false
   },
   {
@@ -778,7 +778,7 @@ export const tokenCards: CardData[] = [
     keywords: [],
     heroClass: "neutral",
     class: "Neutral",
-    race: "automaton",
+    race: "Automaton",
     collectible: false
   },
   {

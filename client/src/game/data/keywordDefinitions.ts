@@ -185,6 +185,61 @@ export const KEYWORD_DEFINITIONS: Record<string, KeywordDefinition> = {
 		description: 'The final evolution stage. Play this card to transform any eligible Stage 2 pet from the same family.',
 		icon: 'crown',
 	},
+	choose_one: {
+		name: 'Choose One',
+		description: 'Pick one of two effects when you play this card.',
+		icon: 'git-branch',
+	},
+	outcast: {
+		name: 'Outcast',
+		description: 'Bonus effect if played as the left- or right-most card in your hand.',
+		icon: 'arrow-right',
+	},
+	quest: {
+		name: 'Quest',
+		description: 'Starts in your hand. Complete the objective for a powerful reward.',
+		icon: 'flag',
+	},
+	sidequest: {
+		name: 'Sidequest',
+		description: 'Complete the objective for a bonus reward.',
+		icon: 'bookmark',
+	},
+	spellburst: {
+		name: 'Spellburst',
+		description: 'Triggers once after you cast a spell.',
+		icon: 'sparkles',
+	},
+	enrage: {
+		name: 'Enrage',
+		description: 'Gains a bonus effect while damaged.',
+		icon: 'angry',
+	},
+	tradeable: {
+		name: 'Tradeable',
+		description: 'Drag this into your deck to spend 1 mana and draw a new card.',
+		icon: 'repeat',
+	},
+	recruit: {
+		name: 'Recruit',
+		description: 'Summon a minion from your deck.',
+		icon: 'user-plus',
+	},
+	cleave: {
+		name: 'Cleave',
+		description: 'Also damages the minions next to whomever this attacks.',
+		icon: 'scissors',
+	},
+	aura: {
+		name: 'Aura',
+		description: 'Provides a persistent effect while this minion is on the board.',
+		icon: 'radio',
+	},
+	flying: {
+		name: 'Flying',
+		description: 'Can bypass Taunt minions and attack any target.',
+		icon: 'feather',
+	},
 };
 
 export function getKeywordDefinition(keyword: string): KeywordDefinition | null {

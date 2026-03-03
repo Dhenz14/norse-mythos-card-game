@@ -36,6 +36,7 @@ import { einherjarWarriorsPets } from './einherjarWarriors';
 import { ratatoskrMessengersPets } from './ratatoskrMessengers';
 import { naglfarPets } from './naglfar';
 import { muspelPhoenixesPets } from './muspelPhoenixes';
+import { ivaldiConstructsPets } from './ivaldiConstructs';
 
 export const allFamilyPets: CardData[] = [
 	...wolvesPets,
@@ -75,6 +76,7 @@ export const allFamilyPets: CardData[] = [
 	...ratatoskrMessengersPets,
 	...naglfarPets,
 	...muspelPhoenixesPets,
+	...ivaldiConstructsPets,
 ];
 
 export {
@@ -115,4 +117,5 @@ export {
 	ratatoskrMessengersPets,
 	naglfarPets,
 	muspelPhoenixesPets,
+	ivaldiConstructsPets,
 };

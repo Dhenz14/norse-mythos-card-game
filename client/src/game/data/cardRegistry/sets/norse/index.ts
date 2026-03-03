@@ -168,7 +168,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "summon",
@@ -198,7 +198,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "destroy",
@@ -230,7 +230,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "resurrect_random_buffed",
@@ -263,7 +263,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "damage_all",
@@ -295,7 +295,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "destroy_low_health",
@@ -327,7 +327,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "summon",
@@ -356,7 +356,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "destroy_and_summon",
@@ -385,7 +385,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "damage_all",
@@ -448,7 +448,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "summon",
@@ -479,7 +479,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["lifesteal", "battlecry"],
     battlecry: {
       type: "aura_debuff",
@@ -507,7 +507,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["windfury"],
     onAttack: {
       type: "grant_keyword",
@@ -530,7 +530,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     aura: {
       type: "attack_debuff",
@@ -557,7 +557,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "silence_all",
@@ -583,7 +583,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     onAttack: {
       type: "damage",
       targetType: "all_enemies",
@@ -636,7 +636,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     onDamageTaken: {
       type: "heal_self",
@@ -662,7 +662,7 @@ const norseLegendaryCreatures: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     endOfTurn: {
       type: "freeze",
       targetType: "random_enemy_minion"
@@ -692,7 +692,7 @@ const fireElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_and_scale",
@@ -719,7 +719,7 @@ const fireElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     endOfTurn: {
       type: "damage",
@@ -746,7 +746,7 @@ const fireElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_and_grant_deathrattle",
@@ -776,7 +776,7 @@ const fireElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "destroy_frozen_and_damage",
@@ -803,7 +803,7 @@ const fireElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "conditional_damage",
@@ -837,7 +837,7 @@ const earthElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_adjacent",
@@ -870,7 +870,7 @@ const earthElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["taunt", "battlecry", "deathrattle"],
     battlecry: {
       type: "buff_by_hand_size",
@@ -900,7 +900,7 @@ const earthElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "summon_by_condition",
@@ -923,7 +923,7 @@ const earthElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     endOfTurn: {
       type: "buff_self_with_heal",
@@ -950,7 +950,7 @@ const earthElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "heal_hero",
@@ -982,7 +982,7 @@ const earthElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt"],
     startOfTurn: {
       type: "heal_all",
@@ -1009,7 +1009,7 @@ const earthElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_all",
@@ -1036,7 +1036,7 @@ const earthElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "elusive"],
     startOfTurn: {
       type: "buff_self",
@@ -1064,7 +1064,7 @@ const holyElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "draw_conditional",
@@ -1093,7 +1093,7 @@ const holyElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "resurrect_conditional",
@@ -1155,7 +1155,7 @@ const waterElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "freeze_all",
@@ -1186,7 +1186,7 @@ const waterElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["poisonous", "battlecry"],
     battlecry: {
       type: "freeze_or_destroy",
@@ -1213,7 +1213,7 @@ const waterElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["stealth"],
     startOfTurn: {
       type: "transform_random_enemy",
@@ -1239,7 +1239,7 @@ const waterElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "bounce_and_damage",
@@ -1268,7 +1268,7 @@ const lightningElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "charge"],
     aura: {
       type: "self_buff_per_ally",
@@ -1291,7 +1291,7 @@ const lightningElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge"],
     onAttack: {
       type: "buff_self",
@@ -1313,7 +1313,7 @@ const lightningElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "battlecry"],
     aura: {
       type: "buff_friendly",
@@ -1342,7 +1342,7 @@ const lightningElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "dragon",
+    race: "Dragon",
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_and_stun",
@@ -1369,7 +1369,7 @@ const lightningElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying"],
     onAttack: {
       type: "reduce_spell_cost",
@@ -1391,7 +1391,7 @@ const lightningElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge"],
     onAttack: {
       type: "damage_all",
@@ -1413,7 +1413,7 @@ const lightningElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge"],
     onAttack: {
       type: "damage_all",
@@ -1435,7 +1435,7 @@ const lightningElementLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "summon",
@@ -1470,7 +1470,7 @@ const fireMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
@@ -1499,7 +1499,7 @@ const darkMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "damage",
@@ -1522,7 +1522,7 @@ const darkMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "debuff",
@@ -1546,7 +1546,7 @@ const darkMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "compound",
@@ -1572,7 +1572,7 @@ const darkMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["poisonous", "battlecry"],
     battlecry: {
       type: "compound",
@@ -1598,7 +1598,7 @@ const darkMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["stealth", "battlecry"],
     passive: {
       type: "stealth_bonus_damage",
@@ -1626,7 +1626,7 @@ const darkMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     onAttack: {
       type: "debuff",
@@ -1655,7 +1655,7 @@ const darkMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     onAttack: {
       type: "debuff",
@@ -1696,7 +1696,7 @@ const lightMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "heal",
@@ -1719,7 +1719,7 @@ const lightMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["charge"],
     onAttack: {
       type: "buff",
@@ -1742,7 +1742,7 @@ const lightMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "heal_self",
@@ -1764,7 +1764,7 @@ const lightMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     startOfTurn: {
       type: "heal_all",
@@ -1799,7 +1799,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_temporary_self",
@@ -1823,7 +1823,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_buff_self",
@@ -1847,7 +1847,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_grant_keyword",
@@ -1870,7 +1870,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_buff_self",
@@ -1894,7 +1894,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "buff",
@@ -1919,7 +1919,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_temporary_self",
@@ -1943,7 +1943,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_conditional",
@@ -1967,7 +1967,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "elusive"],
     categories: ["norse_mythology", "neutral_minion", "neutral_rare"],
     collectible: true
@@ -1984,7 +1984,7 @@ const neutralMinions: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["taunt", "battlecry"],
     passive: {
       type: "damage_reduction",
@@ -2018,7 +2018,7 @@ const greekLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "buff_temporary",
@@ -2049,7 +2049,7 @@ const greekLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "heal_hero",
@@ -2080,7 +2080,7 @@ const greekLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "elemental",
+    race: "Elemental",
     keywords: ["battlecry"],
     battlecry: {
       type: "force_attack_adjacent",
@@ -2111,7 +2111,7 @@ const greekLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "discover",
@@ -2143,7 +2143,7 @@ const greekLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["deathrattle"],
     deathrattle: {
       type: "damage_conditional",
@@ -2172,7 +2172,7 @@ const greekLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: [],
     endOfTurn: {
       type: "heal_all",
@@ -2204,7 +2204,7 @@ const greekLegendaries: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    race: "beast",
+    race: "Beast",
     keywords: ["battlecry"],
     battlecry: {
       type: "grant_stealth_temporary",

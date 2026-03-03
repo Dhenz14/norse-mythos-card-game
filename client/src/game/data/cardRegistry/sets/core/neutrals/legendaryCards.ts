@@ -56,7 +56,7 @@ export const classLegendaryMinions: CardData[] = [
     description: "Windfury, Charge, Divine Shield, Taunt",
     keywords: ["windfury", "charge", "divine_shield", "taunt"],
     heroClass: "shaman",
-    race: "elemental",
+    race: "Elemental",
     class: "Shaman",
     set: "core",
     collectible: true

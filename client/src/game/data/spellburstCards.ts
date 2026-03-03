@@ -117,7 +117,7 @@ export const spellburstCards: CardData[] = [
     keywords: ["spellburst"],
     heroClass: "neutral", 
     class: "Neutral",
-    race: "dragon",
+    race: "Dragon",
     spellburstEffect: {
       type: "discover",
       value: 2,

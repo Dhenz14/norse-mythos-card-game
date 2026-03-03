@@ -331,7 +331,7 @@ export const additionalClassMinions: CardData[] = [
 
       heroClass: "hunter",
       class: "Hunter",
-      race: "beast",
+      race: "Beast",
 
       deathrattle: {
         type: "summon",
@@ -355,7 +355,7 @@ export const additionalClassMinions: CardData[] = [
   description: "Whenever a friendly Beast dies, gain +2/+1.",
   keywords: [],
   
-  heroClass: "hunter", race: "beast",
+  heroClass: "hunter", race: "Beast",
   
   // Special handling in game logic for buff on beast death
   
@@ -419,7 +419,7 @@ export const additionalClassMinions: CardData[] = [
   },
   {
     id: 40010,
-    name: 'Ancient of Lore',
+    name: 'Ancient of Wisdom',
       manaCost: 7,
 
       attack: 5,
@@ -436,7 +436,7 @@ export const additionalClassMinions: CardData[] = [
       chooseOneOptions: [
         {
           id: 40010.1,
-          name: "Ancient of Lore: Draw",
+          name: "Ancient of Wisdom: Draw",
           manaCost: 7,
           type: "spell",
           rarity: "epic",
@@ -454,7 +454,7 @@ export const additionalClassMinions: CardData[] = [
         },
         {
           id: 40010.2,
-          name: "Ancient of Lore: Heal",
+          name: "Ancient of Wisdom: Heal",
           manaCost: 7,
           type: "spell",
           rarity: "epic",
@@ -515,7 +515,7 @@ export const additionalClassMinions: CardData[] = [
 
       heroClass: "warlock",
       class: "Warlock",
-      race: "titan",
+      race: "Titan",
 
                   battlecry: {
         type: "damage",
@@ -543,7 +543,7 @@ export const additionalClassMinions: CardData[] = [
       heroClass: "warlock",
       class: "Warlock",
 
-      race: "titan",
+      race: "Titan",
                   battlecry: {
         type: "draw", // Special handling for discard
     value: -2, // Negative to indicate discard
@@ -567,7 +567,7 @@ export const additionalClassMinions: CardData[] = [
   description: "Whenever you play a card with Overload, gain +1/+1.",
   keywords: [],
   
-  heroClass: "shaman", race: "elemental",
+  heroClass: "shaman", race: "Elemental",
   
   // Special handling in game logic for buff on Overload
   
@@ -585,7 +585,7 @@ export const additionalClassMinions: CardData[] = [
     description: "After your hero attacks, gain +1 Attack.",
     keywords: [],
     heroClass: "berserker", 
-    race: "titan",
+    race: "Titan",
     // Special handling in game logic for attack gain
     class: "Berserker",
     collectible: true

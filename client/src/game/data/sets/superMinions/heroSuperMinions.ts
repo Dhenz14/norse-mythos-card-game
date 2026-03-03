@@ -225,7 +225,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "mage",
     class: "Mage",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-odin",
     isSuperMinion: true,
     battlecry: {
@@ -296,7 +296,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     heroClass: "mage",
     class: "Mage",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-eldrin",
     isSuperMinion: true,
     battlecry: {
@@ -323,7 +323,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "mage",
     class: "Mage",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-logi",
     isSuperMinion: true,
     battlecry: {
@@ -346,7 +346,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry", "overload"],
     heroClass: "mage",
     class: "Mage",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-zeus",
     isSuperMinion: true,
     battlecry: {
@@ -396,7 +396,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "mage",
     class: "Mage",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-hyperion",
     isSuperMinion: true,
     battlecry: {
@@ -473,7 +473,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "warlock",
     class: "Warlock",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-mani",
     isSuperMinion: true,
     battlecry: {
@@ -496,7 +496,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "warlock",
     class: "Warlock",
-    race: "dragon",
+    race: "Dragon",
     linkedHeroId: "hero-thryma",
     isSuperMinion: true,
     battlecry: {
@@ -519,7 +519,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "warlock",
     class: "Warlock",
-    race: "titan",
+    race: "Titan",
     linkedHeroId: "hero-hades",
     isSuperMinion: true,
     battlecry: {
@@ -569,7 +569,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "warlock",
     class: "Warlock",
-    race: "titan",
+    race: "Titan",
     linkedHeroId: "king-tartarus",
     isSuperMinion: true,
     battlecry: {
@@ -619,7 +619,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     heroClass: "necromancer",
     class: "Necromancer",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-sol",
     isSuperMinion: true,
     battlecry: {
@@ -648,7 +648,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "necromancer",
     class: "Necromancer",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-sinmara",
     isSuperMinion: true,
     battlecry: {
@@ -671,7 +671,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     heroClass: "necromancer",
     class: "Necromancer",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-hel",
     isSuperMinion: true,
     battlecry: {
@@ -703,7 +703,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["rush", "battlecry", "deathrattle"],
     heroClass: "warrior",
     class: "Warrior",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-thor",
     isSuperMinion: true,
     battlecry: {
@@ -733,7 +733,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["taunt", "battlecry"],
     heroClass: "warrior",
     class: "Warrior",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-thorgrim",
     isSuperMinion: true,
     battlecry: {
@@ -756,7 +756,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["taunt", "poisonous", "battlecry"],
     heroClass: "warrior",
     class: "Warrior",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-valthrud",
     isSuperMinion: true,
     battlecry: {
@@ -823,7 +823,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["taunt", "battlecry"],
     heroClass: "warrior",
     class: "Warrior",
-    race: "automaton",
+    race: "Automaton",
     linkedHeroId: "hero-hephaestus",
     isSuperMinion: true,
     battlecry: {
@@ -1078,7 +1078,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["rush", "battlecry", "deathrattle"],
     heroClass: "priest",
     class: "Priest",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-frey",
     isSuperMinion: true,
     battlecry: {
@@ -1193,7 +1193,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["taunt", "battlecry"],
     heroClass: "priest",
     class: "Priest",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-hestia",
     isSuperMinion: true,
     battlecry: {
@@ -1336,7 +1336,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["taunt", "battlecry"],
     heroClass: "druid",
     class: "Druid",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-blainn",
     isSuperMinion: true,
     battlecry: {
@@ -1364,7 +1364,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "shaman",
     class: "Shaman",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-gerd",
     isSuperMinion: true,
     battlecry: {
@@ -1387,7 +1387,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "shaman",
     class: "Shaman",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-gefjon",
     isSuperMinion: true,
     battlecry: {
@@ -1454,7 +1454,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "shaman",
     class: "Shaman",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-poseidon",
     isSuperMinion: true,
     battlecry: {
@@ -1482,7 +1482,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["rush", "battlecry", "deathrattle"],
     heroClass: "rogue",
     class: "Rogue",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-loki",
     isSuperMinion: true,
     battlecry: {
@@ -1530,7 +1530,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["poisonous", "battlecry"],
     heroClass: "rogue",
     class: "Rogue",
-    race: "dragon",
+    race: "Dragon",
     linkedHeroId: "hero-gormr",
     isSuperMinion: true,
     battlecry: {
@@ -1553,7 +1553,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["stealth", "battlecry"],
     heroClass: "rogue",
     class: "Rogue",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-lirien",
     isSuperMinion: true,
     battlecry: {
@@ -1625,7 +1625,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["rush", "battlecry"],
     heroClass: "hunter",
     class: "Hunter",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-skadi",
     isSuperMinion: true,
     battlecry: {
@@ -1670,7 +1670,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["rush", "windfury", "battlecry"],
     heroClass: "hunter",
     class: "Hunter",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-fjora",
     isSuperMinion: true,
     battlecry: {
@@ -1737,7 +1737,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["stealth", "battlecry"],
     heroClass: "hunter",
     class: "Hunter",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-artemis",
     isSuperMinion: true,
     battlecry: {
@@ -1765,7 +1765,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["rush", "lifesteal", "battlecry"],
     heroClass: "berserker",
     class: "Berserker",
-    race: "titan",
+    race: "Titan",
     linkedHeroId: "hero-myrka",
     isSuperMinion: true,
     battlecry: {
@@ -1788,7 +1788,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["rush", "battlecry"],
     heroClass: "berserker",
     class: "Berserker",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-ylva",
     isSuperMinion: true,
     battlecry: {
@@ -1867,7 +1867,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "mage",
     class: "Mage",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-fujin",
     isSuperMinion: true,
     battlecry: {
@@ -1983,7 +1983,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["stealth", "poisonous", "battlecry"],
     heroClass: "rogue",
     class: "Rogue",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-serqet",
     isSuperMinion: true,
     battlecry: {
@@ -2006,7 +2006,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["taunt", "battlecry"],
     heroClass: "priest",
     class: "Priest",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-khepri",
     isSuperMinion: true,
     battlecry: {
@@ -2029,7 +2029,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["battlecry"],
     heroClass: "mage",
     class: "Mage",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-shu",
     isSuperMinion: true,
     battlecry: {
@@ -2057,7 +2057,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["poisonous", "battlecry", "deathrattle"],
     heroClass: "rogue",
     class: "Rogue",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-loki",
     isSuperMinion: true,
     battlecry: {
@@ -2090,7 +2090,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["divine_shield", "taunt", "battlecry"],
     heroClass: "paladin",
     class: "Paladin",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-heimdall",
     isSuperMinion: true,
     battlecry: {
@@ -2114,7 +2114,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["stealth", "rush", "deathrattle"],
     heroClass: "hunter",
     class: "Hunter",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-artemis",
     isSuperMinion: true,
     deathrattle: {
@@ -2137,7 +2137,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["lifesteal", "rush", "battlecry"],
     heroClass: "priest",
     class: "Priest",
-    race: "beast",
+    race: "Beast",
     linkedHeroId: "hero-freya",
     isSuperMinion: true,
     battlecry: {
@@ -2161,7 +2161,7 @@ export const heroSuperMinions: CardData[] = [
     keywords: ["windfury", "battlecry"],
     heroClass: "shaman",
     class: "Shaman",
-    race: "elemental",
+    race: "Elemental",
     linkedHeroId: "hero-poseidon",
     isSuperMinion: true,
     battlecry: {

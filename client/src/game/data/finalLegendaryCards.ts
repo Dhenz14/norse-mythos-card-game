@@ -22,7 +22,7 @@ export const finalLegendaryCards: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     heroClass: "neutral", 
     class: "Neutral", 
-    race: "beast",
+    race: "Beast",
     collectible: true,
     battlecry: {
       type: "destroy",
@@ -50,7 +50,7 @@ export const finalLegendaryCards: CardData[] = [
     keywords: [],
     heroClass: "neutral", 
     class: "Neutral", 
-    race: "beast",
+    race: "Beast",
     collectible: false,
     cantBeTargetedBySpells: true
   },
@@ -67,7 +67,7 @@ export const finalLegendaryCards: CardData[] = [
     keywords: ["deathrattle"],
     heroClass: "neutral", 
     class: "Neutral", 
-    race: "automaton",
+    race: "Automaton",
     collectible: true,
     deathrattle: {
       type: "destroy",
@@ -130,7 +130,7 @@ export const finalLegendaryCards: CardData[] = [
     keywords: ["charge"],
     heroClass: "neutral", 
     class: "Neutral",
-    race: "einherjar",
+    race: "Einherjar",
     collectible: true,
     costModifier: {
       type: "friendly_minion_count",
@@ -147,16 +147,16 @@ export const finalLegendaryCards: CardData[] = [
     type: "minion",
     rarity: "rare",
     description: "Charge. Has +1 Attack for each other Naga on the battlefield.",
-    flavorText: "He's a legend among murlocs. He leads raids on coastal towns. He knows all the fishing spots. He's Ran's Champion!",
+    flavorText: "He's a legend among nagas. He leads raids on coastal towns. He knows all the fishing spots. He's Ran's Champion!",
     keywords: ["charge"],
     heroClass: "neutral", 
     class: "Neutral",
-    race: "naga",
+    race: "Naga",
     collectible: true,
     dynamicAttack: {
       type: "minion_count",
       value: 1,
-      condition: "other_murlocs"
+      condition: "other_nagas"
     }
   },
   {
@@ -336,7 +336,7 @@ export const finalLegendaryCards: CardData[] = [
     flavorText: "I can't see it. Can you see it? I can't see it.",
     keywords: ["rush", "divine_shield"],
     heroClass: "paladin", 
-    race: "beast",
+    race: "Beast",
     class: "Paladin",
     collectible: true,
     cantBeTargetedBySpells: true
@@ -413,7 +413,7 @@ export const finalLegendaryCards: CardData[] = [
     flavorText: "She's the mother of all stone elementals, but she's never taken a single one of them for granite.",
     keywords: ["taunt"],
     heroClass: "shaman", 
-    race: "elemental",
+    race: "Elemental",
     // Special handling for end of turn summoning
     class: "Shaman",
     collectible: true
