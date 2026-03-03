@@ -682,7 +682,7 @@ A simple wooden bowl, worn smooth by centuries of faithful use, held at a slight
 ---
 
 ## 36. Ve's Gift of Speech
-**Card ID:** 29925 | **Hero:** Ve (Demon Hunter) | **Attack:** 1
+**Card ID:** 29925 | **Hero:** Ve (Berserker) | **Attack:** 1
 
 **Flavor Text:**
 > "Ve gave humanity sight, speech, and hearing. Through his gift, the silence of creation was broken forever."
@@ -929,12 +929,12 @@ A curved talon — a single massive hawk's claw — mounted as a hooked blade on
 
 ---
 
-# NORSE GODS — KNIGHTS (Demon Hunter)
+# NORSE GODS — KNIGHTS (Berserker)
 
 ---
 
 ## 49. Myrka's Void Scythe
-**Card ID:** 29938 | **Hero:** Myrka (Demon Hunter) | **Attack:** 3
+**Card ID:** 29938 | **Hero:** Myrka (Berserker) | **Attack:** 3
 
 **Flavor Text:**
 > "Born of Ginnungagap, the yawning void before creation. Its edge cuts through existence itself."
@@ -952,7 +952,7 @@ A great scythe whose blade is made of solidified void — not black metal, but a
 ---
 
 ## 50. Ylva's Fang of Fenrir
-**Card ID:** 29939 | **Hero:** Ylva (Demon Hunter) | **Attack:** 2
+**Card ID:** 29939 | **Hero:** Ylva (Berserker) | **Attack:** 2
 
 **Flavor Text:**
 > "Fenrir's fangs reach from earth to sky. Even a fragment of that dread jaw carries the hunger of the world-eater."
@@ -1204,7 +1204,7 @@ I'll continue with condensed entries for the remaining artifacts to keep the gui
 ---
 
 ## 77. Khepri's Sacred Scarab
-**Card ID:** 29966 | **Hero:** Khepri (Demon Hunter) | **Attack:** 1
+**Card ID:** 29966 | **Hero:** Khepri (Berserker) | **Attack:** 1
 **Prompt:** A massive scarab beetle carved from lapis lazuli and gold — the sacred dung beetle that pushes the sun. The scarab's wings are partially spread, revealing a miniature sun (a golden orb) cradled between its legs. The beetle's carapace is midnight blue lapis with gold hieroglyph inlays spelling "kheper" (to come into being). The scarab radiates dawn-light — the first light of each new day. Tiny cracks in the lapis show where previous scarabs have shattered and been reborn. Background: the Egyptian dawn — the sun rising between two mountains, the scarab's shadow stretching across golden sand.
 **Key Attributes:** Lapis lazuli and gold scarab, miniature sun between its legs, spread wings, dawn-light radiation, "kheper" hieroglyph inlays, dawn between mountains.
 

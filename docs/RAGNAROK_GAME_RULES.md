@@ -245,7 +245,7 @@ Hand strength determines who wins the showdown:
 
 ## 7. Status Effects
 
-Status effects are debuffs that can be applied to minions through legendary minion attacks and certain spells. Each god's legendary minion applies a unique status effect on attack.
+Status effects are debuffs that can be applied to minions through mythic minion attacks and certain spells. Each god's mythic minion applies a unique status effect on attack.
 
 ### 7.1. Status Effect List
 
@@ -319,9 +319,9 @@ If frozen, the minion cannot act. If not frozen but paralyzed, roll 50% chance.
 - After dealing damage, the burning minion takes 3 self-damage
 - This self-damage can kill the attacker
 
-### 7.4. Legendary Minion Status Effects
+### 7.4. Mythic Minion Status Effects
 
-Each god's legendary signature minion applies a status effect on attack:
+Each god's mythic signature minion applies a status effect on attack:
 
 | Element | Status Effect | Example Gods |
 |---------|---------------|--------------|
@@ -544,7 +544,7 @@ Based on the Ragnarok poker combat UI (HP = dual stat design):
 ### Pet Cards
 - Represent your battle pets
 - Display: Image, Stats, Abilities
-- Rarity tiers: Common, Rare, Epic, Legendary
+- Rarity tiers: Common, Rare, Epic, Mythic
 
 ### Spell Cards
 - One-time use abilities
@@ -568,7 +568,7 @@ Based on the Ragnarok poker combat UI (HP = dual stat design):
 ### Pet Card Stats (Poker Combat)
 - **Top Left:** Mana/Stamina cost
 - **Center:** HP (serves as both health AND betting power)
-- **Card Frame:** Rarity indicator (Gold=Legendary, Silver=Epic, etc.)
+- **Card Frame:** Rarity indicator (Gold=Mythic, Silver=Epic, etc.)
 
 > **Note:** In poker combat, pets do not have a separate attack stat. HP is the dual stat that represents both survivability and wagering potential.
 

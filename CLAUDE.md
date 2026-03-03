@@ -34,15 +34,15 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 
 ### Game Features
 - 1,400+ collectible cards across 4 mythological factions
-- 76 playable heroes across 12 classes
+- 77 playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
-- Single-player campaign (40 missions across 4 factions)
+- Single-player campaign (56 missions across 5 factions)
 - Tournament system (Swiss + single elimination brackets)
 - Card crafting & trading (dust economy)
 - Spectator mode (read-only P2P connection)
 - Match replay viewer with playback controls
-- Daily quest system (18 quest templates)
+- Daily quest system (19 quest templates)
 - Friends list with presence polling
 - Deck import/export via shareable codes
 - Settings with audio, visual, gameplay configuration
@@ -91,13 +91,13 @@ client/src/
 │   ├── data/               # Card definitions, heroes
 │   │   ├── allCards.ts     # Single source of truth (1400+ cards)
 │   │   ├── cardRegistry/   # Card sets by ID ranges
-│   │   ├── dailyQuestPool.ts # 18 quest templates
+│   │   ├── dailyQuestPool.ts # 19 quest templates
 │   │   ├── keywordDefinitions.ts # All keyword names + descriptions
-│   │   └── norseHeroes/    # 76 playable heroes
+│   │   └── norseHeroes/    # 77 playable heroes
 │   ├── campaign/           # Campaign system
 │   │   ├── campaignTypes.ts # Mission, chapter, AI profile types
 │   │   ├── campaignStore.ts # Progress tracking (Zustand + persist)
-│   │   ├── chapters/       # 4 faction chapters (10 missions each)
+│   │   ├── chapters/       # 5 faction chapters (56 missions total)
 │   │   └── index.ts        # Barrel exports + ALL_CHAPTERS
 │   ├── crafting/           # Crafting economy
 │   │   ├── craftingConstants.ts # Dust values + craft costs
@@ -172,7 +172,7 @@ server/
 3. Change the value - no other files need editing
 
 ### Effect System (`game/effects/`)
-- 99 battlecry handlers in `handlers/battlecry/`
+- 94 battlecry handlers in `handlers/battlecry/`
 - 16 deathrattle handlers in `handlers/deathrattle/`
 - 71 spell effect handlers in `handlers/spellEffect/`
 - All handlers export default functions and are indexed in their `index.ts`
@@ -286,7 +286,7 @@ client/src/data/blockchain/tournamentRewards.ts
 - **Prophecy**: `Prophecy` interface on `GameState.prophecies[]`; countdown ticks in `endTurn()`; `resolveProphecy()` handles 7 effect types
 - **Realm Shift**: `RealmState` on `GameState.activeRealm`; `realm_shift` spell effect in `spellUtils.ts`; start/end-of-turn realm effects in `gameUtils.ts`
 - **Ragnarok Chain**: `chainPartner` + `chainEffect` fields on `MinionCardData`; both-in-play buffs in `playCard()`; partner-death triggers in `destroyCard()`
-- **Pet Evolution**: 3-3-1 family system (37 families, 259 cards); `petStage`, `petFamily`, `petFamilyTier`, `evolvesInto/From`, `evolutionCondition`, `stage3Variants` fields; Stage 2/3 cost 0 mana (free evolution); `attemptPetEvolution()` in `gameUtils.ts` handles transform + variant selection; `checkPetEvolutionTrigger()` fires on 15 triggers across gameUtils/spellUtils/battlecryUtils/zoneUtils; evolve info icon on Stage 2/3 cards in SimpleCard.tsx; Stage 3 cards show "?" for ATK/HP until evolved (cyan glow via `hasStage3Variants` flag)
+- **Pet Evolution**: 3-3-1 family system (38 families, 266 cards); `petStage`, `petFamily`, `petFamilyTier`, `evolvesInto/From`, `evolutionCondition`, `stage3Variants` fields; Stage 2/3 cost 0 mana (free evolution); `attemptPetEvolution()` in `gameUtils.ts` handles transform + variant selection; `checkPetEvolutionTrigger()` fires on 15 triggers across gameUtils/spellUtils/battlecryUtils/zoneUtils; evolve info icon on Stage 2/3 cards in SimpleCard.tsx; Stage 3 cards show "?" for ATK/HP until evolved (cyan glow via `hasStage3Variants` flag)
 - **Rune** (renamed from Secret): Description text says "Rune" but underlying keyword is still `secret` for backwards compatibility
 - **Runic Bond** (renamed from Magnetic): Description says "Runic Bond" but keyword is still `magnetic`
 - **Yggdrasil Golem** (renamed from Jade Golem): Effect key is `summon_yggdrasil_golem`; handlers still in files named `summonJadeGolemHandler.ts`
@@ -329,7 +329,7 @@ vercel --prod                 # Deploy to Vercel
 ```text
 /              → HomePage (quests, friends, navigation)
 /game          → RagnarokChessGame (single-player)
-/campaign      → CampaignPage (40 missions, 4 factions)
+/campaign      → CampaignPage (56 missions, 5 factions)
 /multiplayer   → MultiplayerGame (P2P ranked)
 /tournaments   → TournamentListPage (brackets, registration)
 /packs         → PacksPage (open card packs)
@@ -360,9 +360,9 @@ vercel --prod                 # Deploy to Vercel
 
 - Settings system (audio, visual, gameplay, keybindings)
 - Deck import/export via shareable base64 codes
-- Daily quest system (18 templates, 3 active, daily refresh)
+- Daily quest system (19 templates, 3 active, daily refresh)
 - Friends list (presence polling, challenge invites)
-- Single-player campaign (40 missions, 4 factions, difficulty scaling)
+- Single-player campaign (56 missions, 5 factions, difficulty scaling)
 - Card crafting (dust economy: disenchant/craft, 8:1 cost ratio)
 - Card trading (P2P trade offers with dust + cards)
 - Tournament system (Swiss + elimination, server-managed brackets)
@@ -373,7 +373,7 @@ vercel --prod                 # Deploy to Vercel
 - Per-move state hashing (SHA-256 state hash after each action)
 - Loading screen (Norse lore quotes, rune spinner)
 - Tutorial overlay (15-step onboarding walkthrough)
-- Keyword definitions (30+ keywords with descriptions)
+- Keyword definitions (47 keywords with descriptions)
 
 ### Completed (Norse Mechanics Expansion)
 

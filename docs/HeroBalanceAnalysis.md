@@ -21,14 +21,14 @@ This document provides a comprehensive balance analysis of the per-hero card ass
 | Shaman | Gerd, Gefjon, Ran |
 | Rogue | Loki, Hoder, Gormr, Lirien |
 | Hunter | Skadi, Aegir, Fjora |
-| Demon Hunter | Myrka, Ylva |
+| Berserker | Myrka, Ylva |
 
 ## Hero Power Tiers
 
 ### Tier 1 (Strongest)
 - **Gul'dan (Warlock)** - Late game dominance with Lord Jaraxxus + Twisting Nether
 - **Valeera (Rogue)** - Explosive combo potential with Edwin VanCleef + Preparation
-- **Illidan (Demon Hunter)** - Card advantage with Skull of Gul'dan + Metamorphosis
+- **Illidan (Berserker)** - Card advantage with Skull of Gul'dan + Metamorphosis
 - **Malfurion (Druid)** - Ramp into big threats with Innervate + Overgrowth
 
 ### Tier 2 (Strong)
@@ -37,7 +37,7 @@ This document provides a comprehensive balance analysis of the per-hero card ass
 - **Anduin (Priest)** - Sustained value with Raza + Murozond
 - **Rexxar (Hunter)** - Board flood with Call of the Wild + Unleash
 - **Thrall (Shaman)** - Al'Akir finisher with elemental synergy
-- **Arthas (Death Knight)** - Frostmourne legendary weapon
+- **Arthas (Death Knight)** - Frostmourne mythic weapon
 
 ### Tier 3 (Balanced)
 All remaining heroes (Medivh, Khadgar, Tamsin, Magni, Deathwing, Darion, Tyrande, Lazul, Lunara, Morgl, Maiev, Shaku, Alleria, Kayn)
@@ -148,7 +148,7 @@ All remaining heroes (Medivh, Khadgar, Tamsin, Magni, Deathwing, Darion, Tyrande
 | Rexxar | Beast Swarm | Call of the Wild (8), Unleash the Hounds (3) | HIGH |
 | Alleria | Secret Control | Explosive Trap, Freezing Trap, Eaglehorn Bow | MEDIUM |
 
-#### Demon Hunters
+#### Berserkers
 
 | Hero | Playstyle | Key Cards | Power Level |
 |------|-----------|-----------|-------------|
@@ -182,4 +182,4 @@ This causes registration collisions where the last-registered class overwrites s
 1. **Monitor Tier 1 heroes** for overperformance in playtesting
 2. **Consider buffing Tier 3 heroes** if they underperform
 3. **Resolve Shaman/Necromancer ID conflict** to ensure all cards are available
-4. **Legendary variance** (Jaraxxus, Antonidas, Frostmourne) creates exciting but high-variance games - this is intentional for card game depth
+4. **Mythic variance** (Jaraxxus, Antonidas, Frostmourne) creates exciting but high-variance games - this is intentional for card game depth

@@ -5,7 +5,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 - **Hero Power** (2 mana cost) - Usable each turn
 - **Weapon Upgrade** (5 mana cost) - One-time purchase that permanently upgrades the hero power
 - **Passive Ability** - Always active effect
-- **Signature Legendary Minion** - Included in their 10-card fixed deck
+- **Signature Mythic Minion** - Included in their 10-card fixed deck
 
 ---
 
@@ -16,7 +16,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Queen** | Wisdom/Magic | Mage, Warlock, Necromancer |
 | **Rook** | Strength | Warrior, Paladin, Death Knight |
 | **Bishop** | Wisdom | Priest, Druid, Shaman |
-| **Knight** | Trickery/Speed | Rogue, Hunter, Demon Hunter |
+| **Knight** | Trickery/Speed | Rogue, Hunter, Berserker |
 
 ---
 
@@ -283,7 +283,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Electric |
 | **Health** | 120 |
 | **Class** | Warrior |
-| **Signature Card** | Grass-element Legendary |
+| **Signature Card** | Grass-element Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -301,7 +301,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Water |
 | **Health** | 145 |
 | **Class** | Warrior |
-| **Signature Card** | Fire-element Legendary |
+| **Signature Card** | Fire-element Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -319,7 +319,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Water |
 | **Health** | 100 |
 | **Class** | Necromancer |
-| **Signature Card** | Fire-element Legendary |
+| **Signature Card** | Fire-element Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -429,7 +429,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Light |
 | **Health** | 115 |
 | **Class** | Necromancer |
-| **Signature Card** | Undead Legendary |
+| **Signature Card** | Undead Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -447,7 +447,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Electric |
 | **Health** | 125 |
 | **Class** | Shaman |
-| **Signature Card** | Elemental Totem Legendary |
+| **Signature Card** | Elemental Totem Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -465,7 +465,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Dark |
 | **Health** | 100 |
 | **Class** | Paladin |
-| **Signature Card** | Light Legendary |
+| **Signature Card** | Light Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -483,7 +483,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Water |
 | **Health** | 140 |
 | **Class** | Warrior |
-| **Signature Card** | War Legendary |
+| **Signature Card** | War Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -501,7 +501,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Light |
 | **Health** | 120 |
 | **Class** | Rogue |
-| **Signature Card** | Dark Legendary |
+| **Signature Card** | Dark Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -519,7 +519,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Dark |
 | **Health** | 115 |
 | **Class** | Priest |
-| **Signature Card** | Light Legendary |
+| **Signature Card** | Light Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -537,7 +537,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Fire |
 | **Health** | 125 |
 | **Class** | Hunter |
-| **Signature Card** | Beast Legendary |
+| **Signature Card** | Beast Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -555,7 +555,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | **Weakness** | Electric |
 | **Health** | 120 |
 | **Class** | Druid |
-| **Signature Card** | Nature Legendary |
+| **Signature Card** | Nature Mythic |
 
 | Ability | Name | Description |
 |---------|------|-------------|
@@ -1246,7 +1246,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 | Shaman | 5 | 2 | 7 |
 | Necromancer | 2 | 1 | 3 |
 | Death Knight | 0 | 0 | 0 |
-| Demon Hunter | 0 | 0 | 0 |
+| Berserker | 0 | 0 | 0 |
 
 ### By Element Distribution
 | Element | Count |
@@ -1261,7 +1261,7 @@ This document contains all playable gods in Ragnarok Poker (excluding Kings). Ea
 
 ---
 
-## Legendary Minions by Element
+## Mythic Minions by Element
 
 ### Fire Element (IDs 4351-4361)
 | Card ID | Name | Mana | Attack/Health | Notes |

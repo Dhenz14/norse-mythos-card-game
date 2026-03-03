@@ -1015,7 +1015,7 @@ Each chess piece type has specific Norse heroes available for selection. Heroes 
 ---
 
 ### Knight - Loki's Domain (Trickery/Speed)
-**Spell Pools:** Rogue, Hunter, Demon Hunter
+**Spell Pools:** Rogue, Hunter, Berserker
 
 | Hero | Class | Element | Role |
 |------|-------|---------|------|
@@ -1025,8 +1025,8 @@ Each chess piece type has specific Norse heroes available for selection. Heroes 
 | **Skadi** | Hunter | Ice | Freeze specialist |
 | **Aegir** | Hunter | Water | Buff and freeze |
 | **Fjora** | Hunter | Grass | Nature discover |
-| **Myrka** | Demon Hunter | Water | Debuff control |
-| **Ylva** | Demon Hunter | Grass | Wolf summons |
+| **Myrka** | Berserker | Water | Debuff control |
+| **Ylva** | Berserker | Grass | Wolf summons |
 | **Lirien** | Rogue | Water | Heal and freeze |
 
 ---
@@ -1056,7 +1056,7 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 
 #### Mage Heroes (Odin, Bragi, Kvasir, Eldrin)
 
-**Signature Minion:** Archmage Antonidas (14005) - Legendary spell synergy
+**Signature Minion:** Archmage Antonidas (14005) - Mythic spell synergy
 
 | Spell Pool A (Odin) | Spell Pool B (Bragi) | Spell Pool C (Kvasir) |
 |---------------------|----------------------|----------------------|
@@ -1088,7 +1088,7 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 
 #### Necromancer Heroes (Sol, Sinmara)
 
-**Signature Minion:** Lich Queen (4009) - 9 mana 4/8 legendary undead
+**Signature Minion:** Lich Queen (4009) - 9 mana 4/8 mythic undead
 
 | Spell Pool A (Sol) | Spell Pool B (Sinmara) |
 |--------------------|------------------------|
@@ -1160,7 +1160,7 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 
 #### Priest Heroes (Freya, Eir, Frey)
 
-**Signature Minion:** Murozond the Infinite (5114) - 8/8 legendary
+**Signature Minion:** Murozond the Infinite (5114) - 8/8 mythic
 
 | Spell Pool A (Freya) | Spell Pool B (Eir) | Spell Pool C (Frey) |
 |----------------------|---------------------|---------------------|
@@ -1176,7 +1176,7 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 
 #### Druid Heroes (Idunn, Ve, Fjorgyn)
 
-**Signature Minion:** Cenarius (33003) - 9 mana 5/8 legendary choose one
+**Signature Minion:** Cenarius (33003) - 9 mana 5/8 mythic choose one
 
 | Spell Pool A (Idunn/Fjorgyn) | Spell Pool B (Ve) |
 |------------------------------|-------------------|
@@ -1192,7 +1192,7 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 
 #### Shaman Heroes (Gerd, Gefjon, Ran)
 
-**Signature Minion:** Al'Akir the Windlord (5117) - 8 mana legendary
+**Signature Minion:** Al'Akir the Windlord (5117) - 8 mana mythic
 
 | Spell Pool A (Gerd/Ran) | Spell Pool B (Gefjon) |
 |-------------------------|----------------------|
@@ -1208,11 +1208,11 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 
 ---
 
-### Knight Heroes (Rogue/Hunter/Demon Hunter)
+### Knight Heroes (Rogue/Hunter/Berserker)
 
 #### Rogue Heroes (Loki, Hoder, Gormr, Lirien)
 
-**Signature Minion:** Edwin VanCleef (12404) - Combo scaling legendary
+**Signature Minion:** Edwin VanCleef (12404) - Combo scaling mythic
 
 | Spell Pool A (Loki/Lirien) | Spell Pool B (Hoder) | Spell Pool C (Gormr) |
 |----------------------------|----------------------|----------------------|
@@ -1228,7 +1228,7 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 
 #### Hunter Heroes (Skadi, Aegir, Fjora)
 
-**Signature Minion:** Fang Commander (7020) - 7 mana 5/5 legendary
+**Signature Minion:** Fang Commander (7020) - 7 mana 5/5 mythic
 
 | Spell Pool A (Skadi/Fjora) | Spell Pool B (Aegir) |
 |----------------------------|----------------------|
@@ -1242,7 +1242,7 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 | Freezing Trap (7102) | Deadly Shot (7005) |
 | Multi-Shot (7103) | Hunter's Mark (7105) |
 
-#### Demon Hunter Heroes (Myrka, Ylva)
+#### Berserker Heroes (Myrka, Ylva)
 
 **Signature Minion:** Altruis the Outcast (9112) - Outcast AoE minion
 

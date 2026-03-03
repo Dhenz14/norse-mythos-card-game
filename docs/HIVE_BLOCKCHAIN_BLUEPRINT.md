@@ -110,7 +110,7 @@ The Ragnarok account broadcasts a single genesis transaction before any minting 
     "common":     10000,
     "rare":        4000,
     "epic":        1500,
-    "legendary":    500
+    "mythic":       500
   },
   "reader_hash": "sha256:<hash_of_reader_source>"
 }
@@ -963,7 +963,7 @@ This is a **community airdrop, not a for-profit sale**. Cards are distributed fr
 
 ```
 Genesis distribution (500,000 total):
-  Legendary:   5,000  cards
+  Mythic:      5,000  cards
   Epic:       50,000  cards
   Rare:      150,000  cards
   Common:    295,000  cards
@@ -1280,7 +1280,7 @@ XP is **derived from match_result during replay** — no separate `xp_update` op
 | Common    | 10        | Moderate thresholds  |
 | Rare      | 8         | Higher thresholds    |
 | Epic      | 6         | High thresholds      |
-| Legendary | 4         | Very high thresholds |
+| Mythic    | 4         | Very high thresholds |
 
 Thresholds defined in `cardXPSystem.ts:XP_CONFIG`.
 
@@ -1301,7 +1301,7 @@ Tier thresholds by rarity (`EVOLUTION_TIER_MAP` in `cardLevelScaling.ts`):
 | Common    | 1-3             | 4-7                | 8-10            |
 | Rare      | 1-3             | 4-6                | 7-8             |
 | Epic      | 1-2             | 3-4                | 5-6             |
-| Legendary | 1               | 2-3                | 4               |
+| Mythic    | 1               | 2-3                | 4               |
 
 ### 16.4 How Scaling is Applied
 

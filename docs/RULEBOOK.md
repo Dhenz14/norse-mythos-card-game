@@ -118,7 +118,7 @@ Each hero has three unique abilities:
 | Common | Gray | 40 | 5 |
 | Rare | Blue | 100 | 20 |
 | Epic | Purple | 400 | 100 |
-| Legendary | Orange | 1600 | 400 |
+| Mythic | Orange | 1600 | 400 |
 | Token | Gray (darker) | N/A | N/A |
 
 ### Card ID Ranges
@@ -129,7 +129,7 @@ Each hero has three unique abilities:
 | 2000-2999 | Rare/Epic Neutrals |
 | 3000-3999 | Epic Neutrals & Giants |
 | 4000-4499 | Necromancer Class |
-| 4300-4399 | Norse Legendary Creatures |
+| 4300-4399 | Norse Mythic Creatures |
 | 4500-4999 | Neutral Spells |
 | 5000-5999 | Warrior Class |
 | 6000-6999 | Mage Class |
@@ -417,7 +417,7 @@ Poker Spells are cast during the **Spell/Pet Phase** (before the Faith phase). E
 | **Blood Bet** | 2 | Pay 1 STA: Force opponent to match your bet or fold immediately |
 | **Void Stare** | 2 | Nullify opponent's next Bluff token |
 
-**Legendary Spells** (Game Changers):
+**Mythic Spells** (Game Changers):
 
 | Card | Mana | Effect |
 |------|------|--------|
@@ -787,8 +787,8 @@ When attacking with elemental advantage:
 ### Basic Rules
 
 - **9 cards** per hand (max)
-- Maximum **2 copies** of any card (except Legendaries)
-- Maximum **1 copy** of Legendary cards
+- Maximum **2 copies** of any card (except Mythics)
+- Maximum **1 copy** of Mythic cards
 - Can include **class cards** and **neutral cards**
 - Cannot include cards from other classes
 

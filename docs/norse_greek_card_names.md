@@ -35,7 +35,7 @@ This document tracks all Norse and Greek mythology-themed card names used in the
 - **Pyralis the Ancient** (5006) - 4 mana 3/4 - Flying, Battlecry: Deal 2 damage to random enemy
 - **Phoenix Reborn** (5007) - 5 mana 4/4 - Flying, Deathrattle: Resummon with 1 Health
 
-### Legendary (Evolution)
+### Mythic (Evolution)
 - **Surtur's Spawn** (5008) - 6 mana 6/5 - Rush, Battlecry: Deal 3 damage to all enemies
 - **Muspelheim's Fury** (5009) - 6 mana 5/6 - Rush, Passive: +1 Attack per friendly fire minion
 - **Inferno Drake** (5010) - 5 mana 4/4 - Flying, Battlecry: Deal 2 damage to all enemies
@@ -56,7 +56,7 @@ This document tracks all Norse and Greek mythology-themed card names used in the
 - **Deep Sea Leviathan** (5108) - 5 mana 4/6 - Taunt, Battlecry: Freeze 2 random enemies
 - **Abyssal Lurker** (5109) - 4 mana 3/5 - Stealth, Battlecry: Freeze an enemy
 
-### Legendary (Evolution)
+### Mythic (Evolution)
 - **Maelstrom Serpent** (5110) - 6 mana 5/6 - Rush, Battlecry: Freeze all enemies
 - **Frostweaver Titan** (5111) - 6 mana 4/7 - Taunt, Battlecry: Freeze all enemies, +1 Attack per frozen
 - **Niflheim's Chosen** (5112) - 7 mana 5/7 - Battlecry: Freeze board, deal 1 damage to frozen
@@ -73,7 +73,7 @@ This document tracks all Norse and Greek mythology-themed card names used in the
 - **Leaf Stag** (6210) - 4 mana 3/4 - Rush, Battlecry: +2 Health this turn
 - **Gefjon's Ox** (6211) - 7 mana 6/7 - Taunt, damage attacker for 3
 
-### Legendary (Evolution)
+### Mythic (Evolution)
 - **Thorn Warden** (6220) - 5 mana 3/5 - Taunt, Battlecry: Restore 3 HP to all allies
 - **Yggdrasil's Bough** (6221) - 5 mana 3/6 - Taunt, Battlecry: Restore 3 HP to all allies
 - **Elven Hart** (6222) - 6 mana 4/6 - Rush, Battlecry: +1/+1 to all allies, heal 2 to hero
@@ -91,7 +91,7 @@ This document tracks all Norse and Greek mythology-themed card names used in the
 - **Storm Raven** (5304) - 4 mana 3/3 - Flying, Battlecry: Deal 2 damage to random enemy
 - **Tempest Hawk** (5305) - 4 mana 3/4 - Flying, Battlecry: Deal 2 damage to random enemy
 
-### Legendary (Evolution)
+### Mythic (Evolution)
 - **Thunder Wraith** (5306) - 5 mana 4/3 - Battlecry: Deal 2 damage to all enemies, Passive: 1 damage to played enemies
 - **Skoll's Storm** (5307) - 5 mana 4/4 - Charge, Battlecry: Deal 2 damage to all enemies
 - **Sleipnir's Charge** (5308) - 6 mana 5/4 - Rush, Battlecry: Deal 3 damage to enemy
@@ -107,7 +107,7 @@ This document tracks all Norse and Greek mythology-themed card names used in the
 - **Nightmare Stallion** (5402) - 4 mana 4/3 - Stealth, Battlecry: Deal 2 damage to enemy
 - **Umbraclaw** (5403) - 4 mana 3/4 - Stealth, Battlecry: Deal 2 damage to random enemy
 
-### Legendary (Evolution)
+### Mythic (Evolution)
 - **Voidfang** (5404) - 5 mana 4/5 - Stealth, Battlecry: Deal 3 damage to all enemies
 - **Dusk Serpent** (5405) - 5 mana 4/4 - Stealth, Battlecry: Deal 2 damage to all enemies
 - **Helheim's Shade** (5406) - 6 mana 5/5 - Stealth, Deathrattle: Resummon
@@ -122,7 +122,7 @@ This document tracks all Norse and Greek mythology-themed card names used in the
 - **Radiant Spirit** (5502) - 3 mana 2/3 - Divine Shield, Battlecry: +1/+1 to ally
 - **Sunbeam Stag** (5503) - 4 mana 3/4 - Divine Shield, Battlecry: +2/+2 to ally
 
-### Legendary (Evolution)
+### Mythic (Evolution)
 - **Luminos Hart** (5504) - 5 mana 4/4 - Divine Shield, Battlecry: +2/+2 to all allies
 - **Daybreak Hawk** (5505) - 4 mana 3/3 - Flying, Divine Shield, Battlecry: +2/+1 to ally
 - **Aurora Phoenix** (5506) - 6 mana 5/5 - Divine Shield, Deathrattle: +3/+3 to all allies
@@ -140,7 +140,7 @@ This document tracks all Norse and Greek mythology-themed card names used in the
 - **Mountain Stag** (5555) - 4 mana 3/5 - Taunt, Battlecry: +2 Health to adjacent
 - **Ironhide Sow** (5557) - 6 mana 5/6 - Taunt, Elusive
 
-### Legendary (Evolution)
+### Mythic (Evolution)
 - **Granite Hound** (5558) - 5 mana 3/6 - Taunt, Passive: -1 damage taken
 
 ## Renamed Elemental Cards
