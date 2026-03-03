@@ -326,7 +326,7 @@ export const rogueCards: CardData[] = [
     health: 4,
     type: "minion",
     rarity: "mythic",
-    description: "Deathrattle: Return this to your hand and summon a 4/4 Nerubian.",
+    description: "Deathrattle: Return this to your hand and summon a 4/4 Draugr Spider.",
     flavorText: "The weaver transformed into a spider, she spins eternal schemes.",
     keywords: ["deathrattle"],
     class: "Rogue",

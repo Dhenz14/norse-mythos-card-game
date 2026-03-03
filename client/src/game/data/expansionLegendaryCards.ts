@@ -397,7 +397,7 @@ export const expansionLegendaryCards: CardData[] = [{
   type: "minion",
   rarity: "epic",
   
-  description: "Whenever you cast a 1-cost spell, add a random Mech to your hand.",
+  description: "Whenever you cast a 1-cost spell, add a random Automaton to your hand.",
   flavorText: "Gazlowe was voted 'Most Likely to Explode During a Rocketbike Festival.'",
   
   keywords: [],
@@ -418,7 +418,7 @@ export const expansionLegendaryCards: CardData[] = [{
   type: "minion",
   rarity: "epic",
   
-  description: "At the start of your turn, if you have at least 3 Mechs, destroy them all and form V-07-TR-0N.",
+  description: "At the start of your turn, if you have at least 3 Automatons, destroy them all and form V-07-TR-0N.",
   flavorText: "Do not push the big red button!",
   
   keywords: [],

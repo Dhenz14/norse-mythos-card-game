@@ -381,7 +381,7 @@ export const   mechanicCards: CardData[] = [{
       type: "minion",
       rarity: "rare",
 
-      description: "Deathrattle: Summon a 7/7 Mechanical Dragon.",
+      description: "Deathrattle: Summon a 7/7 Automaton Dragon.",
       keywords: ["deathrattle"],
 
       heroClass: "neutral",

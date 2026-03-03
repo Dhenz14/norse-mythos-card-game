@@ -365,7 +365,7 @@ export const hunterCards: CardData[] = [
   },
   {
     id: 7503,
-    name: "Misha",
+    name: "Bjorn",
     manaCost: 3,
     attack: 4,
     health: 4,
@@ -381,7 +381,7 @@ export const hunterCards: CardData[] = [
   },
   {
     id: 7504,
-    name: "Huffer",
+    name: "Geri",
     manaCost: 3,
     attack: 4,
     health: 2,
@@ -397,7 +397,7 @@ export const hunterCards: CardData[] = [
   },
   {
     id: 7505,
-    name: "Leokk",
+    name: "Freki",
     manaCost: 3,
     attack: 2,
     health: 4,

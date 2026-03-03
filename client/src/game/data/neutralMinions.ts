@@ -251,7 +251,7 @@ export const   neutralMinions: CardData[] = [{
       type: "minion",
       rarity: "epic",
 
-      description: "Battlecry: Adapt your Murlocs.",
+      description: "Battlecry: Adapt your Nagas.",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -941,7 +941,7 @@ export const   neutralMinions: CardData[] = [{
   type: "minion",
   rarity: "common",
   
-  description: "This is an Elemental, Mech, Demon, Murloc, Dragon, Beast, Pirate and Totem.",
+  description: "This is an Elemental, Automaton, Draugr, Naga, Dragon, Beast, Pirate and Totem.",
   keywords: [],
   
   heroClass: "neutral", race: "all",
@@ -1221,7 +1221,7 @@ export const   neutralMinions: CardData[] = [{
       type: "minion",
       rarity: "common",
 
-      description: "Battlecry: Summon a 2/1 Mechanical Dragonling.",
+      description: "Battlecry: Summon a 2/1 Automaton Dragonling.",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -1572,14 +1572,14 @@ export const   neutralMinions: CardData[] = [{
       type: "minion",
       rarity: "common",
 
-      description: "Battlecry: If you control a Mech, gain +1/+1 and add a spare part to your hand.",
+      description: "Battlecry: If you control an Automaton, gain +1/+1 and add a spare part to your hand.",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
       class: "Neutral",
                   battlecry: {
         type: "conditional_buff_and_add",
-        condition: "control_mech",
+        condition: "control_automaton",
         buffAttack: 1,
         buffHealth: 1
       },
@@ -1647,7 +1647,7 @@ export const   neutralMinions: CardData[] = [{
       type: "minion",
       rarity: "common",
 
-      description: "Battlecry: Give a friendly Mech +1/+1.",
+      description: "Battlecry: Give a friendly Automaton +1/+1.",
       keywords: ["battlecry"],
 
       heroClass: "neutral",

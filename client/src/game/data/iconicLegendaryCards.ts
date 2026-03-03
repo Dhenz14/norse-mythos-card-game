@@ -149,7 +149,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   type: "minion",
   rarity: "mythic",
   
-  description: "Stealth. After this attacks and kills a minion, summon 2 Murlocs from your deck.",
+  description: "Stealth. After this attacks and kills a minion, summon 2 Nagas from your deck.",
   flavorText: "The last true master of Finjitsu.",
   
   keywords: ["stealth"],
@@ -508,7 +508,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       type: "minion",
       rarity: "mythic",
 
-      description: "Taunt. Battlecry: Draw a Beast, Dragon, and Murloc from your deck.",
+      description: "Taunt. Battlecry: Draw a Beast, Dragon, and Naga from your deck.",
     flavorText: "Mímir the Keeper is a guardian of ancient wisdom who curates relics from all realms. Also, he can fly.",
     keywords: ["taunt", "battlecry"],
       heroClass: "neutral",

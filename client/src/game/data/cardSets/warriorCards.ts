@@ -66,7 +66,7 @@ export function registerWarriorCards(): void {
     .collectible(true)
     .build();
 
-  // Warsong Commander
+  // Valkyrie Warlord
   createCard()
     .id(5012)
     .name("Valkyrie Warlord")
@@ -74,7 +74,7 @@ export function registerWarriorCards(): void {
     .attack(2)
     .health(3)
     .description("Your Charge minions have +1 Attack.")
-    .flavorText("The Warsong Commander went through a lot of changes in her life, but she's now comfortable in her final form. (This is her final form.)")
+    .flavorText("The Valkyrie Warlord went through many trials, but she's now at peace with her power.")
     .type("minion")
     .rarity("common")
     .class("Warrior")
@@ -123,7 +123,7 @@ export function registerWarriorCards(): void {
     .collectible(true)
     .build();
 
-  // Kor'kron Elite
+  // Einherjar Elite
   createCard()
     .id(5015)
     .name("Einherjar Elite")
@@ -131,7 +131,7 @@ export function registerWarriorCards(): void {
     .attack(4)
     .health(3)
     .description("Charge")
-    .flavorText("The Kor'kron are the elite forces of Kratos Battleborn. Let's just say you don't want to run into these guys while wearing a blue tabard.")
+    .flavorText("The Einherjar elite are the fiercest warriors in Valhalla. Let's just say you don't want to face them unprepared.")
     .type("minion")
     .rarity("common")
     .class("Warrior")
@@ -243,7 +243,7 @@ export function registerWarriorCards(): void {
     .attack(4)
     .durability(2)
     .description("Also damages minions adjacent to whomever your hero attacks.")
-    .flavorText("Forged from the shattered shards of Frostmourne by Darion Mograine and wielded by Highlord Darion Mograine.")
+    .flavorText("Forged from the shattered shards of Hel's Edge in the fires of Nidavellir.")
     .type("weapon")
     .rarity("mythic")
     .class("Warrior")

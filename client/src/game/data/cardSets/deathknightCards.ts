@@ -33,7 +33,7 @@ export function registerDeathKnightCards(): void {
     .name("Death Coil")
     .manaCost(2)
     .description("Deal 3 damage to an enemy, or restore 3 Health to a friendly undead minion.")
-    .flavorText("The prime currency of the Scourge. Trades particularly well against life.")
+    .flavorText("The prime currency of Helheim. Trades particularly well against life.")
     .type("spell")
     .rarity("common")
     .class("Deathknight")
@@ -52,7 +52,7 @@ export function registerDeathKnightCards(): void {
     .name("Army of the Dead")
     .manaCost(6)
     .description("Summon three 2/2 Ghouls with Taunt.")
-    .flavorText("Like a good neighbor, the Scourge is there!")
+    .flavorText("Like a good neighbor, the undead are there!")
     .type("spell")
     .rarity("epic")
     .class("Deathknight")
@@ -71,7 +71,7 @@ export function registerDeathKnightCards(): void {
     .name("Remorseless Winter")
     .manaCost(4)
     .description("Freeze all enemy minions. Deal 2 damage to all Frozen enemies.")
-    .flavorText("The bitter cold of Northrend seeps into the marrow of its victims' bones.")
+    .flavorText("The bitter cold of Niflheim seeps into the marrow of its victims' bones.")
     .type("spell")
     .rarity("rare")
     .class("Deathknight")
@@ -83,10 +83,10 @@ export function registerDeathKnightCards(): void {
     .collectible(true)
     .build();
 
-  // Frostmourne
+  // Hel's Edge
   createCard()
     .id(3009)
-    .name("Frostmourne")
+    .name("Hel's Edge")
     .manaCost(7)
     .attack(5)
     .durability(3)
@@ -177,12 +177,12 @@ export function registerDeathKnightCards(): void {
     .collectible(true)
     .build();
 
-  // Arthas Menethil
+  // The Draugr King
   createCard()
     .id(3015)
-    .name("Arthas Menethil")
+    .name("The Draugr King")
     .manaCost(9)
-    .description("Battlecry: Equip Frostmourne and gain 5 Armor.")
+    .description("Battlecry: Equip Hel's Edge and gain 5 Armor.")
     .flavorText("When a prince becomes a death knight, it's a royal pain.")
     .type("hero")
     .rarity("mythic")
@@ -290,7 +290,7 @@ export function registerDeathKnightCards(): void {
     .name("Frost Presence")
     .manaCost(3)
     .description("Freeze an enemy and all adjacent minions.")
-    .flavorText("Frost death knights bring the bitter cold of Northrend with them wherever they go.")
+    .flavorText("Frost death knights bring the bitter cold of Niflheim with them wherever they go.")
     .type("spell")
     .rarity("rare")
     .class("Deathknight")
@@ -400,15 +400,15 @@ export function registerDeathKnightCards(): void {
     .collectible(true)
     .build();
 
-  // Scourge Champion
+  // Draugr Champion
   createCard()
     .id(3029)
-    .name("Scourge Champion")
+    .name("Draugr Champion")
     .manaCost(4)
     .attack(3)
     .health(3)
     .description("Battlecry: Give a friendly minion +2/+2 and Taunt.")
-    .flavorText("Champions of the Scourge command legions of undead. And they're very encouraging managers.")
+    .flavorText("Champions of Helheim command legions of undead. And they're very encouraging managers.")
     .type("minion")
     .rarity("rare")
     .class("Deathknight")

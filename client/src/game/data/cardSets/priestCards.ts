@@ -55,7 +55,7 @@ export function registerPriestCards(): void {
     .attack(3)
     .health(5)
     .description("Your cards and powers that restore Health now deal damage instead.")
-    .flavorText("The Auchenai know the end is coming, but they're not sure when.")
+    .flavorText("The priests of Hel know the end is coming, but they're not sure when.")
     .type("minion")
     .rarity("rare")
     .heroClass("priest")

@@ -57,7 +57,7 @@ export const deathKnightHeroCards: CardData[] = [
   },
   {
     id: 10502,
-    name: "Frost Lich Jaina",
+    name: "Skadi, Frost Queen",
     manaCost: 9,
     description: "Battlecry: Summon a 3/6 Water Elemental. Your Elementals have Lifesteal this game.",
     flavorText: "The ice queen rises, commanding the chill of death.",
@@ -70,10 +70,10 @@ export const deathKnightHeroCards: CardData[] = [
   },
   {
     id: 10503,
-    name: "Scourgelord Garrosh",
+    name: "Helheim's Warlord",
     manaCost: 8,
     description: "Battlecry: Equip a 4/3 Shadowmourne that also damages adjacent minions.",
-    flavorText: "The warchief embraces the power of the Scourge.",
+    flavorText: "The warchief embraces the power of Helheim.",
     rarity: "mythic",
     type: "hero",
     class: "Warrior",

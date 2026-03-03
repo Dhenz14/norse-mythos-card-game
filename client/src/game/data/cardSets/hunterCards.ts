@@ -52,7 +52,7 @@ const hunterCards = [
       type: "summon",
       value: 1,
       targetType: "none" as SpellTargetType,
-      summonCardId: 7503 // Will randomly choose between Misha, Huffer, and Leokk
+      summonCardId: 7503 // Will randomly choose between Bjorn, Geri, and Freki
     })
     .description("Summon a random Beast Companion.")
     .flavorText("You're never alone when you have a beast at your side.")
@@ -112,10 +112,10 @@ const hunterCards = [
     .collectible(false) // Token card
     .build(),
 
-  // Misha (token for Beast of Valhalla)
+  // Bjorn (token for Beast of Valhalla)
   createCard()
     .id(7503)
-    .name("Misha")
+    .name("Bjorn")
     .manaCost(3)
     .attack(4)
     .health(4)
@@ -129,10 +129,10 @@ const hunterCards = [
     .collectible(false) // Token card
     .build(),
 
-  // Huffer (token for Beast of Valhalla)
+  // Geri (token for Beast of Valhalla)
   createCard()
     .id(7504)
-    .name("Huffer")
+    .name("Geri")
     .manaCost(3)
     .attack(4)
     .health(2)
@@ -146,10 +146,10 @@ const hunterCards = [
     .collectible(false) // Token card
     .build(),
 
-  // Leokk (token for Beast of Valhalla)
+  // Freki (token for Beast of Valhalla)
   createCard()
     .id(7505)
-    .name("Leokk")
+    .name("Freki")
     .manaCost(3)
     .attack(2)
     .health(4)

@@ -240,7 +240,7 @@ const neutralTokens: CardData[] = [
 // ============================================
 // HUNTER TOKENS
 // ============================================
-// Note: Hound (7501), Misha (7503), Huffer (7504), Leokk (7505) are defined in hunter.ts
+// Note: Hound (7501), Bjorn (7503), Geri (7504), Freki (7505) are defined in hunter.ts
 const hunterTokens: CardData[] = [
   {
     id: 7510,
@@ -473,7 +473,7 @@ const necromancerTokens: CardData[] = [];
 // ============================================
 // BERSERKER TOKENS
 // ============================================
-// Note: Demonic Blast (9114), Illidari Initiate (9117) are defined in berserker.ts
+// Note: Berserker Blast (9114), Ulfhednar Initiate (9117) are defined in berserker.ts
 const berserkerTokens: CardData[] = [
   {
     id: 9118,

@@ -146,7 +146,7 @@ export const finalLegendaryCards: CardData[] = [
     health: 4,
     type: "minion",
     rarity: "rare",
-    description: "Charge. Has +1 Attack for each other Murloc on the battlefield.",
+    description: "Charge. Has +1 Attack for each other Naga on the battlefield.",
     flavorText: "He's a legend among murlocs. He leads raids on coastal towns. He knows all the fishing spots. He's Ran's Champion!",
     keywords: ["charge"],
     heroClass: "neutral", 

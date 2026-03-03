@@ -41,7 +41,7 @@ const heroes: HeroData[] = [
    {
       id: 1,
 
-      name: "Jaina Proudmoore",
+      name: "Freya Frostweaver",
       class: "mage",
 
       description: "The Archmage of the Rune Council and former leader of the Mystical Order.",
@@ -90,8 +90,8 @@ const heroes: HeroData[] = [
 {
           id: 1005,
 
-          name: "Daelin Proudmoore",
-          description: "Grand Admiral of Kul Tiras and father of Jaina Proudmoore."
+          name: "Njord Stormfather",
+          description: "Grand Admiral of Kul Tiras and father of Freya Frostweaver."
 
            },
 
@@ -160,7 +160,7 @@ const heroes: HeroData[] = [
       name: "Uther Lightbringer",
       class: "paladin",
 
-      description: "Leader of the Knights of the Silver Hand and mentor to Arthas Menethil.",
+      description: "Leader of the Knights of the Silver Hand and mentor to the Draugr King.",
       heroPowers: [{
 
           id: 103,
@@ -175,7 +175,7 @@ const heroes: HeroData[] = [
 
           id: 3001,
 
-          name: "Lady Liadrin",
+          name: "Sigyn, the Faithful",
           description: "First of the Blood Knights and wielder of the Light."
 
            },
@@ -191,8 +191,8 @@ const heroes: HeroData[] = [
 {
           id: 3003,
 
-          name: "Prince Arthas",
-          description: "The crown prince of Lordaeron before his descent into darkness."
+          name: "Prince Baldur",
+          description: "The shining prince of Asgard before his descent into darkness."
 
            },
 
@@ -392,10 +392,10 @@ const heroes: HeroData[] = [
 {
       id: 7,
 
-      name: "Gul'dan",
+      name: "Angrboda",
       class: "warlock",
 
-      description: "Founder of the Shadow Council and the first warlock.",
+      description: "Mother of monsters and the first shadow-weaver.",
       heroPowers: [{
 
           id: 107,
@@ -603,10 +603,10 @@ const heroes: HeroData[] = [
   {
       id: 11,
 
-      name: "Arthas Menethil",
+      name: "The Draugr King",
       class: "deathknight",
 
-      description: "The Lich King, former prince of Lordaeron who fell to darkness.",
+      description: "The Draugr King, a fallen prince of Asgard who embraced death.",
       heroPowers: [{
 
           id: 111,
@@ -621,8 +621,8 @@ const heroes: HeroData[] = [
 
           id: 11001,
 
-          name: "Darion Mograine",
-          description: "Highlord of the Black Riders and former Death Knight of Hel's army."
+          name: "Hermod Helwalker",
+          description: "Herald of Hel and the first Death Knight to return from Helheim."
 
            },
 
@@ -638,7 +638,7 @@ const heroes: HeroData[] = [
           id: 11003,
 
           name: "Koltira Deathweaver",
-          description: "Former high elf ranger transformed into a Death Knight by Arthas."
+          description: "Former high elf ranger transformed into a Death Knight by the Draugr King."
 
            },
 

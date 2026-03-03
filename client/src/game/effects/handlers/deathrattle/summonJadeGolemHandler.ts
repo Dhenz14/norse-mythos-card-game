@@ -26,7 +26,7 @@ export function getYggdrasilGolemCounter(): number {
 /**
  * Execute a summon_yggdrasil_golem deathrattle effect
  */
-export default function executeSummonJadeGolemSummonJadeGolem(
+export default function executeSummonYggdrasilGolem(
   context: GameContext,
   effect: DeathrattleEffect,
   sourceCard: Card | CardInstance

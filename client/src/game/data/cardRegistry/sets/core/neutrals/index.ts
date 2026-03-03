@@ -355,7 +355,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 5051,
     name: 'Sea Sprite Oracle',
-    description: 'ALL other Murlocs have +1 Attack.',
+    description: 'ALL other Nagas have +1 Attack.',
     flavorText: 'The wisest of the sea sprites, they say.',
     type: 'minion',
     rarity: 'common',
@@ -758,7 +758,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 30074,
     name: 'Craftsman of Nidavellir',
-    description: 'Battlecry: If you control a Mech, gain +1/+1 and add a spare part to your hand.',
+    description: 'Battlecry: If you control an Automaton, gain +1/+1 and add a spare part to your hand.',
     flavorText: 'The dwarven craftsmen of the dark fields.',
     type: 'minion',
     rarity: 'common',
@@ -771,7 +771,7 @@ const commonNeutralMinions: CardData[] = [
     set: 'core',
     battlecry: {
       type: 'conditional_buff_and_add',
-      condition: 'control_mech',
+      condition: 'control_automaton',
       buffAttack: 1,
       buffHealth: 1
     }
@@ -800,7 +800,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 30077,
     name: 'Sprite of Alfheim',
-    description: 'Battlecry: Give a friendly Mech +1/+1.',
+    description: 'Battlecry: Give a friendly Automaton +1/+1.',
     flavorText: 'The light elves aid the divine constructs.',
     type: 'minion',
     rarity: 'common',
@@ -813,7 +813,7 @@ const commonNeutralMinions: CardData[] = [
     set: 'core',
     battlecry: {
       type: 'buff',
-      targetType: 'mech',
+      targetType: 'friendly_automaton',
       requiresTarget: true,
       buffAttack: 1,
       buffHealth: 1
@@ -1092,12 +1092,12 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 30095,
     name: 'Stubborn Turtle',
-    description: 'Battlecry: Deal 5 damage to your hero.',
+    description: 'Battlecry: Deal 3 damage to your hero.',
     flavorText: 'Ancient and grumpy beyond measure.',
     type: 'minion',
     rarity: 'common',
     manaCost: 3,
-    attack: 3,
+    attack: 4,
     health: 5,
     race: 'Beast',
     class: 'Neutral',
@@ -1106,7 +1106,7 @@ const commonNeutralMinions: CardData[] = [
     set: 'core',
     battlecry: {
       type: 'deal_damage_to_hero',
-      value: 5,
+      value: 3,
       requiresTarget: false
     }
   },
@@ -2001,7 +2001,7 @@ const rareNeutralMinions: CardData[] = [
   {
     id: 27004,
     name: 'Tech Priest of Hephaestus',
-    description: 'Battlecry: Silence a minion. If it is a Mech, destroy it.',
+    description: 'Battlecry: Silence a minion. If it is an Automaton, destroy it.',
     flavorText: 'The divine smith knows how to unmake his creations.',
     type: 'minion',
     rarity: 'rare',
@@ -2075,7 +2075,7 @@ const rareNeutralSpells: CardData[] = [
   {
     id: 4501,
     name: 'Glowing Draugr',
-    description: 'Add 2 random Murlocs to your hand.',
+    description: 'Add 2 random Nagas to your hand.',
     flavorText: 'An undead Norse warrior whose eerie glow attracts sea spirits.',
     type: 'spell',
     rarity: 'rare',
@@ -2256,7 +2256,7 @@ const epicNeutralMinions: CardData[] = [
   {
     id: 30028,
     name: 'Crab of the Void',
-    description: 'Battlecry: Destroy a Murloc and gain +2/+2.',
+    description: 'Battlecry: Destroy a Naga and gain +2/+2.',
     flavorText: 'Even the sea creatures have enemies.',
     type: 'minion',
     rarity: 'epic',
@@ -2567,7 +2567,7 @@ const epicNeutralMinions: CardData[] = [
   {
     id: 27010,
     name: 'Divine Constructor',
-    description: 'At the end of your turn, summon a 1/1 Mech with Divine Shield.',
+    description: 'At the end of your turn, summon a 1/1 Automaton with Divine Shield.',
     flavorText: 'Building divine protection for the faithful.',
     type: 'minion',
     rarity: 'epic',
@@ -4377,7 +4377,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 3,
     type: 'minion',
     rarity: 'common',
-    description: 'Battlecry: Give your other Murlocs +2 Health.',
+    description: 'Battlecry: Give your other Nagas +2 Health.',
     keywords: ['battlecry'],
     race: 'naga',
     battlecry: {
@@ -4400,7 +4400,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 2,
     type: 'minion',
     rarity: 'rare',
-    description: 'Whenever you summon a Murloc, gain +1 Attack.',
+    description: 'Whenever you summon a Naga, gain +1 Attack.',
     flavorText: 'Calling upon the power of Aegir, lord of the sea.',
     keywords: [],
     race: 'naga',
@@ -5055,7 +5055,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 8,
     type: 'minion',
     rarity: 'epic',
-    description: "Colossal +2. Taunt. Battlecry: Draw 3 Murlocs from your deck.",
+    description: "Colossal +2. Taunt. Battlecry: Draw 3 Nagas from your deck.",
     flavorText: "The six-headed monster guards the strait between worlds.",
     keywords: ['colossal', 'taunt', 'battlecry'],
     class: 'Neutral',
@@ -6132,7 +6132,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 3,
     type: 'minion',
     rarity: 'epic',
-    description: 'Your other Murlocs have +2 Attack.',
+    description: 'Your other Nagas have +2 Attack.',
     flavorText: 'The sea goddess Ran favors her amphibian warriors.',
     keywords: ['aura'],
     race: 'Naga',
@@ -6178,7 +6178,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 1,
     type: 'minion',
     rarity: 'common',
-    description: 'Your other Murlocs have +1 Attack.',
+    description: 'Your other Nagas have +1 Attack.',
     flavorText: 'The ancient sea sprites speak prophecies of the deep.',
     keywords: ['aura'],
     race: 'Naga',
@@ -7165,7 +7165,7 @@ const hearthstoneInspiredNorseMythCards: CardData[] = [
     health: 2,
     type: 'minion',
     rarity: 'rare',
-    description: 'Whenever you summon a Murloc, gain +1 Attack.',
+    description: 'Whenever you summon a Naga, gain +1 Attack.',
     flavorText: 'The sea goddess Ran commands the tides and their creatures.',
     race: 'Naga',
     class: 'Neutral',
@@ -7180,7 +7180,7 @@ const hearthstoneInspiredNorseMythCards: CardData[] = [
     health: 4,
     type: 'minion',
     rarity: 'rare',
-    description: 'Charge. Has +1 Attack for each other Murloc on the battlefield.',
+    description: 'Charge. Has +1 Attack for each other Naga on the battlefield.',
     flavorText: 'From the darkest depths, the ancient eye awakens.',
     keywords: ['charge'],
     race: 'Naga',
@@ -7196,7 +7196,7 @@ const hearthstoneInspiredNorseMythCards: CardData[] = [
     health: 4,
     type: 'minion',
     rarity: 'epic',
-    description: 'Battlecry: Adapt your Murlocs.',
+    description: 'Battlecry: Adapt your Nagas.',
     flavorText: 'A gift from the sea god to his smallest servants.',
     keywords: ['battlecry'],
     race: 'Beast',
@@ -8747,7 +8747,7 @@ const comboTutorCards: CardData[] = [
   {
     id: 33221,
     name: 'Curator of the Menagerie',
-    description: 'Taunt. Battlecry: Draw a Beast, a Dragon, and a Murloc from your deck.',
+    description: 'Taunt. Battlecry: Draw a Beast, a Dragon, and a Naga from your deck.',
     flavorText: 'The divine menagerie holds creatures from every realm.',
     type: 'minion',
     rarity: 'epic',
@@ -8760,7 +8760,7 @@ const comboTutorCards: CardData[] = [
     collectible: true,
     battlecry: {
       type: 'draw_tribes',
-      tribes: ['Beast', 'Dragon', 'Murloc'],
+      tribes: ['Beast', 'Dragon', 'Naga'],
       requiresTarget: false
     }
   },

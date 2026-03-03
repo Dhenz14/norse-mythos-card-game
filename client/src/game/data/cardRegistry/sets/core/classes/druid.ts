@@ -929,7 +929,7 @@ export const druidCards: CardData[] = [
     manaCost: 2,
     type: "spell",
     rarity: "rare",
-    description: "Freeze an enemy minion. If you discarded a Grass Energy this turn, it can't attack next turn either.",
+    description: "Freeze an enemy minion. If you control a Beast, it can't attack next turn either.",
     flavorText: "The wilds ensnare those who trespass.",
     keywords: [],
     class: "Druid",
@@ -937,7 +937,7 @@ export const druidCards: CardData[] = [
       type: "freeze",
       targetType: "enemy_minion",
       requiresTarget: true,
-      bonusCondition: "discarded_grass_energy"
+      bonusCondition: "control_beast"
     },
     collectible: true,
     set: "core"

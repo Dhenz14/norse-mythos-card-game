@@ -914,7 +914,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 95238,
   
-  name: "Prince Renathal",
+  name: "Vidar, the Silent",
   manaCost: 3,
   
   attack: 3,
@@ -935,7 +935,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 95239,
 
-      name: "Sire Denathrius",
+      name: "Nidhogg, World Eater",
       manaCost: 10,
 
       attack: 10,

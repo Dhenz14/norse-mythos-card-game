@@ -39,7 +39,7 @@ export const colossalMinionCards: CardData[] = [
       attack: 5,
       health: 8,
       
-      description: "Colossal +2. Taunt.   Battlecry: Draw 3 Murlocs from your deck.",
+      description: "Colossal +2. Taunt.   Battlecry: Draw 3 Nagas from your deck.",
       rarity: "mythic",
       type: "minion",
       

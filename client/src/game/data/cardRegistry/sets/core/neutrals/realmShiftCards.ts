@@ -137,7 +137,8 @@ export const realmShiftCards: CardData[] = [
 			realmName: 'Jotunheim',
 			realmDescription: 'All minions have +2 Attack but -1 Health.',
 			realmEffects: [
-				{ type: 'buff_all_attack', value: 2, target: 'all' }
+				{ type: 'buff_all_attack', value: 2, target: 'all' },
+				{ type: 'debuff_all_health', value: 1, target: 'all' }
 			]
 		},
 		set: 'core',
@@ -146,7 +147,7 @@ export const realmShiftCards: CardData[] = [
 	{
 		id: 30307,
 		name: 'Gate to Alfheim',
-		manaCost: 2,
+		manaCost: 4,
 		description: 'Realm Shift: All minions have Elusive (can\'t be targeted by spells).',
 		flavorText: 'The light elves weave enchantments that shield all living things.',
 		type: 'spell',

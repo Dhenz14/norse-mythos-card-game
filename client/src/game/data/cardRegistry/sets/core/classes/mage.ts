@@ -514,9 +514,9 @@ export const mageCards: CardData[] = [
   {
     id: 20034,
     name: "Apollo, Light Weaver",
-    manaCost: 2,
-    attack: 2,
-    health: 2,
+    manaCost: 7,
+    attack: 4,
+    health: 4,
     type: "minion",
     rarity: "mythic",
     description: "Your cards that summon minions summon twice as many.",

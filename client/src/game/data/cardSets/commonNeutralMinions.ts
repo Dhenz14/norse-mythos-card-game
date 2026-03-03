@@ -43,7 +43,7 @@ export function registerCommonNeutralMinions(): void {
     .manaCost(4)
     .attack(2)
     .health(4)
-    .description("Battlecry: Summon a 2/1 Mechanical Dragonling.")
+    .description("Battlecry: Summon a 2/1 Automaton Dragonling.")
     .rarity("common")
     .type("minion")
     .heroClass("neutral")
@@ -308,14 +308,14 @@ export function registerCommonNeutralMinions(): void {
     .manaCost(3)
     .attack(3)
     .health(3)
-    .description("Battlecry: If you control a Mech, gain +1/+1 and add a spare part to your hand.")
+    .description("Battlecry: If you control an Automaton, gain +1/+1 and add a spare part to your hand.")
     .rarity("common")
     .type("minion")
     .heroClass("neutral")
     .addKeyword("battlecry")
     .battlecry({
       type: "conditional_buff_and_add",
-      condition: "control_mech",
+      condition: "control_automaton",
       buffAttack: 1,
       buffHealth: 1
     })
@@ -364,14 +364,14 @@ export function registerCommonNeutralMinions(): void {
     .manaCost(1)
     .attack(1)
     .health(1)
-    .description("Battlecry: Give a friendly Mech +1/+1.")
+    .description("Battlecry: Give a friendly Automaton +1/+1.")
     .rarity("common")
     .type("minion")
     .heroClass("neutral")
     .addKeyword("battlecry")
     .battlecry({
       type: "buff",
-      targetType: "friendly_mech",
+      targetType: "friendly_automaton",
       requiresTarget: true,
       buffAttack: 1,
       buffHealth: 1

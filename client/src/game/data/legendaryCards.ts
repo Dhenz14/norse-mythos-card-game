@@ -170,7 +170,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20015,
-    name: "Kael'thas Sunstrider",
+    name: "Surtr, Flame Eternal",
     manaCost: 7,
     attack: 4,
     health: 7,
@@ -199,7 +199,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20017,
-    name: "Blademaster Samuro",
+    name: "Tyr, Bladedancer",
     manaCost: 4,
     attack: 3,
     health: 4,
@@ -220,7 +220,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20018,
-    name: "Highlord Darion Mograine",
+    name: "Baldur, the Shining",
     manaCost: 8,
     attack: 6,
     health: 8,
@@ -260,7 +260,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20021,
-    name: "Queen Azshara",
+    name: "Ran, Queen of the Deep",
     manaCost: 5,
     attack: 5,
     health: 5,
@@ -302,7 +302,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20023,
-    name: "Lady Liadrin",
+    name: "Sigyn, the Faithful",
     manaCost: 7,
     attack: 4,
     health: 6,
@@ -384,11 +384,11 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20027,
-    name: "Bloodreaver Gul'dan",
+    name: "Hel's Bloodreaver",
     manaCost: 10,
     type: "hero",
     rarity: "mythic",
-    description: "Battlecry: Summon all friendly Demons that died this game.",
+    description: "Battlecry: Summon all friendly Draugr that died this game.",
     keywords: ["battlecry"],
     heroClass: "warlock",
     class: "Warlock",
@@ -404,7 +404,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20030,
-    name: "Frost Lich Jaina",
+    name: "Skadi, Frost Queen",
     manaCost: 9,
     type: "hero",
     rarity: "mythic",
@@ -430,7 +430,7 @@ export const legendaryCards: CardData[] = [
     type: "minion",
     rarity: "common",
     description: "Freeze any character damaged by this minion.",
-    flavorText: "A spectral being of pure cold, summoned by Frost Lich Jaina.",
+    flavorText: "A spectral being of pure cold, summoned by Skadi, Frost Queen.",
     keywords: [],
     race: "elemental",
     heroClass: "mage",

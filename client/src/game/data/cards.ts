@@ -176,7 +176,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 4501,
     name: 'Glowing Draugr',
-  description: 'Add 2 random Murlocs to your hand.',
+  description: 'Add 2 random Nagas to your hand.',
   
   flavorText: 'An undead Norse warrior whose eerie glow attracts sea spirits.',
   type: 'spell',
@@ -2188,7 +2188,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 13017,
     name: 'Wave Nymph Warleader',
-  description: 'Your other Murlocs have +2/+1.',
+  description: 'Your other Nagas have +2/+1.',
   
   flavorText: 'The sea spirits follow their champion.',
   type: 'minion',
@@ -2519,7 +2519,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 13042,
     name: 'Wave Nymph Tidecaller',
-    description: 'Whenever you summon a Murloc, gain +1 Attack.',
+    description: 'Whenever you summon a Naga, gain +1 Attack.',
     flavorText: 'She calls the tides and the tides answer.',
     
     type: 'minion',
@@ -2702,7 +2702,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 13054,
     name: 'Sea Sprite Hunter',
-    description: 'Battlecry: Give your other Murlocs +1/+1.',
+    description: 'Battlecry: Give your other Nagas +1/+1.',
     flavorText: 'Leading the sea sprites to battle.',
     
     type: 'minion',
@@ -3520,7 +3520,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 16020,
     name: 'Hephaestus, Divine Smith',
-    description: 'Battlecry: For the rest of the game, your Mechs have Rush.',
+    description: 'Battlecry: For the rest of the game, your Automatons have Rush.',
       flavorText: 'The god of the forge crafts automatons for battle.',
 
       type: 'hero',
@@ -3789,7 +3789,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 5033,
     name: 'Tinkerer of Midgard',
-      description: 'Battlecry: Summon a 2/1 Mechanical Construct.',
+      description: 'Battlecry: Summon a 2/1 Automaton Construct.',
 
       flavorText: 'Inspired by the dwarves\' craftsmanship.',
       type: 'minion',
@@ -4133,7 +4133,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 5051,
     name: 'Sea Sprite Oracle',
-  description: 'ALL other Murlocs have +1 Attack.',
+  description: 'ALL other Nagas have +1 Attack.',
   
   flavorText: 'The wisest of the sea sprites, they say.',
   type: 'minion',

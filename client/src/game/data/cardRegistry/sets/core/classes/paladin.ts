@@ -346,7 +346,7 @@ export const paladinCards: CardData[] = [
   // === Echo Card ===
   {
     id: 47431,
-    name: "Sound the Bells!",
+    name: "Ring the Gjallarhorn!",
     manaCost: 2,
     type: "spell",
     rarity: "common",
@@ -373,7 +373,7 @@ export const paladinCards: CardData[] = [
     type: "minion",
     rarity: "common",
     race: "naga",
-    description: "Dormant for 2 turns. When this awakens, summon two 1/1 Murlocs.",
+    description: "Dormant for 2 turns. When this awakens, summon two 1/1 Nagas.",
     flavorText: "Apollo's golden serpent, coiled in slumber beneath the waves.",
     keywords: ["dormant"],
     class: "Paladin",
@@ -404,7 +404,7 @@ export const paladinCards: CardData[] = [
   // === Spellburst Card ===
   {
     id: 18003,
-    name: "Goody Two-Shields",
+    name: "Shieldmaiden Sigrid",
     manaCost: 3,
     attack: 4,
     health: 2,
@@ -424,7 +424,7 @@ export const paladinCards: CardData[] = [
   // === Magnetic Card ===
   {
     id: 20008,
-    name: "Glow-Tron",
+    name: "Rune-Tron",
     manaCost: 1,
     attack: 1,
     health: 3,

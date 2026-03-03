@@ -22,7 +22,7 @@ export const priestCards: CardData[] = [
     attack: 3,
     health: 5,
     description: "Your cards and powers that restore Health now deal damage instead.",
-    flavorText: "The Auchenai know the end is coming, but they're not sure when.",
+    flavorText: "The priests of Hel know the end is coming, but they're not sure when.",
     type: "minion",
     rarity: "rare",
     class: "Priest",
@@ -312,7 +312,7 @@ export const priestCards: CardData[] = [
     description: "Battlecry: Choose an enemy minion. Deathrattle: Summon a copy of it.",
     type: "minion",
     rarity: "mythic",
-    class: "Necromancer",
+    class: "Priest",
     keywords: ["battlecry", "deathrattle"],
     collectible: true,
     set: "core"
@@ -355,7 +355,7 @@ export const priestCards: CardData[] = [
     description: "Battlecry: For each spell in your hand, summon a 3/3 copy of a minion that died this game.",
     flavorText: "Moon goddess devoted to resurrecting the faithful.",
     keywords: ["battlecry"],
-    class: "Necromancer",
+    class: "Priest",
     collectible: true,
     set: "core",
     battlecry: {
@@ -398,7 +398,7 @@ export const priestCards: CardData[] = [
     description: "At the end of your turn, summon a friendly minion that died this game.",
     flavorText: "Queen of the underworld, she commands the dead to rise.",
     keywords: [],
-    class: "Necromancer",
+    class: "Priest",
     collectible: true,
     set: "core",
     endOfTurn: {

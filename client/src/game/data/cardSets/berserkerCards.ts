@@ -52,7 +52,7 @@ export function registerBerserkerCards(): void {
     .name("Soul Cleave")
     .manaCost(3)
     .description("Deal 2 damage to two random enemy minions. Restore 2 Health to your hero.")
-    .flavorText("It's like a hot knife through butter, except the knife is demonic, the butter is souls, and you're stabbing everyone.")
+    .flavorText("It's like a hot knife through butter, except the knife is runic, the butter is souls, and you're stabbing everyone.")
     .type("spell")
     .rarity("common")
     .class("Berserker")
@@ -102,10 +102,10 @@ export function registerBerserkerCards(): void {
     .collectible(true)
     .build();
 
-  // Skull of Gul'dan
+  // Skull of the Damned
   createCard()
     .id(9105)
-    .name("Skull of Gul'dan")
+    .name("Skull of the Damned")
     .manaCost(6)
     .description("Draw 3 cards. Outcast: Reduce their Cost by (3).")
     .flavorText("This might look like a powerful dark artifact to you, but to Typhon it's just a fancy candy dish.")
@@ -124,10 +124,10 @@ export function registerBerserkerCards(): void {
     .collectible(true)
     .build();
 
-  // Glaivebound Adept
+  // Runebound Adept
   createCard()
     .id(9111)
-    .name("Glaivebound Adept")
+    .name("Runebound Adept")
     .manaCost(5)
     .attack(6)
     .health(4)
@@ -179,15 +179,15 @@ export function registerBerserkerCards(): void {
     .spellEffect({
       type: "swap_hero_power"
     })
-    .customProperty("heroPowerId", 9114) // Demonic Blast hero power
+    .customProperty("heroPowerId", 9114) // Berserker Blast hero power
     .customProperty("usesBeforeSwapBack", 2)
     .collectible(true)
     .build();
 
-  // Demonic Blast (Hero Power from Metamorphosis)
+  // Berserker Blast (Hero Power from Metamorphosis)
   createCard()
     .id(9114)
-    .name("Demonic Blast")
+    .name("Berserker Blast")
     .manaCost(1)
     .description("Deal 4 damage.")
     .flavorText("After 2 uses, swap back.")
@@ -208,23 +208,23 @@ export function registerBerserkerCards(): void {
     .id(9116)
     .name("Coordinated Strike")
     .manaCost(3)
-    .description("Summon three 1/1 Illidari with Rush.")
-    .flavorText("The Illidari coordinate all their attacks because otherwise they look very silly.")
+    .description("Summon three 1/1 Ulfhednar with Rush.")
+    .flavorText("The Ulfhednar coordinate all their attacks because otherwise they look very silly.")
     .type("spell")
     .rarity("common")
     .class("Berserker")
     .spellEffect({
       type: "summon",
       value: 3,
-      summonCardId: 9117 // Illidari Initiate
+      summonCardId: 9117 // Ulfhednar Initiate
     })
     .collectible(true)
     .build();
 
-  // Illidari Initiate (token from Coordinated Strike)
+  // Ulfhednar Initiate (token from Coordinated Strike)
   createCard()
     .id(9117)
-    .name("Illidari Initiate")
+    .name("Ulfhednar Initiate")
     .manaCost(1)
     .attack(1)
     .health(1)

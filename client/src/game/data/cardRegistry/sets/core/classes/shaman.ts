@@ -906,9 +906,9 @@ export const shamanCards: CardData[] = [
     manaCost: 2,
     type: "spell",
     rarity: "common",
-    description: "Restore 4 Health to a friendly minion. If you discarded a Water Energy this turn, restore 6 Health instead.",
+    description: "Restore 4 Health to a friendly minion. Overload: (1). Restore 6 Health instead.",
     flavorText: "The ocean's embrace heals all wounds.",
-    keywords: [],
+    keywords: ["overload"],
     class: "Shaman",
     spellEffect: {
       type: "heal",
@@ -916,7 +916,10 @@ export const shamanCards: CardData[] = [
       bonusValue: 6,
       targetType: "friendly_minion",
       requiresTarget: true,
-      bonusCondition: "discarded_water_energy"
+      bonusCondition: "overloaded_last_turn"
+    },
+    overload: {
+      amount: 1
     },
     collectible: true,
     set: "core"
@@ -927,88 +930,4 @@ export const shamanCards: CardData[] = [
    * Migrated from client/src/game/data/overloadCards.ts on 2026-02-02
    * Contains Shaman Overload mechanic cards
    */
-  {
-    id: 35001,
-    name: "Fenrir's Call",
-    manaCost: 3,
-    type: "spell",
-    rarity: "rare",
-    description: "Summon two 2/3 Spirit Wolves with Taunt. Overload: (2)",
-    flavorText: "The great wolf answers those who embrace the storm.",
-    keywords: ["overload"],
-    class: "Shaman",
-    spellEffect: {
-      type: "summon",
-      value: 2,
-      requiresTarget: false,
-      targetType: "none",
-      summonCardId: 35003
-    },
-    overload: {
-      amount: 2
-    },
-    collectible: true,
-    set: "core"
-  },
-  {
-    id: 35005,
-    name: "Muspel Burst",
-    manaCost: 3,
-    type: "spell",
-    rarity: "rare",
-    description: "Deal 5 damage. Overload: (2)",
-    flavorText: "The fires of Muspelheim unleash their fury.",
-    keywords: ["overload"],
-    class: "Shaman",
-    spellEffect: {
-      type: "damage",
-      value: 5,
-      requiresTarget: true,
-      targetType: "any"
-    },
-    overload: {
-      amount: 2
-    },
-    collectible: true,
-    set: "core"
-  },
-  {
-    id: 35014,
-    name: "Mjölnir Storm",
-    manaCost: 3,
-    type: "spell",
-    rarity: "rare",
-    description: "Deal 2-3 damage to all enemy minions. Overload: (2)",
-    flavorText: "Thor's hammer strikes with unpredictable wrath.",
-    keywords: ["overload"],
-    class: "Shaman",
-    overload: {
-      amount: 2
-    },
-    spellEffect: {
-      type: "damage_random_range",
-      minValue: 2,
-      maxValue: 3,
-      requiresTarget: false,
-      targetType: "all_enemy_minions"
-    },
-    collectible: true,
-    set: "core"
-  },
-  {
-    id: 35003,
-    name: "Spirit Wolf",
-    manaCost: 2,
-    attack: 2,
-    health: 3,
-    type: "minion",
-    rarity: "common",
-    description: "Taunt",
-    flavorText: "Guardian spirits that protect the shaman in battle.",
-    keywords: ["taunt"],
-    class: "Shaman",
-    race: "beast",
-    collectible: false,
-    set: "core"
-  }
 ];
