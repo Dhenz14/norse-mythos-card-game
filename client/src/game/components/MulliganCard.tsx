@@ -43,6 +43,7 @@ export const MulliganCard: React.FC<MulliganCardProps> = ({ card, isSelected, on
     evolvesFrom,
     evolvesFromName: evolvesFromCard?.name,
     evolutionCondition: cardDataTyped.evolutionCondition,
+    hasStage3Variants: !!(cardDataTyped.stage3Variants && cardDataTyped.stage3Variants.length > 0),
   };
 
   return (

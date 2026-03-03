@@ -192,7 +192,7 @@ Six unique Norse-themed mechanics with dedicated card files:
 - **Prophecy** (`prophecyCards.ts`, IDs 30101-30107): Visible countdown timers on the board
 - **Realm Shift** (`realmShiftCards.ts`, IDs 30301-30309): Change the active battlefield realm
 - **Ragnarok Chain** (`ragnarokChainCards.ts`, IDs 30401-30410): Paired minions with linked destiny
-- **Pet Evolution** (`pets/`, IDs 50000-50236): 24 Norse families, 3-3-1 evolution (Stage 2/3 cost 0 mana)
+- **Pet Evolution** (`pets/`, IDs 50000-50366): 37 Norse families, 3-3-1 evolution (Stage 2/3 cost 0 mana)
 
 Game logic for these mechanics lives in:
 
@@ -286,7 +286,7 @@ client/src/data/blockchain/tournamentRewards.ts
 - **Prophecy**: `Prophecy` interface on `GameState.prophecies[]`; countdown ticks in `endTurn()`; `resolveProphecy()` handles 7 effect types
 - **Realm Shift**: `RealmState` on `GameState.activeRealm`; `realm_shift` spell effect in `spellUtils.ts`; start/end-of-turn realm effects in `gameUtils.ts`
 - **Ragnarok Chain**: `chainPartner` + `chainEffect` fields on `MinionCardData`; both-in-play buffs in `playCard()`; partner-death triggers in `destroyCard()`
-- **Pet Evolution**: 3-3-1 family system (37 families, 259 cards); `petStage`, `petFamily`, `petFamilyTier`, `evolvesInto/From`, `evolutionCondition`, `stage3Variants` fields; Stage 2/3 cost 0 mana (free evolution); `attemptPetEvolution()` in `gameUtils.ts` handles transform + variant selection; `checkPetEvolutionTrigger()` fires on 15 triggers across gameUtils/spellUtils/battlecryUtils/zoneUtils; evolve info icon on Stage 2/3 cards in SimpleCard.tsx
+- **Pet Evolution**: 3-3-1 family system (37 families, 259 cards); `petStage`, `petFamily`, `petFamilyTier`, `evolvesInto/From`, `evolutionCondition`, `stage3Variants` fields; Stage 2/3 cost 0 mana (free evolution); `attemptPetEvolution()` in `gameUtils.ts` handles transform + variant selection; `checkPetEvolutionTrigger()` fires on 15 triggers across gameUtils/spellUtils/battlecryUtils/zoneUtils; evolve info icon on Stage 2/3 cards in SimpleCard.tsx; Stage 3 cards show "?" for ATK/HP until evolved (cyan glow via `hasStage3Variants` flag)
 - **Rune** (renamed from Secret): Description text says "Rune" but underlying keyword is still `secret` for backwards compatibility
 - **Runic Bond** (renamed from Magnetic): Description says "Runic Bond" but keyword is still `magnetic`
 - **Yggdrasil Golem** (renamed from Jade Golem): Effect key is `summon_yggdrasil_golem`; handlers still in files named `summonJadeGolemHandler.ts`
@@ -382,7 +382,7 @@ vercel --prod                 # Deploy to Vercel
 - Prophecy system (7 cards, visible countdown timers, 7 resolve effect types)
 - Realm Shift system (9 cards, board-wide rule changes across the Nine Realms)
 - Ragnarok Chain system (10 cards, 5 mythological pairs with linked destiny)
-- Pet Evolution system (259 cards, 37 families, 3-3-1 evolution, Stage 2/3 cost 0 mana, evolve info icon)
+- Pet Evolution system (259 cards, 37 families, 3-3-1 evolution, Stage 2/3 cost 0 mana, evolve info icon, "?" stats on unevolved Stage 3)
 - Vanilla Minions (7 baseline stat cards for evaluation benchmarks)
 - Berserker class rename (formerly Demon Hunter)
 - Rune keyword rename (formerly Secret, display text only)
@@ -390,6 +390,9 @@ vercel --prod                 # Deploy to Vercel
 - Yggdrasil Golem rename (formerly Jade Golem, effect key + handlers updated)
 - Element advantage system for pet combat (+2 bonus damage)
 - Hero-pet element synergy (+1 Health when elements match)
+- Warcraft/Hearthstone IP purge (72 card renames to Norse equivalents)
+- Mech → Automaton, Murloc → Naga terminology cleanup (45 cards)
+- Card balance pass (Apollo, Gate to Alfheim, Stubborn Turtle, Warrior's Will, Gate to Jotunheim)
 
 ### Next (Genesis Launch)
 

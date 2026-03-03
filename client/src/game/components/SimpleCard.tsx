@@ -32,6 +32,7 @@ export interface SimpleCardData {
   evolvesFrom?: number;
   evolvesFromName?: string;
   evolutionCondition?: { trigger: string; description: string };
+  hasStage3Variants?: boolean;
 }
 
 interface SimpleCardProps {
@@ -346,13 +347,13 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       {(isMinion || isWeapon || isArtifact) && (
         <>
           <div className="card-attack">
-            <span className={`stat-value ${attackBuff > 0 ? 'stat-buffed' : ''}`}>
-              {(card.attack ?? 0) + attackBuff}
+            <span className={`stat-value ${card.petStage === 'master' && card.hasStage3Variants ? 'stat-unknown' : ''} ${attackBuff > 0 ? 'stat-buffed' : ''}`}>
+              {card.petStage === 'master' && card.hasStage3Variants ? '?' : (card.attack ?? 0) + attackBuff}
             </span>
           </div>
           <div className="card-health">
-            <span className={`stat-value ${healthBuff > 0 ? 'stat-buffed' : ''}`}>
-              {(card.health ?? 0) + healthBuff}
+            <span className={`stat-value ${card.petStage === 'master' && card.hasStage3Variants ? 'stat-unknown' : ''} ${healthBuff > 0 ? 'stat-buffed' : ''}`}>
+              {card.petStage === 'master' && card.hasStage3Variants ? '?' : (card.health ?? 0) + healthBuff}
             </span>
           </div>
         </>

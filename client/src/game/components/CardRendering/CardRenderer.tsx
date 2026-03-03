@@ -86,6 +86,7 @@ const CardRenderer: React.FC<CardRendererProps> = React.memo(({
       evolvesFrom,
       evolvesFromName: evolvesFromCard?.name,
       evolutionCondition: cardAny.evolutionCondition,
+      hasStage3Variants: !!(cardAny.stage3Variants && cardAny.stage3Variants.length > 0),
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [processedCard, evolutionLevel]);

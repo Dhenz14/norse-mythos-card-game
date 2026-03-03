@@ -665,6 +665,7 @@ The **3-3-1 Family-Based Evolution System**: 37 Norse-themed pet families, each 
 | **Transform** | Playing an evolution card replaces the pet on the battlefield |
 | **Health Carry** | Damage taken by the previous form carries over (min 1 HP) |
 | **Stage 3 Variants** | The Stage 3 form's stats and abilities depend on which Stage 2 path was taken |
+| **Unknown Stats** | Stage 3 cards show "?" for ATK/HP until evolved — stats are determined by evolution path |
 | **Hero Synergy** | +1 Health bonus when pet element matches hero element |
 | **Element Advantage** | +2 bonus damage when attacking a pet weak to your element |
 
