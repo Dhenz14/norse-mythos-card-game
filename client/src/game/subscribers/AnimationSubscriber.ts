@@ -157,12 +157,12 @@ class AnimationSubscriberImpl {
     // Card Played Animation
     this.unsubscribes.push(
       GameEventBus.subscribe<CardPlayedEvent>('CARD_PLAYED', (event) => {
-        const isLegendary = event.rarity === 'legendary';
+        const isMythic = event.rarity === 'mythic';
         this.queueAnimation({
-          type: isLegendary ? 'legendary_entrance' : 'card_play',
+          type: isMythic ? 'mythic_entrance' : 'card_play',
           sourceId: event.instanceId,
-          duration: isLegendary ? 2000 : 600,
-          priority: isLegendary ? 10 : 5,
+          duration: isMythic ? 2000 : 600,
+          priority: isMythic ? 10 : 5,
           params: {
             cardName: event.cardName,
             cardType: event.cardType,

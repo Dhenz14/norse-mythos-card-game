@@ -20,7 +20,7 @@ const UPGRADED_HERO_POWERS: Record<string, any> = {
   'Life Tap': { name: 'Soul Tap', description: 'Draw a card.', drawCards: 1, selfDamage: 0 },
   'Totemic Call': { name: 'Totemic Slam', description: 'Summon a Totem of your choice.', isDiscover: true },
   'Dagger Mastery': { name: 'Poisoned Daggers', description: 'Equip a 2/2 Weapon with Poisonous.', weaponAttack: 2, weaponDurability: 2, isPoisonous: true },
-  'Demon Claws': { name: 'Demonic Blast', description: '+2 Attack this turn.', attackBuff: 2 }
+  'Berserker Claws': { name: 'Berserker Fury', description: '+2 Attack this turn.', attackBuff: 2 }
 };
 
 export default function executeReplaceHeroPower(

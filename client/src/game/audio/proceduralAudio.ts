@@ -7,7 +7,7 @@ export type SoundType =
 	| 'damage'
 	| 'heal'
 	| 'coin'
-	| 'legendary'
+	| 'mythic'
 	| 'spell'
 	| 'freeze'
 	| 'deathrattle'
@@ -27,7 +27,7 @@ export type SoundType =
 	| 'spell_cast'
 	| 'spell_impact'
 	| 'fire_impact'
-	| 'legendary_entrance'
+	| 'mythic_entrance'
 	| 'turn_start'
 	| 'turn_end'
 	| 'damage_hero'
@@ -242,7 +242,7 @@ export class ProceduralAudio {
 				case 'damage': this.soundDamage(); break;
 				case 'heal': this.soundHeal(); break;
 				case 'coin': this.soundCoin(); break;
-				case 'legendary': this.soundLegendary(); break;
+				case 'mythic': this.soundLegendary(); break;
 				case 'spell': this.soundSpell(); break;
 				case 'freeze': this.soundFreeze(); break;
 				case 'deathrattle': this.soundDeathrattle(); break;
@@ -262,7 +262,7 @@ export class ProceduralAudio {
 				case 'spell_cast': this.soundSpellCast(); break;
 				case 'spell_impact': this.soundSpellImpact(); break;
 				case 'fire_impact': this.soundFireImpact(); break;
-				case 'legendary_entrance': this.soundLegendaryEntrance(); break;
+				case 'mythic_entrance': this.soundLegendaryEntrance(); break;
 				case 'turn_start': this.soundTurnStart(); break;
 				case 'turn_end': this.soundTurnEnd(); break;
 				case 'damage_hero': this.soundDamageHero(); break;

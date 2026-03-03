@@ -157,7 +157,7 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
   let playerClass: HeroClass;
   
   if (selectedDeckId && selectedHeroClass) {
-    const savedDecks = JSON.parse(localStorage.getItem('hearthstone_decks') || '[]');
+    const savedDecks = JSON.parse(localStorage.getItem('ragnarok_decks') || '[]');
     const selectedDeck = savedDecks.find((deck: any) => deck.id === selectedDeckId);
     
     if (selectedDeck) {

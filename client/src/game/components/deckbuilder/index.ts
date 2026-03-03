@@ -17,9 +17,9 @@ export type { UseDeckBuilderProps, UseDeckBuilderReturn, CardGroup } from './use
 export {
   DECK_SIZE,
   MAX_COPIES,
-  MAX_LEGENDARY_COPIES,
+  MAX_MYTHIC_COPIES,
   countCards,
-  isCardLegendary,
+  isCardMythic,
   getMaxCopies,
   canAddCardToDeck,
   getCardClass,

@@ -8,7 +8,7 @@ import { CardData } from '../../types';
 
 export const DECK_SIZE = 30;
 export const MAX_COPIES = 2;
-export const MAX_LEGENDARY_COPIES = 1;
+export const MAX_MYTHIC_COPIES = 1;
 
 export type SortOption = 'cost' | 'name' | 'type';
 export type FilterType = 'all' | 'minion' | 'spell' | 'weapon' | 'artifact' | 'armor' | 'pet';
@@ -33,17 +33,17 @@ export function countCards(cardIds: number[]): Record<number, number> {
 }
 
 /**
- * Check if a card is legendary
+ * Check if a card is mythic rarity (max 1 copy per deck)
  */
-export function isCardLegendary(card: CardData): boolean {
-  return (card.rarity || '').toLowerCase() === 'legendary';
+export function isCardMythic(card: CardData): boolean {
+  return (card.rarity || '').toLowerCase() === 'mythic';
 }
 
 /**
  * Get max allowed copies for a card
  */
 export function getMaxCopies(card: CardData): number {
-  return isCardLegendary(card) ? MAX_LEGENDARY_COPIES : MAX_COPIES;
+  return isCardMythic(card) ? MAX_MYTHIC_COPIES : MAX_COPIES;
 }
 
 /**

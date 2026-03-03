@@ -72,7 +72,7 @@ export const CardRenderer: React.FC<CardRendererProps> = ({
   
   // Card rarity information
   const cardRarity = (processedCard.rarity || 'common').toLowerCase();
-  const isLegendary = cardRarity === 'legendary';
+  const isLegendary = cardRarity === 'mythic';
   const isEpic = cardRarity === 'epic';
   
   // Container style (visual only - no transformations)

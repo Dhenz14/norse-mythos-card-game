@@ -759,7 +759,7 @@ const berserkerHeroes: CardData[] = [
   {
     id: 90090,
     name: 'Surtr the Destroyer',
-    description: 'Hero Power: Demon Claws - Gain +1 Attack this turn.',
+    description: 'Hero Power: Berserker Claws - Gain +1 Attack this turn.',
     flavorText: 'Fire giant destined to set the world ablaze at Ragnarok.',
     type: 'hero',
     rarity: 'mythic',
@@ -772,7 +772,7 @@ const berserkerHeroes: CardData[] = [
   {
     id: 90091,
     name: 'Kayn Sunfury',
-    description: 'Hero Power: Demon Claws - Gain +1 Attack this turn.',
+    description: 'Hero Power: Berserker Claws - Gain +1 Attack this turn.',
     flavorText: 'A powerful elven berserker and disciple of the Betrayer.',
     type: 'hero',
     rarity: 'mythic',
@@ -785,7 +785,7 @@ const berserkerHeroes: CardData[] = [
   {
     id: 90092,
     name: 'Kurtrus Ashfallen',
-    description: 'Hero Power: Demon Claws - Gain +1 Attack this turn.',
+    description: 'Hero Power: Berserker Claws - Gain +1 Attack this turn.',
     flavorText: 'A devoted berserker who survived the destruction of his village by demons.',
     type: 'hero',
     rarity: 'mythic',

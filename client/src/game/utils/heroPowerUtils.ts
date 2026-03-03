@@ -108,7 +108,7 @@ export function getDefaultHeroPower(heroClass: HeroClass): HeroPower {
       };
     case 'berserker':
       return {
-        name: 'Demon Claws',
+        name: 'Berserker Claws',
         description: 'Gain +1 Attack this turn.',
         cost: 1, // Berserker's hero power costs 1 mana
         used: false,

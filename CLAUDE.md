@@ -208,7 +208,7 @@ Game logic for these mechanics lives in:
 - **13 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes
 - **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
 - **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
-- **Supply caps**: 16,000 total (10K common, 4K rare, 1.5K epic, 500 legendary)
+- **Supply caps**: 16,000 total (10K common, 4K rare, 1.5K epic, 500 mythic)
 
 ## Bundle Architecture
 
@@ -299,7 +299,7 @@ client/src/data/blockchain/tournamentRewards.ts
 - Admin authority ends at seal — no ongoing admin key needed
 - Reward claims are self-serve (players verify own stats, no admin distribution)
 - ELO is chain-derived (K=32, computed from match_result history)
-- Supply caps hard-enforced by every reader
+- Supply caps hard-enforced by every reader (16K: 10K common, 4K rare, 1.5K epic, 500 mythic)
 
 ## Known Issues & Fixes
 
@@ -426,6 +426,20 @@ vercel --prod                 # Deploy to Vercel
 - Created Ivaldi's Constructs pet family (#38): 7 cards, IDs 50370-50376, Fire/Electric/Neutral Automaton evolution
 - Renamed `hearthstoneInspired*` variables → `mythology*` in neutrals/index.ts (7 variable renames)
 - Added 13 missing keyword definitions: choose_one, outcast, quest, sidequest, spellburst, enrage, tradeable, recruit, cleave, aura, flying
+
+### Completed (Rarity & IP Cleanup)
+
+- Renamed `legendary` → `mythic` in 20+ code files (audio, animations, notifications, quests, UI effects, stores, subscribers, deck builder)
+- Updated `SoundType`, `CardSummonEffectProps`, `SummonEffect` interfaces from 'legendary' to 'mythic'
+- Renamed `isCardLegendary()` → `isCardMythic()`, `MAX_LEGENDARY_COPIES` → `MAX_MYTHIC_COPIES`
+- Renamed ~60 Warcraft hero names to Norse equivalents in heroes.ts (Valeera→Nótt, Anduin→Eir, Malfurion→Idunn, all alternates)
+- Renamed "Demon Claws" hero power → "Berserker Claws" (heroes.ts, heroPowerUtils.ts, heroes/index.ts, replaceHeroPowerHandler.ts)
+- Renamed "Demonic Blast" upgraded power → "Berserker Fury"
+- Fixed enrageUtils.ts: updated 5 dead Warcraft card name cases (Grommash→Tyr God of War, Tauren Warrior→Enraged Berserker)
+- Fixed cardDatabase.ts: Grommash Hellscream→Tyr God of War, Tirion Fordring→Týr Champion of Justice
+- Renamed `HEARTHSTONE_DECKS` → `RAGNAROK_DECKS` storage key (storageKeys.ts, useGame.tsx, gameUtils.ts)
+- Fixed "Secret" → "Rune" in card descriptions (deepKeywordCards.ts, additionalSpellCards.ts)
+- Fixed "Magnetic" → "Runic Bond" in card descriptions (commonNeutralMinions.ts)
 
 ### Next (Genesis Launch)
 

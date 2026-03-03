@@ -203,7 +203,7 @@ export const TripoSRCardIntegration: React.FC<TripoSRCardIntegrationProps> = ({
   
   // Card rarity information - use the cardData object to get rarity
   const cardRarity = (cardData.rarity || 'common').toLowerCase();
-  const isLegendary = cardRarity === 'legendary';
+  const isLegendary = cardRarity === 'mythic';
   const isEpic = cardRarity === 'epic';
   
   // Determine if we should show the compact view (for cards in hand)

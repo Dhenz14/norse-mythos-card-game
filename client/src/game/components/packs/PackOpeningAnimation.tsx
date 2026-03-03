@@ -218,7 +218,7 @@ export default function PackOpeningAnimation({
                           className="text-4xl"
                         >
                           {card.rarity === 'mythic' ? '🌟' : 
-                           card.rarity === 'legendary' ? '👑' :
+                           card.rarity === 'mythic' ? '👑' :
                            card.rarity === 'epic' ? '💎' :
                            card.rarity === 'rare' ? '💠' : '⚔️'}
                         </motion.span>
@@ -231,7 +231,7 @@ export default function PackOpeningAnimation({
                     </div>
                   </div>
 
-                  {(card.rarity === 'legendary' || card.rarity === 'mythic') && (
+                  {card.rarity === 'mythic' && (
                     <motion.div
                       animate={{ opacity: [0.3, 0.6, 0.3] }}
                       transition={{ duration: 2, repeat: Infinity }}

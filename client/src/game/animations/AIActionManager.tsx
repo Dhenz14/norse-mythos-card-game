@@ -233,7 +233,7 @@ export const useAIActionManager = ({
                   
                   // Add particles for fancy cards (spells and rares+)
                   if (cardType === 'spell' || 
-                      ['Rare', 'Epic', 'Legendary'].includes(cardRarity || '')) {
+                      ['Rare', 'Epic', 'Mythic'].includes(cardRarity || '')) {
                     addAnimation({
                       id: `particles-${cardInstanceId}`,
                       type: 'particles',

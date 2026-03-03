@@ -105,7 +105,7 @@ export const deepKeywordCards: CardData[] = [
 		manaCost: 2,
 		attack: 2,
 		health: 3,
-		description: 'Inspire: Add a random Rune (Secret) to your hand.',
+		description: 'Inspire: Add a random Rune to your hand.',
 		flavorText: 'Each use of power carves a new rune in the air.',
 		type: 'minion',
 		rarity: 'rare',

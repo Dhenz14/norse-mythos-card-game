@@ -56,7 +56,7 @@ const SummonEffectRenderer: React.FC<{ effect: AnimationEffect }> = React.memo((
   const { position, data } = effect;
   const rarity = data.rarity || 'common';
   const colors = rarityColors[rarity] || rarityColors.common;
-  const isLegendary = rarity === 'legendary';
+  const isLegendary = rarity === 'mythic';
   const isEpic = rarity === 'epic';
   
   const particleConfigs = useMemo(() => 

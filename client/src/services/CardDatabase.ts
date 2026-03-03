@@ -94,8 +94,8 @@ const sampleCards: CardData[] = [
   },
   {
     id: 8008,
-    name: "Tirion Fordring",
-    description: "Divine Shield, Taunt. Deathrattle: Equip a 5/3 Ashbringer.",
+    name: "Týr, Champion of Justice",
+    description: "Divine Shield. Taunt. Deathrattle: Equip a 5/3 Ashbringer.",
     type: "minion" as "minion",
     rarity: "mythic",
     manaCost: 8,

@@ -37,7 +37,7 @@ interface SimpleHolographicCardProps {
 export function getStandardHolographicParams(cardRarity?: string) {
   // Only force holographic effects for legendary and epic cards
   const isPremiumRarity = cardRarity && 
-    (cardRarity.toLowerCase() === 'legendary' || cardRarity.toLowerCase() === 'epic');
+    (cardRarity.toLowerCase() === 'mythic' || cardRarity.toLowerCase() === 'epic');
   
   return {
     enableHolographic: true,
@@ -84,7 +84,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
   
   // Determine if card should have holographic effects based on rarity
-  const isPremiumRarity = card.rarity.toLowerCase() === 'legendary' || card.rarity.toLowerCase() === 'epic';
+  const isPremiumRarity = card.rarity.toLowerCase() === 'mythic' || card.rarity.toLowerCase() === 'epic';
   // Card will have holographic effects if:
   // 1. It's a premium rarity (legendary or epic) AND enableHolographic is true (legacy mode), OR
   // 2. forceHolographic is explicitly set to true (override mode)
@@ -319,7 +319,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
   // Determine border color based on rarity - Enhanced to match the test simulation
   const getRarityBorderColor = (rarity: string) => {
     const rarityLower = rarity.toLowerCase();
-    if (rarityLower === 'legendary') return '#FFD700'; // Bright Gold
+    if (rarityLower === 'mythic') return '#FFD700'; // Bright Gold
     if (rarityLower === 'epic') return '#A335EE'; // Purple
     if (rarityLower === 'rare') return '#0070DD'; // Blue
     return '#FFFFFF'; // White for common
@@ -327,7 +327,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
 
   const rarityBorderColor = getRarityBorderColor(card.rarity);
   const isMinion = card.type.toLowerCase() === 'minion';
-  const isLegendary = card.rarity.toLowerCase() === 'legendary';
+  const isMythic = card.rarity.toLowerCase() === 'mythic';
   
   return (
     <div 
@@ -360,17 +360,17 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
           position: 'absolute',
           borderRadius: '12px',
           // Enhanced background for better Norse theme
-          background: isLegendary 
+          background: isMythic 
             ? `radial-gradient(circle at 30% 30%, #3A2E52 0%, #36294B 40%, #271A38 80%, #221833 100%)` 
             : `radial-gradient(circle at 30% 30%, #333752 0%, #283147 40%, #232A3D 80%, #1A2133 100%)`,
           // Enhanced border effects to match test simulation with thick gold borders for legendary cards
-          border: isLegendary 
+          border: isMythic 
             ? `3px solid ${rarityBorderColor}` 
             : card.rarity.toLowerCase() === 'epic' 
               ? `2px solid #A335EE` 
               : `2px solid ${rarityBorderColor}`,
           // Enhanced shadow effects for each rarity
-          boxShadow: isLegendary
+          boxShadow: isMythic
             ? `0 0 25px ${rarityBorderColor}, 0 0 15px rgba(255,215,0,0.7), inset 0 0 30px rgba(0,0,0,0.4)` 
             : card.rarity.toLowerCase() === 'epic' 
               ? `0 0 15px rgba(163,53,238,0.6), inset 0 0 5px rgba(255,255,255,0.3)` 
@@ -428,19 +428,19 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
           
           {/* Card Type */}
           <div style={{
-            background: card.rarity.toLowerCase() === 'legendary' 
+            background: card.rarity.toLowerCase() === 'mythic' 
               ? 'linear-gradient(145deg, #FFD700 0%, #B8860B 100%)' 
               : card.rarity.toLowerCase() === 'epic'
                 ? 'linear-gradient(145deg, #A335EE 0%, #7B00FA 100%)'
                 : card.rarity.toLowerCase() === 'rare'
                   ? 'linear-gradient(145deg, #0070DD 0%, #1C84FF 100%)'
                   : 'linear-gradient(145deg, #4A5568 0%, #2D3748 100%)',
-            color: card.rarity.toLowerCase() === 'legendary' ? 'black' : 'white',
+            color: card.rarity.toLowerCase() === 'mythic' ? 'black' : 'white',
             padding: '5px 10px',
             borderRadius: '15px',
             fontWeight: 'bold',
             fontSize: '12px',
-            boxShadow: card.rarity.toLowerCase() === 'legendary' 
+            boxShadow: card.rarity.toLowerCase() === 'mythic' 
               ? '0 0 10px rgba(255, 215, 0, 0.5), inset 0 1px 1px rgba(255,255,255,0.3)' 
               : card.rarity.toLowerCase() === 'epic'
                 ? '0 0 10px rgba(163, 53, 238, 0.5), inset 0 1px 1px rgba(255,255,255,0.2)'
@@ -457,7 +457,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
           }}>
             <span className="card-name-text" style={{ 
               color: 'inherit',
-              textShadow: card.rarity.toLowerCase() === 'legendary' 
+              textShadow: card.rarity.toLowerCase() === 'mythic' 
                 ? '0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(0, 0, 0, 0.5)' 
                 : '0 0 1px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(0, 0, 0, 0.7)',
             }}>{card.rarity}</span>
@@ -472,7 +472,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
             fontWeight: 'bold',
             marginBottom: '10px',
             textAlign: 'center',
-            color: card.rarity.toLowerCase() === 'legendary' ? '#FFD700' : '#FFFFFF',
+            color: card.rarity.toLowerCase() === 'mythic' ? '#FFD700' : '#FFFFFF',
             letterSpacing: '0.7px',
             transform: hasHolographicEffects ? 
               `translateZ(75px) translate(${position.x * 0.15}px, ${position.y * 0.15}px)` : 
@@ -958,7 +958,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 right: 0,
                 bottom: 0,
                 borderRadius: '12px',
-                background: card.rarity.toLowerCase() === 'legendary' 
+                background: card.rarity.toLowerCase() === 'mythic' 
                   ? 'radial-gradient(circle at 30% 30%, rgba(255,215,0,0.05) 0%, rgba(255,105,180,0.05) 60%, rgba(65,105,225,0.05) 100%)'
                   : card.rarity.toLowerCase() === 'epic'
                     ? `url('${assetPath('/textures/epic_holographic2.png')}')`

@@ -14,7 +14,7 @@ import { create } from 'zustand';
 interface SummonEffect {
   id: string;
   cardName: string;
-  cardRarity: 'common' | 'rare' | 'epic' | 'legendary';
+  cardRarity: 'common' | 'rare' | 'epic' | 'mythic';
   position: { x: number; y: number };
   timestamp: number;
 }
@@ -44,7 +44,7 @@ export const useSummonEffectStore = create<SummonEffectStore>((set) => ({
       set((state) => ({
         activeEffects: state.activeEffects.filter(e => e.id !== effect.id)
       }));
-    }, effect.cardRarity === 'legendary' ? 2500 : 1500);
+    }, effect.cardRarity === 'mythic' ? 2500 : 1500);
   },
   
   clearEffect: (id) => {

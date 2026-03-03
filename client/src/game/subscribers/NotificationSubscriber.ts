@@ -65,8 +65,8 @@ export function initializeNotificationSubscriber(
   if (cfg.showCardPlayed) {
     unsubscribes.push(
       GameEventBus.subscribe<CardPlayedEvent>('CARD_PLAYED', (event) => {
-        if (event.rarity === 'legendary') {
-          toast.success(`Legendary! ${event.cardName}`, {
+        if (event.rarity === 'mythic') {
+          toast.success(`Mythic! ${event.cardName}`, {
             duration: 2000
           });
         }

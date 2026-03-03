@@ -631,7 +631,7 @@ export const additionalSpellCards: CardData[] = [
       health: 3,
       type: "minion",
       rarity: "common",
-      description: "Summoned by Spellbender secret to block spells.",
+      description: "Summoned by Spellbender Rune to block spells.",
       keywords: [],
       heroClass: "mage",
       class: "Mage",

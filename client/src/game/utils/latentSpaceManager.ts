@@ -278,7 +278,7 @@ export function latentToShaderUniforms(latent: LatentVector) {
 
 function getRarityFactor(rarity: string): number {
   switch (rarity.toLowerCase()) {
-    case 'legendary': return 1.0;
+    case 'mythic': return 1.0;
     case 'epic': return 0.8;
     case 'rare': return 0.6;
     case 'common':

@@ -34,7 +34,7 @@ export function initializeDailyQuestSubscriber(): UnsubscribeFn {
 			if (data.cardType === 'weapon') {
 				useDailyQuestStore.getState().updateProgress('play_weapons', 1);
 			}
-			if (data.rarity === 'legendary') {
+			if (data.rarity === 'mythic') {
 				useDailyQuestStore.getState().updateProgress('play_legendary', 1);
 			}
 		})

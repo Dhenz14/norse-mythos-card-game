@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface CardSummonEffectProps {
   cardName: string;
-  cardRarity: 'common' | 'rare' | 'epic' | 'legendary';
+  cardRarity: 'common' | 'rare' | 'epic' | 'mythic';
   position: { x: number; y: number };
   onComplete?: () => void;
 }
@@ -31,7 +31,7 @@ const rarityColors = {
   common: { primary: '#9d9d9d', secondary: '#c4c4c4', glow: 'rgba(157, 157, 157, 0.6)' },
   rare: { primary: '#0070dd', secondary: '#4da6ff', glow: 'rgba(0, 112, 221, 0.6)' },
   epic: { primary: '#a335ee', secondary: '#c77dff', glow: 'rgba(163, 53, 238, 0.6)' },
-  legendary: { primary: '#ff8000', secondary: '#ffb347', glow: 'rgba(255, 128, 0, 0.8)' }
+  mythic: { primary: '#ff8000', secondary: '#ffb347', glow: 'rgba(255, 128, 0, 0.8)' }
 };
 
 const CardSummonEffect: React.FC<CardSummonEffectProps> = ({
@@ -42,7 +42,7 @@ const CardSummonEffect: React.FC<CardSummonEffectProps> = ({
 }) => {
   const [visible, setVisible] = useState(true);
   const colors = rarityColors[cardRarity] || rarityColors.common;
-  const isLegendary = cardRarity === 'legendary';
+  const isLegendary = cardRarity === 'mythic';
   const isEpic = cardRarity === 'epic';
 
   useEffect(() => {

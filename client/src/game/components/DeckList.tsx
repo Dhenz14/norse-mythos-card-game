@@ -153,7 +153,7 @@ function getRarityColor(rarity: string): string {
     case 'common': return '#000000';
     case 'rare': return '#0070DD';
     case 'epic': return '#A335EE';
-    case 'legendary': return '#FF8000';
+    case 'mythic': return '#FF8000';
     default: return '#000000';
   }
 }

@@ -9,7 +9,7 @@
 
 export const StorageKeys = {
 	// Decks
-	HEARTHSTONE_DECKS: 'hearthstone_decks',
+	RAGNAROK_DECKS: 'ragnarok_decks',
 	DECK_BUILDER: 'deck-builder-storage',
 	HERO_DECKS: 'ragnarok-hero-decks',
 	LAST_PLAYED_DECK_ID: 'lastPlayedDeckId',

@@ -46,20 +46,10 @@ export function applyEnrageEffect(minion: CardInstance): CardInstance {
       
       // Apply card-specific enrage effects
       switch (minion.card.name) {
-        case "Amani Berserker":
+        case "Enraged Berserker":
           attackBonus = 3;
           break;
-        case "Angry Chicken":
-          attackBonus = 5;
-          break;
-        case "Tauren Warrior":
-          attackBonus = 3;
-          break;
-        case "Raging Worgen":
-          attackBonus = 1;
-          windfuryAdded = true;
-          break;
-        case "Grommash Hellscream":
+        case "Tyr, God of War":
           attackBonus = 6;
           break;
       }
@@ -83,20 +73,10 @@ export function applyEnrageEffect(minion: CardInstance): CardInstance {
     
     // Apply card-specific enrage removal
     switch (minion.card.name) {
-      case "Amani Berserker":
+      case "Enraged Berserker":
         attackBonus = 3;
         break;
-      case "Angry Chicken":
-        attackBonus = 5;
-        break;
-      case "Tauren Warrior":
-        attackBonus = 3;
-        break;
-      case "Raging Worgen":
-        attackBonus = 1;
-        windfuryRemoved = true;
-        break;
-      case "Grommash Hellscream":
+      case "Tyr, God of War":
         attackBonus = 6;
         break;
     }

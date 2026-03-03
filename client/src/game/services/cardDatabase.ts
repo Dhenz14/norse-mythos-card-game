@@ -315,8 +315,8 @@ class CardDatabaseService {
       },
       {
         id: '15002',
-        name: 'Grommash Hellscream',
-        description: 'Charge. Enrage: +6 Attack',
+        name: 'Tyr, God of War',
+        description: 'Charge. Has +6 Attack while damaged.',
         manaCost: 8,
         attack: 4,
         health: 9,
@@ -327,8 +327,8 @@ class CardDatabaseService {
       },
       {
         id: '16003',
-        name: 'Tirion Fordring',
-        description: 'Divine Shield, Taunt. Deathrattle: Equip a 5/3 Ashbringer.',
+        name: 'Týr, Champion of Justice',
+        description: 'Divine Shield. Taunt. Deathrattle: Equip a 5/3 Ashbringer.',
         manaCost: 8,
         attack: 6,
         health: 6,

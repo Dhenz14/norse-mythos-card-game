@@ -78,14 +78,14 @@ function countCardCopies(cardIds: number[], cardId: number): number {
   return cardIds.filter(id => id === cardId).length;
 }
 
-function isCardLegendary(cardId: number): boolean {
+function isCardMythic(cardId: number): boolean {
   const card = getCardById(cardId);
   if (!card) return false;
-  return (card.rarity || '').toLowerCase() === 'legendary';
+  return (card.rarity || '').toLowerCase() === 'mythic';
 }
 
 function getMaxCopiesForCard(cardId: number): number {
-  return isCardLegendary(cardId) ? 1 : MAX_COPIES;
+  return isCardMythic(cardId) ? 1 : MAX_COPIES;
 }
 
 export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, get) => ({
@@ -131,7 +131,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     const maxAllowed = getMaxCopiesForCard(cardId);
     if (currentCopies >= maxAllowed) {
       const card = getCardById(cardId);
-      const rarityNote = isCardLegendary(cardId) ? ' (Legendary)' : '';
+      const rarityNote = isCardMythic(cardId) ? ' (Mythic)' : '';
       debug.warn(`[HeroDeck] Max copies (${maxAllowed}) of card ${card?.name || cardId}${rarityNote} already in deck`);
       return false;
     }
@@ -240,7 +240,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
       const maxAllowed = getMaxCopiesForCard(cardId);
       if (count > maxAllowed) {
         const card = getCardById(cardId);
-        const rarityNote = isCardLegendary(cardId) ? ' (Legendary - max 1)' : '';
+        const rarityNote = isCardMythic(cardId) ? ' (Mythic - max 1)' : '';
         errors.push(`Card "${card?.name || cardId}"${rarityNote} has ${count} copies (max ${maxAllowed})`);
       }
     }

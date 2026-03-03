@@ -103,7 +103,7 @@ const useGame = create<GameState>()(
       
       // In a real app, we'd save this to localStorage or a backend
       try {
-        localStorage.setItem('hearthstone_decks', JSON.stringify(decks));
+        localStorage.setItem('ragnarok_decks', JSON.stringify(decks));
       } catch (e) {
         console.error("Failed to save decks to localStorage", e);
       }
@@ -132,7 +132,7 @@ const useGame = create<GameState>()(
       
       // Save to localStorage
       try {
-        localStorage.setItem('hearthstone_decks', JSON.stringify(updatedDecks));
+        localStorage.setItem('ragnarok_decks', JSON.stringify(updatedDecks));
       } catch (e) {
         console.error("Failed to save decks to localStorage", e);
       }
@@ -142,7 +142,7 @@ const useGame = create<GameState>()(
 
 // Initialize with saved decks from localStorage if available
 try {
-  const savedDecks = localStorage.getItem('hearthstone_decks');
+  const savedDecks = localStorage.getItem('ragnarok_decks');
   if (savedDecks) {
     // Parse the saved decks
     let decks: DeckInfo[] = [];
@@ -179,7 +179,7 @@ try {
 } catch (e) {
   console.error("Failed to load decks from localStorage", e);
   // Clear potentially corrupted data
-  localStorage.removeItem('hearthstone_decks');
+  localStorage.removeItem('ragnarok_decks');
 }
 
 export default useGame;

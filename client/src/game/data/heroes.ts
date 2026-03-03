@@ -67,7 +67,7 @@ const heroes: HeroData[] = [
 {
           id: 1002,
 
-          name: "Khadgar",
+          name: "Bragi Runekeeper",
           description: "Archmage of the Rune Council and apprentice of Óðinn's Prophet."
 
            },
@@ -75,7 +75,7 @@ const heroes: HeroData[] = [
 {
           id: 1003,
 
-          name: "Varden Dawngrasp",
+          name: "Sindri Dawngrasp",
           description: "Neutral mage from Alfheim who has joined the Aesir in Midgard."
 
            },
@@ -83,15 +83,15 @@ const heroes: HeroData[] = [
 {
           id: 1004,
 
-          name: "Aegwynn",
-        description: "Guardian of the realms, mother of Óðinn's Prophet, and one of the most powerful mages in history."
+          name: "Gróa the Seeress",
+        description: "Guardian of the realms, mother of Óðinn's Prophet, and one of the most powerful seeresses in history."
       },
 
 {
           id: 1005,
 
           name: "Njord Stormfather",
-          description: "Grand Admiral of Kul Tiras and father of Freya Frostweaver."
+          description: "Grand Admiral of the Vanir fleet and father of Freya Frostweaver."
 
            },
 
@@ -125,8 +125,8 @@ const heroes: HeroData[] = [
 
           id: 2001,
 
-          name: "Magni Bronzebeard",
-          description: "Former King of Ironforge and representative of the Diamond Dwarves."
+          name: "Brokkr Ironhand",
+          description: "Former King of Nidavellir and representative of the Dvergr smiths."
 
            },
 
@@ -140,15 +140,15 @@ const heroes: HeroData[] = [
 {
           id: 2003,
 
-          name: "Annhylde the Caller",
-          description: "Leader of the Val'kyr who offered Hel a pact after her fall."
+          name: "Hildr the Valkyrie",
+          description: "Leader of the Valkyries who offered Hel a pact after her fall."
 
            },
 
 {
           id: 2004,
 
-          name: "Rokara",
+          name: "Hervor Shieldmaiden",
           description: "Young einherjar warrior from the Ulfhednar Clan with exceptional combat skills."
       }]
 
@@ -157,10 +157,10 @@ const heroes: HeroData[] = [
 {
       id: 3,
 
-      name: "Uther Lightbringer",
+      name: "Heimdallr the Vigilant",
       class: "paladin",
 
-      description: "Leader of the Knights of the Silver Hand and mentor to the Draugr King.",
+      description: "Guardian of the Bifrost and watchman of the Aesir, mentor to the Draugr King.",
       heroPowers: [{
 
           id: 103,
@@ -176,15 +176,15 @@ const heroes: HeroData[] = [
           id: 3001,
 
           name: "Sigyn, the Faithful",
-          description: "First of the Blood Knights and wielder of the Light."
+          description: "First of the Bifrost Knights and wielder of the Light."
 
            },
 
 {
           id: 3002,
 
-          name: "Sir Annoy-O",
-          description: "Sentient mechanical annoy-o-tron who became a Knight of the Silver Hand."
+          name: "Ratatoskr the Vexing",
+          description: "Sentient automaton squirrel who became a champion of the Bifrost Guard."
 
            },
 
@@ -199,16 +199,16 @@ const heroes: HeroData[] = [
 {
           id: 3004,
 
-          name: "Cariel Roame",
-          description: "Tireless defender of justice and sister to Tamsin Roame."
+          name: "Sif Goldensworn",
+          description: "Tireless defender of justice and sister to Sinmara the Darksworn."
 
            },
 
 {
           id: 3005,
 
-          name: "Yrel",
-          description: "Draenei paladin and former Exarch of the Draenei people."
+          name: "Nanna of Asgard",
+          description: "Light-blessed paladin and former Exarch of the Vanir people."
       }],
       collectible: true
   },
@@ -234,8 +234,8 @@ const heroes: HeroData[] = [
 
           id: 4001,
 
-          name: "Alleria Windrunner",
-          description: "Eldest of the Windrunner sisters and master ranger."
+          name: "Skaði Winterbow",
+          description: "Eldest of the frost-giant huntresses and master ranger of Jotunheim."
 
            },
 
@@ -249,24 +249,24 @@ const heroes: HeroData[] = [
 {
           id: 4003,
 
-          name: "Tavish Stormpike",
-          description: "Skilled dwarf hunter from Alterac Valley who excels at hunting the most dangerous prey."
+          name: "Eitri Stormpike",
+          description: "Skilled dvergr hunter from Niflheim who excels at hunting the most dangerous prey."
 
            },
 
 {
           id: 4004,
 
-          name: "Guff Runetotem",
-          description: "Young tauren hunter with a special connection to animals of the wild."
+          name: "Dáinn Beastcaller",
+          description: "Young jotun hunter with a special connection to the beasts of the wild."
 
            },
 
 {
           id: 4005,
 
-          name: "Hemet Nesingwary",
-          description: "Famed big game hunter and safari guide across the Nine Realms."
+          name: "Víðarr the Silent Hunter",
+          description: "Famed big game hunter and tracker across the Nine Realms."
       }],
       collectible: true
   },
@@ -274,10 +274,10 @@ const heroes: HeroData[] = [
 {
       id: 5,
 
-      name: "Malfurion Stormrage",
+      name: "Idunn Lifebringer",
       class: "druid",
 
-      description: "Archdruid of the Night Elves and twin brother of Typhon, Storm Titan.",
+      description: "Archdruid of the Ljósálfar and keeper of the golden apples of immortality.",
       heroPowers: [{
 
           id: 105,
@@ -292,40 +292,40 @@ const heroes: HeroData[] = [
 
           id: 5001,
 
-          name: "Lunara",
-          description: "First daughter of Cenarius and protector of the Dreamway."
+          name: "Embla Greenwhisper",
+          description: "First daughter of the forest spirits and protector of the Dreamway."
 
            },
 
 {
           id: 5002,
 
-          name: "Hamuul Runetotem",
-          description: "Archdruid of Thunder Bluff and leader of the tauren druids."
+          name: "Fjölnir Rootwarden",
+          description: "Archdruid of the Vanir and leader of the grove druids."
 
            },
 
 {
           id: 5003,
 
-          name: "Shan'do Malfurion",
-          description: "Malfurion in his role as teacher and guide to young druids."
+          name: "Idunn, Grove Warden",
+          description: "Idunn in her role as teacher and guide to young druids."
 
            },
 
 {
           id: 5004,
 
-          name: "Hazelbark",
-          description: "Ancient treant with deep connections to the Emerald Dream."
+          name: "Askr Elderbark",
+          description: "Ancient treant with deep connections to Yggdrasil's roots."
 
            },
 
 {
           id: 5005,
 
-          name: "Guff Runetotem",
-          description: "Young tauren druid known for his friendly nature and connection to the land."
+          name: "Váli Mossborn",
+          description: "Young grove druid known for his friendly nature and connection to the land."
       }],
       collectible: true
   },
@@ -333,10 +333,10 @@ const heroes: HeroData[] = [
 {
       id: 6,
 
-      name: "Anduin Wrynn",
+      name: "Eir the Merciful",
       class: "priest",
 
-      description: "High Priest of Asgard and son of Varian the Valiant.",
+      description: "High Priestess of Asgard and keeper of the healing arts among the Aesir.",
       heroPowers: [{
 
           id: 106,
@@ -351,8 +351,8 @@ const heroes: HeroData[] = [
 
           id: 6001,
 
-          name: "Tyrande Whisperwind",
-          description: "High Priestess of Elune and leader of the Night Elves."
+          name: "Fulla Moonveil",
+          description: "High Priestess of Máni and leader of the Ljósálfar."
 
            },
 
@@ -367,24 +367,24 @@ const heroes: HeroData[] = [
 {
           id: 6003,
 
-          name: "Madame Lazul",
-          description: "Troll priestess and fortune teller with mysterious powers."
+          name: "Vala Seidkona",
+          description: "Völva priestess and fortune teller with mysterious powers of seiðr."
 
            },
 
 {
           id: 6004,
 
-          name: "Natalie Seline",
-          description: "Former high priestess who studied the ways of shadow."
+          name: "Rindr Shadowpriestess",
+          description: "Former high priestess who studied the ways of shadow and Helheim."
 
            },
 
 {
           id: 6005,
 
-          name: "Xyrella",
-          description: "Draenei priest with powerful light-based abilities."
+          name: "Sól Lightbearer",
+          description: "Vanir priest with powerful light-based abilities drawn from the sun."
       }],
       collectible: true
   },
@@ -410,38 +410,38 @@ const heroes: HeroData[] = [
 
           id: 7001,
 
-          name: "Nemsy Necrofizzle",
-          description: "A gnome warlock with an affinity for dark magic."
+          name: "Grýla Hexweaver",
+          description: "A dvergr warlock with an affinity for dark magic."
 
            },
 
 {
           id: 7002,
 
-          name: "Mecha-Jaraxxus",
-          description: "A mechanized version of the eredar lord Jaraxxus."
+          name: "Iron Surtr",
+          description: "A mechanized automaton forged in the fires of Muspelheim."
 
            },
 
 {
           id: 7003,
 
-          name: "N'Zoth",
-        description: "The Corruptor, an ancient Old God known for its power over death."
+          name: "Níðhöggr",
+        description: "The Corpse-Gnawer, an ancient wyrm coiled beneath Yggdrasil, known for its dominion over decay."
       },
 
 {
           id: 7004,
 
-          name: "Tamsin Roame",
-        description: "Ambitious warlock and sister to Cariel Roame, who made a dangerous pact with dark forces."
+          name: "Sinmara the Darksworn",
+        description: "Ambitious warlock and sister to Sif Goldensworn, who made a dangerous pact with dark forces."
       },
 
 {
           id: 7005,
 
-          name: "Cho'gall",
-          description: "Two-headed ogre chieftain with powerful warlock abilities."
+          name: "Þrívaldi",
+          description: "Three-headed jotun chieftain with powerful warlock abilities."
       }],
       collectible: true
   },
@@ -475,23 +475,23 @@ const heroes: HeroData[] = [
 {
           id: 8002,
 
-          name: "King Rastakhan",
-          description: "King of the Zandalari trolls and powerful practitioner of loa magic."
+          name: "Hrímþurs the Frost King",
+          description: "King of the frost giants and powerful practitioner of ice magic."
 
            },
 
 {
           id: 8003,
 
-          name: "The Thunder King",
-          description: "Ancient ruler of the mogu who wields the power of lightning."
+          name: "Þjazi Stormborn",
+          description: "Ancient ruler of the storm giants who wields the power of lightning."
 
            },
 
 {
           id: 8004,
 
-          name: "Instructor Fireheart",
+          name: "Völva Eldrid",
           description: "Master of shamanic techniques who teaches the ways of the elements."
 
            },
@@ -499,8 +499,8 @@ const heroes: HeroData[] = [
 {
           id: 8005,
 
-          name: "Lady Vashj",
-          description: "Former night elf handmaiden transformed into a powerful naga sea witch."
+          name: "Rán of the Depths",
+          description: "Former ljósálfr handmaiden transformed into a powerful naga sea witch."
       }],
       collectible: true
   },
@@ -508,10 +508,10 @@ const heroes: HeroData[] = [
 {
       id: 9,
 
-      name: "Valeera Sanguinar",
+      name: "Nótt the Shadow",
       class: "rogue",
 
-      description: "Master assassin and companion to Varian Wrynn.",
+      description: "Master assassin and goddess of the night who moves unseen through the Nine Realms.",
       heroPowers: [{
 
           id: 109,
@@ -526,8 +526,8 @@ const heroes: HeroData[] = [
 
           id: 9001,
 
-          name: "Maiev Shadowsong",
-          description: "The Warden responsible for imprisoning Typhon, Storm Titan."
+          name: "Skuld Shadowsong",
+          description: "The Norn Warden responsible for imprisoning Typhon, Storm Titan."
 
            },
 
@@ -542,7 +542,7 @@ const heroes: HeroData[] = [
 {
           id: 9003,
 
-          name: "Tess Greymane",
+          name: "Alvíss Greycloak",
           description: "Princess of Svartalfheim and expert in espionage and stealth tactics."
 
            },
@@ -550,16 +550,16 @@ const heroes: HeroData[] = [
 {
           id: 9004,
 
-          name: "Scabbs Cutterbutter",
-          description: "Shadow operative known for his espionage skills and acrobatic abilities."
+          name: "Loki Silvertongue",
+          description: "Shadow operative known for his cunning deception and acrobatic abilities."
 
            },
 
 {
           id: 9005,
 
-          name: "Captain Hooktusk",
-          description: "Infamous pirate captain with a deadly reputation on the high seas."
+          name: "Captain Naglfar",
+          description: "Infamous pirate captain with a deadly reputation on the high seas of the Nine Realms."
       }],
       collectible: true
   },
@@ -570,12 +570,12 @@ const heroes: HeroData[] = [
       name: "Typhon, Storm Titan",
       class: "berserker",
 
-      description: "The first Berserker, twin brother of Malfurion Stormrage.",
+      description: "The first Berserker, twin sibling of the great druids of the Ljósálfar.",
       heroPowers: [{
 
           id: 110,
 
-          name: "Demon Claws",
+          name: "Berserker Claws",
           description: "Gain +1 Attack this turn.",
 
           cost: 1
@@ -585,16 +585,16 @@ const heroes: HeroData[] = [
 
           id: 10001,
 
-          name: "Kayn Sunfury",
-          description: "A powerful blood elf berserker and disciple of Typhon."
+          name: "Höðr Sunfury",
+          description: "A powerful ljósálfr berserker and disciple of Typhon."
 
            },
 
 {
           id: 10002,
 
-          name: "Kurtrus Ashfallen",
-          description: "A devoted berserker who survived the destruction of his village by demons."
+          name: "Egill Ashfallen",
+          description: "A devoted berserker who survived the destruction of his village by fire giants."
 
            }
 ],
@@ -629,7 +629,7 @@ const heroes: HeroData[] = [
 {
           id: 11002,
 
-          name: "Thassarian",
+          name: "Ganglati the Returned",
           description: "The first of the death knights to rejoin the Aesir after breaking free from Hel's dominion."
 
            },
@@ -637,34 +637,34 @@ const heroes: HeroData[] = [
 {
           id: 11003,
 
-          name: "Koltira Deathweaver",
-          description: "Former high elf ranger transformed into a Death Knight by the Draugr King."
+          name: "Hroðgar Deathweaver",
+          description: "Former ljósálfr ranger transformed into a Death Knight by the Draugr King."
 
            },
 
 {
           id: 11004,
 
-          name: "Lady Alistra",
-          description: "Master of unholy magics and instructor of aspiring Death Knights."
+          name: "Lady Ganglöt",
+          description: "Master of unholy magics and instructor of aspiring Death Knights in Helheim."
 
            },
 
 {
           id: 11005,
 
-          name: "Salanar the Horseman",
-          description: "Death Knight known for his mastery over undead steeds."
+          name: "Sleipnir's Rider",
+          description: "Death Knight known for his mastery over spectral steeds of Helheim."
       }],
       collectible: true
   },
   {
       id: 12,
 
-      name: "Lilian Voss",
+      name: "Hyndla the Bone-Singer",
       class: "necromancer",
 
-      description: "Master of dark magic and the art of raising the dead.",
+      description: "Master of dark magic and the art of raising the dead from Helheim.",
       heroPowers: [{
 
           id: 112,
@@ -678,16 +678,16 @@ const heroes: HeroData[] = [
 
           id: 12001,
 
-          name: "Meryl Felstorm",
-          description: "Ancient undead mage who mastered the dark arts of necromancy."
+          name: "Draugr Jarl Ölvir",
+          description: "Ancient undead jarl who mastered the dark arts of necromancy in Helheim."
 
            },
 
 {
           id: 12002,
 
-          name: "Helcular",
-          description: "Notorious necromancer who terrorized the Hillsbrad Foothills."
+          name: "Grimhild the Cursed",
+          description: "Notorious necromancer who terrorized the foothills of Jotunheim."
 
            }
       ],
