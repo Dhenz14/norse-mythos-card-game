@@ -641,13 +641,24 @@ export function getCharacterArtPath(id: string): string | null {
   return null;
 }
 
+const LOCAL_HERO_PORTRAITS = new Set([
+  'aphrodite','apollo','ares','athena','baldur','brakki','chronos','eir',
+  'freya','gerd','hades','heimdall','hephaestus','hera','hestia','hyperion',
+  'idunn','kvasir','logi','loki','magni','myrka','nyx','odin','persephone',
+  'poseidon','ran','sigyn','sinmara','sol','tartarus','thor','tyr','vidar','zeus',
+]);
+
 /**
  * Resolve the best available portrait for a hero or king.
- * Checks explicit portrait first, then falls back to art mapping.
+ * Priority: explicit portrait > local /portraits/heroes/ > CDN art mapping
  */
 export function resolveHeroPortrait(heroId?: string, explicitPortrait?: string): string | undefined {
   if (explicitPortrait) return explicitPortrait;
   if (!heroId) return undefined;
+  const name = heroId.replace(/^hero-/, '').toLowerCase();
+  if (LOCAL_HERO_PORTRAITS.has(name)) {
+    return assetPath(`/portraits/heroes/${name}.png`);
+  }
   return getCharacterArtPath(heroId) ?? undefined;
 }
 

@@ -153,7 +153,7 @@ export const berserkerCards: CardData[] = [
     set: "core"
   },
   {
-    id: 50001,
+    id: 48001,
     name: "Fenrir's Gaze",
     manaCost: 3,
     description: "Lifesteal. Deal 3 damage to a minion. Outcast: This costs (1).",
@@ -172,7 +172,7 @@ export const berserkerCards: CardData[] = [
     set: "core"
   },
   {
-    id: 50002,
+    id: 48002,
     name: "Odin's Vision",
     manaCost: 2,
     description: "Draw a card. Outcast: Draw another.",
@@ -318,7 +318,7 @@ export const berserkerCards: CardData[] = [
   },
   // === Migrated Outcast Cards ===
   {
-    id: 50005,
+    id: 48005,
     name: "Einherjar Berserker",
     manaCost: 4,
     attack: 5,
@@ -333,7 +333,7 @@ export const berserkerCards: CardData[] = [
     set: "core"
   },
   {
-    id: 50006,
+    id: 48006,
     name: "Priestess of Nemesis",
     manaCost: 7,
     attack: 6,

@@ -106,21 +106,30 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
     return 'neutral';
   }, [pet.norseHeroId, elementProp]);
 
-  const portraitUrl = useMemo(() => {
-    const artMapped = pet.norseHeroId ? resolveHeroPortrait(pet.norseHeroId) : null;
-    if (artMapped) return artMapped;
-    return assetPath(`/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png`);
+  const portraitPaths = useMemo(() => {
+    const localPath = assetPath(`/portraits/heroes/${pet.name.split(' ')[0].toLowerCase()}.png`);
+    const cdnPath = pet.norseHeroId ? resolveHeroPortrait(pet.norseHeroId) : null;
+    return { local: localPath, cdn: cdnPath };
   }, [pet.name, pet.norseHeroId]);
 
-  const [resolvedPortrait, setResolvedPortrait] = useState(portraitUrl);
+  const [resolvedPortrait, setResolvedPortrait] = useState(portraitPaths.local);
 
   useEffect(() => {
-    setResolvedPortrait(portraitUrl);
-    if (portraitUrl.startsWith('data:')) return;
-    const img = new Image();
-    img.src = portraitUrl;
-    img.onerror = () => setResolvedPortrait(DEFAULT_PORTRAIT);
-  }, [portraitUrl]);
+    const tryLoad = (src: string, fallback: () => void) => {
+      if (src.startsWith('data:')) { setResolvedPortrait(src); return; }
+      const img = new Image();
+      img.onload = () => setResolvedPortrait(src);
+      img.onerror = fallback;
+      img.src = src;
+    };
+    tryLoad(portraitPaths.local, () => {
+      if (portraitPaths.cdn) {
+        tryLoad(portraitPaths.cdn, () => setResolvedPortrait(DEFAULT_PORTRAIT));
+      } else {
+        setResolvedPortrait(DEFAULT_PORTRAIT);
+      }
+    });
+  }, [portraitPaths]);
 
   const portraitBgStyle = useMemo((): React.CSSProperties => ({
     backgroundImage: `url('${resolvedPortrait}')`,

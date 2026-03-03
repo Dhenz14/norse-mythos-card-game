@@ -262,7 +262,7 @@ export function destroyCard(
 
     // Einherjar: shuffle a +1/+1 copy into deck (max 3 returns)
     const hadEinherjar = cardToDestroy?.card?.keywords?.includes('einherjar');
-    const einherjarGen = (cardToDestroy as any)?.einherjarGeneration || 0;
+    const einherjarGen = cardToDestroy?.einherjarGeneration || 0;
 
     if (hadEinherjar && einherjarGen < 3) {
       const risenCard = { ...cardToDestroy!.card } as any;
@@ -272,7 +272,7 @@ export function destroyCard(
       if (!risenCard.name.includes('(Risen')) {
         risenCard.name = risenCard.name + suffix;
       }
-      (risenCard as any).einherjarGeneration = einherjarGen + 1;
+      risenCard.einherjarGeneration = einherjarGen + 1;
 
       const deck = newState.players[playerId].deck;
       const insertIdx = Math.floor(Math.random() * (deck.length + 1));

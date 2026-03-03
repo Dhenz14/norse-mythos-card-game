@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 import { CardData, CardInstance } from '../../types';
 import { SimpleCard, SimpleCardData } from '../SimpleCard';
 import { getCardDataSafely } from '../../utils/cards/cardInstanceAdapter';
+import { getCardById } from '../../data/allCards';
 
 export type CardRenderQuality = 'high' | 'medium' | 'low';
 
@@ -62,21 +63,32 @@ const CardRenderer: React.FC<CardRendererProps> = React.memo(({
 
   const evolutionLevel = ('evolutionLevel' in card) ? (card as any).evolutionLevel as (1 | 2 | 3 | undefined) : undefined;
 
-  const simpleCardData: SimpleCardData = useMemo(() => ({
-    id: processedCard.id || 0,
-    name: processedCard.name || 'Unknown',
-    manaCost: processedCard.manaCost || 0,
-    attack: processedCard.attack,
-    health: processedCard.health,
-    description: processedCard.description || '',
-    type: (processedCard.type as 'minion' | 'spell' | 'weapon') || 'minion',
-    rarity: (processedCard.rarity as 'basic' | 'common' | 'rare' | 'epic' | 'mythic') || 'common',
-    tribe: processedCard.tribe,
-    cardClass: processedCard.cardClass || processedCard.class,
-    keywords: processedCard.keywords || [],
-    evolutionLevel,
+  const simpleCardData: SimpleCardData = useMemo(() => {
+    const cardAny = processedCard as any;
+    const evolvesFrom = cardAny.evolvesFrom as number | undefined;
+    const evolvesFromCard = evolvesFrom ? getCardById(evolvesFrom) : undefined;
+    return {
+      id: processedCard.id || 0,
+      name: processedCard.name || 'Unknown',
+      manaCost: processedCard.manaCost || 0,
+      attack: processedCard.attack,
+      health: processedCard.health,
+      description: processedCard.description || '',
+      type: (processedCard.type as 'minion' | 'spell' | 'weapon') || 'minion',
+      rarity: (processedCard.rarity as 'basic' | 'common' | 'rare' | 'epic' | 'mythic') || 'common',
+      tribe: processedCard.tribe,
+      cardClass: processedCard.cardClass || processedCard.class,
+      keywords: processedCard.keywords || [],
+      evolutionLevel,
+      element: cardAny.element,
+      petStage: cardAny.petStage,
+      petFamily: cardAny.petFamily,
+      evolvesFrom,
+      evolvesFromName: evolvesFromCard?.name,
+      evolutionCondition: cardAny.evolutionCondition,
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [processedCard, evolutionLevel]);
+  }, [processedCard, evolutionLevel]);
 
   const scaleStyle: React.CSSProperties = useMemo(() => scale !== 1 ? {
     transform: `scale(${scale})`,

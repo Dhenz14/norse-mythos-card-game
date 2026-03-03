@@ -193,9 +193,16 @@
 
   /* ========================================
      HOLE CARDS (Player's Poker Cards)
-     Left side, near player hero
+     Offset from hero card - responsive to screen size
      ======================================== */
-  --zone-hole-cards-offset-y: 36px;
+  --zone-hole-cards-player-offset: -50px;
+  --zone-hole-cards-opponent-offset: -80px;
+
+  /* ========================================
+     POKER CARD SIZING
+     Scale poker cards on smaller screens
+     ======================================== */
+  --zone-poker-card-scale: 1;
 }
 
 /* ========================================
@@ -224,6 +231,10 @@
   :root {
     --zone-poker-col-width: clamp(320px, 35vw, 420px);
     --zone-info-col-width: clamp(140px, 15vw, 200px);
+    --zone-community-top: 38%;
+    --zone-hole-cards-player-offset: -36px;
+    --zone-hole-cards-opponent-offset: -56px;
+    --zone-poker-card-scale: 0.85;
   }
 }
 
@@ -272,6 +283,25 @@
     --zone-player-hero-left: 3%;
     --zone-opponent-hero-left: 3%;
     --zone-pot-left: 8px;
+  }
+}
+
+/* Short screens: reduce poker card overlap to prevent stacking */
+@media (max-height: 800px) {
+  :root {
+    --zone-community-top: 36%;
+    --zone-hole-cards-player-offset: -30px;
+    --zone-hole-cards-opponent-offset: -50px;
+    --zone-poker-card-scale: 0.82;
+  }
+}
+
+@media (max-height: 650px) {
+  :root {
+    --zone-community-top: 32%;
+    --zone-hole-cards-player-offset: -24px;
+    --zone-hole-cards-opponent-offset: -40px;
+    --zone-poker-card-scale: 0.72;
   }
 }
 

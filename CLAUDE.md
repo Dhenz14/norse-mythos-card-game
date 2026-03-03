@@ -155,7 +155,7 @@ server/
 ### Card System (`game/data/`)
 - **Single source**: `allCards.ts` contains all 1,400+ cards
 - Card registry with ID ranges in `cardRegistry/ID_RANGES.md`
-- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 50000-50236 pets (24 families)
+- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 50000-50366 pets (37 families)
 
 ### Combat System (`game/combat/`)
 - `RagnarokCombatArena.tsx` - Main arena component with poker integration
@@ -286,7 +286,7 @@ client/src/data/blockchain/tournamentRewards.ts
 - **Prophecy**: `Prophecy` interface on `GameState.prophecies[]`; countdown ticks in `endTurn()`; `resolveProphecy()` handles 7 effect types
 - **Realm Shift**: `RealmState` on `GameState.activeRealm`; `realm_shift` spell effect in `spellUtils.ts`; start/end-of-turn realm effects in `gameUtils.ts`
 - **Ragnarok Chain**: `chainPartner` + `chainEffect` fields on `MinionCardData`; both-in-play buffs in `playCard()`; partner-death triggers in `destroyCard()`
-- **Pet Evolution**: 3-3-1 family system (24 families, 168 cards); `petStage`, `petFamily`, `petFamilyTier`, `evolvesInto/From`, `evolutionCondition`, `stage3Variants` fields; Stage 2/3 cost 0 mana (free evolution); `attemptPetEvolution()` in `gameUtils.ts` handles transform + variant selection; `checkPetEvolutionTrigger()` fires on 15 triggers across gameUtils/spellUtils/battlecryUtils/zoneUtils
+- **Pet Evolution**: 3-3-1 family system (37 families, 259 cards); `petStage`, `petFamily`, `petFamilyTier`, `evolvesInto/From`, `evolutionCondition`, `stage3Variants` fields; Stage 2/3 cost 0 mana (free evolution); `attemptPetEvolution()` in `gameUtils.ts` handles transform + variant selection; `checkPetEvolutionTrigger()` fires on 15 triggers across gameUtils/spellUtils/battlecryUtils/zoneUtils; evolve info icon on Stage 2/3 cards in SimpleCard.tsx
 - **Rune** (renamed from Secret): Description text says "Rune" but underlying keyword is still `secret` for backwards compatibility
 - **Runic Bond** (renamed from Magnetic): Description says "Runic Bond" but keyword is still `magnetic`
 - **Yggdrasil Golem** (renamed from Jade Golem): Effect key is `summon_yggdrasil_golem`; handlers still in files named `summonJadeGolemHandler.ts`
@@ -382,7 +382,7 @@ vercel --prod                 # Deploy to Vercel
 - Prophecy system (7 cards, visible countdown timers, 7 resolve effect types)
 - Realm Shift system (9 cards, board-wide rule changes across the Nine Realms)
 - Ragnarok Chain system (10 cards, 5 mythological pairs with linked destiny)
-- Pet Evolution system (168 cards, 24 families, 3-3-1 evolution, Stage 2/3 cost 0 mana)
+- Pet Evolution system (259 cards, 37 families, 3-3-1 evolution, Stage 2/3 cost 0 mana, evolve info icon)
 - Vanilla Minions (7 baseline stat cards for evaluation benchmarks)
 - Berserker class rename (formerly Demon Hunter)
 - Rune keyword rename (formerly Secret, display text only)

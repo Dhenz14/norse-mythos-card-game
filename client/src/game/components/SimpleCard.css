@@ -373,7 +373,8 @@
   top: 64%;
   left: 4%;
   right: 4%;
-  height: 11%;
+  min-height: 11%;
+  max-height: 18%;
   background: rgba(10,12,24,0.45);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -439,10 +440,20 @@
   letter-spacing: 0.1px;
 }
 
+.simple-card.medium .card-name.name-extreme {
+  font-size: 8px;
+  letter-spacing: 0;
+}
+
 .simple-card.small .card-name.name-long,
 .simple-card.small .card-name.name-very-long {
   font-size: 8px;
   letter-spacing: 0.1px;
+}
+
+.simple-card.small .card-name.name-extreme {
+  font-size: 7px;
+  letter-spacing: 0;
 }
 
 .simple-card.large .card-name.name-long {
@@ -453,6 +464,11 @@
 .simple-card.large .card-name.name-very-long {
   font-size: 10px;
   letter-spacing: 0.3px;
+}
+
+.simple-card.large .card-name.name-extreme {
+  font-size: 9px;
+  letter-spacing: 0.1px;
 }
 
 .simple-card.preview .card-name {
@@ -596,6 +612,54 @@
   transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.12s ease-out,
               filter 0.12s ease-out;
+}
+
+/* ==========================================================================
+   EVOLVE INFO BADGE — Stage 2/3 pet evolution requirement indicator
+   ========================================================================== */
+
+.evolve-info-badge {
+  border-color: #00e5ff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 6px rgba(0, 229, 255, 0.5) !important;
+  background: linear-gradient(135deg, #0a2a3a 0%, #051520 100%);
+  animation: evolve-pulse 2s ease-in-out infinite;
+}
+
+.evolve-info-badge:hover {
+  box-shadow:
+    0 0 14px #00e5ff,
+    0 0 28px #00e5ff,
+    0 4px 12px rgba(0, 0, 0, 0.8) !important;
+}
+
+@keyframes evolve-pulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 0 6px rgba(0,229,255,0.4); }
+  50%      { box-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 0 12px rgba(0,229,255,0.7); }
+}
+
+.evolve-tooltip {
+  border-color: rgba(0, 229, 255, 0.3) !important;
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.9),
+    0 0 1px rgba(0, 229, 255, 0.3),
+    0 12px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.evolve-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.evolve-requirements > div:first-child {
+  color: #e0f7fa;
+  font-weight: 600;
+}
+
+.evolve-requirements > div:last-child:not(:first-child) {
+  color: #80deea;
+  font-style: italic;
+  font-size: 10px;
 }
 
 /* Small card: tight icon size */

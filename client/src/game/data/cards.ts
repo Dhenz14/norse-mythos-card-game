@@ -3538,7 +3538,7 @@ export const fullCardDatabase: CardData[] = [
         type: 'grant_persistent_effect',
 
         effect: 'rush',
-      targetType: 'mechs',
+      targetType: 'friendly_mech',
 
       permanent: true
     }
@@ -4312,7 +4312,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 0,
 
       health: 3,
-      race: "mechanical",
+      race: "Automaton",
       class: "Neutral"
   },
   {
@@ -4320,15 +4320,15 @@ export const fullCardDatabase: CardData[] = [
     name: 'Restoration Golem',
   description: 'At the end of your turn, restore 6 Health to a damaged character.',
   flavorText: 'A healing automaton from the divine forge.',
-  
+
   type: 'minion',
   rarity: 'mythic',
-  
+
   manaCost: 1,
   attack: 0,
-  
+
   health: 3,
-  race: "mechanical",
+  race: "Automaton",
       class: "Neutral",
       collectible: false
   },

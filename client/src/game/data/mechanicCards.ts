@@ -370,7 +370,7 @@ export const   mechanicCards: CardData[] = [{
       collectible: true
       },
   {
-      id: 40016,
+      id: 4516,
 
       name: "Mechanical Whelp",
       manaCost: 6,
@@ -398,7 +398,7 @@ export const   mechanicCards: CardData[] = [{
       collectible: true
       },
   {
-      id: 40017,
+      id: 4517,
 
       name: "Explosive Sheep",
       manaCost: 2,
@@ -694,7 +694,7 @@ export const   mechanicCards: CardData[] = [{
 export const tokenCards: CardData[] = [
   // Token for Release the Garmr
   {
-    id: 30101,
+    id: 9091,
     name: "Hound",
     manaCost: 1,
     attack: 1,
@@ -797,7 +797,7 @@ export const tokenCards: CardData[] = [
   },
   // Token for the Twin Slice "Second Slice" effect
   {
-    id: 30102,
+    id: 9092,
     name: "Second Slice",
     manaCost: 1,
     type: "spell",

@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from 'react';
-import { getCharacterArtPath } from '../utils/art';
+import { resolveHeroPortrait } from '../utils/art/artMapping';
 
 interface UseHeroArtResult {
   artPath: string | null;
@@ -26,12 +26,12 @@ export function useHeroArt(
     if (explicitPortrait) {
       return { artPath: explicitPortrait, hasArt: true };
     }
-    
+
     if (!heroId) {
       return { artPath: null, hasArt: false };
     }
-    
-    const artPath = getCharacterArtPath(heroId);
+
+    const artPath = resolveHeroPortrait(heroId) ?? null;
     return { artPath, hasArt: artPath !== null };
   }, [heroId, explicitPortrait]);
 }

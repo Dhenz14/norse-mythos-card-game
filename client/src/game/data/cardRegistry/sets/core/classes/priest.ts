@@ -367,7 +367,7 @@ export const priestCards: CardData[] = [
     }
   },
   {
-    id: 50104,
+    id: 48104,
     name: "Nyx, Dark Inquisitor",
     manaCost: 7,
     attack: 5,
@@ -424,7 +424,7 @@ export const priestCards: CardData[] = [
     set: "core"
   },
   {
-    id: 50116,
+    id: 48116,
     name: "Styx Reliquary",
     manaCost: 1,
     attack: 1,
@@ -484,7 +484,7 @@ export const priestCards: CardData[] = [
     }
   },
   {
-    id: 50032,
+    id: 48032,
     name: "Helios Sunshard",
     manaCost: 5,
     attack: 3,

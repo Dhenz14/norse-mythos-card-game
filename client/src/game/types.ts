@@ -664,6 +664,12 @@ export interface CardInstance {
   petEvolutionMet?: boolean;
   evolvedFromStage2Id?: number;
 
+  // Einherjar resurrection tracking (max 3 generations)
+  einherjarGeneration?: number;
+
+  // Blood Price: true when card is queued to pay with health instead of mana
+  payWithBlood?: boolean;
+
   // NFT — present if this is a Hive L1 NFT card; absent for demo/dev cards
   nft_id?: string;
 }

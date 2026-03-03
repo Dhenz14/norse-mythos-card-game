@@ -34,8 +34,8 @@ export const HoleCardsOverlay: React.FC<HoleCardsOverlayProps> = ({
   const displayCards = cards.length > 0 ? cards : [FACE_DOWN_CARD, FACE_DOWN_CARD];
 
   const positionClass = isOpponent
-    ? 'top-full -mt-[80px]'
-    : 'bottom-full -mb-[50px]';
+    ? 'top-full'
+    : 'bottom-full';
 
   return (
     <div
@@ -46,6 +46,12 @@ export const HoleCardsOverlay: React.FC<HoleCardsOverlayProps> = ({
         ${positionClass}
         ${activeTurn ? 'hole-cards-active-turn' : ''}
       `}
+      style={{
+        [isOpponent ? 'marginTop' : 'marginBottom']: isOpponent
+          ? 'var(--zone-hole-cards-opponent-offset, -80px)'
+          : 'var(--zone-hole-cards-player-offset, -50px)',
+        transform: `translateX(-50%) scale(var(--zone-poker-card-scale, 1))`,
+      }}
     >
       {displayCards.map((card, idx) => {
         const isWinning = isCardInWinningHand(card, winningCards);

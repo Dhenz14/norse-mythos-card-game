@@ -107,7 +107,7 @@ export enum CardClass {
   DRUID = 'Druid',
   WARLOCK = 'Warlock',
   PRIEST = 'Priest',
-  DEMONHUNTER = 'Demonhunter',
+  BERSERKER = 'Berserker',
   PALADIN = 'Paladin',
   HUNTER = 'Hunter',
   SHAMAN = 'Shaman',

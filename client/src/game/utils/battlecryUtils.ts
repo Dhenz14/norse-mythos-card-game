@@ -717,6 +717,28 @@ export function executeBattlecry(
       case 'summon_defender':
         return executeSummonDefenderBattlecry(newState, battlecry);
 
+      case 'summon_dead_einherjar': {
+        const gy = newState.players.player.graveyard || [];
+        const deadEinherjar = gy.filter(
+          m => m.card.type === 'minion' && (m.card.keywords || []).includes('einherjar')
+        );
+        const bf = newState.players.player.battlefield;
+        const maxBf = 5;
+        for (const dead of deadEinherjar) {
+          if (bf.length >= maxBf) break;
+          const resummoned: CardInstance = {
+            ...structuredClone(dead),
+            instanceId: uuidv4(),
+            canAttack: false,
+            isSummoningSick: true,
+            currentHealth: (dead.card as any).health || 1,
+            currentAttack: (dead.card as any).attack || 0,
+          };
+          bf.push(resummoned);
+        }
+        return newState;
+      }
+
       case 'gain_armor': {
         const armorVal = battlecry.value || 0;
         newState.players.player.heroArmor = (newState.players.player.heroArmor || 0) + armorVal;

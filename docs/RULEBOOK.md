@@ -147,7 +147,7 @@ Each hero has three unique abilities:
 | 30201-30206 | Einherjar Cards |
 | 30301-30309 | Realm Shift Cards |
 | 30401-30410 | Ragnarok Chain Cards |
-| 50000-50236 | Pet Evolution Cards (24 families) |
+| 50000-50366 | Pet Evolution Cards (37 families) |
 
 ---
 
@@ -634,7 +634,7 @@ Paired minions with linked destiny mechanics. When one partner dies or triggers,
 
 ### Pet Evolution System
 
-The **3-3-1 Family-Based Evolution System**: 24 Norse-themed pet families, each with 3 Stage 1 forms across different elements that evolve into 3 Stage 2 forms, converging into 1 Stage 3 master form with 3 stat/ability variants based on evolution path.
+The **3-3-1 Family-Based Evolution System**: 37 Norse-themed pet families, each with 3 Stage 1 forms across different elements that evolve into 3 Stage 2 forms, converging into 1 Stage 3 master form with 3 stat/ability variants based on evolution path.
 
 #### Elements
 
@@ -668,7 +668,7 @@ The **3-3-1 Family-Based Evolution System**: 24 Norse-themed pet families, each 
 | **Hero Synergy** | +1 Health bonus when pet element matches hero element |
 | **Element Advantage** | +2 bonus damage when attacking a pet weak to your element |
 
-#### Pet Families (24 total, IDs 50000-50236)
+#### Pet Families (37 total, IDs 50000-50366)
 
 | # | Family | Elements | Stage 3 Name | IDs |
 |---|--------|----------|--------------|-----|
@@ -696,6 +696,19 @@ The **3-3-1 Family-Based Evolution System**: 24 Norse-themed pet families, each 
 | 22 | Primordial Beasts | Grass / Dark / Neutral | Primordial Guardian | 50210-50216 |
 | 23 | Doom Heralds | Dark / Electric / Fire | Herald of Ragnarok | 50220-50226 |
 | 24 | War Steeds | Neutral / Fire / Light | Steed of the Gods | 50230-50236 |
+| 25 | Thor's Goats | Fire / Neutral / Light | Tanngrisnir Reborn | 50240-50246 |
+| 26 | Dwarven Forgemasters | Fire / Neutral / Electric | Ivaldi's Masterwork | 50250-50256 |
+| 27 | Norns | Water / Light / Dark | Norn Triumvirate | 50260-50266 |
+| 28 | Trolls | Grass / Water / Neutral | Troll King | 50270-50276 |
+| 29 | Ljosalfar | Light / Electric / Neutral | Alfheim's Radiance | 50280-50286 |
+| 30 | Svartalfar | Dark / Fire / Grass | Svartalfheim's Shadow | 50290-50296 |
+| 31 | Disir | Light / Dark / Neutral | Disir Matriarch | 50300-50306 |
+| 32 | Fylgja | Fire / Water / Dark | Fylgja Ascendant | 50310-50316 |
+| 33 | Huldrefolk | Dark / Grass / Neutral | Huldra Queen | 50320-50326 |
+| 34 | Einherjar Warriors | Fire / Light / Neutral | Einherjar Eternal | 50330-50336 |
+| 35 | Ratatoskr's Messengers | Electric / Neutral / Grass | Ratatoskr Prime | 50340-50346 |
+| 36 | Naglfar's Crew | Dark / Water / Neutral | Naglfar's Admiral | 50350-50356 |
+| 37 | Muspel Phoenixes | Fire / Electric / Light | Muspel Eternal | 50360-50366 |
 
 ---
 

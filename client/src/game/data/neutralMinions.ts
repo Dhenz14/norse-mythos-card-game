@@ -9,7 +9,7 @@ import { CardData, BattlecryTargetType } from '../types';
  * This includes a mix of common, rare, epic, and some additional legendary minions
  */
 export const   neutralMinions: CardData[] = [{
-      id: 30003,
+      id: 29970,
 
       name: "Völva of the Realms",
       manaCost: 3,
@@ -36,7 +36,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-  id: 30004,
+  id: 29971,
   
   name: "Shield Bearer of Asgard",
   manaCost: 4,
@@ -55,7 +55,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-  id: 30006,
+  id: 29972,
   
   name: "Flame Priestess of Loki",
   manaCost: 2,
@@ -72,7 +72,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-      id: 30007,
+      id: 29973,
 
       name: "Oracle of the Sea Depths",
       manaCost: 3,
@@ -100,7 +100,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-      id: 30008,
+      id: 29974,
 
       name: "Doppelganger of Loki",
       manaCost: 5,
@@ -2163,7 +2163,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-      id: 30102,
+      id: 29975,
 
       name: "Thunder Lizard",
       manaCost: 3,
@@ -2188,7 +2188,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-  id: 30103,
+  id: 29976,
   
   name: "Stegodon",
   manaCost: 4,
@@ -2207,7 +2207,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-      id: 30104,
+      id: 29977,
 
       name: "Volatile Elemental",
       manaCost: 2,
@@ -2232,7 +2232,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-  id: 30105,
+  id: 29978,
   
   name: "Duskboar",
   manaCost: 2,
@@ -2249,7 +2249,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-  id: 30106,
+  id: 29979,
   
   name: "Emerald Hive Queen",
   manaCost: 1,
@@ -2268,7 +2268,7 @@ export const   neutralMinions: CardData[] = [{
       collectible: true
   },
   {
-  id: 30107,
+  id: 29980,
   
   name: "Stubborn Gastropod",
   manaCost: 2,

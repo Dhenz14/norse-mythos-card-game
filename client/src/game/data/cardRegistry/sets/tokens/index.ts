@@ -536,7 +536,7 @@ const warriorTokens: CardData[] = [
     collectible: false
   },
   {
-    id: 30101,
+    id: 9091,
     name: 'Hound',
     description: 'Charge',
     type: 'minion',

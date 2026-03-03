@@ -473,7 +473,7 @@ export const shamanCards: CardData[] = [
     set: "core"
   },
   {
-    id: 50031,
+    id: 40131,
     name: "Talos, Elemental Titan",
     manaCost: 8,
     attack: 7,

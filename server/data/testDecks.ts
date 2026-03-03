@@ -139,16 +139,16 @@ export const testDecks: TestDeck[] = [
     }
   },
   
-  // Basic Demonhunter Deck for Testing
+  // Basic Berserker Deck for Testing
   {
-    id: 'test-demonhunter',
-    name: 'Test Demonhunter',
-    class: 'Demonhunter',
-    description: 'A standard demonhunter deck for testing',
+    id: 'test-berserker',
+    name: 'Test Berserker',
+    class: 'Berserker',
+    description: 'A standard berserker deck for testing',
     cards: {
-      // Basic demonhunter cards
-      '1501': 2, // Basic Demonhunter Minion
-      '1502': 2, // Basic Demonhunter Spell
+      // Basic berserker cards
+      '1501': 2, // Basic Berserker Minion
+      '1502': 2, // Basic Berserker Spell
       '2501': 2, // Low-cost minion
       '2502': 2, // Low-cost spell
       '2503': 2, // Weapon

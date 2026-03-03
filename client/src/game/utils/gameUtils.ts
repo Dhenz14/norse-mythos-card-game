@@ -677,7 +677,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
   // Update player state
   player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-  player.mana.current -= (card.card.manaCost || 0);
+  if (!isBloodPayment) player.mana.current -= (card.card.manaCost || 0);
   player.mana.pendingOverload = pendingOverload;
   
   // Track quest progress for minion plays

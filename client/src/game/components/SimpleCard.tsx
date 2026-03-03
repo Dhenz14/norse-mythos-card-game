@@ -28,6 +28,10 @@ export interface SimpleCardData {
   evolutionLevel?: 1 | 2 | 3;
   element?: string;
   petStage?: string;
+  petFamily?: string;
+  evolvesFrom?: number;
+  evolvesFromName?: string;
+  evolutionCondition?: { trigger: string; description: string };
 }
 
 interface SimpleCardProps {
@@ -149,6 +153,7 @@ interface BadgeTooltipState {
   color: string;
   x: number;
   y: number;
+  isEvolveInfo?: boolean;
 }
 
 export const SimpleCard: React.FC<SimpleCardProps> = ({
@@ -174,7 +179,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   const classColor = getClassColor(card.cardClass);
   const artPath = getCardArtPath(card.name);
 
-  const nameClass = card.name.length > 18 ? 'name-very-long' : card.name.length > 13 ? 'name-long' : '';
+  const nameClass = card.name.length > 24 ? 'name-extreme' : card.name.length > 18 ? 'name-very-long' : card.name.length > 13 ? 'name-long' : '';
 
   const cardTypeClass = isSpell ? 'card-type-spell' : isWeapon ? 'card-type-weapon' : isArtifact ? 'card-type-artifact' : isArmor ? 'card-type-armor' : 'card-type-minion';
 
@@ -201,22 +206,60 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
     setBadgeTooltip(null);
   }, []);
 
+  const isEvolvePet = card.petStage === 'adept' || card.petStage === 'master';
+
+  const evolveTooltipText = useMemo(() => {
+    if (!badgeTooltip?.isEvolveInfo) return null;
+    const lines: string[] = [];
+    if (card.petStage === 'adept' && card.evolvesFromName) {
+      lines.push(`Requires ${card.evolvesFromName} on battlefield`);
+    } else if (card.petStage === 'master' && card.petFamily) {
+      const familyName = card.petFamily.charAt(0).toUpperCase() + card.petFamily.slice(1);
+      lines.push(`Requires any ${familyName} adept on battlefield`);
+    }
+    if (card.evolutionCondition) {
+      lines.push(`Trigger: ${card.evolutionCondition.description}`);
+    }
+    return lines.join('\n');
+  }, [badgeTooltip, card.petStage, card.evolvesFromName, card.petFamily, card.evolutionCondition]);
+
   const tooltipEffectText = useMemo(() => {
-    if (!badgeTooltip || !card.description) return null;
+    if (!badgeTooltip || badgeTooltip.isEvolveInfo || !card.description) return null;
     return extractKeywordEffect(badgeTooltip.keyword, card.description);
   }, [badgeTooltip, card.description]);
 
+  const handleEvolveEnter = useCallback((e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setBadgeTooltip({
+      keyword: card.petStage === 'master' ? 'Master Evolution' : 'Evolution',
+      icon: '\u{1F504}',
+      color: '#00e5ff',
+      x: rect.left + rect.width / 2,
+      y: rect.top,
+      isEvolveInfo: true,
+    });
+  }, [card.petStage]);
+
   const descriptionContent = useMemo(() => {
     const effectIcons = getCardKeywordIcons(card.description, card.keywords);
-    const hasContent = card.description || effectIcons.length > 0;
+    const hasContent = card.description || effectIcons.length > 0 || isEvolvePet;
     if (!hasContent) return null;
     return (
       <div className="card-description">
         {showDescription ? (
           <span>{card.description}</span>
         ) : (
-          effectIcons.length > 0 ? (
+          (effectIcons.length > 0 || isEvolvePet) ? (
             <div className="keyword-icons-container">
+              {isEvolvePet && (
+                <div
+                  className="keyword-icon-badge evolve-info-badge"
+                  onMouseEnter={handleEvolveEnter}
+                  onMouseLeave={handleBadgeLeave}
+                >
+                  {card.petStage === 'master' ? '\u{2B50}' : '\u{1F504}'}
+                </div>
+              )}
               {effectIcons.map((effect, idx) => (
                 <div
                   key={idx}
@@ -237,7 +280,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
         )}
       </div>
     );
-  }, [card.description, card.keywords, showDescription, handleBadgeEnter, handleBadgeLeave]);
+  }, [card.description, card.keywords, card.petStage, showDescription, isEvolvePet, handleBadgeEnter, handleBadgeLeave, handleEvolveEnter]);
 
   const tooltipStyle = useMemo<React.CSSProperties>(() => {
     if (!badgeTooltip) return {};
@@ -332,16 +375,22 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       )}
 
       {badgeTooltip && createPortal(
-        <div className="keyword-badge-tooltip" style={tooltipStyle}>
+        <div className={`keyword-badge-tooltip ${badgeTooltip.isEvolveInfo ? 'evolve-tooltip' : ''}`} style={tooltipStyle}>
           <div className="kbt-header">
             <span className="kbt-icon">{badgeTooltip.icon}</span>
             <span className="kbt-name" style={{ color: badgeTooltip.color }}>
               {badgeTooltip.keyword.charAt(0).toUpperCase() + badgeTooltip.keyword.slice(1)}
             </span>
           </div>
-          {tooltipEffectText && (
+          {badgeTooltip.isEvolveInfo && evolveTooltipText ? (
+            <div className="kbt-effect evolve-requirements">
+              {evolveTooltipText.split('\n').map((line, i) => (
+                <div key={i}>{line}</div>
+              ))}
+            </div>
+          ) : tooltipEffectText ? (
             <div className="kbt-effect">{tooltipEffectText}</div>
-          )}
+          ) : null}
         </div>,
         document.body
       )}

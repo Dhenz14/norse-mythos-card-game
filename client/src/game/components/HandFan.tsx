@@ -20,6 +20,7 @@ import './HandFan.css';
 interface HandFanProps {
   cards: CardInstance[];
   currentMana: number;
+  heroHealth: number;
   isPlayerTurn: boolean;
   onCardPlay?: (card: CardInstance, position?: Position) => void;
   isInteractionDisabled?: boolean;
@@ -36,6 +37,7 @@ const NOOP_REGISTER = () => {};
 export const HandFan: React.FC<HandFanProps> = ({
   cards: originalCards,
   currentMana,
+  heroHealth,
   isPlayerTurn,
   onCardPlay,
   isInteractionDisabled = false,
@@ -44,6 +46,7 @@ export const HandFan: React.FC<HandFanProps> = ({
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [shakingCardId, setShakingCardId] = useState<string | null>(null);
+  const [bloodModeCardId, setBloodModeCardId] = useState<string | null>(null);
   const [drawCounter, setDrawCounter] = useState(0);
   const [playedCardData, setPlayedCardData] = useState<{ name: string; manaCost: number; rarity?: string } | null>(null);
   const [playCounter, setPlayCounter] = useState(0);
@@ -86,12 +89,17 @@ export const HandFan: React.FC<HandFanProps> = ({
     );
 
     if (originalCard) {
+      const useBlood = bloodModeCardId === card.instanceId && !!(card.card as any)?.bloodPrice;
+      if (useBlood) {
+        (originalCard as any).payWithBlood = true;
+      }
       setPlayedCardData({ name: card.card.name, manaCost: card.card.manaCost || 0, rarity: (card.card as any).rarity });
       setPlayCounter(prev => prev + 1);
+      setBloodModeCardId(null);
       playSound('card_play');
       onCardPlay(originalCard, position);
     }
-  }, [onCardPlay, originalCards]);
+  }, [onCardPlay, originalCards, bloodModeCardId]);
 
   const clearHover = useCallback(() => setHoveredIndex(null), []);
   const stableRegisterPosition = registerCardPosition || NOOP_REGISTER;
@@ -170,7 +178,11 @@ export const HandFan: React.FC<HandFanProps> = ({
         if (!card || !card.card) return null;
         
         const manaCost = card.card?.manaCost || 0;
-        const canPlay = isPlayerTurn && !isInteractionDisabled && manaCost <= currentMana;
+        const bloodCost = (card.card as any)?.bloodPrice as number | undefined;
+        const isBloodMode = bloodModeCardId === card.instanceId && !!bloodCost;
+        const canAffordMana = manaCost <= currentMana;
+        const canAffordBlood = !!bloodCost && heroHealth > bloodCost;
+        const canPlay = isPlayerTurn && !isInteractionDisabled && (isBloodMode ? canAffordBlood : (canAffordMana || canAffordBlood));
         const isHovered = hoveredIndex === index;
         
         const isShaking = shakingCardId === card.instanceId;
@@ -178,19 +190,29 @@ export const HandFan: React.FC<HandFanProps> = ({
         return (
           <div
             key={card.instanceId || card.card.id}
-            className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''}`}
+            className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''} ${isBloodMode ? 'blood-mode' : ''}`}
             style={getCardStyle(index)}
             onDoubleClick={() => { if (canPlay) handleCardPlay(card); }}
             onClick={() => {
               if (!canPlay && isPlayerTurn && !isInteractionDisabled) {
                 triggerCardShake(card.instanceId);
                 playSound('error');
-                const cost = card.card?.manaCost || 0;
-                const deficit = cost - currentMana;
-                if (deficit > 0) {
-                  toast.error(`Need ${deficit} more mana`, { duration: 1500 });
+                if (isBloodMode && bloodCost) {
+                  toast.error(`Need more than ${bloodCost} HP to pay Blood Price`, { duration: 1500 });
+                } else {
+                  const deficit = manaCost - currentMana;
+                  if (deficit > 0) {
+                    toast.error(bloodCost ? `Need ${deficit} more mana (right-click for Blood Price)` : `Need ${deficit} more mana`, { duration: 1500 });
+                  }
                 }
               }
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              if (!bloodCost) return;
+              setBloodModeCardId(prev => prev === card.instanceId ? null : card.instanceId);
+              playSound('card_draw');
+              toast.info(bloodModeCardId === card.instanceId ? 'Switched to mana payment' : `Blood Price: pay ${bloodCost} HP`, { duration: 1500 });
             }}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={clearHover}

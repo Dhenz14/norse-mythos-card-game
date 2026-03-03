@@ -182,7 +182,7 @@ const CardService = {
       else if (cardId >= 1200 && cardId < 1300) cardClass = 'Druid';
       else if (cardId >= 1300 && cardId < 1400) cardClass = 'Warlock';
       else if (cardId >= 1400 && cardId < 1500) cardClass = 'Priest';
-      else if (cardId >= 1500 && cardId < 1600) cardClass = 'Demonhunter';
+      else if (cardId >= 1500 && cardId < 1600) cardClass = 'Berserker';
       
       // Determine card type based on ID
       const type = cardId % 100 < 50 ? 'minion' : 'spell';

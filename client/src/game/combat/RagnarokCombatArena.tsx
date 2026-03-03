@@ -634,7 +634,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       return;
     }
 
-    playCard(cardId, undefined, undefined, position?.insertionIndex);
+    const useBlood = !!(card as any).payWithBlood;
+    playCard(cardId, undefined, undefined, position?.insertionIndex, useBlood);
   }, [isPlayerTurn, playCard, selectCard, gameState]);
   
   const basePermissions = useMemo(
@@ -906,6 +907,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                 <HandFan
                   cards={handCards}
                   currentMana={handCurrentMana}
+                  heroHealth={gameState?.players?.player ? (gameState.players.player.heroHealth ?? gameState.players.player.health) : 0}
                   isPlayerTurn={handIsPlayerTurn}
                   onCardPlay={handleCardPlay}
                   registerCardPosition={registerCardPosition || noopRegisterCardPosition}

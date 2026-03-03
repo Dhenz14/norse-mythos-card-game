@@ -440,7 +440,7 @@ const commonNeutralMinions: CardData[] = [
   },
   // === Migrated from neutralMinions.ts ===
   {
-    id: 30003,
+    id: 29970,
     name: 'Volva of the Realms',
     description: 'Battlecry: Restore 3 Health.',
     flavorText: 'The völvas see across all nine realms.',
@@ -461,7 +461,7 @@ const commonNeutralMinions: CardData[] = [
     }
   },
   {
-    id: 30004,
+    id: 29971,
     name: 'Shield Bearer of Asgard',
     description: 'Taunt',
     flavorText: 'Guarding the golden gates of Asgard.',
@@ -1203,7 +1203,7 @@ const commonNeutralMinions: CardData[] = [
     set: 'core'
   },
   {
-    id: 30102,
+    id: 29975,
     name: 'Storm Lizard of Thor',
     description: 'Battlecry: If you played an Elemental last turn, Adapt.',
     flavorText: 'Blessed by the thunder god himself.',
@@ -1224,7 +1224,7 @@ const commonNeutralMinions: CardData[] = [
     }
   },
   {
-    id: 30103,
+    id: 29976,
     name: 'Armored Beast',
     description: 'Taunt',
     flavorText: 'Protected by scales of divine steel.',
@@ -1240,7 +1240,7 @@ const commonNeutralMinions: CardData[] = [
     set: 'core'
   },
   {
-    id: 30104,
+    id: 29977,
     name: 'Volatile Fire Spirit',
     description: 'Deathrattle: Deal 3 damage to a random enemy minion.',
     flavorText: 'Spirits of Muspelheim explode on death.',
@@ -1261,7 +1261,7 @@ const commonNeutralMinions: CardData[] = [
     }
   },
   {
-    id: 30105,
+    id: 29978,
     name: 'Dusk Boar',
     description: '',
     flavorText: 'Roaming the twilight between worlds.',
@@ -1276,7 +1276,7 @@ const commonNeutralMinions: CardData[] = [
     set: 'core'
   },
   {
-    id: 30106,
+    id: 29979,
     name: 'Queen Bee of Yggdrasil',
     description: 'Your spells cost (2) more.',
     flavorText: 'The bees of the World Tree guard their hive fiercely.',
@@ -1292,7 +1292,7 @@ const commonNeutralMinions: CardData[] = [
     set: 'core'
   },
   {
-    id: 30107,
+    id: 29980,
     name: 'Venomous Snail',
     description: 'Taunt. Poisonous.',
     flavorText: 'Slow but deadly.',
@@ -2136,7 +2136,7 @@ const epicNeutralMinions: CardData[] = [
   },
   // === Migrated from neutralMinions.ts ===
   {
-    id: 30006,
+    id: 29972,
     name: 'Shapeshifter of Loki',
     description: 'Battlecry: Choose a minion and become a copy of it.',
     flavorText: 'Loki, the trickster god, shares his gift of deception.',
@@ -2156,7 +2156,7 @@ const epicNeutralMinions: CardData[] = [
     }
   },
   {
-    id: 30007,
+    id: 29973,
     name: 'Herald of Ragnarok',
     description: 'At the start of your turn, destroy ALL minions.',
     flavorText: 'When he speaks, the end of all things begins.',
@@ -2171,7 +2171,7 @@ const epicNeutralMinions: CardData[] = [
     startOfTurn: { type: "destroy_all_minions" }
   },
   {
-    id: 30008,
+    id: 29974,
     name: 'Jotun of the Depths',
     description: 'Costs (1) less for each other minion on the battlefield.',
     flavorText: 'The sea giants of Jotunheim rise from the deep.',

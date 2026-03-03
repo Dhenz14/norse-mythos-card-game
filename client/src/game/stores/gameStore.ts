@@ -136,7 +136,7 @@ interface GameStore {
   
   // Game actions
   initGame: () => void;
-  playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number) => void;
+  playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number, payWithBlood?: boolean) => void;
   attackWithCard: (attackerId: string, defenderId?: string) => void; // If defenderId is undefined, attack hero
   selectAttacker: (card: CardInstance | CardInstanceWithCardData | null) => void; // Select card to attack with
   useHeroPower: (targetId?: string, targetType?: 'card' | 'hero') => void; // Use hero power
@@ -197,34 +197,40 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     });
   },
 
-  playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number) => {
+  playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number, payWithBlood?: boolean) => {
     const { gameState } = get();
     const audioStore = useAudio.getState();
-    
+
     try {
       // Check if it's player's turn - add exception for AI simulation
       if (gameState.currentTurn !== 'player' && !isAISimulationMode()) {
         throw new Error('Not your turn');
       }
-      
+
       // Find the card in player's hand
       const player = gameState.players.player;
       const cardResult = findCardInstance(player.hand, cardId);
-      
+
       if (!cardResult) {
         throw new Error('Card not found');
       }
-      
+
       // Extract the card instance from the result
       const cardInstance = cardResult.card as CardInstance;
-      
+
       // Check if player has enough mana
       if (!player.mana || typeof player.mana.current !== 'number') {
         player.mana = { current: 1, max: 1, overloaded: 0, pendingOverload: 0 };
       }
-      
+
       const cardCost = cardInstance.card.manaCost ?? 0;
-      if (cardCost > player.mana.current) {
+      const bloodCost = cardInstance.card.bloodPrice;
+      if (payWithBlood && bloodCost && bloodCost > 0) {
+        const heroHp = player.heroHealth ?? player.health ?? 30;
+        if (heroHp <= bloodCost) {
+          throw new Error(`Not enough health. Need more than ${bloodCost} HP to pay Blood Price`);
+        }
+      } else if (cardCost > player.mana.current) {
         throw new Error(`Not enough mana. Need ${cardCost} but only have ${player.mana.current}`);
       }
 
@@ -251,7 +257,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       
       try {
         // Play the card with the target if provided
-        const newState = playCard(gameState, cardId, targetId, targetType, insertionIndex);
+        const newState = playCard(gameState, cardId, targetId, targetType, insertionIndex, payWithBlood);
         
         // If the card requires a battlecry target but we still don't have a valid game state,
         // it means the battlecry couldn't be executed properly
@@ -1051,7 +1057,12 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       debug.log(`[PokerRewards] Player mana: ${player.mana.max} → ${newPlayerMana.max} (${newPlayerMana.current} available, ${playerOverloaded} overloaded)`);
       debug.log(`[PokerRewards] Opponent mana: ${opponent.mana.max} → ${newOpponentMana.max} (${newOpponentMana.current} available, ${opponentOverloaded} overloaded)`);
       
-      // Update game state with card draws and mana grants
+      const clearSummoningSickness = (battlefield: typeof player.battlefield) =>
+        battlefield.map(m => m.isSummoningSick
+          ? { ...m, isSummoningSick: false, canAttack: !m.isFrozen, attacksPerformed: 0 }
+          : { ...m, attacksPerformed: 0 }
+        );
+
       set({
         gameState: {
           ...gameState,
@@ -1061,13 +1072,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
               ...player,
               hand: newPlayerHand,
               deck: newPlayerDeck,
-              mana: newPlayerMana
+              mana: newPlayerMana,
+              battlefield: clearSummoningSickness(player.battlefield)
             },
             opponent: {
               ...opponent,
               hand: newOpponentHand,
               deck: newOpponentDeck,
-              mana: newOpponentMana
+              mana: newOpponentMana,
+              battlefield: clearSummoningSickness(opponent.battlefield)
             }
           }
         }

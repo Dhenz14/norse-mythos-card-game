@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CardInstance } from '../types';
 import { SimpleCard, SimpleCardData } from './SimpleCard';
+import { getCardById } from '../data/allCards';
 import './mulligan.css';
 
 interface MulliganCardProps {
@@ -22,6 +23,8 @@ export const MulliganCard: React.FC<MulliganCardProps> = ({ card, isSelected, on
   }
 
   const cardDataTyped = cardData as any;
+  const evolvesFrom = cardDataTyped.evolvesFrom as number | undefined;
+  const evolvesFromCard = evolvesFrom ? getCardById(evolvesFrom) : undefined;
   const simpleCardData: SimpleCardData = {
     id: cardData.id || 0,
     name: cardData.name || 'Unknown',
@@ -33,7 +36,13 @@ export const MulliganCard: React.FC<MulliganCardProps> = ({ card, isSelected, on
     rarity: (cardData.rarity as 'basic' | 'common' | 'rare' | 'epic' | 'mythic') || 'common',
     tribe: cardDataTyped.tribe || cardDataTyped.race,
     cardClass: (cardDataTyped.cardClass || cardDataTyped.class),
-    keywords: cardData.keywords || []
+    keywords: cardData.keywords || [],
+    element: cardDataTyped.element,
+    petStage: cardDataTyped.petStage,
+    petFamily: cardDataTyped.petFamily,
+    evolvesFrom,
+    evolvesFromName: evolvesFromCard?.name,
+    evolutionCondition: cardDataTyped.evolutionCondition,
   };
 
   return (
