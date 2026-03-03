@@ -11,6 +11,11 @@ import { bloodPriceCards } from './bloodPriceCards';
 import { prophecyCards } from './prophecyCards';
 import { realmShiftCards } from './realmShiftCards';
 import { ragnarokChainCards } from './ragnarokChainCards';
+import { neutralMythicTechCards } from './neutralMythicTechCards';
+import { petSynergyCards } from './petSynergyCards';
+import { dragonSynergyCards } from './dragonSynergyCards';
+import { norseMechanicSynergyCards } from './norseMechanicSynergyCards';
+import { deepKeywordCards } from './deepKeywordCards';
 
 // Core Set - Neutral Cards
 // Organized by rarity following Hearthstone conventions
@@ -10376,7 +10381,12 @@ export const coreNeutralCards: CardData[] = [
   ...bloodPriceCards,
   ...prophecyCards,
   ...realmShiftCards,
-  ...ragnarokChainCards
+  ...ragnarokChainCards,
+  ...neutralMythicTechCards,
+  ...petSynergyCards,
+  ...dragonSynergyCards,
+  ...norseMechanicSynergyCards,
+  ...deepKeywordCards
 ];
 
 export { allYggdrasilGolemCards, oldGodsCards, allAdaptCards, allMechanicCards, allLegendaryCards, allSpellCards };

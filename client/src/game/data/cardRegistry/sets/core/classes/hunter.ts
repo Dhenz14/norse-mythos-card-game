@@ -715,5 +715,42 @@ export const hunterCards: CardData[] = [
     class: "Hunter",
     collectible: true,
     set: "core"
+  },
+  // === Hunter Expansion — board clear + removal ===
+  {
+    id: 31601,
+    name: "Rain of Arrows",
+    manaCost: 5,
+    type: "spell",
+    rarity: "epic",
+    description: "Deal 2 damage to all enemy minions. If any die, summon a 2/2 Hound for each.",
+    flavorText: "When a Hunter says 'duck,' you duck.",
+    class: "Hunter",
+    spellEffect: {
+      type: "aoe_with_on_kill",
+      value: 2,
+      targetType: "all_enemy_minions",
+      summonCardId: 9019
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31602,
+    name: "Skadi's Mark",
+    manaCost: 3,
+    type: "spell",
+    rarity: "rare",
+    description: "Deal 3 damage to a minion. If it dies, deal 2 damage to adjacent minions.",
+    flavorText: "The huntress of the frost marks her prey — and anything nearby.",
+    class: "Hunter",
+    spellEffect: {
+      type: "damage_with_adjacent",
+      value: 3,
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
   }
 ];

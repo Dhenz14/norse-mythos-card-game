@@ -60,6 +60,20 @@ Reserved ID ranges for card organization:
 | 50360-50366 | Muspel Phoenixes | Fire / Electric / Light — Muspel Eternal |
 | 9200-9249 | Pet Tokens | Non-collectible tokens summoned by pet abilities |
 
+## Expansion Card Ranges (Gap-Filling)
+
+| Range | Category | Description |
+|-------|----------|-------------|
+| 31001-31008 | Neutral Mythic Tech | Cross-class strategic neutral legendaries |
+| 31101-31105 | Pet Synergy | Cards that bridge pet evolution with traditional decks |
+| 31201-31204 | Dragon Synergy | "Holding a Dragon" conditional cards |
+| 31301-31305 | Norse Mechanic Synergy | Cross-Norse-mechanic payoff cards |
+| 31401-31413 | Deep Keywords | Overkill, Frenzy, Inspire, Echo expansion |
+| 31501-31512 | Berserker Expansion | Filling class gaps (weapons, removal, draw, board clear) |
+| 31601-31602 | Hunter Expansion | Board clear and removal spells |
+| 31701-31702 | Druid Expansion | AOE board clear spells |
+| 31801-31806 | Rogue Combo Expansion | Combo keyword depth |
+
 ## Norse Mechanic Card Ranges
 
 | Range | Category | Description |

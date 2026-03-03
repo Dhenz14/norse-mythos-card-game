@@ -120,6 +120,11 @@ import executeFreeze from './freezeHandler';
 import executeBuffFromGraveyardCount from './buffFromGraveyardCountHandler';
 import executeSummonSkeletonsBasedOnGraveyard from './summonSkeletonsBasedOnGraveyardHandler';
 
+// Norse mechanic handlers
+import executeSummonDeadEinherjar from './summonDeadEinherjarHandler';
+import executeSummonCopyIfBlood from './summonCopyIfBloodHandler';
+import executeGainArmor from './gainArmorHandler';
+
 // Map of all battlecry handlers
 const battlecryHandlers: Record<string, Function> = {
   // Damage
@@ -238,6 +243,12 @@ const battlecryHandlers: Record<string, Function> = {
   // Necromancer specific
   'buff_from_graveyard_count': executeBuffFromGraveyardCount,
   'summon_skeletons_based_on_graveyard': executeSummonSkeletonsBasedOnGraveyard,
+
+  // Norse mechanics
+  'summon_dead_einherjar': executeSummonDeadEinherjar,
+  'summon_copy_if_blood': executeSummonCopyIfBlood,
+  'gain_armor': executeGainArmor,
+  'deal_damage': executeDamage,
 };
 
 export default battlecryHandlers;

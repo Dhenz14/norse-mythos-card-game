@@ -959,5 +959,42 @@ export const druidCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Druid Expansion — board clear + Choose One ===
+  {
+    id: 31701,
+    name: "Wrath of Yggdrasil",
+    manaCost: 6,
+    type: "spell",
+    rarity: "epic",
+    description: "Choose One — Deal 2 damage to all enemy minions; or Deal 4 damage to all enemy minions and 2 damage to your own.",
+    flavorText: "The World Tree protects its roots — with extreme prejudice.",
+    keywords: [],
+    class: "Druid",
+    spellEffect: {
+      type: "aoe_damage",
+      value: 2,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31702,
+    name: "Thorns of Jotunheim",
+    manaCost: 4,
+    type: "spell",
+    rarity: "rare",
+    description: "Deal 1 damage to all enemy minions. Draw a card for each minion destroyed.",
+    flavorText: "The thorns of the frost realm pierce both flesh and hope.",
+    keywords: [],
+    class: "Druid",
+    spellEffect: {
+      type: "aoe_with_on_kill",
+      value: 1,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
   }
 ];

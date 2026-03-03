@@ -89,7 +89,7 @@ client/src/
 │   │   ├── tradeStore.ts   # Trade offers + selections
 │   │   └── replayStore.ts  # Match history + replay playback
 │   ├── data/               # Card definitions, heroes
-│   │   ├── allCards.ts     # Single source of truth (1300 cards)
+│   │   ├── allCards.ts     # Single source of truth (1400+ cards)
 │   │   ├── cardRegistry/   # Card sets by ID ranges
 │   │   ├── dailyQuestPool.ts # 18 quest templates
 │   │   ├── keywordDefinitions.ts # All keyword names + descriptions
@@ -155,7 +155,7 @@ server/
 ### Card System (`game/data/`)
 - **Single source**: `allCards.ts` contains all 1,400+ cards
 - Card registry with ID ranges in `cardRegistry/ID_RANGES.md`
-- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 50000-50366 pets (37 families)
+- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 31001-31806 expansion gap-fill, 50000-50366 pets (37 families)
 
 ### Combat System (`game/combat/`)
 - `RagnarokCombatArena.tsx` - Main arena component with poker integration
@@ -172,9 +172,9 @@ server/
 3. Change the value - no other files need editing
 
 ### Effect System (`game/effects/`)
-- 96 battlecry handlers in `handlers/battlecry/`
+- 99 battlecry handlers in `handlers/battlecry/`
 - 16 deathrattle handlers in `handlers/deathrattle/`
-- 70 spell effect handlers in `handlers/spellEffect/`
+- 71 spell effect handlers in `handlers/spellEffect/`
 - All handlers export default functions and are indexed in their `index.ts`
 
 ### Type System (`game/types/`)
@@ -393,6 +393,21 @@ vercel --prod                 # Deploy to Vercel
 - Warcraft/Hearthstone IP purge (72 card renames to Norse equivalents)
 - Mech → Automaton, Murloc → Naga terminology cleanup (45 cards)
 - Card balance pass (Apollo, Gate to Alfheim, Stubborn Turtle, Warrior's Will, Gate to Jotunheim)
+
+### Completed (Card Gap-Fill Expansion)
+
+- Fixed broken battlecry handlers: `summon_dead_einherjar`, `summon_copy_if_blood`, `gain_armor`, `deal_damage` alias
+- Fixed broken spell handler: `reveal_hand` (Mimir's Eye Blood Price bonus)
+- Berserker class expansion (+12 cards: cheap weapons, removal, board clear, draw, overkill)
+- Neutral Mythic tech minions (8 cards: Mimir, Hoenir, Forseti, Kvasir, Lodur, Vili, Bragi, Ull)
+- Hunter board clear (Rain of Arrows AOE, Skadi's Mark targeted removal)
+- Druid board clear (Wrath of Yggdrasil Choose One AOE, Thorns of Jotunheim AOE + draw)
+- Rogue Combo keyword expansion (+6 cards: Loki's Sleight, Shadow Viper, Niflheim Cutthroat, Shadowstep of Hel, Loki's Grand Scheme, Svartalf Combo Master)
+- Pet-matters neutral cards (5 cards: Beast Tamer, Elemental Harmony, Rune of Wild Bond, Yggdrasil Beastkeeper, Fenrir's Chosen Alpha)
+- Dragon-holding conditional cards (4 cards: Nidhogg's Disciple, Dragonscale Warden, Fafnir's Hoardkeeper, Jormungandr's Envoy)
+- Cross-Norse-mechanic synergy cards (5 cards: Weaver of Fates, Seidr Channeler, Bifrost Resonator, Einherjar Oath-Keeper, Ragnarok Harbinger)
+- Deepened thin keywords: Overkill +3, Frenzy +3, Inspire +4, Echo +3 cards
+- Expansion card IDs: 31001-31806 (see ID_RANGES.md)
 
 ### Next (Genesis Launch)
 

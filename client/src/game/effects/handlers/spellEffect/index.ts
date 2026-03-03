@@ -73,6 +73,7 @@ import executeBuffWeapon from './buff_weapon';
 import executeBuffDamagedMinions from './buff_damaged_minions';
 import executeArmorBasedOnMissingHealth from './armor_based_on_missing_health';
 import executeSetHealthSetHealth from './setHealthHandler';
+import executeRevealHand from './revealHandHandler';
 
 // Map of all spellEffect handlers
 const spellEffectHandlers = {
@@ -149,6 +150,7 @@ const spellEffectHandlers = {
   'buff_damaged_minions': executeBuffDamagedMinions,
   'armor_based_on_missing_health': executeArmorBasedOnMissingHealth,
   'set_health_minion': executeSetHealthSetHealth,
+  'reveal_hand': executeRevealHand,
 };
 
 export default spellEffectHandlers;

@@ -838,5 +838,115 @@ export const rogueCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Rogue Expansion — Combo keyword depth ===
+  {
+    id: 31801,
+    name: "Loki's Sleight",
+    manaCost: 0,
+    type: "spell",
+    rarity: "common",
+    description: "Combo: Deal 2 damage to an enemy minion.",
+    flavorText: "The trickster's hands are quicker than the eye.",
+    keywords: ["combo"],
+    class: "Rogue",
+    spellEffect: {
+      type: "damage",
+      value: 2,
+      targetType: "enemy_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31802,
+    name: "Shadow Viper",
+    manaCost: 3,
+    attack: 3,
+    health: 3,
+    type: "minion",
+    rarity: "common",
+    description: "Combo: Gain Poisonous.",
+    flavorText: "It strikes from the shadows, its venom honed by centuries of patience.",
+    keywords: ["combo"],
+    class: "Rogue",
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31803,
+    name: "Niflheim Cutthroat",
+    manaCost: 4,
+    attack: 4,
+    health: 3,
+    type: "minion",
+    rarity: "rare",
+    description: "Combo: Return an enemy minion to their hand. It costs (2) more.",
+    flavorText: "In the fog of Niflheim, even the keenest eyes are blind to her approach.",
+    keywords: ["combo", "battlecry"],
+    class: "Rogue",
+    battlecry: {
+      type: "return",
+      targetType: "enemy_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31804,
+    name: "Shadowstep of Hel",
+    manaCost: 1,
+    type: "spell",
+    rarity: "rare",
+    description: "Return a friendly minion to your hand. Combo: It costs (4) less instead of (2).",
+    flavorText: "Hel opens a path through the shadow realm — for a price.",
+    keywords: ["combo"],
+    class: "Rogue",
+    spellEffect: {
+      type: "return_all_minions_to_hand",
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31805,
+    name: "Loki's Grand Scheme",
+    manaCost: 5,
+    type: "spell",
+    rarity: "epic",
+    description: "Draw 3 cards. Combo: They cost (2) less.",
+    flavorText: "The trickster always has a plan within a plan within a plan.",
+    keywords: ["combo"],
+    class: "Rogue",
+    spellEffect: {
+      type: "draw",
+      value: 3
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31806,
+    name: "Svartalf Combo Master",
+    manaCost: 6,
+    attack: 5,
+    health: 5,
+    type: "minion",
+    rarity: "mythic",
+    description: "Combo: Trigger all Combo effects of cards you played this turn again.",
+    flavorText: "The dark elf strikes last — after ensuring every other blow hits twice.",
+    keywords: ["combo", "battlecry"],
+    class: "Rogue",
+    battlecry: {
+      type: "replay_battlecries",
+      targetType: "combo_cards_this_turn",
+      requiresTarget: false
+    },
+    collectible: true,
+    set: "core"
   }
 ];

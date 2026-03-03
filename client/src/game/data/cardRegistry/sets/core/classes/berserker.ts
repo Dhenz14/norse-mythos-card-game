@@ -360,5 +360,205 @@ export const berserkerCards: CardData[] = [
     keywords: ["taunt"],
     collectible: true,
     set: "core"
+  },
+  // === Berserker Expansion — filling class gaps ===
+  {
+    id: 31501,
+    name: "Ulfhednar Hatchet",
+    manaCost: 1,
+    attack: 2,
+    durability: 2,
+    description: "After your hero attacks, gain +1 Attack.",
+    flavorText: "Small but vicious — the first weapon of every berserker initiate.",
+    type: "weapon",
+    rarity: "common",
+    class: "Berserker",
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31502,
+    name: "Berserker's Reckoning",
+    manaCost: 3,
+    description: "Destroy an enemy minion with 4 or less Attack.",
+    flavorText: "The berserker does not negotiate. The berserker recalibrates.",
+    type: "spell",
+    rarity: "rare",
+    class: "Berserker",
+    spellEffect: {
+      type: "destroy",
+      value: 4,
+      targetType: "enemy_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31503,
+    name: "Frenzied Cleave",
+    manaCost: 4,
+    description: "Deal 3 damage to all enemy minions.",
+    flavorText: "When the red mist descends, everything in reach falls.",
+    type: "spell",
+    rarity: "rare",
+    class: "Berserker",
+    spellEffect: {
+      type: "aoe_damage",
+      value: 3,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31504,
+    name: "Blood-Drunk Fury",
+    manaCost: 2,
+    description: "Draw 2 cards. Take 2 damage.",
+    flavorText: "Pain is just the price of knowledge in Valhalla.",
+    type: "spell",
+    rarity: "common",
+    class: "Berserker",
+    spellEffect: {
+      type: "damage_and_heal",
+      value: 2,
+      targetType: "friendly_hero"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31505,
+    name: "Fenrir's Fang",
+    manaCost: 2,
+    attack: 3,
+    durability: 2,
+    description: "Outcast: Give your hero +2 Attack this turn.",
+    flavorText: "A tooth pulled from the great wolf's maw. He didn't notice.",
+    type: "weapon",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["outcast"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31506,
+    name: "Ulfhednar Veteran",
+    manaCost: 2,
+    attack: 3,
+    health: 2,
+    description: "Outcast: Gain +1/+1 and Rush.",
+    flavorText: "Decades of war have sharpened both blade and instinct.",
+    type: "minion",
+    rarity: "common",
+    class: "Berserker",
+    keywords: ["outcast"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31507,
+    name: "Rage of the Fallen",
+    manaCost: 6,
+    description: "Give your hero +4 Attack this turn. Draw a card for each enemy minion.",
+    flavorText: "Every foe in sight only feeds the rage.",
+    type: "spell",
+    rarity: "epic",
+    class: "Berserker",
+    spellEffect: {
+      type: "hero_attack_buff",
+      value: 4
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31508,
+    name: "Valhalla Berserker",
+    manaCost: 3,
+    attack: 4,
+    health: 3,
+    description: "Rush. After this attacks and kills a minion, gain +2 Attack.",
+    flavorText: "Death is not the end — it is the beginning of true fury.",
+    type: "minion",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["rush"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31509,
+    name: "Tyr's Warmonger",
+    manaCost: 6,
+    attack: 5,
+    health: 7,
+    description: "Taunt. Battlecry: Gain Armor equal to your hero's Attack.",
+    flavorText: "He fights with one hand and shields with the other — Tyr's legacy.",
+    type: "minion",
+    rarity: "epic",
+    class: "Berserker",
+    keywords: ["taunt", "battlecry"],
+    battlecry: {
+      type: "gain_armor_equal_to_attack",
+      targetType: "none",
+      requiresTarget: false
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31510,
+    name: "Hati, Shadow-Chaser",
+    manaCost: 4,
+    attack: 4,
+    health: 4,
+    description: "Rush. Overkill: Draw a card.",
+    flavorText: "The wolf who chases the moon never tires, never stops.",
+    type: "minion",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["rush", "overkill"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31511,
+    name: "Ragnarok Unleashed",
+    manaCost: 8,
+    description: "Deal 5 damage to all characters. Give your hero +5 Attack this turn.",
+    flavorText: "When all hope is lost, the berserker becomes the storm itself.",
+    type: "spell",
+    rarity: "mythic",
+    class: "Berserker",
+    spellEffect: {
+      type: "aoe_damage",
+      value: 5,
+      targetType: "all_characters"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 31512,
+    name: "Vidar, the Silent God",
+    manaCost: 7,
+    attack: 7,
+    health: 5,
+    description: "Battlecry: Destroy an enemy minion. Gain its Attack as Armor.",
+    flavorText: "At Ragnarok, Vidar avenged his father Odin in silence. Words are wasted on the dead.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Berserker",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "destroy_and_steal",
+      targetType: "enemy_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
   }
 ];

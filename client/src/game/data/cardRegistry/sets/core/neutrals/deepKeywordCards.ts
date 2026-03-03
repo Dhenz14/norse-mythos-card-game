@@ -1,0 +1,222 @@
+import { CardData } from '../../../../../types';
+
+export const deepKeywordCards: CardData[] = [
+	// === OVERKILL (3 new, existing 3 = 6 total) ===
+	{
+		id: 31401,
+		name: 'Fenrir\'s Butcher',
+		manaCost: 4,
+		attack: 5,
+		health: 4,
+		description: 'Overkill: Deal the excess damage to the enemy hero.',
+		flavorText: 'The wolf does not know the meaning of "enough."',
+		type: 'minion',
+		rarity: 'rare',
+		class: 'Neutral',
+		keywords: ['overkill'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31402,
+		name: 'Bloodgorged Draugr',
+		manaCost: 6,
+		attack: 7,
+		health: 5,
+		description: 'Rush. Overkill: Gain +2/+2.',
+		flavorText: 'Each kill makes the undead warrior harder to stop.',
+		type: 'minion',
+		rarity: 'epic',
+		race: 'Undead',
+		class: 'Neutral',
+		keywords: ['rush', 'overkill'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31403,
+		name: 'Surtr\'s Executioner',
+		manaCost: 8,
+		attack: 8,
+		health: 6,
+		description: 'Overkill: Summon a 5/5 Fire Elemental.',
+		flavorText: 'When the fire giant swings, nothing is left standing — but something always rises from the ashes.',
+		type: 'minion',
+		rarity: 'mythic',
+		race: 'Elemental',
+		class: 'Neutral',
+		keywords: ['overkill'],
+		set: 'core',
+		collectible: true
+	},
+
+	// === FRENZY (3 new, existing 3 = 6 total) ===
+	{
+		id: 31404,
+		name: 'Valkyrie Shieldmaiden',
+		manaCost: 3,
+		attack: 3,
+		health: 4,
+		description: 'Frenzy: Gain Divine Shield.',
+		flavorText: 'The first blow awakens her warrior spirit; the shield of light follows.',
+		type: 'minion',
+		rarity: 'rare',
+		class: 'Neutral',
+		keywords: ['frenzy'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31405,
+		name: 'Berserk Raider',
+		manaCost: 2,
+		attack: 2,
+		health: 3,
+		description: 'Frenzy: Gain +3 Attack.',
+		flavorText: 'Hit him once and you\'ll wish you hadn\'t.',
+		type: 'minion',
+		rarity: 'common',
+		class: 'Neutral',
+		keywords: ['frenzy'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31406,
+		name: 'Jotunheim Sentinel',
+		manaCost: 5,
+		attack: 3,
+		health: 7,
+		description: 'Taunt. Frenzy: Deal 3 damage to all enemy minions.',
+		flavorText: 'The frost giant guards the pass. Those who strike first earn his wrath.',
+		type: 'minion',
+		rarity: 'epic',
+		race: 'Giant',
+		class: 'Neutral',
+		keywords: ['taunt', 'frenzy'],
+		set: 'core',
+		collectible: true
+	},
+
+	// === INSPIRE (4 new, existing 5 = 9 total) ===
+	{
+		id: 31407,
+		name: 'Runekeeper Acolyte',
+		manaCost: 2,
+		attack: 2,
+		health: 3,
+		description: 'Inspire: Add a random Rune (Secret) to your hand.',
+		flavorText: 'Each use of power carves a new rune in the air.',
+		type: 'minion',
+		rarity: 'rare',
+		class: 'Neutral',
+		keywords: ['inspire'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31408,
+		name: 'Vanaheim Healer',
+		manaCost: 3,
+		attack: 2,
+		health: 5,
+		description: 'Inspire: Restore 3 Health to your hero.',
+		flavorText: 'The Vanir taught her that every use of power should nurture, not just destroy.',
+		type: 'minion',
+		rarity: 'common',
+		class: 'Neutral',
+		keywords: ['inspire'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31409,
+		name: 'Thundercaller',
+		manaCost: 4,
+		attack: 3,
+		health: 4,
+		description: 'Inspire: Deal 2 damage to a random enemy.',
+		flavorText: 'Thor\'s blessing courses through those who channel his power.',
+		type: 'minion',
+		rarity: 'rare',
+		class: 'Neutral',
+		keywords: ['inspire'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31410,
+		name: 'Odin\'s Herald',
+		manaCost: 6,
+		attack: 4,
+		health: 6,
+		description: 'Inspire: Discover a card from your deck.',
+		flavorText: 'The All-Father\'s voice echoes through those who wield his power.',
+		type: 'minion',
+		rarity: 'epic',
+		class: 'Neutral',
+		keywords: ['inspire'],
+		set: 'core',
+		collectible: true
+	},
+
+	// === ECHO (3 new, existing 1 = 4 total) ===
+	{
+		id: 31411,
+		name: 'Muspel Spark',
+		manaCost: 1,
+		attack: 1,
+		health: 1,
+		description: 'Echo. Rush.',
+		flavorText: 'One spark is nothing. A dozen sparks is an inferno.',
+		type: 'minion',
+		rarity: 'common',
+		race: 'Elemental',
+		class: 'Neutral',
+		keywords: ['echo', 'rush'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31412,
+		name: 'Echoing Rune',
+		manaCost: 2,
+		description: 'Echo. Deal 2 damage.',
+		flavorText: 'The rune reverberates across reality, striking again and again.',
+		type: 'spell',
+		rarity: 'rare',
+		class: 'Neutral',
+		keywords: ['echo'],
+		spellEffect: {
+			type: 'damage',
+			value: 2,
+			targetType: 'any',
+			requiresTarget: true
+		},
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31413,
+		name: 'Spectral Echo',
+		manaCost: 3,
+		attack: 2,
+		health: 2,
+		description: 'Echo. Deathrattle: Add a copy of this to your hand.',
+		flavorText: 'It fades and returns, fades and returns — death is just another echo.',
+		type: 'minion',
+		rarity: 'epic',
+		class: 'Neutral',
+		keywords: ['echo', 'deathrattle'],
+		deathrattle: {
+			type: 'add_to_hand',
+			value: 1,
+			targetType: 'self'
+		},
+		set: 'core',
+		collectible: true
+	},
+
+	// === COMBO (for Rogue — see rogueComboCards) ===
+	// Combo cards are in the Rogue class file
+];

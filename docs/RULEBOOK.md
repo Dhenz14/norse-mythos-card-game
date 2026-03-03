@@ -32,7 +32,7 @@
 
 Ragnarok Combat Arena is a multi-mythology digital collectible card game featuring:
 
-- **1,300+ collectible cards** across 2 mythological factions (Norse, Greek)
+- **1,400+ collectible cards** across 2 mythological factions (Norse, Greek)
 - **76 playable heroes** across 12 classes
 - **Two distinct game modes**: Ragnarok Chess and Standard Match
 - **Poker-inspired combat** with Texas Hold'em mechanics
@@ -148,6 +148,15 @@ Each hero has three unique abilities:
 | 30301-30309 | Realm Shift Cards |
 | 30401-30410 | Ragnarok Chain Cards |
 | 50000-50366 | Pet Evolution Cards (37 families) |
+| 31001-31008 | Neutral Mythic Tech Cards |
+| 31101-31105 | Pet Synergy Cards |
+| 31201-31204 | Dragon Synergy Cards |
+| 31301-31305 | Norse Mechanic Synergy Cards |
+| 31401-31413 | Deep Keyword Cards (Overkill, Frenzy, Inspire, Echo) |
+| 31501-31512 | Berserker Expansion |
+| 31601-31602 | Hunter Expansion |
+| 31701-31702 | Druid Expansion |
+| 31801-31806 | Rogue Combo Expansion |
 
 ---
 
