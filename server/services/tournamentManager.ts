@@ -81,6 +81,41 @@ function swissPair(players: TournamentPlayer[], round: TournamentRound[]): Tourn
 	const matches: TournamentMatch[] = [];
 	const paired = new Set<string>();
 
+	// Count previous byes per player to rotate fairly
+	const byeCount = new Map<string, number>();
+	for (const r of round) {
+		for (const m of r.matches) {
+			if (m.player2 === null) {
+				byeCount.set(m.player1, (byeCount.get(m.player1) ?? 0) + 1);
+			}
+		}
+	}
+
+	// If odd number of active players, assign bye to lowest-ranked player with fewest prior byes
+	if (active.length % 2 === 1) {
+		let byePlayer = active[active.length - 1];
+		let minByes = byeCount.get(byePlayer.username) ?? 0;
+		for (let i = active.length - 1; i >= 0; i--) {
+			const pByes = byeCount.get(active[i].username) ?? 0;
+			if (pByes < minByes) {
+				byePlayer = active[i];
+				minByes = pByes;
+			}
+		}
+		paired.add(byePlayer.username);
+		byePlayer.wins++;
+		matches.push({
+			id: generateMatchId(),
+			round: round.length + 1,
+			player1: byePlayer.username,
+			player2: null,
+			winner: byePlayer.username,
+			status: 'completed',
+			scheduledAt: Date.now(),
+			completedAt: Date.now(),
+		});
+	}
+
 	for (let i = 0; i < active.length; i++) {
 		if (paired.has(active[i].username)) continue;
 		let opponent: TournamentPlayer | null = null;
@@ -92,16 +127,17 @@ function swissPair(players: TournamentPlayer[], round: TournamentRound[]): Tourn
 			break;
 		}
 
+		if (!opponent) continue;
+
 		paired.add(active[i].username);
 		matches.push({
 			id: generateMatchId(),
 			round: round.length + 1,
 			player1: active[i].username,
-			player2: opponent?.username ?? null,
-			winner: opponent ? null : active[i].username,
-			status: opponent ? 'pending' : 'completed',
+			player2: opponent.username,
+			winner: null,
+			status: 'pending',
 			scheduledAt: Date.now(),
-			completedAt: opponent ? undefined : Date.now(),
 		});
 	}
 
@@ -210,6 +246,8 @@ export function reportMatchResult(tournamentId: string, matchId: string, winner:
 	const match = currentRound.matches.find(m => m.id === matchId);
 	if (!match || match.status === 'completed') return null;
 
+	if (winner !== match.player1 && winner !== match.player2) return null;
+
 	match.winner = winner;
 	match.status = 'completed';
 	match.completedAt = Date.now();
@@ -271,7 +309,19 @@ export function getTournament(id: string): Tournament | undefined {
 }
 
 export function getAllTournaments(): Tournament[] {
+	pruneOldTournaments();
 	return Array.from(tournaments.values()).sort((a, b) => b.createdAt - a.createdAt);
+}
+
+const TOURNAMENT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+function pruneOldTournaments(): void {
+	const now = Date.now();
+	for (const [id, t] of tournaments) {
+		if ((t.status === 'completed' || t.status === 'cancelled') && t.completedAt && now - t.completedAt > TOURNAMENT_TTL_MS) {
+			tournaments.delete(id);
+		}
+	}
 }
 
 export function createDefaultTournaments(): void {

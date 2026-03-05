@@ -171,6 +171,16 @@ export function useP2PSync() {
 
 		const handleClose = () => {
 			console.warn('[useP2PSync] Connection to opponent closed');
+			// Clean up pending result to prevent stale closures
+			if (pendingResultRef.current) {
+				pendingResultRef.current.reject(new Error('Connection closed'));
+				pendingResultRef.current = null;
+			}
+			// Clean up debounce timer
+			if (pendingSyncRef.current) {
+				clearTimeout(pendingSyncRef.current);
+				pendingSyncRef.current = null;
+			}
 			toast.error('Opponent disconnected from the game.', {
 				duration: 8000,
 				description: 'The connection was lost. You may need to start a new game.',
@@ -367,20 +377,23 @@ export function useP2PSync() {
 					break;
 
 				case 'deck_verify': {
-					let checkedCount = 0;
+					let disconnecting = false;
+					const disconnectOnce = () => {
+						if (disconnecting) return;
+						disconnecting = true;
+						setTimeout(() => usePeerStore.getState().disconnect(), 2000);
+					};
+
 					verifyDeckOwnership(
 						data.hiveAccount,
 						data.nftIds.map(id => ({ nft_id: id })),
 					).then(result => {
-						checkedCount++;
 						if (!result.valid) {
 							toast.error(`Opponent deck verification failed`, {
 								description: `${result.invalidCards.length} card(s) not owned by ${data.hiveAccount}. Disconnecting.`,
 								duration: 5000,
 							});
-							if (checkedCount > 0) {
-								setTimeout(() => usePeerStore.getState().disconnect(), 2000);
-							}
+							disconnectOnce();
 						}
 					}).catch(() => { /* IndexedDB unavailable in dev mode — skip */ });
 
@@ -389,15 +402,12 @@ export function useP2PSync() {
 						if (cardIds.length > 0) {
 							verifyDeckOnServer(data.hiveAccount, cardIds)
 								.then(sv => {
-									checkedCount++;
 									if (!sv.verified) {
 										toast.error('Server deck verification failed', {
 											description: `${sv.missing.length} card(s) not found on-chain for ${data.hiveAccount}. Disconnecting.`,
 											duration: 5000,
 										});
-										if (checkedCount > 0) {
-											setTimeout(() => usePeerStore.getState().disconnect(), 2000);
-										}
+										disconnectOnce();
 									}
 								})
 								.catch(() => { /* Chain indexer unavailable — skip */ });
@@ -492,6 +502,10 @@ export function useP2PSync() {
 
 		return () => {
 			connection.off('data', handleMessageWrapper);
+			if (pendingSyncRef.current) {
+				clearTimeout(pendingSyncRef.current);
+				pendingSyncRef.current = null;
+			}
 		};
 	}, [connection, connectionState, isHost, send, gameStore]);
 

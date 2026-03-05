@@ -37,6 +37,7 @@ import { useCombatTimer } from './useCombatTimer';
 import { useCombatEvents, ShowdownCelebration as ShowdownCelebrationState, HeroDeathState } from './useCombatEvents';
 import { useTurnOrchestrator } from './useTurnOrchestrator';
 import { COMBAT_DEBUG } from '../debugConfig';
+import { hasKeyword } from '../../utils/cards/keywordUtils';
 import { debug } from '../../config/debugConfig';
 import type { HeroBattlePopupData, BattlePopupAction, BattlePopupTarget } from '../components/HeroBattlePopup';
 
@@ -192,17 +193,19 @@ export function useRagnarokCombatController(
     setResolution
   });
   
-  const { 
-    currentPhase: turnPhase, 
+  const onPhaseChangeCb = useCallback((from: string, to: string, context: { turnNumber: number }) => {
+    if (COMBAT_DEBUG.PHASES) {
+      debug.combat(`[TurnOrchestrator] Phase: ${from} → ${to} (Turn ${context.turnNumber})`);
+    }
+  }, []);
+
+  const {
+    currentPhase: turnPhase,
     turnNumber: orchestratorTurn,
     completePhase: advanceTurnPhase,
     startTurn: startOrchestratorTurn
   } = useTurnOrchestrator({
-    onPhaseChange: (from, to, context) => {
-      if (COMBAT_DEBUG.PHASES) {
-        debug.combat(`[TurnOrchestrator] Phase: ${from} → ${to} (Turn ${context.turnNumber})`);
-      }
-    }
+    onPhaseChange: onPhaseChangeCb
   });
   
   const showdownBackupTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -211,6 +214,8 @@ export function useRagnarokCombatController(
   
   const cardPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const handEndProcessedRef = useRef(false);
+  const combatEndFiredRef = useRef(false);
+  const combatEndRetryCountRef = useRef(0);
   const heroPowerProcessingRef = useRef(false);
   const weaponUpgradeProcessingRef = useRef(false);
 
@@ -236,12 +241,12 @@ export function useRagnarokCombatController(
   const opponentMaxMana = useGameStore(state => state.gameState?.players?.opponent?.mana?.max ?? 10);
   
   const isPlayerTurn = currentTurn === 'player';
-  const isOpponentTargetable: boolean = !!(isPlayerTurn && (!!attackingCard || !!heroTargetMode || 
-    (!!selectedCard && (selectedCard.card.type === 'spell' || 
-      (selectedCard.card.type === 'minion' && selectedCard.card.keywords?.includes('battlecry'))))));
-  const isPlayerTargetable: boolean = !!(isPlayerTurn && 
-    (!!selectedCard && (selectedCard.card.type === 'spell' || 
-      (selectedCard.card.type === 'minion' && selectedCard.card.keywords?.includes('battlecry')))));
+  const isOpponentTargetable: boolean = !!(isPlayerTurn && (!!attackingCard || !!heroTargetMode ||
+    (!!selectedCard && (selectedCard.card.type === 'spell' ||
+      (selectedCard.card.type === 'minion' && hasKeyword(selectedCard, 'battlecry'))))));
+  const isPlayerTargetable: boolean = !!(isPlayerTurn &&
+    (!!selectedCard && (selectedCard.card.type === 'spell' ||
+      (selectedCard.card.type === 'minion' && hasKeyword(selectedCard, 'battlecry')))));
   
   const selectCard = useGameStore(state => state.selectCard);
   const playCard = useGameStore(state => state.playCard);
@@ -270,6 +275,7 @@ export function useRagnarokCombatController(
   useEffect(() => {
     if (!isActive) {
       setWeaponUpgraded(false);
+      combatEndFiredRef.current = false;
     }
   }, [isActive]);
   
@@ -451,7 +457,6 @@ export function useRagnarokCombatController(
   const handleHeroPower = useCallback(() => {
     if (heroPowerProcessingRef.current) return;
     heroPowerProcessingRef.current = true;
-    requestAnimationFrame(() => { heroPowerProcessingRef.current = false; });
 
     if (COMBAT_DEBUG.PHASES) {
       debug.combat('[handleHeroPower] Called!');
@@ -463,66 +468,73 @@ export function useRagnarokCombatController(
       if (COMBAT_DEBUG.PHASES) {
         debug.combat('[handleHeroPower] Blocked: Already used this turn (gameStore)');
       }
+      heroPowerProcessingRef.current = false;
       return;
     }
-    
+
     const norseHeroId = combatState?.player?.pet?.norseHeroId;
     if (!norseHeroId) {
       if (COMBAT_DEBUG.PHASES) {
         debug.combat('[handleHeroPower] Blocked: No norseHeroId found');
       }
+      heroPowerProcessingRef.current = false;
       return;
     }
-    
+
     if (!combatState) {
       if (COMBAT_DEBUG.PHASES) {
         debug.combat('[handleHeroPower] Blocked: No combatState');
       }
+      heroPowerProcessingRef.current = false;
       return;
     }
-    
+
     const norseHero = ALL_NORSE_HEROES[norseHeroId];
     if (!norseHero) {
       if (COMBAT_DEBUG.PHASES) {
         debug.combat('[handleHeroPower] Blocked: norseHero not found for ID:', norseHeroId);
       }
+      heroPowerProcessingRef.current = false;
       return;
     }
-    
+
     const heroPower = norseHero.heroPower;
     const manaCost = heroPower.cost;
     const currentMana = playerMana;
-    
+
     if (COMBAT_DEBUG.PHASES) {
       debug.combat('[handleHeroPower] Hero:', norseHero.name, 'Power:', heroPower.name, 'Cost:', manaCost, 'Current mana:', currentMana);
     }
-    
+
     if (currentMana < manaCost) {
       if (COMBAT_DEBUG.PHASES) {
         debug.combat('[handleHeroPower] Blocked: Not enough mana');
       }
+      heroPowerProcessingRef.current = false;
       return;
     }
-    
+
     if (heroPowerUsedThisTurn) {
       if (COMBAT_DEBUG.PHASES) {
         debug.combat('[handleHeroPower] Blocked: heroPowerUsedThisTurn is true');
       }
+      heroPowerProcessingRef.current = false;
       return;
     }
-    
+
     const targetType = heroPower.targetType || 'none';
-    
+
     const noTargetTypes = ['none', 'self', 'all_enemies', 'all_friendly', 'random_enemy', 'random_friendly'];
-    
+
     if (noTargetTypes.includes(targetType)) {
       if (COMBAT_DEBUG.PHASES) {
         debug.combat('[handleHeroPower] Executing immediately (no target needed), targetType:', targetType);
       }
       executeHeroPowerEffect(norseHero, heroPower, null);
+      heroPowerProcessingRef.current = false;
       return;
     }
-    
+
     if (COMBAT_DEBUG.PHASES) {
       debug.combat('[handleHeroPower] Entering targeting mode, targetType:', targetType);
     }
@@ -538,6 +550,7 @@ export function useRagnarokCombatController(
       manaCost
     });
     fireAnnouncement('spell', `Select a target for ${heroPower.name}`, { duration: 3000 });
+    heroPowerProcessingRef.current = false;
   }, [combatState, heroPowerUsedThisTurn, playerMana, executeHeroPowerEffect]);
   
   const cancelHeroPowerTargeting = useCallback(() => {
@@ -549,37 +562,41 @@ export function useRagnarokCombatController(
   const handleWeaponUpgrade = useCallback(() => {
     if (weaponUpgradeProcessingRef.current) return;
     weaponUpgradeProcessingRef.current = true;
-    requestAnimationFrame(() => { weaponUpgradeProcessingRef.current = false; });
 
     const norseHeroId = combatState?.player?.pet?.norseHeroId;
     if (!norseHeroId) {
+      weaponUpgradeProcessingRef.current = false;
       return;
     }
-    
+
     if (!combatState) {
+      weaponUpgradeProcessingRef.current = false;
       return;
     }
-    
+
     const norseHero = ALL_NORSE_HEROES[norseHeroId];
     if (!norseHero) {
+      weaponUpgradeProcessingRef.current = false;
       return;
     }
-    
+
     const WEAPON_COST = 5;
     const currentMana = playerMana;
-    
+
     if (currentMana < WEAPON_COST) {
+      weaponUpgradeProcessingRef.current = false;
       return;
     }
-    
+
     if (weaponUpgraded) {
+      weaponUpgradeProcessingRef.current = false;
       return;
     }
-    
+
     fireAnnouncement('spell', `${norseHero.name} equips ${norseHero.weaponUpgrade.name}!`, { duration: 2500 });
-    
+
     setWeaponUpgraded(true);
-    
+
     useGameStore.setState(state => {
       if (!state.gameState?.players?.player?.mana) return state;
       return {
@@ -599,9 +616,9 @@ export function useRagnarokCombatController(
         }
       };
     });
-    
+
     const immediateEffect = norseHero.weaponUpgrade.immediateEffect;
-    
+
     if (immediateEffect.value) {
       switch (immediateEffect.type) {
         case 'damage':
@@ -616,7 +633,8 @@ export function useRagnarokCombatController(
         default:
       }
     }
-    
+
+    weaponUpgradeProcessingRef.current = false;
   }, [combatState, weaponUpgraded, applyDirectDamage, playerMana]);
   
   const handleOpponentHeroClick = useCallback(() => {
@@ -796,13 +814,11 @@ export function useRagnarokCombatController(
   const grantPokerHandRewards = useGameStore(state => state.grantPokerHandRewards);
   
   const handleAction = useCallback((action: CombatAction, hp?: number) => {
-    if (!combatState) return;
-    
     const freshState = getPokerCombatAdapterState().combatState;
     if (!freshState || freshState.player.isReady) {
       return;
     }
-    
+
     if (action === CombatAction.DEFEND) {
       addHeroBattlePopup({ action: 'defend', target: 'player', text: 'Defend', subtitle: '+1 STA' });
     } else if (action === CombatAction.ATTACK) {
@@ -812,14 +828,14 @@ export function useRagnarokCombatController(
     } else if (action === CombatAction.BRACE) {
       addHeroBattlePopup({ action: 'brace', target: 'player', text: 'Brace' });
     }
-    
-    performAction(combatState.player.playerId, action, hp);
-    
+
+    performAction(freshState.player.playerId, action, hp);
+
     if (action === CombatAction.BRACE) {
       endTurn();
     }
-    
-    const phaseBeforeAction = combatState.phase;
+
+    const phaseBeforeAction = freshState.phase;
     
     setTimeout(() => {
       try {
@@ -910,11 +926,13 @@ export function useRagnarokCombatController(
         aiResponseInProgressRef.current = false;
       }
     }, 1000);
-  }, [combatState, performAction, endTurn]);
+  }, [performAction, endTurn, addHeroBattlePopup]);
   
   useEffect(() => {
     if (resolution) {
       handEndProcessedRef.current = false;
+      combatEndFiredRef.current = false;
+      combatEndRetryCountRef.current = 0;
     }
   }, [resolution]);
   
@@ -929,12 +947,20 @@ export function useRagnarokCombatController(
 
     const discoveryActive = useGameStore.getState().gameState?.discovery?.active;
     if (discoveryActive) {
-      debug.combat('[handleCombatEnd] Discovery active — will retry in 500ms');
-      setTimeout(() => handleCombatEnd(), 500);
-      return;
+      combatEndRetryCountRef.current += 1;
+      if (combatEndRetryCountRef.current >= 20) {
+        debug.warn('[handleCombatEnd] Discovery retry limit reached (20) — forcing combat end');
+        handEndProcessedRef.current = true;
+      } else {
+        debug.combat(`[handleCombatEnd] Discovery active — will retry in 500ms (attempt ${combatEndRetryCountRef.current}/20)`);
+        setTimeout(() => handleCombatEnd(), 500);
+        return;
+      }
     }
 
+    combatEndRetryCountRef.current = 0;
     handEndProcessedRef.current = true;
+    cardPositionsRef.current.clear();
 
     advanceTurnPhase();
 
@@ -951,8 +977,10 @@ export function useRagnarokCombatController(
       }
       
       showdownBackupTimerRef.current = setTimeout(() => {
+        if (combatEndFiredRef.current) return;
+        combatEndFiredRef.current = true;
         const mulliganStillActive = useGameStore.getState().gameState?.mulligan?.active;
-        if (mulliganStillActive) return;
+        if (mulliganStillActive) { combatEndFiredRef.current = false; return; }
         debug.warn('[RagnarokCombatArena] Showdown backup timer fired - forcing combat end', { hasResolution: !!resolution });
         setShowdownCelebration(null);
         handleCombatEnd();
@@ -974,10 +1002,13 @@ export function useRagnarokCombatController(
     if (phase === CombatPhase.RESOLUTION && !showdownCelebration && !heroDeathState && isActive) {
       if (resolutionEscapeRef.current) clearTimeout(resolutionEscapeRef.current);
       resolutionEscapeRef.current = setTimeout(() => {
+        if (combatEndFiredRef.current) return;
+        combatEndFiredRef.current = true;
         const adapter = getPokerCombatAdapterState();
         const currentPhase = adapter.combatState?.phase;
         if (currentPhase === CombatPhase.RESOLUTION) {
           debug.warn('[ResolutionEscape] Stuck in RESOLUTION for 3s — forcing next hand');
+          cardPositionsRef.current.clear();
           adapter.setTransitioning(false);
           advanceTurnPhase();
           grantPokerHandRewards();

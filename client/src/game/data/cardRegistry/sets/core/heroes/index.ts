@@ -810,7 +810,7 @@ const deathKnightHeroes: CardData[] = [
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Deathknight',
+    class: 'DeathKnight',
     set: 'core',
     collectible: true
   },
@@ -823,7 +823,7 @@ const deathKnightHeroes: CardData[] = [
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Deathknight',
+    class: 'DeathKnight',
     set: 'core',
     collectible: true
   },
@@ -836,7 +836,7 @@ const deathKnightHeroes: CardData[] = [
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Deathknight',
+    class: 'DeathKnight',
     set: 'core',
     collectible: true
   },
@@ -849,7 +849,7 @@ const deathKnightHeroes: CardData[] = [
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Deathknight',
+    class: 'DeathKnight',
     set: 'core',
     collectible: true
   },
@@ -862,7 +862,7 @@ const deathKnightHeroes: CardData[] = [
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Deathknight',
+    class: 'DeathKnight',
     set: 'core',
     collectible: true
   },
@@ -875,7 +875,7 @@ const deathKnightHeroes: CardData[] = [
     rarity: 'mythic',
     manaCost: 0,
     health: 30,
-    class: 'Deathknight',
+    class: 'DeathKnight',
     set: 'core',
     collectible: true
   }

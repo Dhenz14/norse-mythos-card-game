@@ -1,5 +1,6 @@
 import { CardInstance, GameState } from '../../types';
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
+import { addKeyword, removeKeyword, hasKeyword } from '../cards/keywordUtils';
 
 /**
  * Check if a minion should be enraged (has less than max health but is still alive)
@@ -15,7 +16,7 @@ export function shouldBeEnraged(minion: CardInstance): boolean {
   return (
     minion.currentHealth > 0 && // Minion is alive
     minion.currentHealth < minionHealth && // Minion has taken damage
-    (minion.card.keywords || []).includes('enrage') && // Minion has the enrage keyword
+    hasKeyword(minion, 'enrage') && // Minion has the enrage keyword
     !minion.isSilenced // Minion isn't silenced
   );
 }
@@ -61,8 +62,8 @@ export function applyEnrageEffect(minion: CardInstance): CardInstance {
       modifiedMinion.currentAttack += attackBonus;
       
       // Apply windfury if needed
-      if (windfuryAdded && !(modifiedMinion.card.keywords || []).includes('windfury')) {
-        modifiedMinion.card.keywords = [...(modifiedMinion.card.keywords || []), 'windfury'];
+      if (windfuryAdded) {
+        addKeyword(modifiedMinion, 'windfury');
       }
       
     }
@@ -85,10 +86,8 @@ export function applyEnrageEffect(minion: CardInstance): CardInstance {
     modifiedMinion.currentAttack = (modifiedMinion.currentAttack ?? 0) - attackBonus;
     
     // Remove windfury if it was added by enrage
-    if (windfuryRemoved && !(minion.card.keywords || []).includes('windfury')) {
-      modifiedMinion.card.keywords = (modifiedMinion.card.keywords || []).filter(
-        keyword => keyword !== 'windfury'
-      );
+    if (windfuryRemoved) {
+      removeKeyword(modifiedMinion, 'windfury');
     }
     
   }

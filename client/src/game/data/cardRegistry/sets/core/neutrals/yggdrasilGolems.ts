@@ -31,13 +31,13 @@ export const yggdrasilGolemCards: CardData[] = [
     flavorText: "The seeds of Yggdrasil multiply endlessly.",
     type: "spell",
     rarity: "common",
-    spellEffect: { type: "shuffle_copies", count: 3, targetCardId: 85001 },
+    spellEffect: { type: "shuffle_copies", count: 3, targetCardId: 85001001 },
     class: "Neutral",
     set: "core",
     collectible: true
   },
   {
-    id: 85005,
+    id: 85022,
     name: "Yggdrasil Swarmer",
     manaCost: 2,
     attack: 1,

@@ -192,7 +192,7 @@ export default function TradingPage() {
 	const history = offers.filter(o => o.status !== 'pending');
 
 	const handleSend = async (toUser: string) => {
-		await createOffer(toUser);
+		await createOffer(username, toUser);
 	};
 
 	return (
@@ -255,9 +255,9 @@ export default function TradingPage() {
 									key={o.id}
 									offer={o}
 									currentUser={username}
-									onAccept={() => acceptOffer(o.id)}
-									onDecline={() => declineOffer(o.id)}
-									onCancel={() => cancelOffer(o.id)}
+									onAccept={() => acceptOffer(o.id, username)}
+									onDecline={() => declineOffer(o.id, username)}
+									onCancel={() => cancelOffer(o.id, username)}
 								/>
 							))
 						)}
@@ -274,9 +274,9 @@ export default function TradingPage() {
 									key={o.id}
 									offer={o}
 									currentUser={username}
-									onAccept={() => acceptOffer(o.id)}
-									onDecline={() => declineOffer(o.id)}
-									onCancel={() => cancelOffer(o.id)}
+									onAccept={() => acceptOffer(o.id, username)}
+									onDecline={() => declineOffer(o.id, username)}
+									onCancel={() => cancelOffer(o.id, username)}
 								/>
 							))
 						)}

@@ -6,17 +6,35 @@ import allCards from '../data/allCards';
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
-import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
+import { addKeyword } from './cards/keywordUtils';
 
-/**
- * Execute deathrattle effects for a card
- */
+const MAX_DEATHRATTLE_DEPTH = 10;
+let deathrattleDepth = 0;
+
 export function executeDeathrattle(
   state: GameState,
   card: CardInstance,
   playerId: 'player' | 'opponent'
 ): GameState {
-  // If the card is not a minion, return the original state
+  if (deathrattleDepth >= MAX_DEATHRATTLE_DEPTH) {
+    debug.warn(`[Deathrattle] Max recursion depth (${MAX_DEATHRATTLE_DEPTH}) reached, skipping ${card.card.name}`);
+    return state;
+  }
+
+  deathrattleDepth++;
+  try {
+    return executeDeathrattleInner(state, card, playerId);
+  } finally {
+    deathrattleDepth--;
+  }
+}
+
+function executeDeathrattleInner(
+  state: GameState,
+  card: CardInstance,
+  playerId: 'player' | 'opponent'
+): GameState {
   if (card.card.type !== 'minion') {
     debug.log(`[Deathrattle] Skipped: ${card.card.name} is not a minion`);
     return state;
@@ -182,7 +200,10 @@ export function executeDeathrattle(
             oppBf[i].currentHealth! -= aoeDmgVal;
           }
         }
-        newState.players[oppId as 'player' | 'opponent'].battlefield = oppBf.filter(m => (m.currentHealth ?? 1) > 0);
+        const deadMinions = oppBf.filter(m => (m.currentHealth ?? 1) <= 0);
+        for (const dead of deadMinions) {
+          newState = destroyCard(newState, dead.instanceId, oppId as 'player' | 'opponent');
+        }
         if (aoeTgt === 'all_enemies') {
           newState = dealDamage(newState, oppId as 'player' | 'opponent', 'hero', aoeDmgVal);
         }
@@ -219,7 +240,10 @@ export function executeDeathrattle(
           oppBf[i].currentHealth! -= aoeDmg;
         }
       }
-      newState.players[opponent].battlefield = oppBf.filter(m => (m.currentHealth ?? 1) > 0);
+      const deadFromAoe = oppBf.filter(m => (m.currentHealth ?? 1) <= 0);
+      for (const dead of deadFromAoe) {
+        newState = destroyCard(newState, dead.instanceId, opponent as 'player' | 'opponent');
+      }
       const buffAtk = (deathrattle as any).buffAttack || 0;
       const buffHp = (deathrattle as any).buffHealth || 0;
       if (buffAtk > 0 || buffHp > 0) {
@@ -277,7 +301,7 @@ function executeSummonDeathrattle(
   const cardToSummon = allCards.find(card => card.id === summonId);
   
   if (!cardToSummon) {
-    debug.error(`Card with ID ${deathrattle.summonCardId} not found in the database`);
+    debug.error(`Card with ID ${summonId} not found in the database`);
     return state;
   }
   
@@ -890,7 +914,7 @@ function executeAddRandomToHandDeathrattle(
   const count = deathrattle.value || 1;
 
   for (let i = 0; i < count; i++) {
-    if (player.hand.length >= 7) break;
+    if (player.hand.length >= MAX_HAND_SIZE) break;
     if (allCards.length === 0) break;
     const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
     const instance = createCardInstance(randomCard);
@@ -1028,11 +1052,7 @@ function executeGrantKeywordDeathrattle(
 
   player.battlefield.forEach(minion => {
     if (minion.card.type === 'minion') {
-      const minionCard = minion.card as MinionCardData;
-      if (!minionCard.keywords) minionCard.keywords = [];
-      if (!minionCard.keywords.includes(keyword)) {
-        minionCard.keywords.push(keyword);
-      }
+      addKeyword(minion, keyword);
     }
   });
 
@@ -1049,7 +1069,7 @@ function executeGiveSparePartDeathrattle(
   const count = deathrattle.value || 1;
 
   for (let i = 0; i < count; i++) {
-    if (player.hand.length >= 7) break;
+    if (player.hand.length >= MAX_HAND_SIZE) break;
     if (allCards.length === 0) break;
     const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
     const instance = createCardInstance(randomCard);

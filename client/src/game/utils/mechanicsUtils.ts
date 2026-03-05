@@ -20,7 +20,7 @@ import {
   HeroClass
 } from '../types';
 import { addGameLogEvent } from './gameLogUtils';
-import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 import { v4 as uuidv4 } from 'uuid';
 import { createCardInstance } from './cards/cardUtils';
 import { 
@@ -34,6 +34,7 @@ import {
 } from './cards/typeGuards';
 import { destroyCard } from './zoneUtils';
 import { dealDamage, dealDamageToAllEnemyMinions } from './effects/damageUtils';
+import { addKeyword } from './cards/keywordUtils';
 
 // ===================== DISCOVER MECHANICS =====================
 /**
@@ -536,7 +537,7 @@ export const handleSecretTrigger = (
             };
             
             // Add to hand if there's space
-            if (newGameState.players[triggeringPlayer].hand.length < 10) {
+            if (newGameState.players[triggeringPlayer].hand.length < MAX_HAND_SIZE) {
               newGameState.players[triggeringPlayer].hand.push(minion);
             }
           }
@@ -698,12 +699,12 @@ export const applyAdaptation = (
       
     case "Lightning Speed":
       // Windfury
-      minion.card.keywords = [...(minion.card.keywords || []), 'windfury'];
+      addKeyword(minion, 'windfury');
       break;
-      
+
     case "Massive":
       // Taunt
-      minion.card.keywords = [...(minion.card.keywords || []), 'taunt'];
+      addKeyword(minion, 'taunt');
       break;
       
     case "Poison Spit":

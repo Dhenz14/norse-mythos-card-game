@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Peer, { DataConnection } from 'peerjs';
 import type { GameState } from '../types';
+import { filterGameStateForSpectator } from './spectatorFilter';
 
 export type SpectatorStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 
@@ -31,7 +32,7 @@ export function useSpectatorSync(hostPeerId: string | null) {
 
 			conn.on('data', (data: any) => {
 				if (data && data.type === 'spectator_state' && data.gameState) {
-					setGameState(data.gameState);
+					setGameState(filterGameStateForSpectator(data.gameState));
 				}
 			});
 
@@ -51,7 +52,14 @@ export function useSpectatorSync(hostPeerId: string | null) {
 		});
 
 		return () => {
-			connRef.current?.close();
+			if (connRef.current) {
+				connRef.current.off('data');
+				connRef.current.off('close');
+				connRef.current.off('error');
+				connRef.current.close();
+			}
+			peer.off('open');
+			peer.off('error');
 			peer.destroy();
 			peerRef.current = null;
 			connRef.current = null;

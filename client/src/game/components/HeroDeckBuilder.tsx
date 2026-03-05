@@ -498,7 +498,7 @@ const CardDetailFlip: React.FC<{
 					<div className={`cd-front rarity-${rarityKey}`}>
 						<div className="cd-front-art">
 							{cardArtPath ? (
-								<img src={cardArtPath} alt="" />
+								<img src={cardArtPath} alt="" loading="lazy" />
 							) : (
 								<div className="cd-front-art-fallback" style={{ background: `linear-gradient(135deg, ${classColor}25, ${classColor}08)` }}>
 									{TYPE_ICONS[card.type] || '\u2726'}

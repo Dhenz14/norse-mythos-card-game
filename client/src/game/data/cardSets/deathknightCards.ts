@@ -36,7 +36,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("The prime currency of Helheim. Trades particularly well against life.")
     .type("spell")
     .rarity("common")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "death_coil",
       value: 3,
@@ -55,7 +55,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Like a good neighbor, the undead are there!")
     .type("spell")
     .rarity("epic")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "summon",
       summonCardId: 3003,
@@ -74,7 +74,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("The bitter cold of Niflheim seeps into the marrow of its victims' bones.")
     .type("spell")
     .rarity("rare")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "freeze_and_damage",
       value: 2,
@@ -94,7 +94,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Whomsoever takes up this blade shall wield power eternal. Just as the blade rends flesh, so must power scar the spirit.")
     .type("weapon")
     .rarity("mythic")
-    .class("Deathknight")
+    .class("DeathKnight")
     .customProperty("onKillEffect", {
       type: "raise_enemy"
     })
@@ -110,7 +110,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Boiling blood is a staple in the death knight diet.")
     .type("spell")
     .rarity("rare")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "aoe_with_on_kill",
       value: 1,
@@ -131,7 +131,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Enchanted with runes of power, this blade grows stronger with each rune the death knight invokes.")
     .type("weapon")
     .rarity("epic")
-    .class("Deathknight")
+    .class("DeathKnight")
     .customProperty("runeEffect", {
       type: "weapon_attack_per_rune"
     })
@@ -147,7 +147,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Death knights can encase themselves in an icy fortress of invulnerability, which is kind of unfair.")
     .type("spell")
     .rarity("epic")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "gain_armor_and_immunity",
       value: 5,
@@ -166,7 +166,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Death knights are masters of manipulation, both of the dead and the living.")
     .type("spell")
     .rarity("rare")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "mind_control_temporary",
       targetType: "enemy_minion" as SpellTargetType,
@@ -187,7 +187,7 @@ export function registerDeathKnightCards(): void {
     .type("hero")
     .rarity("mythic")
     .customProperty("armor", 5)
-    .class("Deathknight")
+    .class("DeathKnight")
     .addKeyword("battlecry")
     .battlecry({
       type: "equip_frostmourne",
@@ -204,7 +204,7 @@ export function registerDeathKnightCards(): void {
         targetType: "all_enemies"
       },
       collectible: true,
-      class: "Deathknight"
+      class: "DeathKnight"
     })
     .collectible(true)
     .build();
@@ -218,7 +218,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Death knights can open portals to the realm of the dead. Very convenient for retrieving fallen comrades.")
     .type("spell")
     .rarity("rare")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "resurrect_random",
       value: 1,
@@ -236,7 +236,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("A shield made of bones. Pretty self-explanatory, actually.")
     .type("spell")
     .rarity("common")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "buff_and_enchant",
       buffHealth: 2,
@@ -261,7 +261,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Just your average, run-of-the-mill undead skeleton. Nothing special here.")
     .type("minion")
     .rarity("common")
-    .class("Deathknight")
+    .class("DeathKnight")
     .collectible(false)
     .build();
 
@@ -274,7 +274,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Blood death knights are vampiric fighters, using their enemies' life essence to fuel their own survival.")
     .type("spell")
     .rarity("rare")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "gain_armor_and_lifesteal",
       value: 4,
@@ -293,7 +293,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Frost death knights bring the bitter cold of Niflheim with them wherever they go.")
     .type("spell")
     .rarity("rare")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "freeze_adjacent",
       targetType: "enemy_minion" as SpellTargetType,
@@ -311,7 +311,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Unholy death knights specialize in plague and pestilence. Fun at parties!")
     .type("spell")
     .rarity("rare")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "buff_all_with_deathrattle",
       buffAttack: 1,
@@ -337,7 +337,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("A basic runeblade, the iconic weapon of the death knight. Chills the soul of whoever it strikes.")
     .type("weapon")
     .rarity("common")
-    .class("Deathknight")
+    .class("DeathKnight")
     .collectible(true)
     .build();
 
@@ -350,7 +350,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Death knights can conjure chains of pure ice to bind their opponents. Their prisoners really should wear warmer clothes.")
     .type("spell")
     .rarity("common")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "freeze_and_draw",
       targetType: "any_enemy" as SpellTargetType,
@@ -369,7 +369,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("The closer a death knight is to death, the more devastating their strikes become.")
     .type("spell")
     .rarity("epic")
-    .class("Deathknight")
+    .class("DeathKnight")
     .spellEffect({
       type: "damage_based_on_missing_health",
       targetType: "any" as SpellTargetType,
@@ -390,7 +390,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Every death knight starts somewhere. Usually with smaller, less impressive rune weapons.")
     .type("minion")
     .rarity("common")
-    .class("Deathknight")
+    .class("DeathKnight")
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_weapon",
@@ -411,7 +411,7 @@ export function registerDeathKnightCards(): void {
     .flavorText("Champions of Helheim command legions of undead. And they're very encouraging managers.")
     .type("minion")
     .rarity("rare")
-    .class("Deathknight")
+    .class("DeathKnight")
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_and_taunt",

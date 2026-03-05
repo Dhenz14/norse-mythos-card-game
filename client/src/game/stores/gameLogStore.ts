@@ -26,15 +26,15 @@ export const useGameLogStore = create<GameLogState>((set) => ({
 	entries: [],
 	isOpen: false,
 	addEntry: (entry) => set((state) => {
-		const entries = state.entries.length >= 100
+		const base = state.entries.length >= 100
 			? state.entries.slice(1)
-			: [...state.entries];
-		entries.push({
+			: state.entries;
+		const newEntry: GameLogEntry = {
 			...entry,
 			id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
 			timestamp: Date.now()
-		});
-		return { entries };
+		};
+		return { entries: [...base, newEntry] };
 	}),
 	toggleLog: () => set((state) => ({ isOpen: !state.isOpen })),
 	clearLog: () => set({ entries: [] })

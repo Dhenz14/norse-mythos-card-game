@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from 'express';
+import { verifyHiveAuth, isValidHiveUsername, isTimestampFresh } from '../services/hiveAuth';
 
 const router = Router();
 
@@ -48,17 +49,35 @@ router.get('/:username', (req: Request, res: Response) => {
 	res.json({ offers });
 });
 
-router.post('/', (req: Request, res: Response) => {
-	const { fromUser, toUser, offeredCardIds, requestedCardIds, offeredDust, requestedDust } = req.body;
+router.post('/', async (req: Request, res: Response) => {
+	const { fromUser, toUser, offeredCardIds, requestedCardIds, offeredDust, requestedDust, signature, timestamp } = req.body;
 
 	if (!fromUser || !toUser) {
 		res.status(400).json({ error: 'fromUser and toUser required' });
 		return;
 	}
 
+	if (!isValidHiveUsername(fromUser) || !isValidHiveUsername(toUser)) {
+		res.status(400).json({ error: 'Invalid username format' });
+		return;
+	}
+
 	if (fromUser === toUser) {
 		res.status(400).json({ error: 'Cannot trade with yourself' });
 		return;
+	}
+
+	if (signature && timestamp) {
+		if (!isTimestampFresh(timestamp)) {
+			res.status(401).json({ error: 'Stale timestamp' });
+			return;
+		}
+		const message = `ragnarok-trade-create:${fromUser}:${toUser}:${timestamp}`;
+		const authResult = await verifyHiveAuth(fromUser, message, signature);
+		if (!authResult.valid) {
+			res.status(401).json({ error: 'Invalid signature' });
+			return;
+		}
 	}
 
 	const id = generateTradeId();
@@ -79,10 +98,35 @@ router.post('/', (req: Request, res: Response) => {
 	res.json({ offer });
 });
 
-router.post('/:tradeId/accept', (req: Request, res: Response) => {
+router.post('/:tradeId/accept', async (req: Request, res: Response) => {
+	const { username, signature, timestamp } = req.body;
+	if (!username || typeof username !== 'string') {
+		res.status(400).json({ error: 'username required' });
+		return;
+	}
+	if (!isValidHiveUsername(username)) {
+		res.status(400).json({ error: 'Invalid username format' });
+		return;
+	}
+	if (signature && timestamp) {
+		if (!isTimestampFresh(timestamp)) {
+			res.status(401).json({ error: 'Stale timestamp' });
+			return;
+		}
+		const message = `ragnarok-trade-accept:${username}:${req.params.tradeId}:${timestamp}`;
+		const authResult = await verifyHiveAuth(username, message, signature);
+		if (!authResult.valid) {
+			res.status(401).json({ error: 'Invalid signature' });
+			return;
+		}
+	}
 	const trade = trades.get(req.params.tradeId);
 	if (!trade) {
 		res.status(404).json({ error: 'Trade not found' });
+		return;
+	}
+	if (trade.toUser !== username) {
+		res.status(403).json({ error: 'Only the trade recipient can accept' });
 		return;
 	}
 	if (trade.status !== 'pending') {
@@ -93,10 +137,35 @@ router.post('/:tradeId/accept', (req: Request, res: Response) => {
 	res.json({ trade });
 });
 
-router.post('/:tradeId/decline', (req: Request, res: Response) => {
+router.post('/:tradeId/decline', async (req: Request, res: Response) => {
+	const { username, signature, timestamp } = req.body;
+	if (!username || typeof username !== 'string') {
+		res.status(400).json({ error: 'username required' });
+		return;
+	}
+	if (!isValidHiveUsername(username)) {
+		res.status(400).json({ error: 'Invalid username format' });
+		return;
+	}
+	if (signature && timestamp) {
+		if (!isTimestampFresh(timestamp)) {
+			res.status(401).json({ error: 'Stale timestamp' });
+			return;
+		}
+		const message = `ragnarok-trade-decline:${username}:${req.params.tradeId}:${timestamp}`;
+		const authResult = await verifyHiveAuth(username, message, signature);
+		if (!authResult.valid) {
+			res.status(401).json({ error: 'Invalid signature' });
+			return;
+		}
+	}
 	const trade = trades.get(req.params.tradeId);
 	if (!trade) {
 		res.status(404).json({ error: 'Trade not found' });
+		return;
+	}
+	if (trade.fromUser !== username && trade.toUser !== username) {
+		res.status(403).json({ error: 'Only trade participants can decline' });
 		return;
 	}
 	if (trade.status !== 'pending') {
@@ -107,10 +176,35 @@ router.post('/:tradeId/decline', (req: Request, res: Response) => {
 	res.json({ trade });
 });
 
-router.post('/:tradeId/cancel', (req: Request, res: Response) => {
+router.post('/:tradeId/cancel', async (req: Request, res: Response) => {
+	const { username, signature, timestamp } = req.body;
+	if (!username || typeof username !== 'string') {
+		res.status(400).json({ error: 'username required' });
+		return;
+	}
+	if (!isValidHiveUsername(username)) {
+		res.status(400).json({ error: 'Invalid username format' });
+		return;
+	}
+	if (signature && timestamp) {
+		if (!isTimestampFresh(timestamp)) {
+			res.status(401).json({ error: 'Stale timestamp' });
+			return;
+		}
+		const message = `ragnarok-trade-cancel:${username}:${req.params.tradeId}:${timestamp}`;
+		const authResult = await verifyHiveAuth(username, message, signature);
+		if (!authResult.valid) {
+			res.status(401).json({ error: 'Invalid signature' });
+			return;
+		}
+	}
 	const trade = trades.get(req.params.tradeId);
 	if (!trade) {
 		res.status(404).json({ error: 'Trade not found' });
+		return;
+	}
+	if (trade.fromUser !== username && trade.toUser !== username) {
+		res.status(403).json({ error: 'Only trade participants can cancel' });
 		return;
 	}
 	if (trade.status !== 'pending') {

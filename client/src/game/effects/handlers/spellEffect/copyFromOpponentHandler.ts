@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeCopyFromOpponent(
   context: GameContext, 
@@ -49,7 +50,7 @@ export default function executeCopyFromOpponent(
     const copiedCards: string[] = [];
     
     toCopy.forEach(cardInstance => {
-      if (context.currentPlayer.hand.length < 10) {
+      if (context.currentPlayer.hand.length < MAX_HAND_SIZE) {
         const copy = {
           ...cardInstance,
           instanceId: 'copy-' + Date.now() + '-' + Math.random().toString(36).substring(7),

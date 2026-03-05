@@ -404,19 +404,20 @@ export const putPlayerNonce = (record: PlayerNonce): Promise<void> =>
 export async function advancePlayerNonce(account: string, nonce: number): Promise<boolean> {
 	const db = await openDB();
 	return new Promise((resolve, reject) => {
+		let accepted = false;
 		const tx = db.transaction('player_nonces', 'readwrite');
 		const store = tx.objectStore('player_nonces');
 		const getReq = store.get(account);
 		getReq.onsuccess = () => {
 			const current = (getReq.result as PlayerNonce | undefined) ?? { account, highestMatchNonce: 0 };
 			if (nonce <= current.highestMatchNonce) {
-				resolve(false);
 				return;
 			}
+			accepted = true;
 			store.put({ account, highestMatchNonce: nonce });
-			resolve(true);
 		};
 		getReq.onerror = () => reject(getReq.error);
+		tx.oncomplete = () => resolve(accepted);
 		tx.onerror = () => reject(tx.error);
 	});
 }

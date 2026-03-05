@@ -228,5 +228,5 @@ export function usePokerAI(options: UsePokerAIOptions): void {
       }
     };
   }, [combatState?.activePlayerId, combatState?.phase, combatState?.foldWinner,
-      combatState?.isAllInShowdown, isActive, aiResponseInProgressRef, cardGameMulliganActive]);
+      combatState?.isAllInShowdown, isActive, aiResponseInProgressRef, cardGameMulliganActive, addHeroBattlePopup]);
 }

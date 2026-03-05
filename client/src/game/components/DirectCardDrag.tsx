@@ -55,7 +55,7 @@ export const DirectCardDrag: React.FC<DirectCardDragProps> = ({
     if (isPlayable && !disableDrag) {
       cardRef.current.style.cursor = 'grab';
       cardRef.current.style.transform = `scale(${scale * 1.05}) translateY(-4px)`;
-      cardRef.current.style.transition = 'all 0.15s ease-out';
+      cardRef.current.style.transition = 'transform 0.15s ease-out';
       cardRef.current.style.zIndex = '100';
     }
   }, [isPlayable, disableDrag, scale]);
@@ -65,7 +65,7 @@ export const DirectCardDrag: React.FC<DirectCardDragProps> = ({
     
     cardRef.current.style.cursor = 'default';
     cardRef.current.style.transform = `scale(${scale})`;
-    cardRef.current.style.transition = 'all 0.15s ease-out';
+    cardRef.current.style.transition = 'transform 0.15s ease-out';
     cardRef.current.style.zIndex = 'auto';
   }, [scale, isDragging]);
 
@@ -177,8 +177,8 @@ export const DirectCardDrag: React.FC<DirectCardDragProps> = ({
       ref={cardRef}
       className="relative select-none"
       style={{
-        width: '150px',
-        height: '210px',
+        width: 'clamp(100px, 12vw, 150px)',
+        height: 'clamp(140px, 16.8vw, 210px)',
         transform: `scale(${scale})`,
         transformOrigin: 'center',
         cursor: isPlayable && !disableDrag ? 'grab' : 'default'

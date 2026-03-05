@@ -18,7 +18,7 @@
 /* 2. Card styling - clean, no excessive glow */
 .card-playable-professional {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* 3. Professional Mana Crystals */
@@ -105,7 +105,7 @@
     inset 0 2px 4px rgba(255, 255, 255, 0.25),
     0 0 12px rgba(234, 179, 8, 0.3);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-  transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition: transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0.0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
   font-weight: 600;
   letter-spacing: 0.5px;
 }
@@ -128,7 +128,7 @@
 
 /* 6. Professional Card Hover Effects */
 .card-professional-hover {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-origin: center bottom;
 }
 

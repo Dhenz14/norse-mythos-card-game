@@ -70,7 +70,8 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 			startDownload: async () => {
 				if (get().isDownloading) return;
 
-				abortController = new AbortController();
+				const controller = new AbortController();
+				abortController = controller;
 				set({
 					isDownloading: true,
 					downloadError: null,
@@ -97,7 +98,7 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 					}
 
 					const manifestUrl = toFullUrl('asset-manifest.json');
-					const manifestRes = await fetch(manifestUrl, { signal: abortController.signal });
+					const manifestRes = await fetch(manifestUrl, { signal: controller.signal });
 					if (!manifestRes.ok) throw new Error('Failed to fetch asset manifest');
 					const manifest: AssetManifest = await manifestRes.json();
 
@@ -139,21 +140,21 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 					}
 
 					const failed: AssetFile[] = [];
-					let completed = alreadyCachedFiles;
-					let bytes = alreadyCachedBytes;
 
 					const downloadFile = async (file: AssetFile) => {
 						const url = toFullUrl(file.path);
 						try {
-							const res = await fetch(url, { signal: abortController!.signal });
+							const res = await fetch(url, { signal: controller.signal });
 							if (res.ok) {
 								await cache.put(url, res);
-								bytes += file.size;
-								completed++;
-								set({
-									filesDownloaded: completed,
-									bytesDownloaded: bytes,
-									downloadProgress: Math.round((completed / manifest.totalFiles) * 100),
+								set(state => {
+									const filesDownloaded = state.filesDownloaded + 1;
+									const bytesDownloaded = state.bytesDownloaded + file.size;
+									return {
+										filesDownloaded,
+										bytesDownloaded,
+										downloadProgress: Math.round((filesDownloaded / manifest.totalFiles) * 100),
+									};
 								});
 							} else {
 								failed.push(file);
@@ -165,26 +166,28 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 					};
 
 					for (let i = 0; i < uncached.length; i += BATCH_SIZE) {
-						if (abortController.signal.aborted) break;
+						if (controller.signal.aborted) break;
 						const batch = uncached.slice(i, i + BATCH_SIZE);
 						await Promise.allSettled(batch.map(downloadFile));
 					}
 
-					if (failed.length > 0 && !abortController.signal.aborted) {
+					if (failed.length > 0 && !controller.signal.aborted) {
 						const retryFailed: AssetFile[] = [];
 						for (let i = 0; i < failed.length; i += BATCH_SIZE) {
 							const batch = failed.slice(i, i + BATCH_SIZE);
 							const results = await Promise.allSettled(batch.map(async (file) => {
 								const url = toFullUrl(file.path);
-								const res = await fetch(url, { signal: abortController!.signal });
+								const res = await fetch(url, { signal: controller.signal });
 								if (res.ok) {
 									await cache.put(url, res);
-									bytes += file.size;
-									completed++;
-									set({
-										filesDownloaded: completed,
-										bytesDownloaded: bytes,
-										downloadProgress: Math.round((completed / manifest.totalFiles) * 100),
+									set(state => {
+										const filesDownloaded = state.filesDownloaded + 1;
+										const bytesDownloaded = state.bytesDownloaded + file.size;
+										return {
+											filesDownloaded,
+											bytesDownloaded,
+											downloadProgress: Math.round((filesDownloaded / manifest.totalFiles) * 100),
+										};
 									});
 								} else {
 									retryFailed.push(file);

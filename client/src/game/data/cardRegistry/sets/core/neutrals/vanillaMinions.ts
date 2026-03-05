@@ -3,7 +3,7 @@ import { CardData } from '../../../../../types';
 /**
  * Vanilla Minions — Pure stat baseline cards with no abilities.
  * These serve as evaluation benchmarks for ability-carrying cards.
- * Stats follow the formula: total stats ≈ mana cost + 2 (premium for no text).
+ * Stats follow the formula: total stats ≈ (mana cost × 2) + 1 (premium for no text).
  */
 export const vanillaMinions: CardData[] = [
 	{

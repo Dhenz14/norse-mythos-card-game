@@ -44,8 +44,7 @@ export default function executeSetHealthSetHealth(
     const targetType = effect.targetType || 'any_hero';
     
     if (!requiresTarget) {
-      context.logGameEvent(`Set health effect requires a target but none specified`);
-      return { success: false, error: 'Set health effect requires a target' };
+      context.logGameEvent(`Set health effect does not require explicit target — using default targeting`);
     }
     
     // Validate target type - should be a hero target

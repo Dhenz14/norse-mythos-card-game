@@ -92,7 +92,11 @@ export function createCardInstance(card: CardData, evolutionLevel?: EvolutionLev
   if (scaledCard.keywords?.includes('echo')) {
     processedInstance = initializeEchoEffect(processedInstance);
   }
-  
+
+  if (scaledCard.keywords?.includes('einherjar')) {
+    processedInstance.einherjarGeneration = 0;
+  }
+
   return processedInstance;
 }
 

@@ -53,27 +53,26 @@ import AttackSystem from '../combat/AttackSystem';
 import { canCardAttack, isValidAttackTarget } from '../combat/attackUtils';
 import { createHandlePlayerCardClick, createHandleOpponentCardClick, createHandleOpponentHeroClick } from './GameBoardHandlers';
 import { isMinion, isSpell, isWeapon, isHero, getAttack, getHealth, getDurability, hasOverload, hasBattlecry, hasSpellEffect } from '../utils/cards/typeGuards';
+import { hasKeyword, getKeywords } from '../utils/cards/keywordUtils';
 import { debug } from '../config/debugConfig';
 // Ultimate CardWithDrag system handles all interactions now
 
 // CardWithDrag is now the ONLY card interaction system
 
 export const GameBoard: React.FC<{}> = () => {
-  const { 
-    gameState, 
-    playCard, 
-    endTurn, 
-    hoveredCard,
-    attackingCard,
-    selectedCard,
-    selectAttacker,
-    attackWithCard,
-    heroTargetMode,
-    toggleHeroTargetMode,
-    useHeroPower,
-    selectCard,
-    selectDiscoveryOption
-  } = useGameStore();
+  const gameState = useGameStore(state => state.gameState);
+  const playCard = useGameStore(state => state.playCard);
+  const endTurn = useGameStore(state => state.endTurn);
+  const hoveredCard = useGameStore(state => state.hoveredCard);
+  const attackingCard = useGameStore(state => state.attackingCard);
+  const selectedCard = useGameStore(state => state.selectedCard);
+  const selectAttacker = useGameStore(state => state.selectAttacker);
+  const attackWithCard = useGameStore(state => state.attackWithCard);
+  const heroTargetMode = useGameStore(state => state.heroTargetMode);
+  const toggleHeroTargetMode = useGameStore(state => state.toggleHeroTargetMode);
+  const useHeroPower = useGameStore(state => state.useHeroPower);
+  const selectCard = useGameStore(state => state.selectCard);
+  const selectDiscoveryOption = useGameStore(state => state.selectDiscoveryOption);
   
   // Mouse position tracking for targeting arrow
   const [mousePosition, setMousePosition] = useState<Position>({ x: 0, y: 0 });
@@ -125,13 +124,18 @@ export const GameBoard: React.FC<{}> = () => {
   
   // Reference to track turn changes for turn transition
   const lastTurnRef = useRef<string | null>(null);
-  
-  const { 
-    players, 
-    currentTurn, 
-    turnNumber, 
-    gamePhase 
+
+  const {
+    players,
+    currentTurn,
+    turnNumber,
+    gamePhase
   } = gameState;
+
+  // Initialize ref on first render to prevent spurious transition animation
+  if (lastTurnRef.current === null && currentTurn) {
+    lastTurnRef.current = currentTurn;
+  }
   
   const { playSoundEffect } = useAudio();
   const { showNotification, showBattlecryEffect, showAoEDamageEffect, showDeathrattleEffect } = useGameNotifications();
@@ -270,35 +274,28 @@ export const GameBoard: React.FC<{}> = () => {
     return () => {
       document.removeEventListener('contextmenu', handleRightClick);
     };
-  }, [showTargetingArrow, selectedCard]); // Re-add listener when targeting state changes
+  }, [showTargetingArrow, selectedCard, selectCard, playSoundEffect, showNotification]);
 
-  // Handle clean Hearthstone-style card play events
   useEffect(() => {
-    const handleHearthstoneCardPlay = (e: CustomEvent) => {
+    const handleCardPlayEvent = (e: CustomEvent) => {
       const { instanceId, position } = e.detail;
-      debug.log('Hearthstone card play event received:', instanceId, 'at position:', position);
-      
-      // Find the card in player's hand
+      debug.log('Card play event received:', instanceId, 'at position:', position);
+
       const player = gameState.players.player;
       if (player && player.hand) {
         const cardToPlay = player.hand.find(card => card.instanceId === instanceId);
         if (cardToPlay) {
           debug.log('Playing card via clean interaction system:', cardToPlay.card.name);
-          
-          // Play the card using the existing game logic
           playCard(instanceId, position);
-          
-          // Play a satisfying sound effect
           playSoundEffect('card_play');
         }
       }
     };
 
-    // Listen for our custom card play events
-    document.addEventListener('hearthstone-card-play', handleHearthstoneCardPlay as EventListener);
+    document.addEventListener('ragnarok-card-play', handleCardPlayEvent as EventListener);
 
     return () => {
-      document.removeEventListener('hearthstone-card-play', handleHearthstoneCardPlay as EventListener);
+      document.removeEventListener('ragnarok-card-play', handleCardPlayEvent as EventListener);
     };
   }, [gameState.players, playCard, playSoundEffect]);
 
@@ -366,8 +363,8 @@ export const GameBoard: React.FC<{}> = () => {
     return () => {
       document.removeEventListener('click', handleDocumentClick);
     };
-  }, [showTargetingArrow, selectedCard]);
-  
+  }, [showTargetingArrow, selectedCard, selectCard, showNotification, validTargets]);
+
   // Reset targeting UI when selected card changes
   useEffect(() => {
     if (!selectedCard) {
@@ -530,7 +527,7 @@ export const GameBoard: React.FC<{}> = () => {
     }
       
     // Check if it's a spell card with discover keyword
-    if (isSpell(card.card) && card.card.keywords?.includes('discover') && card.card.spellEffect?.type === 'discover') {
+    if (isSpell(card.card) && hasKeyword(card, 'discover') && card.card.spellEffect?.type === 'discover') {
       // Play the card after a delay if animating, or immediately if not
       if (cardPosition) {
         setTimeout(() => {
@@ -1068,7 +1065,7 @@ export const GameBoard: React.FC<{}> = () => {
       const isOpponentHero = targetIsHero && (isHero(targetCard.card) && targetCard.card.heroClass !== player.heroClass);
       
       // Check if target has taunt
-      const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+      const hasTaunt = hasKeyword(targetCard, 'taunt');
       
       // Log for debugging
       debug.log(`[DEBUG] Checking target validity for ${sourceCard.card.name}:`, {
@@ -1141,7 +1138,7 @@ export const GameBoard: React.FC<{}> = () => {
           if (isOpponentHero || opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
             // Check if the opponent has taunt minions
             const opponentHasTaunt = opponent.battlefield.some(c => 
-              c.card.keywords?.includes('taunt')
+              hasKeyword(c, 'taunt')
             );
             
             // If opponent has taunt minions, we can only target those unless the target itself has taunt
@@ -1167,7 +1164,7 @@ export const GameBoard: React.FC<{}> = () => {
         case 'enemy_minion':
           // Check if the opponent has taunt minions
           const opponentHasTaunt = opponent.battlefield.some(c => 
-            c.card.keywords?.includes('taunt')
+            hasKeyword(c, 'taunt')
           );
           
           // If the target is an opponent minion
@@ -1183,7 +1180,7 @@ export const GameBoard: React.FC<{}> = () => {
         case 'enemy':
           // Check if the opponent has taunt minions
           const opponentHasTaunts = opponent.battlefield.some(c => 
-            c.card.keywords?.includes('taunt')
+            hasKeyword(c, 'taunt')
           );
           
           // If targeting an opponent minion
@@ -1236,11 +1233,11 @@ export const GameBoard: React.FC<{}> = () => {
           if (isOpponentHero || isOpponentMinion) {
             // Check if the opponent has taunt minions
             const opponentHasTaunt = opponent.battlefield.some(c => 
-              c.card.keywords?.includes('taunt')
+              hasKeyword(c, 'taunt')
             );
             
             // If opponent has taunt minions, we can only target those unless the target itself has taunt
-            const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+            const hasTaunt = hasKeyword(targetCard, 'taunt');
             
             if (opponentHasTaunt && !hasTaunt && isOpponentMinion) {
               debug.log('Cannot target non-taunt minions when opponent has taunt minions');
@@ -1264,11 +1261,11 @@ export const GameBoard: React.FC<{}> = () => {
           if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
             // Check if the opponent has taunt minions
             const opponentHasTaunt = opponent.battlefield.some(c => 
-              c.card.keywords?.includes('taunt')
+              hasKeyword(c, 'taunt')
             );
             
             // If opponent has taunt minions, we can only target those unless the target itself has taunt
-            const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+            const hasTaunt = hasKeyword(targetCard, 'taunt');
             
             if (opponentHasTaunt && !hasTaunt) {
               debug.log('Cannot target non-taunt minions when opponent has taunt minions');
@@ -1286,11 +1283,11 @@ export const GameBoard: React.FC<{}> = () => {
           
           // Check if the opponent has taunt minions
           const opponentHasTaunt = opponent.battlefield.some(c => 
-            c.card.keywords?.includes('taunt')
+            hasKeyword(c, 'taunt')
           );
           
           // If opponent has taunt minions, we can only target those unless the target itself has taunt
-          const hasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+          const hasTaunt = hasKeyword(targetCard, 'taunt');
           
           if (opponentHasTaunt && !hasTaunt) {
             debug.log('Cannot target non-taunt minions when opponent has taunt minions');
@@ -1356,11 +1353,11 @@ export const GameBoard: React.FC<{}> = () => {
       
       // Check if opponent has taunt minions - if so, we can only attack those
       const opponentHasTaunts = opponent.battlefield.some(c => 
-        c.card.keywords?.includes('taunt')
+        hasKeyword(c, 'taunt')
       );
       
       // Only do Taunt validation when the target is NOT a Taunt
-      const targetHasTaunt = targetCard.card.keywords?.includes('taunt') || false;
+      const targetHasTaunt = hasKeyword(targetCard, 'taunt');
       
       if (opponentHasTaunts && !targetHasTaunt) {
         debug.log(`Can't attack non-taunt minion when opponent has taunt minions`);
@@ -1408,7 +1405,7 @@ export const GameBoard: React.FC<{}> = () => {
       const willKill = (targetCard.currentHealth || 0) <= attackerAttackValue;
       
       // Check for deathrattle
-      if (willKill && targetCard.card.keywords?.includes('deathrattle') && isMinion(targetCard.card) && targetCard.card.deathrattle) {
+      if (willKill && hasKeyword(targetCard, 'deathrattle') && isMinion(targetCard.card) && targetCard.card.deathrattle) {
         // Attack first
         attackWithCard(attackingCard.instanceId, targetCard.instanceId);
         
@@ -1480,7 +1477,7 @@ export const GameBoard: React.FC<{}> = () => {
       if (isValidTarget(selectedCard, opponentHeroInstance)) {
         // Check if opponent has taunt minions - if so, we can't target the hero with spells either
         const opponentHasTaunt = opponent.battlefield?.some(c => 
-          c.card.keywords?.includes('taunt')
+          hasKeyword(c, 'taunt')
         ) || false;
         
         if (opponentHasTaunt) {
@@ -1583,7 +1580,7 @@ export const GameBoard: React.FC<{}> = () => {
       if (isValid) {
         // Check if opponent has taunt minions - if so, we can't target the hero
         const opponentHasTaunt = opponent.battlefield?.some(c => 
-          c.card.keywords?.includes('taunt')
+          hasKeyword(c, 'taunt')
         ) || false;
         
         if (opponentHasTaunt) {
@@ -1648,7 +1645,7 @@ export const GameBoard: React.FC<{}> = () => {
       if (player.heroClass === 'mage' || player.heroClass === 'hunter') {
         // Check if opponent has taunt minions - if so, we can't target the hero with hero power
         const opponentHasTaunt = opponent.battlefield?.some(c => 
-          c.card.keywords?.includes('taunt')
+          hasKeyword(c, 'taunt')
         ) || false;
         
         if (opponentHasTaunt) {
@@ -1731,7 +1728,7 @@ export const GameBoard: React.FC<{}> = () => {
       
       // Check if opponent has taunt minions - if so, we can't attack the hero
       const opponentHasTaunt = opponent.battlefield?.some(c => 
-        c.card.keywords?.includes('taunt')
+        hasKeyword(c, 'taunt')
       ) || false;
       
       if (opponentHasTaunt) {
@@ -2102,7 +2099,7 @@ export const GameBoard: React.FC<{}> = () => {
   
   return (
     <NorseBackground>
-    <div className="virtual-canvas-scaler game-container game-board-enhanced h-full overflow-visible relative z-index-base" ref={gameContainerRef}>
+    <div role="main" aria-label="Game Board" className="virtual-canvas-scaler game-container game-board-enhanced h-full overflow-visible relative z-index-base" ref={gameContainerRef}>
       {/* Debug 3D renderer to validate WebGL rendering */}
       <DebugRenderCheck />
       
@@ -2129,7 +2126,7 @@ export const GameBoard: React.FC<{}> = () => {
       )}
       
       {/* Turn transition animation - activated when turn changes */}
-      {lastTurnRef.current !== currentTurn && (
+      {lastTurnRef.current !== null && lastTurnRef.current !== currentTurn && (
         <TurnTransition 
           isPlayerTurn={isPlayerTurn}
           onComplete={() => {
@@ -2275,7 +2272,7 @@ export const GameBoard: React.FC<{}> = () => {
             {/* Enemy hero portrait - clickable for attacks */}
             <div 
               className={`opponent-hero-portrait relative cursor-pointer transition-all ${
-                attackingCard && !opponent.battlefield?.some(c => c.card.keywords?.includes('taunt'))
+                attackingCard && !opponent.battlefield?.some(c => hasKeyword(c, 'taunt'))
                   ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-gray-900 animate-pulse scale-105'
                   : ''
               }`}
@@ -2326,10 +2323,10 @@ export const GameBoard: React.FC<{}> = () => {
         </GameAreaContainer>
         
         {/* Main battlefield area - fixed at 60% height */}
-        <GameAreaContainer areaType="battlefield" className="px-4" ref={battlefieldRef}>
+        <GameAreaContainer areaType="battlefield" className="px-4" ref={battlefieldRef} style={{ pointerEvents: (!isPlayerTurn || isProcessingAIActions) ? 'none' : 'auto' }}>
           {/* Attack System is now integrated at the root level */}
-          
-          <SimpleBattlefield 
+
+          <SimpleBattlefield
             playerCards={player.battlefield}
             opponentCards={opponent.battlefield}
             isPlayerTurn={isPlayerTurn}
@@ -2375,7 +2372,7 @@ export const GameBoard: React.FC<{}> = () => {
               }) : 
               // If a card with battlecry requiring target is selected, handle that
               (selectedCard && selectedCard.card.type === 'minion' && 
-               selectedCard.card.keywords?.includes('battlecry') && 
+               hasKeyword(selectedCard, 'battlecry') &&
                selectedCard.card.battlecry?.requiresTarget) ? 
                ((card) => {
                 // Extract the essential properties to create a compatible CardInstance
@@ -2484,8 +2481,8 @@ export const GameBoard: React.FC<{}> = () => {
             
             {/* Hand area - hidden during mulligan phase */}
             {gamePhase !== 'mulligan' && (
-              <div className="mt-4 w-full">
-                <Hand 
+              <div className="mt-4 w-full" style={{ pointerEvents: (!isPlayerTurn || isProcessingAIActions) ? 'none' : 'auto' }}>
+                <Hand
                   cards={player.hand}
                   currentMana={player.mana.current}
                   isPlayerTurn={isPlayerTurn}

@@ -80,7 +80,7 @@ export const realmShiftCards: CardData[] = [
 	{
 		id: 30304,
 		name: 'Gate to Helheim',
-		manaCost: 3,
+		manaCost: 4,
 		description: 'Realm Shift: Minions that die return to their owner\'s hand costing (2) more.',
 		flavorText: 'The dead do not rest in Hel\'s domain. They linger, waiting to return.',
 		type: 'spell',

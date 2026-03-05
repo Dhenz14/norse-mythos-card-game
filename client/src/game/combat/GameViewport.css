@@ -757,7 +757,7 @@
 
 /* Betting button glow effects */
 .viewport-mode .poker-btn {
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -890,7 +890,7 @@
 }
 
 .viewport-mode .poker-btn {
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
 }
 
 /* ========================================

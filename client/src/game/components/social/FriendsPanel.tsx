@@ -64,7 +64,7 @@ export default function FriendsPanel() {
 	const [showAdd, setShowAdd] = useState(false);
 	const [expanded, setExpanded] = useState(true);
 
-	const pollPresence = useCallback(async () => {
+	const pollPresence = useCallback(async (signal?: AbortSignal) => {
 		if (!user || friends.length === 0) return;
 		try {
 			const res = await fetch('/api/friends/heartbeat', {
@@ -74,18 +74,25 @@ export default function FriendsPanel() {
 					username: user.hiveUsername,
 					friends: friends.map(f => f.hiveUsername),
 				}),
+				signal,
 			});
 			if (res.ok) {
 				const data = await res.json();
 				updatePresence(data.statuses ?? {});
 			}
-		} catch { /* server offline */ }
+		} catch (e) {
+			if (e instanceof Error && e.name === 'AbortError') return;
+		}
 	}, [user, friends, updatePresence]);
 
 	useEffect(() => {
-		pollPresence();
-		const interval = setInterval(pollPresence, 30000);
-		return () => clearInterval(interval);
+		const controller = new AbortController();
+		pollPresence(controller.signal);
+		const interval = setInterval(() => pollPresence(controller.signal), 30000);
+		return () => {
+			controller.abort();
+			clearInterval(interval);
+		};
 	}, [pollPresence]);
 
 	const onlineFriends = friends.filter(f => onlineStatus[f.hiveUsername]?.online);

@@ -441,6 +441,33 @@ vercel --prod                 # Deploy to Vercel
 - Fixed "Secret" → "Rune" in card descriptions (deepKeywordCards.ts, additionalSpellCards.ts)
 - Fixed "Magnetic" → "Runic Bond" in card descriptions (commonNeutralMinions.ts)
 
+### Completed (System Audit & Balance Pass)
+
+- React.memo + Map-based O(1) lookups in Hand.tsx, shakeTimerRef cleanup in HandFan.tsx
+- P2PContext.tsx: separated actions ref from gameState to reduce context broadcasts
+- Fixed 8 duplicate IDs in 85xxx range (shaman 85201-85211, druid 85301, rogue 85021-85022)
+- Fixed broken summonCardId/targetCardId cross-references in yggdrasilGolems.ts
+- Card balance: nerfed Loki's Spark, Earth Elemental, Svartalf Combo Master, Baldur's Doom, Gate to Helheim
+- Card balance: buffed Young Hippogriff, Ironbeak Owl, Rider of Sleipnir, Crusader of Valhalla
+- Renamed Al'Akir → Kari, Lord of Storms; Magtheridon → Thrymr the Imprisoned
+- Added 5 neutral Lifesteal minions (IDs 31901-31905, 2-6 mana curve)
+- Added 2 Paladin 2-mana class minions (IDs 8530-8531: Baldur's Acolyte, Shieldbearer of Tyr)
+- Fixed vanilla stat formula comment: `(mana cost × 2) + 1`
+- Fixed `VALID_RARITIES` in cardSchemaValidator.ts: added `'mythic'` + `'basic'` (was rejecting all mythic cards)
+- Fixed `getLegendaryCards` → `getMythicCards` in useCardDatabase.ts (was returning empty)
+- Fixed tournament rewards `rarity: 'legendary'` → `'mythic'` (3 instances)
+- Fixed "Demon's Bite" → "Berserker's Bite" hero power in heroPowerUtils.ts
+- Fixed "Secret Active" → "Rune Active" display text in BattlefieldHero.tsx + NotificationSubscriber.ts
+- Fixed "Frostmourne" → "Helgrind" weapon name in equipFrostmourneHandler.ts
+- Fixed `hearthstone-deck-builder` → `ragnarok-deck-builder` localStorage key
+- Fixed `hearthstone-card-play` → `ragnarok-card-play` DOM event name
+- Fixed DeathKnight casing: remaining `"Deathknight"` → `"DeathKnight"` in cards.ts, heroes/index.ts, tokens/index.ts, deathknightCards.ts
+- Nerfed 0-cost Charge pets: Freyja's Chosen, Einherjar Eternal, Fenrir Reborn all changed Charge → Rush
+- Nerfed Doomed Guardian (warlock): Charge → Rush
+- Nerfed Thrymr the Imprisoned (ex-Magtheridon): 12/12 → 8/8
+- Deleted Aeolus, Wind Tyrant (exact dupe of Kari, Lord of Storms)
+- Deleted 4 duplicate Old God cards (32087-32089, 32094) — canonical versions in oldGods.ts
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

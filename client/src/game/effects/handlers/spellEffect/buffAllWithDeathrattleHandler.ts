@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeBuffAllWithDeathrattle(
   context: GameContext, 
@@ -24,9 +25,8 @@ export default function executeBuffAllWithDeathrattle(
     let minions = friendlyOnly ? context.getFriendlyMinions() : context.getAllMinions();
     
     const deathrattleMinions = minions.filter(minion => {
-      const card = minion.card;
-      return card.deathrattle !== undefined || 
-             (card.keywords && card.keywords.includes('deathrattle'));
+      return minion.card.deathrattle !== undefined ||
+             hasKeyword(minion, 'deathrattle');
     });
     
     if (deathrattleMinions.length === 0) {

@@ -85,10 +85,10 @@ export const useCardDatabase = () => {
   };
   
   /**
-   * Get legendary cards only
+   * Get mythic cards only
    */
-  const getLegendaryCards = (): CardData[] => {
-    return CardDatabaseService.getCardsByRarity('legendary');
+  const getMythicCards = (): CardData[] => {
+    return CardDatabaseService.getCardsByRarity('mythic');
   };
   
   /**
@@ -108,7 +108,8 @@ export const useCardDatabase = () => {
     getCardsByType,
     getCardsByRarity,
     getRandomCard,
-    getLegendaryCards,
+    getMythicCards,
+    getLegendaryCards: getMythicCards,
     searchCards
   };
 };

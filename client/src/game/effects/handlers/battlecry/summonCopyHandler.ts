@@ -11,6 +11,7 @@ import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 import { v4 as uuidv4 } from 'uuid';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 
 /**
@@ -24,7 +25,7 @@ function checkCondition(context: GameContext, condition: string | undefined, sou
     case 'cthun_10_attack':
       return true;
     case 'has_taunt':
-      return context.currentPlayer.board.some(m => m.card.keywords?.includes('taunt'));
+      return context.currentPlayer.board.some(m => hasKeyword(m, 'taunt'));
     case 'has_divine_shield':
       return context.currentPlayer.board.some(m => m.hasDivineShield);
     case 'holding_dragon':

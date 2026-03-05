@@ -35,6 +35,7 @@ export function applyFreezeEffect(
       const target = { ...newState.players.player.battlefield[playerIndex] };
       target.isFrozen = true;
       target.canAttack = false;
+      (target as any).frozenLastTurn = false;
       
       // Replace the minion with updated version
       newState.players.player.battlefield = [
@@ -56,6 +57,7 @@ export function applyFreezeEffect(
       const target = { ...newState.players.opponent.battlefield[opponentIndex] };
       target.isFrozen = true;
       target.canAttack = false;
+      (target as any).frozenLastTurn = false;
       
       // Replace the minion with updated version
       newState.players.opponent.battlefield = [
@@ -95,7 +97,8 @@ export function applyAoEFreeze(
       minion => ({
         ...minion,
         isFrozen: true,
-        canAttack: false
+        canAttack: false,
+        frozenLastTurn: false
       })
     );
     
@@ -103,49 +106,48 @@ export function applyAoEFreeze(
       minion => ({
         ...minion,
         isFrozen: true,
-        canAttack: false
+        canAttack: false,
+        frozenLastTurn: false
       })
     );
     
   } else if (targets === 'all_enemy_minions') {
-    // Freeze only enemy minions
     if (currentPlayer === 'player') {
-      // Player's turn, freeze opponent's minions
       newState.players.opponent.battlefield = newState.players.opponent.battlefield.map(
         minion => ({
           ...minion,
           isFrozen: true,
-          canAttack: false
+          canAttack: false,
+          frozenLastTurn: false
         })
       );
     } else {
-      // Opponent's turn, freeze player's minions
       newState.players.player.battlefield = newState.players.player.battlefield.map(
         minion => ({
           ...minion,
           isFrozen: true,
-          canAttack: false
+          canAttack: false,
+          frozenLastTurn: false
         })
       );
     }
   } else if (targets === 'all_friendly_minions') {
-    // Freeze only friendly minions (rare, but possible)
     if (currentPlayer === 'player') {
-      // Player's turn, freeze player's minions
       newState.players.player.battlefield = newState.players.player.battlefield.map(
         minion => ({
           ...minion,
           isFrozen: true,
-          canAttack: false
+          canAttack: false,
+          frozenLastTurn: false
         })
       );
     } else {
-      // Opponent's turn, freeze opponent's minions
       newState.players.opponent.battlefield = newState.players.opponent.battlefield.map(
         minion => ({
           ...minion,
           isFrozen: true,
-          canAttack: false
+          canAttack: false,
+          frozenLastTurn: false
         })
       );
     }
@@ -172,40 +174,27 @@ export function canAttackWhileFrozen(minion: CardInstance): boolean {
 export function processFrozenEffectsAtTurnEnd(state: GameState): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn;
-  
-  // Process frozen minions for the current player
+
+  const processFrozen = (minion: CardInstance): CardInstance => {
+    if (!minion.isFrozen) return minion;
+    if ((minion as any).frozenLastTurn) {
+      return {
+        ...minion,
+        isFrozen: false,
+        frozenLastTurn: undefined
+      } as any;
+    }
+    return {
+      ...minion,
+      frozenLastTurn: true
+    } as any;
+  };
+
   if (currentPlayer === 'player') {
-    // At the end of player's turn, we're setting up for the next turn
-    // Any minions still frozen at the end of player's next turn will be unfrozen
-    newState.players.player.battlefield = newState.players.player.battlefield.map(
-      minion => {
-        // If the minion was already frozen for a full turn, unfreeze it
-        if (minion.isFrozen) {
-          return {
-            ...minion,
-            isFrozen: false 
-            // canAttack will be set to true during the next start turn phase
-          };
-        }
-        return minion;
-      }
-    );
+    newState.players.player.battlefield = newState.players.player.battlefield.map(processFrozen);
   } else {
-    // At the end of opponent's turn
-    newState.players.opponent.battlefield = newState.players.opponent.battlefield.map(
-      minion => {
-        // If the minion was already frozen for a full turn, unfreeze it
-        if (minion.isFrozen) {
-          return {
-            ...minion,
-            isFrozen: false
-            // canAttack will be set to true during the next start turn phase
-          };
-        }
-        return minion;
-      }
-    );
+    newState.players.opponent.battlefield = newState.players.opponent.battlefield.map(processFrozen);
   }
-  
+
   return newState;
 }

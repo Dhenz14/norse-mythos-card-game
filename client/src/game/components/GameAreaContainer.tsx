@@ -5,6 +5,7 @@ interface GameAreaContainerProps {
   children?: ReactNode;
   areaType: 'opponent' | 'battlefield' | 'player';
   className?: string;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -13,7 +14,7 @@ interface GameAreaContainerProps {
  * the 20%/60%/20% vertical distribution between opponent, battlefield, and player areas.
  */
 const GameAreaContainerBase: ForwardRefRenderFunction<HTMLDivElement, GameAreaContainerProps> = (props, ref) => {
-  const { children, areaType, className = '' } = props;
+  const { children, areaType, className = '', style: externalStyle } = props;
   // Determine which CSS variable to use based on area type
   const heightVariable = 
     areaType === 'opponent' ? 'var(--opponent-area-height)' :
@@ -63,7 +64,7 @@ const GameAreaContainerBase: ForwardRefRenderFunction<HTMLDivElement, GameAreaCo
     };
   
   // Combine base and specific styles
-  const combinedStyles = { ...baseStyles, ...specificStyles };
+  const combinedStyles = { ...baseStyles, ...specificStyles, ...externalStyle };
   
   // Special handler for player area to prevent hover effects
   const handlePlayerAreaMouseMove = (e: React.MouseEvent) => {

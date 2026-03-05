@@ -73,6 +73,7 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
         
         getPokerCombatAdapterState().performAction(freshState.player.playerId, autoAction);
         
+        if (nestedTimerRef.current) clearTimeout(nestedTimerRef.current);
         nestedTimerRef.current = setTimeout(() => {
           const stateAfterAction = getPokerCombatAdapterState().combatState;
           if (!stateAfterAction || stateAfterAction.opponent.isReady) return;
@@ -98,5 +99,5 @@ export function useCombatTimer(options: UseCombatTimerOptions): void {
         nestedTimerRef.current = null;
       }
     };
-  }, [combatState?.phase, combatState?.player?.isReady, combatState?.isAllInShowdown, isActive, updateTimer, cardGameMulliganActive]);
+  }, [combatState?.phase, combatState?.player?.isReady, combatState?.isAllInShowdown, isActive, updateTimer, cardGameMulliganActive, addHeroBattlePopup]);
 }

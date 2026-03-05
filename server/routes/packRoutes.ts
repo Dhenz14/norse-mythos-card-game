@@ -6,6 +6,7 @@
 
 import express, { Request, Response } from 'express';
 import { directDb as _directDb } from '../db';
+import { verifyHiveAuth, isValidHiveUsername, isTimestampFresh } from '../services/hiveAuth';
 
 // This file is only imported when DATABASE_URL is set (see server/routes.ts)
 const directDb = _directDb!;
@@ -43,7 +44,7 @@ router.get('/types', async (_req: Request, res: Response) => {
 		res.json({ success: true, packs });
 	} catch (error: any) {
 		console.error('Error fetching pack types:', error);
-		res.status(500).json({ success: false, error: error.message });
+		res.status(500).json({ success: false, error: 'Failed to fetch pack types' });
 	}
 });
 
@@ -108,7 +109,7 @@ router.get('/supply-stats', async (_req: Request, res: Response) => {
 		res.json({ success: true, ...stats });
 	} catch (error: any) {
 		console.error('Error fetching supply stats:', error);
-		res.status(500).json({ success: false, error: error.message });
+		res.status(500).json({ success: false, error: 'Failed to fetch supply stats' });
 	}
 });
 
@@ -122,13 +123,28 @@ const WILDCARD_TYPES = ['hero', 'spell', 'minion'];
  * Opens a pack and returns the cards pulled
  */
 router.post('/open', async (req: Request, res: Response) => {
-	const { packTypeId, userId } = req.body;
+	const { packTypeId, userId, signature, timestamp } = req.body;
 
 	if (!packTypeId || !userId) {
 		return res.status(400).json({
 			success: false,
 			error: 'packTypeId and userId are required'
 		});
+	}
+
+	if (!isValidHiveUsername(userId)) {
+		return res.status(400).json({ success: false, error: 'Invalid username format' });
+	}
+
+	if (signature && timestamp) {
+		if (!isTimestampFresh(timestamp)) {
+			return res.status(401).json({ success: false, error: 'Stale timestamp' });
+		}
+		const message = `ragnarok-pack-open:${userId}:${packTypeId}:${timestamp}`;
+		const authResult = await verifyHiveAuth(userId, message, signature);
+		if (!authResult.valid) {
+			return res.status(401).json({ success: false, error: 'Invalid signature' });
+		}
 	}
 
 	const client = await directDb.connect();
@@ -300,7 +316,7 @@ router.post('/open', async (req: Request, res: Response) => {
 	} catch (error: any) {
 		await client.query('ROLLBACK');
 		console.error('Error opening pack:', error);
-		return res.status(500).json({ success: false, error: error.message });
+		return res.status(500).json({ success: false, error: 'Failed to open pack' });
 	} finally {
 		client.release();
 	}
@@ -315,24 +331,29 @@ router.get('/history/:userId', async (req: Request, res: Response) => {
   
   try {
     const historyResult = await directDb.query(`
-      SELECT ph.*, pt.name as pack_name 
+      SELECT ph.*, pt.name as pack_name
       FROM pack_history ph
       JOIN pack_types pt ON ph.pack_type_id = pt.id
       WHERE ph.user_id = $1
       ORDER BY ph.opened_at DESC
       LIMIT 50
     `, [userId]);
-    
+
     res.json({
       success: true,
-      history: historyResult.rows.map(row => ({
-        ...row,
-        cards_received: JSON.parse(row.cards_received),
-      })),
+      history: historyResult.rows.map(row => {
+        let cardsReceived: unknown = [];
+        try {
+          cardsReceived = JSON.parse(row.cards_received);
+        } catch {
+          console.error('Malformed cards_received JSON for pack history row:', row.id);
+        }
+        return { ...row, cards_received: cardsReceived };
+      }),
     });
   } catch (error: any) {
     console.error('Error fetching pack history:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Failed to fetch pack history' });
   }
 });
 

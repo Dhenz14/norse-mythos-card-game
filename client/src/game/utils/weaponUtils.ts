@@ -8,11 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { createCardInstance } from './cards/cardUtils';
 import { logCardPlay } from './gameLogUtils';
 import { processAfterHeroAttackEffects } from './mechanics/afterAttackUtils';
-import { 
-  isWeapon, 
-  isMinion, 
-  getAttack, 
-  getDurability, 
+import {
+  isWeapon,
+  isMinion,
+  getAttack,
+  getDurability,
   getHealth,
   hasAttack,
   hasDurability
@@ -22,6 +22,7 @@ import { destroyCard } from './zoneUtils';
 import { dealDamage } from './effects/damageUtils';
 import { processArtifactOnHeroAttack, processArtifactOnHeroAttackTarget, processArtifactOnHeroKill } from './artifactTriggerProcessor';
 import { getArtifactAttackBonus } from './artifactUtils';
+import { hasKeyword } from './cards/keywordUtils';
 
 /**
  * Equip a weapon for a player
@@ -313,7 +314,7 @@ export function isValidWeaponTarget(
       if (!isMinion(cardInstance.card)) {
         return false;
       }
-      return (cardInstance.card.keywords || []).includes('taunt');
+      return hasKeyword(cardInstance, 'taunt');
     }
   );
   
@@ -329,7 +330,7 @@ export function isValidWeaponTarget(
     );
     
     if (targetMinion && isMinion(targetMinion.card)) {
-      const hasNoTaunt = !(targetMinion.card.keywords || []).includes('taunt');
+      const hasNoTaunt = !hasKeyword(targetMinion, 'taunt');
       if (hasNoTaunt) {
         return false;
       }

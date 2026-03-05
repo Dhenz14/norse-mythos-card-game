@@ -4,6 +4,7 @@
  */
 import { GameState, CardInstance } from '../../types';
 import { createGameLogEvent } from '../gameLogUtils';
+import { hasKeyword } from '../cards/keywordUtils';
 
 /**
  * Start of game effect interface
@@ -170,8 +171,7 @@ export function applyAllStartOfGameEffects(state: GameState): GameState {
     // Find all cards with start of game effects
     const startOfGameCards = allCards.filter(
       (card: any) =>
-        card.card?.keywords &&
-        card.card.keywords.includes('start_of_game') &&
+        hasKeyword(card, 'start_of_game') &&
         card.card.startOfGameEffect
     );
 

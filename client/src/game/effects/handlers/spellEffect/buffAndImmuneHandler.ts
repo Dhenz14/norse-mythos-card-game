@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeBuffAndImmune(
   context: GameContext, 
@@ -57,13 +58,8 @@ export default function executeBuffAndImmune(
     (target as any).isImmune = true;
     (target as any).immuneDuration = duration;
     
-    if (!target.card.keywords) {
-      target.card.keywords = [];
-    }
     grantKeywords.forEach((keyword: string) => {
-      if (!target.card.keywords!.includes(keyword)) {
-        target.card.keywords!.push(keyword);
-      }
+      addKeyword(target, keyword);
     });
     
     context.logGameEvent(`${target.card.name} buffed by +${buffAttack}/+${buffHealth} and granted immunity for ${duration} turn(s)`);

@@ -9,6 +9,9 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../../../constants/gameConstants';
+
+const ROD_MAX_ITERATIONS = 50;
 
 const YOGG_WHEEL_EFFECTS = [
   {
@@ -19,7 +22,7 @@ const YOGG_WHEEL_EFFECTS = [
       let playerHealth = context.currentPlayer.health;
       let opponentHealth = context.opponentPlayer.health;
       
-      while (playerHealth > 0 && opponentHealth > 0) {
+      while (playerHealth > 0 && opponentHealth > 0 && results.length < ROD_MAX_ITERATIONS) {
         const targetPlayer = Math.random() < 0.5;
         if (targetPlayer) {
           playerHealth -= 10;
@@ -28,8 +31,6 @@ const YOGG_WHEEL_EFFECTS = [
           opponentHealth -= 10;
           results.push('Pyroblast hit enemy for 10');
         }
-        
-        if (results.length > 10) break;
       }
       
       context.currentPlayer.health = Math.max(0, playerHealth);
@@ -42,7 +43,7 @@ const YOGG_WHEEL_EFFECTS = [
     name: 'Mystifying Miscreation',
     description: 'Fill your board with random minions',
     execute: (context: GameContext, sourceCard: Card) => {
-      const slotsAvailable = 7 - context.currentPlayer.board.length;
+      const slotsAvailable = MAX_BATTLEFIELD_SIZE - context.currentPlayer.board.length;
       const summoned: string[] = [];
       
       for (let i = 0; i < slotsAvailable; i++) {
@@ -84,7 +85,7 @@ const YOGG_WHEEL_EFFECTS = [
     name: 'Hand of Fate',
     description: 'Fill your hand with random spells (they cost 0)',
     execute: (context: GameContext, sourceCard: Card) => {
-      const slotsAvailable = 10 - context.currentPlayer.hand.length;
+      const slotsAvailable = MAX_HAND_SIZE - context.currentPlayer.hand.length;
       const added: string[] = [];
       
       const spellTypes = ['Fireball', 'Frostbolt', 'Arcane Intellect', 'Pyroblast', 'Blizzard', 'Flamestrike'];
@@ -122,8 +123,8 @@ const YOGG_WHEEL_EFFECTS = [
     execute: (context: GameContext, sourceCard: Card) => {
       const results = { friendly: [] as string[], enemy: [] as string[] };
       
-      const friendlySlots = 7 - context.currentPlayer.board.length;
-      const enemySlots = 7 - context.opponentPlayer.board.length;
+      const friendlySlots = MAX_BATTLEFIELD_SIZE - context.currentPlayer.board.length;
+      const enemySlots = MAX_BATTLEFIELD_SIZE - context.opponentPlayer.board.length;
       
       for (let i = 0; i < friendlySlots; i++) {
         const stats = { attack: Math.floor(Math.random() * 6) + 1, health: Math.floor(Math.random() * 6) + 1 };
@@ -186,7 +187,7 @@ const YOGG_WHEEL_EFFECTS = [
     execute: (context: GameContext, sourceCard: Card) => {
       const stolen: string[] = [];
       const enemyMinions = [...context.opponentPlayer.board];
-      const slotsAvailable = 7 - context.currentPlayer.board.length;
+      const slotsAvailable = MAX_BATTLEFIELD_SIZE - context.currentPlayer.board.length;
       const toSteal = Math.min(3, enemyMinions.length, slotsAvailable);
       
       for (let i = 0; i < toSteal; i++) {

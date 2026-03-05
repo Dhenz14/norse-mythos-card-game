@@ -1,5 +1,9 @@
 import React from 'react';
 
+function sanitizeHtml(html: string): string {
+	return html.replace(/<(?!\/?span\b)[^>]*>/gi, '');
+}
+
 // Keywords that should be highlighted
 const KEYWORDS = [
   'Battlecry',
@@ -339,7 +343,7 @@ export const formatCardText = (
         padding: '0',
         margin: '0' 
       }}
-      dangerouslySetInnerHTML={{ __html: processedText }} 
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(processedText) }}
     />
   );
 };
@@ -660,10 +664,10 @@ export const cardTextStyles = `
       0 0 5px rgba(0,0,0,0.8), 
       0 0 10px rgba(0,0,0,0.5),
       0 1px 0 rgba(255,255,255,0.3);
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
     letter-spacing: 0.5px;
   }
-  
+
   /* Attack value specific styling */
   .attack-value {
     color: #bb3300;

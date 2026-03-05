@@ -518,7 +518,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -628,7 +628,7 @@
   border-radius: 4px;
   color: #e2e8f0;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: transform 0.12s ease, opacity 0.12s ease, box-shadow 0.12s ease;
   min-width: 50px;
   text-align: center;
 }
@@ -862,7 +862,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
 .continue-btn:hover {

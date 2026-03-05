@@ -34,7 +34,7 @@ const PUSH_AMOUNTS = [0, 35, 20, 10];
 const HOVERED_CONTAINER_STYLE: React.CSSProperties = { zIndex: 9000, position: 'relative' };
 const NOOP_REGISTER = () => {};
 
-export const HandFan: React.FC<HandFanProps> = ({
+export const HandFan = React.memo<HandFanProps>(({
   cards: originalCards,
   currentMana,
   heroHealth,
@@ -58,6 +58,12 @@ export const HandFan: React.FC<HandFanProps> = ({
     setShakingCardId(instanceId);
     shakeTimerRef.current = setTimeout(() => setShakingCardId(null), 450);
   };
+
+  useEffect(() => {
+    return () => {
+      if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
+    };
+  }, []);
 
   const elementalBuff = useElementalBuff();
   const atkBuff = elementalBuff.playerBuff?.attackBonus ?? 0;
@@ -192,7 +198,29 @@ export const HandFan: React.FC<HandFanProps> = ({
             key={card.instanceId || card.card.id}
             className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''} ${isBloodMode ? 'blood-mode' : ''}`}
             style={getCardStyle(index)}
+            tabIndex={0}
+            role="button"
+            aria-label={`${card.card.name}, ${manaCost} mana`}
             onDoubleClick={() => { if (canPlay) handleCardPlay(card); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (canPlay) {
+                  handleCardPlay(card);
+                } else if (isPlayerTurn && !isInteractionDisabled) {
+                  triggerCardShake(card.instanceId);
+                  playSound('error');
+                  if (isBloodMode && bloodCost) {
+                    toast.error(`Need more than ${bloodCost} HP to pay Blood Price`, { duration: 1500 });
+                  } else {
+                    const deficit = manaCost - currentMana;
+                    if (deficit > 0) {
+                      toast.error(bloodCost ? `Need ${deficit} more mana (right-click for Blood Price)` : `Need ${deficit} more mana`, { duration: 1500 });
+                    }
+                  }
+                }
+              }
+            }}
             onClick={() => {
               if (!canPlay && isPlayerTurn && !isInteractionDisabled) {
                 triggerCardShake(card.instanceId);
@@ -210,9 +238,10 @@ export const HandFan: React.FC<HandFanProps> = ({
             onContextMenu={(e) => {
               e.preventDefault();
               if (!bloodCost) return;
+              const willBeBloodMode = bloodModeCardId !== card.instanceId;
               setBloodModeCardId(prev => prev === card.instanceId ? null : card.instanceId);
               playSound('card_draw');
-              toast.info(bloodModeCardId === card.instanceId ? 'Switched to mana payment' : `Blood Price: pay ${bloodCost} HP`, { duration: 1500 });
+              toast.info(willBeBloodMode ? `Blood Price: pay ${bloodCost} HP` : 'Switched to mana payment', { duration: 1500 });
             }}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={clearHover}
@@ -233,6 +262,8 @@ export const HandFan: React.FC<HandFanProps> = ({
       })}
     </div>
   );
-};
+});
+
+HandFan.displayName = 'HandFan';
 
 export default HandFan;

@@ -53,7 +53,7 @@ export default function LoadingScreen({ message }: { message?: string }) {
 			</p>
 
 			{/* Lore quote */}
-			<p className="text-gray-500 text-sm italic max-w-md text-center px-4 transition-opacity duration-500">
+			<p key={quote} className="text-gray-500 text-sm italic max-w-md text-center px-4 transition-opacity duration-500">
 				"{quote}"
 			</p>
 		</div>

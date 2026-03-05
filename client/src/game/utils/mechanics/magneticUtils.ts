@@ -5,6 +5,7 @@
 import { CardInstance, GameState } from '../../types';
 import { isMinion, getAttack, getHealth, hasOverload } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
+import { addKeyword, getKeywords, hasKeyword } from '../cards/keywordUtils';
 
 /**
  * Check if a card can be magnetized to a target
@@ -24,7 +25,7 @@ export function canMagnetize(card: CardInstance, target: CardInstance | null): b
   }
   
   // Card being played must have the magnetic keyword
-  if (!(card.card.keywords || []).includes('magnetic')) {
+  if (!hasKeyword(card, 'magnetic')) {
     return false;
   }
   
@@ -90,10 +91,9 @@ export function applyMagnetization(
   targetCard.currentHealth = (targetCard.currentHealth || getHealth(targetCard.card)) + healthBonus;
   
   // Transfer keywords from magnetic card to target (excluding 'magnetic' itself)
-  (magneticCard.card.keywords || []).forEach(keyword => {
-    if (keyword !== 'magnetic' && !(targetCard.card.keywords || []).includes(keyword)) {
-      if (!targetCard.card.keywords) targetCard.card.keywords = [];
-      targetCard.card.keywords.push(keyword);
+  getKeywords(magneticCard).forEach(keyword => {
+    if (keyword !== 'magnetic') {
+      addKeyword(targetCard, keyword);
     }
   });
   
@@ -159,7 +159,7 @@ export function getValidMagneticTargets(
  */
 export function initializeMagneticEffect(card: CardInstance): CardInstance {
   // Check if the card has the magnetic keyword
-  if (card.card.keywords?.includes('magnetic')) {
+  if (hasKeyword(card, 'magnetic')) {
     return {
       ...card,
       isMagnetic: true,

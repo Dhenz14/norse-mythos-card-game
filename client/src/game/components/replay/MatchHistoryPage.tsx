@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
 import { useReplayStore, type MatchRecord } from '../../stores/replayStore';
@@ -58,6 +58,7 @@ export default function MatchHistoryPage() {
 	const loadReplay = useReplayStore(s => s.loadReplay);
 	const closeReplay = useReplayStore(s => s.closeReplay);
 	const clearHistory = useReplayStore(s => s.clearHistory);
+	const [confirmClear, setConfirmClear] = useState(false);
 
 	if (currentReplay) {
 		return <ReplayViewer match={currentReplay} onClose={closeReplay} />;
@@ -70,12 +71,30 @@ export default function MatchHistoryPage() {
 					<h1 className="text-3xl font-bold text-amber-400 tracking-wide">Match History</h1>
 					<div className="flex items-center gap-3">
 						{matchHistory.length > 0 && (
-							<button
-								onClick={clearHistory}
-								className="px-4 py-2 bg-red-900/40 hover:bg-red-800/50 text-red-300 rounded-lg text-sm border border-red-700/40 transition-colors"
-							>
-								Clear All
-							</button>
+							confirmClear ? (
+								<div className="flex items-center gap-2">
+									<span className="text-sm text-red-300">Are you sure?</span>
+									<button
+										onClick={() => { clearHistory(); setConfirmClear(false); }}
+										className="px-3 py-1.5 bg-red-700 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition-colors"
+									>
+										Confirm
+									</button>
+									<button
+										onClick={() => setConfirmClear(false)}
+										className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-sm transition-colors"
+									>
+										Cancel
+									</button>
+								</div>
+							) : (
+								<button
+									onClick={() => setConfirmClear(true)}
+									className="px-4 py-2 bg-red-900/40 hover:bg-red-800/50 text-red-300 rounded-lg text-sm border border-red-700/40 transition-colors"
+								>
+									Clear All
+								</button>
+							)
 						)}
 						<Link
 							to={routes.home}

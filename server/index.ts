@@ -17,6 +17,35 @@ const apiLimiter = rateLimit({
 });
 app.use('/api', apiLimiter);
 
+const sensitiveLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 6,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { success: false, error: 'Rate limit exceeded for this endpoint' },
+});
+app.use('/api/matchmaking', sensitiveLimiter);
+app.use('/api/tournaments/:id/register', sensitiveLimiter);
+app.use('/api/tournaments/:id/result', sensitiveLimiter);
+
+const packOpenLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 10,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { success: false, error: 'Pack opening rate limit exceeded, try again later' },
+});
+app.use('/api/packs/open', packOpenLimiter);
+
+const challengeLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 12,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { success: false, error: 'Challenge rate limit exceeded' },
+});
+app.use('/api/friends/challenge', challengeLimiter);
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -52,10 +81,11 @@ app.use((req, res, next) => {
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
+    console.error(`[error] ${status}:`, err);
+    const message = app.get("env") === "production"
+      ? "Internal Server Error"
+      : (err.message || "Internal Server Error");
     res.status(status).json({ message });
-    throw err;
   });
 
   // importantly only setup vite in development and after

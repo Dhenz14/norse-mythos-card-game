@@ -263,21 +263,25 @@ async function applyLocalXPAndStampLevelUps(result: PackagedMatchResult): Promis
 	const queue = useTransactionQueueStore.getState();
 
 	for (const xpReward of result.xpRewards) {
-		const card = await getCard(xpReward.cardUid);
-		if (!card) continue;
+		try {
+			const card = await getCard(xpReward.cardUid);
+			if (!card) continue;
 
-		const oldLevel = getLevelForXP(card.rarity, card.xp);
-		card.xp = xpReward.xpAfter;
-		card.level = xpReward.levelAfter;
-		await putCard(card);
+			const oldLevel = getLevelForXP(card.rarity, card.xp);
+			card.xp = xpReward.xpAfter;
+			card.level = xpReward.levelAfter;
+			await putCard(card);
 
-		if (xpReward.levelAfter > oldLevel) {
-			queue.enqueue('level_up', {
-				nft_id: xpReward.cardUid,
-				card_id: xpReward.cardId,
-				new_level: xpReward.levelAfter,
-			}, `${result.hash}_levelup_${xpReward.cardUid}`);
-			levelUpCount++;
+			if (xpReward.levelAfter > oldLevel) {
+				queue.enqueue('level_up', {
+					nft_id: xpReward.cardUid,
+					card_id: xpReward.cardId,
+					new_level: xpReward.levelAfter,
+				}, `${result.hash}_levelup_${xpReward.cardUid}`);
+				levelUpCount++;
+			}
+		} catch (err) {
+			debug.error(`[BlockchainSubscriber] Failed to apply XP for card ${xpReward.cardUid}:`, err);
 		}
 	}
 
@@ -365,8 +369,8 @@ export function initializeBlockchainSubscriber(): UnsubscribeFn {
 			const gs = state.gameState;
 			if (gs) {
 				GameEventBus.emitGameEnded({
-					winner: gs.winner || null,
-					reason: 'hero_death',
+					winner: gs.winner === 'player' || gs.winner === 'opponent' ? gs.winner : null,
+					reason: gs.winner === 'draw' ? 'draw' : 'hero_death',
 					finalTurn: gs.turnNumber,
 				});
 			}

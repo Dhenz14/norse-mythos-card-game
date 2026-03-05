@@ -436,7 +436,7 @@ const commonNeutralMinions: CardData[] = [
     rarity: 'common',
     manaCost: 1,
     attack: 1,
-    health: 1,
+    health: 2,
     race: 'Beast',
     class: 'Neutral',
     keywords: ['windfury'],
@@ -616,8 +616,8 @@ const commonNeutralMinions: CardData[] = [
     type: 'minion',
     rarity: 'common',
     manaCost: 3,
-    attack: 3,
-    health: 1,
+    attack: 2,
+    health: 2,
     class: 'Neutral',
     keywords: ['divine_shield'],
     collectible: true,
@@ -695,7 +695,7 @@ const commonNeutralMinions: CardData[] = [
     rarity: 'common',
     manaCost: 3,
     attack: 3,
-    health: 1,
+    health: 2,
     class: 'Neutral',
     keywords: ['charge'],
     collectible: true,
@@ -4269,10 +4269,10 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 10007,
-    name: 'Magtheridon',
+    name: 'Thrymr the Imprisoned',
     manaCost: 4,
-    attack: 12,
-    health: 12,
+    attack: 8,
+    health: 8,
     type: 'minion',
     rarity: 'rare',
     class: 'Neutral',
@@ -6886,64 +6886,6 @@ const mythologyNorseCards: CardData[] = [
     set: 'core'
   },
   {
-    id: 32087,
-    name: "N'Zoth of the Void",
-    manaCost: 10,
-    attack: 5,
-    health: 7,
-    type: 'minion',
-    rarity: 'mythic',
-    description: 'Battlecry: Summon your Deathrattle minions that died this game.',
-    flavorText: 'From the void between worlds, the ancient one calls forth the fallen.',
-    keywords: ['battlecry'],
-    class: 'Neutral',
-    collectible: true,
-    set: 'core',
-    battlecry: {
-      type: 'summon_deathrattle_minions_that_died',
-      requiresTarget: false
-    }
-  },
-  {
-    id: 32088,
-    name: "C'Thun the Ancient",
-    manaCost: 10,
-    attack: 6,
-    health: 6,
-    type: 'minion',
-    rarity: 'mythic',
-    description: 'Battlecry: Deal damage equal to this minion\'s Attack randomly split among all enemies.',
-    flavorText: 'The eye of chaos has watched since before time itself.',
-    keywords: ['battlecry'],
-    class: 'Neutral',
-    collectible: true,
-    set: 'core',
-    battlecry: {
-      type: 'deal_damage_split',
-      targetType: 'all_enemies',
-      requiresTarget: false
-    }
-  },
-  {
-    id: 32089,
-    name: 'Yogg-Saron, Chaos Incarnate',
-    manaCost: 10,
-    attack: 7,
-    health: 5,
-    type: 'minion',
-    rarity: 'mythic',
-    description: 'Battlecry: Cast a random spell for each spell you\'ve cast this game (targets chosen randomly).',
-    flavorText: 'Madness given form. Chaos given purpose.',
-    keywords: ['battlecry'],
-    class: 'Neutral',
-    collectible: true,
-    set: 'core',
-    battlecry: {
-      type: 'cast_random_spells_for_each_spell_cast',
-      requiresTarget: false
-    }
-  },
-  {
     id: 32090,
     name: "Surtr's Creation Reborn",
     manaCost: 11,
@@ -7016,20 +6958,6 @@ const mythologyNorseCards: CardData[] = [
       stats: { attack: 1, health: 1 },
       requiresTarget: false
     }
-  },
-  {
-    id: 32094,
-    name: "Y'Shaarj, Rage Unbound",
-    manaCost: 10,
-    attack: 10,
-    health: 10,
-    type: 'minion',
-    rarity: 'mythic',
-    description: 'At the end of your turn, put a minion from your deck into the battlefield.',
-    flavorText: 'The ancient rage of the void knows no restraint.',
-    class: 'Neutral',
-    collectible: true,
-    set: 'core'
   },
   {
     id: 32095,

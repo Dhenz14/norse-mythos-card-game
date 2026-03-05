@@ -10,6 +10,7 @@ import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeSummonDeadEinherjar(
 	context: GameContext,
@@ -21,7 +22,7 @@ export default function executeSummonDeadEinherjar(
 
 		const graveyard = context.currentPlayer.graveyard || [];
 		const deadEinherjar = graveyard.filter(
-			(instance: any) => instance.card?.keywords?.includes('einherjar') && instance.card?.type === 'minion'
+			(instance: any) => hasKeyword(instance, 'einherjar') && instance.card?.type === 'minion'
 		);
 
 		if (deadEinherjar.length === 0) {

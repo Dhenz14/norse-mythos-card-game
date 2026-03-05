@@ -11,6 +11,7 @@ import { Position } from '../types/Position';
 import { useAttackStore } from './attackStore';
 import { canCardAttack, isValidAttackTarget } from './attackUtils';
 import { useGameStore } from '../stores/gameStore';
+import { hasKeyword } from '../utils/cards/keywordUtils';
 
 interface UnifiedBattlefieldAttackConnectorProps {
   playerCards: CardInstance[];
@@ -67,8 +68,8 @@ const UnifiedBattlefieldAttackConnector: React.FC<UnifiedBattlefieldAttackConnec
       if (isAttackMode && attackingCard) {
         // Get taunt minions from opponent's battlefield for target validation
         const opponentBattlefield = gameState?.players?.opponent?.battlefield || [];
-        const opponentTauntCards = opponentBattlefield.filter((c: any) => 
-          c.card?.keywords?.includes('taunt')
+        const opponentTauntCards = opponentBattlefield.filter((c: any) =>
+          hasKeyword(c, 'taunt')
         );
         
         // Check if this is a valid target

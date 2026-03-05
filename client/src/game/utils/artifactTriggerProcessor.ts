@@ -1,6 +1,7 @@
 import { GameState, GameLogEvent, CardInstance } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { dealDamage } from './effects/damageUtils';
+import { MAX_HAND_SIZE } from '../constants/gameConstants';
 
 function getArtifactEffect(state: GameState, playerType: 'player' | 'opponent'): any {
 	const player = state.players[playerType];
@@ -119,7 +120,7 @@ export function processArtifactOnSpellCast(
 	if (effect.onSpellCast?.bounceRandomEnemy) {
 		const opp = state.players[opponentType];
 		const target = getRandomMinion(opp.battlefield);
-		if (target && opp.hand.length < 7) {
+		if (target && opp.hand.length < MAX_HAND_SIZE) {
 			opp.battlefield = opp.battlefield.filter(m => m.instanceId !== target.instanceId);
 			opp.hand.push(target);
 			logArtifactTrigger(state, casterType, `${name} bounces ${target.card.name} to opponent's hand`);
@@ -1235,7 +1236,7 @@ export function processArtifactOnEnemyMinionPlayed(
 		const threshold = effect.onOpponentPlayCard.costThreshold;
 		if (minion && (minion.card.manaCost ?? 0) >= threshold) {
 			const hand = state.players[defenderType].hand;
-			if (hand.length < 7) {
+			if (hand.length < MAX_HAND_SIZE) {
 				const copy = structuredClone(minion) as CardInstance;
 				copy.instanceId = uuidv4();
 				const reduction = effect.onOpponentPlayCard.copyReduction || 0;

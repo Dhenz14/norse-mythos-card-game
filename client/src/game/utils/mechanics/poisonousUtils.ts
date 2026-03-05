@@ -42,8 +42,11 @@ export function applyPoisonousEffect(
   const defender = state.players.player.battlefield.find(card => card.instanceId === defenderId) ||
                   state.players.opponent.battlefield.find(card => card.instanceId === defenderId);
   
-  // If either card is not found, or attacker is not poisonous, return unchanged state
   if (!attacker || !defender || !hasPoisonous(attacker)) {
+    return state;
+  }
+
+  if (defender.hasDivineShield) {
     return state;
   }
   

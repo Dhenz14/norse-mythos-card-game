@@ -7,6 +7,7 @@ import { handleInspireEffects } from './mechanicsUtils';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { NORSE_HEROES } from '../data/norseHeroes/heroDefinitions';
 import { isMinion, isWeapon, isSpell, isHero, getAttack, getHealth, getDurability } from './cards/typeGuards';
+import { addKeyword, clearKeywords } from './cards/keywordUtils';
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
@@ -228,7 +229,7 @@ export function getUpgradedHeroPower(heroClass: HeroClass): HeroPower {
       };
     case 'berserker':
       return {
-        name: 'Demon\'s Bite',
+        name: 'Berserker\'s Bite',
         description: 'Gain +2 Attack this turn.',
         cost: 1,
         used: false,
@@ -825,10 +826,7 @@ function executeNorseHeroPower(
       const target = player.battlefield.find(m => m.instanceId === targetId);
       if (target && isMinion(target.card)) {
         (target as any).hasStealth = true;
-        if (!target.card.keywords) target.card.keywords = [];
-        if (!target.card.keywords.includes('stealth')) {
-          target.card.keywords.push('stealth');
-        }
+        addKeyword(target, 'stealth');
         debug.log(`[Hero Power] Granted Stealth to ${target.card.name}`);
       }
       return state;
@@ -844,7 +842,7 @@ function executeNorseHeroPower(
       const target = allMinions.find(m => m.instanceId === targetId);
       if (target && isMinion(target.card)) {
         // Remove all keywords and effects
-        target.card.keywords = [];
+        clearKeywords(target);
         target.card.battlecry = undefined;
         target.card.deathrattle = undefined;
         (target as any).hasDivineShield = false;
@@ -1117,26 +1115,18 @@ function executeNorseHeroPower(
  * Helper function to apply keywords to minions
  */
 function applyKeywordToMinion(minion: CardInstance, keyword: string): void {
-  if (!minion.card.keywords) minion.card.keywords = [];
-  
   switch (keyword) {
     case 'divine_shield':
       minion.hasDivineShield = true;
-      if (!minion.card.keywords.includes('divine_shield')) {
-        minion.card.keywords.push('divine_shield');
-      }
+      addKeyword(minion, 'divine_shield');
       break;
     case 'taunt':
       (minion as any).hasTaunt = true;
-      if (!minion.card.keywords.includes('taunt')) {
-        minion.card.keywords.push('taunt');
-      }
+      addKeyword(minion, 'taunt');
       break;
     case 'stealth':
       (minion as any).hasStealth = true;
-      if (!minion.card.keywords.includes('stealth')) {
-        minion.card.keywords.push('stealth');
-      }
+      addKeyword(minion, 'stealth');
       break;
     case 'frozen':
       (minion as any).isFrozen = true;
@@ -1145,14 +1135,10 @@ function applyKeywordToMinion(minion: CardInstance, keyword: string): void {
     case 'poisonous':
     case 'poisonous_temp':
       (minion as any).hasPoisonous = true;
-      if (!minion.card.keywords.includes('poisonous')) {
-        minion.card.keywords.push('poisonous');
-      }
+      addKeyword(minion, 'poisonous');
       break;
     default:
-      if (!minion.card.keywords.includes(keyword)) {
-        minion.card.keywords.push(keyword);
-      }
+      addKeyword(minion, keyword);
       break;
   }
 }

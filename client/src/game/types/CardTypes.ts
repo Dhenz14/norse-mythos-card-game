@@ -239,6 +239,9 @@ export interface CardInstance {
   hasReborn?: boolean;
   isPlayerOwned?: boolean;
 
+  // Instance-level keyword overrides (takes precedence over card.keywords when present)
+  instanceKeywords?: string[];
+
   // Extension fields
   animationPosition?: {
     x: number;

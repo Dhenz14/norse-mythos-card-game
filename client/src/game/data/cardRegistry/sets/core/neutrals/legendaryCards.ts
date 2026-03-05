@@ -47,7 +47,7 @@ export const classLegendaryMinions: CardData[] = [
   },
   {
     id: 20011,
-    name: "Al'Akir the Windlord",
+    name: "Kari, Lord of Storms",
     manaCost: 8,
     attack: 3,
     health: 5,

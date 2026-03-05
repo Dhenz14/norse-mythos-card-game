@@ -33,7 +33,7 @@ const VALID_CARD_TYPES = ['minion', 'spell', 'weapon', 'hero', 'secret', 'locati
 /**
  * Valid card rarities
  */
-const VALID_RARITIES = ['free', 'common', 'rare', 'epic', 'legendary'];
+const VALID_RARITIES = ['free', 'basic', 'common', 'rare', 'epic', 'mythic'];
 
 /**
  * Ensures a card has all required fields based on its type

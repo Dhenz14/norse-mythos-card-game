@@ -26,34 +26,53 @@ interface SummonEffectStore {
   clearAllEffects: () => void;
 }
 
+const effectTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
 export const useSummonEffectStore = create<SummonEffectStore>((set) => ({
   activeEffects: [],
-  
+
   triggerSummonEffect: (effect) => {
     const newEffect: SummonEffect = {
       ...effect,
       timestamp: Date.now()
     };
-    
+
+    // Clear any existing timer for the same id to prevent orphaned timeouts
+    const existingTimer = effectTimers.get(effect.id);
+    if (existingTimer !== undefined) {
+      clearTimeout(existingTimer);
+      effectTimers.delete(effect.id);
+    }
+
     set((state) => ({
-      activeEffects: [...state.activeEffects, newEffect]
+      activeEffects: [...state.activeEffects.filter(e => e.id !== effect.id), newEffect]
     }));
-    
-    // Auto-clear after animation completes
-    setTimeout(() => {
+
+    const timerId = setTimeout(() => {
+      effectTimers.delete(effect.id);
       set((state) => ({
         activeEffects: state.activeEffects.filter(e => e.id !== effect.id)
       }));
     }, effect.cardRarity === 'mythic' ? 2500 : 1500);
+    effectTimers.set(effect.id, timerId);
   },
-  
+
   clearEffect: (id) => {
+    const timerId = effectTimers.get(id);
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+      effectTimers.delete(id);
+    }
     set((state) => ({
       activeEffects: state.activeEffects.filter(e => e.id !== id)
     }));
   },
-  
+
   clearAllEffects: () => {
+    for (const timerId of effectTimers.values()) {
+      clearTimeout(timerId);
+    }
+    effectTimers.clear();
     set({ activeEffects: [] });
   }
 }));

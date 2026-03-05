@@ -69,6 +69,7 @@ type AnimationListener = (animations: Animation[]) => void;
 class GlobalAnimationQueue {
   private animations: Animation[] = [];
   private listeners: Set<AnimationListener> = new Set();
+  private timerMap: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
   getState() {
     return {
@@ -90,20 +91,36 @@ class GlobalAnimationQueue {
     this.notifyListeners();
     
     if (animation.duration) {
-      setTimeout(() => {
+      const timerId = setTimeout(() => {
+        this.timerMap.delete(animationWithDefaults.id);
         this.removeAnimation(animationWithDefaults.id);
       }, animation.duration);
+      this.timerMap.set(animationWithDefaults.id, timerId);
     }
   }
 
   removeAnimation(id: string) {
+    const timerId = this.timerMap.get(id);
+    if (timerId) {
+      clearTimeout(timerId);
+      this.timerMap.delete(id);
+    }
     this.animations = this.animations.filter(a => a.id !== id);
     this.notifyListeners();
   }
 
   clearAnimations() {
+    this.timerMap.forEach(timerId => clearTimeout(timerId));
+    this.timerMap.clear();
     this.animations = [];
     this.notifyListeners();
+  }
+
+  clearAll() {
+    this.timerMap.forEach(timerId => clearTimeout(timerId));
+    this.timerMap.clear();
+    this.animations = [];
+    this.listeners.clear();
   }
 
   subscribe(listener: AnimationListener) {
@@ -119,6 +136,10 @@ class GlobalAnimationQueue {
 }
 
 const globalAnimationQueue = new GlobalAnimationQueue();
+
+if (import.meta.hot) {
+	import.meta.hot.dispose(() => globalAnimationQueue.clearAll());
+}
 
 interface AnimationStoreState {
   animations: Animation[];

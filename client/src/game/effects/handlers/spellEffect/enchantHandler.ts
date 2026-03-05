@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeEnchant(
   context: GameContext, 
@@ -56,15 +57,9 @@ export default function executeEnchant(
         }
         
         if (grantKeywords.length > 0) {
-          if (!target.card.keywords) {
-            target.card.keywords = [];
-          }
-          const keywords = target.card.keywords;
           grantKeywords.forEach((keyword: string) => {
-            if (!keywords.includes(keyword)) {
-              keywords.push(keyword);
-              context.logGameEvent(`Enchanted ${target.card.name} with ${keyword}`);
-            }
+            addKeyword(target, keyword);
+            context.logGameEvent(`Enchanted ${target.card.name} with ${keyword}`);
           });
         }
         

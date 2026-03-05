@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeDeathCoil(
   context: GameContext, 
@@ -58,8 +59,8 @@ export default function executeDeathCoil(
         }
       };
     } else if (isFriendly) {
-      const isUndead = (target.card.race as string) === 'undead' || 
-                       (target.card.keywords && target.card.keywords.includes('undead'));
+      const isUndead = (target.card.race as string) === 'undead' ||
+                       hasKeyword(target, 'undead');
       
       context.healTarget(target, healValue);
       context.logGameEvent(`Death Coil healed friendly ${target.card.name} for ${healValue}`);

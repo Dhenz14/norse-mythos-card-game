@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { toast } from 'sonner';
 import { createCardInstance, findCardInstance } from '../utils/cards/cardUtils';
+import { hasKeyword } from '../utils/cards/keywordUtils';
 import {
   initializeGame,
   playCard,
@@ -51,8 +52,10 @@ function logBattlefieldChange(
 ) {
   if (!getDebugConfig().logBattlefieldChanges) return;
   
-  const removed = prevCards.filter(c => !newCards.includes(c));
-  const added = newCards.filter(c => !prevCards.includes(c));
+  const newSet = new Set(newCards);
+  const prevSet = new Set(prevCards);
+  const removed = prevCards.filter(c => !newSet.has(c));
+  const added = newCards.filter(c => !prevSet.has(c));
   
   if (removed.length > 0 || added.length > 0) {
     debug.warn(`[BattlefieldDebug] ${side} battlefield CHANGED:`);
@@ -168,6 +171,10 @@ let prevBattlefieldLength = 0;
 
 // Guard: prevents a second attack from being initiated while one is already animating
 let isAttackProcessing = false;
+let attackWatchdogTimer: ReturnType<typeof setTimeout> | null = null;
+
+// Auto-end-turn timer (declared early so initGame/resetGameState can clear it)
+let autoEndTurnTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Create store with subscribeWithSelector middleware for precise battlefield monitoring
 export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get) => ({
@@ -180,7 +187,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   heroTargetMode: false,
 
   initGame: () => {
+    if (autoEndTurnTimer) { clearTimeout(autoEndTurnTimer); autoEndTurnTimer = null; }
     isAttackProcessing = false;
+    if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
     // Get selectedDeck and selectedHero from useGame store
     const { selectedDeck, selectedHero, selectedHeroId } = useGame.getState();
     // Convert null to undefined for function compatibility
@@ -238,14 +247,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         throw new Error(`Battlefield is full! Maximum ${MAX_BATTLEFIELD_SIZE} minions allowed.`);
       }
 
-      // Ensure the card has a keywords array even if it's missing
-      if (!cardInstance.card.keywords) {
-        cardInstance.card.keywords = [];
-      }
-      
       // For cards with battlecry that require target, check if we have a target
-      if (cardInstance.card.type === 'minion' && 
-          cardInstance.card.keywords.includes('battlecry') && 
+      if (cardInstance.card.type === 'minion' &&
+          hasKeyword(cardInstance, 'battlecry') &&
           cardInstance.card.battlecry?.requiresTarget && 
           !targetId) {
         debug.log(`${cardInstance.card.name} requires a battlecry target`);
@@ -289,7 +293,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           );
           
           // Show battlecry popup if the minion has a battlecry (like Hearthstone)
-          if (cardInstance.card.keywords.includes('battlecry') && 
+          if (hasKeyword(cardInstance, 'battlecry') &&
               cardInstance.card.battlecry) {
             // Get the battlecry description from the card
             const battlecryDescription = cardInstance.card.description || 
@@ -312,8 +316,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         }
         
         // Check if the card has a spell effect that triggers discovery
-        const hasDiscover = (cardInstance.card.type === 'spell' && cardInstance.card.spellEffect?.type === 'discover') || 
-                          cardInstance.card.keywords?.includes('discover');
+        const hasDiscover = (cardInstance.card.type === 'spell' && cardInstance.card.spellEffect?.type === 'discover') ||
+                          hasKeyword(cardInstance, 'discover');
 
         if (hasDiscover && newState.discovery?.active) {
           // Play sound effect
@@ -333,8 +337,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             if (audioStore && typeof audioStore.playSoundEffect === 'function') {
               audioStore.playSoundEffect('legendary');
             }
-          } else if (cardInstance.card.type === 'minion' && 
-                    cardInstance.card.keywords.includes('battlecry') && 
+          } else if (cardInstance.card.type === 'minion' &&
+                    hasKeyword(cardInstance, 'battlecry') &&
                     cardInstance.card.battlecry?.type === 'damage') {
             if (audioStore && typeof audioStore.playSoundEffect === 'function') {
               audioStore.playSoundEffect('damage');
@@ -346,8 +350,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           }
           
           let finalState = newState;
-          const hasCharge = cardInstance.card.keywords.includes('charge');
-          const hasRush = cardInstance.card.keywords.includes('rush');
+          const hasCharge = hasKeyword(cardInstance, 'charge');
+          const hasRush = hasKeyword(cardInstance, 'rush');
           
           if (cardInstance.card.type === 'minion' && (cardInstance.card.attack ?? 0) > 0 && (hasCharge || hasRush)) {
             // Find the minion in state and ensure it's ready to attack
@@ -420,10 +424,12 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       // Phase 2: After AI thinking delay, process AI turn and switch back to player
       // Skip AI processing if opponent is a real human (P2P connected)
       const aiDelay = 800 + Math.random() * 700; // 800-1500ms
+      const scheduledTurnNumber = intermediateState.turnNumber;
       setTimeout(() => {
         const { gameState: currentState } = get();
         if (currentState.currentTurn !== 'opponent') return;
         if (currentState.gamePhase === 'game_over') return;
+        if (currentState.turnNumber !== scheduledTurnNumber) return;
 
         // If P2P connected, the opponent is a real human — do NOT run AI
         if (usePeerStore.getState().connectionState === 'connected') return;
@@ -459,8 +465,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const opponentBattlefield = gameState.players.opponent.battlefield || [];
       
       // Check if any opponent minion has taunt
-      const hasTaunt = opponentBattlefield.some((m: CardInstance) => 
-        m.card?.keywords?.includes('taunt')
+      const hasTaunt = opponentBattlefield.some((m: CardInstance) =>
+        hasKeyword(m, 'taunt')
       );
       
       // Build list of valid target IDs
@@ -469,14 +475,14 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       if (hasTaunt) {
         // Can only attack taunt minions (stealth doesn't protect a taunt minion)
         opponentBattlefield.forEach((m: CardInstance) => {
-          if (m.card?.keywords?.includes('taunt')) {
+          if (hasKeyword(m, 'taunt')) {
             validTargetIds.push(m.instanceId);
           }
         });
       } else {
         // Can attack any non-stealthed opponent minion or hero
         opponentBattlefield.forEach((m: CardInstance) => {
-          if (!m.card?.keywords?.includes('stealth')) {
+          if (!hasKeyword(m, 'stealth')) {
             validTargetIds.push(m.instanceId);
           }
         });
@@ -497,6 +503,11 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     // Prevent re-entry while a previous attack animation is in flight
     if (isAttackProcessing) return;
     isAttackProcessing = true;
+    if (attackWatchdogTimer) clearTimeout(attackWatchdogTimer);
+    attackWatchdogTimer = setTimeout(() => {
+      isAttackProcessing = false;
+      attackWatchdogTimer = null;
+    }, 5000);
 
     const { gameState } = get();
     const audioStore = useAudio.getState();
@@ -512,14 +523,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     );
 
     if (attackerCard) {
-      const hasMegaWindfury = attackerCard.card.keywords?.includes('mega_windfury');
-      const hasWindfury = attackerCard.card.keywords?.includes('windfury');
+      const hasMegaWindfury = hasKeyword(attackerCard, 'mega_windfury');
+      const hasWindfury = hasKeyword(attackerCard, 'windfury');
       const maxAttacks = hasMegaWindfury ? 4 : hasWindfury ? 2 : 1;
       if ((attackerCard.attacksPerformed || 0) >= maxAttacks) {
         toast.error("This minion already attacked this turn!");
         targetingStore.cancelTargeting();
         set({ attackingCard: null });
         isAttackProcessing = false;
+        if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
         return;
       }
     }
@@ -590,6 +602,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             targetingStore.cancelTargeting();
             set({ attackingCard: null, selectedCard: null });
             isAttackProcessing = false;
+            if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
             return;
           }
 
@@ -671,12 +684,14 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           set({ attackingCard: null, selectedCard: null });
         } finally {
           isAttackProcessing = false;
+          if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
         }
       }, impactDelay);
 
     } catch (error) {
       debug.error('Error processing attack:', error);
       isAttackProcessing = false;
+      if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
       // Clear targeting on error
       targetingStore.cancelTargeting();
     }
@@ -692,6 +707,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   
   // Reset the game state to initial values
   resetGameState: () => {
+    if (autoEndTurnTimer) { clearTimeout(autoEndTurnTimer); autoEndTurnTimer = null; }
     debug.log('Resetting game state to initial values');
     set({
       gameState: initializeGame(),
@@ -745,8 +761,18 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     }
     const { gameState } = get();
     
-    // Check if we're actually changing anything to avoid unnecessary updates
-    if (JSON.stringify(gameState.players) === JSON.stringify(players)) {
+    const shallowEqual = (a: any, b: any) =>
+      a.health === b.health &&
+      a.heroHealth === b.heroHealth &&
+      a.mana?.current === b.mana?.current &&
+      a.mana?.max === b.mana?.max &&
+      a.hand?.length === b.hand?.length &&
+      a.battlefield?.length === b.battlefield?.length &&
+      a.deck?.length === b.deck?.length;
+    if (
+      shallowEqual(gameState.players.player, players.player) &&
+      shallowEqual(gameState.players.opponent, players.opponent)
+    ) {
       return;
     }
     
@@ -1103,7 +1129,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
 
 // Subscribe to battlefield changes to trace when minions disappear
 // This captures stack traces to identify the root cause of battlefield clears
-useGameStore.subscribe((state, prevState) => {
+const unsubBattlefieldMonitor = useGameStore.subscribe((state, prevState) => {
   const currPlayerBattlefield = state.gameState?.players?.player?.battlefield || [];
   const prevPlayerBattlefield = prevState.gameState?.players?.player?.battlefield || [];
   const currOpponentBattlefield = state.gameState?.players?.opponent?.battlefield || [];
@@ -1127,9 +1153,7 @@ useGameStore.subscribe((state, prevState) => {
 });
 
 // Auto-end-turn when player has no possible actions
-let autoEndTurnTimer: ReturnType<typeof setTimeout> | null = null;
-
-useGameStore.subscribe((state, prevState) => {
+const unsubAutoEndTurn = useGameStore.subscribe((state, prevState) => {
 	if (autoEndTurnTimer) {
 		clearTimeout(autoEndTurnTimer);
 		autoEndTurnTimer = null;
@@ -1168,3 +1192,10 @@ useGameStore.subscribe((state, prevState) => {
 		}, 3000);
 	}
 });
+
+export function cleanupGameStoreSubscriptions() {
+	unsubBattlefieldMonitor();
+	unsubAutoEndTurn();
+	if (autoEndTurnTimer) { clearTimeout(autoEndTurnTimer); autoEndTurnTimer = null; }
+	if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
+}

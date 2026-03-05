@@ -373,7 +373,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 
     0 4px 16px rgba(34, 197, 94, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -556,7 +556,7 @@
   border-radius: 11px;
   position: relative;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   padding: 0;
 }
 
@@ -1419,7 +1419,7 @@
   background: rgba(0, 0, 0, 0.3);
   border: 1px dashed rgba(100, 116, 139, 0.3);
   border-radius: 6px;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 }
 
 .poker-panel .card-placeholder.revealed {
@@ -1519,7 +1519,7 @@
   cursor: pointer;
   font-family: 'Cinzel', 'Times New Roman', serif;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   min-width: 48px;
   text-align: center;
 }
@@ -1645,7 +1645,7 @@
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -2158,7 +2158,7 @@
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
 .hearthstone-end-turn.active {
@@ -2292,7 +2292,7 @@
   /* Raise hero card up so stats are fully visible (~4 inches = 96px) */
   transform: translateY(-96px);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
   margin: 0 !important;
   padding: 0 !important;
   position: relative;
@@ -2400,7 +2400,7 @@
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
   isolation: isolate;
 }
 
@@ -2499,7 +2499,7 @@
    Single click = activate power, Double click = upgrade
    ======================================== */
 .hero-portrait-interactive {
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   z-index: 1; /* Ensure interaction surface is above backgrounds */
   pointer-events: auto !important; /* Force pointer events */
@@ -2517,7 +2517,7 @@
 .hero-portrait-interactive.has-power:active {
   filter: brightness(0.9);
   transform: scale(0.97);
-  transition: all 0.08s ease;
+  transition: transform 0.08s ease, opacity 0.08s ease, box-shadow 0.08s ease;
 }
 
 .hero-portrait-interactive.power-ready {
@@ -2573,7 +2573,7 @@
   font-size: 0.85rem;
   font-weight: 700;
   z-index: 10;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
 .portrait-power-badge.affordable {
@@ -2964,7 +2964,7 @@
   pointer-events: auto !important;
   z-index: 501;
   position: relative;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   overflow: visible;
 }
@@ -3453,7 +3453,7 @@
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 1px;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
 }
 
@@ -3692,7 +3692,7 @@
   border-radius: 50%;
   background: rgba(100, 100, 120, 0.5);
   border: 2px solid rgba(100, 100, 120, 0.6);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 }
 
 .phase-node.active .phase-dot {
@@ -5381,7 +5381,7 @@
   font-weight: bold;
   font-size: 1.1rem;
   text-transform: uppercase;
-  transition: all 0.2s;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 0 #1a1d2e;
   min-width: 100px;
 }
@@ -5694,7 +5694,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
   overflow: hidden;
 }
 

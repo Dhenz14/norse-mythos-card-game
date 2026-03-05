@@ -28,6 +28,7 @@ import { hasEcho, createEchoCopy, expireEchoCardsAtEndOfTurn } from './mechanics
 import { processAfterAttackEffects, processAfterHeroAttackEffects } from './mechanics/afterAttackUtils';
 import { dealDamage, dealDamageToAllEnemyMinions, dealDamageToAllMinions, dealDamageToHero } from './effects/damageUtils';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { removeKeyword, hasKeyword, getKeywords } from './cards/keywordUtils';
 import { canMagnetize, applyMagnetization, isValidMagneticTarget } from './mechanics/magneticUtils';
 import allCards from '../data/allCards';
 import { trackQuestProgress, activateQuest } from './quests/questProgress';
@@ -60,6 +61,7 @@ import { NORSE_TO_GAME_ELEMENT } from '../types/NorseTypes';
 import { getElementAdvantage } from './elements/elementAdvantage';
 import { getNorseHeroById } from './norseHeroPowerUtils';
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
+import { applyLifestealHealing } from './mechanics/lifestealUtils';
 
 function attemptPetEvolution(
   state: GameState,
@@ -397,7 +399,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   if (isBloodPayment) {
     // Blood Price: check hero has enough health (must survive)
     const heroHealth = player.heroHealth ?? player.health ?? 30;
-    if (heroHealth <= bloodCost) {
+    if (heroHealth - bloodCost <= 0) {
       return state;
     }
     // Pay with health — deal damage to own hero
@@ -412,17 +414,11 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // Update cards played this turn counter (for Combo)
   const updatedCardsPlayedThisTurn = player.cardsPlayedThisTurn + 1;
-  // Ensure keywords exists and is an array before checking for combo
-  const cardKeywords = card.card.keywords || [];
-  const isComboActive = updatedCardsPlayedThisTurn > 1 && 
-                        Array.isArray(cardKeywords) && 
-                        cardKeywords.includes('combo');
-  
+  const isComboActive = updatedCardsPlayedThisTurn > 1 && hasKeyword(card, 'combo');
+
   // Handle pending overload if card has overload keyword
   let pendingOverload = player.mana.pendingOverload || 0;
-  if (Array.isArray(cardKeywords) && 
-      cardKeywords.includes('overload') && 
-      card.card.overload) {
+  if (hasKeyword(card, 'overload') && card.card.overload) {
     pendingOverload += card.card.overload.amount;
   }
   
@@ -538,8 +534,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   // 3. Handle Minion cards
   
   // Handle Magnetic mechanic - check if targeting a mech on battlefield
-  // Reuse the existing cardKeywords variable declared above
-  const isMagnetic = Array.isArray(cardKeywords) && cardKeywords.includes('magnetic');
+  const isMagnetic = hasKeyword(card, 'magnetic');
   if (isMagnetic && targetId && targetType === 'minion') {
     // Apply magnetic effect to target mech
     
@@ -584,7 +579,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
       const evolvedMinion = player.battlefield.find(
         m => m.evolvedFromStage2Id !== undefined
           && (m.card as any).petFamily === ((card.card as any).petFamily)
-          && ((m.card as any).keywords || []).includes('battlecry')
+          && hasKeyword(m, 'battlecry')
           && (m.card as any).battlecry
       );
       if (evolvedMinion) {
@@ -599,8 +594,8 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   }
 
   // Check if battlefield is full before removing card from hand
-  if (player.battlefield.length >= 5) {
-    debug.error(`Cannot play ${card.card.name}: Battlefield is full (5 minions maximum)`);
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
+    debug.error(`Cannot play ${card.card.name}: Battlefield is full (${MAX_BATTLEFIELD_SIZE} minions maximum)`);
     return state;
   }
 
@@ -611,10 +606,8 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   // Cards with the 'charge' keyword can attack immediately
   // Cards with the 'rush' keyword can attack minions immediately but not heroes
   
-  // Ensure keywords exists and is an array before calling includes
-  const keywords = card.card.keywords || [];
-  const hasCharge = keywords.includes('charge');
-  const hasRush = keywords.includes('rush');
+  const hasCharge = hasKeyword(card, 'charge');
+  const hasRush = hasKeyword(card, 'rush');
   const canAttackImmediately = hasCharge || hasRush;
   
   let playedCard: CardInstance = {
@@ -703,6 +696,8 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     const bf = newState.players[currentPlayer].battlefield;
     const partner = bf.find((m: CardInstance) => m.card.id === chainPartner);
     if (partner) {
+      playedCard.chainPartnerInstanceId = partner.instanceId;
+      partner.chainPartnerInstanceId = playedCard.instanceId;
       const playedChainEff = (playedCard.card as any).chainEffect?.onBothInPlay;
       const partnerChainEff = (partner.card as any).chainEffect?.onBothInPlay;
       if (playedChainEff) {
@@ -737,8 +732,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   newState = checkPetEvolutionTrigger(newState, 'on_summon');
 
   // Handle colossal minions - summon additional parts
-  const playedKeywords = playedCard.card.keywords || [];
-  const isColossalMinion = Array.isArray(playedKeywords) && playedKeywords.includes('colossal');
+  const isColossalMinion = hasKeyword(playedCard, 'colossal');
   if (isColossalMinion) {
     // Get the instance ID of the just-played card
     const colossalMinionId = playedCard.instanceId;
@@ -1157,17 +1151,18 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
 
   // Tick prophecies — decrement counters, resolve any that hit 0
   if (state.prophecies && state.prophecies.length > 0) {
-    const resolved: number[] = [];
-    state.prophecies.forEach((prophecy, idx) => {
-      prophecy.turnsRemaining -= 1;
-      if (prophecy.turnsRemaining <= 0) {
-        resolved.push(idx);
+    const resolved: typeof state.prophecies = [];
+    state.prophecies = state.prophecies.map(prophecy => {
+      const updated = { ...prophecy, turnsRemaining: prophecy.turnsRemaining - 1 };
+      if (updated.turnsRemaining <= 0) {
+        resolved.push(updated);
       }
+      return updated;
     });
-    for (const idx of resolved) {
-      state = resolveProphecy(state, state.prophecies![idx]);
+    for (const prophecy of resolved) {
+      state = resolveProphecy(state, prophecy);
     }
-    state.prophecies = state.prophecies!.filter((_, idx) => !resolved.includes(idx));
+    state.prophecies = (state.prophecies || []).filter(p => !resolved.includes(p));
   }
 
   // Apply realm end-of-turn effects (e.g., Muspelheim damage)
@@ -1756,8 +1751,7 @@ function simulateOpponentTurn(state: GameState): GameState {
         
         playerField.forEach(defenderCard => {
           // Skip Taunt minions as they were already considered above
-          const defenderKeywords = defenderCard.card.keywords || [];
-          if (defenderKeywords.includes('taunt')) {
+          if (hasKeyword(defenderCard, 'taunt')) {
             return;
           }
           
@@ -1919,9 +1913,7 @@ function processAttackForOpponent(
         newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
 
         // For non-Windfury cards, or Windfury cards that have performed their maximum attacks (2), disable attacking
-        // Ensure keywords array exists before checking
-        const attackerKeywords = attacker.card.keywords || [];
-        const hasWindfury = attackerKeywords.includes('windfury');
+        const hasWindfury = hasKeyword(attacker, 'windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
 
         if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
@@ -1930,10 +1922,9 @@ function processAttackForOpponent(
         }
 
         // Remove stealth after attacking
-        const aiStealthIdx = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
-        if (aiStealthIdx !== undefined && aiStealthIdx !== -1) {
+        if (hasKeyword(newState.players.opponent.battlefield[updatedAttackerIndex], 'stealth')) {
           newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.opponent.battlefield[updatedAttackerIndex].instanceId);
-          newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx, 1);
+          removeKeyword(newState.players.opponent.battlefield[updatedAttackerIndex], 'stealth');
         }
       }
 
@@ -1987,10 +1978,9 @@ function processAttackForOpponent(
       );
       
       if (updatedAttackerIndex !== -1) {
-        const attackerKeywords = attacker.card.keywords || [];
-        const hasWindfury = attackerKeywords.includes('windfury');
+        const hasWindfury = hasKeyword(attacker, 'windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
-        
+
         newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
 
         if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
@@ -1998,10 +1988,9 @@ function processAttackForOpponent(
         }
 
         // Remove stealth after attacking
-        const aiStealthIdx2 = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
-        if (aiStealthIdx2 !== undefined && aiStealthIdx2 !== -1) {
+        if (hasKeyword(newState.players.opponent.battlefield[updatedAttackerIndex], 'stealth')) {
           newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.opponent.battlefield[updatedAttackerIndex].instanceId);
-          newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx2, 1);
+          removeKeyword(newState.players.opponent.battlefield[updatedAttackerIndex], 'stealth');
         }
       }
 
@@ -2069,10 +2058,9 @@ function processAttackForOpponent(
     } else if (updatedAttackerIndex !== -1) {
       // Attacker is still alive, mark it as having performed an attack
       // We need to do this here because the index might have changed
-      const attackerKeywords = attacker.card.keywords || [];
-      const hasWindfury = attackerKeywords.includes('windfury');
+      const hasWindfury = hasKeyword(attacker, 'windfury');
       const maxAttacksAllowed = hasWindfury ? 2 : 1;
-      
+
       newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
 
       if ((newState.players.opponent.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
@@ -2081,10 +2069,9 @@ function processAttackForOpponent(
       }
 
       // Remove stealth after attacking
-      const aiStealthIdx3 = newState.players.opponent.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
-      if (aiStealthIdx3 !== undefined && aiStealthIdx3 !== -1) {
+      if (hasKeyword(newState.players.opponent.battlefield[updatedAttackerIndex], 'stealth')) {
         newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.opponent.battlefield[updatedAttackerIndex].instanceId);
-        newState.players.opponent.battlefield[updatedAttackerIndex].card.keywords!.splice(aiStealthIdx3, 1);
+        removeKeyword(newState.players.opponent.battlefield[updatedAttackerIndex], 'stealth');
       }
     }
 
@@ -2228,8 +2215,7 @@ function processAttackForPlayer(
         const currentAttacks = currentCard.attacksPerformed ?? 0;
         currentCard.attacksPerformed = currentAttacks + 1;
 
-        const attackerKeywords = attacker.card.keywords || [];
-        const hasWindfury = attackerKeywords.includes('windfury');
+        const hasWindfury = hasKeyword(attacker, 'windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
 
         if ((currentCard.attacksPerformed ?? 0) >= maxAttacksAllowed) {
@@ -2239,7 +2225,7 @@ function processAttackForPlayer(
 
       return newState;
     }
-    
+
     // Find the defender card on opponent's battlefield
     const opponentField = newState.players.opponent.battlefield;
     const defenderIndex = opponentField.findIndex(card => card.instanceId === defenderInstanceId);
@@ -2282,10 +2268,9 @@ function processAttackForPlayer(
       );
       
       if (updatedAttackerIndex !== -1) {
-        const attackerKeywords = attacker.card.keywords || [];
-        const hasWindfury = attackerKeywords.includes('windfury');
+        const hasWindfury = hasKeyword(attacker, 'windfury');
         const maxAttacksAllowed = hasWindfury ? 2 : 1;
-        
+
         newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
 
         if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
@@ -2293,10 +2278,9 @@ function processAttackForPlayer(
         }
 
         // Remove stealth after attacking
-        const stealthIdx = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
-        if (stealthIdx !== undefined && stealthIdx !== -1) {
+        if (hasKeyword(newState.players.player.battlefield[updatedAttackerIndex], 'stealth')) {
           newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.player.battlefield[updatedAttackerIndex].instanceId);
-          newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx, 1);
+          removeKeyword(newState.players.player.battlefield[updatedAttackerIndex], 'stealth');
         }
       }
 
@@ -2343,10 +2327,9 @@ function processAttackForPlayer(
         (newState.players.player.battlefield[updatedAttackerIndex].currentHealth || 0) <= 0) {
       newState = destroyCard(newState, attackerId, 'player');
     } else if (updatedAttackerIndex !== -1) {
-      const attackerKeywords = attacker.card.keywords || [];
-      const hasWindfury = attackerKeywords.includes('windfury');
+      const hasWindfury = hasKeyword(attacker, 'windfury');
       const maxAttacksAllowed = hasWindfury ? 2 : 1;
-      
+
       newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
 
       if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
@@ -2354,10 +2337,9 @@ function processAttackForPlayer(
       }
 
       // Remove stealth after attacking
-      const stealthIdx2 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
-      if (stealthIdx2 !== undefined && stealthIdx2 !== -1) {
+      if (hasKeyword(newState.players.player.battlefield[updatedAttackerIndex], 'stealth')) {
         newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.player.battlefield[updatedAttackerIndex].instanceId);
-        newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx2, 1);
+        removeKeyword(newState.players.player.battlefield[updatedAttackerIndex], 'stealth');
       }
     }
 
@@ -2486,17 +2468,16 @@ function simulatePlayerMinionAttacks(state: GameState): GameState {
         let lowestHP = Infinity;
         
         opponentField.forEach(defenderCard => {
-          const defenderKeywords = defenderCard.card.keywords || [];
-          if (defenderKeywords.includes('taunt')) {
+          if (hasKeyword(defenderCard, 'taunt')) {
             return;
           }
-          
+
           if ((defenderCard.currentHealth || 0) < lowestHP) {
             lowestHP = defenderCard.currentHealth || 0;
             bestTarget = defenderCard;
           }
         });
-        
+
         if (bestTarget) {
           const target = bestTarget as CardInstance;
           currentState = processAttackForPlayer(
@@ -2507,7 +2488,7 @@ function simulatePlayerMinionAttacks(state: GameState): GameState {
         } else {
           // No enemy minions, attack the opponent's hero
           currentState = processAttackForPlayer(
-            currentState, 
+            currentState,
             attackerCard.instanceId
           );
         }
@@ -2530,15 +2511,24 @@ function checkGameOver(state: GameState): GameState {
   const playerHealth = player.heroHealth !== undefined ? player.heroHealth : player.health;
   const opponentHealth = opponent.heroHealth !== undefined ? opponent.heroHealth : opponent.health;
   
-  if (playerHealth <= 0) {
+  const playerDead = playerHealth <= 0;
+  const opponentDead = opponentHealth <= 0;
+
+  if (playerDead && opponentDead) {
+    return {
+      ...state,
+      gamePhase: 'game_over',
+      winner: 'draw'
+    };
+  }
+  if (playerDead) {
     return {
       ...state,
       gamePhase: 'game_over',
       winner: 'opponent'
     };
   }
-  
-  if (opponentHealth <= 0) {
+  if (opponentDead) {
     return {
       ...state,
       gamePhase: 'game_over',
@@ -2601,9 +2591,13 @@ export function processAttack(
     attacker.attacksPerformed = 0;
   }
   
-  // Check for Rush restriction - cards with Rush can only attack minions on the turn they're played
-  // Use the more robust isValidRushTarget function for consistency
+  const opponentHasTaunt = hasTauntMinions(newState.players.opponent.battlefield);
+
   if (!defenderInstanceId || defenderInstanceId === 'opponent-hero') {
+    if (opponentHasTaunt) {
+      debug.error('Cannot attack hero directly when opponent has Taunt minions');
+      return state;
+    }
     if (!isValidRushTarget(attacker, 'hero')) {
       debug.error('Minions with Rush cannot attack the enemy hero on the turn they are played');
       return state;
@@ -2615,24 +2609,15 @@ export function processAttack(
     }
   }
   
-  // Check if opponent has Taunt minions - if so, we can't attack the hero or non-Taunt minions
-  const opponentHasTaunt = hasTauntMinions(newState.players.opponent.battlefield);
-  
-  // If no defender is specified (or 'opponent-hero' sentinel), attack the opponent's hero directly
   if (!defenderInstanceId || defenderInstanceId === 'opponent-hero') {
-    // Cannot attack hero if there are Taunt minions on the battlefield
-    if (opponentHasTaunt) {
-      debug.error('Cannot attack hero directly when opponent has Taunt minions');
-      return state;
-    }
-    
     // Deal damage to opponent's hero using the dealDamage function instead of direct modification
     // This ensures armor is properly handled
     const attackerAttackVal = (attacker.card as any).attack;
     if (attackerAttackVal !== undefined && attackerAttackVal > 0) {
       newState = dealDamage(newState, 'opponent', 'hero', attackerAttackVal, undefined, attacker.card.id as number | undefined, 'player');
+      newState = applyLifestealHealing(newState, attacker, attackerAttackVal, 'player');
     }
-    
+
     // Store the original attacker ID
     const attackerId = attacker.instanceId;
     
@@ -2646,9 +2631,8 @@ export function processAttack(
       newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
       
       // For non-Windfury cards, or Windfury cards that have performed their maximum attacks, disable attacking
-      const attackerKeywords = attacker.card.keywords || [];
-      const hasMegaWindfury = attackerKeywords.includes('mega_windfury');
-      const hasWindfury = attackerKeywords.includes('windfury');
+      const hasMegaWindfury = hasKeyword(attacker, 'mega_windfury');
+      const hasWindfury = hasKeyword(attacker, 'windfury');
       const maxAttacksAllowed = hasMegaWindfury ? 4 : hasWindfury ? 2 : 1;
 
       if ((newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) >= maxAttacksAllowed) {
@@ -2657,30 +2641,30 @@ export function processAttack(
       }
 
       // Remove stealth after attacking
-      const stealthIdx3 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
-      if (stealthIdx3 !== undefined && stealthIdx3 !== -1) {
+      if (hasKeyword(newState.players.player.battlefield[updatedAttackerIndex], 'stealth')) {
         newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.player.battlefield[updatedAttackerIndex].instanceId);
-        newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx3, 1);
+        removeKeyword(newState.players.player.battlefield[updatedAttackerIndex], 'stealth');
       }
     }
 
+    newState = removeDeadMinions(newState);
+    newState = checkGameOver(newState);
     return newState;
   }
 
   // Find the defender card
   const opponentField = newState.players.opponent.battlefield;
   const defenderIndex = opponentField.findIndex(card => card.instanceId === defenderInstanceId);
-  
+
   if (defenderIndex === -1) {
     debug.error('Defender card not found');
     return state;
   }
-  
+
   const defender = opponentField[defenderIndex];
-  
+
   // If there are Taunt minions, we can only attack those
-  const defenderKeywords = defender.card.keywords || [];
-  if (opponentHasTaunt && !defenderKeywords.includes('taunt')) {
+  if (opponentHasTaunt && !hasKeyword(defender, 'taunt')) {
     debug.error('Must attack Taunt minions first');
     return state;
   }
@@ -2753,6 +2737,20 @@ export function processAttack(
     }
   }
 
+  // Apply lifesteal healing for minion-vs-minion combat
+  if (!defenderHasDivineShield) {
+    const attackerAtk2 = (attacker.card as any).attack || 0;
+    if (attackerAtk2 > 0) {
+      newState = applyLifestealHealing(newState, attacker, attackerAtk2, 'player');
+    }
+  }
+  if (!attackerHasDivineShield) {
+    const defenderAtk2 = (defender.card as any).attack || 0;
+    if (defenderAtk2 > 0) {
+      newState = applyLifestealHealing(newState, defender, defenderAtk2, 'opponent');
+    }
+  }
+
   // Store the original attacker and defender IDs before manipulating the state
   const attackerId = attacker.instanceId;
   const defenderId = defender.instanceId;
@@ -2762,12 +2760,12 @@ export function processAttack(
     // Move the defender from the battlefield to the graveyard
     newState = destroyCard(newState, defenderId, 'opponent');
   }
-  
+
   // We need to find the attacker again as the indexes might have changed after destroying a minion
   const updatedAttackerIndex = newState.players.player.battlefield.findIndex(
     card => card.instanceId === attackerId
   );
-  
+
   // Only check attacker health if it's still on the battlefield
   if (updatedAttackerIndex !== -1 && 
       (newState.players.player.battlefield[updatedAttackerIndex].currentHealth || 0) <= 0) {
@@ -2776,9 +2774,8 @@ export function processAttack(
   } else if (updatedAttackerIndex !== -1) {
     // Attacker is still alive, mark it as having performed an attack
     // We need to do this here because the index might have changed
-    const attackerKeywords = attacker.card.keywords || [];
-    const hasMegaWindfury = attackerKeywords.includes('mega_windfury');
-    const hasWindfury = attackerKeywords.includes('windfury');
+    const hasMegaWindfury = hasKeyword(attacker, 'mega_windfury');
+    const hasWindfury = hasKeyword(attacker, 'windfury');
     const maxAttacksAllowed = hasMegaWindfury ? 4 : hasWindfury ? 2 : 1;
 
     newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed = (newState.players.player.battlefield[updatedAttackerIndex].attacksPerformed || 0) + 1;
@@ -2789,13 +2786,12 @@ export function processAttack(
     }
 
     // Remove stealth after attacking
-    const stealthIdx4 = newState.players.player.battlefield[updatedAttackerIndex].card?.keywords?.indexOf('stealth');
-    if (stealthIdx4 !== undefined && stealthIdx4 !== -1) {
+    if (hasKeyword(newState.players.player.battlefield[updatedAttackerIndex], 'stealth')) {
       newState = checkPetEvolutionTrigger(newState, 'on_attack_from_stealth', newState.players.player.battlefield[updatedAttackerIndex].instanceId);
-      newState.players.player.battlefield[updatedAttackerIndex].card.keywords!.splice(stealthIdx4, 1);
+      removeKeyword(newState.players.player.battlefield[updatedAttackerIndex], 'stealth');
     }
   }
-  
+
   // Process frenzy effects for any damaged minions that survived
   if (damagedMinionIds.length > 0) {
     // Process frenzy effects using the imported function
@@ -2840,8 +2836,7 @@ export function processAttack(
  */
 function hasTauntMinions(battlefield: CardInstance[]): boolean {
   return battlefield.some(card => {
-    const keywords = card.card.keywords || [];
-    return keywords.includes('taunt');
+    return hasKeyword(card, 'taunt') && !card.isSilenced && !(card as any).hasElusive;
   });
 }
 
@@ -2850,8 +2845,7 @@ function hasTauntMinions(battlefield: CardInstance[]): boolean {
  */
 function getTauntMinions(battlefield: CardInstance[]): CardInstance[] {
   return battlefield.filter(card => {
-    const keywords = card.card.keywords || [];
-    return keywords.includes('taunt');
+    return hasKeyword(card, 'taunt') && !card.isSilenced && !(card as any).hasElusive;
   });
 }
 
@@ -2966,59 +2960,53 @@ export function findOptimalAttackTargets(
   // Strategy 2: Value trades - kill minions that our attacker can kill without dying
   opponentField.forEach(defenderCard => {
     // Skip Taunt minions as they were handled above
-    const defenderKeywords = defenderCard.card.keywords || [];
-    if (defenderKeywords.includes('taunt')) {
+    if (hasKeyword(defenderCard, 'taunt')) {
       return;
     }
-    
+
     const defAtk = (defenderCard.card as any).attack || 0;
     // Can kill without dying
     if (attackerAttack >= (defenderCard.currentHealth || 0) && defAtk < (attacker.currentHealth || 0)) {
-      targets.push({ 
-        defenderId: defenderCard.instanceId, 
-        type: 'minion', 
+      targets.push({
+        defenderId: defenderCard.instanceId,
+        type: 'minion',
         priority: 100 + defAtk // Prioritize killing higher attack minions
       });
     }
   });
-  
+
   // Strategy 3: Equal trades - kill minions of equal or higher value
   opponentField.forEach(defenderCard => {
     // Skip Taunt minions as they were handled above
-    const defenderKeywords = defenderCard.card.keywords || [];
-    if (defenderKeywords.includes('taunt')) {
+    if (hasKeyword(defenderCard, 'taunt')) {
       return;
     }
-    
+
     const defAtk = (defenderCard.card as any).attack || 0;
     // Equal value trade (we both die or high value target)
-    if (attackerAttack >= (defenderCard.currentHealth || 0) && 
-        (defAtk >= (attacker.currentHealth || 0) || 
+    if (attackerAttack >= (defenderCard.currentHealth || 0) &&
+        (defAtk >= (attacker.currentHealth || 0) ||
          defAtk > attackerAttack)) {
-      targets.push({ 
-        defenderId: defenderCard.instanceId, 
-        type: 'minion', 
-        priority: 50 + defAtk 
+      targets.push({
+        defenderId: defenderCard.instanceId,
+        type: 'minion',
+        priority: 50 + defAtk
       });
     }
   });
-  
+
   // Strategy 4: Attack any non-Taunt minion if we can't find good trades
-  if (targets.length === 0 && opponentField.some(card => {
-    const cardKeywords = card.card.keywords || [];
-    return !cardKeywords.includes('taunt');
-  })) {
+  if (targets.length === 0 && opponentField.some(card => !hasKeyword(card, 'taunt'))) {
     opponentField.forEach(defenderCard => {
       // Skip Taunt minions as they were handled above
-      const defKeywords = defenderCard.card.keywords || [];
-      if (defKeywords.includes('taunt')) {
+      if (hasKeyword(defenderCard, 'taunt')) {
         return;
       }
-      
+
       const defAtk = (defenderCard.card as any).attack || 0;
-      targets.push({ 
-        defenderId: defenderCard.instanceId, 
-        type: 'minion', 
+      targets.push({
+        defenderId: defenderCard.instanceId,
+        type: 'minion',
         priority: defAtk // Prioritize attacking high attack threats
       });
     });
@@ -3109,8 +3097,8 @@ export function autoAttackOnPlace(
     }
     
     // Check for Taunt minions first - must attack them if present
-    const tauntMinions = defenderField.filter(m => 
-      (m.card.keywords || []).includes('taunt') && !m.silenced
+    const tauntMinions = defenderField.filter(m =>
+      hasKeyword(m, 'taunt') && !m.silenced
     );
     
     let targetId: string | undefined;

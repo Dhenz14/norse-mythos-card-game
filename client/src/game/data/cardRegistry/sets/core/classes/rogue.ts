@@ -800,7 +800,7 @@ export const rogueCards: CardData[] = [
   },
   // === Yggdrasil Golem Card ===
   {
-    id: 85004,
+    id: 85021,
     name: "Yggdrasil Shadowblade",
     manaCost: 2,
     attack: 1,
@@ -937,14 +937,15 @@ export const rogueCards: CardData[] = [
     health: 5,
     type: "minion",
     rarity: "mythic",
-    description: "Combo: Trigger all Combo effects of cards you played this turn again.",
+    description: "Combo: Trigger up to 3 random Combo effects of cards you played this turn again.",
     flavorText: "The dark elf strikes last — after ensuring every other blow hits twice.",
     keywords: ["combo", "battlecry"],
     class: "Rogue",
     battlecry: {
       type: "replay_battlecries",
       targetType: "combo_cards_this_turn",
-      requiresTarget: false
+      requiresTarget: false,
+      maxTargets: 3
     },
     collectible: true,
     set: "core"

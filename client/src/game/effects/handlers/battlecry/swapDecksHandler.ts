@@ -9,6 +9,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeSwapDecks(
   context: GameContext, 
@@ -50,7 +51,7 @@ export default function executeSwapDecks(
         attacksPerformed: 0
       };
       
-      if (context.opponentPlayer.hand.length < 10) {
+      if (context.opponentPlayer.hand.length < MAX_HAND_SIZE) {
         context.opponentPlayer.hand.push(ransomCard);
         context.logGameEvent(`Opponent received ${ransomCard.card.name} to swap decks back`);
       } else {

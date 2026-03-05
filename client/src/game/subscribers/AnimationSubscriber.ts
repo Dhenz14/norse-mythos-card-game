@@ -66,6 +66,7 @@ class AnimationSubscriberImpl {
 
   private callbacks: AnimationCallback[] = [];
   private unsubscribes: UnsubscribeFn[] = [];
+  private processNextTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
    * Register callback for when animations should play
@@ -123,8 +124,11 @@ class AnimationSubscriberImpl {
       }
     });
 
-    // Schedule next animation after duration
-    setTimeout(() => {
+    if (this.processNextTimer) {
+      clearTimeout(this.processNextTimer);
+    }
+    this.processNextTimer = setTimeout(() => {
+      this.processNextTimer = null;
       this.processNext();
     }, this.state.currentAnimation.duration);
   }
@@ -364,6 +368,10 @@ class AnimationSubscriberImpl {
   cleanup(): void {
     this.unsubscribes.forEach(unsub => unsub());
     this.unsubscribes = [];
+    if (this.processNextTimer) {
+      clearTimeout(this.processNextTimer);
+      this.processNextTimer = null;
+    }
     this.clearQueue();
   }
 }

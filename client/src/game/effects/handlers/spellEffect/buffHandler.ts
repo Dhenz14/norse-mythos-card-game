@@ -7,6 +7,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a Buff effect
@@ -70,11 +71,8 @@ export default function executeBuffBuff(
           
           // Grant keywords
           if (grantKeywords.length > 0) {
-            target.card.keywords = target.card.keywords || [];
             grantKeywords.forEach((keyword: string) => {
-              if (!target.card.keywords!.includes(keyword)) {
-                target.card.keywords!.push(keyword);
-              }
+              addKeyword(target, keyword);
             });
           }
           

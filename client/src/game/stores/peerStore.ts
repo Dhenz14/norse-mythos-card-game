@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import Peer, { DataConnection } from 'peerjs';
 
+let reconnectTimerId: ReturnType<typeof setTimeout> | null = null;
+const PEER_CONNECT_TIMEOUT_MS = 10_000;
+
 // 'waiting'      = host peer created, waiting for opponent to connect
 // 'reconnecting' = client lost connection, attempting one auto-reconnect
 export type P2PConnectionState = 'disconnected' | 'connecting' | 'waiting' | 'connected' | 'reconnecting' | 'error';
@@ -54,6 +57,13 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 		set({ connectionState: 'connecting', isHost: true, error: null });
 
 		return new Promise((resolve, reject) => {
+			const timeoutId = setTimeout(() => {
+				newPeer.destroy();
+				const err = new Error('Peer connection timeout');
+				set({ error: err.message, connectionState: 'error' });
+				reject(err);
+			}, PEER_CONNECT_TIMEOUT_MS);
+
 			const newPeer = new Peer({
 				host: '0.peerjs.com',
 				port: 443,
@@ -62,12 +72,14 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 			});
 
 			newPeer.on('open', (id) => {
+				clearTimeout(timeoutId);
 				// Peer initialized — now waiting for an opponent, NOT yet 'connected'
 				set({ myPeerId: id, peer: newPeer, connectionState: 'waiting' });
 				resolve();
 			});
 
 			newPeer.on('error', (err) => {
+				clearTimeout(timeoutId);
 				const errorMsg = err.message || 'Failed to create peer connection';
 				set({ error: errorMsg, connectionState: 'error' });
 				reject(err);
@@ -79,11 +91,13 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 				});
 
 				conn.on('error', (err) => {
+					if (!get().peer) return; // Already disconnected intentionally
 					set({ error: err.message || 'Connection error', connectionState: 'error' });
 				});
 
 				// When opponent disconnects, host goes back to 'waiting' so a new opponent can join
 				conn.on('close', () => {
+					if (!get().peer) return; // Already disconnected intentionally
 					set({ connection: null, connectionState: 'waiting', remotePeerId: null });
 				});
 			});
@@ -100,6 +114,13 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 		set({ connectionState: state, isHost: false, remotePeerId: remoteId, error: null });
 
 		return new Promise((resolve, reject) => {
+			const timeoutId = setTimeout(() => {
+				newPeer.destroy();
+				const err = new Error('Peer connection timeout');
+				set({ error: err.message, connectionState: 'error' });
+				reject(err);
+			}, PEER_CONNECT_TIMEOUT_MS);
+
 			const newPeer = new Peer({
 				host: '0.peerjs.com',
 				port: 443,
@@ -115,23 +136,28 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 				});
 
 				conn.on('open', () => {
+					clearTimeout(timeoutId);
 					set({ connection: conn, connectionState: 'connected' });
 					resolve();
 				});
 
 				conn.on('error', (err) => {
+					clearTimeout(timeoutId);
+					if (!get().peer) return; // Already disconnected intentionally
 					const errorMsg = err.message || 'Failed to connect to host';
 					set({ error: errorMsg, connectionState: 'error' });
 					reject(err);
 				});
 
 				conn.on('close', () => {
+					if (!get().peer) return; // Already disconnected intentionally
 					const { remotePeerId } = get();
 					if (!isReconnect && remotePeerId) {
 						// First drop — attempt one auto-reconnect after 2 seconds
 						console.warn('[PeerStore] Connection lost — attempting reconnect in 2s');
 						set({ connection: null, connectionState: 'reconnecting' });
-						setTimeout(() => {
+						reconnectTimerId = setTimeout(() => {
+							reconnectTimerId = null;
 							get().join(remotePeerId, true).catch(() => {
 								console.error('[PeerStore] Reconnect failed');
 								set({ connectionState: 'disconnected' });
@@ -145,6 +171,7 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 			});
 
 			newPeer.on('error', (err) => {
+				clearTimeout(timeoutId);
 				const errorMsg = err.message || 'Failed to create peer connection';
 				set({ error: errorMsg, connectionState: 'error' });
 				reject(err);
@@ -153,6 +180,10 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 	},
 
 	disconnect: () => {
+		if (reconnectTimerId !== null) {
+			clearTimeout(reconnectTimerId);
+			reconnectTimerId = null;
+		}
 		const { connection, peer } = get();
 		if (connection) {
 			connection.close();

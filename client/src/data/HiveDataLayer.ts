@@ -33,7 +33,7 @@ import {
 interface HiveDataStore extends HiveGameState {
   setUser: (user: HiveUserRecord) => void;
   updateStats: (stats: Partial<HivePlayerStats>) => void;
-  recordMatchResult: (match: HiveMatchResult) => void;
+  recordMatchResult: (match: HiveMatchResult, opponentElo?: number) => void;
   addCard: (card: HiveCardAsset) => void;
   removeCard: (cardUid: string) => void;
   updateTokenBalance: (balance: Partial<HiveTokenBalance>) => void;
@@ -66,15 +66,17 @@ export const useHiveDataStore = create<HiveDataStore>()(
           : { ...DEFAULT_PLAYER_STATS, ...statsUpdate },
       })),
 
-      recordMatchResult: (match) => set((state) => {
+      recordMatchResult: (match, opponentElo?) => set((state) => {
         const isWinner = match.winnerId === state.user?.hiveUsername;
         const currentStats = state.stats || DEFAULT_PLAYER_STATS;
-        
+
         const newWinStreak = isWinner ? currentStats.winStreak + 1 : 0;
-        const eloChange = calculateEloChange(currentStats.odinsEloRating, 1000, isWinner);
-        
-        const playerData = match.player1.hiveUsername === state.user?.hiveUsername 
-          ? match.player1 
+
+        const resolvedOpponentElo = opponentElo ?? DEFAULT_PLAYER_STATS.odinsEloRating;
+        const eloChange = calculateEloChange(currentStats.odinsEloRating, resolvedOpponentElo, isWinner);
+
+        const playerData = match.player1.hiveUsername === state.user?.hiveUsername
+          ? match.player1
           : match.player2;
         
         return {

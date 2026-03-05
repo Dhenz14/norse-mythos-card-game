@@ -26,6 +26,7 @@ import { dealDamage } from '../utils/effects/damageUtils';
 // AUTHORITATIVE canCardAttack function - single source of truth
 import { canCardAttack as canCardAttackUtil, getAttackEligibility } from './attackUtils';
 import { debug } from '../config/debugConfig';
+import { hasKeyword } from '../utils/cards/keywordUtils';
 
 // Types
 export type AttackTarget = {
@@ -83,8 +84,8 @@ export function isValidAttackTarget(
   // If targeting a hero (no target ID provided, or explicitly targeting hero)
   if (!targetId || targetType === 'hero') {
     // Cards with Rush can only attack minions in the turn they're played
-    const hasRush = attacker.card.keywords?.includes('rush');
-    const hasCharge = attacker.card.keywords?.includes('charge');
+    const hasRush = hasKeyword(attacker, 'rush');
+    const hasCharge = hasKeyword(attacker, 'charge');
     
     if (attacker.isSummoningSick && hasRush && !hasCharge) {
       return false;
@@ -92,7 +93,7 @@ export function isValidAttackTarget(
 
     // Check if opponent has taunt minions
     const opponentHasTaunt = state.players.opponent.battlefield.some(
-      card => card.card.keywords?.includes('taunt')
+      card => hasKeyword(card, 'taunt')
     );
 
     if (opponentHasTaunt) {
@@ -113,10 +114,10 @@ export function isValidAttackTarget(
 
   // Check for taunt
   const opponentHasTaunt = state.players.opponent.battlefield.some(
-    card => card.card.keywords?.includes('taunt')
+    card => hasKeyword(card, 'taunt')
   );
 
-  if (opponentHasTaunt && !targetMinion.card.keywords?.includes('taunt')) {
+  if (opponentHasTaunt && !hasKeyword(targetMinion, 'taunt')) {
     return false;
   }
 
@@ -303,7 +304,7 @@ export function executeAttack(
     updatedAttacker.attacksPerformed = (updatedAttacker.attacksPerformed || 0) + 1;
     
     // Check if it can attack again this turn
-    const hasWindfury = updatedAttacker.card.keywords?.includes('windfury');
+    const hasWindfury = hasKeyword(updatedAttacker, 'windfury');
     const maxAttacks = hasWindfury ? 2 : 1;
     
     if (updatedAttacker.attacksPerformed >= maxAttacks) {
@@ -368,9 +369,9 @@ export function resetAttackStateForTurn(state: GameState, playerId: 'player' | '
  * Format info about a card's attack status for debugging
  */
 export function getAttackStatusInfo(card: CardInstance, isPlayerTurn: boolean): string {
-  const hasCharge = card.card.keywords?.includes('charge');
-  const hasRush = card.card.keywords?.includes('rush');
-  const hasWindfury = card.card.keywords?.includes('windfury');
+  const hasCharge = hasKeyword(card, 'charge');
+  const hasRush = hasKeyword(card, 'rush');
+  const hasWindfury = hasKeyword(card, 'windfury');
   
   return `
     Name: ${card.card.name}
@@ -519,7 +520,7 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
       }
       
       // This is a taunt minion
-      if (card.card.keywords?.includes('taunt')) {
+      if (hasKeyword(card, 'taunt')) {
         classes.push('has-taunt');
       }
     }

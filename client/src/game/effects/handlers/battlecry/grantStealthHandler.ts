@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a grant_stealth battlecry effect
@@ -57,12 +58,7 @@ export default function executeGrantStealth(
         (target as any).stealthDuration = duration;
         (target as any).stealthAppliedTurn = context.turnCount;
         
-        if (!target.card.keywords) {
-          target.card.keywords = [];
-        }
-        if (!target.card.keywords.includes('stealth')) {
-          target.card.keywords.push('stealth');
-        }
+        addKeyword(target, 'stealth');
         
         stealthedCount++;
         

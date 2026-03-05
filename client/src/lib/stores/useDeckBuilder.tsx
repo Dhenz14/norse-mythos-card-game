@@ -196,7 +196,7 @@ const useDeckBuilder = create<DeckBuilderState>()(
       },
     }),
     {
-      name: 'hearthstone-deck-builder', // Local storage key
+      name: 'ragnarok-deck-builder', // Local storage key
       partialize: (state) => ({ 
         selectedClass: state.selectedClass, 
         selectedDeck: state.selectedDeck,

@@ -60,14 +60,14 @@ export const TOURNAMENT_REWARDS: TournamentReward[] = [
 		rewardId: 'champion_50',
 		name: 'Champion of Midgard',
 		condition: { type: 'wins_milestone', value: 50 },
-		cards: [{ cardId: 20050, rarity: 'legendary' }],
+		cards: [{ cardId: 20050, rarity: 'mythic' }],
 		runeBonus: 500,
 	},
 	{
 		rewardId: 'legend_100',
 		name: 'Legend of the Nine Realms',
 		condition: { type: 'wins_milestone', value: 100 },
-		cards: [{ cardId: 20100, rarity: 'legendary', foil: 'gold' }],
+		cards: [{ cardId: 20100, rarity: 'mythic', foil: 'gold' }],
 		runeBonus: 1000,
 	},
 
@@ -90,7 +90,7 @@ export const TOURNAMENT_REWARDS: TournamentReward[] = [
 		rewardId: 'elo_1800',
 		name: 'Odin\'s Favored',
 		condition: { type: 'elo_milestone', value: 1800 },
-		cards: [{ cardId: 20200, rarity: 'legendary', foil: 'gold' }],
+		cards: [{ cardId: 20200, rarity: 'mythic', foil: 'gold' }],
 		runeBonus: 1000,
 	},
 

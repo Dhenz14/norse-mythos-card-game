@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CardData } from '../../types';
 import { CardRenderer } from '../CardRenderer';
@@ -17,7 +17,7 @@ interface CollectionCardProps {
  * CollectionCard - A card component for the collection view with Hearthstone-like hover effects and count indicator
  * Uses the Premium 3D card rendering system and supports both CardData and CardInstanceWithCardData
  */
-const CollectionCard: React.FC<CollectionCardProps> = ({
+const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
   card,
   count = 0,
   maxCount = 2,
@@ -27,6 +27,11 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const animTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => { if (animTimerRef.current) clearTimeout(animTimerRef.current); };
+  }, []);
   
   // Glow colors based on card rarity - exactly matching Hearthstone colors
   const glowColors = {
@@ -49,10 +54,11 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
     if (canAdd && count < maxCount) {
       setIsAnimating(true);
       onAdd(typeof cardData.id === 'number' ? cardData.id : parseInt(cardData.id as string, 10));
-      
-      // Reset animation state
-      setTimeout(() => {
+
+      if (animTimerRef.current) clearTimeout(animTimerRef.current);
+      animTimerRef.current = setTimeout(() => {
         setIsAnimating(false);
+        animTimerRef.current = null;
       }, 500);
     } else {
       // Show card details when we can't add more
@@ -148,6 +154,6 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
       </div>
     </motion.div>
   );
-};
+});
 
 export default CollectionCard;

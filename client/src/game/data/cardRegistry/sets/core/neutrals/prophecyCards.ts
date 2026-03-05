@@ -92,7 +92,7 @@ export const prophecyCards: CardData[] = [
 	{
 		id: 30105,
 		name: "Baldur's Doom",
-		manaCost: 2,
+		manaCost: 3,
 		description: 'Prophecy (2): Restore 8 Health to your hero.',
 		flavorText: "Even Baldur's death carried the seed of renewal.",
 		type: 'spell',

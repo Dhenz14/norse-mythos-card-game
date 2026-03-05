@@ -166,8 +166,8 @@ canvas {
 .card-with-drag {
   min-width: var(--card-width);
   min-height: var(--card-height);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
   /* Premium 3D effects */
   transform-style: preserve-3d;
   perspective: 1000px;
@@ -912,7 +912,7 @@ canvas {
 
 .opponent-hero-portrait, .player-hero-portrait {
   position: relative;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -923,7 +923,7 @@ canvas {
 /* Hand card styles */
 .hand-card-container {
   transform-origin: center bottom;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   /* Card margin is now managed directly in the component's inline style */
   /* This ensures the poker-hand overlap is consistent */
   position: relative;

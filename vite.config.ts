@@ -4,6 +4,7 @@ import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { execSync } from "child_process";
 import glsl from "vite-plugin-glsl";
+import { visualizer } from "rollup-plugin-visualizer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,8 +23,8 @@ export default defineConfig(({ command }) => ({
   },
   plugins: [
     react(),
-
-    glsl(), // Add GLSL shader support
+    glsl(),
+    ...(command === 'build' ? [visualizer({ filename: 'dist/bundle-stats.html', gzipSize: true, brotliSize: true })] : []),
   ],
   resolve: {
     alias: {

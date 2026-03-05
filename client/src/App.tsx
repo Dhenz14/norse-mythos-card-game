@@ -192,6 +192,15 @@ function App() {
               <Route path={routes.spectate} element={<SpectatorView />} />
               <Route path={routes.history} element={<MatchHistoryPage />} />
               <Route path={routes.settings} element={<SettingsPage />} />
+              <Route path="*" element={
+                <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center text-white">
+                  <h1 className="text-5xl font-bold text-amber-400 mb-4">404</h1>
+                  <p className="text-gray-400 text-lg mb-8">Page not found</p>
+                  <Link to={routes.home} className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-lg transition-colors">
+                    Back to Home
+                  </Link>
+                </div>
+              } />
             </Routes>
           </Suspense>
         </HashRouter>

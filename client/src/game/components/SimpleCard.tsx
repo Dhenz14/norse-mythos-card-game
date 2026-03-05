@@ -9,6 +9,7 @@
 
 import React, { useMemo, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useInView } from 'react-intersection-observer';
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
 import { getCardArtPath } from '../utils/art/artMapping';
 import './SimpleCard.css';
@@ -190,6 +191,8 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
 
   const evolutionStars = card.evolutionLevel ? '★'.repeat(card.evolutionLevel) : '';
 
+  const { ref: artRef, inView: artInView } = useInView({ triggerOnce: true, rootMargin: '200px' });
+
   const [badgeTooltip, setBadgeTooltip] = useState<BadgeTooltipState | null>(null);
 
   const handleBadgeEnter = useCallback((e: React.MouseEvent, effect: { icon: string; color: string; keyword: string }) => {
@@ -302,7 +305,11 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   return (
     <div
       className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${evolutionClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${className}`}
+      role="button"
+      aria-label={`${card.name}, ${card.manaCost} mana ${card.type}${card.attack !== undefined ? `, ${card.attack} attack` : ''}${card.health !== undefined ? `, ${card.health} health` : ''}`}
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && onClick) { e.preventDefault(); onClick(); } }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       style={style}
@@ -326,16 +333,17 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       )}
 
       <div
+        ref={artRef}
         className="card-art-container"
         style={artPath ? undefined : { background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}
       >
-        {artPath ? (
+        {artPath && artInView ? (
           <img src={artPath} alt="" className="card-art-image" draggable={false} loading="lazy" />
-        ) : (
+        ) : !artPath ? (
           <div className="card-art-icon">
             <span>{getCardTypeIcon(card.type)}</span>
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="card-name-banner">

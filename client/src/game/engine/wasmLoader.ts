@@ -14,24 +14,31 @@ import {
 	loadCardDataIntoWasm,
 } from './wasmInterface';
 
-let initialized = false;
+let initPromise: Promise<boolean> | null = null;
 let cardCount = 0;
 
 export async function loadWasmEngine(): Promise<boolean> {
-	if (initialized && isWasmReady()) return true;
+	if (isWasmReady()) return true;
+	if (initPromise) return initPromise;
 
-	const success = await initializeWasm();
-	if (!success) return false;
+	initPromise = (async () => {
+		const success = await initializeWasm();
+		if (!success) {
+			initPromise = null;
+			return false;
+		}
 
-	try {
-		const { cardRegistry } = await import('../data/cardRegistry');
-		cardCount = await loadCardDataIntoWasm(cardRegistry);
-	} catch {
-		// Card data loading is non-fatal — hashing still works
-	}
+		try {
+			const { cardRegistry } = await import('../data/cardRegistry');
+			cardCount = await loadCardDataIntoWasm(cardRegistry);
+		} catch {
+			// Card data loading is non-fatal — hashing still works
+		}
 
-	initialized = true;
-	return true;
+		return true;
+	})();
+
+	return initPromise;
 }
 
 export function getWasmHash(): string {

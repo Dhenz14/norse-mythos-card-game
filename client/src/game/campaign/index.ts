@@ -24,6 +24,7 @@ export const ALL_CHAPTERS: CampaignChapter[] = [
 	greekChapter,
 	egyptianChapter,
 	celticChapter,
+	easternChapter,
 ];
 
 export const EASTERN_CHAPTER: CampaignChapter = easternChapter;

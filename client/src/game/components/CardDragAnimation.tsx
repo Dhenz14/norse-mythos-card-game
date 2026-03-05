@@ -61,10 +61,20 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
   const isDraggingRef = useRef(false);
   
   const animationRef = useRef<number | null>(null);
-  
+  const activeDragListenersRef = useRef<{ move: ((e: PointerEvent) => void) | null; up: ((e: PointerEvent) => void) | null }>({ move: null, up: null });
+
   const lastPointerPos = useRef<Position | null>(null);
   const lastPointerEventTime = useRef<number | null>(null);
   const pointerVelocity = useRef<Position | null>(null);
+
+  useEffect(() => {
+    return () => {
+      const { move, up } = activeDragListenersRef.current;
+      if (move) document.removeEventListener('pointermove', move);
+      if (up) document.removeEventListener('pointerup', up);
+      activeDragListenersRef.current = { move: null, up: null };
+    };
+  }, []);
 
   const animateToPosition = useCallback((targetX: number, targetY: number, scale = 1, rotate = 0, duration = 400) => {
     if (!dragWrapperRef.current || !startPosRef.current) return;
@@ -481,7 +491,8 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
             
             document.removeEventListener('pointermove', handlePointerMoveEvent);
             document.removeEventListener('pointerup', handlePointerUpEvent);
-            
+            activeDragListenersRef.current = { move: null, up: null };
+
             if (cardRef.current) {
               try {
                 cardRef.current.releasePointerCapture(e.pointerId);
@@ -493,6 +504,7 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
           }
         };
         
+        activeDragListenersRef.current = { move: handlePointerMoveEvent, up: handlePointerUpEvent };
         document.addEventListener('pointermove', handlePointerMoveEvent);
         document.addEventListener('pointerup', handlePointerUpEvent);
       } catch (err) {

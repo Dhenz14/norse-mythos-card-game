@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a draw deathrattle effect
@@ -39,7 +40,7 @@ export default function executeDrawDraw(
         
         if (validCardIndex !== -1) {
           const [drawnCard] = context.currentPlayer.deck.splice(validCardIndex, 1);
-          if (context.currentPlayer.hand.length < 10) {
+          if (context.currentPlayer.hand.length < MAX_HAND_SIZE) {
             context.currentPlayer.hand.push(drawnCard);
             drawnCards.push(drawnCard);
             context.logGameEvent(`Drew ${drawnCard.card.name} from ${cardName}'s deathrattle`);

@@ -57,7 +57,7 @@ export default function executeDrawUntil(
       
       drawCount++;
       
-      if (context.currentPlayer.hand.length < MAX_HAND_SIZE) {
+      if (context.currentPlayer.hand.length < handSize) {
         context.currentPlayer.hand.push(cardInstance);
         drawnCards.push(cardInstance.card);
         context.logGameEvent(`Drew ${cardInstance.card.name}`);

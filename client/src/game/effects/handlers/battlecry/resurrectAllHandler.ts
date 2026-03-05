@@ -9,6 +9,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeResurrectAll(
   context: GameContext,
@@ -65,9 +66,9 @@ export default function executeResurrectAll(
         isPlayed: true,
         isSummoningSick: true,
         attacksPerformed: 0,
-        hasDivineShield: deadMinion.card.keywords?.includes('divine_shield'),
-        isPoisonous: deadMinion.card.keywords?.includes('poisonous'),
-        hasLifesteal: deadMinion.card.keywords?.includes('lifesteal')
+        hasDivineShield: hasKeyword(deadMinion, 'divine_shield'),
+        isPoisonous: hasKeyword(deadMinion, 'poisonous'),
+        hasLifesteal: hasKeyword(deadMinion, 'lifesteal')
       };
       
       context.currentPlayer.board.push(resurrectedMinion);

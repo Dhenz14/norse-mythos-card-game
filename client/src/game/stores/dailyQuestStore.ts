@@ -29,7 +29,11 @@ interface DailyQuestActions {
 }
 
 function todayString(): string {
-	return new Date().toISOString().slice(0, 10);
+	const d = new Date();
+	const year = d.getFullYear();
+	const month = String(d.getMonth() + 1).padStart(2, '0');
+	const day = String(d.getDate()).padStart(2, '0');
+	return `${year}-${month}-${day}`;
 }
 
 function templateToQuest(template: QuestTemplate, index: number): DailyQuest {
@@ -78,7 +82,7 @@ export const useDailyQuestStore = create<DailyQuestState & DailyQuestActions>()(
 						}
 						return q;
 					});
-					return changed ? { quests } : state;
+					return changed ? { quests } : {};
 				});
 			},
 
@@ -97,22 +101,22 @@ export const useDailyQuestStore = create<DailyQuestState & DailyQuestActions>()(
 			},
 
 			rerollQuest: (questId) => {
-				const state = get();
-				if (state.rerollsUsedToday >= 1) return;
+				const current = get();
+				if (current.rerollsUsedToday >= 1) return;
 
-				const existingTitles = state.quests.map(q => q.title);
+				const existingTitles = current.quests.map(q => q.title);
 				const newTemplates = pickRandomQuests(1, existingTitles);
 				if (newTemplates.length === 0) return;
 
-				const questIndex = state.quests.findIndex(q => q.id === questId);
-				if (questIndex === -1) return;
-
-				const newQuest = templateToQuest(newTemplates[0], questIndex);
-
-				set(state => ({
-					quests: state.quests.map((q, i) => i === questIndex ? newQuest : q),
-					rerollsUsedToday: state.rerollsUsedToday + 1,
-				}));
+				set(state => {
+					const questIndex = state.quests.findIndex(q => q.id === questId);
+					if (questIndex === -1) return {};
+					const newQuest = templateToQuest(newTemplates[0], questIndex);
+					return {
+						quests: state.quests.map((q, i) => i === questIndex ? newQuest : q),
+						rerollsUsedToday: state.rerollsUsedToday + 1,
+					};
+				});
 			},
 		}),
 		{

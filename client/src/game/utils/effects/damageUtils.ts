@@ -12,6 +12,7 @@ import { calculateDamageTaken } from './statusEffectUtils';
 import { isMinion, getHealth } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
 import { processArtifactOnHeroDamaged, processArtifactOnLethal } from '../artifactTriggerProcessor';
+import { hasKeyword } from '../cards/keywordUtils';
 
 /**
  * Utility function to handle damage dealing to heroes or minions
@@ -692,12 +693,10 @@ export function getValidTargets(
     if (isFriendly || isAny) {
       const friendlyMinions = state.players.player.battlefield || [];
       friendlyMinions.forEach((minion: CardInstance) => {
-        const minionKeywords = minion.card.keywords || [];
-        
         // Skip minions with stealth if they're enemy targets (Stealth minions can only be targeted by friendly effects)
         // Skip minions with untargetable flag
-        const isUntargetable = minionKeywords.includes('untargetable') || 
-          (isEnemy && minionKeywords.includes('stealth'));
+        const isUntargetable = hasKeyword(minion, 'untargetable') ||
+          (isEnemy && hasKeyword(minion, 'stealth'));
           
         if (!isUntargetable) {
           validTargets.push({ targetId: minion.instanceId, targetType: 'minion' });
@@ -709,11 +708,9 @@ export function getValidTargets(
     if (isEnemy || isAny) {
       const enemyMinions = state.players.opponent.battlefield || [];
       enemyMinions.forEach((minion: CardInstance) => {
-        const minionKeywords = minion.card.keywords || [];
-        
         // Skip minions with stealth or untargetable flag
-        const isUntargetable = minionKeywords.includes('untargetable') || 
-          minionKeywords.includes('stealth');
+        const isUntargetable = hasKeyword(minion, 'untargetable') ||
+          hasKeyword(minion, 'stealth');
           
         if (!isUntargetable) {
           validTargets.push({ targetId: minion.instanceId, targetType: 'minion' });

@@ -287,8 +287,9 @@ router.get('/nft/:uid', (req: Request, res: Response) => {
 // GET /supply/:cardId — how many of this card have been minted
 // ---------------------------------------------------------------------------
 
-router.get('/supply/:cardId', (req: Request, res: Response) => {
+router.get('/supply/:cardId', (req: Request, res: Response): void => {
 	const cardId = parseInt(req.params.cardId, 10);
+	if (Number.isNaN(cardId)) { res.status(400).json({ error: 'Invalid cardId' }); return; }
 	const minted = state.supplyCounters.get(cardId) ?? 0;
 	res.json({ cardId, minted });
 });
@@ -435,7 +436,7 @@ router.get('/stats/:username', (req: Request, res: Response) => {
 
 router.get('/match-history/:username', (req: Request, res: Response) => {
 	const { username } = req.params;
-	const limit = Math.min(parseInt(req.query.limit as string ?? '20', 10), 100);
+	const limit = Math.min(Math.max(parseInt(req.query.limit as string ?? '20', 10) || 20, 1), 100);
 
 	const matches: PackagedMatchResult[] = [];
 	for (const result of state.matchResults.values()) {

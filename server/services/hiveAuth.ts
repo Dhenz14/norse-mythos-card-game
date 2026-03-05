@@ -60,26 +60,47 @@ async function fetchPostingKeys(username: string): Promise<string[]> {
 	throw lastError;
 }
 
+export type AuthErrorKind = 'invalid_input' | 'invalid_signature' | 'network_error' | 'malformed_data';
+
+export interface AuthResult {
+	valid: boolean;
+	error?: AuthErrorKind;
+}
+
 export async function verifyHiveAuth(
 	username: string,
 	message: string,
 	signatureHex: string,
-): Promise<boolean> {
-	if (!username || !signatureHex || signatureHex.length < 10) return false;
-	if (!isValidHiveUsername(username)) return false;
+): Promise<AuthResult> {
+	if (!username || !signatureHex || signatureHex.length < 10) {
+		return { valid: false, error: 'invalid_input' };
+	}
+	if (!isValidHiveUsername(username)) {
+		return { valid: false, error: 'invalid_input' };
+	}
+
+	let postingKeys: string[];
+	try {
+		postingKeys = await fetchPostingKeys(username);
+	} catch (err) {
+		console.error(`[hiveAuth] network error fetching keys for ${username}:`, err);
+		return { valid: false, error: 'network_error' };
+	}
 
 	try {
 		const { Signature } = await import('hive-tx');
-		const postingKeys = await fetchPostingKeys(username);
-
 		const hashHex = createHash('sha256').update(message).digest('hex');
 		const sig = Signature.from(signatureHex);
 		const recoveredKey = sig.getPublicKey(hashHex);
 		const recoveredKeyStr = recoveredKey.toString();
 
-		return postingKeys.includes(recoveredKeyStr);
-	} catch {
-		return false;
+		if (postingKeys.includes(recoveredKeyStr)) {
+			return { valid: true };
+		}
+		return { valid: false, error: 'invalid_signature' };
+	} catch (err) {
+		console.error(`[hiveAuth] malformed signature data for ${username}:`, err);
+		return { valid: false, error: 'malformed_data' };
 	}
 }
 

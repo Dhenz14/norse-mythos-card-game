@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeFreezeAndDraw(
   context: GameContext, 
@@ -49,7 +50,7 @@ export default function executeFreezeAndDraw(
     
     let cardsDrawn = 0;
     for (let i = 0; i < drawCards; i++) {
-      if (context.currentPlayer.deck.length > 0 && context.currentPlayer.hand.length < 10) {
+      if (context.currentPlayer.deck.length > 0 && context.currentPlayer.hand.length < MAX_HAND_SIZE) {
         context.drawCards(1);
         cardsDrawn++;
       }

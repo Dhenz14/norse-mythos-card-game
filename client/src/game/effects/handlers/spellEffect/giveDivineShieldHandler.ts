@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeGiveDivineShield(
   context: GameContext, 
@@ -39,10 +40,7 @@ export default function executeGiveDivineShield(
     targets.forEach(target => {
       if (target.card.type === 'minion') {
         (target as any).hasDivineShield = true;
-        target.card.keywords = target.card.keywords || [];
-        if (!target.card.keywords.includes('divine_shield')) {
-          target.card.keywords.push('divine_shield');
-        }
+        addKeyword(target, 'divine_shield');
         shieldsGranted++;
         context.logGameEvent(`${target.card.name} gained Divine Shield`);
       }

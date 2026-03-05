@@ -14,6 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import CardRenderer from './CardRendering/CardRenderer';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { hasKeyword } from '../utils/cards/keywordUtils';
 import './SimpleBattlefield.css';
 
 interface SimpleBattlefieldProps {
@@ -31,6 +32,7 @@ interface SimpleBattlefieldProps {
 }
 
 const MAX_SLOTS = MAX_BATTLEFIELD_SIZE;
+const SLOT_INDICES = Array.from({ length: MAX_BATTLEFIELD_SIZE }, (_, i) => i);
 const EMPTY_SET = new Set<string>();
 
 export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
@@ -48,13 +50,13 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
   const showPlayer = renderMode === 'both' || renderMode === 'player';
 
   const opponentHasTaunt = useMemo(
-    () => opponentCards.some(c => c.card?.keywords?.includes('taunt')),
+    () => opponentCards.some(c => hasKeyword(c, 'taunt')),
     [opponentCards]
   );
 
   const isValidTarget = (card: CardInstanceWithCardData) => {
     if (!attackingCard) return false;
-    return !opponentHasTaunt || card.card?.keywords?.includes('taunt');
+    return !opponentHasTaunt || hasKeyword(card, 'taunt');
   };
 
   const renderSlots = (
@@ -62,7 +64,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
     side: 'player' | 'opponent',
     onClick?: (card: CardInstanceWithCardData) => void
   ) => {
-    return Array.from({ length: MAX_SLOTS }).map((_, index) => {
+    return SLOT_INDICES.map((index) => {
       const card = cards[index];
       const isOccupied = !!card;
       const isShaking = card && shakingTargets.has(card.instanceId);
@@ -71,12 +73,12 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                         !card.isSummoningSick && card.canAttack && !attackingCard;
       const isTarget = side === 'opponent' && card && isValidTarget(card);
       const hasSuperBonus = card && (card as any).hasSuperMinionBonus;
-      const hasCharge = !!(card?.card?.keywords?.includes('charge'));
+      const hasCharge = !!(card && hasKeyword(card, 'charge'));
       const isSummoningSick = side === 'player' && !!card && !!card.isSummoningSick && !hasCharge;
       const isExhausted = side === 'player' && !!card && isPlayerTurn &&
                           !card.isSummoningSick && !card.canAttack &&
                           !!((card.card as any)?.attack > 0);
-      const cardHasTaunt = !!(card?.card?.keywords?.includes('taunt'));
+      const cardHasTaunt = !!(card && hasKeyword(card, 'taunt'));
       const hasElementalBuff = !!(card as any)?.hasElementalBuff;
 
       const statusPoisoned = !!(card as any)?.isPoisonedDoT;
@@ -257,13 +259,13 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
   return (
     <div className="simple-battlefield">
       {showOpponent && (
-        <div className="bf-row opponent-row">
+        <div className="bf-row opponent-row" aria-label="Opponent's battlefield">
           {opponentSlots}
         </div>
       )}
 
       {showPlayer && (
-        <div ref={playerRowRef} className={`bf-row player-row ${showGaps ? 'dragging' : ''}`}>
+        <div ref={playerRowRef} className={`bf-row player-row ${showGaps ? 'dragging' : ''}`} aria-label="Player's battlefield">
           {playerSlotsWithGaps}
         </div>
       )}

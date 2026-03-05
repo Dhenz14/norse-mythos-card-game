@@ -9,6 +9,7 @@ import { applyDamage } from './gameUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
+import { hasKeyword } from './cards/keywordUtils';
 
 /**
  * Initialize a card's dormant effect when played
@@ -18,7 +19,7 @@ import { debug } from '../config/debugConfig';
  */
 export function initializeDormantEffect(card: CardInstance): CardInstance {
   // Check if the card has the dormant keyword
-  if ((card.card.keywords || []).includes('dormant') && isMinion(card.card)) {
+  if (hasKeyword(card, 'dormant') && isMinion(card.card)) {
     return {
       ...card,
       isDormant: true,

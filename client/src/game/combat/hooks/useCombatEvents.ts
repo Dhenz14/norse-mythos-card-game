@@ -44,6 +44,12 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
   }, [combatState?.phase]);
 
   useEffect(() => {
+    if (!isActive) {
+      hasResolvedRef.current = false;
+    }
+  }, [isActive]);
+
+  useEffect(() => {
     initializeCombatEventSubscribers();
 
     return () => {

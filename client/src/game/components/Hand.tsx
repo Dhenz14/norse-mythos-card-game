@@ -7,7 +7,7 @@
  * 
  * Uses slot-based layout system from SlotLayout.css for professional TCG styling.
  */
-import React, { useRef, useEffect, useMemo, useState } from 'react';
+import React, { useRef, useEffect, useMemo, useState, useCallback } from 'react';
 import { CardInstance, CardData } from '../types';
 import { playSound } from '../utils/soundUtils';
 import { debug } from '../config/debugConfig';
@@ -30,116 +30,74 @@ interface HandProps {
   battlefieldRef: React.RefObject<HTMLDivElement>; // Required - battlefield ref for drop detection
 }
 
+const NOOP_REGISTER = () => {};
+
 /**
  * Hand component displays the player's current hand of cards
  */
-export const Hand: React.FC<HandProps> = ({
+export const Hand: React.FC<HandProps> = React.memo(({
   cards: originalCards,
   currentMana,
   isPlayerTurn,
   onCardPlay,
   isInteractionDisabled = false,
   registerCardPosition,
-  battlefieldRef // Add this parameter to receive the battlefield reference
+  battlefieldRef
 }) => {
-  // Track which card is being hovered for preview and mouse position
   const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  
-  // Debug the props being passed to Hand component
-  debug.log('🎯 Hand component render:', {
-    cardsCount: originalCards?.length || 0,
-    currentMana,
-    isPlayerTurn,
-    isInteractionDisabled,
-    hasCards: originalCards && originalCards.length > 0,
-    cardsArray: originalCards
-  });
-  
-  // Force initialization if no cards
-  useEffect(() => {
-    if (!originalCards || originalCards.length === 0) {
-      debug.log('🔧 Hand is empty - checking game initialization');
-    }
-  }, [originalCards]);
 
-  // Convert all cards to the premium format using the adapter
   const adaptedCards = useMemo(() => {
     return originalCards.map(card => {
-      // Type guard to ensure we have the correct card structure
       if ('instanceId' in card && 'card' in card) {
         return card as CardInstanceWithCardData;
       }
       return adaptCardInstance(card as CardInstance);
     });
   }, [originalCards]);
-  
-  // Reference to hand container for position calculations
+
+  const cardLookup = useMemo(() => {
+    const map = new Map<string, CardInstance>();
+    for (const c of originalCards) {
+      const id = (c as any).instanceId;
+      if (id) map.set(id, c);
+    }
+    return map;
+  }, [originalCards]);
+
   const handContainerRef = useRef<HTMLDivElement>(null);
   const prevCardCount = useRef<number>(0);
-  
-  // Play sound when cards are added to hand
+
   useEffect(() => {
     if (adaptedCards.length > prevCardCount.current) {
       playSound('card_draw');
     }
     prevCardCount.current = adaptedCards.length;
   }, [adaptedCards.length]);
-  
-  // Handle card play - accepts optional position from drag-drop
-  const handleCardPlay = (card: CardInstanceWithCardData, position?: Position) => {
-    debug.log('[Hand.handleCardPlay] Called with:', {
-      cardInstanceId: card.instanceId,
-      cardId: card.card.id,
-      cardName: card.card.name,
-      hasOnCardPlay: !!onCardPlay
-    });
-    
-    if (!onCardPlay) {
-      debug.log('[Hand.handleCardPlay] No onCardPlay callback!');
-      return;
-    }
-    
-    // Find the original card in the array
-    const originalCard = originalCards.find(c => 
-      (card.instanceId === (c as any).instanceId) || 
-      (card.card.id === (c as any).card?.id)
-    );
-    
-    debug.log('[Hand.handleCardPlay] Original card found:', !!originalCard, originalCard?.instanceId);
-    
+
+  const handleCardPlay = useCallback((card: CardInstanceWithCardData, position?: Position) => {
+    if (!onCardPlay) return;
+
+    const originalCard = cardLookup.get(card.instanceId);
     if (originalCard) {
       playSound('card_play');
       onCardPlay(originalCard, position);
-    } else {
-      debug.error('[Hand.handleCardPlay] Could not find original card!');
     }
-  };
-  
-  // Calculate and register card position
-  // Uses the central position calculation from useCardPositions hook
-  const calculateCardPosition = (cardElement: HTMLElement, card: CardInstanceWithCardData) => {
+  }, [onCardPlay, cardLookup]);
+
+  const calculateCardPosition = useCallback((cardElement: HTMLElement, card: CardInstanceWithCardData) => {
     if (!cardElement || !registerCardPosition) return;
-    
-    // Find original card to register
-    const originalCard = originalCards.find(c => 
-      (card.instanceId === (c as any).instanceId) || 
-      (card.card.id === (c as any).card?.id)
-    );
-    
+
+    const originalCard = cardLookup.get(card.instanceId);
     if (originalCard && cardElement) {
-      // Use a consistent position calculation approach
       const rect = cardElement.getBoundingClientRect();
-      const position = {
+      registerCardPosition(originalCard, {
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2
-      };
-      
-      // Register with the central store
-      registerCardPosition(originalCard, position);
+      });
     }
-  };
+  }, [registerCardPosition, cardLookup]);
   
   // Use the professional hand arc calculator for card positioning from SlotLayout system
   const handArcTransforms = useHandArc(adaptedCards.length);
@@ -215,7 +173,7 @@ export const Hand: React.FC<HandProps> = ({
                     handleCardPlay(card, position);
                   } : undefined}
                   boardRef={battlefieldRef}
-                  registerPosition={registerCardPosition || (() => {})}
+                  registerPosition={registerCardPosition || NOOP_REGISTER}
                 />
               </div>
             );
@@ -227,6 +185,8 @@ export const Hand: React.FC<HandProps> = ({
       {hoveredCard && <CardHoverPreview card={hoveredCard} mousePosition={mousePos} />}
     </div>
   );
-};
+});
+
+Hand.displayName = 'Hand';
 
 export default Hand;

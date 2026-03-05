@@ -131,8 +131,8 @@ function checkCondition(
       });
       
     default:
-      debug.warn(`Unknown condition: ${condition}`);
-      return true;
+      debug.warn(`Unknown conditional_draw condition: ${condition}`);
+      return false;
   }
 }
 

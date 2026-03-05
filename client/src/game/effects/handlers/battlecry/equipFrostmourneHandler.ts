@@ -1,7 +1,7 @@
 /**
  * EquipFrostmourne Battlecry Handler
- * 
- * Equips the legendary Frostmourne weapon.
+ *
+ * Equips the legendary Helgrind weapon.
  * Example card: The Lich King (ID: 3015)
  */
 import { debug } from '../../../config/debugConfig';
@@ -23,10 +23,10 @@ export default function executeEquipFrostmourne(
     const summonCount = effect.summonCount || 0;
     
     const frostmourne: CardInstance = {
-      instanceId: `frostmourne-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      instanceId: `helgrind-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       card: {
         id: effect.weaponId || 3016,
-        name: 'Frostmourne',
+        name: 'Helgrind',
         description: 'Deathrattle: Summon every minion killed by this weapon.',
         manaCost: 7,
         type: 'weapon',
@@ -49,7 +49,7 @@ export default function executeEquipFrostmourne(
     
     (context.currentPlayer as any).weapon = frostmourne;
     
-    context.logGameEvent(`Equipped Frostmourne (${weaponAttack}/${weaponDurability}).`);
+    context.logGameEvent(`Equipped Helgrind (${weaponAttack}/${weaponDurability}).`);
     
     return { 
       success: true, 

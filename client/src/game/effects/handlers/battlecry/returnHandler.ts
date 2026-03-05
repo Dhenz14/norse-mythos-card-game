@@ -9,6 +9,7 @@ import { GameState, CardInstance, PlayerState } from '../../../types';
 import { BattlecryEffect } from '../../../types/CardTypes';
 import { isMinion, getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a return battlecry effect
@@ -82,9 +83,9 @@ export function executeReturnReturn(
     isPlayed: false,
     isSummoningSick: true,
     currentHealth: getHealth(targetMinion.card) || 1, // Reset health to full
-    hasDivineShield: !!targetMinion.card.keywords?.includes('divine_shield'), // Reset divine shield
-    hasPoisonous: !!targetMinion.card.keywords?.includes('poisonous'), // Reset poisonous
-    hasLifesteal: !!targetMinion.card.keywords?.includes('lifesteal') // Reset lifesteal
+    hasDivineShield: hasKeyword(targetMinion, 'divine_shield'), // Reset divine shield
+    hasPoisonous: hasKeyword(targetMinion, 'poisonous'), // Reset poisonous
+    hasLifesteal: hasKeyword(targetMinion, 'lifesteal') // Reset lifesteal
   };
   
   // Remove any buffs or modifications from the card

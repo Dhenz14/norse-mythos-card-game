@@ -70,6 +70,7 @@ Reserved ID ranges for card organization:
 | 31201-31204 | Dragon Synergy | "Holding a Dragon" conditional cards |
 | 31301-31305 | Norse Mechanic Synergy | Cross-Norse-mechanic payoff cards |
 | 31401-31413 | Deep Keywords | Overkill, Frenzy, Inspire, Echo expansion |
+| 31901-31905 | Lifesteal Expansion | Neutral Lifesteal minions (2-6 mana curve) |
 | 31501-31512 | Berserker Expansion | Filling class gaps (weapons, removal, draw, board clear) |
 | 31601-31602 | Hunter Expansion | Board clear and removal spells |
 | 31701-31702 | Druid Expansion | AOE board clear spells |

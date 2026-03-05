@@ -94,12 +94,11 @@ export const Tooltip: React.FC<TooltipProps> = ({
       calculatePosition();
       window.addEventListener('scroll', calculatePosition, true);
       window.addEventListener('resize', calculatePosition);
-      return () => {
-        window.removeEventListener('scroll', calculatePosition, true);
-        window.removeEventListener('resize', calculatePosition);
-      };
     }
-    return undefined;
+    return () => {
+      window.removeEventListener('scroll', calculatePosition, true);
+      window.removeEventListener('resize', calculatePosition);
+    };
   }, [isVisible, calculatePosition]);
 
   useEffect(() => {
@@ -113,6 +112,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
   const tooltipContent = isVisible && content && createPortal(
     <div
       ref={tooltipRef}
+      id="portal-tooltip"
+      role="tooltip"
       className={`portal-tooltip portal-tooltip--${coords.placement} ${className}`}
       style={{
         left: coords.x,
@@ -138,6 +139,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         onMouseEnter={showTooltip}
         onMouseLeave={hideTooltip}
         style={{ display: 'inline-block' }}
+        aria-describedby={isVisible ? 'portal-tooltip' : undefined}
       >
         {children}
       </div>

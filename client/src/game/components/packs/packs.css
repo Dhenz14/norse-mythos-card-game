@@ -267,7 +267,7 @@
 	font-size: 15px;
 	color: white;
 	cursor: pointer;
-	transition: all 0.2s ease;
+	transition: box-shadow 0.2s ease;
 	position: relative;
 	overflow: hidden;
 }

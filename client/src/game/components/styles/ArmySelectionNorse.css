@@ -143,7 +143,7 @@
   border-radius: 24px;
   color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
 }
 
@@ -173,7 +173,7 @@
   border-radius: 6px;
   color: #a78bfa;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
   opacity: 0.6;
 }
 
@@ -224,7 +224,7 @@
   border: 2px solid #6B5B45;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
   position: relative;
   flex-shrink: 0;
 }
@@ -380,7 +380,7 @@
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
   min-height: 220px;
@@ -772,7 +772,7 @@
   background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
   border: 2px solid #6B5B45;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
 }
 
 .norse-army-selection .norse-army-slot.filled {
@@ -844,7 +844,7 @@
   border-radius: 4px;
   color: #0f172a;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -882,7 +882,7 @@
   border-radius: 8px;
   color: #94a3b8;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
   font-family: inherit;
 }
 
@@ -901,7 +901,7 @@
   border-radius: 8px;
   color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   font-family: inherit;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -1149,7 +1149,7 @@
   border-radius: 6px;
   color: #e2e8f0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   font-family: inherit;
 }
 
@@ -1293,7 +1293,7 @@
   border-radius: 8px;
   color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   font-family: inherit;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -1518,7 +1518,7 @@
 
 /* Army sidebar item hover effect */
 .norse-army-selection .norse-army-item {
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .norse-army-selection .norse-army-item:hover {

@@ -80,6 +80,11 @@ function removeStaleQueueEntries() {
 		console.log(`[Matchmaking] Removed ${before - matchmakingQueue.length} stale queue entries`);
 		saveQueue();
 	}
+	for (const [matchId, match] of activeMatches.entries()) {
+		if (now - match.createdAt > 300_000) {
+			activeMatches.delete(matchId);
+		}
+	}
 }
 
 // Clean stale entries every 60 seconds
@@ -143,9 +148,10 @@ router.post('/queue', async (req: Request, res: Response) => {
 			return res.status(401).json({ success: false, error: 'Timestamp expired' });
 		}
 		const message = `ragnarok-queue:${username}:${timestamp}`;
-		const valid = await verifyHiveAuth(username, message, signature);
-		if (!valid) {
-			return res.status(401).json({ success: false, error: 'Invalid Hive signature' });
+		const authResult = await verifyHiveAuth(username, message, signature);
+		if (!authResult.valid) {
+			const status = authResult.error === 'network_error' ? 503 : 401;
+			return res.status(status).json({ success: false, error: authResult.error === 'network_error' ? 'Auth service unavailable' : 'Invalid Hive signature' });
 		}
 	}
 
@@ -193,7 +199,7 @@ router.post('/queue', async (req: Request, res: Response) => {
 
 			setTimeout(() => {
 				activeMatches.delete(matchId);
-			}, 3600000);
+			}, 120_000);
 
 			return res.json({
 				success: true,

@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a Buff effect
@@ -71,12 +72,7 @@ export default function executeBuff(
         }
         
         grantKeywords.forEach((keyword: string) => {
-          if (!target.card.keywords) {
-            target.card.keywords = [];
-          }
-          if (!target.card.keywords.includes(keyword)) {
-            target.card.keywords.push(keyword);
-          }
+          addKeyword(target, keyword);
           
           const lowerKeyword = keyword.toLowerCase();
           if (lowerKeyword === 'taunt') {

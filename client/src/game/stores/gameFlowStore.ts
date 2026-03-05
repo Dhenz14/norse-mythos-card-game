@@ -48,18 +48,23 @@ interface GameFlowStore {
 
 const flowManager = new GameFlowManager();
 
+let flowManagerSubscribed = false;
+
 export const useGameFlowStore = create<GameFlowStore>()(
   persist(
     (set, get) => {
-      flowManager.subscribe((state) => {
-        set({
-          phase: state.phase,
-          previousPhase: state.previousPhase,
-          match: state.match,
-          isLoading: state.isLoading,
-          error: state.error,
+      if (!flowManagerSubscribed) {
+        flowManagerSubscribed = true;
+        flowManager.subscribe((state) => {
+          set({
+            phase: state.phase,
+            previousPhase: state.previousPhase,
+            match: state.match,
+            isLoading: state.isLoading,
+            error: state.error,
+          });
         });
-      });
+      }
 
       return {
         phase: 'MAIN_MENU',

@@ -60,7 +60,7 @@ export const useFriendStore = create<FriendState & FriendActions>()(
 			},
 
 			updatePresence: (statuses) => {
-				set({ onlineStatus: statuses });
+				set(state => ({ onlineStatus: { ...state.onlineStatus, ...statuses } }));
 			},
 
 			addChallenge: (from, peerId) => {

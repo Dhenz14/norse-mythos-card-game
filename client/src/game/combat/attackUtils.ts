@@ -14,6 +14,7 @@
 
 import { CardInstance } from '../types';
 import { debug } from '../config/debugConfig';
+import { hasKeyword } from '../utils/cards/keywordUtils';
 
 export interface AttackEligibilityResult {
   canAttack: boolean;
@@ -75,16 +76,16 @@ export function getAttackEligibility(card: CardInstance, isPlayerTurn: boolean):
   }
   
   // Check summoning sickness
-  const hasCharge = card.card.keywords?.includes('charge');
-  const hasRush = card.card.keywords?.includes('rush');
+  const hasCharge = hasKeyword(card, 'charge');
+  const hasRush = hasKeyword(card, 'rush');
   
   if (card.isSummoningSick && !hasCharge && !hasRush) {
     return { canAttack: false, reason: 'Summoning sickness' };
   }
   
   // Check attack limit (Windfury allows 2 attacks, Mega-Windfury allows 4)
-  const hasWindfury = card.card.keywords?.includes('windfury');
-  const hasMegaWindfury = card.card.keywords?.includes('mega_windfury');
+  const hasWindfury = hasKeyword(card, 'windfury');
+  const hasMegaWindfury = hasKeyword(card, 'mega_windfury');
   const attackLimit = hasMegaWindfury ? 4 : (hasWindfury ? 2 : 1);
   const attacksPerformed = card.attacksPerformed || 0;
   
@@ -120,7 +121,7 @@ export function isValidAttackTarget(
   }
   
   // If the attacker has rush, it can only attack minions (not heroes) in the turn it's played
-  if (attackingCard.isSummoningSick && attackingCard.card.keywords?.includes('rush') && targetCard.card.type === 'hero') {
+  if (attackingCard.isSummoningSick && hasKeyword(attackingCard, 'rush') && targetCard.card.type === 'hero') {
     return false;
   }
   
@@ -140,8 +141,8 @@ export function getValidTargets(
   if (!attackingCard.canAttack) return [];
   
   // Check for taunt minions
-  const tauntMinions = opponentCards.filter(card => 
-    card.card.keywords?.includes('taunt')
+  const tauntMinions = opponentCards.filter(card =>
+    hasKeyword(card, 'taunt')
   );
   
   // If there are taunt minions, they are the only valid targets
@@ -151,8 +152,8 @@ export function getValidTargets(
   
   // Otherwise, all opponent cards and hero are valid targets
   // Exception: Rush minions can't attack heroes in the turn they're played
-  const hasRushLimitation = attackingCard.isSummoningSick && 
-                         attackingCard.card.keywords?.includes('rush');
+  const hasRushLimitation = attackingCard.isSummoningSick &&
+                         hasKeyword(attackingCard, 'rush');
   
   const targets = [...opponentCards];
   

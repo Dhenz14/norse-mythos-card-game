@@ -11,7 +11,8 @@ import { ALL_NORSE_HEROES, getAnyHeroById } from '../data/norseHeroes';
 import { debug } from '../config/debugConfig';
 import { destroyCard } from './zoneUtils';
 import { dealDamage } from './effects/damageUtils';
-import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { addKeyword, clearKeywords, hasKeyword } from './cards/keywordUtils';
+import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 
 /**
  * Helper to safely get attack from card data
@@ -544,7 +545,7 @@ function executeDraw(
   // First handle the draw effect
   const drawCount = power.value || 1;
   for (let i = 0; i < drawCount; i++) {
-    if (player.deck.length > 0 && player.hand.length < 10) {
+    if (player.deck.length > 0 && player.hand.length < MAX_HAND_SIZE) {
       const drawnCardData = player.deck.shift();
       if (drawnCardData) {
         const cardInstance: CardInstance = {
@@ -584,7 +585,7 @@ function executeCopy(
 
   const copyCount = power.value || 1;
   for (let i = 0; i < copyCount; i++) {
-    if (opponent.hand.length > 0 && player.hand.length < 10) {
+    if (opponent.hand.length > 0 && player.hand.length < MAX_HAND_SIZE) {
       const randomIndex = Math.floor(Math.random() * opponent.hand.length);
       const copiedCard = { ...opponent.hand[randomIndex] };
       copiedCard.instanceId = `${playerType}_copy_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -632,8 +633,7 @@ function executeGrantKeyword(
 function applyKeyword(minion: CardInstance, keyword: string): void {
   switch (keyword) {
     case 'taunt':
-      if (!minion.card.keywords) minion.card.keywords = [];
-      minion.card.keywords.push('taunt');
+      addKeyword(minion, 'taunt');
       break;
     case 'divine_shield':
       minion.hasDivineShield = true;
@@ -803,7 +803,7 @@ function executeSilence(
     targetMinion.isRush = false;
     targetMinion.hasCharge = false;
 
-    targetMinion.card.keywords = [];
+    clearKeywords(targetMinion);
     (targetMinion.card as any).battlecry = undefined;
     (targetMinion.card as any).deathrattle = undefined;
     (targetMinion.card as any).aura = undefined;
@@ -999,12 +999,7 @@ function executeGrantDivineShield(
 
   if (targetMinion) {
     targetMinion.hasDivineShield = true;
-    if (!targetMinion.card.keywords) {
-      targetMinion.card.keywords = [];
-    }
-    if (!targetMinion.card.keywords.includes('divine_shield')) {
-      targetMinion.card.keywords.push('divine_shield');
-    }
+    addKeyword(targetMinion, 'divine_shield');
   }
 
   return state;
@@ -1022,7 +1017,7 @@ function executeGenerateEnemyClassCard(
   const opponentType = playerType === 'player' ? 'opponent' : 'player';
   const opponent = state.players[opponentType];
 
-  if (player.hand.length >= 10) {
+  if (player.hand.length >= MAX_HAND_SIZE) {
     return state;
   }
 
@@ -1139,7 +1134,7 @@ function executeDiscover(
 ): GameState {
   const player = state.players[playerType];
 
-  if (player.hand.length >= 10) {
+  if (player.hand.length >= MAX_HAND_SIZE) {
     return state;
   }
 
@@ -1207,12 +1202,7 @@ function executeDamageAndPoison(
 
     targetMinion.hasPoisonous = true;
     (targetMinion as any).isPoisoned = true;
-    if (!targetMinion.card.keywords) {
-      targetMinion.card.keywords = [];
-    }
-    if (!targetMinion.card.keywords.includes('poisoned')) {
-      targetMinion.card.keywords.push('poisoned');
-    }
+    addKeyword(targetMinion, 'poisoned');
 
     opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
   }
@@ -1292,7 +1282,7 @@ function executeConditionalDestroy(
       shouldDestroy = shouldDestroy || minionHealth <= condition.maxHealth;
     }
     if (condition.hasKeyword) {
-      shouldDestroy = shouldDestroy || (targetMinion.card.keywords?.includes(condition.hasKeyword) || false);
+      shouldDestroy = shouldDestroy || hasKeyword(targetMinion, condition.hasKeyword);
     }
   } else {
     const maxHealth = getCardHealth(targetMinion.card);
@@ -1331,7 +1321,7 @@ function executeBounce(
     targetOwner = player;
   }
 
-  if (targetMinion && targetOwner.hand.length < 10) {
+  if (targetMinion && targetOwner.hand.length < MAX_HAND_SIZE) {
     targetOwner.battlefield = targetOwner.battlefield.filter(m => m.instanceId !== targetId);
 
     const returnedCard: CardInstance = {
@@ -1378,7 +1368,7 @@ function executeBounceDamage(
   if (targetMinion) {
     targetMinion.currentHealth = (targetMinion.currentHealth || getCardHealth(targetMinion.card)) - damageValue;
 
-    if ((targetMinion.currentHealth || 0) > 0 && targetOwner.hand.length < 10) {
+    if ((targetMinion.currentHealth || 0) > 0 && targetOwner.hand.length < MAX_HAND_SIZE) {
       targetOwner.battlefield = targetOwner.battlefield.filter(m => m.instanceId !== targetId);
 
       const returnedCard: CardInstance = {
@@ -1436,7 +1426,7 @@ function executeBounceAndDamageHero(
     targetOwner = player;
   }
 
-  if (targetMinion && targetOwner.hand.length < 10) {
+  if (targetMinion && targetOwner.hand.length < MAX_HAND_SIZE) {
     targetOwner.battlefield = targetOwner.battlefield.filter(m => m.instanceId !== targetId);
 
     const returnedCard: CardInstance = {
@@ -1549,7 +1539,7 @@ function executeDrawAndDamage(
   player.heroHealth = Math.max(0, (player.heroHealth ?? player.health ?? 30) - damageValue);
 
   for (let i = 0; i < drawCount; i++) {
-    if (player.deck.length > 0 && player.hand.length < 10) {
+    if (player.deck.length > 0 && player.hand.length < MAX_HAND_SIZE) {
       const drawnCardData = player.deck.shift();
       if (drawnCardData) {
         const cardInstance: CardInstance = {
@@ -1780,7 +1770,7 @@ export function executeHeroPassive(
       }
       break;
     case 'copy':
-      if (opponent.deck.length > 0 && owner.hand.length < 10) {
+      if (opponent.deck.length > 0 && owner.hand.length < MAX_HAND_SIZE) {
         const randomIndex = Math.floor(Math.random() * opponent.deck.length);
         const copiedCardData = opponent.deck[randomIndex];
         const copiedCardInstance: CardInstance = {

@@ -219,4 +219,89 @@ export const deepKeywordCards: CardData[] = [
 
 	// === COMBO (for Rogue — see rogueComboCards) ===
 	// Combo cards are in the Rogue class file
+
+	// === LIFESTEAL (5 new — filling biggest keyword gap) ===
+	{
+		id: 31901,
+		name: 'Eir\'s Disciple',
+		manaCost: 2,
+		attack: 1,
+		health: 3,
+		description: 'Lifesteal',
+		flavorText: 'She learned healing from the goddess herself — every strike mends.',
+		type: 'minion',
+		rarity: 'common',
+		class: 'Neutral',
+		keywords: ['lifesteal'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31902,
+		name: 'Hel\'s Leech',
+		manaCost: 3,
+		attack: 3,
+		health: 2,
+		description: 'Lifesteal',
+		flavorText: 'It feeds on the boundary between life and death.',
+		type: 'minion',
+		rarity: 'common',
+		race: 'Undead',
+		class: 'Neutral',
+		keywords: ['lifesteal'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31903,
+		name: 'Draugr Blood-Drinker',
+		manaCost: 4,
+		attack: 3,
+		health: 4,
+		description: 'Lifesteal',
+		flavorText: 'The undead thirst is never quenched — but it does restore the master.',
+		type: 'minion',
+		rarity: 'common',
+		race: 'Undead',
+		class: 'Neutral',
+		keywords: ['lifesteal'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31904,
+		name: 'Nótt\'s Embrace',
+		manaCost: 5,
+		attack: 4,
+		health: 4,
+		description: 'Taunt. Lifesteal',
+		flavorText: 'The goddess of night wraps her chosen in shadow that heals.',
+		type: 'minion',
+		rarity: 'rare',
+		class: 'Neutral',
+		keywords: ['taunt', 'lifesteal'],
+		set: 'core',
+		collectible: true
+	},
+	{
+		id: 31905,
+		name: 'Valravn',
+		manaCost: 6,
+		attack: 5,
+		health: 5,
+		description: 'Lifesteal. Deathrattle: Restore 3 Health to your hero.',
+		flavorText: 'A raven that consumed the hearts of the slain, gaining their strength.',
+		type: 'minion',
+		rarity: 'epic',
+		race: 'Beast',
+		class: 'Neutral',
+		keywords: ['lifesteal', 'deathrattle'],
+		deathrattle: {
+			type: 'heal',
+			value: 3,
+			targetType: 'friendly_hero'
+		},
+		set: 'core',
+		collectible: true
+	}
 ];

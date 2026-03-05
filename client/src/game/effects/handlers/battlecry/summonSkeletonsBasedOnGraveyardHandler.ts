@@ -12,6 +12,7 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { getGraveyard } from '../../../data/cardManagement/graveyardTracker';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
+import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a battlecry that summons skeletons based on graveyard size
@@ -32,7 +33,7 @@ function executeSummonSkeletonsBasedOnGraveyardSummonSkeletonsBasedOnGraveyard(
     graveyardSize,
     maxSkeletons,
     // Also limit by available board space
-    7 - (context.currentPlayer.board?.length || 0)
+    MAX_BATTLEFIELD_SIZE - (context.currentPlayer.board?.length || 0)
   );
   
   if (skeletonsToSummon <= 0) {

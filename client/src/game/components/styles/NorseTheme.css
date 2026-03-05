@@ -312,7 +312,7 @@
   letter-spacing: 1px;
   color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .norse-end-turn-button:hover {
@@ -469,7 +469,7 @@
     0 4px 10px rgba(0, 0, 0, 0.3),
     inset 0 2px 4px rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 /* Active state animation only - no hover */

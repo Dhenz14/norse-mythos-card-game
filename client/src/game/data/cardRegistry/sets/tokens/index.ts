@@ -459,7 +459,7 @@ const deathknightTokens: CardData[] = [
     attack: 1,
     health: 1,
     race: 'Undead',
-    class: 'Deathknight',
+    class: 'DeathKnight',
     collectible: false
   }
 ];

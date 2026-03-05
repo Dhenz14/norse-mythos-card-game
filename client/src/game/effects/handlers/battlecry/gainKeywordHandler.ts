@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a gain_keyword battlecry effect
@@ -67,14 +68,8 @@ export default function executeGainKeyword(
     
     targets.forEach(target => {
       if (target.card.type === 'minion') {
-        if (!target.card.keywords) {
-          target.card.keywords = [];
-        }
-        
         keywords.forEach((keyword: string) => {
-          if (!target.card.keywords!.includes(keyword)) {
-            target.card.keywords!.push(keyword);
-          }
+          addKeyword(target, keyword);
           
           applyKeywordEffect(target, keyword);
         });

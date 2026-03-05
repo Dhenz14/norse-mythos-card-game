@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a Gain Armor Conditional Draw effect
@@ -50,7 +51,7 @@ export default function executeGainArmorConditionalDraw(
         conditionMet = context.currentPlayer.health < context.currentPlayer.maxHealth;
         break;
       case 'full_hand':
-        conditionMet = context.currentPlayer.hand.length >= 7;
+        conditionMet = context.currentPlayer.hand.length >= MAX_HAND_SIZE;
         break;
       case 'empty_board':
         conditionMet = context.currentPlayer.board.length === 0;

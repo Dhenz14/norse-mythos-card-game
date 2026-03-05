@@ -88,7 +88,7 @@ export const druidCards: CardData[] = [
   
   // Yggdrasil Golem card
   {
-    id: 85002,
+    id: 85301,
     name: "Stone Flower",
     manaCost: 3,
     description: "Summon a Yggdrasil Golem. Gain an empty Mana Crystal.",

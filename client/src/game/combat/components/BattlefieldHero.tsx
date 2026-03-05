@@ -508,10 +508,10 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
           {showSecretTooltip && secrets && secrets.length > 0 && (
             <div className="secret-tooltip" style={secretTooltipStyle}>
               <div style={secretHeaderStyle}>
-                Secret Active
+                Rune Active
               </div>
               <div style={SECRET_TEXT_STYLE}>
-                {secrets.length === 1 ? '1 secret in play' : `${secrets.length} secrets in play`}
+                {secrets.length === 1 ? '1 rune in play' : `${secrets.length} runes in play`}
               </div>
             </div>
           )}

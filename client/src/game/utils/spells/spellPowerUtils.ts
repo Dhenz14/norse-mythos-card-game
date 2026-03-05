@@ -4,6 +4,7 @@
 
 import { CardInstance, GameState, Player } from '../../types';
 import { isMinion } from '../cards/typeGuards';
+import { hasKeyword } from '../cards/keywordUtils';
 
 /**
  * Calculate the total spell power for a player
@@ -24,7 +25,7 @@ export function calculateSpellPower(state: GameState, playerType: 'player' | 'op
     }
     
     // Check if minion has the spell_damage keyword
-    const hasSpellDamageKeyword = minion.card.keywords?.includes('spell_damage') ?? false;
+    const hasSpellDamageKeyword = hasKeyword(minion, 'spell_damage');
     
     // Add the minion's spell power value if it has one
     if (hasSpellDamageKeyword && minion.currentAttack && minion.currentAttack > 0) {
@@ -60,7 +61,7 @@ export function initializeSpellPower(cardInstance: CardInstance): CardInstance {
   }
   
   // Check if the card has spell damage keyword
-  const hasSpellDamage = cardInstance.card.keywords?.includes('spell_damage') ?? false;
+  const hasSpellDamage = hasKeyword(cardInstance, 'spell_damage');
   if (hasSpellDamage) {
     // By default, we'll set currentAttack to represent spell power
     // For minions with spell_damage keyword, their attack acts as spell power

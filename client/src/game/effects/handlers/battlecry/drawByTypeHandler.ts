@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 
 /**
@@ -44,7 +45,7 @@ export default function executeDrawByType(
         
         const matchesType = card.type === typeOrRace;
         const matchesRace = (card.race || '').toLowerCase() === typeOrRace.toLowerCase();
-        const matchesKeyword = card.keywords?.includes(typeOrRace);
+        const matchesKeyword = hasKeyword(cardInstance, typeOrRace);
         
         if (matchesType || matchesRace || matchesKeyword) {
           context.currentPlayer.deck.splice(i, 1);

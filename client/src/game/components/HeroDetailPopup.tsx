@@ -572,7 +572,7 @@ const styles = `
     cursor: pointer;
     font-size: 16px;
     color: rgba(255, 255, 255, 0.6);
-    transition: all 0.2s;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
     flex-shrink: 0;
     margin-left: 10px;
   }
@@ -598,7 +598,7 @@ const styles = `
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
   }
 
   .hero-popup-close:hover {

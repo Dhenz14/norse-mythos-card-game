@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a divine_shield_gain battlecry effect
@@ -54,12 +55,7 @@ export default function executeDivineShieldGain(
       if (target.card.type === 'minion') {
         target.hasDivineShield = true;
         
-        if (!target.card.keywords) {
-          target.card.keywords = [];
-        }
-        if (!target.card.keywords.includes('divine_shield')) {
-          target.card.keywords.push('divine_shield');
-        }
+        addKeyword(target, 'divine_shield');
         
         shieldedCount++;
         context.logGameEvent(`${sourceCard.name} granted Divine Shield to ${target.card.name}`);

@@ -437,6 +437,43 @@ export const paladinCards: CardData[] = [
     collectible: true,
     set: "core"
   },
+  // === 2-Mana Class Minions (filling early-game gap) ===
+  {
+    id: 8530,
+    name: "Baldur's Acolyte",
+    manaCost: 2,
+    attack: 2,
+    health: 2,
+    type: "minion",
+    rarity: "common",
+    description: "Battlecry: Restore 2 Health to your hero.",
+    flavorText: "Even the smallest light of Baldur can mend a wound.",
+    keywords: ["battlecry"],
+    class: "Paladin",
+    battlecry: {
+      type: "heal",
+      value: 2,
+      requiresTarget: false,
+      targetType: "friendly_hero"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 8531,
+    name: "Shieldbearer of Tyr",
+    manaCost: 2,
+    attack: 1,
+    health: 3,
+    type: "minion",
+    rarity: "common",
+    description: "Divine Shield",
+    flavorText: "Tyr lost his hand to Fenrir, but his shield-bearers never falter.",
+    keywords: ["divine_shield"],
+    class: "Paladin",
+    collectible: true,
+    set: "core"
+  },
   // === Migrated from additionalClassMinions.ts ===
   {
     id: 40005,

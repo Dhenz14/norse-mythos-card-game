@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export default function executeReturnAllMinionsToHand(
   context: GameContext, 
@@ -29,7 +30,7 @@ export default function executeReturnAllMinionsToHand(
       const friendlyMinions = [...context.currentPlayer.board];
       friendlyMinions.forEach(minion => {
         const minionAny = minion as any;
-        if (context.currentPlayer.hand.length < 10) {
+        if (context.currentPlayer.hand.length < MAX_HAND_SIZE) {
           context.currentPlayer.board = context.currentPlayer.board.filter(
             (m: any) => m.instanceId !== minion.instanceId
           );
@@ -55,7 +56,7 @@ export default function executeReturnAllMinionsToHand(
       const enemyMinions = [...context.opponentPlayer.board];
       enemyMinions.forEach(minion => {
         const minionAny = minion as any;
-        if (context.opponentPlayer.hand.length < 10) {
+        if (context.opponentPlayer.hand.length < MAX_HAND_SIZE) {
           context.opponentPlayer.board = context.opponentPlayer.board.filter(
             (m: any) => m.instanceId !== minion.instanceId
           );

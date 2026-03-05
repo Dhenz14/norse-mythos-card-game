@@ -1,13 +1,23 @@
 import type { HeroDeck } from '../stores/heroDeckStore';
 import { cardRegistry } from '../data/cardRegistry';
 
-const DECK_CODE_VERSION = 1;
+const DECK_CODE_VERSION = 2;
 
 const HERO_CLASSES = [
 	'mage', 'hunter', 'warrior', 'priest', 'rogue',
 	'paladin', 'warlock', 'druid', 'shaman',
-	'death_knight', 'berserker', 'monk',
+	'deathknight', 'berserker', 'monk',
 ] as const;
+
+function encodeId(bytes: number[], id: number) {
+	bytes.push((id >> 16) & 0xFF);
+	bytes.push((id >> 8) & 0xFF);
+	bytes.push(id & 0xFF);
+}
+
+function decodeId(bytes: Uint8Array, offset: number): number {
+	return (bytes[offset] << 16) | (bytes[offset + 1] << 8) | bytes[offset + 2];
+}
 
 export function encodeDeck(deck: HeroDeck): string {
 	const bytes: number[] = [];
@@ -38,14 +48,12 @@ export function encodeDeck(deck: HeroDeck): string {
 
 	bytes.push(singles.length);
 	for (const id of singles) {
-		bytes.push((id >> 8) & 0xFF);
-		bytes.push(id & 0xFF);
+		encodeId(bytes, id);
 	}
 
 	bytes.push(doubles.length);
 	for (const id of doubles) {
-		bytes.push((id >> 8) & 0xFF);
-		bytes.push(id & 0xFF);
+		encodeId(bytes, id);
 	}
 
 	return btoa(String.fromCharCode(...bytes));
@@ -60,7 +68,7 @@ export function decodeDeck(code: string): { heroId: string; heroClass: string; c
 		let offset = 0;
 
 		const version = bytes[offset++];
-		if (version !== DECK_CODE_VERSION) return null;
+		if (version !== 1 && version !== DECK_CODE_VERSION) return null;
 
 		const classIndex = bytes[offset++];
 		const heroClass = classIndex < HERO_CLASSES.length ? HERO_CLASSES[classIndex] : 'mage';
@@ -71,18 +79,27 @@ export function decodeDeck(code: string): { heroId: string; heroClass: string; c
 		const heroId = new TextDecoder().decode(heroIdBytes);
 
 		const cardIds: number[] = [];
+		const idSize = version === 1 ? 2 : 3;
 
+		if (offset >= bytes.length) return null;
 		const singlesCount = bytes[offset++];
 		for (let i = 0; i < singlesCount; i++) {
-			const id = (bytes[offset] << 8) | bytes[offset + 1];
-			offset += 2;
+			if (offset + idSize > bytes.length) return null;
+			const id = version === 1
+				? (bytes[offset] << 8) | bytes[offset + 1]
+				: decodeId(bytes, offset);
+			offset += idSize;
 			cardIds.push(id);
 		}
 
+		if (offset >= bytes.length) return null;
 		const doublesCount = bytes[offset++];
 		for (let i = 0; i < doublesCount; i++) {
-			const id = (bytes[offset] << 8) | bytes[offset + 1];
-			offset += 2;
+			if (offset + idSize > bytes.length) return null;
+			const id = version === 1
+				? (bytes[offset] << 8) | bytes[offset + 1]
+				: decodeId(bytes, offset);
+			offset += idSize;
 			cardIds.push(id);
 			cardIds.push(id);
 		}

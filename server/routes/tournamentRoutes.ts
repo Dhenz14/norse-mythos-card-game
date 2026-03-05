@@ -9,6 +9,7 @@ import {
 	getAllTournaments,
 	createDefaultTournaments,
 } from '../services/tournamentManager';
+import { verifyHiveAuth, isValidHiveUsername, isTimestampFresh } from '../services/hiveAuth';
 
 const router = Router();
 
@@ -54,10 +55,29 @@ router.post('/', (req: Request, res: Response) => {
 	res.json({ tournament });
 });
 
-router.post('/:id/register', (req: Request, res: Response) => {
-	const { username, elo } = req.body;
-	if (!username) {
+router.post('/:id/register', async (req: Request, res: Response) => {
+	const { username, elo, signature, timestamp } = req.body;
+	if (!username || typeof username !== 'string') {
 		res.status(400).json({ error: 'username required' });
+		return;
+	}
+	if (!isValidHiveUsername(username)) {
+		res.status(400).json({ error: 'Invalid Hive username format' });
+		return;
+	}
+	if (!signature || !timestamp) {
+		res.status(401).json({ error: 'Hive signature required' });
+		return;
+	}
+	if (!isTimestampFresh(timestamp)) {
+		res.status(401).json({ error: 'Timestamp expired' });
+		return;
+	}
+	const message = `ragnarok-tournament-register:${username}:${req.params.id}:${timestamp}`;
+	const authResult = await verifyHiveAuth(username, message, signature);
+	if (!authResult.valid) {
+		const status = authResult.error === 'network_error' ? 503 : 401;
+		res.status(status).json({ error: authResult.error === 'network_error' ? 'Auth service unavailable' : 'Invalid Hive signature' });
 		return;
 	}
 	const tournament = registerPlayer(req.params.id, username, elo);
@@ -77,10 +97,29 @@ router.post('/:id/start', (req: Request, res: Response) => {
 	res.json({ tournament });
 });
 
-router.post('/:id/result', (req: Request, res: Response) => {
-	const { matchId, winner } = req.body;
+router.post('/:id/result', async (req: Request, res: Response) => {
+	const { matchId, winner, signature, timestamp } = req.body;
 	if (!matchId || !winner) {
 		res.status(400).json({ error: 'matchId and winner required' });
+		return;
+	}
+	if (typeof winner !== 'string' || !isValidHiveUsername(winner)) {
+		res.status(400).json({ error: 'Invalid winner username format' });
+		return;
+	}
+	if (!signature || !timestamp) {
+		res.status(401).json({ error: 'Hive signature required' });
+		return;
+	}
+	if (!isTimestampFresh(timestamp)) {
+		res.status(401).json({ error: 'Timestamp expired' });
+		return;
+	}
+	const message = `ragnarok-tournament-result:${winner}:${req.params.id}:${matchId}:${timestamp}`;
+	const authResult = await verifyHiveAuth(winner, message, signature);
+	if (!authResult.valid) {
+		const status = authResult.error === 'network_error' ? 503 : 401;
+		res.status(status).json({ error: authResult.error === 'network_error' ? 'Auth service unavailable' : 'Invalid Hive signature' });
 		return;
 	}
 	const tournament = reportMatchResult(req.params.id, matchId, winner);
@@ -91,10 +130,29 @@ router.post('/:id/result', (req: Request, res: Response) => {
 	res.json({ tournament });
 });
 
-router.post('/:id/drop', (req: Request, res: Response) => {
-	const { username } = req.body;
-	if (!username) {
+router.post('/:id/drop', async (req: Request, res: Response) => {
+	const { username, signature, timestamp } = req.body;
+	if (!username || typeof username !== 'string') {
 		res.status(400).json({ error: 'username required' });
+		return;
+	}
+	if (!isValidHiveUsername(username)) {
+		res.status(400).json({ error: 'Invalid Hive username format' });
+		return;
+	}
+	if (!signature || !timestamp) {
+		res.status(401).json({ error: 'Hive signature required' });
+		return;
+	}
+	if (!isTimestampFresh(timestamp)) {
+		res.status(401).json({ error: 'Timestamp expired' });
+		return;
+	}
+	const message = `ragnarok-tournament-drop:${username}:${req.params.id}:${timestamp}`;
+	const authResult = await verifyHiveAuth(username, message, signature);
+	if (!authResult.valid) {
+		const status = authResult.error === 'network_error' ? 503 : 401;
+		res.status(status).json({ error: authResult.error === 'network_error' ? 'Auth service unavailable' : 'Invalid Hive signature' });
 		return;
 	}
 	const tournament = dropPlayer(req.params.id, username);

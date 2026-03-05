@@ -667,8 +667,14 @@ export interface CardInstance {
   // Einherjar resurrection tracking (max 3 generations)
   einherjarGeneration?: number;
 
+  // Ragnarok Chain: instanceId of the chain partner on the battlefield
+  chainPartnerInstanceId?: string;
+
   // Blood Price: true when card is queued to pay with health instead of mana
   payWithBlood?: boolean;
+
+  // Instance-level keyword overrides (takes precedence over card.keywords when present)
+  instanceKeywords?: string[];
 
   // NFT — present if this is a Hive L1 NFT card; absent for demo/dev cards
   nft_id?: string;
@@ -831,7 +837,7 @@ export interface GameState {
   currentTurn: 'player' | 'opponent';
   turnNumber: number;
   gamePhase: 'mulligan' | 'playing' | 'ended' | 'game_over';
-  winner?: 'player' | 'opponent' | null;
+  winner?: 'player' | 'opponent' | 'draw' | null;
   gameLog: GameLogEvent[];
   mulligan?: MulliganState;
   mulliganCompleted?: boolean;

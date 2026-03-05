@@ -141,12 +141,23 @@ export function findBestHand(holeCards: PokerCard[], communityCards: PokerCard[]
   
   if (allCards.length < 5) {
     const sortedCards = allCards.sort((a, b) => b.numericValue - a.numericValue);
+    if (sortedCards.length === 0) {
+      console.warn('[HandEvaluator] findBestHand called with 0 cards — returning fallback High Card');
+      return {
+        rank: PokerHandRank.HIGH_CARD,
+        cards: [],
+        highCard: { suit: 'hearts', value: '2', numericValue: 2 } as PokerCard,
+        multiplier: 1.0,
+        displayName: 'High Card',
+        tieBreakers: []
+      };
+    }
     return {
       rank: PokerHandRank.HIGH_CARD,
       cards: sortedCards,
       highCard: sortedCards[0],
       multiplier: 1.0,
-      displayName: '',
+      displayName: 'High Card',
       tieBreakers: sortedCards.map(c => c.numericValue)
     };
   }

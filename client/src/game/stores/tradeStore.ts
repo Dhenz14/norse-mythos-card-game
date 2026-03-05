@@ -25,10 +25,10 @@ interface TradeState {
 
 interface TradeActions {
 	fetchOffers: (username: string) => Promise<void>;
-	createOffer: (toUser: string) => Promise<boolean>;
-	acceptOffer: (offerId: string) => Promise<boolean>;
-	declineOffer: (offerId: string) => Promise<boolean>;
-	cancelOffer: (offerId: string) => Promise<boolean>;
+	createOffer: (fromUser: string, toUser: string) => Promise<boolean>;
+	acceptOffer: (offerId: string, username: string) => Promise<boolean>;
+	declineOffer: (offerId: string, username: string) => Promise<boolean>;
+	cancelOffer: (offerId: string, username: string) => Promise<boolean>;
 	toggleOfferedCard: (cardId: number) => void;
 	toggleRequestedCard: (cardId: number) => void;
 	setOfferedDust: (amount: number) => void;
@@ -60,7 +60,7 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 		}
 	},
 
-	createOffer: async (toUser) => {
+	createOffer: async (fromUser, toUser) => {
 		const { selectedOfferedCards, selectedRequestedCards, offeredDust, requestedDust } = get();
 		if (selectedOfferedCards.length === 0 && offeredDust === 0) return false;
 		set({ loading: true, error: null });
@@ -69,6 +69,7 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
+					fromUser,
 					toUser,
 					offeredCardIds: selectedOfferedCards,
 					requestedCardIds: selectedRequestedCards,
@@ -90,9 +91,13 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 		}
 	},
 
-	acceptOffer: async (offerId) => {
+	acceptOffer: async (offerId, username) => {
 		try {
-			const res = await fetch(`/api/trades/${offerId}/accept`, { method: 'POST' });
+			const res = await fetch(`/api/trades/${offerId}/accept`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ username }),
+			});
 			if (res.ok) {
 				set(s => ({
 					offers: s.offers.map(o => o.id === offerId ? { ...o, status: 'accepted' as const } : o),
@@ -105,9 +110,13 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 		}
 	},
 
-	declineOffer: async (offerId) => {
+	declineOffer: async (offerId, username) => {
 		try {
-			const res = await fetch(`/api/trades/${offerId}/decline`, { method: 'POST' });
+			const res = await fetch(`/api/trades/${offerId}/decline`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ username }),
+			});
 			if (res.ok) {
 				set(s => ({
 					offers: s.offers.map(o => o.id === offerId ? { ...o, status: 'declined' as const } : o),
@@ -120,9 +129,13 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 		}
 	},
 
-	cancelOffer: async (offerId) => {
+	cancelOffer: async (offerId, username) => {
 		try {
-			const res = await fetch(`/api/trades/${offerId}/cancel`, { method: 'POST' });
+			const res = await fetch(`/api/trades/${offerId}/cancel`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ username }),
+			});
 			if (res.ok) {
 				set(s => ({
 					offers: s.offers.map(o => o.id === offerId ? { ...o, status: 'cancelled' as const } : o),

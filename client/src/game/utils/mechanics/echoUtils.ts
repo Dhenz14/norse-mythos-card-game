@@ -5,6 +5,8 @@
 
 import { CardInstance, GameState, GameLogEventType } from '../../types';
 import { createGameLogEvent } from '../logUtils';
+import { MAX_HAND_SIZE } from '../../constants/gameConstants';
+import { hasKeyword } from '../cards/keywordUtils';
 
 /**
  * Check if a card has the Echo keyword
@@ -18,7 +20,7 @@ export function hasEcho(card: CardInstance): boolean {
   // 3. It's not an expired Echo copy (Echo copies expire at the end of the turn)
   // 4. The original card had Echo (for cards that gained Echo through effects)
   return (
-    ((Array.isArray(card.card.keywords) && card.card.keywords.includes('echo')) || card.hasEcho === true) && 
+    (hasKeyword(card, 'echo') || card.hasEcho === true) &&
     !card.isSilenced &&
     card.isEchoExpired !== true
   );
@@ -79,7 +81,7 @@ export function createEchoCopy(
   };
 
   // If hand isn't full, add the echo copy
-  if (newState.players[player].hand.length < 10) {
+  if (newState.players[player].hand.length < MAX_HAND_SIZE) {
     newState.players[player].hand.push(echoCopy);
     
     // Log the echo copy creation

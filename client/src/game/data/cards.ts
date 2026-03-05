@@ -1244,7 +1244,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'common',
       manaCost: 2,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1269,7 +1269,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'epic',
       manaCost: 6,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1292,7 +1292,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
       manaCost: 4,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1318,7 +1318,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 5,
       durability: 3,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       onKillEffect: {
@@ -1335,7 +1335,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
 
       manaCost: 2,
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
       spellEffect: {
         type: 'aoe_with_on_kill',
@@ -1360,7 +1360,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 2,
       durability: 3,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       runeEffect: {
@@ -1379,7 +1379,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'epic',
       manaCost: 4,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1404,7 +1404,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
       manaCost: 3,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1430,7 +1430,7 @@ export const fullCardDatabase: CardData[] = [
       manaCost: 9,
 
       armor: 5,
-      class: 'Deathknight',
+      class: 'DeathKnight',
 
       keywords: ['battlecry'],
       collectible: true,
@@ -1465,7 +1465,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
       manaCost: 4,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1488,7 +1488,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'common',
       manaCost: 2,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1519,7 +1519,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 1,
   health: 1,
   
-  class: "Deathknight",
+  class: "DeathKnight",
       collectible: false
   },
   {
@@ -1533,7 +1533,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
       manaCost: 3,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1558,7 +1558,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
       manaCost: 3,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1580,7 +1580,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'rare',
       manaCost: 4,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1612,7 +1612,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 2,
   durability: 2,
   
-  class: "Deathknight",
+  class: "DeathKnight",
       collectible: true
   },
   {
@@ -1626,7 +1626,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'common',
       manaCost: 2,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1649,7 +1649,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'epic',
       manaCost: 4,
 
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
 
       spellEffect: {
@@ -1675,7 +1675,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 2,
       health: 3,
 
-      class: 'Deathknight',
+      class: 'DeathKnight',
       keywords: ['battlecry'],
       collectible: true,
                   battlecry: {
@@ -1699,7 +1699,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 3,
       health: 3,
 
-      class: 'Deathknight',
+      class: 'DeathKnight',
       keywords: ['battlecry'],
                   battlecry: {
         type: 'buff_and_taunt',
@@ -1724,7 +1724,7 @@ export const fullCardDatabase: CardData[] = [
       attack: 3,
 
       durability: 2,
-      class: "Deathknight",
+      class: "DeathKnight",
       collectible: true,
       onKillEffect: {
       type: 'buff_weapon',
@@ -2748,7 +2748,7 @@ export const fullCardDatabase: CardData[] = [
   attack: 3,
   health: 3,
   
-  class: 'Deathknight',
+  class: 'DeathKnight',
   keywords: ['deathrattle'],
       collectible: true
   },

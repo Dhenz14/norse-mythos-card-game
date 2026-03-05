@@ -1,7 +1,8 @@
 import { debug } from '../../config/debugConfig';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { routes } from '../../../lib/routes';
 import { getRarityColor, getRarityBackground, getTypeIcon } from '../../utils/rarityUtils';
 import type { OwnedCard, InventoryResponse, InventoryCard } from '../packs/types';
@@ -55,7 +56,7 @@ function getClassGradient(heroClass: string): string {
 		case 'shaman': return 'linear-gradient(135deg, #1e3a5f 0%, #0c4a6e 100%)';
 		case 'rogue': return 'linear-gradient(135deg, #1c1917 0%, #292524 100%)';
 		case 'death_knight': case 'deathknight': return 'linear-gradient(135deg, #164e63 0%, #0e7490 100%)';
-		case 'berserker': case 'berserker': return 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)';
+		case 'berserker': case 'demon_hunter': return 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)';
 		default: return 'linear-gradient(135deg, #374151 0%, #1f2937 100%)';
 	}
 }
@@ -96,17 +97,23 @@ export default function CollectionPage() {
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
 	useEffect(() => {
-		fetchInventory(1);
-		fetchStats();
+		const controller = new AbortController();
+		fetchInventory(1, controller.signal);
+		fetchStats(controller.signal);
+		return () => { controller.abort(); };
 	}, []);
 
-	const fetchInventory = async (pageNum: number) => {
+	useEffect(() => {
+		setPage(1);
+	}, [filterRarity, filterType, searchQuery]);
+
+	const fetchInventory = async (pageNum: number, signal?: AbortSignal) => {
 		try {
 			if (pageNum === 1) setLoading(true);
 			else setIsLoadingMore(true);
 			setError(null);
 
-			const res = await fetch(`/api/inventory/1?page=${pageNum}&limit=30`);
+			const res = await fetch(`/api/inventory/1?page=${pageNum}&limit=30`, { signal });
 
 			if (res.ok) {
 				const data: InventoryResponse = await res.json();
@@ -133,6 +140,7 @@ export default function CollectionPage() {
 				setCards([]);
 			}
 		} catch (err) {
+			if (err instanceof DOMException && err.name === 'AbortError') return;
 			debug.error('Error fetching inventory:', err);
 			setError('Failed to load collection.');
 			setCards([]);
@@ -142,9 +150,9 @@ export default function CollectionPage() {
 		}
 	};
 
-	const fetchStats = async () => {
+	const fetchStats = async (signal?: AbortSignal) => {
 		try {
-			const res = await fetch('/api/inventory/1/stats');
+			const res = await fetch('/api/inventory/1/stats', { signal });
 			if (res.ok) {
 				const data = await res.json();
 				if (data.success && data.stats) {
@@ -160,6 +168,7 @@ export default function CollectionPage() {
 				}
 			}
 		} catch (err) {
+			if (err instanceof DOMException && err.name === 'AbortError') return;
 			debug.error('Error fetching stats:', err);
 		}
 	};
@@ -188,6 +197,23 @@ export default function CollectionPage() {
 
 		return result;
 	}, [cards, filterRarity, filterType, searchQuery, sortBy]);
+
+	const parentRef = useRef<HTMLDivElement>(null);
+	const COLUMNS = 6;
+	const rows = useMemo(() => {
+		const result: OwnedCard[][] = [];
+		for (let i = 0; i < filteredAndSorted.length; i += COLUMNS) {
+			result.push(filteredAndSorted.slice(i, i + COLUMNS));
+		}
+		return result;
+	}, [filteredAndSorted]);
+
+	const rowVirtualizer = useVirtualizer({
+		count: rows.length,
+		getScrollElement: () => parentRef.current,
+		estimateSize: () => 280,
+		overscan: 3,
+	});
 
 	if (loading) {
 		return (
@@ -413,79 +439,88 @@ export default function CollectionPage() {
 					</motion.div>
 				) : (
 					<>
-						{/* Card Grid */}
-						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-							{filteredAndSorted.map((card, index) => {
-								const hiveAsset = hiveCardMap.get(card.id);
-								const masteryTier = hiveAsset ? getMasteryTier(hiveAsset.xp, card.rarity) : 0;
-								return (
-								<motion.div
-									key={`${card.id}-${index}`}
-									initial={{ opacity: 0, scale: 0.9 }}
-									animate={{ opacity: 1, scale: 1 }}
-									transition={{ delay: index * 0.02 }}
-									onClick={() => setSelectedCard(card)}
-									className={`relative cursor-pointer rounded-xl overflow-hidden ${getFrameClass(card.rarity)}`}
-									style={{ background: 'linear-gradient(180deg, #1a1a2e 0%, #16162a 100%)' }}
-								>
-									{/* Foil Shimmer */}
-									{card.rarity !== 'common' && (
-										<div className={getShimmerClass(card.rarity)} />
-									)}
+						<div ref={parentRef} style={{ height: '70vh', overflow: 'auto' }}>
+							<div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
+								{rowVirtualizer.getVirtualItems().map((virtualRow) => (
+									<div
+										key={virtualRow.key}
+										style={{
+											position: 'absolute',
+											top: 0,
+											left: 0,
+											width: '100%',
+											height: `${virtualRow.size}px`,
+											transform: `translateY(${virtualRow.start}px)`,
+										}}
+									>
+										<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+											{rows[virtualRow.index].map((card, colIndex) => {
+												const hiveAsset = hiveCardMap.get(card.id);
+												const masteryTier = hiveAsset ? getMasteryTier(hiveAsset.xp, card.rarity) : 0;
+												return (
+													<motion.div
+														key={`${card.id}-${colIndex}`}
+														initial={{ opacity: 0, scale: 0.9 }}
+														animate={{ opacity: 1, scale: 1 }}
+														onClick={() => setSelectedCard(card)}
+														className={`relative cursor-pointer rounded-xl overflow-hidden ${getFrameClass(card.rarity)}`}
+														style={{ background: 'linear-gradient(180deg, #1a1a2e 0%, #16162a 100%)' }}
+													>
+														{card.rarity !== 'common' && (
+															<div className={getShimmerClass(card.rarity)} />
+														)}
 
-									{/* Mastery Badge */}
-									{masteryTier >= 2 && (
-										<div className={`mastery-badge mastery-tier-${masteryTier}`}>
-											{'★'.repeat(masteryTier)}
-										</div>
-									)}
+														{masteryTier >= 2 && (
+															<div className={`mastery-badge mastery-tier-${masteryTier}`}>
+																{'★'.repeat(masteryTier)}
+															</div>
+														)}
 
-									<div className="relative p-3">
-										{/* Type Icon + Quantity */}
-										<div className="flex justify-between items-start mb-1">
-											<span className="text-lg" title={card.type}>{getTypeIcon(card.type)}</span>
-											{card.quantity > 1 && (
-												<div className="w-6 h-6 bg-amber-600 rounded-full flex items-center justify-center text-white font-bold text-[10px] border border-amber-400">
-													x{card.quantity}
-												</div>
-											)}
-										</div>
+														<div className="relative p-3">
+															<div className="flex justify-between items-start mb-1">
+																<span className="text-lg" title={card.type}>{getTypeIcon(card.type)}</span>
+																{card.quantity > 1 && (
+																	<div className="w-6 h-6 bg-amber-600 rounded-full flex items-center justify-center text-white font-bold text-[10px] border border-amber-400">
+																		x{card.quantity}
+																	</div>
+																)}
+															</div>
 
-										{/* Art Area */}
-										<div
-											className="w-full aspect-square rounded-lg mb-2 flex items-center justify-center border border-white/10"
-											style={{ background: getClassGradient(card.heroClass) }}
-										>
-											<span className="text-4xl opacity-80">
-												{card.rarity === 'mythic' ? '🌟' :
-												 												 card.type === 'hero' ? '👑' :
-												 card.type === 'spell' ? '✨' :
-												 card.type === 'weapon' ? '🗡️' : '⚔️'}
-											</span>
-										</div>
+															<div
+																className="w-full aspect-square rounded-lg mb-2 flex items-center justify-center border border-white/10"
+																style={{ background: getClassGradient(card.heroClass) }}
+															>
+																<span className="text-4xl opacity-80">
+																	{card.rarity === 'mythic' ? '🌟' :
+																	 card.type === 'hero' ? '👑' :
+																	 card.type === 'spell' ? '✨' :
+																	 card.type === 'weapon' ? '🗡️' : '⚔️'}
+																</span>
+															</div>
 
-										{/* Card Name */}
-										<h3 className="text-xs font-bold text-white text-center truncate mb-0.5">{card.name}</h3>
+															<h3 className="text-xs font-bold text-white text-center truncate mb-0.5">{card.name}</h3>
 
-										{/* Rarity Label */}
-										<div className="text-center mb-1.5">
-											<span className={`text-[10px] font-semibold uppercase ${getRarityColor(card.rarity)}`}>
-												{card.rarity}
-											</span>
-										</div>
+															<div className="text-center mb-1.5">
+																<span className={`text-[10px] font-semibold uppercase ${getRarityColor(card.rarity)}`}>
+																	{card.rarity}
+																</span>
+															</div>
 
-										{/* Mint Number Badge */}
-										<div className="text-center">
-											<span className="mint-badge">
-												{card.mintNumber ? `#${card.mintNumber}` : '—'}
-												<span className="text-gray-500 mx-0.5">/</span>
-												{card.maxSupply?.toLocaleString() ?? '???'}
-											</span>
+															<div className="text-center">
+																<span className="mint-badge">
+																	{card.mintNumber ? `#${card.mintNumber}` : '—'}
+																	<span className="text-gray-500 mx-0.5">/</span>
+																	{card.maxSupply?.toLocaleString() ?? '???'}
+																</span>
+															</div>
+														</div>
+													</motion.div>
+												);
+											})}
 										</div>
 									</div>
-								</motion.div>
-							);
-							})}
+								))}
+							</div>
 						</div>
 
 						{/* Pagination */}

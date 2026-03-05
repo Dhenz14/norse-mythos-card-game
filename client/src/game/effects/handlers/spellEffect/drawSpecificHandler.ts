@@ -9,6 +9,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeDrawSpecific(
   context: GameContext, 
@@ -44,9 +45,7 @@ export default function executeDrawSpecific(
     }
     
     if (keyword) {
-      eligibleCards = eligibleCards.filter(c => 
-        c.card.keywords && c.card.keywords.includes(keyword)
-      );
+      eligibleCards = eligibleCards.filter(c => hasKeyword(c, keyword));
     }
     
     if (eligibleCards.length === 0) {

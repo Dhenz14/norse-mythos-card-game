@@ -9,6 +9,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a buff deathrattle effect
@@ -73,14 +74,11 @@ export default function executeBuffBuff(
       }
       
       if (effect.grantKeywords && Array.isArray(effect.grantKeywords)) {
-        if (!target.card.keywords) target.card.keywords = [];
         effect.grantKeywords.forEach((keyword: string) => {
-          if (!target.card.keywords!.includes(keyword)) {
-            target.card.keywords!.push(keyword);
-            if (keyword === 'taunt') (target as any).isTaunt = true;
-            if (keyword === 'divine_shield') target.hasDivineShield = true;
-            if (keyword === 'rush') (target as any).hasRush = true;
-          }
+          addKeyword(target, keyword);
+          if (keyword === 'taunt') (target as any).isTaunt = true;
+          if (keyword === 'divine_shield') target.hasDivineShield = true;
+          if (keyword === 'rush') (target as any).hasRush = true;
         });
       }
       

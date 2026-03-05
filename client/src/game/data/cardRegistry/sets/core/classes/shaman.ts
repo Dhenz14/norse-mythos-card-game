@@ -86,21 +86,6 @@ export const shamanCards: CardData[] = [
     set: "core"
   },
   {
-    id: 5117,
-    name: "Aeolus, Wind Tyrant",
-    manaCost: 8,
-    attack: 3,
-    health: 5,
-    description: "Charge, Divine Shield, Taunt, Windfury",
-    type: "minion",
-    rarity: "mythic",
-    class: "Shaman",
-    race: "Elemental",
-    keywords: ["charge", "divine_shield", "taunt", "windfury"],
-    collectible: true,
-    set: "core"
-  },
-  {
     id: 5221,
     name: "Thor's Strike",
     manaCost: 1,
@@ -521,8 +506,8 @@ export const shamanCards: CardData[] = [
     id: 35006,
     name: "Earth Elemental",
     manaCost: 5,
-    attack: 7,
-    health: 8,
+    attack: 6,
+    health: 7,
     type: "minion",
     rarity: "epic",
     description: "Taunt. Overload: (3)",
@@ -841,27 +826,26 @@ export const shamanCards: CardData[] = [
   },
   // === Yggdrasil Golem Cards ===
   {
-    id: 85001,
+    id: 85201,
     name: "Emerald Strike",
     manaCost: 4,
     type: "spell",
     rarity: "common",
-    description: "Deal 4 damage. Summon an Emerald Golem.",
+    description: "Deal 4 damage. Summon a Yggdrasil Golem.",
     flavorText: "Lightning infused with the World Tree's mystical power.",
     keywords: ["yggdrasil_golem"],
     class: "Shaman",
     spellEffect: {
-      type: "damage",
+      type: "damage_and_summon_yggdrasil_golem",
       value: 4,
       targetType: "any",
-      requiresTarget: true,
-      summonCardId: 85002
+      requiresTarget: true
     },
     collectible: true,
     set: "core"
   },
   {
-    id: 85003,
+    id: 85203,
     name: "Emerald Talons",
     manaCost: 2,
     attack: 2,
@@ -881,7 +865,7 @@ export const shamanCards: CardData[] = [
   },
   // === New Elemental Spells ===
   {
-    id: 85010,
+    id: 85210,
     name: "Thunderstrike",
     manaCost: 4,
     type: "spell",
@@ -901,7 +885,7 @@ export const shamanCards: CardData[] = [
     set: "core"
   },
   {
-    id: 85011,
+    id: 85211,
     name: "Tide's Grace",
     manaCost: 2,
     type: "spell",

@@ -343,7 +343,7 @@ async function applyMatchResult(
 		p2Username = p2.hiveUsername as string;
 	}
 
-	if (!p1Username || !p2Username || p1Username === p2Username) {
+	if (!p1Username || !p2Username || p1Username.length === 0 || p2Username.length === 0 || p1Username === p2Username) {
 		rejectOp(op, `self-play or empty username (p1=${p1Username}, p2=${p2Username})`);
 		return;
 	}
@@ -731,8 +731,8 @@ async function applyCardTransfer(
 	const to = (payload.to as string);
 	if (typeof nftId !== 'string' || typeof to !== 'string') { rejectOp(op, 'missing nft_id or to'); return; }
 
-	// Validate destination: must be non-empty, at least 3 chars (Hive minimum), no spaces
-	if (!to || to.length < 3 || /\s/.test(to)) {
+	const HIVE_USERNAME_RE = /^[a-z][a-z0-9.-]{2,15}$/;
+	if (!HIVE_USERNAME_RE.test(to)) {
 		rejectOp(op, `invalid transfer destination: "${to}"`);
 		return;
 	}

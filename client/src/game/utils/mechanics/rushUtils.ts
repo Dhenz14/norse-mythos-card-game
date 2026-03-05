@@ -4,6 +4,7 @@
  */
 
 import { CardInstance, GameState } from '../../types';
+import { hasKeyword } from '../cards/keywordUtils';
 
 /**
  * Check if a card has the rush keyword
@@ -12,7 +13,7 @@ import { CardInstance, GameState } from '../../types';
  */
 export function hasRush(card: CardInstance): boolean {
   // Check if the card has the rush keyword in its definition and is not silenced
-  const hasRushKeyword = (card.card.keywords || []).includes('rush');
+  const hasRushKeyword = hasKeyword(card, 'rush');
   const hasRushProperty = card.isRush === true || card.hasRush === true;
   
   // Either the card must have the rush keyword or rush property set

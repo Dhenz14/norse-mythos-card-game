@@ -116,7 +116,7 @@ export function initializeNotificationSubscriber(
     unsubscribes.push(
       GameEventBus.subscribe<SecretRevealedEvent>('SECRET_REVEALED', (event) => {
         const player = event.player === 'player' ? 'Your' : 'Opponent\'s';
-        toast.info(`${player} secret: ${event.cardName}!`, {
+        toast.info(`${player} rune: ${event.cardName}!`, {
           duration: 3000
         });
       })

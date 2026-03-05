@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a buff_and_taunt battlecry effect
@@ -64,12 +65,7 @@ export default function executeBuffAndTaunt(
           target.card.health = (target.card.health || 0) + buffHealth;
         }
         
-        if (!target.card.keywords) {
-          target.card.keywords = [];
-        }
-        if (!target.card.keywords.includes('taunt')) {
-          target.card.keywords.push('taunt');
-        }
+        addKeyword(target, 'taunt');
         (target as any).hasTaunt = true;
         
         buffedCount++;

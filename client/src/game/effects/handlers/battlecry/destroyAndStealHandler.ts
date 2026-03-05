@@ -9,6 +9,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a destroy_and_steal battlecry effect
@@ -76,7 +77,7 @@ export default function executeDestroyAndSteal(
       currentAttack: targetMinion.card.attack
     };
     
-    if (context.currentPlayer.hand.length < 10) {
+    if (context.currentPlayer.hand.length < MAX_HAND_SIZE) {
       context.currentPlayer.hand.push(cardCopy);
       context.logGameEvent(`${sourceCard.name} added a copy of ${targetMinion.card.name} to your hand`);
     } else {
@@ -88,7 +89,7 @@ export default function executeDestroyAndSteal(
       additionalData: { 
         minionDestroyed: true,
         destroyedMinion: targetMinion.card.name,
-        copyAdded: context.currentPlayer.hand.length < 10
+        copyAdded: context.currentPlayer.hand.length < MAX_HAND_SIZE
       } 
     };
   } catch (error) {

@@ -17,7 +17,7 @@ export const battlecryMinions: CardData[] = [
   {
     id: 40003,
     name: "Ironbeak Owl",
-    manaCost: 3,
+    manaCost: 2,
     attack: 2,
     health: 1,
     type: "minion",

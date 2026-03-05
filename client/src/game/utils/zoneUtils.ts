@@ -13,6 +13,7 @@ import { isMinion, getHealth } from './cards/typeGuards';
 import { createCardInstance } from './cards/cardUtils';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
+import { removeKeyword } from './cards/keywordUtils';
 
 const MAX_HAND_SIZE = 7;
 
@@ -185,6 +186,7 @@ export function drawCardFromDeck(
   const cardInstance = createCardInstance(cardData);
 
   if (player.hand.length >= MAX_HAND_SIZE) {
+    queueCardBurnAnimation(cardInstance.card.name, playerId);
     return newState;
   }
 
@@ -252,8 +254,7 @@ export function destroyCard(
       const rebornCopy = createCardInstance(cardToDestroy!.card);
       rebornCopy.currentHealth = 1;
       rebornCopy.hasReborn = false;
-      rebornCopy.card = { ...rebornCopy.card };
-      rebornCopy.card.keywords = (rebornCopy.card.keywords || []).filter((k: string) => k !== 'reborn');
+      removeKeyword(rebornCopy, 'reborn');
       rebornCopy.isSummoningSick = true;
       rebornCopy.canAttack = false;
       newState.players[playerId].battlefield.push(rebornCopy);
@@ -283,11 +284,15 @@ export function destroyCard(
     // Ragnarok Chain: process onPartnerDeath for chain partners
     const deadCardData = cardToDestroy?.card as any;
     if (deadCardData?.chainPartner) {
-      const partnerId = deadCardData.chainPartner;
+      const partnerInstanceId = cardToDestroy?.chainPartnerInstanceId;
       for (const side of ['player', 'opponent'] as const) {
-        const partner = newState.players[side].battlefield.find(
-          (m: CardInstance) => m.card.id === partnerId
-        );
+        const partner = partnerInstanceId
+          ? newState.players[side].battlefield.find(
+              (m: CardInstance) => m.instanceId === partnerInstanceId
+            )
+          : newState.players[side].battlefield.find(
+              (m: CardInstance) => m.card.id === deadCardData.chainPartner
+            );
         if (partner) {
           const partnerData = partner.card as any;
           const chainEff = partnerData?.chainEffect?.onPartnerDeath;
@@ -303,8 +308,9 @@ export function destroyCard(
                 const drawCount = chainEff.value || 1;
                 const deck = newState.players[side].deck;
                 const hand = newState.players[side].hand;
-                for (let i = 0; i < drawCount && deck.length > 0 && hand.length < 7; i++) {
-                  hand.push(deck.shift()! as any);
+                for (let i = 0; i < drawCount && deck.length > 0 && hand.length < MAX_HAND_SIZE; i++) {
+                  const drawn = deck.shift();
+                  if (drawn) hand.push(drawn as any);
                 }
                 break;
               }
@@ -324,10 +330,10 @@ export function destroyCard(
 
     // Helheim realm: return dead minion to owner's hand costing more
     if (newState.activeRealm?.effects?.some(e => e.type === 'return_to_hand_on_death')) {
-      const helEff = newState.activeRealm.effects.find(e => e.type === 'return_to_hand_on_death');
+      const helEff = newState.activeRealm!.effects!.find(e => e.type === 'return_to_hand_on_death');
       if (helEff && cardToDestroy) {
         const hand = newState.players[playerId].hand;
-        if (hand.length < 7) {
+        if (hand.length < MAX_HAND_SIZE) {
           const returnedCard = { ...cardToDestroy.card } as any;
           returnedCard.manaCost = (returnedCard.manaCost || 0) + (helEff.value || 2);
           hand.push({
@@ -341,6 +347,9 @@ export function destroyCard(
             attacksPerformed: 0,
             isPlayerOwned: playerId === 'player',
           } as any);
+        } else {
+          queueCardBurnAnimation(cardToDestroy.card.name, playerId);
+          debug.state(`[Helheim] ${cardToDestroy.card.name} burned — ${playerId}'s hand is full`);
         }
       }
     }

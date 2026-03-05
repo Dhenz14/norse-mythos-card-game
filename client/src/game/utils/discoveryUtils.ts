@@ -3,6 +3,7 @@ import allCards from '../data/allCards';
 import { useGameStore } from '../stores/gameStore';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
+import { MAX_HAND_SIZE } from '../constants/gameConstants';
 
 /**
  * Filter cards based on discovery parameters
@@ -179,7 +180,7 @@ export function createDiscoveryFromSpell(
           // Log the selection
           
           // Add the selected card to the player's hand if there's room
-          if (updatedState.players.player.hand.length < 10) {
+          if (updatedState.players.player.hand.length < MAX_HAND_SIZE) {
             updatedState.players.player.hand.push(cardInstance);
           } else {
           }

@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { addKeyword } from '../../../utils/cards/keywordUtils';
 
 export default function executeGrantDeathrattle(
   context: GameContext, 
@@ -60,10 +61,7 @@ export default function executeGrantDeathrattle(
           effect: finalDeathrattle
         });
         
-        target.card.keywords = target.card.keywords || [];
-        if (!target.card.keywords.includes('deathrattle')) {
-          target.card.keywords.push('deathrattle');
-        }
+        addKeyword(target, 'deathrattle');
         
         deathrattlesGranted++;
         context.logGameEvent(`${target.card.name} gained Deathrattle from ${sourceCard.name}`);

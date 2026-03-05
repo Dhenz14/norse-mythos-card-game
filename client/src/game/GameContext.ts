@@ -5,6 +5,7 @@
  */
 import { CardInstance } from './types/CardTypes';
 import { debug } from './config/debugConfig';
+import { MAX_HAND_SIZE } from './constants/gameConstants';
 
 export interface Player {
   id: string;
@@ -235,7 +236,7 @@ export class GameContext {
       
       const card = this.currentPlayer.deck.shift();
       if (card) {
-        if (this.currentPlayer.hand.length < 10) {
+        if (this.currentPlayer.hand.length < MAX_HAND_SIZE) {
           this.currentPlayer.hand.push(card);
           drawnCards.push(card);
           this.logGameEvent(`${this.currentPlayer.hero.card.name} drew ${card.card.name}.`);

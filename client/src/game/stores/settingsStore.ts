@@ -53,7 +53,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
 
 			setSetting: (key, value) => set({ [key]: value }),
 
-			resetToDefaults: () => set(DEFAULT_SETTINGS),
+			resetToDefaults: () => set({ ...DEFAULT_SETTINGS, keybindings: { ...DEFAULT_KEYBINDINGS } }),
 		}),
 		{
 			name: StorageKeys.GAME_SETTINGS,

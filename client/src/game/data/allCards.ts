@@ -13,61 +13,47 @@
 import { CardData, CardType, HeroClass } from '../types';
 import { cardRegistry } from './cardRegistry';
 
-// Re-export cardRegistry as allCards for backward compatibility
 const allCards: CardData[] = cardRegistry;
 
-// ============================================================================
-// UTILITY FUNCTIONS
-// These functions operate on the canonical cardRegistry data.
-// For new code, prefer importing utilities from utils/cards/cardUtils.ts
-// ============================================================================
+const idCache = new Map<number, CardData | undefined>();
+const classCache = new Map<string, CardData[]>();
+const keywordCache = new Map<string, CardData[]>();
+const typeCache = new Map<string, CardData[]>();
 
-/**
- * Find a card by its unique ID
- * @param id - The card's unique identifier
- * @returns The card data or undefined if not found
- */
 export const getCardById = (id: number): CardData | undefined => {
-  return allCards.find(card => card.id === id);
+	if (idCache.has(id)) return idCache.get(id);
+	const result = allCards.find(card => card.id === id);
+	idCache.set(id, result);
+	return result;
 };
 
-/**
- * Filter cards by hero class
- * @param className - The hero class to filter by (or 'neutral')
- * @returns Array of cards belonging to that class
- */
 export const getCardsByClass = (className: HeroClass | 'neutral'): CardData[] => {
-  return allCards.filter(card => {
-    // Check for regular class cards
-    if ('heroClass' in card && card.heroClass === className) {
-      return true;
-    }
-    
-    // Check for dual-class cards
-    if ('dualClassInfo' in card && card.dualClassInfo && (card.dualClassInfo as any).classes.includes(className as HeroClass)) {
-      return true;
-    }
-    
-    return false;
-  });
+	if (classCache.has(className)) return classCache.get(className)!;
+	const result = allCards.filter(card => {
+		if ('heroClass' in card && card.heroClass === className) {
+			return true;
+		}
+		if ('dualClassInfo' in card && card.dualClassInfo && (card.dualClassInfo as any).classes.includes(className as HeroClass)) {
+			return true;
+		}
+		return false;
+	});
+	classCache.set(className, result);
+	return result;
 };
 
-/**
- * Filter cards by mechanic keyword
- * @param keyword - The keyword to search for (e.g., 'battlecry', 'deathrattle')
- * @returns Array of cards with that keyword
- */
 export const getCardsByKeyword = (keyword: string): CardData[] => {
-  return allCards.filter(card => card.keywords && card.keywords.includes(keyword));
+	if (keywordCache.has(keyword)) return keywordCache.get(keyword)!;
+	const result = allCards.filter(card => card.keywords && card.keywords.includes(keyword));
+	keywordCache.set(keyword, result);
+	return result;
 };
 
-/**
- * Filter cards by type
- * @param type - The card type (minion, spell, weapon, hero)
- * @returns Array of cards of that type
- */
 export const getCardsByType = (type: CardType): CardData[] => {
-  return allCards.filter(card => card.type === type);
+	if (typeCache.has(type)) return typeCache.get(type)!;
+	const result = allCards.filter(card => card.type === type);
+	typeCache.set(type, result);
+	return result;
 };
 
 // ============================================================================

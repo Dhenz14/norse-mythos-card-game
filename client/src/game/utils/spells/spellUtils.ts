@@ -16,8 +16,9 @@ import { useGameStore } from '../../stores/gameStore';
 import { isMinion, isSpell, isWeapon, getAttack, getHealth, hasAttack, hasHealth } from '../cards/typeGuards';
 import { trackQuestProgress } from '../quests/questProgress';
 import { debug } from '../../config/debugConfig';
-import { MAX_BATTLEFIELD_SIZE } from '../../constants/gameConstants';
+import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../../constants/gameConstants';
 import { checkPetEvolutionTrigger } from '../petEvolutionTriggers';
+import { addKeyword, removeKeyword, clearKeywords, hasKeyword } from '../cards/keywordUtils';
 
 function getSpellEffectType(effectType: string): SpellEffectType {
   const typeMap: Record<string, SpellEffectType> = {
@@ -755,7 +756,8 @@ export function executeSpell(
         for (const side of ['player', 'opponent'] as const) {
           for (const minion of state.players[side].battlefield) {
             minion.currentAttack = (minion.card as any).attack ?? minion.currentAttack;
-            minion.currentHealth = Math.min(minion.currentHealth ?? 0, (minion.card as any).health ?? minion.currentHealth ?? 0);
+            const baseHealth = (minion.card as any).health ?? 1;
+            minion.currentHealth = Math.min(minion.currentHealth ?? baseHealth, baseHealth);
           }
         }
       } else {
@@ -1362,30 +1364,19 @@ function executeBuffSpell(
       
       // Apply keyword buffs if specified
       if (effect.grantKeywords && effect.grantKeywords.length > 0) {
-        // Ensure keywords array exists
-        if (!target.card.keywords) {
-          target.card.keywords = [];
-        }
-        // Add keywords to the card
         for (const keyword of effect.grantKeywords) {
-          if (!target.card.keywords.includes(keyword)) {
-            target.card.keywords.push(keyword);
-            
-            // Handle special keyword properties
-            if (keyword === 'divine_shield') {
-              target.hasDivineShield = true;
-            } else if (keyword === 'taunt') {
-            } else if (keyword === 'windfury') {
-            } else {
-            }
+          addKeyword(target, keyword);
+
+          if (keyword === 'divine_shield') {
+            target.hasDivineShield = true;
           }
         }
       }
-      
+
       break;
     }
   }
-  
+
   // If not found on player's battlefield, check opponent's battlefield
   if (!targetFound) {
     const opponentBattlefield = [...opponent.battlefield];
@@ -1407,22 +1398,11 @@ function executeBuffSpell(
         
         // Apply keyword buffs if specified
         if (effect.grantKeywords && effect.grantKeywords.length > 0) {
-          // Ensure keywords array exists
-          if (!target.card.keywords) {
-            target.card.keywords = [];
-          }
-          // Add keywords to the card
           for (const keyword of effect.grantKeywords) {
-            if (!target.card.keywords.includes(keyword)) {
-              target.card.keywords.push(keyword);
-              
-              // Handle special keyword properties
-              if (keyword === 'divine_shield') {
-                target.hasDivineShield = true;
-              } else if (keyword === 'taunt') {
-              } else if (keyword === 'windfury') {
-              } else {
-              }
+            addKeyword(target, keyword);
+
+            if (keyword === 'divine_shield') {
+              target.hasDivineShield = true;
             }
           }
         }
@@ -1797,7 +1777,7 @@ function executeDiscoverSpell(
         if (selectedCard) {
           
           // Add the selected card to the player's hand if there's room
-          if (updatedState.players.player.hand.length < 10) {
+          if (updatedState.players.player.hand.length < MAX_HAND_SIZE) {
             const cardInstance: CardInstance = {
               instanceId: uuidv4(),
               card: selectedCard,
@@ -1853,16 +1833,14 @@ function executeSilenceSpell(
         if (!target.enchantments) {
           target.enchantments = [];
         }
-        
+
         // Remove all ability-based keywords
-        target.card.keywords = (target.card.keywords || []).filter(keyword => 
-          keyword !== 'taunt' && 
-          keyword !== 'divine_shield' && 
-          keyword !== 'windfury' && 
-          keyword !== 'deathrattle' && 
-          keyword !== 'battlecry' && 
-          keyword !== 'spell_damage'
-        );
+        removeKeyword(target, 'taunt');
+        removeKeyword(target, 'divine_shield');
+        removeKeyword(target, 'windfury');
+        removeKeyword(target, 'deathrattle');
+        removeKeyword(target, 'battlecry');
+        removeKeyword(target, 'spell_damage');
         
         // Remove divine shield if present
         target.hasDivineShield = false;
@@ -1919,24 +1897,22 @@ function executeSilenceSpell(
       }
       
       // Remove all ability-based keywords
-      target.card.keywords = (target.card.keywords || []).filter(keyword => 
-        keyword !== 'taunt' && 
-        keyword !== 'divine_shield' && 
-        keyword !== 'windfury' && 
-        keyword !== 'deathrattle' && 
-        keyword !== 'battlecry' && 
-        keyword !== 'spell_damage'
-      );
-      
+      removeKeyword(target, 'taunt');
+      removeKeyword(target, 'divine_shield');
+      removeKeyword(target, 'windfury');
+      removeKeyword(target, 'deathrattle');
+      removeKeyword(target, 'battlecry');
+      removeKeyword(target, 'spell_damage');
+
       // Remove divine shield if present
       target.hasDivineShield = false;
-      
+
       // Remove any deathrattle and battlecry effects (only for minions)
       if (isMinion(target.card)) {
         (target.card as any).deathrattle = undefined;
         (target.card as any).battlecry = undefined;
       }
-      
+
       // Mark the minion as silenced
       target.silenced = true;
       
@@ -1958,18 +1934,16 @@ function executeSilenceSpell(
         }
         
         // Remove all ability-based keywords
-        target.card.keywords = (target.card.keywords || []).filter(keyword => 
-          keyword !== 'taunt' && 
-          keyword !== 'divine_shield' && 
-          keyword !== 'windfury' && 
-          keyword !== 'deathrattle' && 
-          keyword !== 'battlecry' && 
-          keyword !== 'spell_damage'
-        );
-        
+        removeKeyword(target, 'taunt');
+        removeKeyword(target, 'divine_shield');
+        removeKeyword(target, 'windfury');
+        removeKeyword(target, 'deathrattle');
+        removeKeyword(target, 'battlecry');
+        removeKeyword(target, 'spell_damage');
+
         // Remove divine shield if present
         target.hasDivineShield = false;
-        
+
         // Remove any deathrattle and battlecry effects (only for minions)
         if (isMinion(target.card)) {
           (target.card as any).deathrattle = undefined;
@@ -3609,8 +3583,8 @@ function executeGainManaSpell(
     // Also increase current mana for this turn
     playerState.mana.current = Math.min(playerState.mana.current + effect.value, playerState.mana.max);
   } else {
-    // Temporary mana this turn (like Innervate)
-    playerState.mana.current = Math.min((playerState.mana.current || 0) + effect.value, 10);
+    // Temporary mana this turn (like Innervate) - no cap, can exceed max
+    playerState.mana.current = (playerState.mana.current || 0) + effect.value;
   }
   
   
@@ -4060,18 +4034,16 @@ function executeSilenceAllSpell(
     }
     
     // Remove all ability-based keywords
-    minion.card.keywords = (minion.card.keywords || []).filter(keyword =>
-      keyword !== 'taunt' &&
-      keyword !== 'divine_shield' &&
-      keyword !== 'windfury' &&
-      keyword !== 'deathrattle' &&
-      keyword !== 'battlecry' &&
-      keyword !== 'spell_damage'
-    );
-    
+    removeKeyword(minion, 'taunt');
+    removeKeyword(minion, 'divine_shield');
+    removeKeyword(minion, 'windfury');
+    removeKeyword(minion, 'deathrattle');
+    removeKeyword(minion, 'battlecry');
+    removeKeyword(minion, 'spell_damage');
+
     // Remove divine shield if present
     minion.hasDivineShield = false;
-    
+
     // Remove any deathrattle and battlecry effects (using type assertion)
     if (isMinion(minion.card)) {
       (minion.card as any).deathrattle = undefined;
@@ -4133,23 +4105,21 @@ function executeSilenceAndDamageSpell(
       
       // Apply silence effect - store state in enchantments
       if (!minion.enchantments) minion.enchantments = [];
-      
-      minion.card.keywords = (minion.card.keywords || []).filter(keyword =>
-        keyword !== 'taunt' &&
-        keyword !== 'divine_shield' &&
-        keyword !== 'windfury' &&
-        keyword !== 'deathrattle' &&
-        keyword !== 'battlecry' &&
-        keyword !== 'spell_damage'
-      );
-      
+
+      removeKeyword(minion, 'taunt');
+      removeKeyword(minion, 'divine_shield');
+      removeKeyword(minion, 'windfury');
+      removeKeyword(minion, 'deathrattle');
+      removeKeyword(minion, 'battlecry');
+      removeKeyword(minion, 'spell_damage');
+
       minion.hasDivineShield = false;
       if (isMinion(minion.card)) {
         (minion.card as any).deathrattle = undefined;
         (minion.card as any).battlecry = undefined;
       }
       minion.silenced = true;
-      
+
       break;
     }
   }
@@ -4162,15 +4132,13 @@ function executeSilenceAndDamageSpell(
         
         // Apply silence effect - store state in enchantments
         if (!minion.enchantments) minion.enchantments = [];
-        
-        minion.card.keywords = (minion.card.keywords || []).filter(keyword =>
-          keyword !== 'taunt' &&
-          keyword !== 'divine_shield' &&
-          keyword !== 'windfury' &&
-          keyword !== 'deathrattle' &&
-          keyword !== 'battlecry' &&
-          keyword !== 'spell_damage'
-        );
+
+        removeKeyword(minion, 'taunt');
+        removeKeyword(minion, 'divine_shield');
+        removeKeyword(minion, 'windfury');
+        removeKeyword(minion, 'deathrattle');
+        removeKeyword(minion, 'battlecry');
+        removeKeyword(minion, 'spell_damage');
         
         minion.hasDivineShield = false;
         if (isMinion(minion.card)) {
@@ -4349,13 +4317,8 @@ function executeSelfDamageBuffSpell(
       }
       
       if (effect.grantKeywords && effect.grantKeywords.length > 0) {
-        if (!minion.card.keywords) {
-          minion.card.keywords = [];
-        }
         for (const keyword of effect.grantKeywords) {
-          if (!minion.card.keywords.includes(keyword)) {
-            minion.card.keywords.push(keyword);
-          }
+          addKeyword(minion, keyword);
         }
       }
     }
@@ -5144,8 +5107,8 @@ function executeReplayBattlecriesSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   // Find minions with battlecry effects on battlefield
-  const minionsWithBattlecry = playerState.battlefield.filter(minion => 
-    minion.card.keywords && minion.card.keywords.includes('battlecry')
+  const minionsWithBattlecry = playerState.battlefield.filter(minion =>
+    hasKeyword(minion, 'battlecry')
   );
   
   
@@ -5644,10 +5607,10 @@ function executeStealCardSpell(
     return newState;
   }
   
-  if (playerState.hand.length >= 10) {
+  if (playerState.hand.length >= MAX_HAND_SIZE) {
     return newState;
   }
-  
+
   const randomIndex = Math.floor(Math.random() * opponentState.hand.length);
   const stolenCard = opponentState.hand[randomIndex];
   
@@ -5962,7 +5925,7 @@ function executeCopyCardSpell(
   
   // Add to hand
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
-  if (playerState.hand.length < 10) {
+  if (playerState.hand.length < MAX_HAND_SIZE) {
     playerState.hand.push(copiedCard);
   }
   
@@ -5990,8 +5953,8 @@ function executeGiveCardsSpell(
   
   for (let i = 0; i < count; i++) {
     const hand = currentPlayer === 'player' ? newState.players.player.hand : newState.players.opponent.hand;
-    if (hand.length >= 10) break;
-    
+    if (hand.length >= MAX_HAND_SIZE) break;
+
     const cardId = cardIds[i % cardIds.length];
     const cardData = allCards.find(c => c.id === cardId);
     
@@ -6211,8 +6174,8 @@ function executeDrawSpecificSpell(
   
   for (let i = 0; i < count; i++) {
     const hand = currentPlayer === 'player' ? newState.players.player.hand : newState.players.opponent.hand;
-    if (hand.length >= 10) break;
-    
+    if (hand.length >= MAX_HAND_SIZE) break;
+
     // Find matching card in deck (using type assertion for deck compatibility)
     const matchIndex = (deck as any[]).findIndex((entry: any) => {
       const cardData = entry.card ? entry.card : entry;
@@ -6662,8 +6625,8 @@ function executeCopyFromOpponentDeckSpell(
   
   for (let i = 0; i < count && opponentDeck.length > 0; i++) {
     const hand = currentPlayer === 'player' ? newState.players.player.hand : newState.players.opponent.hand;
-    if (hand.length >= 10) break;
-    
+    if (hand.length >= MAX_HAND_SIZE) break;
+
     const randomIndex = Math.floor(Math.random() * opponentDeck.length);
     const deckEntry = opponentDeck[randomIndex] as any;
     const cardData = deckEntry.card ? deckEntry.card : deckEntry;

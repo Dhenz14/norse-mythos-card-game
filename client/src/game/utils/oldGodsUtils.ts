@@ -12,6 +12,7 @@ import { getRandomInt } from './randomUtils';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { hasKeyword } from './cards/keywordUtils';
 
 interface CThunState {
   baseAttack: number;
@@ -253,8 +254,8 @@ export function executeNZothBattlecry(
   
   // Filter for deathrattle minions
   const deathrattleMinions = graveyard.filter(
-    (card: CardInstance) => isMinion(card.card) && 
-    (card.card.keywords?.includes('deathrattle') || card.card.deathrattle)
+    (card: CardInstance) => isMinion(card.card) &&
+    (hasKeyword(card, 'deathrattle') || card.card.deathrattle)
   );
   
   // Log the battlecry

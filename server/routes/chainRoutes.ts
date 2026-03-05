@@ -32,8 +32,8 @@ const router = Router();
 // ---------------------------------------------------------------------------
 
 router.get('/leaderboard', (req: Request, res: Response) => {
-	const limit = Math.min(Math.max(parseInt(req.query.limit as string ?? '100', 10), 1), 500);
-	const offset = Math.max(parseInt(req.query.offset as string ?? '0', 10), 0);
+	const limit = Math.min(Math.max(parseInt(req.query.limit as string ?? '100', 10) || 100, 1), 500);
+	const offset = Math.max(parseInt(req.query.offset as string ?? '0', 10) || 0, 0);
 
 	const result = getLeaderboard(limit, offset);
 	res.json({
@@ -138,7 +138,7 @@ router.get('/player/:username/cards', async (req: Request, res: Response) => {
 
 router.get('/player/:username/matches', (req: Request, res: Response) => {
 	const { username } = req.params;
-	const limit = Math.min(Math.max(parseInt(req.query.limit as string ?? '20', 10), 1), 100);
+	const limit = Math.min(Math.max(parseInt(req.query.limit as string ?? '20', 10) || 20, 1), 100);
 
 	const matches = getMatchHistory(username, limit);
 	res.json({

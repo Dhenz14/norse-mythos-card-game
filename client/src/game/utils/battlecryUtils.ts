@@ -13,9 +13,10 @@ import {
 import { debug } from '../config/debugConfig';
 import { assetPath } from './assetPath';
 import { trackQuestProgress } from './quests/questProgress';
-import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 import { useAnimationStore } from '../animations/AnimationManager';
 import allCards from '../data/allCards';
+import { addKeyword, setKeywords, getKeywords, hasKeyword } from './cards/keywordUtils';
 import { 
   findCardInstance, 
   createCardInstance, 
@@ -738,7 +739,7 @@ export function executeBattlecry(
       case 'summon_dead_einherjar': {
         const gy = newState.players.player.graveyard || [];
         const deadEinherjar = gy.filter(
-          m => m.card.type === 'minion' && (m.card.keywords || []).includes('einherjar')
+          m => m.card.type === 'minion' && hasKeyword(m, 'einherjar')
         );
         const bf = newState.players.player.battlefield;
         const maxBf = 5;
@@ -817,7 +818,7 @@ export function executeBattlecry(
           const idx = oppBf.findIndex(m => m.instanceId === targetId);
           if (idx !== -1) {
             const bounced = oppBf.splice(idx, 1)[0];
-            if (newState.players.opponent.hand.length < 7) {
+            if (newState.players.opponent.hand.length < MAX_HAND_SIZE) {
               bounced.isPlayed = false;
               bounced.isSummoningSick = true;
               bounced.canAttack = false;
@@ -836,7 +837,7 @@ export function executeBattlecry(
             return atk > atkThreshold;
           });
           for (const card of toReturn) {
-            if (newState.players.opponent.hand.length < 7) {
+            if (newState.players.opponent.hand.length < MAX_HAND_SIZE) {
               card.isPlayed = false;
               card.isSummoningSick = true;
               card.canAttack = false;
@@ -2214,10 +2215,10 @@ function executeAddToHandBattlecry(
     
     // Add the specific card to hand
     for (let i = 0; i < numCards; i++) {
-      if (state.players.player.hand.length >= 7) {
+      if (state.players.player.hand.length >= MAX_HAND_SIZE) {
         break;
       }
-      
+
       // Create a card instance and add it to the hand
       const cardInstance = createCardInstance(cardToAdd);
       state.players.player.hand.push(cardInstance);
@@ -2226,7 +2227,7 @@ function executeAddToHandBattlecry(
     // Add random cards (like a discovery/random generation effect)
     // For now, just adding random cards from the database as a placeholder
     for (let i = 0; i < numCards; i++) {
-      if (state.players.player.hand.length >= 7) {
+      if (state.players.player.hand.length >= MAX_HAND_SIZE) {
         break;
       }
       
@@ -2407,8 +2408,7 @@ function executeReturnToHandBattlecry(
     const targetMinion = targetInfo.card;
     const targetIndex = targetInfo.index;
     
-    // Check if hand is full (max 9 cards)
-    if (state.players.player.hand.length >= 7) {
+    if (state.players.player.hand.length >= MAX_HAND_SIZE) {
       state.players.player.battlefield.splice(targetIndex, 1);
       return state;
     }
@@ -2838,7 +2838,7 @@ function executeAddRandomToHandBattlecry(
   if (candidates.length === 0) return state;
 
   for (let i = 0; i < count; i++) {
-    if (state.players.player.hand.length >= 7) break;
+    if (state.players.player.hand.length >= MAX_HAND_SIZE) break;
     const randomIdx = Math.floor(Math.random() * candidates.length);
     const cardInstance = createCardInstance(candidates[randomIdx]);
     state.players.player.hand.push(cardInstance);
@@ -3094,11 +3094,7 @@ function executeConditionalBuffAndTauntBattlecry(
   (minion.card as any).health = ((minion.card as any).health || 0) + buffHp;
   minion.currentHealth = (minion.currentHealth ?? (minion.card as any).health) + buffHp;
 
-  const keywords: string[] = (minion.card as any).keywords || [];
-  if (!keywords.includes('taunt')) {
-    keywords.push('taunt');
-    (minion.card as any).keywords = keywords;
-  }
+  addKeyword(minion, 'taunt');
   (minion as any).hasTaunt = true;
   return state;
 }
@@ -3135,11 +3131,7 @@ function executeGrantDeathrattleBattlecry(
   const minion = targetInfo.card;
   (minion.card as any).deathrattle = (battlecry as any).deathrattle;
 
-  const keywords: string[] = (minion.card as any).keywords || [];
-  if (!keywords.includes('deathrattle')) {
-    keywords.push('deathrattle');
-    (minion.card as any).keywords = keywords;
-  }
+  addKeyword(minion, 'deathrattle');
   return state;
 }
 
@@ -3215,38 +3207,36 @@ function executeAdaptBattlecry(
     (minion.card as any).health = ((minion.card as any).health || 0) + (chosen.health || 0);
     minion.currentHealth = (minion.currentHealth ?? (minion.card as any).health) + (chosen.health || 0);
   } else if (chosen.type === 'keyword') {
-    const keywords: string[] = (minion.card as any).keywords || [];
     switch (chosen.keyword) {
       case 'divine_shield':
         minion.hasDivineShield = true;
-        if (!keywords.includes('divine_shield')) keywords.push('divine_shield');
+        addKeyword(minion, 'divine_shield');
         break;
       case 'taunt':
         (minion as any).hasTaunt = true;
-        if (!keywords.includes('taunt')) keywords.push('taunt');
+        addKeyword(minion, 'taunt');
         break;
       case 'windfury':
         (minion as any).hasWindfury = true;
-        if (!keywords.includes('windfury')) keywords.push('windfury');
+        addKeyword(minion, 'windfury');
         break;
       case 'stealth':
         (minion as any).hasStealth = true;
-        if (!keywords.includes('stealth')) keywords.push('stealth');
+        addKeyword(minion, 'stealth');
         break;
       case 'poisonous':
         (minion as any).hasPoisonous = true;
-        if (!keywords.includes('poisonous')) keywords.push('poisonous');
+        addKeyword(minion, 'poisonous');
         break;
       case 'elusive':
         (minion as any).cantBeTargeted = true;
-        if (!keywords.includes('elusive')) keywords.push('elusive');
+        addKeyword(minion, 'elusive');
         break;
       case 'deathrattle_tokens':
-        if (!keywords.includes('deathrattle')) keywords.push('deathrattle');
+        addKeyword(minion, 'deathrattle');
         (minion.card as any).deathrattle = { type: 'summon', summonCardId: 'token_1_1', count: 2 };
         break;
     }
-    (minion.card as any).keywords = keywords;
   }
   return state;
 }
@@ -3351,11 +3341,7 @@ function executeBuffAndTauntBattlecry(
   (minion.card as any).health = ((minion.card as any).health || 0) + (battlecry.buffHealth || 0);
   minion.currentHealth = (minion.currentHealth ?? (minion.card as any).health) + (battlecry.buffHealth || 0);
 
-  const keywords: string[] = (minion.card as any).keywords || [];
-  if (!keywords.includes('taunt')) {
-    keywords.push('taunt');
-    (minion.card as any).keywords = keywords;
-  }
+  addKeyword(minion, 'taunt');
   (minion as any).hasTaunt = true;
   return state;
 }
@@ -3515,11 +3501,7 @@ function executeChooseKeywordsBattlecry(
   const options = ['taunt', 'divine_shield', 'windfury', 'stealth'];
   const chosen = options[Math.floor(Math.random() * options.length)];
 
-  const keywords: string[] = (minion.card as any).keywords || [];
-  if (!keywords.includes(chosen)) {
-    keywords.push(chosen);
-    (minion.card as any).keywords = keywords;
-  }
+  addKeyword(minion, chosen);
 
   switch (chosen) {
     case 'taunt': (minion as any).hasTaunt = true; break;
@@ -3593,7 +3575,7 @@ function executeStealFromDeckBattlecry(
   if (!opponentDeck || opponentDeck.length === 0) return state;
 
   for (let i = 0; i < count; i++) {
-    if (state.players.player.hand.length >= 7) break;
+    if (state.players.player.hand.length >= MAX_HAND_SIZE) break;
     if (opponentDeck.length === 0) break;
     const randomIdx = Math.floor(Math.random() * opponentDeck.length);
     const stolen = opponentDeck.splice(randomIdx, 1)[0];
@@ -3639,11 +3621,7 @@ function executeAdaptNagasBattlecry(
       (minion.card as any).health = ((minion.card as any).health || 0) + (chosen.health || 0);
       minion.currentHealth = (minion.currentHealth ?? (minion.card as any).health) + (chosen.health || 0);
     } else if (chosen.type === 'keyword' && chosen.keyword) {
-      const keywords: string[] = (minion.card as any).keywords || [];
-      if (!keywords.includes(chosen.keyword)) {
-        keywords.push(chosen.keyword);
-        (minion.card as any).keywords = keywords;
-      }
+      addKeyword(minion, chosen.keyword);
       switch (chosen.keyword) {
         case 'divine_shield': minion.hasDivineShield = true; break;
         case 'taunt': (minion as any).hasTaunt = true; break;
@@ -3765,7 +3743,7 @@ function executeSummonAndDrawBattlecry(
   const drawCount = (battlecry as any).drawCount || 1;
   for (let i = 0; i < drawCount; i++) {
     if (state.players.player.deck.length === 0) break;
-    if (state.players.player.hand.length >= 7) break;
+    if (state.players.player.hand.length >= MAX_HAND_SIZE) break;
     const drawn = state.players.player.deck.shift()!;
     const instance = createCardInstance(drawn);
     state.players.player.hand.push(instance);

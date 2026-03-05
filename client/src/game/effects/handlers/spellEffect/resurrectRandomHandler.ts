@@ -7,6 +7,7 @@
 import { GameState, CardInstance, GameLogEvent, MinionCardData } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
 import { v4 as uuidv4 } from 'uuid';
+import { hasKeyword } from '../../../utils/cards/keywordUtils';
 
 /**
  * Execute a resurrect_random spellEffect effect
@@ -68,7 +69,7 @@ export function executeResurrectRandomResurrectRandom(
       isPlayed: true,
       isSummoningSick: true,
       attacksPerformed: 0,
-      hasDivineShield: deadMinion.card.keywords?.includes('divine_shield') || false
+      hasDivineShield: hasKeyword(deadMinion, 'divine_shield')
     };
 
     newBattlefield.push(resurrectedMinion);
