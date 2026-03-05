@@ -35,7 +35,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeVictory: 'You endure the purest light in existence. Amaterasu sees your true nature — and approves.',
 			narrativeDefeat: 'The sun\'s full radiance unmakes every shadow you hid behind.',
 			aiHeroId: 'eastern-mage-2', aiHeroClass: 'mage',
-			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.hard,
+			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.amaterasu,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Amaterasu has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Divine solar energy (+1 mana)' },
@@ -53,7 +53,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeVictory: 'Even heavenly bureaucracy bows to undeniable merit.',
 			narrativeDefeat: 'The celestial bureaucracy finds you wanting. Your paperwork is denied.',
 			aiHeroId: 'eastern-priest-3', aiHeroClass: 'priest',
-			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.hard,
+			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.jadeEmperor,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'The Jade Emperor has 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Celestial bureaucracy grants extra resources' },
@@ -71,7 +71,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeVictory: 'The storm god\'s fury breaks against your resolve like waves on stone.',
 			narrativeDefeat: 'No mortal can stand against the fury of heaven\'s exile.',
 			aiHeroId: 'eastern-shaman-4', aiHeroClass: 'shaman',
-			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.hard,
+			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.susanoo,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Susanoo has 110 health' },
 				{ type: 'passive_damage', value: 1, description: 'Typhoon deals 1 damage each turn' },
@@ -89,7 +89,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeVictory: 'The irrepressible Monkey King is impressed. That alone is worth a legend.',
 			narrativeDefeat: 'Sun Wukong laughs and does a backflip. "Too slow! Way too slow!"',
 			aiHeroId: 'eastern-rogue-5', aiHeroClass: 'rogue',
-			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.boss,
+			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.sunWukong,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Sun Wukong has 115 health' },
 				{ type: 'bonus_draw', value: 1, description: '72 transformations grant extra cards' },
@@ -107,7 +107,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeVictory: 'You escape Yomi intact. Izanami\'s curse passes over you — this time.',
 			narrativeDefeat: 'Yomi closes around you. Izanami collects another soul for her endless grief.',
 			aiHeroId: 'eastern-warlock-6', aiHeroClass: 'warlock',
-			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.boss,
+			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.izanami,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Izanami has 115 health' },
 				{ type: 'passive_damage', value: 2, description: 'Yomi\'s decay deals 2 damage each turn' },
@@ -125,7 +125,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeVictory: 'Wisdom overcomes obstacles. Ganesha removes every barrier before you.',
 			narrativeDefeat: 'Ganesha sighs. "You think like a warrior. Come back when you think like a sage."',
 			aiHeroId: 'eastern-priest-7', aiHeroClass: 'priest',
-			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.boss,
+			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.ganesha,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Ganesha has 115 health' },
 				{ type: 'extra_mana', value: 2, description: 'Divine wisdom grants +2 mana' },
@@ -162,7 +162,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeVictory: 'You dance with destruction itself and survive. Kali keeps time — and you kept pace.',
 			narrativeDefeat: 'Time dances on. You do not.',
 			aiHeroId: 'eastern-boss-9', aiHeroClass: 'warlock',
-			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.boss,
+			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.kali,
 			bossRules: [
 				{ type: 'extra_health', value: 20, description: 'Kali has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Time\'s power grants +2 mana' },

@@ -34,7 +34,7 @@ export const celticChapter: CampaignChapter = {
 			narrativeVictory: 'The phantom queen\'s omens of death prove false. You defy fate itself.',
 			narrativeDefeat: 'The crows descend. The Morrigan always collects what she is owed.',
 			aiHeroId: 'celtic-warlock-2', aiHeroClass: 'warlock',
-			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.easy,
+			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.morrigan,
 			bossRules: [], prerequisiteIds: ['celtic-1'],
 			rewards: [{ type: 'rune', amount: 25 }],
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-hel', rook: 'hero-vidar', bishop: 'hero-sigyn', knight: 'hero-nyx' },
@@ -48,7 +48,7 @@ export const celticChapter: CampaignChapter = {
 			narrativeVictory: 'The greatest warrior of Celtic myth acknowledges your prowess.',
 			narrativeDefeat: 'Cu Chulainn\'s gae bolga finds its mark. The Hound is unmatched.',
 			aiHeroId: 'celtic-warrior-3', aiHeroClass: 'warrior',
-			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.medium,
+			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.cuChulainn,
 			bossRules: [{ type: 'extra_health', value: 5, description: 'Cu Chulainn\'s warp spasm grants extra vitality' }],
 			prerequisiteIds: ['celtic-2'],
 			rewards: [{ type: 'rune', amount: 30 }],
@@ -78,7 +78,7 @@ export const celticChapter: CampaignChapter = {
 			narrativeVictory: 'You withstand the gaze that destroyed armies. Balor\'s prophecy is fulfilled.',
 			narrativeDefeat: 'The eye opens. Everything you are turns to nothing.',
 			aiHeroId: 'celtic-warlock-5', aiHeroClass: 'warlock',
-			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.medium,
+			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.balor,
 			bossRules: [
 				{ type: 'extra_health', value: 5, description: 'Balor has 105 health' },
 				{ type: 'passive_damage', value: 1, description: 'Balor\'s Evil Eye deals 1 damage each turn' },
@@ -96,7 +96,7 @@ export const celticChapter: CampaignChapter = {
 			narrativeVictory: 'The father of gods falls laughing. His cauldron bubbles in approval.',
 			narrativeDefeat: 'The Dagda\'s club swings once. That is enough.',
 			aiHeroId: 'celtic-priest-6', aiHeroClass: 'priest',
-			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.hard,
+			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.dagda,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'The Dagda has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'The cauldron grants +1 mana' },
@@ -132,7 +132,7 @@ export const celticChapter: CampaignChapter = {
 			narrativeVictory: 'The Hunt passes you by. Even Cernunnos acknowledges the untouchable.',
 			narrativeDefeat: 'The Wild Hunt always catches its quarry. Always.',
 			aiHeroId: 'celtic-hunter-8', aiHeroClass: 'hunter',
-			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.hard,
+			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.cernunnos,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Cernunnos has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'The Wild Hunt grants +1 mana' },
@@ -150,7 +150,7 @@ export const celticChapter: CampaignChapter = {
 			narrativeVictory: 'Fire, word, and mercy — you endure all three aspects of the triple goddess.',
 			narrativeDefeat: 'Brigid\'s forge consumes those who are not ready to be remade.',
 			aiHeroId: 'celtic-boss-9', aiHeroClass: 'paladin',
-			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.boss,
+			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.brigid,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Brigid has 115 health' },
 				{ type: 'extra_mana', value: 2, description: 'Brigid channels triple power (+2 mana)' },
@@ -168,7 +168,7 @@ export const celticChapter: CampaignChapter = {
 			narrativeVictory: 'The master of all arts concedes. In the annals of the Otherworld, your name is written beside Lugh\'s.',
 			narrativeDefeat: 'Lugh is the master of everything — including the art of victory.',
 			aiHeroId: 'celtic-boss-10', aiHeroClass: 'paladin',
-			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.boss,
+			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.lugh,
 			bossRules: [
 				{ type: 'extra_health', value: 20, description: 'Lugh has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Lugh wields all arts (+2 mana)' },

@@ -48,7 +48,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeVictory: 'Your heart balances against truth itself. Few mortals pass this judgment.',
 			narrativeDefeat: 'The scales tip. Your heart is heavier than truth.',
 			aiHeroId: 'egyptian-priest-3', aiHeroClass: 'priest',
-			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.medium,
+			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.maat,
 			bossRules: [{ type: 'bonus_draw', value: 1, description: 'Ma\'at draws wisdom from the scales' }],
 			prerequisiteIds: ['egyptian-2'],
 			rewards: [{ type: 'rune', amount: 30 }],
@@ -63,7 +63,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeVictory: 'The Devourer goes hungry. Your soul is too fierce to be swallowed.',
 			narrativeDefeat: 'Ammit\'s jaws close. Another soul devoured.',
 			aiHeroId: 'egyptian-warrior-4', aiHeroClass: 'warrior',
-			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.medium,
+			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.ammit,
 			bossRules: [{ type: 'extra_health', value: 5, description: 'Ammit has 105 health' }],
 			prerequisiteIds: ['egyptian-3'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'dust', amount: 50 }],
@@ -78,7 +78,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeVictory: 'You stand firm in the eye of chaos. Set\'s storm cannot uproot you.',
 			narrativeDefeat: 'The desert storm swallows you whole.',
 			aiHeroId: 'egyptian-warlock-5', aiHeroClass: 'warlock',
-			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.medium,
+			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.set,
 			bossRules: [
 				{ type: 'extra_health', value: 5, description: 'Set has 105 health' },
 				{ type: 'passive_damage', value: 1, description: 'Sandstorm deals 1 damage each turn' },
@@ -96,7 +96,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeVictory: 'Dawn breaks because of you. Ra will remember.',
 			narrativeDefeat: 'The serpents overwhelm the barge. For the first time, dawn is delayed.',
 			aiHeroId: 'egyptian-mage-6', aiHeroClass: 'mage',
-			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.hard,
+			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.ra,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Ra has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Ra channels solar energy (+1 mana)' },
@@ -114,7 +114,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeVictory: 'The greatest sorceress in creation acknowledges your power.',
 			narrativeDefeat: 'Isis\'s enchantments weave around you like chains.',
 			aiHeroId: 'egyptian-mage-7', aiHeroClass: 'mage',
-			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.hard,
+			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.isis,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Isis has 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Isis weaves extra cards from magic' },
@@ -132,7 +132,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeVictory: 'The judge of the dead finds you worthy of the living.',
 			narrativeDefeat: 'Anubis wraps you in burial cloth. Your journey ends here.',
 			aiHeroId: 'egyptian-priest-8', aiHeroClass: 'priest',
-			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.hard,
+			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.anubis,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Anubis has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Anubis channels death energy (+1 mana)' },
@@ -150,7 +150,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeVictory: 'Chaos itself recoils. The sun will rise because you stood firm.',
 			narrativeDefeat: 'Apophis swallows the light. The sun goes dark.',
 			aiHeroId: 'egyptian-boss-9', aiHeroClass: 'warlock',
-			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.boss,
+			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.apophis,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Apophis has 115 health' },
 				{ type: 'passive_damage', value: 2, description: 'Apophis\' darkness deals 2 damage each turn' },
@@ -168,7 +168,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeVictory: 'The Lord of the Dead is defeated. You have conquered death\'s own kingdom.',
 			narrativeDefeat: 'Osiris shakes his head slowly. "Not yet. But you will return."',
 			aiHeroId: 'egyptian-boss-10', aiHeroClass: 'priest',
-			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.boss,
+			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.osiris,
 			bossRules: [
 				{ type: 'extra_health', value: 20, description: 'Osiris has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Osiris wields death\'s power (+2 mana)' },

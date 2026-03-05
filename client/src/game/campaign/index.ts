@@ -3,7 +3,7 @@ export { greekChapter } from './chapters/greekChapter';
 export { egyptianChapter } from './chapters/egyptianChapter';
 export { celticChapter } from './chapters/celticChapter';
 export { easternChapter } from './chapters/easternChapter';
-export type { CampaignChapter, CampaignMission, CampaignArmy, AIBehaviorProfile, BossRule, CampaignReward, Difficulty } from './campaignTypes';
+export type { CampaignChapter, CampaignMission, CampaignArmy, AIBehaviorProfile, BossRule, CampaignReward, Difficulty, CinematicIntro, CinematicScene } from './campaignTypes';
 export { AI_PROFILES } from './campaignTypes';
 export { useCampaignStore } from './campaignStore';
 export { buildCampaignArmy } from './campaignArmyBuilder';
