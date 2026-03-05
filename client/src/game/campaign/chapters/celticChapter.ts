@@ -1,7 +1,7 @@
 import type { CampaignChapter } from '../campaignTypes';
 import { AI_PROFILES } from '../campaignTypes';
 
-const c = (n: number) => 3000 + n;
+const c = (n: number) => 20000 + n;
 const deck = (base: number) => Array.from({ length: 30 }, (_, j) => c(base + (j % 15)));
 
 export const celticChapter: CampaignChapter = {
@@ -102,7 +102,7 @@ export const celticChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 1, description: 'The cauldron grants +1 mana' },
 			],
 			prerequisiteIds: ['celtic-5'],
-			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 3200 }],
+			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 20106 }],
 			campaignArmy: { king: 'king-buri', queen: 'hero-odin', rook: 'hero-thor', bishop: 'hero-freya', knight: 'hero-ullr' },
 		},
 		{
@@ -156,7 +156,7 @@ export const celticChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Brigid channels triple power (+2 mana)' },
 			],
 			prerequisiteIds: ['celtic-8'],
-			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 3250 }],
+			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 20204 }],
 			campaignArmy: { king: 'king-surtr', queen: 'hero-sol', rook: 'hero-tyr', bishop: 'hero-eir', knight: 'hero-apollo' },
 		},
 		{
@@ -175,7 +175,7 @@ export const celticChapter: CampaignChapter = {
 				{ type: 'bonus_draw', value: 1, description: 'Lugh draws from mastery of all crafts' },
 			],
 			prerequisiteIds: ['celtic-9'],
-			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 3300 }, { type: 'pack', amount: 2 }],
+			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20111 }, { type: 'pack', amount: 2 }],
 			campaignArmy: { king: 'king-borr', queen: 'hero-odin', rook: 'hero-thor', bishop: 'hero-freya', knight: 'hero-loki' },
 		},
 	],

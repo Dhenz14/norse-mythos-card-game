@@ -1,7 +1,7 @@
 import type { CampaignChapter } from '../campaignTypes';
 import { AI_PROFILES } from '../campaignTypes';
 
-const x = (n: number) => 1000 + n;
+const x = (n: number) => 20000 + n;
 const deck = (base: number) => Array.from({ length: 30 }, (_, j) => x(base + (j % 15)));
 
 export const easternChapter: CampaignChapter = {
@@ -113,7 +113,7 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'passive_damage', value: 2, description: 'Yomi\'s decay deals 2 damage each turn' },
 			],
 			prerequisiteIds: ['eastern-5'],
-			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 1400 }],
+			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 20021 }],
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-izanami', rook: 'hero-vidar', bishop: 'hero-ran', knight: 'hero-tsukuyomi' },
 		},
 		{
@@ -169,7 +169,7 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'passive_damage', value: 2, description: 'Kali\'s dance deals 2 damage each turn' },
 			],
 			prerequisiteIds: ['eastern-8'],
-			rewards: [{ type: 'rune', amount: 90 }, { type: 'card', cardId: 1450 }],
+			rewards: [{ type: 'rune', amount: 90 }, { type: 'card', cardId: 20114 }],
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-izanami', rook: 'hero-logi', bishop: 'hero-ran', knight: 'hero-nyx' },
 		},
 		{
@@ -189,7 +189,7 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'passive_damage', value: 2, description: 'The unraveling deals 2 damage each turn' },
 			],
 			prerequisiteIds: ['eastern-9'],
-			rewards: [{ type: 'rune', amount: 200 }, { type: 'card', cardId: 1500 }, { type: 'pack', amount: 5 }],
+			rewards: [{ type: 'rune', amount: 200 }, { type: 'card', cardId: 20001 }, { type: 'pack', amount: 5 }],
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-zeus', rook: 'hero-thor', bishop: 'hero-poseidon', knight: 'hero-loki' },
 		},
 	],

@@ -1,7 +1,7 @@
 import type { CampaignChapter } from '../campaignTypes';
 import { AI_PROFILES } from '../campaignTypes';
 
-const e = (n: number) => 2000 + n;
+const e = (n: number) => 20000 + n;
 const deck = (base: number) => Array.from({ length: 30 }, (_, j) => e(base + (j % 15)));
 
 export const egyptianChapter: CampaignChapter = {
@@ -102,7 +102,7 @@ export const egyptianChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 1, description: 'Ra channels solar energy (+1 mana)' },
 			],
 			prerequisiteIds: ['egyptian-5'],
-			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 2200 }],
+			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 20108 }],
 			campaignArmy: { king: 'king-audumbla', queen: 'hero-shu', rook: 'hero-baldur', bishop: 'hero-hestia', knight: 'hero-apollo' },
 		},
 		{
@@ -156,7 +156,7 @@ export const egyptianChapter: CampaignChapter = {
 				{ type: 'passive_damage', value: 2, description: 'Apophis\' darkness deals 2 damage each turn' },
 			],
 			prerequisiteIds: ['egyptian-8'],
-			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 2250 }],
+			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 20109 }],
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-hades', rook: 'hero-logi', bishop: 'hero-ran', knight: 'hero-nyx' },
 		},
 		{
@@ -175,7 +175,7 @@ export const egyptianChapter: CampaignChapter = {
 				{ type: 'bonus_draw', value: 1, description: 'Osiris draws from the Book of the Dead' },
 			],
 			prerequisiteIds: ['egyptian-9'],
-			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 2300 }, { type: 'pack', amount: 2 }],
+			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20116 }, { type: 'pack', amount: 2 }],
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-hel', rook: 'hero-tyr', bishop: 'hero-maat', knight: 'hero-khepri' },
 		},
 	],

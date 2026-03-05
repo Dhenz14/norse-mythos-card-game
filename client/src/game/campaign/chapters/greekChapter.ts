@@ -1,7 +1,7 @@
 import type { CampaignChapter } from '../campaignTypes';
 import { AI_PROFILES } from '../campaignTypes';
 
-const g = (n: number) => 1000 + n;
+const g = (n: number) => 20000 + n;
 const deck = (base: number) => Array.from({ length: 30 }, (_, j) => g(base + (j % 15)));
 
 export const greekChapter: CampaignChapter = {
@@ -67,7 +67,7 @@ export const greekChapter: CampaignChapter = {
 			narrativeDefeat: 'For every head you sever, two more strike. The poison overwhelms you.',
 			aiHeroId: 'hero-artemis', aiHeroClass: 'hunter',
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.hydra,
-			bossRules: [{ type: 'start_with_minion', cardId: 1010, description: 'The Hydra starts with a regenerating head on the battlefield' }],
+			bossRules: [{ type: 'start_with_minion', cardId: 20203, description: 'The Hydra starts with a regenerating head on the battlefield' }],
 			prerequisiteIds: ['greek-3'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			realm: 'aegean',
@@ -104,7 +104,7 @@ export const greekChapter: CampaignChapter = {
 				{ type: 'bonus_draw', value: 1, description: 'Poseidon draws an extra card from the depths' },
 			],
 			prerequisiteIds: ['greek-5'],
-			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 1200 }],
+			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 20209 }],
 			realm: 'aegean',
 			campaignArmy: { king: 'king-brimir', queen: 'hero-zeus', rook: 'hero-hephaestus', bishop: 'hero-poseidon', knight: 'hero-hermes' },
 		},
@@ -161,7 +161,7 @@ export const greekChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Kronos wields primordial power (+2 mana)' },
 			],
 			prerequisiteIds: ['greek-8'],
-			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 1250 }],
+			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 20216 }],
 			realm: 'delphi',
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-chronos', rook: 'hero-logi', bishop: 'hero-demeter', knight: 'hero-apollo' },
 		},
@@ -181,7 +181,7 @@ export const greekChapter: CampaignChapter = {
 				{ type: 'bonus_draw', value: 1, description: 'Zeus draws an extra card each turn' },
 			],
 			prerequisiteIds: ['greek-9'],
-			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 1300 }, { type: 'pack', amount: 2 }],
+			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20002 }, { type: 'pack', amount: 2 }],
 			realm: 'olympus',
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-zeus', rook: 'hero-ares', bishop: 'hero-poseidon', knight: 'hero-apollo' },
 		},
