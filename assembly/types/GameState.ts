@@ -28,7 +28,7 @@ export const CLASS_SHAMAN: i32 = 6;
 export const CLASS_WARLOCK: i32 = 7;
 export const CLASS_DRUID: i32 = 8;
 export const CLASS_DEATH_KNIGHT: i32 = 9;
-export const CLASS_DEMON_HUNTER: i32 = 10;
+export const CLASS_BERSERKER: i32 = 10;
 export const CLASS_NEUTRAL: i32 = 11;
 export const CLASS_MONK: i32 = 12;
 
@@ -97,7 +97,7 @@ export class CardDef {
 	attack: i32;           // For minions/weapons
 	health: i32;           // For minions (durability for weapons)
 	heroClass: i32;        // CLASS_* constant
-	rarity: string;        // "free", "common", "rare", "epic", "legendary"
+	rarity: string;        // "free", "common", "rare", "epic", "mythic"
 	race: string;          // "beast", "dragon", "elemental", etc. or ""
 	keywords: string[];    // ["taunt", "charge", "divine_shield", etc.]
 	battlecry: EffectDef | null;
