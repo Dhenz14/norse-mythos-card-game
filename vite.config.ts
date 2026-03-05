@@ -40,22 +40,43 @@ export default defineConfig(({ command }) => ({
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
+    target: 'esnext',
+    chunkSizeWarningLimit: 300,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': ['framer-motion', '@react-spring/web'],
-          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
-          'radix-vendor': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-select',
-            '@radix-ui/react-popover',
-          ],
-          'state-vendor': ['zustand', '@tanstack/react-query'],
-          'anim-vendor': ['gsap'],
+        manualChunks(id: string) {
+          // Vendor splits — isolate heavy node_modules
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom') || id.includes('react/')) return 'react-vendor';
+            if (id.includes('three') || id.includes('@react-three')) return 'three-vendor';
+            if (id.includes('framer-motion') || id.includes('@react-spring')) return 'ui-vendor';
+            if (id.includes('@radix-ui')) return 'radix-vendor';
+            if (id.includes('zustand') || id.includes('@tanstack')) return 'state-vendor';
+            if (id.includes('gsap')) return 'anim-vendor';
+            if (id.includes('peerjs') || id.includes('uuid')) return 'network-vendor';
+            if (id.includes('drizzle') || id.includes('idb')) return 'db-vendor';
+          }
+          // Card data splits — 84K lines split by category
+          if (id.includes('/game/data/cardRegistry/sets/core/pets/')) return 'card-data-pets';
+          if (id.includes('/game/data/cardRegistry/sets/core/neutrals/')) return 'card-data-neutrals';
+          if (id.includes('/game/data/cardRegistry/sets/core/classes/')) return 'card-data-classes';
+          if (id.includes('/game/data/cardRegistry/sets/')) return 'card-data-sets';
+          if (id.includes('/game/data/norseHeroes/')) return 'card-data-heroes';
+          if (id.includes('/game/data/cardSets/')) return 'card-data-legacy-sets';
+          if (id.includes('/game/data/') && !id.includes('/game/data/allCards')) return 'card-data';
+          // Game logic splits
+          if (id.includes('/game/effects/handlers/battlecry/')) return 'effects-battlecry';
+          if (id.includes('/game/effects/handlers/spellEffect/')) return 'effects-spells';
+          if (id.includes('/game/effects/')) return 'effects-core';
+          if (id.includes('/game/utils/spells/')) return 'engine-spells';
+          if (id.includes('/game/utils/battlecry')) return 'engine-battlecry';
+          if (id.includes('/game/utils/heroPower') || id.includes('/game/utils/norseHeroPower')) return 'engine-heropower';
+          if (id.includes('/game/utils/deathrattle')) return 'engine-deathrattle';
+          if (id.includes('/game/utils/')) return 'game-engine';
+          if (id.includes('/game/stores/combat/')) return 'combat-stores';
+          if (id.includes('/game/stores/gameStore')) return 'game-store';
+          if (id.includes('/game/campaign/')) return 'campaign';
+          if (id.includes('/data/blockchain/')) return 'blockchain';
         },
       },
     },
