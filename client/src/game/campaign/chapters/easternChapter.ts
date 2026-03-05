@@ -19,7 +19,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'The dragon coils around the waterfall and bows its great head. "You have crossed the Dragon Gate," it rumbles. "Few from the Western myths have ever reached this far."',
 			narrativeVictory: 'The dragon yields. The gate between worlds swings open.',
 			narrativeDefeat: 'The waterfall crashes down. The Dragon Gate remains closed to you.',
-			aiHeroId: 'eastern-warrior-1', aiHeroClass: 'warrior',
+			aiHeroId: 'hero-thorgrim', aiHeroClass: 'warrior',
 			aiDeckCardIds: deck(0), aiProfile: AI_PROFILES.hard,
 			bossRules: [{ type: 'extra_health', value: 10, description: 'The Dragon has 110 health' }],
 			prerequisiteIds: [],
@@ -34,7 +34,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'Amaterasu dims her radiance to something bearable. "There is light in you that no shadow could hide," she says. "You may walk my lands."',
 			narrativeVictory: 'You endure the purest light in existence. Amaterasu sees your true nature — and approves.',
 			narrativeDefeat: 'The sun\'s full radiance unmakes every shadow you hid behind.',
-			aiHeroId: 'eastern-mage-2', aiHeroClass: 'mage',
+			aiHeroId: 'hero-shu', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.amaterasu,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Amaterasu has 110 health' },
@@ -52,7 +52,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'The Jade Emperor stamps his celestial seal. "Irregular, but... acceptable," he says. "Your file has been updated. You may proceed."',
 			narrativeVictory: 'Even heavenly bureaucracy bows to undeniable merit.',
 			narrativeDefeat: 'The celestial bureaucracy finds you wanting. Your paperwork is denied.',
-			aiHeroId: 'eastern-priest-3', aiHeroClass: 'priest',
+			aiHeroId: 'hero-hoenir', aiHeroClass: 'priest',
 			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.jadeEmperor,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'The Jade Emperor has 110 health' },
@@ -70,7 +70,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'Susanoo\'s storm breaks. He stands in the rain, breathing heavily. "You\'re different from the Western gods I\'ve heard about," he says. "They rely on power. You rely on will."',
 			narrativeVictory: 'The storm god\'s fury breaks against your resolve like waves on stone.',
 			narrativeDefeat: 'No mortal can stand against the fury of heaven\'s exile.',
-			aiHeroId: 'eastern-shaman-4', aiHeroClass: 'shaman',
+			aiHeroId: 'hero-ran', aiHeroClass: 'shaman',
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.susanoo,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Susanoo has 110 health' },
@@ -88,7 +88,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'Sun Wukong scratches his head. "Huh. Not bad for someone who can\'t even somersault on clouds." He shrinks his staff to the size of a needle and tucks it behind his ear. "You\'re alright."',
 			narrativeVictory: 'The irrepressible Monkey King is impressed. That alone is worth a legend.',
 			narrativeDefeat: 'Sun Wukong laughs and does a backflip. "Too slow! Way too slow!"',
-			aiHeroId: 'eastern-rogue-5', aiHeroClass: 'rogue',
+			aiHeroId: 'hero-gormr', aiHeroClass: 'rogue',
 			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.sunWukong,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Sun Wukong has 115 health' },
@@ -106,7 +106,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'Izanami retreats into the deepest dark. "Go," she whispers. "But remember: I kill a thousand living things each day in revenge. You are merely the one who got away."',
 			narrativeVictory: 'You escape Yomi intact. Izanami\'s curse passes over you — this time.',
 			narrativeDefeat: 'Yomi closes around you. Izanami collects another soul for her endless grief.',
-			aiHeroId: 'eastern-warlock-6', aiHeroClass: 'warlock',
+			aiHeroId: 'hero-izanami', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.izanami,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Izanami has 115 health' },
@@ -124,7 +124,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'Ganesha trumpets with joy. "Beautiful! You did not try to smash through it!" He hands you a golden tusk. "Carry this. It means you think before you strike."',
 			narrativeVictory: 'Wisdom overcomes obstacles. Ganesha removes every barrier before you.',
 			narrativeDefeat: 'Ganesha sighs. "You think like a warrior. Come back when you think like a sage."',
-			aiHeroId: 'eastern-priest-7', aiHeroClass: 'priest',
+			aiHeroId: 'hero-frey', aiHeroClass: 'priest',
 			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.ganesha,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Ganesha has 115 health' },
@@ -142,7 +142,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'The churning stops. The Amrita glows in its vessel, and you have earned a single sip. Immortality touches your lips — not forever, but long enough to face what comes next.',
 			narrativeVictory: 'You stand between gods and demons and claim the Amrita. Both sides are impressed.',
 			narrativeDefeat: 'The cosmic ocean swallows you. The churning continues without you.',
-			aiHeroId: 'eastern-shaman-8', aiHeroClass: 'shaman',
+			aiHeroId: 'hero-gefjon', aiHeroClass: 'shaman',
 			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.boss,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Cosmic forces have 115 health' },
@@ -161,7 +161,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'Kali stops dancing. The silence is deafening. "You... kept up," she says, genuinely surprised. "No one has ever kept up." She removes one skull from her necklace. "Take this. It belonged to a god who thought he was stronger than Time. You are wiser."',
 			narrativeVictory: 'You dance with destruction itself and survive. Kali keeps time — and you kept pace.',
 			narrativeDefeat: 'Time dances on. You do not.',
-			aiHeroId: 'eastern-boss-9', aiHeroClass: 'warlock',
+			aiHeroId: 'hero-dionysus', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.kali,
 			bossRules: [
 				{ type: 'extra_health', value: 20, description: 'Kali has 120 health' },
@@ -180,7 +180,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'Silence. For the first time in the history of every mythology, the End was met — and turned back. The being of endings unravels, and from its dissolution, new stories begin. You stand at the nexus of all myths, the one who prevented the final Ragnarok. Every god, from every pantheon, knows your name. The campaign is complete.',
 			narrativeVictory: 'You are the champion of all mythologies. The one who stood at the end of everything and said: "Not today." Every god across every pantheon bows.',
 			narrativeDefeat: 'All endings arrive at once. But even this is just a story — and stories can be retold.',
-			aiHeroId: 'eastern-boss-10', aiHeroClass: 'mage',
+			aiHeroId: 'hero-hyperion', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.boss,
 			bossRules: [
 				{ type: 'extra_health', value: 30, description: 'The World-Ender has 130 health' },

@@ -99,7 +99,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'The ice caves grow quiet. The first jotnar have fallen, but Ymir himself stirs in the distance, vast and terrible. Buri\'s bloodline flows in your veins — the defiance that carved order from chaos. Audumbla lows in the distance, still licking ice, still creating. The war for existence has only begun.',
 			narrativeVictory: 'The void\'s children cannot extinguish what Audumbla freed from the ice. You carry Buri\'s spark.',
 			narrativeDefeat: 'The primordial cold reclaims you. Without Buri\'s heirs, the void would have swallowed all.',
-			aiHeroId: 'norse-warrior-1', aiHeroClass: 'warrior',
+			aiHeroId: 'hero-thor', aiHeroClass: 'warrior',
 			aiDeckCardIds: [20001,20001,20002,20002,20003,20003,20004,20004,20005,20005,20010,20010,20011,20011,20012,20012,20013,20013,20014,20014,20015,20015,20020,20020,20021,20021,20022,20022,20023,20023],
 			aiProfile: AI_PROFILES.easy, bossRules: [], prerequisiteIds: [],
 			rewards: [{ type: 'rune', amount: 20 }],
@@ -113,7 +113,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'Ymir falls. The ground shakes as the colossus crashes into the void. An ocean of blood erupts from the wound — a crimson flood that drowns nearly every giant in existence. Audumbla, the primordial cow who birthed creation with her tongue, stands on a shrinking ice floe. She lows once — mournful, accepting — and the red tide swallows her. Even mothers of beginnings are not spared the flood of endings. But one giant survives: Bergelmir, clutching a blood-soaked log, drifting into darkness. His eyes burn with a hatred that will outlast the cosmos.',
 			narrativeVictory: 'Ymir is slain. The flood of his blood drowns the old world. From this death, everything will be born.',
 			narrativeDefeat: 'Ymir\'s fist closes. The void remains formless. Creation itself dies stillborn.',
-			aiHeroId: 'norse-warrior-2', aiHeroClass: 'warrior',
+			aiHeroId: 'hero-thorgrim', aiHeroClass: 'warrior',
 			aiDeckCardIds: [20001,20001,20003,20003,20004,20004,20100,20100,20104,20104,20107,20107,20110,20110,20111,20111,20114,20114,20115,20115,20116,20116,20201,20201,20204,20204,20210,20210,20305,20305],
 			aiProfile: AI_PROFILES.ymir,
 			bossRules: [
@@ -137,7 +137,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'Bergelmir retreats into the new-formed mountains of Jotunheim, dragging his wounded kin with him. The world takes shape around you — mountains rising, rivers carving paths, the great tree Yggdrasil groaning as it stretches through the fresh-born realms. But Bergelmir\'s oath echoes across the stone: the giants will never forget what the gods did to Ymir. The feud is eternal.',
 			narrativeVictory: 'The remnant giants scatter. The Nine Realms take form from Ymir\'s sacrifice — bone, blood, and sky.',
 			narrativeDefeat: 'Bergelmir\'s kin reclaim the corpse. The worlds remain unformed — raw meat and blood in the void.',
-			aiHeroId: 'norse-shaman-1', aiHeroClass: 'shaman',
+			aiHeroId: 'hero-njord', aiHeroClass: 'shaman',
 			aiDeckCardIds: [20004,20004,20020,20020,20100,20100,20103,20103,20106,20106,20107,20107,20109,20109,20112,20112,20113,20113,20200,20200,20206,20206,20208,20208,20211,20211,20301,20301,20304,20304],
 			aiProfile: AI_PROFILES.bergelmir,
 			bossRules: [
@@ -160,7 +160,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'The giant scouts withdraw, but their report will reach Bergelmir: humanity is small, fragile, and defended only by divine echoes. The brothers have given you life, but survival is your own burden. Midgard\'s first villages rise along the shore where Ask and Embla drew their first breaths.',
 			narrativeVictory: 'The children of Ask and Embla endure. Humanity\'s first breath will not be its last.',
 			narrativeDefeat: 'The giants trample the shore where Ask and Embla stood. The first humans are dust before their story begins.',
-			aiHeroId: 'norse-hunter-1', aiHeroClass: 'hunter',
+			aiHeroId: 'hero-skadi', aiHeroClass: 'hunter',
 			aiDeckCardIds: [20004,20004,20020,20020,20100,20100,20103,20103,20108,20108,20109,20109,20111,20111,20112,20112,20116,20116,20202,20202,20205,20205,20208,20208,20214,20214,20215,20215,20301,20301],
 			aiProfile: AI_PROFILES.medium,
 			bossRules: [],
@@ -180,7 +180,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'The walls of Asgard hold. The Bifrost blazes with all colors of creation, sealing the road between gods and mortals. Odin sits upon Hlidskjalf for the first time and looks across all Nine Realms. He sees everything — the giant remnants festering in Jotunheim, the dark elves stirring in the roots, the fire of Muspelheim growing restless. He sees you, too. And he remembers.',
 			narrativeVictory: 'Asgard stands. The gods have their fortress, built on the bones of the enemy their fathers died to slay.',
 			narrativeDefeat: 'The walls crumble. Asgard falls before it is finished — and the gods are left without sanctuary.',
-			aiHeroId: 'norse-warrior-3', aiHeroClass: 'warrior',
+			aiHeroId: 'hero-valthrud', aiHeroClass: 'warrior',
 			aiDeckCardIds: [20001,20001,20003,20003,20005,20005,20020,20020,20100,20100,20104,20104,20105,20105,20111,20111,20113,20113,20114,20114,20201,20201,20210,20210,20302,20302,20305,20305,20306,20306],
 			aiProfile: AI_PROFILES.hard,
 			bossRules: [
@@ -202,7 +202,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'The dark-elf incursion is broken, but their whispers linger in the roots of Yggdrasil. The light-elves gift you a shard of crystallized sunlight — Freyr\'s blessing, they say. "Carry it into the darker realms," their queen murmurs. "You will need it." The branches of the World Tree glow brighter for your passing, but somewhere below, the roots grow darker.',
 			narrativeVictory: 'Alfheim\'s light endures. The dark elves slink back to the roots, but their ambition festers still.',
 			narrativeDefeat: 'Shadow drowns the light-elves\' realm. Freyr\'s gift withers, and Alfheim dims for the first time since its creation.',
-			aiHeroId: 'norse-mage-1', aiHeroClass: 'mage',
+			aiHeroId: 'hero-odin', aiHeroClass: 'mage',
 			aiDeckCardIds: [20004,20004,20016,20016,20021,20021,20100,20100,20101,20101,20103,20103,20106,20106,20109,20109,20112,20112,20113,20113,20204,20204,20205,20205,20208,20208,20211,20211,20303,20303],
 			aiProfile: AI_PROFILES.hard,
 			bossRules: [
@@ -224,7 +224,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'Exhaustion ends what pride could not. The Aesir and Vanir exchange hostages: Njordr and Freyr join the Aesir in Asgard; Hoenir and Mimir go to the Vanir. When the Vanir discover Hoenir is useless without Mimir\'s counsel, they behead Mimir and send the head to Odin. Odin preserves the head with herbs and runes, and it whispers secrets to him forevermore. Peace holds — but the scars of the first divine war run deeper than bone. Gullveig, reborn as Heidr the seeress, vanishes into the world, her prophecies echoing through time.',
 			narrativeVictory: 'The divine war ends in bitter peace. Aesir and Vanir unite — scarred, diminished, but whole enough to face what comes.',
 			narrativeDefeat: 'The war of the gods tears the cosmos apart. Without unity, Bergelmir\'s giants inherit the ruins.',
-			aiHeroId: 'norse-druid-1', aiHeroClass: 'druid',
+			aiHeroId: 'hero-idunn', aiHeroClass: 'druid',
 			aiDeckCardIds: [20001,20001,20003,20003,20004,20004,20020,20020,20100,20100,20105,20105,20106,20106,20107,20107,20110,20110,20113,20113,20115,20115,20203,20203,20204,20204,20207,20207,20216,20216],
 			aiProfile: AI_PROFILES.vanirWarlord,
 			bossRules: [
@@ -247,7 +247,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'Bergelmir falls at last — the oldest grudge in the cosmos extinguished. His descendants scatter into the frozen wastes, leaderless but not broken. The feud between gods and giants will outlast them all, echoing through every age until Ragnarok settles it forever. But today, the architect of vengeance is gone, and the worlds breathe easier.',
 			narrativeVictory: 'The flood-survivor falls. Ymir\'s blood-debt is paid — but the giants\' hatred will outlast even this.',
 			narrativeDefeat: 'Bergelmir\'s vengeance is complete. The blood-flood\'s lone survivor destroys what the blood-flood could not.',
-			aiHeroId: 'norse-warrior-2', aiHeroClass: 'warrior',
+			aiHeroId: 'hero-thorgrim', aiHeroClass: 'warrior',
 			aiDeckCardIds: [20001,20001,20002,20002,20003,20003,20005,20005,20020,20020,20104,20104,20105,20105,20107,20107,20114,20114,20115,20115,20201,20201,20203,20203,20207,20207,20209,20209,20305,20305],
 			aiProfile: AI_PROFILES.bergelmir,
 			bossRules: [
@@ -271,7 +271,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeAfter: 'The roots hold — for now. Nidhogg retreats deeper, Fenrir\'s chains endure one more day, and the Fimbulvetr eases, though it does not end. Odin watches from Hlidskjalf as you descend from the World Tree. "Ragnarok will come," he says, without sadness — only certainty. "The sun will be swallowed. The wolf will break free. I will fall to Fenrir\'s jaws, and Thor will die slaying the Serpent. But after the twilight, the world will rise again — green and new, from the sea. My sons Vidar and Vali will survive. Baldur will return from Hel. And the children of Ask and Embla will walk the earth once more." He pauses. "Perhaps, this time, they will remember what it cost." The Echoes of Ymir fall silent. The story of creation is told. What comes next... is Ragnarok itself.',
 			narrativeVictory: 'The twilight is delayed — not prevented. But every moment bought is a world preserved.',
 			narrativeDefeat: 'The roots of Yggdrasil snap. Ragnarok arrives ahead of prophecy, and the cosmos has no time to prepare.',
-			aiHeroId: 'norse-priest-1', aiHeroClass: 'priest',
+			aiHeroId: 'hero-freya', aiHeroClass: 'priest',
 			aiDeckCardIds: [20001,20001,20002,20002,20003,20003,20004,20004,20020,20020,20105,20105,20107,20107,20113,20113,20114,20114,20115,20115,20200,20200,20203,20203,20207,20207,20209,20209,20216,20216],
 			aiProfile: AI_PROFILES.odin,
 			bossRules: [

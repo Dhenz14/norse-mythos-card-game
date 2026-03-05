@@ -1,10 +1,12 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+app.use(helmet());
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: false }));
 
