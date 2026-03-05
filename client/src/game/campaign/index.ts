@@ -37,7 +37,7 @@ export const BASE_CHAPTER_MISSION_IDS: Record<string, string[]> = {
 };
 
 export function getMission(missionId: string) {
-	const allChapters = [...ALL_CHAPTERS, easternChapter];
+	const allChapters = ALL_CHAPTERS;
 	for (const chapter of allChapters) {
 		const mission = chapter.missions.find(m => m.id === missionId);
 		if (mission) return { mission, chapter };

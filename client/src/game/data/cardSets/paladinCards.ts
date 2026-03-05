@@ -99,7 +99,7 @@ export function registerPaladinCards(): void {
 
   // Luminous Blade
   createCard()
-    .id(8501)
+    .id(8540)
     .name("Luminous Blade")
     .manaCost(5)
     .attack(5)

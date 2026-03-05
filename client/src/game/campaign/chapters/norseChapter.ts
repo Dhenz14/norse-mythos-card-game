@@ -114,7 +114,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeVictory: 'Ymir is slain. The flood of his blood drowns the old world. From this death, everything will be born.',
 			narrativeDefeat: 'Ymir\'s fist closes. The void remains formless. Creation itself dies stillborn.',
 			aiHeroId: 'norse-warrior-2', aiHeroClass: 'warrior',
-			aiDeckCardIds: [20030,20030,20031,20031,20032,20032,20033,20033,20034,20034,20035,20035,20036,20036,20037,20037,20038,20038,20039,20039,20040,20040,20041,20041,20042,20042,20043,20043,20044,20044],
+			aiDeckCardIds: [20001,20001,20003,20003,20004,20004,20100,20100,20104,20104,20107,20107,20110,20110,20111,20111,20114,20114,20115,20115,20116,20116,20201,20201,20204,20204,20210,20210,20305,20305],
 			aiProfile: AI_PROFILES.ymir,
 			bossRules: [
 				{ type: 'extra_health', value: 30, description: 'Ymir has 130 health — primordial giant' },
@@ -138,7 +138,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeVictory: 'The remnant giants scatter. The Nine Realms take form from Ymir\'s sacrifice — bone, blood, and sky.',
 			narrativeDefeat: 'Bergelmir\'s kin reclaim the corpse. The worlds remain unformed — raw meat and blood in the void.',
 			aiHeroId: 'norse-shaman-1', aiHeroClass: 'shaman',
-			aiDeckCardIds: [20050,20050,20051,20051,20052,20052,20053,20053,20054,20054,20055,20055,20056,20056,20057,20057,20058,20058,20059,20059,20060,20060,20061,20061,20062,20062,20063,20063,20064,20064],
+			aiDeckCardIds: [20004,20004,20020,20020,20100,20100,20103,20103,20106,20106,20107,20107,20109,20109,20112,20112,20113,20113,20200,20200,20206,20206,20208,20208,20211,20211,20301,20301,20304,20304],
 			aiProfile: AI_PROFILES.bergelmir,
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Bergelmir has 115 health — survivor of the blood-flood' },
@@ -161,7 +161,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeVictory: 'The children of Ask and Embla endure. Humanity\'s first breath will not be its last.',
 			narrativeDefeat: 'The giants trample the shore where Ask and Embla stood. The first humans are dust before their story begins.',
 			aiHeroId: 'norse-hunter-1', aiHeroClass: 'hunter',
-			aiDeckCardIds: [20070,20070,20071,20071,20072,20072,20073,20073,20074,20074,20075,20075,20076,20076,20077,20077,20078,20078,20079,20079,20080,20080,20081,20081,20082,20082,20083,20083,20084,20084],
+			aiDeckCardIds: [20004,20004,20020,20020,20100,20100,20103,20103,20108,20108,20109,20109,20111,20111,20112,20112,20116,20116,20202,20202,20205,20205,20208,20208,20214,20214,20215,20215,20301,20301],
 			aiProfile: AI_PROFILES.medium,
 			bossRules: [],
 			prerequisiteIds: ['norse-3'],
@@ -181,7 +181,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeVictory: 'Asgard stands. The gods have their fortress, built on the bones of the enemy their fathers died to slay.',
 			narrativeDefeat: 'The walls crumble. Asgard falls before it is finished — and the gods are left without sanctuary.',
 			aiHeroId: 'norse-warrior-3', aiHeroClass: 'warrior',
-			aiDeckCardIds: [20090,20090,20091,20091,20092,20092,20093,20093,20094,20094,20095,20095,20096,20096,20097,20097,20098,20098,20099,20099,20100,20100,20101,20101,20102,20102,20103,20103,20104,20104],
+			aiDeckCardIds: [20001,20001,20003,20003,20005,20005,20020,20020,20100,20100,20104,20104,20105,20105,20111,20111,20113,20113,20114,20114,20201,20201,20210,20210,20302,20302,20305,20305,20306,20306],
 			aiProfile: AI_PROFILES.hard,
 			bossRules: [
 				{ type: 'extra_mana', value: 1, description: 'Giant war-lord starts with +1 mana crystal' },
@@ -203,7 +203,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeVictory: 'Alfheim\'s light endures. The dark elves slink back to the roots, but their ambition festers still.',
 			narrativeDefeat: 'Shadow drowns the light-elves\' realm. Freyr\'s gift withers, and Alfheim dims for the first time since its creation.',
 			aiHeroId: 'norse-mage-1', aiHeroClass: 'mage',
-			aiDeckCardIds: [20110,20110,20111,20111,20112,20112,20113,20113,20114,20114,20115,20115,20116,20116,20117,20117,20118,20118,20119,20119,20120,20120,20121,20121,20122,20122,20123,20123,20124,20124],
+			aiDeckCardIds: [20004,20004,20016,20016,20021,20021,20100,20100,20101,20101,20103,20103,20106,20106,20109,20109,20112,20112,20113,20113,20204,20204,20205,20205,20208,20208,20211,20211,20303,20303],
 			aiProfile: AI_PROFILES.hard,
 			bossRules: [
 				{ type: 'bonus_draw', value: 1, description: 'Dark-elf lord draws an extra card each turn' },
@@ -225,14 +225,14 @@ export const norseChapter: CampaignChapter = {
 			narrativeVictory: 'The divine war ends in bitter peace. Aesir and Vanir unite — scarred, diminished, but whole enough to face what comes.',
 			narrativeDefeat: 'The war of the gods tears the cosmos apart. Without unity, Bergelmir\'s giants inherit the ruins.',
 			aiHeroId: 'norse-druid-1', aiHeroClass: 'druid',
-			aiDeckCardIds: [20130,20130,20131,20131,20132,20132,20133,20133,20134,20134,20135,20135,20136,20136,20137,20137,20138,20138,20139,20139,20140,20140,20141,20141,20142,20142,20143,20143,20144,20144],
+			aiDeckCardIds: [20001,20001,20003,20003,20004,20004,20020,20020,20100,20100,20105,20105,20106,20106,20107,20107,20110,20110,20113,20113,20115,20115,20203,20203,20204,20204,20207,20207,20216,20216],
 			aiProfile: AI_PROFILES.vanirWarlord,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Vanir war-leader has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Vanir war-leader starts with +1 mana crystal' },
 			],
 			prerequisiteIds: ['norse-6'],
-			rewards: [{ type: 'rune', amount: 55 }, { type: 'card', cardId: 20250 }],
+			rewards: [{ type: 'rune', amount: 55 }, { type: 'card', cardId: 20210 }],
 			realm: 'vanaheim',
 		},
 
@@ -248,7 +248,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeVictory: 'The flood-survivor falls. Ymir\'s blood-debt is paid — but the giants\' hatred will outlast even this.',
 			narrativeDefeat: 'Bergelmir\'s vengeance is complete. The blood-flood\'s lone survivor destroys what the blood-flood could not.',
 			aiHeroId: 'norse-warrior-2', aiHeroClass: 'warrior',
-			aiDeckCardIds: [20150,20150,20151,20151,20152,20152,20153,20153,20154,20154,20155,20155,20156,20156,20157,20157,20158,20158,20159,20159,20160,20160,20161,20161,20162,20162,20163,20163,20164,20164],
+			aiDeckCardIds: [20001,20001,20002,20002,20003,20003,20005,20005,20020,20020,20104,20104,20105,20105,20107,20107,20114,20114,20115,20115,20201,20201,20203,20203,20207,20207,20209,20209,20305,20305],
 			aiProfile: AI_PROFILES.bergelmir,
 			bossRules: [
 				{ type: 'extra_health', value: 20, description: 'Bergelmir has 120 health — ancient and terrible' },
@@ -272,7 +272,7 @@ export const norseChapter: CampaignChapter = {
 			narrativeVictory: 'The twilight is delayed — not prevented. But every moment bought is a world preserved.',
 			narrativeDefeat: 'The roots of Yggdrasil snap. Ragnarok arrives ahead of prophecy, and the cosmos has no time to prepare.',
 			aiHeroId: 'norse-priest-1', aiHeroClass: 'priest',
-			aiDeckCardIds: [20170,20170,20171,20171,20172,20172,20173,20173,20174,20174,20175,20175,20176,20176,20177,20177,20178,20178,20179,20179,20180,20180,20181,20181,20182,20182,20183,20183,20184,20184],
+			aiDeckCardIds: [20001,20001,20002,20002,20003,20003,20004,20004,20020,20020,20105,20105,20107,20107,20113,20113,20114,20114,20115,20115,20200,20200,20203,20203,20207,20207,20209,20209,20216,20216],
 			aiProfile: AI_PROFILES.odin,
 			bossRules: [
 				{ type: 'extra_health', value: 20, description: 'The forces of Ragnarok have 120 health' },

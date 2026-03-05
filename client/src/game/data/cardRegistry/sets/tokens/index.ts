@@ -295,7 +295,7 @@ const hunterTokens: CardData[] = [
 // ============================================
 // PALADIN TOKENS
 // ============================================
-// Note: Ashbringer (8501), Silver Hand Recruit (8502) are defined in paladin.ts
+// Note: Luminous Blade (8540), Einherjar Recruit (8502) are defined in paladin.ts
 const paladinTokens: CardData[] = [
   {
     id: 8503,

@@ -239,7 +239,7 @@ export const paladinCards: CardData[] = [
     set: "core"
   },
   {
-    id: 8501,
+    id: 8540,
     name: "Luminous Blade",
     manaCost: 5,
     attack: 5,
