@@ -23,7 +23,7 @@
   <img src="https://img.shields.io/badge/cards-1%2C400%2B-gold?style=flat-square" />
   <img src="https://img.shields.io/badge/heroes-77-blue?style=flat-square" />
   <img src="https://img.shields.io/badge/mythologies-5-red?style=flat-square" />
-  <img src="https://img.shields.io/badge/campaign_missions-56-green?style=flat-square" />
+  <img src="https://img.shields.io/badge/campaign_missions-55-green?style=flat-square" />
   <img src="https://img.shields.io/badge/pet_families-38-orange?style=flat-square" />
   <img src="https://img.shields.io/badge/react-18-61DAFB?style=flat-square&logo=react&logoColor=white" />
   <img src="https://img.shields.io/badge/typescript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" />
@@ -52,8 +52,8 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 - **Element system** — Fire, Water, Wind, Earth, Holy, Shadow with advantage bonuses
 
 ### Campaign: War of the Pantheons
-- **56 hand-crafted missions** across 5 mythological chapters
-- **Nine Realms constellation map** — navigate Asgard, Midgard, Niflheim, Muspelheim, Jotunheim, Vanaheim, Alfheim, Svartalfheim, Helheim
+- **55 hand-crafted missions** across 5 mythological chapters
+- **Nine Realms constellation map** — navigate Ginnungagap, Asgard, Midgard, Niflheim, Muspelheim, Jotunheim, Vanaheim, Alfheim, Svartalfheim, Helheim
 - **Greek Olympus world map** — 8 locations from Mount Olympus to the Underworld
 - **Themed AI enemies** — fight gods and monsters matching each realm's mythology
 - **Boss rules** — extra health, bonus mana, passive damage, minion summons
@@ -70,8 +70,8 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 - **Deck import/export** via shareable base64 codes
 
 ### Economy & Progression
-- **Card crafting** — dust economy with disenchant/craft (8:1 cost ratio)
-- **Card trading** — P2P trade offers with cards and dust
+- **Eitr crafting** — dissolve cards into Eitr (primordial essence), forge random cards of chosen rarity (8:1 cost ratio)
+- **Card trading** — P2P trade offers with cards and Eitr
 - **Card evolution** — 3 tiers: Mortal (60-70%) → Ascended (80-90%) → Divine (100%)
 - **Daily quest system** — 19 quest templates, 3 active per day
 - **Pack opening** with rarity-weighted pulls and premium animations
@@ -235,10 +235,10 @@ The winner **heals back their committed HP**. The loser **keeps their loss perma
 
 ### War of the Pantheons
 
-Five mythological campaigns with 56 hand-crafted missions featuring unique narratives, themed AI armies, and escalating boss mechanics.
+Five mythological campaigns with 55 hand-crafted missions featuring unique narratives, themed AI armies, and escalating boss mechanics.
 
-#### Norse — The Nine Realms
-Navigate the World Tree through Asgard, Midgard, Jotunheim, Niflheim, Muspelheim, and more. Face Fenrir, the Midgard Serpent, frost giants, and ultimately Odin himself.
+#### Norse — The Prose Edda
+Follow the chronological Norse creation myth from Ginnungagap through Ragnarok. Face Ymir in the primordial void, witness the world forged from his body, breathe life into Ask and Embla, build the halls of Asgard, and survive the Vanir War — culminating in a Twilight Omen of Ragnarok.
 
 #### Greek — Olympus
 Journey from the Underworld to Mount Olympus across 8 locations. Battle Cerberus, the Minotaur, Medusa, the Hydra, Ares, Poseidon, Hades, Athena, the Titan Kronos, and Zeus.
@@ -329,12 +329,12 @@ Every status effect has full visual feedback — themed glows, overlays, and ico
 
 ### Rarities
 
-| Rarity | Deck Limit | Craft Cost | Disenchant |
-|--------|-----------|------------|------------|
-| Common | 2 copies | 40 dust | 5 dust |
-| Rare | 2 copies | 100 dust | 20 dust |
-| Epic | 2 copies | 400 dust | 100 dust |
-| Mythic | 1 copy | 1,600 dust | 400 dust |
+| Rarity | Deck Limit | Forge Cost | Dissolve Value |
+|--------|-----------|------------|----------------|
+| Common | 2 copies | 40 Eitr | 5 Eitr |
+| Rare | 2 copies | 100 Eitr | 20 Eitr |
+| Epic | 2 copies | 400 Eitr | 100 Eitr |
+| Mythic | 1 copy | 1,600 Eitr | 400 Eitr |
 
 ### Races
 
@@ -434,10 +434,10 @@ Opens at `http://localhost:5000`. No database required for single-player — Pos
 ```
 client/src/
 ├── game/
-│   ├── campaign/          # 56 missions, 5 chapters, 2 world maps
+│   ├── campaign/          # 55 missions, 5 chapters, 2 world maps
 │   ├── combat/            # Poker combat arena + hooks
 │   ├── components/        # Card, chess, campaign, collection, trading UI
-│   ├── crafting/          # Dust economy
+│   ├── crafting/          # Eitr economy (dissolve/forge)
 │   ├── data/              # 1,400+ cards + 77 heroes + 38 pet families
 │   ├── effects/           # 181 effect handlers (battlecry, deathrattle, spell)
 │   ├── engine/            # WASM loader + TypeScript fallback
@@ -465,13 +465,13 @@ server/
 - [x] Pet Evolution 3-3-1 system (38 families, 266 cards, element advantage, hero synergy)
 - [x] Ragnarok Chess (7x5 board with poker combat collisions)
 - [x] Texas Hold'em poker combat with Norse hand rankings
-- [x] 56-mission campaign across 5 mythological chapters
+- [x] 55-mission campaign across 5 mythological chapters
 - [x] Nine Realms constellation map + Greek Olympus world map
 - [x] Secret Eastern chapter (Chinese/Japanese/Hindu)
 - [x] P2P multiplayer via WebRTC
 - [x] Ranked matchmaking with ELO ladder
 - [x] Tournament system (Swiss + elimination)
-- [x] Card crafting & trading
+- [x] Eitr crafting (dissolve/forge random) & trading
 - [x] Spectator mode + match replay viewer
 - [x] Daily quest system (19 templates)
 - [x] Friends list with presence + challenges

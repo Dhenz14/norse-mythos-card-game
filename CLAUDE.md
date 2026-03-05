@@ -21,7 +21,7 @@ npm run lint:fix  # ESLint with auto-fix
 
 ## Architecture Overview
 
-Norse Mythos Card Game is a multi-mythology digital collectible card game combining poker mechanics with Hearthstone-style card battling.
+Norse Mythos Card Game is a multi-mythology digital collectible card game combining poker mechanics with strategic card battling.
 
 ### Stack
 - **Frontend**: React 18 + TypeScript + Vite 5
@@ -487,6 +487,20 @@ vercel --prod                 # Deploy to Vercel
 - Added AI profiles: ymir (brutal aggro), bergelmir (vengeful), vanirWarlord (nature-magic)
 - Boss rules scale from none (mission 1) to triple-stacked modifiers (finale)
 - Cinematic intro preserved (12-scene Ymir creation/slaying sequence)
+
+### Completed (Eitr Crafting & Forge Implementation)
+
+- Renamed dust → Eitr (primordial essence from Niflheim) across 14 files
+- `craftingConstants.ts`: `EITR_VALUES` + `getEitrValue()` + `getCraftCost()`
+- `craftingStore.ts`: `eitr` state, `addEitr()`, `spendEitr()` (Zustand + persist)
+- `CraftingPanel.tsx`: "Dissolve" (destroy card → gain Eitr) / "Forge" (spend Eitr → random card)
+- `CollectionPage.tsx`: Full forge/dissolve implementation with inventory state updates
+  - Dissolve: decrements card quantity, removes from HiveDataStore, adds Eitr
+  - Forge: spends Eitr, picks random non-hero card of matching rarity from `cardRegistry`, adds to local state + HiveDataStore
+  - Random output prevents NFT supply hoarding (500 mythic cap per card)
+- `CampaignPage.tsx`, `TradingPage.tsx`: Eitr display labels
+- `campaignTypes.ts`: `CampaignReward.type` includes `'eitr'`
+- All 5 campaign chapters: reward type `'dust'` → `'eitr'`
 
 ### Next (Genesis Launch)
 

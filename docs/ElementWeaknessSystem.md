@@ -34,11 +34,11 @@ When a chess piece fights an opponent they are **strong against**, they receive:
 
 - **+2 Attack** (added to base attack stat)
 - **+2 Health** (added to current HP for that combat)
-- **+20 Hero Armor** (absorbs damage before HP, like Hearthstone armor)
+- **+20 Hero Armor** (absorbs damage before HP)
 
-### Armor Mechanics (Hearthstone-style)
+### Armor Mechanics
 
-Armor is a damage buffer that works exactly like in Hearthstone:
+Armor is a damage buffer:
 - Armor absorbs damage BEFORE HP is reduced
 - Armor is consumed as it absorbs damage
 - **Armor applies to**: losing poker hands, fold penalties, ability damage

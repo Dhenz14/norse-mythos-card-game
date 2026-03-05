@@ -1,6 +1,6 @@
 # Ragnarok Combat Arena - Complete Rulebook
 
-> A comprehensive guide to the Norse mythology card game combining strategic chess, poker combat, and Hearthstone-style card mechanics.
+> A comprehensive guide to the Norse mythology card game combining strategic chess, poker combat, and collectible card game mechanics.
 
 ## Table of Contents
 
@@ -57,7 +57,7 @@ Main Menu → Mode Selection → Ragnarok Chess → Army Selection → Chess Boa
 
 ### Standard Match Mode
 
-Classic Hearthstone-style 1v1 card battles without the chess layer.
+Classic 1v1 card battles without the chess layer.
 
 **Flow:**
 ```
@@ -113,8 +113,8 @@ Each hero has three unique abilities:
 
 ### Card Rarity
 
-| Rarity | Color | Dust (Craft) | Dust (Disenchant) |
-|--------|-------|--------------|-------------------|
+| Rarity | Color | Eitr (Forge) | Eitr (Dissolve) |
+|--------|-------|--------------|-----------------|
 | Common | Gray | 40 | 5 |
 | Rare | Blue | 100 | 20 |
 | Epic | Purple | 400 | 100 |
@@ -147,7 +147,7 @@ Each hero has three unique abilities:
 | 30201-30206 | Einherjar Cards |
 | 30301-30309 | Realm Shift Cards |
 | 30401-30410 | Ragnarok Chain Cards |
-| 50000-50366 | Pet Evolution Cards (37 families) |
+| 50000-50376 | Pet Evolution Cards (38 families) |
 | 31001-31008 | Neutral Mythic Tech Cards |
 | 31101-31105 | Pet Synergy Cards |
 | 31201-31204 | Dragon Synergy Cards |
@@ -643,7 +643,7 @@ Paired minions with linked destiny mechanics. When one partner dies or triggers,
 
 ### Pet Evolution System
 
-The **3-3-1 Family-Based Evolution System**: 37 Norse-themed pet families, each with 3 Stage 1 forms across different elements that evolve into 3 Stage 2 forms, converging into 1 Stage 3 master form with 3 stat/ability variants based on evolution path.
+The **3-3-1 Family-Based Evolution System**: 38 Norse-themed pet families, each with 3 Stage 1 forms across different elements that evolve into 3 Stage 2 forms, converging into 1 Stage 3 master form with 3 stat/ability variants based on evolution path.
 
 #### Elements
 
@@ -678,7 +678,7 @@ The **3-3-1 Family-Based Evolution System**: 37 Norse-themed pet families, each 
 | **Hero Synergy** | +1 Health bonus when pet element matches hero element |
 | **Element Advantage** | +2 bonus damage when attacking a pet weak to your element |
 
-#### Pet Families (37 total, IDs 50000-50366)
+#### Pet Families (38 total, IDs 50000-50376)
 
 | # | Family | Elements | Stage 3 Name | IDs |
 |---|--------|----------|--------------|-----|
@@ -719,6 +719,7 @@ The **3-3-1 Family-Based Evolution System**: 37 Norse-themed pet families, each 
 | 35 | Ratatoskr's Messengers | Electric / Neutral / Grass | Ratatoskr Prime | 50340-50346 |
 | 36 | Naglfar's Crew | Dark / Water / Neutral | Naglfar's Admiral | 50350-50356 |
 | 37 | Muspel Phoenixes | Fire / Electric / Light | Muspel Eternal | 50360-50366 |
+| 38 | Ivaldi's Constructs | Fire / Electric / Neutral | Ivaldi's Masterwork | 50370-50376 |
 
 ---
 
@@ -795,7 +796,7 @@ When attacking with elemental advantage:
 ### Highlander Decks
 
 Special deck archetype with no duplicate cards:
-- Enables powerful **Highlander effects** (Reno Jackson, Kazakus, etc.)
+- Enables powerful **Highlander effects** (unique one-of-a-kind rewards)
 - Requires exactly 1 copy of each card
 - Rewards unique deck building
 

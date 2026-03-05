@@ -36,8 +36,8 @@ export const testDecks: TestDeck[] = [
       '3002': 2, // Mid-cost spell
       '4001': 2, // High-cost minion
       '4002': 2, // High-cost spell
-      '5001': 2, // Legendary minion
-      '5002': 2, // Legendary spell
+      '5001': 2, // Mythic minion
+      '5002': 2, // Mythic spell
       '6001': 2, // Weapon
       '7001': 2, // Taunt minion
       '8001': 2, // Card draw spell
@@ -62,8 +62,8 @@ export const testDecks: TestDeck[] = [
       '3102': 2, // Mid-cost spell
       '4101': 2, // High-cost minion
       '4102': 2, // High-cost spell
-      '5101': 2, // Legendary minion
-      '5102': 2, // Legendary spell
+      '5101': 2, // Mythic minion
+      '5102': 2, // Mythic spell
       '6101': 2, // AoE spell
       '7101': 2, // Card draw spell
       '8101': 2, // Freeze spell
@@ -88,8 +88,8 @@ export const testDecks: TestDeck[] = [
       '3202': 2, // Mid-cost spell
       '4201': 2, // High-cost minion
       '4202': 2, // High-cost spell
-      '5201': 2, // Legendary minion
-      '5202': 2, // Legendary spell
+      '5201': 2, // Mythic minion
+      '5202': 2, // Mythic spell
       '6201': 2, // Taunt minion
       '7201': 2, // Card draw spell
       '8201': 2, // Healing spell
@@ -132,8 +132,8 @@ export const testDecks: TestDeck[] = [
       '3405': 2, // Card draw spell
       '4401': 2, // Healing spell
       '4402': 2, // Healing spell
-      '5401': 2, // Legendary minion
-      '5402': 2, // Legendary spell
+      '5401': 2, // Mythic minion
+      '5402': 2, // Mythic spell
       '6401': 2, // Taunt minion
       '7401': 2  // AoE spell
     }
@@ -156,8 +156,8 @@ export const testDecks: TestDeck[] = [
       '3502': 2, // Mid-cost spell
       '4501': 2, // High-cost minion
       '4502': 2, // High-cost spell
-      '5501': 2, // Legendary minion
-      '5502': 2, // Legendary spell
+      '5501': 2, // Mythic minion
+      '5502': 2, // Mythic spell
       '6501': 2, // Taunt minion
       '7501': 2, // Card draw spell
       '8501': 2, // Direct damage spell

@@ -40,7 +40,7 @@ const PACK_TYPES = [
 	},
 	{
 		name: 'Premium Pack',
-		description: 'A 9-card premium pack with a guaranteed epic and two wildcard slots for legendary pulls.',
+		description: 'A 9-card premium pack with a guaranteed epic and two wildcard slots for mythic pulls.',
 		card_count: 9,
 		price: 500,
 		common_slots: 4,
@@ -52,7 +52,7 @@ const PACK_TYPES = [
 		is_active: true,
 	},
 	{
-		name: 'Legendary Pack',
+		name: 'Mythic Pack',
 		description: 'The ultimate pack. No commons — guaranteed epic, double wildcards with the highest mythic odds.',
 		card_count: 5,
 		price: 1000,

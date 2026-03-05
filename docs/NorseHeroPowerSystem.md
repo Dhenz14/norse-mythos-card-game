@@ -1061,7 +1061,7 @@ Each hero has **10 fixed cards**: 1 signature minion + 9 spells from their class
 | Spell Pool A (Odin) | Spell Pool B (Bragi) | Spell Pool C (Kvasir) |
 |---------------------|----------------------|----------------------|
 | Frost Nova (32003) | Arcane Missiles (32002) | Flamecannon (32010) |
-| Blizzard (32009) | Arcane Blast (32001) | Flame Strike (32005) |
+| Niflheim's Embrace (32009) | Arcane Blast (32001) | Flame Strike (32005) |
 | Ice Lance (14013) | Unstable Portal (31002) | Arcane Missiles (32002) |
 | Ice Block (31004) | Mirror Entity (32011) | Arcane Blast (32001) |
 | Polymorph (14009) | Vaporize (14012) | Mirror Image (32008) |

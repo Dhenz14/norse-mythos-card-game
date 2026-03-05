@@ -70,7 +70,7 @@ This creates strategic tension:
 
 ### 4.2. Spell System
 
-#### Mana Management (Hearthstone-style)
+#### Mana Management
 - **Purpose:** Mana is ONLY for playing cards and using hero powers
 - **Starting Value:** Players start each match with 1 mana
 - **Growth:** Gain +1 mana at end of each turn (when poker hand ends via fold/end turn)
@@ -79,7 +79,7 @@ This creates strategic tension:
 - **NO RELATION TO POKER:** Mana has nothing to do with poker betting mechanics
 
 > **IMPORTANT:** Mana and STA are completely separate systems:
-> - **Mana** = For cards and hero powers (Hearthstone-style)
+> - **Mana** = For cards and hero powers
 > - **STA** = For poker betting caps (poker-only)
 
 #### Spell Properties
@@ -395,7 +395,7 @@ Each god's mythic signature minion applies a status effect on attack:
 When fighting an opponent you are **strong against**, you receive combat buffs:
 - **+2 Attack** (added to base attack stat)
 - **+2 Health** (added to current HP for combat)
-- **+20 Hero Armor** (absorbs damage before HP, like Hearthstone armor)
+- **+20 Hero Armor** (absorbs damage before HP)
 
 **Armor Mechanics:**
 - Armor absorbs damage BEFORE HP is reduced

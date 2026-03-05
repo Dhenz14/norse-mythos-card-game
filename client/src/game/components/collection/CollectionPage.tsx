@@ -10,6 +10,7 @@ import { useHiveDataStore } from '../../../data/HiveDataLayer';
 import { getMasteryTier } from '../../../data/blockchain/cardXPSystem';
 import { useCraftingStore } from '../../crafting/craftingStore';
 import { getEitrValue, getCraftCost } from '../../crafting/craftingConstants';
+import { cardRegistry } from '../../data/cardRegistry';
 import './collection.css';
 
 type FilterRarity = 'all' | 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
@@ -80,6 +81,8 @@ export default function CollectionPage() {
 	const eitr = useCraftingStore(s => s.eitr);
 	const addEitr = useCraftingStore(s => s.addEitr);
 	const spendEitr = useCraftingStore(s => s.spendEitr);
+	const addCard = useHiveDataStore(s => s.addCard);
+	const removeCard = useHiveDataStore(s => s.removeCard);
 	const [craftConfirm, setCraftConfirm] = useState<'craft' | 'disenchant' | null>(null);
 
 	const [cards, setCards] = useState<OwnedCard[]>([]);
@@ -721,8 +724,56 @@ export default function CollectionPage() {
 														onClick={() => {
 															if (craftConfirm === 'disenchant') {
 																addEitr(eitrVal);
+																setCards(prev => {
+																	const idx = prev.findIndex(c => c.id === selectedCard.id);
+																	if (idx === -1) return prev;
+																	const card = prev[idx];
+																	if (card.quantity <= 1) {
+																		return prev.filter((_, i) => i !== idx);
+																	}
+																	return prev.map((c, i) => i === idx ? { ...c, quantity: c.quantity - 1 } : c);
+																});
+																removeCard(String(selectedCard.id));
+																if (selectedCard.quantity <= 1) setSelectedCard(null);
+																else setSelectedCard({ ...selectedCard, quantity: selectedCard.quantity - 1 });
 															} else {
-																spendEitr(craftCostVal);
+																if (!spendEitr(craftCostVal)) return;
+																const pool = cardRegistry.filter(c => c.rarity === selectedCard.rarity && c.type !== 'hero');
+																if (pool.length === 0) return;
+																const pick = pool[Math.floor(Math.random() * pool.length)];
+																const pickId = typeof pick.id === 'number' ? pick.id : parseInt(pick.id as string, 10);
+																const forgedCard: OwnedCard = {
+																	id: pickId,
+																	name: pick.name,
+																	rarity: pick.rarity || 'common',
+																	type: pick.type || 'minion',
+																	heroClass: pick.heroClass || 'neutral',
+																	quantity: 1,
+																	manaCost: pick.manaCost,
+																	attack: 'attack' in pick ? pick.attack : undefined,
+																	health: 'health' in pick ? pick.health : undefined,
+																	description: pick.description,
+																};
+																setCards(prev => {
+																	const existing = prev.findIndex(c => c.id === pickId);
+																	if (existing >= 0) {
+																		return prev.map((c, i) => i === existing ? { ...c, quantity: c.quantity + 1 } : c);
+																	}
+																	return [forgedCard, ...prev];
+																});
+																addCard({
+																	uid: `forge-${Date.now()}-${pickId}`,
+																	cardId: pickId,
+																	ownerId: hiveCards.length > 0 ? hiveCards[0].ownerId : 'local',
+																	edition: 'alpha',
+																	foil: 'standard',
+																	rarity: pick.rarity || 'common',
+																	level: 1,
+																	xp: 0,
+																	name: pick.name,
+																	type: pick.type || 'minion',
+																});
+																setSelectedCard(forgedCard);
 															}
 															setCraftConfirm(null);
 														}}
