@@ -434,7 +434,7 @@ Opens at `http://localhost:5000`. No database required for single-player — Pos
 ```
 client/src/
 ├── game/
-│   ├── campaign/          # 55 missions, 5 chapters, 2 world maps
+│   ├── campaign/          # 49 missions, 5 chapters, 2 world maps
 │   ├── combat/            # Poker combat arena + hooks
 │   ├── components/        # Card, chess, campaign, collection, trading UI
 │   ├── crafting/          # Eitr economy (dissolve/forge)

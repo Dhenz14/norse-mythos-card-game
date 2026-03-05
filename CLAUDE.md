@@ -37,7 +37,7 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - 77 playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
-- Single-player campaign (55 missions across 5 factions)
+- Single-player campaign (49 missions across 5 factions)
 - Tournament system (Swiss + single elimination brackets)
 - Card crafting & trading (Eitr economy)
 - Spectator mode (read-only P2P connection)
@@ -97,7 +97,7 @@ client/src/
 │   ├── campaign/           # Campaign system
 │   │   ├── campaignTypes.ts # Mission, chapter, AI profile types
 │   │   ├── campaignStore.ts # Progress tracking (Zustand + persist)
-│   │   ├── chapters/       # 5 faction chapters (55 missions total)
+│   │   ├── chapters/       # 5 faction chapters (49 missions total)
 │   │   └── index.ts        # Barrel exports + ALL_CHAPTERS
 │   ├── crafting/           # Crafting economy
 │   │   ├── craftingConstants.ts # Eitr values + forge costs
@@ -329,7 +329,7 @@ vercel --prod                 # Deploy to Vercel
 ```text
 /              → HomePage (quests, friends, navigation)
 /game          → RagnarokChessGame (single-player)
-/campaign      → CampaignPage (55 missions, 5 factions)
+/campaign      → CampaignPage (49 missions, 5 factions)
 /multiplayer   → MultiplayerGame (P2P ranked)
 /tournaments   → TournamentListPage (brackets, registration)
 /packs         → PacksPage (open card packs)
@@ -362,7 +362,7 @@ vercel --prod                 # Deploy to Vercel
 - Deck import/export via shareable base64 codes
 - Daily quest system (19 templates, 3 active, daily refresh)
 - Friends list (presence polling, challenge invites)
-- Single-player campaign (55 missions, 5 factions, difficulty scaling)
+- Single-player campaign (49 missions, 5 factions, difficulty scaling)
 - Card crafting (Eitr economy: dissolve/forge, 8:1 cost ratio, random output)
 - Card trading (P2P trade offers with Eitr + cards)
 - Tournament system (Swiss + elimination, server-managed brackets)
@@ -501,6 +501,19 @@ vercel --prod                 # Deploy to Vercel
 - `CampaignPage.tsx`, `TradingPage.tsx`: Eitr display labels
 - `campaignTypes.ts`: `CampaignReward.type` includes `'eitr'`
 - All 5 campaign chapters: reward type `'dust'` → `'eitr'`
+
+### Completed (Campaign & Security Polish)
+
+- Mapped all 49 campaign `aiHeroId` values to real hero registry IDs across 5 chapters
+- Remapped Greek/Egyptian/Celtic/Eastern AI deck generators from sparse 1000-3000 ranges to dense 20000+ range
+- Fixed Eastern chapter deck ID collision with Greek (both were using `1000+n`)
+- Replaced 12 non-existent reward `cardId` values with real cards from the registry
+- Fixed Hydra `start_with_minion` boss rule to reference real card 20203 (Hydra, Many Heads)
+- Added `helmet` middleware for CSP, HSTS, X-Frame-Options security headers
+- Removed 9 unused dependencies (express-session, passport, passport-local, connect-pg-simple, memorystore + @types)
+- Deleted 4 dead legacy pet files (firePets, waterPets, grassPets, electricPets — 48 duplicate IDs)
+- Fixed `getMission()` double-counting easternChapter in `ALL_CHAPTERS`
+- Re-IDed paladin Luminous Blade from 8501 to 8540 (conflict with berserker Jötunn Thornback)
 
 ### Next (Genesis Launch)
 
