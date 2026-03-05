@@ -40,7 +40,7 @@ function TradeOfferCard({ offer, currentUser, onAccept, onDecline, onCancel }: {
 						<p className="text-xs text-gray-300">{offer.offeredCardIds.length} card(s)</p>
 					)}
 					{offer.offeredDust > 0 && (
-						<p className="text-xs text-blue-400">{offer.offeredDust} dust</p>
+						<p className="text-xs text-blue-400">{offer.offeredDust} Eitr</p>
 					)}
 					{offer.offeredCardIds.length === 0 && offer.offeredDust === 0 && (
 						<p className="text-xs text-gray-600">Nothing</p>
@@ -52,7 +52,7 @@ function TradeOfferCard({ offer, currentUser, onAccept, onDecline, onCancel }: {
 						<p className="text-xs text-gray-300">{offer.requestedCardIds.length} card(s)</p>
 					)}
 					{offer.requestedDust > 0 && (
-						<p className="text-xs text-blue-400">{offer.requestedDust} dust</p>
+						<p className="text-xs text-blue-400">{offer.requestedDust} Eitr</p>
 					)}
 					{offer.requestedCardIds.length === 0 && offer.requestedDust === 0 && (
 						<p className="text-xs text-gray-600">Nothing</p>
@@ -124,7 +124,7 @@ function CreateTradePanel({ onSend }: { onSend: (toUser: string) => void }) {
 
 			<div className="grid grid-cols-2 gap-4 mb-4">
 				<div>
-					<label htmlFor="trade-offer-dust" className="block text-xs text-gray-500 mb-1">Offer dust</label>
+					<label htmlFor="trade-offer-dust" className="block text-xs text-gray-500 mb-1">Offer Eitr</label>
 					<input
 						id="trade-offer-dust"
 						type="number"
@@ -135,7 +135,7 @@ function CreateTradePanel({ onSend }: { onSend: (toUser: string) => void }) {
 					/>
 				</div>
 				<div>
-					<label htmlFor="trade-request-dust" className="block text-xs text-gray-500 mb-1">Request dust</label>
+					<label htmlFor="trade-request-dust" className="block text-xs text-gray-500 mb-1">Request Eitr</label>
 					<input
 						id="trade-request-dust"
 						type="number"

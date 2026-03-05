@@ -128,7 +128,7 @@ function MissionBriefing({ mission, chapter, onStart, onBack }: {
 				<span className="text-sm text-gray-400">Rewards:</span>
 				{mission.rewards.map((r, i) => (
 					<span key={i} className="text-xs bg-amber-900/40 text-amber-300 px-2 py-1 rounded border border-amber-700/40">
-						{r.type === 'rune' ? `${r.amount} RUNE` : r.type === 'card' ? `Card #${r.cardId}` : r.type === 'pack' ? `${r.amount} Packs` : `${r.amount} Dust`}
+						{r.type === 'rune' ? `${r.amount} RUNE` : r.type === 'card' ? `Card #${r.cardId}` : r.type === 'pack' ? `${r.amount} Packs` : `${r.amount} Eitr`}
 					</span>
 				))}
 			</div>

@@ -9,7 +9,7 @@ import type { OwnedCard, InventoryResponse, InventoryCard } from '../packs/types
 import { useHiveDataStore } from '../../../data/HiveDataLayer';
 import { getMasteryTier } from '../../../data/blockchain/cardXPSystem';
 import { useCraftingStore } from '../../crafting/craftingStore';
-import { getDustValue, getCraftCost } from '../../crafting/craftingConstants';
+import { getEitrValue, getCraftCost } from '../../crafting/craftingConstants';
 import './collection.css';
 
 type FilterRarity = 'all' | 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
@@ -77,9 +77,9 @@ function getShimmerClass(rarity: string): string {
 
 export default function CollectionPage() {
 	const hiveCards = useHiveDataStore((s) => s.cardCollection);
-	const dust = useCraftingStore(s => s.dust);
-	const addDust = useCraftingStore(s => s.addDust);
-	const spendDust = useCraftingStore(s => s.spendDust);
+	const eitr = useCraftingStore(s => s.eitr);
+	const addEitr = useCraftingStore(s => s.addEitr);
+	const spendEitr = useCraftingStore(s => s.spendEitr);
 	const [craftConfirm, setCraftConfirm] = useState<'craft' | 'disenchant' | null>(null);
 
 	const [cards, setCards] = useState<OwnedCard[]>([]);
@@ -242,8 +242,8 @@ export default function CollectionPage() {
 						</motion.button>
 					</Link>
 					<div className="flex items-center gap-2 px-4 py-2 bg-blue-900/30 border border-blue-700/40 rounded-lg">
-						<span className="text-blue-400 font-bold text-sm">{dust}</span>
-						<span className="text-gray-400 text-xs">Dust</span>
+						<span className="text-blue-400 font-bold text-sm">{eitr}</span>
+						<span className="text-gray-400 text-xs">Eitr</span>
 					</div>
 					<Link to={routes.packs}>
 						<motion.button
@@ -702,27 +702,27 @@ export default function CollectionPage() {
 									{selectedCard.quantity > 1 && <span className="text-gray-500"> copies</span>}
 								</div>
 
-								{/* Crafting Actions */}
+								{/* Eitr Forge Actions */}
 								{(() => {
-									const dustVal = getDustValue(selectedCard.rarity);
+									const eitrVal = getEitrValue(selectedCard.rarity);
 									const craftCostVal = getCraftCost(selectedCard.rarity);
-									const canAfford = dust >= craftCostVal && craftCostVal > 0;
+									const canAfford = eitr >= craftCostVal && craftCostVal > 0;
 
 									if (craftConfirm) {
 										return (
 											<div className="bg-gray-800/60 border border-gray-700/50 rounded-lg p-3 mb-3">
 												<p className="text-xs text-gray-400 mb-2 text-center">
 													{craftConfirm === 'disenchant'
-														? `Disenchant ${selectedCard.name} for ${dustVal} dust?`
-														: `Craft ${selectedCard.name} for ${craftCostVal} dust?`}
+														? `Dissolve ${selectedCard.name} into ${eitrVal} Eitr?`
+														: `Forge a random ${selectedCard.rarity} card for ${craftCostVal} Eitr?`}
 												</p>
 												<div className="flex gap-2">
 													<button
 														onClick={() => {
 															if (craftConfirm === 'disenchant') {
-																addDust(dustVal);
+																addEitr(eitrVal);
 															} else {
-																spendDust(craftCostVal);
+																spendEitr(craftCostVal);
 															}
 															setCraftConfirm(null);
 														}}
@@ -743,12 +743,12 @@ export default function CollectionPage() {
 
 									return (
 										<div className="flex gap-2 mb-3">
-											{selectedCard.quantity > 0 && dustVal > 0 && (
+											{selectedCard.quantity > 0 && eitrVal > 0 && (
 												<button
 													onClick={() => setCraftConfirm('disenchant')}
 													className="flex-1 px-3 py-2 bg-red-900/50 hover:bg-red-800/60 text-red-300 rounded-lg text-xs font-medium border border-red-700/40 transition-colors"
 												>
-													Disenchant ({dustVal} dust)
+													Dissolve ({eitrVal} Eitr)
 												</button>
 											)}
 											{craftCostVal > 0 && (
@@ -757,7 +757,7 @@ export default function CollectionPage() {
 													disabled={!canAfford}
 													className="flex-1 px-3 py-2 bg-blue-900/50 hover:bg-blue-800/60 disabled:bg-gray-800/40 disabled:text-gray-600 text-blue-300 rounded-lg text-xs font-medium border border-blue-700/40 transition-colors"
 												>
-													Craft ({craftCostVal} dust)
+													Forge Random ({craftCostVal} Eitr)
 												</button>
 											)}
 										</div>

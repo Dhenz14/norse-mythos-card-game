@@ -30,7 +30,7 @@ export interface BossRule {
 }
 
 export interface CampaignReward {
-	type: 'card' | 'rune' | 'pack' | 'dust';
+	type: 'card' | 'rune' | 'pack' | 'eitr';
 	cardId?: number;
 	amount?: number;
 }

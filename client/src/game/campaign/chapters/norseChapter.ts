@@ -144,7 +144,7 @@ export const norseChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 15, description: 'Bergelmir has 115 health — survivor of the blood-flood' },
 			],
 			prerequisiteIds: ['norse-2'],
-			rewards: [{ type: 'rune', amount: 35 }, { type: 'dust', amount: 50 }],
+			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			realm: 'midgard',
 		},
 
@@ -209,7 +209,7 @@ export const norseChapter: CampaignChapter = {
 				{ type: 'bonus_draw', value: 1, description: 'Dark-elf lord draws an extra card each turn' },
 			],
 			prerequisiteIds: ['norse-5'],
-			rewards: [{ type: 'rune', amount: 45 }, { type: 'dust', amount: 50 }],
+			rewards: [{ type: 'rune', amount: 45 }, { type: 'eitr', amount: 50 }],
 			realm: 'alfheim',
 		},
 
@@ -256,7 +256,7 @@ export const norseChapter: CampaignChapter = {
 				{ type: 'passive_damage', value: 1, description: 'Bergelmir\'s hatred deals 1 damage to your hero each turn' },
 			],
 			prerequisiteIds: ['norse-7'],
-			rewards: [{ type: 'rune', amount: 65 }, { type: 'dust', amount: 100 }],
+			rewards: [{ type: 'rune', amount: 65 }, { type: 'eitr', amount: 100 }],
 			realm: 'jotunheim',
 		},
 

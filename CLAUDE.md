@@ -39,7 +39,7 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - Ragnarok Chess (7x5 strategic board)
 - Single-player campaign (55 missions across 5 factions)
 - Tournament system (Swiss + single elimination brackets)
-- Card crafting & trading (dust economy)
+- Card crafting & trading (Eitr economy)
 - Spectator mode (read-only P2P connection)
 - Match replay viewer with playback controls
 - Daily quest system (19 quest templates)
@@ -71,13 +71,13 @@ client/src/
 │   ├── components/         # Card, combat, chess, UI components
 │   │   ├── campaign/       # CampaignPage (world map + mission briefing)
 │   │   ├── collection/     # CollectionPage (with crafting integration)
-│   │   ├── crafting/       # CraftingPanel (dust craft/disenchant)
+│   │   ├── crafting/       # CraftingPanel (Eitr forge/dissolve)
 │   │   ├── replay/         # MatchHistoryPage + ReplayViewer
 │   │   ├── settings/       # SettingsPage + SettingsPanel
 │   │   ├── social/         # FriendsPanel (presence + challenges)
 │   │   ├── spectator/      # SpectatorView (read-only P2P)
 │   │   ├── tournament/     # TournamentListPage (brackets + standings)
-│   │   ├── trading/        # TradingPage (card/dust trade offers)
+│   │   ├── trading/        # TradingPage (card/Eitr trade offers)
 │   │   ├── tutorial/       # TutorialOverlay (step-by-step onboarding)
 │   │   ├── quests/         # DailyQuestPanel (3 daily quests)
 │   │   └── ui/             # LoadingScreen + shared UI
@@ -100,8 +100,8 @@ client/src/
 │   │   ├── chapters/       # 5 faction chapters (55 missions total)
 │   │   └── index.ts        # Barrel exports + ALL_CHAPTERS
 │   ├── crafting/           # Crafting economy
-│   │   ├── craftingConstants.ts # Dust values + craft costs
-│   │   └── craftingStore.ts # Dust balance (Zustand + persist)
+│   │   ├── craftingConstants.ts # Eitr values + forge costs
+│   │   └── craftingStore.ts # Eitr balance (Zustand + persist)
 │   ├── tournament/         # Tournament system
 │   │   ├── tournamentTypes.ts # Tournament, match, bracket types
 │   │   └── tournamentStore.ts # Tournament state (Zustand)
@@ -334,7 +334,7 @@ vercel --prod                 # Deploy to Vercel
 /tournaments   → TournamentListPage (brackets, registration)
 /packs         → PacksPage (open card packs)
 /collection    → CollectionPage (with crafting)
-/trading       → TradingPage (card/dust trade offers)
+/trading       → TradingPage (card/Eitr trade offers)
 /ladder        → RankedLadderPage (ELO leaderboard)
 /history       → MatchHistoryPage (replay viewer)
 /spectate/:id  → SpectatorView (read-only P2P)
@@ -363,8 +363,8 @@ vercel --prod                 # Deploy to Vercel
 - Daily quest system (19 templates, 3 active, daily refresh)
 - Friends list (presence polling, challenge invites)
 - Single-player campaign (55 missions, 5 factions, difficulty scaling)
-- Card crafting (dust economy: disenchant/craft, 8:1 cost ratio)
-- Card trading (P2P trade offers with dust + cards)
+- Card crafting (Eitr economy: dissolve/forge, 8:1 cost ratio, random output)
+- Card trading (P2P trade offers with Eitr + cards)
 - Tournament system (Swiss + elimination, server-managed brackets)
 - Spectator mode (filtered P2P read-only connection)
 - Match replay viewer (action timeline, playback controls)

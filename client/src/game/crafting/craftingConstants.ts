@@ -1,4 +1,4 @@
-export const DUST_VALUES: Record<string, number> = {
+export const EITR_VALUES: Record<string, number> = {
 	basic: 0,
 	common: 5,
 	rare: 20,
@@ -15,8 +15,8 @@ export const CRAFT_COSTS: Record<string, number> = {
 
 export const GOLDEN_MULTIPLIER = 4;
 
-export function getDustValue(rarity: string): number {
-	return DUST_VALUES[rarity.toLowerCase()] ?? 0;
+export function getEitrValue(rarity: string): number {
+	return EITR_VALUES[rarity.toLowerCase()] ?? 0;
 }
 
 export function getCraftCost(rarity: string, golden = false): number {

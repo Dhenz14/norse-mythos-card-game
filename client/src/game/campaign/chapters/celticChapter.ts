@@ -66,7 +66,7 @@ export const celticChapter: CampaignChapter = {
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.medium,
 			bossRules: [{ type: 'bonus_draw', value: 1, description: 'The Salmon grants extra wisdom (bonus draw)' }],
 			prerequisiteIds: ['celtic-3'],
-			rewards: [{ type: 'rune', amount: 35 }, { type: 'dust', amount: 50 }],
+			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-odin', rook: 'hero-heimdall', bishop: 'hero-idunn', knight: 'hero-loki' },
 		},
 		{
@@ -138,7 +138,7 @@ export const celticChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 1, description: 'The Wild Hunt grants +1 mana' },
 			],
 			prerequisiteIds: ['celtic-7'],
-			rewards: [{ type: 'rune', amount: 60 }, { type: 'dust', amount: 100 }],
+			rewards: [{ type: 'rune', amount: 60 }, { type: 'eitr', amount: 100 }],
 			campaignArmy: { king: 'king-ymir', queen: 'hero-sinmara', rook: 'hero-magni', bishop: 'hero-gerd', knight: 'hero-skadi' },
 		},
 		{

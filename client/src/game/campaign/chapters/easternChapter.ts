@@ -77,7 +77,7 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'passive_damage', value: 1, description: 'Typhoon deals 1 damage each turn' },
 			],
 			prerequisiteIds: ['eastern-3'],
-			rewards: [{ type: 'rune', amount: 65 }, { type: 'dust', amount: 100 }],
+			rewards: [{ type: 'rune', amount: 65 }, { type: 'eitr', amount: 100 }],
 			campaignArmy: { king: 'king-surtr', queen: 'hero-fujin', rook: 'hero-thor', bishop: 'hero-poseidon', knight: 'hero-tsukuyomi' },
 		},
 		{
@@ -150,7 +150,7 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'bonus_draw', value: 1, description: 'The churning produces extra resources' },
 			],
 			prerequisiteIds: ['eastern-7'],
-			rewards: [{ type: 'rune', amount: 85 }, { type: 'dust', amount: 150 }],
+			rewards: [{ type: 'rune', amount: 85 }, { type: 'eitr', amount: 150 }],
 			campaignArmy: { king: 'king-brimir', queen: 'hero-fujin', rook: 'hero-thor', bishop: 'hero-poseidon', knight: 'hero-tsukuyomi' },
 		},
 		{

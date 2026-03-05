@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useCraftingStore } from '../../crafting/craftingStore';
-import { getDustValue, getCraftCost } from '../../crafting/craftingConstants';
+import { getEitrValue, getCraftCost } from '../../crafting/craftingConstants';
 
 interface CraftingPanelProps {
 	cardName: string;
@@ -11,23 +11,23 @@ interface CraftingPanelProps {
 }
 
 export default function CraftingPanel({ cardName, cardRarity, owned, onDisenchant, onCraft }: CraftingPanelProps) {
-	const dust = useCraftingStore(s => s.dust);
-	const addDust = useCraftingStore(s => s.addDust);
-	const spendDust = useCraftingStore(s => s.spendDust);
+	const eitr = useCraftingStore(s => s.eitr);
+	const addEitr = useCraftingStore(s => s.addEitr);
+	const spendEitr = useCraftingStore(s => s.spendEitr);
 	const [showConfirm, setShowConfirm] = useState<'craft' | 'disenchant' | null>(null);
 
-	const dustValue = getDustValue(cardRarity);
+	const eitrValue = getEitrValue(cardRarity);
 	const craftCost = getCraftCost(cardRarity);
-	const canCraft = dust >= craftCost && craftCost > 0;
+	const canCraft = eitr >= craftCost && craftCost > 0;
 
 	const handleDisenchant = () => {
-		addDust(dustValue);
+		addEitr(eitrValue);
 		onDisenchant?.();
 		setShowConfirm(null);
 	};
 
 	const handleCraft = () => {
-		if (spendDust(craftCost)) {
+		if (spendEitr(craftCost)) {
 			onCraft?.();
 		}
 		setShowConfirm(null);
@@ -38,8 +38,8 @@ export default function CraftingPanel({ cardName, cardRarity, owned, onDisenchan
 			<div className="flex items-center justify-between">
 				<span className="text-sm font-semibold text-gray-200">{cardName}</span>
 				<div className="flex items-center gap-1">
-					<span className="text-xs text-blue-400 font-bold">{dust}</span>
-					<span className="text-xs text-gray-500">Dust</span>
+					<span className="text-xs text-blue-400 font-bold">{eitr}</span>
+					<span className="text-xs text-gray-500">Eitr</span>
 				</div>
 			</div>
 
@@ -47,8 +47,8 @@ export default function CraftingPanel({ cardName, cardRarity, owned, onDisenchan
 				<div className="space-y-2">
 					<p className="text-xs text-gray-400">
 						{showConfirm === 'disenchant'
-							? `Disenchant ${cardName} for ${dustValue} dust?`
-							: `Craft ${cardName} for ${craftCost} dust?`
+							? `Dissolve ${cardName} for ${eitrValue} Eitr?`
+							: `Forge ${cardName} for ${craftCost} Eitr?`
 						}
 					</p>
 					<div className="flex gap-2">
@@ -68,12 +68,12 @@ export default function CraftingPanel({ cardName, cardRarity, owned, onDisenchan
 				</div>
 			) : (
 				<div className="flex gap-2">
-					{owned && dustValue > 0 && (
+					{owned && eitrValue > 0 && (
 						<button
 							onClick={() => setShowConfirm('disenchant')}
 							className="flex-1 px-3 py-1.5 bg-red-900/50 hover:bg-red-800/60 text-red-300 rounded text-xs font-medium border border-red-700/40 transition-colors"
 						>
-							Disenchant ({dustValue})
+							Dissolve ({eitrValue})
 						</button>
 					)}
 					{!owned && craftCost > 0 && (
@@ -82,7 +82,7 @@ export default function CraftingPanel({ cardName, cardRarity, owned, onDisenchan
 							disabled={!canCraft}
 							className="flex-1 px-3 py-1.5 bg-blue-900/50 hover:bg-blue-800/60 disabled:bg-gray-800/40 disabled:text-gray-600 text-blue-300 rounded text-xs font-medium border border-blue-700/40 transition-colors"
 						>
-							Craft ({craftCost})
+							Forge ({craftCost})
 						</button>
 					)}
 				</div>

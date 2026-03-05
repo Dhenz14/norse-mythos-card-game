@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { getDustValue, getCraftCost } from './craftingConstants';
+import { getEitrValue, getCraftCost } from './craftingConstants';
 
 interface CraftingState {
-	dust: number;
+	eitr: number;
 }
 
 interface CraftingActions {
-	addDust: (amount: number) => void;
-	spendDust: (amount: number) => boolean;
+	addEitr: (amount: number) => void;
+	spendEitr: (amount: number) => boolean;
 	canAfford: (rarity: string, golden?: boolean) => boolean;
 	getDisenchantValue: (rarity: string) => number;
 	getCraftingCost: (rarity: string, golden?: boolean) => number;
@@ -17,24 +17,24 @@ interface CraftingActions {
 export const useCraftingStore = create<CraftingState & CraftingActions>()(
 	persist(
 		(set, get) => ({
-			dust: 0,
+			eitr: 0,
 
-			addDust: (amount) => {
-				set(state => ({ dust: state.dust + amount }));
+			addEitr: (amount) => {
+				set(state => ({ eitr: state.eitr + amount }));
 			},
 
-			spendDust: (amount) => {
-				if (get().dust < amount) return false;
-				set(state => ({ dust: state.dust - amount }));
+			spendEitr: (amount) => {
+				if (get().eitr < amount) return false;
+				set(state => ({ eitr: state.eitr - amount }));
 				return true;
 			},
 
 			canAfford: (rarity, golden = false) => {
-				return get().dust >= getCraftCost(rarity, golden);
+				return get().eitr >= getCraftCost(rarity, golden);
 			},
 
 			getDisenchantValue: (rarity) => {
-				return getDustValue(rarity);
+				return getEitrValue(rarity);
 			},
 
 			getCraftingCost: (rarity, golden = false) => {
@@ -43,7 +43,7 @@ export const useCraftingStore = create<CraftingState & CraftingActions>()(
 		}),
 		{
 			name: 'ragnarok-crafting',
-			partialize: (state) => ({ dust: state.dust }),
+			partialize: (state) => ({ eitr: state.eitr }),
 		}
 	)
 );

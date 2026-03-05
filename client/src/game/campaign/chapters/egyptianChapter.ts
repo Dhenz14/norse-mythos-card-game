@@ -66,7 +66,7 @@ export const egyptianChapter: CampaignChapter = {
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.ammit,
 			bossRules: [{ type: 'extra_health', value: 5, description: 'Ammit has 105 health' }],
 			prerequisiteIds: ['egyptian-3'],
-			rewards: [{ type: 'rune', amount: 35 }, { type: 'dust', amount: 50 }],
+			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-ammit', rook: 'hero-ares', bishop: 'hero-aphrodite', knight: 'hero-serqet' },
 		},
 		{
@@ -138,7 +138,7 @@ export const egyptianChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 1, description: 'Anubis channels death energy (+1 mana)' },
 			],
 			prerequisiteIds: ['egyptian-7'],
-			rewards: [{ type: 'rune', amount: 60 }, { type: 'dust', amount: 100 }],
+			rewards: [{ type: 'rune', amount: 60 }, { type: 'eitr', amount: 100 }],
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-hel', rook: 'hero-vidar', bishop: 'hero-maat', knight: 'hero-nyx' },
 		},
 		{

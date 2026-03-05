@@ -31,7 +31,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const socialRoutes = (await import("./routes/socialRoutes")).default;
   app.use('/api/friends', socialRoutes);
 
-  // Trading routes (card/dust trade offers)
+  // Trading routes (card/Eitr trade offers)
   const tradeRoutes = (await import("./routes/tradeRoutes")).default;
   app.use('/api/trades', tradeRoutes);
 
