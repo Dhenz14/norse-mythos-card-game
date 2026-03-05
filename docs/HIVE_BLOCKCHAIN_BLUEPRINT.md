@@ -371,7 +371,7 @@ The operation must be broadcast from `player_alice`'s account (Hive verifies the
   "app": "ragnarok-cards",
   "action": "burn",
   "nft_id": "gen1-common-000042",
-  "reason": "dust_conversion"
+  "reason": "eitr_conversion"
 }
 ```
 

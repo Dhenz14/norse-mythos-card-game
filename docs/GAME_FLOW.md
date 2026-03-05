@@ -223,7 +223,7 @@ interface CombatResolution {
 
 ### 1. Hero Selection
 
-Choose from 76 heroes across 12 classes.
+Choose from 77 heroes across 12 classes.
 
 **UI Component**: `HeroDetailPopup.tsx`
 
@@ -233,7 +233,7 @@ Choose from 76 heroes across 12 classes.
 // Deck constraints
 const DECK_SIZE = 30;
 const MAX_COPIES = 2;           // Per card
-const MAX_LEGENDARY_COPIES = 1; // Legendaries only
+const MAX_MYTHIC_COPIES = 1;    // Mythics only
 const MAX_HAND_SIZE = 9;
 const MAX_BOARD_SIZE = 7;
 ```
@@ -434,8 +434,8 @@ client/src/
 │   │   └── ui/                 # Tooltips, buttons
 │   ├── stores/                 # Zustand state
 │   ├── data/                   # Card/hero definitions
-│   │   ├── allCards.ts         # 1,300+ cards
-│   │   └── norseHeroes/        # 76 heroes
+│   │   ├── allCards.ts         # 1,400+ cards
+│   │   └── norseHeroes/        # 77 heroes
 │   ├── combat/                 # Combat system
 │   │   ├── RagnarokCombatArena.tsx
 │   │   ├── PokerCombatStore.ts
