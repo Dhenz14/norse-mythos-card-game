@@ -37,7 +37,7 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - 77 playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
-- Single-player campaign (56 missions across 5 factions)
+- Single-player campaign (55 missions across 5 factions)
 - Tournament system (Swiss + single elimination brackets)
 - Card crafting & trading (dust economy)
 - Spectator mode (read-only P2P connection)
@@ -97,7 +97,7 @@ client/src/
 │   ├── campaign/           # Campaign system
 │   │   ├── campaignTypes.ts # Mission, chapter, AI profile types
 │   │   ├── campaignStore.ts # Progress tracking (Zustand + persist)
-│   │   ├── chapters/       # 5 faction chapters (56 missions total)
+│   │   ├── chapters/       # 5 faction chapters (55 missions total)
 │   │   └── index.ts        # Barrel exports + ALL_CHAPTERS
 │   ├── crafting/           # Crafting economy
 │   │   ├── craftingConstants.ts # Dust values + craft costs
@@ -329,7 +329,7 @@ vercel --prod                 # Deploy to Vercel
 ```text
 /              → HomePage (quests, friends, navigation)
 /game          → RagnarokChessGame (single-player)
-/campaign      → CampaignPage (56 missions, 5 factions)
+/campaign      → CampaignPage (55 missions, 5 factions)
 /multiplayer   → MultiplayerGame (P2P ranked)
 /tournaments   → TournamentListPage (brackets, registration)
 /packs         → PacksPage (open card packs)
@@ -362,7 +362,7 @@ vercel --prod                 # Deploy to Vercel
 - Deck import/export via shareable base64 codes
 - Daily quest system (19 templates, 3 active, daily refresh)
 - Friends list (presence polling, challenge invites)
-- Single-player campaign (56 missions, 5 factions, difficulty scaling)
+- Single-player campaign (55 missions, 5 factions, difficulty scaling)
 - Card crafting (dust economy: disenchant/craft, 8:1 cost ratio)
 - Card trading (P2P trade offers with dust + cards)
 - Tournament system (Swiss + elimination, server-managed brackets)
@@ -467,6 +467,26 @@ vercel --prod                 # Deploy to Vercel
 - Nerfed Thrymr the Imprisoned (ex-Magtheridon): 12/12 → 8/8
 - Deleted Aeolus, Wind Tyrant (exact dupe of Kari, Lord of Storms)
 - Deleted 4 duplicate Old God cards (32087-32089, 32094) — canonical versions in oldGods.ts
+
+### Completed (Alpha Readiness)
+
+- Implemented 5 stub handlers: armor_based_on_missing_health, replay spells, summon spell, Yogg casting, highlander potions
+- Renamed demon race → Titan across 67+ card data files (names, descriptions, effects, targets)
+- Purged all Hearthstone/Blizzard IP from source (200+ comment references → 0)
+- Fixed DeathKnight casing in remaining files (superMinions, artifacts, equipFrostmourneHandler)
+- Documented no-fatigue-damage as intentional design in RULEBOOK.md
+- Fixed duplicate case labels (CollectionPage, conditionalDrawHandler)
+- Removed invalid react-hooks/exhaustive-deps comments
+- Optimized Vite build chunking (20+ granular chunks, NODE_OPTIONS safety net for CI)
+
+### Completed (Campaign Lore Rewrite)
+
+- Rewrote Norse chapter as chronological Prose Edda campaign (Gylfaginning ch. 5-9)
+- 9 missions: Ginnungagap → Ymir's Slaying → World Forging → Ask/Embla → Asgard → Alfheim → Vanir War → Jotunheim → Ragnarok Omen
+- Added Ginnungagap as primordial realm (pre-Nine Realms void)
+- Added AI profiles: ymir (brutal aggro), bergelmir (vengeful), vanirWarlord (nature-magic)
+- Boss rules scale from none (mission 1) to triple-stacked modifiers (finale)
+- Cinematic intro preserved (12-scene Ymir creation/slaying sequence)
 
 ### Next (Genesis Launch)
 
