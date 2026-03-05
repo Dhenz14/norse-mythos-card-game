@@ -82,6 +82,11 @@ export const AI_PROFILES: Record<string, AIBehaviorProfile> = {
 	hard: { aggression: 0.7, efficiency: 0.8, bluffFrequency: 0.5, tightness: 0.7, usesHeroPower: true, prioritizeFace: true },
 	boss: { aggression: 0.9, efficiency: 0.9, bluffFrequency: 0.6, tightness: 0.8, usesHeroPower: true, prioritizeFace: true },
 
+	// Norse primordial profiles
+	ymir: { aggression: 0.9, efficiency: 0.4, bluffFrequency: 0.1, tightness: 0.2, usesHeroPower: true, prioritizeFace: true, tradeEfficiency: 0.3 },
+	bergelmir: { aggression: 0.8, efficiency: 0.7, bluffFrequency: 0.2, tightness: 0.6, usesHeroPower: true, prioritizeFace: true, tradeEfficiency: 0.6 },
+	vanirWarlord: { aggression: 0.6, efficiency: 0.8, bluffFrequency: 0.3, tightness: 0.7, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.8, heroPowerPriority: 0.7 },
+
 	// Norse god-specific profiles
 	fenrir: { aggression: 0.4, efficiency: 0.3, bluffFrequency: 0.1, tightness: 0.2, usesHeroPower: false, prioritizeFace: true, tradeEfficiency: 0.3 },
 	ratatosk: { aggression: 0.4, efficiency: 0.5, bluffFrequency: 0.7, tightness: 0.3, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.4 },

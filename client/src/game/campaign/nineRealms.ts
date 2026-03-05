@@ -15,6 +15,18 @@ export interface Realm {
 
 export const NINE_REALMS: Realm[] = [
 	{
+		id: 'ginnungagap',
+		name: 'Ginnungagap',
+		description: 'The primordial void where ice and fire first collided, birthing Ymir and the cosmos itself.',
+		runeSymbol: '\u16C7',
+		environmentEffect: 'Primordial Chaos',
+		environmentDescription: 'Creation and destruction intertwine',
+		position: { x: 50, y: 0 },
+		connections: ['niflheim', 'muspelheim'],
+		color: '#4b5563',
+		glowColor: 'rgba(75, 85, 99, 0.6)',
+	},
+	{
 		id: 'asgard',
 		name: 'Asgard',
 		description: 'Home of the Aesir gods, connected to Midgard by the Rainbow Bridge Bifrost.',
@@ -127,16 +139,15 @@ export const NINE_REALMS: Realm[] = [
 export const REALM_MAP = new Map(NINE_REALMS.map(r => [r.id, r]));
 
 export const MISSION_REALM_MAP: Record<string, string> = {
-	'norse-1': 'niflheim',
-	'norse-2': 'jotunheim',
-	'norse-3': 'asgard',
+	'norse-1': 'ginnungagap',
+	'norse-2': 'ginnungagap',
+	'norse-3': 'midgard',
 	'norse-4': 'midgard',
-	'norse-5': 'svartalfheim',
-	'norse-6': 'helheim',
-	'norse-7': 'midgard',
+	'norse-5': 'asgard',
+	'norse-6': 'alfheim',
+	'norse-7': 'vanaheim',
 	'norse-8': 'jotunheim',
-	'norse-9': 'asgard',
-	'norse-10': 'asgard',
+	'norse-9': 'midgard',
 };
 
 export function getMissionsForRealm(realmId: string, missions: CampaignMission[]): CampaignMission[] {
