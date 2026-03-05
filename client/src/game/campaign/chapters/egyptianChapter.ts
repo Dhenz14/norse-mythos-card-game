@@ -64,7 +64,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeDefeat: 'Ammit\'s jaws close. Another soul devoured.',
 			aiHeroId: 'egyptian-warrior-4', aiHeroClass: 'warrior',
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.medium,
-			bossRules: [{ type: 'extra_health', value: 5, description: 'Ammit has 35 health' }],
+			bossRules: [{ type: 'extra_health', value: 5, description: 'Ammit has 105 health' }],
 			prerequisiteIds: ['egyptian-3'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'dust', amount: 50 }],
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-ammit', rook: 'hero-ares', bishop: 'hero-aphrodite', knight: 'hero-serqet' },
@@ -80,7 +80,7 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'egyptian-warlock-5', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.medium,
 			bossRules: [
-				{ type: 'extra_health', value: 5, description: 'Set has 35 health' },
+				{ type: 'extra_health', value: 5, description: 'Set has 105 health' },
 				{ type: 'passive_damage', value: 1, description: 'Sandstorm deals 1 damage each turn' },
 			],
 			prerequisiteIds: ['egyptian-4'],
@@ -98,7 +98,7 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'egyptian-mage-6', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Ra has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Ra has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Ra channels solar energy (+1 mana)' },
 			],
 			prerequisiteIds: ['egyptian-5'],
@@ -116,7 +116,7 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'egyptian-mage-7', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Isis has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Isis has 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Isis weaves extra cards from magic' },
 			],
 			prerequisiteIds: ['egyptian-6'],
@@ -134,7 +134,7 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'egyptian-priest-8', aiHeroClass: 'priest',
 			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Anubis has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Anubis has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Anubis channels death energy (+1 mana)' },
 			],
 			prerequisiteIds: ['egyptian-7'],
@@ -152,7 +152,7 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'egyptian-boss-9', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 15, description: 'Apophis has 45 health' },
+				{ type: 'extra_health', value: 15, description: 'Apophis has 115 health' },
 				{ type: 'passive_damage', value: 2, description: 'Apophis\' darkness deals 2 damage each turn' },
 			],
 			prerequisiteIds: ['egyptian-8'],
@@ -170,7 +170,7 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'egyptian-boss-10', aiHeroClass: 'priest',
 			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 20, description: 'Osiris has 50 health' },
+				{ type: 'extra_health', value: 20, description: 'Osiris has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Osiris wields death\'s power (+2 mana)' },
 				{ type: 'bonus_draw', value: 1, description: 'Osiris draws from the Book of the Dead' },
 			],

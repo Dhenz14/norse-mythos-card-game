@@ -116,7 +116,7 @@ interface BattlefieldCardFrameProps {
   manaCost?: number;
   name: string;
   imageSrc: string;
-  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity?: 'common' | 'rare' | 'epic' | 'mythic';
   type?: 'minion' | 'spell' | 'weapon';
   keywords?: string[];
   description?: string;
@@ -183,8 +183,8 @@ const BattlefieldCardFrame: React.FC<BattlefieldCardFrameProps> = ({
       accent: '#B794F4',
       nameBg: 'linear-gradient(180deg, #553C9A 0%, #322659 100%)'
     },
-    legendary: { 
-      border: '#F6AD55', 
+    mythic: {
+      border: '#F6AD55',
       glow: '0 0 20px rgba(246, 173, 85, 0.7), inset 0 0 12px rgba(246, 173, 85, 0.2)',
       accent: '#FBD38D',
       nameBg: 'linear-gradient(180deg, #744210 0%, #5C3D14 100%)'
@@ -263,7 +263,7 @@ const BattlefieldCardFrame: React.FC<BattlefieldCardFrameProps> = ({
         }} />
 
         {/* Foil overlay for Legendary - Gold foil */}
-        {rarity === 'legendary' && (
+        {rarity === 'mythic' && (
           <div style={{
             position: 'absolute',
             inset: 0,

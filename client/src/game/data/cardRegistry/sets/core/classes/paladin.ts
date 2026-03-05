@@ -610,5 +610,110 @@ export const paladinCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // PALADIN EXPANSION (6 new cards — curve and depth)
+  // ═══════════════════════════════════════════════════════════════
+
+  {
+    id: 36401,
+    name: "Shield of Valhalla",
+    manaCost: 2,
+    description: "Give a minion Divine Shield. Draw a card.",
+    type: "spell",
+    rarity: "common",
+    class: "Paladin",
+    spellEffect: {
+      type: "grant_divine_shield_draw",
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36402,
+    name: "Asgardian Defender",
+    manaCost: 3,
+    attack: 2,
+    health: 4,
+    description: "Taunt. Divine Shield. Battlecry: Gain +1 Attack for each other friendly minion with Divine Shield.",
+    type: "minion",
+    rarity: "rare",
+    class: "Paladin",
+    keywords: ["taunt", "divine_shield", "battlecry"],
+    battlecry: {
+      type: "buff_from_divine_shield_count",
+      value: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36403,
+    name: "Bifrost Justicar",
+    manaCost: 6,
+    attack: 5,
+    health: 6,
+    description: "Battlecry: Set all friendly minions' Health to their maximum Health. Give them +2/+2.",
+    type: "minion",
+    rarity: "epic",
+    class: "Paladin",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "full_heal_and_buff_all",
+      value: 2,
+      targetType: "all_friendly_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36404,
+    name: "Baldr's Blessing",
+    manaCost: 8,
+    description: "Give all friendly minions Divine Shield, Taunt, and +2/+2.",
+    type: "spell",
+    rarity: "mythic",
+    class: "Paladin",
+    spellEffect: {
+      type: "mass_buff_divine_shield_taunt",
+      value: 2,
+      targetType: "all_friendly_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36405,
+    name: "Shieldmaiden Recruit",
+    manaCost: 1,
+    attack: 1,
+    health: 2,
+    description: "Divine Shield.",
+    type: "minion",
+    rarity: "common",
+    class: "Paladin",
+    keywords: ["divine_shield"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36406,
+    name: "Judgment of the Aesir",
+    manaCost: 4,
+    description: "Deal 4 damage to a minion. If it dies, summon a 2/2 with Divine Shield.",
+    type: "spell",
+    rarity: "rare",
+    class: "Paladin",
+    spellEffect: {
+      type: "damage_summon_on_kill",
+      value: 4,
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
   }
 ];

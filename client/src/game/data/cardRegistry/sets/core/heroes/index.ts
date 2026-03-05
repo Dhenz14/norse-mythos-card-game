@@ -21,7 +21,7 @@ const mageHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Mage',
     set: 'core',
     collectible: true
@@ -34,7 +34,7 @@ const mageHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Mage',
     set: 'core',
     collectible: true
@@ -47,7 +47,7 @@ const mageHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Mage',
     set: 'core',
     collectible: true
@@ -60,7 +60,7 @@ const mageHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Mage',
     set: 'core',
     collectible: true
@@ -73,7 +73,7 @@ const mageHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Mage',
     set: 'core',
     collectible: true
@@ -86,7 +86,7 @@ const mageHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Mage',
     set: 'core',
     collectible: true
@@ -105,7 +105,7 @@ const warriorHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warrior',
     set: 'core',
     collectible: true
@@ -118,7 +118,7 @@ const warriorHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warrior',
     set: 'core',
     collectible: true
@@ -131,7 +131,7 @@ const warriorHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warrior',
     set: 'core',
     collectible: true
@@ -144,7 +144,7 @@ const warriorHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warrior',
     set: 'core',
     collectible: true
@@ -157,7 +157,7 @@ const warriorHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warrior',
     set: 'core',
     collectible: true
@@ -176,7 +176,7 @@ const paladinHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Paladin',
     set: 'core',
     collectible: true
@@ -189,7 +189,7 @@ const paladinHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Paladin',
     set: 'core',
     collectible: true
@@ -202,7 +202,7 @@ const paladinHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Paladin',
     set: 'core',
     collectible: true
@@ -215,7 +215,7 @@ const paladinHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Paladin',
     set: 'core',
     collectible: true
@@ -228,7 +228,7 @@ const paladinHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Paladin',
     set: 'core',
     collectible: true
@@ -241,7 +241,7 @@ const paladinHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Paladin',
     set: 'core',
     collectible: true
@@ -260,7 +260,7 @@ const hunterHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Hunter',
     set: 'core',
     collectible: true
@@ -273,7 +273,7 @@ const hunterHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Hunter',
     set: 'core',
     collectible: true
@@ -286,7 +286,7 @@ const hunterHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Hunter',
     set: 'core',
     collectible: true
@@ -299,7 +299,7 @@ const hunterHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Hunter',
     set: 'core',
     collectible: true
@@ -312,7 +312,7 @@ const hunterHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Hunter',
     set: 'core',
     collectible: true
@@ -325,7 +325,7 @@ const hunterHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Hunter',
     set: 'core',
     collectible: true
@@ -344,7 +344,7 @@ const druidHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Druid',
     set: 'core',
     collectible: true
@@ -357,7 +357,7 @@ const druidHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Druid',
     set: 'core',
     collectible: true
@@ -370,7 +370,7 @@ const druidHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Druid',
     set: 'core',
     collectible: true
@@ -383,7 +383,7 @@ const druidHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Druid',
     set: 'core',
     collectible: true
@@ -396,7 +396,7 @@ const druidHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Druid',
     set: 'core',
     collectible: true
@@ -409,7 +409,7 @@ const druidHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Druid',
     set: 'core',
     collectible: true
@@ -428,7 +428,7 @@ const priestHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Priest',
     set: 'core',
     collectible: true
@@ -441,7 +441,7 @@ const priestHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Priest',
     set: 'core',
     collectible: true
@@ -454,7 +454,7 @@ const priestHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Priest',
     set: 'core',
     collectible: true
@@ -467,7 +467,7 @@ const priestHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Priest',
     set: 'core',
     collectible: true
@@ -480,7 +480,7 @@ const priestHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Priest',
     set: 'core',
     collectible: true
@@ -493,7 +493,7 @@ const priestHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Priest',
     set: 'core',
     collectible: true
@@ -512,7 +512,7 @@ const warlockHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warlock',
     set: 'core',
     collectible: true
@@ -525,7 +525,7 @@ const warlockHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warlock',
     set: 'core',
     collectible: true
@@ -538,7 +538,7 @@ const warlockHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warlock',
     set: 'core',
     collectible: true
@@ -551,7 +551,7 @@ const warlockHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warlock',
     set: 'core',
     collectible: true
@@ -564,7 +564,7 @@ const warlockHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warlock',
     set: 'core',
     collectible: true
@@ -577,7 +577,7 @@ const warlockHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Warlock',
     set: 'core',
     collectible: true
@@ -596,7 +596,7 @@ const shamanHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Shaman',
     set: 'core',
     collectible: true
@@ -609,7 +609,7 @@ const shamanHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Shaman',
     set: 'core',
     collectible: true
@@ -622,7 +622,7 @@ const shamanHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Shaman',
     set: 'core',
     collectible: true
@@ -635,7 +635,7 @@ const shamanHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Shaman',
     set: 'core',
     collectible: true
@@ -648,7 +648,7 @@ const shamanHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Shaman',
     set: 'core',
     collectible: true
@@ -661,7 +661,7 @@ const shamanHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Shaman',
     set: 'core',
     collectible: true
@@ -680,7 +680,7 @@ const rogueHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Rogue',
     set: 'core',
     collectible: true
@@ -693,7 +693,7 @@ const rogueHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Rogue',
     set: 'core',
     collectible: true
@@ -706,7 +706,7 @@ const rogueHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Rogue',
     set: 'core',
     collectible: true
@@ -719,7 +719,7 @@ const rogueHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Rogue',
     set: 'core',
     collectible: true
@@ -732,7 +732,7 @@ const rogueHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Rogue',
     set: 'core',
     collectible: true
@@ -745,7 +745,7 @@ const rogueHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Rogue',
     set: 'core',
     collectible: true
@@ -764,7 +764,7 @@ const berserkerHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Berserker',
     set: 'core',
     collectible: true
@@ -777,7 +777,7 @@ const berserkerHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Berserker',
     set: 'core',
     collectible: true
@@ -790,7 +790,7 @@ const berserkerHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Berserker',
     set: 'core',
     collectible: true
@@ -809,7 +809,7 @@ const deathKnightHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'DeathKnight',
     set: 'core',
     collectible: true
@@ -822,7 +822,7 @@ const deathKnightHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'DeathKnight',
     set: 'core',
     collectible: true
@@ -835,7 +835,7 @@ const deathKnightHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'DeathKnight',
     set: 'core',
     collectible: true
@@ -848,7 +848,7 @@ const deathKnightHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'DeathKnight',
     set: 'core',
     collectible: true
@@ -861,7 +861,7 @@ const deathKnightHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'DeathKnight',
     set: 'core',
     collectible: true
@@ -874,7 +874,7 @@ const deathKnightHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'DeathKnight',
     set: 'core',
     collectible: true
@@ -893,7 +893,7 @@ const necromancerHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Necromancer',
     set: 'core',
     collectible: true
@@ -906,7 +906,7 @@ const necromancerHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Necromancer',
     set: 'core',
     collectible: true
@@ -919,7 +919,7 @@ const necromancerHeroes: CardData[] = [
     type: 'hero',
     rarity: 'mythic',
     manaCost: 0,
-    health: 30,
+    health: 100,
     class: 'Necromancer',
     set: 'core',
     collectible: true

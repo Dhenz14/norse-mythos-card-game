@@ -220,7 +220,7 @@ export function registerWarriorCards(): void {
     .id(5020)
     .name("Kratos Battleborn")
     .manaCost(9)
-    .health(30)
+    .health(100)
     .customProperty("armor", 5)
     .description("Battlecry: Equip a 4/2 Helgrind's Cleaver that also damages adjacent minions.")
     .flavorText("The legendary warrior known for his battle fury and unyielding rage.")

@@ -1161,15 +1161,12 @@ export const GameBoard: React.FC<{}> = () => {
           return isMinion(targetCard.card); // Can target any minion, but not heroes
         case 'friendly_minion':
           return player.battlefield.some(c => c.instanceId === targetCard.instanceId);
-        case 'enemy_minion':
-          // Check if the opponent has taunt minions
-          const opponentHasTaunt = opponent.battlefield.some(c => 
+        case 'enemy_minion': {
+          const opponentHasTaunt = opponent.battlefield.some(c =>
             hasKeyword(c, 'taunt')
           );
-          
-          // If the target is an opponent minion
+
           if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
-            // If opponent has taunt minions, we can only target those unless the target itself has taunt
             if (opponentHasTaunt && !hasTaunt) {
               debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
@@ -1177,23 +1174,20 @@ export const GameBoard: React.FC<{}> = () => {
             return true;
           }
           return false;
-        case 'enemy':
-          // Check if the opponent has taunt minions
-          const opponentHasTaunts = opponent.battlefield.some(c => 
+        }
+        case 'enemy': {
+          const opponentHasTaunts = opponent.battlefield.some(c =>
             hasKeyword(c, 'taunt')
           );
-          
-          // If targeting an opponent minion
+
           if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
-            // If opponent has taunt minions, we can only target those unless the target itself has taunt
             if (opponentHasTaunts && !hasTaunt) {
               debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
             }
             return true;
           }
-          
-          // If targeting opponent hero and there are taunt minions, cannot target hero
+
           if (targetIsHero && isOpponentHero) {
             if (opponentHasTaunts) {
               debug.log('Cannot target opponent hero when there are taunt minions');
@@ -1201,8 +1195,9 @@ export const GameBoard: React.FC<{}> = () => {
             }
             return true;
           }
-          
+
           return false;
+        }
         case 'friendly':
           return player.battlefield.some(c => c.instanceId === targetCard.instanceId) || 
                  (targetIsHero && isPlayerHero);
@@ -1224,76 +1219,63 @@ export const GameBoard: React.FC<{}> = () => {
       
       // Check based on the target type
       switch (battlecry?.targetType) {
-        case 'any':
-          // Can target any character (minion or hero), but check for taunt
-          // If targeting opponent hero or an opponent minion
+        case 'any': {
           const isOpponentHero = isHero(targetCard.card) && targetCard.card.heroClass !== player.heroClass;
           const isOpponentMinion = opponent.battlefield.some(c => c.instanceId === targetCard.instanceId);
-          
+
           if (isOpponentHero || isOpponentMinion) {
-            // Check if the opponent has taunt minions
-            const opponentHasTaunt = opponent.battlefield.some(c => 
+            const opponentHasTaunt = opponent.battlefield.some(c =>
               hasKeyword(c, 'taunt')
             );
-            
-            // If opponent has taunt minions, we can only target those unless the target itself has taunt
             const hasTaunt = hasKeyword(targetCard, 'taunt');
-            
+
             if (opponentHasTaunt && !hasTaunt && isOpponentMinion) {
               debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
             }
-            
-            // If targeting opponent hero and there are taunt minions, cannot target hero
             if (isOpponentHero && opponentHasTaunt) {
               debug.log('Cannot target opponent hero when there are taunt minions');
               return false;
             }
           }
           return true;
-        case 'any_minion':
-          // Can target any minion, verify it's actually a minion
+        }
+        case 'any_minion': {
           if (targetCard.card.type !== 'minion') {
             return false;
           }
-          
-          // If targeting an opponent minion, check for taunt
+
           if (opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
-            // Check if the opponent has taunt minions
-            const opponentHasTaunt = opponent.battlefield.some(c => 
+            const opponentHasTaunt = opponent.battlefield.some(c =>
               hasKeyword(c, 'taunt')
             );
-            
-            // If opponent has taunt minions, we can only target those unless the target itself has taunt
             const hasTaunt = hasKeyword(targetCard, 'taunt');
-            
+
             if (opponentHasTaunt && !hasTaunt) {
               debug.log('Cannot target non-taunt minions when opponent has taunt minions');
               return false;
             }
           }
           return true;
+        }
         case 'friendly_minion':
           return player.battlefield.some(c => c.instanceId === targetCard.instanceId);
-        case 'enemy_minion':
-          // Check if it's actually an opponent minion
+        case 'enemy_minion': {
           if (!opponent.battlefield.some(c => c.instanceId === targetCard.instanceId)) {
             return false;
           }
-          
-          // Check if the opponent has taunt minions
-          const opponentHasTaunt = opponent.battlefield.some(c => 
+
+          const opponentHasTaunt = opponent.battlefield.some(c =>
             hasKeyword(c, 'taunt')
           );
-          
-          // If opponent has taunt minions, we can only target those unless the target itself has taunt
           const hasTaunt = hasKeyword(targetCard, 'taunt');
-          
+
           if (opponentHasTaunt && !hasTaunt) {
             debug.log('Cannot target non-taunt minions when opponent has taunt minions');
             return false;
           }
           return true;
+        }
         default:
           // Special case for Faceless Manipulator (copy battlecry)
           if (battlecry?.type === 'copy') {
@@ -1468,7 +1450,7 @@ export const GameBoard: React.FC<{}> = () => {
           heroClass: (opponent.heroClass as string).toLowerCase()
         },
         attacksPerformed: 0,
-        currentHealth: opponent.heroHealth || 30,
+        currentHealth: opponent.heroHealth || 100,
         canAttack: false,
         isSummoningSick: false
       };
@@ -1891,7 +1873,7 @@ export const GameBoard: React.FC<{}> = () => {
           heroClass: ((player.heroClass as string) || 'neutral').toLowerCase()
         },
         attacksPerformed: 0,
-        currentHealth: player.heroHealth || 30,
+        currentHealth: player.heroHealth || 100,
         canAttack: false,
         isSummoningSick: false
       };
@@ -2136,7 +2118,7 @@ export const GameBoard: React.FC<{}> = () => {
               // Only show environmental effect for the player's turn
               // and only for higher-value cards (rare, epic, legendary)
               const highValueCards = player.hand.filter(card => 
-                card.card.rarity && ['rare', 'epic', 'legendary'].includes(card.card.rarity.toLowerCase())
+                card.card.rarity && ['rare', 'epic', 'mythic'].includes(card.card.rarity.toLowerCase())
               );
               
               if (highValueCards.length > 0) {
@@ -2294,7 +2276,7 @@ export const GameBoard: React.FC<{}> = () => {
             >
               <div className="w-16 h-16 rounded-full bg-gradient-to-b from-red-700 to-red-900 flex items-center justify-center text-white font-bold shadow-lg border-2 border-red-600 hover:scale-110 transition-transform">
                 <div className="text-center">
-                  <div className="text-lg leading-none">{opponent.heroHealth ?? opponent.health ?? 30}</div>
+                  <div className="text-lg leading-none">{opponent.heroHealth ?? opponent.health ?? 100}</div>
                   <div className="text-[8px] opacity-70">HP</div>
                 </div>
               </div>

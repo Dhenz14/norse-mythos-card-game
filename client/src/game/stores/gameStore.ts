@@ -235,7 +235,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const cardCost = cardInstance.card.manaCost ?? 0;
       const bloodCost = cardInstance.card.bloodPrice;
       if (payWithBlood && bloodCost && bloodCost > 0) {
-        const heroHp = player.heroHealth ?? player.health ?? 30;
+        const heroHp = player.heroHealth ?? player.health ?? 100;
         if (heroHp <= bloodCost) {
           throw new Error(`Not enough health. Need more than ${bloodCost} HP to pay Blood Price`);
         }
@@ -302,7 +302,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             // Fire the battlecry announcement popup
             fireAnnouncement('battlecry', cardInstance.card.name, {
               subtitle: battlecryDescription,
-              rarity: cardInstance.card.rarity as 'common' | 'rare' | 'epic' | 'legendary',
+              rarity: cardInstance.card.rarity as 'common' | 'rare' | 'epic' | 'mythic',
               cardClass: cardInstance.card.class as any,
               duration: 2500
             });

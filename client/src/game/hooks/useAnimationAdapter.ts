@@ -33,7 +33,7 @@ export function fireAnnouncementAdapter(
   title: string,
   options?: {
     subtitle?: string;
-    rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+    rarity?: 'common' | 'rare' | 'epic' | 'mythic';
     cardClass?: string;
     duration?: number;
     icon?: string;

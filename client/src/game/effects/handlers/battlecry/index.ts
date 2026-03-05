@@ -103,7 +103,7 @@ import executeReplaceSpells from './replaceSpellsHandler';
 import executeResurrectAll from './resurrectAllHandler';
 
 // Weapon handlers
-import executeEquipFrostmourne from './equipFrostmourneHandler';
+import executeEquipHelgrind from './equipFrostmourneHandler';
 import executeEquipWeaponFromDeckGainArmor from './equip_weapon_from_deck_gain_armor';
 import executeRandomWeapon from './randomWeaponHandler';
 import executeWeaponAttackBuff from './weaponAttackBuffHandler';
@@ -227,7 +227,7 @@ const battlecryHandlers: Record<string, Function> = {
   'resurrect_all': executeResurrectAll,
   
   // Weapon
-  'equip_frostmourne': executeEquipFrostmourne,
+  'equip_helgrind': executeEquipHelgrind,
   'equip_weapon_from_deck_gain_armor': executeEquipWeaponFromDeckGainArmor,
   'random_weapon': executeRandomWeapon,
   'weapon_attack_buff': executeWeaponAttackBuff,

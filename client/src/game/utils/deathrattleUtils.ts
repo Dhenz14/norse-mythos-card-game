@@ -675,12 +675,12 @@ function safeBattlefield(battlefield: CardInstance[] | undefined): CardInstance[
 
 // Helper function to safely check for undefined health
 function safeHealth(health: number | undefined): number {
-  return health !== undefined ? health : 30; // Default health is 30
+  return health !== undefined ? health : 100;
 }
 
 // Helper function to safely update health with a minimum of 0
 function updateHealth(currentHealth: number | undefined, change: number, maxHealth?: number): number {
-  const health = currentHealth !== undefined ? currentHealth : 30;
+  const health = currentHealth !== undefined ? currentHealth : 100;
   const result = maxHealth !== undefined ? 
     Math.min(Math.max(health + change, 0), maxHealth) : 
     Math.max(health + change, 0);

@@ -161,7 +161,7 @@ export const nornsPets: CardData[] = [
 		id: 50266,
 		name: 'Norn Triumvirate',
 		manaCost: 0,
-		attack: 4,
+		attack: 5,
 		health: 8,
 		type: 'minion',
 		rarity: 'mythic',
@@ -179,7 +179,7 @@ export const nornsPets: CardData[] = [
 		stage3Variants: [
 			{
 				fromStage2Id: 50263,
-				attack: 4,
+				attack: 5,
 				health: 8,
 				manaCost: 0,
 				keywords: ['taunt', 'battlecry'],
@@ -188,7 +188,7 @@ export const nornsPets: CardData[] = [
 			},
 			{
 				fromStage2Id: 50264,
-				attack: 3,
+				attack: 5,
 				health: 6,
 				manaCost: 0,
 				keywords: ['divine_shield', 'battlecry'],
@@ -197,8 +197,8 @@ export const nornsPets: CardData[] = [
 			},
 			{
 				fromStage2Id: 50265,
-				attack: 4,
-				health: 4,
+				attack: 5,
+				health: 5,
 				manaCost: 0,
 				keywords: ['stealth', 'battlecry'],
 				description: 'Stealth. Battlecry: Draw 3 cards. They cost (2) less.',

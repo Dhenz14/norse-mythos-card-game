@@ -190,7 +190,7 @@ export function registerDeathKnightCards(): void {
     .class("DeathKnight")
     .addKeyword("battlecry")
     .battlecry({
-      type: "equip_frostmourne",
+      type: "equip_helgrind",
       summonCardId: 3009
     })
     .customProperty("heroPower", {

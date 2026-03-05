@@ -82,7 +82,7 @@ export const norseChapter: CampaignChapter = {
 			aiDeckCardIds: [20110,20110,20111,20111,20112,20112,20113,20113,20114,20114,20115,20115,20116,20116,20117,20117,20118,20118,20119,20119,20120,20120,20121,20121,20122,20122,20123,20123,20124,20124],
 			aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Hel has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Hel has 110 health' },
 				{ type: 'passive_damage', value: 1, description: 'Hel deals 1 damage to your hero each turn' },
 			],
 			prerequisiteIds: ['norse-5'],
@@ -98,7 +98,7 @@ export const norseChapter: CampaignChapter = {
 			aiHeroId: 'norse-shaman-1', aiHeroClass: 'shaman',
 			aiDeckCardIds: [20130,20130,20131,20131,20132,20132,20133,20133,20134,20134,20135,20135,20136,20136,20137,20137,20138,20138,20139,20139,20140,20140,20141,20141,20142,20142,20143,20143,20144,20144],
 			aiProfile: AI_PROFILES.hard,
-			bossRules: [{ type: 'extra_health', value: 15, description: 'Jormungandr has 45 health' }],
+			bossRules: [{ type: 'extra_health', value: 15, description: 'Jormungandr has 115 health' }],
 			prerequisiteIds: ['norse-6'],
 			rewards: [{ type: 'rune', amount: 55 }],
 			realm: 'midgard',
@@ -127,7 +127,7 @@ export const norseChapter: CampaignChapter = {
 			aiDeckCardIds: [20170,20170,20171,20171,20172,20172,20173,20173,20174,20174,20175,20175,20176,20176,20177,20177,20178,20178,20179,20179,20180,20180,20181,20181,20182,20182,20183,20183,20184,20184],
 			aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Thor has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Thor has 110 health' },
 				{ type: 'extra_mana', value: 2, description: 'Thor starts with +2 mana crystals' },
 			],
 			prerequisiteIds: ['norse-8'],
@@ -144,7 +144,7 @@ export const norseChapter: CampaignChapter = {
 			aiDeckCardIds: [20190,20190,20191,20191,20192,20192,20193,20193,20194,20194,20195,20195,20196,20196,20197,20197,20198,20198,20199,20199,20200,20200,20201,20201,20202,20202,20203,20203,20204,20204],
 			aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 20, description: 'Odin has 50 health' },
+				{ type: 'extra_health', value: 20, description: 'Odin has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Odin starts with +2 mana crystals' },
 				{ type: 'bonus_draw', value: 1, description: 'Odin draws an extra card each turn' },
 			],

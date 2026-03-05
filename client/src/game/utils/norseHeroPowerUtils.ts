@@ -860,7 +860,7 @@ function executeSelfDamageAndSummon(
   const selfDamageAmount = power.selfDamage || 0;
 
   if (selfDamageAmount > 0) {
-    player.heroHealth = Math.max(0, (player.heroHealth ?? player.health ?? 30) - selfDamageAmount);
+    player.heroHealth = Math.max(0, (player.heroHealth ?? player.health ?? 100) - selfDamageAmount);
   }
 
   if (power.summonData && player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
@@ -1536,7 +1536,7 @@ function executeDrawAndDamage(
   const drawCount = (power as any).drawCount || power.value || 1;
   const damageValue = (power as any).damageValue || power.selfDamage || 0;
 
-  player.heroHealth = Math.max(0, (player.heroHealth ?? player.health ?? 30) - damageValue);
+  player.heroHealth = Math.max(0, (player.heroHealth ?? player.health ?? 100) - damageValue);
 
   for (let i = 0; i < drawCount; i++) {
     if (player.deck.length > 0 && player.hand.length < MAX_HAND_SIZE) {

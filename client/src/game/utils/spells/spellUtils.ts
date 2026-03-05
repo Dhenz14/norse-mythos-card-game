@@ -6325,7 +6325,7 @@ function executeConditionalDrawSpell(
       break;
     case 'damaged_hero':
       const playerHp = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
-      conditionMet = playerHp.health < 30;
+      conditionMet = (playerHp.heroHealth ?? playerHp.health ?? 100) < (playerHp.maxHealth ?? 100);
       break;
     case 'always':
     default:
@@ -7369,7 +7369,7 @@ function executeDamageAndHealHeroSpell(
   const currentPlayer = newState.currentTurn || 'player';
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   const healAmount = (effect as any).healValue || effect.value || 0;
-  const maxHp = playerState.maxHealth || 30;
+  const maxHp = playerState.maxHealth || 100;
   const currentHp = playerState.heroHealth ?? playerState.health ?? maxHp;
   if (currentPlayer === 'player') {
     newState.players.player.heroHealth = Math.min(currentHp + healAmount, maxHp);
@@ -7409,7 +7409,7 @@ function executeDmgBasedOnMissingHpSpell(
 ): GameState {
   const currentPlayer = state.currentTurn || 'player';
   const playerState = currentPlayer === 'player' ? state.players.player : state.players.opponent;
-  const maxHp = playerState.maxHealth || 30;
+  const maxHp = playerState.maxHealth || 100;
   const currentHp = playerState.heroHealth ?? playerState.health ?? maxHp;
   const missingHp = Math.max(0, maxHp - currentHp);
   if (missingHp <= 0) return state;

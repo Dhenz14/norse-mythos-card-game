@@ -299,17 +299,17 @@ export const   iconicLegendaryCards: CardData[] = [{
   },
   {
   id: 95113,
-  
+
   name: "Ladon, Chromatic Drake",
   manaCost: 8,
-  
+
   attack: 6,
   health: 8,
-  
+
   type: "minion",
   rarity: "mythic",
-  
-  description: "Whenever you draw a card, add a copy of it to your hand.",
+
+  description: "Whenever you draw a card, add a copy of it to your hand. (Once per turn)",
   flavorText: "The hundred-headed dragon guards the golden apples. Each head has its own opinion on lunch.",
   keywords: [],
   
@@ -655,22 +655,24 @@ export const   iconicLegendaryCards: CardData[] = [{
     },
   {
   id: 95126,
-  
+
   name: "The Storm Guardian",
   manaCost: 5,
-  
-  attack: 10,
-  health: 10,
-  
+
+  attack: 8,
+  health: 8,
+
   type: "minion",
   rarity: "mythic",
-  
-  description: "Taunt",
+
+  description: "Taunt. Battlecry: Deal 3 damage to all enemy minions.",
   flavorText: "The gatekeeper of his ancestral homeland. Don't knock if he's napping.",
-  
-  keywords: ["taunt"],
+
+  keywords: ["taunt", "battlecry"],
+  battlecry: { type: "aoe_damage", targetType: "all_enemy_minions", value: 3 },
   heroClass: "shaman",
-      class: "Shaman"
+      class: "Shaman",
+      collectible: false
   },
   {
       id: 95127,

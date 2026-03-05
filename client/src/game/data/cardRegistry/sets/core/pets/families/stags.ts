@@ -160,7 +160,7 @@ export const stagsPets: CardData[] = [
 		id: 50036,
 		name: 'Eikthyrnir',
 		manaCost: 0,
-		attack: 4,
+		attack: 5,
 		health: 8,
 		type: 'minion',
 		rarity: 'mythic',
@@ -178,7 +178,7 @@ export const stagsPets: CardData[] = [
 		stage3Variants: [
 			{
 				fromStage2Id: 50033,
-				attack: 4,
+				attack: 5,
 				health: 8,
 				manaCost: 0,
 				keywords: ['taunt', 'battlecry'],
@@ -187,8 +187,8 @@ export const stagsPets: CardData[] = [
 			},
 			{
 				fromStage2Id: 50034,
-				attack: 3,
-				health: 6,
+				attack: 5,
+				health: 7,
 				manaCost: 0,
 				keywords: ['lifesteal'],
 				description: 'Lifesteal. Deathrattle: Give your minions +2/+2.',
@@ -196,8 +196,8 @@ export const stagsPets: CardData[] = [
 			},
 			{
 				fromStage2Id: 50035,
-				attack: 3,
-				health: 7,
+				attack: 5,
+				health: 8,
 				manaCost: 0,
 				keywords: ['divine_shield', 'taunt', 'battlecry'],
 				description: 'Divine Shield. Taunt. Battlecry: Give all friendly minions Divine Shield.',

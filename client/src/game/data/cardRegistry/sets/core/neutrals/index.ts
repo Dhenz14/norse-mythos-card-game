@@ -3438,15 +3438,15 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20210,
-    name: 'Centaur Chieftain',
+    name: 'Sleipnir Warchief',
     manaCost: 6,
     attack: 5,
     health: 5,
     type: 'minion',
     rarity: 'epic',
-    description: 'Charge. After this attacks a hero, gain +2 Attack.',
-    flavorText: 'Leader of the wild centaur tribes.',
-    keywords: ['charge'],
+    description: 'Rush. After this attacks a hero, gain +2 Attack.',
+    flavorText: 'Leader of the eight-legged warband.',
+    keywords: ['rush'],
     class: 'Neutral',
     collectible: true,
     set: 'core'
@@ -8134,9 +8134,9 @@ const legendaryBeastMinions: CardData[] = [
   },
   {
     id: 33149,
-    name: 'Cerberus Rex',
-    description: 'Charge',
-    flavorText: 'The ancient tyrant king returns, unstoppable in his fury.',
+    name: 'Garmr, Hound of Hel',
+    description: 'Rush',
+    flavorText: 'The ancient hound king returns, unstoppable in his fury.',
     type: 'minion',
     rarity: 'epic',
     manaCost: 9,
@@ -8145,7 +8145,7 @@ const legendaryBeastMinions: CardData[] = [
     race: 'Beast',
     class: 'Neutral',
     set: 'core',
-    keywords: ['charge'],
+    keywords: ['rush'],
     collectible: true
   }
 ];

@@ -560,5 +560,164 @@ export const berserkerCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // BERSERKER EXPANSION (10 new cards — mana 8+ finishers, curve fill)
+  // ═══════════════════════════════════════════════════════════════
+
+  {
+    id: 36201,
+    name: "Ragnarok's Wrath",
+    manaCost: 8,
+    description: "Deal 5 damage to all minions. Give your hero +5 Attack this turn.",
+    type: "spell",
+    rarity: "epic",
+    class: "Berserker",
+    spellEffect: {
+      type: "aoe_and_hero_buff",
+      value: 5,
+      targetType: "all_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36202,
+    name: "Surtr, Lord of Muspelheim",
+    manaCost: 10,
+    attack: 10,
+    health: 10,
+    description: "Rush. Mega-Windfury. Overkill: Deal the excess damage to the enemy hero.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Berserker",
+    race: "Elemental",
+    keywords: ["rush", "mega_windfury", "overkill"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36203,
+    name: "Battle Fury",
+    manaCost: 2,
+    description: "Give a friendly minion +3 Attack. If it's damaged, give +5 instead.",
+    type: "spell",
+    rarity: "common",
+    class: "Berserker",
+    spellEffect: {
+      type: "conditional_buff",
+      value: 3,
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36204,
+    name: "Blood-Drunk Berserker",
+    manaCost: 3,
+    attack: 4,
+    health: 3,
+    description: "Frenzy: Gain +3 Attack and Immune until end of turn.",
+    type: "minion",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["frenzy"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36205,
+    name: "Bifrost Cleaver",
+    manaCost: 5,
+    attack: 3,
+    durability: 3,
+    description: "After your hero attacks, deal 2 damage to all enemy minions.",
+    type: "weapon",
+    rarity: "epic",
+    class: "Berserker",
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36206,
+    name: "Fenrir's Howl",
+    manaCost: 9,
+    description: "Destroy all enemy minions. Deal 2 damage to your hero for each destroyed.",
+    type: "spell",
+    rarity: "mythic",
+    class: "Berserker",
+    spellEffect: {
+      type: "destroy_all_self_damage",
+      value: 2,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36207,
+    name: "War-Scarred Veteran",
+    manaCost: 4,
+    attack: 3,
+    health: 5,
+    description: "Taunt. Has +2 Attack while your hero is damaged.",
+    type: "minion",
+    rarity: "common",
+    class: "Berserker",
+    keywords: ["taunt"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36208,
+    name: "Undying Rage",
+    manaCost: 1,
+    description: "Give a minion 'Can't be reduced below 1 Health this turn.' Draw a card.",
+    type: "spell",
+    rarity: "common",
+    class: "Berserker",
+    spellEffect: {
+      type: "immune_to_lethal_draw",
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36209,
+    name: "Jotunheim Destroyer",
+    manaCost: 8,
+    attack: 8,
+    health: 6,
+    description: "Rush. Battlecry: Deal damage equal to your hero's Attack to a minion.",
+    type: "minion",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["rush", "battlecry"],
+    battlecry: {
+      type: "deal_hero_attack_damage",
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36210,
+    name: "Bloodlust Incarnate",
+    manaCost: 6,
+    attack: 5,
+    health: 5,
+    description: "Whenever this attacks and kills a minion, gain +2/+2 and attack again.",
+    type: "minion",
+    rarity: "epic",
+    class: "Berserker",
+    keywords: ["rush"],
+    collectible: true,
+    set: "core"
   }
 ];

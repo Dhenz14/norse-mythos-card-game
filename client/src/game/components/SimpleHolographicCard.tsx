@@ -60,8 +60,8 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
     attack: 5,
     health: 5,
     type: "minion",
-    rarity: "legendary",
-    description: "Battlecry: Discover a Legendary minion from any class. Reduce its Cost by (3)."
+    rarity: "mythic",
+    description: "Battlecry: Discover a Mythic minion from any class. Reduce its Cost by (3)."
   },
   enableHolographic = true, // Legacy prop
   forceHolographic = false, // New prop to override rarity-based effects

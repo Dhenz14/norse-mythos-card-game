@@ -12,8 +12,8 @@ export function useGameLogIntegration() {
 	const prevOpponentHandRef = useRef(0);
 	const prevPlayerBfRef = useRef(0);
 	const prevOpponentBfRef = useRef(0);
-	const prevPlayerHealthRef = useRef(30);
-	const prevOpponentHealthRef = useRef(30);
+	const prevPlayerHealthRef = useRef(100);
+	const prevOpponentHealthRef = useRef(100);
 
 	useEffect(() => {
 		if (!gameState) return;
@@ -28,8 +28,8 @@ export function useGameLogIntegration() {
 		const opponentHand = opponent.hand?.length || 0;
 		const playerBf = player.battlefield?.length || 0;
 		const opponentBf = opponent.battlefield?.length || 0;
-		const playerHealth = player.heroHealth ?? player.health ?? 30;
-		const opponentHealth = opponent.heroHealth ?? opponent.health ?? 30;
+		const playerHealth = player.heroHealth ?? player.health ?? 100;
+		const opponentHealth = opponent.heroHealth ?? opponent.health ?? 100;
 
 		if (turn > prevTurnRef.current && prevTurnRef.current > 0) {
 			const actor = currentTurn === 'player' ? 'player' : 'opponent';

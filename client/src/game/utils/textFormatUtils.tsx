@@ -34,7 +34,7 @@ const KEYWORDS = [
   'Corrupt',
   'Overkill',
   'Echo',
-  'Magnetic',
+  'Runic Bond',
   'Immune',
   'Rune',
   'Counter',
@@ -56,7 +56,7 @@ const STANDALONE_KEYWORDS = [
   'Echo',
   'Tradeable',
   'Immune',
-  'Magnetic',
+  'Runic Bond',
   'Colossal',
   'Counter',
   'Freeze'
@@ -245,7 +245,7 @@ export const formatCardText = (
           case 'Echo':
           case 'Tradeable':
           case 'Immune':
-          case 'Magnetic':
+          case 'Runic Bond':
           case 'Colossal':
           case 'Counter':
           case 'Freeze':

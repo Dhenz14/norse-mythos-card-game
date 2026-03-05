@@ -407,7 +407,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'mythic',
       manaCost: 9,
 
-      health: 30,
+      health: 100,
       armor: 5,
 
       class: 'Warrior',
@@ -1436,7 +1436,7 @@ export const fullCardDatabase: CardData[] = [
       collectible: true,
 
                   battlecry: {
-        type: 'equip_frostmourne',
+        type: 'equip_helgrind',
 
         summonCardId: 3009
     
@@ -3415,7 +3415,7 @@ export const fullCardDatabase: CardData[] = [
       rarity: 'mythic',
       manaCost: 10,
 
-      health: 30,
+      health: 100,
       armor: 5,
 
       class: 'Warlock',
@@ -3529,7 +3529,7 @@ export const fullCardDatabase: CardData[] = [
       manaCost: 9,
       armor: 7,
 
-      health: 30,
+      health: 100,
       class: 'Warrior',
 
       keywords: ['battlecry'],

@@ -158,7 +158,7 @@ export const ljosalfarPets: CardData[] = [
 		id: 50286,
 		name: "Alfheim's Radiance",
 		manaCost: 0,
-		attack: 3,
+		attack: 5,
 		health: 7,
 		type: 'minion',
 		rarity: 'mythic',
@@ -176,7 +176,7 @@ export const ljosalfarPets: CardData[] = [
 		stage3Variants: [
 			{
 				fromStage2Id: 50283,
-				attack: 3,
+				attack: 5,
 				health: 7,
 				manaCost: 0,
 				keywords: ['divine_shield', 'taunt', 'battlecry'],

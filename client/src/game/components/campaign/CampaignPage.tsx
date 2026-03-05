@@ -103,7 +103,7 @@ function MissionBriefing({ mission, chapter, onStart, onBack }: {
 
 			<div className="flex items-center gap-3 mb-4">
 				<span className="text-sm text-gray-400">Difficulty:</span>
-				{(['normal', 'heroic', 'legendary'] as Difficulty[]).map(d => (
+				{(['normal', 'heroic', 'mythic'] as Difficulty[]).map(d => (
 					<button
 						key={d}
 						onClick={() => setDifficulty(d)}

@@ -2127,7 +2127,7 @@
 /* ========================================
    Hearthstone-Style End Turn Button
    ======================================== */
-.hearthstone-end-turn {
+.ragnarok-end-turn {
   position: absolute;
   right: 20px;
   top: 50%;
@@ -2161,12 +2161,12 @@
   transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 }
 
-.hearthstone-end-turn.active {
+.ragnarok-end-turn.active {
   animation: end-turn-glow 1.6s ease-in-out infinite;
   border-color: #f5c842;
 }
 
-.hearthstone-end-turn.active:hover {
+.ragnarok-end-turn.active:hover {
   transform: translateY(-50%) scale(1.07);
   animation: none;
   background: linear-gradient(180deg,
@@ -2181,12 +2181,12 @@
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.hearthstone-end-turn.active:active {
+.ragnarok-end-turn.active:active {
   transform: translateY(-50%) scale(0.97);
   transition: transform 0.08s ease;
 }
 
-.hearthstone-end-turn.inactive {
+.ragnarok-end-turn.inactive {
   opacity: 0.45;
   cursor: not-allowed;
   background: linear-gradient(180deg,
@@ -2197,7 +2197,7 @@
   border-color: #888;
 }
 
-.hearthstone-end-turn .end-turn-text {
+.ragnarok-end-turn .end-turn-text {
   display: block;
 }
 

@@ -80,7 +80,7 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'celtic-warlock-5', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.medium,
 			bossRules: [
-				{ type: 'extra_health', value: 5, description: 'Balor has 35 health' },
+				{ type: 'extra_health', value: 5, description: 'Balor has 105 health' },
 				{ type: 'passive_damage', value: 1, description: 'Balor\'s Evil Eye deals 1 damage each turn' },
 			],
 			prerequisiteIds: ['celtic-4'],
@@ -98,7 +98,7 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'celtic-priest-6', aiHeroClass: 'priest',
 			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'The Dagda has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'The Dagda has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'The cauldron grants +1 mana' },
 			],
 			prerequisiteIds: ['celtic-5'],
@@ -116,7 +116,7 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'celtic-mage-7', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Tir na nOg\'s guardians have 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Tir na nOg\'s guardians have 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Time flows strangely here (bonus draw)' },
 			],
 			prerequisiteIds: ['celtic-6'],
@@ -134,7 +134,7 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'celtic-hunter-8', aiHeroClass: 'hunter',
 			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Cernunnos has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Cernunnos has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'The Wild Hunt grants +1 mana' },
 			],
 			prerequisiteIds: ['celtic-7'],
@@ -152,7 +152,7 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'celtic-boss-9', aiHeroClass: 'paladin',
 			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 15, description: 'Brigid has 45 health' },
+				{ type: 'extra_health', value: 15, description: 'Brigid has 115 health' },
 				{ type: 'extra_mana', value: 2, description: 'Brigid channels triple power (+2 mana)' },
 			],
 			prerequisiteIds: ['celtic-8'],
@@ -170,7 +170,7 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'celtic-boss-10', aiHeroClass: 'paladin',
 			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 20, description: 'Lugh has 50 health' },
+				{ type: 'extra_health', value: 20, description: 'Lugh has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Lugh wields all arts (+2 mana)' },
 				{ type: 'bonus_draw', value: 1, description: 'Lugh draws from mastery of all crafts' },
 			],

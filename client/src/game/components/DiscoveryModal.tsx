@@ -176,7 +176,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               <option value="common">Common</option>
               <option value="rare">Rare</option>
               <option value="epic">Epic</option>
-              <option value="legendary">Legendary</option>
+              <option value="mythic">Mythic</option>
             </select>
           </div>
           

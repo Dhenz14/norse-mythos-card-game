@@ -188,8 +188,8 @@ export const drakesPets: CardData[] = [
 				attack: 6,
 				health: 6,
 				manaCost: 0,
-				keywords: ['windfury', 'charge'],
-				description: 'Windfury. Charge.',
+				keywords: ['windfury', 'rush'],
+				description: 'Windfury. Rush.',
 			},
 			{
 				fromStage2Id: 50055,

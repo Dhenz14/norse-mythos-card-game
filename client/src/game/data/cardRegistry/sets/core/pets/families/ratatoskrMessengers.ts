@@ -179,8 +179,8 @@ export const ratatoskrMessengersPets: CardData[] = [
 				attack: 5,
 				health: 4,
 				manaCost: 0,
-				keywords: ['windfury', 'charge', 'battlecry'],
-				description: 'Windfury. Charge. Battlecry: Deal 2 damage to all enemies.',
+				keywords: ['windfury', 'rush', 'battlecry'],
+				description: 'Windfury. Rush. Battlecry: Deal 2 damage to all enemies.',
 				battlecry: { type: 'aoe_damage', targetType: 'all_enemies', value: 2 },
 			},
 			{

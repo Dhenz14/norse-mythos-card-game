@@ -58,7 +58,7 @@ export interface CampaignChapter {
 	chapterReward: CampaignReward[];
 }
 
-export type Difficulty = 'normal' | 'heroic' | 'legendary';
+export type Difficulty = 'normal' | 'heroic' | 'mythic';
 
 export const AI_PROFILES: Record<string, AIBehaviorProfile> = {
 	easy: { aggression: 0.3, efficiency: 0.4, bluffFrequency: 0.1, tightness: 0.3, usesHeroPower: false, prioritizeFace: false },

@@ -161,8 +161,8 @@ export const ravensPets: CardData[] = [
 		id: 50026,
 		name: "Odin's Emissary",
 		manaCost: 0,
-		attack: 4,
-		health: 4,
+		attack: 6,
+		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
 		description: 'The final form depends on its evolution path.',
@@ -179,8 +179,8 @@ export const ravensPets: CardData[] = [
 		stage3Variants: [
 			{
 				fromStage2Id: 50023,
-				attack: 4,
-				health: 4,
+				attack: 6,
+				health: 5,
 				manaCost: 0,
 				keywords: ['stealth', 'battlecry'],
 				description: 'Stealth. Battlecry: Draw 3 cards. They cost (1) less.',
@@ -188,8 +188,8 @@ export const ravensPets: CardData[] = [
 			},
 			{
 				fromStage2Id: 50024,
-				attack: 5,
-				health: 4,
+				attack: 7,
+				health: 5,
 				manaCost: 0,
 				keywords: ['rush', 'windfury', 'spell_damage'],
 				description: 'Rush. Windfury. Spell Damage +2.',
@@ -197,7 +197,7 @@ export const ravensPets: CardData[] = [
 			},
 			{
 				fromStage2Id: 50025,
-				attack: 4,
+				attack: 6,
 				health: 6,
 				manaCost: 0,
 				keywords: ['divine_shield', 'battlecry'],

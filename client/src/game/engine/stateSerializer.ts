@@ -76,7 +76,7 @@ function serializePlayer(player: Player): string {
 	parts.push('"deck":' + canonicalValue(player.deck.map(d => typeof d === 'object' && d !== null && 'id' in d ? (d as { id: number }).id : 0)));
 	parts.push('"graveyard":[' + player.graveyard.map(c => serializeCardInstance(c)).join(',') + ']');
 	parts.push('"hand":[' + player.hand.map(c => serializeCardInstance(c)).join(',') + ']');
-	parts.push('"health":' + (player.heroHealth ?? player.health ?? 30));
+	parts.push('"health":' + (player.heroHealth ?? player.health ?? 100));
 	parts.push('"heroArmor":' + (player.heroArmor ?? 0));
 	parts.push('"heroClass":' + escapeJsonString(player.heroClass ?? 'neutral'));
 	parts.push('"id":' + escapeJsonString(player.id ?? ''));

@@ -949,5 +949,60 @@ export const rogueCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // ROGUE EXPANSION — filling mana 7-8 gap (3 new cards)
+  // ═══════════════════════════════════════════════════════════════
+
+  {
+    id: 36301,
+    name: "Nótt, Shadow Sovereign",
+    manaCost: 7,
+    attack: 5,
+    health: 5,
+    description: "Stealth. Battlecry: Add 3 random spells from other classes to your hand. They cost (2) less.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Rogue",
+    keywords: ["stealth", "battlecry"],
+    battlecry: {
+      type: "add_random_class_spells",
+      value: 3,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36302,
+    name: "Vanish into Shadow",
+    manaCost: 7,
+    description: "Return all minions to their owners' hands. Combo: Your minions cost (2) less this turn.",
+    type: "spell",
+    rarity: "epic",
+    class: "Rogue",
+    keywords: ["combo"],
+    spellEffect: {
+      type: "return_all_to_hand",
+      targetType: "all_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36303,
+    name: "Svartalf Assassin",
+    manaCost: 8,
+    attack: 7,
+    health: 5,
+    description: "Stealth. Combo: Destroy an enemy minion. Deathrattle: Add a copy to your hand.",
+    type: "minion",
+    rarity: "epic",
+    class: "Rogue",
+    keywords: ["stealth", "combo", "deathrattle"],
+    deathrattle: { type: "add_copy_to_hand" },
+    collectible: true,
+    set: "core"
   }
 ];

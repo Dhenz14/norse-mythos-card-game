@@ -125,7 +125,8 @@ router.get('/:userId/stats', async (req: Request, res: Response) => {
       ORDER BY 
         CASE cs.nft_rarity 
           WHEN 'mythic' THEN 1 
-          WHEN 'legendary' THEN 2 
+          WHEN 'legendary' THEN 2 -- legacy DB rows
+          WHEN 'mythic' THEN 1
           WHEN 'epic' THEN 3 
           WHEN 'rare' THEN 4 
           WHEN 'common' THEN 5 

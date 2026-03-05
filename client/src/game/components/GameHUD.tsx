@@ -6,7 +6,7 @@ import ManaBar from './ManaBar';
 // Adapter function to convert Player to PlayerState for Hero component
 function toPlayerState(player: Player): PlayerState {
   return {
-    heroHealth: player.heroHealth ?? player.health ?? 30,
+    heroHealth: player.heroHealth ?? player.health ?? 100,
     heroArmor: player.heroArmor ?? player.armor ?? 0,
     heroClass: player.heroClass,
     currentMana: player.mana?.current ?? 0,

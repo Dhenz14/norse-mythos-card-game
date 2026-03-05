@@ -72,7 +72,7 @@ export default function executeShuffleSpecial(
           description: template.description || '',
           manaCost: template.manaCost || 0,
           type: template.type || 'spell',
-          rarity: 'legendary',
+          rarity: 'mythic',
           heroClass: 'neutral',
           ...effect.cardData
         } as Card,

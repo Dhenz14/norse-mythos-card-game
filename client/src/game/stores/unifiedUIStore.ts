@@ -37,7 +37,7 @@ export type AnnouncementType =
   | 'draw'
   | 'discover'
   | 'secret'
-  | 'legendary'
+  | 'mythic'
   | 'combo'
   | 'taunt'
   | 'divine_shield'
@@ -67,7 +67,7 @@ export interface ActionAnnouncement {
   title: string;
   subtitle?: string;
   icon?: string;
-  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity?: 'common' | 'rare' | 'epic' | 'mythic';
   cardClass?: string;
   duration?: number;
 }
@@ -85,7 +85,7 @@ export function getAnnouncementConfig(type: AnnouncementType): { icon: string; c
     draw: { icon: '📜', color: '#3498DB' },
     discover: { icon: '🔮', color: '#9B59B6' },
     secret: { icon: '❓', color: '#E91E63' },
-    legendary: { icon: '👑', color: '#FF8C00' },
+    mythic: { icon: '👑', color: '#FF8C00' },
     combo: { icon: '🎯', color: '#F1C40F' },
     taunt: { icon: '🛡️', color: '#7F8C8D' },
     divine_shield: { icon: '✨', color: '#F1C40F' },
@@ -550,7 +550,7 @@ export function fireAnnouncement(
   title: string,
   options?: {
     subtitle?: string;
-    rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+    rarity?: 'common' | 'rare' | 'epic' | 'mythic';
     cardClass?: string;
     duration?: number;
   }

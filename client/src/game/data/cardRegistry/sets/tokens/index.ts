@@ -741,7 +741,7 @@ const effectTokens: CardData[] = [
   {
     id: 20612,
     name: 'Fenrir, the Worldbreaker',
-    description: 'Charge. Rush. Can attack twice each turn.',
+    description: 'Rush. Mega-Windfury (can attack four times). Immune while attacking.',
     type: 'minion',
     rarity: 'mythic',
     manaCost: 10,
@@ -749,7 +749,7 @@ const effectTokens: CardData[] = [
     health: 10,
     race: 'Beast',
     class: 'Neutral',
-    keywords: ['charge', 'rush', 'mega_windfury'],
+    keywords: ['rush', 'mega_windfury'],
     collectible: false
   },
   {

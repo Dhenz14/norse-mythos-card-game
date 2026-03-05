@@ -78,6 +78,12 @@ Reserved ID ranges for card organization:
 | 85001-85010 | Rogue Combo/Class Cards | Rogue combo minions and spells |
 | 9050 | The Coin | Token spell (Rogue Cutpurse combo) |
 | 8501 | Berserker Misc | Jötunn Thornback (re-IDed from pet range) |
+| 36001-36014 | DeathKnight Expansion | Mana 5-8 fill, mythics, curve balance |
+| 36101-36112 | Necromancer Expansion | Mythics, mana 5+ finishers, graveyard synergy |
+| 36201-36210 | Berserker Expansion | Mana 8+ finishers, aggro tools |
+| 36301-36303 | Rogue Expansion | Mana 7-8 gap fill |
+| 36401-36406 | Paladin Expansion | Curve fill, Divine Shield synergy |
+| 95082-95084 | Alt-Skin Super Minions | Selene, Hecate, Helios hero-linked minions |
 
 ## Norse Mechanic Card Ranges
 

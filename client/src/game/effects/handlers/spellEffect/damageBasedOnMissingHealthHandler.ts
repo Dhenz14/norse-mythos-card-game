@@ -26,7 +26,7 @@ export function executeDamageBasedOnMissingHealthDamageBasedOnMissingHealth(
     context.logGameEvent(`Executing spellEffect:damage_based_on_missing_health for ${sourceCard.name}`);
 
     const targetType = effect.targetType || 'any';
-    const maxHealth = context.currentPlayer.maxHealth || 30;
+    const maxHealth = context.currentPlayer.maxHealth || 100;
     const currentHealth = context.currentPlayer.health;
     const missingHealth = maxHealth - currentHealth;
 

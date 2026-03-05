@@ -15,7 +15,7 @@ export default function executeEquipFrostmourne(
   sourceCard: Card
 ): EffectResult {
   try {
-    context.logGameEvent(`Executing equip_frostmourne battlecry for ${sourceCard.name}`);
+    context.logGameEvent(`Executing equip_helgrind battlecry for ${sourceCard.name}`);
     
     const weaponAttack = effect.weaponAttack || 5;
     const weaponDurability = effect.weaponDurability || 3;
@@ -56,7 +56,7 @@ export default function executeEquipFrostmourne(
       additionalData: { equippedWeapon: frostmourne }
     };
   } catch (error) {
-    debug.error('Error executing equip_frostmourne:', error);
-    return { success: false, error: `Failed to execute equip_frostmourne: ${error}` };
+    debug.error('Error executing equip_helgrind:', error);
+    return { success: false, error: `Failed to execute equip_helgrind: ${error}` };
   }
 }

@@ -845,7 +845,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         )}
         {/* Hearthstone-style End Turn Button - Positioned absolutely within info-row */}
         <button 
-          className={`hearthstone-end-turn ${isPlayerTurn ? 'active' : 'inactive'}`}
+          className={`ragnarok-end-turn ${isPlayerTurn ? 'active' : 'inactive'}`}
           onClick={onEndTurn}
           disabled={!isPlayerTurn}
         >

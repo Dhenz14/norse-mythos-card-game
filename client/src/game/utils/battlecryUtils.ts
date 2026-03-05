@@ -496,7 +496,7 @@ export function executeBattlecry(
             }
           }
           const hero = newState.players[heroOwner];
-          const maxHp = 30;
+          const maxHp = hero.maxHealth ?? 100;
           hero.heroHealth = Math.min(maxHp, (hero.heroHealth ?? hero.health ?? 0) + healAmount);
         }
         return newState;

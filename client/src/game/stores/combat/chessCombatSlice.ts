@@ -63,8 +63,8 @@ export const createChessCombatSlice: StateCreator<
         playerHero: {
           heroId: 'player',
           name: 'Player',
-          health: 30,
-          maxHealth: 30,
+          health: 100,
+          maxHealth: 100,
           armor: 0,
           attack: 0,
           ownerId: 'player',
@@ -72,8 +72,8 @@ export const createChessCombatSlice: StateCreator<
         opponentHero: {
           heroId: 'opponent',
           name: 'Opponent',
-          health: 30,
-          maxHealth: 30,
+          health: 100,
+          maxHealth: 100,
           armor: 0,
           attack: 0,
           ownerId: 'opponent',

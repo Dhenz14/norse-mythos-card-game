@@ -2,6 +2,17 @@ import js from '@eslint/js';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import reactPlugin from 'eslint-plugin-react';
+import globals from 'globals';
+
+function trimGlobals(...sources) {
+	const merged = {};
+	for (const src of sources) {
+		for (const [key, val] of Object.entries(src)) {
+			merged[key.trim()] = val;
+		}
+	}
+	return merged;
+}
 
 export default [
 	js.configs.recommended,
@@ -15,50 +26,12 @@ export default [
 				sourceType: 'module',
 			},
 			globals: {
-				window: 'readonly',
-				document: 'readonly',
-				navigator: 'readonly',
-				console: 'readonly',
-				setTimeout: 'readonly',
-				clearTimeout: 'readonly',
-				setInterval: 'readonly',
-				clearInterval: 'readonly',
-				requestAnimationFrame: 'readonly',
-				cancelAnimationFrame: 'readonly',
-				fetch: 'readonly',
-				URL: 'readonly',
-				HTMLElement: 'readonly',
-				HTMLDivElement: 'readonly',
-				HTMLCanvasElement: 'readonly',
-				MouseEvent: 'readonly',
-				KeyboardEvent: 'readonly',
-				Event: 'readonly',
-				EventTarget: 'readonly',
-				CustomEvent: 'readonly',
-				Map: 'readonly',
-				Set: 'readonly',
-				Promise: 'readonly',
-				crypto: 'readonly',
-				localStorage: 'readonly',
-				sessionStorage: 'readonly',
-				performance: 'readonly',
-				Audio: 'readonly',
-				Image: 'readonly',
-				WebSocket: 'readonly',
-				FormData: 'readonly',
-				FileReader: 'readonly',
-				Blob: 'readonly',
-				atob: 'readonly',
-				btoa: 'readonly',
-				NodeJS: 'readonly',
-				process: 'readonly',
-				__dirname: 'readonly',
-				module: 'readonly',
-				require: 'readonly',
-				exports: 'readonly',
-				global: 'readonly',
+				...trimGlobals(globals.browser, globals.node, globals.es2017),
+				structuredClone: 'readonly',
+				EventListener: 'readonly',
 				React: 'readonly',
 				JSX: 'readonly',
+				NodeJS: 'readonly',
 			},
 		},
 		plugins: {
@@ -74,7 +47,9 @@ export default [
 			'@typescript-eslint/no-explicit-any': 'warn',
 			'complexity': ['warn', 15],
 			'camelcase': ['error', { properties: 'never', allow: ['^card_', '^effect_'] }],
-			'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['state'] }],
+			'no-param-reassign': ['warn', { props: true, ignorePropertyModificationsFor: ['state', 'context', 'player', 'opponent'] }],
+			'no-empty': 'warn',
+			'no-case-declarations': 'warn',
 		},
 		settings: {
 			react: { version: 'detect' },

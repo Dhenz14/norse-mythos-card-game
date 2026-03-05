@@ -225,9 +225,9 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
       overloaded: 0,
       pendingOverload: 0
     },
-    health: 30,
-    maxHealth: 30,
-    heroHealth: 30,
+    health: 100,
+    maxHealth: 100,
+    heroHealth: 100,
     heroArmor: playerClass === 'warrior' ? 5 : 0, // Warriors start with armor
     armor: playerClass === 'warrior' ? 5 : 0, // Alternative property for armor
     heroClass: playerClass,
@@ -252,9 +252,9 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
       overloaded: 0,
       pendingOverload: 0
     },
-    health: 30,
-    maxHealth: 30,
-    heroHealth: 30,
+    health: 100,
+    maxHealth: 100,
+    heroHealth: 100,
     heroArmor: (opponentClass as string) === 'warrior' ? 5 : 0, // Warriors start with armor
     armor: (opponentClass as string) === 'warrior' ? 5 : 0, // Alternative property for armor
     heroClass: opponentClass,
@@ -398,12 +398,12 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
   if (isBloodPayment) {
     // Blood Price: check hero has enough health (must survive)
-    const heroHealth = player.heroHealth ?? player.health ?? 30;
+    const heroHealth = player.heroHealth ?? player.health ?? 100;
     if (heroHealth - bloodCost <= 0) {
       return state;
     }
     // Pay with health — deal damage to own hero
-    player.heroHealth = (player.heroHealth ?? player.health ?? 30) - bloodCost;
+    player.heroHealth = (player.heroHealth ?? player.health ?? 100) - bloodCost;
     if (player.health !== undefined) player.health = player.heroHealth;
   } else {
     // Normal mana payment: check if player has enough mana
@@ -1067,7 +1067,7 @@ function resolveProphecy(state: GameState, prophecy: import('../types').Prophecy
       const amount = effect.value || 8;
       const healTarget = effect.targetType === 'friendly_hero' ? owner : enemy;
       const p = newState.players[healTarget];
-      p.heroHealth = Math.min((p.heroHealth ?? p.health ?? 30) + amount, 30);
+      p.heroHealth = Math.min((p.heroHealth ?? p.health ?? 100) + amount, p.maxHealth ?? 100);
       if (p.health !== undefined) p.health = p.heroHealth;
       break;
     }

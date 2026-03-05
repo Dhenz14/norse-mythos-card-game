@@ -22,7 +22,7 @@ export interface Card {
   // Card class (e.g., 'Warrior', 'Mage', 'Neutral')
   class: string;
   // Card rarity (e.g., 'Common', 'Rare', 'Epic', 'Legendary')
-  rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary';
+  rarity: 'Common' | 'Rare' | 'Epic' | 'Mythic';
   // Whether the card is collectible
   collectible?: boolean;
   // Card set
@@ -80,7 +80,7 @@ export interface DeckCard extends Card {
   count: number; // Number of copies in the deck
 }
 
-export const CardRarities = ['Common', 'Rare', 'Epic', 'Legendary'] as const;
+export const CardRarities = ['Common', 'Rare', 'Epic', 'Mythic'] as const;
 export const CardTypes = ['Minion', 'Spell', 'Weapon', 'Hero'] as const;
 export const HeroClasses = [
   'Warrior',
@@ -92,6 +92,9 @@ export const HeroClasses = [
   'Rogue',
   'Shaman',
   'Warlock',
+  'Berserker',
+  'DeathKnight',
+  'Necromancer',
   'Neutral'
 ] as const;
 

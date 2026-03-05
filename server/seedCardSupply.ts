@@ -209,7 +209,7 @@ async function loadHeroData(): Promise<CardData[]> {
 				id: heroIdCounter++,
 				name: heroName,
 				type: 'hero',
-				rarity: 'legendary',
+				rarity: 'mythic',
 				heroClass,
 				collectible: true,
 			});
@@ -245,7 +245,7 @@ async function seedCardSupply() {
 	console.log(`\nTotal unique items: ${itemList.length}`);
 
 	// Count per tier
-	const cardCounts: Record<string, number> = { mythic: 0, legendary: 0, rare: 0, common: 0 };
+	const cardCounts: Record<string, number> = { mythic: 0, epic: 0, rare: 0, common: 0 };
 	const tierAssignments: { card: CardData; nftRarity: NftRarity }[] = [];
 
 	for (const card of itemList) {

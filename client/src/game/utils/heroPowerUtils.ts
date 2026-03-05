@@ -739,7 +739,7 @@ function executeNorseHeroPower(
 
     case 'self_damage_and_summon': {
       const selfDamage = power.value || 2;
-      player.heroHealth = Math.max(0, (player.heroHealth || 30) - selfDamage);
+      player.heroHealth = Math.max(0, (player.heroHealth || 100) - selfDamage);
       debug.log(`[Hero Power] Took ${selfDamage} damage`);
       
       if (player.heroHealth <= 0) {
@@ -1387,7 +1387,7 @@ function executeWarlockPower(state: GameState, playerType: 'player' | 'opponent'
   player.heroPower.used = true;
   
   // Take 2 damage
-  player.heroHealth = Math.max(0, (player.heroHealth || 30) - 2);
+  player.heroHealth = Math.max(0, (player.heroHealth || 100) - 2);
   
   // Check for game over (unlikely but possible if at 2 health)
   if (player.heroHealth <= 0) {

@@ -21,7 +21,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeDefeat: 'The waterfall crashes down. The Dragon Gate remains closed to you.',
 			aiHeroId: 'eastern-warrior-1', aiHeroClass: 'warrior',
 			aiDeckCardIds: deck(0), aiProfile: AI_PROFILES.hard,
-			bossRules: [{ type: 'extra_health', value: 10, description: 'The Dragon has 40 health' }],
+			bossRules: [{ type: 'extra_health', value: 10, description: 'The Dragon has 110 health' }],
 			prerequisiteIds: [],
 			rewards: [{ type: 'rune', amount: 50 }],
 			campaignArmy: { king: 'king-brimir', queen: 'hero-fujin', rook: 'hero-sarutahiko', bishop: 'hero-kamimusubi', knight: 'hero-tsukuyomi' },
@@ -37,7 +37,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-mage-2', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Amaterasu has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Amaterasu has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Divine solar energy (+1 mana)' },
 			],
 			prerequisiteIds: ['eastern-1'],
@@ -55,7 +55,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-priest-3', aiHeroClass: 'priest',
 			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'The Jade Emperor has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'The Jade Emperor has 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Celestial bureaucracy grants extra resources' },
 			],
 			prerequisiteIds: ['eastern-2'],
@@ -73,7 +73,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-shaman-4', aiHeroClass: 'shaman',
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Susanoo has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Susanoo has 110 health' },
 				{ type: 'passive_damage', value: 1, description: 'Typhoon deals 1 damage each turn' },
 			],
 			prerequisiteIds: ['eastern-3'],
@@ -91,7 +91,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-rogue-5', aiHeroClass: 'rogue',
 			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 15, description: 'Sun Wukong has 45 health' },
+				{ type: 'extra_health', value: 15, description: 'Sun Wukong has 115 health' },
 				{ type: 'bonus_draw', value: 1, description: '72 transformations grant extra cards' },
 			],
 			prerequisiteIds: ['eastern-4'],
@@ -109,7 +109,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-warlock-6', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 15, description: 'Izanami has 45 health' },
+				{ type: 'extra_health', value: 15, description: 'Izanami has 115 health' },
 				{ type: 'passive_damage', value: 2, description: 'Yomi\'s decay deals 2 damage each turn' },
 			],
 			prerequisiteIds: ['eastern-5'],
@@ -127,7 +127,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-priest-7', aiHeroClass: 'priest',
 			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 15, description: 'Ganesha has 45 health' },
+				{ type: 'extra_health', value: 15, description: 'Ganesha has 115 health' },
 				{ type: 'extra_mana', value: 2, description: 'Divine wisdom grants +2 mana' },
 			],
 			prerequisiteIds: ['eastern-6'],
@@ -145,7 +145,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-shaman-8', aiHeroClass: 'shaman',
 			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 15, description: 'Cosmic forces have 45 health' },
+				{ type: 'extra_health', value: 15, description: 'Cosmic forces have 115 health' },
 				{ type: 'extra_mana', value: 2, description: 'Cosmic energy grants +2 mana' },
 				{ type: 'bonus_draw', value: 1, description: 'The churning produces extra resources' },
 			],
@@ -164,7 +164,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-boss-9', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 20, description: 'Kali has 50 health' },
+				{ type: 'extra_health', value: 20, description: 'Kali has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Time\'s power grants +2 mana' },
 				{ type: 'passive_damage', value: 2, description: 'Kali\'s dance deals 2 damage each turn' },
 			],
@@ -183,7 +183,7 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'eastern-boss-10', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 30, description: 'The World-Ender has 60 health' },
+				{ type: 'extra_health', value: 30, description: 'The World-Ender has 130 health' },
 				{ type: 'extra_mana', value: 3, description: 'All mythologies\' power combined (+3 mana)' },
 				{ type: 'bonus_draw', value: 2, description: 'Draws from every pantheon\'s arsenal' },
 				{ type: 'passive_damage', value: 2, description: 'The unraveling deals 2 damage each turn' },

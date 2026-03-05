@@ -1064,7 +1064,7 @@ export const   neutralMinions: CardData[] = [{
         targetType: "none",
       value: 1,
 
-      specificRace: "legendary"
+      specificRarity: "mythic"
     },
       collectible: true
   },

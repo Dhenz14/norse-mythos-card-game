@@ -193,8 +193,8 @@ export const bifrostPets: CardData[] = [
 				attack: 7,
 				health: 5,
 				manaCost: 0,
-				keywords: ['windfury', 'charge'],
-				description: 'Windfury. Charge. Blazes across the battlefield.',
+				keywords: ['windfury', 'rush'],
+				description: 'Windfury. Rush. Blazes across the battlefield.',
 			},
 			{
 				fromStage2Id: 50155,

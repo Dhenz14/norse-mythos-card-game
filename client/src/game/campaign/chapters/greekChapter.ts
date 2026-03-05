@@ -83,7 +83,7 @@ export const greekChapter: CampaignChapter = {
 			narrativeDefeat: 'Ares stands over you, laughing. War always wins in the end.',
 			aiHeroId: 'greek-warrior-5', aiHeroClass: 'warrior',
 			aiDeckCardIds: deck(60), aiProfile: AI_PROFILES.medium,
-			bossRules: [{ type: 'extra_health', value: 5, description: 'Ares has 35 health' }],
+			bossRules: [{ type: 'extra_health', value: 5, description: 'Ares has 105 health' }],
 			prerequisiteIds: ['greek-4'],
 			rewards: [{ type: 'rune', amount: 40 }],
 			realm: 'sparta',
@@ -100,7 +100,7 @@ export const greekChapter: CampaignChapter = {
 			aiHeroId: 'greek-shaman-6', aiHeroClass: 'shaman',
 			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Poseidon has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Poseidon has 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Poseidon draws an extra card from the depths' },
 			],
 			prerequisiteIds: ['greek-5'],
@@ -119,7 +119,7 @@ export const greekChapter: CampaignChapter = {
 			aiHeroId: 'greek-warlock-7', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(90), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Hades has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Hades has 110 health' },
 				{ type: 'passive_damage', value: 1, description: 'The Underworld drains 1 health each turn' },
 			],
 			prerequisiteIds: ['greek-6'],
@@ -138,7 +138,7 @@ export const greekChapter: CampaignChapter = {
 			aiHeroId: 'greek-mage-8', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(105), aiProfile: AI_PROFILES.hard,
 			bossRules: [
-				{ type: 'extra_health', value: 10, description: 'Athena has 40 health' },
+				{ type: 'extra_health', value: 10, description: 'Athena has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Athena starts with +1 mana from divine wisdom' },
 			],
 			prerequisiteIds: ['greek-7'],
@@ -157,7 +157,7 @@ export const greekChapter: CampaignChapter = {
 			aiHeroId: 'greek-boss-9', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(120), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 15, description: 'Kronos has 45 health' },
+				{ type: 'extra_health', value: 15, description: 'Kronos has 115 health' },
 				{ type: 'extra_mana', value: 2, description: 'Kronos wields primordial power (+2 mana)' },
 			],
 			prerequisiteIds: ['greek-8'],
@@ -176,7 +176,7 @@ export const greekChapter: CampaignChapter = {
 			aiHeroId: 'greek-boss-10', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(135), aiProfile: AI_PROFILES.boss,
 			bossRules: [
-				{ type: 'extra_health', value: 20, description: 'Zeus has 50 health' },
+				{ type: 'extra_health', value: 20, description: 'Zeus has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Zeus commands divine mana (+2)' },
 				{ type: 'bonus_draw', value: 1, description: 'Zeus draws an extra card each turn' },
 			],

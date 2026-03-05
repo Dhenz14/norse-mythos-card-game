@@ -117,6 +117,11 @@ export const HERO_SUPER_MINION_LINKS: Record<string, number> = {
   'hero-serqet': 95074,
   'hero-khepri': 95075,
   'hero-shu': 95076,
+
+  // Greek Alt-Skin Heroes (3)
+  'hero-selene': 95082,
+  'hero-hecate': 95083,
+  'hero-helios': 95084,
 };
 
 /**
@@ -2167,6 +2172,79 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "freeze_all_damage_hero",
       value: 2,
+      requiresTarget: false,
+      targetType: BattlecryTargetType.NONE
+    },
+    collectible: true
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GREEK ALT-SKIN HEROES (3 Super Minions)
+  // ═══════════════════════════════════════════════════════════════
+
+  {
+    id: 95082,
+    name: "Endymion, the Eternal Dreamer",
+    manaCost: 10,
+    attack: 8,
+    health: 8,
+    type: "minion",
+    rarity: "mythic",
+    description: "Stealth. Battlecry: Give all friendly minions Stealth. At end of your turn, deal 3 damage to a random enemy for each stealthed friendly minion.",
+    keywords: ["stealth", "battlecry"],
+    heroClass: "rogue",
+    class: "Rogue",
+    linkedHeroId: "hero-selene",
+    isSuperMinion: true,
+    battlecry: {
+      type: "stealth_all_friendly",
+      requiresTarget: false,
+      targetType: BattlecryTargetType.NONE
+    },
+    collectible: true
+  },
+
+  {
+    id: 95083,
+    name: "Empusa, Queen of the Crossroads",
+    manaCost: 10,
+    attack: 9,
+    health: 9,
+    type: "minion",
+    rarity: "mythic",
+    description: "Battlecry: Destroy all enemy minions with 4 or less Attack. Summon a 3/3 Shade with Lifesteal for each destroyed. Your hero power costs (0) next turn.",
+    keywords: ["battlecry"],
+    heroClass: "warlock",
+    class: "Warlock",
+    race: "Undead",
+    linkedHeroId: "hero-hecate",
+    isSuperMinion: true,
+    battlecry: {
+      type: "destroy_low_attack_summon_shades",
+      value: 4,
+      requiresTarget: false,
+      targetType: BattlecryTargetType.NONE
+    },
+    collectible: true
+  },
+
+  {
+    id: 95084,
+    name: "Phaethon, Rider of the Dawn",
+    manaCost: 10,
+    attack: 7,
+    health: 10,
+    type: "minion",
+    rarity: "mythic",
+    description: "Battlecry: Restore all friendly characters to full Health. Deal 4 damage to all enemies. At end of your turn, restore 3 Health to all friendly characters.",
+    keywords: ["battlecry"],
+    heroClass: "priest",
+    class: "Priest",
+    linkedHeroId: "hero-helios",
+    isSuperMinion: true,
+    battlecry: {
+      type: "full_heal_and_aoe",
+      value: 4,
       requiresTarget: false,
       targetType: BattlecryTargetType.NONE
     },

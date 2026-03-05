@@ -507,5 +507,217 @@ export const necromancerCards: CardData[] = [
     race: "Undead",
     collectible: false,
     set: "core"
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // NECROMANCER EXPANSION (12 new cards — mythics, mana 5+ finishers)
+  // ═══════════════════════════════════════════════════════════════
+
+  {
+    id: 36101,
+    name: "Lich of the Barrow",
+    manaCost: 5,
+    attack: 3,
+    health: 6,
+    description: "Taunt. Deathrattle: Summon two 2/1 Skeletons with Rush.",
+    type: "minion",
+    rarity: "common",
+    class: "Necromancer",
+    race: "Undead",
+    keywords: ["taunt", "deathrattle"],
+    deathrattle: { type: "summon", summonCardId: 4900, value: 2 },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36102,
+    name: "Phylactery",
+    manaCost: 4,
+    description: "Choose a friendly minion. When it dies, resummon it with full stats.",
+    type: "spell",
+    rarity: "epic",
+    class: "Necromancer",
+    spellEffect: {
+      type: "grant_resummon",
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36103,
+    name: "Mass Raise Dead",
+    manaCost: 7,
+    description: "Summon 3 random friendly minions that died this game. They have Rush.",
+    type: "spell",
+    rarity: "mythic",
+    class: "Necromancer",
+    spellEffect: {
+      type: "mass_resurrect",
+      value: 3,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36104,
+    name: "Draugr Overlord",
+    manaCost: 8,
+    attack: 6,
+    health: 8,
+    description: "Taunt. Battlecry: Summon a copy of every Undead that died this game (up to 4).",
+    type: "minion",
+    rarity: "mythic",
+    class: "Necromancer",
+    race: "Undead",
+    keywords: ["taunt", "battlecry"],
+    battlecry: {
+      type: "resurrect_undead",
+      value: 4,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36105,
+    name: "Soul Harvest",
+    manaCost: 3,
+    description: "Destroy a friendly minion. Draw 2 cards and gain 3 Armor.",
+    type: "spell",
+    rarity: "common",
+    class: "Necromancer",
+    spellEffect: {
+      type: "sacrifice_draw_armor",
+      value: 2,
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36106,
+    name: "Bone Golem",
+    manaCost: 6,
+    attack: 4,
+    health: 4,
+    description: "Battlecry: Gain +1/+1 for each minion in your graveyard.",
+    type: "minion",
+    rarity: "rare",
+    class: "Necromancer",
+    race: "Undead",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "buff_from_graveyard_count",
+      value: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36107,
+    name: "Plague of Undeath",
+    manaCost: 5,
+    description: "Transform all enemy minions into 2/2 Zombies.",
+    type: "spell",
+    rarity: "epic",
+    class: "Necromancer",
+    spellEffect: {
+      type: "transform_all_enemy",
+      summonCardId: 4901,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36108,
+    name: "Revenant Stalker",
+    manaCost: 2,
+    attack: 3,
+    health: 2,
+    description: "Deathrattle: Return this to your hand. It costs (1) more.",
+    type: "minion",
+    rarity: "common",
+    class: "Necromancer",
+    race: "Undead",
+    keywords: ["deathrattle"],
+    deathrattle: { type: "return_to_hand_cost_increase", value: 1 },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36109,
+    name: "Death's Emissary",
+    manaCost: 7,
+    attack: 5,
+    health: 7,
+    description: "Lifesteal. Whenever a minion dies, gain +2 Attack.",
+    type: "minion",
+    rarity: "rare",
+    class: "Necromancer",
+    race: "Undead",
+    keywords: ["lifesteal"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36110,
+    name: "Bone Spike",
+    manaCost: 1,
+    description: "Deal 3 damage to a minion. If it dies, summon a 2/1 Skeleton.",
+    type: "spell",
+    rarity: "common",
+    class: "Necromancer",
+    spellEffect: {
+      type: "damage_summon_on_kill",
+      value: 3,
+      summonCardId: 4900,
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36111,
+    name: "Ghoul Frenzy",
+    manaCost: 4,
+    description: "Summon three 2/2 Zombies. Give them +1 Attack if you have 4+ minions in your graveyard.",
+    type: "spell",
+    rarity: "rare",
+    class: "Necromancer",
+    spellEffect: {
+      type: "summon_conditional_buff",
+      value: 3,
+      summonCardId: 4901,
+      condition: { check: "graveyard_count", minimum: 4 },
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36112,
+    name: "Nidhogg, the Corpse-Eater",
+    manaCost: 9,
+    attack: 8,
+    health: 10,
+    description: "Battlecry: Devour all minions in both graveyards. Gain +1/+1 for each. Deathrattle: Summon them all as 1/1 copies.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Necromancer",
+    race: "Dragon",
+    keywords: ["battlecry", "deathrattle"],
+    battlecry: {
+      type: "devour_graveyards",
+      targetType: "none"
+    },
+    deathrattle: { type: "summon_devoured_copies" },
+    collectible: true,
+    set: "core"
   }
 ];

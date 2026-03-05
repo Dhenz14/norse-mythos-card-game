@@ -186,8 +186,8 @@ export const stormkinPets: CardData[] = [
 				attack: 7,
 				health: 5,
 				manaCost: 0,
-				keywords: ['windfury', 'charge'],
-				description: 'Windfury. Charge. The storm incarnate.',
+				keywords: ['windfury', 'rush'],
+				description: 'Windfury. Rush. The storm incarnate.',
 			},
 			{
 				fromStage2Id: 50134,

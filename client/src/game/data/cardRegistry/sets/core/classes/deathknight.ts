@@ -464,5 +464,245 @@ export const deathknightCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // DEATH KNIGHT EXPANSION (14 new cards — filling mana 5-8, mythics)
+  // ═══════════════════════════════════════════════════════════════
+
+  {
+    id: 36001,
+    name: "Soul Reaper",
+    manaCost: 5,
+    attack: 4,
+    health: 5,
+    description: "Lifesteal. Deathrattle: Deal damage equal to this minion's Attack to a random enemy.",
+    type: "minion",
+    rarity: "rare",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["lifesteal", "deathrattle"],
+    deathrattle: { type: "deal_attack_damage_random_enemy" },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36002,
+    name: "Plague Bearer",
+    manaCost: 3,
+    attack: 2,
+    health: 4,
+    description: "At the end of your turn, deal 1 damage to all enemy minions.",
+    type: "minion",
+    rarity: "common",
+    class: "DeathKnight",
+    race: "Undead",
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36003,
+    name: "Niflheim Harbinger",
+    manaCost: 6,
+    attack: 5,
+    health: 6,
+    description: "Battlecry: Destroy a Frozen enemy minion. Draw a card.",
+    type: "minion",
+    rarity: "rare",
+    class: "DeathKnight",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "destroy_frozen_draw",
+      targetType: "frozen_enemy_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36004,
+    name: "Corpse Explosion",
+    manaCost: 5,
+    description: "Destroy a friendly minion. Deal its Health as damage to all enemy minions.",
+    type: "spell",
+    rarity: "epic",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "sacrifice_aoe",
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36005,
+    name: "Hel-Walker",
+    manaCost: 1,
+    attack: 2,
+    health: 1,
+    description: "Deathrattle: Add a random DeathKnight card to your hand.",
+    type: "minion",
+    rarity: "common",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["deathrattle"],
+    deathrattle: { type: "add_random_class_card" },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36006,
+    name: "Obliterate",
+    manaCost: 5,
+    description: "Destroy a minion. Your hero takes damage equal to its Health.",
+    type: "spell",
+    rarity: "epic",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "destroy_take_damage",
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36007,
+    name: "Frost Lich",
+    manaCost: 5,
+    attack: 4,
+    health: 4,
+    description: "Battlecry: Freeze a minion. If it's already Frozen, destroy it.",
+    type: "minion",
+    rarity: "rare",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "freeze_or_destroy",
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36008,
+    name: "Death Grip",
+    manaCost: 3,
+    description: "Steal a minion from your opponent's deck. It costs (2) less.",
+    type: "spell",
+    rarity: "rare",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "steal_from_deck",
+      value: 2,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36009,
+    name: "Sindragosa's Fury",
+    manaCost: 7,
+    description: "Deal 8 damage randomly split among all enemies. Freeze any that survive.",
+    type: "spell",
+    rarity: "mythic",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "random_damage_freeze",
+      value: 8,
+      targetType: "all_enemies"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36010,
+    name: "Death Gate",
+    manaCost: 6,
+    description: "Summon a random minion from your opponent's graveyard. Give it Rush and Lifesteal.",
+    type: "spell",
+    rarity: "epic",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "steal_from_graveyard",
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36011,
+    name: "Marrowgar, Bone Storm",
+    manaCost: 8,
+    attack: 7,
+    health: 7,
+    description: "Rush. Battlecry: Deal 3 damage to all enemy minions. Deathrattle: Resummon this with 1 Health.",
+    type: "minion",
+    rarity: "mythic",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["rush", "battlecry", "deathrattle"],
+    battlecry: {
+      type: "aoe_damage",
+      value: 3,
+      targetType: "all_enemy_minions"
+    },
+    deathrattle: { type: "resummon_self", health: 1 },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36012,
+    name: "Blood Tap",
+    manaCost: 1,
+    description: "Deal 2 damage to your hero. Draw a card.",
+    type: "spell",
+    rarity: "common",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "self_damage_draw",
+      value: 2,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36013,
+    name: "Ebon Champion",
+    manaCost: 4,
+    attack: 3,
+    health: 4,
+    description: "Taunt. Whenever this minion takes damage, gain +1 Attack.",
+    type: "minion",
+    rarity: "common",
+    class: "DeathKnight",
+    keywords: ["taunt"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36014,
+    name: "Helheim's Chosen",
+    manaCost: 9,
+    attack: 8,
+    health: 8,
+    description: "Battlecry: Destroy all minions with 3 or less Attack. Gain +1/+1 for each destroyed.",
+    type: "minion",
+    rarity: "mythic",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "destroy_low_attack_buff",
+      value: 3,
+      targetType: "all_low_attack"
+    },
+    collectible: true,
+    set: "core"
   }
 ];

@@ -180,8 +180,8 @@ export const thorsGoatsPets: CardData[] = [
 				attack: 6,
 				health: 4,
 				manaCost: 0,
-				keywords: ['charge', 'reborn', 'battlecry'],
-				description: 'Charge. Reborn. Battlecry: Deal 3 damage to all enemies.',
+				keywords: ['rush', 'reborn', 'battlecry'],
+				description: 'Rush. Reborn. Battlecry: Deal 3 damage to all enemies.',
 				battlecry: { type: 'aoe_damage', targetType: 'all_enemies', value: 3 },
 			},
 			{

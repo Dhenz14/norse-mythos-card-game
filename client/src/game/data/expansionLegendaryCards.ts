@@ -514,7 +514,7 @@ export const expansionLegendaryCards: CardData[] = [{
       type: "minion",
       rarity: "epic",
 
-      description: "Deathrattle: Summon a random legendary minion.",
+      description: "Deathrattle: Summon a random mythic minion.",
     flavorText: "When the Forgemaster says 'Shred', ya shred. Even if you're a mythic minion.",
       keywords: ["deathrattle"],
 

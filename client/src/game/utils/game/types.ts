@@ -102,7 +102,7 @@ export function adaptLegacyPlayerToContextPlayer(player: LegacyPlayer, playerId:
   return {
     id: playerId,
     health: player.health,
-    maxHealth: player.maxHealth ?? 30,
+    maxHealth: player.maxHealth ?? 100,
     armor: player.armor || player.heroArmor || 0,
     mana: {
       current: manaPool.current,

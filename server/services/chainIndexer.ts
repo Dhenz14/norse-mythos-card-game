@@ -49,7 +49,7 @@ const RAGNAROK_ACCOUNT = 'ragnarok';
 
 // XP per win by rarity (mirrors client cardXPSystem.ts)
 const XP_PER_WIN: Record<string, number> = {
-	free: 5, basic: 5, common: 10, rare: 15, epic: 20, legendary: 25,
+	free: 5, basic: 5, common: 10, rare: 15, epic: 20, mythic: 25,
 };
 
 // Level thresholds by rarity (mirrors client cardXPSystem.ts)
@@ -59,7 +59,7 @@ const XP_THRESHOLDS: Record<string, number[]> = {
 	common: [0, 50, 150],
 	rare: [0, 100, 300],
 	epic: [0, 160, 480],
-	legendary: [0, 200, 500],
+	mythic: [0, 200, 500],
 };
 
 // ---------------------------------------------------------------------------
@@ -338,7 +338,7 @@ function processPackOpen(payload: Record<string, unknown>, ctx: OpContext): void
 
 		s = lcgNext(s);
 		const rarityRoll = s % 100;
-		const rarity = rarityRoll < 1 ? 'legendary' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
+		const rarity = rarityRoll < 1 ? 'mythic' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
 
 		putCard({
 			uid,

@@ -345,26 +345,6 @@ export const modernLegendaryCards: CardData[] = [
        }
     },
   {
-  id: 95217,
-  
-  name: "Eos, Wing Mother",
-  manaCost: 9,
-  
-  attack: 5,
-  health: 5,
-  
-  type: "minion",
-  rarity: "mythic",
-  
-  description: "Your minions cost (1).",
-  flavorText: "Call her 'Tweety'. She hates that.",
-  
-  keywords: [],
-  heroClass: "druid",
-  // Special handling for minion cost reduction
-  class: "Druid"
-  },
-  {
       id: 95218,
 
       name: "Moirai High Priestess",

@@ -1282,7 +1282,7 @@ const lightningElementLegendaries: CardData[] = [
   {
     id: 4411,
     name: "Bygul, Freyja's Swiftclaw",
-    manaCost: 4,
+    manaCost: 5,
     attack: 5,
     health: 3,
     description: "Charge. Each time this minion attacks, it gains +1 Attack permanently.",

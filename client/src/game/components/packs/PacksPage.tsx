@@ -665,12 +665,6 @@ export default function PacksPage() {
 								<div className="text-gray-400 text-sm">Cards Collected</div>
 							</div>
 							<div className="bg-gray-800/40 rounded-xl p-4 border border-gray-700/50 text-center">
-								<div className="text-2xl font-bold text-yellow-400">
-									{supplyStats.mythicDropRate}%
-								</div>
-								<div className="text-gray-400 text-sm">Legendary Rate</div>
-							</div>
-							<div className="bg-gray-800/40 rounded-xl p-4 border border-gray-700/50 text-center">
 								<div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">
 									{supplyStats.mythicDropRate}%
 								</div>

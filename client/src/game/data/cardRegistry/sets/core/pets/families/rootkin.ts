@@ -165,7 +165,7 @@ export const rootkinPets: CardData[] = [
 		id: 50126,
 		name: "Idunn's Blessing",
 		manaCost: 0,
-		attack: 3,
+		attack: 5,
 		health: 8,
 		type: 'minion',
 		rarity: 'mythic',
@@ -183,7 +183,7 @@ export const rootkinPets: CardData[] = [
 		stage3Variants: [
 			{
 				fromStage2Id: 50123,
-				attack: 3,
+				attack: 5,
 				health: 8,
 				manaCost: 0,
 				keywords: ['taunt', 'lifesteal'],
@@ -192,7 +192,7 @@ export const rootkinPets: CardData[] = [
 			},
 			{
 				fromStage2Id: 50124,
-				attack: 3,
+				attack: 5,
 				health: 7,
 				manaCost: 0,
 				keywords: ['divine_shield', 'taunt', 'battlecry'],

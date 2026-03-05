@@ -48,8 +48,8 @@ const DynamicAudioLayer: React.FC = () => {
     const totalMinions = playerBoardCount + opponentBoardCount;
     
     // Calculate player health percentage with safety checks
-    const playerHealth = gameState.players.player.health || 30; // Default to 30 if not available
-    const playerMaxHealth = 30; // Standard max health in Hearthstone
+    const playerHealth = gameState.players.player.health || 100;
+    const playerMaxHealth = gameState.players.player.maxHealth || 100;
     const healthPercentage = playerHealth / playerMaxHealth;
     
     // Use turn count as a factor
@@ -203,7 +203,7 @@ const DynamicAudioLayer: React.FC = () => {
   const prevStateRef = useRef({
     playerBoardCount: 0,
     opponentBoardCount: 0,
-    playerHealth: 30,
+    playerHealth: 100,
     isPlayerTurn: true
   });
 
@@ -216,7 +216,7 @@ const DynamicAudioLayer: React.FC = () => {
     // Extract current state for comparison with safety checks
     const playerBoardCount = gameState.players.player.battlefield?.length || 0;
     const opponentBoardCount = gameState.players.opponent.battlefield?.length || 0;
-    const playerHealth = gameState.players.player.health || 30; // Default to 30 if not available
+    const playerHealth = gameState.players.player.health || 100;
     const isPlayerTurn = gameState.currentTurn === 'player';
     
     // Check for low health warning (only play once when crossing threshold)
@@ -250,7 +250,7 @@ const DynamicAudioLayer: React.FC = () => {
     prevStateRef.current = {
       playerBoardCount,
       opponentBoardCount,
-      playerHealth: typeof playerHealth === 'number' ? playerHealth : 30, // Ensure it's a number
+      playerHealth: typeof playerHealth === 'number' ? playerHealth : 100,
       isPlayerTurn
     };
     
