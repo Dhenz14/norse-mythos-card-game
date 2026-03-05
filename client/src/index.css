@@ -795,7 +795,7 @@ canvas {
   max-width: 100%;
   overflow: visible; /* No scrolling */
   
-  /* Hearthstone-style curved card arrangement */
+  /* CCG-style curved card arrangement */
   transform-style: preserve-3d;
   perspective: 1200px;
   position: relative;
@@ -806,11 +806,11 @@ canvas {
   /* Each card container receives a negative margin to create overlap ONLY FOR HAND */
   /* Card containers will have special styling for fan arrangement */
   & > div {
-    margin: 0 -15px; /* Pronounced overlap like Hearthstone battlefield */
+    margin: 0 -15px; /* Pronounced overlap overlapping battlefield */
     transform-origin: center bottom;
     transition: transform 0.2s ease-out;
     position: relative;
-    /* Cards elevate on hover - Hearthstone uses subtle lifting */
+    /* Cards elevate on hover - subtle lifting on hover */
     &:hover {
       transform: translateY(-8px) scale(1.1);
       z-index: 100 !important; /* Ensure hovered card is on top */

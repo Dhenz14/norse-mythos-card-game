@@ -70,7 +70,7 @@
 
 /* ----------------------------------------
    Opponent Hand Zone (Face-down cards)
-   Hearthstone-style card backs showing card count
+   CCG-style card backs showing card count
    ---------------------------------------- */
 .opponent-hand-zone {
   grid-area: opponent-hand;

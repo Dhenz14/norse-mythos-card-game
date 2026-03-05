@@ -3,7 +3,7 @@
 ## Overview
 
 This directory contains the modular refactoring of `spellUtils.ts` (5665 lines, 80+ functions).
-The goal is to meet Blizzard-quality code standards by organizing spell functions into logical categories.
+The goal is to meet production-quality code standards by organizing spell functions into logical categories.
 
 ## Target Structure
 

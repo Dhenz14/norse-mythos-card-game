@@ -141,7 +141,7 @@
 
 /* ========================================
    OPPONENT FACE-DOWN HAND DISPLAY
-   Hearthstone-style card backs showing card count
+   CCG-style card backs showing card count
    ======================================== */
 .opponent-hand-zone {
   grid-area: opponent-hand;

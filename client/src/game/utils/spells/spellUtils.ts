@@ -1043,7 +1043,7 @@ function executeAoEDamageSpell(
     newState = applyAoEDamage(newState, damageAmount, 'friendly');
   }
   
-  // Handle freeze effect if present (for spells like Frost Nova and Blizzard)
+  // Handle freeze effect if present (for spells like Frost Nova and Niflheim's Embrace)
   if (effect.freezeTarget && effect.targetType) {
     newState = applyFreezeEffect(newState, effect.targetType);
   }
@@ -1114,7 +1114,7 @@ function applyAoEDamage(
 
 /**
  * Apply AoE freeze effects based on the specified target type
- * Used by spells like Frost Nova and Blizzard
+ * Used by spells like Frost Nova and Niflheim's Embrace
  */
 function applyFreezeEffect(
   state: GameState,

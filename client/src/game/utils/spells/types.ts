@@ -2,7 +2,7 @@
  * Spell Types and Shared Interfaces
  * 
  * This file contains types and interfaces shared across all spell modules.
- * Part of the spellUtils refactoring for Blizzard-quality code organization.
+ * Part of the spellUtils refactoring for production-quality code organization.
  */
 
 import { GameState, SpellEffect, CardInstance } from '../../types';

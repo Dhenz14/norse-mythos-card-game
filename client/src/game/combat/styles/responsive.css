@@ -15,7 +15,7 @@
   --hover-safe-zone: calc(var(--hover-lift-distance) + 20px);
   --active-minion-safe-margin: 80px;
   
-  /* Hand layout - Hearthstone-style overlapping fan */
+  /* Hand layout - CCG-style overlapping fan */
   --hand-overlap: -100px;
   --hand-max-fan-angle: 5deg;
   --hand-hover-lift: -60px;

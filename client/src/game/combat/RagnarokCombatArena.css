@@ -2005,7 +2005,7 @@
 
 /* ========================================
    OPPONENT FACE-DOWN HAND DISPLAY
-   Hearthstone-style card backs showing card count
+   CCG-style card backs showing card count
    ======================================== */
 .opponent-hand-zone {
   grid-area: opponent-hand;
@@ -2125,7 +2125,7 @@
 }
 
 /* ========================================
-   Hearthstone-Style End Turn Button
+   CCG-Style End Turn Button
    ======================================== */
 .ragnarok-end-turn {
   position: absolute;
@@ -5906,7 +5906,7 @@
   padding: 8px;
 }
 
-/* Hearthstone-style end turn in unified layout */
+/* CCG-style end turn in unified layout */
 .unified-end-turn-btn {
   position: absolute;
   right: 50%;

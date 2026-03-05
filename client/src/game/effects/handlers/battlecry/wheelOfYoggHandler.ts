@@ -88,7 +88,7 @@ const YOGG_WHEEL_EFFECTS = [
       const slotsAvailable = MAX_HAND_SIZE - context.currentPlayer.hand.length;
       const added: string[] = [];
       
-      const spellTypes = ['Fireball', 'Frostbolt', 'Arcane Intellect', 'Pyroblast', 'Blizzard', 'Flamestrike'];
+      const spellTypes = ['Runefire Bolt', 'Frostbolt', 'Arcane Intellect', 'Runefire Blast', 'Niflheim\'s Embrace', 'Flamestrike'];
       
       for (let i = 0; i < slotsAvailable; i++) {
         const spellName = spellTypes[Math.floor(Math.random() * spellTypes.length)];

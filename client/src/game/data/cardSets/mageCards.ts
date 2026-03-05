@@ -413,7 +413,6 @@ export function registerMageCards(): void {
     .collectible(true)
     .build();
 
-  // Blizzard
   createCard()
     .id(32009)
     .name("Niflheim's Embrace")

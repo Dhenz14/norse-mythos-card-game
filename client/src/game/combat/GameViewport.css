@@ -409,7 +409,7 @@
 }
 
 /* ========================================
-   ZONE LAYOUT - Hearthstone-inspired clear zones
+   ZONE LAYOUT - CCG-inspired clear zones
    
    VERTICAL LAYOUT (top to bottom):
    - Opponent Hero: top 8px
@@ -466,7 +466,7 @@
 }
 
 /* Player Field */
-/* NOTE: Player field moved to Hearthstone-style layout section below */
+/* NOTE: Player field moved to CCG-style layout section below */
 
 /* Info Row with End Turn button */
 .viewport-mode .unified-info-row {
@@ -519,7 +519,7 @@
   margin-top: 8px;
 }
 
-/* NOTE: Hand section and betting actions moved to Hearthstone-style layout section below */
+/* NOTE: Hand section and betting actions moved to CCG-style layout section below */
 
 /* Hero card constraints - ensure visibility */
 .viewport-mode .battlefield-hero-square {
@@ -644,7 +644,7 @@
 /* ========================================
    BATTLEFIELD MINION ZONE - CENTER OF SCREEN
    (Active minions on the battlefield)
-   Hearthstone-style: minions face each other in center
+   CCG-style: minions face each other in center
    ======================================== */
 
 /* Player Minion Field - RIGHT SIDE to avoid poker card overlap

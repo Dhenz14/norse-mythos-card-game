@@ -811,7 +811,7 @@
   font-size: 22px;
 }
 
-/* Elemental buff indicator - green numbers like Hearthstone's "above base" convention */
+/* Elemental buff indicator - green numbers like standard "above base" convention */
 .stat-value.stat-buffed {
   color: #4ade80;
   text-shadow:

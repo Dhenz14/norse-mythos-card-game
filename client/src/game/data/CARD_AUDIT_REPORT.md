@@ -124,7 +124,7 @@ The card data system has significant duplication and architectural fragmentation
 
 **`cardRegistry/` should be the SINGLE canonical source.**
 
-The validation in `cardRegistry/validation.ts` handles deduplication, and the structure follows Hearthstone conventions (Core Set → Class Cards → Expansion Sets → Tokens).
+The validation in `cardRegistry/validation.ts` handles deduplication, and the structure follows standard conventions (Core Set → Class Cards → Expansion Sets → Tokens).
 
 ---
 
