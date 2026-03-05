@@ -14,7 +14,7 @@ export function useHandArc(cardCount: number): CardTransform[] {
     const transforms: CardTransform[] = [];
     const centerIndex = (cardCount - 1) / 2;
     
-    // Hearthstone-style subtle fan - very small rotation angles
+    // Subtle fan - very small rotation angles
     const maxRotation = 4; // Small rotation for subtle fan
     const maxYOffset = 12; // Arc curve depth
     

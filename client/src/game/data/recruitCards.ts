@@ -1,5 +1,5 @@
 /**
- * Recruit cards for Hearthstone clone
+ * Recruit cards for Norse mythos card game
  * Recruit mechanic pulls a minion directly from the deck into the battlefield
  */
 import { CardData } from '../types';
@@ -121,7 +121,7 @@ export const recruitCards: CardData[] = [
   attack: 2,
   health: 2,
   
-  description: "Deathrattle: Recruit a Demon.",
+  description: "Deathrattle: Recruit a Titan.",
   rarity: "rare",
   
   type: "minion",
@@ -130,7 +130,7 @@ export const recruitCards: CardData[] = [
   type: "summon",
   targetType: "none",
   
-  // Would filter for Demon minions in game logic
+  // Would filter for Titan minions in game logic
   summonCardId: 18007
   
   

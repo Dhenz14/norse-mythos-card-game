@@ -1,7 +1,7 @@
 /**
  * SimpleCard.tsx
  *
- * A clean, elegant 2D card component inspired by Hearthstone.
+ * A clean, elegant 2D card component.
  * No 3D effects, no complex transforms - just clear, readable cards.
  * Uses simple color-based backgrounds with rarity styling.
  * Keyword badges show small ability tooltips on hover.

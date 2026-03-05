@@ -1,5 +1,5 @@
 /**
- * Enhanced Card component with Hearthstone-style drag and drop
+ * Enhanced Card component with CCG-style drag and drop
  * 
  * This component is responsible for card dragging behaviors and transformations.
  * Uses flat card design with hover preview system (no 3D tilt effects).

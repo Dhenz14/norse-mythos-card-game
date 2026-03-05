@@ -1,5 +1,5 @@
 /**
- * Outcast cards for Hearthstone clone
+ * Outcast cards for Norse mythos card game
  * Outcast cards have special effects when played from the leftmost or rightmost position in your hand
  * This mechanic was introduced in the Ashes of Outland expansion for Berserker
  */
@@ -87,7 +87,7 @@ export const outcastCards: CardData[] = [
       manaCost: 7,
       type: "spell",
       rarity: "rare",
-      description: "Summon three 1/2 Demons with Taunt. Costs (1) less for each minion that died this game.",
+      description: "Summon three 1/2 Titans with Taunt. Costs (1) less for each minion that died this game.",
       keywords: ["outcast"],
       heroClass: "berserker",
       class: "Berserker",
@@ -96,7 +96,7 @@ export const outcastCards: CardData[] = [
         value: 3,
         requiresTarget: false,
         targetType: "none",
-        // Will summon 1/2 demons with Taunt in the implementation
+        // Will summon 1/2 titans with Taunt in the implementation
         summonCardId: 95605
       },
       outcastEffect: {

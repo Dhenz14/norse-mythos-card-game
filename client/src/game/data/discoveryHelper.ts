@@ -22,7 +22,7 @@ const poolOptions: DiscoverPoolOption[] = [
 
 { id: 'murloc', name: 'Naga',   description: 'Discover a Naga' },
 
-{ id: 'demon', name: 'Demon',   description: 'Discover a Demon' },
+{ id: 'titan', name: 'Titan',   description: 'Discover a Titan' },
 
 { id: 'elemental', name: 'Elemental',   description: 'Discover an Elemental' },
 

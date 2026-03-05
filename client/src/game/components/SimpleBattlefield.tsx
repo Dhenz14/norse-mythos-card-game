@@ -1,7 +1,7 @@
 /**
  * SimpleBattlefield.tsx
  * 
- * Clean, minimal battlefield component for Hearthstone-style card game.
+ * Clean, minimal battlefield component for CCG-style card game.
  * 7 slots per side, flexbox layout, direct card rendering.
  * Integrates UnifiedCardTooltip for consistent hover descriptions.
  * 
@@ -185,13 +185,11 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
 
   const playerSlots = useMemo(
     () => renderSlots(playerCards, 'player', onCardClick),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [playerCards, onCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt]
   );
 
   const opponentSlots = useMemo(
     () => renderSlots(opponentCards, 'opponent', onOpponentCardClick),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [opponentCards, onOpponentCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt]
   );
 

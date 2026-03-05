@@ -1113,7 +1113,7 @@ export const createDiscoverPool = (
   sourceCardId: string
 ): CardData[] => {
   // This would be a comprehensive implementation that maps specific card IDs
-  // to their discovery pools based on Hearthstone rules
+  // to their discovery pools based on game rules
   
   // In a real implementation, we would have a mapping of card IDs to discover logic
   // For now, we'll use placeholder logic based on the card ID

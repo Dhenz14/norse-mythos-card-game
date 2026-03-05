@@ -207,7 +207,7 @@ function formatCardText(text: string): string {
   // Replace keywords with styled versions
   const keywordStyles = 'font-bold text-yellow-400';
   
-  // Add styling for common Hearthstone keywords
+  // Add styling for common card game keywords
   let formattedText = text
     .replace(/Battlecry:/g, `<span class="${keywordStyles}">Battlecry:</span>`)
     .replace(/Deathrattle:/g, `<span class="${keywordStyles}">Deathrattle:</span>`)

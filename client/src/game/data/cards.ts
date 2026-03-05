@@ -3287,7 +3287,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 15012,
     name: 'Call of the Deep-Dark',
-      description: 'Draw 2 Demons from your deck.',
+      description: 'Draw 2 Titans from your deck.',
 
       flavorText: 'The void summons its servants from below.',
       type: 'spell',
@@ -3389,7 +3389,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 15018,
     name: 'Muspel Infernal',
-  description: 'A demon summoned from the fires of destruction.',
+  description: 'A titan summoned from the fires of Muspelheim.',
   
   flavorText: 'Born in the fires of Muspelheim.',
   type: 'minion',
@@ -3407,7 +3407,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 15019,
     name: 'Abyssal Soul-Reaper',
-      description: 'Battlecry: Summon all friendly Demons that died this game.',
+      description: 'Battlecry: Summon all friendly Titans that died this game.',
 
       flavorText: 'Ruler of the depths, he commands all departed souls.',
       type: 'hero',

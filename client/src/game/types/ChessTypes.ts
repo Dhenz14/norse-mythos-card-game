@@ -2,7 +2,7 @@
  * ChessTypes.ts
  * 
  * Type definitions for Ragnarok Chess integration.
- * Chess pieces map to Hearthstone hero classes for combat.
+ * Chess pieces map to hero classes for combat.
  */
 
 import { HeroClass, CardData } from '../types';

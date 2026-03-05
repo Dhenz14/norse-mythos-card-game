@@ -13,7 +13,7 @@ interface DeckListProps {
 }
 
 /**
- * DeckList component - Displays the current deck in a Hearthstone-like manner
+ * DeckList component - Displays the current deck
  * with mana curve sorted cards, hover effects, and card removal
  */
 const DeckList: React.FC<DeckListProps> = ({
@@ -47,7 +47,7 @@ const DeckList: React.FC<DeckListProps> = ({
     return result;
   }, [cards, availableCards]);
   
-  // Group cards by mana cost for Hearthstone-style display
+  // Group cards by mana cost for sorted display
   const cardsByMana = useMemo(() => {
     const result: { [key: number]: { card: CardData; count: number }[] } = {};
     

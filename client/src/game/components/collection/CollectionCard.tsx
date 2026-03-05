@@ -14,7 +14,7 @@ interface CollectionCardProps {
 }
 
 /**
- * CollectionCard - A card component for the collection view with Hearthstone-like hover effects and count indicator
+ * CollectionCard - A card component for the collection view with hover effects and count indicator
  * Uses the Premium 3D card rendering system and supports both CardData and CardInstanceWithCardData
  */
 const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
@@ -33,7 +33,7 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
     return () => { if (animTimerRef.current) clearTimeout(animTimerRef.current); };
   }, []);
   
-  // Glow colors based on card rarity - exactly matching Hearthstone colors
+  // Glow colors based on card rarity
   const glowColors = {
     common: 'rgba(255, 255, 255, 0.7)',
     rare: 'rgba(0, 112, 221, 0.7)',
@@ -104,7 +104,7 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
           />
         </div>
         
-        {/* Card glow effect (Hearthstone style) */}
+        {/* Card glow effect (CCG style) */}
         <AnimatePresence>
           {isHovered && (
             <motion.div

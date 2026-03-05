@@ -1,5 +1,5 @@
 /**
- * HandFan Component - Clean Hearthstone-style hand display
+ * HandFan Component - Clean hand display
  * 
  * Self-contained component using CSS variables for responsive sizing.
  * Uses flexbox with negative margins for tight overlapping fan effect.
@@ -136,7 +136,7 @@ export const HandFan = React.memo<HandFanProps>(({
     );
   }
 
-  // Calculate dynamic positioning for Hearthstone-style spread effect
+  // Calculate dynamic positioning for spread effect
   const getCardStyle = (index: number): React.CSSProperties => {
     const baseTransform = getCardTransform(index);
     const isHovered = hoveredIndex === index;

@@ -29,7 +29,7 @@ function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent
 /**
  * Draw a card from a player's deck to their hand
  * Used for all card draw effects in the game
- * Implements 9-card hand limit like Hearthstone - if hand is full, card is burned
+ * Implements 9-card hand limit by design - if hand is full, card is burned
  */
 export function drawCardFromDeck(
   state: GameState,

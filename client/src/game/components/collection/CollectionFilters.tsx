@@ -15,7 +15,7 @@ interface CollectionFiltersProps {
 }
 
 /**
- * CollectionFilters - A Hearthstone-like filter bar for the card collection
+ * CollectionFilters - A the game-like filter bar for the card collection
  */
 const CollectionFilters: React.FC<CollectionFiltersProps> = ({
   filters,

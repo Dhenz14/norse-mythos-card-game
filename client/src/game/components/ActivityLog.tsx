@@ -1,6 +1,6 @@
 /**
  * ActivityLog.tsx
- * Saga Feed - Hearthstone-style activity log showing recent game actions
+ * Saga Feed - activity log showing recent game actions
  * Supports two separate feeds: minion events and poker events
  */
 

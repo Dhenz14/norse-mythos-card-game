@@ -1,12 +1,12 @@
 /**
- * Modern legendary cards for Hearthstone clone
- * Powerful and unique cards from recent Hearthstone expansions
+ * Modern legendary cards for Echoes of Ymir
+ * Powerful and unique cards from recent card expansions
  */
 import { CardData } from '../types';
 
 /**
  * Collection of modern legendary minions
- * Covering recent Hearthstone expansions
+ * Covering recent card expansions
  */
 export const modernLegendaryCards: CardData[] = [
   {

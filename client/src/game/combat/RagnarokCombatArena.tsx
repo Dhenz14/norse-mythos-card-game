@@ -843,7 +843,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           <div className="poker-info-row">
           </div>
         )}
-        {/* Hearthstone-style End Turn Button - Positioned absolutely within info-row */}
+        {/* End Turn Button - Positioned absolutely within info-row */}
         <button 
           className={`ragnarok-end-turn ${isPlayerTurn ? 'active' : 'inactive'}`}
           onClick={onEndTurn}

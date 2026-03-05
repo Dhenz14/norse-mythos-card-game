@@ -287,7 +287,7 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
 
 /**
  * Draw a card for the current player
- * Includes Hearthstone-style fatigue mechanic where damage increases with each empty draw
+ * Includes fatigue mechanic where damage increases with each empty draw
  */
 export function drawCard(state: GameState): GameState {
   const currentPlayer = state.currentTurn;
@@ -945,7 +945,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
 /**
  * End the current turn and prepare for the next turn
- * Implements Hearthstone-like turn rules:
+ * Implements turn rules:
  * 1. Change active player
  * 2. Increase max mana by 1 (up to 10) for the new active player
  * 3. Refresh current mana to full
@@ -1125,7 +1125,7 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
   const currentPlayer = state.currentTurn;
   const nextPlayer = currentPlayer === 'player' ? 'opponent' : 'player';
   
-  // NOTE: Player minion attacks are now MANUAL (Hearthstone-style)
+  // NOTE: Player minion attacks are now MANUAL
   // Auto-attack was removed as it caused opponent minions to die unexpectedly
   // Players must click on their minions and select targets during their turn
   
@@ -1181,11 +1181,11 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
   const newTurnNumber = nextPlayer === 'player' ? state.turnNumber + 1 : state.turnNumber;
   
   // Calculate new max mana for the next player (capped at 10)
-  // In Hearthstone, max mana increases at the start of EACH player's turn
+  // Max mana increases at the start of EACH player's turn
   const newMaxMana = Math.min(state.players[nextPlayer].mana.max + 1, 10);
   
   // Track turn change between players
-  // Update max mana for next player - handled according to Hearthstone rules
+  // Update max mana for next player
   
   // Ensure nextPlayer is properly typed
   const typedNextPlayer = nextPlayer as 'player' | 'opponent';
@@ -1298,7 +1298,7 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
   if (typedNextPlayer === 'opponent' && !skipAISimulation) {
     try {
       // AI logic: Play cards if they have enough mana, prioritizing high cost cards
-      // This implements Hearthstone-like AI behavior for playing cards and attacking
+      // AI behavior for playing cards and attacking
       newState = simulateOpponentTurn(newState);
       
       // Process end of turn effects for the opponent
@@ -2832,7 +2832,7 @@ export function processAttack(
 
 /**
  * Check if there are any Taunt minions on the battlefield
- * In Hearthstone, you must attack minions with Taunt before any other target
+ * You must attack minions with Taunt before any other target
  */
 function hasTauntMinions(battlefield: CardInstance[]): boolean {
   return battlefield.some(card => {
@@ -2850,7 +2850,7 @@ function getTauntMinions(battlefield: CardInstance[]): CardInstance[] {
 }
 
 /**
- * Finds optimal attack targets for a card following common Hearthstone strategies
+ * Finds optimal attack targets for a card following standard CCG strategies
  * and respecting the Taunt mechanic (must attack Taunt minions first)
  * Returns an array of optimal targets in priority order
  */
@@ -2886,7 +2886,7 @@ export function findOptimalAttackTargets(
   const opponentField = state.players.opponent.battlefield;
   const opponentHeroHealth = state.players.opponent.health;
   
-  // Check for Taunt minions - they must be attacked first as per Hearthstone rules
+  // Check for Taunt minions - they must be attacked first
   const opponentHasTaunts = hasTauntMinions(opponentField);
   
   const targets: { defenderId: string, type: 'minion' | 'hero', priority: number }[] = [];

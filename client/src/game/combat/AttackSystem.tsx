@@ -1,7 +1,7 @@
 /**
  * AttackSystem.tsx
  * 
- * A comprehensive Hearthstone-style attack system that handles:
+ * A comprehensive CCG-style attack system that handles:
  * - Attack eligibility (summoning sickness, charge, rush)
  * - Attack targeting (taunt, valid targets)
  * - Attack resolution (damage calculation, divine shield)
@@ -47,7 +47,7 @@ export type AttackResult = {
 };
 
 /**
- * Check if a card can attack based on Hearthstone rules.
+ * Check if a card can attack based on game rules.
  * 
  * NOTE: This is a wrapper around the authoritative canCardAttack from attackUtils.ts
  * to maintain backwards compatibility. All new code should import from attackUtils directly.
@@ -73,7 +73,7 @@ export function canCardAttack(card: CardInstance, isPlayerTurn: boolean): boolea
 }
 
 /**
- * Check if a target is valid for an attack based on Hearthstone rules
+ * Check if a target is valid for an attack based on game rules
  */
 export function isValidAttackTarget(
   state: GameState,

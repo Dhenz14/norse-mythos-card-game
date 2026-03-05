@@ -3,7 +3,7 @@ import { assetPath } from '../game/utils/assetPath';
 import '../game/components/CardEnhancements.css';
 import '../game/components/HolographicEffect.css';
 
-// Keyword icons mapping for visual effect indicators (Hearthstone-style)
+// Keyword icons mapping for visual effect indicators
 const keywordIcons: Record<string, { icon: string; color: string; bgColor: string }> = {
   'battlecry': { icon: '⚔️', color: '#FFD700', bgColor: 'rgba(255, 215, 0, 0.2)' },
   'deathrattle': { icon: '💀', color: '#9B59B6', bgColor: 'rgba(155, 89, 182, 0.2)' },

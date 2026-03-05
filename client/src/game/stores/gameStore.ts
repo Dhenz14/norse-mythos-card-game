@@ -292,7 +292,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             cardInstance.card.health
           );
           
-          // Show battlecry popup if the minion has a battlecry (like Hearthstone)
+          // Show battlecry popup if the minion has a battlecry
           if (hasKeyword(cardInstance, 'battlecry') &&
               cardInstance.card.battlecry) {
             // Get the battlecry description from the card

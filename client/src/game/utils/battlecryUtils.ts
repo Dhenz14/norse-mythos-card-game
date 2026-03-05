@@ -467,8 +467,8 @@ export function executeBattlecry(
         // Execute Bound-Spirit's battlecry (hero power costs 0)
         return executeRazaBattlecry(newState, 'player');
         
-      case 'conditional_summon_hand_demons':
-        // Execute The Unshackled's battlecry (summon demons from hand)
+      case 'conditional_summon_hand_titans':
+        // Execute The Unshackled's battlecry (summon titans from hand)
         return executeKrulBattlecry(newState, 'player');
         
       // Old Gods battlecries (already implemented elsewhere)

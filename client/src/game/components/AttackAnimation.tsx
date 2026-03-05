@@ -53,7 +53,7 @@ export const AttackAnimation: React.FC<AttackAnimationProps> = ({
   const dy = endPosition.y - startPosition.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
   
-  // Hearthstone uses a curved attack path with slight overshoot for better feel
+  // Uses a curved attack path with slight overshoot for better feel
   // Calculate a control point for the curve
   const midX = startPosition.x + dx * 0.5;
   const midY = startPosition.y + dy * 0.5;
@@ -105,7 +105,7 @@ export const AttackAnimation: React.FC<AttackAnimationProps> = ({
               ease: "easeInOut",
             }}
           >
-            {/* Hearthstone-style attack animation with glowing border */}
+            {/* CCG-style attack animation with glowing border */}
             <div className="w-full h-full flex items-center justify-center">
               <div 
                 className="absolute inset-0 rounded-md border-2 border-yellow-400 animate-pulse"
@@ -164,7 +164,7 @@ export const AttackAnimation: React.FC<AttackAnimationProps> = ({
                 ease: "easeOut" 
               }}
             >
-              {/* Hearthstone-style impact effect with layered flashes */}
+              {/* CCG-style impact effect with layered flashes */}
               <div className="relative">
                 {/* White flash background for initial impact */}
                 <div className="absolute inset-0 rounded-full bg-white opacity-60" 
@@ -188,7 +188,7 @@ export const AttackAnimation: React.FC<AttackAnimationProps> = ({
           {/* Particle effects scattered from the impact */}
           {showImpact && (
             <>
-              {/* Hearthstone-style particles with varying sizes and speeds */}
+              {/* CCG-style particles with varying sizes and speeds */}
               {[...Array(12)].map((_, i) => {
                 // More varied and dynamic particle trajectories
                 const angle = (i * 30) + (Math.random() * 30 - 15);
@@ -201,7 +201,7 @@ export const AttackAnimation: React.FC<AttackAnimationProps> = ({
                 const x = Math.cos(radians) * distance;
                 const y = Math.sin(radians) * distance;
                 
-                // Use different colors for particles - just like Hearthstone
+                // Use different colors for particles - standard CCG style
                 const colors = [
                   "bg-yellow-300", "bg-orange-400", "bg-amber-500", 
                   "bg-yellow-400", "bg-orange-300"
@@ -308,10 +308,10 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
   }, [duration, onComplete]);
 
   // Generate blood splatter particles proportional to damage amount
-  // Hearthstone shows more particles for higher damage
+  // Shows more particles for higher damage
   const particleCount = Math.min(4 + Math.floor(amount / 2), 12);
   
-  // Generate a random shake offset - Hearthstone has screen shake for big hits
+  // Generate a random shake offset - Uses screen shake for big hits
   const shakeOffset = amount > 3 ? {
     x: Math.random() * 4 - 2, 
     y: Math.random() * 4 - 2
@@ -321,7 +321,7 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Initial flash effect for damage - just like Hearthstone */}
+          {/* Initial flash effect for damage - standard CCG style */}
           <motion.div
             className="absolute rounded-full bg-white bg-opacity-30 pointer-events-none"
             style={{
@@ -343,7 +343,7 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
             }}
           />
           
-          {/* Main damage number - with Hearthstone's characteristic bounce and fade */}
+          {/* Main damage number - with the game's characteristic bounce and fade */}
           <motion.div
             className="absolute z-50 pointer-events-none"
             style={{
@@ -354,7 +354,7 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
             initial={{ opacity: 0, y: 0, scale: 0.5 }}
             animate={{ 
               opacity: [0, 1, 1, 0.8, 0],
-              y: [-10, -25, -40, -45], // Hearthstone's characteristic upward bounce
+              y: [-10, -25, -40, -45], // the game's characteristic upward bounce
               scale: [0.7, 1.5, 1.3, 1], // The number expands then contracts slightly
               x: showShake ? [shakeOffset.x, -shakeOffset.x, shakeOffset.x, 0] : 0 // Optional shake for big hits
             }}
@@ -365,9 +365,9 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
               x: { duration: 0.3, times: [0, 0.3, 0.6, 1] }
             }}
           >
-            {/* Hearthstone-style damage number with improved 3D effect */}
+            {/* CCG-style damage number with improved 3D effect */}
             <div className="text-5xl font-black relative" style={{ fontFamily: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif" }}>
-              {/* Black outline with more depth - Hearthstone's damage text has a substantial 3D effect */}
+              {/* Black outline with more depth - the game's damage text has a substantial 3D effect */}
               <div className="absolute text-black opacity-80" style={{ 
                 left: 3, 
                 top: 3,
@@ -396,7 +396,7 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
             </div>
           </motion.div>
           
-          {/* Hearthstone-style impact effect */}
+          {/* CCG-style impact effect */}
           <motion.div 
             className="absolute bg-red-600 rounded-full pointer-events-none"
             style={{
@@ -413,7 +413,7 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
             transition={{ duration: 0.5, times: [0, 0.2, 1] }}
           />
           
-          {/* Hearthstone-style blood splatter particles */}
+          {/* CCG-style blood splatter particles */}
           {showSplatter && (
             <>
               {/* Immediate blood spray effect */}
@@ -435,18 +435,18 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
                 transition={{ duration: 0.25 }}
               />
               
-              {/* Detailed blood particles - like Hearthstone's characteristic spray */}
+              {/* Detailed blood particles - standard CCG style's characteristic spray */}
               {[...Array(particleCount)].map((_, i) => {
                 // Calculate trajectories for blood particles - they tend to spray outward
                 const angleOffset = i * (360 / particleCount) + (Math.random() * 30 - 15); 
                 const angle = angleOffset;
                 const distance = 15 + Math.random() * (amount > 5 ? 50 : 35); // Big hits spray further
                 
-                // Vary the particle sizes - Hearthstone has different sized blood drops
+                // Vary the particle sizes - Uses different sized blood drops
                 const baseSize = amount > 5 ? 5 : 3; // Bigger damage = bigger particles
                 const size = baseSize + Math.random() * baseSize * (amount > 3 ? 1.5 : 1);
                 
-                // Vary the timing - Hearthstone has some particles appear slightly later
+                // Vary the timing - Uses some particles appear slightly later
                 const delay = Math.random() * 0.15;
                 
                 // Transform to cartesian coordinates
@@ -503,7 +503,7 @@ export const DamageEffect: React.FC<DamageEffectProps> = ({
   );
 };
 
-// Visual effect for healing - enhanced to match Hearthstone's style
+// Visual effect for healing - enhanced to match the game's style
 export const HealEffect: React.FC<DamageEffectProps> = ({
   position,
   amount,
@@ -536,14 +536,14 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
     };
   }, [duration, onComplete]);
 
-  // Generate healing particles based on amount - Hearthstone shows more for bigger heals
+  // Generate healing particles based on amount - Shows more for bigger heals
   const particleCount = Math.min(6 + Math.floor(amount / 2), 15);
 
   return (
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Initial healing glow flash - Hearthstone starts with a bright flash */}
+          {/* Initial healing glow flash - Starts with a bright flash */}
           <motion.div
             className="absolute rounded-full bg-green-400 bg-opacity-40 pointer-events-none"
             style={{
@@ -567,7 +567,7 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
             }}
           />
           
-          {/* Main healing number with Hearthstone's distinctive pop and rise */}
+          {/* Main healing number with the game's distinctive pop and rise */}
           <motion.div
             className="absolute z-50 pointer-events-none"
             style={{
@@ -578,9 +578,9 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
             initial={{ opacity: 0, y: 0, scale: 0.5 }}
             animate={{ 
               opacity: [0, 1, 1, 0.8, 0],
-              y: [-5, -20, -35, -45], // Hearthstone's upward float
+              y: [-5, -20, -35, -45], // the game's upward float
               scale: [0.7, 1.5, 1.3, 1], // The number expands then contracts slightly
-              rotate: [0, -2, 2, 0] // Slight wobble like in Hearthstone
+              rotate: [0, -2, 2, 0] // Slight wobble standard CCG style
             }}
             transition={{
               duration,
@@ -588,7 +588,7 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
               ease: "easeOut"
             }}
           >
-            {/* Hearthstone-style healing number with improved 3D effect */}
+            {/* CCG-style healing number with improved 3D effect */}
             <div className="text-5xl font-black relative" style={{ fontFamily: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif" }}>
               {/* Shadow layer for depth */}
               <div className="absolute text-black opacity-80" style={{ 
@@ -599,7 +599,7 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
                 +{amount}
               </div>
               
-              {/* Green glow border - Hearthstone uses a vibrant green */}
+              {/* Green glow border - Uses a vibrant green */}
               <div className="text-green-500 font-extrabold"
                 style={{ 
                   textShadow: '0 0 4px #00ff00, 0 0 6px #00ff00, 0 0 1px #000000, 2px 2px 1px rgba(0,0,0,0.8)', 
@@ -619,7 +619,7 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
             </div>
           </motion.div>
           
-          {/* Hearthstone-style radial healing glow */}
+          {/* CCG-style radial healing glow */}
           {showGlow && (
             <>
               {/* Central bright flash */}
@@ -644,7 +644,7 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
                 }}
               />
               
-              {/* Healing rays - Hearthstone has distinct light rays */}
+              {/* Healing rays - Uses distinct light rays */}
               <motion.div
                 className="absolute z-44"
                 style={{
@@ -688,12 +688,12 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
             </>
           )}
           
-          {/* Hearthstone-style healing particles - includes upward swirling effect */}
+          {/* CCG-style healing particles - includes upward swirling effect */}
           {showParticles && (
             <>
-              {/* Healing sparkles with spiral pattern - just like Hearthstone's healing effect */}
+              {/* Healing sparkles with spiral pattern - standard CCG style's healing effect */}
               {[...Array(particleCount)].map((_, i) => {
-                // Hearthstone's healing has particles that move in a spiral pattern upward
+                // the game's healing has particles that move in a spiral pattern upward
                 const spiralBase = (i / particleCount) * Math.PI * 2; // Distribute around a circle
                 const startAngle = spiralBase;
                 const endAngle = spiralBase + (Math.random() > 0.5 ? 0.5 : -0.5); // Spiral direction
@@ -703,18 +703,18 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
                 const endDistance = baseDistance + (20 + Math.random() * 30);
                 const size = 8 + Math.random() * (amount > 5 ? 8 : 5);
                 
-                // Timing - Hearthstone has staggered particle appearances
+                // Timing - Uses staggered particle appearances
                 const delay = (i / particleCount) * 0.2; // Stagger based on position
                 const randomDelay = Math.random() * 0.1; // Add some randomness
                 const totalDelay = delay + randomDelay;
                 
-                // Star or cross shapes - Hearthstone uses specific shapes
+                // Star or cross shapes - Uses specific shapes
                 const particles = [
                   "✦", "✧", "✴", "✹", "✺", "✻", "✽", "❋", "❊", "✚", "✙"
                 ];
                 const particle = particles[Math.floor(Math.random() * particles.length)];
                 
-                // Color variations - Hearthstone uses yellow-green to bright green
+                // Color variations - Uses yellow-green to bright green
                 const colors = [
                   "text-green-300", "text-green-400", "text-green-500",
                   "text-lime-300", "text-lime-400", "text-yellow-300"
@@ -768,7 +768,7 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
                 );
               })}
               
-              {/* Characteristic Hearthstone healing spiral */}
+              {/* Characteristic healing spiral */}
               <motion.div
                 className="absolute z-42 pointer-events-none"
                 style={{
@@ -809,7 +809,7 @@ export const HealEffect: React.FC<DamageEffectProps> = ({
   );
 };
 
-// Visual effect for buff - enhanced to match Hearthstone's style
+// Visual effect for buff - enhanced to match the game's style
 export const BuffEffect: React.FC<{
   position: Position;
   attackBuff?: number;
@@ -850,7 +850,7 @@ export const BuffEffect: React.FC<{
   const showHealth = healthBuff > 0;
   const showBoth = showAttack && showHealth;
   
-  // Hearthstone uses different colors for attack and health buffs
+  // Uses different colors for attack and health buffs
   const attackColor = "text-yellow-400";
   const healthColor = "text-green-500";
   
@@ -860,12 +860,12 @@ export const BuffEffect: React.FC<{
     y: -30
   };
   
-  // Hearthstone buff effects bounce and have a distinctive glow
+  // Buff effects bounce and have a distinctive glow
   return (
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Initial flash effect - Hearthstone has a pulse on buff */}
+          {/* Initial flash effect - Uses a pulse on buff */}
           <motion.div
             className="absolute rounded-full bg-yellow-100 bg-opacity-40 pointer-events-none"
             style={{
@@ -887,7 +887,7 @@ export const BuffEffect: React.FC<{
             }}
           />
         
-          {/* Main buff number container with Hearthstone's bounce effect */}
+          {/* Main buff number container with the game's bounce effect */}
           <motion.div
             className="absolute z-50 pointer-events-none flex"
             style={{
@@ -899,7 +899,7 @@ export const BuffEffect: React.FC<{
             initial={{ opacity: 0, y: 5, scale: 0.7 }}
             animate={{ 
               opacity: [0, 1, 1, 0.8, 0],
-              y: [-5, -20, -15, -10], // Hearthstone's characteristic bounce
+              y: [-5, -20, -15, -10], // the game's characteristic bounce
               scale: [0.7, 1.2, 1.1, 1]
             }}
             transition={{
@@ -908,10 +908,10 @@ export const BuffEffect: React.FC<{
               ease: "easeOut"
             }}
           >
-            {/* Attack buff - with Hearthstone styling */}
+            {/* Attack buff - with CCG styling */}
             {showAttack && (
               <div className="relative">
-                {/* Hearthstone buff text with 3D effect */}
+                {/* Buff text with 3D effect */}
                 <div className="text-3xl font-black relative" style={{ fontFamily: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif" }}>
                   {/* Dark shadow layer for depth */}
                   <div className="absolute text-black opacity-70" style={{ 
@@ -930,7 +930,7 @@ export const BuffEffect: React.FC<{
                     +{attackBuff}
                   </div>
                   
-                  {/* White inner highlight - Hearthstone uses this for better readability */}
+                  {/* White inner highlight - Uses this for better readability */}
                   <div className="absolute inset-0 text-white flex items-center justify-center" 
                     style={{ 
                       textShadow: '0 0 2px #ffffff', 
@@ -941,7 +941,7 @@ export const BuffEffect: React.FC<{
                   </div>
                 </div>
                 
-                {/* Hearthstone adds the "ATK" indicator below */}
+                {/* Adds the "ATK" indicator below */}
                 <div className="absolute -bottom-5 left-0 right-0 text-center">
                   <div className={`${attackColor} text-sm font-bold`}
                     style={{ textShadow: '0 0 2px #000000, 0 1px 1px #000000' }}>
@@ -951,10 +951,10 @@ export const BuffEffect: React.FC<{
               </div>
             )}
             
-            {/* Health buff - with Hearthstone styling */}
+            {/* Health buff - with CCG styling */}
             {showHealth && (
               <div className="relative">
-                {/* Hearthstone buff text with 3D effect */}
+                {/* Buff text with 3D effect */}
                 <div className="text-3xl font-black relative" style={{ fontFamily: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif" }}>
                   {/* Dark shadow layer for depth */}
                   <div className="absolute text-black opacity-70" style={{ 
@@ -995,7 +995,7 @@ export const BuffEffect: React.FC<{
             )}
           </motion.div>
           
-          {/* Hearthstone-style sparkle effects around buff */}
+          {/* CCG-style sparkle effects around buff */}
           {showEffects && (
             <>
               {/* Orbit particles - both attack and health buffs get these */}
@@ -1010,7 +1010,7 @@ export const BuffEffect: React.FC<{
                 const orbitX = Math.cos(angle) * distance;
                 const orbitY = Math.sin(angle) * distance;
                 
-                // Hearthstone uses different particle styles
+                // Uses different particle styles
                 const particleType = isAttackParticle ? '✦' : '✧';
                 const particleColor = isAttackParticle ? attackColor : healthColor;
                 
@@ -1033,7 +1033,7 @@ export const BuffEffect: React.FC<{
                     animate={{
                       opacity: [0, 0.9, 0],
                       scale: [0.5, 1.2, 0.8],
-                      rotate: [0, 180], // Hearthstone particles rotate
+                      rotate: [0, 180], // Particles rotate
                       x: [0, orbitX * 0.7, orbitX],
                       y: [0, orbitY * 0.7, orbitY - 15], // Slight upward bias
                     }}
@@ -1081,7 +1081,7 @@ export const BuffEffect: React.FC<{
   );
 };
 
-// Hero Power Effect - enhanced to match Hearthstone's style
+// Hero Power Effect - enhanced to match the game's style
 export const HeroPowerEffect: React.FC<{
   position: Position;
   heroClass: 'mage' | 'warrior' | 'paladin' | 'hunter';
@@ -1098,7 +1098,7 @@ export const HeroPowerEffect: React.FC<{
   const [showParticles, setShowParticles] = useState(false);
 
   useEffect(() => {
-    // Create a staged animation like Hearthstone
+    // Create a staged animation standard CCG style
     setShowRipple(true);
     
     // Show particles slightly after the icon appears
@@ -1119,8 +1119,8 @@ export const HeroPowerEffect: React.FC<{
     };
   }, [duration, onComplete]);
   
-  // Get Hearthstone hero power visual elements based on class
-  // These match the actual Hearthstone hero power colors and effects
+  // Get hero power visual elements based on class
+  // These match the hero power colors and effects for each class
   const getHeroPowerInfo = () => {
     switch (heroClass) {
       case 'mage':
@@ -1176,15 +1176,15 @@ export const HeroPowerEffect: React.FC<{
     }
   };
 
-  // Get Hearthstone-accurate visuals
+  // Get class-accurate visuals
   const heroPowerInfo = getHeroPowerInfo();
-  const particleCount = 15; // Hearthstone uses many particles
+  const particleCount = 15; // Uses many particles
 
   return (
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Initial hero power activation flash - Hearthstone has a distinct flash */}
+          {/* Initial hero power activation flash - Uses a distinct flash */}
           <motion.div
             className="absolute rounded-full pointer-events-none"
             style={{
@@ -1207,7 +1207,7 @@ export const HeroPowerEffect: React.FC<{
             }}
           />
           
-          {/* Main hero power icon with Hearthstone's shine and pop */}
+          {/* Main hero power icon with the game's shine and pop */}
           <motion.div
             className="absolute z-50 pointer-events-none"
             style={{
@@ -1218,7 +1218,7 @@ export const HeroPowerEffect: React.FC<{
             initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
             animate={{ 
               opacity: [0, 1, 1, 0.8, 0],
-              scale: [0.5, 1.4, 1.3, 1.2, 0.8], // Hearthstone's characteristic pop effect
+              scale: [0.5, 1.4, 1.3, 1.2, 0.8], // the game's characteristic pop effect
               rotate: [-15, 15, -5, 0], // The slight wobble just like in HS
             }}
             transition={{
@@ -1227,7 +1227,7 @@ export const HeroPowerEffect: React.FC<{
               ease: "easeOut",
             }}
           >
-            {/* Hearthstone hero power with glowing effect */}
+            {/* Hero power with glowing effect */}
             <div 
               className={`text-5xl font-bold ${heroPowerInfo.mainColor}`}
               style={{
@@ -1238,7 +1238,7 @@ export const HeroPowerEffect: React.FC<{
               {heroPowerInfo.icon}
             </div>
             
-            {/* Circular glow ring - Hearthstone has this */}
+            {/* Circular glow ring - Uses this */}
             <motion.div
               className="absolute rounded-full border-2 border-opacity-70 pointer-events-none"
               style={{
@@ -1257,7 +1257,7 @@ export const HeroPowerEffect: React.FC<{
             />
           </motion.div>
           
-          {/* Ripple effect - Hearthstone's hero powers create outward ripples */}
+          {/* Ripple effect - the game's hero powers create outward ripples */}
           {showRipple && (
             <>
               {[...Array(3)].map((_, i) => (
@@ -1287,11 +1287,11 @@ export const HeroPowerEffect: React.FC<{
             </>
           )}
           
-          {/* Particle effects - Hearthstone's hero powers have class-specific particles */}
+          {/* Particle effects - the game's hero powers have class-specific particles */}
           {showParticles && (
             <>
               {[...Array(particleCount)].map((_, i) => {
-                // Hearthstone scatters particles in all directions
+                // Scatters particles in all directions
                 const angle = (i / particleCount) * Math.PI * 2 + (Math.random() * 0.5 - 0.25);
                 const baseDistance = 20 + Math.random() * 60;
                 const finalDistance = baseDistance * (1 + Math.random() * 0.3);
@@ -1308,7 +1308,7 @@ export const HeroPowerEffect: React.FC<{
                 const symbol = heroPowerInfo.particleSymbols[Math.floor(Math.random() * heroPowerInfo.particleSymbols.length)];
                 const color = heroPowerInfo.particleColors[Math.floor(Math.random() * heroPowerInfo.particleColors.length)];
                 
-                // Vary particle size - Hearthstone has different sized particles
+                // Vary particle size - Uses different sized particles
                 const size = 10 + Math.random() * 10;
                 
                 return (
@@ -1378,7 +1378,7 @@ export const HeroPowerEffect: React.FC<{
   );
 };
 
-// Shield break effect for Divine Shield - enhanced to match Hearthstone
+// Shield break effect for Divine Shield - enhanced CCG-style
 export const ShieldBreakEffect: React.FC<{
   position: Position;
   duration?: number;
@@ -1394,7 +1394,7 @@ export const ShieldBreakEffect: React.FC<{
   const [showRipple, setShowRipple] = useState(false);
 
   useEffect(() => {
-    // Create sequence just like Hearthstone
+    // Create sequence standard CCG style
     // 1. Initial shield bubble
     setShowShield(true);
     
@@ -1423,14 +1423,14 @@ export const ShieldBreakEffect: React.FC<{
     };
   }, [duration, onComplete]);
 
-  // Generate shield particles - Hearthstone uses many small shards
+  // Generate shield particles - Uses many small shards
   const particleCount = 16;
   
   return (
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Hearthstone's golden shield bubble */}
+          {/* the game's golden shield bubble */}
           {showShield && (
             <motion.div
               className="absolute z-50 pointer-events-none"
@@ -1476,10 +1476,10 @@ export const ShieldBreakEffect: React.FC<{
             </motion.div>
           )}
           
-          {/* Shield break effect - Exactly like Hearthstone's sequence */}
+          {/* Shield break effect - Exactly standard CCG style's sequence */}
           {showShatter && (
             <>
-              {/* Initial bright flash - Hearthstone has a bright central flash */}
+              {/* Initial bright flash - Uses a bright central flash */}
               <motion.div
                 className="absolute rounded-full bg-white pointer-events-none"
                 style={{
@@ -1502,7 +1502,7 @@ export const ShieldBreakEffect: React.FC<{
                 }}
               />
               
-              {/* Main gold/blue flash ring that appears in Hearthstone */}
+              {/* Main gold/blue flash ring that appears in the game */}
               <motion.div
                 className="absolute rounded-full border-4 border-blue-300 pointer-events-none"
                 style={{
@@ -1526,14 +1526,14 @@ export const ShieldBreakEffect: React.FC<{
                 }}
               />
               
-              {/* Glass shards - Hearthstone's characteristic shield break particles */}
+              {/* Glass shards - the game's characteristic shield break particles */}
               {[...Array(particleCount)].map((_, i) => {
                 // Create a full circle of particles
                 const angle = (i * 360 / particleCount) + (Math.random() * 15 - 7.5);
                 const distance = 35 + Math.random() * 45;
                 const delay = (i % 3) * 0.03; // Stagger particles in groups of 3
                 
-                // Vary shard sizes - Hearthstone has different sized shards
+                // Vary shard sizes - Uses different sized shards
                 const size = 3 + Math.random() * 8;
                 const isLarger = Math.random() > 0.7;
                 const finalSize = isLarger ? size * 1.5 : size;
@@ -1543,7 +1543,7 @@ export const ShieldBreakEffect: React.FC<{
                 const x = Math.cos(radians) * distance;
                 const y = Math.sin(radians) * distance;
                 
-                // Hearthstone uses blue/gold/silver tinted shards
+                // Uses blue/gold/silver tinted shards
                 const colorType = Math.random();
                 let background;
                 
@@ -1560,7 +1560,7 @@ export const ShieldBreakEffect: React.FC<{
                   background = `rgba(${whiteValue}, ${whiteValue}, ${whiteValue}, ${0.7 + Math.random() * 0.3})`;
                 }
                 
-                // Hearthstone shards have different shapes
+                // Shards have different shapes
                 const shapeType = Math.floor(Math.random() * 3);
                 let clipPath;
                 
@@ -1623,7 +1623,7 @@ export const ShieldBreakEffect: React.FC<{
                 );
               })}
               
-              {/* Light rays that Hearthstone emits at break */}
+              {/* Light rays emitted at break */}
               {[...Array(8)].map((_, i) => {
                 const angle = i * 45;
                 const distance = 60;

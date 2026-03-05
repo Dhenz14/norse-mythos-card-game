@@ -1,5 +1,5 @@
 /**
- * Utility functions for the Dormant mechanic in Hearthstone
+ * Utility functions for the Dormant mechanic in the game
  * Dormant minions can't attack, be attacked, or take damage for a specified number of turns.
  * After the dormant period is over, they "awaken" and gain their full abilities.
  */

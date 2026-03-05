@@ -8,7 +8,7 @@ interface ManaCurveProps {
 
 /**
  * ManaCurve component - Visual representation of the deck's mana curve
- * in Hearthstone style with crystal headers and animated bars
+ * with crystal headers and animated bars
  */
 const ManaCurve: React.FC<ManaCurveProps> = ({ manaCurve, maxCardCount }) => {
   // Determine the maximum number of cards at any mana cost for scaling

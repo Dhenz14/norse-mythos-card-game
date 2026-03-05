@@ -4,7 +4,7 @@
  * SINGLE SOURCE OF TRUTH for attack eligibility in the game.
  * All attack checks MUST use these functions to ensure consistent behavior.
  * 
- * Based on Hearthstone rules:
+ * Attack rules:
  * - Minions have summoning sickness when first played
  * - Charge: Can attack immediately, including heroes
  * - Rush: Can attack minions immediately, heroes only after sickness wears off

@@ -573,7 +573,7 @@ const MINION_CARD_TO_ART: Record<string, string> = {
   "audhumla, the primordial cow": "valhallagrazer",// valhallagrazer → primordial cow
 
   // ========== DEMON/ABYSS ARTWORKS ==========
-  "demon lord of helheim": "/art/demon_lord_helheim.png",
+  "titan lord of helheim": "/art/demon_lord_helheim.png",
 
   // ========== GIANT/APE ARTWORKS (2) - ONE card each ==========
   "elder gorilla of the forest": "bergrisigorilla",// bergrisigorilla → gorilla
@@ -749,7 +749,7 @@ const VERCEL_CARD_ART: Record<string, string> = {
   "loki, trickster god": "/art/86f7-8cb16c88.webp",
   "primordial wyrm": "/art/bd55-987b9fd4.webp",
   "echo of the norns": "/art/bead-9bf434ac.webp",
-  "thanatos, demon form": "/art/450c-0fc107e1.webp",
+  "thanatos, titan form": "/art/450c-0fc107e1.webp",
   "high priest of hades": "/art/fba2-dd9bb4b7.webp",
   "corruptor of tartarus": "/art/681d-db2e93f0.webp",
   "bloodthirsty raider": "/art/4c5f-62ce228c.webp",

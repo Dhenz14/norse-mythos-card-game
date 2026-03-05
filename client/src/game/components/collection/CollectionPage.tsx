@@ -56,7 +56,7 @@ function getClassGradient(heroClass: string): string {
 		case 'shaman': return 'linear-gradient(135deg, #1e3a5f 0%, #0c4a6e 100%)';
 		case 'rogue': return 'linear-gradient(135deg, #1c1917 0%, #292524 100%)';
 		case 'death_knight': case 'deathknight': return 'linear-gradient(135deg, #164e63 0%, #0e7490 100%)';
-		case 'berserker': case 'demon_hunter': return 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)';
+		case 'berserker': return 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)';
 		default: return 'linear-gradient(135deg, #374151 0%, #1f2937 100%)';
 	}
 }

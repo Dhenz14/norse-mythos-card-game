@@ -353,7 +353,7 @@ function executeDrawDeathrattle(
   const player = newState.players[playerId];
   
   if (player.deck.length === 0) {
-    // In Hearthstone, drawing from an empty deck causes fatigue damage
+    // Drawing from an empty deck causes fatigue damage
     // For simplicity, we'll just skip the draw without causing fatigue damage
     return newState;
   }
@@ -425,7 +425,7 @@ function executeDamageDeathrattle(
   // Note: Chained deathrattles from AOE damage are NOT processed here to prevent infinite loops.
   // The game uses a sequential resolution model where deaths from deathrattles are moved to graveyard
   // but their deathrattles are deferred until the next combat phase check.
-  // This matches Hearthstone's behavior where simultaneous deaths resolve together.
+  // Simultaneous deaths resolve together.
   
   for (const playerKey of ['player', 'opponent'] as const) {
     const deadMinions = newState.players[playerKey].battlefield.filter(minion => (minion.currentHealth ?? 0) <= 0);

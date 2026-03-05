@@ -1,5 +1,5 @@
 /**
- * Class-specific minions for Hearthstone clone
+ * Class-specific minions for Echoes of Ymir
  * Each class gets unique minions with class identity mechanics
  */
 import { CardData, HeroClass } from '../types';

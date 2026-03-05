@@ -1,5 +1,5 @@
 /**
- * Spellburst cards for Hearthstone clone
+ * Spellburst cards for Norse mythos card game
  * Spellburst is a one-time effect that triggers after you cast a spell
  */
 import { CardData } from '../types';

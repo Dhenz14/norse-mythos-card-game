@@ -77,6 +77,7 @@ export default defineConfig(({ command }) => ({
           if (id.includes('/game/stores/gameStore')) return 'game-store';
           if (id.includes('/game/campaign/')) return 'campaign';
           if (id.includes('/data/blockchain/')) return 'blockchain';
+          return undefined;
         },
       },
     },

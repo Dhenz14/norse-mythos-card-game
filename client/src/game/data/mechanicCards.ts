@@ -1,6 +1,6 @@
 /**
  * Cards focused on Battlecry and Deathrattle mechanics
- * Designed to showcase these key Hearthstone mechanics
+ * Designed to showcase these key card game mechanics
  */
 import { CardData } from '../types';
 
@@ -674,7 +674,7 @@ export const   mechanicCards: CardData[] = [{
       health: 4,
       type: "minion",
       rarity: "common",
-      description: "Deathrattle: Put a random Demon from your hand into the battlefield.",
+      description: "Deathrattle: Put a random Titan from your hand into the battlefield.",
       keywords: ["deathrattle"],
       heroClass: "warlock",
       class: "Warlock",
@@ -683,7 +683,7 @@ export const   mechanicCards: CardData[] = [{
         type: "summon",
         targetType: "none",
         fromHand: true,
-        specificRace: "demon",
+        specificRace: "titan",
         summonCardId: 40030
       },
       collectible: true

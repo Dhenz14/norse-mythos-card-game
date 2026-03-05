@@ -18,7 +18,7 @@ import { norseMechanicSynergyCards } from './norseMechanicSynergyCards';
 import { deepKeywordCards } from './deepKeywordCards';
 
 // Core Set - Neutral Cards
-// Organized by rarity following Hearthstone conventions
+// Organized by rarity following standard CCG conventions
 // All cards use Norse/Greek mythology theming
 
 // ============================================
@@ -4671,7 +4671,7 @@ const legendaryNeutralMinions: CardData[] = [
     manaCost: 6,
     attack: 2,
     health: 2,
-    description: 'Deathrattle: Recruit a Demon.',
+    description: 'Deathrattle: Recruit a Titan.',
     rarity: 'rare',
     type: 'minion',
     keywords: ['deathrattle', 'recruit'],
@@ -5301,7 +5301,7 @@ const legendaryNeutralMinions: CardData[] = [
     set: 'core'
   },
   // ============================================
-  // HEARTHSTONE INSPIRED LEGENDARY CARDS (92001-92025)
+  // MYTHOLOGY LEGENDARY CARDS (92001-92025)
   // Norse/Greek Mythology Theming
   // ============================================
   {
@@ -5828,7 +5828,7 @@ const legendaryNeutralMinions: CardData[] = [
     }
   },
   // ============================================
-  // TOKEN CARDS FOR HEARTHSTONE INSPIRED LEGENDARIES
+  // TOKEN CARDS FOR MYTHOLOGY LEGENDARIES
   // ============================================
   {
     id: 92101,
@@ -5884,7 +5884,7 @@ const legendaryNeutralMinions: CardData[] = [
     set: 'core'
   },
   // ============================================
-  // HEARTHSTONE-INSPIRED NEUTRAL MINIONS (33026-33050)
+  // MYTHOLOGY-THEMED NEUTRAL MINIONS (33026-33050)
   // Norse/Greek mythology theming
   // ============================================
   {
@@ -6794,8 +6794,8 @@ const mythologyLegendaryMinions: CardData[] = [
 ];
 
 // ============================================
-// HEARTHSTONE-INSPIRED NORSE/GREEK MYTHOLOGY CARDS
-// Iconic Hearthstone cards reimagined with Norse/Greek theming
+// NORSE/GREEK MYTHOLOGY CARDS
+// Iconic cards reimagined with Norse/Greek theming
 // ============================================
 const mythologyNorseCards: CardData[] = [
   {
@@ -6995,13 +6995,13 @@ const mythologyNorseCards: CardData[] = [
   },
   {
     id: 32097,
-    name: 'Demon Lord of Helheim',
+    name: 'Titan Lord of Helheim',
     manaCost: 9,
     attack: 9,
     health: 7,
     type: 'minion',
     rarity: 'mythic',
-    description: 'Your other Demons have +2/+2. Your hero is Immune.',
+    description: 'Your other Titans have +2/+2. Your hero is Immune.',
     flavorText: 'Ruler of the Norse underworld, feared by gods and mortals alike.',
     race: 'Titan',
     class: 'Neutral',
@@ -8202,7 +8202,7 @@ const beastTokens: CardData[] = [
   }
 ];
 
-// Token cards for Hearthstone-inspired cards
+// Token cards for mythology-themed cards
 const mythologyTokens: CardData[] = [
   {
     id: 32076,
@@ -9063,7 +9063,7 @@ const controlRemovalCards: CardData[] = [
     id: 33241,
     name: 'Dread Infernal of Surtr',
     description: 'Battlecry: Deal 1 damage to ALL other characters.',
-    flavorText: 'Surtr\'s demons herald the flames of Ragnarok.',
+    flavorText: 'Surtr\'s titans herald the flames of Ragnarok.',
     type: 'minion',
     rarity: 'common',
     manaCost: 6,
@@ -9366,7 +9366,7 @@ const cheatRecruitRampCards: CardData[] = [
   {
     id: 33255,
     name: 'Shadow Thrall of Hel',
-    description: 'Deathrattle: Recruit a Demon.',
+    description: 'Deathrattle: Recruit a Titan.',
     flavorText: 'Bound to dark spirits, his death releases something far worse.',
     type: 'minion',
     rarity: 'rare',
@@ -9379,7 +9379,7 @@ const cheatRecruitRampCards: CardData[] = [
     collectible: true,
     deathrattle: {
       type: 'recruit',
-      recruitCondition: 'demon'
+      recruitCondition: 'titan'
     }
   },
   {
@@ -9440,8 +9440,8 @@ const cheatRecruitRampCards: CardData[] = [
   {
     id: 33259,
     name: "Skull of the Man'ari",
-    description: 'At the start of your turn, Recruit a Demon.',
-    flavorText: 'The skull whispers names of demons imprisoned in the deck.',
+    description: 'At the start of your turn, Recruit a Titan.',
+    flavorText: 'The skull whispers names of titans imprisoned in the deck.',
     type: 'weapon',
     rarity: 'epic',
     manaCost: 5,
@@ -9610,7 +9610,7 @@ const cheatRecruitRampCards: CardData[] = [
   {
     id: 33269,
     name: 'Voidcaller of Helheim',
-    description: 'Deathrattle: Put a random Demon from your hand into the battlefield.',
+    description: 'Deathrattle: Put a random Titan from your hand into the battlefield.',
     flavorText: 'In death, the caller opens the gate for darker things.',
     type: 'minion',
     rarity: 'common',
@@ -9624,7 +9624,7 @@ const cheatRecruitRampCards: CardData[] = [
     collectible: true,
     deathrattle: {
       type: 'summon_from_hand',
-      summonCondition: 'demon'
+      summonCondition: 'titan'
     }
   },
   {

@@ -40,7 +40,7 @@ export function initializeEchoEffect(card: CardInstance): CardInstance {
 
 /**
  * Create an Echo copy of a card after it's played
- * In Hearthstone, Echo copies maintain the original cost of the card,
+ * By design, Echo copies maintain the original cost of the card,
  * and any cost modifications apply separately to the copy
  * @param state Current game state
  * @param playedCard Card that was played
@@ -64,7 +64,7 @@ export function createEchoCopy(
   // Important: Reset certain attributes for the Echo copy
   const originalCard = { ...structuredClone(playedCard) };
   
-  // Per Hearthstone rules, Echo copies use the base card's original cost
+  // By design, Echo copies use the base card's original cost
   // but retain other modified properties
   const echoCopy: CardInstance = {
     ...originalCard,
@@ -123,7 +123,7 @@ export function createEchoCopy(
 
 /**
  * Handle Echo cards at the end of turn
- * In Hearthstone, Echo copies are discarded at the end of the turn they were created
+ * By design, Echo copies are discarded at the end of the turn they were created
  * @param state Current game state
  * @returns Updated game state with Echo copies discarded
  */

@@ -14,7 +14,7 @@ type LowercaseHeroClass = 'mage' | 'warrior' | 'priest' | 'rogue' | 'paladin' |
   'necromancer' | 'neutral';
 
 /**
- * Chess piece to Hearthstone hero class mapping
+ * Chess piece to hero class mapping
  */
 export const PIECE_HERO_CLASS_MAP: Record<ChessPieceType, HeroClass | null> = {
   queen: 'mage',
@@ -261,7 +261,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-magni',
       name: 'Magni',
-      heroClass: 'deathknight',
+      heroClass: 'DeathKnight',
       description: 'God of Strength: Buff ally attack for devastating blows.',
       fixedCardIds: [],
       element: 'fire',
@@ -271,7 +271,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-brakki',
       name: 'Brakki',
-      heroClass: 'deathknight',
+      heroClass: 'DeathKnight',
       description: 'Forge Master: Buff weapons and armor for your army.',
       fixedCardIds: [],
       element: 'fire',
@@ -381,7 +381,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-thryma',
       name: 'Thryma',
-      heroClass: 'deathknight',
+      heroClass: 'DeathKnight',
       description: 'Storm Caller: Channel lightning and frost to shatter enemy lines.',
       fixedCardIds: [],
       element: 'electric',

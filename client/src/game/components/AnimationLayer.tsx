@@ -376,7 +376,7 @@ export const AnimationLayer: React.FC = () => {
 
 // All necessary imports are now at the top of the file
 
-// Spell Damage Popup - Hearthstone-style prominent notification
+// Spell Damage Popup - prominent notification
 const SpellDamagePopup: React.FC<{ animation: Animation }> = ({ animation }) => {
   const damage = animation.damage || animation.value || 0;
   const spellName = animation.spellName || animation.card?.name || 'Spell';

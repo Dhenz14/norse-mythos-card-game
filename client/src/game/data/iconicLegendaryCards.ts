@@ -1,12 +1,12 @@
 /**
- * Iconic legendary cards from Hearthstone's history
+ * Iconic mythic cards
  * A collection of some of the most memorable legendaries from the classic sets and expansions
  */
 import { CardData } from '../types';
 
 /**
  * Collection of iconic legendary minions
- * These cards have had significant impact on the Hearthstone meta over the years
+ * These cards have had significant impact on the meta over the years
  */
 export const   iconicLegendaryCards: CardData[] = [{
       id: 95101,

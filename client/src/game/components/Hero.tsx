@@ -190,7 +190,7 @@ export const Hero: React.FC<HeroProps> = ({
 
   return (
     <div className="flex flex-col items-center">
-      {/* Hero portrait with frame - Hearthstone style */}
+      {/* Hero portrait with frame */}
       <div 
         ref={heroRef}
         className={`w-20 h-20 bg-gradient-to-b ${heroClassColor} rounded-full flex items-center justify-center text-white font-bold shadow-lg border-2 transition-all hover:scale-105 relative overflow-hidden ${onHeroClick && !isInteractionDisabled ? 'cursor-pointer' : 'cursor-default'}`}

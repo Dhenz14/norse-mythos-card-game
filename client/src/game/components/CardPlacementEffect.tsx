@@ -2,7 +2,7 @@
  * CardPlacementEffect Component
  * 
  * This creates a burst of particles/sparkles when a card is successfully
- * placed on the board, inspired by Hearthstone's visual effects.
+ * placed on the board.
  */
 import React, { useRef, useEffect } from 'react';
 

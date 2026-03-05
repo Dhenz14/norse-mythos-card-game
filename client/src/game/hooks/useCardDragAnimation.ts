@@ -12,7 +12,7 @@ import { Position } from '../types/Position';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 
 /**
- * Hook for managing card drag animations with a Hearthstone-style curved motion path
+ * Hook for managing card drag animations with a CCG-style curved motion path
  */
 export function useCardDragAnimation() {
   // Animation state

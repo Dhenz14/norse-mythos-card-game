@@ -4787,7 +4787,7 @@ export function registerNorseMythologyCards(): void {
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
-    .race("demon")
+    .race("Titan")
     .addKeyword("charge")
     .addKeyword("battlecry")
     .battlecry({
@@ -4839,7 +4839,7 @@ export function registerNorseMythologyCards(): void {
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
-    .race("demon")
+    .race("Titan")
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_and_burn",
@@ -5043,7 +5043,7 @@ export function registerNorseMythologyCards(): void {
     .type("minion")
     .class("Neutral")
     .heroClass("neutral")
-    .race("demon")
+    .race("Titan")
     .addKeyword("charge")
     .addKeyword("battlecry")
     .battlecry({

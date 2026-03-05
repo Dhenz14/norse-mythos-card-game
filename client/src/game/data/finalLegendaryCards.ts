@@ -1,12 +1,12 @@
 /**
- * Final batch of legendary cards for Hearthstone clone
- * Powerful and unique cards from various Hearthstone expansions
+ * Final batch of legendary cards for Echoes of Ymir
+ * Powerful and unique cards from various card expansions
  */
 import { CardData } from '../types';
 
 /**
  * Collection of final legendary cards
- * Includes some of the most impactful legendary cards from Hearthstone
+ * Includes some of the most impactful legendary cards from the game
  */
 export const finalLegendaryCards: CardData[] = [
   {

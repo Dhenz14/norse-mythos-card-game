@@ -9,7 +9,7 @@
  * 
  * The AnimationOverlay component handles rendering via portal automatically.
  * 
- * A dramatic Hearthstone-style animation that plays when a minion is summoned
+ * A dramatic CCG-style animation that plays when a minion is summoned
  * to the battlefield. Features burst effects, particles, and rarity-based styling.
  * 
  * Uses React Portal to render outside of transformed containers to ensure

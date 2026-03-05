@@ -196,16 +196,16 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 17102,
-    name: "Demon Sense",
+    name: "Titan Sense",
     manaCost: 3,
-    description: "Draw 2 Demons from your deck.",
+    description: "Draw 2 Titans from your deck.",
     type: "spell",
     rarity: "common",
     class: "Warlock",
     spellEffect: {
       type: "draw_specific",
       count: 2,
-      condition: "demon"
+      condition: "titan"
     },
     collectible: true,
     set: "core"
@@ -214,13 +214,13 @@ export const warlockCards: CardData[] = [
     id: 17103,
     name: "Void Pact",
     manaCost: 0,
-    description: "Destroy a Demon. Restore 5 Health to your hero.",
+    description: "Destroy a Titan. Restore 5 Health to your hero.",
     type: "spell",
     rarity: "common",
     class: "Warlock",
     spellEffect: {
       type: "destroy",
-      targetType: "demon_only",
+      targetType: "titan_only",
       requiresTarget: true
     },
     collectible: true,
@@ -262,7 +262,7 @@ export const warlockCards: CardData[] = [
     manaCost: 1,
     attack: 2,
     health: 2,
-    description: "A mischievous demon.",
+    description: "A mischievous titan.",
     type: "minion",
     rarity: "common",
     class: "Warlock",
@@ -294,12 +294,12 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 20027,
-    name: "Hades, Demon Reaver",
+    name: "Hades, Titan Reaver",
     manaCost: 10,
     type: "hero",
     rarity: "mythic",
-    description: "Battlecry: Summon all friendly Demons that died this game.",
-    flavorText: "King of the underworld, he commands the demons of the dead.",
+    description: "Battlecry: Summon all friendly Titans that died this game.",
+    flavorText: "King of the underworld, he commands the fallen titans.",
     keywords: ["battlecry"],
     class: "Warlock",
     armor: 5,
@@ -310,7 +310,7 @@ export const warlockCards: CardData[] = [
       requiresTarget: false,
       targetType: "none",
       fromGraveyard: true,
-      conditionalTarget: "demon"
+      conditionalTarget: "titan"
     }
   },
   {
@@ -321,8 +321,8 @@ export const warlockCards: CardData[] = [
     durability: 3,
     type: "weapon",
     rarity: "mythic",
-    description: "At the start of your turn, summon a Demon from your hand.",
-    flavorText: "The primordial darkness gives form to demons.",
+    description: "At the start of your turn, summon a Titan from your hand.",
+    flavorText: "The primordial darkness gives form to titans.",
     keywords: [],
     class: "Warlock",
     collectible: true,
@@ -416,13 +416,13 @@ export const warlockCards: CardData[] = [
     manaCost: 3,
     type: "spell",
     rarity: "common",
-    description: "Discover a Demon.",
+    description: "Discover a Titan.",
     keywords: ["discover"],
     class: "Warlock",
     spellEffect: {
       type: "discover",
       requiresTarget: false,
-      discoveryPoolId: "demon",
+      discoveryPoolId: "titan",
       targetType: "none"
     },
     collectible: true,
@@ -455,7 +455,7 @@ export const warlockCards: CardData[] = [
     type: "spell",
     rarity: "rare",
     description: "When you play or discard this, deal 4 damage to a random enemy.",
-    flavorText: "The demon lord's fury strikes from beyond.",
+    flavorText: "The titan lord's fury strikes from beyond.",
     class: "Warlock",
     spellEffect: {
       type: "damage_random_enemy",
@@ -471,7 +471,7 @@ export const warlockCards: CardData[] = [
     manaCost: 5,
     type: "spell",
     rarity: "epic",
-    description: "Deal 5 damage to a minion. If it dies, summon a 5/5 Demon.",
+    description: "Deal 5 damage to a minion. If it dies, summon a 5/5 Titan.",
     flavorText: "A dark gift from the void itself.",
     class: "Warlock",
     spellEffect: {
@@ -527,19 +527,19 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 17109,
-    name: "Demon's Heart",
+    name: "Titan's Heart",
     manaCost: 5,
     type: "spell",
     rarity: "epic",
-    description: "Deal 5 damage to a minion. If it's a friendly Demon, give it +5/+5 instead.",
-    flavorText: "The heart of a demon beats with dark power.",
+    description: "Deal 5 damage to a minion. If it's a friendly Titan, give it +5/+5 instead.",
+    flavorText: "The heart of a titan beats with dark power.",
     class: "Warlock",
     spellEffect: {
       type: "conditional_effect",
       targetType: "minion_only",
       requiresTarget: true,
       condition: {
-        type: "is_friendly_demon"
+        type: "is_friendly_titan"
       },
       trueEffect: {
         type: "buff",
@@ -564,7 +564,7 @@ export const warlockCards: CardData[] = [
     race: "Titan",
     rarity: "common",
     description: "Whenever you discard a card, draw a card.",
-    flavorText: "The imp serves as a living conduit to the demon prince.",
+    flavorText: "The imp serves as a living conduit to the titan prince.",
     class: "Warlock",
     triggeredEffect: {
       type: "draw_on_discard",
@@ -642,7 +642,7 @@ export const warlockCards: CardData[] = [
     manaCost: 5,
     type: "spell",
     rarity: "epic",
-    description: "Deal 2 damage to a character. If that kills it, summon a random Demon.",
+    description: "Deal 2 damage to a character. If that kills it, summon a random Titan.",
     flavorText: "From death comes terrible new life.",
     class: "Warlock",
     spellEffect: {
@@ -651,7 +651,7 @@ export const warlockCards: CardData[] = [
       targetType: "any",
       requiresTarget: true,
       deathEffect: {
-        type: "summon_random_demon"
+        type: "summon_random_titan"
       }
     },
     collectible: true,
@@ -722,12 +722,12 @@ export const warlockCards: CardData[] = [
     manaCost: 2,
     type: "spell",
     rarity: "common",
-    description: "Each player transforms a random minion in their hand into a Demon.",
+    description: "Each player transforms a random minion in their hand into a Titan.",
     flavorText: "Everyone deserves a chance to embrace chaos.",
     class: "Warlock",
     spellEffect: {
       type: "transform_random_in_hand",
-      transformType: "demon",
+      transformType: "titan",
       affectBothPlayers: true
     },
     collectible: true,
@@ -899,13 +899,13 @@ export const warlockCards: CardData[] = [
     health: 4,
     type: "minion",
     rarity: "common",
-    description: "Battlecry: Give your Demons +1/+1.",
-    flavorText: "She adorns her demons with crystals of power.",
+    description: "Battlecry: Give your Titans +1/+1.",
+    flavorText: "She adorns her titans with crystals of power.",
     keywords: ["battlecry"],
     class: "Warlock",
     battlecry: {
       type: "buff_tribe",
-      tribe: "demon",
+      tribe: "titan",
       buffs: {
         attack: 1,
         health: 1
@@ -1004,7 +1004,7 @@ export const warlockCards: CardData[] = [
     health: 5,
     type: "minion",
     rarity: "rare",
-    description: "Battlecry: Give a friendly Demon +2/+2.",
+    description: "Battlecry: Give a friendly Titan +2/+2.",
     flavorText: "His whispers carry promises of power.",
     keywords: ["battlecry"],
     class: "Warlock",
@@ -1048,14 +1048,14 @@ export const warlockCards: CardData[] = [
     type: "minion",
     rarity: "mythic",
     race: "Titan",
-    description: "Battlecry: If your deck has no duplicates, summon all Demons from your hand.",
-    flavorText: "Freed from his chains in Tartarus, he commands the demon legions.",
+    description: "Battlecry: If your deck has no duplicates, summon all Titans from your hand.",
+    flavorText: "Freed from his chains in Tartarus, he commands the titan legions.",
     keywords: ["battlecry"],
     class: "Warlock",
     battlecry: {
       type: "summon_from_hand",
       condition: "no_duplicates",
-      targetType: "demon"
+      targetType: "titan"
     },
     collectible: true,
     set: "core"

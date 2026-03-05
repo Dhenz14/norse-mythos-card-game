@@ -281,7 +281,7 @@ export type SummonEffectType =
   | 'summon_rush_minions'
   | 'summon_stored'
   | 'conditional_summon'
-  | 'conditional_summon_hand_demons'
+  | 'conditional_summon_hand_titans'
   | 'self_damage_and_summon'
   | 'sacrifice_summon'
   | 'resurrect'

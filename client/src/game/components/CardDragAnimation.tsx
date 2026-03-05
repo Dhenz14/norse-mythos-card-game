@@ -1,7 +1,7 @@
 /**
  * CardDragAnimation Component
  * 
- * This component creates smooth Hearthstone-style card dragging animations.
+ * This component creates smooth CCG-style card dragging animations.
  * It's responsible for:
  * 1. Handling pointer events for card drag and drop
  * 2. Visual feedback during dragging (scale, rotation, etc.)

@@ -525,7 +525,7 @@ const warriorTokens: CardData[] = [
     id: 15018,
     name: 'Muspel Infernal',
     description: '',
-    flavorText: 'Demon from the fire realm of Muspelheim.',
+    flavorText: 'Titan from the fire realm of Muspelheim.',
     type: 'minion',
     rarity: 'common',
     manaCost: 1,

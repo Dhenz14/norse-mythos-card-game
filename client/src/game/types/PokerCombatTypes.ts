@@ -303,7 +303,7 @@ export interface PlayerCombatState {
   currentAction?: CombatAction;
   hpCommitted: number;      // Total HP at risk (blind + ante + bets)
   preBlindHealth: number;   // HP BEFORE blinds/antes were deducted (for proper HP persistence back to chess)
-  heroArmor: number;        // Armor that absorbs damage before HP (like Hearthstone), granted by elemental advantage (+20)
+  heroArmor: number;        // Armor that absorbs damage before HP, granted by elemental advantage (+20)
   statusEffects: StatusEffect[];
   mana: number;
   maxMana: number;

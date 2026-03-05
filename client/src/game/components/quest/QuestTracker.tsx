@@ -1,6 +1,6 @@
 /**
  * QuestTracker Component
- * Displays active quests with Hearthstone-style progress tracking
+ * Displays active quests with CCG-style progress tracking
  * 
  * Features:
  * - Shows quest name, condition, and progress

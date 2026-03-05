@@ -102,7 +102,7 @@ export const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
   const hasLifesteal = cardData.keywords?.includes('lifesteal') || false;
   const isRush = cardData.keywords?.includes('rush') || false;
   
-  // Responsive card sizing using aspect-ratio (standard Hearthstone card ratio: 230/342)
+  // Responsive card sizing using aspect-ratio (standard card ratio: 230/342)
   
   return (
     <motion.div

@@ -77,7 +77,7 @@ export function addCardToHand(state: GameState, playerType: 'player' | 'opponent
   const newState = structuredClone(state) as GameState;
   const player = newState.players[playerType];
   
-  // Check if the hand is full (max 9 cards like Hearthstone)
+  // Check if the hand is full (max 9 cards by design)
   if (player.hand.length >= MAX_HAND_SIZE) {
     queueCardBurnAnimation(cardData.name, playerType);
     return newState;

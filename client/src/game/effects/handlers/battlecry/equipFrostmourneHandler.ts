@@ -31,7 +31,7 @@ export default function executeEquipFrostmourne(
         manaCost: 7,
         type: 'weapon',
         rarity: 'mythic',
-        heroClass: 'deathknight',
+        heroClass: 'DeathKnight',
         attack: weaponAttack,
         durability: weaponDurability,
         deathrattle: summonOnDestroy ? {

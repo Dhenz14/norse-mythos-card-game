@@ -440,7 +440,7 @@ Poker Spells are cast during the **Spell/Pet Phase** (before the Faith phase). E
 ### Turn Structure
 
 1. **Start of Turn**
-   - Draw a card
+   - Draw a card (if deck is empty, no card is drawn and no damage is dealt)
    - Gain a mana crystal (max 10)
    - Refresh mana crystals
    - Unfreeze frozen minions
@@ -833,7 +833,7 @@ For Ragnarok Chess mode, select heroes for each piece slot:
 | **Burn** | Cards drawn with a full hand are destroyed |
 | **Debuff** | Negative stat modification (-Attack, -Health) |
 | **Face** | Attacking the enemy hero directly |
-| **Fatigue** | Damage taken when drawing from empty deck |
+| **Empty Deck** | When your deck runs out, you simply cannot draw more cards. There is no fatigue damage — plan your resources wisely |
 | **Hand** | Cards currently held (max 9) |
 | **Hole Cards** | Your 2 private poker cards |
 | **HP** | Health Points |

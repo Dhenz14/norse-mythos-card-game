@@ -2227,7 +2227,7 @@ export const GameBoard: React.FC<{}> = () => {
       {/* AI Attack Animation Popup - shows when opponent minions attack */}
       <AIAttackAnimationProcessor />
       
-      {/* Hearthstone-style game board layout with strict proportional containers */}
+      {/* Game board layout with strict proportional containers */}
       <div className="game-grid-container w-full h-full">
         {/* Top opponent area - fixed at 20% height */}
         <GameAreaContainer areaType="opponent" className="z-index-base">

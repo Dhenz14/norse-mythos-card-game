@@ -1,5 +1,5 @@
 /**
- * Additional legendary cards for Hearthstone clone
+ * Additional legendary cards for Echoes of Ymir
  * More powerful and unique cards with game-changing effects
  */
 import { CardData } from '../types';

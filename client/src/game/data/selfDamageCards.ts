@@ -81,19 +81,19 @@ export const selfDamageCards: CardData[] = [
     health: 4,
     type: "minion",
     rarity: "common",
-    description: "Battlecry: Give your Demons +1/+1.",
+    description: "Battlecry: Give your Titans +1/+1.",
     keywords: ["battlecry"],
     heroClass: "warlock",
     class: "Warlock",
     collectible: true,
     battlecry: {
       type: "buff_tribe", // Using a standard type for tribe buffs
-      tribe: "demon", // The tribe to buff
+      tribe: "titan", // The tribe to buff
       buffs: {
         attack: 1,
         health: 1
       },
-      targetType: BattlecryTargetType.NONE // No specific target - affects all friendly demons
+      targetType: BattlecryTargetType.NONE // No specific target - affects all friendly titans
     }
   },
   {
@@ -184,7 +184,7 @@ export const selfDamageCards: CardData[] = [
     health: 5,
     type: "minion",
     rarity: "rare",
-    description: "Battlecry: Corrupt a friendly Demon, giving it +2/+2.",
+    description: "Battlecry: Corrupt a friendly Titan, giving it +2/+2.",
     keywords: ["battlecry"],
     heroClass: "warlock",
     class: "Warlock",

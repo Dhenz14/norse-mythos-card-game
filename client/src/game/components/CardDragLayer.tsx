@@ -3,7 +3,7 @@
  * 
  * This component handles the smooth animation of cards when played or moved between areas.
  * It creates a "floating" card that animates from start to target position
- * with a Hearthstone-style curved motion path and rotation.
+ * with a CCG-style curved motion path and rotation.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { CardInstance } from '../types';
@@ -21,7 +21,7 @@ interface CardDragLayerProps {
 /**
  * CardDragLayer handles the smooth animation of cards between positions
  * It creates a "floating" card that moves from start to target position
- * with a Hearthstone-style curved motion path and rotation
+ * with a CCG-style curved motion path and rotation
  */
 export const CardDragLayer: React.FC<CardDragLayerProps> = ({
   card,

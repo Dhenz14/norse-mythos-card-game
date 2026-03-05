@@ -1145,7 +1145,7 @@ function applyKeywordToMinion(minion: CardInstance, keyword: string): void {
 
 /**
  * Mage hero power: Deal 1 damage to any target
- * (Default Hearthstone Fireblast - used when no Norse hero is active)
+ * (Default Fireblast - used when no Norse hero is active)
  */
 function executeMagePower(
   state: GameState, 

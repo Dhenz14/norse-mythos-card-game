@@ -1,5 +1,5 @@
 /**
- * Secret cards for Hearthstone clone
+ * Rune (secret) cards for Norse mythos card game
  * Secrets are hidden spells that trigger automatically when specific conditions are met
  */
 import { CardData, SecretTriggerType } from '../types';

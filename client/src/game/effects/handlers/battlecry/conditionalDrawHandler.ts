@@ -102,8 +102,8 @@ function checkCondition(
         return r === 'automaton' || r === 'mech';
       });
 
-    case 'control_demon':
     case 'control_titan':
+    case 'control_demon':
       return context.currentPlayer.board.some(ci => {
         const r = (ci.card.race || '').toLowerCase();
         return r === 'titan' || r === 'demon';

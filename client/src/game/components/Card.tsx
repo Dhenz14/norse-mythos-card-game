@@ -71,7 +71,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
     cardData.health !== undefined && 
     currentHealth < cardData.health;
   
-  // Responsive card sizing using aspect-ratio (standard Hearthstone card ratio: 230/342)
+  // Responsive card sizing using aspect-ratio (standard card ratio: 230/342)
   
   // State for card images and hover state
   const [cardImage, setCardImage] = useState<string | null>(null);
@@ -762,7 +762,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
                 ) : null}
               </div>
             ) : (
-              /* Icon-only display for minions on battlefield (Hearthstone style) */
+              /* Icon-only display for minions on battlefield */
               effectIcons.length > 0 && (
                 <div 
                   className="flex flex-wrap justify-center gap-1 py-1"

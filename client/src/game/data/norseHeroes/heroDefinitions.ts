@@ -1139,7 +1139,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     weakness: 'dark',
     startingHealth: 100,
     description: 'Brother of Odin who channels divine wrath to purge darkness.',
-    lore: 'The third creator god who gave humanity the gift of speech and the five senses. But Ve\'s true nature was always war — a burning fury tempered by divine purpose. When demons crawled from the cracks between worlds, Ve took up the blade.',
+    lore: 'The third creator god who gave humanity the gift of speech and the five senses. But Ve\'s true nature was always war — a burning fury tempered by divine purpose. When dark spirits crawled from the cracks between worlds, Ve took up the blade.',
     gender: 'male',
     hasSpells: true,
     heroClass: 'berserker',

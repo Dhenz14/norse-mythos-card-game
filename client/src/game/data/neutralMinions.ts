@@ -1,11 +1,11 @@
 /**
- * Neutral minions for Hearthstone clone
+ * Neutral minions for Echoes of Ymir
  * Expanding the neutral minion collection with more iconic cards
  */
 import { CardData, BattlecryTargetType } from '../types';
 
 /**
- * Collection of iconic neutral minions from Hearthstone
+ * Collection of iconic neutral minions from the game
  * This includes a mix of common, rare, epic, and some additional legendary minions
  */
 export const   neutralMinions: CardData[] = [{
@@ -571,7 +571,7 @@ export const   neutralMinions: CardData[] = [{
   {
   id: 30029,
   
-  name: "Demon Bound Soul",
+  name: "Titan Bound Soul",
   manaCost: 3,
   
   attack: 3,
@@ -771,7 +771,7 @@ export const   neutralMinions: CardData[] = [{
   {
   id: 30037,
   
-  name: "Demon-Cracked Colossus",
+  name: "Titan-Cracked Colossus",
   manaCost: 7,
   
   attack: 7,
@@ -859,7 +859,7 @@ export const   neutralMinions: CardData[] = [{
   {
   id: 30041,
   
-  name: "Jumbo Demon",
+  name: "Muspel Giant",
   manaCost: 10,
   
   attack: 8,
@@ -868,7 +868,7 @@ export const   neutralMinions: CardData[] = [{
   type: "minion",
   rarity: "epic",
   
-  description: "Costs (1) less for each friendly Demon that died this game.",
+  description: "Costs (1) less for each friendly Titan that died this game.",
   keywords: [],
   
   heroClass: "neutral", race: "none",

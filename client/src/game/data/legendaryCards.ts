@@ -141,7 +141,7 @@ export const legendaryCards: CardData[] = [
     health: 8,
     type: "minion",
     rarity: "mythic",
-    description: "Battlecry: Transform into Demon Form, gaining +5 Attack and Lifesteal this turn.",
+    description: "Battlecry: Transform into Titan Form, gaining +5 Attack and Lifesteal this turn.",
     keywords: ["battlecry"],
     heroClass: "berserker",
     class: "Berserker",
@@ -398,7 +398,7 @@ export const legendaryCards: CardData[] = [
       requiresTarget: false,
       targetType: "none",
       fromGraveyard: true,
-      conditionalTarget: "demon"
+      conditionalTarget: "titan"
     },
     collectible: true
   },
@@ -492,7 +492,7 @@ export const legendaryCards: CardData[] = [
     durability: 3,
     type: "weapon",
     rarity: "mythic",
-    description: "At the start of your turn, summon a Demon from your hand.",
+    description: "At the start of your turn, summon a Titan from your hand.",
     keywords: [],
     heroClass: "warlock",
     class: "Warlock",

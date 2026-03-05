@@ -13,6 +13,7 @@ import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { hasKeyword } from './cards/keywordUtils';
+import { executeSpell } from './spells/spellUtils';
 
 interface CThunState {
   baseAttack: number;
@@ -383,9 +384,11 @@ export function executeYoggSaronBattlecry(
       })
     );
     
-    // TODO: Implement the actual spell casting with random targets
-    // This would need integration with the spell execution system
-    // For now, we'll just log the spells that would be cast
+    // Execute the spell effect if the card has one
+    if ((randomSpell as any).spellEffect) {
+      const fakeInstance = { instanceId: `yogg-${i}`, card: randomSpell, currentHealth: 0, canAttack: false, isPlayed: true, isSummoningSick: false, attacksPerformed: 0 } as CardInstance;
+      newState = executeSpell(newState, fakeInstance);
+    }
   }
   
   return newState;

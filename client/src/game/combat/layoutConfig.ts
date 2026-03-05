@@ -86,7 +86,7 @@ export const LAYOUT_ZONES = {
   /**
    * PLAYER HAND ZONE
    * Bottom-center of the screen
-   * Displays playable cards with Hearthstone-style fanning effect
+   * Displays playable cards with fanning effect
    */
   playerHand: {
     left: '50%',
@@ -291,7 +291,7 @@ export const ZONE_HEIGHTS = {
 
 /**
  * HAND LAYOUT CONFIGURATION
- * Hearthstone-style overlapping fan effect for cards
+ * Overlapping fan effect for cards
  * Controls spacing, rotation, and hover behavior
  */
 export const HAND_LAYOUT = {

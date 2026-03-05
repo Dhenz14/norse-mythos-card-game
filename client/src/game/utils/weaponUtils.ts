@@ -291,7 +291,7 @@ export function canPlayerAttackWithWeapon(state: GameState, playerType: 'player'
 
 /**
  * Check if a target is valid for a weapon attack
- * In Hearthstone, if there are Taunt minions, you must attack those first
+ * If there are Taunt minions, you must attack those first
  * @param state Game state
  * @param targetId Target ID
  * @param targetType Type of target ('minion' or 'hero')

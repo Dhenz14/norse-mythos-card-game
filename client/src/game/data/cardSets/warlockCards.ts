@@ -2,7 +2,7 @@
  * Warlock Cards Collection
  * 
  * This file contains Warlock-specific cards using the card builder API.
- * Warlock cards often trade health for power, summon demons, and control the board through dark magic.
+ * Warlock cards often trade health for power, summon titans, and control the board through dark magic.
  * Key mechanics include Life Tap (drawing at the cost of health) and Discard synergies.
  */
 import { debug } from '../../config/debugConfig';
@@ -16,7 +16,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
  * Card IDs: 
  * - Regular Warlock cards: 17xxx series
  * - Warlock spell cards: 37xxx series
- * - Demon-specific tokens: 17xxx series (usually 500+)
+ * - Titan-specific tokens: 17xxx series (usually 500+)
  */
 export function registerWarlockCards(): void {
   if (IS_DEV) debug.card('Registering Warlock cards...');
@@ -29,7 +29,7 @@ export function registerWarlockCards(): void {
     .attack(1)
     .health(3)
     .type("minion")
-    .race("demon")
+    .race("Titan")
     .rarity("common")
     .description("Taunt")
     .heroClass("warlock")
@@ -83,7 +83,7 @@ export function registerWarlockCards(): void {
     .attack(5)
     .health(7)
     .type("minion")
-    .race("demon")
+    .race("Titan")
     .rarity("rare")
     .description("Charge. Battlecry: Discard two random cards.")
     .heroClass("warlock")
@@ -151,7 +151,7 @@ export function registerWarlockCards(): void {
     .attack(3)
     .health(3)
     .type("minion")
-    .race("demon")
+    .race("Titan")
     .rarity("rare")
     .description("Battlecry: Destroy both adjacent minions and gain their Attack and Health.")
     .heroClass("warlock")
@@ -212,7 +212,7 @@ export function registerWarlockCards(): void {
     .attack(3)
     .health(2)
     .type("minion")
-    .race("demon")
+    .race("Titan")
     .rarity("common")
     .description("Battlecry: Deal 3 damage to your hero.")
     .heroClass("warlock")
@@ -235,7 +235,7 @@ export function registerWarlockCards(): void {
     .attack(3)
     .health(15)
     .type("minion")
-    .race("demon")
+    .race("Titan")
     .rarity("mythic")
     .description("Battlecry: Replace your hero with Erebus, Void Lord.")
     .heroClass("warlock")
@@ -251,18 +251,18 @@ export function registerWarlockCards(): void {
 
   createCard()
     .id(17102)
-    .name("Demon Sense")
+    .name("Titan Sense")
     .manaCost(3)
     .type("spell")
     .rarity("common")
-    .description("Draw 2 Demons from your deck.")
+    .description("Draw 2 Titans from your deck.")
     .heroClass("warlock")
     .class("Warlock")
     .spellEffect({
       type: "draw_specific",
       count: 2
     })
-    .customProperty("specificCardType", "demon")
+    .customProperty("specificCardType", "titan")
     .collectible(true)
     .addCategory("advanced")
     .build();
@@ -273,12 +273,12 @@ export function registerWarlockCards(): void {
     .manaCost(0)
     .type("spell")
     .rarity("common")
-    .description("Destroy a Demon. Restore 5 Health to your hero.")
+    .description("Destroy a Titan. Restore 5 Health to your hero.")
     .heroClass("warlock")
     .class("Warlock")
     .spellEffect({
       type: "destroy",
-      targetType: "demon_only",
+      targetType: "titan_only",
       requiresTarget: true,
       bonusEffect: {
         type: "restore_health",
@@ -337,7 +337,7 @@ export function registerWarlockCards(): void {
     .attack(6)
     .health(6)
     .type("minion")
-    .race("demon")
+    .race("Titan")
     .rarity("common")
     .description("Summoned by Erebus, Void Lord.")
     .heroClass("warlock")
@@ -353,7 +353,7 @@ export function registerWarlockCards(): void {
     .attack(5)
     .health(5)
     .type("minion")
-    .race("demon")
+    .race("Titan")
     .rarity("common")
     .description("Drawn from the void.")
     .heroClass("warlock")
@@ -414,9 +414,9 @@ export function registerWarlockCards(): void {
     .attack(2)
     .health(2)
     .type("minion")
-    .race("demon")
+    .race("Titan")
     .rarity("common")
-    .description("A mischievous demon.")
+    .description("A mischievous imp of Muspelheim.")
     .heroClass("warlock")
     .class("Warlock")
     .collectible(false) // Token card

@@ -56,7 +56,7 @@ export function executeReturnReturn(
   // Get the target minion
   const targetMinion = currentPlayer.battlefield[targetIndex];
   
-  // Check if hand is full (max 9 cards like Hearthstone)
+  // Check if hand is full (max 9 cards by design)
   if (currentPlayer.hand.length >= MAX_HAND_SIZE) {
     
     // Log the effect for debugging

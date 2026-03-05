@@ -186,7 +186,7 @@ export const TripoSRCardIntegration: React.FC<TripoSRCardIntegrationProps> = ({
   // Visual scaling factor - maintain full 300x420 render quality
   // but visually scale to precisely fit the display context
   // Hand: 50% scale (300px → 150px) 
-  // Battlefield: 70% scale (300px → 210px) to match Hearthstone's smaller battlefield cards
+  // Battlefield: 70% scale (300px → 210px) for smaller battlefield cards
   const visualScaleFactor = isInHand ? 0.5 : scale || 1.0;
   
   // We no longer need the spring animation as we're using the CardTransformationManager

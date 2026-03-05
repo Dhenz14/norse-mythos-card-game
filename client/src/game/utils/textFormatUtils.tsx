@@ -91,7 +91,7 @@ const getKeywordGradient = (keyword: string): string => {
 const keywordRegex = new RegExp(`(${KEYWORDS.join('|')})(:|\\.)`, 'gi');
 
 /**
- * Format card text with Hearthstone-like keyword formatting and optimized space usage
+ * Format card text with keyword formatting and optimized space usage
  * Ensures keywords and their descriptions stay on the same line, with proper 
  * styling based on rarity
  * 
@@ -100,7 +100,7 @@ const keywordRegex = new RegExp(`(${KEYWORDS.join('|')})(:|\\.)`, 'gi');
  */
 /**
  * Enhanced formatCardText function with additional debug mode option
- * Use this to format card text with proper Hearthstone-like keyword styling
+ * Use this to format card text with proper keyword styling
  * while eliminating any invisible boxes that might clip text effects
  * 
  * @param text The card text to format

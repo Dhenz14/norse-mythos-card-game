@@ -228,9 +228,8 @@ export class GameContext {
     
     for (let i = 0; i < count; i++) {
       if (this.currentPlayer.deck.length === 0) {
-        // Handle fatigue
-        this.logGameEvent(`${this.currentPlayer.hero.card.name} draws from an empty deck and takes fatigue damage.`);
-        // TODO: Implement fatigue damage
+        // Empty deck — no fatigue damage by design; player simply cannot draw
+        this.logGameEvent(`${this.currentPlayer.hero.card.name} draws from an empty deck.`);
         continue;
       }
       

@@ -14,7 +14,7 @@ import { CardData } from '../types';
 
 /**
  * Collection of additional spell cards
- * These are accurate implementations of classic Hearthstone cards
+ * These are accurate implementations of classic cards
  */
 export const additionalSpellCards: CardData[] = [
   {

@@ -6,7 +6,6 @@
  * all subscribers (HP systems, animations, sounds, analytics) stay in sync.
  * 
  * Architecture pattern: Observer/Pub-Sub with typed events
- * Inspired by: Blizzard's Hearthstone event system
  */
 
 import { debug } from '../config/debugConfig';

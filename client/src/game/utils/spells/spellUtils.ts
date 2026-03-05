@@ -1442,23 +1442,13 @@ function executeSummonSpell(
   const currentPlayer = state.currentTurn;
   const cardToSummon = effect.summonCardId;
   
-  // Find the card data for the summoned minion
-  // In a real implementation, we'd look up the card by ID from a database
-  // For now, we'll use a simple stub implementation
-  
-  // For demo purposes - summon a simple minion
-  // Note: In a real implementation, this should be replaced with actual card lookup
-  const summonedCard: CardData = {
-    id: cardToSummon,
-    name: `Summoned Minion ${cardToSummon}`,
-    manaCost: 0,
-    attack: 1,
-    health: 1,
-    type: 'minion',
-    description: "Summoned by a spell",
-    rarity: 'common',
-    keywords: [],
-  };
+  // Look up the card data from the registry
+  const foundCard = allCards.find(c => c.id === cardToSummon);
+  if (!foundCard || foundCard.type !== 'minion') {
+    debug.error(`Summon spell: card ID ${cardToSummon} not found or not a minion`);
+    return state;
+  }
+  const summonedCard: CardData = foundCard;
   
   // Create a card instance for the summoned minion
   const summonedInstance: CardInstance = {
@@ -1473,7 +1463,7 @@ function executeSummonSpell(
   
   // Add the summoned minion to the current player's battlefield
   if (currentPlayer === 'player') {
-    // Check if battlefield is full (Hearthstone has a limit of 7 minions)
+    // Check if battlefield is full
     if (newState.players.player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
       newState.players.player.battlefield.push(summonedInstance);
       trackQuestProgress('player', 'summon_minion', summonedInstance.card);
@@ -1720,7 +1710,7 @@ function executeDiscoverSpell(
 ): GameState {
   debug.log('[executeDiscoverSpell] Called with effect:', effect, 'sourceCardId:', sourceCardId);
   
-  // Number of cards to choose from (typically 3 in Hearthstone)
+  // Number of cards to choose from (typically 3)
   const discoveryCount = effect.discoveryCount || 3;
   
   // Create discovery options
@@ -5112,7 +5102,7 @@ function executeReplayBattlecriesSpell(
   );
   
   
-  // Execute battlecry for each minion (placeholder implementation)
+  // Re-trigger battlecry for each minion on the battlefield
   for (const minion of minionsWithBattlecry) {
     // Check if card has battlecry effect (using type assertion for MinionCardData)
     const minionCard = minion.card as any;
@@ -5134,13 +5124,26 @@ function executeReplaySpellsSpell(
 ): GameState {
   let newState = { ...state };
   
-  // This is a placeholder implementation
-  // In a real implementation, you would track spells cast in game history and re-execute them
-  // For now, we'll just log the action
-  
   const spellCount = effect.count || 1;
-  
-  
+  const currentPlayer = state.currentTurn || 'player';
+
+  // Gather spells cast this game from the game log
+  const castSpells = (newState.gameLog || [])
+    .filter((entry: any) => entry.type === 'spell' && entry.player === currentPlayer && entry.cardId)
+    .map((entry: any) => allCards.find(c => c.id === Number(entry.cardId)))
+    .filter((c: any): c is CardData => c != null && c.type === 'spell');
+
+  // Pick random spells to replay (up to spellCount)
+  const shuffled = [...castSpells].sort(() => Math.random() - 0.5);
+  const toReplay = shuffled.slice(0, Math.min(spellCount, shuffled.length));
+
+  for (const spell of toReplay) {
+    if ((spell as any).spellEffect) {
+      const fakeInstance = { instanceId: uuidv4(), card: spell, currentHealth: 0, canAttack: false, isPlayed: true, isSummoningSick: false, attacksPerformed: 0 } as CardInstance;
+      newState = executeSpell(newState, fakeInstance);
+    }
+  }
+
   return newState;
 }
 
@@ -5323,8 +5326,7 @@ function executeShuffleCardsSpell(
   const currentPlayer = state.currentTurn || 'player';
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
-  // This is a placeholder implementation
-  // Real implementation would shuffle cards based on effect.cardIds or effect.cardType
+  // Shuffle cards into the player's deck based on effect.cardIds or effect.cardType
   
   if (effect.cardIds) {
     // Shuffle specific cards by ID

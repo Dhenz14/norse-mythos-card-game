@@ -1,6 +1,6 @@
 /**
  * Predefined discovery pools for different types of discoveries
- * This is similar to how Hearthstone implements "discover a dragon" or "discover a deathrattle minion"
+ * This implements typed discovery pools like "discover a dragon" or "discover a deathrattle minion"
  */
 import { CardData } from '../types';
 import { debug } from '../config/debugConfig';
@@ -65,7 +65,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       name: 'Titan',
       description: 'Discover a Titan',
 
-      filter: (card: CardData): boolean => Boolean(hasRace(card, 'titan') || hasRace(card, 'demon'))
+      filter: (card: CardData): boolean => Boolean(hasRace(card, 'titan') || hasRace(card, 'Titan'))
   },
 
 {

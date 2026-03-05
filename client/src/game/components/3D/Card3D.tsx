@@ -138,7 +138,7 @@ export const Card3D: React.FC<Card3DProps> = ({
     }
   });
   
-  // Card dimensions (roughly matching Hearthstone card proportions)
+  // Card dimensions (standard CCG card proportions)
   const width = 1;
   const height = 1.4;
   const depth = 0.05;

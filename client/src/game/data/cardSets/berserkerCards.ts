@@ -7,7 +7,7 @@
  * Core Mechanics:
  * - Outcast: Special effects when played from leftmost or rightmost position
  * - Attack bonuses: Cards that enhance the hero's attack power
- * - Fel magic: Destructive spells and demon synergy
+ * - Fel magic: Destructive spells and titan synergy
  * - Mobility: Cards with aggressive positioning and tempo
  */
 import { debug } from '../../config/debugConfig';
@@ -314,7 +314,7 @@ export function registerBerserkerCards(): void {
     .flavorText("His 'time out' is over and he's ready to play.")
     .type("minion")
     .rarity("rare")
-    .race("demon")
+    .race("Titan")
     .class("Berserker")
     .addKeyword("dormant")
     .customProperty("dormantTurns", 2)

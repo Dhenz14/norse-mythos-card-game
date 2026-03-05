@@ -1,5 +1,5 @@
 /**
- * Quest cards for Hearthstone clone
+ * Quest cards for Norse mythos card game
  * Quests are spell cards that when played, give the player a task to complete for a powerful reward
  */
 import { CardData } from '../types';

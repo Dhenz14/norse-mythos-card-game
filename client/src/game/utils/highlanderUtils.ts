@@ -134,7 +134,7 @@ const potionEffects: Record<number, PotionEffect[]> = {
     { id: 1, name: "Felbloom", description: "Deal 2 damage to all minions" },
     { id: 2, name: "Kingsblood", description: "Draw a card" },
     { id: 3, name: "Icecap", description: "Freeze a random enemy minion" },
-    { id: 4, name: "Netherbloom", description: "Summon a 2/2 demon" },
+    { id: 4, name: "Netherbloom", description: "Summon a 2/2 Titan" },
     { id: 5, name: "Heart of Fire", description: "Deal 3 damage to a random enemy" }
   ],
   
@@ -143,7 +143,7 @@ const potionEffects: Record<number, PotionEffect[]> = {
     { id: 1, name: "Felbloom", description: "Deal 4 damage to all minions" },
     { id: 2, name: "Kingsblood", description: "Draw 2 cards" },
     { id: 3, name: "Icecap", description: "Freeze all enemy minions" },
-    { id: 4, name: "Netherbloom", description: "Summon a 5/5 demon" },
+    { id: 4, name: "Netherbloom", description: "Summon a 5/5 Titan" },
     { id: 5, name: "Heart of Fire", description: "Deal 5 damage to a random enemy" }
   ],
   
@@ -152,7 +152,7 @@ const potionEffects: Record<number, PotionEffect[]> = {
     { id: 1, name: "Felbloom", description: "Deal 6 damage to all minions" },
     { id: 2, name: "Kingsblood", description: "Draw 3 cards" },
     { id: 3, name: "Icecap", description: "Freeze and Silence all enemy minions" },
-    { id: 4, name: "Netherbloom", description: "Summon a 8/8 demon" },
+    { id: 4, name: "Netherbloom", description: "Summon an 8/8 Titan" },
     { id: 5, name: "Heart of Fire", description: "Deal 8 damage to all enemies" }
   ]
 };
@@ -397,7 +397,7 @@ export function executeRazaBattlecry(
 }
 
 /**
- * Execute The Unshackled's battlecry (summon all demons from hand if deck has no duplicates)
+ * Execute The Unshackled's battlecry (summon all Titans from hand if deck has no duplicates)
  * @param state Current game state
  * @param playerType Player who played The Unshackled
  * @returns Updated game state after The Unshackled's battlecry
@@ -418,7 +418,7 @@ export function executeKrulBattlecry(
       newState,
       'krul_battlecry' as GameLogEventType,
       playerType,
-      `The Unshackled attempts to summon all demons from your hand.`,
+      `The Unshackled attempts to summon all Titans from your hand.`,
       { cardId: '70005' }
     )
   );
@@ -456,9 +456,9 @@ export function executeKrulBattlecry(
     newState.gameLog.push(
       createGameLogEvent(
       newState,
-      'krul_no_demons' as GameLogEventType,
+      'krul_no_titans' as GameLogEventType,
       playerType,
-      `The Unshackled found no titans to summon from your hand.`,
+      `The Unshackled found no Titans to summon from your hand.`,
       { cardId: '70005' }
     )
     );
@@ -568,12 +568,42 @@ export function castKazakusPotion(
       )
     );
     
-    // Apply based on effect ID and potion cost
-    // This would integrate with existing spell effect systems
-    // For now, we'll just log the effect
-    
-    // TODO: Implement actual effect logic
-    // This would need to be integrated with the game's spell execution system
+    // Apply the potion effect based on its description
+    const player = newState.players[playerType];
+    const opponentType = playerType === 'player' ? 'opponent' : 'player';
+    const opponent = newState.players[opponentType];
+
+    if (effect.description.startsWith('Deal') && effect.description.includes('all minions')) {
+      const dmg = parseInt(effect.description.match(/\d+/)?.[0] || '0');
+      [...player.battlefield, ...opponent.battlefield].forEach((m: CardInstance) => {
+        m.currentHealth = (m.currentHealth ?? (m.card as any).health ?? 0) - dmg;
+      });
+      player.battlefield = player.battlefield.filter((m: CardInstance) => (m.currentHealth ?? 0) > 0);
+      opponent.battlefield = opponent.battlefield.filter((m: CardInstance) => (m.currentHealth ?? 0) > 0);
+    } else if (effect.description.startsWith('Draw')) {
+      const count = parseInt(effect.description.match(/\d+/)?.[0] || '1');
+      for (let d = 0; d < count && player.deck.length > 0 && player.hand.length < 10; d++) {
+        player.hand.push(player.deck.shift()! as unknown as CardInstance);
+      }
+    } else if (effect.description.includes('Freeze') && effect.description.includes('enemy')) {
+      opponent.battlefield.forEach((m: CardInstance) => { (m as any).isFrozen = true; });
+    } else if (effect.description.startsWith('Deal') && effect.description.includes('random enemy')) {
+      const dmg = parseInt(effect.description.match(/\d+/)?.[0] || '0');
+      const targets = [...opponent.battlefield];
+      if (targets.length > 0) {
+        const target = targets[Math.floor(Math.random() * targets.length)];
+        target.currentHealth = (target.currentHealth ?? (target.card as any).health ?? 0) - dmg;
+        if ((target.currentHealth ?? 0) <= 0) {
+          opponent.battlefield = opponent.battlefield.filter((m: CardInstance) => m.instanceId !== target.instanceId);
+        }
+      }
+    } else if (effect.description.startsWith('Deal') && effect.description.includes('all enemies')) {
+      const dmg = parseInt(effect.description.match(/\d+/)?.[0] || '0');
+      opponent.battlefield.forEach((m: CardInstance) => {
+        m.currentHealth = (m.currentHealth ?? (m.card as any).health ?? 0) - dmg;
+      });
+      opponent.battlefield = opponent.battlefield.filter((m: CardInstance) => (m.currentHealth ?? 0) > 0);
+    }
   }
   
   // Move to graveyard

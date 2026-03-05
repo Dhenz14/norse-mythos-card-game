@@ -2,7 +2,7 @@
  * UnifiedCardTooltip.tsx
  * 
  * SINGLE SOURCE OF TRUTH for all card hover tooltips in the game.
- * Hearthstone-inspired design with keyword icons and explanations.
+ * Norse-themed design with keyword icons and explanations.
  * Uses React Portal for proper layering above all game elements.
  * 
  * Replaces and consolidates:

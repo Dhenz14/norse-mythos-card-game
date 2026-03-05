@@ -1,7 +1,7 @@
 /**
  * Card Registry - Single Source of Truth
  * 
- * Hearthstone-style card organization:
+ * CCG-style card organization:
  * - Core Set: Basic neutral and class cards
  * - Norse Set: Norse mythology themed expansion
  * - Tokens: Non-collectible cards summoned by other cards

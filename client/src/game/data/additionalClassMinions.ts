@@ -1,5 +1,5 @@
 /**
- * Additional classic class minions for Hearthstone clone
+ * Additional classic class minions for Echoes of Ymir
  * Iconic class-specific minions with class-relevant abilities
  */
 import { CardData } from '../types';

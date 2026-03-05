@@ -253,7 +253,7 @@ export const berserkerCards: CardData[] = [
   },
   {
     id: 20013,
-    name: "Thanatos, Demon Form",
+    name: "Thanatos, Titan Form",
     manaCost: 8,
     attack: 8,
     health: 8,

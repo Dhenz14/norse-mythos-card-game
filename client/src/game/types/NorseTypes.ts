@@ -374,7 +374,7 @@ export interface NorseHero {
   hasSpells: true;
   fixedCardIds: number[];
   
-  // Class assignment (for spell pool) - matches Hearthstone classes
+  // Class assignment (for spell pool)
   heroClass?: 'mage' | 'warrior' | 'paladin' | 'hunter' | 'rogue' | 'priest' | 'shaman' | 'warlock' | 'druid' | 'deathknight' | 'berserker' | 'necromancer';
   
   // Hero power (2 mana, once per turn)

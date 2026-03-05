@@ -1,12 +1,12 @@
 /**
- * Expansion legendary cards for Hearthstone clone
- * Powerful and unique cards from various Hearthstone expansions
+ * Expansion legendary cards for Echoes of Ymir
+ * Powerful and unique cards from various card expansions
  */
 import { CardData } from '../types';
 
 /**
  * Collection of expansion legendary minions
- * These cards cover several Hearthstone expansions
+ * These cards cover several card expansions
  */
 export const expansionLegendaryCards: CardData[] = [{
       id: 95401,

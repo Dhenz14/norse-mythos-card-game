@@ -15,7 +15,7 @@ import { CardData, BattlecryTargetType } from '../types';
  * Card IDs: 
  * - Regular Warlock cards: 17xxx series
  * - Warlock spell cards: 37xxx series
- * - Demon-specific tokens: 17xxx series (usually 500+)
+ * - Titan-specific tokens: 17xxx series (usually 500+)
  */
 export const warlockCards: CardData[] = [
   // BASIC WARLOCK CARDS
@@ -231,11 +231,11 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 17102,
-    name: "Demon Sense",
+    name: "Titan Sense",
     manaCost: 3,
     type: "spell",
     rarity: "common",
-    description: "Draw 2 Demons from your deck.",
+    description: "Draw 2 Titans from your deck.",
     keywords: [],
     heroClass: "warlock",
     class: "Warlock",
@@ -243,7 +243,7 @@ export const warlockCards: CardData[] = [
     spellEffect: {
       type: "draw_specific",
       count: 2,
-      cardType: "demon"
+      cardType: "titan"
     }
   },
   {
@@ -252,14 +252,14 @@ export const warlockCards: CardData[] = [
     manaCost: 0,
     type: "spell",
     rarity: "common",
-    description: "Destroy a Demon. Restore 5 Health to your hero.",
+    description: "Destroy a Titan. Restore 5 Health to your hero.",
     keywords: [],
     heroClass: "warlock",
     class: "Warlock",
     collectible: true,
     spellEffect: {
       type: "destroy",
-      targetType: "demon_only",
+      targetType: "titan_only",
       requiresTarget: true,
       sideEffect: {
         type: "restore_health",
@@ -307,7 +307,7 @@ export const warlockCards: CardData[] = [
     manaCost: 5,
     type: "spell",
     rarity: "epic",
-    description: "Deal 5 damage to a minion. If it dies, summon a 5/5 Demon.",
+    description: "Deal 5 damage to a minion. If it dies, summon a 5/5 Titan.",
     keywords: [],
     heroClass: "warlock",
     class: "Warlock",
@@ -362,11 +362,11 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 17109,
-    name: "Demon's Heart",
+    name: "Titan's Heart",
     manaCost: 5,
     type: "spell",
     rarity: "epic",
-    description: "Deal 5 damage to a minion. If it's a friendly Demon, give it +5/+5 instead.",
+    description: "Deal 5 damage to a minion. If it's a friendly Titan, give it +5/+5 instead.",
     keywords: [],
     heroClass: "warlock",
     class: "Warlock",
@@ -376,7 +376,7 @@ export const warlockCards: CardData[] = [
       targetType: "minion_only",
       requiresTarget: true,
       condition: {
-        type: "is_friendly_demon"
+        type: "is_friendly_titan"
       },
       trueEffect: {
         type: "buff",
@@ -478,7 +478,7 @@ export const warlockCards: CardData[] = [
     manaCost: 5,
     type: "spell",
     rarity: "epic",
-    description: "Deal 2 damage to a character. If that kills it, summon a random Demon.",
+    description: "Deal 2 damage to a character. If that kills it, summon a random Titan.",
     keywords: [],
     heroClass: "warlock",
     class: "Warlock",
@@ -489,7 +489,7 @@ export const warlockCards: CardData[] = [
       targetType: BattlecryTargetType.ANY,
       requiresTarget: true,
       deathEffect: {
-        type: "summon_random_demon"
+        type: "summon_random_titan"
       }
     }
   },
@@ -558,14 +558,14 @@ export const warlockCards: CardData[] = [
     manaCost: 2,
     type: "spell",
     rarity: "common",
-    description: "Each player transforms a random minion in their hand into a Demon.",
+    description: "Each player transforms a random minion in their hand into a Titan.",
     keywords: [],
     heroClass: "warlock",
     class: "Warlock",
     collectible: true,
     spellEffect: {
       type: "transform_random_in_hand",
-      transformType: "demon",
+      transformType: "titan",
       affectBothPlayers: true
     }
   },
@@ -689,7 +689,7 @@ export const warlockCards: CardData[] = [
     type: "minion",
     race: "titan",
     rarity: "common",
-    description: "A mischievous demon.",
+    description: "A mischievous titan.",
     keywords: [],
     heroClass: "warlock",
     class: "Warlock",
