@@ -110,7 +110,7 @@ class CardDatabaseService {
 
   /**
    * Get all cards of a specific rarity
-   * @param rarity Card rarity (e.g., 'legendary', 'epic', etc.)
+   * @param rarity Card rarity (e.g., 'mythic', 'epic', etc.)
    * @returns Array of cards with the specified rarity
    */
   public getCardsByRarity(rarity: string): CardData[] {

@@ -749,7 +749,7 @@ export const formatManaCost = (value: number): JSX.Element => {
 /**
  * Get text styling based on card rarity
  * This function returns a style object with appropriate colors and text effects
- * for each rarity level (legendary, epic, rare, common)
+ * for each rarity level (mythic, epic, rare, common)
  * 
  * @param rarity The card rarity
  * @returns Style object for the specified rarity

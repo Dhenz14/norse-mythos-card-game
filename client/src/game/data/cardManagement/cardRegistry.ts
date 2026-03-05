@@ -56,7 +56,7 @@ export function registerCard(card: CardData, categories: string[] = []): void {
   // Also index by built-in categories
   const builtInCategories = [
     card.type,                   // minion, spell, weapon, etc
-    card.rarity,                 // common, rare, epic, legendary
+    card.rarity,                 // common, rare, epic, mythic
     card.heroClass || 'neutral', // class or neutral
   ];
   

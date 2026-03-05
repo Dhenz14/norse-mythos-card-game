@@ -79,7 +79,7 @@ export class CardBuilder {
   }
   
   /**
-   * Set the card rarity (common, rare, epic, legendary)
+   * Set the card rarity (common, rare, epic, mythic)
    * @param rarity - Rarity of the card
    */
   rarity(rarity: CardRarity): CardBuilder {

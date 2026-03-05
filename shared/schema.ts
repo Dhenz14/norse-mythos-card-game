@@ -96,7 +96,7 @@ export const cardSupply = pgTable("card_supply", {
   id: serial("id").primaryKey(),
   cardId: integer("card_id").notNull().unique(), // References the in-game card ID
   cardName: text("card_name").notNull(),
-  nftRarity: text("nft_rarity").notNull(), // common, rare, epic, legendary, mythic
+  nftRarity: text("nft_rarity").notNull(), // common, rare, epic, mythic
   maxSupply: integer("max_supply").notNull(), // Absolute max ever minted
   remainingSupply: integer("remaining_supply").notNull(), // How many left to pull
   rewardReserve: integer("reward_reserve").notNull().default(0), // 20% held back for in-game rewards

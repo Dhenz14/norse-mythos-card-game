@@ -405,8 +405,8 @@ export interface CardFilterParams {
  * @returns Array of cards matching all specified filters
  * 
  * @example
- * // Get all legendary mage spells
- * const cards = getCardsByFilter({ class: 'Mage', type: 'spell', rarity: 'legendary' });
+ * // Get all mythic mage spells
+ * const cards = getCardsByFilter({ class: 'Mage', type: 'spell', rarity: 'mythic' });
  */
 export const getCardsByFilter = (filters: CardFilterParams): CardData[] => {
   return allCards.filter(card => {
