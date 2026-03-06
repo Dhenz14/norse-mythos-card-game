@@ -54,7 +54,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         const data = localStorage.getItem(StorageKeys.HIVE_USER_DATA);
                         return this.createResult(data ? JSON.parse(data) : null);
                 } catch (e) {
-                        return this.createError('Failed to get user');
+                        this.debugLog('Failed to get user:', e);
+			return this.createError('Failed to get user');
                 }
         }
 
@@ -64,7 +65,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         this.debugLog('User saved:', user.username);
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to save user');
+                        this.debugLog('Failed to save user:', e);
+			return this.createError('Failed to save user');
                 }
         }
 
@@ -89,7 +91,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         this.debugLog('Stats saved:', stats);
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to save stats');
+                        this.debugLog('Failed to save stats:', e);
+			return this.createError('Failed to save stats');
                 }
         }
 
@@ -117,7 +120,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         this.debugLog('Match saved:', match.matchId);
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to save match');
+                        this.debugLog('Failed to save match:', e);
+			return this.createError('Failed to save match');
                 }
         }
 
@@ -144,7 +148,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         localStorage.setItem(StorageKeys.HIVE_CARD_COLLECTION, JSON.stringify(cards));
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to save card');
+                        this.debugLog('Failed to save card:', e);
+			return this.createError('Failed to save card');
                 }
         }
 
@@ -155,7 +160,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         localStorage.setItem(StorageKeys.HIVE_CARD_COLLECTION, JSON.stringify(cards));
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to remove card');
+                        this.debugLog('Failed to remove card:', e);
+			return this.createError('Failed to remove card');
                 }
         }
 
@@ -174,7 +180,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         localStorage.setItem(StorageKeys.HIVE_TOKEN_BALANCE, JSON.stringify(balance));
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to save token balance');
+                        this.debugLog('Failed to save token balance:', e);
+			return this.createError('Failed to save token balance');
                 }
         }
 
@@ -199,7 +206,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         localStorage.setItem(StorageKeys.HIVE_PENDING_TRANSACTIONS, JSON.stringify(limited));
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to save transaction');
+                        this.debugLog('Failed to save transaction:', e);
+			return this.createError('Failed to save transaction');
                 }
         }
 
@@ -212,7 +220,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         localStorage.setItem(StorageKeys.HIVE_PENDING_TRANSACTIONS, JSON.stringify(transactions));
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to update transaction');
+                        this.debugLog('Failed to update transaction:', e);
+			return this.createError('Failed to update transaction');
                 }
         }
 
@@ -244,7 +253,8 @@ export class LocalStorageAdapter extends BaseHiveDataAdapter {
                         
                         return this.createResult(undefined);
                 } catch (e) {
-                        return this.createError('Failed to import data');
+                        this.debugLog('Failed to import data:', e);
+			return this.createError('Failed to import data');
                 }
         }
 

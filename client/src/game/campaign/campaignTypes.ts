@@ -98,13 +98,18 @@ export const AI_PROFILES: Record<string, AIBehaviorProfile> = {
 	odin: { aggression: 0.6, efficiency: 0.95, bluffFrequency: 0.5, tightness: 0.8, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.9, heroPowerPriority: 0.8 },
 
 	// Greek god-specific profiles
+	uranus: { aggression: 0.6, efficiency: 0.7, bluffFrequency: 0.2, tightness: 0.8, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.7, heroPowerPriority: 0.8 },
+	kronos: { aggression: 0.8, efficiency: 0.8, bluffFrequency: 0.3, tightness: 0.7, usesHeroPower: true, prioritizeFace: true, tradeEfficiency: 0.7 },
+	atlas: { aggression: 0.7, efficiency: 0.75, bluffFrequency: 0.2, tightness: 0.7, usesHeroPower: true, prioritizeFace: true, tradeEfficiency: 0.7 },
+	typhon: { aggression: 0.9, efficiency: 0.5, bluffFrequency: 0.7, tightness: 0.3, usesHeroPower: true, prioritizeFace: true, tradeEfficiency: 0.4 },
+	porphyrion: { aggression: 0.85, efficiency: 0.6, bluffFrequency: 0.2, tightness: 0.4, usesHeroPower: true, prioritizeFace: true, tradeEfficiency: 0.5 },
+	gaiaRemnant: { aggression: 0.5, efficiency: 0.9, bluffFrequency: 0.4, tightness: 0.85, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.9, heroPowerPriority: 0.9 },
 	medusa: { aggression: 0.5, efficiency: 0.6, bluffFrequency: 0.3, tightness: 0.6, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.7 },
 	hydra: { aggression: 0.6, efficiency: 0.5, bluffFrequency: 0.2, tightness: 0.4, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.5 },
 	ares: { aggression: 0.95, efficiency: 0.4, bluffFrequency: 0.1, tightness: 0.2, usesHeroPower: false, prioritizeFace: true, tradeEfficiency: 0.3 },
 	poseidon: { aggression: 0.7, efficiency: 0.7, bluffFrequency: 0.4, tightness: 0.6, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.6 },
 	hades: { aggression: 0.4, efficiency: 0.8, bluffFrequency: 0.6, tightness: 0.9, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.8, heroPowerPriority: 0.9 },
 	athena: { aggression: 0.3, efficiency: 0.95, bluffFrequency: 0.4, tightness: 0.9, usesHeroPower: true, prioritizeFace: false, tradeEfficiency: 0.95, heroPowerPriority: 0.7 },
-	kronos: { aggression: 0.8, efficiency: 0.8, bluffFrequency: 0.3, tightness: 0.7, usesHeroPower: true, prioritizeFace: true, tradeEfficiency: 0.7 },
 	zeus: { aggression: 0.8, efficiency: 0.85, bluffFrequency: 0.5, tightness: 0.7, usesHeroPower: true, prioritizeFace: true, tradeEfficiency: 0.8, heroPowerPriority: 0.8 },
 
 	// Egyptian god-specific profiles

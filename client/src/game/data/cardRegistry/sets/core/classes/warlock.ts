@@ -1059,5 +1059,83 @@ export const warlockCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Zoo & Discard Expansion ===
+  {
+    id: 38901,
+    name: "Void Imp",
+    manaCost: 1,
+    attack: 2,
+    health: 1,
+    description: "Battlecry: Deal 1 damage to your hero.",
+    type: "minion",
+    rarity: "common",
+    class: "Warlock",
+    race: "Titan",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "damage",
+      value: 1,
+      targetType: "friendly_hero"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38902,
+    name: "Hel's Wretch",
+    manaCost: 1,
+    attack: 1,
+    health: 3,
+    description: "Whenever you discard a card, gain +1/+1.",
+    type: "minion",
+    rarity: "rare",
+    class: "Warlock",
+    keywords: [],
+    triggeredEffect: {
+      type: "buff_on_discard",
+      attack: 1,
+      health: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38903,
+    name: "Soulfire of Muspel",
+    manaCost: 1,
+    description: "Deal 4 damage. Discard a random card.",
+    type: "spell",
+    rarity: "common",
+    class: "Warlock",
+    spellEffect: {
+      type: "damage",
+      value: 4,
+      targetType: "any",
+      requiresTarget: true,
+      sideEffect: {
+        type: "discard_random",
+        count: 1
+      }
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38904,
+    name: "Clutch of Hel",
+    manaCost: 2,
+    description: "Discard 2 cards. Draw 3 cards.",
+    type: "spell",
+    rarity: "rare",
+    class: "Warlock",
+    spellEffect: {
+      type: "discard_and_draw",
+      discardCount: 2,
+      drawCount: 3,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
   }
 ];

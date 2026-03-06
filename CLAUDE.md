@@ -33,8 +33,8 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - **Blockchain**: Hive Layer 1 NFTs (custom_json ops, deterministic reader, Keychain auth)
 
 ### Game Features
-- 1,400+ collectible cards across 4 mythological factions
-- 77 playable heroes across 12 classes
+- 1,500+ collectible cards across 4 mythological factions
+- 80 playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
 - Single-player campaign (49 missions across 5 factions)
@@ -514,6 +514,32 @@ vercel --prod                 # Deploy to Vercel
 - Deleted 4 dead legacy pet files (firePets, waterPets, grassPets, electricPets — 48 duplicate IDs)
 - Fixed `getMission()` double-counting easternChapter in `ALL_CHAPTERS`
 - Re-IDed paladin Luminous Blade from 8501 to 8540 (conflict with berserker Jötunn Thornback)
+
+### Completed (Greek Campaign & Class Completeness)
+
+- Rewrote Greek chapter as "Echoes of Chaos: Blood of the Olympians" (Hesiod/Apollodorus sources)
+- 10 Greek campaign missions: Chaos → Uranus → Cronus → Zeus → Titanomachy → Prometheus → Typhon → Giants → Heroic Age → Seeds of Strife
+- Added 6 Greek AI profiles (uranus, atlas, typhon, porphyrion, gaiaRemnant + existing)
+- Added 3 new heroes: Prometheus (druid), Heracles (warrior), Rhea (priest) with lore-accurate powers
+- Artemis hero power reworked: "Silver Arrow" (+1 damage to hero + buff all pets)
+- Added 6 Greek mythic minion cards (32101-32106): Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa
+- Added NorseTypes.ts: damage_hero_and_buff_pets, self_damage_and_buff, buff_random_friendly, heal_bonus
+- Fixed EnhancedCard.tsx taunt border (broken borderImage → CSS-only)
+- Fixed LocalStorageAdapter.ts silent error swallowing (10 catch blocks)
+- Deleted duplicate setHealthHandler.ts spell effect file
+- Class completeness expansion: 82 new cards across all 12 classes (IDs 38001-39104)
+  - Mage: Arcane package + Spell Damage synergy (10 cards)
+  - DeathKnight: Blood/Frost/Unholy Rune spells + Corpse mechanic (10 cards)
+  - Shaman: Evolve, totem generation, Bloodlust equivalent (8 cards)
+  - Paladin: Token generation (Muster), Divine Shield synergy (8 cards)
+  - Druid: Permanent ramp, Innervate, first weapon, Force of Nature (8 cards)
+  - Hunter: Kill Command, Tracking, Multi-Shot, Explosive Trap (8 cards)
+  - Necromancer: Shadow damage spells, mass resurrection (7 cards)
+  - Priest: Shadow Word spells, mind control, Shadow Priest archetype (6 cards)
+  - Berserker: Lifesteal minions, Outcast payoffs (5 cards)
+  - Warlock: Zoo 1-drops, discard payoffs (4 cards)
+  - Rogue: Burgle/thief archetype, card draw (4 cards)
+  - Warrior: Whirlwind effects, Enrage enablers (4 cards)
 
 ### Next (Genesis Launch)
 

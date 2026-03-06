@@ -704,5 +704,195 @@ export const deathknightCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+
+  // === Rune & Corpse Expansion ===
+
+  {
+    id: 38101,
+    name: "Blood Rune: Siphon",
+    manaCost: 2,
+    description: "Deal 2 damage to a minion. Restore 2 Health to your hero.",
+    type: "spell",
+    rarity: "common",
+    class: "DeathKnight",
+    keywords: ["lifesteal"],
+    spellEffect: {
+      type: "drain",
+      value: 2,
+      targetType: "enemy_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38102,
+    name: "Frost Rune: Howling Gale",
+    manaCost: 3,
+    description: "Freeze all enemy minions. Draw a card.",
+    type: "spell",
+    rarity: "rare",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "freeze_and_draw",
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38103,
+    name: "Unholy Rune: Raise Dead",
+    manaCost: 2,
+    description: "Return two random friendly minions that died this game to your hand. They cost (1) less.",
+    type: "spell",
+    rarity: "rare",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "resurrect_to_hand",
+      value: 2,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38104,
+    name: "Draugr Conscript",
+    manaCost: 1,
+    attack: 2,
+    health: 1,
+    description: "Deathrattle: Add a Blood Rune: Siphon to your hand.",
+    type: "minion",
+    rarity: "common",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["deathrattle"],
+    deathrattle: {
+      type: "add_to_hand",
+      cardId: 38101
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38105,
+    name: "Runeforger",
+    manaCost: 3,
+    attack: 2,
+    health: 4,
+    description: "Battlecry: Discover a Rune spell (Blood, Frost, or Unholy).",
+    type: "minion",
+    rarity: "rare",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "discover",
+      discoveryType: "dk_rune"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38106,
+    name: "Helheim Abomination",
+    manaCost: 5,
+    attack: 4,
+    health: 5,
+    description: "Taunt. Deathrattle: Deal 2 damage to all minions.",
+    type: "minion",
+    rarity: "common",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["taunt", "deathrattle"],
+    deathrattle: {
+      type: "damage",
+      value: 2,
+      targetType: "all_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38107,
+    name: "Corpse Harvester",
+    manaCost: 4,
+    attack: 3,
+    health: 4,
+    description: "Battlecry: For each Undead that died this game, gain +1/+1 (up to +5/+5).",
+    type: "minion",
+    rarity: "epic",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "buff_from_graveyard_count",
+      condition: { check: "graveyard_count", race: "Undead", minimum: 1 },
+      value: 1,
+      maxValue: 5
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38108,
+    name: "Niflheim's Grasp",
+    manaCost: 6,
+    description: "Destroy an enemy minion. Summon a 3/3 Ghoul with Taunt.",
+    type: "spell",
+    rarity: "epic",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "destroy_and_summon",
+      targetType: "enemy_minion",
+      requiresTarget: true,
+      summonAttack: 3,
+      summonHealth: 3
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38109,
+    name: "Hel's Chosen",
+    manaCost: 7,
+    attack: 6,
+    health: 6,
+    description: "Battlecry: Summon all friendly Undead that died this game (up to 4). They have Rush.",
+    type: "minion",
+    rarity: "mythic",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "mass_resurrect",
+      condition: { check: "race", value: "Undead" },
+      maxCount: 4,
+      grantKeywords: ["rush"]
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38110,
+    name: "Nidhogg, Corpse Eater",
+    manaCost: 8,
+    attack: 5,
+    health: 7,
+    description: "Battlecry: Destroy all Undead in both graveyards. Gain +2/+2 for each.",
+    type: "minion",
+    rarity: "mythic",
+    class: "DeathKnight",
+    race: "Dragon",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "consume_graveyard",
+      race: "Undead",
+      buffPerCard: { attack: 2, health: 2 }
+    },
+    collectible: true,
+    set: "core"
   }
 ];

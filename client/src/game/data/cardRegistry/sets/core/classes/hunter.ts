@@ -752,5 +752,146 @@ export const hunterCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Beast & Face Damage Expansion ===
+  {
+    id: 38601,
+    name: "Skadi's Command",
+    manaCost: 3,
+    type: "spell",
+    rarity: "common",
+    description: "Deal 3 damage. If you control a Beast, deal 5 damage instead.",
+    class: "Hunter",
+    spellEffect: {
+      type: "damage",
+      value: 3,
+      bonusDamage: 2,
+      bonusCondition: "controls_beast",
+      targetType: "any",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38602,
+    name: "Tracking Rune",
+    manaCost: 1,
+    type: "spell",
+    rarity: "common",
+    description: "Look at the top 3 cards of your deck. Draw one and discard the others.",
+    class: "Hunter",
+    spellEffect: {
+      type: "tracking",
+      value: 3,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38603,
+    name: "Multi-Shot of Ullr",
+    manaCost: 4,
+    type: "spell",
+    rarity: "common",
+    description: "Deal 3 damage to two random enemy minions.",
+    class: "Hunter",
+    spellEffect: {
+      type: "damage",
+      value: 3,
+      targetType: "random_enemy_minion",
+      hitCount: 2
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38604,
+    name: "Explosive Rune",
+    manaCost: 2,
+    type: "spell",
+    rarity: "rare",
+    description: "Rune: When your hero is attacked, deal 2 damage to all enemy minions.",
+    class: "Hunter",
+    keywords: ["secret"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38605,
+    name: "Freya's Houndmaster",
+    manaCost: 4,
+    attack: 4,
+    health: 3,
+    type: "minion",
+    rarity: "common",
+    description: "Battlecry: Give a friendly Beast +2/+2 and Taunt.",
+    class: "Hunter",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "buff",
+      targetType: "friendly_beast",
+      requiresTarget: true,
+      buffAttack: 2,
+      buffHealth: 2,
+      grantKeywords: ["taunt"]
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38606,
+    name: "Savanna Prowler",
+    manaCost: 6,
+    attack: 6,
+    health: 5,
+    type: "minion",
+    rarity: "mythic",
+    race: "Beast",
+    description: "Deathrattle: Summon two 2/2 Hyenas.",
+    class: "Hunter",
+    keywords: ["deathrattle"],
+    deathrattle: {
+      type: "summon_token",
+      value: 2,
+      summonName: "Hyena",
+      summonAttack: 2,
+      summonHealth: 2
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38607,
+    name: "Artemis' Volley",
+    manaCost: 2,
+    type: "spell",
+    rarity: "common",
+    description: "Deal 2 damage to the enemy hero. Draw a card.",
+    class: "Hunter",
+    spellEffect: {
+      type: "damage_and_draw",
+      value: 2,
+      drawValue: 1,
+      targetType: "enemy_hero"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38608,
+    name: "Fenrir, Alpha Predator",
+    manaCost: 7,
+    attack: 5,
+    health: 5,
+    type: "minion",
+    rarity: "mythic",
+    race: "Beast",
+    description: "Rush. Overkill: Summon a copy of this minion.",
+    class: "Hunter",
+    keywords: ["rush", "overkill"],
+    collectible: true,
+    set: "core"
   }
 ];

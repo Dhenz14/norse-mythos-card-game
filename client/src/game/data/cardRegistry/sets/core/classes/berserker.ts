@@ -719,5 +719,81 @@ export const berserkerCards: CardData[] = [
     keywords: ["rush"],
     collectible: true,
     set: "core"
+  },
+
+  // === Lifesteal & Outcast Expansion ===
+  {
+    id: 38801,
+    name: "Leech of Niflheim",
+    manaCost: 3,
+    attack: 3,
+    health: 4,
+    description: "Lifesteal. Outcast: Gain +2 Attack.",
+    type: "minion",
+    rarity: "common",
+    class: "Berserker",
+    keywords: ["lifesteal", "outcast"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38802,
+    name: "Blood Drinker",
+    manaCost: 5,
+    attack: 4,
+    health: 6,
+    description: "Lifesteal. Rush. After this attacks and kills a minion, gain +2/+2.",
+    type: "minion",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["lifesteal", "rush"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38803,
+    name: "Outcast's Reward",
+    manaCost: 2,
+    description: "Draw 2 cards. Outcast: They cost (1) less.",
+    type: "spell",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["outcast"],
+    spellEffect: {
+      type: "draw",
+      value: 2,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38804,
+    name: "Soulrend Blade",
+    manaCost: 4,
+    attack: 4,
+    durability: 2,
+    description: "Lifesteal.",
+    type: "weapon",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["lifesteal"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38805,
+    name: "Muspel Lifedrinker",
+    manaCost: 7,
+    attack: 5,
+    health: 7,
+    description: "Lifesteal. Taunt. Outcast: Deal 5 damage to all enemy minions.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Berserker",
+    race: "Elemental",
+    keywords: ["lifesteal", "taunt", "outcast"],
+    collectible: true,
+    set: "core"
   }
 ];

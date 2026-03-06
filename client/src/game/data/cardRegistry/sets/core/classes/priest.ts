@@ -725,5 +725,120 @@ export const priestCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Shadow Priest Expansion ===
+  {
+    id: 38501,
+    name: "Shadow Word: Bane",
+    manaCost: 2,
+    type: "spell",
+    rarity: "common",
+    description: "Destroy a minion with 3 or less Attack.",
+    flavorText: "The shadow consumes those too weak to resist.",
+    class: "Priest",
+    spellEffect: {
+      type: "destroy",
+      targetType: "enemy_minion",
+      requiresTarget: true,
+      condition: "attack_3_or_less"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38502,
+    name: "Shadow Word: Ruin",
+    manaCost: 3,
+    type: "spell",
+    rarity: "common",
+    description: "Destroy a minion with 5 or more Attack.",
+    flavorText: "Even the mightiest warriors fall before the shadow's judgment.",
+    class: "Priest",
+    spellEffect: {
+      type: "destroy",
+      targetType: "enemy_minion",
+      requiresTarget: true,
+      condition: "attack_5_or_more"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38503,
+    name: "Hel's Shadow Bolt",
+    manaCost: 3,
+    type: "spell",
+    rarity: "rare",
+    description: "Deal 4 damage to a minion. If it dies, deal 2 damage to the enemy hero.",
+    flavorText: "Hel's bolts pursue the soul even beyond death.",
+    class: "Priest",
+    spellEffect: {
+      type: "damage",
+      value: 4,
+      targetType: "enemy_minion",
+      requiresTarget: true,
+      overkillEffect: { type: "damage_hero", value: 2 }
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38504,
+    name: "Mind Seize",
+    manaCost: 4,
+    type: "spell",
+    rarity: "epic",
+    description: "Take control of an enemy minion with 3 or less Attack.",
+    flavorText: "The weak-willed are easy prey for those who walk between worlds.",
+    class: "Priest",
+    spellEffect: {
+      type: "mind_control",
+      targetType: "enemy_minion",
+      requiresTarget: true,
+      condition: "attack_3_or_less"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38505,
+    name: "Shadow Priestess of Hel",
+    manaCost: 4,
+    attack: 4,
+    health: 5,
+    type: "minion",
+    rarity: "rare",
+    description: "Your healing effects also deal that much damage to a random enemy.",
+    flavorText: "She walks the line between mercy and malice.",
+    class: "Priest",
+    aura: {
+      type: "shadowform",
+      effect: "heal_also_damages"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38506,
+    name: "Hel, Queen of Shadows",
+    manaCost: 8,
+    attack: 6,
+    health: 6,
+    type: "minion",
+    rarity: "mythic",
+    description: "Battlecry: Take control of an enemy minion. Deathrattle: Return it to your opponent.",
+    flavorText: "Half living, half dead, she claims all who enter her domain — but never forever.",
+    keywords: ["battlecry", "deathrattle"],
+    class: "Priest",
+    battlecry: {
+      type: "mind_control",
+      targetType: "enemy_minion",
+      requiresTarget: true
+    },
+    deathrattle: {
+      type: "return_stolen_minion"
+    },
+    collectible: true,
+    set: "core"
   }
 ];

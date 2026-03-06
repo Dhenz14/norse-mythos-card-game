@@ -746,5 +746,191 @@ export const mageCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Arcane & Spell Damage Expansion ===
+  {
+    id: 38001,
+    name: "Arcane Barrage",
+    manaCost: 1,
+    description: "Deal 3 damage randomly split among all enemies.",
+    flavorText: "Bolts of pure arcane energy scatter across the battlefield.",
+    type: "spell",
+    rarity: "common",
+    class: "Mage",
+    spellEffect: {
+      type: "damage",
+      value: 3,
+      targetType: "random_enemy",
+      requiresTarget: false,
+      isSplit: true,
+      isRandom: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38002,
+    name: "Wisdom of Mímir",
+    manaCost: 3,
+    description: "Draw 2 cards.",
+    flavorText: "The severed head of Mímir whispers forbidden knowledge.",
+    type: "spell",
+    rarity: "common",
+    class: "Mage",
+    spellEffect: {
+      type: "draw",
+      value: 2,
+      targetType: "none",
+      requiresTarget: false
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38003,
+    name: "Arcane Eruption",
+    manaCost: 2,
+    description: "Deal 1 damage to all enemy minions.",
+    flavorText: "Runes carved into the earth detonate in a wave of force.",
+    type: "spell",
+    rarity: "common",
+    class: "Mage",
+    spellEffect: {
+      type: "damage",
+      value: 1,
+      targetType: "all_enemy_minions",
+      requiresTarget: false
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38004,
+    name: "Rune of Amplification",
+    manaCost: 2,
+    description: "Spell Damage +3 this turn only.",
+    flavorText: "A volatile rune that amplifies all magic for a fleeting moment.",
+    type: "spell",
+    rarity: "rare",
+    class: "Mage",
+    spellEffect: {
+      type: "spell_damage_boost",
+      value: 3,
+      targetType: "none",
+      requiresTarget: false
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38005,
+    name: "Arcane Familiar",
+    manaCost: 1,
+    attack: 1,
+    health: 2,
+    description: "Spell Damage +1.",
+    flavorText: "A tiny spirit drawn from the ley lines of Alfheim.",
+    type: "minion",
+    rarity: "common",
+    class: "Mage",
+    race: "Elemental",
+    keywords: ["spell_damage"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38006,
+    name: "Seiðr Flamecaller",
+    manaCost: 4,
+    attack: 3,
+    health: 5,
+    description: "Spell Damage +2. After you cast a spell, deal 1 damage to all enemies.",
+    flavorText: "She channels the old Norse magic through living flame.",
+    type: "minion",
+    rarity: "rare",
+    class: "Mage",
+    keywords: ["spell_damage"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38007,
+    name: "Astral Rift",
+    manaCost: 5,
+    description: "Deal 4 damage to all enemy minions. Draw a card for each killed.",
+    flavorText: "The rift tears open, consuming the weak and revealing hidden truths.",
+    type: "spell",
+    rarity: "epic",
+    class: "Mage",
+    spellEffect: {
+      type: "damage_and_draw",
+      value: 4,
+      targetType: "all_enemy_minions",
+      requiresTarget: false
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38008,
+    name: "Chrono-Weaver",
+    manaCost: 6,
+    attack: 4,
+    health: 6,
+    description: "Battlecry: Add a random Mage spell to your hand. It costs (0) this turn.",
+    flavorText: "She plucks spells from timelines that never were.",
+    type: "minion",
+    rarity: "epic",
+    class: "Mage",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "add_random_class_spell",
+      targetClass: "Mage",
+      costReduction: true,
+      requiresTarget: false,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38009,
+    name: "Odin's Arcane Mastery",
+    manaCost: 8,
+    description: "Deal 8 damage to an enemy. Draw 3 cards. Gain 3 Armor.",
+    flavorText: "The Allfather's knowledge encompasses all schools of magic.",
+    type: "spell",
+    rarity: "mythic",
+    class: "Mage",
+    spellEffect: {
+      type: "damage_draw_armor",
+      value: 8,
+      drawValue: 3,
+      armorValue: 3,
+      targetType: "any",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38010,
+    name: "Hyperion, Sun Archmage",
+    manaCost: 7,
+    attack: 5,
+    health: 5,
+    description: "Spell Damage +3. Your spells cost (2) less.",
+    flavorText: "Titan of the sun, his radiance fuels every incantation.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Mage",
+    race: "Titan",
+    keywords: ["spell_damage"],
+    aura: {
+      type: "spell_cost_reduction",
+      value: 2
+    },
+    collectible: true,
+    set: "core"
   }
 ];

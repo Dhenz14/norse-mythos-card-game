@@ -163,8 +163,7 @@ export const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
         {/* Card effects go here */}
         {hasTaunt && (
           <div className="absolute inset-0 z-10 pointer-events-none">
-            <div className="absolute inset-0 border-4 border-yellow-700 rounded-lg" 
-              style={{ borderImage: 'url("/frames/taunt-border.png") 30 stretch' }}>
+            <div className="absolute inset-0 border-4 border-yellow-700 rounded-lg shadow-[inset_0_0_8px_rgba(180,140,20,0.5)]">
             </div>
           </div>
         )}

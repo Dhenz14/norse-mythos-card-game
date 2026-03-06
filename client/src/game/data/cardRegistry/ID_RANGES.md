@@ -85,6 +85,24 @@ Reserved ID ranges for card organization:
 | 36401-36406 | Paladin Expansion | Curve fill, Divine Shield synergy |
 | 95082-95084 | Alt-Skin Super Minions | Selene, Hecate, Helios hero-linked minions |
 
+## Class Completeness Expansion (v2)
+
+| Range | Category | Description |
+|-------|----------|-------------|
+| 38001-38010 | Mage Expansion II | Arcane package, Spell Damage synergy (10 cards) |
+| 38101-38110 | DeathKnight Expansion II | Rune system, Corpse mechanic (10 cards) |
+| 38201-38208 | Shaman Expansion | Evolve, totem synergy, overload payoffs (8 cards) |
+| 38301-38308 | Paladin Expansion II | Token generation, Divine Shield synergy (8 cards) |
+| 38401-38408 | Druid Expansion | Ramp, Innervate, first weapon, Treant engine (8 cards) |
+| 38501-38506 | Priest Expansion | Shadow spells package (6 cards) |
+| 38601-38608 | Hunter Expansion | Kill Command, face damage, Tracking, traps (8 cards) |
+| 38701-38707 | Necromancer Expansion II | Shadow damage, mass resurrection (7 cards) |
+| 38801-38805 | Berserker Expansion II | Lifesteal minions, Outcast payoffs (5 cards) |
+| 38901-38904 | Warlock Expansion | Zoo 1-drops, discard payoffs (4 cards) |
+| 39001-39004 | Rogue Expansion II | Burgle/thief, card draw (4 cards) |
+| 39101-39104 | Warrior Expansion | Whirlwind effects, Enrage enablers (4 cards) |
+| 32101-32106 | Greek Mythic Minions | Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa |
+
 ## Norse Mechanic Card Ranges
 
 | Range | Category | Description |

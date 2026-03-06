@@ -2363,44 +2363,45 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     fixedCardIds: [7102, 7103, 7104, 7105, 7106, 7107, 7108, 7109, 7110, 7200, 95079], // Hunter spells + The Ceryneian Hind
     heroPower: {
       id: 'artemis-power',
-      name: 'Call of the Wild',
-      description: 'Summon a 1/1 Hunting Hound with Charge.',
+      name: 'Silver Arrow',
+      description: 'Deal 1 damage to the enemy hero. Give all friendly pets +1 Attack this turn.',
       cost: 2,
       targetType: 'none',
-      effectType: 'summon',
-      summonData: { name: 'Hunting Hound', attack: 1, health: 1, keywords: ['charge'], race: 'Beast' }
+      effectType: 'damage_hero_and_buff_pets',
+      value: 1,
+      secondaryValue: 1
     },
     weaponUpgrade: {
       id: 90041,
       name: 'Bow of the Moon',
       heroId: 'hero-artemis',
       manaCost: 5,
-      description: 'Summon three 2/2 Wolves with Charge. Permanently upgrade your hero power.',
+      description: 'Deal 3 damage to the enemy hero. Give all friendly pets +2 Attack permanently. Permanently upgrade your hero power.',
       immediateEffect: {
-        type: 'summon_multiple',
+        type: 'damage_hero_and_buff_pets',
         value: 3,
-        summonData: { name: 'Wolf', attack: 2, health: 2, keywords: ['charge'], race: 'Beast' },
-        description: 'Summon three 2/2 Wolves with Charge.'
+        description: 'Deal 3 damage to the enemy hero. Give all friendly pets +2 Attack permanently.'
       },
       upgradedPowerId: 'artemis-power-upgraded'
     },
     upgradedHeroPower: {
       id: 'artemis-power-upgraded',
-      name: 'Call of the Wild+',
-      description: 'Summon a 2/2 Hunting Hound with Charge.',
+      name: 'Silver Arrow+',
+      description: 'Deal 2 damage to the enemy hero. Give all friendly pets +1 Attack this turn.',
       cost: 2,
       targetType: 'none',
-      effectType: 'summon',
-      summonData: { name: 'Hunting Hound', attack: 2, health: 2, keywords: ['charge'], race: 'Beast' },
+      effectType: 'damage_hero_and_buff_pets',
+      value: 2,
+      secondaryValue: 1,
       isUpgraded: true,
       baseHeroPowerId: 'artemis-power'
     },
     passive: {
       id: 'artemis-passive',
-      name: 'Pack Leader',
-      description: 'Your Beasts have +1 Attack.',
+      name: 'Mistress of Beasts',
+      description: 'Your pets have +1 Attack.',
       trigger: 'always',
-      condition: { minionRace: 'beast' },
+      condition: { minionIsPet: true },
       effectType: 'buff_attack',
       value: 1
     }
@@ -2948,6 +2949,177 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
       trigger: 'always',
       condition: { minionElement: 'fire', hasKeyword: 'taunt' },
       effectType: 'buff_health',
+      value: 1
+    }
+  },
+
+  // ==================== 53. PROMETHEUS ====================
+  'hero-prometheus': {
+    id: 'hero-prometheus',
+    name: 'Prometheus',
+    title: 'The Fire-Bringer',
+    element: 'fire',
+    weakness: 'water',
+    startingHealth: 100,
+    description: 'The far-seeing Titan who stole fire from heaven and gave it to humanity, suffering eternal punishment for his defiance.',
+    lore: 'Chained to a rock in the Caucasus, an eagle devours his liver each day — and each night it regrows. His gift of fire lifted mortals from darkness, but his foresight could not save him from Zeus\'s wrath. Hesiod wrote: "He stole the far-seen gleam of unwearying fire in a hollow fennel stalk." (Theogony 566)',
+    hasSpells: true,
+    heroClass: 'druid',
+    fixedCardIds: [],
+    heroPower: {
+      id: 'prometheus-power',
+      name: 'Stolen Flame',
+      description: 'Deal 2 damage to your hero. Give a friendly minion +2 Attack.',
+      cost: 2,
+      targetType: 'friendly_minion',
+      effectType: 'self_damage_and_buff',
+      selfDamage: 2,
+      value: 2
+    },
+    weaponUpgrade: {
+      id: 90053,
+      name: 'Fennel Stalk of Heaven',
+      heroId: 'hero-prometheus',
+      manaCost: 5,
+      description: 'Give all friendly minions +2 Attack. Draw 2 cards. Permanently upgrade your hero power.',
+      immediateEffect: {
+        type: 'buff_aoe_and_draw',
+        value: 2,
+        drawValue: 2,
+        description: 'Give all friendly minions +2 Attack. Draw 2 cards.'
+      },
+      upgradedPowerId: 'prometheus-power-upgraded'
+    },
+    upgradedHeroPower: {
+      id: 'prometheus-power-upgraded',
+      name: 'Stolen Flame+',
+      description: 'Deal 1 damage to your hero. Give a friendly minion +2 Attack.',
+      cost: 2,
+      targetType: 'friendly_minion',
+      effectType: 'self_damage_and_buff',
+      selfDamage: 1,
+      value: 2,
+      isUpgraded: true,
+      baseHeroPowerId: 'prometheus-power'
+    },
+    passive: {
+      id: 'prometheus-passive',
+      name: 'Gift of Fire',
+      description: 'Whenever you take damage on your turn, give a random friendly minion +1 Attack.',
+      trigger: 'on_hero_damage',
+      effectType: 'buff_random_friendly',
+      value: 1
+    }
+  },
+
+  // ==================== 54. HERACLES ====================
+  'hero-heracles': {
+    id: 'hero-heracles',
+    name: 'Heracles',
+    title: 'The Greatest Hero',
+    element: 'fire',
+    weakness: 'dark',
+    startingHealth: 100,
+    description: 'Son of Zeus and Alcmene, the mightiest mortal who ever lived. His twelve labors are the measure of all heroism.',
+    lore: 'Driven mad by Hera, he slew his own family — and undertook twelve impossible labors as penance. He strangled the Nemean Lion, slew the Hydra, captured Cerberus from the underworld. In death, Zeus raised him to Olympus. Apollodorus wrote: "He surpassed all men of that age in size and strength." (Library 2.4.9)',
+    hasSpells: true,
+    heroClass: 'warrior',
+    fixedCardIds: [],
+    heroPower: {
+      id: 'heracles-power',
+      name: 'Lion\'s Hide',
+      description: 'Gain 2 Armor.',
+      cost: 2,
+      targetType: 'none',
+      effectType: 'gain_armor',
+      value: 2
+    },
+    weaponUpgrade: {
+      id: 90054,
+      name: 'Club of Nemea',
+      heroId: 'hero-heracles',
+      manaCost: 5,
+      description: 'Gain 8 Armor. Deal 4 damage to an enemy. Permanently upgrade your hero power.',
+      immediateEffect: {
+        type: 'armor_and_damage',
+        value: 8,
+        description: 'Gain 8 Armor. Deal 4 damage to an enemy.'
+      },
+      upgradedPowerId: 'heracles-power-upgraded'
+    },
+    upgradedHeroPower: {
+      id: 'heracles-power-upgraded',
+      name: 'Lion\'s Hide+',
+      description: 'Gain 3 Armor.',
+      cost: 2,
+      targetType: 'none',
+      effectType: 'gain_armor',
+      value: 3,
+      isUpgraded: true,
+      baseHeroPowerId: 'heracles-power'
+    },
+    passive: {
+      id: 'heracles-passive',
+      name: 'Twelve Labors',
+      description: 'After you destroy an enemy minion, gain +1 Armor.',
+      trigger: 'on_enemy_minion_death',
+      effectType: 'gain_armor',
+      value: 1
+    }
+  },
+
+  // ==================== 55. RHEA ====================
+  'hero-rhea': {
+    id: 'hero-rhea',
+    name: 'Rhea',
+    title: 'Mother of the Gods',
+    element: 'grass',
+    weakness: 'fire',
+    startingHealth: 100,
+    description: 'Titaness and mother of the six Olympian gods. She saved Zeus from Cronus by hiding him in a cave on Crete.',
+    lore: 'The great mother who wrapped a stone in swaddling clothes and fed it to Cronus while her youngest son grew strong in secret. Her courage saved the future. Without Rhea\'s deception, there would be no Olympus, no Zeus, no age of gods. Hesiod wrote: "She bore splendid children — Hestia, Demeter, Hera, Hades, Poseidon, and Zeus." (Theogony 453-457)',
+    hasSpells: true,
+    heroClass: 'priest',
+    fixedCardIds: [],
+    heroPower: {
+      id: 'rhea-power',
+      name: 'Mother\'s Aegis',
+      description: 'Restore 3 Health to a friendly character.',
+      cost: 2,
+      targetType: 'friendly_character',
+      effectType: 'heal',
+      value: 3
+    },
+    weaponUpgrade: {
+      id: 90055,
+      name: 'Swaddling Stone',
+      heroId: 'hero-rhea',
+      manaCost: 5,
+      description: 'Restore 5 Health to all friendly characters. Give all friendly minions +1/+1. Permanently upgrade your hero power.',
+      immediateEffect: {
+        type: 'heal_all_and_buff',
+        value: 5,
+        description: 'Restore 5 Health to all friendly characters. Give all friendly minions +1/+1.'
+      },
+      upgradedPowerId: 'rhea-power-upgraded'
+    },
+    upgradedHeroPower: {
+      id: 'rhea-power-upgraded',
+      name: 'Mother\'s Aegis+',
+      description: 'Restore 4 Health to a friendly character.',
+      cost: 2,
+      targetType: 'friendly_character',
+      effectType: 'heal',
+      value: 4,
+      isUpgraded: true,
+      baseHeroPowerId: 'rhea-power'
+    },
+    passive: {
+      id: 'rhea-passive',
+      name: 'Titan Mother',
+      description: 'When you restore Health, restore +1 additional.',
+      trigger: 'on_heal',
+      effectType: 'heal_bonus',
       value: 1
     }
   }

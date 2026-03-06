@@ -901,5 +901,69 @@ export const warriorCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Whirlwind & Enrage Expansion ===
+  {
+    id: 39101,
+    name: "Whirlwind of Tyr",
+    manaCost: 1,
+    description: "Deal 1 damage to all minions.",
+    type: "spell",
+    rarity: "common",
+    class: "Warrior",
+    spellEffect: {
+      type: "damage",
+      value: 1,
+      targetType: "all_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39102,
+    name: "Raging Berserker",
+    manaCost: 3,
+    attack: 3,
+    health: 4,
+    description: "Enrage: +3 Attack.",
+    type: "minion",
+    rarity: "common",
+    class: "Warrior",
+    keywords: ["enrage"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39103,
+    name: "Death Bite",
+    manaCost: 4,
+    attack: 4,
+    durability: 2,
+    description: "Deathrattle: Deal 1 damage to all minions.",
+    type: "weapon",
+    rarity: "rare",
+    class: "Warrior",
+    keywords: ["deathrattle"],
+    deathrattle: {
+      type: "damage",
+      value: 1,
+      targetType: "all_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39104,
+    name: "Patron of Valhalla",
+    manaCost: 5,
+    attack: 3,
+    health: 3,
+    description: "Frenzy: Summon a copy of this minion.",
+    type: "minion",
+    rarity: "rare",
+    class: "Warrior",
+    keywords: ["frenzy"],
+    collectible: true,
+    set: "core"
   }
 ];

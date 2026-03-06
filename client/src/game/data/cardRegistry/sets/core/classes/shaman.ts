@@ -915,4 +915,152 @@ export const shamanCards: CardData[] = [
    * Migrated from client/src/game/data/overloadCards.ts on 2026-02-02
    * Contains Shaman Overload mechanic cards
    */
+  // === Evolve, Totem & Overload Expansion ===
+  {
+    id: 38201,
+    name: "Mjölnir's Bolt",
+    manaCost: 1,
+    type: "spell",
+    rarity: "common",
+    description: "Deal 3 damage. Overload: (1)",
+    keywords: ["overload"],
+    class: "Shaman",
+    overload: { amount: 1 },
+    spellEffect: {
+      type: "damage",
+      value: 3,
+      targetType: "any",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38202,
+    name: "Ancestral Totem",
+    manaCost: 2,
+    attack: 0,
+    health: 4,
+    type: "minion",
+    rarity: "common",
+    description: "At the end of your turn, give a random friendly minion +1/+1.",
+    race: "Spirit",
+    class: "Shaman",
+    effects: [{
+      type: "end_of_turn",
+      endOfTurnEffect: "buff_random_friendly",
+      value: 1
+    }],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38203,
+    name: "Totemic Surge",
+    manaCost: 0,
+    type: "spell",
+    rarity: "common",
+    description: "Summon two 1/1 Spirit Totems.",
+    class: "Shaman",
+    spellEffect: {
+      type: "summon_token",
+      value: 2,
+      summonName: "Spirit Totem",
+      summonAttack: 1,
+      summonHealth: 1,
+      summonRace: "Spirit",
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38204,
+    name: "Primal Fury",
+    manaCost: 5,
+    type: "spell",
+    rarity: "rare",
+    description: "Give your minions +3 Attack this turn.",
+    class: "Shaman",
+    spellEffect: {
+      type: "buff_attack",
+      value: 3,
+      targetType: "all_friendly_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38205,
+    name: "Runic Evolution",
+    manaCost: 2,
+    type: "spell",
+    rarity: "rare",
+    description: "Transform a friendly minion into a random one that costs (2) more.",
+    class: "Shaman",
+    spellEffect: {
+      type: "evolve",
+      value: 2,
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38206,
+    name: "Gaia's Earthquake",
+    manaCost: 4,
+    type: "spell",
+    rarity: "epic",
+    description: "Silence and destroy all enemy minions with 2 or less Attack. Overload: (2)",
+    keywords: ["overload"],
+    class: "Shaman",
+    overload: { amount: 2 },
+    spellEffect: {
+      type: "mass_destroy",
+      condition: "attack_2_or_less",
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38207,
+    name: "Spirit of the Tides",
+    manaCost: 3,
+    attack: 2,
+    health: 3,
+    type: "minion",
+    rarity: "rare",
+    description: "Your Overload cards cost (1) less. Overload payoff: After you play an Overloaded card, draw a card.",
+    race: "Spirit",
+    class: "Shaman",
+    aura: {
+      type: "overload_cost_reduction",
+      value: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38208,
+    name: "Aegir, Tidal Titan",
+    manaCost: 8,
+    attack: 6,
+    health: 8,
+    type: "minion",
+    rarity: "mythic",
+    description: "Battlecry: Transform all enemy minions into 1/1 Frogs.",
+    race: "Elemental",
+    class: "Shaman",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "mass_transform",
+      transformTo: "frog",
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
 ];

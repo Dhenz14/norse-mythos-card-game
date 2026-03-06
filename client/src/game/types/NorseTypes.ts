@@ -161,6 +161,9 @@ export type HeroPowerEffectType =
   | 'bounce_and_damage_hero'  // Return to hand and damage hero (Shu+)
   | 'bounce'                  // Return minion to board/hand (generic bounce)
   | 'bounce_damage'           // Bounce minion and deal damage
+  // Greek-specific effect types
+  | 'damage_hero_and_buff_pets' // Deal damage to enemy hero and buff friendly pets (Artemis)
+  | 'self_damage_and_buff'     // Take damage and buff a friendly minion (Prometheus)
   // Japanese-specific effect types
   | 'sacrifice_summon'        // Destroy friendly and summon (Izanami)
   | 'mana_ramp'               // Gain mana crystals (Inari)
@@ -308,6 +311,8 @@ export interface HeroPassiveCondition {
   // Egyptian-specific conditions
   evenMinions?: boolean;        // For Ma'at - even number of minions
   maxAttack?: number;           // For conditional destroy effects
+  // Greek-specific conditions
+  minionIsPet?: boolean;        // For pet-specific effects (Artemis)
 }
 
 /**
@@ -339,7 +344,10 @@ export type HeroPassiveEffectType =
   | 'copy'                  // Copy opponent cards
   // Egyptian-specific effect types
   | 'draw_card'             // Draw a card (Ma'at)
-  | 'heal_all_friendly';    // Heal all friendly minions (Khepri)
+  | 'heal_all_friendly'     // Heal all friendly minions (Khepri)
+  // Greek-specific effect types
+  | 'buff_random_friendly'  // Buff a random friendly minion (Prometheus)
+  | 'heal_bonus';           // Bonus healing (Rhea)
 
 /**
  * Hero passive effect

@@ -715,5 +715,156 @@ export const paladinCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Token & Divine Shield Expansion ===
+  {
+    id: 38301,
+    name: "Call to Valhalla",
+    manaCost: 3,
+    description: "Summon three 1/1 Einherjar Recruits with Divine Shield.",
+    type: "spell",
+    rarity: "rare",
+    class: "Paladin",
+    spellEffect: {
+      type: "summon_token",
+      value: 3,
+      summonName: "Einherjar Recruit",
+      summonAttack: 1,
+      summonHealth: 1,
+      grantKeywords: ["divine_shield"]
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38302,
+    name: "Valhalla's Decree",
+    manaCost: 4,
+    description: "Give all friendly minions +1/+1. If you have 3+ minions, also give them Divine Shield.",
+    type: "spell",
+    rarity: "rare",
+    class: "Paladin",
+    spellEffect: {
+      type: "buff_conditional",
+      buffAttack: 1,
+      buffHealth: 1,
+      condition: "minion_count_3",
+      bonusKeyword: "divine_shield",
+      targetType: "all_friendly_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38303,
+    name: "Baldur's Hammer",
+    manaCost: 4,
+    attack: 4,
+    durability: 2,
+    description: "Divine Shield (first hit takes no durability loss).",
+    type: "weapon",
+    rarity: "rare",
+    class: "Paladin",
+    keywords: ["divine_shield"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38304,
+    name: "Shieldmaiden of Asgard",
+    manaCost: 2,
+    attack: 2,
+    health: 2,
+    description: "Battlecry: Summon a 1/1 Einherjar Recruit.",
+    type: "minion",
+    rarity: "common",
+    class: "Paladin",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "summon_token",
+      summonName: "Einherjar Recruit",
+      summonAttack: 1,
+      summonHealth: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38305,
+    name: "Valkyrie Quartermaster",
+    manaCost: 5,
+    attack: 2,
+    health: 5,
+    description: "Battlecry: Give all 1/1 minions +2/+2.",
+    type: "minion",
+    rarity: "rare",
+    class: "Paladin",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "buff_tokens",
+      targetType: "all_1_1_minions",
+      buffAttack: 2,
+      buffHealth: 2
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38306,
+    name: "Oathkeeper of Tyr",
+    manaCost: 3,
+    attack: 3,
+    health: 3,
+    description: "Divine Shield. After this minion loses Divine Shield, gain +2/+2.",
+    type: "minion",
+    rarity: "common",
+    class: "Paladin",
+    keywords: ["divine_shield"],
+    triggerEffect: {
+      type: "self_buff",
+      trigger: "lose_divine_shield",
+      buffAttack: 2,
+      buffHealth: 2
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38307,
+    name: "Libram of Radiance",
+    manaCost: 6,
+    description: "Restore a minion to full Health. Give it Divine Shield and +4/+4.",
+    type: "spell",
+    rarity: "epic",
+    class: "Paladin",
+    spellEffect: {
+      type: "heal_and_buff",
+      targetType: "friendly_minion",
+      requiresTarget: true,
+      buffAttack: 4,
+      buffHealth: 4,
+      grantKeywords: ["divine_shield"]
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38308,
+    name: "Týr's Judgment",
+    manaCost: 8,
+    attack: 6,
+    health: 8,
+    description: "Taunt. Divine Shield. Battlecry: Set all enemy minions' Attack to 1.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Paladin",
+    keywords: ["taunt", "divine_shield", "battlecry"],
+    battlecry: {
+      type: "set_attack",
+      value: 1,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
   }
 ];

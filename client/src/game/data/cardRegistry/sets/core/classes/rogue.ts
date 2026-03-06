@@ -1004,5 +1004,74 @@ export const rogueCards: CardData[] = [
     deathrattle: { type: "add_copy_to_hand" },
     collectible: true,
     set: "core"
+  },
+  // === Burgle & Draw Expansion ===
+  {
+    id: 39001,
+    name: "Pilfer of Loki",
+    manaCost: 1,
+    description: "Add a random card from your opponent's class to your hand.",
+    type: "spell",
+    rarity: "common",
+    class: "Rogue",
+    spellEffect: {
+      type: "add_random_class_card",
+      source: "opponent_class",
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39002,
+    name: "Hallowed Fencer",
+    manaCost: 2,
+    attack: 2,
+    health: 3,
+    description: "Battlecry: Add a random weapon from another class to your hand.",
+    type: "minion",
+    rarity: "rare",
+    class: "Rogue",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "add_random_weapon",
+      source: "other_class",
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39003,
+    name: "Fan of Knives",
+    manaCost: 3,
+    description: "Deal 1 damage to all enemy minions. Draw a card.",
+    type: "spell",
+    rarity: "common",
+    class: "Rogue",
+    spellEffect: {
+      type: "damage_and_draw",
+      value: 1,
+      drawValue: 1,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39004,
+    name: "Sprint of Shadows",
+    manaCost: 7,
+    description: "Draw 4 cards.",
+    type: "spell",
+    rarity: "rare",
+    class: "Rogue",
+    spellEffect: {
+      type: "draw",
+      value: 4,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
   }
 ];

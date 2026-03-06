@@ -996,5 +996,168 @@ export const druidCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Ramp, Treant & Choose One Expansion ===
+  {
+    id: 38401,
+    name: "Yggdrasil's Roots",
+    manaCost: 3,
+    type: "spell",
+    rarity: "common",
+    description: "Gain an empty Mana Crystal. Draw a card.",
+    flavorText: "The World Tree's roots reach into every realm, drawing sustenance from all Nine Worlds.",
+    class: "Druid",
+    spellEffect: {
+      type: "gain_mana_and_draw",
+      value: 1,
+      drawValue: 1,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38402,
+    name: "Sap of the World Tree",
+    manaCost: 0,
+    type: "spell",
+    rarity: "rare",
+    description: "Gain 2 Mana Crystals this turn only.",
+    flavorText: "Golden sap drips from Yggdrasil's bark, brimming with fleeting cosmic energy.",
+    class: "Druid",
+    spellEffect: {
+      type: "gain_mana",
+      value: 2,
+      isTemporaryMana: true,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38403,
+    name: "Norn's Shears",
+    manaCost: 1,
+    attack: 1,
+    durability: 3,
+    type: "weapon",
+    rarity: "epic",
+    description: "After your hero attacks, gain an empty Mana Crystal.",
+    flavorText: "The Norns cut threads of fate — and from each severed strand, new growth begins.",
+    class: "Druid",
+    weaponEffect: {
+      trigger: "after_hero_attack",
+      effect: "gain_mana",
+      value: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38404,
+    name: "Force of Yggdrasil",
+    manaCost: 6,
+    type: "spell",
+    rarity: "epic",
+    description: "Summon three 2/2 Treants with Rush.",
+    flavorText: "The World Tree unleashes its guardians when the Nine Realms are threatened.",
+    class: "Druid",
+    spellEffect: {
+      type: "summon_token",
+      value: 3,
+      summonName: "Treant",
+      summonAttack: 2,
+      summonHealth: 2,
+      grantKeywords: ["rush"]
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38405,
+    name: "Verdant Protector",
+    manaCost: 4,
+    attack: 2,
+    health: 6,
+    type: "minion",
+    rarity: "rare",
+    description: "Taunt. Choose One: Give adjacent minions +2/+2; or Summon a copy of this minion.",
+    flavorText: "Where one root stands firm, the forest follows.",
+    class: "Druid",
+    keywords: ["taunt", "choose_one"],
+    chooseOneOptions: [
+      {
+        name: "Empower",
+        description: "+2/+2 to adjacent minions",
+        effect: "buff_adjacent",
+        buffAttack: 2,
+        buffHealth: 2
+      },
+      {
+        name: "Multiply",
+        description: "Summon a copy",
+        effect: "summon_copy"
+      }
+    ],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38406,
+    name: "Ironbark Guardian",
+    manaCost: 8,
+    attack: 8,
+    health: 8,
+    type: "minion",
+    rarity: "common",
+    description: "Taunt. Can't be targeted by spells or Hero Powers.",
+    flavorText: "Clad in bark harder than dwarven steel, it answers to no sorcery.",
+    class: "Druid",
+    keywords: ["taunt", "elusive"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38407,
+    name: "Nidhogg's Infestation",
+    manaCost: 7,
+    type: "spell",
+    rarity: "mythic",
+    description: "Deal 5 damage to an enemy. Draw 3 cards. Gain 5 Armor.",
+    flavorText: "The dragon gnaws at Yggdrasil's roots, and from the decay springs terrible power.",
+    class: "Druid",
+    spellEffect: {
+      type: "damage_draw_armor",
+      value: 5,
+      drawValue: 3,
+      armorValue: 5,
+      targetType: "any",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38408,
+    name: "Freya's Warden",
+    manaCost: 5,
+    attack: 4,
+    health: 4,
+    type: "minion",
+    rarity: "rare",
+    race: "Beast",
+    description: "Battlecry: For each Beast you control, summon a 2/2 Treant.",
+    flavorText: "Freya's chosen guardian commands the wild — where beasts gather, forests rise.",
+    class: "Druid",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "summon_per_condition",
+      condition: "beast_count",
+      summonName: "Treant",
+      summonAttack: 2,
+      summonHealth: 2
+    },
+    collectible: true,
+    set: "core"
   }
 ];

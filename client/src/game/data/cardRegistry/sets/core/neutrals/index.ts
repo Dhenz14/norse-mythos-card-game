@@ -16,6 +16,7 @@ import { petSynergyCards } from './petSynergyCards';
 import { dragonSynergyCards } from './dragonSynergyCards';
 import { norseMechanicSynergyCards } from './norseMechanicSynergyCards';
 import { deepKeywordCards } from './deepKeywordCards';
+import { greekMythicMinions } from './greekMythicMinions';
 
 // Core Set - Neutral Cards
 // Organized by rarity following standard CCG conventions
@@ -10314,7 +10315,8 @@ export const coreNeutralCards: CardData[] = [
   ...petSynergyCards,
   ...dragonSynergyCards,
   ...norseMechanicSynergyCards,
-  ...deepKeywordCards
+  ...deepKeywordCards,
+  ...greekMythicMinions
 ];
 
 export { allYggdrasilGolemCards, oldGodsCards, allAdaptCards, allMechanicCards, allLegendaryCards, allSpellCards };

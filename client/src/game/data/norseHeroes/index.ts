@@ -165,13 +165,14 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-sinmara': 'necromancer',
   'hero-hel': 'necromancer',
 
-  // ROOK - Warrior (7 heroes)
+  // ROOK - Warrior (8 heroes)
   'hero-thor': 'warrior',
   'hero-thorgrim': 'warrior',
   'hero-valthrud': 'warrior',
   'hero-vili': 'warrior',
   'hero-ares': 'warrior',
   'hero-hephaestus': 'warrior',
+  'hero-heracles': 'warrior',
   'hero-logi': 'warrior',
 
   // ROOK - Death Knight (3 heroes)
@@ -187,7 +188,7 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-solvi': 'paladin',
   'hero-eldrin': 'paladin',
   
-  // BISHOP - Priest (8 heroes)
+  // BISHOP - Priest (9 heroes)
   'hero-freya': 'priest',
   'hero-eir': 'priest',
   'hero-frey': 'priest',
@@ -196,13 +197,15 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-hera': 'priest',
   'hero-eros': 'priest',
   'hero-hestia': 'priest',
+  'hero-rhea': 'priest',
   
-  // BISHOP - Druid (6 heroes)
+  // BISHOP - Druid (7 heroes)
   'hero-idunn': 'druid',
   'hero-ve': 'berserker',
   'hero-fjorgyn': 'druid',
   'hero-sigyn': 'druid',
   'hero-demeter': 'druid',
+  'hero-prometheus': 'druid',
   'hero-blainn': 'druid',
   
   // BISHOP - Shaman (5 heroes)

@@ -719,5 +719,132 @@ export const necromancerCards: CardData[] = [
     deathrattle: { type: "summon_devoured_copies" },
     collectible: true,
     set: "core"
+  },
+
+  // === Shadow & Mass Resurrection Expansion ===
+
+  {
+    id: 38701,
+    name: "Shadow Bolt of Hel",
+    manaCost: 3,
+    description: "Deal 4 damage to a minion.",
+    type: "spell",
+    rarity: "common",
+    class: "Necromancer",
+    spellEffect: {
+      type: "damage",
+      value: 4,
+      targetType: "enemy_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38702,
+    name: "Dark Pact",
+    manaCost: 1,
+    description: "Destroy a friendly minion. Restore 4 Health to your hero.",
+    type: "spell",
+    rarity: "common",
+    class: "Necromancer",
+    spellEffect: {
+      type: "destroy_friendly_and_heal",
+      targetType: "friendly_minion",
+      requiresTarget: true,
+      healValue: 4
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38703,
+    name: "Mass Resurrection",
+    manaCost: 9,
+    description: "Summon 3 random friendly minions that died this game.",
+    type: "spell",
+    rarity: "epic",
+    class: "Necromancer",
+    spellEffect: {
+      type: "mass_resurrect",
+      value: 3,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38704,
+    name: "Shadow Nova",
+    manaCost: 5,
+    description: "Deal 3 damage to all enemy minions.",
+    type: "spell",
+    rarity: "common",
+    class: "Necromancer",
+    spellEffect: {
+      type: "damage",
+      value: 3,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38705,
+    name: "Undead Horde Commander",
+    manaCost: 5,
+    attack: 3,
+    health: 5,
+    description: "Your Undead minions have +2 Attack.",
+    type: "minion",
+    rarity: "rare",
+    class: "Necromancer",
+    race: "Undead",
+    aura: {
+      type: "buff_attack",
+      value: 2,
+      target: "friendly_undead"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38706,
+    name: "Plague of Helheim",
+    manaCost: 7,
+    description: "Destroy all minions. Summon a 1/1 Skeleton for each enemy minion destroyed.",
+    type: "spell",
+    rarity: "epic",
+    class: "Necromancer",
+    spellEffect: {
+      type: "destroy_all_and_summon",
+      targetType: "all_minions",
+      summonName: "Skeleton",
+      summonAttack: 1,
+      summonHealth: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38707,
+    name: "Hel's Vanguard",
+    manaCost: 8,
+    attack: 7,
+    health: 7,
+    description: "Battlecry: Summon copies of all Undead in your graveyard (up to 6). They have 1/1 stats.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Necromancer",
+    race: "Undead",
+    keywords: ["battlecry"],
+    battlecry: {
+      type: "mass_resurrect_as_copies",
+      condition: { race: "Undead" },
+      maxCount: 6,
+      setStats: { attack: 1, health: 1 }
+    },
+    collectible: true,
+    set: "core"
   }
 ];
