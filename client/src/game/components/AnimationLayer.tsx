@@ -367,6 +367,24 @@ export const AnimationLayer: React.FC = () => {
             {animation.type === 'card_draw_notification' && (
               <CardDrawNotification animation={animation} />
             )}
+            {animation.type === 'battlecry' && animation.position && (
+              <BattlecryEffect animation={animation} />
+            )}
+            {animation.type === 'deathrattle' && animation.position && (
+              <DeathrattleEffect animation={animation} />
+            )}
+            {animation.type === 'summon' && animation.position && (
+              <SummonEffect animation={animation} />
+            )}
+            {animation.type === 'buff' && animation.position && (
+              <BuffEffect animation={animation} />
+            )}
+            {animation.type === 'pet_ascension' && animation.position && (
+              <PetAscensionEffect animation={animation} />
+            )}
+            {animation.type === 'pet_apotheosis' && animation.position && (
+              <PetApotheosisEffect animation={animation} />
+            )}
           </React.Fragment>
         ))}
       </AnimatePresence>
@@ -693,6 +711,228 @@ const DeathAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
         ease: "easeOut"
       }}
     />
+  );
+};
+
+const BattlecryEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+  const pos = animation.position!;
+  return (
+    <>
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 80, height: 80,
+          left: pos.x - 40, top: pos.y - 40,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,215,0,0.7) 0%, rgba(255,165,0,0.4) 50%, transparent 70%)',
+          zIndex: 100
+        }}
+        initial={{ scale: 0.2, opacity: 0 }}
+        animate={{ scale: [0.2, 1.5, 0], opacity: [0, 0.9, 0] }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      />
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: 4, height: 4,
+            left: pos.x, top: pos.y,
+            borderRadius: '50%',
+            backgroundColor: '#fbbf24',
+            zIndex: 101
+          }}
+          animate={{
+            x: [0, Math.cos(i * Math.PI / 3) * 50],
+            y: [0, Math.sin(i * Math.PI / 3) * 50],
+            opacity: [1, 0]
+          }}
+          transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.03 }}
+        />
+      ))}
+    </>
+  );
+};
+
+const DeathrattleEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+  const pos = animation.position!;
+  return (
+    <>
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 70, height: 70,
+          left: pos.x - 35, top: pos.y - 35,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(100,0,200,0.7) 0%, rgba(60,0,120,0.4) 50%, transparent 70%)',
+          zIndex: 100
+        }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: [0, 1.3, 0], opacity: [0, 0.8, 0] }}
+        transition={{ duration: 1, ease: 'easeOut' }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute',
+          left: pos.x - 15, top: pos.y - 15,
+          width: 30, height: 30,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '24px', zIndex: 102
+        }}
+        initial={{ scale: 0 }}
+        animate={{ scale: [0, 1.3, 1], opacity: [0, 1, 0] }}
+        transition={{ duration: 1 }}
+      >
+        &#9760;
+      </motion.div>
+    </>
+  );
+};
+
+const SummonEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+  const pos = animation.position!;
+  return (
+    <>
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 80, height: 120,
+          left: pos.x - 40, top: pos.y - 80,
+          background: 'linear-gradient(to bottom, rgba(255,255,200,0.6), transparent)',
+          zIndex: 99
+        }}
+        initial={{ scaleY: 0, opacity: 0, transformOrigin: 'center bottom' }}
+        animate={{ scaleY: [0, 1, 0], opacity: [0, 0.7, 0] }}
+        transition={{ duration: 0.8, times: [0, 0.4, 1] }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 50, height: 50,
+          left: pos.x - 25, top: pos.y - 25,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,255,200,0.8), transparent)',
+          zIndex: 100
+        }}
+        initial={{ scale: 0 }}
+        animate={{ scale: [0, 1.5, 0], opacity: [0, 0.8, 0] }}
+        transition={{ duration: 0.8 }}
+      />
+    </>
+  );
+};
+
+const BuffEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+  const pos = animation.position!;
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        width: 60, height: 60,
+        left: pos.x - 30, top: pos.y - 30,
+        borderRadius: '50%',
+        border: '3px solid rgba(100, 200, 100, 0.8)',
+        boxShadow: '0 0 20px rgba(100, 200, 100, 0.6)',
+        zIndex: 100
+      }}
+      initial={{ scale: 0.3, opacity: 0 }}
+      animate={{ scale: [0.3, 1.3, 0], opacity: [0, 0.9, 0] }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    />
+  );
+};
+
+const PetAscensionEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+  const pos = animation.position!;
+  return (
+    <>
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 90, height: 90,
+          left: pos.x - 45, top: pos.y - 45,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0,220,255,0.6) 0%, rgba(120,0,255,0.3) 50%, transparent 70%)',
+          zIndex: 100
+        }}
+        initial={{ scale: 0 }}
+        animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      />
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: 3, height: 3,
+            left: pos.x, top: pos.y,
+            borderRadius: '50%',
+            backgroundColor: '#00dcff',
+            zIndex: 101
+          }}
+          animate={{
+            x: [0, Math.cos(i * Math.PI / 4) * 45],
+            y: [0, Math.sin(i * Math.PI / 4) * 45 - 20],
+            opacity: [1, 0]
+          }}
+          transition={{ duration: 0.7, ease: 'easeOut', delay: i * 0.04 }}
+        />
+      ))}
+    </>
+  );
+};
+
+const PetApotheosisEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+  const pos = animation.position!;
+  return (
+    <>
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 120, height: 120,
+          left: pos.x - 60, top: pos.y - 60,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(0,220,255,0.5) 30%, rgba(160,0,255,0.3) 60%, transparent 70%)',
+          zIndex: 100
+        }}
+        initial={{ scale: 0 }}
+        animate={{ scale: [0, 2, 0], opacity: [0, 1, 0] }}
+        transition={{ duration: 1.5, ease: 'easeOut' }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute',
+          width: 80, height: 200,
+          left: pos.x - 40, top: pos.y - 160,
+          background: 'linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(0,220,255,0.3), transparent)',
+          zIndex: 99
+        }}
+        initial={{ scaleY: 0, opacity: 0 }}
+        animate={{ scaleY: [0, 1, 0], opacity: [0, 0.8, 0] }}
+        transition={{ duration: 1.2, times: [0, 0.3, 1] }}
+      />
+      {[...Array(12)].map((_, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: 4, height: 4,
+            left: pos.x, top: pos.y,
+            borderRadius: '50%',
+            backgroundColor: i % 2 === 0 ? '#00dcff' : '#a855f7',
+            boxShadow: `0 0 8px ${i % 2 === 0 ? '#00dcff' : '#a855f7'}`,
+            zIndex: 101
+          }}
+          animate={{
+            x: [0, Math.cos(i * Math.PI / 6) * 70],
+            y: [0, Math.sin(i * Math.PI / 6) * 70 - 30],
+            opacity: [1, 0],
+            scale: [1, 0.5]
+          }}
+          transition={{ duration: 1, ease: 'easeOut', delay: i * 0.05 }}
+        />
+      ))}
+    </>
   );
 };
 

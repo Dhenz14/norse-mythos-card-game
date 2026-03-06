@@ -55,6 +55,7 @@ import { debug } from '../config/debugConfig';
 import { playSound } from '../utils/soundUtils';
 import { GameLog } from '../components/GameLog';
 import { useGameLogIntegration } from '../hooks/useGameLogIntegration';
+import { useEventAnimationBridge } from '../hooks/useEventAnimationBridge';
 import { useKingPassiveEventStore } from '../stores/kingPassiveEventStore';
 
 const SwordIcon = () => (
@@ -1048,6 +1049,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onCombatEnd }) => {
   useCombatLayout();
   useGameLogIntegration();
+  useEventAnimationBridge();
   const resetKingEvents = useKingPassiveEventStore(s => s.reset);
 
   const {

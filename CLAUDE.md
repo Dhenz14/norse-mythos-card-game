@@ -557,6 +557,14 @@ vercel --prod                 # Deploy to Vercel
 - `gameStore.updateStateHash` logs WASM errors (was silently swallowing)
 - Added 33 anti-cheat tests (vitest): enforcement, determinism, tamper detection
 
+### Completed (Animation Rendering Bridge)
+
+- Created `useEventAnimationBridge` hook bridging `AnimationSubscriber` (event bus queue) to `AnimationLayer` (Framer Motion renderer)
+- Event flow: `GameEventBus.emit()` -> `AnimationSubscriber` queues -> `onAnimation()` fires -> bridge resolves `[data-instance-id]` DOM positions -> pushes to `GlobalAnimationQueue` -> `AnimationLayer` renders
+- Added 7 new visual effect renderers in `AnimationLayer.tsx`: BattlecryEffect, DeathrattleEffect, SummonEffect, BuffEffect, PetAscensionEffect, PetApotheosisEffect
+- Mapped 13 event animation types to rendering pipeline: card_play, mythic_entrance, card_draw, card_burn, death, spell_cast, battlecry, deathrattle, summon, buff, pet_ascension, pet_apotheosis, turn_start
+- Bridge mounted in both `GameBoard.tsx` (single-player) and `RagnarokCombatArena.tsx` (poker combat)
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

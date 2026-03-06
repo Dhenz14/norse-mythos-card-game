@@ -28,6 +28,7 @@ import CardDetailView from './CardDetailView';
 import ManaBar from './ManaBar';
 import GameAreaContainer from './GameAreaContainer';
 import { useCardDragAnimation } from '../hooks/useCardDragAnimation';
+import { useEventAnimationBridge } from '../hooks/useEventAnimationBridge';
 import { CardDragLayer } from './CardDragLayer';
 import { useGraveyardTracking } from '../hooks/useGraveyardTracking';
 import TurnTransition from '../animations/TurnTransition';
@@ -221,7 +222,9 @@ export const GameBoard: React.FC<{}> = () => {
     addManaUseAnimation,
     addOverloadAnimation
   } = useAnimations();
-  
+
+  useEventAnimationBridge();
+
   // Mouse position tracking for targeting
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
