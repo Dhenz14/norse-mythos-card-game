@@ -1271,3 +1271,154 @@
   .kbt-name { font-size: 10px; }
   .kbt-effect { font-size: 10px; }
 }
+
+/* ==========================================================================
+   GOLDEN CARD SURFACE EFFECT - Animated liquid-metal for mythic/epic
+   ========================================================================== */
+
+@keyframes golden-flow {
+  0%   { background-position: 0% 0%; }
+  25%  { background-position: 100% 50%; }
+  50%  { background-position: 50% 100%; }
+  75%  { background-position: 0% 50%; }
+  100% { background-position: 0% 0%; }
+}
+
+@keyframes golden-hue-shift {
+  0%   { filter: hue-rotate(0deg) saturate(1.2) brightness(1); }
+  33%  { filter: hue-rotate(15deg) saturate(1.4) brightness(1.1); }
+  66%  { filter: hue-rotate(-10deg) saturate(1.3) brightness(1.05); }
+  100% { filter: hue-rotate(0deg) saturate(1.2) brightness(1); }
+}
+
+@keyframes golden-warp {
+  0%, 100% { transform: perspective(400px) rotateY(0deg) rotateX(0deg); }
+  25%      { transform: perspective(400px) rotateY(0.5deg) rotateX(-0.3deg); }
+  50%      { transform: perspective(400px) rotateY(-0.5deg) rotateX(0.3deg); }
+  75%      { transform: perspective(400px) rotateY(0.3deg) rotateX(-0.2deg); }
+}
+
+/* Mythic golden surface — flowing liquid gold over card art */
+.simple-card.rarity-mythic .card-art-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.simple-card.rarity-mythic .card-art-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      135deg,
+      transparent 20%,
+      rgba(255, 215, 0, 0.08) 30%,
+      rgba(255, 180, 0, 0.12) 40%,
+      transparent 50%,
+      rgba(255, 200, 50, 0.08) 60%,
+      transparent 80%
+    );
+  background-size: 300% 300%;
+  animation: golden-flow 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+  mix-blend-mode: overlay;
+}
+
+.simple-card.rarity-mythic:hover .card-art-container::after {
+  background:
+    linear-gradient(
+      135deg,
+      transparent 10%,
+      rgba(255, 215, 0, 0.15) 25%,
+      rgba(255, 180, 0, 0.22) 35%,
+      rgba(255, 255, 200, 0.18) 45%,
+      transparent 55%,
+      rgba(255, 200, 50, 0.15) 65%,
+      transparent 80%
+    );
+  background-size: 300% 300%;
+  animation: golden-flow 4s ease-in-out infinite;
+}
+
+/* Mythic foil overlay gets hue-shifting animation */
+.simple-card.rarity-mythic .foil-overlay.mythic-foil {
+  animation: golden-hue-shift 6s ease-in-out infinite;
+}
+
+/* Mythic card subtle perspective warp on hover */
+.simple-card.rarity-mythic:hover {
+  animation: golden-warp 3s ease-in-out infinite;
+}
+
+/* Epic purple surface — flowing amethyst over card art */
+.simple-card.rarity-epic .card-art-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.simple-card.rarity-epic .card-art-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      135deg,
+      transparent 20%,
+      rgba(168, 85, 247, 0.06) 30%,
+      rgba(139, 92, 246, 0.10) 40%,
+      transparent 50%,
+      rgba(192, 132, 252, 0.06) 60%,
+      transparent 80%
+    );
+  background-size: 300% 300%;
+  animation: golden-flow 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+  mix-blend-mode: overlay;
+}
+
+.simple-card.rarity-epic:hover .card-art-container::after {
+  background:
+    linear-gradient(
+      135deg,
+      transparent 10%,
+      rgba(168, 85, 247, 0.12) 25%,
+      rgba(139, 92, 246, 0.18) 35%,
+      rgba(192, 132, 252, 0.14) 45%,
+      transparent 55%,
+      rgba(168, 85, 247, 0.10) 65%,
+      transparent 80%
+    );
+  background-size: 300% 300%;
+  animation: golden-flow 5s ease-in-out infinite;
+}
+
+/* SVG filter for real displacement on card art */
+.simple-card.rarity-mythic .card-art-container img,
+.simple-card.rarity-mythic .card-art-container .card-art {
+  filter: url(#golden-displacement);
+}
+
+.simple-card.rarity-epic .card-art-container img,
+.simple-card.rarity-epic .card-art-container .card-art {
+  filter: url(#epic-displacement);
+}
+
+/* Disable golden effects when user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .simple-card.rarity-mythic .card-art-container::after,
+  .simple-card.rarity-epic .card-art-container::after {
+    animation: none;
+  }
+  .simple-card.rarity-mythic .card-art-container img,
+  .simple-card.rarity-mythic .card-art-container .card-art,
+  .simple-card.rarity-epic .card-art-container img,
+  .simple-card.rarity-epic .card-art-container .card-art {
+    filter: none;
+  }
+  .simple-card.rarity-mythic:hover,
+  .simple-card.rarity-mythic .foil-overlay.mythic-foil {
+    animation: none;
+  }
+}

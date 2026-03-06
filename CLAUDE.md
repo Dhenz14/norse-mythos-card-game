@@ -565,6 +565,20 @@ vercel --prod                 # Deploy to Vercel
 - Mapped 13 event animation types to rendering pipeline: card_play, mythic_entrance, card_draw, card_burn, death, spell_cast, battlecry, deathrattle, summon, buff, pet_ascension, pet_apotheosis, turn_start
 - Bridge mounted in both `GameBoard.tsx` (single-player) and `RagnarokCombatArena.tsx` (poker combat)
 
+### Completed (AAA Animation Upgrade)
+
+- Golden card surface effect: SVG `feTurbulence`+`feDisplacementMap` filter for mythic/epic card art displacement, CSS `golden-flow` gradient overlay, `golden-hue-shift` foil animation, `golden-warp` perspective hover — zero JS cost
+- Realm-aware ambient GPU particles: 10 realm configs in `PixiParticleCanvas.tsx` (niflheim snow, muspelheim embers, alfheim sparkles, etc.), `startAmbientParticles(realm)`/`stopAmbientParticles()` exports
+- Upgraded all AnimationLayer effects from basic Framer Motion divs to GPU-accelerated Pixi particle bursts + premium Framer Motion composites (battlecry shockwave+beam, deathrattle vortex+skull, summon light pillar, buff aura+value, pet ascension/apotheosis with triple rings+screen flash)
+- Card play arc animation: parabolic arc from hand to board with spell/minion color variants, Pixi burst on landing
+- Spell projectile travel: animated orb from source→target with spell-type-aware colors, Pixi burst+ring on impact
+- Critical hit system: damage ≥10 triggers white screen flash, oversized golden damage number, 50-particle GPU burst+impact ring
+- Victory cinematic: golden screen flash, 3 staggered GPU particle bursts, "VICTORY" text with glow animation
+- Defeat cinematic: dark overlay, shadow/fire particles, "DEFEAT" text with dramatic scale animation
+- LegendaryEntrance: replaced placeholder div with real `SimpleCard` component (preview size), migrated 40 DOM particles to 3 staggered Pixi GPU bursts
+- EnhancedDeathAnimation: migrated 80 DOM particles + injected CSS keyframes to 3 staggered Pixi GPU bursts+embers+impact ring
+- `GoldenCardFilter.tsx`: portal-mounted SVG filter definitions for golden/epic displacement effects
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

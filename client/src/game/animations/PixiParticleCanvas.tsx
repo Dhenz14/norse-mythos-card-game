@@ -29,6 +29,115 @@ function pickColor(palette: ParticleColor): number {
 let pixiApp: Application | null = null;
 let trailContainer: Container | null = null;
 let burstContainer: Container | null = null;
+let ambientContainer: Container | null = null;
+let ambientTimers: ReturnType<typeof setTimeout>[] = [];
+let currentRealm: string | undefined;
+
+interface RealmParticleConfig {
+	colors: number[];
+	count: number;
+	sizeRange: [number, number];
+	driftY: number;
+	driftX: number;
+	lifetime: [number, number];
+	opacity: number;
+	sway: number;
+}
+
+const REALM_CONFIGS: Record<string, RealmParticleConfig> = {
+	niflheim:      { colors: [0x88ccff, 0xcceeFF, 0xffffff], count: 25, sizeRange: [1, 3], driftY: 0.5, driftX: 0.3, lifetime: [4, 7], opacity: 0.6, sway: 30 },
+	muspelheim:    { colors: [0xff5500, 0xff8800, 0xffcc00], count: 28, sizeRange: [1, 3], driftY: -0.8, driftX: 0.2, lifetime: [3, 6], opacity: 0.7, sway: 20 },
+	alfheim:       { colors: [0x88dd55, 0xffee88, 0xaaffaa], count: 20, sizeRange: [1, 3], driftY: 0.2, driftX: 0.1, lifetime: [5, 8], opacity: 0.5, sway: 50 },
+	jotunheim:     { colors: [0xddddff, 0xffffff, 0xaaccee], count: 15, sizeRange: [2, 5], driftY: 0.15, driftX: 0.4, lifetime: [6, 10], opacity: 0.4, sway: 60 },
+	helheim:       { colors: [0x6622aa, 0x44cc66, 0x884488], count: 20, sizeRange: [1, 4], driftY: -0.3, driftX: 0.5, lifetime: [3, 6], opacity: 0.5, sway: 80 },
+	svartalfheim:  { colors: [0xff6600, 0xcc4400, 0xffaa22], count: 15, sizeRange: [1, 2], driftY: -0.6, driftX: 0.3, lifetime: [2, 5], opacity: 0.6, sway: 15 },
+	asgard:        { colors: [0xffd700, 0xffee88, 0xffffff], count: 20, sizeRange: [1, 3], driftY: -0.4, driftX: 0.1, lifetime: [4, 7], opacity: 0.5, sway: 25 },
+	vanaheim:      { colors: [0x44aa44, 0x88cc44, 0xaadd66], count: 20, sizeRange: [1, 3], driftY: 0.1, driftX: 0.15, lifetime: [5, 8], opacity: 0.45, sway: 60 },
+	ginnungagap:   { colors: [0x8888ff, 0xffffff, 0x4466cc], count: 10, sizeRange: [3, 6], driftY: 0.05, driftX: 0.05, lifetime: [8, 12], opacity: 0.3, sway: 100 },
+	midgard:       { colors: [0xccbbaa, 0xaa9988, 0xddccbb], count: 10, sizeRange: [1, 2], driftY: 0.05, driftX: 0.05, lifetime: [6, 10], opacity: 0.2, sway: 40 },
+};
+
+function spawnAmbientParticle(config: RealmParticleConfig) {
+	if (!pixiApp || !ambientContainer) return;
+
+	const w = window.innerWidth;
+	const h = window.innerHeight;
+	const x = Math.random() * w;
+	const y = config.driftY < 0 ? h + 20 : (config.driftY > 0.3 ? -20 : Math.random() * h);
+	const size = config.sizeRange[0] + Math.random() * (config.sizeRange[1] - config.sizeRange[0]);
+	const color = config.colors[Math.floor(Math.random() * config.colors.length)];
+	const life = config.lifetime[0] + Math.random() * (config.lifetime[1] - config.lifetime[0]);
+
+	const g = new Graphics();
+	g.circle(0, 0, size);
+	g.fill(color);
+	g.position.set(x, y);
+	g.alpha = 0;
+	ambientContainer.addChild(g);
+
+	const swayX = (Math.random() - 0.5) * config.sway;
+	const endY = y + config.driftY * h * (life / 5);
+
+	gsap.to(g, {
+		alpha: config.opacity,
+		duration: life * 0.2,
+		ease: 'power1.in',
+	});
+
+	gsap.to(g, {
+		x: x + swayX + config.driftX * w * 0.3 * (Math.random() - 0.5),
+		y: endY,
+		duration: life,
+		ease: 'none',
+		onComplete: () => {
+			gsap.to(g, {
+				alpha: 0,
+				duration: 0.5,
+				onComplete: () => {
+					ambientContainer?.removeChild(g);
+					g.destroy();
+				}
+			});
+		}
+	});
+
+	gsap.to(g, {
+		alpha: 0,
+		duration: life * 0.3,
+		delay: life * 0.7,
+		ease: 'power1.out',
+	});
+}
+
+export function startAmbientParticles(realm: string) {
+	stopAmbientParticles();
+	currentRealm = realm;
+	const config = REALM_CONFIGS[realm] || REALM_CONFIGS.midgard;
+	const interval = ((config.lifetime[0] + config.lifetime[1]) / 2 * 1000) / config.count;
+
+	for (let i = 0; i < Math.min(config.count, 8); i++) {
+		const delay = setTimeout(() => spawnAmbientParticle(config), i * 200);
+		ambientTimers.push(delay);
+	}
+
+	const loop = () => {
+		if (currentRealm !== realm) return;
+		spawnAmbientParticle(config);
+		const timer = setTimeout(loop, interval + Math.random() * interval * 0.5);
+		ambientTimers.push(timer);
+	};
+	const startTimer = setTimeout(loop, 2000);
+	ambientTimers.push(startTimer);
+}
+
+export function stopAmbientParticles() {
+	currentRealm = undefined;
+	ambientTimers.forEach(t => clearTimeout(t));
+	ambientTimers = [];
+	if (ambientContainer) {
+		ambientContainer.removeChildren();
+	}
+}
 
 export function spawnSlashTrail(
 	sx: number, sy: number,
@@ -182,7 +291,7 @@ export function spawnEmbers(
 	}
 }
 
-export const PixiParticleCanvas: React.FC = () => {
+export const PixiParticleCanvas: React.FC<{ realm?: string }> = ({ realm }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -208,18 +317,30 @@ export const PixiParticleCanvas: React.FC = () => {
 
 			trailContainer = new Container();
 			burstContainer = new Container();
+			ambientContainer = new Container();
+			app.stage.addChild(ambientContainer);
 			app.stage.addChild(trailContainer);
 			app.stage.addChild(burstContainer);
 		});
 
 		return () => {
 			mounted = false;
+			stopAmbientParticles();
+			if (ambientContainer) { ambientContainer.destroy({ children: true }); ambientContainer = null; }
 			if (trailContainer) { trailContainer.destroy({ children: true }); trailContainer = null; }
 			if (burstContainer) { burstContainer.destroy({ children: true }); burstContainer = null; }
 			if (pixiApp === app) pixiApp = null;
 			app.destroy(true);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (realm) {
+			startAmbientParticles(realm);
+		} else {
+			stopAmbientParticles();
+		}
+	}, [realm]);
 
 	const overlay = (
 		<div

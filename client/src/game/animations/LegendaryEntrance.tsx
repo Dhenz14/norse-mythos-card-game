@@ -8,8 +8,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { CardData, Position } from '../types';
 import { useAudio } from '../../lib/stores/useAudio';
-import { isMinion, getAttack, getHealth } from '../utils/cards/typeGuards';
+import { SimpleCard, SimpleCardData } from '../components/SimpleCard';
 import gsap from 'gsap';
+import { spawnParticleBurst, spawnImpactRing, spawnEmbers, ELEMENT_PALETTES } from './PixiParticleCanvas';
 
 interface LegendaryEntranceProps {
   card: CardData;
@@ -26,7 +27,6 @@ const LegendaryEntrance: React.FC<LegendaryEntranceProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const flareRef = useRef<HTMLDivElement>(null);
-  const particlesRef = useRef<HTMLDivElement>(null);
   const { playSoundEffect } = useAudio();
   
   // Get card-specific effects based on the card class
@@ -185,68 +185,19 @@ const LegendaryEntrance: React.FC<LegendaryEntranceProps> = ({
         });
     }
     
-    // Create particles
-    if (particlesRef.current) {
-      const particles = particlesRef.current;
-      particles.innerHTML = '';
-      
-      // Create 40 particles
-      for (let i = 0; i < 40; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('legendary-particle');
-        
-        // Randomize particle properties
-        const size = Math.random() * 8 + 2;
-        const angle = Math.random() * Math.PI * 2;
-        const distance = Math.random() * 200 + 100;
-        const duration = Math.random() * 2 + 1.5;
-        const delay = Math.random() * 0.7;
-        
-        // Calculate position
-        const x = Math.cos(angle) * 20;
-        const y = Math.sin(angle) * 20;
-        const finalX = Math.cos(angle) * distance;
-        const finalY = Math.sin(angle) * distance;
-        
-        // Create particle
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.position = 'absolute';
-        particle.style.borderRadius = '50%';
-        particle.style.background = cardEffects.particleColor;
-        particle.style.boxShadow = `0 0 ${size}px ${cardEffects.glowColor}`;
-        particle.style.opacity = '0';
-        particle.style.left = '50%';
-        particle.style.top = '50%';
-        particle.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-        
-        particles.appendChild(particle);
-        
-        // Animate each particle
-        gsap.timeline()
-          .fromTo(particle, 
-            { 
-              opacity: 0,
-              x,
-              y
-            },
-            { 
-              opacity: 0.7,
-              x,
-              y,
-              duration: 0.3,
-              delay: delay
-            }
-          )
-          .to(particle, {
-            opacity: 0,
-            x: finalX,
-            y: finalY,
-            duration: duration,
-            ease: 'power1.out'
-          });
-      }
-    }
+    // GPU particle bursts via Pixi canvas
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const palette = { primary: cardEffects.glowColor, secondary: cardEffects.particleColor, glow: `${cardEffects.glowColor}99` };
+    spawnParticleBurst(cx, cy, 60, palette);
+    spawnImpactRing(cx, cy, palette);
+    setTimeout(() => {
+      spawnParticleBurst(cx, cy, 40, palette);
+      spawnEmbers(cx, cy, 25, palette);
+    }, 500);
+    setTimeout(() => {
+      spawnParticleBurst(cx, cy, 30, palette);
+    }, 1000);
     
     // Close the effect after animation completes
     gsap.delayedCall(4, () => {
@@ -272,29 +223,14 @@ const LegendaryEntrance: React.FC<LegendaryEntranceProps> = ({
       className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none transition-all duration-500"
       style={{ backdropFilter: 'blur(0px)' }}
     >
-      {/* Card display */}
+      {/* Card display - real card component */}
       <div ref={cardRef} className="relative">
-        {/* Card image as a placeholder (you'll want to render your actual card component here) */}
-        <div 
-          className="w-72 h-96 rounded-lg overflow-hidden shadow-2xl"
-          style={{ 
-            background: `linear-gradient(135deg, ${cardEffects.glowColor}66, #2d3436)`,
-            border: `2px solid ${cardEffects.glowColor}`,
-            boxShadow: `0 0 30px ${cardEffects.glowColor}`
-          }}
-        >
-          <div className="w-full h-full flex flex-col items-center justify-center text-center p-4">
-            <div className="text-xl font-bold mb-2 text-white">{card.name}</div>
-            {card.manaCost !== undefined && (
-              <div className="text-lg mb-4 text-white">Cost: {card.manaCost}</div>
-            )}
-            {isMinion(card) && (
-              <div className="text-lg mb-4 text-white">ATK: {getAttack(card)} / HP: {getHealth(card)}</div>
-            )}
-            {card.description && (
-              <div className="text-sm text-gray-200 italic">{card.description}</div>
-            )}
-          </div>
+        <div style={{ boxShadow: `0 0 40px ${cardEffects.glowColor}, 0 0 80px ${cardEffects.glowColor}55` }}>
+          <SimpleCard
+            card={card as unknown as SimpleCardData}
+            size="preview"
+            showDescription
+          />
         </div>
         
         {/* Light flare */}
@@ -308,11 +244,7 @@ const LegendaryEntrance: React.FC<LegendaryEntranceProps> = ({
         />
       </div>
       
-      {/* Particles container */}
-      <div 
-        ref={particlesRef}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      />
+      {/* Particles handled by Pixi GPU canvas */}
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CardData, Position } from '../types';
 import { Howl } from 'howler';
 import { assetPath } from '../utils/assetPath';
+import { spawnParticleBurst, spawnEmbers, spawnImpactRing, ELEMENT_PALETTES } from './PixiParticleCanvas';
 
 interface EnhancedDeathAnimationProps {
   position: Position;
@@ -19,7 +20,6 @@ const EnhancedDeathAnimation: React.FC<EnhancedDeathAnimationProps> = ({
 }) => {
   const [cardImage, setCardImage] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(true);
-  const particlesRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -76,101 +76,20 @@ const EnhancedDeathAnimation: React.FC<EnhancedDeathAnimationProps> = ({
     };
   }, [card, duration, onComplete]);
   
-  // Generate particles when the component mounts
+  // GPU particle bursts via Pixi canvas (replaces 80 DOM particles)
   useEffect(() => {
-    if (!particlesRef.current) return;
-    
-    const particleCount = 80; // Increased number of particles for more dramatic effect
-    const container = particlesRef.current;
-    
-    // Clear any existing particles
-    container.innerHTML = '';
-    
-    // Create particles
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement('div');
-      const size = Math.random() * 10 + 4; // Larger particles (4-14px)
-      
-      // Position particles randomly near the center
-      const xOffset = (Math.random() - 0.5) * 120; // Wider spread horizontally
-      const yOffset = (Math.random() - 0.5) * 160; // Wider spread vertically
-      
-      // Apply styles
-      particle.style.position = 'absolute';
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      
-      // More varied colors for particles
-      const colors = [
-        `rgba(255, 215, 0, ${Math.random() * 0.7 + 0.3})`, // Gold
-        `rgba(255, 140, 0, ${Math.random() * 0.7 + 0.3})`, // Dark orange
-        `rgba(255, 245, 210, ${Math.random() * 0.7 + 0.3})`, // Light gold
-        `rgba(210, 180, 140, ${Math.random() * 0.7 + 0.3})`, // Light brown
-      ];
-      particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      
-      particle.style.borderRadius = '50%';
-      particle.style.left = `${50 + xOffset}px`;
-      particle.style.top = `${70 + yOffset}px`;
-      
-      // Enhanced glow
-      particle.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.9)';
-      
-      // Apply animation with slower timing for slow-motion effect
-      const animDuration = Math.random() * 2.5 + 2; // 2-4.5s (much slower)
-      const delay = Math.random() * 1.2; // 0-1.2s delay (more staggered)
-      
-      particle.style.animation = `
-        particle-fade ${animDuration}s ease-out ${delay}s forwards,
-        particle-float ${animDuration * 1.5}s ease-out ${delay}s forwards
-      `;
-      
-      // Add to container
-      container.appendChild(particle);
-    }
-    
-    // Add the CSS animation keyframes
-    const style = document.createElement('style');
-    style.innerHTML = `
-      @keyframes particle-fade {
-        0% { opacity: 1; transform: scale(1); }
-        100% { opacity: 0; transform: scale(0); }
-      }
-      
-      @keyframes particle-float {
-        0% { transform: translate(0, 0) rotate(0deg); }
-        25% { transform: translate(
-          ${Math.random() > 0.5 ? '+' : '-'}${Math.random() * 50 + 20}px, 
-          ${Math.random() > 0.5 ? '+' : '-'}${Math.random() * 50 + 20}px) 
-          rotate(${Math.random() * 180}deg);
-        }
-        50% { transform: translate(
-          ${Math.random() > 0.5 ? '+' : '-'}${Math.random() * 100 + 40}px, 
-          ${Math.random() > 0.5 ? '+' : '-'}${Math.random() * 100 + 40}px) 
-          rotate(${Math.random() * 240}deg);
-        }
-        75% { transform: translate(
-          ${Math.random() > 0.5 ? '+' : '-'}${Math.random() * 150 + 60}px, 
-          ${Math.random() > 0.5 ? '+' : '-'}${Math.random() * 150 + 60}px) 
-          rotate(${Math.random() * 300}deg);
-        }
-        100% { transform: translate(
-          ${Math.random() > 0.5 ? '+' : '-'}${Math.random() * 200 + 100}px, 
-          ${Math.random() > 0.5 ? '+' : '-'}${Math.random() * 200 + 100}px) 
-          rotate(${Math.random() * 360}deg); 
-        }
-      }
-    `;
-    
-    document.head.appendChild(style);
-    
-    // Clean up
-    return () => {
-      if (document.head.contains(style)) {
-        document.head.removeChild(style);
-      }
-    };
-  }, []);
+    const deathPalette = { primary: '#ffd700', secondary: '#ff8c00', glow: 'rgba(255,215,0,0.7)' };
+    spawnParticleBurst(position.x, position.y, 60, deathPalette);
+    spawnImpactRing(position.x, position.y, deathPalette);
+    spawnEmbers(position.x, position.y, 25, deathPalette);
+    setTimeout(() => {
+      spawnParticleBurst(position.x, position.y, 40, ELEMENT_PALETTES.fire);
+      spawnEmbers(position.x, position.y - 20, 15, ELEMENT_PALETTES.fire);
+    }, 500);
+    setTimeout(() => {
+      spawnParticleBurst(position.x, position.y, 20, ELEMENT_PALETTES.neutral);
+    }, 1000);
+  }, [position.x, position.y]);
   
   return (
     <AnimatePresence>
@@ -223,9 +142,8 @@ const EnhancedDeathAnimation: React.FC<EnhancedDeathAnimationProps> = ({
             />
           </motion.div>
           
-          {/* Particles container */}
-          <div 
-            ref={particlesRef}
+          {/* Particles handled by Pixi GPU canvas */}
+          <div
             className="absolute top-0 left-0 w-[240px] h-[340px]"
             style={{ zIndex: 10 }}
           />
