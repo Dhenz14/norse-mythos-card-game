@@ -4,6 +4,8 @@
  * Loads the deterministic game engine WASM module, initializes it with
  * card data, and verifies its hash. Both P2P players must have matching
  * WASM hashes to ensure deterministic gameplay.
+ *
+ * WASM is mandatory. If it fails to load, loadWasmEngine() throws.
  */
 
 import {
@@ -14,44 +16,32 @@ import {
 	loadCardDataIntoWasm,
 } from './wasmInterface';
 
-let initPromise: Promise<boolean> | null = null;
+let initPromise: Promise<void> | null = null;
 let cardCount = 0;
 
-export async function loadWasmEngine(): Promise<boolean> {
-	if (isWasmReady()) return true;
+export async function loadWasmEngine(): Promise<void> {
+	if (isWasmReady()) return;
 	if (initPromise) return initPromise;
 
 	initPromise = (async () => {
 		const success = await initializeWasm();
 		if (!success) {
 			initPromise = null;
-			return false;
+			throw new Error(`WASM engine failed to load: ${getInterfaceError() ?? 'unknown error'}`);
 		}
 
-		try {
-			const { cardRegistry } = await import('../data/cardRegistry');
-			cardCount = await loadCardDataIntoWasm(cardRegistry);
-		} catch {
-			// Card data loading is non-fatal — hashing still works
-		}
-
-		return true;
+		const { cardRegistry } = await import('../data/cardRegistry');
+		cardCount = await loadCardDataIntoWasm(cardRegistry);
 	})();
 
 	return initPromise;
 }
 
 export function getWasmHash(): string {
-	if (isWasmReady()) return getWasmBinaryHash();
-	if (typeof __BUILD_HASH__ !== 'undefined') return __BUILD_HASH__;
-	return 'dev';
+	return getWasmBinaryHash();
 }
 
 declare const __BUILD_HASH__: string;
-
-export function isWasmAvailable(): boolean {
-	return isWasmReady();
-}
 
 export function getWasmLoadError(): string | null {
 	return getInterfaceError();

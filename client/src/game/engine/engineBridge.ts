@@ -2,9 +2,7 @@
  * engineBridge.ts - TypeScript ↔ WASM bridge
  *
  * Provides a unified interface for game state transitions and verification.
- * After each action (applied via the TS game engine), the state is
- * canonically serialized and hashed through the WASM module for P2P
- * anti-cheat verification.
+ * All state hashing goes through the WASM module — no TypeScript fallback.
  *
  * Anti-cheat mechanism:
  * 1. Both peers verify identical WASM binary hash at handshake
@@ -12,9 +10,7 @@
  * 3. Hash mismatch → cheat detected (modified game logic)
  */
 
-import { isWasmAvailable } from './wasmLoader';
-import { isWasmReady, hashGameState } from './wasmInterface';
-import { serializeGameState } from './stateSerializer';
+import { hashGameState } from './wasmInterface';
 import type { GameState } from '../types';
 
 export type EngineAction =
@@ -26,51 +22,24 @@ export type EngineAction =
 export interface EngineResult {
 	state: GameState;
 	hash: string;
-	engine: 'wasm' | 'typescript';
-}
-
-async function hashStateTypescript(state: GameState): Promise<string> {
-	const serialized = serializeGameState(state);
-	const encoded = new TextEncoder().encode(serialized);
-	const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
-	const hashArray = new Uint8Array(hashBuffer);
-	return Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 export async function applyAction(
 	state: GameState,
 	action: EngineAction,
 ): Promise<EngineResult> {
-	// Game logic runs via the existing TS engine (gameStore actions).
-	// This function computes the post-action state hash for P2P verification.
-	// When WASM is available, hash is computed through the tamper-proof WASM
-	// SHA-256 implementation. Otherwise, falls back to browser crypto.
 	const hash = await computeStateHash(state);
-	const engine = isWasmReady() ? 'wasm' as const : 'typescript' as const;
-
-	return { state, hash, engine };
+	return { state, hash };
 }
 
 export async function computeStateHash(state: GameState): Promise<string> {
-	if (isWasmReady()) {
-		try {
-			return hashGameState(state);
-		} catch {
-			// WASM hash failed — fall back to TS
-		}
-	}
-	return hashStateTypescript(state);
+	return hashGameState(state);
 }
 
-export function getEngineType(): 'wasm' | 'typescript' {
-	return isWasmAvailable() ? 'wasm' : 'typescript';
+export function getEngineType(): 'wasm' {
+	return 'wasm';
 }
 
-export function computeStateHashSync(state: GameState): string | null {
-	if (!isWasmReady()) return null;
-	try {
-		return hashGameState(state);
-	} catch {
-		return null;
-	}
+export function computeStateHashSync(state: GameState): string {
+	return hashGameState(state);
 }

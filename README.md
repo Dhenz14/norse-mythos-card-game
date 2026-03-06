@@ -82,7 +82,7 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 - **Dual-signature match results** with Merkle transcript anchoring
 - **Self-serve tournament rewards** — 11 milestones, players claim via Keychain
 - **Supply caps** — 16,000 total (10K common, 4K rare, 1.5K epic, 500 mythic)
-- **Anti-cheat** — WASM engine hash verification, PoW, slash evidence, nonce anti-replay
+- **Anti-cheat** — Mandatory WASM engine (no TS fallback), hash verification, PoW, slash evidence, nonce anti-replay
 
 ---
 
@@ -443,7 +443,7 @@ client/src/
 │   ├── crafting/          # Eitr economy (dissolve/forge)
 │   ├── data/              # 1,500+ cards + 80 heroes + 38 pet families
 │   ├── effects/           # 181 effect handlers (battlecry, deathrattle, spell)
-│   ├── engine/            # WASM loader + TypeScript fallback
+│   ├── engine/            # WASM loader + bridge (mandatory, no TS fallback)
 │   ├── spectator/         # Read-only P2P viewer
 │   ├── stores/            # 20+ Zustand stores
 │   ├── tournament/        # Swiss + elimination brackets
@@ -483,7 +483,7 @@ server/
 - [x] Daily quest system (19 templates)
 - [x] Friends list with presence + challenges
 - [x] Hive NFT blockchain integration
-- [x] WASM anti-cheat engine with hash verification
+- [x] WASM anti-cheat engine — mandatory, no TS fallback, 33 enforcement tests
 - [x] 8 status effects with visual overlays
 - [x] Service Worker asset caching
 - [x] Deck import/export via shareable codes

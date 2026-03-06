@@ -1123,7 +1123,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     if (!gameState) return;
     computeStateHash(gameState).then(hash => {
       set({ lastStateHash: hash });
-    }).catch(() => {});
+    }).catch(err => {
+      console.error('[gameStore] WASM state hash failed:', err);
+    });
   },
 })));
 

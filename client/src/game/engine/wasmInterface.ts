@@ -5,8 +5,8 @@
  * and exposes typed functions for state hashing, poker evaluation,
  * betting, and card data loading.
  *
- * Uses the ASC-generated engine.js bindings for proper string/memory
- * management. Falls back gracefully when WASM is unavailable.
+ * WASM is mandatory — no TypeScript fallbacks. If WASM fails to load,
+ * ranked play is blocked and all engine functions throw.
  */
 
 import type { GameState } from '../types';
@@ -45,7 +45,7 @@ export async function initializeWasm(): Promise<boolean> {
 	try {
 		const response = await fetch('/engine.wasm');
 		if (!response.ok) {
-			loadError = 'WASM module not found — using TypeScript fallback';
+			loadError = 'WASM module not found at /engine.wasm';
 			return false;
 		}
 
@@ -196,8 +196,15 @@ export async function initializeWasm(): Promise<boolean> {
 	}
 }
 
+function requireWasm(): WasmExports {
+	if (!wasmExports) {
+		throw new Error(`WASM engine not loaded — ranked play blocked. ${loadError ?? 'Call loadWasmEngine() first.'}`);
+	}
+	return wasmExports;
+}
+
 export function getWasmBinaryHash(): string {
-	return wasmBinaryHash ?? 'unavailable';
+	return requireWasm(), wasmBinaryHash!;
 }
 
 export function isWasmReady(): boolean {
@@ -209,53 +216,40 @@ export function getWasmLoadError(): string | null {
 }
 
 export function hashGameState(state: GameState): string {
-	if (!wasmExports) {
-		throw new Error('WASM not initialized');
-	}
 	const canonical = serializeGameState(state);
-	return wasmExports.hashStateJson(canonical);
+	return requireWasm().hashStateJson(canonical);
 }
 
 export function hashJsonString(json: string): string {
-	if (!wasmExports) {
-		throw new Error('WASM not initialized');
-	}
-	return wasmExports.hashStateJson(json);
+	return requireWasm().hashStateJson(json);
 }
 
 export function getEngineVersion(): string {
-	if (!wasmExports) return 'typescript-fallback';
-	return wasmExports.getEngineVersion();
+	return requireWasm().getEngineVersion();
 }
 
 export function wasmCalculateFinalDamage(
 	baseAttack: number, hpBet: number, handRank: number, extraDamage?: number,
 ): number {
-	if (!wasmExports) return baseAttack;
-	return wasmExports.calculateFinalDamage(baseAttack, hpBet, handRank, extraDamage);
+	return requireWasm().calculateFinalDamage(baseAttack, hpBet, handRank, extraDamage);
 }
 
 export function wasmGetNextPhase(currentPhase: number): number {
-	if (!wasmExports) return currentPhase + 1;
-	return wasmExports.getNextPhase(currentPhase);
+	return requireWasm().getNextPhase(currentPhase);
 }
 
 export function wasmIsBettingPhase(phase: number): boolean {
-	if (!wasmExports) return false;
-	return wasmExports.isBettingPhase(phase);
+	return requireWasm().isBettingPhase(phase);
 }
 
 export function wasmIsRevealPhase(phase: number): boolean {
-	if (!wasmExports) return false;
-	return wasmExports.isRevealPhase(phase);
+	return requireWasm().isRevealPhase(phase);
 }
 
 export async function loadCardDataIntoWasm(cards: import('../types').CardData[]): Promise<number> {
-	if (!wasmExports) {
-		throw new Error('WASM not initialized');
-	}
-	if (cardDataLoaded) return wasmExports.getCardCount();
-	const count = exportCardDataToWasm(cards, wasmExports);
+	const wasm = requireWasm();
+	if (cardDataLoaded) return wasm.getCardCount();
+	const count = exportCardDataToWasm(cards, wasm);
 	cardDataLoaded = true;
 	return count;
 }

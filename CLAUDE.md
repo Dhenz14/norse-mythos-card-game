@@ -110,7 +110,7 @@ client/src/
 │   │   └── useSpectatorSync.ts # Read-only PeerJS connection
 │   ├── tutorial/           # Tutorial system
 │   │   └── tutorialStore.ts # 15 steps (Zustand + persist)
-│   ├── engine/             # WASM game engine (TypeScript fallback)
+│   ├── engine/             # WASM game engine (mandatory, no TS fallback)
 │   │   ├── wasmLoader.ts   # Load + hash-verify WASM module
 │   │   └── engineBridge.ts # TS ↔ WASM interface
 │   ├── combat/             # Combat system + poker mechanics
@@ -368,7 +368,7 @@ vercel --prod                 # Deploy to Vercel
 - Tournament system (Swiss + elimination, server-managed brackets)
 - Spectator mode (filtered P2P read-only connection)
 - Match replay viewer (action timeline, playback controls)
-- WASM engine infrastructure (loader, bridge, TypeScript fallback)
+- WASM engine infrastructure (loader, bridge, mandatory — no TS fallback)
 - Block reference cache (3s Hive polling, per-move anchoring)
 - Per-move state hashing (SHA-256 state hash after each action)
 - Loading screen (Norse lore quotes, rune spinner)
@@ -541,9 +541,24 @@ vercel --prod                 # Deploy to Vercel
   - Rogue: Burgle/thief archetype, card draw (4 cards)
   - Warrior: Whirlwind effects, Enrage enablers (4 cards)
 
+### Completed (WASM Anti-Cheat Enforcement)
+
+- Removed all TypeScript fallbacks from WASM engine (wasmInterface, engineBridge, wasmLoader)
+- All engine functions (`hashGameState`, `calculateFinalDamage`, `getNextPhase`, etc.) throw if WASM not loaded
+- `loadWasmEngine()` throws on failure (was silently returning `false`)
+- `getWasmBinaryHash()` throws if not loaded (was returning `'unavailable'`)
+- `getEngineVersion()` throws if not loaded (was returning `'typescript-fallback'`)
+- `computeStateHash()` calls WASM directly — no `crypto.subtle` fallback
+- `computeStateHashSync()` returns `string` (was `string | null`)
+- `EngineResult` no longer has `engine` field (always WASM)
+- Removed `isWasmAvailable()` export entirely
+- P2P hash check no longer accepts `'dev'` or `'unavailable'` as valid hashes
+- `useP2PSync` shows error toast if WASM fails to load (was silent)
+- `gameStore.updateStateHash` logs WASM errors (was silently swallowing)
+- Added 33 anti-cheat tests (vitest): enforcement, determinism, tamper detection
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account
 - Upload card art to CDN
-- Build AssemblyScript WASM module (deterministic game engine)
 - Broadcast genesis + seal on Hive mainnet (two Keychain clicks, then admin key irrelevant)

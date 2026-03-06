@@ -11,7 +11,7 @@ import type { PackagedMatchResult } from '../../data/blockchain/types';
 import { createSeededRng, seededShuffle } from '../utils/seededRng';
 import { startNewTranscript, getActiveTranscript, clearTranscript } from '../../data/blockchain/transcriptBuilder';
 import type { GameMove } from '../../data/blockchain/signedMove';
-import { getWasmHash, isWasmAvailable, loadWasmEngine } from '../engine/wasmLoader';
+import { getWasmHash, loadWasmEngine } from '../engine/wasmLoader';
 import { computeStateHash } from '../engine/engineBridge';
 
 declare const __BUILD_HASH__: string;
@@ -134,6 +134,11 @@ export function useP2PSync() {
 		loadWasmEngine().then(() => {
 			const wasmHash = getWasmHash();
 			send({ type: 'wasm_hash_check', wasmHash });
+		}).catch(err => {
+			toast.error('WASM engine failed to load — ranked play blocked', {
+				description: err instanceof Error ? err.message : 'Unknown WASM error',
+				duration: 15000,
+			});
 		});
 
 		const salt = generateSalt();
@@ -212,7 +217,7 @@ export function useP2PSync() {
 				case 'wasm_hash_check': {
 					const myWasmHash = getWasmHash();
 					const theirWasmHash = data.wasmHash;
-					if (theirWasmHash !== myWasmHash && theirWasmHash !== 'dev' && myWasmHash !== 'dev' && theirWasmHash !== 'unavailable' && myWasmHash !== 'unavailable') {
+					if (theirWasmHash !== myWasmHash) {
 						toast.error('WASM engine mismatch — ranked play blocked', {
 							description: `Your engine: ${myWasmHash.slice(0, 12)}…, opponent: ${theirWasmHash.slice(0, 12)}…`,
 							duration: 10000,
@@ -223,7 +228,7 @@ export function useP2PSync() {
 
 				case 'hash_check': {
 					const gs = useGameStore.getState().gameState;
-					if (!gs || !isWasmAvailable()) break;
+					if (!gs) break;
 					const myHash = await computeStateHash(gs);
 					if (myHash !== data.stateHash) {
 						console.error(`[useP2PSync] State hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
@@ -590,7 +595,7 @@ export function useP2PSync() {
 
 	// Host sends state hash check every 2s for anti-cheat verification
 	useEffect(() => {
-		if (connectionState !== 'connected' || !isHost || !isWasmAvailable()) return;
+		if (connectionState !== 'connected' || !isHost) return;
 		const interval = setInterval(async () => {
 			const gs = useGameStore.getState().gameState;
 			if (!gs || gs.gamePhase === 'game_over') return;
