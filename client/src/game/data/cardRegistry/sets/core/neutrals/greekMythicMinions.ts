@@ -4,14 +4,14 @@
  * Lore-accurate mythic minion cards for the Greek campaign's primordial beings,
  * Titans, and monsters. Sources: Hesiod's Theogony, Apollodorus' Library.
  *
- * ID Range: 32101-32106
+ * ID Range: 32201-32206
  */
 
 import { CardData } from '../../../../../types';
 
 export const greekMythicMinions: CardData[] = [
 	{
-		id: 32101,
+		id: 32201,
 		name: 'Cerberus, Hound of Hades',
 		manaCost: 8,
 		attack: 6,
@@ -25,7 +25,7 @@ export const greekMythicMinions: CardData[] = [
 		flavorText: 'The three-headed hound who guards the gates of the underworld. He welcomes the dead in — but lets none leave. Only Heracles ever dragged him to the surface. (Library 2.5.12)',
 	},
 	{
-		id: 32102,
+		id: 32202,
 		name: 'Typhon, Father of Monsters',
 		manaCost: 10,
 		attack: 6,
@@ -40,7 +40,7 @@ export const greekMythicMinions: CardData[] = [
 		flavorText: '"A hundred dragon-heads grew upon his shoulders, flickering dark tongues of flame." (Theogony 824-828)',
 	},
 	{
-		id: 32103,
+		id: 32203,
 		name: 'Porphyrion, Giant-King',
 		manaCost: 9,
 		attack: 9,
@@ -54,7 +54,7 @@ export const greekMythicMinions: CardData[] = [
 		flavorText: 'King of the Giants who stormed Olympus. The gods could wound him, but only mortal hands could end him. (Library 1.6.1)',
 	},
 	{
-		id: 32104,
+		id: 32204,
 		name: 'Atlas, World-Bearer',
 		manaCost: 8,
 		attack: 2,
@@ -69,7 +69,7 @@ export const greekMythicMinions: CardData[] = [
 		flavorText: 'Condemned by Zeus to bear the heavens upon his shoulders for eternity. While he endures, others fight. (Theogony 517-520)',
 	},
 	{
-		id: 32105,
+		id: 32205,
 		name: 'Campe, Dragon of Tartarus',
 		manaCost: 7,
 		attack: 6,
@@ -85,7 +85,7 @@ export const greekMythicMinions: CardData[] = [
 		flavorText: 'The she-dragon set by Cronus to guard the Cyclopes and Hecatonchires in Tartarus. Zeus slew her to free his allies. (Library 1.2.1)',
 	},
 	{
-		id: 32106,
+		id: 32206,
 		name: 'Medusa, Gorgon Queen',
 		manaCost: 6,
 		attack: 4,

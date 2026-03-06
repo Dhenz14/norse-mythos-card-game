@@ -24,7 +24,7 @@ import { Toaster } from '../../components/ui/sonner';
 import DebugRenderCheck from './DebugRenderCheck';
 import ActionNotification from './ActionNotification';
 import AIAttackAnimationProcessor from './AIAttackAnimationProcessor';
-import CardDetailView from './CardDetailView';
+const CardDetailView = React.lazy(() => import('./CardDetailView').then(m => ({ default: m.CardDetailView })));
 import ManaBar from './ManaBar';
 import GameAreaContainer from './GameAreaContainer';
 import { useCardDragAnimation } from '../hooks/useCardDragAnimation';
@@ -2188,10 +2188,12 @@ export const GameBoard: React.FC<{}> = () => {
       
       {/* Card detail view */}
       {detailCard && (
-        <CardDetailView 
-          card={detailCard} 
-          onClose={handleCloseCardDetails} 
-        />
+        <React.Suspense fallback={null}>
+          <CardDetailView
+            card={detailCard}
+            onClose={handleCloseCardDetails}
+          />
+        </React.Suspense>
       )}
       
       {/* AI thinking overlay - show when AI is processing actions */}

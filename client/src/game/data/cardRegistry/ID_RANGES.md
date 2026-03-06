@@ -101,7 +101,8 @@ Reserved ID ranges for card organization:
 | 38901-38904 | Warlock Expansion | Zoo 1-drops, discard payoffs (4 cards) |
 | 39001-39004 | Rogue Expansion II | Burgle/thief, card draw (4 cards) |
 | 39101-39104 | Warrior Expansion | Whirlwind effects, Enrage enablers (4 cards) |
-| 32101-32106 | Greek Mythic Minions | Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa |
+| 32100-32105 | Norse Naga/Einherjar Neutrals | Skidbladnir's Stowaway, Deckhand of Njord, etc. |
+| 32201-32206 | Greek Mythic Minions | Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa |
 
 ## Norse Mechanic Card Ranges
 

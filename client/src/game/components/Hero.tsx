@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
 import { PlayerState, HeroClass, Position, ActiveSecret } from '../types';
 import HeroPower from './HeroPower';
 import SecretIcon from './SecretIcon';
-import HealthDisplay from './HealthDisplay';
-import ArmorDisplay from './ArmorDisplay';
+const HealthDisplay = lazy(() => import('./HealthDisplay'));
+const ArmorDisplay = lazy(() => import('./ArmorDisplay'));
 import { debug } from '../config/debugConfig';
 
 const HERO_IMAGE_IDS = {
@@ -250,19 +250,21 @@ export const Hero: React.FC<HeroProps> = ({
       <div className="mt-2 text-center">
         <div className="font-bold text-sm bg-gradient-to-r from-gray-700 to-gray-800 rounded px-2 py-0.5">{heroName}</div>
         <div className="flex items-center justify-center mt-1 space-x-2">
-          {/* Health display with 3D heart */}
-          <HealthDisplay 
-            value={player.heroHealth} 
-            maxValue={30}
-            size="md"
-          />
-          
-          {/* Armor display with 3D shield (only shows if player has armor) */}
-          {player.heroArmor > 0 && (
-            <ArmorDisplay 
-              value={player.heroArmor} 
-              className="ml-1"
+          <Suspense fallback={<span className="text-green-500 font-bold">{player.heroHealth}</span>}>
+            <HealthDisplay
+              value={player.heroHealth}
+              maxValue={30}
+              size="md"
             />
+          </Suspense>
+
+          {player.heroArmor > 0 && (
+            <Suspense fallback={<span className="text-blue-300 font-bold">{player.heroArmor}</span>}>
+              <ArmorDisplay
+                value={player.heroArmor}
+                className="ml-1"
+              />
+            </Suspense>
           )}
         </div>
       </div>
