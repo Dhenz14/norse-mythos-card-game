@@ -21,7 +21,8 @@ import type {
   SilenceAppliedEvent,
   OverloadTriggeredEvent,
   ShowdownResultEvent,
-  NotificationEvent
+  NotificationEvent,
+  PetEvolvedEvent
 } from '@/core/events/GameEvents';
 import { toast } from 'sonner';
 
@@ -219,6 +220,23 @@ export function initializeNotificationSubscriber(
       })
     );
   }
+
+  // Pet Evolution
+  unsubscribes.push(
+    GameEventBus.subscribe<PetEvolvedEvent>('PET_EVOLVED', (event) => {
+      if (event.toStage === 3) {
+        toast.success(`DIVINE APOTHEOSIS! ${event.cardName}`, {
+          description: `${event.familyName} has achieved ultimate form!`,
+          duration: 4000
+        });
+      } else {
+        toast.success(`Ascended! ${event.cardName}`, {
+          description: `${event.familyName} evolves to Stage ${event.toStage}`,
+          duration: 2500
+        });
+      }
+    })
+  );
 
   // Direct Notification Events
   unsubscribes.push(

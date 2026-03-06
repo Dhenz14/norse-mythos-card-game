@@ -62,6 +62,7 @@ import { getElementAdvantage } from './elements/elementAdvantage';
 import { getNorseHeroById } from './norseHeroPowerUtils';
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 import { applyLifestealHealing } from './mechanics/lifestealUtils';
+import { GameEventBus } from '@/core/events/GameEventBus';
 
 function attemptPetEvolution(
   state: GameState,
@@ -143,6 +144,18 @@ function attemptPetEvolution(
   };
 
   // Evolution is free — Stage 2/3 cards have manaCost: 0
+
+  const fromStage = isMaster ? 2 : 1;
+  const toStage = isMaster ? 3 : 2;
+  GameEventBus.emitPetEvolved({
+    player: state.currentTurn as 'player' | 'opponent',
+    instanceId: basic.instanceId,
+    cardName: evolvedCard.name || 'Unknown',
+    familyName: petFamily || evolvedCard.petFamily || '',
+    fromStage: fromStage as 1 | 2,
+    toStage: toStage as 2 | 3,
+    element: evolvedCard.element,
+  });
 
   return { evolved: true, newState: state };
 }

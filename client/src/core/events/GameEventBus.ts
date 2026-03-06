@@ -54,6 +54,7 @@ import type {
   NotificationEvent,
   AnimationRequestEvent,
   SoundRequestEvent,
+  PetEvolvedEvent,
   GamePhase,
   SubPhase
 } from './GameEvents';
@@ -660,6 +661,22 @@ class GameEventBusImpl {
     const event: ShowdownResultEvent = {
       ...data,
       type: 'SHOWDOWN_RESULT',
+      id: this.generateEventId(),
+      timestamp: Date.now(),
+      turn: this.currentTurn
+    };
+    this.emit(event);
+    return event;
+  }
+
+  // ============================================
+  // Pet Evolution Helper
+  // ============================================
+
+  emitPetEvolved(data: Omit<PetEvolvedEvent, 'type' | 'id' | 'timestamp' | 'turn'>): PetEvolvedEvent {
+    const event: PetEvolvedEvent = {
+      ...data,
+      type: 'PET_EVOLVED',
       id: this.generateEventId(),
       timestamp: Date.now(),
       turn: this.currentTurn

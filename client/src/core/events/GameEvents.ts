@@ -388,6 +388,21 @@ export interface SoundRequestEvent extends GameEventBase {
 }
 
 // ============================================
+// Pet Evolution Events
+// ============================================
+
+export interface PetEvolvedEvent extends GameEventBase {
+  type: 'PET_EVOLVED';
+  player: 'player' | 'opponent';
+  instanceId: string;
+  cardName: string;
+  familyName: string;
+  fromStage: 1 | 2;
+  toStage: 2 | 3;
+  element?: string;
+}
+
+// ============================================
 // Union Types
 // ============================================
 
@@ -445,7 +460,8 @@ export type GameEvent =
   | GameStartedEvent
   | GameEndedEvent
   | PokerEvent
-  | UIEvent;
+  | UIEvent
+  | PetEvolvedEvent;
 
 // ============================================
 // Event Type Strings
@@ -497,4 +513,6 @@ export type GameEventType =
   // UI
   | 'NOTIFICATION'
   | 'ANIMATION_REQUEST'
-  | 'SOUND_REQUEST';
+  | 'SOUND_REQUEST'
+  // Pet Evolution
+  | 'PET_EVOLVED';

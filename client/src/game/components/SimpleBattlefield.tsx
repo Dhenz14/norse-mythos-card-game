@@ -80,6 +80,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                           !!((card.card as any)?.attack > 0);
       const cardHasTaunt = !!(card && hasKeyword(card, 'taunt'));
       const hasElementalBuff = !!(card as any)?.hasElementalBuff;
+      const readyToEvolve = !!(card as any)?.petEvolutionMet;
 
       const statusPoisoned = !!(card as any)?.isPoisonedDoT;
       const statusBleeding = !!(card as any)?.isBleeding;
@@ -119,6 +120,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   ${statusFrozen ? 'status-frozen' : ''}
                   ${statusMarked ? 'status-marked' : ''}
                   ${statusBurning ? 'status-burning' : ''}
+                  ${readyToEvolve ? 'ready-to-evolve' : ''}
                 `}
                 initial={{ opacity: 0, scale: 0.15, y: side === 'player' ? 80 : -80 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}

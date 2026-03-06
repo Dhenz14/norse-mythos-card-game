@@ -286,7 +286,7 @@ client/src/data/blockchain/tournamentRewards.ts
 - **Prophecy**: `Prophecy` interface on `GameState.prophecies[]`; countdown ticks in `endTurn()`; `resolveProphecy()` handles 7 effect types
 - **Realm Shift**: `RealmState` on `GameState.activeRealm`; `realm_shift` spell effect in `spellUtils.ts`; start/end-of-turn realm effects in `gameUtils.ts`
 - **Ragnarok Chain**: `chainPartner` + `chainEffect` fields on `MinionCardData`; both-in-play buffs in `playCard()`; partner-death triggers in `destroyCard()`
-- **Pet Evolution**: 3-3-1 family system (38 families, 266 cards); `petStage`, `petFamily`, `petFamilyTier`, `evolvesInto/From`, `evolutionCondition`, `stage3Variants` fields; Stage 2/3 cost 0 mana (free evolution); `attemptPetEvolution()` in `gameUtils.ts` handles transform + variant selection; `checkPetEvolutionTrigger()` fires on 15 triggers across gameUtils/spellUtils/battlecryUtils/zoneUtils; evolve info icon on Stage 2/3 cards in SimpleCard.tsx; Stage 3 cards show "?" for ATK/HP until evolved (cyan glow via `hasStage3Variants` flag)
+- **Pet Evolution**: 3-3-1 family system (38 families, 266 cards); `petStage`, `petFamily`, `petFamilyTier`, `evolvesInto/From`, `evolutionCondition`, `stage3Variants` fields; Stage 2/3 cost 0 mana (free evolution); `attemptPetEvolution()` in `gameUtils.ts` handles transform + variant selection; `checkPetEvolutionTrigger()` fires on 15 triggers across gameUtils/spellUtils/battlecryUtils/zoneUtils; evolve info icon on Stage 2/3 cards in SimpleCard.tsx; Stage 3 cards show "?" for ATK/HP until evolved (cyan glow via `hasStage3Variants` flag); `PET_EVOLVED` event emitted via `GameEventBus`; AnimationSubscriber queues `pet_ascension` (Stage 2, 800ms, priority 8) and `pet_apotheosis` (Stage 3, 1500ms, priority 15); NotificationSubscriber shows evolution toasts; `ready-to-evolve` CSS class adds rotating conic gradient border + ⬆ icon on `petEvolutionMet` cards
 - **Rune** (renamed from Secret): Description text says "Rune" but underlying keyword is still `secret` for backwards compatibility
 - **Runic Bond** (renamed from Magnetic): Description says "Runic Bond" but keyword is still `magnetic`
 - **Yggdrasil Golem** (renamed from Jade Golem): Effect key is `summon_yggdrasil_golem`; handlers still in files named `summonJadeGolemHandler.ts`
@@ -382,7 +382,7 @@ vercel --prod                 # Deploy to Vercel
 - Prophecy system (7 cards, visible countdown timers, 7 resolve effect types)
 - Realm Shift system (9 cards, board-wide rule changes across the Nine Realms)
 - Ragnarok Chain system (10 cards, 5 mythological pairs with linked destiny)
-- Pet Evolution system (266 cards, 38 families, 3-3-1 evolution, Stage 2/3 cost 0 mana, evolve info icon, "?" stats on unevolved Stage 3)
+- Pet Evolution system (266 cards, 38 families, 3-3-1 evolution, Stage 2/3 cost 0 mana, evolve info icon, "?" stats on unevolved Stage 3, PET_EVOLVED event, ascension/apotheosis animations, ready-to-evolve battlefield indicator)
 - Vanilla Minions (7 baseline stat cards for evaluation benchmarks)
 - Berserker class rename (formerly Demon Hunter)
 - Rune keyword rename (formerly Secret, display text only)

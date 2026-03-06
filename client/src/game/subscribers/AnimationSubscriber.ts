@@ -21,7 +21,8 @@ import type {
   TurnStartedEvent,
   GameStartedEvent,
   GameEndedEvent,
-  AnimationRequestEvent
+  AnimationRequestEvent,
+  PetEvolvedEvent
 } from '@/core/events/GameEvents';
 
 type UnsubscribeFn = () => void;
@@ -342,6 +343,27 @@ class AnimationSubscriberImpl {
             winner: event.winner,
             reason: event.reason,
             finalTurn: event.finalTurn
+          }
+        });
+      })
+    );
+
+    // Pet Evolution Animation
+    this.unsubscribes.push(
+      GameEventBus.subscribe<PetEvolvedEvent>('PET_EVOLVED', (event) => {
+        const isApotheosis = event.toStage === 3;
+        this.queueAnimation({
+          type: isApotheosis ? 'pet_apotheosis' : 'pet_ascension',
+          sourceId: event.instanceId,
+          duration: isApotheosis ? 1500 : 800,
+          priority: isApotheosis ? 15 : 8,
+          params: {
+            cardName: event.cardName,
+            familyName: event.familyName,
+            fromStage: event.fromStage,
+            toStage: event.toStage,
+            element: event.element,
+            isApotheosis
           }
         });
       })
