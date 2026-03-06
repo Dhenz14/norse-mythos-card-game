@@ -20,10 +20,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/cards-1%2C400%2B-gold?style=flat-square" />
-  <img src="https://img.shields.io/badge/heroes-77-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/cards-1%2C500%2B-gold?style=flat-square" />
+  <img src="https://img.shields.io/badge/heroes-80-blue?style=flat-square" />
   <img src="https://img.shields.io/badge/mythologies-5-red?style=flat-square" />
-  <img src="https://img.shields.io/badge/campaign_missions-55-green?style=flat-square" />
+  <img src="https://img.shields.io/badge/campaign_missions-49-green?style=flat-square" />
   <img src="https://img.shields.io/badge/pet_families-38-orange?style=flat-square" />
   <img src="https://img.shields.io/badge/react-18-61DAFB?style=flat-square&logo=react&logoColor=white" />
   <img src="https://img.shields.io/badge/typescript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" />
@@ -43,8 +43,8 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 ## Features
 
 ### Core Gameplay
-- **1,400+ collectible cards** with battlecry, deathrattle, combo, discover, and 47 keyword mechanics
-- **77 playable heroes** across 12 classes — Mage, Warrior, Priest, Rogue, Paladin, Hunter, Druid, Warlock, Shaman, Berserker, Death Knight, Necromancer
+- **1,500+ collectible cards** with battlecry, deathrattle, combo, discover, and 47 keyword mechanics
+- **80 playable heroes** across 12 classes — Mage, Warrior, Priest, Rogue, Paladin, Hunter, Druid, Warlock, Shaman, Berserker, Death Knight, Necromancer
 - **6 unique Norse mechanics** — Blood Price, Einherjar, Prophecy, Realm Shift, Ragnarok Chain, Pet Evolution
 - **Ragnarok Chess** — 7x5 board where god-pieces maneuver and collisions trigger poker combat
 - **Texas Hold'em poker combat** — bet HP, read bluffs, and resolve battles with Norse-themed hand rankings
@@ -52,12 +52,12 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 - **Element system** — Fire, Water, Wind, Earth, Holy, Shadow with advantage bonuses
 
 ### Campaign: War of the Pantheons
-- **55 hand-crafted missions** across 5 mythological chapters
+- **49 hand-crafted missions** across 5 mythological chapters
 - **Nine Realms constellation map** — navigate Ginnungagap, Asgard, Midgard, Niflheim, Muspelheim, Jotunheim, Vanaheim, Alfheim, Svartalfheim, Helheim
-- **Greek Olympus world map** — 8 locations from Mount Olympus to the Underworld
+- **Greek world map** — 10 missions from Chaos to the Seeds of Strife (Hesiod's Theogony / Apollodorus' Library)
 - **Themed AI enemies** — fight gods and monsters matching each realm's mythology
 - **Boss rules** — extra health, bonus mana, passive damage, minion summons
-- **Secret Eastern chapter** — 12 boss-tier missions unlocked after completing all campaigns, featuring Chinese, Japanese, and Hindu mythology
+- **Secret Eastern chapter** — 10 boss-tier missions unlocked after completing all campaigns, featuring Chinese, Japanese, and Hindu mythology
 - **Escalating difficulty** with unique AI behavior profiles per mission
 
 ### Multiplayer & Social
@@ -235,13 +235,13 @@ The winner **heals back their committed HP**. The loser **keeps their loss perma
 
 ### War of the Pantheons
 
-Five mythological campaigns with 55 hand-crafted missions featuring unique narratives, themed AI armies, and escalating boss mechanics.
+Five mythological campaigns with 49 hand-crafted missions featuring unique narratives, themed AI armies, and escalating boss mechanics.
 
-#### Norse — The Prose Edda
+#### Norse — Echoes of Ymir (9 missions)
 Follow the chronological Norse creation myth from Ginnungagap through Ragnarok. Face Ymir in the primordial void, witness the world forged from his body, breathe life into Ask and Embla, build the halls of Asgard, and survive the Vanir War — culminating in a Twilight Omen of Ragnarok.
 
-#### Greek — Olympus
-Journey from the Underworld to Mount Olympus across 8 locations. Battle Cerberus, the Minotaur, Medusa, the Hydra, Ares, Poseidon, Hades, Athena, the Titan Kronos, and Zeus.
+#### Greek — Echoes of Chaos: Blood of the Olympians (10 missions)
+Follow Hesiod's Theogony and Apollodorus' Library from Chaos through the Heroic Age. Battle Gaia's brood in the primordial void, dethrone Uranus, survive Cronus the Devourer, forge Zeus's thunderbolts, storm the Titanomachy, witness Prometheus's defiance, face Typhon and the Giants, and navigate the seeds of divine strife that doom Olympus.
 
 #### Egyptian — The Afterlife
 Walk the path of the dead through Ma'at's judgment hall, Ra's sun barge, and the throne of the Pharaoh. Face Ammit the Devourer, Set's storms, the serpent Apophis.
@@ -249,8 +249,8 @@ Walk the path of the dead through Ma'at's judgment hall, Ra's sun barge, and the
 #### Celtic — The Otherworld
 Enter the misty realm of druids, the Morrigan's battlefield, Cu Chulainn's rage, Balor's evil eye, and the Wild Hunt. End at the Battle of Mag Tuired.
 
-#### Eastern — The Celestial Gate (Secret)
-*Unlocked after completing all four base campaigns.* 12 boss-tier missions spanning Chinese dragons, Japanese kami (Amaterasu, Susanoo, Izanami), Hindu devas (Ganesha, Kali), and a final battle where ALL mythologies collide: **Ragnarok of All Worlds**.
+#### Eastern — The Celestial Gate (Secret, 10 missions)
+*Unlocked after completing all four base campaigns.* 10 boss-tier missions spanning Chinese dragons, Japanese kami (Amaterasu, Susanoo, Izanami), Hindu devas (Ganesha, Kali), and a final battle where ALL mythologies collide: **Ragnarok of All Worlds**.
 
 ---
 
@@ -312,7 +312,7 @@ Every status effect has full visual feedback — themed glows, overlays, and ico
 
 ## Card System
 
-### 1,400+ Cards Across 5 Sets
+### 1,500+ Cards Across 6 Sets
 
 | Range | Category |
 |-------|----------|
@@ -322,7 +322,10 @@ Every status effect has full visual feedback — themed glows, overlays, and ico
 | 20000-29967 | Norse Mythology set |
 | 29800-29967 | Artifacts & Armor |
 | 30001-30410 | Norse Mechanics (Blood Price, Einherjar, Prophecy, Realm Shift, Chain) |
-| 31001-31806 | Expansion gap-fill (synergy, deep keywords) |
+| 31001-31905 | Expansion gap-fill (synergy, deep keywords, lifesteal) |
+| 32101-32106 | Greek Mythic Minions (Cerberus, Typhon, Atlas, Medusa...) |
+| 36001-36406 | Class expansion I (DK, Necro, Berserker, Rogue, Paladin) |
+| 38001-39104 | Class expansion II (all 12 classes — completeness pass) |
 | 50000-50376 | Pet Evolution (38 families, 266 cards) |
 | 85001-85010 | Rogue specialty |
 | 90000-99999 | Hero cards |
@@ -434,11 +437,11 @@ Opens at `http://localhost:5000`. No database required for single-player — Pos
 ```
 client/src/
 ├── game/
-│   ├── campaign/          # 49 missions, 5 chapters, 2 world maps
+│   ├── campaign/          # 49 missions, 5 chapters, world maps
 │   ├── combat/            # Poker combat arena + hooks
 │   ├── components/        # Card, chess, campaign, collection, trading UI
 │   ├── crafting/          # Eitr economy (dissolve/forge)
-│   ├── data/              # 1,400+ cards + 77 heroes + 38 pet families
+│   ├── data/              # 1,500+ cards + 80 heroes + 38 pet families
 │   ├── effects/           # 181 effect handlers (battlecry, deathrattle, spell)
 │   ├── engine/            # WASM loader + TypeScript fallback
 │   ├── spectator/         # Read-only P2P viewer
@@ -459,15 +462,19 @@ server/
 
 ### Completed
 
-- [x] 1,400+ cards with 181 effect handlers (94 battlecry, 16 deathrattle, 71 spell)
-- [x] 77 heroes across 12 classes and 5 mythological factions
+- [x] 1,500+ cards with 181 effect handlers (94 battlecry, 16 deathrattle, 71 spell)
+- [x] 80 heroes across 12 classes and 5 mythological factions
 - [x] 6 Norse-original mechanics (Blood Price, Einherjar, Prophecy, Realm Shift, Ragnarok Chain, Pet Evolution)
 - [x] Pet Evolution 3-3-1 system (38 families, 266 cards, element advantage, hero synergy)
 - [x] Ragnarok Chess (7x5 board with poker combat collisions)
 - [x] Texas Hold'em poker combat with Norse hand rankings
-- [x] 55-mission campaign across 5 mythological chapters
-- [x] Nine Realms constellation map + Greek Olympus world map
+- [x] 49-mission campaign across 5 mythological chapters
+- [x] Nine Realms constellation map + Greek world map (Hesiod/Apollodorus lore)
 - [x] Secret Eastern chapter (Chinese/Japanese/Hindu)
+- [x] Greek campaign rewrite: "Echoes of Chaos: Blood of the Olympians" (10 missions)
+- [x] 82-card class completeness expansion (all 12 classes audited and gap-filled)
+- [x] 6 Greek mythic minion cards (Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa)
+- [x] 3 new heroes: Prometheus (druid), Heracles (warrior), Rhea (priest)
 - [x] P2P multiplayer via WebRTC
 - [x] Ranked matchmaking with ELO ladder
 - [x] Tournament system (Swiss + elimination)
