@@ -23,16 +23,19 @@ import type {
   GameEndedEvent,
   DiscoveryStartedEvent,
   PokerHandRevealedEvent,
-  ShowdownResultEvent
+  ShowdownResultEvent,
+  PetEvolvedEvent
 } from '@/core/events/GameEvents';
 import { useAudio, type SoundEffectType } from '@/lib/stores/useAudio';
+import { proceduralAudio } from '@/game/audio/proceduralAudio';
+import cardDatabase from '@/game/services/cardDatabase';
 
 type UnsubscribeFn = () => void;
 
 /**
  * Audio mapping for card rarities
  */
-const RARITY_SOUNDS: Record<string, SoundEffectType> = {
+const RARITY_SOUNDS: Record<string, SoundEffectType> = { // eslint-disable-line @typescript-eslint/no-unused-vars
   mythic: 'legendary',
   epic: 'spell',
   rare: 'card_play',
@@ -68,6 +71,13 @@ export function initializeAudioSubscriber(): UnsubscribeFn {
       } else {
         const sound = CARD_TYPE_SOUNDS[event.cardType] ?? 'card_play';
         audioStore.playSoundEffect(sound);
+      }
+
+      // Play pet family sound if the card belongs to a pet family
+      const card = cardDatabase.getCardById(event.cardId);
+      const petFamily = (card as unknown as Record<string, unknown>)?.petFamily as string | undefined;
+      if (petFamily) {
+        proceduralAudio.playPetSound(petFamily);
       }
     })
   );
@@ -213,6 +223,15 @@ export function initializeAudioSubscriber(): UnsubscribeFn {
         audioStore.playSoundEffect('victory');
       } else if (event.winner === 'opponent') {
         audioStore.playSoundEffect('damage_hero');
+      }
+    })
+  );
+
+  // Pet Evolved — play family-specific sound
+  unsubscribes.push(
+    GameEventBus.subscribe<PetEvolvedEvent>('PET_EVOLVED', (event) => {
+      if (event.familyName) {
+        proceduralAudio.playPetSound(event.familyName);
       }
     })
   );

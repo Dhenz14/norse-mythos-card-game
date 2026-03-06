@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, complexity */
 import type { AnimationArchetype, AnimationElement } from '../combat/data/heroAnimationProfiles';
 
 export type SoundType =
@@ -283,7 +284,7 @@ export class ProceduralAudio {
 				case 'timer_warning': this.soundTimerWarning(); break;
 				default: this.soundButtonClick(); break;
 			}
-		} catch (_) {
+		} catch {
 			// silently ignore audio errors
 		}
 	}
@@ -300,7 +301,7 @@ export class ProceduralAudio {
 				shadow_strike: () => this.soundCombatShadowElemental(element, intensity),
 			};
 			archetypeMap[archetype]();
-		} catch (_) {
+		} catch {
 			// silently ignore
 		}
 	}
@@ -2086,6 +2087,865 @@ export class ProceduralAudio {
 		hornGain.connect(this.getMaster());
 		horn.start(now);
 		horn.stop(now + 0.12);
+	}
+
+	playPetSound(family: string): void {
+		if (!this.enabled) return;
+		const key = family.toLowerCase().replace(/[^a-z]/g, '');
+		const handler = this.petSoundHandlers[key];
+		if (handler) {
+			try { handler(); } catch { /* ignore audio errors */ }
+		} else {
+			try { this.petGenericBeast(); } catch { /* ignore */ }
+		}
+	}
+
+	private petSoundHandlers: Record<string, () => void> = {
+		wolves: () => this.petWolf(),
+		serpents: () => this.petSerpent(),
+		ravens: () => this.petRaven(),
+		stags: () => this.petStag(),
+		bears: () => this.petBear(),
+		drakes: () => this.petDrake(),
+		ents: () => this.petEnt(),
+		valkyries: () => this.petValkyrie(),
+		draugr: () => this.petDraugr(),
+		giants: () => this.petGiant(),
+		muspelheim: () => this.petMuspelheim(),
+		tideborn: () => this.petTideborn(),
+		rootkin: () => this.petRootkin(),
+		stormkin: () => this.petStormkin(),
+		hellhounds: () => this.petHellhound(),
+		bifrost: () => this.petBifrost(),
+		freyjascompanions: () => this.petFreyjaCat(),
+		celestialhorses: () => this.petHorse(),
+		yggdrasilwatchers: () => this.petYggdrasilWatcher(),
+		norseseaspiritss: () => this.petSeaSpirit(),
+		norseseaspirites: () => this.petSeaSpirit(),
+		norsesea: () => this.petSeaSpirit(),
+		norseseaspirits: () => this.petSeaSpirit(),
+		aesirsbeasts: () => this.petAesirBeast(),
+		primordialbeasts: () => this.petPrimordialBeast(),
+		doomheralds: () => this.petDoomHerald(),
+		warsteeds: () => this.petWarSteed(),
+		thorsgoats: () => this.petGoat(),
+		dwarvenforgemasters: () => this.petDwarvenForge(),
+		norns: () => this.petNorn(),
+		trolls: () => this.petTroll(),
+		ljosalfar: () => this.petLjosalfar(),
+		svartalfar: () => this.petSvartalfar(),
+		disir: () => this.petDisir(),
+		fylgja: () => this.petFylgja(),
+		huldrefolk: () => this.petHuldrefolk(),
+		einherjarwarriors: () => this.petEinherjarWarrior(),
+		ratatoskrmessengers: () => this.petRatatoskr(),
+		naglfar: () => this.petNaglfar(),
+		muspelphoenixes: () => this.petPhoenix(),
+		ivaldiconstructs: () => this.petIvaldiConstruct(),
+	};
+
+	private petWolf(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Howl: descending sawtooth with vibrato
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		const lfo = ctx.createOscillator();
+		const lfoGain = ctx.createGain();
+		osc.type = 'sawtooth';
+		osc.frequency.setValueAtTime(400, now);
+		osc.frequency.linearRampToValueAtTime(200, now + 0.5);
+		lfo.frequency.value = 6;
+		lfoGain.gain.value = 15;
+		lfo.connect(lfoGain);
+		lfoGain.connect(osc.frequency);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'lowpass';
+		filter.frequency.value = 800;
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+		gain.gain.setValueAtTime(0.2, now + 0.3);
+		gain.gain.linearRampToValueAtTime(0, now + 0.6);
+		osc.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getMaster());
+		lfo.start(now);
+		osc.start(now);
+		osc.stop(now + 0.6);
+		lfo.stop(now + 0.6);
+	}
+
+	private petSerpent(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Hiss: highpass filtered noise
+		const noise = ctx.createBufferSource();
+		noise.buffer = this.createNoise(0.5);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'highpass';
+		filter.frequency.setValueAtTime(4000, now);
+		filter.frequency.linearRampToValueAtTime(8000, now + 0.2);
+		filter.frequency.linearRampToValueAtTime(5000, now + 0.5);
+		filter.Q.value = 3;
+		const gain = ctx.createGain();
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.18, now + 0.05);
+		gain.gain.setValueAtTime(0.15, now + 0.25);
+		gain.gain.linearRampToValueAtTime(0, now + 0.5);
+		noise.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getMaster());
+		noise.start(now);
+		noise.stop(now + 0.5);
+	}
+
+	private petRaven(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Caw: two sharp squawks
+		for (let i = 0; i < 2; i++) {
+			const t = now + i * 0.15;
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'square';
+			osc.frequency.setValueAtTime(900 + i * 100, t);
+			osc.frequency.linearRampToValueAtTime(600, t + 0.08);
+			gain.gain.setValueAtTime(0.15, t);
+			gain.gain.linearRampToValueAtTime(0, t + 0.1);
+			const filter = ctx.createBiquadFilter();
+			filter.type = 'bandpass';
+			filter.frequency.value = 1200;
+			filter.Q.value = 2;
+			osc.connect(filter);
+			filter.connect(gain);
+			gain.connect(this.getMaster());
+			osc.start(t);
+			osc.stop(t + 0.1);
+		}
+		this.playFilteredNoiseBurst(now, 0.12, 3000, 'bandpass', 0.08);
+	}
+
+	private petStag(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Bellow: low sweep + antler clash
+		this.playSweep(200, 120, 0.4, 'sawtooth', 0.03, 0.35, 0.15);
+		this.playFilteredNoiseBurst(now + 0.1, 0.08, 4000, 'highpass', 0.12);
+		const thud = ctx.createOscillator();
+		const thudGain = ctx.createGain();
+		thud.type = 'sine';
+		thud.frequency.value = 60;
+		thudGain.gain.setValueAtTime(0.2, now + 0.15);
+		thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+		thud.connect(thudGain);
+		thudGain.connect(this.getMaster());
+		thud.start(now + 0.15);
+		thud.stop(now + 0.35);
+	}
+
+	private petBear(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Deep roar: low sawtooth rumble with growl modulation
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		const lfo = ctx.createOscillator();
+		const lfoGain = ctx.createGain();
+		osc.type = 'sawtooth';
+		osc.frequency.setValueAtTime(90, now);
+		osc.frequency.linearRampToValueAtTime(120, now + 0.15);
+		osc.frequency.linearRampToValueAtTime(80, now + 0.5);
+		lfo.frequency.value = 20;
+		lfoGain.gain.value = 25;
+		lfo.connect(lfoGain);
+		lfoGain.connect(osc.frequency);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'lowpass';
+		filter.frequency.value = 400;
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.25, now + 0.08);
+		gain.gain.setValueAtTime(0.22, now + 0.3);
+		gain.gain.linearRampToValueAtTime(0, now + 0.55);
+		osc.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getMaster());
+		lfo.start(now);
+		osc.start(now);
+		osc.stop(now + 0.55);
+		lfo.stop(now + 0.55);
+	}
+
+	private petDrake(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Dragon roar: rising sweep + fire crackle
+		this.playSweep(150, 500, 0.4, 'sawtooth', 0.05, 0.35, 0.18);
+		this.playFilteredNoiseBurst(now + 0.15, 0.3, 2000, 'bandpass', 0.12, undefined, 3);
+		// Fire crackle
+		for (let i = 0; i < 5; i++) {
+			this.playFilteredNoiseBurst(now + 0.2 + i * 0.05, 0.04, 5000 + Math.random() * 3000, 'highpass', 0.06);
+		}
+	}
+
+	private petEnt(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Creaking wood: slow filtered noise + low groan
+		const noise = ctx.createBufferSource();
+		noise.buffer = this.createNoise(0.6);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'bandpass';
+		filter.frequency.setValueAtTime(300, now);
+		filter.frequency.linearRampToValueAtTime(600, now + 0.3);
+		filter.frequency.linearRampToValueAtTime(200, now + 0.6);
+		filter.Q.value = 8;
+		const gain = ctx.createGain();
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.12, now + 0.1);
+		gain.gain.linearRampToValueAtTime(0, now + 0.6);
+		noise.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getMaster());
+		noise.start(now);
+		noise.stop(now + 0.6);
+		this.playTone(70, 0.5, 'sine', 0.1, 0.4, 0.1);
+	}
+
+	private petValkyrie(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// War cry: choir-like harmonics
+		const freqs = [440, 554, 659];
+		freqs.forEach(f => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'sine';
+			osc.frequency.setValueAtTime(f, now);
+			osc.frequency.linearRampToValueAtTime(f * 1.05, now + 0.3);
+			gain.gain.setValueAtTime(0, now);
+			gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
+			gain.gain.setValueAtTime(0.08, now + 0.25);
+			gain.gain.linearRampToValueAtTime(0, now + 0.4);
+			osc.connect(gain);
+			gain.connect(this.getReverb());
+			osc.start(now);
+			osc.stop(now + 0.4);
+		});
+		this.playFilteredNoiseBurst(now, 0.15, 6000, 'highpass', 0.06);
+	}
+
+	private petDraugr(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Undead moan: low distorted sweep
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		const distortion = ctx.createWaveShaper();
+		const curve = new Float32Array(256);
+		for (let i = 0; i < 256; i++) {
+			const x = (i / 128) - 1;
+			curve[i] = (Math.PI + 200) * x / (Math.PI + 200 * Math.abs(x));
+		}
+		distortion.curve = curve;
+		osc.type = 'sawtooth';
+		osc.frequency.setValueAtTime(80, now);
+		osc.frequency.linearRampToValueAtTime(120, now + 0.2);
+		osc.frequency.linearRampToValueAtTime(60, now + 0.5);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.12, now + 0.05);
+		gain.gain.linearRampToValueAtTime(0, now + 0.5);
+		osc.connect(distortion);
+		distortion.connect(gain);
+		gain.connect(this.getReverb());
+		osc.start(now);
+		osc.stop(now + 0.5);
+	}
+
+	private petGiant(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Ground stomp: deep thud + rumble
+		const thud = ctx.createOscillator();
+		const thudGain = ctx.createGain();
+		thud.type = 'sine';
+		thud.frequency.value = 40;
+		thudGain.gain.setValueAtTime(0.3, now);
+		thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+		thud.connect(thudGain);
+		thudGain.connect(this.getMaster());
+		thud.start(now);
+		thud.stop(now + 0.4);
+		this.playFilteredNoiseBurst(now, 0.25, 200, 'lowpass', 0.15);
+		this.playFilteredNoiseBurst(now + 0.05, 0.15, 3000, 'bandpass', 0.08);
+	}
+
+	private petMuspelheim(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Fire crackle: rapid noise bursts + low roar
+		for (let i = 0; i < 8; i++) {
+			const t = now + i * 0.04;
+			this.playFilteredNoiseBurst(t, 0.03, 4000 + Math.random() * 4000, 'highpass', 0.06 + Math.random() * 0.04);
+		}
+		this.playSweep(100, 200, 0.3, 'sawtooth', 0.02, 0.25, 0.1);
+	}
+
+	private petTideborn(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Water splash: filtered noise with sweep
+		const noise = ctx.createBufferSource();
+		noise.buffer = this.createNoise(0.4);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'bandpass';
+		filter.frequency.setValueAtTime(2000, now);
+		filter.frequency.linearRampToValueAtTime(500, now + 0.4);
+		filter.Q.value = 1;
+		const gain = ctx.createGain();
+		gain.gain.setValueAtTime(0.2, now);
+		gain.gain.linearRampToValueAtTime(0, now + 0.4);
+		noise.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getReverb());
+		noise.start(now);
+		noise.stop(now + 0.4);
+		this.playTone(200, 0.2, 'sine', 0.01, 0.18, 0.06);
+	}
+
+	private petRootkin(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Earth rumble: very low sine + crackle
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = 'sine';
+		osc.frequency.setValueAtTime(35, now);
+		osc.frequency.linearRampToValueAtTime(50, now + 0.2);
+		osc.frequency.linearRampToValueAtTime(30, now + 0.5);
+		gain.gain.setValueAtTime(0.2, now);
+		gain.gain.linearRampToValueAtTime(0, now + 0.5);
+		osc.connect(gain);
+		gain.connect(this.getMaster());
+		osc.start(now);
+		osc.stop(now + 0.5);
+		for (let i = 0; i < 4; i++) {
+			this.playFilteredNoiseBurst(now + 0.1 + i * 0.08, 0.03, 2000, 'bandpass', 0.04);
+		}
+	}
+
+	private petStormkin(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Thunder crack: sharp noise burst + low rumble
+		this.playFilteredNoiseBurst(now, 0.08, 6000, 'highpass', 0.25);
+		const rumble = ctx.createOscillator();
+		const rumbleGain = ctx.createGain();
+		rumble.type = 'sine';
+		rumble.frequency.value = 50;
+		rumbleGain.gain.setValueAtTime(0.2, now + 0.05);
+		rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+		rumble.connect(rumbleGain);
+		rumbleGain.connect(this.getMaster());
+		rumble.start(now + 0.05);
+		rumble.stop(now + 0.5);
+		this.playFilteredNoiseBurst(now + 0.08, 0.3, 300, 'lowpass', 0.1);
+	}
+
+	private petHellhound(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Snarling bark: distorted wolf variant
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		const distortion = ctx.createWaveShaper();
+		const curve = new Float32Array(256);
+		for (let i = 0; i < 256; i++) {
+			const x = (i / 128) - 1;
+			curve[i] = Math.tanh(x * 5);
+		}
+		distortion.curve = curve;
+		osc.type = 'sawtooth';
+		osc.frequency.setValueAtTime(350, now);
+		osc.frequency.linearRampToValueAtTime(180, now + 0.15);
+		osc.frequency.linearRampToValueAtTime(250, now + 0.25);
+		osc.frequency.linearRampToValueAtTime(150, now + 0.35);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.18, now + 0.03);
+		gain.gain.linearRampToValueAtTime(0, now + 0.4);
+		osc.connect(distortion);
+		distortion.connect(gain);
+		gain.connect(this.getMaster());
+		osc.start(now);
+		osc.stop(now + 0.4);
+		this.playFilteredNoiseBurst(now, 0.15, 2000, 'bandpass', 0.08);
+	}
+
+	private petBifrost(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Crystal chime: high harmonics cascading
+		const freqs = [1200, 1600, 2000, 2400];
+		freqs.forEach((f, i) => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'sine';
+			osc.frequency.value = f;
+			gain.gain.setValueAtTime(0, now + i * 0.06);
+			gain.gain.linearRampToValueAtTime(0.08, now + i * 0.06 + 0.01);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.35);
+			osc.connect(gain);
+			gain.connect(this.getReverb());
+			osc.start(now + i * 0.06);
+			osc.stop(now + i * 0.06 + 0.35);
+		});
+	}
+
+	private petFreyjaCat(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Cat yowl: filtered oscillator sweep
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = 'triangle';
+		osc.frequency.setValueAtTime(500, now);
+		osc.frequency.linearRampToValueAtTime(900, now + 0.15);
+		osc.frequency.linearRampToValueAtTime(600, now + 0.35);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'bandpass';
+		filter.frequency.value = 800;
+		filter.Q.value = 5;
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.15, now + 0.03);
+		gain.gain.setValueAtTime(0.12, now + 0.2);
+		gain.gain.linearRampToValueAtTime(0, now + 0.35);
+		osc.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getMaster());
+		osc.start(now);
+		osc.stop(now + 0.35);
+	}
+
+	private petHorse(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Neigh: rising whinny + hoofbeats
+		this.playSweep(300, 800, 0.25, 'triangle', 0.02, 0.2, 0.12);
+		for (let i = 0; i < 3; i++) {
+			const t = now + 0.3 + i * 0.1;
+			const thud = ctx.createOscillator();
+			const thudGain = ctx.createGain();
+			thud.type = 'sine';
+			thud.frequency.value = 80;
+			thudGain.gain.setValueAtTime(0.12, t);
+			thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+			thud.connect(thudGain);
+			thudGain.connect(this.getMaster());
+			thud.start(t);
+			thud.stop(t + 0.06);
+			this.playFilteredNoiseBurst(t, 0.03, 3000, 'highpass', 0.06);
+		}
+	}
+
+	private petYggdrasilWatcher(): void {
+		// Ancient whisper: reverbed noise + low drone
+		this.playNoise(0.5, 1500, 'bandpass', 0.06, this.getReverb());
+		this.playTone(100, 0.5, 'sine', 0.1, 0.4, 0.06, this.getReverb());
+		this.playTone(150, 0.4, 'sine', 0.15, 0.25, 0.04, this.getReverb());
+	}
+
+	private petSeaSpirit(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Whale song: slow sine sweep
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = 'sine';
+		osc.frequency.setValueAtTime(200, now);
+		osc.frequency.linearRampToValueAtTime(400, now + 0.2);
+		osc.frequency.linearRampToValueAtTime(250, now + 0.5);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.1, now + 0.05);
+		gain.gain.setValueAtTime(0.08, now + 0.3);
+		gain.gain.linearRampToValueAtTime(0, now + 0.5);
+		osc.connect(gain);
+		gain.connect(this.getReverb());
+		osc.start(now);
+		osc.stop(now + 0.5);
+	}
+
+	private petAesirBeast(): void {
+		// Divine roar: bright roar + shimmer
+		this.playSweep(200, 400, 0.3, 'sawtooth', 0.03, 0.25, 0.15);
+		this.playTone(800, 0.3, 'sine', 0.05, 0.25, 0.06, this.getReverb());
+		this.playTone(1200, 0.25, 'sine', 0.08, 0.17, 0.04, this.getReverb());
+	}
+
+	private petPrimordialBeast(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Primeval roar: ultra-low + harmonics
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = 'sawtooth';
+		osc.frequency.setValueAtTime(50, now);
+		osc.frequency.linearRampToValueAtTime(80, now + 0.2);
+		osc.frequency.linearRampToValueAtTime(40, now + 0.6);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'lowpass';
+		filter.frequency.value = 300;
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.25, now + 0.05);
+		gain.gain.linearRampToValueAtTime(0, now + 0.6);
+		osc.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getMaster());
+		osc.start(now);
+		osc.stop(now + 0.6);
+		this.playTone(100, 0.4, 'sine', 0.1, 0.3, 0.1);
+	}
+
+	private petDoomHerald(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Ominous horn: brass-like sawtooth
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = 'sawtooth';
+		osc.frequency.setValueAtTime(110, now);
+		osc.frequency.linearRampToValueAtTime(130, now + 0.15);
+		osc.frequency.linearRampToValueAtTime(110, now + 0.4);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'lowpass';
+		filter.frequency.setValueAtTime(300, now);
+		filter.frequency.linearRampToValueAtTime(600, now + 0.15);
+		filter.frequency.linearRampToValueAtTime(200, now + 0.4);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.18, now + 0.05);
+		gain.gain.setValueAtTime(0.15, now + 0.25);
+		gain.gain.linearRampToValueAtTime(0, now + 0.45);
+		osc.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getReverb());
+		osc.start(now);
+		osc.stop(now + 0.45);
+	}
+
+	private petWarSteed(): void {
+		// Charge neigh + gallop
+		this.playSweep(250, 700, 0.2, 'triangle', 0.02, 0.18, 0.12);
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		for (let i = 0; i < 4; i++) {
+			const t = now + 0.25 + i * 0.08;
+			this.playFilteredNoiseBurst(t, 0.03, 3000, 'highpass', 0.05);
+			this.playScheduledTone(t, 70, 0.04, 'sine', 0.1);
+		}
+	}
+
+	private petGoat(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Bleat: nasal vibrato + mini thunder
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		const lfo = ctx.createOscillator();
+		const lfoGain = ctx.createGain();
+		osc.type = 'square';
+		osc.frequency.value = 600;
+		lfo.frequency.value = 30;
+		lfoGain.gain.value = 80;
+		lfo.connect(lfoGain);
+		lfoGain.connect(osc.frequency);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'bandpass';
+		filter.frequency.value = 900;
+		filter.Q.value = 3;
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.12, now + 0.02);
+		gain.gain.linearRampToValueAtTime(0, now + 0.2);
+		osc.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getMaster());
+		lfo.start(now);
+		osc.start(now);
+		osc.stop(now + 0.2);
+		lfo.stop(now + 0.2);
+		// Mini thunder for Thor's goats
+		this.playFilteredNoiseBurst(now + 0.15, 0.15, 200, 'lowpass', 0.08);
+	}
+
+	private petDwarvenForge(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Hammer strike: metallic clang
+		const osc1 = ctx.createOscillator();
+		const osc2 = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc1.type = 'square';
+		osc1.frequency.value = 800;
+		osc2.type = 'sine';
+		osc2.frequency.value = 2400;
+		gain.gain.setValueAtTime(0.2, now);
+		gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+		osc1.connect(gain);
+		osc2.connect(gain);
+		gain.connect(this.getMaster());
+		osc1.start(now);
+		osc2.start(now);
+		osc1.stop(now + 0.3);
+		osc2.stop(now + 0.3);
+		this.playFilteredNoiseBurst(now, 0.05, 5000, 'highpass', 0.15);
+	}
+
+	private petNorn(): void {
+		// Fate whisper: eerie harmonics
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		const freqs = [330, 440, 550];
+		freqs.forEach((f, i) => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'sine';
+			osc.frequency.setValueAtTime(f, now);
+			osc.frequency.linearRampToValueAtTime(f * 1.02, now + 0.5);
+			gain.gain.setValueAtTime(0, now + i * 0.08);
+			gain.gain.linearRampToValueAtTime(0.06, now + i * 0.08 + 0.1);
+			gain.gain.linearRampToValueAtTime(0, now + 0.5);
+			osc.connect(gain);
+			gain.connect(this.getReverb());
+			osc.start(now);
+			osc.stop(now + 0.5);
+		});
+		this.playNoise(0.4, 3000, 'highpass', 0.03, this.getReverb());
+	}
+
+	private petTroll(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Grunt + smash
+		const grunt = ctx.createOscillator();
+		const gruntGain = ctx.createGain();
+		grunt.type = 'sawtooth';
+		grunt.frequency.setValueAtTime(100, now);
+		grunt.frequency.linearRampToValueAtTime(70, now + 0.15);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'lowpass';
+		filter.frequency.value = 300;
+		gruntGain.gain.setValueAtTime(0.15, now);
+		gruntGain.gain.linearRampToValueAtTime(0, now + 0.2);
+		grunt.connect(filter);
+		filter.connect(gruntGain);
+		gruntGain.connect(this.getMaster());
+		grunt.start(now);
+		grunt.stop(now + 0.2);
+		// Smash thud
+		const thud = ctx.createOscillator();
+		const thudGain = ctx.createGain();
+		thud.type = 'sine';
+		thud.frequency.value = 50;
+		thudGain.gain.setValueAtTime(0.25, now + 0.15);
+		thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+		thud.connect(thudGain);
+		thudGain.connect(this.getMaster());
+		thud.start(now + 0.15);
+		thud.stop(now + 0.4);
+	}
+
+	private petLjosalfar(): void {
+		// Light chime: bright bell-like
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		const freqs = [880, 1320, 1760];
+		freqs.forEach((f, i) => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'sine';
+			osc.frequency.value = f;
+			gain.gain.setValueAtTime(0, now + i * 0.04);
+			gain.gain.linearRampToValueAtTime(0.08, now + i * 0.04 + 0.01);
+			gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.04 + 0.4);
+			osc.connect(gain);
+			gain.connect(this.getReverb());
+			osc.start(now + i * 0.04);
+			osc.stop(now + i * 0.04 + 0.4);
+		});
+	}
+
+	private petSvartalfar(): void {
+		// Dark whisper: low filtered murmur
+		this.playNoise(0.4, 500, 'lowpass', 0.08, this.getReverb());
+		this.playTone(80, 0.35, 'sawtooth', 0.05, 0.3, 0.06, this.getReverb());
+	}
+
+	private petDisir(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Spirit wail: rising ethereal cry
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = 'sine';
+		osc.frequency.setValueAtTime(300, now);
+		osc.frequency.linearRampToValueAtTime(800, now + 0.3);
+		osc.frequency.linearRampToValueAtTime(500, now + 0.45);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.12, now + 0.1);
+		gain.gain.linearRampToValueAtTime(0, now + 0.45);
+		osc.connect(gain);
+		gain.connect(this.getReverb());
+		osc.start(now);
+		osc.stop(now + 0.45);
+		this.playNoise(0.3, 4000, 'highpass', 0.03, this.getReverb());
+	}
+
+	private petFylgja(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Shapeshifter morph: warbling pitch shift
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		const lfo = ctx.createOscillator();
+		const lfoGain = ctx.createGain();
+		osc.type = 'triangle';
+		osc.frequency.setValueAtTime(300, now);
+		osc.frequency.linearRampToValueAtTime(600, now + 0.15);
+		osc.frequency.linearRampToValueAtTime(200, now + 0.3);
+		osc.frequency.linearRampToValueAtTime(500, now + 0.4);
+		lfo.frequency.value = 12;
+		lfoGain.gain.value = 40;
+		lfo.connect(lfoGain);
+		lfoGain.connect(osc.frequency);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.12, now + 0.03);
+		gain.gain.linearRampToValueAtTime(0, now + 0.4);
+		osc.connect(gain);
+		gain.connect(this.getReverb());
+		lfo.start(now);
+		osc.start(now);
+		osc.stop(now + 0.4);
+		lfo.stop(now + 0.4);
+	}
+
+	private petHuldrefolk(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Forest giggle: quick bright notes
+		const notes = [700, 900, 800, 1000, 850];
+		notes.forEach((f, i) => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'sine';
+			osc.frequency.value = f;
+			const t = now + i * 0.06;
+			gain.gain.setValueAtTime(0.1, t);
+			gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+			osc.connect(gain);
+			gain.connect(this.getMaster());
+			osc.start(t);
+			osc.stop(t + 0.05);
+		});
+	}
+
+	private petEinherjarWarrior(): void {
+		// Battle cry: horn + clash
+		this.playSweep(150, 220, 0.25, 'sawtooth', 0.03, 0.2, 0.12);
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		this.playFilteredNoiseBurst(now + 0.15, 0.08, 5000, 'highpass', 0.12);
+		this.playScheduledTone(now + 0.15, 80, 0.1, 'sine', 0.15);
+	}
+
+	private petRatatoskr(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Squirrel chatter: rapid high clicks
+		for (let i = 0; i < 6; i++) {
+			const t = now + i * 0.05;
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = 'sine';
+			osc.frequency.value = 2000 + Math.random() * 1000;
+			gain.gain.setValueAtTime(0.1, t);
+			gain.gain.exponentialRampToValueAtTime(0.001, t + 0.025);
+			osc.connect(gain);
+			gain.connect(this.getMaster());
+			osc.start(t);
+			osc.stop(t + 0.025);
+		}
+	}
+
+	private petNaglfar(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Ship horn: deep foghorn
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = 'sawtooth';
+		osc.frequency.value = 65;
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'lowpass';
+		filter.frequency.setValueAtTime(200, now);
+		filter.frequency.linearRampToValueAtTime(400, now + 0.2);
+		filter.frequency.linearRampToValueAtTime(150, now + 0.6);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.18, now + 0.1);
+		gain.gain.setValueAtTime(0.15, now + 0.35);
+		gain.gain.linearRampToValueAtTime(0, now + 0.6);
+		osc.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getReverb());
+		osc.start(now);
+		osc.stop(now + 0.6);
+	}
+
+	private petPhoenix(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Phoenix cry: rising fire screech
+		this.playSweep(400, 1500, 0.3, 'sawtooth', 0.02, 0.25, 0.12);
+		// Fire crackle overlay
+		for (let i = 0; i < 6; i++) {
+			this.playFilteredNoiseBurst(now + i * 0.04, 0.03, 5000 + Math.random() * 3000, 'highpass', 0.05);
+		}
+		this.playTone(1200, 0.2, 'sine', 0.05, 0.15, 0.06, this.getReverb());
+	}
+
+	private petIvaldiConstruct(): void {
+		const ctx = this.getContext();
+		const now = ctx.currentTime;
+		// Mechanical whir: gear-like oscillation
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		const lfo = ctx.createOscillator();
+		const lfoGain = ctx.createGain();
+		osc.type = 'square';
+		osc.frequency.value = 200;
+		lfo.frequency.setValueAtTime(8, now);
+		lfo.frequency.linearRampToValueAtTime(20, now + 0.3);
+		lfoGain.gain.value = 60;
+		lfo.connect(lfoGain);
+		lfoGain.connect(osc.frequency);
+		gain.gain.setValueAtTime(0, now);
+		gain.gain.linearRampToValueAtTime(0.1, now + 0.05);
+		gain.gain.setValueAtTime(0.08, now + 0.25);
+		gain.gain.linearRampToValueAtTime(0, now + 0.35);
+		const filter = ctx.createBiquadFilter();
+		filter.type = 'bandpass';
+		filter.frequency.value = 400;
+		filter.Q.value = 2;
+		osc.connect(filter);
+		filter.connect(gain);
+		gain.connect(this.getMaster());
+		lfo.start(now);
+		osc.start(now);
+		osc.stop(now + 0.35);
+		lfo.stop(now + 0.35);
+		this.playFilteredNoiseBurst(now, 0.1, 3000, 'highpass', 0.05);
+	}
+
+	private petGenericBeast(): void {
+		// Fallback: generic growl
+		this.playSweep(200, 100, 0.3, 'sawtooth', 0.03, 0.25, 0.12);
+		this.playFilteredNoiseBurst(this.getContext().currentTime, 0.15, 2000, 'bandpass', 0.06);
 	}
 }
 
