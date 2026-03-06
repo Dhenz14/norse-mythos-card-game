@@ -284,6 +284,23 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     return cards.map((card: any) => adaptCardInstance(card));
   }, [gameState?.players?.opponent?.battlefield]);
   
+  const evolveReadyIds = useMemo(() => {
+    const ids = new Set<string>();
+    const bf = gameState?.players?.player?.battlefield;
+    if (!bf || !handCards) return ids;
+    const readyPets = bf.filter((m: any) => m.petEvolutionMet === true);
+    if (readyPets.length === 0) return ids;
+    for (const hc of handCards) {
+      const cd = (hc as any).card || hc;
+      if (cd?.petStage === 'adept' && cd.evolvesFrom) {
+        if (readyPets.some((m: any) => m.card?.id === cd.evolvesFrom)) ids.add((hc as any).instanceId);
+      } else if (cd?.petStage === 'master' && cd.petFamily) {
+        if (readyPets.some((m: any) => (m.card as any)?.petFamily === cd.petFamily && (m.card as any)?.petStage === 'adept')) ids.add((hc as any).instanceId);
+      }
+    }
+    return ids;
+  }, [gameState?.players?.player?.battlefield, handCards]);
+
   const opponentSecrets = gameState?.players?.opponent?.secrets || [];
   const opponentHeroClass = gameState?.players?.opponent?.heroClass || 'neutral';
   
@@ -912,6 +929,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   onCardPlay={handleCardPlay}
                   registerCardPosition={registerCardPosition || noopRegisterCardPosition}
                   battlefieldRef={battlefieldRef as React.RefObject<HTMLDivElement>}
+                  evolveReadyIds={evolveReadyIds}
                 />
               </div>
             )}

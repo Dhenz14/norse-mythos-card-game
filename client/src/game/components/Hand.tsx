@@ -27,7 +27,8 @@ interface HandProps {
   onCardPlay?: (card: CardInstance, position?: Position) => void;
   isInteractionDisabled?: boolean;
   registerCardPosition?: (card: CardInstance, position: Position) => void;
-  battlefieldRef: React.RefObject<HTMLDivElement>; // Required - battlefield ref for drop detection
+  battlefieldRef: React.RefObject<HTMLDivElement>;
+  evolveReadyIds?: Set<string>;
 }
 
 const NOOP_REGISTER = () => {};
@@ -42,7 +43,8 @@ export const Hand: React.FC<HandProps> = React.memo(({
   onCardPlay,
   isInteractionDisabled = false,
   registerCardPosition,
-  battlefieldRef
+  battlefieldRef,
+  evolveReadyIds
 }) => {
   const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -133,10 +135,12 @@ export const Hand: React.FC<HandProps> = React.memo(({
             const isHovered = hoveredCardIndex === index;
             const cardStyle = transform ? getHandCardStyle(transform, isHovered) : {};
             
+            const isEvolveReady = evolveReadyIds?.has(card.instanceId) ?? false;
+
             return (
-              <div 
+              <div
                 key={card.instanceId || card.card.id}
-                className={`hand-card-wrapper ${canPlay ? 'playable' : ''}`}
+                className={`hand-card-wrapper ${canPlay ? 'playable' : ''} ${isEvolveReady ? 'evolve-ready' : ''}`}
                 style={{ 
                   '--card-offset-x': `${transform?.xOffset || 0}px`,
                   '--card-offset-y': `${transform?.yOffset || 0}px`,

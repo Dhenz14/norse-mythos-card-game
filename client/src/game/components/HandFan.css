@@ -65,6 +65,46 @@
   }
 }
 
+/* Evolve-ready — synced pulse with battlefield pet (cyan/purple) */
+.hand-fan-card.evolve-ready {
+  animation: evolveHandPulse 1.6s ease-in-out infinite !important;
+  position: relative;
+}
+
+.hand-fan-card.evolve-ready::after {
+  content: 'EVOLVE';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #22d3ee;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(34, 211, 238, 0.6);
+  text-shadow: 0 0 6px rgba(34, 211, 238, 0.8);
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+}
+
+@keyframes evolveHandPulse {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 6px rgba(34, 211, 238, 0.5))
+      drop-shadow(0 0 14px rgba(168, 85, 247, 0.25));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 12px rgba(34, 211, 238, 0.85))
+      drop-shadow(0 0 26px rgba(168, 85, 247, 0.5))
+      drop-shadow(0 0 40px rgba(34, 211, 238, 0.2));
+  }
+}
+
 .hand-fan-card.playable.is-hovered {
   animation: none;
   filter:

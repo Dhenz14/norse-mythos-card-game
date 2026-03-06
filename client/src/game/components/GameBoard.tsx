@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import GameHUD from './GameHUD';
 import SimpleBattlefield from './SimpleBattlefield';
@@ -405,6 +405,27 @@ export const GameBoard: React.FC<{}> = () => {
   const player = gameState.players.player;
   const opponent = gameState.players.opponent;
   
+  // Compute which hand cards can evolve a battlefield pet right now
+  const evolveReadyIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (!player?.hand || !player?.battlefield) return ids;
+    const readyPets = player.battlefield.filter((m: any) => m.petEvolutionMet === true);
+    if (readyPets.length === 0) return ids;
+    for (const handCard of player.hand) {
+      const cd = handCard.card as any;
+      if (cd?.petStage === 'adept' && cd.evolvesFrom) {
+        if (readyPets.some((m: any) => m.card?.id === cd.evolvesFrom)) {
+          ids.add((handCard as any).instanceId);
+        }
+      } else if (cd?.petStage === 'master' && cd.petFamily) {
+        if (readyPets.some((m: any) => (m.card as any)?.petFamily === cd.petFamily && (m.card as any)?.petStage === 'adept')) {
+          ids.add((handCard as any).instanceId);
+        }
+      }
+    }
+    return ids;
+  }, [player?.hand, player?.battlefield]);
+
   // Track minion deaths for the graveyard mechanics
   useGraveyardTracking(gameState);
   
@@ -2481,7 +2502,8 @@ export const GameBoard: React.FC<{}> = () => {
                   }}
                   isInteractionDisabled={isProcessingAIActions}
                   registerCardPosition={registerCardPosition}
-                  battlefieldRef={battlefieldRef} // Pass the battlefield reference to Hand component
+                  battlefieldRef={battlefieldRef}
+                  evolveReadyIds={evolveReadyIds}
                 />
               </div>
             )}

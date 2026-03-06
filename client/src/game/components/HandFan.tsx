@@ -26,6 +26,7 @@ interface HandFanProps {
   isInteractionDisabled?: boolean;
   registerCardPosition?: (card: CardInstance, position: Position) => void;
   battlefieldRef: React.RefObject<HTMLDivElement>;
+  evolveReadyIds?: Set<string>;
 }
 
 const MAX_ROTATION = 4;
@@ -42,7 +43,8 @@ export const HandFan = React.memo<HandFanProps>(({
   onCardPlay,
   isInteractionDisabled = false,
   registerCardPosition,
-  battlefieldRef
+  battlefieldRef,
+  evolveReadyIds
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [shakingCardId, setShakingCardId] = useState<string | null>(null);
@@ -192,11 +194,12 @@ export const HandFan = React.memo<HandFanProps>(({
         const isHovered = hoveredIndex === index;
         
         const isShaking = shakingCardId === card.instanceId;
+        const isEvolveReady = evolveReadyIds?.has(card.instanceId) ?? false;
 
         return (
           <div
             key={card.instanceId || card.card.id}
-            className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''} ${isBloodMode ? 'blood-mode' : ''}`}
+            className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''} ${isBloodMode ? 'blood-mode' : ''} ${isEvolveReady ? 'evolve-ready' : ''}`}
             style={getCardStyle(index)}
             tabIndex={0}
             role="button"
