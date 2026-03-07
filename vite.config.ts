@@ -17,7 +17,7 @@ try {
 }
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/norse-mythos-card-game/' : '/',
+  base: process.env.VITE_BASE_PATH || (command === 'build' ? './' : '/'),
   define: {
     __BUILD_HASH__: JSON.stringify(buildHash),
   },

@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max-old-space-size=4096'
+      VITE_BASE_PATH: '/norse-mythos-card-game/'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
