@@ -60,6 +60,8 @@ async function callHive<T>(method: string, params: unknown[]): Promise<T> {
 				signal: controller.signal,
 			});
 
+			if (!res.ok) throw new Error(`HTTP ${res.status} from ${node}`);
+
 			const data = (await res.json()) as HiveRpcResponse<T>;
 
 			if (data.result !== undefined) return data.result;
@@ -193,7 +195,7 @@ async function _doSync(username: string): Promise<void> {
 			try {
 				const parsed = JSON.parse(opData.json) as { action?: string };
 				if (parsed.action) opId = `rp_${parsed.action}`;
-			} catch { /* use raw id */ }
+			} catch { console.warn('[replayEngine] malformed ragnarok-cards JSON:', opData.json.slice(0, 100)); }
 		} else if (opId === 'ragnarok_level_up') {
 			opId = 'rp_level_up';
 		}

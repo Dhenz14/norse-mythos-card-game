@@ -160,8 +160,20 @@ async function applyMint(
 	}> | undefined;
 	if (!to || !cards || !Array.isArray(cards)) return;
 
+	const VALID_CARD_RANGES: [number, number][] = [
+		[1000, 3999], [4000, 8999], [9000, 9250], [20000, 29999],
+		[30001, 30410], [31001, 31905], [38001, 39104], [50000, 50376], [85001, 85010],
+	];
+	const isValidCardId = (id: number) => VALID_CARD_RANGES.some(([lo, hi]) => id >= lo && id <= hi);
+
 	for (const card of cards) {
 		if (!card.nft_id || !card.card_id || !card.rarity) continue;
+
+		const parsedId = typeof card.card_id === 'number' ? card.card_id : parseInt(card.card_id, 10) || 0;
+		if (!isValidCardId(parsedId)) {
+			rejectOp(op, `mint card_id ${parsedId} outside valid ranges`);
+			continue;
+		}
 
 		// Check supply cap for this rarity
 		const counter = await getSupplyCounter(card.rarity);
@@ -258,13 +270,19 @@ async function applyMatchStart(
 	const powValid = await verifyPoWFromPayload(payloadForPow, pow.nonces, POW_CONFIG.MATCH_START);
 	if (!powValid) { rejectOp(op, 'match_start PoW verification failed'); return; }
 
-	const existing = await getMatchAnchor(matchId);
+	let existing = await getMatchAnchor(matchId);
+
+	// Expire stale single-sig anchors (24h TTL) — if one player abandoned, allow re-anchor
+	const ANCHOR_TTL_MS = 24 * 60 * 60 * 1000;
+	if (existing && !existing.dualAnchored && (op.timestamp - existing.timestamp > ANCHOR_TTL_MS)) {
+		existing = undefined;
+	}
 
 	if (!existing) {
 		// First anchor for this match
 		const playerA = (payload.player_a as string) ?? op.broadcaster;
 		const playerB = (payload.player_b as string) ?? (payload.opponent as string) ?? '';
-		const anchor: MatchAnchor = {
+		const newAnchor: MatchAnchor = {
 			matchId,
 			playerA,
 			playerB,
@@ -278,7 +296,7 @@ async function applyMatchStart(
 			deckHashB: op.broadcaster === playerB ? (payload.deck_hash as string) ?? null : null,
 			timestamp: op.timestamp,
 		};
-		await putMatchAnchor(anchor);
+		await putMatchAnchor(newAnchor);
 	} else if (!existing.dualAnchored) {
 		// Second anchor — complete the dual-sig
 		const isPlayerA = op.broadcaster === existing.playerA;
@@ -860,6 +878,13 @@ async function applyPackOpen(
 	const isGold = (lcgNext(seed) % 20) === 0;
 	const edition: HiveCardAsset['edition'] = op.blockNum < 1_000_000 ? 'alpha' : 'beta';
 
+	// Pre-fetch supply counters to avoid repeated IDB reads in loop
+	const supplyCache = new Map<string, SupplyCounter>();
+	for (const r of ['common', 'rare', 'epic', 'mythic']) {
+		const c = await getSupplyCounter(r);
+		if (c) supplyCache.set(r, { ...c });
+	}
+
 	for (let i = 0; i < cardIds.length; i++) {
 		const uid = `${op.trxId}-${i}`;
 		// Derive rarity from a secondary LCG roll per card
@@ -867,8 +892,8 @@ async function applyPackOpen(
 		const rarityRoll = s % 100;
 		const rarity = rarityRoll < 1 ? 'mythic' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
 
-		// Supply cap enforcement — check before minting each card
-		const counter = await getSupplyCounter(rarity);
+		// Supply cap enforcement — check cached counter
+		const counter = supplyCache.get(rarity);
 		if (counter && counter.minted >= counter.cap) continue;
 
 		const cardDef = getCardById(cardIds[i]);
@@ -892,8 +917,13 @@ async function applyPackOpen(
 		await putCard(card);
 
 		if (counter) {
-			await putSupplyCounter({ ...counter, minted: counter.minted + 1 });
+			counter.minted++;
 		}
+	}
+
+	// Flush updated supply counters back to IDB
+	for (const counter of supplyCache.values()) {
+		await putSupplyCounter(counter);
 	}
 }
 

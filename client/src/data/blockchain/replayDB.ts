@@ -17,6 +17,7 @@
 
 import type { HiveCardAsset, HiveMatchResult, HiveTokenBalance } from '../schemas/HiveTypes';
 import { DEFAULT_TOKEN_BALANCE } from '../schemas/HiveTypes';
+import { DEFAULT_ELO_RATING } from './hiveConfig';
 
 const DB_NAME = 'ragnarok-chain-v1';
 const DB_VERSION = 6;
@@ -436,7 +437,7 @@ export interface EloRating {
 
 export async function getEloRating(account: string): Promise<EloRating> {
 	const stored = await idbGet<EloRating>('elo_ratings', account);
-	return stored ?? { account, elo: 1000, wins: 0, losses: 0, lastMatchBlock: 0 };
+	return stored ?? { account, elo: DEFAULT_ELO_RATING, wins: 0, losses: 0, lastMatchBlock: 0 };
 }
 
 export const putEloRating = (rating: EloRating): Promise<void> =>

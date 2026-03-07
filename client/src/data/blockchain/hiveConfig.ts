@@ -9,3 +9,5 @@ export const RAGNAROK_ACCOUNT = 'ragnarok';
 export const NFT_ART_BASE_URL = 'https://ragnarok.cards/art';
 
 export const EXTERNAL_URL_BASE = 'https://ragnarok.cards/card';
+
+export const DEFAULT_ELO_RATING = 1000;

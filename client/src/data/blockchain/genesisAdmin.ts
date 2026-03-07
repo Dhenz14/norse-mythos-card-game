@@ -38,11 +38,20 @@ export async function broadcastGenesis(): Promise<HiveBroadcastResult> {
 	const err = requireAdmin();
 	if (err) return err;
 
+	let readerHash = '';
+	try {
+		const wasmBinary = await fetch('/engine.wasm').then(r => r.arrayBuffer());
+		const hashBuffer = await crypto.subtle.digest('SHA-256', wasmBinary);
+		readerHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+	} catch (err) {
+		console.warn('[genesisAdmin] Could not hash WASM binary:', err);
+	}
+
 	return hiveSync.broadcastCustomJson('rp_genesis', {
 		version: '1.0',
 		total_supply: TOTAL_SUPPLY,
 		card_distribution: SUPPLY_CAPS,
-		reader_hash: '',
+		reader_hash: readerHash,
 	});
 }
 

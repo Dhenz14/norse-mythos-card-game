@@ -61,7 +61,7 @@ router.get('/player/:username', async (req: Request, res: Response) => {
 			await syncAccountNow(username);
 		}
 
-		const player = getPlayer(username) ?? { username, elo: 1000, wins: 0, losses: 0, lastMatchAt: 0 };
+		const player = getPlayer(username) ?? { username, elo: 1000, wins: 0, losses: 0, lastMatchAt: 0 }; // DEFAULT_ELO_RATING
 		const matches = getMatchHistory(username, 20);
 
 		res.json({

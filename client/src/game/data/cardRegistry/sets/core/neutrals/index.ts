@@ -2941,6 +2941,26 @@ const legendaryNeutralMinions: CardData[] = [
     }
   },
   {
+    id: 20050,
+    name: 'Baldr, the Radiant',
+    manaCost: 8,
+    attack: 6,
+    health: 8,
+    type: 'minion',
+    rarity: 'mythic',
+    description: 'Divine Shield. Deathrattle: Restore all friendly minions to full Health.',
+    flavorText: 'The most beloved of the Aesir, whose light outshines even the sun.',
+    keywords: ['divine_shield', 'deathrattle'],
+    class: 'Neutral',
+    collectible: true,
+    set: 'core',
+    deathrattle: {
+      type: 'heal',
+      value: 99,
+      targetType: 'all_friendly_minions'
+    }
+  },
+  {
     id: 20100,
     name: 'Bragi, Bard of the Gods',
     manaCost: 3,
@@ -3243,6 +3263,50 @@ const legendaryNeutralMinions: CardData[] = [
       requiresTarget: false,
       targetType: 'friendly_hero',
       value: 5
+    }
+  },
+  {
+    id: 20150,
+    name: 'Saga, Keeper of Histories',
+    manaCost: 5,
+    attack: 3,
+    health: 5,
+    type: 'minion',
+    rarity: 'epic',
+    description: 'Battlecry: Discover a spell from your opponent\'s class.',
+    flavorText: 'She records every deed in the waters of Sökkvabekkr.',
+    keywords: ['battlecry'],
+    class: 'Neutral',
+    collectible: true,
+    set: 'core',
+    battlecry: {
+      type: 'discover',
+      requiresTarget: false,
+      targetType: 'none',
+      cardType: 'spell',
+      source: 'opponent_class'
+    }
+  },
+  {
+    id: 20151,
+    name: 'Vár, Oath Warden',
+    manaCost: 4,
+    attack: 3,
+    health: 4,
+    type: 'minion',
+    rarity: 'epic',
+    description: 'Battlecry: The next spell you cast this turn costs (3) less.',
+    flavorText: 'Goddess of oaths, she punishes those who break their word.',
+    keywords: ['battlecry'],
+    class: 'Neutral',
+    collectible: true,
+    set: 'core',
+    battlecry: {
+      type: 'cost_reduction',
+      requiresTarget: false,
+      targetType: 'none',
+      cardType: 'spell',
+      value: 3
     }
   },
   {

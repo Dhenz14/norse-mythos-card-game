@@ -13,6 +13,8 @@
 import fs from 'fs';
 import path from 'path';
 
+const DEFAULT_ELO_RATING = 1000;
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -181,7 +183,7 @@ export function getPlayer(username: string): PlayerRecord | undefined {
 export function getOrCreatePlayer(username: string): PlayerRecord {
 	let p = players.get(username);
 	if (!p) {
-		p = { username, elo: 1000, wins: 0, losses: 0, lastMatchAt: 0 };
+		p = { username, elo: DEFAULT_ELO_RATING, wins: 0, losses: 0, lastMatchAt: 0 };
 		players.set(username, p);
 		markDirty();
 	}
