@@ -6,7 +6,10 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
-app.use(helmet());
+const isDev = process.env.NODE_ENV !== 'production';
+app.use(helmet({
+  contentSecurityPolicy: isDev ? false : undefined,
+}));
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: false }));
 

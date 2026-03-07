@@ -106,8 +106,10 @@ const PlayingCard: React.FC<{ card: PokerCard; faceDown?: boolean; small?: boole
   );
 };
 
-const PetCard: React.FC<{ pet: any; heroArmor?: number }> = ({ pet, heroArmor = 0 }) => {
-  const healthPercent = (pet.stats.currentHealth / pet.stats.maxHealth) * 100;
+const PetCard: React.FC<{ pet: any; heroArmor?: number; hpCommitted?: number }> = ({ pet, heroArmor = 0, hpCommitted = 0 }) => {
+  const effectiveHP = Math.max(0, pet.stats.currentHealth - hpCommitted);
+  const healthPercent = (effectiveHP / pet.stats.maxHealth) * 100;
+  const committedPercent = Math.min(100, (hpCommitted / pet.stats.maxHealth) * 100);
 
   return (
     <div className={`pet-card ${pet.rarity}`}>
@@ -115,11 +117,11 @@ const PetCard: React.FC<{ pet: any; heroArmor?: number }> = ({ pet, heroArmor = 
         <span className="pet-name">{pet.name}</span>
         <span className="pet-level">Lv.{pet.stats.level}</span>
       </div>
-      
+
       <div className="pet-avatar">
         {pet.name.charAt(0)}
       </div>
-      
+
       <div className="pet-stats">
         <div className="stat-row">
           <span className="stat-label">Speed</span>
@@ -134,9 +136,16 @@ const PetCard: React.FC<{ pet: any; heroArmor?: number }> = ({ pet, heroArmor = 
           <span className="stat-value rage">{pet.stats.rage}</span>
         </div>
       </div>
-      
+
       <div className="health-bar-container">
         <div className="health-bar">
+          {committedPercent > 0 && (
+            <div className="health-committed" style={{
+              transform: `scaleX(${(healthPercent + committedPercent) / 100})`,
+              background: 'rgba(255, 170, 0, 0.6)',
+              position: 'absolute', inset: 0, transformOrigin: 'left'
+            }} />
+          )}
           <div className="health-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
         </div>
         <div className="health-text">
@@ -145,7 +154,12 @@ const PetCard: React.FC<{ pet: any; heroArmor?: number }> = ({ pet, heroArmor = 
               🛡️ {heroArmor}
             </span>
           )}
-          {pet.stats.currentHealth} / {pet.stats.maxHealth}
+          {effectiveHP} / {pet.stats.maxHealth}
+          {hpCommitted > 0 && (
+            <span style={{ color: '#ffaa00', marginLeft: '4px', fontSize: '0.85em' }}>
+              (-{hpCommitted})
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -342,8 +356,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
       <div className="battle-arena">
         <div className={`opponent-section ${waitingForOpponent ? 'active-turn' : ''}`}>
           <div className="player-label">{combatState.opponent.playerName}</div>
-          <PetCard pet={combatState.opponent.pet} heroArmor={combatState.opponent.heroArmor} />
-          <div className="commitment-display">Committed: {combatState.opponent.hpCommitted} HP</div>
+          <PetCard pet={combatState.opponent.pet} heroArmor={combatState.opponent.heroArmor} hpCommitted={combatState.opponent.hpCommitted} />
         </div>
 
         <div className="community-section">
@@ -389,13 +402,12 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
 
         <div className="player-section">
           <div className="player-label">{combatState.player.playerName}</div>
-          <PetCard pet={combatState.player.pet} heroArmor={combatState.player.heroArmor} />
+          <PetCard pet={combatState.player.pet} heroArmor={combatState.player.heroArmor} hpCommitted={combatState.player.hpCommitted} />
           <div className={`hole-cards ${isMyTurnToAct ? 'active-turn' : ''}`}>
             {combatState.player.holeCards.map((card, idx) => (
               <PlayingCard key={`hole-${idx}`} card={card} small />
             ))}
           </div>
-          <div className="commitment-display">Committed: {combatState.player.hpCommitted} HP</div>
         </div>
       </div>
 

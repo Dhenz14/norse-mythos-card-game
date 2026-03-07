@@ -39,7 +39,8 @@ export const HeroBridge: React.FC<HeroBridgeProps> = ({
 }) => {
   const currentHP = pet.stats.currentHealth;
   const maxHP = pet.stats.maxHealth;
-  const healthPercent = Math.max(0, (currentHP / maxHP) * 100);
+  const effectiveHP = Math.max(0, currentHP - hpCommitted);
+  const healthPercent = Math.max(0, (effectiveHP / maxHP) * 100);
   const committedPercent = Math.min(100, Math.max(0, (hpCommitted / maxHP) * 100));
 
   return (
@@ -65,7 +66,7 @@ export const HeroBridge: React.FC<HeroBridgeProps> = ({
               <div className="hero-hp-committed" style={{ transform: `scaleX(${committedPercent / 100})` }} />
               <div className="hero-hp-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
             </div>
-            <span className="hero-hp-text">{currentHP}/{maxHP} HP</span>
+            <span className="hero-hp-text">{effectiveHP}/{maxHP} HP</span>
           </div>
           
           <div className="hero-bridge-stamina">

@@ -141,8 +141,9 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   
   const currentHP = pet.stats.currentHealth;
   const maxHP = pet.stats.maxHealth;
+  const effectiveHP = Math.max(0, currentHP - hpCommitted);
   const armor = pet.stats.armor || 0;
-  const healthPercent = Math.max(0, (currentHP / maxHP) * 100);
+  const healthPercent = Math.max(0, (effectiveHP / maxHP) * 100);
   const currentSta = pet.stats.currentStamina;
   const maxSta = pet.stats.maxStamina;
   const staminaPercent = maxSta > 0 ? Math.max(0, (currentSta / maxSta) * 100) : 0;
@@ -153,22 +154,22 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   const [matchupTooltipPos, setMatchupTooltipPos] = useState<{ top: number; left: number } | null>(null);
   const [damageReaction, setDamageReaction] = useState<'damaged' | 'healed' | null>(null);
   const [powerActivating, setPowerActivating] = useState(false);
-  const prevHealthRef = useRef(currentHP);
+  const prevHealthRef = useRef(effectiveHP);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
   const matchupBadgeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (prevHealthRef.current === currentHP) return;
-    if (currentHP < prevHealthRef.current) {
+    if (prevHealthRef.current === effectiveHP) return;
+    if (effectiveHP < prevHealthRef.current) {
       setDamageReaction('damaged');
     } else {
       setDamageReaction('healed');
     }
-    prevHealthRef.current = currentHP;
+    prevHealthRef.current = effectiveHP;
     const timer = setTimeout(() => setDamageReaction(null), 600);
     return () => clearTimeout(timer);
-  }, [currentHP]);
+  }, [effectiveHP]);
   
   const elementClass = heroElement ? `element-${heroElement.toLowerCase()}` : '';
   
@@ -446,7 +447,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
         
           <div className="hero-stat-bar hp-bar">
             <div className="stat-bar-fill hp-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
-            <span className="stat-bar-text">{Math.round(currentHP)}/{Math.round(maxHP)}</span>
+            <span className="stat-bar-text">{Math.round(effectiveHP)}/{Math.round(maxHP)}</span>
           </div>
         
           <div className="hero-stat-bar sta-bar">
