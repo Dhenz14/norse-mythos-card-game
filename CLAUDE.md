@@ -615,6 +615,19 @@ vercel --prod                 # Deploy to Vercel
 - GitHub Pages deploy sets `VITE_BASE_PATH=/norse-mythos-card-game/` via env var in deploy.yml
 - `assetPath()` automatically adapts to both GitHub Pages (`/norse-mythos-card-game/...`) and local (`./...`) deployments
 
+### Completed (Holographic Card Effects)
+
+- Rewrote holographic card system using Pokemon Cards CSS architecture (simeydotme/pokemon-cards-css)
+- Shine layer: `color-dodge` blend with `brightness(0.7) contrast(2.75) saturate(0.5)` — rainbow only tints bright highlights, dark areas stay dark
+- Foil layer: switched from `screen` (additive wash) to `soft-light` (midtone shimmer) blend mode
+- Glare layer: tight radial spotlight (10%/20% bright area vs old 15%/35%), `overlay` blend with `brightness(0.8)`
+- Added `--card-opacity` variable (0 idle → 1 hovering) driving all layer opacities via `calc(var(--card-opacity) * factor)`
+- Added `--pointer-from-center` calculation for edge-intensity effects
+- Per-rarity scaling: common (no holo), rare (subtle), epic (medium), mythic (full)
+- Applied to both HeroDetailPopup (clicked card) and ArmySelection grid (deck builder)
+- Scanline bars + luminosity mask focus rainbow near cursor position
+- Glare `::after` edge highlight ring with `brightness(0.6) contrast(3)` filter chain
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

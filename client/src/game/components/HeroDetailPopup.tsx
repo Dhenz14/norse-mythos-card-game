@@ -63,14 +63,6 @@ const styles = `
     to { --border-angle: 360deg; }
   }
 
-  @keyframes prismatic-shift {
-    0%   { filter: hue-rotate(0deg) saturate(1.5); }
-    25%  { filter: hue-rotate(90deg) saturate(1.7); }
-    50%  { filter: hue-rotate(180deg) saturate(1.9); }
-    75%  { filter: hue-rotate(270deg) saturate(1.7); }
-    100% { filter: hue-rotate(360deg) saturate(1.5); }
-  }
-
   @keyframes frame-pulse {
     0%, 100% { opacity: 0.3; }
     50% { opacity: 0.6; }
@@ -243,62 +235,245 @@ const styles = `
     z-index: 0;
   }
 
-  /* Foil overlay — interactive shimmer */
-  .portrait-foil-overlay {
-    position: absolute;
-    inset: 0;
-    background-image: url('/textures/foil.png');
-    background-size: 300% 300%;
-    mix-blend-mode: color-dodge;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-    z-index: 10;
-    border-radius: 4px;
+  /* ========== HOLOGRAPHIC SYSTEM (Pokemon-style) ========== */
+  /*
+   * Architecture from simeydotme/pokemon-cards-css:
+   * 1. Shine layer: color-dodge blend with LOW brightness + HIGH contrast
+   *    → rainbow only tints bright highlights, dark areas stay dark
+   * 2. Foil layer: soft-light blend with texture image
+   *    → adds shimmer without washing out art
+   * 3. Glare layer: overlay blend with tight radial spotlight
+   *    → cursor hotspot, dark surround preserves art
+   * 4. All layers use --card-opacity (0 when idle, 1 when hovering)
+   */
+
+  .card-front {
+    --card-opacity: 0;
+    --pointer-x: 50%;
+    --pointer-y: 50%;
+    --pointer-from-center: 0;
+    --pointer-from-top: 0.5;
+    --pointer-from-left: 0.5;
+    --bg-x: 50%;
+    --bg-y: 50%;
   }
 
-  .hero-popup-portrait:hover .portrait-foil-overlay {
-    opacity: 0.35;
-  }
-
-  /* Prismatic rainbow overlay */
-  .portrait-prismatic-overlay {
+  /* --- Layer 1: SHINE — rainbow spectrum, color-dodge blend --- */
+  .portrait-holo-shine {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg,
-      rgba(255, 50, 50, 0.06),
-      rgba(50, 255, 50, 0.06),
-      rgba(50, 50, 255, 0.06),
-      rgba(255, 50, 255, 0.06),
-      rgba(50, 255, 255, 0.06)
-    );
-    background-size: 400% 400%;
-    mix-blend-mode: color-dodge;
-    animation: prismatic-shift 8s linear infinite;
-    opacity: 0;
-    transition: opacity 0.4s ease;
     pointer-events: none;
     z-index: 11;
     border-radius: 4px;
+    overflow: hidden;
+
+    /* Pokemon's key insight: LOW brightness darkens the gradient,
+       HIGH contrast makes only spectral peaks survive,
+       LOW saturation prevents garish colors */
+    filter: brightness(0.7) contrast(2.75) saturate(0.5);
+    mix-blend-mode: color-dodge;
+
+    /* Rainbow sunpillar gradient — cursor-tracked position */
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        hsl(2, 100%, 73%) calc(5% * 1),
+        hsl(53, 100%, 69%) calc(5% * 2),
+        hsl(93, 100%, 69%) calc(5% * 3),
+        hsl(176, 100%, 76%) calc(5% * 4),
+        hsl(228, 100%, 74%) calc(5% * 5),
+        hsl(283, 100%, 73%) calc(5% * 6),
+        hsl(2, 100%, 73%) calc(5% * 7)
+      ),
+      repeating-linear-gradient(
+        90deg,
+        hsl(0, 0%, 0%) 0, hsl(0, 0%, 0%) 1.5px,
+        hsl(0, 0%, 40%) 1.5px, hsl(0, 0%, 40%) 3px
+      );
+
+    background-size: 400% 400%, cover;
+    background-position:
+      calc(((50% - var(--bg-x)) * 2.6) + 50%)
+      calc(((50% - var(--bg-y)) * 3.5) + 50%),
+      center center;
+    background-blend-mode: overlay;
+
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  .hero-popup-portrait:hover .portrait-prismatic-overlay {
-    opacity: 0.6;
+  /* Shine ::before — secondary angled bars (depth illusion) */
+  .portrait-holo-shine::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        hsl(0, 0%, 0%) 0%, hsl(0, 0%, 0%) 6%,
+        hsl(0, 0%, 70%) 9%, hsl(0, 0%, 0%) 10.5%,
+        hsl(0, 0%, 70%) 12%, hsl(0, 0%, 0%) 15%,
+        hsl(0, 0%, 0%) 42%
+      ),
+      repeating-linear-gradient(
+        90deg,
+        hsl(0, 0%, 0%) 0%, hsl(0, 0%, 0%) 6%,
+        hsl(0, 0%, 70%) 9%, hsl(0, 0%, 0%) 10.5%,
+        hsl(0, 0%, 70%) 12%, hsl(0, 0%, 0%) 15%,
+        hsl(0, 0%, 0%) 30%
+      );
+
+    background-position:
+      calc((((50% - var(--bg-x)) * 1.65) + 50%) + (var(--bg-y) * 0.5)) var(--bg-x),
+      calc((((50% - var(--bg-x)) * -0.9) + 50%) - (var(--bg-y) * 0.75)) var(--bg-y);
+    background-size: 200% 200%, 200% 200%;
+    background-blend-mode: screen;
+    filter: brightness(1.15) contrast(1.1);
+    mix-blend-mode: hard-light;
   }
 
-  /* Glossy spotlight — follows cursor */
-  .portrait-gloss-overlay {
+  /* Shine ::after — luminosity mask (focus light near cursor) */
+  .portrait-holo-shine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+
+    background-image: radial-gradient(
+      farthest-corner circle at var(--pointer-x) var(--pointer-y),
+      hsla(0, 0%, 90%, 0.8) 0%,
+      hsla(0, 0%, 78%, 0.1) 25%,
+      hsl(0, 0%, 0%) 90%
+    );
+    background-size: cover;
+    mix-blend-mode: luminosity;
+    filter: brightness(0.6) contrast(4);
+  }
+
+  /* Per-rarity shine opacity — driven by --card-opacity */
+  .card-front.rarity-common .portrait-holo-shine { opacity: 0; }
+  .card-front.rarity-rare .portrait-holo-shine {
+    opacity: calc(var(--card-opacity) * 0.5);
+  }
+  .card-front.rarity-epic .portrait-holo-shine {
+    opacity: calc(var(--card-opacity) * 0.65);
+  }
+  .card-front.rarity-mythic .portrait-holo-shine {
+    opacity: calc(var(--card-opacity) * 0.8);
+  }
+
+  /* --- Layer 2: FOIL — texture overlay, soft-light blend --- */
+  .portrait-foil-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    border-radius: 4px;
+    overflow: hidden;
+
+    background-size: 150% 150%;
+    background-position: var(--pointer-x, 50%) var(--pointer-y, 50%);
+
+    /* soft-light only affects midtones — preserves darks and lights */
+    mix-blend-mode: soft-light;
+    filter: brightness(1.2) contrast(1.2);
+
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .card-front.rarity-common .portrait-foil-overlay { background-image: none; }
+  .card-front.rarity-rare .portrait-foil-overlay {
+    background-image: url('/textures/epic_holographic2.png');
+  }
+  .card-front.rarity-epic .portrait-foil-overlay {
+    background-image: url('/textures/foil_epic.png');
+  }
+  .card-front.rarity-mythic .portrait-foil-overlay {
+    background-image: url('/textures/foil_mythic.png');
+  }
+
+  /* Foil opacity — much lower than before; texture, not wash */
+  .card-front.rarity-rare .portrait-foil-overlay {
+    opacity: calc(var(--card-opacity) * 0.25);
+  }
+  .card-front.rarity-epic .portrait-foil-overlay {
+    opacity: calc(var(--card-opacity) * 0.35);
+  }
+  .card-front.rarity-mythic .portrait-foil-overlay {
+    opacity: calc(var(--card-opacity) * 0.45);
+  }
+
+  /* --- Layer 3: GLARE — spotlight, overlay blend --- */
+  .portrait-holo-glare {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 12;
     border-radius: 4px;
+    overflow: hidden;
+
+    /* Pokemon-style radial: bright center, dark surround
+       Much tighter bright area than before (10%/20% not 15%/35%) */
+    background-image: radial-gradient(
+      farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      hsla(0, 0%, 100%, 0.8) 10%,
+      hsla(0, 0%, 100%, 0.65) 20%,
+      hsla(0, 0%, 0%, 0.5) 90%
+    );
+
+    mix-blend-mode: overlay;
+    filter: brightness(0.8) contrast(1.5);
+
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
-  .hero-popup-portrait:hover .portrait-gloss-overlay {
-    opacity: 1;
+  /* Glare ::after — edge highlight ring */
+  .portrait-holo-glare::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    background-image: radial-gradient(
+      farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      hsl(180, 100%, 95%) 5%,
+      hsla(0, 0%, 39%, 0.25) 55%,
+      hsla(0, 0%, 0%, 0.36) 110%
+    );
+    mix-blend-mode: overlay;
+    filter: brightness(0.6) contrast(3);
+  }
+
+  /* Glare opacity — intensity rises near card edges */
+  .card-front.rarity-common .portrait-holo-glare { opacity: 0; }
+  .card-front.rarity-rare .portrait-holo-glare {
+    opacity: calc(var(--card-opacity) * 0.5);
+  }
+  .card-front.rarity-epic .portrait-holo-glare {
+    opacity: calc(var(--card-opacity) * 0.6);
+  }
+  .card-front.rarity-mythic .portrait-holo-glare {
+    opacity: calc(var(--card-opacity) * 0.7);
+  }
+
+  /* --- Layer 4: GLOSS — subtle cursor-following highlight --- */
+  .portrait-gloss-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 13;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .card-front.rarity-rare .portrait-gloss-overlay,
+  .card-front.rarity-epic .portrait-gloss-overlay,
+  .card-front.rarity-mythic .portrait-gloss-overlay {
+    opacity: var(--card-opacity);
   }
 
   /* Vignette */
@@ -913,6 +1088,7 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 	const [rotation, setRotation] = useState({ x: 0, y: 0 });
 	const [position, setPosition] = useState({ x: 0, y: 0 });
 	const [mousePercent, setMousePercent] = useState({ x: 50, y: 50 });
+	const [isHovering, setIsHovering] = useState(false);
 	const [isFlipped, setIsFlipped] = useState(false);
 	const [isFlipping, setIsFlipping] = useState(false);
 	const cardRef = useRef<HTMLDivElement>(null);
@@ -948,9 +1124,11 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 		const mx = ((e.clientX - rect.left) / rect.width) * 100;
 		const my = ((e.clientY - rect.top) / rect.height) * 100;
 		setMousePercent({ x: mx, y: my });
-	}, [isFlipping]);
+		if (!isHovering) setIsHovering(true);
+	}, [isFlipping, isHovering]);
 
 	const handleMouseLeave = useCallback(() => {
+		setIsHovering(false);
 		const startRotation = { ...rotation };
 		const startPosition = { ...position };
 		const startTime = performance.now();
@@ -1064,7 +1242,20 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 							/>
 
 							{/* ===== FRONT FACE — Portrait ===== */}
-							<div className="card-front" onClick={handleFlip}>
+							<div
+								className={`card-front rarity-${edition.rarity}`}
+								onClick={handleFlip}
+								style={{
+									'--pointer-x': `${mousePercent.x}%`,
+									'--pointer-y': `${mousePercent.y}%`,
+									'--pointer-from-center': Math.min(Math.sqrt(Math.pow((mousePercent.y - 50) / 50, 2) + Math.pow((mousePercent.x - 50) / 50, 2)), 1),
+									'--pointer-from-top': mousePercent.y / 100,
+									'--pointer-from-left': mousePercent.x / 100,
+									'--card-opacity': isHovering ? 1 : 0,
+									'--bg-x': `${37 + ((mousePercent.x - 50) / 50) * 13}%`,
+									'--bg-y': `${37 + ((mousePercent.y - 50) / 50) * 13}%`,
+								} as React.CSSProperties}
+							>
 								<div className="hero-popup-portrait">
 									{resolvedPortrait && (
 										<img
@@ -1077,17 +1268,13 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 										/>
 									)}
 
-									<div
-										className="portrait-foil-overlay"
-										style={{
-											backgroundPosition: `${mousePercent.x}% ${mousePercent.y}%`,
-										}}
-									/>
-									<div className="portrait-prismatic-overlay" />
+									<div className="portrait-foil-overlay" />
+									<div className="portrait-holo-shine" />
+									<div className="portrait-holo-glare" />
 									<div
 										className="portrait-gloss-overlay"
 										style={{
-											background: `radial-gradient(circle at ${mousePercent.x}% ${mousePercent.y}%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
+											background: `radial-gradient(circle at ${mousePercent.x}% ${mousePercent.y}%, rgba(255,255,255,0.12) 0%, transparent 60%)`,
 										}}
 									/>
 									<div className="portrait-vignette" />

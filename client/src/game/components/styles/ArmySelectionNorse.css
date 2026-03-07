@@ -685,6 +685,175 @@
   opacity: 0.5;
 }
 
+/* --- Holographic interactive effect — Pokemon-style (low brightness + high contrast) --- */
+
+.norse-army-selection .norse-hero-card {
+	--pointer-x: 50%;
+	--pointer-y: 50%;
+	--bg-x: 50%;
+	--bg-y: 50%;
+}
+
+/* SHINE — rainbow color-dodge, darkened so art shows through */
+.norse-army-selection .hero-holo-shine {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 5;
+	opacity: 0;
+	overflow: hidden;
+	filter: brightness(0.7) contrast(2.75) saturate(0.5);
+	mix-blend-mode: color-dodge;
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			hsl(2, 100%, 73%) calc(5% * 1),
+			hsl(53, 100%, 69%) calc(5% * 2),
+			hsl(93, 100%, 69%) calc(5% * 3),
+			hsl(176, 100%, 76%) calc(5% * 4),
+			hsl(228, 100%, 74%) calc(5% * 5),
+			hsl(283, 100%, 73%) calc(5% * 6),
+			hsl(2, 100%, 73%) calc(5% * 7)
+		),
+		repeating-linear-gradient(
+			90deg,
+			hsl(0, 0%, 0%) 0, hsl(0, 0%, 0%) 1.5px,
+			hsl(0, 0%, 40%) 1.5px, hsl(0, 0%, 40%) 3px
+		);
+	background-size: 400% 400%, cover;
+	background-position:
+		calc(((50% - var(--bg-x)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y)) * 3.5) + 50%),
+		center center;
+	background-blend-mode: overlay;
+	transition: opacity 0.3s ease;
+}
+
+.norse-army-selection .hero-holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-image:
+		repeating-linear-gradient(
+			90deg,
+			hsl(0, 0%, 0%) 0%, hsl(0, 0%, 0%) 6%,
+			hsl(0, 0%, 70%) 9%, hsl(0, 0%, 0%) 10.5%,
+			hsl(0, 0%, 70%) 12%, hsl(0, 0%, 0%) 15%,
+			hsl(0, 0%, 0%) 42%
+		),
+		repeating-linear-gradient(
+			90deg,
+			hsl(0, 0%, 0%) 0%, hsl(0, 0%, 0%) 6%,
+			hsl(0, 0%, 70%) 9%, hsl(0, 0%, 0%) 10.5%,
+			hsl(0, 0%, 70%) 12%, hsl(0, 0%, 0%) 15%,
+			hsl(0, 0%, 0%) 30%
+		);
+	background-position:
+		calc((((50% - var(--bg-x)) * 1.65) + 50%) + (var(--bg-y) * 0.5)) var(--bg-x),
+		calc((((50% - var(--bg-x)) * -0.9) + 50%) - (var(--bg-y) * 0.75)) var(--bg-y);
+	background-size: 200% 200%, 200% 200%;
+	background-blend-mode: screen;
+	filter: brightness(1.15) contrast(1.1);
+	mix-blend-mode: hard-light;
+}
+
+.norse-army-selection .hero-holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x) var(--pointer-y),
+		hsla(0, 0%, 90%, 0.8) 0%,
+		hsla(0, 0%, 78%, 0.1) 25%,
+		hsl(0, 0%, 0%) 90%
+	);
+	background-size: cover;
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(4);
+}
+
+/* FOIL — soft-light texture, preserves dark areas */
+.norse-army-selection .hero-holo-foil {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 4;
+	opacity: 0;
+	overflow: hidden;
+	background-size: 150% 150%;
+	background-position: var(--pointer-x) var(--pointer-y);
+	mix-blend-mode: soft-light;
+	filter: brightness(1.2) contrast(1.2);
+	transition: opacity 0.3s ease;
+}
+
+.norse-army-selection .norse-hero-card.rarity-rare .hero-holo-foil {
+	background-image: url('/textures/epic_holographic2.png');
+}
+.norse-army-selection .norse-hero-card.rarity-epic .hero-holo-foil {
+	background-image: url('/textures/foil_epic.png');
+}
+.norse-army-selection .norse-hero-card.rarity-mythic .hero-holo-foil {
+	background-image: url('/textures/foil_mythic.png');
+}
+
+/* GLARE — tight spotlight, overlay blend */
+.norse-army-selection .hero-holo-glare {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 6;
+	opacity: 0;
+	overflow: hidden;
+	mix-blend-mode: overlay;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x) var(--pointer-y),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.65) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	filter: brightness(0.8) contrast(1.5);
+	transition: opacity 0.3s ease;
+}
+
+.norse-army-selection .hero-holo-glare::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x) var(--pointer-y),
+		hsl(180, 100%, 95%) 5%,
+		hsla(0, 0%, 39%, 0.25) 55%,
+		hsla(0, 0%, 0%, 0.36) 110%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.6) contrast(3);
+}
+
+/* Rarity-scaled opacity — grid cards are smaller so keep subtle */
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-common .hero-holo-shine { opacity: 0; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-common .hero-holo-glare { opacity: 0; }
+
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-foil { opacity: 0.15; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-shine { opacity: 0.3; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-glare { opacity: 0.25; }
+
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-foil { opacity: 0.2; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-shine { opacity: 0.4; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-glare { opacity: 0.3; }
+
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-foil { opacity: 0.3; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-shine { opacity: 0.5; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-glare { opacity: 0.35; }
+
+@media (prefers-reduced-motion: reduce) {
+	.norse-army-selection .hero-holo-foil,
+	.norse-army-selection .hero-holo-shine,
+	.norse-army-selection .hero-holo-glare {
+		display: none;
+	}
+}
+
 /* Selected state should still override rarity borders */
 .norse-army-selection .norse-hero-card.selected.rarity-mythic,
 .norse-army-selection .norse-hero-card.selected.rarity-epic,
