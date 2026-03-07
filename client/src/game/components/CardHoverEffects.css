@@ -23,7 +23,7 @@
   pointer-events: auto;
   overflow: visible;
   z-index: 20;
-  will-change: transform, z-index, filter;
+  will-change: transform;
 }
 
 /* Hover state - spring lift */

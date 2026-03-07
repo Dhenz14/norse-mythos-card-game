@@ -363,7 +363,7 @@ export const AnimationLayer: React.FC = () => {
     cleanupStaleAnimations();
     
     // Then set interval for ongoing cleanup
-    const intervalId = setInterval(cleanupStaleAnimations, 100);
+    const intervalId = setInterval(cleanupStaleAnimations, 2000);
     
     // Clear all animations when component unmounts to prevent memory leaks
     return () => {

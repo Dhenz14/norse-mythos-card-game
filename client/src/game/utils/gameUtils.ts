@@ -30,7 +30,7 @@ import { dealDamage, dealDamageToAllEnemyMinions, dealDamageToAllMinions, dealDa
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { removeKeyword, hasKeyword, getKeywords } from './cards/keywordUtils';
 import { canMagnetize, applyMagnetization, isValidMagneticTarget } from './mechanics/magneticUtils';
-import allCards from '../data/allCards';
+import allCards, { getCardById } from '../data/allCards';
 import { trackQuestProgress, activateQuest } from './quests/questProgress';
 import { isQuestCard, extractQuestData } from './quests/questUtils';
 import { 
@@ -180,7 +180,7 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
       playerDeck = [];
       Object.entries(selectedDeck.cards).forEach(([cardId, count]) => {
         // Find the card in the full database
-        const cardData = allCards.find(c => c.id === parseInt(cardId));
+        const cardData = getCardById(parseInt(cardId));
         if (cardData) {
           // Convert count to a number if it isn't already
           const countNumber = typeof count === 'number' ? count : parseInt(count as string) || 0;

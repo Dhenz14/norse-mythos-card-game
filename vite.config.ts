@@ -49,6 +49,7 @@ export default defineConfig(({ command }) => ({
           if (id.includes('node_modules')) {
             if (id.includes('react-dom') || id.includes('react/')) return 'react-vendor';
             if (id.includes('three') || id.includes('@react-three')) return 'three-vendor';
+            if (id.includes('pixi')) return 'pixi-vendor';
             if (id.includes('framer-motion') || id.includes('@react-spring')) return 'ui-vendor';
             if (id.includes('@radix-ui')) return 'radix-vendor';
             if (id.includes('zustand') || id.includes('@tanstack')) return 'state-vendor';

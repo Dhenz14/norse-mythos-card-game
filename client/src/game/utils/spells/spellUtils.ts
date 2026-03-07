@@ -8,7 +8,7 @@ import { dealDamage } from '../effects/damageUtils';
 import { removeDeadMinions, destroyCard as destroyCardFromZone } from '../zoneUtils';
 import { drawCard, drawMultipleCards, drawMultipleCardsForCurrentPlayer } from '../drawUtils';
 import executeSetHealthHandler from '../../effects/handlers/spellEffect/set_healthHandler';
-import allCards from '../../data/allCards';
+import allCards, { getCardById } from '../../data/allCards';
 import { useAnimationStore } from '../../animations/AnimationManager';
 import { logActivity } from '../../stores/activityLogStore';
 import { scheduleSpellEffect, SpellEffectType } from '../../animations/UnifiedAnimationOrchestrator';
@@ -1443,7 +1443,7 @@ function executeSummonSpell(
   const cardToSummon = effect.summonCardId;
   
   // Look up the card data from the registry
-  const foundCard = allCards.find(c => c.id === cardToSummon);
+  const foundCard = getCardById(cardToSummon as number);
   if (!foundCard || foundCard.type !== 'minion') {
     debug.error(`Summon spell: card ID ${cardToSummon} not found or not a minion`);
     return state;
@@ -2840,7 +2840,7 @@ function executeDamageAndShuffleSpell(
   
   // Then shuffle the card into the deck
   // Find the card to shuffle by ID
-  const cardToShuffle = allCards.find(card => card.id === cardIdToShuffle);
+  const cardToShuffle = getCardById(cardIdToShuffle as number);
   
   if (!cardToShuffle) {
     debug.error(`Card with ID ${cardIdToShuffle} not found for shuffling`);
@@ -3161,7 +3161,7 @@ function executeEquipWeaponSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   // Find the weapon card
-  const weaponCard = allCards.find(c => c.id === effect.weaponCardId);
+  const weaponCard = getCardById(effect.weaponCardId as number);
   if (!weaponCard || weaponCard.type !== 'weapon') {
     debug.error(`Weapon card ${effect.weaponCardId} not found`);
     return state;
@@ -3193,7 +3193,7 @@ function executeAddCardSpell(
   
   if (effect.addCardId) {
     // Add specific card(s)
-    const cardToAdd = allCards.find(c => c.id === effect.addCardId);
+    const cardToAdd = getCardById(effect.addCardId as number);
     if (cardToAdd) {
       for (let i = 0; i < count && playerHand.length < 10; i++) {
         const instance: CardInstance = {
@@ -3338,7 +3338,7 @@ function executeShuffleIntoDeckSpell(
     }
   } else if (effect.shuffleCardId) {
     // Shuffle a specific card into deck
-    const cardToShuffle = allCards.find(c => c.id === effect.shuffleCardId);
+    const cardToShuffle = getCardById(effect.shuffleCardId as number);
     if (cardToShuffle) {
       const instance: CardInstance = {
         instanceId: uuidv4(),
@@ -3705,7 +3705,7 @@ function executeSummonTokenSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   // Find the token card
-  const tokenCard = allCards.find(card => card && card.id === effect.tokenId);
+  const tokenCard = getCardById(effect.tokenId as number);
   if (!tokenCard) {
     debug.error(`Token with ID ${effect.tokenId} not found`);
     return state;
@@ -5130,7 +5130,7 @@ function executeReplaySpellsSpell(
   // Gather spells cast this game from the game log
   const castSpells = (newState.gameLog || [])
     .filter((entry: any) => entry.type === 'spell' && entry.player === currentPlayer && entry.cardId)
-    .map((entry: any) => allCards.find(c => c.id === Number(entry.cardId)))
+    .map((entry: any) => getCardById(Number(entry.cardId)))
     .filter((c: any): c is CardData => c != null && c.type === 'spell');
 
   // Pick random spells to replay (up to spellCount)
@@ -5331,7 +5331,7 @@ function executeShuffleCardsSpell(
   if (effect.cardIds) {
     // Shuffle specific cards by ID
     for (const cardId of effect.cardIds) {
-      const foundCard = allCards.find(c => c.id === cardId);
+      const foundCard = getCardById(cardId as number);
       if (foundCard) {
         const cardInstance = {
           card: foundCard,
@@ -5835,7 +5835,7 @@ function executeSummonMultipleSpell(
     if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
     
     const minionId = minionIds[i];
-    const cardData = allCards.find(c => c.id === minionId);
+    const cardData = getCardById(minionId as number);
     
     if (cardData && cardData.type === 'minion') {
       const newMinion: CardInstance = {
@@ -5958,7 +5958,7 @@ function executeGiveCardsSpell(
     if (hand.length >= MAX_HAND_SIZE) break;
 
     const cardId = cardIds[i % cardIds.length];
-    const cardData = allCards.find(c => c.id === cardId);
+    const cardData = getCardById(cardId as number);
     
     if (cardData) {
       const newCard = {
@@ -7026,7 +7026,7 @@ function executeTransformAllSpell(
   
   if (!transformInto) return newState;
   
-  const cardData = allCards.find(c => c.id === transformInto);
+  const cardData = getCardById(transformInto as number);
   if (!cardData) return newState;
   
   const createTransformedMinion = (): CardInstance => ({
@@ -7274,7 +7274,7 @@ function executeFillBoardSpell(
   for (let i = 0; i < summonCount; i++) {
     let cardData: CardData | undefined;
     if (summonId) {
-      cardData = allCards.find(c => c.id === summonId);
+      cardData = getCardById(summonId as number);
     }
     if (!cardData) {
       cardData = {

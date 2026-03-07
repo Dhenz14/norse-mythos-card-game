@@ -365,7 +365,7 @@
 
 /* Ready to evolve — pet with petEvolutionMet=true */
 .bf-card-wrapper.ready-to-evolve {
-  animation: evolveReadyPulse 1.6s ease-in-out infinite;
+  box-shadow: 0 0 14px 4px rgba(34, 211, 238, 0.6), 0 0 28px 8px rgba(168, 85, 247, 0.3);
 }
 
 .bf-card-wrapper.ready-to-evolve::before {
@@ -397,14 +397,7 @@
   animation: evolveArrowBounce 1.2s ease-in-out infinite;
 }
 
-@keyframes evolveReadyPulse {
-  0%, 100% {
-    box-shadow: 0 0 8px 2px rgba(34, 211, 238, 0.3), 0 0 16px 4px rgba(168, 85, 247, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 14px 4px rgba(34, 211, 238, 0.6), 0 0 28px 8px rgba(168, 85, 247, 0.3);
-  }
-}
+/* evolveReadyPulse removed — static box-shadow + conic ::before provides feedback */
 
 @keyframes evolveRotate {
   to { --evolve-angle: 360deg; }
@@ -423,7 +416,7 @@
 
 /* Evolve-ready hand card — synced pulse with battlefield pet */
 .hand-card-wrapper.evolve-ready {
-  animation: evolveReadyPulse 1.6s ease-in-out infinite;
+  box-shadow: 0 0 14px 4px rgba(34, 211, 238, 0.6), 0 0 28px 8px rgba(168, 85, 247, 0.3);
   position: relative;
   z-index: 50;
 }
@@ -714,10 +707,9 @@
 /* ── Poison — toxic green mist ── */
 .bf-card-wrapper.status-poisoned {
   box-shadow:
-    0 0 8px 2px rgba(34, 197, 94, 0.5),
-    0 0 20px 4px rgba(22, 163, 74, 0.25),
-    inset 0 0 10px 2px rgba(34, 197, 94, 0.15);
-  animation: poisonPulse 2.5s ease-in-out infinite;
+    0 0 10px 3px rgba(34, 197, 94, 0.6),
+    0 0 24px 5px rgba(22, 163, 74, 0.3),
+    inset 0 0 12px 2px rgba(34, 197, 94, 0.18);
 }
 
 .bf-card-wrapper.status-poisoned::before {
@@ -728,26 +720,15 @@
   pointer-events: none;
   z-index: 2;
   background: linear-gradient(to top, rgba(34, 197, 94, 0.25) 0%, rgba(34, 197, 94, 0.08) 40%, transparent 70%);
-  animation: poisonMist 3s ease-in-out infinite;
-}
-
-@keyframes poisonPulse {
-  0%, 100% { box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.5), 0 0 20px 4px rgba(22, 163, 74, 0.25), inset 0 0 10px 2px rgba(34, 197, 94, 0.15); }
-  50% { box-shadow: 0 0 12px 4px rgba(34, 197, 94, 0.7), 0 0 28px 6px rgba(22, 163, 74, 0.35), inset 0 0 14px 3px rgba(34, 197, 94, 0.2); }
-}
-
-@keyframes poisonMist {
-  0%, 100% { opacity: 0.6; background-position: 0% 100%; }
-  50% { opacity: 1; background-position: 0% 80%; }
+  animation: statusOverlayPulse 3s ease-in-out infinite;
 }
 
 /* ── Bleed — crimson drip ── */
 .bf-card-wrapper.status-bleeding {
   box-shadow:
-    0 0 8px 2px rgba(220, 38, 38, 0.5),
-    0 0 18px 4px rgba(185, 28, 28, 0.25),
-    inset 0 0 10px 2px rgba(220, 38, 38, 0.15);
-  animation: bleedPulse 2s ease-in-out infinite;
+    0 0 11px 3px rgba(220, 38, 38, 0.6),
+    0 0 21px 5px rgba(185, 28, 28, 0.3),
+    inset 0 0 12px 2px rgba(220, 38, 38, 0.2);
 }
 
 .bf-card-wrapper.status-bleeding::before {
@@ -758,27 +739,15 @@
   pointer-events: none;
   z-index: 2;
   background: linear-gradient(to bottom, rgba(220, 38, 38, 0.3) 0%, rgba(185, 28, 28, 0.1) 30%, transparent 60%);
-  animation: bleedDrip 2.5s ease-in-out infinite;
-}
-
-@keyframes bleedPulse {
-  0%, 100% { box-shadow: 0 0 8px 2px rgba(220, 38, 38, 0.5), 0 0 18px 4px rgba(185, 28, 28, 0.25), inset 0 0 10px 2px rgba(220, 38, 38, 0.15); }
-  50% { box-shadow: 0 0 14px 4px rgba(220, 38, 38, 0.7), 0 0 24px 6px rgba(185, 28, 28, 0.35), inset 0 0 14px 3px rgba(220, 38, 38, 0.25); }
-}
-
-@keyframes bleedDrip {
-  0% { opacity: 0.4; transform: translateY(-2px); }
-  50% { opacity: 1; transform: translateY(2px); }
-  100% { opacity: 0.4; transform: translateY(-2px); }
+  animation: statusOverlayPulse 2.5s ease-in-out infinite;
 }
 
 /* ── Burn — orange flame flicker ── */
 .bf-card-wrapper.status-burning {
   box-shadow:
-    0 0 10px 3px rgba(249, 115, 22, 0.6),
-    0 0 22px 6px rgba(234, 88, 12, 0.3),
-    inset 0 0 8px 2px rgba(249, 115, 22, 0.15);
-  animation: burnFlicker 1.5s ease-in-out infinite;
+    0 0 12px 4px rgba(249, 115, 22, 0.7),
+    0 0 26px 7px rgba(234, 88, 12, 0.35),
+    inset 0 0 10px 2px rgba(249, 115, 22, 0.18);
 }
 
 .bf-card-wrapper.status-burning::before {
@@ -792,17 +761,10 @@
     radial-gradient(ellipse at 50% 100%, rgba(249, 115, 22, 0.35) 0%, transparent 60%),
     radial-gradient(ellipse at 30% 90%, rgba(234, 88, 12, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 70% 95%, rgba(251, 146, 60, 0.2) 0%, transparent 50%);
-  animation: burnFlare 2s ease-in-out infinite;
+  animation: statusOverlayFlicker 2s ease-in-out infinite;
 }
 
-@keyframes burnFlicker {
-  0%, 100% { box-shadow: 0 0 10px 3px rgba(249, 115, 22, 0.6), 0 0 22px 6px rgba(234, 88, 12, 0.3), inset 0 0 8px 2px rgba(249, 115, 22, 0.15); }
-  25% { box-shadow: 0 0 14px 5px rgba(249, 115, 22, 0.8), 0 0 30px 8px rgba(234, 88, 12, 0.4), inset 0 0 12px 3px rgba(249, 115, 22, 0.2); }
-  50% { box-shadow: 0 0 8px 2px rgba(249, 115, 22, 0.5), 0 0 18px 4px rgba(234, 88, 12, 0.25), inset 0 0 6px 2px rgba(249, 115, 22, 0.1); }
-  75% { box-shadow: 0 0 16px 5px rgba(251, 146, 60, 0.7), 0 0 28px 8px rgba(249, 115, 22, 0.35), inset 0 0 10px 3px rgba(249, 115, 22, 0.2); }
-}
-
-@keyframes burnFlare {
+@keyframes statusOverlayFlicker {
   0%, 100% { opacity: 0.5; }
   30% { opacity: 0.9; }
   60% { opacity: 0.4; }
@@ -813,10 +775,9 @@
 .bf-card-wrapper.status-frozen {
   filter: saturate(0.4) brightness(0.85);
   box-shadow:
-    0 0 10px 3px rgba(56, 189, 248, 0.6),
-    0 0 24px 6px rgba(14, 165, 233, 0.3),
-    inset 0 0 12px 3px rgba(56, 189, 248, 0.2);
-  animation: freezeShimmer 3s ease-in-out infinite;
+    0 0 12px 4px rgba(56, 189, 248, 0.7),
+    0 0 28px 7px rgba(14, 165, 233, 0.35),
+    inset 0 0 14px 3px rgba(56, 189, 248, 0.25);
 }
 
 .bf-card-wrapper.status-frozen::before {
@@ -828,20 +789,15 @@
   z-index: 2;
   background: linear-gradient(135deg, rgba(224, 242, 254, 0.35) 0%, rgba(186, 230, 253, 0.2) 40%, rgba(56, 189, 248, 0.15) 70%, rgba(14, 165, 233, 0.25) 100%);
   border: 2px solid rgba(56, 189, 248, 0.4);
-}
-
-@keyframes freezeShimmer {
-  0%, 100% { box-shadow: 0 0 10px 3px rgba(56, 189, 248, 0.6), 0 0 24px 6px rgba(14, 165, 233, 0.3), inset 0 0 12px 3px rgba(56, 189, 248, 0.2); }
-  50% { box-shadow: 0 0 14px 5px rgba(56, 189, 248, 0.8), 0 0 32px 8px rgba(14, 165, 233, 0.4), inset 0 0 16px 4px rgba(56, 189, 248, 0.3); }
+  animation: statusOverlayPulse 3s ease-in-out infinite;
 }
 
 /* ── Paralysis — electric indigo crackle ── */
 .bf-card-wrapper.status-paralyzed {
   box-shadow:
-    0 0 8px 2px rgba(129, 140, 248, 0.5),
-    0 0 18px 4px rgba(99, 102, 241, 0.25),
-    inset 0 0 8px 2px rgba(129, 140, 248, 0.15);
-  animation: paralysisCrackle 1.2s ease-in-out infinite;
+    0 0 12px 3px rgba(129, 140, 248, 0.6),
+    0 0 24px 6px rgba(99, 102, 241, 0.3),
+    inset 0 0 10px 2px rgba(129, 140, 248, 0.2);
 }
 
 .bf-card-wrapper.status-paralyzed::before {
@@ -851,28 +807,16 @@
   border-radius: 6px;
   pointer-events: none;
   z-index: 2;
-  border: 1.5px solid rgba(129, 140, 248, 0.4);
-  animation: paralysisFlicker 0.8s steps(2) infinite;
-}
-
-@keyframes paralysisCrackle {
-  0%, 100% { box-shadow: 0 0 8px 2px rgba(129, 140, 248, 0.5), 0 0 18px 4px rgba(99, 102, 241, 0.25), inset 0 0 8px 2px rgba(129, 140, 248, 0.15); }
-  30% { box-shadow: 0 0 16px 5px rgba(129, 140, 248, 0.8), 0 0 30px 8px rgba(99, 102, 241, 0.4), inset 0 0 12px 3px rgba(129, 140, 248, 0.25); }
-  60% { box-shadow: 0 0 6px 1px rgba(129, 140, 248, 0.3), 0 0 14px 3px rgba(99, 102, 241, 0.15), inset 0 0 6px 1px rgba(129, 140, 248, 0.1); }
-}
-
-@keyframes paralysisFlicker {
-  0%, 100% { opacity: 0.4; border-color: rgba(129, 140, 248, 0.3); }
-  50% { opacity: 1; border-color: rgba(165, 180, 252, 0.7); }
+  border: 1.5px solid rgba(129, 140, 248, 0.5);
+  animation: statusOverlayFlicker 0.8s steps(2) infinite;
 }
 
 /* ── Weakness — muted purple dim ── */
 .bf-card-wrapper.status-weakened {
-  filter: saturate(0.5) brightness(0.75);
+  filter: saturate(0.45) brightness(0.7);
   box-shadow:
     0 0 8px 2px rgba(167, 139, 250, 0.4),
     inset 0 0 10px 2px rgba(139, 92, 246, 0.15);
-  animation: weaknessDim 3s ease-in-out infinite;
 }
 
 .bf-card-wrapper.status-weakened::before {
@@ -883,20 +827,15 @@
   pointer-events: none;
   z-index: 2;
   background: radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
-}
-
-@keyframes weaknessDim {
-  0%, 100% { filter: saturate(0.5) brightness(0.75); }
-  50% { filter: saturate(0.4) brightness(0.65); }
+  animation: statusOverlayPulse 3s ease-in-out infinite;
 }
 
 /* ── Vulnerable — target red vignette ── */
 .bf-card-wrapper.status-vulnerable {
   box-shadow:
-    0 0 8px 2px rgba(239, 68, 68, 0.5),
-    0 0 18px 4px rgba(220, 38, 38, 0.25),
-    inset 0 0 12px 3px rgba(239, 68, 68, 0.2);
-  animation: vulnerablePulse 2s ease-in-out infinite;
+    0 0 10px 3px rgba(239, 68, 68, 0.6),
+    0 0 21px 5px rgba(220, 38, 38, 0.3),
+    inset 0 0 14px 3px rgba(239, 68, 68, 0.25);
 }
 
 .bf-card-wrapper.status-vulnerable::before {
@@ -908,20 +847,15 @@
   z-index: 2;
   background: radial-gradient(circle at center, transparent 40%, rgba(239, 68, 68, 0.15) 80%);
   border: 1.5px solid rgba(239, 68, 68, 0.35);
-}
-
-@keyframes vulnerablePulse {
-  0%, 100% { box-shadow: 0 0 8px 2px rgba(239, 68, 68, 0.5), 0 0 18px 4px rgba(220, 38, 38, 0.25), inset 0 0 12px 3px rgba(239, 68, 68, 0.2); }
-  50% { box-shadow: 0 0 12px 4px rgba(239, 68, 68, 0.7), 0 0 24px 6px rgba(220, 38, 38, 0.35), inset 0 0 16px 4px rgba(239, 68, 68, 0.3); }
+  animation: statusOverlayPulse 2s ease-in-out infinite;
 }
 
 /* ── Marked — gold highlight ── */
 .bf-card-wrapper.status-marked {
   box-shadow:
-    0 0 10px 3px rgba(251, 191, 36, 0.5),
-    0 0 22px 6px rgba(245, 158, 11, 0.25),
-    inset 0 0 8px 2px rgba(251, 191, 36, 0.1);
-  animation: markedGlow 2.5s ease-in-out infinite;
+    0 0 12px 4px rgba(251, 191, 36, 0.6),
+    0 0 26px 7px rgba(245, 158, 11, 0.3),
+    inset 0 0 10px 2px rgba(251, 191, 36, 0.13);
 }
 
 .bf-card-wrapper.status-marked::before {
@@ -933,11 +867,12 @@
   z-index: 2;
   border: 2px solid rgba(251, 191, 36, 0.5);
   background: radial-gradient(circle at center, rgba(251, 191, 36, 0.08) 0%, transparent 60%);
+  animation: statusOverlayPulse 2.5s ease-in-out infinite;
 }
 
-@keyframes markedGlow {
-  0%, 100% { box-shadow: 0 0 10px 3px rgba(251, 191, 36, 0.5), 0 0 22px 6px rgba(245, 158, 11, 0.25), inset 0 0 8px 2px rgba(251, 191, 36, 0.1); }
-  50% { box-shadow: 0 0 14px 5px rgba(251, 191, 36, 0.7), 0 0 30px 8px rgba(245, 158, 11, 0.35), inset 0 0 12px 3px rgba(251, 191, 36, 0.15); }
+@keyframes statusOverlayPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 /* Responsive adjustments */

@@ -1,8 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CardData } from '../../types';
 import { CardRenderer } from '../CardRenderer';
 import { UnifiedCard, extractCardData } from '../../utils/cards/cardTypeAdapter';
+
+const GLOW_COLORS = {
+  common: 'rgba(255, 255, 255, 0.7)',
+  rare: 'rgba(0, 112, 221, 0.7)',
+  epic: 'rgba(163, 53, 238, 0.7)',
+  legendary: 'rgba(255, 128, 0, 0.7)'
+};
+const NOOP_ADD = () => {};
+const NOOP_DETAILS = () => {};
+const HOVER_ANIMATION = { scale: 1.05, y: -8, transition: { duration: 0.2 } };
+const TRANSITION = { duration: 0.2 };
 
 interface CollectionCardProps {
   card: UnifiedCard;
@@ -21,9 +32,9 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
   card,
   count = 0,
   maxCount = 2,
-  onAdd = () => {},
+  onAdd = NOOP_ADD,
   canAdd = false,
-  showCardDetails = () => {}
+  showCardDetails = NOOP_DETAILS
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -32,25 +43,14 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
   useEffect(() => {
     return () => { if (animTimerRef.current) clearTimeout(animTimerRef.current); };
   }, []);
-  
-  // Glow colors based on card rarity
-  const glowColors = {
-    common: 'rgba(255, 255, 255, 0.7)',
-    rare: 'rgba(0, 112, 221, 0.7)',
-    epic: 'rgba(163, 53, 238, 0.7)',
-    legendary: 'rgba(255, 128, 0, 0.7)'
-  };
-  
-  // Extract card data for consistent access to properties
-  const cardData = extractCardData(card);
 
-  // Function to ensure we pass a CardData object to showCardDetails
-  const handleShowCardDetails = () => {
-    // We know extractCardData always returns a CardData object
+  const cardData = useMemo(() => extractCardData(card), [card]);
+
+  const handleShowCardDetails = useCallback(() => {
     showCardDetails(cardData);
-  };
+  }, [showCardDetails, cardData]);
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (canAdd && count < maxCount) {
       setIsAnimating(true);
       onAdd(typeof cardData.id === 'number' ? cardData.id : parseInt(cardData.id as string, 10));
@@ -61,19 +61,14 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
         animTimerRef.current = null;
       }, 500);
     } else {
-      // Show card details when we can't add more
       handleShowCardDetails();
     }
-  };
-  
-  const handleRightClick = (e: React.MouseEvent) => {
+  }, [canAdd, count, maxCount, onAdd, cardData, handleShowCardDetails]);
+
+  const handleRightClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     handleShowCardDetails();
-  };
-  
-  // Quality setting for collection view - using medium to balance performance with visuals
-  // for collections with many cards visible at once
-  const cardQuality = 'medium';
+  }, [handleShowCardDetails]);
   
   return (
     <motion.div
@@ -82,15 +77,11 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
       onContextMenu={handleRightClick}
-      whileHover={{ 
-        scale: 1.05, 
-        y: -8,
-        transition: { duration: 0.2 } 
-      }}
+      whileHover={HOVER_ANIMATION}
       animate={{
         filter: isAnimating ? 'brightness(1.5)' : 'brightness(1)'
       }}
-      transition={{ duration: 0.2 }}
+      transition={TRANSITION}
     >
       {/* Using the universal CardRenderer for consistent rendering */}
       <div className="relative h-full w-full flex items-center justify-center p-3">
@@ -113,7 +104,7 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
               exit={{ opacity: 0 }}
               className="absolute inset-0 z-[-1] rounded-lg pointer-events-none"
               style={{
-                boxShadow: `0 0 15px 2px ${cardData.rarity && glowColors[cardData.rarity as keyof typeof glowColors] || glowColors.common}`,
+                boxShadow: `0 0 15px 2px ${cardData.rarity && GLOW_COLORS[cardData.rarity as keyof typeof GLOW_COLORS] || GLOW_COLORS.common}`,
                 filter: 'blur(4px)'
               }}
             />

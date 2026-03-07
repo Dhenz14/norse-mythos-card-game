@@ -15,7 +15,7 @@ import { assetPath } from './assetPath';
 import { trackQuestProgress } from './quests/questProgress';
 import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 import { useAnimationStore } from '../animations/AnimationManager';
-import allCards from '../data/allCards';
+import allCards, { getCardById } from '../data/allCards';
 import { addKeyword, setKeywords, getKeywords, hasKeyword } from './cards/keywordUtils';
 import { 
   findCardInstance, 
@@ -1336,7 +1336,7 @@ function executeSummonBattlecry(
     return state;
   }
 
-  const cardToSummon = allCards.find(card => card.id === cardId);
+  const cardToSummon = getCardById(cardId);
 
   if (!cardToSummon) {
     debug.error(`Card with ID ${cardId} not found for summoning`);
@@ -1421,7 +1421,7 @@ function executeSummonCopyBattlecry(
   const count = Math.min((battlecry as any).count || 1, availableSlots);
   for (let i = 0; i < count; i++) {
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
-    const cardData = allCards.find(c => c.id === sourceCard.card.id);
+    const cardData = getCardById(sourceCard.card.id as number);
     if (cardData) {
       const copy = createCardInstance(cardData);
       copy.isPlayed = true;
@@ -1448,7 +1448,7 @@ function executeFillBoardBattlecry(
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
 
     if (summonCardId) {
-      const cardData = allCards.find(c => c.id === summonCardId);
+      const cardData = getCardById(summonCardId);
       if (cardData) {
         const instance = createCardInstance(cardData);
         instance.isPlayed = true;
@@ -1580,7 +1580,7 @@ function executeSummonCopyFromDeckBattlecry(
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
     const deckMinion = shuffled[i];
     const minionId = deckMinion.card ? deckMinion.card.id : deckMinion.id;
-    let cardData = allCards.find(c => c.id === minionId);
+    let cardData = getCardById(minionId);
     
     if (cardData) {
       const instance = createCardInstance(cardData);
@@ -1662,7 +1662,7 @@ function executeSummonSkeletonsBasedOnGraveyardBattlecry(
   const skeletonsToSummon = Math.min(graveyardMinionCount, maxSkeletons, availableSlots);
 
   const skeletonCardId = (battlecry as any).summonCardId || 4900;
-  const skeletonData = allCards.find(c => c.id === skeletonCardId);
+  const skeletonData = getCardById(skeletonCardId);
 
   for (let i = 0; i < skeletonsToSummon; i++) {
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
@@ -2206,7 +2206,7 @@ function executeAddToHandBattlecry(
   
   if (cardId) {
     // Add a specific card to the hand
-    const cardToAdd = allCards.find(card => card.id === cardId);
+    const cardToAdd = getCardById(cardId);
     
     if (!cardToAdd) {
       debug.error(`Card with ID ${cardId} not found for add to hand battlecry`);
@@ -2439,7 +2439,8 @@ function executeEquipWeaponBattlecry(
   }
   
   // Find the weapon in the database
-  const weaponCard = allCards.find(card => card.id === battlecry.summonCardId && card.type === 'weapon');
+  const found = getCardById(battlecry.summonCardId as number);
+  const weaponCard = found?.type === 'weapon' ? found : undefined;
   
   if (!weaponCard) {
     debug.error(`Weapon card with ID ${battlecry.summonCardId} not found`);
@@ -2754,7 +2755,7 @@ function executeSummonMultipleBattlecry(
   if (Array.isArray(summonCardIds)) {
     for (const cardId of summonCardIds) {
       if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
-      const cardData = allCards.find(c => c.id === cardId);
+      const cardData = getCardById(cardId);
       if (cardData) {
         const instance = createCardInstance(cardData);
         instance.isPlayed = true;
@@ -2765,7 +2766,7 @@ function executeSummonMultipleBattlecry(
     const cardId = battlecry.summonCardId;
     const count = (battlecry as any).count || 1;
     if (cardId) {
-      const cardData = allCards.find(c => c.id === cardId);
+      const cardData = getCardById(cardId);
       if (cardData) {
         for (let i = 0; i < count; i++) {
           if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
@@ -2884,7 +2885,7 @@ function executeRecruitBattlecry(
     const randomIdx = minionIndices[Math.floor(Math.random() * minionIndices.length)];
     const recruited = deck.splice(randomIdx, 1)[0];
     const cardData = recruited.card || recruited;
-    const lookupCard = allCards.find(c => c.id === cardData.id);
+    const lookupCard = getCardById(cardData.id as number);
     const instance = createCardInstance(lookupCard || cardData);
     instance.isPlayed = true;
     state.players.player.battlefield.push(instance);
@@ -2901,7 +2902,7 @@ function executeSummonForOpponentBattlecry(
   const count = (battlecry as any).count || 1;
   if (!cardId) return state;
 
-  const cardData = allCards.find(c => c.id === cardId);
+  const cardData = getCardById(cardId);
   if (!cardData) return state;
 
   for (let i = 0; i < count; i++) {
@@ -3248,7 +3249,7 @@ function executeSummonUntilFullBattlecry(
   const summonCardId = (battlecry as any).summonCardId;
   if (!summonCardId) return state;
 
-  const cardTemplate = allCards.find(c => c.id === summonCardId);
+  const cardTemplate = getCardById(summonCardId);
   if (!cardTemplate) return state;
 
   while (state.players.player.battlefield.length < MAX_BOARD_SIZE) {
@@ -3642,7 +3643,7 @@ function executeSummonHorsemanBattlecry(
   if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) return state;
 
   if (battlecry.summonCardId) {
-    const cardData = allCards.find(c => c.id === battlecry.summonCardId);
+    const cardData = getCardById(battlecry.summonCardId as number);
     if (cardData) {
       const instance = createCardInstance(cardData);
       instance.isPlayed = true;
@@ -3693,7 +3694,7 @@ function executeSummonSplittingBattlecry(
   if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) return state;
 
   if (battlecry.summonCardId) {
-    const cardData = allCards.find(c => c.id === battlecry.summonCardId);
+    const cardData = getCardById(battlecry.summonCardId as number);
     if (cardData) {
       const instance = createCardInstance(cardData);
       instance.isPlayed = true;
@@ -3715,7 +3716,7 @@ function executeSummonIfOtherDiedBattlecry(
   if (!hasDead) return state;
 
   if (battlecry.summonCardId) {
-    const cardData = allCards.find(c => c.id === battlecry.summonCardId);
+    const cardData = getCardById(battlecry.summonCardId as number);
     if (cardData) {
       const instance = createCardInstance(cardData);
       instance.isPlayed = true;
@@ -3732,7 +3733,7 @@ function executeSummonAndDrawBattlecry(
   if (!state.players.player.battlefield) state.players.player.battlefield = [];
 
   if (battlecry.summonCardId && state.players.player.battlefield.length < MAX_BOARD_SIZE) {
-    const cardData = allCards.find(c => c.id === battlecry.summonCardId);
+    const cardData = getCardById(battlecry.summonCardId as number);
     if (cardData) {
       const instance = createCardInstance(cardData);
       instance.isPlayed = true;
@@ -3828,7 +3829,7 @@ function executeSummonDeathrattleMinionsThatDiedBattlecry(
 
   const randomPick = deathrattleMinions[Math.floor(Math.random() * deathrattleMinions.length)];
   const cardData = randomPick.card || randomPick;
-  const lookupCard = allCards.find(c => c.id === cardData.id);
+  const lookupCard = getCardById(cardData.id as number);
   const instance = createCardInstance(lookupCard || cardData);
   instance.isPlayed = true;
   state.players.player.battlefield.push(instance);

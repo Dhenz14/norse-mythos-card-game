@@ -8,15 +8,12 @@
 /* Premium Glow Border Class - Subtle, refined cyan/green border */
 .hero-card-frame.premium-glow {
   position: relative;
-  border: 2px solid rgba(0, 255, 204, 0.6);
+  border: 2px solid rgba(0, 255, 204, 0.55);
   border-radius: 16px;
-  animation: premiumGlowPulse 3s ease-in-out infinite;
-  box-shadow: 
-    /* Subtle outer glow */
+  box-shadow:
     0 0 8px rgba(0, 255, 204, 0.3),
     0 0 16px rgba(0, 255, 204, 0.15),
     0 0 24px rgba(34, 197, 94, 0.1),
-    /* Soft inner glow */
     inset 0 0 8px rgba(0, 255, 204, 0.08);
 }
 
@@ -52,7 +49,6 @@
       transparent 70%
     );
   filter: blur(10px);
-  will-change: opacity;
 }
 
 /* Improved Particle System - Floating upward particles */
@@ -183,29 +179,7 @@
    Smooth, professional AAA-quality effects
    ======================================== */
 
-@keyframes premiumGlowPulse {
-  0% {
-    border-color: rgba(0, 255, 204, 0.5);
-    box-shadow: 
-      0 0 6px rgba(0, 255, 204, 0.25),
-      0 0 12px rgba(0, 255, 204, 0.12),
-      inset 0 0 6px rgba(0, 255, 204, 0.06);
-  }
-  50% {
-    border-color: rgba(34, 197, 94, 0.6);
-    box-shadow: 
-      0 0 10px rgba(0, 255, 204, 0.35),
-      0 0 18px rgba(34, 197, 94, 0.2),
-      inset 0 0 10px rgba(34, 197, 94, 0.1);
-  }
-  100% {
-    border-color: rgba(0, 255, 204, 0.5);
-    box-shadow: 
-      0 0 6px rgba(0, 255, 204, 0.25),
-      0 0 12px rgba(0, 255, 204, 0.12),
-      inset 0 0 6px rgba(0, 255, 204, 0.06);
-  }
-}
+/* premiumGlowPulse removed — static box-shadow + ::before opacity cycle provides feedback */
 
 @keyframes premiumGlowBorderCycle {
   0% {

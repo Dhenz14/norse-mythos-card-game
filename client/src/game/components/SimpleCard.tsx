@@ -171,7 +171,9 @@ interface BadgeTooltipState {
   isEvolveInfo?: boolean;
 }
 
-export const SimpleCard: React.FC<SimpleCardProps> = ({
+const EMPTY_STYLE: React.CSSProperties = {};
+
+export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
   card,
   isPlayable = true,
   isHighlighted = false,
@@ -181,7 +183,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   size = 'medium',
   showDescription = false,
   className = '',
-  style = {},
+  style = EMPTY_STYLE,
   attackBuff = 0,
   healthBuff = 0
 }) => {
@@ -465,6 +467,6 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       )}
     </div>
   );
-};
+});
 
-export default React.memo(SimpleCard);
+export default SimpleCard;

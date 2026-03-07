@@ -2,7 +2,7 @@ import { CardInstance, GameState, CardData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { findCardInstance, createCardInstance } from './cards/cardUtils';
 import { isMinion, getHealth } from './cards/typeGuards';
-import allCards from '../data/allCards';
+import allCards, { getCardById } from '../data/allCards';
 import { debug } from '../config/debugConfig';
 
 /**
@@ -34,7 +34,7 @@ export function transformMinion(
   }
   
   // Find the card to transform into
-  const transformToCard = allCards.find(card => card.id === transformToCardId);
+  const transformToCard = getCardById(transformToCardId as number);
   
   if (!transformToCard) {
     debug.error(`Card with ID ${transformToCardId} not found for transformation target`);

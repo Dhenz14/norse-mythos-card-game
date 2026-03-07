@@ -158,27 +158,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
       initial={{ scale: 0 }}
       animate={{ scale: isKing ? 1.05 : 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      style={{
-        ...(hasElement ? { boxShadow: elementGlow.shadow } : undefined),
-        ...(matchupGlow === 'advantage' ? { 
-          outline: '3px solid rgba(34, 197, 94, 0.9)',
-          outlineOffset: '2px',
-          boxShadow: '0 0 20px rgba(34, 197, 94, 0.8), 0 0 40px rgba(34, 197, 94, 0.5), 0 0 60px rgba(34, 197, 94, 0.3), inset 0 0 15px rgba(34, 197, 94, 0.3)',
-          zIndex: 50
-        } : {}),
-        ...(matchupGlow === 'disadvantage' ? {
-          outline: '3px solid rgba(239, 68, 68, 0.9)',
-          outlineOffset: '2px',
-          boxShadow: '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5), 0 0 60px rgba(239, 68, 68, 0.3), inset 0 0 15px rgba(239, 68, 68, 0.3)',
-          zIndex: 50
-        } : {}),
-        ...(matchupGlow === 'mutual' ? {
-          outline: '3px solid rgba(192, 132, 252, 0.9)',
-          outlineOffset: '2px',
-          boxShadow: '0 0 20px rgba(192, 132, 252, 0.8), 0 0 40px rgba(192, 132, 252, 0.5), 0 0 60px rgba(192, 132, 252, 0.3), inset 0 0 15px rgba(192, 132, 252, 0.3)',
-          zIndex: 50
-        } : {})
-      }}
+      style={hasElement ? { boxShadow: elementGlow.shadow } : undefined}
     >
       <AnimatePresence>
         {showTooltip && (

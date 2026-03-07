@@ -2,7 +2,7 @@ import { CardInstance, GameState, CardData, DeathrattleEffect, CardAnimationType
 import { v4 as uuidv4 } from 'uuid';
 import { createCardInstance, isCardOfTribe } from './cards/cardUtils';
 import { drawCardFromDeck, removeDeadMinions, destroyCard } from './zoneUtils';
-import allCards from '../data/allCards';
+import allCards, { getCardById } from '../data/allCards';
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
@@ -298,7 +298,7 @@ function executeSummonDeathrattle(
     return state;
   }
 
-  const cardToSummon = allCards.find(card => card.id === summonId);
+  const cardToSummon = getCardById(summonId);
   
   if (!cardToSummon) {
     debug.error(`Card with ID ${summonId} not found in the database`);
@@ -807,7 +807,7 @@ function executeSummonSplittingDeathrattle(
 
   if (!deathrattle.summonCardId) return newState;
 
-  const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+  const cardData = getCardById(deathrattle.summonCardId as number);
   if (!cardData) return newState;
 
   for (let i = 0; i < 2; i++) {
@@ -833,14 +833,14 @@ function executeSummonMultipleDeathrattle(
   if (summonCardIds.length > 0) {
     for (const cardId of summonCardIds) {
       if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-      const cardData = allCards.find(c => c.id === cardId);
+      const cardData = getCardById(typeof cardId === 'string' ? parseInt(cardId, 10) : cardId);
       if (!cardData) continue;
       const instance = createCardInstance(cardData);
       player.battlefield.push(instance);
       trackQuestProgress(playerId, 'summon_minion', instance.card);
     }
   } else if (deathrattle.summonCardId) {
-    const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+    const cardData = getCardById(deathrattle.summonCardId as number);
     if (!cardData) return newState;
     const count = deathrattle.value || 1;
     for (let i = 0; i < count; i++) {
@@ -869,7 +869,7 @@ function executeSummonIfOtherDiedDeathrattle(
   const hasDeadMinion = graveyard.some(c => c.card.type === 'minion');
   if (!hasDeadMinion) return newState;
 
-  const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+  const cardData = getCardById(deathrattle.summonCardId as number);
   if (!cardData) return newState;
 
   const instance = createCardInstance(cardData);
@@ -891,7 +891,7 @@ function executeSummonForOpponentDeathrattle(
   if (opponent.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
   if (!deathrattle.summonCardId) return newState;
 
-  const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+  const cardData = getCardById(deathrattle.summonCardId as number);
   if (!cardData) return newState;
 
   const count = deathrattle.value || 1;
@@ -982,7 +982,7 @@ function executeShuffleCopiesBuffedDeathrattle(
 
   if (!deathrattle.summonCardId) return newState;
 
-  const cardData = allCards.find(c => c.id === deathrattle.summonCardId);
+  const cardData = getCardById(deathrattle.summonCardId as number);
   if (!cardData) return newState;
 
   for (let i = 0; i < copyCount; i++) {

@@ -222,7 +222,7 @@
 	position: absolute;
 	inset: -5px;
 	border-radius: 50%;
-	box-shadow: 0 0 30px var(--element-color);
+	box-shadow: 0 0 40px var(--element-color), 0 0 60px var(--element-color);
 	animation: glow-pulse 0.8s ease-in-out;
 }
 
@@ -338,8 +338,8 @@
 }
 
 @keyframes glow-pulse {
-	0%, 100% { box-shadow: 0 0 20px var(--element-color); }
-	50% { box-shadow: 0 0 40px var(--element-color), 0 0 60px var(--element-color); }
+	0%, 100% { opacity: 0.6; }
+	50% { opacity: 1; }
 }
 
 @keyframes particle-burst {

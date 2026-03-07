@@ -1,29 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useAnimationStore } from '../animations/AnimationManager';
 import './CardBurnOverlay.css';
 
-interface CardBurnAnimation {
-  id: string;
-  cardName: string;
-  playerId: 'player' | 'opponent';
-  startTime: number;
-}
-
 export const CardBurnOverlay: React.FC = () => {
   const { animations, removeAnimation } = useAnimationStore();
-  const [burnAnimations, setBurnAnimations] = useState<CardBurnAnimation[]>([]);
 
-  useEffect(() => {
-    const cardBurnAnims = animations
+  const burnAnimations = useMemo(() =>
+    animations
       .filter(a => a.type === 'card_burn')
       .map(a => ({
         id: a.id,
         cardName: a.cardName || 'Card',
-        playerId: a.playerId || 'player',
+        playerId: (a.playerId || 'player') as 'player' | 'opponent',
         startTime: a.startTime
-      }));
-    setBurnAnimations(cardBurnAnims);
-  }, [animations]);
+      })),
+    [animations]
+  );
 
   if (burnAnimations.length === 0) return null;
 

@@ -15,16 +15,13 @@ import { cardRegistry } from './cardRegistry';
 
 const allCards: CardData[] = cardRegistry;
 
-const idCache = new Map<number, CardData | undefined>();
+const idMap = new Map<number, CardData>(allCards.map(c => [c.id as number, c]));
 const classCache = new Map<string, CardData[]>();
 const keywordCache = new Map<string, CardData[]>();
 const typeCache = new Map<string, CardData[]>();
 
 export const getCardById = (id: number): CardData | undefined => {
-	if (idCache.has(id)) return idCache.get(id);
-	const result = allCards.find(card => card.id === id);
-	idCache.set(id, result);
-	return result;
+	return idMap.get(id);
 };
 
 export const getCardsByClass = (className: HeroClass | 'neutral'): CardData[] => {

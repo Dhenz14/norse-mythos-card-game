@@ -14,6 +14,8 @@ import { getCardById } from '../../data/allCards';
 
 export type CardRenderQuality = 'high' | 'medium' | 'low';
 
+const EMPTY_STYLE: React.CSSProperties = {};
+
 interface CardRendererProps {
   card: CardData | CardInstance;
   isInHand?: boolean;
@@ -49,7 +51,7 @@ const CardRenderer: React.FC<CardRendererProps> = React.memo(({
   onMouseEnter,
   onMouseLeave,
   className = '',
-  style = {},
+  style = EMPTY_STYLE,
   size = 'medium',
   attackBuff = 0,
   healthBuff = 0

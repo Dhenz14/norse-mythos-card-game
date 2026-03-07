@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CardData, CardInstance } from '../../types';
-import allCards from '../../data/allCards';
+import allCards, { getCardById } from '../../data/allCards';
 import { colossalMinionCards } from '../../data/colossalCards';
 import { initializeSpellPower } from '../spells/spellPowerUtils';
 import { initializePoisonousEffect } from '../mechanics/poisonousUtils';
@@ -349,7 +349,7 @@ export function canPlayCard(card: CardInstance, currentMana: number): boolean {
  * Find a card by its ID in the full card database
  */
 export function findCardById(id: number): CardData | undefined {
-  return allCards.find((card: CardData) => card && card.id === id);
+  return getCardById(id);
 }
 
 /**

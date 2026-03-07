@@ -5,7 +5,7 @@
  * Uses flat card design with hover preview system (no 3D tilt effects).
  */
 import { debug } from '../config/debugConfig';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { CardInstance } from '../types';
 import { Position } from '../types/Position';
 import { CardInstanceWithCardData, isCardInstanceWithCardData } from '../types/interfaceExtensions';
@@ -34,7 +34,9 @@ interface CardWithDragProps {
   healthBuff?: number;
 }
 
-export const CardWithDrag: React.FC<CardWithDragProps> = ({
+const NOOP_HOVER = () => {};
+
+export const CardWithDrag: React.FC<CardWithDragProps> = React.memo(({
   card,
   isInHand,
   isPlayable,
@@ -106,33 +108,33 @@ export const CardWithDrag: React.FC<CardWithDragProps> = ({
 
   const processedCard = getCardDataSafely(card);
   
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (onClick && isPlayable) {
       playSound('card_hover');
       onClick();
     }
-  };
+  }, [onClick, isPlayable]);
 
-  const handleHoverChange = (hovering: boolean) => {
+  const handleHoverChange = useCallback((hovering: boolean) => {
     if (isInHand || isPlayable || !hovering) {
       setIsHovering(hovering);
       setHovering(hovering, { hoverSource: 'direct' });
-      
+
       if (hovering && isPlayable) {
         playSound('card_hover');
       }
     }
-  };
+  }, [isInHand, isPlayable, setHovering]);
 
-  const handleOnDragStart = () => {
+  const handleOnDragStart = useCallback(() => {
     setDragging(true);
     if (onDragStart) onDragStart();
-  };
+  }, [setDragging, onDragStart]);
 
-  const handleOnDragEnd = (wasDropped: boolean, position: Position) => {
+  const handleOnDragEnd = useCallback((wasDropped: boolean, position: Position) => {
     setDragging(false);
     if (onDragEnd) onDragEnd(wasDropped, position);
-  };
+  }, [setDragging, onDragEnd]);
 
   return (
     <CardDragAnimation
@@ -174,7 +176,7 @@ export const CardWithDrag: React.FC<CardWithDragProps> = ({
           isHighlighted={isHovering || isDragging}
           scale={1.0}
           onClick={handleClick}
-          onHover={() => {}}
+          onHover={NOOP_HOVER}
           use3D={false}
           className="flat-card-container"
           renderQuality="high"
@@ -185,6 +187,6 @@ export const CardWithDrag: React.FC<CardWithDragProps> = ({
       </div>
     </CardDragAnimation>
   );
-};
+});
 
 export default CardWithDrag;

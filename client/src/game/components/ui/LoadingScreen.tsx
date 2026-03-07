@@ -21,15 +21,9 @@ function getRandomQuote(): string {
 
 export default function LoadingScreen({ message }: { message?: string }) {
 	const [quote, setQuote] = useState(getRandomQuote);
-	const [dots, setDots] = useState('');
-
 	useEffect(() => {
 		const quoteInterval = setInterval(() => setQuote(getRandomQuote()), 5000);
-		const dotInterval = setInterval(() => setDots(d => d.length >= 3 ? '' : d + '.'), 400);
-		return () => {
-			clearInterval(quoteInterval);
-			clearInterval(dotInterval);
-		};
+		return () => clearInterval(quoteInterval);
 	}, []);
 
 	return (
@@ -49,7 +43,7 @@ export default function LoadingScreen({ message }: { message?: string }) {
 
 			{/* Loading text */}
 			<p className="text-amber-400 text-lg font-semibold mb-2">
-				{message || 'Loading'}{dots}
+				{message || 'Loading'}...
 			</p>
 
 			{/* Lore quote */}

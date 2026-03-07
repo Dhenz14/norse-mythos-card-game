@@ -22,6 +22,19 @@ interface Position {
   insertionIndex?: number;
 }
 
+const OUTER_STYLE: React.CSSProperties = {
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  touchAction: 'none',
+};
+const INNER_STYLE: React.CSSProperties = {
+  width: '100%',
+  height: '100%',
+  transformStyle: 'preserve-3d',
+  perspective: '1000px',
+};
+
 interface CardDragAnimationProps {
   cardRef: React.RefObject<HTMLDivElement>;
   card: CardInstance;
@@ -556,21 +569,11 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
       onPointerDown={handlePointerDown}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        touchAction: 'none',
-      }}
+      style={OUTER_STYLE}
     >
       <div
         ref={dragWrapperRef}
-        style={{
-          width: '100%',
-          height: '100%',
-          transformStyle: 'preserve-3d',
-          perspective: '1000px',
-        }}
+        style={INNER_STYLE}
       >
         {children}
       </div>

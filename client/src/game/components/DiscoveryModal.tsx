@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CardData, DiscoveryState, CardType, CardRarity, HeroClass } from '../types';
 import { Card } from './Card';
 import { createCardInstance } from '../utils/cards/cardUtils';
@@ -44,23 +44,15 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
     discoveryState.filters?.manaCost || 'any'
   );
   
-  // Initialize filtered options
-  const [filteredOptions, setFilteredOptions] = useState<CardData[]>(discoveryState.options);
-  
-  // Apply filters when they change
-  useEffect(() => {
-    if (!discoveryState.allOptions) {
-      return;
-    }
-    
+  const filteredOptions = useMemo(() => {
+    if (!discoveryState.allOptions) return discoveryState.options;
     const filtered = filterCards(discoveryState.allOptions, {
       type: cardType,
       rarity: cardRarity,
       manaCost: manaCost
     });
-    
-    setFilteredOptions(filtered.length > 0 ? filtered : discoveryState.options);
-  }, [cardType, cardRarity, manaCost, discoveryState.allOptions]);
+    return filtered.length > 0 ? filtered : discoveryState.options;
+  }, [cardType, cardRarity, manaCost, discoveryState.allOptions, discoveryState.options]);
   
   const handleCardClick = (card: CardData) => {
     if (selectedCard) return;

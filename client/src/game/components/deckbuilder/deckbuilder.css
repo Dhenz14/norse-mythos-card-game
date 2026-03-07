@@ -20,19 +20,19 @@
 	50% { background-position: 100% 100%; }
 }
 
-@keyframes db-mythic-pulse {
-	0%, 100% { opacity: 0.35; }
-	50% { opacity: 0.55; }
+@keyframes db-mythic-foil {
+	0%, 100% { background-position: 0% 0%; }
+	50% { background-position: 100% 100%; }
 }
 
-@keyframes db-epic-sweep {
+@keyframes db-epic-foil {
 	0%   { background-position: 0% 0%; }
 	100% { background-position: 100% 100%; }
 }
 
-@keyframes db-rare-glint {
-	0%, 85%  { background-position: -100% 0; }
-	100%     { background-position: 200% 0; }
+@keyframes db-rare-foil {
+	0%, 85%  { background-position: 0% 0%; }
+	100%     { background-position: 100% 100%; }
 }
 
 @keyframes db-common-breathe {
@@ -189,7 +189,7 @@
 	letter-spacing: 1.5px;
 	text-transform: uppercase;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-	backdrop-filter: blur(4px);
+	/* backdrop-filter removed for perf */
 }
 .db-rarity-badge.rarity-mythic {
 	background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(255, 140, 0, 0.9));
@@ -207,58 +207,50 @@
 	box-shadow: 0 0 5px rgba(59, 130, 246, 0.35);
 }
 
-/* --- Foil overlay (over art area) --- */
+/* --- Foil overlay (over art area) — texture-based per rarity --- */
 .db-foil-overlay {
 	position: absolute;
 	inset: 0;
 	pointer-events: none;
 	z-index: 2;
 	transition: opacity 0.3s ease;
+	background-size: 150% 150%;
+	mix-blend-mode: screen;
 }
 .db-foil-overlay.rarity-mythic {
-	background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(168, 85, 247, 0.12) 25%, rgba(59, 130, 246, 0.12) 50%, rgba(34, 197, 94, 0.1) 75%, rgba(245, 158, 11, 0.1) 100%);
-	opacity: 0.4;
-	animation: db-mythic-pulse 3s ease-in-out infinite;
+	background-image: url('/textures/foil_mythic.png');
+	background-size: 150% 150%;
+	opacity: 0;
+	animation: db-mythic-foil 3s ease-in-out infinite;
+	border: 2px solid rgba(255, 170, 0, 0.5);
+	box-shadow: inset 0 0 15px rgba(255, 170, 0, 0.2);
 }
-.db-card:hover .db-foil-overlay.rarity-mythic { opacity: 0.7; }
+.db-card:hover .db-foil-overlay.rarity-mythic { opacity: 0.6; }
 .db-foil-overlay.rarity-epic {
-	background: linear-gradient(
-		135deg,
-		transparent 0%,
-		rgba(88, 28, 135, 0.08) 15%,
-		rgba(124, 58, 237, 0.15) 30%,
-		rgba(192, 132, 252, 0.22) 50%,
-		rgba(124, 58, 237, 0.15) 70%,
-		rgba(88, 28, 135, 0.08) 85%,
-		transparent 100%
-	);
-	background-size: 300% 300%;
-	opacity: 0.3;
-	animation: db-epic-sweep 4s ease-in-out infinite;
+	background-image: url('/textures/foil_epic.png');
+	background-size: 200% 200%;
+	opacity: 0;
+	animation: db-epic-foil 4s ease-in-out infinite;
+	border: 2px solid rgba(163, 53, 238, 0.4);
+	box-shadow: inset 0 0 12px rgba(163, 53, 238, 0.15);
 }
-.db-card:hover .db-foil-overlay.rarity-epic { opacity: 0.55; }
+.db-card:hover .db-foil-overlay.rarity-epic { opacity: 0.5; }
 
 .db-foil-overlay.rarity-rare {
-	background: linear-gradient(
-		105deg,
-		transparent 0%,
-		transparent 40%,
-		rgba(255, 255, 255, 0.12) 46%,
-		rgba(147, 197, 253, 0.22) 50%,
-		rgba(255, 255, 255, 0.12) 54%,
-		transparent 60%,
-		transparent 100%
-	);
-	background-size: 300% 100%;
-	opacity: 0.5;
-	animation: db-rare-glint 5s ease-in-out infinite;
+	background-image: url('/textures/epic_holographic2.png');
+	background-size: 200% 200%;
+	opacity: 0;
+	animation: db-rare-foil 5s ease-in-out infinite;
+	border: 1px solid rgba(0, 150, 255, 0.35);
+	box-shadow: inset 0 0 10px rgba(0, 150, 255, 0.1);
 }
-.db-card:hover .db-foil-overlay.rarity-rare { opacity: 0.8; }
+.db-card:hover .db-foil-overlay.rarity-rare { opacity: 0.4; }
 
 .db-foil-overlay.rarity-common {
 	background: radial-gradient(ellipse at center, transparent 40%, rgba(156, 163, 175, 0.06) 70%, rgba(120, 130, 145, 0.1) 100%);
 	opacity: 0.3;
 	animation: db-common-breathe 6s ease-in-out infinite;
+	mix-blend-mode: normal;
 }
 .db-card:hover .db-foil-overlay.rarity-common { opacity: 0.5; }
 
@@ -975,7 +967,6 @@
 	aspect-ratio: 3/4;
 	max-height: 88vh;
 	transform-style: preserve-3d;
-	will-change: transform;
 	cursor: pointer;
 }
 
@@ -1073,15 +1064,21 @@
 	inset: 0;
 	pointer-events: none;
 	z-index: 2;
+	mix-blend-mode: screen;
+	background-size: 150% 150%;
 }
 .cd-front-foil.rarity-mythic {
-	background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(168, 85, 247, 0.12) 25%, rgba(59, 130, 246, 0.12) 50%, rgba(34, 197, 94, 0.1) 75%, rgba(245, 158, 11, 0.1));
+	background-image: url('/textures/foil_mythic.png');
 	opacity: 0.5;
-	animation: db-mythic-pulse 3s ease-in-out infinite;
+	animation: db-mythic-foil 3s ease-in-out infinite;
+	border: 2px solid rgba(255, 170, 0, 0.4);
 }
 .cd-front-foil.rarity-epic {
-	background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(192, 132, 252, 0.12) 50%, rgba(168, 85, 247, 0.08));
-	opacity: 0.6;
+	background-image: url('/textures/foil_epic.png');
+	background-size: 200% 200%;
+	opacity: 0.45;
+	animation: db-epic-foil 4s ease-in-out infinite;
+	border: 2px solid rgba(163, 53, 238, 0.35);
 }
 
 /* Front face mana gem */
@@ -1244,7 +1241,7 @@
 	letter-spacing: 1.5px;
 	text-transform: uppercase;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-	backdrop-filter: blur(4px);
+	/* backdrop-filter removed for perf */
 }
 .cd-front-badge.rarity-mythic {
 	background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(255, 140, 0, 0.9));
@@ -1476,7 +1473,7 @@
 	top: 0;
 	z-index: 5;
 	background: linear-gradient(180deg, rgba(15, 15, 25, 0.98) 0%, rgba(15, 15, 25, 0.85) 100%);
-	backdrop-filter: blur(4px);
+	/* backdrop-filter removed for perf */
 }
 
 .db-group-label {

@@ -6,10 +6,10 @@
 
 /* Cards that can attack — subtle warm bronze outline */
 .card-attackable {
-  border: 1.5px solid rgba(205, 170, 100, 0.7);
+  border: 1.5px solid rgba(205, 170, 100, 0.55);
   box-shadow:
-    0 0 4px rgba(205, 170, 100, 0.3),
-    0 0 8px rgba(205, 170, 100, 0.15);
+    0 0 4px rgba(205, 170, 100, 0.25),
+    0 0 8px rgba(205, 170, 100, 0.12);
   animation: ready-pulse 2.5s ease-in-out infinite;
   cursor: pointer;
   position: relative;
@@ -34,10 +34,10 @@
 
 /* Valid attack targets — subtle red indicator */
 .valid-target {
-  border: 1.5px solid rgba(220, 80, 60, 0.7);
+  border: 1.5px solid rgba(220, 80, 60, 0.55);
   box-shadow:
-    0 0 4px rgba(220, 80, 60, 0.35),
-    0 0 10px rgba(220, 80, 60, 0.15);
+    0 0 4px rgba(220, 80, 60, 0.25),
+    0 0 10px rgba(220, 80, 60, 0.12);
   cursor: crosshair;
   animation: target-pulse 2s ease-in-out infinite;
 }
@@ -56,33 +56,13 @@
 
 /* Animation keyframes */
 @keyframes ready-pulse {
-  0%, 100% {
-    border-color: rgba(205, 170, 100, 0.7);
-    box-shadow:
-      0 0 4px rgba(205, 170, 100, 0.3),
-      0 0 8px rgba(205, 170, 100, 0.15);
-  }
-  50% {
-    border-color: rgba(205, 170, 100, 0.4);
-    box-shadow:
-      0 0 3px rgba(205, 170, 100, 0.15),
-      0 0 6px rgba(205, 170, 100, 0.08);
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @keyframes target-pulse {
-  0%, 100% {
-    border-color: rgba(220, 80, 60, 0.7);
-    box-shadow:
-      0 0 4px rgba(220, 80, 60, 0.35),
-      0 0 10px rgba(220, 80, 60, 0.15);
-  }
-  50% {
-    border-color: rgba(220, 80, 60, 0.4);
-    box-shadow:
-      0 0 3px rgba(220, 80, 60, 0.15),
-      0 0 6px rgba(220, 80, 60, 0.08);
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* Attack line/arrow */

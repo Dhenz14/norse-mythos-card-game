@@ -579,6 +579,33 @@ vercel --prod                 # Deploy to Vercel
 - EnhancedDeathAnimation: migrated 80 DOM particles + injected CSS keyframes to 3 staggered Pixi GPU bursts+embers+impact ring
 - `GoldenCardFilter.tsx`: portal-mounted SVG filter definitions for golden/epic displacement effects
 
+### Completed (Rendering Performance Optimization)
+
+- Converted 20+ CSS keyframe animations from box-shadow/text-shadow to opacity-only (GPU compositor, zero repaints)
+  - SimpleBattlefield: 8 status effects (poison, bleed, burn, freeze, paralysis, weakness, vulnerable, marked) + evolve-ready pulse
+  - AttackStyles: ready-pulse, target-pulse
+  - RagnarokCombatArena: end-turn-glow, upgrade-pulse, end-turn-pulse
+  - end-turn-button: end-turn-glow
+  - HUDOverlay: hud-end-turn-glow
+  - SimpleCard: evolve-pulse
+  - DeckPile: low-deck-pulse
+  - HeroPowerButton: hero-power-upgrade-glow
+  - ChessPiece: matchup-pulse animations + inline matchup glow styles moved to CSS classes
+  - glow-effects: premiumGlowPulse removed (static box-shadow)
+  - RaceIcon: subtle-glow removed (7-layer box-shadow animation on every card hover)
+  - constellation-map: realm-pulse (9 always-visible nodes)
+  - combat-animations: glow-pulse
+  - GameOverScreen: victory-title-pulse (text-shadow → opacity)
+- Removed unnecessary `will-change` declarations (z-index, filter not GPU-compositable; hover-only buttons; deck builder)
+- Removed `backdrop-filter: blur()` from RaceIcon (36px element) and reduced GameOverScreen blur
+- React.memo added to SimpleCard named export (most-rendered component, was unmemoized), CardWithDrag, MulliganCard, CollectionCard
+- Hoisted inline style/animation objects to module-level constants across 6 components (SimpleCard, CardRenderer, CardWithDrag, MulliganCard, CollectionCard, CardDragAnimation)
+- Fixed `style = {}` default parameter pattern (creates new ref every render, breaks memo) with `EMPTY_STYLE` constants
+- Fixed `() => {}` default callback pattern with stable `NOOP` constants
+- Added `useCallback` for event handlers in CardWithDrag, CollectionCard
+- Added `useMemo` for derived card data in MulliganCard, CollectionCard
+- Net result: ~255 fewer lines, eliminated ~60 repaints/sec per animated element
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

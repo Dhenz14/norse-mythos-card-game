@@ -36,5 +36,5 @@
 
 /* Fix for 3D transform perspective issues */
 .premium-card-container {
-  will-change: transform;
+  transform: translateZ(0);
 }
