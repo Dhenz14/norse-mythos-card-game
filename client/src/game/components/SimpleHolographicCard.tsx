@@ -1,6 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { assetPath } from '../utils/assetPath';
 import './HolographicEffect.css';
+import './SimpleCard.css';
+
+const ICE_RE = /\b(ymir|buri|niflheim|frost|ice|snow|skadi|jotun|glacier|blizzard|frozen|winter|cold)\b/i;
+const FIRE_RE = /\b(surtr|muspel|fire|flame|ember|inferno|burn|ash|volcanic|magma|lava|pyre)\b/i;
+const ELECTRIC_RE = /\b(thor|thunder|lightning|storm|spark|tempest|volt)\b/i;
+const SHADOW_RE = /\b(hel|helheim|shadow|dark|death|draugr|void|abyss|niflung|undead)\b/i;
+
+const getCardTheme = (name: string): string | null => {
+  if (ICE_RE.test(name)) return 'ice';
+  if (FIRE_RE.test(name)) return 'fire';
+  if (ELECTRIC_RE.test(name)) return 'electric';
+  if (SHADOW_RE.test(name)) return 'shadow';
+  return null;
+};
 
 
 interface SimpleHolographicCardProps {
@@ -82,7 +96,9 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
   
   // Last known position for maintaining effect when mouse is still
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
-  
+
+  const cardTheme = useMemo(() => getCardTheme(card.name), [card.name]);
+
   // Determine if card should have holographic effects based on rarity
   const isPremiumRarity = card.rarity.toLowerCase() === 'mythic' || card.rarity.toLowerCase() === 'epic';
   // Card will have holographic effects if:
@@ -163,8 +179,9 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
   // No longer needed - we use mouseenter/mouseleave events for reliable tracking
 
   // Handle mouse movement to create the holographic effect
+  // Track rotation for ALL cards so foil textures animate on hover
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current || !hasHolographicEffects) return;
+    if (!cardRef.current) return;
     
     const rect = cardRef.current.getBoundingClientRect();
     
@@ -698,19 +715,24 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
             </g>
           </svg>
           
-          {/* Holographic foil overlay for art area */}
+          {/* Holographic foil overlay for art area — matches rarity foil */}
           <div style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundImage: `url('${assetPath('/textures/foil.png')}')`,
+            backgroundImage: `url('${assetPath(
+              card.rarity.toLowerCase() === 'mythic' ? '/textures/foil_mythic.png' :
+              card.rarity.toLowerCase() === 'epic' ? '/textures/foil_epic.png' :
+              card.rarity.toLowerCase() === 'rare' ? '/textures/epic_holographic2.png' :
+              '/textures/foil.png'
+            )}')`,
             backgroundSize: '200%',
             backgroundPosition: `${50 + rotation.y * 1.2}% ${50 + rotation.x * 1.2}%`,
-            mixBlendMode: 'overlay',
-            opacity: Math.min(0.5, 0.2 + (Math.abs(rotation.x) + Math.abs(rotation.y)) * 0.01),
-            filter: `hue-rotate(${rotation.y * 8}deg) contrast(1.8) brightness(1.5)`,
+            mixBlendMode: 'screen',
+            opacity: Math.min(0.45, 0.15 + (Math.abs(rotation.x) + Math.abs(rotation.y)) * 0.01),
+            filter: `hue-rotate(${rotation.y * 8}deg) saturate(1.5) brightness(1.3)`,
             zIndex: 42
           }} />
           
@@ -837,10 +859,93 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
             </div>
           </div>
         )}
+        {/* Foil texture overlay — renders for ALL rarities, different texture each */}
+        {/* Uses 'screen' blend to brighten and show texture on dark card backgrounds */}
+        {isHovering && (
+          <>
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                borderRadius: '12px',
+                backgroundImage: `url('${assetPath(
+                  card.rarity.toLowerCase() === 'mythic' ? '/textures/foil_mythic.png' :
+                  card.rarity.toLowerCase() === 'epic' ? '/textures/foil_epic.png' :
+                  card.rarity.toLowerCase() === 'rare' ? '/textures/epic_holographic2.png' :
+                  '/textures/foil.png'
+                )}')`,
+                backgroundSize: '150% 150%',
+                backgroundPosition: `${50 + rotation.y * 1.5}% ${50 + rotation.x * 1.5}%`,
+                mixBlendMode: 'screen',
+                opacity: card.rarity.toLowerCase() === 'mythic' ? 0.55 :
+                  card.rarity.toLowerCase() === 'epic' ? 0.45 :
+                  card.rarity.toLowerCase() === 'rare' ? 0.35 : 0.2,
+                pointerEvents: 'none',
+                zIndex: 10,
+                filter: `saturate(1.5) brightness(1.2)`,
+                transition: 'opacity 0.3s ease'
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                borderRadius: '12px',
+                backgroundImage: `url('${assetPath(
+                  card.rarity.toLowerCase() === 'mythic' ? '/textures/foil_mythic.png' :
+                  card.rarity.toLowerCase() === 'epic' ? '/textures/foil_epic.png' :
+                  card.rarity.toLowerCase() === 'rare' ? '/textures/epic_holographic2.png' :
+                  '/textures/foil.png'
+                )}')`,
+                backgroundSize: '150% 150%',
+                backgroundPosition: `${50 + rotation.y * 1.5}% ${50 + rotation.x * 1.5}%`,
+                mixBlendMode: 'color-dodge',
+                opacity: card.rarity.toLowerCase() === 'mythic' ? 0.3 :
+                  card.rarity.toLowerCase() === 'epic' ? 0.2 :
+                  card.rarity.toLowerCase() === 'rare' ? 0.15 : 0.06,
+                pointerEvents: 'none',
+                zIndex: 11,
+                filter: `hue-rotate(${rotation.y * 5}deg) saturate(2)`,
+                transition: 'opacity 0.3s ease'
+              }}
+            />
+            {/* Rarity-colored border glow so each tier is unmistakably different */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                borderRadius: '12px',
+                border: card.rarity.toLowerCase() === 'mythic' ? '2px solid rgba(255, 170, 0, 0.7)' :
+                  card.rarity.toLowerCase() === 'epic' ? '2px solid rgba(163, 53, 238, 0.6)' :
+                  card.rarity.toLowerCase() === 'rare' ? '2px solid rgba(0, 150, 255, 0.5)' :
+                  '1px solid rgba(255, 255, 255, 0.15)',
+                boxShadow: card.rarity.toLowerCase() === 'mythic'
+                  ? 'inset 0 0 20px rgba(255, 170, 0, 0.25), 0 0 12px rgba(255, 170, 0, 0.4)'
+                  : card.rarity.toLowerCase() === 'epic'
+                    ? 'inset 0 0 15px rgba(163, 53, 238, 0.2), 0 0 10px rgba(163, 53, 238, 0.35)'
+                    : card.rarity.toLowerCase() === 'rare'
+                      ? 'inset 0 0 12px rgba(0, 150, 255, 0.15), 0 0 8px rgba(0, 150, 255, 0.3)'
+                      : 'none',
+                pointerEvents: 'none',
+                zIndex: 12
+              }}
+            />
+          </>
+        )}
+
         {hasHolographicEffects && (
           <>
             {/* Multiple thin diffraction lines - set 1 */}
-            <div className="holographic-overlay" 
+            <div className="holographic-overlay"
               style={{
                 position: 'absolute',
                 top: 0,
@@ -859,13 +964,13 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 opacity: Math.min(0.4, 0.15 + Math.abs(rotation.y) * 0.01),
                 mixBlendMode: 'soft-light',
                 pointerEvents: 'none',
-                zIndex: -5, // Negative to ensure it's below everything
+                zIndex: -5,
                 transform: `rotate(${rotation.y * 0.08}deg)`
               }}
             />
-            
+
             {/* Multiple thin diffraction lines - set 2 */}
-            <div 
+            <div
               style={{
                 position: 'absolute',
                 top: 0,
@@ -887,9 +992,9 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 zIndex: 5
               }}
             />
-            
+
             {/* Multiple thin diffraction lines - set 3 */}
-            <div 
+            <div
               style={{
                 position: 'absolute',
                 top: 0,
@@ -911,9 +1016,9 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 zIndex: 5
               }}
             />
-            
-            {/* Special edge highlight that appears on tilt - changed to radial for testing */}
-            <div 
+
+            {/* Special edge highlight that appears on tilt */}
+            <div
               style={{
                 position: 'absolute',
                 top: 0,
@@ -927,9 +1032,9 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 zIndex: 9
               }}
             />
-            
-            {/* Holographic foil texture overlay */}
-            <div 
+
+            {/* Rarity-specific prismatic color tint */}
+            <div
               style={{
                 position: 'absolute',
                 top: 0,
@@ -937,50 +1042,31 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 right: 0,
                 bottom: 0,
                 borderRadius: '12px',
-                backgroundImage: `url('${assetPath('/textures/foil.png')}')`,
-                backgroundSize: 'cover',
-                backgroundPosition: `${50 + rotation.y * 0.7}% ${50 + rotation.x * 0.7}%`,
-                mixBlendMode: 'color-dodge',
-                opacity: Math.min(0.7, 0.25 + (Math.abs(rotation.x) + Math.abs(rotation.y)) * 0.012),
-                pointerEvents: 'none',
-                zIndex: 10,
-                filter: `hue-rotate(${rotation.y * 4}deg) contrast(1.2) brightness(1.1)`,
-                transition: isHovering ? 'none' : 'opacity 0.8s, background-position 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-              }}
-            />
-            
-            {/* Rarity-specific prismatic effect */}
-            <div 
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: '12px',
-                background: card.rarity.toLowerCase() === 'mythic' 
-                  ? 'radial-gradient(circle at 30% 30%, rgba(255,215,0,0.05) 0%, rgba(255,105,180,0.05) 60%, rgba(65,105,225,0.05) 100%)'
+                background: card.rarity.toLowerCase() === 'mythic'
+                  ? 'radial-gradient(circle at 30% 30%, rgba(255,215,0,0.08) 0%, rgba(255,105,180,0.06) 60%, rgba(65,105,225,0.06) 100%)'
                   : card.rarity.toLowerCase() === 'epic'
-                    ? `url('${assetPath('/textures/epic_holographic2.png')}')`
-                    : card.rarity.toLowerCase() === 'rare' 
-                      ? 'radial-gradient(circle at 30% 30%, rgba(0,112,221,0.05) 0%, rgba(28,132,255,0.05) 60%, rgba(84,183,255,0.05) 100%)'
-                      : 'radial-gradient(circle at 30% 30%, rgba(200,200,200,0.05) 0%, rgba(230,230,230,0.05) 60%, rgba(180,180,180,0.05) 100%)',
-                backgroundSize: card.rarity.toLowerCase() === 'epic' ? '120% 120%' : 'auto',
-                backgroundPosition: card.rarity.toLowerCase() === 'epic' ? `${50 + rotation.y * 0.8}% ${50 + rotation.x * 0.8}%` : 'center center',
-                filter: card.rarity.toLowerCase() === 'epic' ? `brightness(1.3) contrast(1.2) hue-rotate(${rotation.y * 0.7}deg)` : 'blur(5px)',
-                opacity: card.rarity.toLowerCase() === 'epic' ? Math.min(0.75, 0.4 + Math.abs(rotation.y) * 0.02) : Math.min(0.8, 0.3 + Math.abs(rotation.y) * 0.02),
-                mixBlendMode: card.rarity.toLowerCase() === 'epic' ? 'soft-light' : 'normal',
+                    ? 'radial-gradient(circle at 30% 30%, rgba(163,53,238,0.08) 0%, rgba(200,100,255,0.06) 60%, rgba(100,50,200,0.06) 100%)'
+                    : 'radial-gradient(circle at 30% 30%, rgba(0,112,221,0.06) 0%, rgba(28,132,255,0.06) 60%, rgba(84,183,255,0.05) 100%)',
+                filter: 'blur(5px)',
+                opacity: Math.min(0.8, 0.3 + Math.abs(rotation.y) * 0.02),
+                mixBlendMode: 'normal',
                 pointerEvents: 'none',
                 zIndex: 8,
-                transform: card.rarity.toLowerCase() === 'epic' ? 
-                  `rotate(${-rotation.y * 0.2}deg) scale(0.95)` :
-                  `rotate(${-rotation.y * 0.1}deg)`
+                transform: `rotate(${-rotation.y * 0.1}deg)`
               }}
             />
           </>
         )}
+
+        {cardTheme && (
+          <div className={`card-particles theme-${cardTheme}`} style={{
+            borderRadius: '12px',
+            zIndex: 11,
+            animationPlayState: isHovering ? 'running' : 'paused'
+          }} />
+        )}
       </div>
-      
+
       {/* Debug Overlay */}
       {showDebugOverlay && (
         <div className="holographic-debug-overlay"

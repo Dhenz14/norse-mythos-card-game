@@ -7,7 +7,7 @@
  * Keyword badges show small ability tooltips on hover.
  */
 
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
@@ -50,6 +50,19 @@ interface SimpleCardProps {
   attackBuff?: number;
   healthBuff?: number;
 }
+
+const ICE_RE = /\b(ymir|buri|niflheim|frost|ice|snow|skadi|jotun|glacier|blizzard|frozen|winter|cold)\b/i;
+const FIRE_RE = /\b(surtr|muspel|fire|flame|ember|inferno|burn|ash|volcanic|magma|lava|pyre)\b/i;
+const ELECTRIC_RE = /\b(thor|thunder|lightning|storm|spark|tempest|volt)\b/i;
+const SHADOW_RE = /\b(hel|helheim|shadow|dark|death|draugr|void|abyss|niflung|undead)\b/i;
+
+const getCardTheme = (name: string, element?: string): string | null => {
+  if (element === 'ice' || ICE_RE.test(name)) return 'ice';
+  if (element === 'fire' || FIRE_RE.test(name)) return 'fire';
+  if (element === 'electric' || ELECTRIC_RE.test(name)) return 'electric';
+  if (element === 'dark' || SHADOW_RE.test(name)) return 'shadow';
+  return null;
+};
 
 const getRarityClass = (rarity?: string): string => {
   switch (rarity) {
@@ -180,6 +193,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
 
   const classColor = getClassColor(card.cardClass);
   const artPath = getCardArtPath(card.name);
+  const cardTheme = useMemo(() => getCardTheme(card.name, card.element), [card.name, card.element]);
 
   const nameClass = card.name.length > 24 ? 'name-extreme' : card.name.length > 18 ? 'name-very-long' : card.name.length > 13 ? 'name-long' : '';
 
@@ -192,6 +206,44 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
   const evolutionStars = card.evolutionLevel ? '★'.repeat(card.evolutionLevel) : '';
 
   const { ref: artRef, inView: artInView } = useInView({ triggerOnce: true, rootMargin: '200px' });
+
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleHoloMove = useCallback((e: React.MouseEvent) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = ((e.clientX - rect.left) / rect.width) * 100;
+    const py = ((e.clientY - rect.top) / rect.height) * 100;
+    const cx = px - 50;
+    const cy = py - 50;
+    el.style.setProperty('--pointer-x', `${px}%`);
+    el.style.setProperty('--pointer-y', `${py}%`);
+    el.style.setProperty('--rotate-x', `${-(cx / 2.5)}deg`);
+    el.style.setProperty('--rotate-y', `${(cy / 2.5)}deg`);
+    el.style.setProperty('--shadow-x', `${cx / -4}px`);
+    el.style.setProperty('--shadow-y', `${cy / 3}px`);
+    el.style.setProperty('--bg-x', `${37 + (cx / 50) * 13}%`);
+    el.style.setProperty('--bg-y', `${37 + (cy / 50) * 13}%`);
+    if (!el.classList.contains('holo-tracking')) {
+      el.classList.add('holo-tracking');
+    }
+  }, []);
+
+  const handleHoloLeave = useCallback((e: React.MouseEvent) => {
+    const el = cardRef.current;
+    if (!el) return;
+    el.classList.remove('holo-tracking');
+    el.style.setProperty('--rotate-x', '0deg');
+    el.style.setProperty('--rotate-y', '0deg');
+    el.style.setProperty('--pointer-x', '50%');
+    el.style.setProperty('--pointer-y', '50%');
+    el.style.setProperty('--shadow-x', '0px');
+    el.style.setProperty('--shadow-y', '0px');
+    el.style.setProperty('--bg-x', '50%');
+    el.style.setProperty('--bg-y', '50%');
+    onMouseLeave?.(e);
+  }, [onMouseLeave]);
 
   const [badgeTooltip, setBadgeTooltip] = useState<BadgeTooltipState | null>(null);
 
@@ -308,10 +360,12 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       role="button"
       aria-label={`${card.name}, ${card.manaCost} mana ${card.type}${card.attack !== undefined ? `, ${card.attack} attack` : ''}${card.health !== undefined ? `, ${card.health} health` : ''}`}
       tabIndex={0}
+      ref={cardRef}
       onClick={onClick}
       onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && onClick) { e.preventDefault(); onClick(); } }}
+      onMouseMove={handleHoloMove}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseLeave={handleHoloLeave}
       style={style}
       data-card-id={card.id}
       data-rarity={card.rarity}
@@ -382,6 +436,12 @@ export const SimpleCard: React.FC<SimpleCardProps> = ({
       {(card.rarity === 'common' || card.rarity === 'basic') && (
         <div className="foil-overlay common-foil" />
       )}
+
+      <div className="holo-foil" />
+      <div className="holo-shine" />
+      <div className="holo-glare" />
+
+      {cardTheme && <div className={`card-particles theme-${cardTheme}`} />}
 
       {badgeTooltip && createPortal(
         <div className={`keyword-badge-tooltip ${badgeTooltip.isEvolveInfo ? 'evolve-tooltip' : ''}`} style={tooltipStyle}>

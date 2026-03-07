@@ -43,12 +43,20 @@
 
 /* Base card container - Deep premium dark theme */
 .simple-card {
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --shadow-x: 0px;
+  --shadow-y: 0px;
+  --bg-x: 50%;
+  --bg-y: 50%;
   position: relative;
   background: linear-gradient(180deg, #1E1E2E 0%, #151520 40%, #0C0C14 100%);
   border-radius: 10px;
   overflow: visible; /* Allows stat gems to hang below the card frame */
   cursor: grab;
-  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease-out;
+  transition: transform 0.5s cubic-bezier(0.03, 0.98, 0.52, 0.99), box-shadow 0.3s ease-out;
   box-shadow:
     0 2px 4px rgba(0,0,0,0.4),
     0 8px 24px rgba(0,0,0,0.6),
@@ -56,6 +64,12 @@
   user-select: none;
   flex-shrink: 0;
   will-change: transform;
+  transform-style: preserve-3d;
+}
+
+/* During active mouse tracking — fast transform response */
+.simple-card.holo-tracking {
+  transition: transform 0.05s ease-out, box-shadow 0.2s ease-out;
 }
 
 /* Subtle top-edge metallic highlight */
@@ -107,43 +121,41 @@
   height: 400px;
 }
 
-/* Hover effects - lift + scale + shadow */
+/* Hover effects - 3D tilt + lift + dynamic shadow */
 .simple-card:hover {
-  transform: translateY(-8px) scale(1.04);
+  transform: perspective(800px) rotateY(var(--rotate-x)) rotateX(var(--rotate-y)) translateY(-6px) scale(1.03);
   box-shadow:
-    0 4px 8px rgba(0,0,0,0.5),
-    0 14px 28px rgba(0,0,0,0.7),
+    var(--shadow-x, 0px) calc(var(--shadow-y, 0px) + 12px) 24px rgba(0,0,0,0.6),
+    var(--shadow-x, 0px) calc(var(--shadow-y, 0px) + 4px) 8px rgba(0,0,0,0.4),
     0 0 0 1px rgba(255,255,255,0.06);
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.18s ease-out;
 }
 
-/* Rarity-specific hover glows */
+/* Rarity-specific hover glows + dynamic shadow */
 .simple-card.rarity-rare:hover {
   box-shadow:
-    0 4px 8px rgba(0,0,0,0.5),
-    0 14px 28px rgba(0,0,0,0.7),
-    0 0 24px rgba(59,130,246,0.5);
+    var(--shadow-x, 0px) calc(var(--shadow-y, 0px) + 12px) 24px rgba(0,0,0,0.6),
+    var(--shadow-x, 0px) calc(var(--shadow-y, 0px) + 4px) 8px rgba(0,0,0,0.4),
+    0 0 28px rgba(59,130,246,0.5);
 }
 
 .simple-card.rarity-epic:hover {
   box-shadow:
-    0 4px 8px rgba(0,0,0,0.5),
-    0 14px 28px rgba(0,0,0,0.7),
-    0 0 28px rgba(168,85,247,0.55);
+    var(--shadow-x, 0px) calc(var(--shadow-y, 0px) + 12px) 24px rgba(0,0,0,0.6),
+    var(--shadow-x, 0px) calc(var(--shadow-y, 0px) + 4px) 8px rgba(0,0,0,0.4),
+    0 0 32px rgba(168,85,247,0.55);
 }
 
 .simple-card.rarity-mythic:hover {
   box-shadow:
-    0 4px 8px rgba(0,0,0,0.5),
-    0 14px 28px rgba(0,0,0,0.7),
-    0 0 28px rgba(168,85,247,0.4),
-    0 0 28px rgba(245,158,11,0.3);
+    var(--shadow-x, 0px) calc(var(--shadow-y, 0px) + 12px) 24px rgba(0,0,0,0.6),
+    var(--shadow-x, 0px) calc(var(--shadow-y, 0px) + 4px) 8px rgba(0,0,0,0.4),
+    0 0 36px rgba(168,85,247,0.4),
+    0 0 36px rgba(245,158,11,0.35);
 }
 
 /* Active/click press-down feel */
 .simple-card:active:not(.not-playable) {
-  transform: translateY(-2px) scale(1.01);
+  transform: perspective(800px) rotateY(var(--rotate-x)) rotateX(var(--rotate-y)) translateY(-2px) scale(1.01);
   transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
 }
 
@@ -895,9 +907,393 @@
 .simple-card:hover .foil-overlay.mythic-foil { opacity: 1; }
 .simple-card:hover .foil-overlay.common-foil { opacity: 0.5; }
 
+/* ==========================================================================
+   HOLOGRAPHIC INTERACTIVE EFFECT - Mouse-tracked rainbow shine + glare
+   Adapted from pokemon-cards-css (simeydotme). Uses CSS custom properties
+   set by onMouseMove JS for real-time cursor tracking.
+   ========================================================================== */
+
+/* Foil texture layer — real holographic texture images per rarity tier */
+.holo-foil {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  overflow: hidden;
+  background-size: 150% 150%;
+  background-position: var(--pointer-x, 50%) var(--pointer-y, 50%);
+  mix-blend-mode: screen;
+  filter: brightness(1.1) saturate(1.4);
+  transition: opacity 0.4s ease;
+}
+
+.simple-card.rarity-rare .holo-foil {
+  background-image: url('/textures/epic_holographic2.png');
+}
+.simple-card.rarity-epic .holo-foil {
+  background-image: url('/textures/foil_epic.png');
+}
+.simple-card.rarity-mythic .holo-foil {
+  background-image: url('/textures/foil_mythic.png');
+}
+
+.simple-card.rarity-rare:hover .holo-foil { opacity: 0.45; }
+.simple-card.rarity-epic:hover .holo-foil { opacity: 0.55; }
+.simple-card.rarity-mythic:hover .holo-foil { opacity: 0.7; }
+
+/* Shine layer — rainbow spectrum with scanlines, follows cursor */
+.holo-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0;
+  overflow: hidden;
+  mix-blend-mode: color-dodge;
+  filter: brightness(0.8) contrast(2.75) saturate(0.75);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgb(255, 119, 115) calc(5% * 1),
+      rgba(255, 237, 95, 1) calc(5% * 2),
+      rgba(168, 255, 95, 1) calc(5% * 3),
+      rgba(131, 255, 247, 1) calc(5% * 4),
+      rgba(120, 148, 255, 1) calc(5% * 5),
+      rgb(216, 117, 255) calc(5% * 6),
+      rgb(255, 119, 115) calc(5% * 7)
+    );
+  background-size: 200% 700%;
+  background-position: var(--pointer-x) var(--pointer-y);
+  transition: opacity 0.4s ease;
+}
+
+/* Scanline texture — fine horizontal lines like real holo foil */
+.holo-shine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 1px,
+      rgba(255, 255, 255, 0.06) 1px,
+      rgba(255, 255, 255, 0.06) 2px
+    );
+  background-size: 100% 3px;
+  mix-blend-mode: overlay;
+}
+
+/* Secondary diagonal shine — adds depth and "sun pillar" feel */
+.holo-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      133deg,
+      rgb(216, 117, 255) calc(5% * 1),
+      rgb(120, 148, 255) calc(5% * 2),
+      rgba(131, 255, 247, 1) calc(5% * 3),
+      rgba(255, 237, 95, 1) calc(5% * 4),
+      rgb(255, 119, 115) calc(5% * 5),
+      rgba(168, 255, 95, 1) calc(5% * 6),
+      rgb(216, 117, 255) calc(5% * 7)
+    );
+  background-size: 300% 400%;
+  background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+  mix-blend-mode: hard-light;
+  opacity: 0.4;
+}
+
+/* Glare layer — bright light spot + edge highlight */
+.holo-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 7;
+  opacity: 0;
+  overflow: hidden;
+  mix-blend-mode: overlay;
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsla(0, 0%, 100%, 0.9) 5%,
+    hsla(0, 0%, 100%, 0.7) 15%,
+    hsla(0, 0%, 100%, 0.3) 35%,
+    hsla(0, 0%, 0%, 0.5) 90%
+  );
+  filter: brightness(0.95) contrast(1.5);
+  transition: opacity 0.4s ease;
+}
+
+/* Edge sparkle — bright rim on lit side */
+.holo-glare::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 11px;
+  background: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsla(0, 0%, 100%, 0.5) 0%,
+    transparent 50%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+/* Rarity-scaled holographic intensity */
+.simple-card.rarity-common:hover .holo-shine { opacity: 0.12; }
+.simple-card.rarity-common:hover .holo-glare { opacity: 0.2; }
+
+.simple-card.rarity-rare:hover .holo-shine { opacity: 0.5; }
+.simple-card.rarity-rare:hover .holo-glare { opacity: 0.4; }
+
+.simple-card.rarity-epic:hover .holo-shine { opacity: 0.65; }
+.simple-card.rarity-epic:hover .holo-glare { opacity: 0.5; }
+
+.simple-card.rarity-mythic:hover .holo-shine { opacity: 0.85; }
+.simple-card.rarity-mythic:hover .holo-glare { opacity: 0.6; }
+
+/* ==========================================================================
+   THEMED CARD PARTICLES — element-specific ambient effects on hover
+   Snow (ice), embers (fire), sparks (electric), wisps (shadow)
+   ========================================================================== */
+
+.card-particles {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.card-particles::before,
+.card-particles::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  animation-play-state: paused;
+}
+
+.simple-card:hover .card-particles::before,
+.simple-card:hover .card-particles::after,
+.holographic-card-container:hover .card-particles::before,
+.holographic-card-container:hover .card-particles::after,
+.holographic-card-container.is-hovering .card-particles::before,
+.holographic-card-container.is-hovering .card-particles::after {
+  animation-play-state: running;
+}
+
+/* --- ICE / SNOW — soft white flakes drifting down --- */
+.card-particles.theme-ice::before {
+  top: -8px;
+  left: 5px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    18px 0 2px rgba(200, 230, 255, 0.8),
+    38px -6px 1px rgba(255, 255, 255, 0.7),
+    56px -3px 2px rgba(200, 230, 255, 0.9),
+    74px -10px 1px rgba(255, 255, 255, 0.6),
+    92px -5px 2px rgba(200, 230, 255, 0.8),
+    28px -14px 1px rgba(255, 255, 255, 0.5),
+    64px -18px 2px rgba(200, 230, 255, 0.7),
+    108px -8px 1px rgba(255, 255, 255, 0.6);
+  animation: snow-fall 4s linear infinite;
+}
+
+.card-particles.theme-ice::after {
+  top: -15px;
+  left: 12px;
+  width: 2px;
+  height: 2px;
+  background: rgba(200, 230, 255, 0.7);
+  box-shadow:
+    14px 0 1px rgba(255, 255, 255, 0.6),
+    32px -4px 2px rgba(200, 230, 255, 0.8),
+    50px -9px 1px rgba(255, 255, 255, 0.5),
+    68px -2px 2px rgba(200, 230, 255, 0.7),
+    86px -12px 1px rgba(255, 255, 255, 0.8),
+    22px -7px 2px rgba(200, 230, 255, 0.6),
+    78px -16px 1px rgba(255, 255, 255, 0.7);
+  animation: snow-fall 5.5s linear infinite;
+  animation-delay: -2s;
+}
+
+.card-particles.theme-ice {
+  background: linear-gradient(180deg, rgba(200, 230, 255, 0.06) 0%, transparent 40%);
+}
+
+@keyframes snow-fall {
+  0%   { transform: translateY(-10px) translateX(0); opacity: 0; }
+  8%   { opacity: 1; }
+  50%  { transform: translateY(100px) translateX(6px); }
+  92%  { opacity: 0.7; }
+  100% { transform: translateY(210px) translateX(-2px); opacity: 0; }
+}
+
+/* --- FIRE — embers rising with glow --- */
+.card-particles.theme-fire::before {
+  bottom: 5px;
+  left: 8px;
+  top: auto;
+  background: rgba(255, 160, 50, 0.9);
+  box-shadow:
+    16px 0 3px rgba(255, 100, 20, 0.8),
+    34px 4px 2px rgba(255, 180, 60, 0.7),
+    52px 2px 3px rgba(255, 120, 30, 0.9),
+    70px 6px 2px rgba(255, 200, 80, 0.6),
+    88px 3px 3px rgba(255, 140, 40, 0.8),
+    26px 8px 2px rgba(255, 80, 10, 0.7),
+    62px 5px 3px rgba(255, 160, 50, 0.9),
+    100px 2px 2px rgba(255, 100, 20, 0.6);
+  animation: fire-rise 3.5s ease-out infinite;
+}
+
+.card-particles.theme-fire::after {
+  bottom: 10px;
+  left: 15px;
+  top: auto;
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 200, 80, 0.8);
+  box-shadow:
+    12px 0 2px rgba(255, 120, 30, 0.7),
+    30px 3px 3px rgba(255, 80, 10, 0.9),
+    48px 5px 2px rgba(255, 180, 60, 0.6),
+    66px 2px 3px rgba(255, 100, 20, 0.8),
+    84px 6px 2px rgba(255, 200, 80, 0.7),
+    20px 4px 3px rgba(255, 140, 40, 0.8),
+    72px 8px 2px rgba(255, 80, 10, 0.6);
+  animation: fire-rise 4.5s ease-out infinite;
+  animation-delay: -1.5s;
+}
+
+.card-particles.theme-fire {
+  background: linear-gradient(0deg, rgba(255, 100, 20, 0.08) 0%, transparent 50%);
+}
+
+@keyframes fire-rise {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  10%  { opacity: 1; }
+  40%  { transform: translateY(-60px) translateX(4px) scale(0.8); }
+  70%  { transform: translateY(-130px) translateX(-3px) scale(0.5); opacity: 0.6; }
+  100% { transform: translateY(-200px) translateX(2px) scale(0.2); opacity: 0; }
+}
+
+/* --- ELECTRIC — bright flashing sparks --- */
+.card-particles.theme-electric::before {
+  top: 20%;
+  left: 10px;
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 255, 100, 0.9);
+  box-shadow:
+    20px 30px 3px rgba(255, 220, 50, 0.9),
+    45px 10px 2px rgba(200, 255, 255, 0.8),
+    70px 50px 3px rgba(255, 255, 100, 0.7),
+    30px 70px 2px rgba(200, 255, 255, 0.9),
+    90px 25px 3px rgba(255, 220, 50, 0.8),
+    55px 80px 2px rgba(255, 255, 100, 0.6),
+    15px 90px 3px rgba(200, 255, 255, 0.7);
+  animation: spark-flash 2s steps(3, end) infinite;
+}
+
+.card-particles.theme-electric::after {
+  top: 15%;
+  left: 18px;
+  width: 2px;
+  height: 2px;
+  background: rgba(200, 255, 255, 0.8);
+  box-shadow:
+    25px 20px 2px rgba(255, 255, 100, 0.8),
+    50px 45px 3px rgba(255, 220, 50, 0.7),
+    10px 60px 2px rgba(200, 255, 255, 0.9),
+    75px 15px 3px rgba(255, 255, 100, 0.6),
+    40px 75px 2px rgba(255, 220, 50, 0.8),
+    85px 55px 3px rgba(200, 255, 255, 0.7);
+  animation: spark-flash 2.5s steps(3, end) infinite;
+  animation-delay: -0.8s;
+}
+
+@keyframes spark-flash {
+  0%, 5%   { opacity: 0; }
+  6%, 8%   { opacity: 1; }
+  9%, 30%  { opacity: 0; }
+  31%, 33% { opacity: 0.8; }
+  34%, 60% { opacity: 0; }
+  61%, 63% { opacity: 1; }
+  64%, 100% { opacity: 0; }
+}
+
+/* --- SHADOW — dark wisps rising --- */
+.card-particles.theme-shadow::before {
+  bottom: 10px;
+  left: 10px;
+  top: auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(120, 50, 180, 0.4);
+  box-shadow:
+    20px 0 6px rgba(80, 20, 140, 0.3),
+    45px 5px 8px rgba(120, 50, 180, 0.25),
+    70px 2px 5px rgba(60, 10, 100, 0.35),
+    35px 8px 7px rgba(100, 40, 160, 0.2),
+    85px 3px 6px rgba(80, 20, 140, 0.3),
+    55px 6px 8px rgba(120, 50, 180, 0.2);
+  animation: shadow-rise 5s ease-out infinite;
+  filter: blur(1px);
+}
+
+.card-particles.theme-shadow::after {
+  bottom: 15px;
+  left: 20px;
+  top: auto;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(60, 10, 100, 0.3);
+  box-shadow:
+    15px 0 7px rgba(120, 50, 180, 0.2),
+    40px 4px 5px rgba(80, 20, 140, 0.3),
+    65px 2px 8px rgba(100, 40, 160, 0.25),
+    25px 6px 6px rgba(60, 10, 100, 0.3),
+    80px 5px 7px rgba(120, 50, 180, 0.2);
+  animation: shadow-rise 6.5s ease-out infinite;
+  animation-delay: -2.5s;
+  filter: blur(1.5px);
+}
+
+.card-particles.theme-shadow {
+  background: linear-gradient(0deg, rgba(80, 20, 140, 0.1) 0%, transparent 60%);
+}
+
+@keyframes shadow-rise {
+  0%   { transform: translateY(0) scale(1); opacity: 0; }
+  12%  { opacity: 0.6; }
+  50%  { transform: translateY(-80px) scale(1.3); opacity: 0.4; }
+  100% { transform: translateY(-180px) scale(0.6); opacity: 0; }
+}
+
+/* Disable particles for reduced motion / touch */
+@media (prefers-reduced-motion: reduce) {
+  .card-particles { display: none; }
+}
+
+@media (hover: none) {
+  .card-particles { display: none; }
+}
+
 /* Highlighted state - white glow ring, lifted */
 .simple-card.highlighted {
-  transform: translateY(-10px) scale(1.05);
+  transform: perspective(800px) rotateY(var(--rotate-x)) rotateX(var(--rotate-y)) translateY(-10px) scale(1.05);
   box-shadow:
     0 8px 20px rgba(0,0,0,0.7),
     0 20px 40px rgba(0,0,0,0.5),
@@ -1047,8 +1443,8 @@
 
 /* transform-only animation — runs on GPU compositor, zero repaints */
 @keyframes playable-pulse {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.028); }
+  0%, 100% { transform: perspective(800px) rotateY(var(--rotate-x, 0deg)) rotateX(var(--rotate-y, 0deg)) scale(1); }
+  50%       { transform: perspective(800px) rotateY(var(--rotate-x, 0deg)) rotateX(var(--rotate-y, 0deg)) scale(1.028); }
 }
 
 /* ==========================================================================
@@ -1087,6 +1483,12 @@
   .simple-card:hover .foil-overlay.rare-foil {
     opacity: 0;
   }
+
+  .simple-card:hover .holo-foil,
+  .simple-card:hover .holo-shine,
+  .simple-card:hover .holo-glare {
+    opacity: 0 !important;
+  }
 }
 
 /* ==========================================================================
@@ -1111,6 +1513,16 @@
 
   .foil-overlay {
     transition: none;
+  }
+
+  .holo-foil,
+  .holo-shine,
+  .holo-glare {
+    display: none;
+  }
+
+  .simple-card:hover {
+    transform: none !important;
   }
 }
 
@@ -1291,12 +1703,7 @@
   100% { filter: hue-rotate(0deg) saturate(1.2) brightness(1); }
 }
 
-@keyframes golden-warp {
-  0%, 100% { transform: perspective(400px) rotateY(0deg) rotateX(0deg); }
-  25%      { transform: perspective(400px) rotateY(0.5deg) rotateX(-0.3deg); }
-  50%      { transform: perspective(400px) rotateY(-0.5deg) rotateX(0.3deg); }
-  75%      { transform: perspective(400px) rotateY(0.3deg) rotateX(-0.2deg); }
-}
+/* golden-warp removed — replaced by interactive mouse-tracked 3D tilt */
 
 /* Mythic golden surface — flowing liquid gold over card art */
 .simple-card.rarity-mythic .card-art-container {
@@ -1346,10 +1753,7 @@
   animation: golden-hue-shift 6s ease-in-out infinite;
 }
 
-/* Mythic card subtle perspective warp on hover */
-.simple-card.rarity-mythic:hover {
-  animation: golden-warp 3s ease-in-out infinite;
-}
+/* Mythic hover — 3D tilt handled by mouse tracking */
 
 /* Epic purple surface — flowing amethyst over card art */
 .simple-card.rarity-epic .card-art-container {
@@ -1405,7 +1809,7 @@
   filter: url(#epic-displacement);
 }
 
-/* Disable golden effects when user prefers reduced motion */
+/* Disable golden/holo effects when user prefers reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .simple-card.rarity-mythic .card-art-container::after,
   .simple-card.rarity-epic .card-art-container::after {
@@ -1417,7 +1821,6 @@
   .simple-card.rarity-epic .card-art-container .card-art {
     filter: none;
   }
-  .simple-card.rarity-mythic:hover,
   .simple-card.rarity-mythic .foil-overlay.mythic-foil {
     animation: none;
   }
