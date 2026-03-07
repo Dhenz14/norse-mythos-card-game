@@ -606,6 +606,15 @@ vercel --prod                 # Deploy to Vercel
 - Added `useMemo` for derived card data in MulliganCard, CollectionCard
 - Net result: ~255 fewer lines, eliminated ~60 repaints/sec per animated element
 
+### Completed (Build & Deploy Fixes)
+
+- Fixed lint-staged pre-commit hooks: `eslint --fix --max-warnings=-1` tolerates pre-existing warnings
+- Removed legacy `.eslintrc.js` (superseded by `eslint.config.js` flat config)
+- Fixed art/image paths for local downloads: Vite `base` now defaults to `'./'` (relative) for builds
+- Downloaded games work as self-contained CDNs — local art files resolve correctly without a server
+- GitHub Pages deploy sets `VITE_BASE_PATH=/norse-mythos-card-game/` via env var in deploy.yml
+- `assetPath()` automatically adapts to both GitHub Pages (`/norse-mythos-card-game/...`) and local (`./...`) deployments
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account
