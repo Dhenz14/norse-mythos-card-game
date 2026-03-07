@@ -862,15 +862,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           <div className="poker-info-row">
           </div>
         )}
-        {/* End Turn Button - Positioned absolutely within info-row */}
-        <button 
-          className={`ragnarok-end-turn ${isPlayerTurn ? 'active' : 'inactive'}`}
-          onClick={onEndTurn}
-          disabled={!isPlayerTurn}
-        >
-          <span className="end-turn-text">END TURN</span>
-          <span className="end-turn-hint">(Space)</span>
-        </button>
+        {/* End Turn: Space key only (button removed from HUD) */}
       </div>
       
       {/* Player Area - Hero + Hole Cards + Hand Cards in a row */}

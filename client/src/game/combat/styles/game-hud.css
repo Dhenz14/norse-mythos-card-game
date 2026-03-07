@@ -25,29 +25,28 @@
 	/* backdrop-filter removed for perf */
 }
 
-/* Deck count badges */
+/* Deck count badges — enlarged for visibility */
 .hud-deck-badge {
 	position: absolute;
 	display: flex;
 	align-items: center;
-	gap: 4px;
-	padding: 3px 8px;
-	background: rgba(15, 23, 42, 0.8);
-	border: 1px solid rgba(100, 116, 139, 0.3);
-	border-radius: 6px;
-	font-size: 11px;
+	gap: 6px;
+	padding: 6px 12px;
+	background: rgba(15, 23, 42, 0.85);
+	border: 1px solid rgba(100, 116, 139, 0.4);
+	border-radius: 8px;
+	font-size: 16px;
 	font-weight: 700;
-	color: rgba(203, 213, 225, 0.7);
-	/* backdrop-filter removed for perf */
+	color: rgba(203, 213, 225, 0.85);
 }
 
 .hud-deck-badge .hud-icon {
-	font-size: 14px;
-	opacity: 0.7;
+	font-size: 20px;
+	opacity: 0.8;
 }
 
 .hud-deck-badge .hud-count {
-	min-width: 16px;
+	min-width: 20px;
 	text-align: center;
 }
 
