@@ -11,6 +11,7 @@ import CardTransformBridgeInitializer from "./game/components/CardTransformBridg
 import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
 import LoadingScreen from "./game/components/ui/LoadingScreen";
 import AssetDownloadButton from "./game/components/ui/AssetDownloadButton";
+import GoldenCardFilter from "./game/animations/GoldenCardFilter";
 
 const HiveKeychainLogin = lazy(() => import("./game/components/HiveKeychainLogin").then(m => ({ default: m.HiveKeychainLogin })));
 const DailyQuestPanel = lazy(() => import("./game/components/quests/DailyQuestPanel"));
@@ -176,6 +177,7 @@ function App() {
       <CardTransformProvider>
         <CardTransformBridgeInitializer />
         <UnifiedCardSystem />
+        <GoldenCardFilter />
 
         <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Suspense fallback={<LoadingScreen />}>

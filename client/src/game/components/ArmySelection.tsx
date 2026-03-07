@@ -18,6 +18,19 @@ import { HeroArtImage } from './ui/HeroArtImage';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { getHeroRarity, RARITY_COLORS } from '../utils/heroRarity';
 import './styles/ArmySelectionNorse.css';
+
+const ICE_RE = /\b(ymir|buri|niflheim|frost|ice|snow|skadi|jotun|glacier|blizzard|frozen|winter|cold)\b/i;
+const FIRE_RE = /\b(surtr|muspel|fire|flame|ember|inferno|burn|ash|volcanic|magma|lava|pyre)\b/i;
+const ELECTRIC_RE = /\b(thor|thunder|lightning|storm|spark|tempest|volt)\b/i;
+const SHADOW_RE = /\b(hel|helheim|shadow|dark|death|draugr|void|abyss|niflung|undead)\b/i;
+
+const getHeroTheme = (name: string, element?: string): string | null => {
+	if (element === 'ice' || ICE_RE.test(name)) return 'ice';
+	if (element === 'fire' || FIRE_RE.test(name)) return 'fire';
+	if (element === 'electric' || ELECTRIC_RE.test(name)) return 'electric';
+	if (element === 'dark' || SHADOW_RE.test(name)) return 'shadow';
+	return null;
+};
 import { debug } from '../config/debugConfig';
 import { useMatchmaking } from '../hooks/useMatchmaking';
 import { usePeerStore } from '../stores/peerStore';
@@ -348,6 +361,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                   <div className="hero-holo-foil" />
                   <div className="hero-holo-shine" />
                   <div className="hero-holo-glare" />
+                  {(() => { const t = getHeroTheme(hero.name, hero.element); return t ? <div className={`card-particles theme-${t}`} /> : null; })()}
                   <div className="norse-hero-gradient-overlay" />
                   {rarity !== 'common' && (
                     <span className={`norse-rarity-badge rarity-${rarity}`}>

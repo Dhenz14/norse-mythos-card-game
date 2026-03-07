@@ -22,7 +22,7 @@ import './RagnarokCombatArena.css';
 import './GameViewport.css';
 import AIAttackAnimationProcessor from '../components/AIAttackAnimationProcessor';
 import { PixiParticleCanvas } from '../animations/PixiParticleCanvas';
-import GoldenCardFilter from '../animations/GoldenCardFilter';
+
 import { AnimationOverlay } from '../components/AnimationOverlay';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { ShowdownCelebration } from './components/ShowdownCelebration';
@@ -1246,7 +1246,6 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       <KingPassivePopup />
       <AIAttackAnimationProcessor />
       <PixiParticleCanvas />
-      <GoldenCardFilter />
       <AnimationOverlay />
       
       {/* First Strike Animation - plays when attacker deals initial damage */}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -528,6 +528,188 @@ const styles = `
     animation: float-particle var(--float-duration, 4s) ease-in-out var(--float-delay, 0s) infinite;
     left: var(--start-x, 50%);
     bottom: 5%;
+  }
+
+  /* ========== THEME PARTICLES — element-specific ambient effects ========== */
+  .popup-theme-particles {
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 8;
+  }
+  .popup-theme-particles::before,
+  .popup-theme-particles::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+  }
+
+  /* ICE / SNOW */
+  .popup-theme-particles.theme-ice::before {
+    top: -10px; left: 8px;
+    background: rgba(255,255,255,0.9);
+    box-shadow:
+      30px 0 3px rgba(200,230,255,0.8),
+      65px -8px 2px rgba(255,255,255,0.7),
+      100px -4px 3px rgba(200,230,255,0.9),
+      140px -12px 2px rgba(255,255,255,0.6),
+      180px -6px 3px rgba(200,230,255,0.8),
+      50px -16px 2px rgba(255,255,255,0.5),
+      120px -20px 3px rgba(200,230,255,0.7),
+      200px -10px 2px rgba(255,255,255,0.6);
+    animation: popup-snow-fall 5s linear infinite;
+  }
+  .popup-theme-particles.theme-ice::after {
+    top: -18px; left: 20px;
+    width: 3px; height: 3px;
+    background: rgba(200,230,255,0.7);
+    box-shadow:
+      25px 0 2px rgba(255,255,255,0.6),
+      55px -6px 3px rgba(200,230,255,0.8),
+      90px -12px 2px rgba(255,255,255,0.5),
+      125px -3px 3px rgba(200,230,255,0.7),
+      160px -15px 2px rgba(255,255,255,0.8),
+      40px -9px 3px rgba(200,230,255,0.6),
+      145px -20px 2px rgba(255,255,255,0.7);
+    animation: popup-snow-fall 7s linear infinite;
+    animation-delay: -3s;
+  }
+  .popup-theme-particles.theme-ice {
+    background: linear-gradient(180deg, rgba(200,230,255,0.08) 0%, transparent 40%);
+  }
+  @keyframes popup-snow-fall {
+    0%   { transform: translateY(-12px) translateX(0); opacity: 0; }
+    8%   { opacity: 1; }
+    50%  { transform: translateY(250px) translateX(8px); }
+    92%  { opacity: 0.7; }
+    100% { transform: translateY(500px) translateX(-3px); opacity: 0; }
+  }
+
+  /* FIRE / EMBERS */
+  .popup-theme-particles.theme-fire::before {
+    bottom: 8px; left: 12px; top: auto;
+    background: rgba(255,160,50,0.9);
+    box-shadow:
+      30px 0 4px rgba(255,100,20,0.8),
+      65px 5px 3px rgba(255,180,60,0.7),
+      100px 3px 4px rgba(255,120,30,0.9),
+      140px 8px 3px rgba(255,200,80,0.6),
+      180px 4px 4px rgba(255,140,40,0.8),
+      50px 10px 3px rgba(255,80,10,0.7),
+      120px 6px 4px rgba(255,160,50,0.9),
+      200px 3px 3px rgba(255,100,20,0.6);
+    animation: popup-fire-rise 4s ease-out infinite;
+  }
+  .popup-theme-particles.theme-fire::after {
+    bottom: 14px; left: 25px; top: auto;
+    width: 3px; height: 3px;
+    background: rgba(255,200,80,0.8);
+    box-shadow:
+      20px 0 3px rgba(255,120,30,0.7),
+      55px 4px 4px rgba(255,80,10,0.9),
+      90px 7px 3px rgba(255,180,60,0.6),
+      125px 3px 4px rgba(255,100,20,0.8),
+      160px 8px 3px rgba(255,200,80,0.7),
+      35px 5px 4px rgba(255,140,40,0.8),
+      135px 10px 3px rgba(255,80,10,0.6);
+    animation: popup-fire-rise 5.5s ease-out infinite;
+    animation-delay: -2s;
+  }
+  .popup-theme-particles.theme-fire {
+    background: linear-gradient(0deg, rgba(255,100,20,0.1) 0%, transparent 50%);
+  }
+  @keyframes popup-fire-rise {
+    0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    10%  { opacity: 1; }
+    40%  { transform: translateY(-120px) translateX(5px) scale(0.8); }
+    70%  { transform: translateY(-280px) translateX(-4px) scale(0.5); opacity: 0.6; }
+    100% { transform: translateY(-450px) translateX(3px) scale(0.2); opacity: 0; }
+  }
+
+  /* ELECTRIC / SPARKS */
+  .popup-theme-particles.theme-electric::before {
+    top: 20%; left: 15px;
+    width: 3px; height: 3px;
+    background: rgba(255,255,100,0.9);
+    box-shadow:
+      35px 50px 4px rgba(255,220,50,0.9),
+      80px 15px 3px rgba(200,255,255,0.8),
+      130px 85px 4px rgba(255,255,100,0.7),
+      55px 120px 3px rgba(200,255,255,0.9),
+      170px 40px 4px rgba(255,220,50,0.8),
+      100px 140px 3px rgba(255,255,100,0.6),
+      25px 160px 4px rgba(200,255,255,0.7);
+    animation: popup-spark-flash 2s steps(3, end) infinite;
+  }
+  .popup-theme-particles.theme-electric::after {
+    top: 15%; left: 30px;
+    width: 3px; height: 3px;
+    background: rgba(200,255,255,0.8);
+    box-shadow:
+      45px 35px 3px rgba(255,255,100,0.8),
+      90px 75px 4px rgba(255,220,50,0.7),
+      15px 100px 3px rgba(200,255,255,0.9),
+      140px 25px 4px rgba(255,255,100,0.6),
+      70px 130px 3px rgba(255,220,50,0.8),
+      160px 95px 4px rgba(200,255,255,0.7);
+    animation: popup-spark-flash 2.5s steps(3, end) infinite;
+    animation-delay: -0.8s;
+  }
+  @keyframes popup-spark-flash {
+    0%, 5%   { opacity: 0; }
+    6%, 8%   { opacity: 1; }
+    9%, 30%  { opacity: 0; }
+    31%, 33% { opacity: 0.8; }
+    34%, 60% { opacity: 0; }
+    61%, 63% { opacity: 1; }
+    64%, 100% { opacity: 0; }
+  }
+
+  /* SHADOW / WISPS */
+  .popup-theme-particles.theme-shadow::before {
+    bottom: 15px; left: 15px; top: auto;
+    width: 8px; height: 8px;
+    background: rgba(120,50,180,0.4);
+    box-shadow:
+      35px 0 8px rgba(80,20,140,0.3),
+      80px 7px 10px rgba(120,50,180,0.25),
+      130px 3px 7px rgba(60,10,100,0.35),
+      60px 10px 9px rgba(100,40,160,0.2),
+      160px 5px 8px rgba(80,20,140,0.3),
+      100px 8px 10px rgba(120,50,180,0.2);
+    animation: popup-shadow-rise 5.5s ease-out infinite;
+    filter: blur(1.5px);
+  }
+  .popup-theme-particles.theme-shadow::after {
+    bottom: 20px; left: 35px; top: auto;
+    width: 7px; height: 7px;
+    background: rgba(60,10,100,0.3);
+    box-shadow:
+      25px 0 9px rgba(120,50,180,0.2),
+      70px 5px 7px rgba(80,20,140,0.3),
+      120px 3px 10px rgba(100,40,160,0.25),
+      45px 8px 8px rgba(60,10,100,0.3),
+      150px 6px 9px rgba(120,50,180,0.2);
+    animation: popup-shadow-rise 7s ease-out infinite;
+    animation-delay: -3s;
+    filter: blur(2px);
+  }
+  .popup-theme-particles.theme-shadow {
+    background: linear-gradient(0deg, rgba(80,20,140,0.12) 0%, transparent 60%);
+  }
+  @keyframes popup-shadow-rise {
+    0%   { transform: translateY(0) scale(1); opacity: 0; }
+    12%  { opacity: 0.6; }
+    50%  { transform: translateY(-160px) scale(1.4); opacity: 0.4; }
+    100% { transform: translateY(-400px) scale(0.5); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .popup-theme-particles { display: none; }
   }
 
   /* ========== SCARCITY BADGE ========== */
@@ -1068,6 +1250,19 @@ const styles = `
   }
 `;
 
+const ICE_RE = /\b(ymir|buri|niflheim|frost|ice|snow|skadi|jotun|glacier|blizzard|frozen|winter|cold)\b/i;
+const FIRE_RE = /\b(surtr|muspel|fire|flame|ember|inferno|burn|ash|volcanic|magma|lava|pyre)\b/i;
+const ELECTRIC_RE = /\b(thor|thunder|lightning|storm|spark|tempest|volt)\b/i;
+const SHADOW_RE = /\b(hel|helheim|shadow|dark|death|draugr|void|abyss|niflung|undead)\b/i;
+
+const getHeroTheme = (name: string, element?: string): string | null => {
+	if (element === 'ice' || ICE_RE.test(name)) return 'ice';
+	if (element === 'fire' || FIRE_RE.test(name)) return 'fire';
+	if (element === 'electric' || ELECTRIC_RE.test(name)) return 'electric';
+	if (element === 'dark' || SHADOW_RE.test(name)) return 'shadow';
+	return null;
+};
+
 const KING_GLOW_COLORS = {
 	c1: '#92400E', c2: '#B45309', c3: '#F59E0B', c4: '#FDE68A', c5: '#FFFBEB'
 };
@@ -1091,6 +1286,7 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 	const returnAnimationRef = useRef<number | null>(null);
 
 	const { isKingWithAbility, abilityInfo } = useKingDivineCommandDisplay(hero?.id);
+	const heroTheme = useMemo(() => hero ? getHeroTheme(hero.name, hero.element) : null, [hero]);
 
 	useEffect(() => {
 		setMounted(true);
@@ -1279,6 +1475,8 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 										}}
 									/>
 									<div className="portrait-vignette" />
+
+									{heroTheme && <div className={`popup-theme-particles theme-${heroTheme}`} />}
 
 									<div className="portrait-particles">
 										{particles.map(p => (
