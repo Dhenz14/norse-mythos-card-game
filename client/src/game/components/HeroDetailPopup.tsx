@@ -110,7 +110,7 @@ const styles = `
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    perspective: 1200px;
+    perspective: 800px;
     z-index: 10;
     gap: 0;
   }
@@ -267,13 +267,13 @@ const styles = `
     border-radius: 4px;
     overflow: hidden;
 
-    /* Pokemon's key insight: LOW brightness darkens the gradient,
-       HIGH contrast makes only spectral peaks survive,
-       LOW saturation prevents garish colors */
-    filter: brightness(0.7) contrast(2.75) saturate(0.5);
+    /* Very low brightness so rainbow only tints brightest highlights;
+       high contrast kills midtones; low saturation prevents color wash.
+       Dark painted art needs much lower values than Pokemon's light backgrounds */
+    filter: brightness(0.5) contrast(3) saturate(0.4);
     mix-blend-mode: color-dodge;
 
-    /* Rainbow sunpillar gradient — cursor-tracked position */
+    /* Rainbow sunpillar gradient — cursor-tracked position, NO scanlines */
     background-image:
       repeating-linear-gradient(
         0deg,
@@ -284,54 +284,30 @@ const styles = `
         hsl(228, 100%, 74%) calc(5% * 5),
         hsl(283, 100%, 73%) calc(5% * 6),
         hsl(2, 100%, 73%) calc(5% * 7)
-      ),
-      repeating-linear-gradient(
-        90deg,
-        hsl(0, 0%, 0%) 0, hsl(0, 0%, 0%) 1.5px,
-        hsl(0, 0%, 40%) 1.5px, hsl(0, 0%, 40%) 3px
       );
 
-    background-size: 400% 400%, cover;
+    background-size: 400% 400%;
     background-position:
       calc(((50% - var(--bg-x)) * 2.6) + 50%)
-      calc(((50% - var(--bg-y)) * 3.5) + 50%),
-      center center;
-    background-blend-mode: overlay;
+      calc(((50% - var(--bg-y)) * 3.5) + 50%);
 
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
-  /* Shine ::before — secondary angled bars (depth illusion) */
+  /* Shine ::before — very subtle fine scanlines for texture */
   .portrait-holo-shine::before {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: 4px;
-
-    background-image:
-      repeating-linear-gradient(
-        90deg,
-        hsl(0, 0%, 0%) 0%, hsl(0, 0%, 0%) 6%,
-        hsl(0, 0%, 70%) 9%, hsl(0, 0%, 0%) 10.5%,
-        hsl(0, 0%, 70%) 12%, hsl(0, 0%, 0%) 15%,
-        hsl(0, 0%, 0%) 42%
-      ),
-      repeating-linear-gradient(
-        90deg,
-        hsl(0, 0%, 0%) 0%, hsl(0, 0%, 0%) 6%,
-        hsl(0, 0%, 70%) 9%, hsl(0, 0%, 0%) 10.5%,
-        hsl(0, 0%, 70%) 12%, hsl(0, 0%, 0%) 15%,
-        hsl(0, 0%, 0%) 30%
-      );
-
-    background-position:
-      calc((((50% - var(--bg-x)) * 1.65) + 50%) + (var(--bg-y) * 0.5)) var(--bg-x),
-      calc((((50% - var(--bg-x)) * -0.9) + 50%) - (var(--bg-y) * 0.75)) var(--bg-y);
-    background-size: 200% 200%, 200% 200%;
-    background-blend-mode: screen;
-    filter: brightness(1.15) contrast(1.1);
-    mix-blend-mode: hard-light;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0, transparent 2px,
+      rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px
+    );
+    background-size: 100% 4px;
+    mix-blend-mode: overlay;
   }
 
   /* Shine ::after — luminosity mask (focus light near cursor) */
@@ -349,19 +325,19 @@ const styles = `
     );
     background-size: cover;
     mix-blend-mode: luminosity;
-    filter: brightness(0.6) contrast(4);
+    filter: brightness(0.5) contrast(5);
   }
 
-  /* Per-rarity shine opacity — driven by --card-opacity */
+  /* Per-rarity shine opacity — art must remain clearly visible */
   .card-front.rarity-common .portrait-holo-shine { opacity: 0; }
   .card-front.rarity-rare .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.5);
+    opacity: calc(var(--card-opacity) * 0.2);
   }
   .card-front.rarity-epic .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.65);
+    opacity: calc(var(--card-opacity) * 0.3);
   }
   .card-front.rarity-mythic .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.8);
+    opacity: calc(var(--card-opacity) * 0.4);
   }
 
   /* --- Layer 2: FOIL — texture overlay, soft-light blend --- */
@@ -395,15 +371,15 @@ const styles = `
     background-image: url('/textures/foil_mythic.png');
   }
 
-  /* Foil opacity — much lower than before; texture, not wash */
+  /* Foil opacity — very subtle texture shimmer */
   .card-front.rarity-rare .portrait-foil-overlay {
-    opacity: calc(var(--card-opacity) * 0.25);
+    opacity: calc(var(--card-opacity) * 0.12);
   }
   .card-front.rarity-epic .portrait-foil-overlay {
-    opacity: calc(var(--card-opacity) * 0.35);
+    opacity: calc(var(--card-opacity) * 0.18);
   }
   .card-front.rarity-mythic .portrait-foil-overlay {
-    opacity: calc(var(--card-opacity) * 0.45);
+    opacity: calc(var(--card-opacity) * 0.25);
   }
 
   /* --- Layer 3: GLARE — spotlight, overlay blend --- */
@@ -447,19 +423,36 @@ const styles = `
     filter: brightness(0.6) contrast(3);
   }
 
-  /* Glare opacity — intensity rises near card edges */
+  /* Glare opacity — subtle spotlight, art stays visible */
   .card-front.rarity-common .portrait-holo-glare { opacity: 0; }
   .card-front.rarity-rare .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.5);
+    opacity: calc(var(--card-opacity) * 0.25);
   }
   .card-front.rarity-epic .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.6);
+    opacity: calc(var(--card-opacity) * 0.35);
   }
   .card-front.rarity-mythic .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.7);
+    opacity: calc(var(--card-opacity) * 0.45);
   }
 
-  /* --- Layer 4: GLOSS — subtle cursor-following highlight --- */
+  /* --- Layer 4: DEPTH SHADOW — moves opposite to cursor for embossed/raised feel --- */
+  .portrait-depth-shadow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .card-front.rarity-rare .portrait-depth-shadow,
+  .card-front.rarity-epic .portrait-depth-shadow,
+  .card-front.rarity-mythic .portrait-depth-shadow {
+    opacity: var(--card-opacity);
+  }
+
+  /* --- Layer 5: GLOSS — strong cursor-following spotlight for 3D pop --- */
   .portrait-gloss-overlay {
     position: absolute;
     inset: 0;
@@ -470,6 +463,9 @@ const styles = `
     transition: opacity 0.3s ease;
   }
 
+  .card-front.rarity-common .portrait-gloss-overlay {
+    opacity: calc(var(--card-opacity) * 0.5);
+  }
   .card-front.rarity-rare .portrait-gloss-overlay,
   .card-front.rarity-epic .portrait-gloss-overlay,
   .card-front.rarity-mythic .portrait-gloss-overlay {
@@ -1116,10 +1112,9 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 		const centerY = rect.top + rect.height / 2;
 		const distX = e.clientX - centerX;
 		const distY = e.clientY - centerY;
-		const rotY = Math.max(-12, Math.min(12, distX / rect.width * 24));
-		const rotX = Math.max(-12, Math.min(12, -distY / rect.height * 24));
-		const dampingFactor = 1.618;
-		setRotation({ x: rotX / dampingFactor, y: rotY / dampingFactor });
+		const rotY = Math.max(-15, Math.min(15, distX / rect.width * 30));
+		const rotX = Math.max(-15, Math.min(15, -distY / rect.height * 30));
+		setRotation({ x: rotX, y: rotY });
 		setPosition({ x: distX / 20, y: distY / 20 });
 		const mx = ((e.clientX - rect.left) / rect.width) * 100;
 		const my = ((e.clientY - rect.top) / rect.height) * 100;
@@ -1272,9 +1267,15 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 									<div className="portrait-holo-shine" />
 									<div className="portrait-holo-glare" />
 									<div
+										className="portrait-depth-shadow"
+										style={{
+											background: `radial-gradient(circle at ${100 - mousePercent.x}% ${100 - mousePercent.y}%, rgba(0,0,0,0.45) 0%, transparent 70%)`,
+										}}
+									/>
+									<div
 										className="portrait-gloss-overlay"
 										style={{
-											background: `radial-gradient(circle at ${mousePercent.x}% ${mousePercent.y}%, rgba(255,255,255,0.12) 0%, transparent 60%)`,
+											background: `radial-gradient(circle at ${mousePercent.x}% ${mousePercent.y}%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 35%, transparent 65%)`,
 										}}
 									/>
 									<div className="portrait-vignette" />

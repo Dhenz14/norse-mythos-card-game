@@ -694,7 +694,7 @@
 	--bg-y: 50%;
 }
 
-/* SHINE — rainbow color-dodge, darkened so art shows through */
+/* SHINE — rainbow color-dodge, very dark so art shows through */
 .norse-army-selection .hero-holo-shine {
 	position: absolute;
 	inset: 0;
@@ -702,7 +702,7 @@
 	z-index: 5;
 	opacity: 0;
 	overflow: hidden;
-	filter: brightness(0.7) contrast(2.75) saturate(0.5);
+	filter: brightness(0.5) contrast(3) saturate(0.4);
 	mix-blend-mode: color-dodge;
 	background-image:
 		repeating-linear-gradient(
@@ -714,18 +714,11 @@
 			hsl(228, 100%, 74%) calc(5% * 5),
 			hsl(283, 100%, 73%) calc(5% * 6),
 			hsl(2, 100%, 73%) calc(5% * 7)
-		),
-		repeating-linear-gradient(
-			90deg,
-			hsl(0, 0%, 0%) 0, hsl(0, 0%, 0%) 1.5px,
-			hsl(0, 0%, 40%) 1.5px, hsl(0, 0%, 40%) 3px
 		);
-	background-size: 400% 400%, cover;
+	background-size: 400% 400%;
 	background-position:
 		calc(((50% - var(--bg-x)) * 2.6) + 50%)
-		calc(((50% - var(--bg-y)) * 3.5) + 50%),
-		center center;
-	background-blend-mode: overlay;
+		calc(((50% - var(--bg-y)) * 3.5) + 50%);
 	transition: opacity 0.3s ease;
 }
 
@@ -733,28 +726,13 @@
 	content: '';
 	position: absolute;
 	inset: 0;
-	background-image:
-		repeating-linear-gradient(
-			90deg,
-			hsl(0, 0%, 0%) 0%, hsl(0, 0%, 0%) 6%,
-			hsl(0, 0%, 70%) 9%, hsl(0, 0%, 0%) 10.5%,
-			hsl(0, 0%, 70%) 12%, hsl(0, 0%, 0%) 15%,
-			hsl(0, 0%, 0%) 42%
-		),
-		repeating-linear-gradient(
-			90deg,
-			hsl(0, 0%, 0%) 0%, hsl(0, 0%, 0%) 6%,
-			hsl(0, 0%, 70%) 9%, hsl(0, 0%, 0%) 10.5%,
-			hsl(0, 0%, 70%) 12%, hsl(0, 0%, 0%) 15%,
-			hsl(0, 0%, 0%) 30%
-		);
-	background-position:
-		calc((((50% - var(--bg-x)) * 1.65) + 50%) + (var(--bg-y) * 0.5)) var(--bg-x),
-		calc((((50% - var(--bg-x)) * -0.9) + 50%) - (var(--bg-y) * 0.75)) var(--bg-y);
-	background-size: 200% 200%, 200% 200%;
-	background-blend-mode: screen;
-	filter: brightness(1.15) contrast(1.1);
-	mix-blend-mode: hard-light;
+	background: repeating-linear-gradient(
+		0deg,
+		transparent 0, transparent 2px,
+		rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px
+	);
+	background-size: 100% 4px;
+	mix-blend-mode: overlay;
 }
 
 .norse-army-selection .hero-holo-shine::after {
@@ -769,7 +747,7 @@
 	);
 	background-size: cover;
 	mix-blend-mode: luminosity;
-	filter: brightness(0.6) contrast(4);
+	filter: brightness(0.5) contrast(5);
 }
 
 /* FOIL — soft-light texture, preserves dark areas */
@@ -830,21 +808,21 @@
 	filter: brightness(0.6) contrast(3);
 }
 
-/* Rarity-scaled opacity — grid cards are smaller so keep subtle */
+/* Rarity-scaled opacity — art must remain clearly visible */
 .norse-army-selection .norse-hero-card.holo-tracking.rarity-common .hero-holo-shine { opacity: 0; }
 .norse-army-selection .norse-hero-card.holo-tracking.rarity-common .hero-holo-glare { opacity: 0; }
 
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-foil { opacity: 0.15; }
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-shine { opacity: 0.3; }
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-glare { opacity: 0.25; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-foil { opacity: 0.08; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-shine { opacity: 0.15; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-rare .hero-holo-glare { opacity: 0.15; }
 
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-foil { opacity: 0.2; }
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-shine { opacity: 0.4; }
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-glare { opacity: 0.3; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-foil { opacity: 0.12; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-shine { opacity: 0.2; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-epic .hero-holo-glare { opacity: 0.2; }
 
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-foil { opacity: 0.3; }
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-shine { opacity: 0.5; }
-.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-glare { opacity: 0.35; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-foil { opacity: 0.18; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-shine { opacity: 0.3; }
+.norse-army-selection .norse-hero-card.holo-tracking.rarity-mythic .hero-holo-glare { opacity: 0.25; }
 
 @media (prefers-reduced-motion: reduce) {
 	.norse-army-selection .hero-holo-foil,
