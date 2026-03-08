@@ -61,15 +61,21 @@ Hero Death            ▼             │
 
 ### State Stores
 
-| Store | File | Purpose | Lines |
-|-------|------|---------|-------|
-| **gameStore** | `gameStore.ts` | Card game state, turns, attacks | ~1,300 |
-| **PokerCombatStore** | `PokerCombatStore.ts` | Poker phases, betting, resolution | ~2,500 |
-| **ChessBoardStore** | `ChessBoardStore.ts` | Chess positions, moves, collisions | ~1,000 |
-| **heroDeckStore** | `heroDeckStore.ts` | User-built decks per hero | ~400 |
-| **animationStore** | `animationStore.ts` | Animation state orchestration | ~300 |
-| **sharedDeckStore** | `sharedDeckStore.ts` | Shared deck for Ragnarok Chess | ~200 |
-| **activityLogStore** | `activityLogStore.ts` | Event logging/history | ~150 |
+| Store | File | Purpose |
+|-------|------|---------|
+| **gameStore** | `gameStore.ts` | Card game state, turns, attacks |
+| **PokerCombatStore** | `PokerCombatStore.ts` | Poker phases, betting, resolution |
+| **ChessBoardStore** | `ChessBoardStore.ts` | Chess positions, moves, collisions |
+| **heroDeckStore** | `heroDeckStore.ts` | User-built decks per hero (NFT ownership enforcement in Hive mode) |
+| **animationStore** | `animationStore.ts` | Animation state orchestration |
+| **sharedDeckStore** | `sharedDeckStore.ts` | Shared deck for Ragnarok Chess |
+| **activityLogStore** | `activityLogStore.ts` | Event logging/history |
+| **HiveDataStore** | `HiveDataLayer.ts` | NFT collection, stats, tokens (chain-derived) |
+| **campaignStore** | `campaignStore.ts` | Campaign progress + chain reward claims |
+| **dailyQuestStore** | `dailyQuestStore.ts` | Daily quest progress + chain reward claims |
+| **tradeStore** | `tradeStore.ts` | Trade offers + chain transfers on accept |
+| **craftingStore** | `craftingStore.ts` | Eitr balance (forge/dissolve) |
+| **settingsStore** | `settingsStore.ts` | Audio, visual, gameplay preferences |
 
 ---
 

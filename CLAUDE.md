@@ -33,13 +33,16 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - **Blockchain**: Hive Layer 1 NFTs (custom_json ops, deterministic reader, Keychain auth)
 
 ### Game Features
-- 1,500+ collectible cards across 4 mythological factions
-- 80 playable heroes across 12 classes
+- 2,000+ collectible cards across 4 mythological factions
+- 80+ playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
 - Single-player campaign (49 missions across 5 factions)
 - Tournament system (Swiss + single elimination brackets)
 - Card crafting & trading (Eitr economy)
+- NFT provenance viewer (on-chain history + Hive explorer links)
+- Direct card gifting (one-click Keychain transfer)
+- NFT ownership enforcement (deck building gated on chain-derived collection)
 - Spectator mode (read-only P2P connection)
 - Match replay viewer with playback controls
 - Daily quest system (19 quest templates)
@@ -60,17 +63,19 @@ client/src/
 │   │   ├── replayRules.ts      # Deterministic rules (hash-pinned at genesis)
 │   │   ├── replayDB.ts         # IndexedDB v6: cards, matches, rewards, ELO, etc.
 │   │   ├── genesisAdmin.ts     # Admin: broadcastGenesis, broadcastSeal (one-time)
-│   │   ├── hiveConfig.ts       # Config: HIVE_NODES, RAGNAROK_ACCOUNT, NFT_ART_BASE_URL
+│   │   ├── hiveConfig.ts       # Config: HIVE_NODES, RAGNAROK_ACCOUNT, explorer URLs
+│   │   ├── explorerLinks.ts    # Hive explorer URL builders (tx + block)
 │   │   ├── tournamentRewards.ts # 11 milestone rewards (wins/ELO/matches → cards + RUNE)
 │   │   ├── nftMetadataGenerator.ts # ERC-1155 metadata with attributes
 │   │   └── index.ts            # Barrel exports
-│   ├── HiveSync.ts             # Keychain: login, broadcast, claimReward
+│   ├── HiveSync.ts             # Keychain: login, broadcast, transferCard, claimReward
 │   ├── HiveDataLayer.ts        # Zustand store: collection, stats, tokens
-│   └── schemas/HiveTypes.ts    # Core Hive types
+│   ├── HiveEvents.ts           # Event emitter: card transfers, token updates, tx status
+│   └── schemas/HiveTypes.ts    # Core Hive types (HiveCardAsset, HiveMatchResult, etc.)
 ├── game/
 │   ├── components/         # Card, combat, chess, UI components
 │   │   ├── campaign/       # CampaignPage (world map + mission briefing)
-│   │   ├── collection/     # CollectionPage (with crafting integration)
+│   │   ├── collection/     # CollectionPage, NFT provenance viewer, card gifting
 │   │   ├── crafting/       # CraftingPanel (Eitr forge/dissolve)
 │   │   ├── replay/         # MatchHistoryPage + ReplayViewer
 │   │   ├── settings/       # SettingsPage + SettingsPanel
@@ -83,10 +88,12 @@ client/src/
 │   │   └── ui/             # LoadingScreen + shared UI
 │   ├── stores/             # Zustand state stores
 │   │   ├── gameStore.ts    # Main game store
+│   │   ├── gameStoreIntegration.ts # Event-driven architecture init + HiveEvents toasts
+│   │   ├── heroDeckStore.ts # Deck building (NFT ownership enforcement in Hive mode)
 │   │   ├── settingsStore.ts # Settings (audio, visual, gameplay)
-│   │   ├── dailyQuestStore.ts # Daily quest progress + refresh
+│   │   ├── dailyQuestStore.ts # Daily quest progress + refresh + chain reward claims
 │   │   ├── friendStore.ts  # Friends list + online status
-│   │   ├── tradeStore.ts   # Trade offers + selections
+│   │   ├── tradeStore.ts   # Trade offers + chain transfers on accept
 │   │   └── replayStore.ts  # Match history + replay playback
 │   ├── data/               # Card definitions, heroes
 │   │   ├── allCards.ts     # Single source of truth (1400+ cards)
@@ -122,7 +129,7 @@ client/src/
 │   │   └── modules/        # Hand evaluator, betting
 │   ├── effects/            # Effect handlers
 │   │   └── handlers/       # battlecry/, deathrattle/, spellEffect/
-│   ├── subscribers/        # BlockchainSubscriber, DailyQuestSubscriber
+│   ├── subscribers/        # BlockchainSubscriber (match packaging + IDB refresh), DailyQuestSubscriber
 │   ├── types/              # TypeScript type definitions
 │   └── utils/              # Game utilities
 │       ├── game/           # Game state utilities
@@ -153,9 +160,9 @@ server/
 ## Key Subsystems
 
 ### Card System (`game/data/`)
-- **Single source**: `allCards.ts` contains all 1,400+ cards
+- **Single source**: `allCards.ts` contains all 2,242 cards (2,082 collectible NFTs + 160 tokens)
 - Card registry with ID ranges in `cardRegistry/ID_RANGES.md`
-- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 31001-31806 expansion gap-fill, 50000-50376 pets (38 families), 85001-85010 rogue
+- Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 31001-31922 expansion gap-fill, 35001-40999 class expansions, 50000-50376 pets (38 families), 85001-86999 rogue/golems
 
 ### Combat System (`game/combat/`)
 - `RagnarokCombatArena.tsx` - Main arena component with poker integration
@@ -218,6 +225,14 @@ Game logic for these mechanics lives in:
 - **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
 - **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
 - **Supply caps**: ~3.3M total NFTs (1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
+- **NFT provenance**: `HiveCardAsset` stores `mintTrxId`, `mintBlockNum`, `lastTransferTrxId`, `lastTransferBlock` — full on-chain history per card
+- **Explorer links**: `explorerLinks.ts` generates clickable URLs (hivehub.dev) for any trxId or block
+- **Provenance viewer**: `NFTProvenanceViewer.tsx` shows full metadata + explorer links in collection
+- **Direct transfer**: `SendCardModal.tsx` — one-click card gifting via Keychain, double-confirm safety
+- **Ownership enforcement**: `heroDeckStore.ts` gates deck building on chain-derived NFT collection
+- **Event bus**: `HiveEvents.ts` emits card:transferred, token:updated, transaction:confirmed/failed → toast notifications via `gameStoreIntegration.ts`
+- **Post-match refresh**: `BlockchainSubscriber.ts` re-reads IndexedDB → HiveDataStore after each match (XP, levels, RUNE rewards)
+- **Reward claiming**: campaign, daily quests broadcast `reward_claim` on chain via `hiveSync.claimReward()`
 
 ## Bundle Architecture
 
@@ -309,6 +324,12 @@ client/src/data/blockchain/tournamentRewards.ts
 - Reward claims are self-serve (players verify own stats, no admin distribution)
 - ELO is chain-derived (K=32, computed from match_result history)
 - Supply caps hard-enforced by every reader (~3.3M: 1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
+- Every NFT stores mint + transfer trxIds — provenance viewer links directly to Hive explorer
+- Direct gifting via `SendCardModal` + `hiveSync.transferCard()` — no trade negotiation needed
+- Deck builder enforces NFT ownership in Hive mode (local mode = unlimited)
+- `HiveEvents` bus drives real-time toast notifications for transfers, token changes, tx status
+- `BlockchainSubscriber` refreshes HiveDataStore from IndexedDB after each match (XP, RUNE, levels)
+- Campaign + daily quest rewards broadcast `reward_claim` on chain
 
 ## Known Issues & Fixes
 
