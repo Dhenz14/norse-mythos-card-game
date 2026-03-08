@@ -263,7 +263,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
       className={`battlefield-hero-square ${isOpponent ? 'opponent' : 'player'} ${isTargetable ? 'targetable' : ''} ${onClick ? 'clickable' : ''}`}
       onClick={onClick}
     >
-      <div className={`hero-card-wrapper ${elementClass} premium-glow ${damageReaction ? `hero-${damageReaction}` : ''}`}>
+      <div className={`hero-card-wrapper ${elementClass} premium-glow ${damageReaction ? `hero-${damageReaction}` : ''} ${healthPercent <= 20 ? 'hero-critical-hp' : healthPercent <= 40 ? 'hero-low-hp' : ''}`}>
         <div className={`hero-elemental-aura ${elementClass} premium-glow`} />
         
         <div className={`hero-card-frame ${elementClass} premium-glow`}>

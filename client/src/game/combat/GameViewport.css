@@ -31,7 +31,15 @@
   transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1));
   transform-origin: top left;
   overflow: hidden;
-  background: linear-gradient(180deg, #0a0e1a 0%, #141830 30%, #1a1610 70%, #0a0e1a 100%);
+  background:
+    /* Stone texture: repeating noise pattern via layered gradients */
+    repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
+    repeating-conic-gradient(rgba(0,0,0,0.02) 0% 25%, transparent 0% 50%) 2px 2px / 4px 4px,
+    /* Leather grain overlay */
+    radial-gradient(ellipse 600% 100% at 50% 0%, rgba(20,24,48,0.95) 0%, transparent 70%),
+    radial-gradient(ellipse 600% 100% at 50% 100%, rgba(26,22,16,0.95) 0%, transparent 70%),
+    /* Base gradient */
+    linear-gradient(180deg, #0a0e1a 0%, #141830 30%, #1a1610 70%, #0a0e1a 100%);
   container-type: inline-size;
   container-name: game-viewport;
 }

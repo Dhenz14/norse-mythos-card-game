@@ -43,7 +43,32 @@
 	text-shadow:
 		0 0 8px rgba(0, 0, 0, 0.8),
 		0 0 16px rgba(0, 0, 0, 0.5);
-	animation: damage-number-fly 0.8s ease-out forwards;
+	animation: damage-number-fly 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	will-change: transform, opacity;
+}
+
+/* Critical damage (10+) — oversized golden text */
+.combat-damage-number.crit {
+	font-size: 4.5rem;
+	color: #ffd700;
+	text-shadow:
+		0 0 12px rgba(255, 215, 0, 0.9),
+		0 0 30px rgba(255, 215, 0, 0.5),
+		0 0 6px rgba(0, 0, 0, 0.9);
+	animation: damage-crit-fly 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Heal number — green float up */
+.combat-heal-number {
+	position: absolute;
+	font-family: 'Cinzel', serif;
+	font-size: 2.5rem;
+	font-weight: 900;
+	color: #22c55e;
+	text-shadow:
+		0 0 8px rgba(34, 197, 94, 0.6),
+		0 0 16px rgba(0, 0, 0, 0.5);
+	animation: heal-number-fly 0.9s ease-out forwards;
 	will-change: transform, opacity;
 }
 
@@ -347,13 +372,139 @@
 	100% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(0); opacity: 0; }
 }
 
-/* 12. Reduced Motion */
+/* 12. Minion Attack Lunge */
+.minion-attack-lunge {
+	animation: attack-lunge 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes attack-lunge {
+	0% { transform: translateY(0) scale(1); }
+	30% { transform: translateY(var(--lunge-y, -40px)) translateX(var(--lunge-x, 0)) scale(1.15); }
+	50% { transform: translateY(var(--lunge-y, -40px)) translateX(var(--lunge-x, 0)) scale(1.1); }
+	100% { transform: translateY(0) scale(1); }
+}
+
+/* 13. Card Summon Entrance */
+.card-summon-entrance {
+	animation: summon-entrance 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes summon-entrance {
+	0% { transform: translateY(30px) scale(0.3); opacity: 0; filter: brightness(3); }
+	40% { transform: translateY(-8px) scale(1.1); opacity: 1; filter: brightness(1.6); }
+	70% { transform: translateY(2px) scale(0.98); filter: brightness(1.1); }
+	100% { transform: translateY(0) scale(1); opacity: 1; filter: brightness(1); }
+}
+
+/* Rarity-specific summon glow ring */
+.summon-glow-ring {
+	position: absolute;
+	inset: -12px;
+	border-radius: 12px;
+	pointer-events: none;
+	animation: summon-ring-expand 0.6s ease-out forwards;
+}
+
+.summon-glow-ring.rarity-common { box-shadow: 0 0 20px rgba(200, 200, 200, 0.4); }
+.summon-glow-ring.rarity-rare { box-shadow: 0 0 25px rgba(59, 130, 246, 0.5); }
+.summon-glow-ring.rarity-epic { box-shadow: 0 0 30px rgba(163, 53, 238, 0.6); }
+.summon-glow-ring.rarity-mythic {
+	box-shadow: 0 0 40px rgba(255, 215, 0, 0.7), 0 0 80px rgba(255, 180, 0, 0.3);
+}
+
+@keyframes summon-ring-expand {
+	0% { opacity: 1; transform: scale(0.5); }
+	60% { opacity: 0.8; transform: scale(1); }
+	100% { opacity: 0; transform: scale(1.3); }
+}
+
+/* 14. Death Dissolve Animation */
+.minion-death-dissolve {
+	animation: death-dissolve 0.6s ease-in forwards;
+}
+
+@keyframes death-dissolve {
+	0% { transform: scale(1); opacity: 1; filter: brightness(1) saturate(1); }
+	20% { transform: scale(1.05); filter: brightness(1.8) saturate(0.5); }
+	50% { transform: scale(0.95) translateY(-5px); opacity: 0.6; filter: brightness(0.8) saturate(0.2); }
+	100% { transform: scale(0.3) translateY(-30px); opacity: 0; filter: brightness(0.3) saturate(0); }
+}
+
+/* Death shatter fragments (applied to pseudo-elements or child divs) */
+.death-fragment {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	border-radius: 2px;
+	animation: fragment-scatter 0.5s ease-out forwards;
+	pointer-events: none;
+}
+
+@keyframes fragment-scatter {
+	0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+	100% { opacity: 0; transform: translate(var(--frag-x, 30px), var(--frag-y, -40px)) rotate(var(--frag-rot, 180deg)) scale(0.2); }
+}
+
+/* 15. Spell Cast VFX */
+.spell-cast-flash {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 9100;
+	animation: spell-flash 0.4s ease-out forwards;
+}
+
+.spell-cast-flash.element-fire { background: radial-gradient(circle at center, rgba(255, 100, 0, 0.3) 0%, transparent 60%); }
+.spell-cast-flash.element-ice { background: radial-gradient(circle at center, rgba(100, 180, 255, 0.3) 0%, transparent 60%); }
+.spell-cast-flash.element-lightning { background: radial-gradient(circle at center, rgba(255, 255, 100, 0.3) 0%, transparent 60%); }
+.spell-cast-flash.element-shadow { background: radial-gradient(circle at center, rgba(128, 0, 200, 0.3) 0%, transparent 60%); }
+.spell-cast-flash.element-nature { background: radial-gradient(circle at center, rgba(50, 200, 80, 0.3) 0%, transparent 60%); }
+.spell-cast-flash.element-holy { background: radial-gradient(circle at center, rgba(255, 230, 150, 0.3) 0%, transparent 60%); }
+
+@keyframes spell-flash {
+	0% { opacity: 0; transform: scale(0.5); }
+	30% { opacity: 1; transform: scale(1); }
+	100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* 16. Card Draw Fly-in */
+.card-draw-fly-in {
+	animation: card-draw-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes card-draw-enter {
+	0% { transform: translateX(var(--draw-start-x, 200px)) translateY(var(--draw-start-y, -100px)) scale(0.5) rotateY(90deg); opacity: 0; }
+	50% { transform: translateX(calc(var(--draw-start-x, 200px) * 0.3)) translateY(calc(var(--draw-start-y, -100px) * 0.2)) scale(0.9) rotateY(30deg); opacity: 1; }
+	100% { transform: translateX(0) translateY(0) scale(1) rotateY(0deg); opacity: 1; }
+}
+
+/* 17. Crit Damage Keyframe */
+@keyframes damage-crit-fly {
+	0% { opacity: 1; transform: translateY(0) scale(0.5); }
+	20% { opacity: 1; transform: translateY(-10px) scale(1.8); }
+	50% { opacity: 1; transform: translateY(-40px) scale(1.3); }
+	100% { opacity: 0; transform: translateY(-90px) scale(0.8); }
+}
+
+/* 18. Heal Number Keyframe */
+@keyframes heal-number-fly {
+	0% { opacity: 1; transform: translateY(0) scale(0.8); }
+	30% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+	100% { opacity: 0; transform: translateY(-60px) scale(0.9); }
+}
+
+/* 19. Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
 	.poker-combat-animation *,
 	.screen-shake-mild,
 	.screen-shake-moderate,
-	.screen-shake-heavy {
+	.screen-shake-heavy,
+	.minion-attack-lunge,
+	.card-summon-entrance,
+	.minion-death-dissolve,
+	.card-draw-fly-in {
 		animation-duration: 0.01ms !important;
 	}
-	.super-move-flash { display: none; }
+	.super-move-flash,
+	.spell-cast-flash { display: none; }
 }

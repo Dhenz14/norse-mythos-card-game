@@ -1200,8 +1200,12 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           </div>
         )}
 
+        {/* Ambient board effects */}
+        <div className="board-ambient-dust" />
+        <div className="board-torch-glow" />
+
         <div className="arena-content">
-          <UnifiedCombatArena 
+          <UnifiedCombatArena
             onAction={handleAction}
             onEndTurn={handleUnifiedEndTurn}
             betAmount={betAmount}
