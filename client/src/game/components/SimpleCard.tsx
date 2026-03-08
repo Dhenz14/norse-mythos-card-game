@@ -58,12 +58,24 @@ const ICE_RE = /\b(ymir|buri|niflheim|frost|ice|snow|skadi|jotun|glacier|blizzar
 const FIRE_RE = /\b(surtr|muspel|fire|flame|ember|inferno|burn|ash|volcanic|magma|lava|pyre)\b/i;
 const ELECTRIC_RE = /\b(thor|thunder|lightning|storm|spark|tempest|volt)\b/i;
 const SHADOW_RE = /\b(hel|helheim|shadow|dark|death|draugr|void|abyss|niflung|undead)\b/i;
+const WATER_RE = /\b(aegir|njord|ocean|sea|tide|wave|aqua|rain|river|lake|flood)\b/i;
+const GRASS_RE = /\b(idunn|yggdrasil|vine|leaf|root|bloom|grove|forest|nature|verdant)\b/i;
+const LIGHT_RE = /\b(baldur|heimdall|sol|dawn|radiant|holy|divine|celestial|sun|bright)\b/i;
 
 const getCardTheme = (name: string, element?: string): string | null => {
-  if (element === 'ice' || ICE_RE.test(name)) return 'ice';
-  if (element === 'fire' || FIRE_RE.test(name)) return 'fire';
-  if (element === 'electric' || ELECTRIC_RE.test(name)) return 'electric';
-  if (element === 'dark' || SHADOW_RE.test(name)) return 'shadow';
+  if (element === 'ice' || element === 'water') return element;
+  if (element === 'fire') return 'fire';
+  if (element === 'electric') return 'electric';
+  if (element === 'dark') return 'shadow';
+  if (element === 'grass') return 'grass';
+  if (element === 'light') return 'light';
+  if (ICE_RE.test(name)) return 'ice';
+  if (FIRE_RE.test(name)) return 'fire';
+  if (ELECTRIC_RE.test(name)) return 'electric';
+  if (SHADOW_RE.test(name)) return 'shadow';
+  if (WATER_RE.test(name)) return 'water';
+  if (GRASS_RE.test(name)) return 'grass';
+  if (LIGHT_RE.test(name)) return 'light';
   return null;
 };
 
@@ -361,7 +373,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
   return (
     <div
-      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${evolutionClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${className}`}
+      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${evolutionClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${cardTheme ? `element-holo-${cardTheme}` : ''} ${card.petStage === 'master' && card.element && !card.hasStage3Variants ? 'stage3-evolved' : ''} ${className}`}
       role="button"
       aria-label={`${card.name}, ${card.manaCost} mana ${card.type}${card.attack !== undefined ? `, ${card.attack} attack` : ''}${card.health !== undefined ? `, ${card.health} health` : ''}`}
       tabIndex={0}
