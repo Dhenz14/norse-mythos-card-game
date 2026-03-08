@@ -221,6 +221,7 @@ async function applyMint(
 			type: (card.type as string) || cardDef?.type || 'minion',
 			race: card.race || cardDef?.race || undefined,
 			image: artPath ? (artPath.startsWith('http') ? artPath : `${NFT_ART_BASE_URL}${artPath}`) : undefined,
+			provenanceChain: [{ from: '', to, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }],
 		};
 
 		await putCard(asset);
@@ -783,11 +784,14 @@ async function applyCardTransfer(
 	if (!existing) { rejectOp(op, `card ${nftId} not found`); return; }
 	if (existing.ownerId !== op.broadcaster) { rejectOp(op, `card ${nftId} not owned by broadcaster`); return; }
 
+	const previousOwner = existing.ownerId;
+	const chain = existing.provenanceChain ?? [];
 	const updated: HiveCardAsset = {
 		...existing,
 		ownerId: to,
 		lastTransferBlock: op.blockNum,
 		lastTransferTrxId: op.trxId,
+		provenanceChain: [...chain, { from: previousOwner, to, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }],
 	};
 
 	await putCard(updated);
@@ -947,6 +951,7 @@ async function applyPackOpen(
 			type: cardDef?.type ?? 'minion',
 			race: cardDef?.race || undefined,
 			image: artPath ? `${NFT_ART_BASE_URL}${artPath}` : undefined,
+			provenanceChain: [{ from: '', to: op.broadcaster, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }],
 		};
 		await putCard(card);
 
@@ -1019,6 +1024,7 @@ async function applyRewardClaim(
 			type: gameDef?.type ?? 'minion',
 			race: gameDef?.race || undefined,
 			image: artPath ? `${NFT_ART_BASE_URL}${artPath}` : undefined,
+			provenanceChain: [{ from: '', to: op.broadcaster, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }],
 		};
 		await putCard(card);
 

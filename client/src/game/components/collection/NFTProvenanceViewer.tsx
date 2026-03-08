@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { HiveCardAsset } from '../../../data/schemas/HiveTypes';
+import type { HiveCardAsset, ProvenanceStamp } from '../../../data/schemas/HiveTypes';
 import { getTransactionUrl, getBlockUrl } from '../../../data/blockchain/explorerLinks';
 
 interface NFTProvenanceViewerProps {
@@ -67,7 +67,13 @@ const NFTProvenanceViewer: React.FC<NFTProvenanceViewerProps> = ({ nft, onClose,
 						<div className="border-t border-gray-700 pt-3 space-y-2">
 							<h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">On-Chain History</h3>
 
-							{nft.mintTrxId ? (
+							{nft.provenanceChain && nft.provenanceChain.length > 0 ? (
+								<div className="space-y-1.5 max-h-48 overflow-y-auto">
+									{nft.provenanceChain.map((stamp, i) => (
+										<StampRow key={`${stamp.trxId}-${i}`} stamp={stamp} index={i} />
+									))}
+								</div>
+							) : nft.mintTrxId ? (
 								<ChainRow
 									label="Minted"
 									trxId={nft.mintTrxId}
@@ -77,7 +83,7 @@ const NFTProvenanceViewer: React.FC<NFTProvenanceViewerProps> = ({ nft, onClose,
 								<p className="text-gray-500 text-xs italic">Mint transaction not recorded (pre-upgrade card)</p>
 							)}
 
-							{nft.lastTransferTrxId && nft.lastTransferTrxId !== nft.mintTrxId && (
+							{!nft.provenanceChain && nft.lastTransferTrxId && nft.lastTransferTrxId !== nft.mintTrxId && (
 								<ChainRow
 									label="Last Transfer"
 									trxId={nft.lastTransferTrxId}
@@ -111,6 +117,42 @@ function Field({ label, value, mono, color }: { label: string; value: string; mo
 			>
 				{value}
 			</span>
+		</div>
+	);
+}
+
+function StampRow({ stamp, index }: { stamp: ProvenanceStamp; index: number }) {
+	const isMint = stamp.from === '';
+	const label = isMint ? 'Minted' : `Transfer #${index}`;
+	const detail = isMint
+		? `to ${stamp.to}`
+		: `${stamp.from} \u2192 ${stamp.to}`;
+
+	return (
+		<div className="bg-gray-800 rounded-lg px-3 py-2 space-y-1">
+			<div className="flex items-center justify-between">
+				<span className="text-gray-400 text-xs font-medium">{label}</span>
+				<div className="flex items-center gap-2">
+					<a
+						href={getBlockUrl(stamp.block)}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-xs text-blue-400 hover:text-blue-300 font-mono"
+					>
+						Block #{stamp.block}
+					</a>
+					<a
+						href={getTransactionUrl(stamp.trxId)}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-xs bg-blue-600/20 text-blue-300 hover:bg-blue-600/40 px-2 py-1 rounded font-mono transition-colors"
+						title={stamp.trxId}
+					>
+						{stamp.trxId.slice(0, 8)}...
+					</a>
+				</div>
+			</div>
+			<p className="text-xs text-gray-300 font-mono truncate">{detail}</p>
 		</div>
 	);
 }

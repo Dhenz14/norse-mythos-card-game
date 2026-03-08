@@ -100,6 +100,14 @@ export interface HiveMatchResult {
   seed: string;
 }
 
+export interface ProvenanceStamp {
+	from: string;
+	to: string;
+	trxId: string;
+	block: number;
+	timestamp?: number;
+}
+
 export interface HiveCardAsset {
   uid: string;
   cardId: number;
@@ -117,6 +125,7 @@ export interface HiveCardAsset {
   type: string;
   race?: string;
   image?: string;
+  provenanceChain?: ProvenanceStamp[];
 }
 
 export interface HiveTokenBalance {
