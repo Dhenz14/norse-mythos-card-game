@@ -81,7 +81,7 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 - **15 operation types** — mint, transfer, burn, pack_open, match_result, level_up, and more
 - **Dual-signature match results** with Merkle transcript anchoring
 - **Self-serve tournament rewards** — 11 milestones, players claim via Keychain
-- **Supply caps** — 16,000 total (10K common, 4K rare, 1.5K epic, 500 mythic)
+- **Supply caps** — per-card limits: 1,800 common, 1,250 rare, 750 epic, 500 mythic (~3.3M total NFTs)
 - **Anti-cheat** — Mandatory WASM engine (no TS fallback), hash verification, PoW, slash evidence, nonce anti-replay
 
 ---
@@ -389,7 +389,7 @@ Genesis → Seal → Admin key irrelevant forever
 - **Chain replay**: Browser fetches ops from Hive → applies deterministic rules → builds IndexedDB
 - **Merkle transcripts**: SHA-256 tree root anchored in each match_result
 - **Dual signatures**: Host signs → client counter-signs → both on-chain
-- **Supply**: 16,000 total NFTs (10K common / 4K rare / 1.5K epic / 500 mythic)
+- **Supply**: Per-card caps (1,800 common / 1,250 rare / 750 epic / 500 mythic per card, ~3.3M total NFTs)
 
 ---
 

@@ -94,7 +94,7 @@ export function getSecretTriggerDescription(triggerType: SecretTriggerType): str
  * @param cardInstanceId ID of the secret card to play
  * @returns Updated game state with secret played
  */
-export function playSecret(gameState: any, cardInstanceId: string): any {
+export function playSecret(gameState: any, cardInstanceId: string, isBloodPayment = false): any {
   // Deep clone the game state using JSON parser to avoid reference issues
   const newState = structuredClone(gameState);
   
@@ -135,8 +135,8 @@ export function playSecret(gameState: any, cardInstanceId: string): any {
   // Add the new secret to the player's secrets
   player.secrets.push(newSecret);
   
-  // Reduce mana - properly handling mana structure 
-  if (player.mana && typeof player.mana === 'object' && 'current' in player.mana) {
+  // Reduce mana - properly handling mana structure (skip if blood price was paid)
+  if (!isBloodPayment && player.mana && typeof player.mana === 'object' && 'current' in player.mana) {
     player.mana.current -= secretCard.card.manaCost || 0;
   }
   

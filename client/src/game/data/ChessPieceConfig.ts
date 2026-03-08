@@ -319,7 +319,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-magni',
       name: 'Magni',
-      heroClass: 'DeathKnight',
+      heroClass: 'deathknight',
       description: 'God of Strength: Buff ally attack for devastating blows.',
       fixedCardIds: [],
       element: 'fire',
@@ -329,7 +329,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-brakki',
       name: 'Brakki',
-      heroClass: 'DeathKnight',
+      heroClass: 'deathknight',
       description: 'Forge Master: Buff weapons and armor for your army.',
       fixedCardIds: [],
       element: 'fire',
@@ -439,7 +439,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     {
       id: 'hero-thryma',
       name: 'Thryma',
-      heroClass: 'DeathKnight',
+      heroClass: 'deathknight',
       description: 'Storm Caller: Channel lightning and frost to shatter enemy lines.',
       fixedCardIds: [],
       element: 'electric',

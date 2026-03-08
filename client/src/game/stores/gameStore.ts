@@ -935,7 +935,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     }
     
     if (gameState?.discovery?.active) {
-      debug.combat('[PokerRewards] Deferred: discovery selection in progress');
+      debug.combat('[PokerRewards] Deferred: discovery selection in progress, retrying in 500ms');
+      setTimeout(() => get().grantPokerHandRewards(), 500);
       return;
     }
     

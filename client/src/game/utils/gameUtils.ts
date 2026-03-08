@@ -441,21 +441,21 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     // Update state with combo/overload before passing to playSecret
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
     player.mana.pendingOverload = pendingOverload;
-    
-    return playSecret(newState, cardInstanceId);
+
+    return playSecret(newState, cardInstanceId, !!isBloodPayment);
   }
   
   // 2. Handle Weapon cards
   if (card.card.type === 'weapon') {
-    
+
     // Remove card from hand
     player.hand.splice(index, 1);
-    
+
     // Update player state
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-    player.mana.current -= (card.card.manaCost || 0);
+    if (!isBloodPayment) player.mana.current -= (card.card.manaCost || 0);
     player.mana.pendingOverload = pendingOverload;
-    
+
     // Create weapon card instance
     return equipWeapon(newState, currentPlayer, card);
   }
@@ -464,7 +464,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   if (card.card.type === 'artifact') {
     player.hand.splice(index, 1);
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-    player.mana.current -= (card.card.manaCost || 0);
+    if (!isBloodPayment) player.mana.current -= (card.card.manaCost || 0);
     player.mana.pendingOverload = pendingOverload;
     return equipArtifact(newState, currentPlayer, card);
   }
@@ -476,7 +476,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     if (slot) {
       player.hand.splice(index, 1);
       player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-      player.mana.current -= (card.card.manaCost || 0);
+      if (!isBloodPayment) player.mana.current -= (card.card.manaCost || 0);
       player.mana.pendingOverload = pendingOverload;
       const piece = armorPieceFromCard(armorData);
       if (piece) {

@@ -12,6 +12,7 @@
   background: linear-gradient(135deg, rgba(220, 38, 38, 0.2), rgba(185, 28, 28, 0.15));
   border: 2px solid rgba(239, 68, 68, 0.5);
   border-radius: 12px;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.5), inset 0 0 15px rgba(220, 38, 38, 0.2);
   animation: allInPulse 1.5s ease-in-out infinite;
 }
 
@@ -33,12 +34,8 @@
 }
 
 @keyframes allInPulse {
-  0%, 100% { 
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3), inset 0 0 10px rgba(220, 38, 38, 0.1);
-  }
-  50% { 
-    box-shadow: 0 0 25px rgba(239, 68, 68, 0.5), inset 0 0 15px rgba(220, 38, 38, 0.2);
-  }
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
 @keyframes titleGlow {
@@ -83,8 +80,8 @@
   background: linear-gradient(145deg, rgba(20, 20, 30, 0.95), rgba(30, 30, 45, 0.9));
   border: 2px solid rgba(251, 191, 36, 0.6);
   border-radius: 16px;
-  box-shadow: 
-    0 0 30px rgba(251, 191, 36, 0.4),
+  box-shadow:
+    0 0 50px rgba(251, 191, 36, 0.6),
     0 8px 32px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   z-index: 200;
@@ -155,20 +152,8 @@
 }
 
 @keyframes winnerBadgePulse {
-  0%, 100% { 
-    opacity: 1;
-    box-shadow: 
-      0 0 30px rgba(251, 191, 36, 0.4),
-      0 8px 32px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-  50% { 
-    opacity: 0.95;
-    box-shadow: 
-      0 0 50px rgba(251, 191, 36, 0.6),
-      0 8px 32px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.9; }
 }
 
 @keyframes winnerBadgeFloat {
@@ -191,6 +176,7 @@
 }
 
 .winning-card-glow.celebration::after {
+  box-shadow: 0 0 25px rgba(251, 191, 36, 0.9), 0 0 50px rgba(245, 158, 11, 0.6);
   animation: winningCardGlowCelebrate 1.5s ease-in-out infinite;
 }
 
@@ -204,14 +190,8 @@
 }
 
 @keyframes winningCardGlowCelebrate {
-  0%, 100% { 
-    box-shadow: 0 0 15px rgba(251, 191, 36, 0.6), 0 0 30px rgba(245, 158, 11, 0.4);
-    opacity: 0.8;
-  }
-  50% { 
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.9), 0 0 50px rgba(245, 158, 11, 0.6);
-    opacity: 1;
-  }
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
 }
 
 /* Showdown state: reveal opponent cards */
@@ -230,6 +210,7 @@
   inset: -6px;
   border-radius: 10px;
   background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.2));
+  box-shadow: 0 0 25px rgba(251, 191, 36, 0.9), 0 0 50px rgba(245, 158, 11, 0.6);
   z-index: -1;
   animation: winningCardGlowCelebrate 1.5s ease-in-out infinite;
 }

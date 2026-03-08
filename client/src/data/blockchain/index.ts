@@ -89,7 +89,6 @@ export {
 	broadcastSeal,
 	broadcastMint,
 	SUPPLY_CAPS,
-	TOTAL_SUPPLY,
 } from './genesisAdmin';
 
 export type { PoWConfig, PoWResult } from './proofOfWork';

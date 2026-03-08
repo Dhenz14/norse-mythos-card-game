@@ -182,15 +182,8 @@ canvas {
 
 /* Subtle card hover effects */
 @keyframes card-hover-glow {
-  0% {
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
-  }
-  100% {
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-  }
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 /* REMOVED: Card hover effect styling is now fully managed by CardTransformationManager */

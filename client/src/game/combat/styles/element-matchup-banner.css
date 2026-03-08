@@ -6,7 +6,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	z-index: 9500;
+	z-index: var(--z-cinematic);
 	pointer-events: none;
 	background: radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, transparent 70%);
 }

@@ -2,7 +2,7 @@
 
 .kpp-anchor {
 	position: fixed;
-	z-index: 9500;
+	z-index: var(--z-cinematic);
 	pointer-events: none;
 }
 

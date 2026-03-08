@@ -113,8 +113,20 @@ export function decodeDeck(code: string): { heroId: string; heroClass: string; c
 export function validateDeckCode(code: string): boolean {
 	const result = decodeDeck(code);
 	if (!result) return false;
+
+	// Validate deck size
+	if (result.cardIds.length !== 30) return false;
+
+	// Validate all cards exist and enforce copy limits
+	const counts = new Map<number, number>();
 	for (const id of result.cardIds) {
-		if (!cardRegistry.find(c => Number(c.id) === id)) return false;
+		const card = cardRegistry.find(c => Number(c.id) === id);
+		if (!card) return false;
+		const count = (counts.get(id) || 0) + 1;
+		// Max 1 copy of mythic, max 2 of anything else
+		const maxCopies = card.rarity === 'mythic' ? 1 : 2;
+		if (count > maxCopies) return false;
+		counts.set(id, count);
 	}
 	return true;
 }

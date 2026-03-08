@@ -117,9 +117,10 @@ async function applyGenesis(
 	const existing = await getGenesisState();
 	if (existing.version) return; // genesis already applied — idempotent
 
+	const distribution = (payload.card_supply_caps ?? payload.card_distribution) as Record<string, number> | undefined;
+	if (!distribution) return;
+
 	const totalSupply = Number(payload.total_supply ?? 0);
-	const distribution = payload.card_distribution as Record<string, number> | undefined;
-	if (!totalSupply || !distribution) return;
 
 	const genesis: GenesisState = {
 		key: 'singleton',
@@ -162,7 +163,9 @@ async function applyMint(
 
 	const VALID_CARD_RANGES: [number, number][] = [
 		[1000, 3999], [4000, 8999], [9000, 9250], [20000, 29999],
-		[30001, 30410], [31001, 31905], [38001, 39104], [50000, 50376], [85001, 85010],
+		[30001, 30410], [31001, 31922], [36407, 36409],
+		[38001, 39215], [50000, 50376], [85001, 85310],
+		[90100, 90117],
 	];
 	const isValidCardId = (id: number) => VALID_CARD_RANGES.some(([lo, hi]) => id >= lo && id <= hi);
 
@@ -175,9 +178,13 @@ async function applyMint(
 			continue;
 		}
 
-		// Check supply cap for this rarity
-		const counter = await getSupplyCounter(card.rarity);
-		if (counter && counter.minted >= counter.cap) continue; // cap reached
+		// Check per-card supply cap (each card_id limited by its rarity's cap)
+		const rarityCap = await getSupplyCounter(card.rarity);
+		if (!rarityCap) continue;
+		const cardKey = `card:${parsedId}`;
+		const cardCounter = await getSupplyCounter(cardKey);
+		const cardMinted = cardCounter?.minted ?? 0;
+		if (cardMinted >= rarityCap.cap) continue; // per-card cap reached
 
 		// Check card doesn't already exist (idempotent)
 		const existing = await getCard(card.nft_id);
@@ -206,9 +213,8 @@ async function applyMint(
 
 		await putCard(asset);
 
-		if (counter) {
-			await putSupplyCounter({ ...counter, minted: counter.minted + 1 });
-		}
+		// Increment per-card supply counter
+		await putSupplyCounter({ rarity: cardKey, cap: rarityCap.cap, minted: cardMinted + 1 });
 	}
 }
 

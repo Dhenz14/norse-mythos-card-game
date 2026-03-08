@@ -14,14 +14,13 @@ import { hiveSync } from '../HiveSync';
 import type { HiveBroadcastResult } from '../HiveSync';
 import { RAGNAROK_ACCOUNT } from './hiveConfig';
 
+/** Per-card supply caps — each unique card_id can have at most this many NFTs */
 const SUPPLY_CAPS: Record<string, number> = {
-	common:    10_000,
-	rare:       4_000,
-	epic:       1_500,
+	common:    1_800,
+	rare:      1_250,
+	epic:        750,
 	mythic:      500,
 };
-
-const TOTAL_SUPPLY = Object.values(SUPPLY_CAPS).reduce((a, b) => a + b, 0);
 
 function requireAdmin(): HiveBroadcastResult | null {
 	const username = hiveSync.getUsername();
@@ -49,8 +48,8 @@ export async function broadcastGenesis(): Promise<HiveBroadcastResult> {
 
 	return hiveSync.broadcastCustomJson('rp_genesis', {
 		version: '1.0',
-		total_supply: TOTAL_SUPPLY,
-		card_distribution: SUPPLY_CAPS,
+		supply_model: 'per_card',
+		card_supply_caps: SUPPLY_CAPS,
 		reader_hash: readerHash,
 	});
 }
@@ -88,4 +87,4 @@ export async function broadcastMint(params: {
 	});
 }
 
-export { SUPPLY_CAPS, TOTAL_SUPPLY };
+export { SUPPLY_CAPS };

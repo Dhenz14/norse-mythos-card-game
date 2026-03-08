@@ -155,19 +155,30 @@ export function useP2PSync() {
 	}, [connection, connectionState, send]);
 
 	// Host sends init AFTER seed exchange completes (replaces old 200ms timer)
+	// Timeout after 10s if seed exchange stalls
 	useEffect(() => {
 		if (!connection || !isHost || connectionState !== 'connected') {
 			initSentRef.current = false;
-			return;
+			return undefined;
 		}
-		if (initSentRef.current) return;
-		if (!seedResolvedRef.current) return;
+		if (initSentRef.current) return undefined;
+		if (!seedResolvedRef.current) {
+			const timeout = setTimeout(() => {
+				if (!seedResolvedRef.current) {
+					console.error('[useP2PSync] Seed exchange timed out after 10s');
+					toast.error('Seed exchange timed out. Disconnecting.', { duration: 5000 });
+					usePeerStore.getState().disconnect();
+				}
+			}, 10_000);
+			return () => clearTimeout(timeout);
+		}
 
 		initSentRef.current = true;
 		const currentState = useGameStore.getState().gameState;
 		if (currentState) {
 			send({ type: 'init', gameState: currentState, isHost: true });
 		}
+		return undefined;
 	}, [connection, isHost, connectionState, send]);
 
 	// Detect when connection closes and notify the player
@@ -596,13 +607,23 @@ export function useP2PSync() {
 	// Host sends state hash check every 2s for anti-cheat verification
 	useEffect(() => {
 		if (connectionState !== 'connected' || !isHost) return;
-		const interval = setInterval(async () => {
-			const gs = useGameStore.getState().gameState;
-			if (!gs || gs.gamePhase === 'game_over') return;
-			const stateHash = await computeStateHash(gs);
-			send({ type: 'hash_check', stateHash, turnNumber: gs.turnNumber });
-		}, 2000);
-		return () => clearInterval(interval);
+		let cancelled = false;
+		const scheduleCheck = () => {
+			if (cancelled) return;
+			setTimeout(async () => {
+				if (cancelled) return;
+				const gs = useGameStore.getState().gameState;
+				if (gs && gs.gamePhase !== 'game_over') {
+					const stateHash = await computeStateHash(gs);
+					if (!cancelled) {
+						send({ type: 'hash_check', stateHash, turnNumber: gs.turnNumber });
+					}
+				}
+				scheduleCheck();
+			}, 2000);
+		};
+		scheduleCheck();
+		return () => { cancelled = true; };
 	}, [connectionState, isHost, send]);
 
 	// Send our deck's NFT IDs to the opponent for ownership verification

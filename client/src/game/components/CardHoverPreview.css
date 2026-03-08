@@ -11,7 +11,7 @@
 
 .card-hover-tooltip {
   position: fixed;
-  z-index: 9999;
+  z-index: var(--z-topmost);
   pointer-events: none;
   min-width: 200px;
   max-width: 300px;

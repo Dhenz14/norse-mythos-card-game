@@ -2,7 +2,7 @@
 	position: fixed;
 	width: 80px;
 	height: 112px;
-	z-index: 9500;
+	z-index: var(--z-cinematic);
 	pointer-events: none;
 	perspective: 600px;
 	filter: drop-shadow(0 4px 20px rgba(218, 165, 32, 0.5));

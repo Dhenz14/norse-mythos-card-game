@@ -160,7 +160,7 @@ export function getHeroConfigKey(norseHeroId: string): string | undefined {
 }
 
 /**
- * Complete hero ID to class mapping for all 66 heroes.
+ * Complete hero ID to class mapping for all 92 heroes.
  * This is the authoritative source for class-specific icons.
  */
 export const HERO_ID_TO_CLASS: Record<string, string> = {
@@ -296,7 +296,7 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
  * Uses authoritative HERO_ID_TO_CLASS mapping.
  */
 export function getHeroClass(norseHeroId: string): string {
-  // Check direct mapping first (covers all 69 heroes)
+  // Check direct mapping first (covers all 92 heroes)
   if (HERO_ID_TO_CLASS[norseHeroId]) {
     return HERO_ID_TO_CLASS[norseHeroId];
   }

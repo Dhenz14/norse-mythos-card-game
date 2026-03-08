@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CardData, CardInstance } from '../../types';
 import allCards, { getCardById } from '../../data/allCards';
-import { colossalMinionCards } from '../../data/colossalCards';
 import { initializeSpellPower } from '../spells/spellPowerUtils';
 import { initializePoisonousEffect } from '../mechanics/poisonousUtils';
 import { initializeLifestealEffect } from '../mechanics/lifestealUtils';
@@ -173,12 +172,12 @@ export function createStartingDeck(size: number = 20): CardData[] {
     .sort(() => 0.5 - Math.random())
     .slice(0, numFrenzyCards);
   
-  // Get colossal minions for testing - use imported array of colossal minions
-  // The colossalMinionCards is imported from data/colossalCards.ts
-  
-  // Make sure we include some colossal minions
-  const numColossalCards = Math.min(2, colossalMinionCards.length);
-  const selectedColossalCards = colossalMinionCards
+  // Get colossal minions for testing
+  const colossalCards = allCards.filter((card: CardData) =>
+    card.keywords?.includes('colossal') || false
+  );
+  const numColossalCards = Math.min(2, colossalCards.length);
+  const selectedColossalCards = colossalCards
     .sort(() => 0.5 - Math.random())
     .slice(0, numColossalCards);
   
