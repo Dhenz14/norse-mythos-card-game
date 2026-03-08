@@ -48,5 +48,8 @@
 /* Atmosphere */
 @import './norse-atmosphere.css';
 
+/* Realm Board Skins */
+@import './realm-boards.css';
+
 /* Cursors */
 @import './cursors.css';

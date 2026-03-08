@@ -1101,6 +1101,30 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     return () => { resetKingEvents(); };
   }, [resetKingEvents]);
 
+  // Realm selector — drives board skin + ambient particles
+  const activeRealmId = useGameStore(state => state.gameState?.activeRealm?.id);
+  const activeRealmName = useGameStore(state => state.gameState?.activeRealm?.name);
+  const [realmAnnouncement, setRealmAnnouncement] = useState<string | null>(null);
+  const prevRealmRef = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (activeRealmId && activeRealmId !== prevRealmRef.current) {
+      const isShift = prevRealmRef.current !== undefined;
+      prevRealmRef.current = activeRealmId;
+      if (isShift) {
+        setRealmAnnouncement(activeRealmName || activeRealmId);
+        const timer = setTimeout(() => setRealmAnnouncement(null), 2500);
+        return () => clearTimeout(timer);
+      }
+    } else if (!activeRealmId && prevRealmRef.current) {
+      prevRealmRef.current = undefined;
+    }
+    return undefined;
+  }, [activeRealmId, activeRealmName]);
+
+  // Build realm class for GameViewport
+  const realmClass = activeRealmId ? `realm-${activeRealmId}` : 'realm-midgard';
+
   // HUD selectors
   const gamePhase = useGameStore(state => state.gameState?.gamePhase);
   const gameWinner = useGameStore(state => state.gameState?.winner);
@@ -1182,7 +1206,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   }
 
   return (
-    <GameViewport extraClassName={outerShakeClass}>
+    <GameViewport extraClassName={`${outerShakeClass} ${realmClass}`.trim()}>
       <div className={`ragnarok-combat-arena viewport-mode ${isPlayerTurn ? 'player-turn' : 'opponent-turn'}`}>
         {/* Minimal Timer at Top Center */}
         <div className={`zone-timer minimal-timer ${combatState.turnTimer <= 10 ? 'low-time' : ''}`}>
@@ -1203,6 +1227,32 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         {/* Ambient board effects */}
         <div className="board-ambient-dust" />
         <div className="board-torch-glow" />
+
+        {/* Norse knotwork board border ornament */}
+        <div className="board-border-ornament" />
+
+        {/* Realm indicator badge */}
+        {activeRealmId && (
+          <div className="realm-indicator">
+            <span className="realm-indicator-name">{activeRealmName || activeRealmId}</span>
+          </div>
+        )}
+
+        {/* Realm shift announcement banner */}
+        <AnimatePresence>
+          {realmAnnouncement && (
+            <motion.div
+              className="realm-announcement"
+              initial={{ opacity: 0, scale: 1.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+            >
+              <div className="realm-announcement-name">{realmAnnouncement}</div>
+              <div className="realm-announcement-desc">Realm Shift</div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="arena-content">
           <UnifiedCombatArena
@@ -1249,7 +1299,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       ))}
       <KingPassivePopup />
       <AIAttackAnimationProcessor />
-      <PixiParticleCanvas />
+      <PixiParticleCanvas realm={activeRealmId || 'midgard'} />
       <AnimationOverlay />
       
       {/* First Strike Animation - plays when attacker deals initial damage */}
