@@ -20,6 +20,7 @@ import { useUnifiedCombatStore } from '../../stores/unifiedCombatStore';
 import { getKingAbilityConfig, getAbilityDescription, requiresDirectionSelection, getAvailableDirections, MineDirection } from '../../utils/chess/kingAbilityUtils';
 import { Tooltip } from '../ui/Tooltip';
 import { debug } from '../../config/debugConfig';
+import { useCraftingStore } from '../../crafting/craftingStore';
 import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../utils/art/artMapping';
 import { assetPath } from '../../utils/assetPath';
 import './HeroPortraitEnhanced.css';
@@ -338,6 +339,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   const [vsScreenPieces, setVsScreenPieces] = useState<{ attacker: ChessPiece; defender: ChessPiece } | null>(null);
   const [pokerSlotsSwapped, setPokerSlotsSwapped] = useState(false);
   const [turnCount, setTurnCount] = useState(0);
+  const [bossRulesApplied, setBossRulesApplied] = useState(false);
 
   const {
     boardState,
@@ -433,8 +435,52 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
       initializeBoard(defaultArmy, opponentArmy);
       setPhase('chess');
       playSoundEffect('game_start');
+      setBossRulesApplied(false);
     }
   }, [isCampaign]);
+
+  // Apply boss rules + difficulty scaling after board initialization
+  useEffect(() => {
+    if (!isCampaign || !campaignData || bossRulesApplied) return;
+    if (boardState.pieces.length === 0) return;
+
+    const rules = campaignData.mission.bossRules;
+    const difficultyBonus = campaignDifficulty === 'mythic' ? 40 : campaignDifficulty === 'heroic' ? 20 : 0;
+    const bossExtraHealth = rules.find(r => r.type === 'extra_health')?.value ?? 0;
+    const totalExtraHealth = bossExtraHealth + difficultyBonus;
+
+    if (totalExtraHealth > 0) {
+      const store = useUnifiedCombatStore.getState();
+      const boostedPieces = store.boardState.pieces.map(p => {
+        if (p.owner !== 'opponent') return p;
+        return { ...p, health: p.health + totalExtraHealth, maxHealth: p.maxHealth + totalExtraHealth };
+      });
+      useUnifiedCombatStore.setState({
+        boardState: { ...store.boardState, pieces: boostedPieces },
+      });
+      debug.chess(`[Boss Rules] Applied +${totalExtraHealth} health to opponent (boss: ${bossExtraHealth}, difficulty: ${difficultyBonus})`);
+    }
+
+    setBossRulesApplied(true);
+  }, [isCampaign, campaignData, bossRulesApplied, boardState.pieces.length]);
+
+  // Boss rule: passive_damage — deal damage to player king each turn
+  useEffect(() => {
+    if (!isCampaign || !campaignData) return;
+    if (phase !== 'chess' || boardState.currentTurn !== 'player') return;
+
+    const bossPassive = campaignData.mission.bossRules.find(r => r.type === 'passive_damage')?.value ?? 0;
+    const difficultyPassive = campaignDifficulty === 'mythic' ? 1 : 0;
+    const passiveDmg = bossPassive + difficultyPassive;
+    if (passiveDmg <= 0) return;
+
+    const playerKing = boardState.pieces.find(p => p.owner === 'player' && p.type === 'king');
+    if (!playerKing) return;
+
+    const newHp = Math.max(1, playerKing.health - passiveDmg);
+    updatePieceHealth(playerKing.id, newHp);
+    debug.chess(`[Boss Rules] Passive damage: player king takes ${passiveDmg} (HP: ${playerKing.health} → ${newHp})`);
+  }, [phase, boardState.currentTurn, isCampaign]);
 
   const handleQuickStart = useCallback((army: ArmySelectionType, deckCardIds: number[]) => {
     setPlayerArmy(army);
@@ -636,8 +682,18 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
       const winner = boardState.gameStatus === 'player_wins' ? 'player' : 'opponent';
       playSoundEffect(winner === 'player' ? 'victory' : 'defeat');
       const timer = setTimeout(() => {
-        if (isCampaign && winner === 'player' && campaignMissionId) {
+        if (isCampaign && winner === 'player' && campaignMissionId && campaignData) {
           completeMission(campaignMissionId, campaignDifficulty, turnCount);
+          const alreadyClaimed = useCampaignStore.getState().rewardsClaimed.includes(campaignMissionId);
+          if (!alreadyClaimed) {
+            for (const reward of campaignData.mission.rewards) {
+              if (reward.type === 'eitr' && reward.amount) {
+                useCraftingStore.getState().addEitr(reward.amount);
+              }
+            }
+            useCampaignStore.getState().claimReward(campaignMissionId);
+            debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId}`);
+          }
         }
         setPhase('game_over');
         if (onGameEnd) {
@@ -721,6 +777,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     setPlayerArmy(null);
     setCombatPieces(null);
     setTurnCount(0);
+    setBossRulesApplied(false);
     const defaultArmy = getDefaultArmySelection();
     setPlayerArmy(defaultArmy);
     initializeBoard(defaultArmy, opponentArmy);

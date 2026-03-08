@@ -34,6 +34,7 @@ export const BASE_CHAPTER_MISSION_IDS: Record<string, string[]> = {
 	greek: greekChapter.missions.map(m => m.id),
 	egyptian: egyptianChapter.missions.map(m => m.id),
 	celtic: celticChapter.missions.map(m => m.id),
+	eastern: easternChapter.missions.map(m => m.id),
 };
 
 export function getMission(missionId: string) {

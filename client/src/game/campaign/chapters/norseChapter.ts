@@ -104,6 +104,7 @@ export const norseChapter: CampaignChapter = {
 			aiProfile: AI_PROFILES.easy, bossRules: [], prerequisiteIds: [],
 			rewards: [{ type: 'rune', amount: 20 }],
 			realm: 'ginnungagap',
+			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-sinmara', rook: 'hero-thryma', bishop: 'hero-ran', knight: 'hero-gormr' },
 		},
 		{
 			id: 'norse-2', chapterId: 'norse', missionNumber: 2,
@@ -123,6 +124,7 @@ export const norseChapter: CampaignChapter = {
 			prerequisiteIds: ['norse-1'],
 			rewards: [{ type: 'rune', amount: 40 }, { type: 'card', cardId: 20200 }],
 			realm: 'ginnungagap',
+			campaignArmy: { king: 'king-ymir', queen: 'hero-sinmara', rook: 'hero-thorgrim', bishop: 'hero-ran', knight: 'hero-skadi' },
 		},
 
 		// ─── Chapter 2: Forging the Worlds ───────────────────────────────
@@ -146,6 +148,7 @@ export const norseChapter: CampaignChapter = {
 			prerequisiteIds: ['norse-2'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			realm: 'midgard',
+			campaignArmy: { king: 'king-brimir', queen: 'hero-hel', rook: 'hero-valthrud', bishop: 'hero-njord', knight: 'hero-aegir' },
 		},
 
 		// ─── Chapter 3: Breath of Life ───────────────────────────────────
@@ -167,6 +170,7 @@ export const norseChapter: CampaignChapter = {
 			prerequisiteIds: ['norse-3'],
 			rewards: [{ type: 'rune', amount: 30 }],
 			realm: 'midgard',
+			campaignArmy: { king: 'king-surtr', queen: 'hero-sinmara', rook: 'hero-logi', bishop: 'hero-gerd', knight: 'hero-skadi' },
 		},
 
 		// ─── Chapter 4: Halls of the Aesir ───────────────────────────────
@@ -189,6 +193,7 @@ export const norseChapter: CampaignChapter = {
 			prerequisiteIds: ['norse-4'],
 			rewards: [{ type: 'rune', amount: 40 }],
 			realm: 'asgard',
+			campaignArmy: { king: 'king-ymir', queen: 'hero-hel', rook: 'hero-valthrud', bishop: 'hero-ran', knight: 'hero-gormr' },
 		},
 
 		// ─── Chapter 5: Light and Seed ───────────────────────────────────
@@ -211,6 +216,7 @@ export const norseChapter: CampaignChapter = {
 			prerequisiteIds: ['norse-5'],
 			rewards: [{ type: 'rune', amount: 45 }, { type: 'eitr', amount: 50 }],
 			realm: 'alfheim',
+			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-odin', rook: 'hero-heimdall', bishop: 'hero-frey', knight: 'hero-hoder' },
 		},
 
 		// ─── Chapter 6: War of Kin ───────────────────────────────────────
@@ -234,6 +240,7 @@ export const norseChapter: CampaignChapter = {
 			prerequisiteIds: ['norse-6'],
 			rewards: [{ type: 'rune', amount: 55 }, { type: 'card', cardId: 20210 }],
 			realm: 'vanaheim',
+			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-sol', rook: 'hero-tyr', bishop: 'hero-idunn', knight: 'hero-ullr' },
 		},
 
 		// ─── Chapter 7: Flames of Jotunheim ─────────────────────────────
@@ -258,6 +265,7 @@ export const norseChapter: CampaignChapter = {
 			prerequisiteIds: ['norse-7'],
 			rewards: [{ type: 'rune', amount: 65 }, { type: 'eitr', amount: 100 }],
 			realm: 'jotunheim',
+			campaignArmy: { king: 'king-surtr', queen: 'hero-sinmara', rook: 'hero-thorgrim', bishop: 'hero-gerd', knight: 'hero-skadi' },
 		},
 
 		// ─── Finale: Twilight Omen ───────────────────────────────────────
@@ -282,6 +290,7 @@ export const norseChapter: CampaignChapter = {
 			prerequisiteIds: ['norse-8'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20300 }, { type: 'pack', amount: 2 }],
 			realm: 'midgard',
+			campaignArmy: { king: 'king-surtr', queen: 'hero-hel', rook: 'hero-thryma', bishop: 'hero-freya', knight: 'hero-loki' },
 		},
 	],
 };
