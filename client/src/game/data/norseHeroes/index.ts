@@ -10,12 +10,14 @@ export * from './additionalHeroes';
 export * from './japaneseHeroes';
 export * from './egyptianHeroes';
 export * from './baseHeroes';
+export * from './commonHeroes';
 
 import { NORSE_HEROES, getHeroById as getPrimaryHeroById } from './heroDefinitions';
 import { ADDITIONAL_HEROES, getAdditionalHeroById } from './additionalHeroes';
 import { JAPANESE_HEROES, getJapaneseHeroById } from './japaneseHeroes';
 import { EGYPTIAN_HEROES, getEgyptianHeroById } from './egyptianHeroes';
 import { BASE_HEROES, getBaseHeroById } from './baseHeroes';
+import { COMMON_HEROES, getCommonHeroById } from './commonHeroes';
 import { NorseHero } from '../../types/NorseTypes';
 import { debug } from '../../config/debugConfig';
 
@@ -24,13 +26,14 @@ export const ALL_NORSE_HEROES: Record<string, NorseHero> = {
   ...ADDITIONAL_HEROES,
   ...JAPANESE_HEROES,
   ...EGYPTIAN_HEROES,
-  ...BASE_HEROES
+  ...BASE_HEROES,
+  ...COMMON_HEROES
 };
 
 export const ALL_HERO_LIST = Object.values(ALL_NORSE_HEROES);
 
 export function getAnyHeroById(id: string): NorseHero | undefined {
-  return getPrimaryHeroById(id) || getAdditionalHeroById(id) || getJapaneseHeroById(id) || getEgyptianHeroById(id) || getBaseHeroById(id);
+  return getPrimaryHeroById(id) || getAdditionalHeroById(id) || getJapaneseHeroById(id) || getEgyptianHeroById(id) || getBaseHeroById(id) || getCommonHeroById(id);
 }
 
 export function getAllHeroes(): NorseHero[] {
@@ -138,6 +141,15 @@ export const HERO_ID_TO_CONFIG_KEY: Record<string, string> = {
   'hero-ragnar-ironside': 'warrior-garrosh',
   'hero-brynhild': 'priest-anduin',
   'hero-sigurd': 'rogue-valeera',
+  // Common heroes
+  'hero-gullveig': 'warlock-guldan',
+  'hero-groa': 'mage-jaina',
+  'hero-hervor': 'warrior-garrosh',
+  'hero-bjorn-ironside': 'paladin-uther',
+  'hero-nanna': 'priest-anduin',
+  'hero-volva': 'shaman-thrall',
+  'hero-gudrun': 'hunter-rexxar',
+  'hero-starkad': 'berserker-illidan',
 };
 
 /**
@@ -262,6 +274,16 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-ragnar-ironside': 'warrior',
   'hero-brynhild': 'priest',
   'hero-sigurd': 'rogue',
+
+  // COMMON HEROES (8 heroes — demigods & saga figures)
+  'hero-gullveig': 'warlock',
+  'hero-groa': 'mage',
+  'hero-hervor': 'warrior',
+  'hero-bjorn-ironside': 'paladin',
+  'hero-nanna': 'priest',
+  'hero-volva': 'shaman',
+  'hero-gudrun': 'hunter',
+  'hero-starkad': 'berserker',
 
   // GREEK ALT-SKIN HEROES (3 heroes — preserved from mythology expansion)
   'hero-selene': 'rogue',       // Titaness of the Moon - stealth

@@ -760,6 +760,20 @@ vercel --prod                 # Deploy to Vercel
 - Registered in index.ts: ALL_NORSE_HEROES, HERO_ID_TO_CLASS, HERO_ID_TO_CONFIG_KEY, getAnyHeroById()
 - Weapon upgrade IDs: 90100-90103
 
+### Completed (Common-Tier Demigod Heroes)
+
+- Created 10 common-tier heroes (2 demigods/saga figures per chess piece slot)
+- **Queen**: Gullveig the Thrice-Burned (warlock, draw+self-damage), Groa the Seeress (mage, freeze)
+- **Rook**: Hervor Bearer of Tyrfing (warrior, hero attack), Bjorn Ironside (paladin, Divine Shield)
+- **Bishop**: Nanna Wife of Baldur (priest, heal+devotion), Völva the Prophetess (shaman, scry)
+- **Knight**: Gudrun the Avenger (hunter, hero damage), Starkad the Eight-Armed (berserker, cleave)
+- **King**: Askr First Man (+1 Attack aura), Embla First Woman (+1 Health aura + end-turn heal)
+- All 100 HP, no summons, Norse saga/demigod lore
+- New file: `client/src/game/data/norseHeroes/commonHeroes.ts` (8 NorseHero definitions)
+- Common kings added to ChessPieceConfig.ts (passive-only, no NorseHero needed)
+- Weapon upgrade IDs: 90110-90117
+- All default to 'common' rarity in heroRarity.ts (fallthrough)
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

@@ -50,6 +50,25 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       element: 'fire',
       norseHeroId: 'hero-erik-flameheart'
     },
+    // ===== COMMON =====
+    {
+      id: 'hero-gullveig',
+      name: 'Gullveig',
+      heroClass: 'warlock',
+      description: 'The Thrice-Burned: Draw cards at the cost of your own life.',
+      fixedCardIds: [],
+      element: 'dark',
+      norseHeroId: 'hero-gullveig'
+    },
+    {
+      id: 'hero-groa',
+      name: 'Groa',
+      heroClass: 'mage',
+      description: 'The Seeress: Freeze enemies with ancient galdr chants.',
+      fixedCardIds: [],
+      element: 'ice',
+      norseHeroId: 'hero-groa'
+    },
     // ===== NORSE HEROES - QUEEN (Wisdom/Magic) =====
     // Uses Mage, Warlock, and Necromancer spell pools
     {
@@ -248,6 +267,25 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       element: 'water',
       norseHeroId: 'hero-ragnar-ironside'
     },
+    // ===== COMMON =====
+    {
+      id: 'hero-hervor',
+      name: 'Hervor',
+      heroClass: 'warrior',
+      description: 'Bearer of Tyrfing: Gain Attack and strike with a cursed blade.',
+      fixedCardIds: [],
+      element: 'dark',
+      norseHeroId: 'hero-hervor'
+    },
+    {
+      id: 'hero-bjorn-ironside',
+      name: 'Bjorn Ironside',
+      heroClass: 'paladin',
+      description: 'Son of Ragnar: Grant Divine Shield to protect your forces.',
+      fixedCardIds: [],
+      element: 'water',
+      norseHeroId: 'hero-bjorn-ironside'
+    },
     // ===== NORSE HEROES - ROOK (Strength/Power) =====
     // Uses Warrior, Death Knight, and Paladin spell pools
     {
@@ -427,6 +465,25 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'light',
       norseHeroId: 'hero-brynhild'
+    },
+    // ===== COMMON =====
+    {
+      id: 'hero-nanna',
+      name: 'Nanna',
+      heroClass: 'priest',
+      description: "Wife of Baldur: Heal allies with undying devotion.",
+      fixedCardIds: [],
+      element: 'light',
+      norseHeroId: 'hero-nanna'
+    },
+    {
+      id: 'hero-volva',
+      name: 'Völva',
+      heroClass: 'shaman',
+      description: 'The Prophetess: Scry your deck and weave the threads of fate.',
+      fixedCardIds: [],
+      element: 'grass',
+      norseHeroId: 'hero-volva'
     },
     // ===== NORSE HEROES - BISHOP (Healing/Support) =====
     // Uses Priest, Druid, and Shaman spell pools
@@ -635,6 +692,25 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       element: 'fire',
       norseHeroId: 'hero-sigurd'
     },
+    // ===== COMMON =====
+    {
+      id: 'hero-gudrun',
+      name: 'Gudrun',
+      heroClass: 'hunter',
+      description: 'The Avenger: Deal steady damage to the enemy hero.',
+      fixedCardIds: [],
+      element: 'fire',
+      norseHeroId: 'hero-gudrun'
+    },
+    {
+      id: 'hero-starkad',
+      name: 'Starkad',
+      heroClass: 'berserker',
+      description: 'The Eight-Armed: Cleave through enemies with berserker fury.',
+      fixedCardIds: [],
+      element: 'fire',
+      norseHeroId: 'hero-starkad'
+    },
     // ===== NORSE HEROES - KNIGHT (Stealth/Agility) =====
     // Uses Rogue, Hunter, and Berserker spell pools
     {
@@ -819,6 +895,27 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       passiveEffect: 'leif_passives',
       chessAbility: 'king-leif',
       portrait: '/portraits/kings/leif.png'
+    },
+    // ===== COMMON =====
+    {
+      id: 'king-askr',
+      name: 'Askr',
+      heroClass: 'neutral',
+      description: 'First Man: All friendly pieces gain +1 Attack. Simple but relentless.',
+      fixedCardIds: [],
+      passiveEffect: 'askr_passives',
+      chessAbility: 'king-askr',
+      portrait: '/portraits/kings/askr.png'
+    },
+    {
+      id: 'king-embla',
+      name: 'Embla',
+      heroClass: 'neutral',
+      description: 'First Woman: All friendly pieces gain +1 Health. At end of turn, restore 1 Health to all allies.',
+      fixedCardIds: [],
+      passiveEffect: 'embla_passives',
+      chessAbility: 'king-embla',
+      portrait: '/portraits/kings/embla.png'
     },
     // ===== PREMIUM =====
     {
