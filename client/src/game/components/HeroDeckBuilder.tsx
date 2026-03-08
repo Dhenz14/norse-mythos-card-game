@@ -9,7 +9,7 @@
  * - Tokens: ./deckbuilder/tokens.css
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PieceType } from '../stores/heroDeckStore';
 import { useDeckBuilder, DECK_SIZE, isClassCard, getMaxCopies } from './deckbuilder';
@@ -22,6 +22,7 @@ import './deckbuilder/tokens.css';
 import './deckbuilder/deckbuilder.css';
 
 type ViewTab = 'cards' | 'art';
+type RarityFilter = 'all' | 'common' | 'rare' | 'epic' | 'mythic';
 
 interface HeroDeckBuilderProps {
 	pieceType: PieceType;
@@ -70,7 +71,33 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 }) => {
 	const db = useDeckBuilder({ pieceType, heroId, heroClass, onClose, onSave });
 	const [viewTab, setViewTab] = useState<ViewTab>('cards');
+	const [rarityFilter, setRarityFilter] = useState<RarityFilter>('all');
+	const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
+	const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+	const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const classColor = getClassColor(heroClass);
+
+	const filteredGroupedCards = useMemo(() => {
+		if (rarityFilter === 'all') return db.groupedCards;
+		return db.groupedCards.map(g => ({
+			...g,
+			cards: g.cards.filter(c => (c.rarity || 'common').toLowerCase() === rarityFilter),
+		})).filter(g => g.cards.length > 0);
+	}, [db.groupedCards, rarityFilter]);
+
+	const handleCardMouseEnter = useCallback((card: CardData, e: React.MouseEvent) => {
+		if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current);
+		const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+		tooltipTimerRef.current = setTimeout(() => {
+			setHoveredCard(card);
+			setTooltipPos({ x: rect.right + 8, y: rect.top });
+		}, 300);
+	}, []);
+
+	const handleCardMouseLeave = useCallback(() => {
+		if (tooltipTimerRef.current) clearTimeout(tooltipTimerRef.current);
+		setHoveredCard(null);
+	}, []);
 
 	const manaCurve = useMemo(() => {
 		const curve: number[] = new Array(8).fill(0);
@@ -88,7 +115,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0 }}
-			className="deck-builder fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+			className="deck-builder fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm"
 			onClick={onClose}
 		>
 			<motion.div
@@ -178,6 +205,18 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 									<option value="armor">Armor</option>
 								</select>
 								<select
+									value={rarityFilter}
+									onChange={e => setRarityFilter(e.target.value as RarityFilter)}
+									className="db-filter-select"
+									title="Filter by rarity"
+								>
+									<option value="all">All Rarities</option>
+									<option value="common">Common</option>
+									<option value="rare">Rare</option>
+									<option value="epic">Epic</option>
+									<option value="mythic">Mythic</option>
+								</select>
+								<select
 									value={db.sortBy}
 									onChange={e => db.setSortBy(e.target.value as any)}
 									className="db-filter-select"
@@ -214,10 +253,10 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 
 						{/* Card Grid - Grouped by Class */}
 						<div className="db-card-scroll">
-							{db.groupedCards.length === 0 && (
+							{filteredGroupedCards.length === 0 && (
 								<div className="db-no-results">No cards found matching your filters</div>
 							)}
-							{db.groupedCards.map(group => (
+							{filteredGroupedCards.map(group => (
 								<div key={group.label} className="db-card-group">
 									<div className="db-group-header">
 										<span className="db-group-label">{group.label}</span>
@@ -239,9 +278,17 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 											return (
 												<div
 													key={card.id}
-													onClick={() => db.setSelectedCard(card)}
-													onContextMenu={e => e.preventDefault()}
+													onClick={() => {
+														if (canAdd) db.handleAddCard(card);
+													}}
+													onContextMenu={e => {
+														e.preventDefault();
+														db.setSelectedCard(card);
+													}}
+													onMouseEnter={e => handleCardMouseEnter(card, e)}
+													onMouseLeave={handleCardMouseLeave}
 													className={`db-card rarity-${rarityKey} ${isMaxed ? 'not-playable' : ''} ${isLinkedSuper ? 'super-minion-linked' : ''}`}
+													title={canAdd ? 'Click to add \u2022 Right-click for details' : 'Right-click for details'}
 												>
 													{/* Art Section */}
 													<div className="db-card-art">
@@ -276,13 +323,16 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 
 														{/* Count Badge */}
 														{inDeckCount > 0 && (
-															<div className="db-count-badge">{inDeckCount}</div>
+															<div className="db-count-badge">{inDeckCount}/{maxCopies}</div>
 														)}
 													</div>
 
 													{/* Info Section */}
 													<div className="db-card-info">
 														<div className="db-card-name">{card.name}</div>
+														{card.description && (
+															<div className="db-card-desc">{card.description}</div>
+														)}
 														<div className="db-card-meta">
 															<div className="db-card-meta-left">
 																<span className="db-card-type">{card.type}</span>
@@ -380,7 +430,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 
 						<div className="db-sidebar-list">
 							{db.deckCardsWithCounts.length === 0 ? (
-								<div className="db-sidebar-empty">Click a card, then use Add to Deck</div>
+								<div className="db-sidebar-empty">Click cards to add them to your deck</div>
 							) : (
 								db.deckCardsWithCounts.map(({ card, count }) => {
 									const rarityKey = (card.rarity || 'common').toLowerCase();
@@ -417,7 +467,33 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 				</div>
 			</motion.div>
 
-			{/* Card Detail Flip (left-click) */}
+			{/* Hover Tooltip */}
+			{hoveredCard && (
+				<div
+					className="db-tooltip"
+					style={{
+						left: Math.min(tooltipPos.x, window.innerWidth - 300),
+						top: Math.min(tooltipPos.y, window.innerHeight - 200),
+					}}
+				>
+					<div className="db-tooltip-name">{hoveredCard.name}</div>
+					{hoveredCard.description && (
+						<div className="db-tooltip-desc">{hoveredCard.description}</div>
+					)}
+					{(hoveredCard as any).keywords?.length > 0 && (
+						<div className="db-tooltip-keywords">
+							{((hoveredCard as any).keywords as string[]).map((kw: string) => (
+								<span key={kw} className="db-tooltip-kw">{kw}</span>
+							))}
+						</div>
+					)}
+					{(hoveredCard as any).race && (
+						<div className="db-tooltip-race">Race: {(hoveredCard as any).race}</div>
+					)}
+				</div>
+			)}
+
+			{/* Card Detail Flip (right-click) */}
 			<AnimatePresence>
 				{db.selectedCard && (
 					<CardDetailFlip
@@ -481,7 +557,7 @@ const CardDetailFlip: React.FC<{
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0 }}
-			className="fixed inset-0 z-[55] db-detail-backdrop"
+			className="fixed inset-0 z-[210] db-detail-backdrop"
 			onClick={onClose}
 		>
 			<div className="cd-scene">

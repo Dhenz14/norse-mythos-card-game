@@ -671,6 +671,30 @@ vercel --prod                 # Deploy to Vercel
 - New card data file: `cardRegistry/sets/core/neutrals/norseMechanicPayoffCards.ts`
 - Updated ID_RANGES.md with new expansion ranges
 
+### Completed (Deck Builder UX Overhaul)
+
+- Left-click cards to add directly to deck (was: click to open popup)
+- Right-click opens card detail flip view for full info
+- Hover tooltip (300ms delay) shows name, description, keywords, race
+- Card tiles now display 2-line description snippet inline
+- Count badge shows `x/max` format (e.g. `1/2`)
+- Added rarity filter dropdown (All/Common/Rare/Epic/Mythic)
+- Card grid enlarged: 195px min (210px on wide screens, 155px mobile)
+- Click-to-add press feedback (scale 0.96), deck card slide + press feedback
+- Fixed deck builder z-index: was z-50 (hidden behind army sidebar z-60), now z-200
+- Card detail flip z-210, hover tooltip z-205
+
+### Completed (Combat Layout — Virtual Canvas Fix)
+
+- Converted all zone positions from viewport-relative (vw/vh/%) to fixed px within 1920×1080 virtual canvas
+- GameViewport.tsx scales entire canvas via scaleX/scaleY — internal px positions stay consistent on all screens
+- Player area: fixed 280px height, `align-items: flex-end` (was flex-start causing dead space)
+- Hand section: removed `margin-top: 60px` that pushed cards up, now bottom-aligned
+- Removed 200+ lines of conflicting vw/vh responsive breakpoints from responsive.css
+- Only mobile (<768px) stacked layout breakpoint remains
+- Player field at `bottom: 310px`, opponent field at `top: 260px` (fixed px, not %)
+- Follows Hearthstone approach: fixed virtual resolution, all px, uniform scaling
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

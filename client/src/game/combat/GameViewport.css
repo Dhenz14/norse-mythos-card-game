@@ -577,45 +577,43 @@
   --betting-zone-bottom: 8px;
 }
 
-/* Player Zone Container - absolute positioned at bottom-left */
-/* Override purple background from RagnarokCombatArena.css */
+/* Player Zone Container — pinned to bottom of 1920×1080 canvas */
 .viewport-mode .unified-player-area {
   position: absolute;
   left: 0;
   bottom: 0;
   right: 0;
-  height: auto;
-  min-height: 300px;
+  height: 280px; /* Fixed height within virtual canvas — no jumping */
   z-index: var(--z-heroes, 30);
-  pointer-events: none; /* Allow click-through, children have pointer-events */
-  /* Remove purple bar background */
+  pointer-events: none;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  transform: none !important; /* Remove translateY override */
+  transform: none !important;
 }
 
 .viewport-mode .unified-player-area > * {
   pointer-events: auto;
 }
 
-/* Hero Hand Row - flex container for hero and hand cards side by side */
+/* Hero Hand Row — flex, pinned to bottom of player area */
 .viewport-mode .unified-hero-hand-row {
   display: flex;
   flex-direction: row;
-  align-items: flex-start; /* Align items to top */
-  padding: 0 var(--zone-player-hero-left, 24px)
-    var(--zone-player-hero-bottom, 0);
+  align-items: flex-end; /* Cards align to bottom — no dead space */
+  padding: 0 24px 16px;
   position: absolute;
   bottom: 0;
   left: 0;
+  right: 0;
 }
 
 /* Hero Section - contains hero, mana, and hole cards layered */
 .viewport-mode .unified-hero-section {
   position: relative;
   flex-shrink: 0;
-  z-index: var(--z-heroes, 30); /* Hero above hole cards */
+  align-self: flex-end; /* Pin hero to bottom of row */
+  z-index: var(--z-heroes, 30);
 }
 
 .viewport-mode .poker-hero-container {
@@ -693,16 +691,14 @@
    ======================================== */
 
 .viewport-mode .unified-hand-section {
-  flex-shrink: 1;
+  flex: 1 1 0;
   display: flex;
   flex-direction: row;
-  align-items: flex-start; /* Align to TOP of hero */
-  align-self: flex-start; /* Don't stretch to container bottom */
-  margin-left: var(--hand-zone-gap);
-  margin-top: 60px; /* Offset to align with hero portrait (below poker cards) */
+  align-items: flex-end; /* Cards sit on the bottom edge */
+  margin-left: 16px;
   z-index: var(--z-hand, 40);
   min-width: 240px;
-  max-width: calc(100vw - 280px); /* Prevent overflow past hero portrait */
+  max-width: 1200px;
   overflow: visible;
 }
 
@@ -710,7 +706,7 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: flex-end; /* Cards bottom-aligned */
   gap: var(--hand-minion-card-spacing);
   padding: 0;
 }

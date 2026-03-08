@@ -43,20 +43,20 @@
 /* ===== Card Grid ===== */
 .db-card-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-	gap: 10px;
+	grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+	gap: 12px;
 	padding: 12px;
 }
 
 @media (min-width: 1400px) {
 	.db-card-grid {
-		grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 	}
 }
 
 @media (max-width: 900px) {
 	.db-card-grid {
-		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
 		gap: 8px;
 	}
 }
@@ -350,7 +350,7 @@
 	background: rgba(13, 17, 23, 0.95);
 	display: flex;
 	flex-direction: column;
-	gap: 3px;
+	gap: 2px;
 	min-height: 52px;
 }
 
@@ -487,6 +487,11 @@
 
 .db-deck-card:hover {
 	background: rgba(50, 60, 90, 0.6);
+	transform: translateX(2px);
+}
+.db-deck-card:active {
+	transform: scale(0.97);
+	transition: transform 0.05s ease;
 }
 
 .db-deck-card.rarity-common { border-left-color: rgba(150, 155, 165, 0.4); }
@@ -683,7 +688,7 @@
 	padding: 6px;
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: 3px;
 }
 
 .db-sidebar-empty {
@@ -1532,4 +1537,88 @@
 	border-radius: inherit;
 	border: 1px solid rgba(251, 191, 36, 0.25);
 	pointer-events: none;
+}
+
+/* ===== Card Description Snippet ===== */
+.db-card-desc {
+	font-size: 9px;
+	color: rgba(180, 185, 200, 0.65);
+	line-height: 1.25;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* ===== Click-to-Add Feedback ===== */
+.db-card:not(.not-playable):active {
+	transform: scale(0.96);
+	transition: transform 0.05s ease;
+}
+
+/* ===== Count Badge (show x/max) ===== */
+.db-count-badge {
+	font-size: 10px;
+	min-width: 30px;
+	width: auto;
+	padding: 0 5px;
+	border-radius: 10px;
+}
+
+/* ===== Hover Tooltip ===== */
+.db-tooltip {
+	position: fixed;
+	z-index: 205;
+	width: 260px;
+	max-width: 90vw;
+	padding: 10px 12px;
+	background: rgba(15, 18, 28, 0.97);
+	border: 1px solid rgba(100, 110, 140, 0.5);
+	border-radius: 8px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+	pointer-events: none;
+	animation: db-tooltip-in 0.12s ease-out;
+}
+
+@keyframes db-tooltip-in {
+	from { opacity: 0; transform: translateY(4px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.db-tooltip-name {
+	font-size: 13px;
+	font-weight: 700;
+	color: #f0f0f0;
+	margin-bottom: 4px;
+}
+
+.db-tooltip-desc {
+	font-size: 11px;
+	color: rgba(200, 205, 220, 0.85);
+	line-height: 1.4;
+	margin-bottom: 6px;
+}
+
+.db-tooltip-keywords {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 3px;
+	margin-bottom: 4px;
+}
+
+.db-tooltip-kw {
+	font-size: 9px;
+	padding: 1px 6px;
+	border-radius: 8px;
+	background: rgba(60, 80, 120, 0.5);
+	color: rgba(160, 180, 220, 0.9);
+	font-weight: 600;
+	text-transform: capitalize;
+}
+
+.db-tooltip-race {
+	font-size: 10px;
+	color: rgba(180, 170, 160, 0.7);
+	text-transform: capitalize;
 }
