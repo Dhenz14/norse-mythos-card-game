@@ -843,5 +843,91 @@ export const berserkerCards: CardData[] = [
     keywords: ["outcast"],
     collectible: true,
     set: "core"
+  },
+  // ==================== COMMON GAP-FILL (Starter Deck Viability) ====================
+  {
+    id: 39201,
+    name: "Ulfhednar's Howl",
+    manaCost: 1,
+    description: "Deal 1 damage to all enemy minions. Draw a card.",
+    flavorText: "The wolf-warriors howl before they strike. The howl is worse.",
+    type: "spell",
+    rarity: "common",
+    class: "Berserker",
+    spellEffect: {
+      type: "damage_aoe_and_draw",
+      value: 1,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39202,
+    name: "Reckless Charge",
+    manaCost: 1,
+    description: "Give a friendly minion Rush and +2 Attack this turn.",
+    flavorText: "Who needs a plan when you have axes?",
+    type: "spell",
+    rarity: "common",
+    class: "Berserker",
+    spellEffect: {
+      type: "buff_and_grant_keyword",
+      value: 2,
+      grantKeyword: "rush",
+      targetType: "friendly_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39203,
+    name: "Blood Frenzy",
+    manaCost: 2,
+    description: "Draw 2 cards. Take 2 damage.",
+    flavorText: "Pain is just weakness leaving the body. Along with blood.",
+    type: "spell",
+    rarity: "common",
+    class: "Berserker",
+    spellEffect: {
+      type: "draw_and_self_damage",
+      value: 2,
+      selfDamage: 2
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39204,
+    name: "Fury Slash",
+    manaCost: 3,
+    description: "Deal 4 damage to a minion. If it dies, gain +1 Attack this turn.",
+    flavorText: "One swing to end it. Two swings to enjoy it.",
+    type: "spell",
+    rarity: "common",
+    class: "Berserker",
+    spellEffect: {
+      type: "damage_and_conditional_buff",
+      value: 4,
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39205,
+    name: "Fenrir's Bite",
+    manaCost: 2,
+    attack: 2,
+    durability: 2,
+    description: "After your hero attacks, deal 1 damage to adjacent minions.",
+    flavorText: "The great wolf's jaws close on everything nearby.",
+    type: "weapon",
+    rarity: "common",
+    class: "Berserker",
+    collectible: true,
+    set: "core"
   }
 ];

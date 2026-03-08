@@ -893,5 +893,59 @@ export const hunterCards: CardData[] = [
     keywords: ["rush", "overkill"],
     collectible: true,
     set: "core"
+  },
+  // ==================== COMMON GAP-FILL (Starter Deck Viability — more spells) ====================
+  {
+    id: 39211,
+    name: "Skadi's Arrow",
+    manaCost: 2,
+    description: "Deal 3 damage to a minion.",
+    flavorText: "She never misses. That's not a boast — it's a warning.",
+    type: "spell",
+    rarity: "common",
+    class: "Hunter",
+    spellEffect: {
+      type: "damage",
+      value: 3,
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39212,
+    name: "Tracker's Instinct",
+    manaCost: 2,
+    description: "Draw 2 cards. They cost (1) more.",
+    flavorText: "A good tracker reads the land. A great one reads the future.",
+    type: "spell",
+    rarity: "common",
+    class: "Hunter",
+    spellEffect: {
+      type: "draw_with_penalty",
+      value: 2,
+      costModifier: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39213,
+    name: "Venomous Trap",
+    manaCost: 2,
+    description: "Rune: When your hero is attacked, deal 3 damage to the attacker and give it Poisonous.",
+    flavorText: "Step carefully in the northern woods.",
+    type: "spell",
+    rarity: "common",
+    class: "Hunter",
+    keywords: ["secret"],
+    spellEffect: {
+      type: "secret",
+      secretType: "on_hero_attacked",
+      value: 3
+    },
+    collectible: true,
+    set: "core"
   }
 ];

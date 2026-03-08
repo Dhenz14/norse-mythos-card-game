@@ -774,6 +774,16 @@ vercel --prod                 # Deploy to Vercel
 - Weapon upgrade IDs: 90110-90117
 - All default to 'common' rarity in heroRarity.ts (fallthrough)
 
+### Completed (Common Card Gap-Fill for Starter Decks)
+
+- Added 15 common cards to 4 underserved classes for 10-card spell deck viability
+- **Berserker** (+5, IDs 39201-39205): Ulfhednar's Howl (1-mana AoE+draw), Reckless Charge (rush buff), Blood Frenzy (draw+self-damage), Fury Slash (4 dmg removal), Fenrir's Bite (weapon)
+- **DeathKnight** (+5, IDs 39206-39210): Frost Strike (conditional dmg), Blood Tap (draw+corpse), Unholy Grasp (drain), Runic Shield (armor+draw), Helheim's Grasp (conditional destroy)
+- **Hunter** (+3, IDs 39211-39213): Skadi's Arrow (3 dmg removal), Tracker's Instinct (draw 2), Venomous Trap (Rune/secret)
+- **Priest** (+2, IDs 39214-39215): Norn's Counsel (conditional draw 2), Hel's Rebuke (2 AoE + hero heal)
+- Post-fill counts: Berserker 21, DeathKnight 21, Hunter 30, Priest 20 common cards
+- All classes now have enough common spells for viable 10-card starter decks
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

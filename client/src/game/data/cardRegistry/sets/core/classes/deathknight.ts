@@ -894,5 +894,96 @@ export const deathknightCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // ==================== COMMON GAP-FILL (Starter Deck Viability) ====================
+  {
+    id: 39206,
+    name: "Frost Strike",
+    manaCost: 2,
+    description: "Deal 3 damage to a minion. If it's Frozen, deal 5 instead.",
+    flavorText: "The cold doesn't kill you. The sword does.",
+    type: "spell",
+    rarity: "common",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "conditional_damage",
+      value: 3,
+      bonusValue: 5,
+      condition: "frozen",
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39207,
+    name: "Blood Tap",
+    manaCost: 1,
+    description: "Take 2 damage. Draw a card. Gain 1 Corpse.",
+    flavorText: "A small sacrifice for forbidden knowledge.",
+    type: "spell",
+    rarity: "common",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "draw_and_self_damage",
+      value: 1,
+      selfDamage: 2
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39208,
+    name: "Unholy Grasp",
+    manaCost: 3,
+    description: "Deal 2 damage to an enemy. Restore that much Health to your hero.",
+    flavorText: "Life flows from the living to the unliving.",
+    type: "spell",
+    rarity: "common",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "damage_and_heal_hero",
+      value: 2,
+      targetType: "enemy_any",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39209,
+    name: "Runic Shield",
+    manaCost: 2,
+    description: "Gain 4 Armor. Draw a card.",
+    flavorText: "Runes carved in bone last longer than runes carved in stone.",
+    type: "spell",
+    rarity: "common",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "gain_armor_and_draw",
+      armorValue: 4,
+      value: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39210,
+    name: "Helheim's Grasp",
+    manaCost: 4,
+    description: "Destroy a minion with 4 or less Attack.",
+    flavorText: "The dead reach up from below and drag the weak down with them.",
+    type: "spell",
+    rarity: "common",
+    class: "DeathKnight",
+    spellEffect: {
+      type: "conditional_destroy",
+      condition: { maxAttack: 4 },
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
   }
 ];

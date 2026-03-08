@@ -840,5 +840,41 @@ export const priestCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // ==================== COMMON GAP-FILL (Starter Deck Viability — draw + removal) ====================
+  {
+    id: 39214,
+    name: "Norn's Counsel",
+    manaCost: 1,
+    description: "Draw a card. If you have 3 or more cards in hand, draw another.",
+    flavorText: "The Norns weave and whisper. Those who listen gain wisdom.",
+    type: "spell",
+    rarity: "common",
+    class: "Priest",
+    spellEffect: {
+      type: "conditional_draw",
+      value: 1,
+      condition: { minHandSize: 3 },
+      bonusValue: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 39215,
+    name: "Hel's Rebuke",
+    manaCost: 3,
+    description: "Deal 2 damage to all enemy minions. Restore 2 Health to your hero.",
+    flavorText: "Even the dead flinch when Hel speaks.",
+    type: "spell",
+    rarity: "common",
+    class: "Priest",
+    spellEffect: {
+      type: "damage_aoe_and_heal_hero",
+      value: 2,
+      targetType: "all_enemy_minions"
+    },
+    collectible: true,
+    set: "core"
   }
 ];
