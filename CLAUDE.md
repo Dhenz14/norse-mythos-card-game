@@ -164,12 +164,21 @@ server/
 ### CSS Architecture (`game/combat/styles/`)
 - **zones.css**: Single source of truth for all zone positioning variables
 - **tokens.css**: Design tokens (spacing, colors, z-index tiers)
+- **realm-boards.css**: 10 realm-specific board skins (backgrounds, glow colors, torch tints, fog)
+- **norse-atmosphere.css**: Ambient effects (embers, dust motes, torch glow, vignette, battlefield divider)
 - Z-index tiers: base(1) → battlefield(10) → minions(20) → hero(30) → hand(40) → betting(200) → tooltip(9000)
 
 **To move any UI element:**
 1. Open `styles/zones.css`
 2. Find the `--zone-[name]-[position]` variable
 3. Change the value - no other files need editing
+
+**Realm board skins:**
+- `GameState.activeRealm?.id` → `.game-viewport.realm-{id}` CSS class → unique board appearance
+- Default realm is `midgard` when no `activeRealm` is set
+- Each realm sets CSS custom properties: `--realm-bg-top`, `--realm-glow-color`, `--realm-divider-color`, `--realm-torch-color`, etc.
+- `PixiParticleCanvas` receives `realm` prop for GPU ambient particles (snow, embers, sparkles per realm)
+- Realm shift cards (IDs 30301-30309) trigger visual transition: board skin change + announcement banner
 
 ### Effect System (`game/effects/`)
 - 94 battlecry handlers in `handlers/battlecry/`
@@ -627,6 +636,19 @@ vercel --prod                 # Deploy to Vercel
 - Applied to both HeroDetailPopup (clicked card) and ArmySelection grid (deck builder)
 - Scanline bars + luminosity mask focus rainbow near cursor position
 - Glare `::after` edge highlight ring with `brightness(0.6) contrast(3)` filter chain
+
+### Completed (Realm Board Skins & Ambient Overhaul)
+
+- Created `realm-boards.css` with 10 unique board skins: Midgard (warm stone), Asgard (golden marble + god-rays), Niflheim (blue-black ice + frost mist), Muspelheim (volcanic obsidian + lava glow), Helheim (green-purple spectral), Jotunheim (glacier blue), Alfheim (lavender bloom), Vanaheim (forest green + dappled light), Svartalfheim (bronze forge), Ginnungagap (cosmic void + stars)
+- Each realm sets CSS custom properties: `--realm-bg-top`, `--realm-bg-mid`, `--realm-glow-color`, `--realm-divider-color`, `--realm-fog-color`, `--realm-vignette-color`, `--realm-torch-color`, `--realm-ember-filter`, `--realm-dust-opacity`
+- Wired `GameState.activeRealm?.id` → `.game-viewport.realm-{id}` CSS class in `RagnarokCombatArena.tsx`
+- Wired `PixiParticleCanvas realm` prop for realm-specific GPU ambient particles (snow, embers, sparkles, etc.)
+- Default board is Midgard when no `activeRealm` is set
+- Realm shift announcement banner: Framer Motion overlay with slam-in realm name + fade on realm change
+- Norse knotwork board border ornament div
+- Realm indicator HUD badge showing current realm name
+- Boosted ambient effect visibility: 2-3x larger dust motes (1-1.5px → 3-4px), stronger torch glow (8% → 25% opacity), brighter embers, denser fog (0.3 → 0.7 opacity), sharper battlefield divider with triple glow layers
+- Hero health reactions: idle breathing (4s scale pulse), low HP desaturation + red vignette (≤40%), critical HP faster pulse (≤20%)
 
 ### Next (Genesis Launch)
 
