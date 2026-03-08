@@ -18,8 +18,10 @@ import { initializeAudioSubscriber } from '@/game/subscribers/AudioSubscriber';
 import { initializeNotificationSubscriber } from '@/game/subscribers/NotificationSubscriber';
 import { initializeAnimationSubscriber } from '@/game/subscribers/AnimationSubscriber';
 import { initializeDailyQuestSubscriber } from '@/game/subscribers/DailyQuestSubscriber';
-import { isBlockchainPackagingEnabled } from '../config/featureFlags';
+import { isBlockchainPackagingEnabled, isHiveMode } from '../config/featureFlags';
 import { debug } from '../config/debugConfig';
+import { hiveEvents } from '@/data/HiveEvents';
+import { toast } from 'sonner';
 
 let isInitialized = false;
 let cleanupFunctions: (() => void)[] = [];
@@ -41,6 +43,27 @@ export function initializeGameStoreIntegration(): () => void {
   cleanupFunctions.push(initializeNotificationSubscriber());
   cleanupFunctions.push(initializeAnimationSubscriber());
   cleanupFunctions.push(initializeDailyQuestSubscriber());
+
+  if (isHiveMode()) {
+    cleanupFunctions.push(
+      hiveEvents.on('card:transferred', (e) => {
+        const p = e.payload as { cardUid: string; from: string; to: string };
+        toast.info(`Card ${p.cardUid.slice(0, 8)}… transferred to ${p.to}`, { duration: 3000 });
+      }),
+      hiveEvents.on('token:updated', (e) => {
+        const p = e.payload as { token: string; amount: number; change: number };
+        const sign = p.change > 0 ? '+' : '';
+        toast.success(`${p.token}: ${sign}${p.change} (total: ${p.amount})`, { duration: 3000 });
+      }),
+      hiveEvents.on('transaction:confirmed', () => {
+        toast.success('Transaction confirmed on Hive', { duration: 2000 });
+      }),
+      hiveEvents.on('transaction:failed', (e) => {
+        const p = e.payload as { errorMessage?: string };
+        toast.error(`Transaction failed: ${p.errorMessage ?? 'unknown error'}`, { duration: 4000 });
+      }),
+    );
+  }
 
   if (isBlockchainPackagingEnabled()) {
     Promise.all([

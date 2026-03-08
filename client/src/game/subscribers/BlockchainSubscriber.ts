@@ -16,6 +16,8 @@ import { registerAccount, fetchPlayerElo } from '@/data/chainAPI';
 import { computePoW, POW_CONFIG } from '@/data/blockchain/proofOfWork';
 import { sha256Hash, canonicalStringify } from '@/data/blockchain/hashUtils';
 import { useSeasonStore } from '../stores/seasonStore';
+import { getCardsByOwner, getTokenBalance, getEloRating } from '@/data/blockchain/replayDB';
+import { hiveEvents } from '@/data/HiveEvents';
 
 type UnsubscribeFn = () => void;
 
@@ -28,6 +30,36 @@ let gameStartTime = 0;
 // Dedup guard: "{winner}_{turnNumber}" — unique per game session
 // Prevents double-packaging when both the store watcher and event bus fire for the same game end
 let lastProcessedMatchKey = '';
+
+// ---------------------------------------------------------------------------
+// Post-match Zustand store refresh from IndexedDB
+// ---------------------------------------------------------------------------
+
+async function refreshHiveDataStoreFromIDB(): Promise<void> {
+	const username = useHiveDataStore.getState().user?.hiveUsername;
+	if (!username) return;
+
+	try {
+		const [cards, tokenBalance, eloRating] = await Promise.all([
+			getCardsByOwner(username),
+			getTokenBalance(username),
+			getEloRating(username),
+		]);
+
+		const store = useHiveDataStore.getState();
+		store.loadFromHive({ cardCollection: cards, tokenBalance });
+		store.updateStats({
+			odinsEloRating: eloRating.elo,
+			wins: eloRating.wins,
+			losses: eloRating.losses,
+			totalGamesPlayed: eloRating.wins + eloRating.losses,
+		});
+
+		debug.combat('[BlockchainSubscriber] HiveDataStore refreshed from IndexedDB');
+	} catch (err) {
+		debug.warn('[BlockchainSubscriber] Failed to refresh HiveDataStore:', err);
+	}
+}
 
 // ---------------------------------------------------------------------------
 // Card UID extraction
@@ -302,14 +334,28 @@ async function enqueueResult(result: PackagedMatchResult, playerCardCount: numbe
 	}
 	queue.enqueue('match_result', compactResult, result.hash);
 
-	// Write XP locally to IndexedDB; stamp level-ups on chain
+	// Write XP locally to IndexedDB; stamp level-ups on chain; refresh Zustand store
 	applyLocalXPAndStampLevelUps(result)
-		.then((levelUpCount) => {
+		.then(async (levelUpCount) => {
 			debug.combat('[BlockchainSubscriber] Local XP applied, level-ups stamped:', levelUpCount);
+			await refreshHiveDataStoreFromIDB();
 		})
 		.catch((err) => {
 			debug.error('[BlockchainSubscriber] Failed to apply local XP:', err);
 		});
+
+	// Update RUNE token balance in Zustand (10 for win, 3 for loss in ranked)
+	if (result.matchType === 'ranked') {
+		const playerUsername = useHiveDataStore.getState().user?.hiveUsername;
+		if (playerUsername) {
+			const isWin = result.winner.username === playerUsername;
+			const runeReward = isWin ? 10 : 3;
+			const currentBalance = useHiveDataStore.getState().tokenBalance;
+			const newRune = (currentBalance?.RUNE ?? 0) + runeReward;
+			useHiveDataStore.getState().updateTokenBalance({ RUNE: newRune });
+			hiveEvents.emitTokenUpdate('RUNE', newRune, runeReward);
+		}
+	}
 
 	debug.combat('[BlockchainSubscriber] Packaged and queued:', {
 		matchId: result.matchId,

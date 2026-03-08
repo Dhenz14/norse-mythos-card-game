@@ -4,7 +4,6 @@
  * Simple event emitter for real-time state sync.
  * Focused on the 5 core on-chain data types.
  * 
- * Status: BLUEPRINT ONLY - Ready for implementation when Hive integration begins.
  */
 
 import { HiveMatchResult, HiveTransaction } from './schemas/HiveTypes';

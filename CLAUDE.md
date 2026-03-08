@@ -806,6 +806,21 @@ vercel --prod                 # Deploy to Vercel
 - 2,082 collectible (mintable NFTs), 160 non-collectible (tokens/generated)
 - Full NFT pipeline verified: cardRegistry → getCardById → nftMetadataGenerator → broadcastMint → replayRules → IndexedDB → HiveDataLayer → Game UI
 
+### Completed (NFT End-to-End Wiring)
+
+- Added `refreshHiveDataStoreFromIDB()` in BlockchainSubscriber: re-reads IndexedDB → Zustand after match (XP, levels, cards, ELO)
+- Added RUNE token update after ranked matches: +10 win, +3 loss, emits `token:updated` event
+- Added NFT ownership enforcement in `heroDeckStore.ts`: `getOwnedCopies()` gates deck building in Hive mode
+- Deck validation rejects cards exceeding owned NFT copies in Hive mode
+- Wired `tradeStore.ts` `acceptOffer` to broadcast `card_transfer` on Hive (per-card via `hiveSync.transferCard()`)
+- Wired `CollectionPage.tsx` dissolve to broadcast `rp_burn` on chain for NFT destruction
+- Wired `campaignStore.ts` `claimReward` to broadcast `reward_claim` via `hiveSync.claimReward()`
+- Wired `dailyQuestStore.ts` `claimReward` to broadcast `reward_claim` via `hiveSync.claimReward()`
+- Added HiveEvents toast notifications in `gameStoreIntegration.ts`: card transfers, token updates, tx confirmed/failed
+- Removed stale "BLUEPRINT ONLY" labels from `HiveEvents.ts` and `HiveDataLayer.ts`
+- All changes gated behind `isHiveMode()` — zero impact on local/test mode
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

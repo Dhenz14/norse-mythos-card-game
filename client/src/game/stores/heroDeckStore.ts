@@ -9,6 +9,8 @@
 import { create } from 'zustand';
 import { cardRegistry } from '../data/cardRegistry';
 import { debug } from '../config/debugConfig';
+import { useHiveDataStore } from '../../data/HiveDataLayer';
+import { isHiveMode } from '../config/featureFlags';
 
 export type PieceType = 'queen' | 'rook' | 'bishop' | 'knight';
 
@@ -78,6 +80,12 @@ function countCardCopies(cardIds: number[], cardId: number): number {
   return cardIds.filter(id => id === cardId).length;
 }
 
+function getOwnedCopies(cardId: number): number {
+  if (!isHiveMode()) return Infinity;
+  const collection = useHiveDataStore.getState().cardCollection;
+  return collection.filter(c => c.cardId === cardId).length;
+}
+
 function isCardMythic(cardId: number): boolean {
   const card = getCardById(cardId);
   if (!card) return false;
@@ -139,6 +147,13 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     if (!isCardValidForClass(cardId, deck.heroClass)) {
       const card = getCardById(cardId);
       debug.warn(`[HeroDeck] Card ${card?.name || cardId} is not valid for class ${deck.heroClass}`);
+      return false;
+    }
+
+    const ownedCopies = getOwnedCopies(cardId);
+    if (currentCopies >= ownedCopies) {
+      const card = getCardById(cardId);
+      debug.warn(`[HeroDeck] You only own ${ownedCopies} copy(ies) of ${card?.name || cardId}`);
       return false;
     }
     
@@ -259,7 +274,18 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
         errors.push(`Card with ID ${cardId} not found in registry`);
       }
     }
-    
+
+    if (isHiveMode()) {
+      for (const [cardIdStr, count] of Object.entries(cardCounts)) {
+        const cardId = Number(cardIdStr);
+        const owned = getOwnedCopies(cardId);
+        if (count > owned) {
+          const card = getCardById(cardId);
+          errors.push(`You own ${owned} copy(ies) of "${card?.name || cardId}" but deck has ${count}`);
+        }
+      }
+    }
+
     return {
       valid: errors.length === 0,
       errors,

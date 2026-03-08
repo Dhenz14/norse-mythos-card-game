@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { pickRandomQuests, type DailyQuestType, type QuestTemplate } from '../data/dailyQuestPool';
+import { hiveSync } from '../../data/HiveSync';
+import { isHiveMode } from '../config/featureFlags';
 
 export interface DailyQuest {
 	id: string;
@@ -96,6 +98,10 @@ export const useDailyQuestStore = create<DailyQuestState & DailyQuestActions>()(
 					),
 					totalCompleted: state.totalCompleted + 1,
 				}));
+
+				if (isHiveMode()) {
+					hiveSync.claimReward(`daily_quest:${questId}`).catch(() => {});
+				}
 
 				return quest.reward;
 			},

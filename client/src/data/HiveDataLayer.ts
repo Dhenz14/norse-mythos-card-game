@@ -13,7 +13,6 @@
  * This store reads from IndexedDB and provides reactive state to React.
  * See HIVE_INTEGRATION_BLUEPRINT.md and docs/HIVE_BLOCKCHAIN_BLUEPRINT.md.
  *
- * Status: BLUEPRINT ONLY - Store structure ready, pending chain replay engine.
  */
 
 import { create } from 'zustand';

@@ -11,6 +11,8 @@ import { getMasteryTier } from '../../../data/blockchain/cardXPSystem';
 import { useCraftingStore } from '../../crafting/craftingStore';
 import { getEitrValue, getCraftCost } from '../../crafting/craftingConstants';
 import { cardRegistry } from '../../data/cardRegistry';
+import { hiveSync } from '../../../data/HiveSync';
+import { isHiveMode } from '../../config/featureFlags';
 import './collection.css';
 
 type FilterRarity = 'all' | 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
@@ -723,6 +725,10 @@ export default function CollectionPage() {
 													<button
 														onClick={() => {
 															if (craftConfirm === 'disenchant') {
+																const nft = hiveCards.find(c => c.cardId === selectedCard.id);
+																if (isHiveMode() && nft) {
+																	hiveSync.broadcastCustomJson('rp_burn' as any, { nft_id: nft.uid }).catch(() => {});
+																}
 																addEitr(eitrVal);
 																setCards(prev => {
 																	const idx = prev.findIndex(c => c.id === selectedCard.id);
@@ -733,7 +739,7 @@ export default function CollectionPage() {
 																	}
 																	return prev.map((c, i) => i === idx ? { ...c, quantity: c.quantity - 1 } : c);
 																});
-																removeCard(String(selectedCard.id));
+																removeCard(nft?.uid ?? String(selectedCard.id));
 																if (selectedCard.quantity <= 1) setSelectedCard(null);
 																else setSelectedCard({ ...selectedCard, quantity: selectedCard.quantity - 1 });
 															} else {

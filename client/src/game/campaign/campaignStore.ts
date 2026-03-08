@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Difficulty } from './campaignTypes';
+import { hiveSync } from '../../data/HiveSync';
+import { isHiveMode } from '../config/featureFlags';
 
 interface MissionCompletion {
 	difficulty: Difficulty;
@@ -64,6 +66,9 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 				set(state => ({
 					rewardsClaimed: [...state.rewardsClaimed, missionId],
 				}));
+				if (isHiveMode()) {
+					hiveSync.claimReward(`campaign:${missionId}`).catch(() => {});
+				}
 			},
 
 			isMissionCompleted: (missionId) => {

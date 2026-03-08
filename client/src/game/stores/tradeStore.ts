@@ -1,4 +1,8 @@
 import { create } from 'zustand';
+import { hiveSync } from '../../data/HiveSync';
+import { useHiveDataStore } from '../../data/HiveDataLayer';
+import { hiveEvents } from '../../data/HiveEvents';
+import { isHiveMode } from '../config/featureFlags';
 
 export interface TradeOffer {
 	id: string;
@@ -99,9 +103,24 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 				body: JSON.stringify({ username }),
 			});
 			if (res.ok) {
+				const offer = get().offers.find(o => o.id === offerId);
 				set(s => ({
 					offers: s.offers.map(o => o.id === offerId ? { ...o, status: 'accepted' as const } : o),
 				}));
+
+				if (isHiveMode() && offer) {
+					const collection = useHiveDataStore.getState().cardCollection;
+					for (const cardId of offer.offeredCardIds) {
+						const nft = collection.find(c => c.cardId === cardId);
+						if (nft) {
+							const result = await hiveSync.transferCard(nft.uid, offer.toUser, `trade:${offerId}`);
+							if (result.success) {
+								useHiveDataStore.getState().removeCard(nft.uid);
+								hiveEvents.emitCardTransferred(nft.uid, offer.fromUser, offer.toUser);
+							}
+						}
+					}
+				}
 				return true;
 			}
 			return false;
