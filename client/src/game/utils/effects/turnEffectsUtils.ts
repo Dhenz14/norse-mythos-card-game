@@ -5,7 +5,7 @@
  * start-of-turn and end-of-turn effects.
  */
 
-import { GameState, CardInstance, MinionCardData, GameLogEvent } from '../../types';
+import { GameState, CardInstance, CardData, MinionCardData, GameLogEvent } from '../../types';
 import { drawCard } from '../drawUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { processTurnStartEffects as processStatusTurnStart, clearEndOfTurnEffects } from './statusEffectUtils';
@@ -13,6 +13,7 @@ import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
 import { executeDeathrattle } from '../../effects/handlers/deathrattleBridge';
 import { removeDeadMinions } from '../zoneUtils';
+import { getCardById } from '../../data/allCards';
 
 // Helper to create type-safe game log entries for effects
 function createEffectLogEntry(
@@ -342,7 +343,45 @@ function processGenericStartOfTurnEffect(
     }
 
     case 'summon_token': {
-      debug.log(`[StartOfTurn] ${minion.card.name}: summon_token effect not yet fully implemented`);
+      const tokenId = effect.summonCardId ?? effect.tokenId;
+      const count = typeof effect.value === 'number' ? effect.value : 1;
+      if (!tokenId) {
+        debug.log(`[StartOfTurn] ${minion.card.name}: summon_token missing summonCardId/tokenId`);
+        break;
+      }
+      const tokenCard = getCardById(tokenId);
+      if (!tokenCard) {
+        debug.log(`[StartOfTurn] ${minion.card.name}: token card ${tokenId} not found`);
+        break;
+      }
+      const playerState = newState.players[currentPlayer];
+      const MAX_BATTLEFIELD = 7;
+      for (let i = 0; i < count; i++) {
+        if (playerState.battlefield.length >= MAX_BATTLEFIELD) break;
+        const tokenInstance: CardInstance = {
+          instanceId: uuidv4(),
+          card: tokenCard as CardData,
+          currentHealth: getHealth(tokenCard as CardData),
+          canAttack: false,
+          isPlayed: true,
+          isSummoningSick: true,
+          attacksPerformed: 0,
+        };
+        playerState.battlefield.push(tokenInstance);
+      }
+      newState = {
+        ...newState,
+        gameLog: [
+          ...(newState.gameLog || []),
+          createEffectLogEntry(
+            `${minion.card.name} summoned ${count} ${tokenCard.name}!`,
+            currentPlayer,
+            newState.turnNumber || 1,
+            minion.card.id
+          ),
+        ],
+      };
+      debug.log(`[StartOfTurn] ${minion.card.name}: summoned ${count}x ${tokenCard.name}`);
       break;
     }
 
