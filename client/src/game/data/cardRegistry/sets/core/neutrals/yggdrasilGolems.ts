@@ -5,13 +5,13 @@
  * Contains the Yggdrasil Golem mechanic cards that summon increasingly larger golems
  * for each one summoned during the game
  * 
- * ID Range: 85001001-85101
+ * ID Range: 85011-85101
  */
 import { CardData } from '../../../../../types';
 
 export const yggdrasilGolemCards: CardData[] = [
   {
-    id: 85001001,
+    id: 85011,
     name: "Summon Yggdrasil Golem",
     manaCost: 0,
     description: "Summon a Yggdrasil Golem.",
@@ -24,14 +24,14 @@ export const yggdrasilGolemCards: CardData[] = [
     set: "core"
   },
   {
-    id: 85001002,
+    id: 85012,
     name: "Shuffle 3 Copies",
     manaCost: 0,
     description: "Shuffle 3 copies of this card into your deck.",
     flavorText: "The seeds of Yggdrasil multiply endlessly.",
     type: "spell",
     rarity: "common",
-    spellEffect: { type: "shuffle_copies", count: 3, targetCardId: 85001001 },
+    spellEffect: { type: "shuffle_copies", count: 3, targetCardId: 85011 },
     class: "Neutral",
     set: "core",
     collectible: true

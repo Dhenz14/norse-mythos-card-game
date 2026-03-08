@@ -795,6 +795,17 @@ vercel --prod                 # Deploy to Vercel
 - Base/basic rarity cards (3) excluded from NFT supply — free for all players
 - Mythic artifacts and pets match their hero's rarity separately (~900 total mythic cards across all categories)
 
+### Completed (NFT Compliance Audit)
+
+- Fixed broken Yggdrasil Golem IDs: 85001001→85011, 85001002→85012 (typos that would have been rejected by mint)
+- Expanded `VALID_CARD_RANGES` in `replayRules.ts` from 11 narrow ranges to 13 broad ranges covering all 2,242 cards
+- 962 cards were outside valid mint ranges (would have been rejected by chain replay) — now all covered
+- Added explicit `collectible: true` to 47 cards with undefined collectible across 4 files
+- Final audit: 2,242/2,242 cards have `id`, `name`, `type`, `rarity`, `collectible` (100% coverage)
+- `getCardById()` resolves all 2,242 cards (0 lookup failures)
+- 2,082 collectible (mintable NFTs), 160 non-collectible (tokens/generated)
+- Full NFT pipeline verified: cardRegistry → getCardById → nftMetadataGenerator → broadcastMint → replayRules → IndexedDB → HiveDataLayer → Game UI
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

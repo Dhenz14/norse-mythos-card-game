@@ -162,10 +162,19 @@ async function applyMint(
 	if (!to || !cards || !Array.isArray(cards)) return;
 
 	const VALID_CARD_RANGES: [number, number][] = [
-		[1000, 3999], [4000, 8999], [9000, 9250], [20000, 29999],
-		[30001, 30410], [31001, 31922], [36407, 36409],
-		[38001, 39215], [50000, 50376], [85001, 85310],
-		[90100, 90117],
+		[1000, 19999],  // Core neutrals, classes, tokens, legacy expansions
+		[20000, 29999],  // Norse set, artifacts, armor
+		[30001, 33999],  // Norse mechanics, expansion gap-fill, Greek minions
+		[35001, 40999],  // Class expansions, mechanic cards
+		[47001, 48999],  // Additional spells and minions
+		[50000, 50999],  // Pet cards (38 families)
+		[60001, 60999],  // Einherjar / misc expansion
+		[70001, 71999],  // Greek/cross-mythology cards
+		[80001, 80999],  // Oracle / misc expansion
+		[85001, 86999],  // Rogue combo, Yggdrasil golems, misc
+		[90001, 90999],  // Hero super minions, weapon upgrades
+		[91001, 92999],  // Elder titans, warmaster expansion
+		[95001, 96999],  // Iconic/modern/final legendary cards
 	];
 	const isValidCardId = (id: number) => VALID_CARD_RANGES.some(([lo, hi]) => id >= lo && id <= hi);
 

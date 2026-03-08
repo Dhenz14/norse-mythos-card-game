@@ -93,6 +93,7 @@ export const modernLegendaryCards: CardData[] = [
       keywords: ["battlecry", "deathrattle"],
       heroClass: "priest",
       class: "Priest",
+      collectible: true,
                   battlecry: {
         type: "choose",
         requiresTarget: true,
@@ -286,7 +287,8 @@ export const modernLegendaryCards: CardData[] = [
   keywords: ["rush"],
   
   heroClass: "warrior",
-  
+  collectible: true,
+
   // Special handling for attack and kill trigger
   class: "Warrior"
   },
@@ -336,6 +338,7 @@ export const modernLegendaryCards: CardData[] = [
       keywords: ["deathrattle"],
       heroClass: "mage",
       class: "Mage",
+      collectible: true,
       deathrattle: {
         type: "add_card",
       targetType: "none",
@@ -418,6 +421,7 @@ export const modernLegendaryCards: CardData[] = [
   
   keywords: [],
   heroClass: "neutral",
+  collectible: true,
   // Special handling for hero power refresh
   class: "Neutral"
   },
@@ -465,6 +469,7 @@ export const modernLegendaryCards: CardData[] = [
     keywords: ["battlecry", "discover"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       race: "Naga",
 
@@ -525,6 +530,7 @@ export const modernLegendaryCards: CardData[] = [
 
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       deathrattle: {
         type: "draw",
@@ -554,6 +560,7 @@ export const modernLegendaryCards: CardData[] = [
 
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
                   battlecry: {
         type: "copy_to_hand",
@@ -633,6 +640,7 @@ export const modernLegendaryCards: CardData[] = [
       heroClass: "neutral",
       class: "Neutral",
       race: "Dragon",
+      collectible: true,
                   battlecry: {
         type: "add_card",
         requiresTarget: false,
@@ -695,6 +703,7 @@ export const modernLegendaryCards: CardData[] = [
       keywords: ["battlecry"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
                   battlecry: {
         type: "reorder_deck",
         requiresTarget: false,
@@ -753,6 +762,7 @@ export const modernLegendaryCards: CardData[] = [
       keywords: ["battlecry"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       race: "Naga",
 
@@ -831,6 +841,7 @@ export const modernLegendaryCards: CardData[] = [
     keywords: ["rush", "battlecry"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       race: "Dragon",
 
@@ -908,7 +919,8 @@ export const modernLegendaryCards: CardData[] = [
   keywords: [],
   
   heroClass: "neutral",
-  
+  collectible: true,
+
   // Special handling for deck and health change
   class: "Neutral"
   },

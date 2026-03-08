@@ -76,7 +76,8 @@ export const   iconicLegendaryCards: CardData[] = [{
   keywords: [],
   heroClass: "neutral",
   race: "Einherjar",
-  
+  collectible: true,
+
   // Special handling in game logic for summoning from deck
   class: "Neutral"
   },
@@ -133,7 +134,8 @@ export const   iconicLegendaryCards: CardData[] = [{
   keywords: [],
   heroClass: "neutral",
   race: "Titan",
-  
+  collectible: true,
+
   // Special handling in game logic for start-of-game effect
   class: "Neutral"
   },
@@ -247,6 +249,7 @@ export const   iconicLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       deathrattle: {
         type: "summon",
@@ -373,6 +376,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       keywords: ["taunt", "deathrattle"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       race: "Dragon",
 
@@ -404,6 +408,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       heroClass: "mage",
       class: "Mage",
       race: "Elemental",
+      collectible: true,
       deathrattle: {
         type: "damage",
       targetType: "all_minions",
@@ -463,7 +468,8 @@ export const   iconicLegendaryCards: CardData[] = [{
   keywords: [],
   heroClass: "shaman",
   race: "Elemental",
-  
+  collectible: true,
+
   // Special handling in game logic for healing effect
   class: "Shaman",
   },
@@ -513,6 +519,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     keywords: ["taunt", "battlecry"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       race: "Automaton",
 
@@ -571,6 +578,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "neutral",
+  collectible: true,
   // Special handling in game logic for spell effect
   class: "Neutral"
   },
@@ -646,6 +654,7 @@ export const   iconicLegendaryCards: CardData[] = [{
     keywords: ["taunt", "deathrattle"],
       heroClass: "shaman",
       class: "Shaman",
+      collectible: true,
       deathrattle: {
         type: "shuffle",
       targetType: "none",
@@ -723,7 +732,8 @@ export const   iconicLegendaryCards: CardData[] = [{
   
   heroClass: "neutral",
   race: "Dragon",
-      class: "Neutral"
+      class: "Neutral",
+      collectible: true
   },
   {
   id: 95129,
@@ -838,7 +848,8 @@ export const   iconicLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "neutral",
-      class: "Neutral"
+      class: "Neutral",
+      collectible: true
   },
   {
       id: 95134,
@@ -889,6 +900,7 @@ export const   iconicLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       spellEffect: {
         type: "buff",
@@ -951,6 +963,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       keywords: ["battlecry"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
                   battlecry: {
         type: "give_cards",
 

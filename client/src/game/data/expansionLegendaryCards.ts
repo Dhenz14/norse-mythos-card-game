@@ -74,6 +74,7 @@ export const expansionLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "shaman",
+  collectible: true,
   // Special handling for freeze copy effect
   class: "Shaman"
   },
@@ -125,6 +126,7 @@ export const expansionLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
                   battlecry: {
         type: "transform_copy",
@@ -153,6 +155,7 @@ export const expansionLegendaryCards: CardData[] = [{
       keywords: ["battlecry"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
                   battlecry: {
         type: "buff_deck",
 
@@ -216,6 +219,7 @@ export const expansionLegendaryCards: CardData[] = [{
       keywords: ["deathrattle"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       race: "Beast",
 
@@ -246,6 +250,7 @@ export const expansionLegendaryCards: CardData[] = [{
 
       heroClass: "rogue",
       class: "Rogue",
+      collectible: true,
 
                   battlecry: {
         type: "replace_spells",
@@ -273,7 +278,8 @@ export const expansionLegendaryCards: CardData[] = [{
   keywords: [],
   
   heroClass: "warrior",
-  
+  collectible: true,
+
   // Special handling for armor-based summon
   class: "Warrior"
   },
@@ -352,6 +358,7 @@ export const expansionLegendaryCards: CardData[] = [{
   
   keywords: [],
   heroClass: "neutral",
+  collectible: true,
   // Special handling for summoning Troggs
   class: "Neutral",
   },
@@ -373,6 +380,7 @@ export const expansionLegendaryCards: CardData[] = [{
       keywords: ["battlecry"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
       race: "Automaton",
 
@@ -475,7 +483,8 @@ export const expansionLegendaryCards: CardData[] = [{
   keywords: [],
   heroClass: "neutral",
   race: "Automaton",
-  
+  collectible: true,
+
   // Special handling for Leper Gnome summoning
   class: "Neutral",
   },
@@ -550,6 +559,7 @@ export const expansionLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
                   battlecry: {
         type: "replace_hero_power",
@@ -578,6 +588,7 @@ export const expansionLegendaryCards: CardData[] = [{
 
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
 
                   battlecry: {
         type: "destroy",
@@ -636,6 +647,7 @@ export const expansionLegendaryCards: CardData[] = [{
       heroClass: "neutral",
       class: "Neutral",
       race: "Beast",
+      collectible: true,
                   battlecry: {
         type: "give_cards",
 
@@ -666,6 +678,7 @@ export const expansionLegendaryCards: CardData[] = [{
       heroClass: "rogue",
       class: "Rogue",
       race: "Beast",
+      collectible: true,
 
                   battlecry: {
         type: "give_cards",
@@ -703,7 +716,8 @@ export const expansionLegendaryCards: CardData[] = [{
   keywords: ["stealth"],
   
   heroClass: "neutral",
-  
+  collectible: true,
+
   // Special handling for Steward summoning
   class: "Neutral",
   },
@@ -753,6 +767,7 @@ export const expansionLegendaryCards: CardData[] = [{
       keywords: ["deathrattle"],
       heroClass: "neutral",
       class: "Neutral",
+      collectible: true,
       deathrattle: {
         type: "damage",
       targetType: "all_enemy_minions",
@@ -780,7 +795,8 @@ export const expansionLegendaryCards: CardData[] = [{
   keywords: [],
   heroClass: "hunter",
   race: "Beast",
-  
+  collectible: true,
+
   // Special handling for excess damage to face
   class: "Hunter",
   },
