@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
 import {
 	ALL_CHAPTERS, EASTERN_CHAPTER, BASE_CHAPTER_MISSION_IDS, useCampaignStore,
-	NINE_REALMS, REALM_MAP, getMissionsForRealm, getRealmProgress,
-	GREEK_REALMS, GREEK_REALM_MAP, getGreekMissionsForRealm, getGreekRealmProgress,
+	NINE_REALMS, REALM_MAP, MISSION_REALM_MAP, getMissionsForRealm, getRealmProgress,
+	GREEK_REALMS, GREEK_REALM_MAP, GREEK_MISSION_REALM_MAP, getGreekMissionsForRealm, getGreekRealmProgress,
 } from '../../campaign';
 import type { CampaignChapter, CampaignMission, Difficulty } from '../../campaign/campaignTypes';
 import type { Realm } from '../../campaign/nineRealms';
@@ -257,25 +257,30 @@ function GreekConstellationLines({ completedMissions }: { completedMissions: Rec
 	);
 }
 
-function NorseRealmNode({ realm, selected, onClick }: {
+function NorseRealmNode({ realm, selected, onClick, hasUnlockedMission }: {
 	realm: Realm;
 	selected: boolean;
 	onClick: () => void;
+	hasUnlockedMission: boolean;
 }) {
 	const completedMissions = useCampaignStore(s => s.completedMissions);
 	const norseChapter = ALL_CHAPTERS.find(c => c.faction === 'norse');
 	const missions = norseChapter?.missions ?? [];
 	const progress = getRealmProgress(realm.id, missions, completedMissions);
 	const hasMissions = progress.total > 0;
+	const allDone = progress.completed === progress.total && progress.total > 0;
 
 	return (
 		<div
-			className={`realm-node ${!hasMissions ? 'realm-node-locked' : ''} ${selected ? 'realm-node-selected' : ''}`}
+			className={`realm-node ${!hasMissions ? 'realm-node-locked' : ''} ${selected ? 'realm-node-selected' : ''} ${hasUnlockedMission && !allDone ? 'realm-node-available' : ''}`}
 			style={{ left: `${realm.position.x}%`, top: `${realm.position.y}%` }}
 			onClick={() => hasMissions && onClick()}
 		>
 			{hasMissions && progress.total > 0 && (
 				<div className="realm-progress">{progress.completed}/{progress.total}</div>
+			)}
+			{hasUnlockedMission && !allDone && (
+				<div className="realm-start-hint">Start Here</div>
 			)}
 			<div
 				className="realm-glow"
@@ -292,25 +297,30 @@ function NorseRealmNode({ realm, selected, onClick }: {
 	);
 }
 
-function GreekRealmNode({ realm, selected, onClick }: {
+function GreekRealmNode({ realm, selected, onClick, hasUnlockedMission }: {
 	realm: GreekRealm;
 	selected: boolean;
 	onClick: () => void;
+	hasUnlockedMission: boolean;
 }) {
 	const completedMissions = useCampaignStore(s => s.completedMissions);
 	const greekChapter = ALL_CHAPTERS.find(c => c.faction === 'greek');
 	const missions = greekChapter?.missions ?? [];
 	const progress = getGreekRealmProgress(realm.id, missions, completedMissions);
 	const hasMissions = progress.total > 0;
+	const allDone = progress.completed === progress.total && progress.total > 0;
 
 	return (
 		<div
-			className={`realm-node ${!hasMissions ? 'realm-node-locked' : ''} ${selected ? 'realm-node-selected' : ''}`}
+			className={`realm-node ${!hasMissions ? 'realm-node-locked' : ''} ${selected ? 'realm-node-selected' : ''} ${hasUnlockedMission && !allDone ? 'realm-node-available' : ''}`}
 			style={{ left: `${realm.position.x}%`, top: `${realm.position.y}%` }}
 			onClick={() => hasMissions && onClick()}
 		>
 			{hasMissions && progress.total > 0 && (
 				<div className="realm-progress">{progress.completed}/{progress.total}</div>
+			)}
+			{hasUnlockedMission && !allDone && (
+				<div className="realm-start-hint">Start Here</div>
 			)}
 			<div
 				className="realm-glow"
@@ -338,6 +348,11 @@ function RealmMissionPanel({ realm, chapter, missions, onSelectMission, onClose 
 	const effect = 'environmentEffect' in realm ? realm.environmentEffect : '';
 	const effectDesc = 'environmentDescription' in realm ? realm.environmentDescription : '';
 	const symbol = 'runeSymbol' in realm ? realm.runeSymbol : ('symbol' in realm ? (realm as GreekRealm).symbol : '');
+	const completedMissions = useCampaignStore(s => s.completedMissions);
+	const allLocked = missions.length > 0 && missions.every(m => {
+		if (m.prerequisiteIds.length === 0) return false;
+		return !m.prerequisiteIds.every(id => !!completedMissions[id]);
+	});
 
 	return (
 		<div className="realm-mission-panel" style={{ '--realm-color': realm.color } as React.CSSProperties}>
@@ -352,6 +367,11 @@ function RealmMissionPanel({ realm, chapter, missions, onSelectMission, onClose 
 					</div>
 				)}
 			</div>
+			{allLocked && (
+				<div className="realm-panel-locked-hint">
+					All missions here require completing earlier ones first. Look for the glowing "Start Here" node on the map.
+				</div>
+			)}
 			<div className="space-y-2">
 				{missions.map(mission => (
 					<MissionNode
@@ -384,6 +404,30 @@ export default function CampaignPage() {
 
 	const selectedNorseRealm = view === 'norse' && selectedRealm ? REALM_MAP.get(selectedRealm) ?? null : null;
 	const selectedGreekRealm = view === 'greek' && selectedRealm ? GREEK_REALM_MAP.get(selectedRealm) ?? null : null;
+
+	const norseRealmsWithUnlocked = useMemo(() => {
+		const result = new Set<string>();
+		for (const m of norseChapter.missions) {
+			const realm = MISSION_REALM_MAP[m.id];
+			if (!realm) continue;
+			const unlocked = m.prerequisiteIds.length === 0 || m.prerequisiteIds.every(id => !!completedMissions[id]);
+			const done = !!completedMissions[m.id];
+			if (unlocked && !done) result.add(realm);
+		}
+		return result;
+	}, [norseChapter.missions, completedMissions]);
+
+	const greekRealmsWithUnlocked = useMemo(() => {
+		const result = new Set<string>();
+		for (const m of greekChapter.missions) {
+			const realm = GREEK_MISSION_REALM_MAP[m.id];
+			if (!realm) continue;
+			const unlocked = m.prerequisiteIds.length === 0 || m.prerequisiteIds.every(id => !!completedMissions[id]);
+			const done = !!completedMissions[m.id];
+			if (unlocked && !done) result.add(realm);
+		}
+		return result;
+	}, [greekChapter.missions, completedMissions]);
 
 	const handleStartMission = (difficulty: Difficulty) => {
 		if (!selectedMission) return;
@@ -456,6 +500,7 @@ export default function CampaignPage() {
 							realm={realm}
 							selected={selectedRealm === realm.id}
 							onClick={() => setSelectedRealm(selectedRealm === realm.id ? null : realm.id)}
+							hasUnlockedMission={norseRealmsWithUnlocked.has(realm.id)}
 						/>
 					))}
 					{selectedNorseRealm && (
@@ -481,6 +526,7 @@ export default function CampaignPage() {
 							realm={realm}
 							selected={selectedRealm === realm.id}
 							onClick={() => setSelectedRealm(selectedRealm === realm.id ? null : realm.id)}
+							hasUnlockedMission={greekRealmsWithUnlocked.has(realm.id)}
 						/>
 					))}
 					{selectedGreekRealm && (
