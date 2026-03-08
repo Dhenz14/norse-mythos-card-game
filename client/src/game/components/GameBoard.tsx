@@ -2307,7 +2307,7 @@ export const GameBoard: React.FC<{}> = () => {
                 </div>
               </div>
               {(opponent.heroArmor ?? opponent.armor ?? 0) > 0 && (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center text-white text-xs font-bold border border-gray-400">
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white text-xs font-bold border border-gray-300 shadow-md">
                   {opponent.heroArmor ?? opponent.armor ?? 0}
                 </div>
               )}
@@ -2460,10 +2460,10 @@ export const GameBoard: React.FC<{}> = () => {
               </div>
             </div>
             
-            {/* Player hero portrait - Invisible but in DOM for position tracking */}
-            {/* Keep rendered for animation position tracking */}
-            <div 
-              className="opacity-0 pointer-events-none absolute w-16 h-16"
+            {/* Player hero portrait with HP + armor */}
+            <div
+              className="relative cursor-pointer transition-all hover:scale-105 ml-4"
+              onClick={() => { if (!isProcessingAIActions) handlePlayerHeroClick(); }}
               ref={ref => {
                 if (ref) {
                   const rect = ref.getBoundingClientRect();
@@ -2473,7 +2473,19 @@ export const GameBoard: React.FC<{}> = () => {
                   });
                 }
               }}
-            />
+            >
+              <div className="w-14 h-14 rounded-full bg-gradient-to-b from-blue-700 to-blue-900 flex items-center justify-center text-white font-bold shadow-lg border-2 border-blue-500">
+                <div className="text-center">
+                  <div className="text-lg leading-none">{player.heroHealth ?? player.health ?? 100}</div>
+                  <div className="text-[8px] opacity-70">HP</div>
+                </div>
+              </div>
+              {(player.heroArmor ?? 0) > 0 && (
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white text-xs font-bold border border-gray-300 shadow-md">
+                  {player.heroArmor}
+                </div>
+              )}
+            </div>
             
             {/* Hero power button - using unified HeroPower component */}
             <div className="flex items-center">

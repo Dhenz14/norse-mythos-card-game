@@ -418,6 +418,21 @@ export const AnimationLayer: React.FC = () => {
             {animation.type === 'pet_apotheosis' && animation.position && (
               <PetApotheosisEffect animation={animation} />
             )}
+            {animation.type === 'card_draw' && (
+              <CardDrawEffect animation={animation} />
+            )}
+            {animation.type === 'mythic_entrance' && (
+              <MythicEntranceEffect animation={animation} />
+            )}
+            {animation.type === 'spell_cast' && (
+              <SpellCastEffect animation={animation} />
+            )}
+            {animation.type === 'game_start' && (
+              <GameStartEffect animation={animation} />
+            )}
+            {animation.type === 'turn_start' && (
+              <TurnStartEffect animation={animation} />
+            )}
             {animation.type === 'victory' && (
               <VictoryEffect animation={animation} />
             )}
@@ -1279,6 +1294,185 @@ const PetApotheosisEffect: React.FC<{ animation: Animation }> = ({ animation }) 
       ))}
     </>
   );
+};
+
+const CardDrawEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+	const pos = animation.position || { x: window.innerWidth / 2, y: window.innerHeight * 0.6 };
+
+	useEffect(() => {
+		spawnParticleBurst(pos.x, pos.y, 20, { primary: '#ffd700', secondary: '#fff9c4', glow: 'rgba(255,215,0,0.6)' });
+	}, []);
+
+	return (
+		<motion.div
+			style={{
+				position: 'absolute',
+				width: 80, height: 80,
+				left: pos.x - 40, top: pos.y - 40,
+				borderRadius: '50%',
+				background: 'radial-gradient(circle, rgba(255,215,0,0.7) 0%, rgba(255,255,200,0.3) 40%, transparent 70%)',
+				boxShadow: '0 0 30px rgba(255,215,0,0.5)',
+				zIndex: 100
+			}}
+			initial={{ scale: 0, opacity: 0 }}
+			animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
+			transition={{ duration: 0.6, ease: 'easeOut' }}
+		/>
+	);
+};
+
+const MythicEntranceEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+	useEffect(() => {
+		const cx = window.innerWidth / 2;
+		const cy = window.innerHeight * 0.4;
+		spawnParticleBurst(cx, cy, 60, { primary: '#ffd700', secondary: '#ffffff', glow: 'rgba(255,215,0,0.8)' });
+		spawnImpactRing(cx, cy, { primary: '#ffd700', secondary: '#ffffff', glow: 'rgba(255,215,0,0.8)' });
+	}, []);
+
+	return (
+		<>
+			<motion.div
+				style={{ position: 'fixed', inset: 0, background: 'rgba(255,215,0,0.2)', zIndex: 98, pointerEvents: 'none' }}
+				animate={{ opacity: [0, 0.8, 0] }}
+				transition={{ duration: 0.8 }}
+			/>
+			<motion.div
+				style={{
+					position: 'fixed',
+					top: '50%', left: '50%',
+					width: 200, height: 280,
+					marginLeft: -100, marginTop: -140,
+					borderRadius: '12px',
+					border: '3px solid #ffd700',
+					boxShadow: '0 0 60px rgba(255,215,0,0.8), 0 0 120px rgba(255,215,0,0.4), inset 0 0 30px rgba(255,215,0,0.3)',
+					background: 'linear-gradient(180deg, rgba(40,20,0,0.9), rgba(20,10,0,0.95))',
+					zIndex: 200, pointerEvents: 'none'
+				}}
+				initial={{ scale: 0, opacity: 0 }}
+				animate={{ scale: [0, 1.3, 1], opacity: [0, 1, 1, 0] }}
+				transition={{ duration: 1.5, times: [0, 0.3, 0.5, 1] }}
+			/>
+		</>
+	);
+};
+
+const SpellCastEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+	const pos = animation.position || { x: window.innerWidth / 2, y: window.innerHeight * 0.4 };
+
+	useEffect(() => {
+		spawnParticleBurst(pos.x, pos.y, 30, ELEMENT_PALETTES.lightning);
+		spawnImpactRing(pos.x, pos.y, ELEMENT_PALETTES.lightning);
+	}, []);
+
+	return (
+		<>
+			<motion.div
+				style={{
+					position: 'absolute',
+					width: 120, height: 120,
+					left: pos.x - 60, top: pos.y - 60,
+					borderRadius: '50%',
+					border: '3px solid rgba(100,150,255,0.8)',
+					boxShadow: '0 0 30px rgba(100,150,255,0.6), inset 0 0 20px rgba(100,150,255,0.3)',
+					zIndex: 101
+				}}
+				initial={{ scale: 0, opacity: 0, rotate: 0 }}
+				animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0], rotate: [0, 180] }}
+				transition={{ duration: 1.0, ease: 'easeOut' }}
+			/>
+			<motion.div
+				style={{
+					position: 'absolute',
+					width: 80, height: 80,
+					left: pos.x - 40, top: pos.y - 40,
+					borderRadius: '50%',
+					background: 'radial-gradient(circle, rgba(100,150,255,0.8) 0%, rgba(60,80,200,0.4) 40%, transparent 70%)',
+					boxShadow: '0 0 50px rgba(100,150,255,0.5)',
+					zIndex: 100
+				}}
+				initial={{ scale: 0, opacity: 0 }}
+				animate={{ scale: [0, 2, 0], opacity: [0, 0.9, 0] }}
+				transition={{ duration: 0.8, ease: 'easeOut' }}
+			/>
+		</>
+	);
+};
+
+const GameStartEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+	useEffect(() => {
+		const cx = window.innerWidth / 2;
+		const cy = window.innerHeight * 0.4;
+		setTimeout(() => {
+			spawnParticleBurst(cx, cy, 50, ELEMENT_PALETTES.lightning);
+			spawnImpactRing(cx, cy, ELEMENT_PALETTES.lightning);
+		}, 400);
+	}, []);
+
+	return (
+		<>
+			<motion.div
+				style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 98, pointerEvents: 'none' }}
+				animate={{ opacity: [0, 0.8, 0.6, 0] }}
+				transition={{ duration: 2, times: [0, 0.2, 0.7, 1] }}
+			/>
+			<motion.div
+				style={{
+					position: 'fixed', top: '35%', left: '50%', transform: 'translateX(-50%)',
+					fontSize: '64px', fontWeight: 900, color: '#ffffff',
+					fontFamily: 'Cinzel, "Times New Roman", serif',
+					textShadow: '0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,165,0,0.5), 0 4px 8px rgba(0,0,0,0.9)',
+					letterSpacing: '10px', textTransform: 'uppercase',
+					whiteSpace: 'nowrap', zIndex: 9999, pointerEvents: 'none'
+				}}
+				initial={{ scale: 3, opacity: 0 }}
+				animate={{ scale: [3, 0.9, 1], opacity: [0, 1, 1, 0] }}
+				transition={{ duration: 2, times: [0, 0.25, 0.7, 1], ease: 'easeOut' }}
+			>
+				BATTLE BEGINS
+			</motion.div>
+		</>
+	);
+};
+
+const TurnStartEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+	const isPlayer = animation.data?.turn !== 'opponent';
+	const label = isPlayer ? 'YOUR TURN' : 'ENEMY TURN';
+	const color = isPlayer ? '#60a5fa' : '#f87171';
+	const bgColor = isPlayer
+		? 'linear-gradient(90deg, transparent, rgba(30,80,180,0.9) 20%, rgba(30,80,180,0.9) 80%, transparent)'
+		: 'linear-gradient(90deg, transparent, rgba(180,40,40,0.9) 20%, rgba(180,40,40,0.9) 80%, transparent)';
+
+	return (
+		<motion.div
+			style={{
+				position: 'fixed',
+				top: '40%', left: 0, right: 0,
+				height: '60px',
+				background: bgColor,
+				display: 'flex', alignItems: 'center', justifyContent: 'center',
+				zIndex: 9999, pointerEvents: 'none',
+				borderTop: `2px solid ${color}`,
+				borderBottom: `2px solid ${color}`,
+				boxShadow: `0 0 30px ${color}40`
+			}}
+			initial={{ scaleX: 0, opacity: 0 }}
+			animate={{ scaleX: [0, 1, 1, 0], opacity: [0, 1, 1, 0] }}
+			transition={{ duration: 1.5, times: [0, 0.15, 0.7, 1], ease: 'easeOut' }}
+		>
+			<motion.span
+				style={{
+					fontSize: '32px', fontWeight: 800, color: '#ffffff',
+					letterSpacing: '8px', textTransform: 'uppercase',
+					textShadow: `0 0 20px ${color}, 0 2px 4px rgba(0,0,0,0.8)`
+				}}
+				initial={{ opacity: 0, y: 10 }}
+				animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, 0] }}
+				transition={{ duration: 1.5, times: [0, 0.2, 0.7, 1] }}
+			>
+				{label}
+			</motion.span>
+		</motion.div>
+	);
 };
 
 const VictoryEffect: React.FC<{ animation: Animation }> = ({ animation }) => {

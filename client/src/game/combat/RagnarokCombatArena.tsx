@@ -1125,6 +1125,13 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   // Build realm class for GameViewport
   const realmClass = activeRealmId ? `realm-${activeRealmId}` : 'realm-midgard';
 
+  // Prophecy tracker
+  const prophecies = useGameStore(state => state.gameState?.prophecies);
+
+  // Realm effects
+  const activeRealmEffects = useGameStore(state => state.gameState?.activeRealm?.effects);
+  const activeRealmDescription = useGameStore(state => state.gameState?.activeRealm?.description);
+
   // HUD selectors
   const gamePhase = useGameStore(state => state.gameState?.gamePhase);
   const gameWinner = useGameStore(state => state.gameState?.winner);
@@ -1235,6 +1242,44 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         {activeRealmId && (
           <div className="realm-indicator">
             <span className="realm-indicator-name">{activeRealmName || activeRealmId}</span>
+          </div>
+        )}
+
+        {/* Realm effects breakdown */}
+        {activeRealmId && activeRealmEffects && activeRealmEffects.length > 0 && (
+          <div className="realm-effects-panel">
+            <div className="realm-effects-title">{activeRealmName || activeRealmId}</div>
+            {activeRealmDescription && <div className="realm-effects-desc">{activeRealmDescription}</div>}
+            {activeRealmEffects.map((eff, i) => (
+              <div key={i} className={`realm-effect-row ${eff.target}`}>
+                <span className="realm-effect-icon">
+                  {eff.type === 'buff_all_attack' ? '⚔️' :
+                   eff.type === 'debuff_all_attack' ? '⬇️' :
+                   eff.type === 'damage_all_end_turn' ? '🔥' :
+                   eff.type === 'heal_all_start_turn' ? '💚' :
+                   eff.type === 'cost_increase' ? '💎' :
+                   eff.type === 'keyword_grant' ? '✨' :
+                   eff.type === 'return_to_hand_on_death' ? '🔄' :
+                   eff.type === 'stealth_on_play' ? '👤' : '⚡'}
+                </span>
+                <span className="realm-effect-text">
+                  {eff.type.replace(/_/g, ' ')} {eff.value > 0 ? `+${eff.value}` : ''} ({eff.target})
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Prophecy tracker */}
+        {prophecies && prophecies.length > 0 && (
+          <div className="prophecy-tracker">
+            <div className="prophecy-tracker-title">Active Prophecies</div>
+            {prophecies.map(p => (
+              <div key={p.id} className={`prophecy-entry ${p.turnsRemaining <= 1 ? 'prophecy-imminent' : ''}`}>
+                <span className="prophecy-name">{p.name}</span>
+                <span className="prophecy-countdown">{p.turnsRemaining}</span>
+              </div>
+            ))}
           </div>
         )}
 

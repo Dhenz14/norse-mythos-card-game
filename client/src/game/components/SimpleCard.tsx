@@ -34,6 +34,9 @@ export interface SimpleCardData {
   evolvesFromName?: string;
   evolutionCondition?: { trigger: string; description: string };
   hasStage3Variants?: boolean;
+  bloodPrice?: number;
+  chainPartner?: number;
+  einpieces?: number;
 }
 
 interface SimpleCardProps {
@@ -374,9 +377,15 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
       data-card-type={card.type}
       data-evolution-level={card.evolutionLevel}
     >
-      <div className="card-mana">
+      <div className={`card-mana ${card.bloodPrice ? 'blood-price-mana' : ''}`}>
         <span className="mana-value">{card.manaCost}</span>
       </div>
+
+      {card.bloodPrice && (
+        <div className="blood-price-badge" title={`Blood Price: Pay ${card.bloodPrice} HP instead of mana`}>
+          <span className="blood-price-value">{card.bloodPrice}</span>
+        </div>
+      )}
 
       {evolutionStars && (
         <div className="evolution-stars">{evolutionStars}</div>

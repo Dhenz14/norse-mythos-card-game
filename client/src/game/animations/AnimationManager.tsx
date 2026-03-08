@@ -36,6 +36,7 @@ export interface Animation {
   intensity?: 'normal' | 'critical' | number;
   scale?: number;
   effect?: string;
+  data?: Record<string, any>;
 }
 
 export type AnimationType = 

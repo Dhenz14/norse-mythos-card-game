@@ -81,6 +81,13 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
       const cardHasTaunt = !!(card && hasKeyword(card, 'taunt'));
       const hasElementalBuff = !!(card as any)?.hasElementalBuff;
       const readyToEvolve = !!(card as any)?.petEvolutionMet;
+      const einherjarReturns = (card as any)?.einpieces as number | undefined;
+      const hasChainPartner = !!(card?.card as any)?.chainPartner;
+      const chainPartnerOnBoard = hasChainPartner && (() => {
+        const partnerId = (card?.card as any)?.chainPartner;
+        const allCards = side === 'player' ? playerCards : opponentCards;
+        return allCards.some(c => c.card?.id === partnerId);
+      })();
 
       const statusPoisoned = !!(card as any)?.isPoisonedDoT;
       const statusBleeding = !!(card as any)?.isBleeding;
@@ -175,6 +182,22 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                     {statusWeakened && <span className="status-badge badge-weakness" title="Weakness: -3 Attack">⬇️</span>}
                     {statusVulnerable && <span className="status-badge badge-vulnerable" title="Vulnerable: +3 damage taken">🎯</span>}
                     {statusMarked && <span className="status-badge badge-marked" title="Marked: Ignores Stealth">👁️</span>}
+                  </div>
+                )}
+                {einherjarReturns !== undefined && einherjarReturns > 0 && (
+                  <div className="bf-einherjar-badge" title={`Einherjar: ${einherjarReturns} return${einherjarReturns > 1 ? 's' : ''} remaining`}>
+                    <span className="einherjar-icon">⚔️</span>
+                    <span className="einherjar-count">×{einherjarReturns}</span>
+                  </div>
+                )}
+                {chainPartnerOnBoard && (
+                  <div className="bf-chain-badge" title="Ragnarok Chain: Partner is in play — bonuses active!">
+                    <span className="chain-icon">🔗</span>
+                  </div>
+                )}
+                {hasChainPartner && !chainPartnerOnBoard && (
+                  <div className="bf-chain-badge chain-inactive" title="Ragnarok Chain: Partner not in play">
+                    <span className="chain-icon">🔗</span>
                   </div>
                 )}
               </motion.div>

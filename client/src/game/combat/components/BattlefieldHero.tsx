@@ -154,7 +154,9 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   const [matchupTooltipPos, setMatchupTooltipPos] = useState<{ top: number; left: number } | null>(null);
   const [damageReaction, setDamageReaction] = useState<'damaged' | 'healed' | null>(null);
   const [powerActivating, setPowerActivating] = useState(false);
+  const [armorGained, setArmorGained] = useState(false);
   const prevHealthRef = useRef(effectiveHP);
+  const prevArmorRef = useRef(armor);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
   const matchupBadgeRef = useRef<HTMLDivElement>(null);
@@ -170,7 +172,18 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
     const timer = setTimeout(() => setDamageReaction(null), 600);
     return () => clearTimeout(timer);
   }, [effectiveHP]);
-  
+
+  useEffect(() => {
+    if (armor > prevArmorRef.current) {
+      setArmorGained(true);
+      const timer = setTimeout(() => setArmorGained(false), 400);
+      prevArmorRef.current = armor;
+      return () => clearTimeout(timer);
+    }
+    prevArmorRef.current = armor;
+    return undefined;
+  }, [armor]);
+
   const elementClass = heroElement ? `element-${heroElement.toLowerCase()}` : '';
   
   const norseHero = pet.norseHeroId ? ALL_NORSE_HEROES[pet.norseHeroId] : null;
@@ -456,7 +469,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
           </div>
         
           {armor > 0 && (
-            <div className="hero-armor-badge" title={`Armor: ${armor} - Absorbs damage before HP`}>
+            <div className={`hero-armor-badge${armorGained ? ' armor-gained' : ''}`} title={`Armor: ${armor} - Absorbs damage before HP`}>
               <svg className="armor-shield-icon" viewBox="0 0 36 40" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id={`armorGrad-${isOpponent ? 'opp' : 'plr'}`} x1="0%" y1="0%" x2="100%" y2="100%">

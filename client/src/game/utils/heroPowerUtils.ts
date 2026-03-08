@@ -10,7 +10,7 @@ import { isMinion, isWeapon, isSpell, isHero, getAttack, getHealth, getDurabilit
 import { addKeyword, clearKeywords } from './cards/keywordUtils';
 import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
-import { dealDamage } from './effects/damageUtils';
+import { dealDamage, addArmor } from './effects/damageUtils';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 
 // Type for animation callback function
@@ -1218,16 +1218,14 @@ function executeMagePower(
  */
 function executeWarriorPower(state: GameState, playerType: 'player' | 'opponent'): GameState {
   const player = state.players[playerType];
-  
+
   // Apply cost
   player.mana.current -= player.heroPower.cost;
   player.heroPower.used = true;
-  
-  // Gain 2 health (simplified version of armor)
-  const warlockMaxHp = player.maxHealth;
-  player.heroHealth = Math.min((player.heroHealth || warlockMaxHp) + 2, warlockMaxHp);
-  
-  return state;
+
+  // Gain 2 armor (or 4 if upgraded)
+  const armorAmount = player.heroPower.isUpgraded ? 4 : 2;
+  return addArmor(state, playerType, armorAmount);
 }
 
 /**

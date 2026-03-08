@@ -654,6 +654,138 @@
 }
 
 /* ============================================================
+   REALM EFFECTS BREAKDOWN PANEL
+   ============================================================ */
+.realm-effects-panel {
+	position: absolute;
+	top: 96px;
+	right: 12px;
+	z-index: 500;
+	background: rgba(0, 0, 0, 0.75);
+	border: 1px solid var(--realm-divider-color, rgba(212, 175, 55, 0.4));
+	border-radius: 8px;
+	padding: 8px 12px;
+	pointer-events: none;
+	backdrop-filter: blur(4px);
+	max-width: 220px;
+	animation: realm-indicator-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.realm-effects-title {
+	font-family: 'Cinzel', 'Georgia', serif;
+	font-size: 0.7rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: var(--realm-divider-color, rgba(212, 175, 55, 0.9));
+	margin-bottom: 4px;
+	text-shadow: 0 0 6px var(--realm-glow-color, rgba(212, 175, 55, 0.3));
+}
+
+.realm-effects-desc {
+	font-size: 0.6rem;
+	color: rgba(255, 255, 255, 0.5);
+	font-style: italic;
+	margin-bottom: 6px;
+	line-height: 1.3;
+}
+
+.realm-effect-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 2px 0;
+	font-size: 0.65rem;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.realm-effect-row.friendly { color: rgba(34, 197, 94, 0.9); }
+.realm-effect-row.enemy { color: rgba(239, 68, 68, 0.9); }
+
+.realm-effect-icon { font-size: 0.7rem; }
+.realm-effect-text { text-transform: capitalize; }
+
+/* ============================================================
+   PROPHECY TRACKER
+   ============================================================ */
+.prophecy-tracker {
+	position: absolute;
+	top: 96px;
+	left: 12px;
+	z-index: 500;
+	background: rgba(0, 0, 0, 0.75);
+	border: 1px solid rgba(168, 85, 247, 0.4);
+	border-radius: 8px;
+	padding: 8px 12px;
+	pointer-events: none;
+	backdrop-filter: blur(4px);
+	max-width: 200px;
+	animation: realm-indicator-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.prophecy-tracker-title {
+	font-family: 'Cinzel', 'Georgia', serif;
+	font-size: 0.65rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	color: rgba(168, 85, 247, 0.9);
+	margin-bottom: 6px;
+	text-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+}
+
+.prophecy-entry {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 3px 0;
+	border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+.prophecy-entry:last-child { border-bottom: none; }
+
+.prophecy-name {
+	font-size: 0.6rem;
+	color: rgba(255, 255, 255, 0.75);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex: 1;
+}
+
+.prophecy-countdown {
+	font-family: 'Cinzel', 'Georgia', serif;
+	font-size: 0.75rem;
+	font-weight: 800;
+	color: rgba(168, 85, 247, 0.9);
+	min-width: 18px;
+	height: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(168, 85, 247, 0.15);
+	border: 1px solid rgba(168, 85, 247, 0.3);
+	border-radius: 50%;
+}
+
+.prophecy-entry.prophecy-imminent .prophecy-countdown {
+	color: #fbbf24;
+	background: rgba(251, 191, 36, 0.2);
+	border-color: rgba(251, 191, 36, 0.5);
+	animation: prophecy-imminent-pulse 1.2s ease-in-out infinite;
+}
+
+.prophecy-entry.prophecy-imminent .prophecy-name {
+	color: rgba(251, 191, 36, 0.9);
+}
+
+@keyframes prophecy-imminent-pulse {
+	0%, 100% { opacity: 0.8; transform: scale(1); }
+	50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 8px rgba(251, 191, 36, 0.5); }
+}
+
+/* ============================================================
    REDUCED MOTION
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -665,5 +797,8 @@
 	.realm-announcement-name,
 	.realm-announcement-rune {
 		animation-duration: 0.01ms !important;
+	}
+	.prophecy-entry.prophecy-imminent .prophecy-countdown {
+		animation: none;
 	}
 }

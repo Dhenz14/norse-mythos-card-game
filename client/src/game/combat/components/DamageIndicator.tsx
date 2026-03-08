@@ -39,6 +39,7 @@ export const DamageIndicator: React.FC<DamageIndicatorProps> = ({
 
 	const isBig = damage >= 5;
 	const isCritical = damage >= 8;
+	const isCrit = damage >= 10;
 	const jitterX = useMemo(() => (Math.random() - 0.5) * 28, []);
 	const jitterY = useMemo(() => (Math.random() - 0.5) * 8, []);
 
@@ -61,7 +62,7 @@ export const DamageIndicator: React.FC<DamageIndicatorProps> = ({
 				transform: 'translateX(-50%)',
 			}}
 		>
-			<span className="damage-number-text">{isHeal ? '+' : '-'}{damage}</span>
+			<span className={`damage-number-text ${isHeal ? 'combat-heal-number' : 'combat-damage-number'} ${!isHeal && isCrit ? 'crit' : ''}`}>{isHeal ? '+' : '-'}{damage}</span>
 			{isCritical && !isHeal && <span className="damage-crit-label">CRIT!</span>}
 		</div>
 	);
