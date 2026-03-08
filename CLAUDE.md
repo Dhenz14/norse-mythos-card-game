@@ -874,8 +874,32 @@ vercel --prod                 # Deploy to Vercel
 - Changed `emitTransactionConfirmed`/`emitTransactionFailed` to accept `Partial<HiveTransaction>` for flexible callers
 - TypeScript: 0 errors
 
+### Completed (NFT Stamp Provenance System)
+
+- Implemented self-describing NFT provenance: each card carries its complete ownership history as `ProvenanceStamp[]`
+- `ProvenanceStamp` interface: `from`, `to`, `trxId`, `block`, `timestamp` — each stamp links to immutable Hive L1 transaction
+- Replay engine populates stamps on all card creation paths: `applyMint`, `applyPackOpen`, `applyRewardClaim`
+- `applyCardTransfer` appends stamps on every transfer with previous owner captured
+- `NFTProvenanceViewer.tsx` shows full stamp timeline with clickable hivehub.dev explorer links
+- Zero API calls needed for ownership verification — card object has everything
+- Falls back to legacy `mintTrxId`/`lastTransferTrxId` fields for pre-upgrade cards
+- Blueprint document: `docs/HIVE_NFT_STAMPS_BLUEPRINT.md`
+
+### Completed (Stamp Anti-Spam & Optimization)
+
+- Stamp compaction: `CompactedProvenance` summary when chain exceeds 50 stamps (~6KB max per card forever)
+  - `totalTransfers`, `firstMint` (preserved forever), `compactedAt`, `compactedCount`
+  - Older stamps trimmed from local storage; full history remains on-chain immutably
+- Transfer cooldown: 10-block (~30s) minimum between transfers of same card (kills ping-pong spam)
+- Batch transfers: `applyCardTransfer` accepts `cards[]` array for multi-card single-op transfers
+  - `hiveSync.transferCards(uids[], recipient)` — one Keychain signature for multiple cards
+  - Hive `custom_json` supports 4KB per op (~50 cards per batch)
+- `NFTProvenanceViewer` shows compacted summary with total transfer count + original mint link
+- Hive RC (resource credits) acts as natural Layer 3 rate limiting — spam costs real HIVE POWER
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account
-- Upload card art
+- Upload card art to CDN
 - Broadcast genesis + seal on Hive mainnet (two Keychain clicks, then admin key irrelevant)
