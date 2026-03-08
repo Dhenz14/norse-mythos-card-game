@@ -14,7 +14,7 @@ const KEYWORDS = [
   'Charge', 
   'Lifesteal',
   'Poisonous',
-  'Discover',
+  'Foresee',
   'Adapt',
   'Windfury',
   'Stealth',
@@ -67,7 +67,7 @@ const KEYWORD_COLORS: Record<string, string> = {
   'Battlecry': '#fada5e', // Golden yellow
   'Deathrattle': '#7851a9', // Purple
   'Frenzy': '#b22222', // Firebrick red
-  'Discover': '#4169e1', // Royal blue
+  'Foresee': '#4169e1', // Royal blue
   'Overload': '#1e90ff', // Dodger blue
   'Spellburst': '#9932cc', // Dark orchid
   'Outcast': '#2e8b57', // Sea green

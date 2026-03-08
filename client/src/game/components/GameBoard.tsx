@@ -443,8 +443,8 @@ export const GameBoard: React.FC<{}> = () => {
       
       // Show a notification for the discovery selection
       showNotification({
-        title: '✨ Discovered',
-        description: `You discovered ${selectedCard.name}!`,
+        title: '✨ Foreseen',
+        description: `You foresaw ${selectedCard.name}!`,
         type: 'success',
         duration: 3000
       });
@@ -562,8 +562,8 @@ export const GameBoard: React.FC<{}> = () => {
           
           // Show notification about discovery
           showNotification({
-            title: '🔮 Discover',
-            description: `Discovering options from ${isSpell(card.card) ? (card.card.spellEffect?.discoveryType || 'all') : 'all'} cards`,
+            title: '🔮 Völva\'s Vision',
+            description: `Foreseeing options from ${isSpell(card.card) ? (card.card.spellEffect?.discoveryType || 'all') : 'all'} cards`,
             type: 'info',
             duration: 2000
           });

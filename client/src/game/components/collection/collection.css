@@ -123,18 +123,6 @@
 	background: linear-gradient(
 		90deg,
 		transparent 0%,
-		rgba(251, 191, 36, 0.08) 30%,
-		rgba(251, 191, 36, 0.2) 50%,
-		rgba(251, 191, 36, 0.08) 70%,
-		transparent 100%
-	);
-	animation-duration: 3s;
-}
-
-.foil-shimmer-mythic::after {
-	background: linear-gradient(
-		90deg,
-		transparent 0%,
 		rgba(236, 72, 153, 0.1) 25%,
 		rgba(139, 92, 246, 0.15) 50%,
 		rgba(34, 211, 238, 0.1) 75%,
@@ -194,7 +182,6 @@
 .supply-meter-fill-common { background: linear-gradient(90deg, #6b7280, #9ca3af); }
 .supply-meter-fill-rare { background: linear-gradient(90deg, #2563eb, #3b82f6); }
 .supply-meter-fill-epic { background: linear-gradient(90deg, #7c3aed, #a855f7); }
-.supply-meter-fill-mythic { background: linear-gradient(90deg, #d97706, #fbbf24); }
 .supply-meter-fill-mythic { background: linear-gradient(90deg, #ec4899, #8b5cf6, #22d3ee); }
 
 /* ========== Card Frame Glows ========== */

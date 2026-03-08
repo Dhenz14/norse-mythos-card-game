@@ -943,7 +943,16 @@ export type GameLogEventType =
   | 'artifact_destroyed'
   | 'artifact_trigger'
   | 'equip_armor'
-  | 'armor_removed';
+  | 'armor_removed'
+  | 'cthun_buff'
+  | 'cthun_battlecry'
+  | 'nzoth_battlecry'
+  | 'yogg_saron_battlecry'
+  | 'yogg_saron_stopped'
+  | 'yogg_saron_cast'
+  | 'yshaarj_effect_failed'
+  | 'yshaarj_effect'
+  | 'quest_started';
 
 /**
  * Animation parameters for card animations

@@ -38,7 +38,7 @@ export function executeDiscoverFromDeckDiscoverFromDeck(
 
     const chosen = choices[0];
     context.currentPlayer.hand.push(chosen);
-    context.logGameEvent(`Discovered ${chosen.card.name} and added to hand`);
+    context.logGameEvent(`Foresaw ${chosen.card.name} and added to hand`);
 
     for (let i = 1; i < choices.length; i++) {
       deck.push(choices[i]);

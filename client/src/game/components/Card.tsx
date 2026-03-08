@@ -103,7 +103,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
     isPoisonous ||
     hasLifesteal ||
     isRush ||
-    cardData.description?.match(/(Battlecry|Deathrattle|Taunt|Discover|Adapt|Frenzy|Inspire|Reborn|Spellburst)/i)
+    cardData.description?.match(/(Battlecry|Deathrattle|Taunt|Foresee|Adapt|Frenzy|Inspire|Reborn|Spellburst)/i)
   );
   
   // Get keyword icons from card - uses centralized KEYWORD_DEFINITIONS

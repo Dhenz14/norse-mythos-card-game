@@ -211,7 +211,7 @@ function formatCardText(text: string): string {
   let formattedText = text
     .replace(/Battlecry:/g, `<span class="${keywordStyles}">Battlecry:</span>`)
     .replace(/Deathrattle:/g, `<span class="${keywordStyles}">Deathrattle:</span>`)
-    .replace(/Discover/g, `<span class="${keywordStyles}">Discover</span>`)
+    .replace(/Foresee/g, `<span class="${keywordStyles}">Foresee</span>`)
     .replace(/Lifesteal/g, `<span class="${keywordStyles}">Lifesteal</span>`)
     .replace(/Taunt/g, `<span class="${keywordStyles}">Taunt</span>`)
     .replace(/Rush/g, `<span class="${keywordStyles}">Rush</span>`)

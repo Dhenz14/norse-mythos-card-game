@@ -1138,7 +1138,7 @@ function executeDiscover(
     return state;
   }
 
-  const discoverPool = (power as any).discoverPool || power.summonPool || ['Discovered Card'];
+  const discoverPool = (power as any).discoverPool || power.summonPool || ['Foreseen Card'];
   
   const choices: string[] = [];
   for (let i = 0; i < 3 && i < discoverPool.length; i++) {
@@ -1157,7 +1157,7 @@ function executeDiscover(
       id: 99993,
       name: selectedCard,
       manaCost: baseCost,
-      description: `Discovered card${costReduction > 0 ? ` (cost reduced by ${costReduction})` : ''}`,
+      description: `Foreseen card${costReduction > 0 ? ` (cost reduced by ${costReduction})` : ''}`,
       rarity: 'rare' as any,
       type: 'spell',
       keywords: []

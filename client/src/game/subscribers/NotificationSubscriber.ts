@@ -170,7 +170,7 @@ export function initializeNotificationSubscriber(
   unsubscribes.push(
     GameEventBus.subscribe<DiscoveryCompletedEvent>('DISCOVERY_COMPLETED', (event) => {
       if (event.player === 'player') {
-        toast.success(`Discovered: ${event.chosenCardName}`, {
+        toast.success(`Foresaw: ${event.chosenCardName}`, {
           duration: 2000
         });
       }

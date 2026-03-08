@@ -135,7 +135,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               textShadow: '0 0 10px rgba(251, 191, 36, 0.6), 0 0 20px rgba(251, 191, 36, 0.3)'
             }}
           >
-            Discover a Card
+            Foresee a Card
           </h2>
           <p className="text-gray-300 mt-2">Choose one of these cards to add to your hand</p>
         </div>

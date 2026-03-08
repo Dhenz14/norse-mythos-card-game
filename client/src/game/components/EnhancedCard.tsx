@@ -87,7 +87,7 @@ export const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
   // Detect keywords and special abilities
   const hasKeywords = !!(
     cardData.keywords?.length ||
-    cardData.description?.match(/(Battlecry|Deathrattle|Taunt|Discover|Adapt|Frenzy|Inspire|Reborn|Spellburst)/i)
+    cardData.description?.match(/(Battlecry|Deathrattle|Taunt|Foresee|Adapt|Frenzy|Inspire|Reborn|Spellburst)/i)
   );
   
   // Get the rarity class for styling
