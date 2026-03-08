@@ -13,6 +13,8 @@ import { getEitrValue, getCraftCost } from '../../crafting/craftingConstants';
 import { cardRegistry } from '../../data/cardRegistry';
 import { hiveSync } from '../../../data/HiveSync';
 import { isHiveMode } from '../../config/featureFlags';
+import NFTProvenanceViewer from './NFTProvenanceViewer';
+import SendCardModal from './SendCardModal';
 import './collection.css';
 
 type FilterRarity = 'all' | 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
@@ -86,6 +88,8 @@ export default function CollectionPage() {
 	const addCard = useHiveDataStore(s => s.addCard);
 	const removeCard = useHiveDataStore(s => s.removeCard);
 	const [craftConfirm, setCraftConfirm] = useState<'craft' | 'disenchant' | null>(null);
+	const [provenanceNft, setProvenanceNft] = useState<typeof hiveCards[0] | null>(null);
+	const [sendNft, setSendNft] = useState<typeof hiveCards[0] | null>(null);
 
 	const [cards, setCards] = useState<OwnedCard[]>([]);
 	const [stats, setStats] = useState<CollectionStats | null>(null);
@@ -821,7 +825,31 @@ export default function CollectionPage() {
 									);
 								})()}
 
-								{/* Close Button */}
+								{/* NFT Actions */}
+							{(() => {
+								const nftAsset = hiveCardMap.get(selectedCard.id);
+								if (!nftAsset) return null;
+								return (
+									<div className="flex gap-2 mb-3">
+										<button
+											onClick={() => setProvenanceNft(nftAsset)}
+											className="flex-1 px-3 py-2 bg-gray-800/60 hover:bg-gray-700/60 text-gray-300 rounded-lg text-xs font-medium border border-gray-600/40 transition-colors"
+										>
+											View on Chain
+										</button>
+										{isHiveMode() && (
+											<button
+												onClick={() => setSendNft(nftAsset)}
+												className="flex-1 px-3 py-2 bg-emerald-900/50 hover:bg-emerald-800/60 text-emerald-300 rounded-lg text-xs font-medium border border-emerald-700/40 transition-colors"
+											>
+												Send to Friend
+											</button>
+										)}
+									</div>
+								);
+							})()}
+
+							{/* Close Button */}
 								<motion.button
 									whileHover={{ scale: 1.02 }}
 									whileTap={{ scale: 0.98 }}
@@ -835,6 +863,21 @@ export default function CollectionPage() {
 					</motion.div>
 				)}
 			</AnimatePresence>
+
+			<NFTProvenanceViewer
+				nft={provenanceNft}
+				onClose={() => setProvenanceNft(null)}
+				onSend={(nft) => { setProvenanceNft(null); setSendNft(nft); }}
+			/>
+
+			<SendCardModal
+				nft={sendNft}
+				onClose={() => setSendNft(null)}
+				onSuccess={() => {
+					setSelectedCard(null);
+					setSendNft(null);
+				}}
+			/>
 		</div>
 	);
 }

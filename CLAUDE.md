@@ -821,6 +821,18 @@ vercel --prod                 # Deploy to Vercel
 - All changes gated behind `isHiveMode()` — zero impact on local/test mode
 - TypeScript: 0 errors
 
+### Completed (NFT Provenance Viewer & Direct Transfer)
+
+- Extended `HiveCardAsset` with `lastTransferTrxId`, `mintBlockNum`, `mintTrxId` fields for on-chain provenance
+- `replayRules.ts` now captures `trxId` on mint and transfer ops (stored alongside blockNum)
+- Added `HIVE_EXPLORER_URL` and `HIVE_BLOCK_EXPLORER_URL` to `hiveConfig.ts`
+- Created `explorerLinks.ts`: `getTransactionUrl(trxId)` and `getBlockUrl(blockNum)` utilities
+- Created `NFTProvenanceViewer.tsx`: modal showing full NFT metadata (UID, edition, foil, level/XP, rarity, race) + clickable explorer links for mint and transfer transactions
+- Created `SendCardModal.tsx`: one-click card gifting with recipient validation, memo field, double-confirm safety, Keychain signing, local store update + event emission
+- Added "View on Chain" and "Send to Friend" buttons to CollectionPage card detail modal
+- Provenance viewer has "Send to Friend" button that flows directly into the send modal
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

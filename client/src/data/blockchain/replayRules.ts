@@ -214,6 +214,9 @@ async function applyMint(
 			level: 1,
 			xp: 0,
 			lastTransferBlock: op.blockNum,
+			lastTransferTrxId: op.trxId,
+			mintBlockNum: op.blockNum,
+			mintTrxId: op.trxId,
 			name: cardName,
 			type: (card.type as string) || cardDef?.type || 'minion',
 			race: card.race || cardDef?.race || undefined,
@@ -781,6 +784,7 @@ async function applyCardTransfer(
 		...existing,
 		ownerId: to,
 		lastTransferBlock: op.blockNum,
+		lastTransferTrxId: op.trxId,
 	};
 
 	await putCard(updated);

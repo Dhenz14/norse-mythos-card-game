@@ -110,6 +110,9 @@ export interface HiveCardAsset {
   level: number;
   xp: number;
   lastTransferBlock?: number;
+  lastTransferTrxId?: string;
+  mintBlockNum?: number;
+  mintTrxId?: string;
   name: string;
   type: string;
   race?: string;

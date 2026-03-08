@@ -13,4 +13,7 @@ export const NFT_ART_BASE_URL = 'https://ragnarok.cards/art';
 
 export const EXTERNAL_URL_BASE = 'https://ragnarok.cards/card';
 
+export const HIVE_EXPLORER_URL = 'https://hivehub.dev/tx/';
+export const HIVE_BLOCK_EXPLORER_URL = 'https://hivehub.dev/b/';
+
 export const DEFAULT_ELO_RATING = 1000;
