@@ -40,7 +40,7 @@
 
 .hero-power-anchor {
   position: absolute;
-  z-index: 9999 !important;
+  z-index: var(--z-topmost, 10000) !important;
   pointer-events: auto !important;
   width: 64px;
   height: 64px;
@@ -77,7 +77,7 @@
   justify-content: center !important;
   cursor: pointer !important;
   pointer-events: auto !important; /* Explicitly ensure pointer events */
-  z-index: 10001 !important;
+  z-index: var(--z-topmost, 10000) !important;
   box-shadow: 
     0 2px 8px rgba(0, 0, 0, 0.4),
     0 0 12px rgba(245, 158, 11, 0.4) !important;

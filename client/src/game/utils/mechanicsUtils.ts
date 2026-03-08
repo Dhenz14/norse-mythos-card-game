@@ -1019,7 +1019,6 @@ export const handleKazakusGolemDiscover = (
 export const filterDiscoverOptions = (
   options: CardData[],
   criteria: {
-    spellSchool?: string | string[];
     cardType?: CardType | CardType[];
     costRange?: [number, number];
     exactCost?: number;
@@ -1032,12 +1031,6 @@ export const filterDiscoverOptions = (
   }
 ): CardData[] => {
   return options.filter(card => {
-    // Filter by spell school
-    if (criteria.spellSchool) {
-      // Spell school is not implemented yet, but would check card.spellSchool
-      // against criteria.spellSchool here
-    }
-    
     // Filter by card type
     if (criteria.cardType) {
       const cardTypes = Array.isArray(criteria.cardType) ? criteria.cardType : [criteria.cardType];

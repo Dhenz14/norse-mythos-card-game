@@ -6,7 +6,7 @@
  * opponent ELO, deck verification, cross-account queries.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || (window.location.origin);
 
 export interface PlayerRecord {
 	username: string;
@@ -45,7 +45,7 @@ export interface DeckVerification {
 
 const FETCH_TIMEOUT_MS = 10_000;
 
-async function fetchJSON<T>(path: string, init?: RequestInit): Promise<T> {
+async function fetchJSON<T>(path: string, init?: globalThis.RequestInit): Promise<T> {
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 	try {

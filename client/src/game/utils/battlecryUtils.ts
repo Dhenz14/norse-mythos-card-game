@@ -43,6 +43,7 @@ import {
 import { summonColossalParts } from './mechanics/colossalUtils';
 import executeReturnReturn from '../effects/handlers/battlecry/returnHandler';
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
+import { executeCThunBattlecry, executeYoggSaronBattlecry, executeNZothBattlecry, buffCThun } from './oldGodsUtils';
 
 /**
  * Execute an AoE damage battlecry effect
@@ -473,15 +474,25 @@ export function executeBattlecry(
         
       // Elder Titan battlecries (Gullveig/Hyrrokkin/Utgarda-Loki — implemented in oldGodsUtils.ts)
       case 'cthun_damage':
+        return executeCThunBattlecry(newState, cardInstanceId, 'player');
+
       case 'buff_cthun':
-      case 'cthun_cultist_damage':
+      case 'cthun_cultist_damage': {
+        const buffAtk = battlecry.buffAttack || battlecry.value || 1;
+        const buffHp = battlecry.buffHealth || battlecry.value || 1;
+        return buffCThun(newState, 'player', buffAtk, buffHp);
+      }
+
+      case 'resurrect_deathrattle':
+        return executeNZothBattlecry(newState, cardInstanceId, 'player');
+
+      case 'yogg_saron':
+        return executeYoggSaronBattlecry(newState, cardInstanceId, 'player');
+
       case 'conditional_self_buff':
       case 'conditional_armor':
       case 'conditional_summon':
       case 'summon_by_condition':
-      case 'resurrect_deathrattle':
-      case 'yogg_saron':
-        // These are handled in oldGodsUtils.ts
         return newState;
         
       case 'heal_hero': {
@@ -2122,20 +2133,37 @@ function executeSetHealthBattlecry(
 }
 
 /**
- * Execute a cast all spells battlecry effect (like Zul'jin)
+ * Execute a cast all spells battlecry effect (like Zul'jin / Skoll Death-Hunter)
+ * Replays random spells equal to spellsCastThisGame count.
  */
 function executeCastAllSpellsBattlecry(state: GameState): GameState {
-  
-  // In a real game, we'd track all spells played and replay them with random targets
-  // For this implementation, we'll just log the effect
-  
-  // Create a copy of the state to work with
-  let newState = { ...state };
-  
-  // In a proper implementation, we would iterate through the spell history
-  // and replay each spell with random targets. But for now, this is a placeholder.
-  
-  return newState;
+  const newState = structuredClone(state) as GameState;
+  const spellsCast = (newState.players.player as any).spellsCastThisGame || 0;
+  if (spellsCast === 0) return newState;
+
+  const { getCardDatabase } = require('../data/cardDatabaseUtils');
+  const { executeSpell } = require('./spells/spellUtils');
+  const cardDatabase = getCardDatabase();
+  const allSpells = cardDatabase.filter((card: CardData) => card.type === 'spell');
+  if (allSpells.length === 0) return newState;
+
+  let result = newState;
+  for (let i = 0; i < spellsCast; i++) {
+    const randomSpell = allSpells[Math.floor(Math.random() * allSpells.length)];
+    const fakeInstance = {
+      instanceId: `replay-spell-${i}`,
+      card: randomSpell,
+      currentHealth: 0,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: false,
+      attacksPerformed: 0,
+    } as CardInstance;
+    if ((randomSpell as any).spellEffect) {
+      result = executeSpell(result, fakeInstance);
+    }
+  }
+  return result;
 }
 
 /**

@@ -695,6 +695,23 @@ vercel --prod                 # Deploy to Vercel
 - Player field at `bottom: 310px`, opponent field at `top: 260px` (fixed px, not %)
 - Follows Hearthstone approach: fixed virtual resolution, all px, uniform scaling
 
+### Completed (Pre-Launch Code Audit)
+
+- Deleted dead `initializeEffects.ts` (empty handler dictionaries, never imported)
+- Fixed z-index chaos: `99999` → `var(--z-topmost, 10000)` in HeroDetailPopup, DamageIndicator, HeroPowerButton
+- Fixed localhost:5000 hardcoded fallbacks → `window.location.origin` in chainAPI.ts, useMatchmaking.ts
+- Wired Elder Titan battlecries to real implementations (were returning state unchanged):
+  - `yogg_saron` → `executeYoggSaronBattlecry()` (random spell replay per spells cast)
+  - `cthun_damage` → `executeCThunBattlecry()` (damage split among enemies)
+  - `buff_cthun` / `cthun_cultist_damage` → `buffCThun()` (buff Elder Titan stats)
+  - `resurrect_deathrattle` → `executeNZothBattlecry()` (resurrect deathrattle minions)
+  - `cast_all_spells` → real spell replay (was placeholder returning unchanged state)
+- Removed deprecated `showSpellNotification()` / `showMinionNotification()` from gameStore.ts
+  - NotificationSubscriber already handles card play notifications via GameEventBus
+  - Saga feed logging preserved, battlecry announcements preserved
+- Fixed silent error swallowing in BlockchainSubscriber (`catch(() => {})` → `catch(err => debug.warn())`)
+- Removed dead `spellSchool` parameter and empty filter from `filterDiscoverOptions()` in mechanicsUtils.ts
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

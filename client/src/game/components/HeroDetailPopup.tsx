@@ -92,7 +92,7 @@ const styles = `
   .hero-popup-portal {
     position: fixed;
     inset: 0;
-    z-index: 99999;
+    z-index: var(--z-topmost, 10000);
     pointer-events: auto;
   }
 

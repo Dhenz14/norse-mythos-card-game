@@ -322,8 +322,8 @@ async function enqueueResult(result: PackagedMatchResult, playerCardCount: numbe
 	});
 
 	// Register both players with the chain indexer for global ELO tracking
-	registerAccount(result.winner.username).catch(() => {});
-	registerAccount(result.loser.username).catch(() => {});
+	registerAccount(result.winner.username).catch(err => debug.warn('Failed to register winner account:', err));
+	registerAccount(result.loser.username).catch(err => debug.warn('Failed to register loser account:', err));
 
 	// Record season stats for ranked matches
 	if (result.matchType === 'ranked') {

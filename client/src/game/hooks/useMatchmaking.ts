@@ -3,7 +3,7 @@ import { useMatchmakingStore } from '../stores/matchmakingStore';
 import { usePeerStore } from '../stores/peerStore';
 import { useHiveDataStore } from '../../data/HiveDataLayer';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || (window.location.origin);
 
 export function useMatchmaking() {
 	const { myPeerId } = usePeerStore();

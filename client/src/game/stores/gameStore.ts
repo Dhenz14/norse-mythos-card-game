@@ -72,57 +72,6 @@ function logBattlefieldChange(
   }
 }
 
-// DEPRECATED: Use GameEventBus.emitNotification() instead
-// These functions will be removed once event-driven architecture migration is complete
-// See: client/src/game/subscribers/NotificationSubscriber.ts
-function showSpellNotification(cardName: string, effectType?: string, value?: number) {
-  const effectEmoji = {
-    'damage': '🔥',
-    'aoe_damage': '💥',
-    'heal': '💚',
-    'restore_health': '💚',
-    'buff': '💪',
-    'give_stats': '💪',
-    'draw': '📚',
-    'draw_cards': '📚',
-    'summon': '🧩',
-    'destroy': '💀',
-    'freeze': '❄️',
-    'silence': '🔇',
-    'transform': '🔮',
-    'discover': '🔍',
-    'armor': '🛡️',
-  }[effectType || 'default'] || '✨';
-  
-  let description = 'Spell cast!';
-  if (effectType === 'damage' || effectType === 'aoe_damage') {
-    description = value ? `Dealt ${value} damage!` : 'Damage dealt!';
-  } else if (effectType === 'heal' || effectType === 'restore_health') {
-    description = value ? `Restored ${value} health!` : 'Healing applied!';
-  } else if (effectType === 'draw' || effectType === 'draw_cards') {
-    description = value ? `Drew ${value} card${value > 1 ? 's' : ''}!` : 'Cards drawn!';
-  } else if (effectType === 'summon') {
-    description = 'Minion(s) summoned!';
-  } else if (effectType === 'destroy') {
-    description = 'Target destroyed!';
-  } else if (effectType === 'freeze') {
-    description = 'Target frozen!';
-  } else if (effectType === 'armor') {
-    description = value ? `Gained ${value} armor!` : 'Armor gained!';
-  }
-  
-  toast.info(`${effectEmoji} ${cardName}`, { description, duration: 2500 });
-}
-
-// DEPRECATED: Use GameEventBus.emitMinionSummoned() instead
-// The NotificationSubscriber handles minion summoned notifications
-function showMinionNotification(cardName: string, attack?: number, health?: number) {
-  const description = attack !== undefined && health !== undefined 
-    ? `${attack}/${health} minion summoned to battle!`
-    : 'Minion summoned to the battlefield!';
-  
-  toast.info(`⚔️ ${cardName}`, { description, duration: 2000 });
-}
 
 // Avoid direct import in the store initialization to prevent circular dependencies
 
@@ -273,33 +222,19 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           return;
         }
         
-        // Show notification based on card type
+        // Log to saga feed based on card type
         if (cardInstance.card.type === 'spell') {
-          const effectType = cardInstance.card.spellEffect?.type || 'default';
-          const effectValue = cardInstance.card.spellEffect?.value;
-          showSpellNotification(cardInstance.card.name, effectType as string, effectValue as number);
-          
-          // Log to saga feed
           logActivity('spell_cast', 'player', `Cast ${cardInstance.card.name}`, {
             cardName: cardInstance.card.name,
             cardId: typeof cardInstance.card.id === 'number' ? cardInstance.card.id : undefined,
-            value: effectValue as number
+            value: cardInstance.card.spellEffect?.value as number
           });
         } else if (cardInstance.card.type === 'minion') {
-          showMinionNotification(
-            cardInstance.card.name, 
-            cardInstance.card.attack, 
-            cardInstance.card.health
-          );
-          
-          // Show battlecry popup if the minion has a battlecry
           if (hasKeyword(cardInstance, 'battlecry') &&
               cardInstance.card.battlecry) {
-            // Get the battlecry description from the card
-            const battlecryDescription = cardInstance.card.description || 
+            const battlecryDescription = cardInstance.card.description ||
               `Battlecry: ${cardInstance.card.battlecry.type || 'Special effect'}`;
-            
-            // Fire the battlecry announcement popup
+
             fireAnnouncement('battlecry', cardInstance.card.name, {
               subtitle: battlecryDescription,
               rarity: cardInstance.card.rarity as 'common' | 'rare' | 'epic' | 'mythic',
@@ -307,8 +242,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
               duration: 2500
             });
           }
-          
-          // Log to saga feed
+
           logActivity('minion_summoned', 'player', `Summoned ${cardInstance.card.name} (${cardInstance.card.attack}/${cardInstance.card.health})`, {
             cardName: cardInstance.card.name,
             cardId: typeof cardInstance.card.id === 'number' ? cardInstance.card.id : undefined

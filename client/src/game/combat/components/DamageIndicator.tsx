@@ -58,7 +58,7 @@ export const DamageIndicator: React.FC<DamageIndicatorProps> = ({
 				left: x + jitterX,
 				top: y + jitterY,
 				pointerEvents: 'none',
-				zIndex: 99999,
+				zIndex: 10000,
 				transform: 'translateX(-50%)',
 			}}
 		>
