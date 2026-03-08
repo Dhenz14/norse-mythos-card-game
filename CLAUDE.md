@@ -712,6 +712,27 @@ vercel --prod                 # Deploy to Vercel
 - Fixed silent error swallowing in BlockchainSubscriber (`catch(() => {})` → `catch(err => debug.warn())`)
 - Removed dead `spellSchool` parameter and empty filter from `filterDiscoverOptions()` in mechanicsUtils.ts
 
+### Completed (AI Upgrade + Type Safety)
+
+- Upgraded `simulateOpponentTurn()` in gameUtils.ts from greedy bot to heuristic AI:
+  - Knapsack mana solver: finds card combination that spends the most mana (was: play highest cost first)
+  - Smart play order: removal spells first (if enemy has taunts), then AoE (if 3+ enemy minions), then minions
+  - AoE gating: AoE spells skipped if enemy has fewer than 2 minions
+  - Spell targeting: damage prefers killable high-attack targets, heals target most-damaged, buffs go on highest-attack
+  - Battlecry targeting: same intelligence as spell targeting
+  - Lethal detection: checks total attack vs enemy HP before any attacks; if lethal, all go face
+  - Value trades: prefer killing enemy minions while surviving (score 500+)
+  - Efficient trades: overkill penalized (don't waste 7/7 on 1/1)
+  - Attacker sorting: lowest attack first for trades, save big minions
+- Hive Keychain `broadcastCustomJson` was already fully implemented — fixed stale "stub" comment in transactionProcessor.ts
+- Added 4 typed interfaces replacing `any` in core type definitions:
+  - `Enchantment` (type, effect, source, buffAttack, buffHealth)
+  - `BuffInstance` (attack, health, source)
+  - `ChooseOneOption` (id, name, description, effect)
+  - `ActiveEffect` (type, player, source, duration, value, etc.)
+- Replaced 11 `: any` fields in types.ts: comboEffect, chooseOneOptions (×2), enchantments, buffs, heroPower.effect, passiveAbility.effect (×2), stage3Variants.battlecry/deathrattle
+- Replaced `activeEffects: any[]` → `ActiveEffect[]` in GameContext.ts
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

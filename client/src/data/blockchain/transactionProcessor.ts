@@ -6,7 +6,7 @@
  *
  *   'local' → no-op (transactions stay queued, never submitted)
  *   'test'  → POST to local Express mock-blockchain endpoints
- *   'hive'  → broadcast via Hive Keychain (stub — implement when ready)
+ *   'hive'  → broadcast via Hive Keychain (requestCustomJson)
  *
  * Usage:
  *   startTransactionProcessor()   — call once at app start (idempotent)

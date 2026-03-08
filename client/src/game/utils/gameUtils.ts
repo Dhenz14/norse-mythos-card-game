@@ -1483,340 +1483,381 @@ export function processAITurn(state: GameState): GameState {
   return newState;
 }
 
-/**
- * Enhanced AI logic for opponent's turn - plays cards and attacks
- */
+function aiGetAtk(c: CardInstance): number {
+	return (c.card as any).attack || 0;
+}
+
+function aiGetHp(c: CardInstance): number {
+	return c.currentHealth || 0;
+}
+
+function aiGetMaxHp(c: CardInstance): number {
+	return (c.card as any).health || 0;
+}
+
+function aiIsAoeSpell(card: CardInstance): boolean {
+	const se = (card.card as any).spellEffect;
+	if (!se) return false;
+	const tt = se.targetType as string || '';
+	return tt.includes('all_enem') || tt.includes('all_minion');
+}
+
+function aiIsRemovalSpell(card: CardInstance): boolean {
+	const se = (card.card as any).spellEffect;
+	if (!se) return false;
+	return card.card.type === 'spell' && (se.type === 'damage' || se.type === 'destroy');
+}
+
+function aiFindBestDamageTarget(
+	minions: CardInstance[],
+	dmg: number
+): CardInstance | undefined {
+	const killable = minions.filter(m => aiGetHp(m) <= dmg);
+	if (killable.length > 0) {
+		return killable.sort((a, b) => aiGetAtk(b) - aiGetAtk(a))[0];
+	}
+	return minions.sort((a, b) => aiGetAtk(b) - aiGetAtk(a))[0];
+}
+
+function aiFindBestHealTarget(
+	minions: CardInstance[]
+): CardInstance | undefined {
+	const damaged = minions.filter(m => aiGetHp(m) < aiGetMaxHp(m));
+	if (damaged.length === 0) return undefined;
+	return damaged.sort((a, b) =>
+		(aiGetMaxHp(b) - aiGetHp(b)) - (aiGetMaxHp(a) - aiGetHp(a))
+	)[0];
+}
+
+function aiFindBestBuffTarget(
+	minions: CardInstance[]
+): CardInstance | undefined {
+	if (minions.length === 0) return undefined;
+	return [...minions].sort((a, b) => aiGetAtk(b) - aiGetAtk(a))[0];
+}
+
+function aiKnapsackManaFill(
+	hand: CardInstance[],
+	mana: number,
+	maxBoard: number,
+	boardSize: number
+): CardInstance[] {
+	const playable = hand.filter(c => {
+		const cost = c.card.manaCost || 0;
+		if (cost > mana) return false;
+		if (c.card.type === 'minion' && boardSize >= maxBoard) return false;
+		return true;
+	});
+	if (playable.length === 0) return [];
+	if (playable.length <= 15) {
+		let bestCombo: CardInstance[] = [];
+		let bestMana = 0;
+		const n = playable.length;
+		const limit = 1 << n;
+		for (let mask = 1; mask < limit; mask++) {
+			let totalMana = 0;
+			let minionCount = 0;
+			const combo: CardInstance[] = [];
+			for (let i = 0; i < n; i++) {
+				if (!(mask & (1 << i))) continue;
+				const c = playable[i];
+				totalMana += c.card.manaCost || 0;
+				if (c.card.type === 'minion') minionCount++;
+				combo.push(c);
+			}
+			if (totalMana > mana) continue;
+			if (boardSize + minionCount > maxBoard) continue;
+			if (totalMana > bestMana) {
+				bestMana = totalMana;
+				bestCombo = combo;
+			}
+		}
+		return bestCombo;
+	}
+	const sorted = [...playable].sort(
+		(a, b) => (b.card.manaCost || 0) - (a.card.manaCost || 0)
+	);
+	const result: CardInstance[] = [];
+	let remaining = mana;
+	let slots = maxBoard - boardSize;
+	for (const c of sorted) {
+		const cost = c.card.manaCost || 0;
+		if (cost > remaining) continue;
+		if (c.card.type === 'minion' && slots <= 0) continue;
+		result.push(c);
+		remaining -= cost;
+		if (c.card.type === 'minion') slots--;
+	}
+	return result;
+}
+
+function aiPrioritizePlayOrder(
+	cards: CardInstance[],
+	playerMinions: CardInstance[]
+): CardInstance[] {
+	const hasTaunts = playerMinions.some(m => hasKeyword(m, 'taunt'));
+	const enemyCount = playerMinions.length;
+	return [...cards].sort((a, b) => {
+		let aScore = 0;
+		let bScore = 0;
+		if (hasTaunts && aiIsRemovalSpell(a)) aScore += 100;
+		if (hasTaunts && aiIsRemovalSpell(b)) bScore += 100;
+		if (enemyCount >= 3 && aiIsAoeSpell(a)) aScore += 90;
+		if (enemyCount >= 3 && aiIsAoeSpell(b)) bScore += 90;
+		if (a.card.type === 'spell') aScore += 50;
+		if (b.card.type === 'spell') bScore += 50;
+		if (hasKeyword(a, 'taunt') && a.card.type === 'minion') aScore += 30;
+		if (hasKeyword(b, 'taunt') && b.card.type === 'minion') bScore += 30;
+		return bScore - aScore;
+	});
+}
+
+function aiResolveSpellTarget(
+	card: CardInstance,
+	currentState: GameState
+): string | undefined {
+	const se = (card.card as any).spellEffect;
+	if (!se) return undefined;
+	const playerMinions = currentState.players.player.battlefield;
+	const aiMinions = currentState.players.opponent.battlefield;
+	const dmg = se.value || se.damage || 0;
+
+	if (se.type === 'damage') {
+		if (playerMinions.length > 0) {
+			const best = aiFindBestDamageTarget(playerMinions, dmg);
+			return best?.instanceId;
+		}
+		return 'player-hero';
+	}
+	if (se.type === 'heal') {
+		const best = aiFindBestHealTarget(aiMinions);
+		if (best) return best.instanceId;
+		const aiHeroHp = currentState.players.opponent.heroHealth ?? currentState.players.opponent.health;
+		if (aiHeroHp < 30) return 'opponent-hero';
+		return undefined;
+	}
+	if (se.type === 'buff') {
+		const best = aiFindBestBuffTarget(aiMinions);
+		return best?.instanceId;
+	}
+	if (playerMinions.length > 0) {
+		return playerMinions.sort((a, b) => aiGetAtk(b) - aiGetAtk(a))[0].instanceId;
+	}
+	return 'player-hero';
+}
+
+function aiResolveBattlecryTarget(
+	card: CardInstance,
+	currentState: GameState
+): string | undefined {
+	const bc = (card.card as any).battlecry;
+	if (!bc) return undefined;
+	const playerMinions = currentState.players.player.battlefield;
+	const aiMinions = currentState.players.opponent.battlefield;
+
+	if (bc.targetType === 'enemy' || bc.targetType === 'any') {
+		const isDmg = bc.type === 'deal_damage' || bc.type === 'damage';
+		if (isDmg && playerMinions.length > 0) {
+			const dmg = bc.value || 0;
+			const best = aiFindBestDamageTarget(playerMinions, dmg);
+			return best?.instanceId;
+		}
+		if (playerMinions.length > 0) {
+			return playerMinions.sort((a, b) => aiGetAtk(b) - aiGetAtk(a))[0].instanceId;
+		}
+		if (bc.canTargetHeroes) return 'player-hero';
+		return undefined;
+	}
+	if (bc.targetType === 'friendly') {
+		const isBuff = bc.type === 'buff' || bc.type === 'give_stats';
+		if (isBuff) {
+			const best = aiFindBestBuffTarget(aiMinions);
+			return best?.instanceId;
+		}
+		const isHeal = bc.type === 'heal' || bc.type === 'restore_health';
+		if (isHeal) {
+			const best = aiFindBestHealTarget(aiMinions);
+			return best?.instanceId;
+		}
+		if (aiMinions.length > 0) {
+			return aiMinions.sort((a, b) => aiGetAtk(b) - aiGetAtk(a))[0].instanceId;
+		}
+		return undefined;
+	}
+	return undefined;
+}
+
 function simulateOpponentTurn(state: GameState): GameState {
-  try {
-    // Safety check to ensure we received a valid state object
-    if (!state || !state.players || !state.players.opponent) {
-      debug.error("Invalid state passed to simulateOpponentTurn", state);
-      return state; // Return the original state to avoid crashing
-    }
+	try {
+		if (!state || !state.players || !state.players.opponent) {
+			debug.error("Invalid state passed to simulateOpponentTurn", state);
+			return state;
+		}
 
-    let currentState = structuredClone(state) as GameState;
-    const opponent = currentState.players.opponent;
-    
-    debug.ai('[AI Turn] simulateOpponentTurn called:', {
-      handSize: opponent.hand.length,
-      mana: opponent.mana.current,
-      maxMana: opponent.mana.max,
-      battlefieldSize: opponent.battlefield.length,
-      currentTurn: currentState.currentTurn
-    });
-    
-    // Phase 1: Play cards from hand (highest cost first)
-    const sortedHand = [...opponent.hand].sort(
-      (a, b) => (b.card.manaCost || 0) - (a.card.manaCost || 0)
-    );
-    
-    // Try to play cards until no more can be played
-    for (const card of sortedHand) {
-      // Skip if not enough mana
-      if ((card.card.manaCost || 0) > currentState.players.opponent.mana.current) {
-        continue;
-      }
-      
-      // Check if this card needs a target
-      const needsTarget = (card.card.type === 'spell' && card.card.spellEffect?.requiresTarget) ||
-                         (card.card.type === 'minion' && card.card.battlecry?.requiresTarget);
-      
-      if (needsTarget) {
-        // Find a valid target for the AI
-        let targetId: string | undefined;
-        
-        // Choose target based on card type and effect
-        if (card.card.type === 'spell') {
-          const spellEffect = card.card.spellEffect;
-          
-          // Damage spells should target player's minions or hero
-          if (spellEffect?.type === 'damage') {
-            // Player's minions
-            const playerMinions = currentState.players.player.battlefield;
-            
-            if (playerMinions.length > 0) {
-              // Target minion with highest attack first
-              const targetMinion = playerMinions.sort((a, b) => 
-                ((b.card as any).attack || 0) - ((a.card as any).attack || 0)
-              )[0];
-              targetId = targetMinion.instanceId;
-            } else {
-              // No minions, target player's hero
-              targetId = 'player-hero'; // Special ID for player's hero
-            }
-          }
-          // Healing spells should target AI's own minions or hero
-          else if (spellEffect?.type === 'heal') {
-            // AI's own minions, prioritize damaged ones
-            const aiMinions = currentState.players.opponent.battlefield.filter(m => 
-              (m.currentHealth || 0) < ((m.card as any).health || 0)
-            );
-            
-            if (aiMinions.length > 0) {
-              // Target most damaged minion
-              const targetMinion = aiMinions.sort((a, b) => 
-                (((a.card as any).health || 0) - (a.currentHealth || 0)) - 
-                (((b.card as any).health || 0) - (b.currentHealth || 0))
-              )[0];
-              targetId = targetMinion.instanceId;
-            } else {
-              // No damaged minions, target self
-              targetId = 'opponent-hero'; // Special ID for opponent's hero
-            }
-          }
-          // Buff spells should target AI's own minions
-          else if (spellEffect?.type === 'buff') {
-            const aiMinions = currentState.players.opponent.battlefield;
-            
-            if (aiMinions.length > 0) {
-              // Target highest health minion for buffs
-              const targetMinion = aiMinions.sort((a, b) => 
-                ((b.card as any).health || 0) - ((a.card as any).health || 0)
-              )[0];
-              targetId = targetMinion.instanceId;
-            } else {
-              // No valid targets
-              continue; // Skip this card
-            }
-          } else {
-            // Default targeting for other spells
-            if (currentState.players.player.battlefield.length > 0) {
-              // Target random player minion
-              const randomIndex = Math.floor(Math.random() * currentState.players.player.battlefield.length);
-              targetId = currentState.players.player.battlefield[randomIndex].instanceId;
-            } else {
-              // Target player hero
-              targetId = 'player-hero';
-            }
-          }
-        }
-        // Battlecry targeting for minions
-        else if (card.card.type === 'minion' && card.card.battlecry) {
-          const battlecry = card.card.battlecry;
-          
-          if (battlecry.targetType === 'enemy' || battlecry.targetType === 'any') {
-            // Target player's minions
-            const playerMinions = currentState.players.player.battlefield;
-            
-            if (playerMinions.length > 0) {
-              // Target minion with highest attack first for damage battlecries
-              const targetMinion = playerMinions.sort((a, b) => 
-                ((b.card as any).attack || 0) - ((a.card as any).attack || 0)
-              )[0];
-              targetId = targetMinion.instanceId;
-            } else {
-              // No minions, target player's hero if possible
-              if (battlecry.canTargetHeroes) {
-                targetId = 'player-hero';
-              } else {
-                continue; // Skip this card
-              }
-            }
-          } else if (battlecry.targetType === 'friendly') {
-            // Target AI's own minions
-            const aiMinions = currentState.players.opponent.battlefield;
-            
-            if (aiMinions.length > 0) {
-              // Target highest health minion for buffs
-              const targetMinion = aiMinions.sort((a, b) => 
-                ((b.card as any).health || 0) - ((a.card as any).health || 0)
-              )[0];
-              targetId = targetMinion.instanceId;
-            } else {
-              // No valid targets
-              continue; // Skip this card
-            }
-          }
-        }
-        
-        // Play the card with target if we found one
-        if (targetId) {
-          try {
-            debug.ai(`[AI Turn] Playing targeted card: ${card.card.name} (cost: ${card.card.manaCost}) → target: ${targetId}`);
-            const targetType = targetId === 'player-hero' || targetId === 'opponent-hero' ? 'hero' : 'minion';
-            currentState = playCard(currentState, card.instanceId, targetId, targetType);
-          } catch (error) {
-            debug.error(`Error playing targeted card ${card.card.name}:`, error);
-          }
-        } else {
-          continue; // Skip if no valid target
-        }
-      } else {
-        // Non-targeted card, play normally
-        try {
-          debug.ai(`[AI Turn] Playing card: ${card.card.name} (cost: ${card.card.manaCost}, type: ${card.card.type})`);
-          currentState = playCard(currentState, card.instanceId);
-        } catch (error) {
-          debug.error(`Error playing card ${card.card.name}:`, error);
-        }
-      }
-    }
-    
-    debug.ai('[AI Turn] After card play phase:', {
-      battlefieldSize: currentState.players.opponent.battlefield.length,
-      handSize: currentState.players.opponent.hand.length,
-      manaLeft: currentState.players.opponent.mana.current,
-      minionsOnBoard: currentState.players.opponent.battlefield.map(m => m.card.name)
-    });
-  
-  // Phase 2: Attack with minions (similar to autoAttackWithAllCards but for opponent)
-  
-  // Get all cards that can attack
-  // Sort by HP (currentHealth) - highest HP attacks first per game rules
-  const attackableCards = currentState.players.opponent.battlefield
-    .filter(card => !card.isSummoningSick && card.canAttack)
-    .sort((a, b) => (b.currentHealth || 0) - (a.currentHealth || 0)); // Sort by HP (highest first)
-  
-  
-  debug.ai('[AI Turn] Attack phase:', {
-    attackableCount: attackableCards.length,
-    allMinions: currentState.players.opponent.battlefield.map(m => ({
-      name: m.card.name,
-      canAttack: m.canAttack,
-      isSummoningSick: m.isSummoningSick,
-      attack: (m.card as any).attack,
-      health: m.currentHealth
-    }))
-  });
-  
-  if (attackableCards.length > 0) {
-    // For each card that can attack, find optimal targets (player minions or hero)
-    attackableCards.forEach(attackerCard => {
-      try {
-        // Get player's battlefield and check for Taunt minions
-        const playerField = currentState.players.player.battlefield;
-        const playerHealth = currentState.players.player.heroHealth ?? currentState.players.player.health;
-        const playerHasTaunts = hasTauntMinions(playerField);
+		let currentState = structuredClone(state) as GameState;
+		const opponent = currentState.players.opponent;
 
-        // If we can kill player, do it! (But only if there are no Taunts)
-        if (!playerHasTaunts && ((attackerCard.card as any).attack || 0) >= playerHealth) {
-          // Attack player's hero directly
-          currentState = processAttackForOpponent(
-            currentState, 
-            attackerCard.instanceId
-          );
-          return; // Skip to next card after this attack
-        }
-        
-        // If there are Taunt minions, we must attack those first
-        // Explicitly type this to avoid TypeScript errors
-        let bestTarget: CardInstance | null = null;
-        let bestTargetScore = -1;
-        
-        if (playerHasTaunts) {
-          // Get all Taunt minions
-          const tauntMinions = getTauntMinions(playerField);
-          
-          // Look for value trades against Taunt minions
-          tauntMinions.forEach(defenderCard => {
-            let score = 0;
-            
-            // Can we kill it?
-            if (((attackerCard.card as any).attack || 0) >= (defenderCard.currentHealth || 0)) {
-              score += 150; // Higher priority - we need to clear Taunts
-              
-              // Will our minion survive?
-              if (((defenderCard.card as any).attack || 0) < (attackerCard.currentHealth || 0)) {
-                score += 100;
-              }
-              
-              // Prioritize higher attack/cost cards
-              score += ((defenderCard.card as any).attack || 0) * 5;
-              score += (defenderCard.card.manaCost || 0) * 3;
-              
-              if (score > bestTargetScore) {
-                bestTarget = defenderCard;
-                bestTargetScore = score;
-              }
-            } else {
-              // If we can't kill it, still consider attacking it to damage it
-              score += 50;
-              
-              // Will our minion survive?
-              if (((defenderCard.card as any).attack || 0) < (attackerCard.currentHealth || 0)) {
-                score += 30;
-              }
-              
-              if (score > bestTargetScore) {
-                bestTarget = defenderCard;
-                bestTargetScore = score;
-              }
-            }
-          });
-          
-          // If we found a Taunt target, attack it
-          if (bestTarget) {
-            // Type assertion to ensure TypeScript knows bestTarget is not null here
-            const target = bestTarget as CardInstance;
-            currentState = processAttackForOpponent(
-              currentState, 
-              attackerCard.instanceId, 
-              target.instanceId
-            );
-            return; // Done attacking with this minion
-          }
-        }
-        
-        // If no Taunts or all Taunts handled, proceed with normal targeting
-        // Target the LOWEST HP enemy minion first (game rule)
-        bestTarget = null;
-        let lowestHP = Infinity;
-        
-        playerField.forEach(defenderCard => {
-          // Skip Taunt minions as they were already considered above
-          if (hasKeyword(defenderCard, 'taunt')) {
-            return;
-          }
-          
-          // Target lowest HP minion
-          if ((defenderCard.currentHealth || 0) < lowestHP) {
-            lowestHP = defenderCard.currentHealth || 0;
-            bestTarget = defenderCard;
-          }
-        });
-        
-        // If we found a good trade, do it
-        if (bestTarget) {
-          // Type assertion to ensure TypeScript knows bestTarget is not null here
-          const target = bestTarget as CardInstance;
-          currentState = processAttackForOpponent(
-            currentState, 
-            attackerCard.instanceId, 
-            target.instanceId
-          );
-        } else if (!playerHasTaunts) {
-          // No good trades and no Taunts, attack hero
-          currentState = processAttackForOpponent(
-            currentState, 
-            attackerCard.instanceId
-          );
-        } else {
-          // There are Taunts but we didn't find good targets - this shouldn't happen
-          // but just in case, attack a random Taunt
-          const tauntMinions = getTauntMinions(playerField);
-          if (tauntMinions.length > 0) {
-            const randomTaunt = tauntMinions[0]; // Just pick the first one
-            currentState = processAttackForOpponent(
-              currentState, 
-              attackerCard.instanceId, 
-              randomTaunt.instanceId
-            );
-          }
-        }
-      } catch (error) {
-        debug.error('AI attack error:', error);
-      }
-    });
-  }
-  
-  // Phase 3: Use hero power if possible and appropriate
-  // (Could be implemented in a future enhancement)
-  
-  return currentState;
-  } catch (error) {
-    debug.error('AI simulation error:', error);
-    return state; // Return the original state if we encounter an error
-  }
+		debug.ai('[AI Turn] simulateOpponentTurn called:', {
+			handSize: opponent.hand.length,
+			mana: opponent.mana.current,
+			maxMana: opponent.mana.max,
+			battlefieldSize: opponent.battlefield.length,
+			currentTurn: currentState.currentTurn
+		});
+
+		const maxBoard = 5;
+		const playerMinions = currentState.players.player.battlefield;
+		const cardsToPlay = aiKnapsackManaFill(
+			opponent.hand,
+			opponent.mana.current,
+			maxBoard,
+			opponent.battlefield.length
+		);
+		const orderedCards = aiPrioritizePlayOrder(cardsToPlay, playerMinions);
+
+		for (const card of orderedCards) {
+			if (!currentState.players.opponent.hand.find(c => c.instanceId === card.instanceId)) continue;
+			if ((card.card.manaCost || 0) > currentState.players.opponent.mana.current) continue;
+
+			const needsTarget = (card.card.type === 'spell' && card.card.spellEffect?.requiresTarget) ||
+				(card.card.type === 'minion' && card.card.battlecry?.requiresTarget);
+
+			if (needsTarget) {
+				let targetId: string | undefined;
+
+				if (card.card.type === 'spell') {
+					const isAoe = aiIsAoeSpell(card);
+					if (isAoe && currentState.players.player.battlefield.length < 2) continue;
+					targetId = aiResolveSpellTarget(card, currentState);
+				} else if (card.card.type === 'minion' && card.card.battlecry) {
+					targetId = aiResolveBattlecryTarget(card, currentState);
+				}
+
+				if (targetId) {
+					try {
+						debug.ai(`[AI Turn] Playing targeted card: ${card.card.name} (cost: ${card.card.manaCost}) → target: ${targetId}`);
+						const tType = targetId === 'player-hero' || targetId === 'opponent-hero' ? 'hero' : 'minion';
+						currentState = playCard(currentState, card.instanceId, targetId, tType);
+					} catch (error) {
+						debug.error(`Error playing targeted card ${card.card.name}:`, error);
+					}
+				}
+			} else {
+				const isAoe = card.card.type === 'spell' && aiIsAoeSpell(card);
+				if (isAoe && currentState.players.player.battlefield.length < 2) continue;
+
+				try {
+					debug.ai(`[AI Turn] Playing card: ${card.card.name} (cost: ${card.card.manaCost}, type: ${card.card.type})`);
+					currentState = playCard(currentState, card.instanceId);
+				} catch (error) {
+					debug.error(`Error playing card ${card.card.name}:`, error);
+				}
+			}
+		}
+
+		debug.ai('[AI Turn] After card play phase:', {
+			battlefieldSize: currentState.players.opponent.battlefield.length,
+			handSize: currentState.players.opponent.hand.length,
+			manaLeft: currentState.players.opponent.mana.current,
+			minionsOnBoard: currentState.players.opponent.battlefield.map(m => m.card.name)
+		});
+
+		// Phase 2: Attack with minions
+		const attackers = currentState.players.opponent.battlefield
+			.filter(card => !card.isSummoningSick && card.canAttack);
+		const playerHp = currentState.players.player.heroHealth ?? currentState.players.player.health;
+		const playerArmor = currentState.players.player.heroArmor || 0;
+		const effectiveHp = playerHp + playerArmor;
+		const playerField = currentState.players.player.battlefield;
+		const playerHasTaunts = hasTauntMinions(playerField);
+
+		const totalAtk = attackers.reduce((sum, c) => sum + aiGetAtk(c), 0);
+		const isLethal = !playerHasTaunts && totalAtk >= effectiveHp;
+
+		if (isLethal) {
+			debug.ai('[AI Turn] Lethal detected! Going face with everything.');
+			for (const attacker of attackers) {
+				try {
+					currentState = processAttackForOpponent(currentState, attacker.instanceId);
+				} catch (error) {
+					debug.error('AI lethal attack error:', error);
+				}
+			}
+			return currentState;
+		}
+
+		const sortedAttackers = [...attackers].sort((a, b) => aiGetAtk(a) - aiGetAtk(b));
+
+		for (const attacker of sortedAttackers) {
+			try {
+				const pField = currentState.players.player.battlefield;
+				const hasTaunts = hasTauntMinions(pField);
+				const atkPower = aiGetAtk(attacker);
+				const atkHp = aiGetHp(attacker);
+
+				if (hasTaunts) {
+					const taunts = getTauntMinions(pField);
+					let bestTarget: CardInstance | null = null;
+					let bestScore = -1;
+
+					for (const t of taunts) {
+						let score = 0;
+						const canKill = atkPower >= aiGetHp(t);
+						const survives = aiGetAtk(t) < atkHp;
+						if (canKill && survives) score = 300 + aiGetAtk(t) * 10;
+						else if (canKill) score = 200 + aiGetAtk(t) * 5;
+						else if (survives) score = 50;
+						else score = 10;
+						const overkill = atkPower - aiGetHp(t);
+						if (canKill) score -= Math.max(0, overkill) * 3;
+						if (score > bestScore) { bestScore = score; bestTarget = t; }
+					}
+
+					if (bestTarget) {
+						currentState = processAttackForOpponent(
+							currentState, attacker.instanceId, (bestTarget as CardInstance).instanceId
+						);
+					}
+					continue;
+				}
+
+				let bestTarget: CardInstance | null = null;
+				let bestScore = -1;
+
+				for (const defender of pField) {
+					const canKill = atkPower >= aiGetHp(defender);
+					const survives = aiGetAtk(defender) < atkHp;
+					let score = 0;
+
+					if (canKill && survives) {
+						score = 500 + aiGetAtk(defender) * 10 + (defender.card.manaCost || 0) * 5;
+						const overkill = atkPower - aiGetHp(defender);
+						score -= overkill * 5;
+					} else if (canKill) {
+						score = 200 + aiGetAtk(defender) * 5;
+						score -= atkPower * 2;
+					}
+
+					if (score > bestScore) { bestScore = score; bestTarget = defender; }
+				}
+
+				if (bestTarget && bestScore > 0) {
+					currentState = processAttackForOpponent(
+						currentState, attacker.instanceId, (bestTarget as CardInstance).instanceId
+					);
+				} else if (pField.length === 0) {
+					currentState = processAttackForOpponent(currentState, attacker.instanceId);
+				}
+			} catch (error) {
+				debug.error('AI attack error:', error);
+			}
+		}
+
+		return currentState;
+	} catch (error) {
+		debug.error('AI simulation error:', error);
+		return state;
+	}
 }
 
 /**

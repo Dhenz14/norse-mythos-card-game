@@ -169,6 +169,74 @@ export interface PassiveEffect {
 }
 
 /**
+ * Enchantment applied to a card instance
+ */
+export interface Enchantment {
+  type: string;
+  effect?: BattlecryEffect | DeathrattleEffect | SpellEffect;
+  source?: string;
+  buffAttack?: number;
+  buffHealth?: number;
+}
+
+/**
+ * Buff instance tracking attack/health modifications
+ */
+export interface BuffInstance {
+  attack: number;
+  health: number;
+  source?: string;
+}
+
+/**
+ * Choose One option for cards with multiple effect choices
+ */
+export interface ChooseOneOption {
+  id?: number | string;
+  name: string;
+  description: string;
+  effect?: BattlecryEffect | SpellEffect | string;
+  spellEffect?: SpellEffect;
+  manaCost?: number;
+  type?: string;
+  rarity?: string;
+  class?: string;
+  heroClass?: string;
+  collectible?: boolean;
+  keywords?: string[];
+  buffAttack?: number;
+  buffHealth?: number;
+  [key: string]: unknown;
+}
+
+/**
+ * Active effect tracked on the game context
+ */
+export interface ActiveEffect {
+  type?: string;
+  id?: string;
+  sourceInstanceId?: string;
+  player?: 'self' | 'opponent' | 'player';
+  source?: string;
+  sourceCardId?: number | string;
+  sourceCardName?: string;
+  turnsRemaining?: number;
+  triggeredAt?: number;
+  activateAfterOpponent?: boolean;
+  triggerCondition?: string;
+  effectType?: string;
+  value?: number;
+  targetType?: string;
+  duration?: string;
+  turnApplied?: number;
+  isActive?: boolean;
+  timesTriggered?: number;
+  effect?: BattlecryEffect | SpellEffect;
+  permanent?: boolean;
+  targets?: string[];
+}
+
+/**
  * Minion-specific properties
  */
 export interface MinionCardData extends BaseCardData {
@@ -198,7 +266,7 @@ export interface MinionCardData extends BaseCardData {
   linkedHeroId?: string;
   isSuperMinion?: boolean;
   overload?: { amount: number };
-  comboEffect?: any;
+  comboEffect?: BattlecryEffect;
   spellDamage?: number;
   costReduction?: any;
   tradeableInfo?: any;
@@ -215,7 +283,7 @@ export interface MinionCardData extends BaseCardData {
   awakenCondition?: any;
   awakenEffect?: any;
   customAwakeningCondition?: any;
-  chooseOneOptions?: any[];
+  chooseOneOptions?: ChooseOneOption[];
   outcastEffect?: any;
   costModifier?: any;
   dynamicAttack?: any;
@@ -241,7 +309,7 @@ export interface MinionCardData extends BaseCardData {
     name: string;
     description: string;
     trigger: string;
-    effect: any;
+    effect: BattlecryEffect | TriggeredEffect;
   };
   petFamily?: string;
   petFamilyTier?: 1 | 2 | 3;
@@ -252,9 +320,9 @@ export interface MinionCardData extends BaseCardData {
     manaCost: number;
     keywords: string[];
     description: string;
-    battlecry?: any;
-    deathrattle?: any;
-    passiveAbility?: { name: string; description: string; trigger: string; effect: any };
+    battlecry?: BattlecryEffect;
+    deathrattle?: DeathrattleEffect;
+    passiveAbility?: { name: string; description: string; trigger: string; effect: BattlecryEffect | TriggeredEffect };
   }[];
 }
 
@@ -284,7 +352,7 @@ export interface SpellCardData extends BaseCardData {
     };
     [key: string]: any;
   };
-  chooseOneOptions?: any[];
+  chooseOneOptions?: ChooseOneOption[];
   questProgress?: {
     goal: number;
     current: number;
@@ -589,7 +657,7 @@ export interface HeroPower {
   name: string;
   cost: number;
   used: boolean;
-  effect?: string | any;
+  effect?: string | BattlecryEffect;
   description?: string;
   class?: HeroClass;
   isUpgraded?: boolean;
@@ -617,10 +685,10 @@ export interface CardInstance {
   hasWindfury?: boolean;
   hasLifesteal?: boolean;
   hasPoisonous?: boolean;
-  enchantments?: any[];
+  enchantments?: Enchantment[];
   silenced?: boolean;
   isSilenced?: boolean;
-  buffs?: any[];
+  buffs?: BuffInstance[];
   isPlayed?: boolean;
   hasSuperMinionBonus?: boolean;
   attacksPerformed?: number;

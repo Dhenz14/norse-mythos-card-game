@@ -4,6 +4,7 @@
  * Provides the game state for effect handlers to use when executing effects.
  */
 import { CardInstance } from './types/CardTypes';
+import { ActiveEffect } from './types';
 import { debug } from './config/debugConfig';
 import { MAX_HAND_SIZE } from './constants/gameConstants';
 
@@ -35,7 +36,7 @@ export class GameContext {
   currentPlayer: Player;
   opponentPlayer: Player;
   turnCount: number;
-  activeEffects: any[];
+  activeEffects: ActiveEffect[];
   gameLog: string[];
   
   constructor(currentPlayer: Player, opponentPlayer: Player) {
