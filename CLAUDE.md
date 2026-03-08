@@ -657,6 +657,11 @@ vercel --prod                 # Deploy to Vercel
 - Applied to both HeroDetailPopup (clicked card) and ArmySelection grid (deck builder)
 - Scanline bars + luminosity mask focus rainbow near cursor position
 - Glare `::after` edge highlight ring with `brightness(0.6) contrast(3)` filter chain
+- Element-themed holo effects: 7 element palettes (fire, ice, water, grass, electric, light, shadow) replace default rainbow spectrum
+- Theme detection: explicit `element` field on card data, or name-regex fallback (ICE_RE, FIRE_RE, etc.)
+- Stage 3 evolved pets (`petStage === 'master'`) get boosted holo intensity (shine 0.9, glare 0.65, foil 0.75)
+- CSS classes: `element-holo-{theme}` for palette, `stage3-evolved` for intensity boost
+- Neutral element uses default rainbow holo (no override needed)
 
 ### Completed (Realm Board Skins & Ambient Overhaul)
 
