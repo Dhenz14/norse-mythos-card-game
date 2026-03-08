@@ -10,9 +10,39 @@ export const egyptianChapter: CampaignChapter = {
 	faction: 'egyptian',
 	description: 'Traverse the Egyptian underworld and face the judgment of the gods who weigh the hearts of mortals.',
 	chapterReward: [{ type: 'pack', amount: 3 }, { type: 'rune', amount: 200 }],
+	cinematicIntro: {
+		title: 'Duat: Shadows of the Pharaohs',
+		style: 'Golden hieroglyphics fade in on black, sand particles drift upward, warm amber lighting',
+		scenes: [
+			{
+				narration: 'Before the gods, before the sky and earth, there was only Nun — the dark, endless waters of nothingness. No light. No land. No breath. Only the abyss, patient and eternal, waiting for the first spark of will.',
+				visualCue: 'Pitch black screen. Faint ripples spread across dark water. Distant golden particles begin to coalesce.',
+				musicCue: 'Deep ambient drone with underwater reverb, single sustained low note',
+				durationHint: 14,
+			},
+			{
+				narration: 'From the waters rose Ra, self-created, blazing with the first light the universe had ever known. He spoke his own name and the darkness shattered. He wept, and from his tears came humanity. He breathed, and the gods were born.',
+				visualCue: 'A solar disc erupts from the water, flooding the screen with golden light. Hieroglyphic figures emerge from the rays — Shu, Tefnut, Geb, Nut.',
+				musicCue: 'Triumphant horn swell, Egyptian percussion builds, chorus of voices',
+				durationHint: 15,
+			},
+			{
+				narration: 'But even gods betray. Set, red-eyed and jealous, sealed his brother Osiris in a coffin of lead and gold and cast him into the Nile. Isis searched the world for the pieces. She found them all — all but one. And from that broken god, death entered the world.',
+				visualCue: 'The golden light dims to blood-red. A sarcophagus sinks into dark water. Isis kneels on the riverbank, wings spread in grief. Hieroglyphic panels crack.',
+				musicCue: 'Strings descend in minor key, funeral drums, a woman\'s voice wails',
+				durationHint: 16,
+			},
+			{
+				narration: 'Now Osiris rules the Duat — the underworld where every soul must journey. His scales weigh the hearts of the dead against the feather of truth. And tonight, the gates of the Duat open for the living. Your heart will be weighed. Your shadow will be tested. Walk forward into the land of the dead.',
+				visualCue: 'Massive stone gates grind open, revealing a path lit by torches descending into darkness. Golden scales hang in the distance. Ammit\'s silhouette waits behind them.',
+				musicCue: 'Low chanting builds to crescendo, gates boom open, echo fades to silence',
+				durationHint: 15,
+			},
+		],
+	},
 	missions: [
 		{
-			id: 'egyptian-1', chapterId: 'egyptian', missionNumber: 1,
+			id: 'egyptian-1', chapterId: 'egyptian', missionNumber: 1, realm: 'heliopolis',
 			name: 'The Scarab\'s Awakening',
 			description: 'Khepri, the dawn scarab, tests those who enter the Duat at sunrise.',
 			narrativeBefore: 'The first light of Ra splits the horizon as a massive scarab beetle rolls the sun itself across the sky. Khepri, god of the dawn, clicks his mandibles in challenge. "None pass into the Duat without proving they can endure the light of truth."',
@@ -26,7 +56,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-gaia', queen: 'hero-shu', rook: 'hero-baldur', bishop: 'hero-maat', knight: 'hero-khepri' },
 		},
 		{
-			id: 'egyptian-2', chapterId: 'egyptian', missionNumber: 2,
+			id: 'egyptian-2', chapterId: 'egyptian', missionNumber: 2, realm: 'thebes',
 			name: 'Sands of the Scorpion',
 			description: 'Serqet\'s desert trial — her venom tests the worthy.',
 			narrativeBefore: 'The desert stretches endlessly. Serqet appears from the sand itself, her scorpion tail arched and dripping venom. "My poison separates the weak from the strong," she hisses. "Which are you?"',
@@ -40,7 +70,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-gaia', queen: 'hero-ammit', rook: 'hero-hephaestus', bishop: 'hero-maat', knight: 'hero-serqet' },
 		},
 		{
-			id: 'egyptian-3', chapterId: 'egyptian', missionNumber: 3,
+			id: 'egyptian-3', chapterId: 'egyptian', missionNumber: 3, realm: 'duat',
 			name: 'The Weighing of Hearts',
 			description: 'Ma\'at weighs your heart against the Feather of Truth.',
 			narrativeBefore: 'The Hall of Two Truths stretches before you. Ma\'at stands beside her golden scales, the feather of truth resting on one side. "Place your heart on the scales," she commands. "If it is heavier than my feather, Ammit devours it."',
@@ -55,7 +85,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-shu', rook: 'hero-heimdall', bishop: 'hero-maat', knight: 'hero-khepri' },
 		},
 		{
-			id: 'egyptian-4', chapterId: 'egyptian', missionNumber: 4,
+			id: 'egyptian-4', chapterId: 'egyptian', missionNumber: 4, realm: 'duat',
 			name: 'The Devourer Awaits',
 			description: 'Ammit hungers for the unworthy.',
 			narrativeBefore: 'Behind Ma\'at\'s scales lurks Ammit — part crocodile, part lion, part hippopotamus. She has devoured the hearts of millions. Her jaws open wide. "Your heart passed the scales," she growls. "But I am still hungry."',
@@ -70,7 +100,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-ammit', rook: 'hero-ares', bishop: 'hero-aphrodite', knight: 'hero-serqet' },
 		},
 		{
-			id: 'egyptian-5', chapterId: 'egyptian', missionNumber: 5,
+			id: 'egyptian-5', chapterId: 'egyptian', missionNumber: 5, realm: 'thebes',
 			name: 'Storms of Set',
 			description: 'The god of chaos unleashes the desert storm.',
 			narrativeBefore: 'The sky turns crimson as Set, the red god of chaos, rises like a sandstorm given flesh. He murdered Osiris. He fights Apophis each night. "Order is a lie," he roars. "Let me show you the truth."',
@@ -88,7 +118,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-surtr', queen: 'hero-ammit', rook: 'hero-logi', bishop: 'hero-poseidon', knight: 'hero-serqet' },
 		},
 		{
-			id: 'egyptian-6', chapterId: 'egyptian', missionNumber: 6,
+			id: 'egyptian-6', chapterId: 'egyptian', missionNumber: 6, realm: 'heliopolis',
 			name: 'The Sun Barge',
 			description: 'Journey with Ra through the twelve hours of night.',
 			narrativeBefore: 'Ra\'s golden barge sails the sky of the Duat, carrying the sun through the underworld. Each hour brings new terrors. Ra sits at the prow, ancient and blazing. You must protect the sun through the darkest hour or dawn will never come.',
@@ -106,7 +136,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-audumbla', queen: 'hero-shu', rook: 'hero-baldur', bishop: 'hero-hestia', knight: 'hero-apollo' },
 		},
 		{
-			id: 'egyptian-7', chapterId: 'egyptian', missionNumber: 7,
+			id: 'egyptian-7', chapterId: 'egyptian', missionNumber: 7, realm: 'memphis',
 			name: 'Tears of Isis',
 			description: 'The goddess of magic weaves spells beyond mortal comprehension.',
 			narrativeBefore: 'Isis stands wreathed in enchantments that shimmer like the Nile at midnight. She reassembled Osiris, tricked Ra into revealing his true name. "I have wept an ocean of tears," she says. "Can you endure what made a goddess cry?"',
@@ -124,7 +154,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-sol', rook: 'hero-tyr', bishop: 'hero-freya', knight: 'hero-hermes' },
 		},
 		{
-			id: 'egyptian-8', chapterId: 'egyptian', missionNumber: 8,
+			id: 'egyptian-8', chapterId: 'egyptian', missionNumber: 8, realm: 'duat',
 			name: 'Anubis\' Gauntlet',
 			description: 'The jackal-headed god of death guides or condemns you.',
 			narrativeBefore: 'Anubis waits in the deepest chamber, his jackal eyes seeing through every lie. "I have prepared billions for their final journey," he says. "You are not dead yet. That makes this... interesting."',
@@ -142,7 +172,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-hel', rook: 'hero-vidar', bishop: 'hero-maat', knight: 'hero-nyx' },
 		},
 		{
-			id: 'egyptian-9', chapterId: 'egyptian', missionNumber: 9,
+			id: 'egyptian-9', chapterId: 'egyptian', missionNumber: 9, realm: 'duat',
 			name: 'The Serpent Apophis',
 			description: 'The chaos serpent threatens to devour the sun forever.',
 			narrativeBefore: 'In the deepest abyss, Apophis coils — the serpent of chaos, older than creation itself. Each night it tries to swallow Ra\'s barge. Its body stretches beyond sight, scales blacker than the void. If it wins, the sun dies.',
@@ -160,7 +190,7 @@ export const egyptianChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-hades', rook: 'hero-logi', bishop: 'hero-ran', knight: 'hero-nyx' },
 		},
 		{
-			id: 'egyptian-10', chapterId: 'egyptian', missionNumber: 10,
+			id: 'egyptian-10', chapterId: 'egyptian', missionNumber: 10, realm: 'abydos',
 			name: 'Throne of the Pharaoh',
 			description: 'Osiris renders final judgment from his eternal throne.',
 			narrativeBefore: 'Osiris sits upon the Throne of the Dead, green-skinned and wrapped in white. He who died and was reborn. "I have waited," he says. "Every soul that passed through my realm spoke of you. Now I will see for myself."',

@@ -10,9 +10,39 @@ export const easternChapter: CampaignChapter = {
 	faction: 'eastern',
 	description: 'Beyond the myths of the West lies an ancient truth. Chinese, Japanese, and Hindu gods await those who proved worthy across all four realms.',
 	chapterReward: [{ type: 'pack', amount: 5 }, { type: 'rune', amount: 500 }],
+	cinematicIntro: {
+		title: 'The Celestial Gate: Myths Beyond the Veil',
+		style: 'Ink-wash painting dissolves into golden temple architecture, cherry blossoms drift across transitions, jade and vermillion palette',
+		scenes: [
+			{
+				narration: 'At the edge of the known mythologies stands a gate of jade and starlight. Beyond it lie heavens older than the Western gods can remember — celestial courts where bureaucrats manage the fate of billions, sacred mountains where enlightenment and annihilation are separated by a single breath.',
+				visualCue: 'A towering gate materializes from mist, half torii arch, half Chinese paifang, decorated with Hindu mandalas. Stars wheel behind it. Cherry blossoms and lotus petals drift through the columns.',
+				musicCue: 'Shakuhachi flute over a tampura drone, temple bells ring at intervals',
+				durationHint: 15,
+			},
+			{
+				narration: 'In the beginning, there was the cosmic egg — Pangu slept within it for eighteen thousand years. When he woke, he split it apart: the light half became the sky, the dark half became the earth. He held them apart until his body became the mountains, his blood the rivers, his breath the wind. From one sacrifice, a world was born.',
+				visualCue: 'An enormous egg cracks open in darkness. A giant figure pushes sky from earth, growing larger as the gap widens. His body dissolves into landscapes — spine becoming mountain ranges, veins becoming rivers of jade.',
+				musicCue: 'Deep taiko drums build from silence, erhu melody rises as the world forms',
+				durationHint: 16,
+			},
+			{
+				narration: 'But the heavens warred. Amaterasu hid in her cave and stole the sun. Susanoo raged across the ocean in exile. The Asuras and Devas churned the cosmic sea for immortality. Sun Wukong stormed the Jade Emperor\'s palace and ate the peaches of eternal life. Even paradise knows chaos.',
+				visualCue: 'Split screen: a cave seals shut and darkness falls over Japan; a monkey in golden armor somersaults through a jade palace, scattering scrolls; gods and demons pull a serpent wrapped around a mountain as the ocean froths.',
+				musicCue: 'Chaotic percussion — taiko, tabla, and gamelan clash together, then resolve into harmony',
+				durationHint: 15,
+			},
+			{
+				narration: 'And at the end of every age, Shiva opens his third eye and dances the Tandava — the dance that unmakes creation so it can be born anew. Destruction is not the end. It is the turning of the wheel. You have conquered the gods of the West. Now step through the Celestial Gate and face the myths that move the cosmos itself.',
+				visualCue: 'A four-armed figure wreathed in fire dances inside a ring of flames. With each step, galaxies collapse and reform. The jade gate swings open, revealing an infinite staircase ascending into clouds lit by a thousand paper lanterns.',
+				musicCue: 'Sitar and koto duet builds to a swell, then drops to reverent silence as the gate opens',
+				durationHint: 15,
+			},
+		],
+	},
 	missions: [
 		{
-			id: 'eastern-1', chapterId: 'eastern', missionNumber: 1,
+			id: 'eastern-1', chapterId: 'eastern', missionNumber: 1, realm: 'celestial_court',
 			name: 'The Dragon Gate',
 			description: 'A celestial dragon guards the threshold between worlds.',
 			narrativeBefore: 'The waterfall roars where heaven meets earth. A carp that swims against the current to the top becomes a dragon — the Dragon Gate. But you are no carp. You are a conqueror of four mythologies, and the dragon that guards this gate knows it. It descends from the clouds, scales like liquid jade, eyes older than the mountains.',
@@ -27,7 +57,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-brimir', queen: 'hero-fujin', rook: 'hero-sarutahiko', bishop: 'hero-kamimusubi', knight: 'hero-tsukuyomi' },
 		},
 		{
-			id: 'eastern-2', chapterId: 'eastern', missionNumber: 2,
+			id: 'eastern-2', chapterId: 'eastern', missionNumber: 2, realm: 'takamagahara',
 			name: 'Amaterasu\'s Dawn',
 			description: 'The Japanese sun goddess emerges from her cave to judge the intruder.',
 			narrativeBefore: 'The world has been dark since Amaterasu retreated into Ama-no-Iwato. The other gods danced and laughed to lure her out, and when she emerged, light returned to Japan. Now she turns that blinding radiance upon you. "You carry the shadows of Western gods," she says, her light burning away pretense. "Show me what remains when all shadow is stripped away."',
@@ -45,7 +75,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-audumbla', queen: 'hero-sol', rook: 'hero-baldur', bishop: 'hero-kamimusubi', knight: 'hero-apollo' },
 		},
 		{
-			id: 'eastern-3', chapterId: 'eastern', missionNumber: 3,
+			id: 'eastern-3', chapterId: 'eastern', missionNumber: 3, realm: 'celestial_court',
 			name: 'The Jade Emperor\'s Court',
 			description: 'The ruler of Heaven in Chinese mythology holds court — and you are summoned.',
 			narrativeBefore: 'The Jade Palace shimmers above the clouds, its halls of pure jade stretching beyond mortal sight. The Jade Emperor sits upon his throne, surrounded by celestial bureaucrats who manage every aspect of the mortal world. "You have defeated the gods of four lands," he says, checking a celestial ledger. "That is... irregular. We must rectify this."',
@@ -63,7 +93,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-borr', queen: 'hero-odin', rook: 'hero-heimdall', bishop: 'hero-hera', knight: 'hero-hermes' },
 		},
 		{
-			id: 'eastern-4', chapterId: 'eastern', missionNumber: 4,
+			id: 'eastern-4', chapterId: 'eastern', missionNumber: 4, realm: 'takamagahara',
 			name: 'Susanoo\'s Storm',
 			description: 'The Japanese storm god unleashes typhoon fury.',
 			narrativeBefore: 'Susanoo was banished from heaven for his destruction. He who slew the eight-headed serpent Yamata no Orochi now turns that storm-fury upon you. Rain slashes horizontally. Lightning strikes in sheets. The very ground dissolves into mud. "I was cast out of heaven!" he roars. "Do you think I fear anything?"',
@@ -81,7 +111,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-surtr', queen: 'hero-fujin', rook: 'hero-thor', bishop: 'hero-poseidon', knight: 'hero-tsukuyomi' },
 		},
 		{
-			id: 'eastern-5', chapterId: 'eastern', missionNumber: 5,
+			id: 'eastern-5', chapterId: 'eastern', missionNumber: 5, realm: 'celestial_court',
 			name: 'Monkey King\'s Challenge',
 			description: 'Sun Wukong, the Monkey King, challenges you with impossible tricks.',
 			narrativeBefore: 'A golden-furred figure somersaults down from a cloud, his Ruyi Jingu Bang staff extending to impossible lengths. Sun Wukong, the Monkey King — who fought the armies of heaven, who was trapped under a mountain for 500 years by the Buddha himself. He grins with monkey mischief. "I can transform 72 ways," he boasts. "I can fly 108,000 li in a single somersault. Beat that."',
@@ -99,7 +129,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-loki', rook: 'hero-sarutahiko', bishop: 'hero-kamimusubi', knight: 'hero-loki' },
 		},
 		{
-			id: 'eastern-6', chapterId: 'eastern', missionNumber: 6,
+			id: 'eastern-6', chapterId: 'eastern', missionNumber: 6, realm: 'yomi',
 			name: 'Izanami\'s Underworld',
 			description: 'The mother of Japan waits in Yomi, the land of the dead.',
 			narrativeBefore: 'Yomi is darker than any underworld you have visited. Izanami, mother of Japan, died giving birth to fire. Her husband Izanagi came to rescue her but fled when he saw her rotting form. She has not forgiven him — or any living thing — since. "You have visited many underworlds," she says. "This one will be your last."',
@@ -117,7 +147,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-izanami', rook: 'hero-vidar', bishop: 'hero-ran', knight: 'hero-tsukuyomi' },
 		},
 		{
-			id: 'eastern-7', chapterId: 'eastern', missionNumber: 7,
+			id: 'eastern-7', chapterId: 'eastern', missionNumber: 7, realm: 'mount_meru',
 			name: 'Ganesha\'s Puzzle',
 			description: 'The elephant-headed god of wisdom presents an impossible riddle.',
 			narrativeBefore: 'Ganesha sits cross-legged, his elephant head tilted thoughtfully. The Remover of Obstacles and the Placer of Obstacles — it depends on whether you are worthy. "I will set before you a puzzle," he says, holding up one of his four hands. "It cannot be solved by force, only by understanding. The Western gods rely on strength. Let us see if you have anything else."',
@@ -135,7 +165,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-odin', rook: 'hero-sarutahiko', bishop: 'hero-kamimusubi', knight: 'hero-hermes' },
 		},
 		{
-			id: 'eastern-8', chapterId: 'eastern', missionNumber: 8,
+			id: 'eastern-8', chapterId: 'eastern', missionNumber: 8, realm: 'mount_meru',
 			name: 'The Churning of the Ocean',
 			description: 'Gods and demons churn the cosmic ocean to create the elixir of immortality.',
 			narrativeBefore: 'Mount Mandara spins in the cosmic ocean, Vasuki the serpent wrapped around it as a churning rope. Gods pull one end, demons the other. From the churning emerge wonders and terrors — the moon, divine weapons, deadly poison, and finally the Amrita: the nectar of immortality. Both sides want it. You stand in the middle of a cosmic tug-of-war.',
@@ -154,7 +184,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-brimir', queen: 'hero-fujin', rook: 'hero-thor', bishop: 'hero-poseidon', knight: 'hero-tsukuyomi' },
 		},
 		{
-			id: 'eastern-9', chapterId: 'eastern', missionNumber: 9,
+			id: 'eastern-9', chapterId: 'eastern', missionNumber: 9, realm: 'diyu',
 			name: 'Kali\'s Dance of Destruction',
 			description: 'The Hindu goddess of time and death dances the world toward its end.',
 			narrativeBefore: 'Kali dances. Each step destroys a universe. Each spin creates a new one. She is black as the void between stars, wearing a garland of skulls, her tongue red with the blood of demons. She is Time itself, and Time destroys everything. "Dance with me," she says, her wild eyes burning. "If you can keep up, you live. If not..." She laughs, and galaxies tremble.',
@@ -173,7 +203,7 @@ export const easternChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-izanami', rook: 'hero-logi', bishop: 'hero-ran', knight: 'hero-nyx' },
 		},
 		{
-			id: 'eastern-10', chapterId: 'eastern', missionNumber: 10,
+			id: 'eastern-10', chapterId: 'eastern', missionNumber: 10, realm: 'celestial_court',
 			name: 'Ragnarok of All Worlds',
 			description: 'Every mythology collides. The final battle for all creation.',
 			narrativeBefore: 'The barriers between mythologies shatter. Norse, Greek, Egyptian, Celtic, Chinese, Japanese, Hindu — every pantheon\'s apocalypse arrives simultaneously. Ragnarok. Gigantomachy. The devouring of Ra. The final Fomorian war. The celestial collapse. They all happen at once, in the same place, and at the center of it all stands the adversary: a being woven from every mythology\'s concept of the End. "You conquered each pantheon separately," it speaks with a thousand voices. "Now face them all at once."',

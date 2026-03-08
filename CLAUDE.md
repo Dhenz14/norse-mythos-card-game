@@ -733,6 +733,19 @@ vercel --prod                 # Deploy to Vercel
 - Replaced 11 `: any` fields in types.ts: comboEffect, chooseOneOptions (×2), enchantments, buffs, heroPower.effect, passiveAbility.effect (×2), stage3Variants.battlecry/deathrattle
 - Replaced `activeEffects: any[]` → `ActiveEffect[]` in GameContext.ts
 
+### Completed (Campaign System Overhaul)
+
+- Added `campaignArmy` to all 9 Norse missions with lore-accurate heroes (Ymir/Surtr/Brimir/Yggdrasil kings + faction pieces)
+- Fixed `BASE_CHAPTER_MISSION_IDS` missing 'eastern' key in campaign index
+- Wired boss rules into RagnarokChessGame.tsx: `extra_health` boosts opponent piece HP/maxHP, `passive_damage` hits player king each turn
+- Wired reward distribution: Eitr awarded on first mission completion (double-claim prevention via `rewardsClaimed`)
+- Difficulty scaling: heroic +20 HP to opponents, mythic +40 HP + 1 passive damage per turn
+- Built CinematicCrawl component: Star Wars-style story crawl with title card, scene-by-scene narration, progress dots, skip button
+- Cinematic plays once per chapter (tracked in campaignStore `seenCinematics`, persisted to localStorage)
+- Added `markCinematicSeen`/`hasCinematicBeenSeen` to campaignStore
+- Added `cinematic` game phase to RagnarokChessGame flow (before chess phase)
+- Added cinematicIntro + realm fields to Egyptian, Celtic, Eastern chapters
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

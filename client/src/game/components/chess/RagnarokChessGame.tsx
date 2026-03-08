@@ -23,9 +23,10 @@ import { debug } from '../../config/debugConfig';
 import { useCraftingStore } from '../../crafting/craftingStore';
 import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../utils/art/artMapping';
 import { assetPath } from '../../utils/assetPath';
+import CinematicCrawl from '../campaign/CinematicCrawl';
 import './HeroPortraitEnhanced.css';
 
-type GamePhase = 'army_selection' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
+type GamePhase = 'army_selection' | 'cinematic' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
 
 interface HeroPortraitPanelProps {
   army: ArmySelectionType;
@@ -332,7 +333,14 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   const campaignData = campaignMissionId ? getMission(campaignMissionId) : null;
   const isCampaign = !!campaignData;
 
-  const [phase, setPhase] = useState<GamePhase>(initialArmy || isCampaign ? 'chess' : 'army_selection');
+  const markCinematicSeen = useCampaignStore(s => s.markCinematicSeen);
+  const cinematicAlreadySeen = useCampaignStore(s =>
+    campaignData ? s.seenCinematics.includes(campaignData.chapter.id) : true
+  );
+  const hasCinematic = isCampaign && !!campaignData?.chapter?.cinematicIntro && !cinematicAlreadySeen;
+  const [phase, setPhase] = useState<GamePhase>(
+    initialArmy ? 'chess' : isCampaign ? (hasCinematic ? 'cinematic' : 'chess') : 'army_selection'
+  );
   const [playerArmy, setPlayerArmy] = useState<ArmySelectionType | null>(initialArmy);
   const [sharedDeckCardIds, setSharedDeckCardIds] = useState<number[]>([]);
   const [combatPieces, setCombatPieces] = useState<{ attackerId: string; defenderId: string } | null>(null);
@@ -433,11 +441,21 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
       const defaultArmy = getDefaultArmySelection();
       setPlayerArmy(defaultArmy);
       initializeBoard(defaultArmy, opponentArmy);
-      setPhase('chess');
-      playSoundEffect('game_start');
       setBossRulesApplied(false);
+      if (!hasCinematic) {
+        setPhase('chess');
+        playSoundEffect('game_start');
+      }
     }
   }, [isCampaign]);
+
+  const handleCinematicComplete = useCallback(() => {
+    if (campaignData) {
+      markCinematicSeen(campaignData.chapter.id);
+    }
+    setPhase('chess');
+    playSoundEffect('game_start');
+  }, [playSoundEffect, campaignData, markCinematicSeen]);
 
   // Apply boss rules + difficulty scaling after board initialization
   useEffect(() => {
@@ -810,9 +828,15 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
         <ArmySelectionComponent onComplete={handleArmyComplete} onQuickStart={handleQuickStart} />
       )}
       
-      <AnimatePresence mode="wait">
-        {phase !== 'army_selection' && null}
+      {phase === 'cinematic' && campaignData?.chapter?.cinematicIntro && (
+        <CinematicCrawl
+          intro={campaignData.chapter.cinematicIntro}
+          onComplete={handleCinematicComplete}
+        />
+      )}
 
+      <AnimatePresence mode="wait">
+        {phase !== 'army_selection' && phase !== 'cinematic' && null}
 
         {phase === 'chess' && (
           <ChessPhaseContent

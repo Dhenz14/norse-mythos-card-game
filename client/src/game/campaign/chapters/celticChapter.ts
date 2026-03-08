@@ -10,9 +10,39 @@ export const celticChapter: CampaignChapter = {
 	faction: 'celtic',
 	description: 'Enter the mystical Otherworld of Celtic legend where fae and gods blur the line between dream and reality.',
 	chapterReward: [{ type: 'pack', amount: 3 }, { type: 'rune', amount: 200 }],
+	cinematicIntro: {
+		title: 'Tir na nOg: The Otherworld',
+		style: 'Silver mist rolls across emerald hills, Celtic knotwork borders illuminate line by line, moonlit palette',
+		scenes: [
+			{
+				narration: 'They came from the north, descending in a mist so thick it blotted out the sun for three days. The Tuatha De Danann — the Children of the Goddess Danu — arrived not as conquerors, but as gods returning home. They carried four treasures: the Stone of Destiny, the Spear of Lugh, the Sword of Nuada, and the Cauldron of the Dagda.',
+				visualCue: 'Dense silver fog rolls across green hills. Silhouettes of tall, luminous figures emerge. Four artifacts glow — stone, spear, sword, cauldron — each pulsing with different light.',
+				musicCue: 'Uilleann pipes play a slow, haunting melody over distant thunder',
+				durationHint: 16,
+			},
+			{
+				narration: 'But the land was not empty. The Fomorians waited — twisted giants born from the sea and darkness, led by Balor of the Evil Eye, whose gaze could incinerate armies. The First Battle of Mag Tuired stained the fields red, and Nuada, king of the Tuatha, lost his hand to Sreng\'s blade.',
+				visualCue: 'Battle erupts across rain-soaked fields. Monstrous shapes charge from churning seas. A silver hand is severed in a flash of steel. The ground turns crimson.',
+				musicCue: 'War drums, clashing metal, a bodhran pounds a relentless rhythm',
+				durationHint: 15,
+			},
+			{
+				narration: 'Dian Cecht the healer forged Nuada a hand of pure silver, and the king reclaimed his throne. But it was Lugh — half Tuatha, half Fomorian, master of every art — who hurled the stone that pierced Balor\'s dread eye and ended the war. Light defeated shadow. For a time.',
+				visualCue: 'A silver prosthetic hand flexes, gleaming. A young warrior with a sling steps forward against a colossal eye of fire. The sling-stone flies. The eye explodes in white light.',
+				musicCue: 'Harp arpeggios build to a triumphant crescendo, then fade to gentle rain',
+				durationHint: 14,
+			},
+			{
+				narration: 'When mortals came at last, the Tuatha did not fight. They retreated beneath the hollow hills, into the Sidhe mounds, into Tir na nOg — the Land of Eternal Youth where time has no meaning. They are still there, just beyond the mist, just past the edge of sight. And tonight, the mist parts for you.',
+				visualCue: 'The Tuatha fade into green hillsides that close behind them like doors. Mist swirls around ancient stone mounds. A doorway of light opens in the side of a hill, revealing an impossible golden realm within.',
+				musicCue: 'Pipes fade to a whisper, a single harp note rings, silence fills with wind',
+				durationHint: 15,
+			},
+		],
+	},
 	missions: [
 		{
-			id: 'celtic-1', chapterId: 'celtic', missionNumber: 1,
+			id: 'celtic-1', chapterId: 'celtic', missionNumber: 1, realm: 'tara',
 			name: 'Whispers of the Druids',
 			description: 'Ancient druids guard the entrance to the Otherworld with living wood.',
 			narrativeBefore: 'The forest is alive. Not metaphorically — the trees literally move, their roots sliding through soil like serpents. Druid elders stand at the tree line, their eyes glowing green. "The Otherworld is not for the uninvited," the eldest says, raising a staff that sprouts thorns. "Prove you belong."',
@@ -26,7 +56,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-kvasir', rook: 'hero-baldur', bishop: 'hero-idunn', knight: 'hero-fjora' },
 		},
 		{
-			id: 'celtic-2', chapterId: 'celtic', missionNumber: 2,
+			id: 'celtic-2', chapterId: 'celtic', missionNumber: 2, realm: 'emain_macha',
 			name: 'The Morrigan\'s Crows',
 			description: 'The phantom queen sends her dark flock as an omen of battle.',
 			narrativeBefore: 'The sky turns black with crows — thousands of them, spiraling in patterns that spell doom. At their center, the Morrigan descends, shifting between maiden, mother, and crone in the space of a heartbeat. "I am the chooser of the slain," she whispers. "And I choose you."',
@@ -40,7 +70,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-hel', rook: 'hero-vidar', bishop: 'hero-sigyn', knight: 'hero-nyx' },
 		},
 		{
-			id: 'celtic-3', chapterId: 'celtic', missionNumber: 3,
+			id: 'celtic-3', chapterId: 'celtic', missionNumber: 3, realm: 'emain_macha',
 			name: 'Cu Chulainn\'s Rage',
 			description: 'The Hound of Ulster enters his legendary warp spasm.',
 			narrativeBefore: 'He stands alone on the ford, one man against the world. Cu Chulainn, the Hound of Ulster, whose warp spasm twists his body into something barely human. His muscles ripple, his eye sinks into his skull, and blood-heat radiates from his skin. "I held the ford alone against an army," he growls. "You are just one."',
@@ -55,7 +85,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-surtr', queen: 'hero-sinmara', rook: 'hero-thor', bishop: 'hero-gerd', knight: 'hero-skadi' },
 		},
 		{
-			id: 'celtic-4', chapterId: 'celtic', missionNumber: 4,
+			id: 'celtic-4', chapterId: 'celtic', missionNumber: 4, realm: 'tara',
 			name: 'The Salmon of Knowledge',
 			description: 'Taste the Salmon of Wisdom and face the knowledge it brings.',
 			narrativeBefore: 'The Well of Wisdom bubbles beneath the hazel trees. The Salmon of Knowledge circles in the sacred pool, scales shimmering with every secret ever whispered. Fionn mac Cumhaill gained all wisdom from a single taste of this fish. But wisdom is not free — the salmon has guardians, and knowledge has a price.',
@@ -70,7 +100,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-odin', rook: 'hero-heimdall', bishop: 'hero-idunn', knight: 'hero-loki' },
 		},
 		{
-			id: 'celtic-5', chapterId: 'celtic', missionNumber: 5,
+			id: 'celtic-5', chapterId: 'celtic', missionNumber: 5, realm: 'cruachan',
 			name: 'Balor of the Evil Eye',
 			description: 'One glance from the Fomorian king\'s eye can destroy an army.',
 			narrativeBefore: 'The ground trembles as Balor of the Evil Eye approaches, his cyclopean lid requiring four men to lift. When it opens, everything in its gaze withers and dies. Forests turn to ash. Mountains crack. He is the Fomorian king, and his eye has destroyed more than you can imagine. "Do not look," they whisper. But you must.',
@@ -88,7 +118,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-hades', rook: 'hero-logi', bishop: 'hero-ran', knight: 'hero-myrka' },
 		},
 		{
-			id: 'celtic-6', chapterId: 'celtic', missionNumber: 6,
+			id: 'celtic-6', chapterId: 'celtic', missionNumber: 6, realm: 'tara',
 			name: 'The Dagda\'s Cauldron',
 			description: 'The father-god of the Tuatha De Danann wields infinite power.',
 			narrativeBefore: 'The Dagda is enormous — both in body and in spirit. He carries a club so large one end kills, the other resurrects. Before him sits his cauldron, the Undry, from which no one ever leaves unsatisfied. "Sit. Eat," he booms cheerfully. "And then we fight."',
@@ -106,7 +136,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-buri', queen: 'hero-odin', rook: 'hero-thor', bishop: 'hero-freya', knight: 'hero-ullr' },
 		},
 		{
-			id: 'celtic-7', chapterId: 'celtic', missionNumber: 7,
+			id: 'celtic-7', chapterId: 'celtic', missionNumber: 7, realm: 'tir_na_nog',
 			name: 'Tir na nOg',
 			description: 'The Land of Eternal Youth tempts you to stay forever.',
 			narrativeBefore: 'Golden light spills across fields of impossible flowers. Tir na nOg, the Land of Eternal Youth — where no one ages, no one dies, and no one ever wants to leave. Niamh of the Golden Hair extends her hand. "Stay with me," she says. "Time has no power here." But you see the trap. Oisin stayed for what he thought was three years. Three hundred had passed.',
@@ -124,7 +154,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-audumbla', queen: 'hero-sol', rook: 'hero-baldur', bishop: 'hero-freya', knight: 'hero-fjora' },
 		},
 		{
-			id: 'celtic-8', chapterId: 'celtic', missionNumber: 8,
+			id: 'celtic-8', chapterId: 'celtic', missionNumber: 8, realm: 'mag_mell',
 			name: 'The Wild Hunt',
 			description: 'Cernunnos leads the Wild Hunt across the midnight sky.',
 			narrativeBefore: 'Horns blast across the Otherworld as Cernunnos, the Horned God, rides at the head of the Wild Hunt. Ghost riders pour through the sky on spectral horses, their hounds baying with voices like thunder. Once the Hunt chooses its quarry, it never stops. Never rests. Never fails. And tonight, you are the quarry.',
@@ -142,7 +172,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-ymir', queen: 'hero-sinmara', rook: 'hero-magni', bishop: 'hero-gerd', knight: 'hero-skadi' },
 		},
 		{
-			id: 'celtic-9', chapterId: 'celtic', missionNumber: 9,
+			id: 'celtic-9', chapterId: 'celtic', missionNumber: 9, realm: 'cruachan',
 			name: 'Brigid\'s Forge',
 			description: 'The triple goddess of fire, poetry, and healing tests your spirit in her forge.',
 			narrativeBefore: 'The heat of Brigid\'s forge hits you before you see it — a fire that has burned since the dawn of the Celtic world. Brigid stands in triple aspect: the Smith who shapes weapons, the Healer who mends wounds, and the Poet who speaks truth. "To be worthy," she says, "you must survive all three."',
@@ -160,7 +190,7 @@ export const celticChapter: CampaignChapter = {
 			campaignArmy: { king: 'king-surtr', queen: 'hero-sol', rook: 'hero-tyr', bishop: 'hero-eir', knight: 'hero-apollo' },
 		},
 		{
-			id: 'celtic-10', chapterId: 'celtic', missionNumber: 10,
+			id: 'celtic-10', chapterId: 'celtic', missionNumber: 10, realm: 'tir_na_nog',
 			name: 'Lugh of the Long Arm',
 			description: 'The master of all arts faces you in final combat.',
 			narrativeBefore: 'Lugh Lamhfhada — Lugh of the Long Arm, master of every skill, every craft, every art of war. He slew Balor with a sling-stone. He led the Tuatha De Danann to victory. He is warrior, smith, harper, poet, sorcerer, and champion all in one. "I have mastered everything," he says, his spear Areadbhar blazing with light. "Can you master me?"',

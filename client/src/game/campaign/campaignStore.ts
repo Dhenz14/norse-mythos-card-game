@@ -13,6 +13,7 @@ interface CampaignState {
 	currentMission: string | null;
 	currentDifficulty: Difficulty;
 	rewardsClaimed: string[];
+	seenCinematics: string[];
 }
 
 interface CampaignActions {
@@ -23,6 +24,8 @@ interface CampaignActions {
 	isMissionUnlocked: (missionId: string, prerequisites: string[]) => boolean;
 	getChapterProgress: (chapterId: string, missionIds: string[]) => number;
 	isAllBaseChaptersComplete: (chapterMissionIds: Record<string, string[]>) => boolean;
+	markCinematicSeen: (chapterId: string) => void;
+	hasCinematicBeenSeen: (chapterId: string) => boolean;
 	clearCurrent: () => void;
 	reset: () => void;
 }
@@ -34,6 +37,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 			currentMission: null,
 			currentDifficulty: 'normal',
 			rewardsClaimed: [],
+			seenCinematics: [],
 
 			startMission: (missionId, difficulty) => {
 				set({ currentMission: missionId, currentDifficulty: difficulty });
@@ -84,6 +88,15 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 				);
 			},
 
+			markCinematicSeen: (chapterId) => {
+				if (get().seenCinematics.includes(chapterId)) return;
+				set(state => ({ seenCinematics: [...state.seenCinematics, chapterId] }));
+			},
+
+			hasCinematicBeenSeen: (chapterId) => {
+				return get().seenCinematics.includes(chapterId);
+			},
+
 			clearCurrent: () => set({ currentMission: null }),
 
 			reset: () => set({
@@ -91,6 +104,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 				currentMission: null,
 				currentDifficulty: 'normal',
 				rewardsClaimed: [],
+				seenCinematics: [],
 			}),
 		}),
 		{
@@ -98,6 +112,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 			partialize: (state) => ({
 				completedMissions: state.completedMissions,
 				rewardsClaimed: state.rewardsClaimed,
+				seenCinematics: state.seenCinematics,
 			}),
 		}
 	)
