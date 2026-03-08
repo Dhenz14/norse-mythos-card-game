@@ -81,6 +81,8 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
       const cardHasTaunt = !!(card && hasKeyword(card, 'taunt'));
       const hasElementalBuff = !!(card as any)?.hasElementalBuff;
       const readyToEvolve = !!(card as any)?.petEvolutionMet;
+      const isDormantCard = !!(card as any)?.isDormant;
+      const dormantTurnsLeft = (card as any)?.dormantTurnsLeft as number | undefined;
       const einherjarReturns = (card as any)?.einpieces as number | undefined;
       const hasChainPartner = !!(card?.card as any)?.chainPartner;
       const chainPartnerOnBoard = hasChainPartner && (() => {
@@ -128,6 +130,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   ${statusMarked ? 'status-marked' : ''}
                   ${statusBurning ? 'status-burning' : ''}
                   ${readyToEvolve ? 'ready-to-evolve' : ''}
+                  ${isDormantCard ? 'is-dormant' : ''}
                 `}
                 initial={{ opacity: 0, scale: 0.15, y: side === 'player' ? 80 : -80 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -198,6 +201,12 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                 {hasChainPartner && !chainPartnerOnBoard && (
                   <div className="bf-chain-badge chain-inactive" title="Ragnarok Chain: Partner not in play">
                     <span className="chain-icon">🔗</span>
+                  </div>
+                )}
+                {isDormantCard && (
+                  <div className="bf-dormant-overlay" title={`Dormant: Awakens in ${dormantTurnsLeft ?? '?'} turn${dormantTurnsLeft === 1 ? '' : 's'}`}>
+                    <span className="dormant-icon">💤</span>
+                    <span className="dormant-turns">{dormantTurnsLeft ?? '?'}</span>
                   </div>
                 )}
               </motion.div>

@@ -547,6 +547,17 @@
 .bf-card-wrapper.attacking {
   box-shadow: 0 0 20px 5px rgba(251, 191, 36, 0.8);
   z-index: var(--z-modal, 50);
+  animation: attack-lunge 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.player-row .bf-card-wrapper.attacking { --lunge-y: -40px; --lunge-x: 0; }
+.opponent-row .bf-card-wrapper.attacking { --lunge-y: 40px; --lunge-x: 0; }
+
+@keyframes attack-lunge {
+	0% { transform: translateY(0) scale(1); }
+	30% { transform: translateY(var(--lunge-y, -40px)) translateX(var(--lunge-x, 0)) scale(1.15); }
+	50% { transform: translateY(var(--lunge-y, -40px)) translateX(var(--lunge-x, 0)) scale(1.1); }
+	100% { transform: translateY(0) scale(1); }
 }
 
 /* Super Minion Hero Bonus - Golden legendary glow */
@@ -759,6 +770,48 @@
 @keyframes chain-active-glow {
   0%, 100% { opacity: 0.85; }
   50% { opacity: 1; box-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 16px rgba(168,85,247,0.7); }
+}
+
+/* ── Dormant overlay ── */
+.bf-card-wrapper.is-dormant {
+	filter: saturate(0.3) brightness(0.7);
+	pointer-events: none;
+}
+
+.bf-dormant-overlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background: rgba(20, 15, 40, 0.6);
+	border-radius: 8px;
+	z-index: 10;
+	animation: dormant-pulse 2.5s ease-in-out infinite;
+}
+
+.dormant-icon {
+	font-size: 24px;
+	filter: drop-shadow(0 0 6px rgba(120, 100, 255, 0.6));
+}
+
+.dormant-turns {
+	font-size: 14px;
+	font-weight: 900;
+	color: #c4b5fd;
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+	margin-top: 2px;
+}
+
+@keyframes dormant-pulse {
+	0%, 100% { opacity: 0.85; }
+	50% { opacity: 1; background: rgba(30, 20, 60, 0.7); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.bf-dormant-overlay { animation: none; }
+	.bf-card-wrapper.is-dormant { filter: saturate(0.4) brightness(0.75); }
 }
 
 /* ── Poison — toxic green mist ── */

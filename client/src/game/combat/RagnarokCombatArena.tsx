@@ -6,8 +6,10 @@ import {
   CombatPhase,
   CombatAction,
   PokerCard,
+  PokerHandRank,
   getCombinedHandName
 } from '../types/PokerCombatTypes';
+import { evaluatePokerHand } from '../stores/combat/pokerCombatSlice';
 import SimpleBattlefield from '../components/SimpleBattlefield';
 import HandFan from '../components/HandFan';
 import ManaBar from '../components/ManaBar';
@@ -675,6 +677,34 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 
   const disabled = isMulligan || !basePermissions?.isMyTurnToAct;
 
+  const playerHandEval = useMemo(() => {
+    if (!combatState || isMulligan) return null;
+    const holeCards = combatState.player.holeCards;
+    if (!holeCards || holeCards.length === 0) return null;
+    const community: PokerCard[] = [
+      ...(showFaith ? (combatState.communityCards.faith || []) : []),
+      ...(showForesight && combatState.communityCards.foresight ? [combatState.communityCards.foresight] : []),
+      ...(showDestiny && combatState.communityCards.destiny ? [combatState.communityCards.destiny] : [])
+    ];
+    if (community.length === 0 && holeCards.length < 5) return null;
+    return evaluatePokerHand(holeCards, community);
+  }, [combatState?.player?.holeCards, combatState?.communityCards, showFaith, showForesight, showDestiny, isMulligan]);
+
+  const handStrengthClass = useMemo(() => {
+    if (!playerHandEval) return 'weak';
+    const r = playerHandEval.rank;
+    if (r >= PokerHandRank.DIVINE_ALIGNMENT) return 'royal';
+    if (r >= PokerHandRank.VALHALLAS_BLESSING) return 'very-strong';
+    if (r >= PokerHandRank.ODINS_EYE) return 'strong';
+    if (r >= PokerHandRank.THORS_HAMMER) return 'medium';
+    return 'weak';
+  }, [playerHandEval]);
+
+  const handStrengthPercent = useMemo(() => {
+    if (!playerHandEval) return 0;
+    return Math.min(100, (playerHandEval.rank / PokerHandRank.RAGNAROK) * 100);
+  }, [playerHandEval]);
+
   return (
     <div className="unified-combat-arena" ref={battlefieldRef as React.RefObject<HTMLDivElement>}>
       {/* Turn transition flash overlay */}
@@ -907,6 +937,15 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   isShowdown={showdownCelebration?.resolution.resolutionType === 'showdown'}
                   activeTurn={!!basePermissions?.isMyTurnToAct}
                 />
+                {playerHandEval && playerHandEval.rank > PokerHandRank.HIGH_CARD && (
+                  <div className="hand-strength-compact">
+                    <span className="strength-icon">🃏</span>
+                    <span className={`strength-name ${handStrengthClass}`}>{playerHandEval.displayName}</span>
+                    <div className="hand-strength-bar">
+                      <div className={`hand-strength-fill ${handStrengthClass}`} style={{ transform: `scaleX(${handStrengthPercent / 100})` }} />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

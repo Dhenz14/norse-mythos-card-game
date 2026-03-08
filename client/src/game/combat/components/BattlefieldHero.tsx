@@ -20,6 +20,7 @@ import { NORSE_TO_GAME_ELEMENT, type NorseElement } from '../../types/NorseTypes
 import { assetPath } from '../../utils/assetPath';
 import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../utils/art/artMapping';
 import '../styles/hero-reactions.css';
+import '../styles/hp-bar.css';
 
 /**
  * Props for the BattlefieldHero component
@@ -458,9 +459,12 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
             document.body
           )}
         
-          <div className="hero-stat-bar hp-bar">
-            <div className="stat-bar-fill hp-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
-            <span className="stat-bar-text">{Math.round(effectiveHP)}/{Math.round(maxHP)}</span>
+          <div className={`fighting-hp-bar-container${isOpponent ? ' opponent' : ''}`}>
+            <div className="fighting-hp-bar">
+              <div className="fighting-hp-damage" />
+              <div className="fighting-hp-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
+              <span className="fighting-hp-text">{Math.round(effectiveHP)}/{Math.round(maxHP)}</span>
+            </div>
           </div>
         
           <div className="hero-stat-bar sta-bar">
