@@ -28,7 +28,7 @@ export const necromancerCards: CardData[] = [
     manaCost: 3,
     attack: 3,
     health: 3,
-    description: "Battlecry: Discover a minion that died this game.",
+    description: "Battlecry: Foresee a minion that died this game.",
     flavorText: "One man's grave is another man's treasure chest.",
     type: "minion",
     rarity: "rare",
@@ -287,7 +287,7 @@ export const necromancerCards: CardData[] = [
     id: 4110,
     name: "Eternal Servitude",
     manaCost: 4,
-    description: "Discover a minion from your graveyard and summon it.",
+    description: "Foresee a minion from your graveyard and summon it.",
     flavorText: "Service beyond death is the ultimate loyalty.",
     type: "spell",
     rarity: "rare",
@@ -844,6 +844,63 @@ export const necromancerCards: CardData[] = [
       maxCount: 6,
       setStats: { attack: 1, health: 1 }
     },
+    collectible: true,
+    set: "core"
+  },
+  // === Early Game Expansion ===
+  {
+    id: 38708,
+    name: "Grave Whisperer",
+    manaCost: 1,
+    attack: 1,
+    health: 3,
+    description: "Deathrattle: Add a random Necromancer spell to your hand.",
+    type: "minion",
+    rarity: "common",
+    class: "Necromancer",
+    race: "Undead",
+    keywords: ["deathrattle"],
+    deathrattle: {
+      type: "add_random_class_spell",
+      class: "Necromancer"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38709,
+    name: "Bone Reaper",
+    manaCost: 2,
+    attack: 3,
+    health: 2,
+    description: "Deathrattle: Summon a 1/1 Skeleton.",
+    flavorText: "Even in death, it leaves pieces behind.",
+    type: "minion",
+    rarity: "common",
+    class: "Necromancer",
+    race: "Undead",
+    keywords: ["deathrattle"],
+    deathrattle: {
+      type: "summon",
+      summonName: "Skeleton",
+      summonAttack: 1,
+      summonHealth: 1
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38710,
+    name: "Draugr Apprentice",
+    manaCost: 2,
+    attack: 2,
+    health: 3,
+    description: "Your Deathrattle minions cost (1) less.",
+    flavorText: "She studies the art of dying — and what comes after.",
+    type: "minion",
+    rarity: "rare",
+    class: "Necromancer",
+    race: "Undead",
     collectible: true,
     set: "core"
   }

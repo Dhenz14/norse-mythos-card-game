@@ -1,6 +1,9 @@
 /**
- * Utility functions for handling Old Gods mechanics
- * Primarily C'Thun buffs and summons, N'Zoth's deathrattle resurrection, and Yogg-Saron's random spells
+ * Utility functions for handling Elder Titan mechanics
+ * Gullveig (grows via buffs), Hyrrokkin (deathrattle resurrection),
+ * Utgarda-Loki (random spell casting), Fornjot (summon from deck)
+ *
+ * Internal keys (cthunData, buffCThun, yogg_saron, etc.) kept for backwards compat.
  */
 
 import { GameState, CardData, CardInstance, GameLogEventType, Player } from '../types';
@@ -36,11 +39,11 @@ interface GameStateWithCThun extends Omit<GameState, 'players'> {
 }
 
 /**
- * Initialize C'Thun state for a player
- * Sets the initial values for C'Thun's stats (6/6)
+ * Initialize Gullveig state for a player
+ * Sets the initial values for Gullveig's stats (6/6)
  * @param state Current game state
- * @param playerType Player to initialize C'Thun for
- * @returns Updated game state with C'Thun initialized
+ * @param playerType Player to initialize Gullveig for
+ * @returns Updated game state with Gullveig initialized
  */
 export function initializeCThun(
   state: GameState,
@@ -49,7 +52,7 @@ export function initializeCThun(
   // Create a deep copy of the state to avoid mutation
   const newState: GameStateWithCThun = structuredClone(state);
   
-  // Initialize C'Thun data if it doesn't exist
+  // Initialize Gullveig data if it doesn't exist
   if (!newState.players[playerType].cthunData) {
     newState.players[playerType].cthunData = {
       baseAttack: 6,
@@ -64,12 +67,12 @@ export function initializeCThun(
 }
 
 /**
- * Apply a buff to C'Thun (wherever it is)
+ * Apply a buff to Gullveig (wherever she is)
  * @param state Current game state
- * @param playerType Player whose C'Thun to buff
+ * @param playerType Player whose Gullveig to buff
  * @param attackBuff Attack buff to apply
  * @param healthBuff Health buff to apply
- * @returns Updated game state with C'Thun buffed
+ * @returns Updated game state with Gullveig buffed
  */
 export function buffCThun(
   state: GameState,
@@ -80,7 +83,7 @@ export function buffCThun(
   // Create a deep copy of the state to avoid mutation
   let newState: GameStateWithCThun = structuredClone(state);
   
-  // Initialize C'Thun data if it doesn't exist
+  // Initialize Gullveig data if it doesn't exist
   if (!newState.players[playerType].cthunData) {
     newState = initializeCThun(newState, playerType);
   }
@@ -96,14 +99,14 @@ export function buffCThun(
     createGameLogEvent({
       type: 'cthun_buff' as GameLogEventType,
       player: playerType,
-      text: `C'Thun gained +${attackBuff}/+${healthBuff} (now ${cthunData.currentAttack}/${cthunData.currentHealth}).`,
+      text: `Gullveig gained +${attackBuff}/+${healthBuff} (now ${cthunData.currentAttack}/${cthunData.currentHealth}).`,
       value: cthunData.buffsApplied
     })
   );
   
-  // Update any C'Thun card in the player's hand or battlefield (CardInstance)
+  // Update any Gullveig card in the player's hand or battlefield (CardInstance)
   const updateCardInstanceStats = (card: CardInstance): CardInstance => {
-    if (card.card.id === 60001 && isMinion(card.card)) { // C'Thun's ID
+    if (card.card.id === 60001 && isMinion(card.card)) { // Gullveig's ID
       card.card.attack = cthunData.currentAttack;
       card.card.health = cthunData.currentHealth;
       card.currentHealth = cthunData.currentHealth;
@@ -111,9 +114,9 @@ export function buffCThun(
     return card;
   };
   
-  // Update any C'Thun card in the deck (CardData)
+  // Update any Gullveig card in the deck (CardData)
   const updateCardDataStats = (card: CardData): CardData => {
-    if (card.id === 60001 && isMinion(card)) { // C'Thun's ID
+    if (card.id === 60001 && isMinion(card)) { // Gullveig's ID
       return {
         ...card,
         attack: cthunData.currentAttack,
@@ -123,7 +126,7 @@ export function buffCThun(
     return card;
   };
   
-  // Update all C'Thun instances
+  // Update all Gullveig instances
   newState.players[playerType].hand = newState.players[playerType].hand.map(updateCardInstanceStats);
   newState.players[playerType].deck = newState.players[playerType].deck.map(updateCardDataStats);
   newState.players[playerType].battlefield = newState.players[playerType].battlefield.map(updateCardInstanceStats);
@@ -132,11 +135,11 @@ export function buffCThun(
 }
 
 /**
- * Check if C'Thun has at least 10 attack
- * Used for conditional effects like Twin Emperor Vek'lor
+ * Check if Gullveig has at least 10 attack
+ * Used for conditional effects like Jotun Shieldbearer
  * @param state Current game state
- * @param playerType Player to check C'Thun for
- * @returns Boolean indicating if C'Thun has 10+ attack
+ * @param playerType Player to check Gullveig for
+ * @returns Boolean indicating if Gullveig has 10+ attack
  */
 export function isCThunPowered(
   state: GameState | GameStateWithCThun, 
@@ -145,22 +148,22 @@ export function isCThunPowered(
   // Cast to extended type to access cthunData
   const extendedState = state as GameStateWithCThun;
   
-  // If C'Thun data doesn't exist, return false
+  // If Gullveig data doesn't exist, return false
   if (!extendedState.players[playerType].cthunData) {
     return false;
   }
   
-  // Check if C'Thun has at least 10 attack
+  // Check if Gullveig has at least 10 attack
   return extendedState.players[playerType].cthunData.currentAttack >= 10;
 }
 
 /**
- * Execute C'Thun's battlecry
- * Deals damage equal to C'Thun's attack randomly split among all enemies
+ * Execute Gullveig's battlecry
+ * Deals damage equal to Gullveig's attack randomly split among all enemies
  * @param state Current game state
- * @param cthunInstanceId ID of the C'Thun instance
- * @param playerType Player who played C'Thun
- * @returns Updated game state after C'Thun's battlecry
+ * @param cthunInstanceId ID of the Gullveig instance
+ * @param playerType Player who played Gullveig
+ * @returns Updated game state after Gullveig's battlecry
  */
 export function executeCThunBattlecry(
   state: GameState,
@@ -173,17 +176,17 @@ export function executeCThunBattlecry(
   // Get the enemy player type
   const enemyType = playerType === 'player' ? 'opponent' : 'player';
   
-  // Find C'Thun on the battlefield
+  // Find Gullveig on the battlefield
   const cthunIndex = newState.players[playerType].battlefield.findIndex(
     (card: CardInstance) => card.instanceId === cthunInstanceId
   );
   
   if (cthunIndex === -1) {
-    debug.error("C'Thun not found on battlefield");
+    debug.error("Gullveig not found on battlefield");
     return state;
   }
   
-  // Get C'Thun's attack value
+  // Get Gullveig's attack value
   const cthun = newState.players[playerType].battlefield[cthunIndex];
   const damageAmount = getAttack(cthun.card);
   
@@ -192,7 +195,7 @@ export function executeCThunBattlecry(
     createGameLogEvent({
       type: 'cthun_battlecry' as GameLogEventType,
       player: playerType,
-      text: `C'Thun unleashes ${damageAmount} damage randomly split among enemies.`,
+      text: `Gullveig unleashes ${damageAmount} damage randomly split among enemies.`,
       cardId: cthun.card.id.toString(),
       value: damageAmount
     })
@@ -235,12 +238,12 @@ export function executeCThunBattlecry(
 }
 
 /**
- * Execute N'Zoth's battlecry
+ * Execute Hyrrokkin's battlecry
  * Resurrects deathrattle minions that died this game
  * @param state Current game state
- * @param nzothInstanceId ID of the N'Zoth instance
- * @param playerType Player who played N'Zoth
- * @returns Updated game state after N'Zoth's battlecry
+ * @param nzothInstanceId ID of the Hyrrokkin instance
+ * @param playerType Player who played Hyrrokkin
+ * @returns Updated game state after Hyrrokkin's battlecry
  */
 export function executeNZothBattlecry(
   state: GameState,
@@ -264,8 +267,8 @@ export function executeNZothBattlecry(
     createGameLogEvent({
       type: 'nzoth_battlecry' as GameLogEventType,
       player: playerType,
-      text: `N'Zoth attempts to resurrect ${deathrattleMinions.length} Deathrattle minions.`,
-      cardId: '60101', // N'Zoth's ID
+      text: `Hyrrokkin launches ${deathrattleMinions.length} Deathrattle minions back from the grave.`,
+      cardId: '60101', // Hyrrokkin's ID
       value: deathrattleMinions.length
     })
   );
@@ -303,7 +306,7 @@ export function executeNZothBattlecry(
       createGameLogEvent({
         type: 'summon' as GameLogEventType,
         player: playerType,
-        text: `N'Zoth resurrected ${minion.card.name}.`,
+        text: `Hyrrokkin resurrected ${minion.card.name}.`,
         cardId: minion.card.id.toString()
       })
     );
@@ -313,12 +316,12 @@ export function executeNZothBattlecry(
 }
 
 /**
- * Execute Yogg-Saron's battlecry
+ * Execute Utgarda-Loki's battlecry
  * Casts random spells for each spell played this game
  * @param state Current game state
- * @param yoggInstanceId ID of the Yogg-Saron instance
- * @param playerType Player who played Yogg-Saron
- * @returns Updated game state after Yogg-Saron's battlecry
+ * @param yoggInstanceId ID of the Utgarda-Loki instance
+ * @param playerType Player who played Utgarda-Loki
+ * @returns Updated game state after Utgarda-Loki's battlecry
  */
 export function executeYoggSaronBattlecry(
   state: GameState,
@@ -336,8 +339,8 @@ export function executeYoggSaronBattlecry(
     createGameLogEvent({
       type: 'yogg_saron_battlecry' as GameLogEventType,
       player: playerType,
-      text: `Yogg-Saron will cast ${spellsCast} random spells.`,
-      cardId: '60102', // Yogg-Saron's ID
+      text: `Utgarda-Loki will cast ${spellsCast} random spells.`,
+      cardId: '60102', // Utgarda-Loki's ID
       value: spellsCast
     })
   );
@@ -353,7 +356,7 @@ export function executeYoggSaronBattlecry(
   
   // Cast random spells
   for (let i = 0; i < spellsCast; i++) {
-    // Skip if Yogg-Saron is no longer on the battlefield (destroyed by a previous spell)
+    // Skip if Utgarda-Loki is no longer on the battlefield (destroyed by a previous spell)
     const yoggStillExists = newState.players[playerType].battlefield.some(
       (card: CardInstance) => card.instanceId === yoggInstanceId
     );
@@ -363,7 +366,7 @@ export function executeYoggSaronBattlecry(
         createGameLogEvent({
           type: 'yogg_saron_stopped' as GameLogEventType,
           player: playerType,
-          text: `Yogg-Saron was destroyed, stopping spell casting.`,
+          text: `Utgarda-Loki was destroyed, stopping spell casting.`,
           cardId: '60102'
         })
       );
@@ -379,7 +382,7 @@ export function executeYoggSaronBattlecry(
       createGameLogEvent({
         type: 'yogg_saron_cast' as GameLogEventType,
         player: playerType,
-        text: `Yogg-Saron casts ${randomSpell.name}.`,
+        text: `Utgarda-Loki casts ${randomSpell.name}.`,
         cardId: randomSpell.id.toString()
       })
     );
@@ -395,12 +398,12 @@ export function executeYoggSaronBattlecry(
 }
 
 /**
- * Process Y'Shaarj's end of turn effect
+ * Process Fornjot's end of turn effect
  * Summons a minion from the player's deck
  * @param state Current game state
- * @param yshaarjInstanceId ID of the Y'Shaarj instance
- * @param playerType Player who controls Y'Shaarj
- * @returns Updated game state after Y'Shaarj's effect
+ * @param yshaarjInstanceId ID of the Fornjot instance
+ * @param playerType Player who controls Fornjot
+ * @returns Updated game state after Fornjot's effect
  */
 export function executeYShaarjEffect(
   state: GameState,
@@ -419,7 +422,7 @@ export function executeYShaarjEffect(
       createGameLogEvent({
         type: 'yshaarj_effect_failed' as GameLogEventType,
         player: playerType,
-        text: `Y'Shaarj had no minions to summon from an empty deck.`,
+        text: `Fornjot had no minions to summon from an empty deck.`,
         cardId: '60103'
       })
     );
@@ -435,7 +438,7 @@ export function executeYShaarjEffect(
       createGameLogEvent({
         type: 'yshaarj_effect_failed' as GameLogEventType,
         player: playerType,
-        text: `Y'Shaarj had no minions in deck to summon.`,
+        text: `Fornjot had no minions in deck to summon.`,
         cardId: '60103'
       })
     );
@@ -448,7 +451,7 @@ export function executeYShaarjEffect(
       createGameLogEvent({
         type: 'yshaarj_effect_failed' as GameLogEventType,
         player: playerType,
-        text: `Y'Shaarj's battlefield is full, cannot summon.`,
+        text: `Fornjot's battlefield is full, cannot summon.`,
         cardId: '60103'
       })
     );
@@ -481,7 +484,7 @@ export function executeYShaarjEffect(
     createGameLogEvent({
       type: 'yshaarj_effect' as GameLogEventType,
       player: playerType,
-      text: `Y'Shaarj summoned ${cardToSummon.name} from your deck.`,
+      text: `Fornjot summoned ${cardToSummon.name} from your deck.`,
       cardId: cardToSummon.id.toString()
     })
   );
@@ -490,10 +493,10 @@ export function executeYShaarjEffect(
 }
 
 /**
- * Check if C'Thun is in the player's hand, deck, or battlefield
+ * Check if Gullveig is in the player's hand, deck, or battlefield
  * @param state Current game state
  * @param playerType Player to check
- * @returns Boolean indicating if the player has C'Thun
+ * @returns Boolean indicating if the player has Gullveig
  */
 export function playerHasCThun(
   state: GameState,

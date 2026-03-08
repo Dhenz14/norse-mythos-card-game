@@ -98,8 +98,8 @@ const heroes: HeroData[] = [
 {
           id: 1006,
 
-          name: "Mordecai",
-          description: "A fire mage known for his pyroblast skills and fiery personality."
+          name: "Logi, the Living Flame",
+          description: "Son of Fornjot, the personification of wildfire. His hunger for destruction cannot be sated."
       }],
       collectible: true
   },
@@ -133,8 +133,8 @@ const heroes: HeroData[] = [
 {
           id: 2002,
 
-          name: "Apophis, World Ender",
-        description: "The serpent of chaos who threatens to devour the world."
+          name: "Hrungnir, the Stone-Hearted",
+        description: "Mightiest of the jotnar, whose heart was carved from whetstone. He challenged Thor to single combat and nearly won."
       },
 
 {

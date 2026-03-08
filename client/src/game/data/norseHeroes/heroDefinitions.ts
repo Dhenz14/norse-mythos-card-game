@@ -2138,7 +2138,7 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     heroPower: {
       id: 'athena-power',
       name: 'Strategic Insight',
-      description: 'Discover a spell.',
+      description: 'Foresee a spell.',
       cost: 2,
       targetType: 'none',
       effectType: 'discover',
@@ -2149,18 +2149,18 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
       name: 'Aegis Shield',
       heroId: 'hero-athena',
       manaCost: 5,
-      description: 'Discover a spell. It costs (0) this turn. Permanently upgrade your hero power.',
+      description: 'Foresee a spell. It costs (0) this turn. Permanently upgrade your hero power.',
       immediateEffect: {
         type: 'discover_free',
         discoverType: 'spell',
-        description: 'Discover a spell. It costs (0) this turn.'
+        description: 'Foresee a spell. It costs (0) this turn.'
       },
       upgradedPowerId: 'athena-power-upgraded'
     },
     upgradedHeroPower: {
       id: 'athena-power-upgraded',
       name: 'Strategic Insight+',
-      description: 'Discover a spell. It costs (1) less.',
+      description: 'Foresee a spell. It costs (1) less.',
       cost: 2,
       targetType: 'none',
       effectType: 'discover',

@@ -69,7 +69,7 @@ export const neutralMythicTechCards: CardData[] = [
 		manaCost: 3,
 		attack: 3,
 		health: 3,
-		description: 'Battlecry: Discover a spell from any class. It costs (2) less.',
+		description: 'Battlecry: Foresee a spell from any class. It costs (2) less.',
 		flavorText: 'Born from the mingled spit of the gods, his blood became the mead of poetry.',
 		type: 'minion',
 		rarity: 'mythic',

@@ -61,7 +61,7 @@ export const bloodPriceCards: CardData[] = [
 		manaCost: 2,
 		attack: 2,
 		health: 3,
-		description: 'Battlecry: Discover a card. If paid with Blood Price, discover 2.',
+		description: 'Battlecry: Foresee a card. If paid with Blood Price, foresee 2.',
 		flavorText: 'She reads the future in spilled blood — the more blood, the clearer the vision.',
 		type: 'minion',
 		rarity: 'rare',

@@ -431,7 +431,7 @@ export function registerPriestCards(): void {
     .id(6005)
     .name("Rebirth")
     .manaCost(1)
-    .description("Restore 3 Health. Discover a spell.")
+    .description("Restore 3 Health. Foresee a spell.")
     .type("spell")
     .rarity("common")
     .heroClass("priest")

@@ -620,7 +620,7 @@ export const druidCards: CardData[] = [
     manaCost: 5,
     attack: 4,
     health: 4,
-    description: "Battlecry: Discover a Dragon.",
+    description: "Battlecry: Foresee a Dragon.",
     flavorText: "Hatched in the roots of the World Tree, it guards the oldest groves.",
     type: "minion",
     rarity: "common",
@@ -772,14 +772,14 @@ export const druidCards: CardData[] = [
     collectible: true,
     set: "core"
   },
-  // === Old Gods Themed ===
+  // === Gullveig Themed ===
   {
     id: 60007,
     name: "Amber Weaver",
     manaCost: 4,
     attack: 4,
     health: 5,
-    description: "Battlecry: If your C'Thun has at least 10 Attack, gain +5 Health.",
+    description: "Battlecry: If your Gullveig has at least 10 Attack, gain +5 Health.",
     type: "minion",
     rarity: "rare",
     class: "Druid",

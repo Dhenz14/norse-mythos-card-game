@@ -630,7 +630,7 @@ export const   neutralMinions: CardData[] = [{
       type: "minion",
       rarity: "rare",
 
-      description: "Taunt.   Battlecry: Discover a Taunt minion.",
+      description: "Taunt.   Battlecry: Foresee a Taunt minion.",
     keywords: ["taunt", "battlecry", "discover"],
       heroClass: "neutral",
       class: "Neutral",
@@ -656,7 +656,7 @@ export const   neutralMinions: CardData[] = [{
       type: "minion",
       rarity: "rare",
 
-      description: "Battlecry: If you played an Elemental last turn, Discover an Elemental.",
+      description: "Battlecry: If you played an Elemental last turn, Foresee an Elemental.",
     keywords: ["battlecry", "discover"],
       heroClass: "neutral",
       class: "Neutral",

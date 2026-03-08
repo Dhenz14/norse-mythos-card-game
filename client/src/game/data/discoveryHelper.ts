@@ -14,57 +14,57 @@ export interface DiscoverPoolOption {
 
 // We store the pool options here to avoid circular imports
 const poolOptions: DiscoverPoolOption[] = [
-   { id: 'dragon', name: 'Dragon',   description: 'Discover a Dragon' },
+   { id: 'dragon', name: 'Dragon',   description: 'Foresee a Dragon' },
 
-{ id: 'beast', name: 'Beast',   description: 'Discover a Beast' },
+{ id: 'beast', name: 'Beast',   description: 'Foresee a Beast' },
 
-{ id: 'mech', name: 'Automaton',   description: 'Discover an Automaton' },
+{ id: 'mech', name: 'Automaton',   description: 'Foresee an Automaton' },
 
-{ id: 'murloc', name: 'Naga',   description: 'Discover a Naga' },
+{ id: 'murloc', name: 'Naga',   description: 'Foresee a Naga' },
 
-{ id: 'titan', name: 'Titan',   description: 'Discover a Titan' },
+{ id: 'titan', name: 'Titan',   description: 'Foresee a Titan' },
 
-{ id: 'elemental', name: 'Elemental',   description: 'Discover an Elemental' },
+{ id: 'elemental', name: 'Elemental',   description: 'Foresee an Elemental' },
 
-{ id: 'pirate', name: 'Pirate',   description: 'Discover a Pirate' },
+{ id: 'pirate', name: 'Pirate',   description: 'Foresee a Pirate' },
 
-{ id: 'totem', name: 'Totem',   description: 'Discover a Totem' },
+{ id: 'totem', name: 'Totem',   description: 'Foresee a Totem' },
 
-{ id: 'deathrattle', name: 'Deathrattle',   description: 'Discover a minion with Deathrattle' },
+{ id: 'deathrattle', name: 'Deathrattle',   description: 'Foresee a minion with Deathrattle' },
 
-{ id: 'battlecry', name: 'Battlecry',   description: 'Discover a minion with Battlecry' },
+{ id: 'battlecry', name: 'Battlecry',   description: 'Foresee a minion with Battlecry' },
 
-{ id: 'taunt', name: 'Taunt',   description: 'Discover a minion with Taunt' },
+{ id: 'taunt', name: 'Taunt',   description: 'Foresee a minion with Taunt' },
 
-{ id: 'divine_shield', name: 'Divine Shield',   description: 'Discover a minion with Divine Shield' },
+{ id: 'divine_shield', name: 'Divine Shield',   description: 'Foresee a minion with Divine Shield' },
 
-{ id: 'spell_damage', name: 'Spell Damage',   description: 'Discover a minion with Spell Damage' },
+{ id: 'spell_damage', name: 'Spell Damage',   description: 'Foresee a minion with Spell Damage' },
 
-{ id: 'rush', name: 'Rush',   description: 'Discover a minion with Rush' },
+{ id: 'rush', name: 'Rush',   description: 'Foresee a minion with Rush' },
 
-{ id: 'charge', name: 'Charge',   description: 'Discover a minion with Charge' },
+{ id: 'charge', name: 'Charge',   description: 'Foresee a minion with Charge' },
 
-{ id: 'lifesteal', name: 'Lifesteal',   description: 'Discover a card with Lifesteal' },
+{ id: 'lifesteal', name: 'Lifesteal',   description: 'Foresee a card with Lifesteal' },
 
-{ id: 'windfury', name: 'Windfury',   description: 'Discover a minion with Windfury' },
+{ id: 'windfury', name: 'Windfury',   description: 'Foresee a minion with Windfury' },
 
-{ id: 'mythic', name: 'Mythic',   description: 'Discover a Mythic minion' },
+{ id: 'mythic', name: 'Mythic',   description: 'Foresee a Mythic minion' },
 
-{ id: 'epic', name: 'Epic',   description: 'Discover an Epic card' },
+{ id: 'epic', name: 'Epic',   description: 'Foresee an Epic card' },
 
-{ id: 'one_cost', name: '1-Cost',   description: 'Discover a 1-Cost card' },
+{ id: 'one_cost', name: '1-Cost',   description: 'Foresee a 1-Cost card' },
 
-{ id: 'two_cost', name: '2-Cost',   description: 'Discover a 2-Cost card' },
+{ id: 'two_cost', name: '2-Cost',   description: 'Foresee a 2-Cost card' },
 
-{ id: 'three_cost', name: '3-Cost',   description: 'Discover a 3-Cost card' },
+{ id: 'three_cost', name: '3-Cost',   description: 'Foresee a 3-Cost card' },
 
-{ id: 'damaged_minion', name: 'Damaged Minion',   description: 'Discover a minion that has been damaged' },
+{ id: 'damaged_minion', name: 'Damaged Minion',   description: 'Foresee a minion that has been damaged' },
 
-{ id: 'secret', name: 'Rune',   description: 'Discover a Rune' },
+{ id: 'secret', name: 'Rune',   description: 'Foresee a Rune' },
 
-{ id: 'spell', name: 'Spell',   description: 'Discover a Spell' },
+{ id: 'spell', name: 'Spell',   description: 'Foresee a Spell' },
 
-{ id: 'weapon', name: 'Weapon', description: 'Discover a Weapon' }
+{ id: 'weapon', name: 'Weapon', description: 'Foresee a Weapon' }
 ];
 
 /**

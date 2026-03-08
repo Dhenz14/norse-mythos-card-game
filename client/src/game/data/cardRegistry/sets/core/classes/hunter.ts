@@ -72,7 +72,7 @@ export const hunterCards: CardData[] = [
     manaCost: 1,
     attack: 1,
     health: 1,
-    description: "Battlecry: Discover a Beast.",
+    description: "Battlecry: Foresee a Beast.",
     flavorText: "She knows all the best hiding spots in the forest.",
     type: "minion",
     rarity: "common",

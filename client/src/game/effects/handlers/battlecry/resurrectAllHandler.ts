@@ -2,7 +2,7 @@
  * ResurrectAll Battlecry Handler
  * 
  * Resurrects all friendly minions that died this game.
- * Example card: N'Zoth, the Corruptor (ID: 15019)
+ * Example card: Hyrrokkin, Launcher of the Dead (ID: 60101)
  */
 import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';

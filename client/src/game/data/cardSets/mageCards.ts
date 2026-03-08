@@ -69,7 +69,7 @@ export function registerMageCards(): void {
   // Rune Council Mage
   createCard()
     .id(14003)
-    .name("Völva of the Arcane")
+    .name("Völva of Seidr")
     .manaCost(3)
     .attack(4)
     .health(3)
@@ -471,7 +471,7 @@ export function registerMageCards(): void {
   // Arcane Explosion
   createCard()
     .id(32012)
-    .name("Arcane Explosion")
+    .name("Seidr Burst")
     .manaCost(2)
     .description("Deal 1 damage to all enemy minions.")
     .rarity("common")

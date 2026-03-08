@@ -198,7 +198,7 @@ export const ljosalfarPets: CardData[] = [
 				health: 6,
 				manaCost: 0,
 				keywords: ['battlecry'],
-				description: 'Battlecry: Discover a card. It costs (2) less.',
+				description: 'Battlecry: Foresee a card. It costs (2) less.',
 				battlecry: { type: 'discover', value: 1, manaReduction: 2 },
 			},
 		],

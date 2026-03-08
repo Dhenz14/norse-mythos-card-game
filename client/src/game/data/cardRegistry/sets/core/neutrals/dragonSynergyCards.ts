@@ -54,7 +54,7 @@ export const dragonSynergyCards: CardData[] = [
 		manaCost: 5,
 		attack: 4,
 		health: 4,
-		description: 'Battlecry: If you\'re holding a Dragon, Discover a Dragon.',
+		description: 'Battlecry: If you\'re holding a Dragon, Foresee a Dragon.',
 		flavorText: 'Fafnir hoarded gold and wisdom alike — his keeper hoards dragons.',
 		type: 'minion',
 		rarity: 'epic',

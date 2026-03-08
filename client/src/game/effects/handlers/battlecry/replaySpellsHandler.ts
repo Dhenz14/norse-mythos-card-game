@@ -2,8 +2,8 @@
  * ReplaySpells Battlecry Handler
  * 
  * Implements the "replay_spells" battlecry effect.
- * Replays spells cast this game (Yogg-Saron style).
- * Example card: Lynessa Sunsorrow (ID: 20800), Yogg-Saron (various)
+ * Replays spells cast this game (Utgarda-Loki style).
+ * Example card: Lynessa Sunsorrow (ID: 20800), Utgarda-Loki (60102)
  */
 import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';

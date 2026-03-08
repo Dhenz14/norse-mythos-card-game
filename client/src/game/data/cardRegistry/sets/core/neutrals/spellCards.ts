@@ -120,7 +120,7 @@ export const priestSpells: CardData[] = [
     manaCost: 1,
     type: "spell",
     rarity: "common",
-    description: "Restore 3 Health. Discover a spell.",
+    description: "Restore 3 Health. Foresee a spell.",
     keywords: ["discover"],
     heroClass: "priest",
     class: "Priest",

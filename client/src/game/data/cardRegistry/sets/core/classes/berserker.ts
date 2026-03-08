@@ -795,5 +795,53 @@ export const berserkerCards: CardData[] = [
     keywords: ["lifesteal", "taunt", "outcast"],
     collectible: true,
     set: "core"
+  },
+  // === Outcast Payoff Expansion ===
+  {
+    id: 38806,
+    name: "Svartalf Exile",
+    manaCost: 1,
+    attack: 2,
+    health: 1,
+    description: "Outcast: Gain +1/+2 and Rush.",
+    type: "minion",
+    rarity: "common",
+    class: "Berserker",
+    keywords: ["outcast"],
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38807,
+    name: "Ulfhednar Howl",
+    manaCost: 2,
+    description: "Deal 3 damage to a minion. Outcast: Also deal 2 damage to adjacent minions.",
+    type: "spell",
+    rarity: "rare",
+    class: "Berserker",
+    keywords: ["outcast"],
+    spellEffect: {
+      type: "damage",
+      value: 3,
+      targetType: "any_minion",
+      requiresTarget: true
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 38808,
+    name: "Bolthorn, the Twice-Banished",
+    manaCost: 5,
+    attack: 5,
+    health: 5,
+    description: "Outcast: Return this to your hand after it attacks. It costs (1) less each time.",
+    flavorText: "Grandfather of Odin, exiled by gods and giants alike. He always comes back.",
+    type: "minion",
+    rarity: "mythic",
+    class: "Berserker",
+    keywords: ["outcast"],
+    collectible: true,
+    set: "core"
   }
 ];

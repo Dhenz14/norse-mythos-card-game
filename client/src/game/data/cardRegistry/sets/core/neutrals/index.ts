@@ -17,6 +17,7 @@ import { dragonSynergyCards } from './dragonSynergyCards';
 import { norseMechanicSynergyCards } from './norseMechanicSynergyCards';
 import { deepKeywordCards } from './deepKeywordCards';
 import { greekMythicMinions } from './greekMythicMinions';
+import { norseMechanicPayoffCards } from './norseMechanicPayoffCards';
 
 // Core Set - Neutral Cards
 // Organized by rarity following standard CCG conventions
@@ -1337,7 +1338,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 1201,
     name: 'Jeweled Scarab of Ra',
-    description: 'Battlecry: Discover a 3-Cost card.',
+    description: 'Battlecry: Foresee a 3-Cost card.',
     flavorText: 'The sacred scarab reveals hidden treasures.',
     type: 'minion',
     rarity: 'common',
@@ -1971,7 +1972,7 @@ const rareNeutralMinions: CardData[] = [
   {
     id: 2201,
     name: 'Oracle of Delphi',
-    description: 'Battlecry: Discover a spell.',
+    description: 'Battlecry: Foresee a spell.',
     flavorText: 'The Pythia speaks prophecies from Apollo.',
     type: 'minion',
     rarity: 'rare',
@@ -2261,9 +2262,9 @@ const epicNeutralMinions: CardData[] = [
   },
   {
     id: 30028,
-    name: 'Crab of the Void',
+    name: 'Crab of Ginnungagap',
     description: 'Battlecry: Destroy a Naga and gain +2/+2.',
-    flavorText: 'Even the sea creatures have enemies.',
+    flavorText: 'From the primordial void between fire and ice, even the crabs learned to hunt.',
     type: 'minion',
     rarity: 'epic',
     manaCost: 1,
@@ -2870,7 +2871,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 6,
     type: 'minion',
     rarity: 'epic',
-    description: 'Battlecry: Discover a spell from each player\'s class.',
+    description: 'Battlecry: Foresee a spell from each player\'s class.',
     flavorText: 'At the crossroads, all magic paths converge.',
     keywords: ['battlecry'],
     class: 'Neutral',
@@ -3273,7 +3274,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 5,
     type: 'minion',
     rarity: 'epic',
-    description: 'Battlecry: Discover a spell from your opponent\'s class.',
+    description: 'Battlecry: Foresee a spell from your opponent\'s class.',
     flavorText: 'She records every deed in the waters of Sökkvabekkr.',
     keywords: ['battlecry'],
     class: 'Neutral',
@@ -3720,7 +3721,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 25001,
     name: 'Magic Mapping',
-    description: 'Discover a spell.',
+    description: 'Foresee a spell.',
     manaCost: 1,
     type: 'spell',
     rarity: 'common',
@@ -3739,7 +3740,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 5002,
     name: 'Curious Excavator',
-    description: 'Battlecry: Discover a Dragon.',
+    description: 'Battlecry: Foresee a Dragon.',
     manaCost: 3,
     type: 'minion',
     rarity: 'rare',
@@ -3759,7 +3760,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 5003,
     name: 'Mage Runes',
-    description: 'Discover a Rune.',
+    description: 'Foresee a Rune.',
     manaCost: 2,
     type: 'spell',
     rarity: 'common',
@@ -3778,7 +3779,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 5004,
     name: 'Weapon Smith',
-    description: 'Battlecry: Discover a Weapon.',
+    description: 'Battlecry: Foresee a Weapon.',
     manaCost: 4,
     type: 'minion',
     rarity: 'common',
@@ -3798,7 +3799,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 5005,
     name: 'Beast Finder',
-    description: 'Battlecry: Discover a Beast.',
+    description: 'Battlecry: Foresee a Beast.',
     manaCost: 2,
     type: 'minion',
     rarity: 'common',
@@ -3818,7 +3819,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 5006,
     name: 'Shield Bearer',
-    description: 'Battlecry: Discover a minion with Taunt.',
+    description: 'Battlecry: Foresee a minion with Taunt.',
     manaCost: 3,
     type: 'minion',
     rarity: 'common',
@@ -3838,7 +3839,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 5007,
     name: 'Mana Shifter',
-    description: 'Discover a 1-Cost card.',
+    description: 'Foresee a 1-Cost card.',
     manaCost: 1,
     type: 'spell',
     rarity: 'common',
@@ -3857,7 +3858,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 5008,
     name: 'Master Searcher',
-    description: 'Discover a Mythic minion.',
+    description: 'Foresee a Mythic minion.',
     manaCost: 5,
     type: 'spell',
     rarity: 'epic',
@@ -3876,7 +3877,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 25009,
     name: 'Academic Research',
-    description: "Discover a spell. It costs (2) less.",
+    description: "Foresee a spell. It costs (2) less.",
     manaCost: 3,
     type: 'spell',
     rarity: 'rare',
@@ -3896,7 +3897,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 5010,
     name: 'Master Collector',
-    description: 'Discover 3 different cards.',
+    description: 'Foresee 3 different cards.',
     manaCost: 8,
     type: 'spell',
     rarity: 'epic',
@@ -3916,7 +3917,7 @@ const legendaryNeutralMinions: CardData[] = [
   {
     id: 25013,
     name: 'Stonehill Defender',
-    description: 'Taunt. Battlecry: Discover a Taunt minion.',
+    description: 'Taunt. Battlecry: Foresee a Taunt minion.',
     manaCost: 3,
     type: 'minion',
     attack: 1,
@@ -4931,7 +4932,7 @@ const legendaryNeutralMinions: CardData[] = [
     set: 'core'
   },
   // ============================================
-  // OLD GODS CARDS
+  // ELDER TITAN SUPPORT CARDS (Gullveig synergy)
   // ============================================
   {
     id: 91001,
@@ -4961,8 +4962,8 @@ const legendaryNeutralMinions: CardData[] = [
     health: 3,
     type: 'minion',
     rarity: 'common',
-    description: "Battlecry: Give your C'Thun +2/+2 (wherever it is).",
-    flavorText: "Whispers of the void echo through their prayers.",
+    description: "Battlecry: Give your Gullveig +2/+2 (wherever she is).",
+    flavorText: "Whispers of seidr echo through their incantations.",
     keywords: ['battlecry'],
     class: 'Neutral',
     battlecry: {
@@ -4977,14 +4978,14 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 91003,
-    name: "Disciple of the Void",
+    name: "Disciple of Ginnungagap",
     manaCost: 3,
     attack: 2,
     health: 1,
     type: 'minion',
     rarity: 'rare',
-    description: "Battlecry: Deal 2 damage. Give your C'Thun +2/+2 (wherever it is).",
-    flavorText: "Pain is but an offering to the Old Ones.",
+    description: "Battlecry: Deal 2 damage. Give your Gullveig +2/+2 (wherever she is).",
+    flavorText: "Pain is but an offering to the Thrice-Burned.",
     keywords: ['battlecry'],
     class: 'Neutral',
     battlecry: {
@@ -5007,8 +5008,8 @@ const legendaryNeutralMinions: CardData[] = [
     health: 4,
     type: 'minion',
     rarity: 'common',
-    description: "At the end of your turn, give your C'Thun +1/+1 (wherever it is).",
-    flavorText: "The twilight between worlds feeds the ancient ones.",
+    description: "At the end of your turn, give your Gullveig +1/+1 (wherever she is).",
+    flavorText: "The twilight between worlds feeds the Thrice-Burned's growing rage.",
     keywords: [],
     class: 'Neutral',
     effects: [{
@@ -5019,46 +5020,8 @@ const legendaryNeutralMinions: CardData[] = [
     collectible: true,
     set: 'core'
   },
-  {
-    id: 91101,
-    name: "Nidhogg, the Corruptor",
-    manaCost: 10,
-    attack: 5,
-    health: 7,
-    type: 'minion',
-    rarity: 'mythic',
-    description: "Battlecry: Summon your Deathrattle minions that died this game.",
-    flavorText: "The serpent gnaws at Yggdrasil's roots, calling forth the corrupted dead.",
-    keywords: ['battlecry'],
-    class: 'Neutral',
-    battlecry: {
-      type: 'resurrect_deathrattle',
-      requiresTarget: false,
-      targetType: 'none'
-    },
-    collectible: true,
-    set: 'core'
-  },
-  {
-    id: 91102,
-    name: "Loki, Trickster of Chaos",
-    manaCost: 10,
-    attack: 7,
-    health: 5,
-    type: 'minion',
-    rarity: 'mythic',
-    description: "Battlecry: Cast a random spell for each spell you've cast this game (targets chosen randomly).",
-    flavorText: "The god of mischief delights in chaos and randomness.",
-    keywords: ['battlecry'],
-    class: 'Neutral',
-    battlecry: {
-      type: 'yogg_saron',
-      requiresTarget: false,
-      targetType: 'none'
-    },
-    collectible: true,
-    set: 'core'
-  },
+  // Duplicate Elder Titan cards (91101, 91102) deleted — canonical versions are
+  // Hyrrokkin (60101) and Utgarda-Loki (60102) in oldGods.ts
   {
     id: 91103,
     name: "Surtr, Rage Unbound",
@@ -5332,7 +5295,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 2,
     type: 'minion',
     rarity: 'common',
-    description: "Dual-Class: Mage/Rogue. Combo: Discover a Mage spell.",
+    description: "Dual-Class: Mage/Rogue. Combo: Foresee a Mage spell.",
     flavorText: "Swift as the messenger god, cunning as a trickster.",
     keywords: ['dual_class', 'combo'],
     class: 'Neutral',
@@ -7408,7 +7371,7 @@ const rareDragonMinions: CardData[] = [
   {
     id: 33110,
     name: 'Mnemosyne the Chronicler',
-    description: 'Battlecry: If you\'re holding a Dragon, Discover a Dragon.',
+    description: 'Battlecry: If you\'re holding a Dragon, Foresee a Dragon.',
     flavorText: 'Keeper of ancient draconic lore from the shadow realm.',
     type: 'minion',
     rarity: 'rare',
@@ -7454,7 +7417,7 @@ const rareDragonMinions: CardData[] = [
   {
     id: 33112,
     name: 'Drakonid Operative',
-    description: 'Battlecry: If you\'re holding a Dragon, Discover a card from your opponent\'s deck.',
+    description: 'Battlecry: If you\'re holding a Dragon, Foresee a card from your opponent\'s deck.',
     flavorText: 'A spy among the dragons, learning the secrets of both realms.',
     type: 'minion',
     rarity: 'rare',
@@ -8981,9 +8944,9 @@ const controlRemovalCards: CardData[] = [
   // SILENCE/DISRUPTION (8 cards)
   {
     id: 33233,
-    name: 'Silencer of the Void',
+    name: 'Silencer of Ginnungagap',
     description: 'Battlecry: Silence all enemy minions.',
-    flavorText: 'In the void between realms, no voice can be heard.',
+    flavorText: 'In Ginnungagap, the primordial void between Muspelheim and Niflheim, no voice can be heard.',
     type: 'minion',
     rarity: 'epic',
     manaCost: 4,
@@ -9711,7 +9674,7 @@ const cheatRecruitRampCards: CardData[] = [
   {
     id: 33271,
     name: 'Free from Amber',
-    description: 'Discover a minion that costs (8) or more. Summon it.',
+    description: 'Foresee a minion that costs (8) or more. Summon it.',
     flavorText: 'Preserved in the amber of Yggdrasil, ancient titans await release.',
     type: 'spell',
     rarity: 'rare',
@@ -9842,9 +9805,9 @@ const synergyPackageCards: CardData[] = [
   },
   {
     id: 33277,
-    name: "N'Zoth's First Mate",
+    name: "Hyrrokkin's First Mate",
     description: 'Battlecry: Equip a 1/3 Rusty Hook.',
-    flavorText: 'Even the Old Gods need crew for their dark voyages.',
+    flavorText: 'Even the giantess who launched the dead needs crew for her dark voyages.',
     type: 'minion',
     rarity: 'common',
     manaCost: 1,
@@ -10380,7 +10343,8 @@ export const coreNeutralCards: CardData[] = [
   ...dragonSynergyCards,
   ...norseMechanicSynergyCards,
   ...deepKeywordCards,
-  ...greekMythicMinions
+  ...greekMythicMinions,
+  ...norseMechanicPayoffCards
 ];
 
 export { allYggdrasilGolemCards, oldGodsCards, allAdaptCards, allMechanicCards, allLegendaryCards, allSpellCards };

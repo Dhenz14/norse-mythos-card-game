@@ -479,7 +479,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       type: "minion",
       rarity: "mythic",
 
-      description: "Battlecry: If your C'Thun has at least 10 Attack, summon a copy of this minion.",
+      description: "Battlecry: If your Gullveig has at least 10 Attack, summon a copy of this minion.",
     flavorText: "Time splits when the titan king demands it. One becomes two, and two become eternity.",
     keywords: ["battlecry", "taunt"],
       heroClass: "neutral",

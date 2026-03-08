@@ -645,7 +645,7 @@ export const rogueCards: CardData[] = [
     health: 2,
     type: "minion",
     rarity: "common",
-    description: "Spellburst: Discover a Mage spell.",
+    description: "Spellburst: Foresee a Mage spell.",
     keywords: ["spellburst"],
     class: "Rogue",
     spellburstEffect: {

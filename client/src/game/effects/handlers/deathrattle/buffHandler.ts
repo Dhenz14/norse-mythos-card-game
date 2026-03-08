@@ -3,7 +3,7 @@
  * 
  * Implements the "buff" deathrattle effect.
  * Buffs other minions when this minion dies.
- * Example: Spawn of N'Zoth (gives all friendly minions +1/+1)
+ * Example: Spawn of Hyrrokkin (gives all friendly minions +1/+1)
  */
 import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';

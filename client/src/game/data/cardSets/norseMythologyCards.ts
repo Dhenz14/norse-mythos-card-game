@@ -5276,7 +5276,7 @@ export function registerNorseMythologyCards(): void {
     .manaCost(2)
     .attack(2)
     .health(2)
-    .description("Battlecry: Discover a Beast from your deck.")
+    .description("Battlecry: Foresee a Beast from your deck.")
     .flavorText("Blessed by the god of hunt, it tracks prey through frost and snow.")
     .rarity("common")
     .type("minion")

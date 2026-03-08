@@ -27,7 +27,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'dragon',
 
       name: 'Dragon',
-      description: 'Discover a Dragon',
+      description: 'Foresee a Dragon',
 
       filter: (card: CardData): boolean => Boolean(hasRace(card, 'dragon'))
   },
@@ -36,7 +36,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'beast',
 
       name: 'Beast',
-      description: 'Discover a Beast',
+      description: 'Foresee a Beast',
 
       filter: (card: CardData): boolean => Boolean(hasRace(card, 'beast'))
   },
@@ -45,7 +45,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'automaton',
 
       name: 'Automaton',
-      description: 'Discover an Automaton',
+      description: 'Foresee an Automaton',
 
       filter: (card: CardData): boolean => Boolean(hasRace(card, 'automaton') || hasRace(card, 'mech'))
   },
@@ -54,7 +54,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'naga',
 
       name: 'Naga',
-      description: 'Discover a Naga',
+      description: 'Foresee a Naga',
 
       filter: (card: CardData): boolean => Boolean(hasRace(card, 'naga') || hasRace(card, 'murloc'))
   },
@@ -63,7 +63,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'titan',
 
       name: 'Titan',
-      description: 'Discover a Titan',
+      description: 'Foresee a Titan',
 
       filter: (card: CardData): boolean => Boolean(hasRace(card, 'titan') || hasRace(card, 'Titan'))
   },
@@ -72,7 +72,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'elemental',
 
       name: 'Elemental',
-      description: 'Discover an Elemental',
+      description: 'Foresee an Elemental',
 
       filter: (card: CardData): boolean => Boolean(hasRace(card, 'elemental'))
   },
@@ -81,7 +81,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'einherjar',
 
       name: 'Einherjar',
-      description: 'Discover an Einherjar',
+      description: 'Foresee an Einherjar',
 
       filter: (card: CardData): boolean => Boolean(hasRace(card, 'einherjar') || hasRace(card, 'pirate'))
   },
@@ -90,7 +90,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'totem',
 
       name: 'Spirit',
-      description: 'Discover a Spirit',
+      description: 'Foresee a Spirit',
 
       filter: (card: CardData): boolean => Boolean(hasRace(card, 'spirit') || hasRace(card, 'totem'))
   },
@@ -99,7 +99,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'deathrattle',
 
       name: 'Deathrattle',
-      description: 'Discover a minion with Deathrattle',
+      description: 'Foresee a minion with Deathrattle',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'deathrattle'))
@@ -109,7 +109,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'battlecry',
 
       name: 'Battlecry',
-      description: 'Discover a minion with Battlecry',
+      description: 'Foresee a minion with Battlecry',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'battlecry'))
@@ -119,7 +119,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'taunt',
 
       name: 'Taunt',
-      description: 'Discover a minion with Taunt',
+      description: 'Foresee a minion with Taunt',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'taunt'))
@@ -129,7 +129,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'divine_shield',
 
       name: 'Divine Shield',
-      description: 'Discover a minion with Divine Shield',
+      description: 'Foresee a minion with Divine Shield',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'divine shield'))
@@ -139,7 +139,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'spell_damage',
 
       name: 'Spell Damage',
-      description: 'Discover a minion with Spell Damage',
+      description: 'Foresee a minion with Spell Damage',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'spell damage'))
@@ -149,7 +149,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'rush',
 
       name: 'Rush',
-      description: 'Discover a minion with Rush',
+      description: 'Foresee a minion with Rush',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'rush'))
@@ -159,7 +159,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'charge',
 
       name: 'Charge',
-      description: 'Discover a minion with Charge',
+      description: 'Foresee a minion with Charge',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'charge'))
@@ -169,7 +169,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'lifesteal',
 
       name: 'Lifesteal',
-      description: 'Discover a card with Lifesteal',
+      description: 'Foresee a card with Lifesteal',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'lifesteal'))
@@ -179,7 +179,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'windfury',
 
       name: 'Windfury',
-      description: 'Discover a minion with Windfury',
+      description: 'Foresee a minion with Windfury',
 
       filter: (card: CardData): boolean => Boolean(card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
       typeof keyword === 'string' && keyword.toLowerCase() === 'windfury'))
@@ -189,7 +189,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'mythic',
 
       name: 'Mythic',
-      description: 'Discover a Mythic minion',
+      description: 'Foresee a Mythic minion',
 
       filter: (card: CardData): boolean => Boolean(card.type === 'minion' && card.rarity === 'mythic')
   },
@@ -198,7 +198,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'epic',
 
       name: 'Epic',
-      description: 'Discover an Epic card',
+      description: 'Foresee an Epic card',
 
       filter: (card: CardData): boolean => Boolean(card.rarity === 'epic')
   },
@@ -207,7 +207,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'one_cost',
 
       name: '1-Cost',
-      description: 'Discover a 1-Cost card',
+      description: 'Foresee a 1-Cost card',
 
       filter: (card: CardData): boolean => Boolean(card.manaCost === 1)
   },
@@ -216,7 +216,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'two_cost',
 
       name: '2-Cost',
-      description: 'Discover a 2-Cost card',
+      description: 'Foresee a 2-Cost card',
 
       filter: (card: CardData): boolean => Boolean(card.manaCost === 2)
   },
@@ -225,7 +225,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'three_cost',
 
       name: '3-Cost',
-      description: 'Discover a 3-Cost card',
+      description: 'Foresee a 3-Cost card',
 
       filter: (card: CardData): boolean => Boolean(card.manaCost === 3)
   },
@@ -234,7 +234,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'damaged_minion',
 
       name: 'Damaged Minion',
-      description: 'Discover a minion that has been damaged',
+      description: 'Foresee a minion that has been damaged',
 
       filter: (card: CardData): boolean => Boolean(card.type === 'minion' && 
       card.keywords && Array.isArray(card.keywords) && card.keywords.some(keyword => 
@@ -246,7 +246,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'secret',
 
       name: 'Rune',
-      description: 'Discover a Rune',
+      description: 'Foresee a Rune',
 
       filter: (card: CardData): boolean => Boolean(card.type === 'secret')
   },
@@ -255,7 +255,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'spell',
 
       name: 'Spell',
-      description: 'Discover a Spell',
+      description: 'Foresee a Spell',
 
       filter: (card: CardData): boolean => Boolean(card.type === 'spell')
   },
@@ -264,7 +264,7 @@ const createDiscoveryPools = (): DiscoveryPool[] => [
       id: 'weapon',
 
       name: 'Weapon',
-      description: 'Discover a Weapon',
+      description: 'Foresee a Weapon',
 
       filter: (card: CardData): boolean => Boolean(card.type === 'weapon')
   }

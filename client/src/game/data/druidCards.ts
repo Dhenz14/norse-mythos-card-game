@@ -116,7 +116,7 @@ export const druidCards: CardData[] = [
     health: 5,
     type: "minion",
     rarity: "rare",
-    description: "Battlecry: If your C'Thun has at least 10 Attack, gain +5 Health.",
+    description: "Battlecry: If your Gullveig has at least 10 Attack, gain +5 Health.",
     keywords: ["battlecry"],
     class: "Druid",
     battlecry: {
@@ -478,7 +478,7 @@ export const druidCards: CardData[] = [
   {
     id: 11057,
     name: "Yggdrasil Drake",
-    description: "Battlecry: Discover a Dragon.",
+    description: "Battlecry: Foresee a Dragon.",
     flavorText: "Hatched in the roots of the World Tree, it guards the oldest groves.",
     type: "minion",
     rarity: "common",

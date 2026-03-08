@@ -185,7 +185,7 @@ const hunterCards = [
       value: 1,
       discoveryType: "beast"
     })
-    .description("Battlecry: Discover a Beast.")
+    .description("Battlecry: Foresee a Beast.")
     .flavorText("She knows all the best hiding spots in the forest.")
     .collectible(true)
     .build(),
@@ -468,7 +468,7 @@ const hunterCards = [
       targetType: "none" as SpellTargetType,
       value: 1
     })
-    .description("Discover a card from your deck.")
+    .description("Foresee a card from your deck.")
     .flavorText("When you need to find that perfect shot.")
     .collectible(true)
     .build(),

@@ -1,28 +1,31 @@
 /**
- * Old Gods Cards
- * 
+ * Elder Titans Cards
+ *
  * Migrated from client/src/game/data/oldGodsCards.ts on 2026-02-02
- * Contains the powerful Old Gods legendary minions with unique effects:
- * - C'Thun: Grows stronger throughout the game and deals its damage when played
- * - N'Zoth: Resurrects friendly Deathrattle minions that died this game
- * - Yogg-Saron: Casts random spells for each spell you've cast this game
- * - Y'Shaarj: Summons a minion from your deck at the end of your turn
- * 
+ * Contains the powerful Elder Titan mythic minions with unique effects:
+ * - Gullveig: Grows stronger throughout the game and deals her damage when played
+ * - Hyrrokkin: Resurrects friendly Deathrattle minions that died this game
+ * - Utgarda-Loki: Casts random spells for each spell you've cast this game
+ * - Fornjot: Summons a minion from your deck at the end of your turn
+ *
  * ID Range: 60001-60103
+ *
+ * Internal effect keys (cthun_damage, buff_cthun, yogg_saron, etc.) kept for
+ * backwards compatibility with existing game logic and save data.
  */
 import { CardData } from '../../../../../types';
 
 export const oldGodsCards: CardData[] = [
   {
     id: 60001,
-    name: "C'Thun",
+    name: "Gullveig, the Thrice-Burned",
     manaCost: 10,
     attack: 6,
     health: 6,
     type: "minion",
     rarity: "mythic",
     description: "Battlecry: Deal damage equal to this minion's Attack randomly split among all enemies.",
-    flavorText: "The ancient one awakens, its eyes seeing across all dimensions.",
+    flavorText: "They burned her thrice upon Odin's pyre. Thrice she rose, and thrice the Aesir trembled.",
     keywords: ["battlecry"],
     class: "Neutral",
     set: "core",
@@ -35,14 +38,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60002,
-    name: "Beckoner of Evil",
+    name: "Seidr Acolyte",
     manaCost: 2,
     attack: 2,
     health: 3,
     type: "minion",
     rarity: "common",
-    description: "Battlecry: Give your C'Thun +2/+2 (wherever it is).",
-    flavorText: "The cultist calls to the sleeping god, offering power for power.",
+    description: "Battlecry: Give your Gullveig +2/+2 (wherever she is).",
+    flavorText: "She channels the forbidden art of seidr, feeding power to the sleeping goddess.",
     keywords: ["battlecry"],
     class: "Neutral",
     set: "core",
@@ -57,14 +60,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60005,
-    name: "Twilight Elder",
+    name: "Gullveig's Ember-Keeper",
     manaCost: 3,
     attack: 3,
     health: 4,
     type: "minion",
     rarity: "common",
-    description: "At the end of your turn, give your C'Thun +1/+1 (wherever it is).",
-    flavorText: "Age has not dimmed his devotion to the Old Gods.",
+    description: "At the end of your turn, give your Gullveig +1/+1 (wherever she is).",
+    flavorText: "He tends the embers of her third burning, feeding them with his own life-force.",
     keywords: [],
     class: "Neutral",
     set: "core",
@@ -79,14 +82,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60008,
-    name: "Jötun Shieldbearer",
+    name: "Jotun Shieldbearer",
     manaCost: 7,
     attack: 6,
     health: 6,
     type: "minion",
     rarity: "rare",
-    description: "Battlecry: If your C'Thun has at least 10 Attack, gain 10 Armor.",
-    flavorText: "The frost giant stands ready to defend the awakening god.",
+    description: "Battlecry: If your Gullveig has at least 10 Attack, gain 10 Armor.",
+    flavorText: "The frost giant stands ready to defend the reborn goddess with his life.",
     keywords: ["battlecry"],
     class: "Warrior",
     set: "core",
@@ -101,14 +104,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60010,
-    name: "Emperor Vek'nilash",
+    name: "Thrall of Gullveig",
     manaCost: 7,
     attack: 4,
     health: 6,
     type: "minion",
     rarity: "mythic",
     description: "Taunt",
-    flavorText: "One of the Twin Emperors, summoned to guard the ancient temple.",
+    flavorText: "A warrior enslaved by Gullveig's burning gaze, doomed to serve beyond death.",
     keywords: ["taunt"],
     class: "Neutral",
     set: "core",
@@ -116,14 +119,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60101,
-    name: "N'Zoth, the Corruptor",
+    name: "Hyrrokkin, Launcher of the Dead",
     manaCost: 10,
     attack: 5,
     health: 7,
     type: "minion",
     rarity: "mythic",
     description: "Battlecry: Summon your Deathrattle minions that died this game.",
-    flavorText: "The master of corruption returns his servants from death.",
+    flavorText: "She pushed Baldur's ship to sea with a single hand. Now she pushes the dead back from their graves.",
     keywords: ["battlecry"],
     class: "Neutral",
     set: "core",
@@ -136,14 +139,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60102,
-    name: "Yogg-Saron, Hope's End",
+    name: "Utgarda-Loki, Lord of Illusions",
     manaCost: 10,
     attack: 7,
     health: 5,
     type: "minion",
     rarity: "mythic",
     description: "Battlecry: Cast a random spell for each spell you've cast this game (targets chosen randomly).",
-    flavorText: "The god of death casts the chaos of a thousand spells.",
+    flavorText: "He made Thor drink the sea, wrestle Old Age, and lift the World Serpent. Imagine what his spells could do to you.",
     keywords: ["battlecry"],
     class: "Neutral",
     set: "core",
@@ -156,14 +159,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60103,
-    name: "Y'Shaarj, Rage Unbound",
+    name: "Fornjot, the Primordial",
     manaCost: 10,
     attack: 10,
     health: 10,
     type: "minion",
     rarity: "mythic",
     description: "At the end of your turn, summon a minion from your deck.",
-    flavorText: "The greatest of the Old Gods, rage incarnate.",
+    flavorText: "Before the gods, before the Nine Realms, Fornjot stirred. From his blood came fire, sea, and wind.",
     keywords: [],
     class: "Neutral",
     set: "core",

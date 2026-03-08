@@ -17,7 +17,7 @@ export const spellburstCards: CardData[] = [
     health: 2,
     type: "minion",
     rarity: "common",
-    description: "Spellburst: Discover a Mage spell.",
+    description: "Spellburst: Foresee a Mage spell.",
     keywords: ["spellburst"],
     heroClass: "rogue", 
     class: "Rogue",

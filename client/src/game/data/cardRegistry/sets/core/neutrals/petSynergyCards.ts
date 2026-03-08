@@ -38,7 +38,7 @@ export const petSynergyCards: CardData[] = [
 		id: 31103,
 		name: 'Rune of the Wild Bond',
 		manaCost: 4,
-		description: 'Discover a pet from your deck. Reduce its evolution requirement by 1.',
+		description: 'Foresee a pet from your deck. Reduce its evolution requirement by 1.',
 		flavorText: 'The rune glows brighter in the presence of untamed spirits.',
 		type: 'spell',
 		rarity: 'epic',

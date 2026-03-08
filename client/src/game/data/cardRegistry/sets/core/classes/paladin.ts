@@ -866,5 +866,58 @@ export const paladinCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  // === Draw & Removal Expansion ===
+  {
+    id: 36407,
+    name: "Rune of Forseti",
+    manaCost: 2,
+    description: "Draw a card. If you control a minion with Divine Shield, draw 2 instead.",
+    type: "spell",
+    rarity: "rare",
+    class: "Paladin",
+    spellEffect: {
+      type: "conditional_draw",
+      value: 1,
+      condition: "friendly_has_divine_shield",
+      bonusValue: 2,
+      targetType: "none"
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36408,
+    name: "Mjolnir's Echo",
+    manaCost: 3,
+    description: "Destroy a minion with 4 or less Attack. Gain 2 Armor.",
+    type: "spell",
+    rarity: "rare",
+    class: "Paladin",
+    spellEffect: {
+      type: "conditional_destroy",
+      condition: "attack_4_or_less",
+      targetType: "any_minion",
+      requiresTarget: true,
+      bonusEffect: {
+        type: "gain_armor",
+        value: 2
+      }
+    },
+    collectible: true,
+    set: "core"
+  },
+  {
+    id: 36409,
+    name: "Saga-Keeper",
+    manaCost: 1,
+    attack: 1,
+    health: 3,
+    description: "Whenever you cast a spell on a friendly minion, draw a card.",
+    type: "minion",
+    rarity: "rare",
+    class: "Paladin",
+    collectible: true,
+    set: "core"
   }
 ];

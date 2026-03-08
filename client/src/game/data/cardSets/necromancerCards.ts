@@ -61,7 +61,7 @@ const necromancerCards = [
       condition: { check: "graveyard_size", minimum: 1 },
       discoveryCount: 3
     })
-    .description("Battlecry: Discover a minion that died this game.")
+    .description("Battlecry: Foresee a minion that died this game.")
     .flavorText("One man's grave is another man's treasure chest.")
     .collectible(true)
     .build(),
@@ -412,7 +412,7 @@ const necromancerCards = [
       discoveryCount: 3
     })
     .customProperty("buffAmount", 2) // Custom property for buff amount
-    .description("Discover a minion that died this game. Summon it with +2/+2.")
+    .description("Foresee a minion that died this game. Summon it with +2/+2.")
     .flavorText("Choose your fallen champion. This time, they'll be stronger.")
     .collectible(true)
     .build(),
@@ -533,7 +533,7 @@ const necromancerCards = [
       targetType: "none" as SpellTargetType,
       discoveryCount: 3
     })
-    .description("Discover a minion from your graveyard and summon it.")
+    .description("Foresee a minion from your graveyard and summon it.")
     .flavorText("Service beyond death is the ultimate loyalty.")
     .collectible(true)
     .build(),

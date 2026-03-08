@@ -82,7 +82,9 @@ Reserved ID ranges for card organization:
 | 36101-36112 | Necromancer Expansion | Mythics, mana 5+ finishers, graveyard synergy |
 | 36201-36210 | Berserker Expansion | Mana 8+ finishers, aggro tools |
 | 36301-36303 | Rogue Expansion | Mana 7-8 gap fill |
-| 36401-36406 | Paladin Expansion | Curve fill, Divine Shield synergy |
+| 36401-36409 | Paladin Expansion | Curve fill, Divine Shield synergy, draw/removal (9 cards) |
+| 38806-38808 | Berserker Expansion III | Outcast payoff minions + spell (3 cards) |
+| 38708-38710 | Necromancer Expansion III | Early game Undead minions (3 cards) |
 | 95082-95084 | Alt-Skin Super Minions | Selene, Hecate, Helios hero-linked minions |
 
 ## Class Completeness Expansion (v2)
@@ -101,6 +103,7 @@ Reserved ID ranges for card organization:
 | 38901-38904 | Warlock Expansion | Zoo 1-drops, discard payoffs (4 cards) |
 | 39001-39004 | Rogue Expansion II | Burgle/thief, card draw (4 cards) |
 | 39101-39104 | Warrior Expansion | Whirlwind effects, Enrage enablers (4 cards) |
+| 31906-31921 | Norse Mechanic Payoffs | Blood Price, Prophecy, Realm Shift, Einherjar synergy payoffs |
 | 32100-32105 | Norse Naga/Einherjar Neutrals | Skidbladnir's Stowaway, Deckhand of Njord, etc. |
 | 32201-32206 | Greek Mythic Minions | Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa |
 

@@ -416,7 +416,7 @@ export const warlockCards: CardData[] = [
     manaCost: 3,
     type: "spell",
     rarity: "common",
-    description: "Discover a Titan.",
+    description: "Foresee a Titan.",
     keywords: ["discover"],
     class: "Warlock",
     spellEffect: {

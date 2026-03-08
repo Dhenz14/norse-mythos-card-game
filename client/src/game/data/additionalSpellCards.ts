@@ -40,7 +40,7 @@ export const additionalSpellCards: CardData[] = [
   // BEGIN NEW MAGE SPELLS - IDs 32001-32030
   {
       id: 32001,
-      name: 'Arcane Blast',
+      name: 'Rune Bolt',
       manaCost: 1,
       type: "spell",
       rarity: "common",
@@ -245,7 +245,7 @@ export const additionalSpellCards: CardData[] = [
   },
   {
       id: 32012,
-      name: 'Arcane Explosion',
+      name: 'Seidr Burst',
       manaCost: 2,
       type: "spell",
       rarity: "common",
@@ -318,7 +318,7 @@ export const additionalSpellCards: CardData[] = [
   },
   {
       id: 32016,
-      name: 'Arcane Brilliance',
+      name: 'Rune Brilliance',
       manaCost: 6,
       type: "spell",
       rarity: "common",
@@ -420,7 +420,7 @@ export const additionalSpellCards: CardData[] = [
   },
   {
       id: 32021,
-      name: 'Arcane Barrage',
+      name: 'Galdor Barrage',
       manaCost: 3,
       type: "spell",
       rarity: "rare",
@@ -535,7 +535,7 @@ export const additionalSpellCards: CardData[] = [
   },
   {
       id: 32027,
-      name: 'Arcane Surge',
+      name: 'Rune Surge',
       manaCost: 4,
       type: "spell",
       rarity: "rare",

@@ -150,7 +150,7 @@ export const deepKeywordCards: CardData[] = [
 		manaCost: 6,
 		attack: 4,
 		health: 6,
-		description: 'Inspire: Discover a card from your deck.',
+		description: 'Inspire: Foresee a card from your deck.',
 		flavorText: 'The All-Father\'s voice echoes through those who wield his power.',
 		type: 'minion',
 		rarity: 'epic',

@@ -731,7 +731,7 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     heroPower: {
       id: 'fjora-power',
       name: 'Root Sight',
-      description: 'Discover a Grass minion and give it +1/+1.',
+      description: 'Foresee a Grass minion and give it +1/+1.',
       cost: 2,
       targetType: 'none',
       effectType: 'scry',
@@ -742,14 +742,14 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
       name: 'Yggdrasil Branch',
       heroId: 'hero-fjora',
       manaCost: 5,
-      description: 'Discover 2 Grass minions and give them +2/+2. Permanently upgrade your hero power.',
-      immediateEffect: { type: 'discover_and_buff', value: 2, description: 'Discover 2 Grass minions and give them +2/+2.' },
+      description: 'Foresee 2 Grass minions and give them +2/+2. Permanently upgrade your hero power.',
+      immediateEffect: { type: 'discover_and_buff', value: 2, description: 'Foresee 2 Grass minions and give them +2/+2.' },
       upgradedPowerId: 'fjora-power-upgraded'
     },
     upgradedHeroPower: {
       id: 'fjora-power-upgraded',
       name: 'Root Sight+',
-      description: 'Discover a Grass minion and give it +2/+2.',
+      description: 'Foresee a Grass minion and give it +2/+2.',
       cost: 2,
       targetType: 'none',
       effectType: 'scry',

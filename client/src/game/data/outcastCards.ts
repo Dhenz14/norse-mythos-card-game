@@ -62,7 +62,7 @@ export const outcastCards: CardData[] = [
       manaCost: 1,
       type: "spell",
       rarity: "common",
-      description: "Discover an Outcast card. Outcast: It costs (1) less.",
+      description: "Foresee an Outcast card. Outcast: It costs (1) less.",
       keywords: ["discover", "outcast"],
       heroClass: "berserker",
       class: "Berserker",

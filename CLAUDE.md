@@ -650,6 +650,27 @@ vercel --prod                 # Deploy to Vercel
 - Boosted ambient effect visibility: 2-3x larger dust motes (1-1.5px → 3-4px), stronger torch glow (8% → 25% opacity), brighter embers, denser fog (0.3 → 0.7 opacity), sharper battlefield divider with triple glow layers
 - Hero health reactions: idle breathing (4s scale pulse), low HP desaturation + red vignette (≤40%), critical HP faster pulse (≤20%)
 
+### Completed (Pre-NFT Card & IP Audit)
+
+- Renamed Old Gods to Norse Elder Titans: C'Thun → Gullveig the Thrice-Burned, N'Zoth → Hyrrokkin Launcher of the Dead, Yogg-Saron → Utgarda-Loki Lord of Illusions, Y'Shaarj → Fornjot the Primordial (internal effect keys preserved)
+- Renamed Arcane terminology to Norse magic: Arcane → Seidr/Rune/Galdor across 5 spell card files + mage class cards
+- Renamed non-Norse heroes: Mordecai → Logi the Living Flame, Apophis → Hrungnir the Stone-Hearted
+- Renamed Void references → Ginnungagap (3 cards: Wind of Ginnungagap, Crab of Ginnungagap, Silencer of Ginnungagap)
+- Renamed Discover keyword display text → "Völva's Vision" (tooltip) / "Foresee" (card text verb form), 121 replacements across 36 files
+- Deleted 2 duplicate Elder Titan cards (91101, 91102) that used taken names (Nidhogg, Loki)
+- Updated Elder Titan support card descriptions: Gullveig synergy (91002, 91003, 91005)
+- Added 16 Norse mechanic payoff cards (IDs 31906-31921):
+  - Blood Price payoffs (4): Wound-Drinker (Warlock), Grimnir the Hooded One (Neutral mythic), Sanguine Rune (Mage), Vithar the Silent God (Priest)
+  - Prophecy payoffs (4): Skuld Norn of the Future (Neutral mythic), Doom-Reader (Warlock), Verdandi's Anchor (Warrior), Echoes of Urd (Shaman)
+  - Realm Shift payoffs (4): Wanderer of the Nine (Shaman), Ratatoskr Realm-Runner (Neutral mythic), Realm-Torn Veil (Mage), Gullintanni Bifrost Sentinel (Paladin)
+  - Einherjar payoffs (4): Valkyrja Chooser of the Slain (Warrior), Horn of Gjallarhorn (Paladin), Herjan Lord of Hosts (Neutral mythic), Feast of the Fallen (Priest)
+- Added Eitri the Unmaker (31922): neutral 3-mana tech card, destroys enemy weapon or artifact
+- Paladin gap-fill (3 cards, IDs 36407-36409): Rune of Forseti (cheap draw), Mjolnir's Echo (conditional destroy), Saga-Keeper (buff-draw trigger)
+- Berserker Outcast payoffs (3 cards, IDs 38806-38808): Svartalf Exile, Ulfhednar Howl, Bolthorn the Twice-Banished (mythic bouncer)
+- Necromancer early game (3 cards, IDs 38708-38710): Grave Whisperer (1-mana Undead), Bone Reaper (2-mana deathrattle), Draugr Apprentice (deathrattle cost reduction)
+- New card data file: `cardRegistry/sets/core/neutrals/norseMechanicPayoffCards.ts`
+- Updated ID_RANGES.md with new expansion ranges
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

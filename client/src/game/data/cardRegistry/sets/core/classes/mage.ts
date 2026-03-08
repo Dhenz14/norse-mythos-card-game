@@ -592,7 +592,7 @@ export const mageCards: CardData[] = [
     manaCost: 2,
     type: "spell",
     rarity: "epic",
-    description: "Discover a spell. Reduce its cost by (2).",
+    description: "Foresee a spell. Reduce its cost by (2).",
     keywords: ["discover"],
     class: "Mage",
     spellEffect: {
@@ -747,13 +747,13 @@ export const mageCards: CardData[] = [
     collectible: true,
     set: "core"
   },
-  // === Arcane & Spell Damage Expansion ===
+  // === Seidr & Spell Damage Expansion ===
   {
     id: 38001,
-    name: "Arcane Barrage",
+    name: "Runestorm",
     manaCost: 1,
     description: "Deal 3 damage randomly split among all enemies.",
-    flavorText: "Bolts of pure arcane energy scatter across the battlefield.",
+    flavorText: "Bolts of runic energy scatter across the battlefield like hail from Niflheim.",
     type: "spell",
     rarity: "common",
     class: "Mage",
@@ -788,10 +788,10 @@ export const mageCards: CardData[] = [
   },
   {
     id: 38003,
-    name: "Arcane Eruption",
+    name: "Seidr Eruption",
     manaCost: 2,
     description: "Deal 1 damage to all enemy minions.",
-    flavorText: "Runes carved into the earth detonate in a wave of force.",
+    flavorText: "Runes carved into the earth detonate in a wave of seidr force.",
     type: "spell",
     rarity: "common",
     class: "Mage",
@@ -824,12 +824,12 @@ export const mageCards: CardData[] = [
   },
   {
     id: 38005,
-    name: "Arcane Familiar",
+    name: "Rune Familiar",
     manaCost: 1,
     attack: 1,
     health: 2,
     description: "Spell Damage +1.",
-    flavorText: "A tiny spirit drawn from the ley lines of Alfheim.",
+    flavorText: "A tiny spirit drawn from the ley lines of Alfheim, attuned to runic magic.",
     type: "minion",
     rarity: "common",
     class: "Mage",
@@ -895,10 +895,10 @@ export const mageCards: CardData[] = [
   },
   {
     id: 38009,
-    name: "Odin's Arcane Mastery",
+    name: "Odin's Seidr Mastery",
     manaCost: 8,
     description: "Deal 8 damage to an enemy. Draw 3 cards. Gain 3 Armor.",
-    flavorText: "The Allfather's knowledge encompasses all schools of magic.",
+    flavorText: "The Allfather's mastery of seidr encompasses all schools of magic.",
     type: "spell",
     rarity: "mythic",
     class: "Mage",

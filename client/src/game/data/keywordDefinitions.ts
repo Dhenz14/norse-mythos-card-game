@@ -96,8 +96,8 @@ export const KEYWORD_DEFINITIONS: Record<string, KeywordDefinition> = {
 		icon: 'layers',
 	},
 	discover: {
-		name: 'Discover',
-		description: 'Choose one of three cards to add to your hand.',
+		name: "V\u00f6lva's Vision",
+		description: 'The V\u00f6lva reveals three fates \u2014 choose one card to add to your hand.',
 		icon: 'search',
 	},
 	adapt: {

@@ -545,7 +545,7 @@ export const priestCards: CardData[] = [
     manaCost: 2,
     type: "spell",
     rarity: "epic",
-    description: "Discover a copy of a spell in your deck.",
+    description: "Foresee a copy of a spell in your deck.",
     keywords: ["discover"],
     class: "Priest",
     spellEffect: {
@@ -566,7 +566,7 @@ export const priestCards: CardData[] = [
     type: "minion",
     rarity: "rare",
     race: "Dragon",
-    description: "Battlecry: If you are holding a Dragon, Discover a copy of a card in your opponent's deck.",
+    description: "Battlecry: If you are holding a Dragon, Foresee a copy of a card in your opponent's deck.",
     keywords: ["battlecry", "discover"],
     class: "Priest",
     battlecry: {
@@ -644,17 +644,17 @@ export const priestCards: CardData[] = [
     collectible: false,
     set: "core"
   },
-  // === Old Gods Card ===
+  // === Gullveig Card ===
   {
     id: 60004,
-    name: "Sibyl of C'Thun",
+    name: "Sibyl of Gullveig",
     manaCost: 4,
     attack: 3,
     health: 6,
     type: "minion",
     rarity: "common",
-    description: "Whenever a character is healed, give your C'Thun +2/+2 (wherever it is).",
-    flavorText: "Her prophecies speak of the Old God's inevitable return.",
+    description: "Whenever a character is healed, give your Gullveig +2/+2 (wherever she is).",
+    flavorText: "Her prophecies speak of the Thrice-Burned's inevitable return from the pyre.",
     keywords: [],
     class: "Priest",
     minionEffect: {

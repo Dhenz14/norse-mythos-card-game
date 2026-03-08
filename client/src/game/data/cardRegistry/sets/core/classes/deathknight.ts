@@ -782,7 +782,7 @@ export const deathknightCards: CardData[] = [
     manaCost: 3,
     attack: 2,
     health: 4,
-    description: "Battlecry: Discover a Rune spell (Blood, Frost, or Unholy).",
+    description: "Battlecry: Foresee a Rune spell (Blood, Frost, or Unholy).",
     type: "minion",
     rarity: "rare",
     class: "DeathKnight",

@@ -2,8 +2,8 @@
  * WheelOfYogg Battlecry Handler
  * 
  * Implements the "wheel_of_yogg" battlecry effect.
- * Spins a wheel for a random crazy effect (Yogg-Saron, Master of Fate).
- * Example card: Yogg-Saron, Master of Fate (ID: 20312)
+ * Spins a wheel for a random crazy effect (Utgarda-Loki, Lord of Illusions).
+ * Example card: Moirai, Master of Fate (ID: 95231)
  */
 import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
@@ -58,7 +58,7 @@ const YOGG_WHEEL_EFFECTS = [
           card: {
             id: 99900 + i,
             name: `Yogg's Creation ${i + 1}`,
-            description: 'Created by the Wheel of Yogg-Saron',
+            description: 'Created by the Wheel of Illusions',
             manaCost: randomStats.cost,
             type: 'minion',
             rarity: 'mythic',
@@ -254,7 +254,7 @@ export default function executeWheelOfYogg(
     if (condition === 'spells_cast') {
       const spellsCast = (context as any).spellsCastThisGame?.length || 0;
       if (spellsCast < conditionValue) {
-        context.logGameEvent(`Wheel of Yogg condition not met: only ${spellsCast} spells cast (need ${conditionValue})`);
+        context.logGameEvent(`Wheel of Illusions condition not met: only ${spellsCast} spells cast (need ${conditionValue})`);
         return { success: true, additionalData: { conditionNotMet: true, spellsCast, required: conditionValue } };
       }
     }

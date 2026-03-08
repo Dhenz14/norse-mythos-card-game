@@ -460,7 +460,7 @@ export const modernLegendaryCards: CardData[] = [
       type: "minion",
       rarity: "rare",
 
-      description: "Battlecry: Discover a new basic Hero Power.",
+      description: "Battlecry: Foresee a new basic Hero Power.",
     flavorText: "He was a great explorer until his knee got injured, then he became a humble innkeeper.",
     keywords: ["battlecry", "discover"],
       heroClass: "neutral",
@@ -595,7 +595,7 @@ export const modernLegendaryCards: CardData[] = [
       type: "minion",
       rarity: "mythic",
 
-      description: "Battlecry: Discover 5 cards. Replace your deck with 2 copies of each.",
+      description: "Battlecry: Foresee 5 cards. Replace your deck with 2 copies of each.",
       flavorText: "She's the kind of person who shows up to a party with her own playlist and demands that everyone use it.",
 
       keywords: ["battlecry", "discover"],
@@ -717,8 +717,8 @@ export const modernLegendaryCards: CardData[] = [
       type: "minion",
       rarity: "mythic",
 
-      description: "Battlecry: If you've cast 10 spells this game, spin the Wheel of Yogg-Saron.",
-    flavorText: "Yogg-Saron doesn't so much master fate as give fate a friendly, but painful-looking noogie.",
+      description: "Battlecry: If you've cast 10 spells this game, spin the Wheel of Utgarda-Loki.",
+    flavorText: "Utgarda-Loki doesn't so much master fate as give fate a friendly, but painful-looking noogie.",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -732,7 +732,7 @@ export const modernLegendaryCards: CardData[] = [
         condition: "spells_cast",
       conditionValue: 10
 
-            // Special handling for Wheel of Yogg-Saron effects
+            // Special handling for Wheel of Illusions effects
     }
     },
   {

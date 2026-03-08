@@ -471,7 +471,7 @@ export function executeBattlecry(
         // Execute The Unshackled's battlecry (summon titans from hand)
         return executeKrulBattlecry(newState, 'player');
         
-      // Old Gods battlecries (already implemented elsewhere)
+      // Elder Titan battlecries (Gullveig/Hyrrokkin/Utgarda-Loki — implemented in oldGodsUtils.ts)
       case 'cthun_damage':
       case 'buff_cthun':
       case 'cthun_cultist_damage':

@@ -879,7 +879,7 @@ export const warriorCards: CardData[] = [
     collectible: false,
     set: "core"
   },
-  // === Old Gods Card ===
+  // === Gullveig Card ===
   {
     id: 60006,
     name: "Einherjar Shieldbearer",
@@ -888,7 +888,7 @@ export const warriorCards: CardData[] = [
     health: 6,
     type: "minion",
     rarity: "epic",
-    description: "Battlecry: If your C'Thun has at least 10 Attack, gain 10 Armor.",
+    description: "Battlecry: If your Gullveig has at least 10 Attack, gain 10 Armor.",
     flavorText: "Valhalla's chosen warriors bear shields blessed by the All-Father.",
     keywords: ["battlecry"],
     class: "Warrior",

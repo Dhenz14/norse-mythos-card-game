@@ -83,7 +83,7 @@ export const classMinions: CardData[] = [
   health: 1,
   type: "minion",
   rarity: "rare",
-  description: "Battlecry: If you're holding a Dragon, Discover a spell from your deck.",
+  description: "Battlecry: If you're holding a Dragon, Foresee a spell from your deck.",
   keywords: ["battlecry", "discover"],
   heroClass: "priest",
   class: "Priest",

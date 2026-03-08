@@ -450,7 +450,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 14021,
     name: 'Bifrost Gate',
-    description: 'Discover a random 8, 9, or 10-Cost minion.',
+    description: 'Foresee a random 8, 9, or 10-Cost minion.',
       flavorText: 'The rainbow bridge connects Midgard to Asgard.',
 
       type: 'spell',
@@ -2292,7 +2292,7 @@ export const fullCardDatabase: CardData[] = [
   {
     id: 13027,
     name: 'Call of the Elements',
-  description: 'Discover a (?) Cost minion. Transform a friendly minion into it. (Upgraded for each Overloaded Mana Crystal.)',
+  description: 'Foresee a (?) Cost minion. Transform a friendly minion into it. (Upgraded for each Overloaded Mana Crystal.)',
   
   flavorText: 'The elements answer those who have paid the price.',
   type: 'spell',
