@@ -428,6 +428,44 @@
 }
 
 /* ==========================================================================
+   LOCKED ART - NFT ownership gating
+   ========================================================================== */
+
+.card-art-container.art-locked {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+}
+
+.card-art-locked {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.card-art-locked .lock-icon {
+  font-size: 28px;
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.card-art-locked .lock-text {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+}
+
+.simple-card.small .card-art-locked .lock-icon { font-size: 18px; }
+.simple-card.large .card-art-locked .lock-icon,
+.simple-card.preview .card-art-locked .lock-icon { font-size: 40px; }
+.simple-card.large .card-art-locked .lock-text,
+.simple-card.preview .card-art-locked .lock-text { font-size: 11px; }
+
+/* ==========================================================================
    NAME BANNER - Richer gradient with gold trim feel
    ========================================================================== */
 

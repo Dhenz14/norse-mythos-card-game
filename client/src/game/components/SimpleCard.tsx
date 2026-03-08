@@ -52,6 +52,7 @@ interface SimpleCardProps {
   style?: React.CSSProperties;
   attackBuff?: number;
   healthBuff?: number;
+  owned?: boolean;
 }
 
 const ICE_RE = /\b(ymir|buri|niflheim|frost|ice|snow|skadi|jotun|glacier|blizzard|frozen|winter|cold)\b/i;
@@ -200,7 +201,8 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
   className = '',
   style = EMPTY_STYLE,
   attackBuff = 0,
-  healthBuff = 0
+  healthBuff = 0,
+  owned = true,
 }) => {
   const isMinion = card.type === 'minion';
   const isSpell = card.type === 'spell';
@@ -411,11 +413,16 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
       <div
         ref={artRef}
-        className="card-art-container"
-        style={artPath ? undefined : { background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}
+        className={`card-art-container${!owned ? ' art-locked' : ''}`}
+        style={artPath && owned ? undefined : { background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}
       >
-        {artPath && artInView ? (
+        {artPath && artInView && owned ? (
           <img src={artPath} alt="" className="card-art-image" draggable={false} loading="lazy" />
+        ) : !owned ? (
+          <div className="card-art-locked">
+            <span className="lock-icon">🔒</span>
+            <span className="lock-text">Not Owned</span>
+          </div>
         ) : !artPath ? (
           <div className="card-art-icon">
             <span>{getCardTypeIcon(card.type)}</span>

@@ -8,6 +8,10 @@ import { getRarityColor } from '../../utils/rarityUtils';
 import { useHiveDataStore } from '../../../data/HiveDataLayer';
 import { hiveSync } from '../../../data/HiveSync';
 import { cardRegistry } from '../../data/cardRegistry';
+import { isHiveMode } from '../../config/featureFlags';
+import { derivePackCards } from '../../../data/blockchain/packDerivation';
+import { forceSync } from '../../../data/blockchain/replayEngine';
+import { toast } from 'sonner';
 import type {
 	PackType,
 	PackTypeResponse,
@@ -131,6 +135,85 @@ export default function PacksPage() {
 	const [isOpening, setIsOpening] = useState(false);
 	const [packError, setPackError] = useState<string | null>(null);
 	const [runeOpening, setRuneOpening] = useState<string | null>(null);
+	const [testMinting, setTestMinting] = useState(false);
+
+	const handleTestMint = async () => {
+		if (!user || testMinting) return;
+		setTestMinting(true);
+		try {
+			const { getGenesisState } = await import('../../../data/blockchain/replayDB');
+			const { broadcastGenesis, broadcastMint } = await import('../../../data/blockchain/genesisAdmin');
+
+			const genesis = await getGenesisState();
+			if (!genesis.version) {
+				toast.info('Broadcasting genesis (one-time setup)...');
+				const genesisResult = await broadcastGenesis();
+				if (!genesisResult.success) {
+					toast.error(`Genesis failed: ${genesisResult.error}`);
+					return;
+				}
+				toast.success('Genesis broadcast complete!');
+			}
+
+			const testCards = [];
+			const pool = cardRegistry.filter(c => c.rarity && Number(c.id) >= 1000);
+			for (let i = 0; i < 5; i++) {
+				const card = pool[Math.floor(Math.random() * pool.length)];
+				testCards.push({
+					nft_id: `test-${Date.now()}-${i}`,
+					card_id: Number(card.id),
+					rarity: (card.rarity ?? 'common').toLowerCase(),
+					name: card.name,
+					type: card.type ?? 'minion',
+					race: card.race,
+				});
+			}
+
+			const mintResult = await broadcastMint({ to: user.hiveUsername, cards: testCards });
+			if (mintResult.success) {
+				const mapped: RevealedCard[] = testCards.map(c => ({
+					id: c.card_id,
+					name: c.name ?? `Card #${c.card_id}`,
+					rarity: c.rarity,
+					type: c.type,
+					heroClass: 'neutral',
+				}));
+
+				testCards.forEach(c => {
+					useHiveDataStore.getState().addCard({
+						uid: c.nft_id,
+						cardId: c.card_id,
+						ownerId: user.hiveUsername,
+						edition: 'alpha',
+						foil: 'standard',
+						rarity: c.rarity,
+						level: 1,
+						xp: 0,
+						lastTransferBlock: mintResult.blockNum,
+						lastTransferTrxId: mintResult.trxId,
+						mintBlockNum: mintResult.blockNum,
+						mintTrxId: mintResult.trxId,
+						name: c.name ?? '',
+						type: c.type,
+						race: c.race,
+					});
+				});
+
+				setOpeningPack(FALLBACK_PACKS[0]);
+				setRevealedCards(mapped);
+				setIsOpening(true);
+
+				forceSync(user.hiveUsername).catch(() => {});
+				toast.success(`Minted ${testCards.length} test NFTs on-chain!`);
+			} else {
+				toast.error(`Mint failed: ${mintResult.error}`);
+			}
+		} catch (err) {
+			toast.error(`Test mint error: ${err instanceof Error ? err.message : 'unknown'}`);
+		} finally {
+			setTestMinting(false);
+		}
+	};
 
 	useEffect(() => {
 		fetchData();
@@ -231,6 +314,57 @@ export default function PacksPage() {
 		setIsOpening(true);
 		setPackError(null);
 
+		const packKey = pack.name.split(' ')[0].toLowerCase();
+
+		if (isHiveMode() && user) {
+			const result = await hiveSync.broadcastCustomJson(
+				'rp_pack_open',
+				{ pack_type: packKey, quantity: 1 },
+				false,
+			);
+
+			if (result.success && result.trxId) {
+				const derived = derivePackCards(result.trxId, packKey, 1);
+				const mappedCards: RevealedCard[] = derived.map(c => ({
+					id: c.cardId,
+					name: c.name,
+					rarity: c.rarity,
+					type: c.type,
+					heroClass: 'neutral',
+				}));
+				setRevealedCards(mappedCards);
+
+				derived.forEach(c => {
+					useHiveDataStore.getState().addCard({
+						uid: c.uid,
+						cardId: c.cardId,
+						ownerId: user.hiveUsername,
+						edition: 'alpha',
+						foil: c.foil,
+						rarity: c.rarity,
+						level: 1,
+						xp: 0,
+						lastTransferBlock: result.blockNum,
+						lastTransferTrxId: result.trxId,
+						mintBlockNum: result.blockNum,
+						mintTrxId: result.trxId,
+						name: c.name,
+						type: c.type,
+						race: c.race,
+					});
+				});
+
+				forceSync(user.hiveUsername).catch(() => {});
+				toast.success(`Opened ${derived.length} cards on-chain!`);
+				return;
+			}
+
+			setPackError(result.error ?? 'Pack open failed — check Keychain');
+			setIsOpening(false);
+			setOpeningPack(null);
+			return;
+		}
+
 		try {
 			const res = await fetch('/api/packs/open', {
 				method: 'POST',
@@ -253,7 +387,6 @@ export default function PacksPage() {
 					return;
 				}
 			}
-			// API unavailable or empty — fall back to client-side
 			const localCards = openPackLocally(pack);
 			if (localCards.length > 0) {
 				setRevealedCards(localCards);
@@ -288,17 +421,56 @@ export default function PacksPage() {
 		if (!user) return;
 
 		setRuneOpening(pack.id.toString());
+		setOpeningPack(pack);
+		setIsOpening(true);
+		setPackError(null);
+
 		const result = await hiveSync.broadcastCustomJson(
 			'rp_pack_open',
-			{ app: 'ragnarok-cards/1.0', type: 'rp_pack_open', pack_type: packKey, quantity: 1 },
+			{ pack_type: packKey, quantity: 1 },
 			false,
 		);
 		setRuneOpening(null);
 
-		if (result.success) {
+		if (result.success && result.trxId) {
 			updateTokenBalance({ RUNE: runeBalance - cost });
+
+			const derived = derivePackCards(result.trxId, packKey, 1);
+			const mappedCards: RevealedCard[] = derived.map(c => ({
+				id: c.cardId,
+				name: c.name,
+				rarity: c.rarity,
+				type: c.type,
+				heroClass: 'neutral',
+			}));
+			setRevealedCards(mappedCards);
+
+			derived.forEach(c => {
+				useHiveDataStore.getState().addCard({
+					uid: c.uid,
+					cardId: c.cardId,
+					ownerId: user.hiveUsername,
+					edition: 'alpha',
+					foil: c.foil,
+					rarity: c.rarity,
+					level: 1,
+					xp: 0,
+					lastTransferBlock: result.blockNum,
+					lastTransferTrxId: result.trxId,
+					mintBlockNum: result.blockNum,
+					mintTrxId: result.trxId,
+					name: c.name,
+					type: c.type,
+					race: c.race,
+				});
+			});
+
+			forceSync(user.hiveUsername).catch(() => {});
+			toast.success(`Opened ${derived.length} cards with RUNE!`);
 		} else {
 			setPackError(result.error ?? 'RUNE pack open failed. Please try again.');
+			setIsOpening(false);
+			setOpeningPack(null);
 		}
 	};
 
@@ -385,6 +557,17 @@ export default function PacksPage() {
 								<span className="text-amber-200 font-bold">{runeBalance.toLocaleString()}</span>
 								<span className="text-amber-500 text-xs">RUNE</span>
 							</div>
+						)}
+						{isHiveMode() && user && (
+							<motion.button
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								onClick={handleTestMint}
+								disabled={testMinting}
+								className="px-6 py-3 bg-green-700 hover:bg-green-600 text-white rounded-lg border border-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							>
+								{testMinting ? 'Minting...' : 'Test Mint 5 NFTs'}
+							</motion.button>
 						)}
 						<Link to={routes.collection}>
 							<motion.button

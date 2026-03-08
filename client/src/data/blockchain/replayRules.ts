@@ -847,7 +847,10 @@ async function applyLevelUp(
 
 const PACK_SIZES: Record<string, number> = {
 	starter: 5,
+	booster: 5,
 	standard: 5,
+	premium: 7,
+	mythic: 7,
 	mega: 15,
 };
 
@@ -857,7 +860,10 @@ function lcgNext(seed: number): number {
 
 const CARD_RANGES: Record<string, [number, number]> = {
 	starter:  [1000, 1999],
+	booster:  [1000, 3999],
 	standard: [1000, 3999],
+	premium:  [1000, 8999],
+	mythic:   [20000, 29999],
 	class:    [4000, 8999],
 	mega:     [1000, 8999],
 	norse:    [20000, 29999],
@@ -928,6 +934,9 @@ async function applyPackOpen(
 			level: 1,
 			xp: 0,
 			lastTransferBlock: op.blockNum,
+			lastTransferTrxId: op.trxId,
+			mintBlockNum: op.blockNum,
+			mintTrxId: op.trxId,
 			name: cardDef?.name ?? '',
 			type: cardDef?.type ?? 'minion',
 			race: cardDef?.race || undefined,

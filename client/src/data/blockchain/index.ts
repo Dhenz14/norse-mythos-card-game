@@ -176,6 +176,9 @@ export {
 	clearKeyCache,
 } from './hiveSignatureVerifier';
 
+export type { DerivedPackCard } from './packDerivation';
+export { derivePackCards } from './packDerivation';
+
 export type { RewardConditionType, RewardCondition, RewardCardDef, TournamentReward } from './tournamentRewards';
 export {
 	TOURNAMENT_REWARDS,
