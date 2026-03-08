@@ -150,6 +150,9 @@ export const HERO_ID_TO_CONFIG_KEY: Record<string, string> = {
   'hero-volva': 'shaman-thrall',
   'hero-gudrun': 'hunter-rexxar',
   'hero-starkad': 'berserker-illidan',
+  'hero-frigg': 'priest-frigg',
+  'hero-bestla': 'shaman-bestla',
+  'hero-hermod': 'rogue-hermod',
 };
 
 /**
@@ -284,6 +287,9 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-volva': 'shaman',
   'hero-gudrun': 'hunter',
   'hero-starkad': 'berserker',
+  'hero-frigg': 'priest',
+  'hero-bestla': 'shaman',
+  'hero-hermod': 'rogue',
 
   // GREEK ALT-SKIN HEROES (3 heroes — preserved from mythology expansion)
   'hero-selene': 'rogue',       // Titaness of the Moon - stealth

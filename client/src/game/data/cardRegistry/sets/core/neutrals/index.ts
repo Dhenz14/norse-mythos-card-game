@@ -18,6 +18,7 @@ import { norseMechanicSynergyCards } from './norseMechanicSynergyCards';
 import { deepKeywordCards } from './deepKeywordCards';
 import { greekMythicMinions } from './greekMythicMinions';
 import { norseMechanicPayoffCards } from './norseMechanicPayoffCards';
+import { primordialExpansionCards } from './primordialExpansionCards';
 
 // Core Set - Neutral Cards
 // Organized by rarity following standard CCG conventions
@@ -10344,7 +10345,8 @@ export const coreNeutralCards: CardData[] = [
   ...norseMechanicSynergyCards,
   ...deepKeywordCards,
   ...greekMythicMinions,
-  ...norseMechanicPayoffCards
+  ...norseMechanicPayoffCards,
+  ...primordialExpansionCards
 ];
 
 export { allYggdrasilGolemCards, oldGodsCards, allAdaptCards, allMechanicCards, allLegendaryCards, allSpellCards };

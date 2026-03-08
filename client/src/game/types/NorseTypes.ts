@@ -113,7 +113,8 @@ export type HeroPowerTargetType =
   | 'any_character'     // Target any character
   | 'random_enemy'      // Random enemy target
   | 'random_friendly'   // Random friendly target
-  | 'enemy_hero';       // Target enemy hero only
+  | 'enemy_hero'        // Target enemy hero only
+  | 'graveyard';        // Target dead minion (Hermod)
 
 /**
  * Hero power effect types
@@ -167,7 +168,8 @@ export type HeroPowerEffectType =
   // Japanese-specific effect types
   | 'sacrifice_summon'        // Destroy friendly and summon (Izanami)
   | 'mana_ramp'               // Gain mana crystals (Inari)
-  | 'transform_card';         // Transform a card (Kitsune)
+  | 'transform_card'          // Transform a card (Kitsune)
+  | 'resurrect_to_hand';      // Return dead minion to hand (Hermod)
 
 /**
  * Hero power definition
@@ -186,6 +188,9 @@ export interface NorseHeroPower {
   duration?: 'permanent' | 'this_turn' | 'next_turn';
   selfDamage?: number;      // Self-damage amount (for Life Tap style)
   armorValue?: number;      // Armor to gain
+  healOnBreak?: number;     // Heal amount when shield/oath breaks (Frigg)
+  costHealth?: boolean;     // Pay Health equal to card cost (Hermod)
+  buffAttack?: number;      // Bonus attack buff (Bestla upgraded)
   
   // For summon effects
   summonData?: {
@@ -289,6 +294,9 @@ export type HeroPassiveTrigger =
   | 'on_poison_applied'     // When poison is applied (Serqet)
   // Japanese-specific triggers
   | 'on_friendly_death'     // When friendly minion dies (Izanami)
+  | 'on_shield_break'       // When a Divine Shield is broken (Frigg)
+  | 'on_freeze'             // When an enemy is frozen (Bestla)
+  | 'on_card_play'          // When a card is played (Hermod)
   | 'passive';              // Always active aura effect
 
 /**

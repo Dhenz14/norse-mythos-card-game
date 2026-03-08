@@ -69,6 +69,15 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       element: 'ice',
       norseHeroId: 'hero-groa'
     },
+    {
+      id: 'hero-frigg',
+      name: 'Frigg',
+      heroClass: 'priest',
+      description: 'All-Mother: Shields allies with Oaths that heal when broken.',
+      fixedCardIds: [],
+      element: 'light',
+      norseHeroId: 'hero-frigg'
+    },
     // ===== NORSE HEROES - QUEEN (Wisdom/Magic) =====
     // Uses Mage, Warlock, and Necromancer spell pools
     {
@@ -485,6 +494,15 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       element: 'grass',
       norseHeroId: 'hero-volva'
     },
+    {
+      id: 'hero-bestla',
+      name: 'Bestla',
+      heroClass: 'shaman',
+      description: 'Primordial Frost-Mother: Freeze foes and bolster allies with ancient ice.',
+      fixedCardIds: [],
+      element: 'ice',
+      norseHeroId: 'hero-bestla'
+    },
     // ===== NORSE HEROES - BISHOP (Healing/Support) =====
     // Uses Priest, Druid, and Shaman spell pools
     {
@@ -710,6 +728,15 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'fire',
       norseHeroId: 'hero-starkad'
+    },
+    {
+      id: 'hero-hermod',
+      name: 'Hermod',
+      heroClass: 'rogue',
+      description: 'The Brave: Rides to Hel and back, rescuing fallen allies at a cost.',
+      fixedCardIds: [],
+      element: 'dark',
+      norseHeroId: 'hero-hermod'
     },
     // ===== NORSE HEROES - KNIGHT (Stealth/Agility) =====
     // Uses Rogue, Hunter, and Berserker spell pools

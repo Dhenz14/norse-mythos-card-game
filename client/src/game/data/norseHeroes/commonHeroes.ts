@@ -414,6 +414,185 @@ export const COMMON_HEROES: Record<string, NorseHero> = {
 		}
 	},
 
+	// ==================== QUEEN SLOT #3 — Frigg (Priest) ====================
+	'hero-frigg': {
+		id: 'hero-frigg',
+		name: 'Frigg',
+		title: 'All-Mother of Asgard',
+		element: 'light',
+		weakness: 'dark',
+		startingHealth: 100,
+		description: 'Wife of Odin, queen of the Aesir, weaver of fates. She knows all destinies but speaks none.',
+		lore: 'Frigg sat at her spinning wheel in Fensalir and saw the threads of every life in the Nine Realms. When Baldur dreamed of death, she traveled to every creature, every stone, every drop of poison and extracted an oath never to harm her son. She asked everything — everything except the mistletoe, too young and small to swear. That single oversight unraveled the world. She is the only being besides Odin permitted to sit upon Hlidskjalf and gaze across all realms, yet she chooses silence over prophecy, for she learned that knowing the future does not mean you can change it.',
+		gender: 'female',
+		hasSpells: true,
+		fixedCardIds: [],
+		heroClass: 'priest',
+		heroPower: {
+			id: 'frigg-power',
+			name: 'Mother\'s Oath',
+			description: 'Give a friendly minion an Oath: prevents the next damage dealt to it and heals 1 when broken.',
+			cost: 2,
+			targetType: 'friendly_minion',
+			effectType: 'grant_divine_shield',
+			value: 1,
+			healOnBreak: 1
+		},
+		weaponUpgrade: {
+			id: 90118,
+			name: 'Fensalir\'s Spindle',
+			heroId: 'hero-frigg',
+			manaCost: 5,
+			description: 'Restore 4 Health to all friendly minions. Give your hero an Oath. Upgrade your hero power.',
+			immediateEffect: {
+				type: 'heal_all_and_shield',
+				value: 4,
+				description: 'Restore 4 Health to all friendly minions. Give your hero an Oath.'
+			},
+			upgradedPowerId: 'frigg-power-upgraded'
+		},
+		upgradedHeroPower: {
+			id: 'frigg-power-upgraded',
+			name: 'All-Mother\'s Vow',
+			description: 'Give ALL friendly minions an Oath.',
+			cost: 2,
+			targetType: 'none',
+			effectType: 'grant_divine_shield',
+			value: 1,
+			healOnBreak: 1,
+			isUpgraded: true,
+			baseHeroPowerId: 'frigg-power'
+		},
+		passive: {
+			id: 'frigg-passive',
+			name: 'Foresight of Fensalir',
+			description: 'When a friendly minion\'s Divine Shield is broken, draw a card.',
+			trigger: 'on_shield_break',
+			effectType: 'draw',
+			value: 1
+		}
+	},
+
+	// ==================== BISHOP SLOT #3 — Bestla (Shaman) ====================
+	'hero-bestla': {
+		id: 'hero-bestla',
+		name: 'Bestla',
+		title: 'Primordial Frost-Mother',
+		element: 'ice',
+		weakness: 'fire',
+		startingHealth: 100,
+		description: 'Jotun giantess, wife of Borr, mother of Odin, Vili, and Ve. Without her blood, no Aesir would exist.',
+		lore: 'Bestla was a daughter of the frost giant Bolthorn, born in the age before the gods. When Borr, son of Buri, found her in the ice wastes of Niflheim, they forged an alliance between the first of men and the eldest of giants. From their union came three sons who would slay Ymir and build the world from his corpse. Bestla taught her sons the runes of creation — the secret names of ice and void that predate the Nine Realms themselves. She is the grandmother of all the Aesir, the primordial bridge between giant-kind and godhood, and it is said that the frost in Odin\'s single eye is hers.',
+		gender: 'female',
+		hasSpells: true,
+		fixedCardIds: [],
+		heroClass: 'shaman',
+		heroPower: {
+			id: 'bestla-power',
+			name: 'Primordial Frost',
+			description: 'Freeze an enemy minion. Give a friendly minion +1 Health.',
+			cost: 2,
+			targetType: 'enemy_minion',
+			effectType: 'freeze',
+			value: 1,
+			secondaryValue: 1
+		},
+		weaponUpgrade: {
+			id: 90120,
+			name: 'Bolthorn\'s Rime',
+			heroId: 'hero-bestla',
+			manaCost: 5,
+			description: 'Freeze all enemy minions. Give all friendly minions +2 Health. Upgrade your hero power.',
+			immediateEffect: {
+				type: 'freeze_all_and_buff',
+				value: 2,
+				description: 'Freeze all enemy minions. Give all friendly minions +2 Health.'
+			},
+			upgradedPowerId: 'bestla-power-upgraded'
+		},
+		upgradedHeroPower: {
+			id: 'bestla-power-upgraded',
+			name: 'Primordial Frost+',
+			description: 'Freeze an enemy minion. Give a friendly minion +1/+1.',
+			cost: 2,
+			targetType: 'enemy_minion',
+			effectType: 'freeze',
+			value: 1,
+			secondaryValue: 1,
+			buffAttack: 1,
+			isUpgraded: true,
+			baseHeroPowerId: 'bestla-power'
+		},
+		passive: {
+			id: 'bestla-passive',
+			name: 'Ancient Lineage',
+			description: 'When you Freeze an enemy, gain 2 Armor.',
+			trigger: 'on_freeze',
+			effectType: 'gain_armor',
+			value: 2
+		}
+	},
+
+	// ==================== KNIGHT SLOT #3 — Hermod (Rogue) ====================
+	'hero-hermod': {
+		id: 'hero-hermod',
+		name: 'Hermod',
+		title: 'The Brave',
+		element: 'dark',
+		weakness: 'light',
+		startingHealth: 100,
+		description: 'Son of Odin who rode Sleipnir nine nights through darkness to beg Hel for Baldur\'s return.',
+		lore: 'When Baldur fell to the mistletoe arrow and the gods stood weeping, Odin asked who among them would ride to Hel\'s domain and offer ransom for his son. Only Hermod stepped forward. He mounted Sleipnir and rode nine nights through ever-deepening valleys of shadow until he reached the river Gjoll. The maiden Modgud at the bridge said a whole army of the dead had crossed that morning, yet Sleipnir\'s hooves thundered louder than all of them. Hermod leapt the gates of Hel itself and found Baldur seated in the hall of honor. Hel agreed: if every living thing in the world would weep for Baldur, she would release him. Hermod rode back with hope — but Loki, disguised as the giantess Thokk, refused to weep, and Baldur remained in death. Hermod\'s journey was the bravest act in all the sagas, and the most futile.',
+		gender: 'male',
+		hasSpells: true,
+		fixedCardIds: [],
+		heroClass: 'rogue',
+		heroPower: {
+			id: 'hermod-power',
+			name: 'Ride to Hel',
+			description: 'Return a friendly minion that died this game to your hand. Pay Health equal to its mana cost.',
+			cost: 1,
+			targetType: 'graveyard',
+			effectType: 'resurrect_to_hand',
+			value: 1,
+			costHealth: true
+		},
+		weaponUpgrade: {
+			id: 90119,
+			name: 'Sleipnir\'s Reins',
+			heroId: 'hero-hermod',
+			manaCost: 5,
+			description: 'Deal 3 damage. Return the last friendly minion that died to your hand (no HP cost). Upgrade your hero power.',
+			immediateEffect: {
+				type: 'damage_and_resurrect',
+				value: 3,
+				description: 'Deal 3 damage. Return the last friendly minion that died to your hand.'
+			},
+			upgradedPowerId: 'hermod-power-upgraded'
+		},
+		upgradedHeroPower: {
+			id: 'hermod-power-upgraded',
+			name: 'Hel\'s Passage',
+			description: 'Return a friendly minion that died this game to your hand. It costs (2) less. Pay Health equal to its original cost minus 2.',
+			cost: 1,
+			targetType: 'graveyard',
+			effectType: 'resurrect_to_hand',
+			value: 1,
+			costHealth: true,
+			costReduction: 2,
+			isUpgraded: true,
+			baseHeroPowerId: 'hermod-power'
+		},
+		passive: {
+			id: 'hermod-passive',
+			name: 'Swift Messenger',
+			description: 'The first card you play each turn that was returned from death costs (1) less.',
+			trigger: 'on_card_play',
+			effectType: 'cost_reduction',
+			value: 1
+		}
+	},
+
 	// ==================== KNIGHT SLOT #2 — Starkad (Berserker) ====================
 	'hero-starkad': {
 		id: 'hero-starkad',
