@@ -18,7 +18,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Your Battlecries trigger twice.",
       flavorText: "Contains 75% more fiber than his brother Magni!",
@@ -68,7 +68,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 1,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "After you play a Pirate, summon this minion from your deck.",
   flavorText: "I'm in charge now!",
@@ -90,7 +90,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: Summon a 1/1 copy of a random minion in your deck.",
     flavorText: "He used to play every part, until Charon the Steward convinced him to focus on his true talent: being super-dramatic.",
@@ -125,7 +125,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 6,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "When the game starts, add 5 random Mythic minions to your deck.",
   flavorText: "He was super excited to acquire Gungnir's Fury at a garage sale! Then super disappointed when he realized he couldn't wield it.",
@@ -147,7 +147,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 4,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "Stealth. After this attacks and kills a minion, summon 2 Nagas from your deck.",
   flavorText: "The last true master of Finjitsu.",
@@ -171,7 +171,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 5,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "At the end of your turn, reduce the Cost of cards in your hand by (1).",
   flavorText: "His second greatest regret is summoning an evil Firelord who enslaved his entire people.",
@@ -191,7 +191,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "Your minions trigger their Deathrattles twice.",
   flavorText: "There used to be five Horsemen but one of them left because a job opened up in Gadgetzan.",
@@ -239,7 +239,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Deathrattle: If Móði (Thor's son) also died this game, summon Surtr's Creation.",
     flavorText: "Magni want to smash! Móði think smash waste of time, send ravens instead.",
@@ -287,7 +287,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 8,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "At the end of each turn, summon all friendly minions that died this turn.",
   flavorText: "The archlich could not resist the call of Niflheim. Unfortunately, his bones made clunking sounds all the way up the frozen steps.",
@@ -307,7 +307,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 8,
 
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
 
   description: "Whenever you draw a card, add a copy of it to your hand. (Once per turn)",
   flavorText: "The hundred-headed dragon guards the golden apples. Each head has its own opinion on lunch.",
@@ -331,7 +331,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 8,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: Add 2 random spells from your opponent's class to your hand.",
       flavorText: "Father of all monsters, Typhon claims dominion over all dragons. The gods themselves once fled from his wrath.",
@@ -365,7 +365,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 6,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Taunt. Deathrattle: If you're holding a Dragon, deal 3 damage to all minions.",
       flavorText: "The wolf who chases the sun will one day swallow it whole.",
@@ -395,7 +395,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 6,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Deathrattle: Deal 8 damage to all minions.",
     flavorText: "Born from the primordial chaos, its death brings destruction to all around it.",
@@ -421,7 +421,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 7,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: The next spell you cast this turn costs Health instead of Mana.",
     flavorText: "The two-headed hound guards the gates with eternal vigilance. Each head argues about who's in charge.",
@@ -455,7 +455,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 6,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "Whenever your spells deal damage, restore that much Health to your hero.",
   flavorText: "It's like his mom always said: \"Play with fire and you'll heal for 3 to 5 damage.\"",
@@ -506,7 +506,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 6,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Taunt. Battlecry: Draw a Beast, Dragon, and Naga from your deck.",
     flavorText: "Mímir the Keeper is a guardian of ancient wisdom who curates relics from all realms. Also, he can fly.",
@@ -535,7 +535,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 7,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: Equip Atiesh, Greatstaff of the Guardian.",
     flavorText: "He is a Guardian, and a Guardian watches... other Guardians... guard things.",
@@ -564,7 +564,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   durability: 3,
   
   type: "weapon",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "After you cast a spell, summon a random minion of the same Cost. Lose 1 Durability.",
   flavorText: "Óðinn's staff is ancient and powerful... and also was the inspiration for his most famous recipe: Mead with honey.",
@@ -639,7 +639,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 5,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Taunt.   Deathrattle: Shuffle 'The Storm Guardian' into your deck.",
     flavorText: "He sees the future, and in it he sees... DESTRUCTION... and then more destruction... and then dancing bananas for some reason.",
@@ -663,7 +663,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 8,
 
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
 
   description: "Taunt. Battlecry: Deal 3 damage to all enemy minions.",
   flavorText: "The gatekeeper of his ancestral homeland. Don't knock if he's napping.",
@@ -684,7 +684,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 8,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: Fill your board with 1/1 Whelps.",
       flavorText: "They say that many whelps handle her with care and respect. But that's because they don't want to get VOLED BY FIFTY DKP MINUS!",
@@ -735,7 +735,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "At the end of each turn, gain +1/+1.",
   flavorText: "The titan who bears the weight of worlds grows ever stronger.",
@@ -775,7 +775,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 5,
   
   type: "minion",
-  rarity: "mythic",
+  rarity: 'epic',
   
   description: "After you play a card, summon a 2/1 Storm Spawn.",
   flavorText: "Father of all monsters, his very presence spawns chaos.",
@@ -799,7 +799,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 7,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Deathrattle: Summon a 3/3 Sindri's Apprentice for your opponent.",
       flavorText: "Descended from the legendary Nemean Lion, its hide is impervious but its appetite knows no bounds.",
@@ -850,7 +850,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 5,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: Give your opponent 2 Bananas.",
     flavorText: "The divine monkey god shares his bounty, for better or worse.",
@@ -911,7 +911,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: Give your weapon +1/+1.",
     flavorText: "He was suppose to be a captain of a pirate ship. Instead, he's a mech, which makes NO SENSE. He doesn't even have a parrot.",

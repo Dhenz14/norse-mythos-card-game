@@ -404,7 +404,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'A master of battle and heroic glory.',
       type: 'hero',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 9,
 
       health: 100,
@@ -1138,7 +1138,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The beloved god of light and purity.',
       type: 'hero',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 9,
 
       armor: 5,
@@ -1174,7 +1174,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Starvation follows in this rider\'s wake.',
   type: 'minion',
   
-  rarity: 'mythic',
+  rarity: 'epic',
   manaCost: 2,
   
   attack: 2,
@@ -1191,7 +1191,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Disease spreads wherever this horseman rides.',
   type: 'minion',
   
-  rarity: 'mythic',
+  rarity: 'epic',
   manaCost: 2,
   
   attack: 2,
@@ -1208,7 +1208,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Battle and bloodshed ride in his shadow.',
   type: 'minion',
   
-  rarity: 'mythic',
+  rarity: 'epic',
   manaCost: 2,
   
   attack: 2,
@@ -1225,7 +1225,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Hel herself empowered this final rider.',
   type: 'minion',
   
-  rarity: 'mythic',
+  rarity: 'epic',
   manaCost: 2,
   
   attack: 2,
@@ -1312,7 +1312,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The legendary sword that slew the dragon Fafnir.',
       type: 'weapon',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 7,
 
       attack: 5,
@@ -1426,7 +1426,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Half living, half dead, she rules over Helheim.',
       type: 'hero',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 9,
 
       armor: 5,
@@ -2059,7 +2059,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'The Windlord commands all four winds.',
   type: 'minion',
   
-  rarity: 'mythic',
+  rarity: 'epic',
   manaCost: 8,
   
   attack: 3,
@@ -2111,7 +2111,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'He shapes the elements and the world itself.',
   type: 'hero',
   
-  rarity: 'mythic',
+  rarity: 'epic',
   manaCost: 9,
   
   armor: 5,
@@ -2277,7 +2277,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'The sea goddess collects what the waves take.',
   type: 'minion',
   
-  rarity: 'mythic',
+  rarity: 'epic',
   manaCost: 6,
   
   attack: 6,
@@ -2606,7 +2606,7 @@ export const fullCardDatabase: CardData[] = [
     flavorText: 'The sorceress\'s heir transforms all.',
     
     type: 'minion',
-    rarity: 'mythic',
+    rarity: 'epic',
     
     manaCost: 6,
     attack: 4,
@@ -2826,7 +2826,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The Titan who stole fire now shares forbidden knowledge.',
       type: 'spell',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 6,
 
       class: 'Berserker',
@@ -2883,7 +2883,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'A blur of wings and malice striking from unexpected angles.',
 
       type: 'minion',
-      rarity: 'mythic',
+      rarity: 'epic',
 
       manaCost: 4,
       attack: 4,
@@ -2898,7 +2898,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Channel the primordial power of the Titans.',
 
       type: 'spell',
-      rarity: 'mythic',
+      rarity: 'epic',
 
       manaCost: 5,
       class: "Berserker",
@@ -2918,7 +2918,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'After 2 uses, swap back.',
       type: 'spell',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 1,
 
       class: "Berserker",
@@ -3051,7 +3051,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Father of all monsters, his legacy grows.',
       type: 'minion',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 9,
 
       attack: 8,
@@ -3412,7 +3412,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Ruler of the depths, he commands all departed souls.',
       type: 'hero',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 10,
 
       health: 100,
@@ -3524,7 +3524,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The god of the forge crafts automatons for battle.',
 
       type: 'hero',
-      rarity: 'mythic',
+      rarity: 'epic',
 
       manaCost: 9,
       armor: 7,
@@ -3551,7 +3551,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Creator of the Labyrinth and wings of wax.',
       type: 'minion',
 
-      rarity: 'mythic',
+      rarity: 'epic',
       manaCost: 6,
 
       attack: 6,
@@ -4306,7 +4306,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'One of Daedalus\'s more... creative inventions.',
 
       type: 'minion',
-      rarity: 'mythic',
+      rarity: 'epic',
 
       manaCost: 1,
       attack: 0,
@@ -4322,7 +4322,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'A healing automaton from the divine forge.',
 
   type: 'minion',
-  rarity: 'mythic',
+  rarity: 'epic',
 
   manaCost: 1,
   attack: 0,
@@ -4356,7 +4356,7 @@ export const fullCardDatabase: CardData[] = [
   description: 'Part of Giga-Fin. Taunt. Deathrattle: Deal 2 damage to all enemy minions.',
   
   type: 'minion',
-  rarity: 'mythic',
+  rarity: 'rare',
   
   manaCost: 3,
   attack: 3,
@@ -4374,7 +4374,7 @@ export const fullCardDatabase: CardData[] = [
   description: 'Part of Colossus of the Moon. Taunt. Divine Shield. Can\'t attack.',
   
   type: 'minion',
-  rarity: 'mythic',
+  rarity: 'rare',
   
   manaCost: 4,
   attack: 0,
@@ -4391,7 +4391,7 @@ export const fullCardDatabase: CardData[] = [
   description: 'Part of Neptulon the Tidehunter. After this attacks, add a random Elemental to your hand.',
   type: 'minion',
   
-  rarity: 'mythic',
+  rarity: 'epic',
   manaCost: 4,
   
   attack: 4,

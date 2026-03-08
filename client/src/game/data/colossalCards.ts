@@ -16,8 +16,8 @@ export const colossalMinionCards: CardData[] = [
       attack: 7,
       health: 7,
 
-      description: "Colossal +2. Battlecry: Summon two Neptulon's Hands. Whenever a Neptulon\'s Hand attacks, add a random Elemental to your hand.",
-      rarity: "mythic",
+      description: "Colossal +2. Battlecry: Summon two Neptulon's Hands. Whenever a Neptulon's Hand attacks, add a random Elemental to your hand.",
+      rarity: 'epic',
 
       type: "minion",
       keywords: ['colossal', 'battlecry'],
@@ -40,7 +40,7 @@ export const colossalMinionCards: CardData[] = [
       health: 8,
       
       description: "Colossal +2. Taunt.   Battlecry: Draw 3 Nagas from your deck.",
-      rarity: "mythic",
+      rarity: 'epic',
       type: "minion",
       
       keywords: ['colossal', 'taunt', 'battlecry'],
@@ -67,7 +67,7 @@ export const colossalMinionCards: CardData[] = [
       health: 10,
       
       description: "Colossal +3. Divine Shield. Summons three Protective Shield parts that protect the main body.",
-      rarity: "mythic",
+      rarity: 'epic',
       
       type: "minion",
       keywords: ['colossal', 'divine_shield', 'battlecry'],
@@ -96,7 +96,7 @@ export const colossalPartCards: CardData[] = [
       
       health: 2,
       description: "Part of Neptulon the Tidehunter. After this attacks, add a random Elemental to your hand.",
-      rarity: "mythic",
+      rarity: 'epic',
       
       type: "minion",
       keywords: [],
@@ -114,7 +114,7 @@ export const colossalPartCards: CardData[] = [
       health: 3,
       description: "Part of Giga-Fin. Taunt. Deathrattle: Deal 2 damage to all enemy minions.",
       
-      rarity: "mythic",
+      rarity: 'rare',
       type: "minion",
       
       keywords: ['taunt', 'deathrattle'],
@@ -138,7 +138,7 @@ export const colossalPartCards: CardData[] = [
       health: 4,
       description: "Part of Giga-Fin. Taunt. Battlecry: Give adjacent minions +1/+1.",
       
-      rarity: "mythic",
+      rarity: 'epic',
       type: "minion",
       
       keywords: ['taunt', 'battlecry'],
@@ -165,7 +165,7 @@ export const colossalPartCards: CardData[] = [
       health: 5,
       description: "Part of Colossus of the Moon. Taunt. Divine Shield. Can't attack.",
       
-      rarity: "mythic",
+      rarity: 'epic',
       type: "minion",
       
       keywords: ['taunt', 'divine_shield'],

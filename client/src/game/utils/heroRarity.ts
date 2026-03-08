@@ -7,12 +7,12 @@
 
 export type HeroRarity = 'common' | 'rare' | 'epic' | 'mythic';
 
-/** NFT supply cap per rarity tier — same for heroes and kings */
+/** NFT supply cap per rarity tier — same for heroes, kings, and cards */
 export const PIECE_SUPPLY: Record<HeroRarity, number> = {
 	mythic: 500,
-	epic: 2_000,
-	rare: 5_000,
-	common: 10_000,
+	epic: 750,
+	rare: 1_250,
+	common: 1_800,
 };
 
 /** Rarity-specific accent colors */
@@ -23,7 +23,7 @@ export const RARITY_COLORS: Record<HeroRarity, { primary: string; glow: string; 
 	common: { primary: '#9ca3af', glow: 'rgba(156, 163, 175, 0.3)', label: 'COMMON' },
 };
 
-// ==================== MYTHIC — /500 supply ====================
+// ==================== MYTHIC — 500 supply ====================
 // The most iconic gods/titans/cosmic entities across all mythologies.
 const MYTHIC_PIECES = new Set([
 	// Norse major gods
@@ -48,7 +48,7 @@ const MYTHIC_PIECES = new Set([
 	'king-ginnungagap',
 ]);
 
-// ==================== EPIC — /2,000 supply ====================
+// ==================== EPIC — 750 supply ====================
 // Named deities with strong thematic significance.
 const EPIC_PIECES = new Set([
 	// Norse deities
@@ -86,7 +86,7 @@ const EPIC_PIECES = new Set([
 	'king-buri',
 ]);
 
-// ==================== RARE — /5,000 supply ====================
+// ==================== RARE — 1,250 supply ====================
 // Lesser-known mythology figures from all pantheons.
 const RARE_PIECES = new Set([
 	// Norse lesser deities
@@ -125,7 +125,7 @@ const RARE_PIECES = new Set([
 	'king-audumbla',
 ]);
 
-// ==================== COMMON — /10,000 supply ====================
+// ==================== COMMON — 1,800 supply ====================
 // Original game characters not from established mythology.
 // Any piece not listed above defaults to common.
 

@@ -184,7 +184,7 @@ export const realmShiftPayoffCards: CardData[] = [
 		description: 'Battlecry: Foresee a Realm Shift spell from any class. It costs (0).',
 		flavorText: 'Up and down the World Tree he scurries, carrying insults between realms.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {
@@ -293,7 +293,7 @@ export const einherjarPayoffCards: CardData[] = [
 		description: 'Battlecry: All Einherjar in your deck gain +2/+2. Your Einherjar have Rush.',
 		flavorText: 'Another of Odin\'s war-names. Under Herjan, the Einherjar march as one.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {

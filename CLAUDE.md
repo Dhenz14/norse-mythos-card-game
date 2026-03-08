@@ -217,7 +217,7 @@ Game logic for these mechanics lives in:
 - **13 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes
 - **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
 - **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
-- **Supply caps**: 16,000 total (10K common, 4K rare, 1.5K epic, 500 mythic)
+- **Supply caps**: ~3.3M total NFTs (1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
 
 ## Bundle Architecture
 
@@ -308,7 +308,7 @@ client/src/data/blockchain/tournamentRewards.ts
 - Admin authority ends at seal — no ongoing admin key needed
 - Reward claims are self-serve (players verify own stats, no admin distribution)
 - ELO is chain-derived (K=32, computed from match_result history)
-- Supply caps hard-enforced by every reader (16K: 10K common, 4K rare, 1.5K epic, 500 mythic)
+- Supply caps hard-enforced by every reader (~3.3M: 1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
 
 ## Known Issues & Fixes
 
@@ -506,7 +506,7 @@ vercel --prod                 # Deploy to Vercel
 - `CollectionPage.tsx`: Full forge/dissolve implementation with inventory state updates
   - Dissolve: decrements card quantity, removes from HiveDataStore, adds Eitr
   - Forge: spends Eitr, picks random non-hero card of matching rarity from `cardRegistry`, adds to local state + HiveDataStore
-  - Random output prevents NFT supply hoarding (500 mythic cap per card)
+  - Random output prevents NFT supply hoarding (500 copies per mythic card, 750 epic, 1,250 rare, 1,800 common)
 - `CampaignPage.tsx`, `TradingPage.tsx`: Eitr display labels
 - `campaignTypes.ts`: `CampaignReward.type` includes `'eitr'`
 - All 5 campaign chapters: reward type `'dust'` → `'eitr'`
@@ -783,6 +783,17 @@ vercel --prod                 # Deploy to Vercel
 - **Priest** (+2, IDs 39214-39215): Norn's Counsel (conditional draw 2), Hel's Rebuke (2 AoE + hero heal)
 - Post-fill counts: Berserker 21, DeathKnight 21, Hunter 30, Priest 20 common cards
 - All classes now have enough common spells for viable 10-card starter decks
+
+### Completed (NFT Rarity Audit & Supply Lock-down)
+
+- Audited all 1,400+ cards for rarity accuracy, targeting ~300 mythic core cards + mythic artifacts/pets/super minions
+- Demoted 371 over-classified mythics (362→epic, 9→rare) via `scripts/demoteMythics.mjs` across 32 card data files
+- Kept ~312 mythic cards: iconic gods (Odin, Thor, Zeus, Hades), primordial entities, Elder Titans, flagship minions
+- Demoted generic creatures, excess deity variants (3+ Fenrir, 5+ Nidhogg, 5+ Surtr), companion animals, tokens
+- Updated `PIECE_SUPPLY` in `heroRarity.ts`: mythic 500, epic 750, rare 1,250, common 1,800 (per card)
+- Final NFT supply: ~3.29M total (300×500 + 750×750 + 745×1,250 + 912×1,800)
+- Base/basic rarity cards (3) excluded from NFT supply — free for all players
+- Mythic artifacts and pets match their hero's rarity separately (~900 total mythic cards across all categories)
 
 ### Next (Genesis Launch)
 

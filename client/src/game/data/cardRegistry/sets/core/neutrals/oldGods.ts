@@ -109,7 +109,7 @@ export const oldGodsCards: CardData[] = [
     attack: 4,
     health: 6,
     type: "minion",
-    rarity: "mythic",
+    rarity: 'epic',
     description: "Taunt",
     flavorText: "A warrior enslaved by Gullveig's burning gaze, doomed to serve beyond death.",
     keywords: ["taunt"],

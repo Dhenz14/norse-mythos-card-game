@@ -99,7 +99,7 @@ export const einherjarCards: CardData[] = [
 		description: 'Einherjar. Battlecry: Summon all friendly Einherjar that died this game.',
 		flavorText: 'The gates of Valhalla open wide, and the fallen march once more.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['einherjar', 'battlecry'],
 		battlecry: {

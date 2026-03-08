@@ -111,7 +111,7 @@ export const modernLegendaryCards: CardData[] = [
       attack: 8,
       health: 8,
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
       description: "Battlecry: Play all cards your opponent played last turn.",
       keywords: ["battlecry"],
       heroClass: "priest",
@@ -170,7 +170,7 @@ export const modernLegendaryCards: CardData[] = [
       health: 6,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: Your opponent takes two turns. Then you take two turns.",
     flavorText: "He understands that time is money, but hasn't figured out the exchange rate.",
@@ -593,7 +593,7 @@ export const modernLegendaryCards: CardData[] = [
       health: 7,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: Foresee 5 cards. Replace your deck with 2 copies of each.",
       flavorText: "She's the kind of person who shows up to a party with her own playlist and demands that everyone use it.",
@@ -715,7 +715,7 @@ export const modernLegendaryCards: CardData[] = [
       health: 5,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Battlecry: If you've cast 10 spells this game, spin the Wheel of Utgarda-Loki.",
     flavorText: "Utgarda-Loki doesn't so much master fate as give fate a friendly, but painful-looking noogie.",
@@ -824,7 +824,7 @@ export const modernLegendaryCards: CardData[] = [
       health: 8,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Rush. Battlecry: Summon six 1/1 Whelps with Rush. If any die, resummon them at the end of your turn.",
     flavorText: "Honestly, after the 42nd attempt, I think they should just put her purples in the mailbox.",
@@ -922,7 +922,7 @@ export const modernLegendaryCards: CardData[] = [
       health: 10,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Lifesteal. Battlecry: Deal damage equal to the number of friendly minions that died this game to all enemies, distributed randomly. Gain that much Attack.",
     flavorText: "With every soul he drained for power, he'd send a personalized thank-you note.",

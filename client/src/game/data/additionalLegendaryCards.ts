@@ -54,7 +54,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 12,
     health: 12,
     type: "minion",
-    rarity: "mythic",
+    rarity: 'epic',
     description: "Battlecry: Destroy all other minions and discard your hand.",
     keywords: [
       "battlecry"
@@ -243,7 +243,7 @@ export const additionalLegendaryCards: CardData[] = [
     name: "Nyx, the Hollow",
     manaCost: 9,
     type: "hero",
-    rarity: "mythic",
+    rarity: 'epic',
     description: "Battlecry: Gain Stealth until your next turn. Passive Hero Power: During your turn, add a Shadow Reflection to your hand.",
     keywords: [
       "battlecry"

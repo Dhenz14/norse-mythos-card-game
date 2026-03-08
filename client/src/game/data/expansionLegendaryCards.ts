@@ -598,7 +598,7 @@ export const expansionLegendaryCards: CardData[] = [{
       health: 7,
 
       type: "minion",
-      rarity: "mythic",
+      rarity: 'epic',
 
       description: "Deathrattle: Replace your hero with Surtr, Flame Lord.",
       flavorText: "He's Surtr's #1 fan.",

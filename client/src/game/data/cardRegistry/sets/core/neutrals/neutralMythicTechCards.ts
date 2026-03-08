@@ -10,7 +10,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'Battlecry: Draw a card for each Norse mechanic keyword you control (Blood Price, Einherjar, Prophecy, Ragnarok Chain).',
 		flavorText: 'The severed head of the wise god still whispers truths that shake the Nine Realms.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {
@@ -31,7 +31,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'Battlecry: Silence all enemy minions. They can\'t gain keywords until your next turn.',
 		flavorText: 'The silent god speaks only once — and all other voices fall to nothing.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {
@@ -72,7 +72,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'Battlecry: Foresee a spell from any class. It costs (2) less.',
 		flavorText: 'Born from the mingled spit of the gods, his blood became the mead of poetry.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {
@@ -92,7 +92,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'At the end of your turn, give a random friendly minion +2/+2.',
 		flavorText: 'He gave humanity blood and warmth — why not his allies too?',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		set: 'core',
 		collectible: true
@@ -106,7 +106,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'Battlecry: Destroy all enemy minions with 2 or less Attack.',
 		flavorText: 'Brother to Odin, he crushes the weak so the strong may fall to his kin.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {
@@ -147,7 +147,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'Divine Shield. Battlecry: The next spell cast on this minion triggers twice.',
 		flavorText: 'Swear upon Ull\'s ring and your oath becomes unbreakable — as does your shield.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['divine_shield', 'battlecry'],
 		battlecry: {
