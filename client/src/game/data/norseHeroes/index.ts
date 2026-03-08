@@ -9,11 +9,13 @@ export * from './heroDefinitions';
 export * from './additionalHeroes';
 export * from './japaneseHeroes';
 export * from './egyptianHeroes';
+export * from './baseHeroes';
 
 import { NORSE_HEROES, getHeroById as getPrimaryHeroById } from './heroDefinitions';
 import { ADDITIONAL_HEROES, getAdditionalHeroById } from './additionalHeroes';
 import { JAPANESE_HEROES, getJapaneseHeroById } from './japaneseHeroes';
 import { EGYPTIAN_HEROES, getEgyptianHeroById } from './egyptianHeroes';
+import { BASE_HEROES, getBaseHeroById } from './baseHeroes';
 import { NorseHero } from '../../types/NorseTypes';
 import { debug } from '../../config/debugConfig';
 
@@ -21,13 +23,14 @@ export const ALL_NORSE_HEROES: Record<string, NorseHero> = {
   ...NORSE_HEROES,
   ...ADDITIONAL_HEROES,
   ...JAPANESE_HEROES,
-  ...EGYPTIAN_HEROES
+  ...EGYPTIAN_HEROES,
+  ...BASE_HEROES
 };
 
 export const ALL_HERO_LIST = Object.values(ALL_NORSE_HEROES);
 
 export function getAnyHeroById(id: string): NorseHero | undefined {
-  return getPrimaryHeroById(id) || getAdditionalHeroById(id) || getJapaneseHeroById(id) || getEgyptianHeroById(id);
+  return getPrimaryHeroById(id) || getAdditionalHeroById(id) || getJapaneseHeroById(id) || getEgyptianHeroById(id) || getBaseHeroById(id);
 }
 
 export function getAllHeroes(): NorseHero[] {
@@ -130,6 +133,11 @@ export const HERO_ID_TO_CONFIG_KEY: Record<string, string> = {
   // Necromancer heroes
   'hero-sol': 'necromancer-lilian',
   'hero-sinmara': 'necromancer-helcular',
+  // Base (free starter) heroes
+  'hero-erik-flameheart': 'mage-jaina',
+  'hero-ragnar-ironside': 'warrior-garrosh',
+  'hero-brynhild': 'priest-anduin',
+  'hero-sigurd': 'rogue-valeera',
 };
 
 /**
@@ -248,6 +256,12 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-serqet': 'rogue',       // Scorpion Goddess - poison
   'hero-khepri': 'berserker',  // Scarab of Wrath - aggro
   'hero-shu': 'mage',           // God of Air - bounce
+
+  // BASE (FREE STARTER) HEROES (4 heroes)
+  'hero-erik-flameheart': 'mage',
+  'hero-ragnar-ironside': 'warrior',
+  'hero-brynhild': 'priest',
+  'hero-sigurd': 'rogue',
 
   // GREEK ALT-SKIN HEROES (3 heroes — preserved from mythology expansion)
   'hero-selene': 'rogue',       // Titaness of the Moon - stealth

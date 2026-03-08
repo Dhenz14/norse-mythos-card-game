@@ -40,6 +40,16 @@ export interface ChessPieceHeroConfig {
  */
 export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
   queen: [
+    // ===== BASE (FREE STARTER) =====
+    {
+      id: 'hero-erik-flameheart',
+      name: 'Erik Flameheart',
+      heroClass: 'mage',
+      description: 'The Scorched: Deal fire damage fueled by your own blood.',
+      fixedCardIds: [],
+      element: 'fire',
+      norseHeroId: 'hero-erik-flameheart'
+    },
     // ===== NORSE HEROES - QUEEN (Wisdom/Magic) =====
     // Uses Mage, Warlock, and Necromancer spell pools
     {
@@ -228,6 +238,16 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     }
   ],
   rook: [
+    // ===== BASE (FREE STARTER) =====
+    {
+      id: 'hero-ragnar-ironside',
+      name: 'Ragnar Ironside',
+      heroClass: 'warrior',
+      description: 'Jarl of the North Sea: Armor up and outlast your enemies.',
+      fixedCardIds: [],
+      element: 'water',
+      norseHeroId: 'hero-ragnar-ironside'
+    },
     // ===== NORSE HEROES - ROOK (Strength/Power) =====
     // Uses Warrior, Death Knight, and Paladin spell pools
     {
@@ -398,6 +418,16 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     }
   ],
   bishop: [
+    // ===== BASE (FREE STARTER) =====
+    {
+      id: 'hero-brynhild',
+      name: 'Brynhild',
+      heroClass: 'priest',
+      description: 'The Defiant: Heal allies and strengthen them with light.',
+      fixedCardIds: [],
+      element: 'light',
+      norseHeroId: 'hero-brynhild'
+    },
     // ===== NORSE HEROES - BISHOP (Healing/Support) =====
     // Uses Priest, Druid, and Shaman spell pools
     {
@@ -595,6 +625,16 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     },
   ],
   knight: [
+    // ===== BASE (FREE STARTER) =====
+    {
+      id: 'hero-sigurd',
+      name: 'Sigurd',
+      heroClass: 'rogue',
+      description: 'The Dragonbane: Strike hard and strike first.',
+      fixedCardIds: [],
+      element: 'fire',
+      norseHeroId: 'hero-sigurd'
+    },
     // ===== NORSE HEROES - KNIGHT (Stealth/Agility) =====
     // Uses Rogue, Hunter, and Berserker spell pools
     {
@@ -769,6 +809,18 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
     }
   ],
   king: [
+    // ===== BASE (FREE STARTER) =====
+    {
+      id: 'king-leif',
+      name: 'Leif the Wayfinder',
+      heroClass: 'neutral',
+      description: 'All friendly pieces gain +1 Health. At the start of your turn, restore 1 Health to your most damaged piece.',
+      fixedCardIds: [],
+      passiveEffect: 'leif_passives',
+      chessAbility: 'king-leif',
+      portrait: '/portraits/kings/leif.png'
+    },
+    // ===== PREMIUM =====
     {
       id: 'king-ymir',
       name: 'Ymir',

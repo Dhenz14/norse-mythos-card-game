@@ -746,6 +746,20 @@ vercel --prod                 # Deploy to Vercel
 - Added `cinematic` game phase to RagnarokChessGame flow (before chess phase)
 - Added cinematicIntro + realm fields to Egyptian, Celtic, Eastern chapters
 
+### Completed (Base Starter Heroes)
+
+- Created 5 free base-tier heroes (one per chess piece slot) — weaker than premium gods but fully playable
+- **King — Leif the Wayfinder** (grass): +1 Health aura, start-of-turn heal to most damaged piece
+- **Queen — Erik Flameheart** (fire, mage): Scorching Burst (2 dmg + 1 self-dmg), Ember's Fury weapon (3 AoE + 2 self-dmg), spell damage passive on hero damage
+- **Rook — Ragnar Ironside** (water, warrior): Iron Guard (3 Armor), Tidal Bulwark weapon (6 Armor + 2 AoE), gain 1 Armor on hero damage passive
+- **Bishop — Brynhild** (light, priest): Defiant Light (heal 3), Radiant Chains weapon (heal 4 all), healed target gains +1 Attack passive
+- **Knight — Sigurd** (fire, rogue): Dragon's Mark (2 targeted dmg), Gram weapon (4 dmg + cleave on kill), +1 damage on minion attack passive
+- All heroes: 100 HP, no summons, no minion-like mechanics
+- Base heroes are index [0] in every CHESS_PIECE_HEROES array → `getDefaultArmySelection()` returns them as defaults
+- New file: `client/src/game/data/norseHeroes/baseHeroes.ts` (4 NorseHero definitions)
+- Registered in index.ts: ALL_NORSE_HEROES, HERO_ID_TO_CLASS, HERO_ID_TO_CONFIG_KEY, getAnyHeroById()
+- Weapon upgrade IDs: 90100-90103
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account
