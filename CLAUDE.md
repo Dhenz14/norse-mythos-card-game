@@ -859,8 +859,23 @@ vercel --prod                 # Deploy to Vercel
 - Provenance viewer has "Send to Friend" button that flows directly into the send modal
 - TypeScript: 0 errors
 
+### Completed (NFT Pre-Launch Audit & Hardening)
+
+- Full 6-subsystem audit: replay rules, genesis/admin, metadata/provenance, card data, pack/trading/anti-cheat, data layer/events
+- Added `lastTransferTrxId`, `mintBlockNum`, `mintTrxId` to `applyRewardClaim` in replayRules.ts (provenance was incomplete for reward cards)
+- Added genesis guard to `applyPackOpen` — rejects pack opens before genesis broadcast
+- Added genesis guard to `applyMatchResult` — rejects match results before genesis broadcast
+- Wired `transactionProcessor.ts` to emit `transaction:confirmed`/`transaction:failed` via HiveEvents (users now see toast on all chain confirmations)
+- Added HiveEvents `token:updated` emissions to crafting dissolve (+Eitr) and forge (-Eitr) in CollectionPage
+- Added `transaction:confirmed` emissions to campaign reward claims and daily quest reward claims
+- Gated Test Mint button behind `user.hiveUsername === RAGNAROK_ACCOUNT` (no longer visible to regular players)
+- Added payload validation to all event toast handlers in `gameStoreIntegration.ts` (prevents `undefined` in toast text)
+- Removed dead `user:login`/`user:logout` event types from HiveEvents (never emitted anywhere)
+- Changed `emitTransactionConfirmed`/`emitTransactionFailed` to accept `Partial<HiveTransaction>` for flexible callers
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account
-- Upload card art to CDN
+- Upload card art
 - Broadcast genesis + seal on Hive mainnet (two Keychain clicks, then admin key irrelevant)

@@ -9,8 +9,6 @@
 import { HiveMatchResult, HiveTransaction } from './schemas/HiveTypes';
 
 export type HiveEventType =
-  | 'user:login'
-  | 'user:logout'
   | 'match:ended'
   | 'card:transferred'
   | 'token:updated'
@@ -62,11 +60,11 @@ class HiveEventEmitter {
     this.emit('token:updated', { token, amount, change });
   }
 
-  emitTransactionConfirmed(tx: HiveTransaction): void {
+  emitTransactionConfirmed(tx: Partial<HiveTransaction>): void {
     this.emit('transaction:confirmed', tx);
   }
 
-  emitTransactionFailed(tx: HiveTransaction): void {
+  emitTransactionFailed(tx: Partial<HiveTransaction>): void {
     this.emit('transaction:failed', tx);
   }
 

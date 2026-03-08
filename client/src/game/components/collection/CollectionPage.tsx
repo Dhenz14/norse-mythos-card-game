@@ -12,6 +12,7 @@ import { useCraftingStore } from '../../crafting/craftingStore';
 import { getEitrValue, getCraftCost } from '../../crafting/craftingConstants';
 import { cardRegistry } from '../../data/cardRegistry';
 import { hiveSync } from '../../../data/HiveSync';
+import { hiveEvents } from '../../../data/HiveEvents';
 import { isHiveMode } from '../../config/featureFlags';
 import NFTProvenanceViewer from './NFTProvenanceViewer';
 import SendCardModal from './SendCardModal';
@@ -734,6 +735,7 @@ export default function CollectionPage() {
 																	hiveSync.broadcastCustomJson('rp_burn' as any, { nft_id: nft.uid }).catch(() => {});
 																}
 																addEitr(eitrVal);
+																hiveEvents.emitTokenUpdate('Eitr', eitr + eitrVal, eitrVal);
 																setCards(prev => {
 																	const idx = prev.findIndex(c => c.id === selectedCard.id);
 																	if (idx === -1) return prev;
@@ -748,6 +750,7 @@ export default function CollectionPage() {
 																else setSelectedCard({ ...selectedCard, quantity: selectedCard.quantity - 1 });
 															} else {
 																if (!spendEitr(craftCostVal)) return;
+																hiveEvents.emitTokenUpdate('Eitr', eitr - craftCostVal, -craftCostVal);
 																const pool = cardRegistry.filter(c => c.rarity === selectedCard.rarity && c.type !== 'hero');
 																if (pool.length === 0) return;
 																const pick = pool[Math.floor(Math.random() * pool.length)];

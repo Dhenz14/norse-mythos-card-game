@@ -9,6 +9,7 @@ import { useHiveDataStore } from '../../../data/HiveDataLayer';
 import { hiveSync } from '../../../data/HiveSync';
 import { cardRegistry } from '../../data/cardRegistry';
 import { isHiveMode } from '../../config/featureFlags';
+import { RAGNAROK_ACCOUNT } from '../../../data/blockchain/hiveConfig';
 import { derivePackCards } from '../../../data/blockchain/packDerivation';
 import { forceSync } from '../../../data/blockchain/replayEngine';
 import { toast } from 'sonner';
@@ -558,7 +559,7 @@ export default function PacksPage() {
 								<span className="text-amber-500 text-xs">RUNE</span>
 							</div>
 						)}
-						{isHiveMode() && user && (
+						{isHiveMode() && user && user.hiveUsername === RAGNAROK_ACCOUNT && (
 							<motion.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}

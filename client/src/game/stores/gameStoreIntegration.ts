@@ -47,11 +47,13 @@ export function initializeGameStoreIntegration(): () => void {
   if (isHiveMode()) {
     cleanupFunctions.push(
       hiveEvents.on('card:transferred', (e) => {
-        const p = e.payload as { cardUid: string; from: string; to: string };
+        const p = e.payload as { cardUid?: string; from?: string; to?: string };
+        if (!p?.cardUid || !p.to) return;
         toast.info(`Card ${p.cardUid.slice(0, 8)}… transferred to ${p.to}`, { duration: 3000 });
       }),
       hiveEvents.on('token:updated', (e) => {
-        const p = e.payload as { token: string; amount: number; change: number };
+        const p = e.payload as { token?: string; amount?: number; change?: number };
+        if (!p?.token || p.amount == null || p.change == null) return;
         const sign = p.change > 0 ? '+' : '';
         toast.success(`${p.token}: ${sign}${p.change} (total: ${p.amount})`, { duration: 3000 });
       }),
@@ -60,7 +62,7 @@ export function initializeGameStoreIntegration(): () => void {
       }),
       hiveEvents.on('transaction:failed', (e) => {
         const p = e.payload as { errorMessage?: string };
-        toast.error(`Transaction failed: ${p.errorMessage ?? 'unknown error'}`, { duration: 4000 });
+        toast.error(`Transaction failed: ${p?.errorMessage ?? 'unknown error'}`, { duration: 4000 });
       }),
     );
   }

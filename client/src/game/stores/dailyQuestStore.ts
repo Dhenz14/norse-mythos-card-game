@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { pickRandomQuests, type DailyQuestType, type QuestTemplate } from '../data/dailyQuestPool';
 import { hiveSync } from '../../data/HiveSync';
+import { hiveEvents } from '../../data/HiveEvents';
 import { isHiveMode } from '../config/featureFlags';
 
 export interface DailyQuest {
@@ -100,7 +101,9 @@ export const useDailyQuestStore = create<DailyQuestState & DailyQuestActions>()(
 				}));
 
 				if (isHiveMode()) {
-					hiveSync.claimReward(`daily_quest:${questId}`).catch(() => {});
+					hiveSync.claimReward(`daily_quest:${questId}`)
+					.then(r => { if (r.success) hiveEvents.emitTransactionConfirmed({ trxId: r.trxId ?? '', status: 'confirmed' }); })
+					.catch(() => {});
 				}
 
 				return quest.reward;

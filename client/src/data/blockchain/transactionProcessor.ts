@@ -21,6 +21,7 @@ import { useTransactionQueueStore } from './transactionQueueStore';
 import { getDataLayerMode } from '@/game/config/featureFlags';
 import type { TransactionEntry, PackagedMatchResult } from './types';
 import { hiveSync } from '../HiveSync';
+import { hiveEvents } from '../HiveEvents';
 import type { RagnarokTransactionType } from '../schemas/HiveTypes';
 
 const POLL_INTERVAL_MS = 2000;
@@ -145,6 +146,7 @@ async function submitToMockServer(tx: TransactionEntry): Promise<void> {
 		trxId: data.trxId ?? `mock_${tx.id}`,
 		blockNum: data.blockNum ?? 0,
 	});
+	hiveEvents.emitTransactionConfirmed({ trxId: data.trxId ?? `mock_${tx.id}`, type: tx.actionType as any, status: 'confirmed' });
 }
 
 // ---------------------------------------------------------------------------
@@ -187,6 +189,7 @@ async function submitToHive(tx: TransactionEntry): Promise<void> {
 	);
 
 	if (!result.success) {
+		hiveEvents.emitTransactionFailed({ trxId: tx.id, type: tx.actionType as any, status: 'failed', errorMessage: result.error ?? 'Keychain broadcast rejected' });
 		throw new Error(result.error ?? 'Keychain broadcast rejected');
 	}
 
@@ -194,6 +197,7 @@ async function submitToHive(tx: TransactionEntry): Promise<void> {
 		trxId: result.trxId ?? null,
 		blockNum: result.blockNum ?? null,
 	});
+	hiveEvents.emitTransactionConfirmed({ trxId: result.trxId ?? '', type: tx.actionType as any, status: 'confirmed' });
 }
 
 // ---------------------------------------------------------------------------

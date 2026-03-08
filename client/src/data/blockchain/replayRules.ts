@@ -355,6 +355,9 @@ async function applyMatchResult(
 	op: RawOp,
 	payload: Record<string, unknown>,
 ): Promise<void> {
+	const genesis = await getGenesisState();
+	if (!genesis.version) { rejectOp(op, 'no genesis — match result unavailable'); return; }
+
 	// Support both compact (m/w/l/n/h/s/v) and legacy verbose formats
 	const isCompact = typeof payload.m === 'string';
 	const mId = (isCompact ? payload.m : payload.matchId) as string;
@@ -878,6 +881,9 @@ async function applyPackOpen(
 	op: RawOp,
 	payload: Record<string, unknown>,
 ): Promise<void> {
+	const genesis = await getGenesisState();
+	if (!genesis.version) { rejectOp(op, 'no genesis — pack open unavailable'); return; }
+
 	const packType = (payload.pack_type as string) ?? 'standard';
 	const quantity = Math.min(Number(payload.quantity ?? 1), 10);
 	const cardCount = (PACK_SIZES[packType] ?? 5) * quantity;
@@ -1006,6 +1012,9 @@ async function applyRewardClaim(
 			level: 1,
 			xp: 0,
 			lastTransferBlock: op.blockNum,
+			lastTransferTrxId: op.trxId,
+			mintBlockNum: op.blockNum,
+			mintTrxId: op.trxId,
 			name: gameDef?.name ?? '',
 			type: gameDef?.type ?? 'minion',
 			race: gameDef?.race || undefined,
