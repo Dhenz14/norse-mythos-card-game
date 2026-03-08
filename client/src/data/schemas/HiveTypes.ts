@@ -108,6 +108,13 @@ export interface ProvenanceStamp {
 	timestamp?: number;
 }
 
+export interface CompactedProvenance {
+	totalTransfers: number;
+	firstMint: ProvenanceStamp;
+	compactedAt: number;
+	compactedCount: number;
+}
+
 export interface HiveCardAsset {
   uid: string;
   cardId: number;
@@ -126,6 +133,7 @@ export interface HiveCardAsset {
   race?: string;
   image?: string;
   provenanceChain?: ProvenanceStamp[];
+  compactedProvenance?: CompactedProvenance;
 }
 
 export interface HiveTokenBalance {

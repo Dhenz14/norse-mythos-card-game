@@ -138,6 +138,14 @@ export class HiveSync {
     }, true);
   }
 
+  async transferCards(cardUids: string[], toUser: string, memo?: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('rp_card_transfer', {
+      cards: cardUids.map(uid => ({ card_uid: uid })),
+      to: toUser,
+      memo,
+    }, true);
+  }
+
   async openPack(packType: string, quantity: number = 1): Promise<HiveBroadcastResult> {
     return this.broadcastCustomJson('rp_pack_open', {
       pack_type: packType,

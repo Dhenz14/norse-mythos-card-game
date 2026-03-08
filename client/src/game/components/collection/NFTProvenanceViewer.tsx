@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { HiveCardAsset, ProvenanceStamp } from '../../../data/schemas/HiveTypes';
+import type { HiveCardAsset, ProvenanceStamp, CompactedProvenance } from '../../../data/schemas/HiveTypes';
 import { getTransactionUrl, getBlockUrl } from '../../../data/blockchain/explorerLinks';
 
 interface NFTProvenanceViewerProps {
@@ -67,10 +67,18 @@ const NFTProvenanceViewer: React.FC<NFTProvenanceViewerProps> = ({ nft, onClose,
 						<div className="border-t border-gray-700 pt-3 space-y-2">
 							<h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">On-Chain History</h3>
 
+							{nft.compactedProvenance && (
+								<CompactedSummary compacted={nft.compactedProvenance} />
+							)}
+
 							{nft.provenanceChain && nft.provenanceChain.length > 0 ? (
 								<div className="space-y-1.5 max-h-48 overflow-y-auto">
 									{nft.provenanceChain.map((stamp, i) => (
-										<StampRow key={`${stamp.trxId}-${i}`} stamp={stamp} index={i} />
+										<StampRow
+											key={`${stamp.trxId}-${i}`}
+											stamp={stamp}
+											index={i + (nft.compactedProvenance?.compactedCount ?? 0)}
+										/>
 									))}
 								</div>
 							) : nft.mintTrxId ? (
@@ -153,6 +161,33 @@ function StampRow({ stamp, index }: { stamp: ProvenanceStamp; index: number }) {
 				</div>
 			</div>
 			<p className="text-xs text-gray-300 font-mono truncate">{detail}</p>
+		</div>
+	);
+}
+
+function CompactedSummary({ compacted }: { compacted: CompactedProvenance }) {
+	return (
+		<div className="bg-amber-900/20 border border-amber-700/30 rounded-lg px-3 py-2 space-y-1">
+			<div className="flex items-center justify-between">
+				<span className="text-amber-400 text-xs font-medium">
+					{compacted.compactedCount} older stamp{compacted.compactedCount !== 1 ? 's' : ''} compacted
+				</span>
+				<span className="text-gray-500 text-xs font-mono">
+					{compacted.totalTransfers} total transfers
+				</span>
+			</div>
+			<div className="flex items-center gap-2 text-xs">
+				<span className="text-gray-400">Originally minted to</span>
+				<span className="text-gray-300 font-mono">{compacted.firstMint.to}</span>
+				<a
+					href={getTransactionUrl(compacted.firstMint.trxId)}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="text-blue-400 hover:text-blue-300 font-mono"
+				>
+					{compacted.firstMint.trxId.slice(0, 8)}...
+				</a>
+			</div>
 		</div>
 	);
 }

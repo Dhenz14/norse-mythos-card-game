@@ -22,7 +22,7 @@ import {
 	getRewardClaim, putRewardClaim,
 } from './replayDB';
 import type { GenesisState, SupplyCounter, MatchAnchor } from './replayDB';
-import type { HiveCardAsset, HiveMatchResult } from '../schemas/HiveTypes';
+import type { HiveCardAsset, HiveMatchResult, ProvenanceStamp, CompactedProvenance } from '../schemas/HiveTypes';
 import { hiveEvents } from '../HiveEvents';
 import { verifyPoW, POW_CONFIG, type PoWResult, type PoWConfig } from './proofOfWork';
 import { getLevelForXP, calculateXPGain } from './cardXPSystem';
@@ -763,12 +763,52 @@ export async function retryPendingSlashes(): Promise<void> {
 // rp_card_transfer / rp_transfer — move a card between accounts
 // ---------------------------------------------------------------------------
 
+const TRANSFER_COOLDOWN_BLOCKS = 10;
+const MAX_RECENT_STAMPS = 50;
+
+function compactStampChain(
+	chain: ProvenanceStamp[],
+	existing: HiveCardAsset,
+): { provenanceChain: ProvenanceStamp[]; compactedProvenance?: CompactedProvenance } {
+	if (chain.length <= MAX_RECENT_STAMPS) {
+		return { provenanceChain: chain, compactedProvenance: existing.compactedProvenance };
+	}
+	const mintStamp = chain[0];
+	const trimCount = chain.length - MAX_RECENT_STAMPS;
+	const prevCompacted = existing.compactedProvenance;
+	const compactedProvenance: CompactedProvenance = {
+		totalTransfers: (prevCompacted?.compactedCount ?? 0) + trimCount + chain.length - 1,
+		firstMint: prevCompacted?.firstMint ?? mintStamp,
+		compactedAt: chain[trimCount - 1].block,
+		compactedCount: (prevCompacted?.compactedCount ?? 0) + trimCount,
+	};
+	return { provenanceChain: chain.slice(trimCount), compactedProvenance };
+}
+
 async function applyCardTransfer(
 	op: RawOp,
 	payload: Record<string, unknown>,
 ): Promise<void> {
+	const cards = payload.cards as Array<{ nft_id?: string; card_uid?: string; to?: string }> | undefined;
+	if (Array.isArray(cards)) {
+		for (const entry of cards) {
+			const nftId = (entry.nft_id ?? entry.card_uid) as string;
+			const to = (entry.to ?? payload.to) as string;
+			await transferSingleCard(op, nftId, to);
+		}
+		return;
+	}
+
 	const nftId = (payload.nft_id ?? payload.card_uid) as string;
 	const to = (payload.to as string);
+	await transferSingleCard(op, nftId, to);
+}
+
+async function transferSingleCard(
+	op: RawOp,
+	nftId: string,
+	to: string,
+): Promise<void> {
 	if (typeof nftId !== 'string' || typeof to !== 'string') { rejectOp(op, 'missing nft_id or to'); return; }
 
 	const HIVE_USERNAME_RE = /^[a-z][a-z0-9.-]{2,15}$/;
@@ -777,21 +817,28 @@ async function applyCardTransfer(
 		return;
 	}
 
-	// Cannot transfer to yourself
 	if (to === op.broadcaster) { rejectOp(op, 'cannot transfer to self'); return; }
 
 	const existing = await getCard(nftId);
 	if (!existing) { rejectOp(op, `card ${nftId} not found`); return; }
 	if (existing.ownerId !== op.broadcaster) { rejectOp(op, `card ${nftId} not owned by broadcaster`); return; }
 
+	if (existing.lastTransferBlock && (op.blockNum - existing.lastTransferBlock) < TRANSFER_COOLDOWN_BLOCKS) {
+		rejectOp(op, `card ${nftId} transfer cooldown (${TRANSFER_COOLDOWN_BLOCKS} blocks)`);
+		return;
+	}
+
 	const previousOwner = existing.ownerId;
-	const chain = existing.provenanceChain ?? [];
+	const chain = [...(existing.provenanceChain ?? []), { from: previousOwner, to, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }];
+	const { provenanceChain, compactedProvenance } = compactStampChain(chain, existing);
+
 	const updated: HiveCardAsset = {
 		...existing,
 		ownerId: to,
 		lastTransferBlock: op.blockNum,
 		lastTransferTrxId: op.trxId,
-		provenanceChain: [...chain, { from: previousOwner, to, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }],
+		provenanceChain,
+		compactedProvenance,
 	};
 
 	await putCard(updated);

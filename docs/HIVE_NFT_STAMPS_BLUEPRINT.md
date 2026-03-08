@@ -271,16 +271,109 @@ The key differentiator: Ragnarok cards are **self-describing**. The NFT object i
 
 ---
 
+## Anti-Spam Defenses
+
+Hive is feeless (resource credits regenerate), so stamp bloat from spam trading is a real attack vector. Three layers of defense:
+
+### Layer 1: Transfer Cooldown (10 blocks / ~30 seconds)
+
+The replay engine rejects any transfer of a card that was transferred fewer than 10 blocks ago:
+
+```typescript
+const TRANSFER_COOLDOWN_BLOCKS = 10;
+
+if (existing.lastTransferBlock && (op.blockNum - existing.lastTransferBlock) < TRANSFER_COOLDOWN_BLOCKS) {
+    rejectOp(op, `card ${nftId} transfer cooldown (${TRANSFER_COOLDOWN_BLOCKS} blocks)`);
+    return;
+}
+```
+
+This limits any single card to ~2 transfers per minute maximum, killing ping-pong spam while allowing legitimate rapid re-trading. The cooldown is enforced deterministically by every replay engine — no server needed.
+
+### Layer 2: Stamp Compaction (50 recent stamps max)
+
+When the stamp chain exceeds 50 entries, older stamps are compressed into a summary:
+
+```typescript
+interface CompactedProvenance {
+    totalTransfers: number;     // lifetime count
+    firstMint: ProvenanceStamp; // original mint stamp (preserved forever)
+    compactedAt: number;        // block number where compaction occurred
+    compactedCount: number;     // how many stamps were compacted
+}
+```
+
+The card keeps its 50 most recent stamps (full detail with explorer links) plus a compact summary of everything before. The mint stamp is always preserved — you can always verify authenticity.
+
+**Storage after compaction:**
+
+| Lifetime Transfers | Stamp Chain Size | Notes |
+|-------------------|-----------------|-------|
+| 1-50 | ~120 bytes per stamp | No compaction needed |
+| 100 | ~6 KB | 50 recent + summary |
+| 1,000 | ~6 KB | Same — always 50 recent |
+| 10,000 | ~6 KB | Same — always 50 recent |
+| 1,000,000 | ~6 KB | Same — always 50 recent |
+
+**Max card size is capped at ~6KB regardless of how many times it trades.** The full history remains on-chain (immutable Hive ops) — the compaction only affects local storage.
+
+### Layer 3: Hive Resource Credits (Natural Rate Limiting)
+
+Each `custom_json` op costs RC (resource credits). RC regenerates over ~5 days based on HIVE POWER staked:
+
+| Account HP | Approx RC/day | Transfers/day |
+|-----------|--------------|---------------|
+| 5 HP (new account) | ~150 ops | ~150 |
+| 50 HP (casual) | ~1,500 ops | ~1,500 |
+| 500 HP (whale) | ~15,000 ops | ~15,000 |
+
+Even a whale spamming 15,000 transfers/day only adds 15,000 stamps — and with compaction, each card stores at most 50 recent stamps locally. The attack costs real money (HIVE POWER) and achieves nothing.
+
+---
+
+## Batch Transfers
+
+Multiple cards can be transferred in a single `custom_json` op, saving RC and reducing chain bloat:
+
+```typescript
+// Single transfer (existing)
+hiveSync.transferCard('rk_alpha_00001', 'player2');
+
+// Batch transfer (new)
+hiveSync.transferCards(
+    ['rk_alpha_00001', 'rk_alpha_00002', 'rk_alpha_00003'],
+    'player2'
+);
+```
+
+On-chain payload for batch:
+```json
+{
+    "app": "ragnarok-cards",
+    "action": "card_transfer",
+    "cards": [
+        { "card_uid": "rk_alpha_00001" },
+        { "card_uid": "rk_alpha_00002" },
+        { "card_uid": "rk_alpha_00003" }
+    ],
+    "to": "player2"
+}
+```
+
+The replay engine processes each card in the batch independently — if one fails validation (wrong owner, cooldown), the others still succeed. Hive `custom_json` supports up to 4KB per op, enough for ~50 cards per batch.
+
+---
+
 ## Scalability Analysis
 
-### Storage Cost Per Card
+### Storage Cost Per Card (With Compaction)
 
 | Transfers | Stamp Chain Size | Total Card Size |
 |-----------|-----------------|-----------------|
 | 1 (mint only) | ~120 bytes | ~500 bytes |
 | 10 | ~1.2 KB | ~1.6 KB |
-| 100 | ~12 KB | ~12.5 KB |
-| 1,000 | ~120 KB | ~120 KB |
+| 50 | ~6 KB | ~6.5 KB |
+| 100+ | ~6 KB (capped) | ~6.5 KB |
 
 ### Storage Cost Per Player
 
@@ -288,10 +381,10 @@ The key differentiator: Ragnarok cards are **self-describing**. The NFT object i
 |----------------|-------------------|----------------|
 | 100 cards | 3 | ~200 KB |
 | 500 cards | 5 | ~1.5 MB |
-| 2,000 cards | 10 | ~8 MB |
-| 10,000 cards | 20 | ~50 MB |
+| 2,000 cards | 50+ | ~13 MB (capped) |
+| 10,000 cards | 50+ | ~65 MB (capped) |
 
-IndexedDB supports gigabytes of storage. Even extreme collectors with heavily-traded cards stay well within limits.
+IndexedDB supports gigabytes of storage. With compaction, even extreme collectors with heavily-traded cards stay well within limits.
 
 ### Chain Replay Cost
 
@@ -325,7 +418,7 @@ After initial sync, the client only processes new ops (incremental). The stamp c
 | `client/src/data/blockchain/replayDB.ts` | IndexedDB storage (v6, 13 object stores) |
 | `client/src/data/blockchain/explorerLinks.ts` | `getTransactionUrl(trxId)`, `getBlockUrl(blockNum)` |
 | `client/src/data/blockchain/hiveConfig.ts` | Explorer base URLs, game account, Hive nodes |
-| `client/src/data/HiveSync.ts` | Keychain signing: `transferCard()`, `broadcastCustomJson()` |
+| `client/src/data/HiveSync.ts` | Keychain signing: `transferCard()`, `transferCards()` (batch), `broadcastCustomJson()` |
 | `client/src/data/HiveEvents.ts` | Event bus: `card:transferred`, `transaction:confirmed/failed` |
 | `client/src/game/components/collection/NFTProvenanceViewer.tsx` | UI: stamp timeline with explorer links |
 | `client/src/game/components/collection/SendCardModal.tsx` | UI: transfer flow with double-confirm |
@@ -394,3 +487,7 @@ The blockchain IS the database. The stamps ARE the API response. The explorer li
 5. **Trust math, not servers.** Deterministic replay means any client can independently verify any card's entire history. The server indexer is a convenience, not a requirement.
 
 6. **Storage burden on the user who benefits.** Each player stores their own collection's provenance. The cost is trivial (KB per card). The benefit is trustless ownership.
+
+7. **Bounded by design.** Stamp compaction caps local storage at ~6KB per card regardless of trade volume. The full history lives on-chain forever; local storage keeps only what matters.
+
+8. **Spam has a cost, not a reward.** Transfer cooldowns + Hive RC + compaction mean spam attacks waste the attacker's resources while achieving nothing — local storage stays bounded, chain state stays correct.
