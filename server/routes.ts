@@ -4,12 +4,19 @@ import { createServer, type Server } from "http";
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Mount Pack and Inventory routes only when DATABASE_URL is set (optional for static/local dev)
+  // Mount Pack and Inventory routes — DB-backed if DATABASE_URL set, otherwise stubs
   if (process.env.DATABASE_URL) {
     const packRoutes = (await import("./routes/packRoutes")).default;
     const inventoryRoutes = (await import("./routes/inventoryRoutes")).default;
     app.use('/api/packs', packRoutes);
     app.use('/api/inventory', inventoryRoutes);
+  } else {
+    app.get('/api/packs', (_req: Request, res: Response) => {
+      res.json({ packs: [], message: 'Pack data is chain-derived. Connect Hive wallet to view.' });
+    });
+    app.get('/api/inventory', (_req: Request, res: Response) => {
+      res.json({ cards: [], message: 'Inventory is chain-derived. Connect Hive wallet to view.' });
+    });
   }
 
   // Health check endpoint

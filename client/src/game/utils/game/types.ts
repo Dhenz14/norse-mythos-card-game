@@ -81,24 +81,17 @@ export function createGameContextFromState(state: GameState): GameContext {
 
 /**
  * Adapt a legacy Player to GameContext Player format
- * 
- * NOTE: This adapter has known limitations:
- * - hero is a placeholder (uses first hand card or empty object)
- * - heroPower is a placeholder (empty object)
- * - deck cards use mock instanceIds (not stable references)
- * - Some tracking fields default to 0 (cardsDrawnThisTurn, etc.)
- * 
- * For production use, these placeholders should be replaced with proper
- * hero/heroPower state from the legacy Player structure.
- * 
+ *
+ * Maps legacy Player fields (heroPower, hero, heroClass) into
+ * synthetic CardInstance objects for the effect system.
+ *
  * @param player - Legacy Player from GameState
  * @param playerId - The player ID ('player' or 'opponent')
  * @returns ContextPlayer for use with EffectRegistry
  */
 export function adaptLegacyPlayerToContextPlayer(player: LegacyPlayer, playerId: string): ContextPlayer {
-  // Get mana values from the ManaPool structure
   const manaPool = player.mana;
-  
+
   return {
     id: playerId,
     health: player.health,
@@ -114,14 +107,54 @@ export function adaptLegacyPlayerToContextPlayer(player: LegacyPlayer, playerId:
     deck: player.deck.map(c => createMockCardInstance(c)),
     board: player.battlefield.map(c => adaptCardInstanceForEffects(c)),
     graveyard: player.graveyard?.map(c => adaptCardInstanceForEffects(c)) || [],
-    hero: player.hand.length > 0 ? adaptCardInstanceForEffects(player.hand[0]) : {} as EffectCardInstance,
-    heroPower: {} as EffectCardInstance, // Legacy heroPower has different structure
+    hero: createHeroCardInstance(player),
+    heroPower: createHeroPowerCardInstance(player),
     cardsPlayedThisTurn: player.cardsPlayedThisTurn || 0,
-    cardsDrawnThisTurn: 0, // Legacy doesn't track this
-    minionsPlayedThisTurn: 0, // Legacy doesn't track this separately
-    damageDealtThisTurn: 0, // Legacy doesn't track this
-    healingDoneThisTurn: 0 // Legacy doesn't track this
+    cardsDrawnThisTurn: 0,
+    minionsPlayedThisTurn: 0,
+    damageDealtThisTurn: 0,
+    healingDoneThisTurn: 0
   };
+}
+
+/**
+ * Create a synthetic hero CardInstance from legacy Player state
+ */
+function createHeroCardInstance(player: LegacyPlayer): EffectCardInstance {
+  const heroId = player.heroId || player.hero?.id || `hero-${player.heroClass}`;
+  return {
+    instanceId: `hero-${heroId}`,
+    card: {
+      id: 0,
+      name: heroId,
+      manaCost: 0,
+      type: 'hero' as const,
+      class: player.heroClass,
+      rarity: 'basic' as const,
+      description: '',
+      health: player.health,
+      maxHealth: player.maxHealth ?? 100,
+    }
+  } as unknown as EffectCardInstance;
+}
+
+/**
+ * Create a synthetic heroPower CardInstance from legacy Player state
+ */
+function createHeroPowerCardInstance(player: LegacyPlayer): EffectCardInstance {
+  const hp = player.heroPower;
+  return {
+    instanceId: `heropower-${player.heroId || player.heroClass}`,
+    card: {
+      id: 0,
+      name: hp?.name || 'Hero Power',
+      manaCost: hp?.cost ?? 2,
+      type: 'spell' as const,
+      class: player.heroClass,
+      rarity: 'basic' as const,
+      description: hp?.description || '',
+    }
+  } as unknown as EffectCardInstance;
 }
 
 /**

@@ -162,12 +162,14 @@ function App() {
   useEffect(() => {
     let cleanup: (() => void) | undefined;
     (async () => {
-      const [{ default: initEffectSystem }, { initializeGameStoreIntegration }] = await Promise.all([
+      const [{ default: initEffectSystem }, { initializeGameStoreIntegration }, { loadWasmEngine }] = await Promise.all([
         import("./game/effects/initEffectSystem"),
         import("./game/stores/gameStoreIntegration"),
+        import("./game/engine/wasmLoader"),
       ]);
       initEffectSystem();
       cleanup = initializeGameStoreIntegration();
+      loadWasmEngine().catch(err => console.warn('WASM engine load deferred:', err.message));
     })();
     return () => { cleanup?.(); };
   }, []);
