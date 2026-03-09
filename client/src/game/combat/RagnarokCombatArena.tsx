@@ -403,24 +403,32 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     const prev = prevHealthRef.current;
     if (prev) {
       const getHeroPos = (selector: string) => {
-        const classMap: Record<string, string> = {
-          '.player-hero': '.unified-hero-section',
-          '.opponent-hero': '.unified-opponent-hero',
-        };
-        const mapped = classMap[selector] || selector;
-        const el = document.querySelector(mapped);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 3 };
+        const isPlayer = selector.includes('player');
+        const selectors = isPlayer
+          ? ['[data-hero-role="player"]', '.unified-hero-section', '.poker-hero-container']
+          : ['[data-hero-role="opponent"]', '.unified-opponent-hero', '.opponent-hero-container'];
+        for (const sel of selectors) {
+          const el = document.querySelector(sel);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+              return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 3 };
+            }
+          }
         }
-        return { x: window.innerWidth / 2, y: window.innerHeight * 0.8 };
+        return isPlayer
+          ? { x: 120, y: window.innerHeight * 0.75 }
+          : { x: 120, y: window.innerHeight * 0.15 };
       };
 
       const getMinionPos = (id: string) => {
-        const el = document.querySelector(`[data-card-id="${id}"]`);
+        const el = document.querySelector(`[data-instance-id="${id}"]`) ||
+                   document.querySelector(`[data-card-id="${id}"]`);
         if (el) {
           const rect = el.getBoundingClientRect();
-          return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+          if (rect.width > 0 && rect.height > 0) {
+            return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 3 };
+          }
         }
         return null;
       };
@@ -731,7 +739,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       </div>
       
       {/* Opponent Hero - with hole cards overlay below (true mirror - opponent faces you across the table) */}
-      <div className={`unified-opponent-hero ${shakingTargets.has('opponent-hero') ? 'damage-shake damage-flash' : ''} ${!isPlayerTurn ? 'turn-active' : ''}`}>
+      <div data-hero-role="opponent" className={`unified-opponent-hero ${shakingTargets.has('opponent-hero') ? 'damage-shake damage-flash' : ''} ${!isPlayerTurn ? 'turn-active' : ''}`}>
         {opponentPet && (
           <div className="opponent-hero-container">
             <BattlefieldHero
@@ -905,7 +913,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         <div className="unified-hero-hand-row">
           {/* Hero section with hole cards behind */}
           {playerPet && (
-            <div className={`unified-hero-section ${shakingTargets.has('player-hero') ? 'damage-shake damage-flash' : ''} ${isPlayerTurn ? 'turn-active' : ''}`}>
+            <div data-hero-role="player" className={`unified-hero-section ${shakingTargets.has('player-hero') ? 'damage-shake damage-flash' : ''} ${isPlayerTurn ? 'turn-active' : ''}`}>
               <div className="poker-hero-container">
                 <BattlefieldHero
                   pet={enrichedPlayerPet}
@@ -968,6 +976,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   registerCardPosition={registerCardPosition || noopRegisterCardPosition}
                   battlefieldRef={battlefieldRef as React.RefObject<HTMLDivElement>}
                   evolveReadyIds={evolveReadyIds}
+                  battlefieldCount={playerBattlefield.length}
                 />
               </div>
             )}

@@ -830,7 +830,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-cards, 20);
+  z-index: 30;
   box-shadow:
     0 3px 10px rgba(0,0,0,0.7),
     0 0 10px rgba(217,119,6,0.35),
@@ -870,7 +870,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-cards, 20);
+  z-index: 30;
   box-shadow:
     0 3px 10px rgba(0,0,0,0.7),
     0 0 10px rgba(220,38,38,0.35),

@@ -74,9 +74,9 @@ export const GameLog: React.FC = () => {
 				{isOpen && (
 					<motion.div
 						className="game-log-panel"
-						initial={{ x: -280, opacity: 0 }}
+						initial={{ x: 280, opacity: 0 }}
 						animate={{ x: 0, opacity: 1 }}
-						exit={{ x: -280, opacity: 0 }}
+						exit={{ x: 280, opacity: 0 }}
 						transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 					>
 						<div className="game-log-header">

@@ -2547,6 +2547,7 @@ export const GameBoard: React.FC<{}> = () => {
                   registerCardPosition={registerCardPosition}
                   battlefieldRef={battlefieldRef}
                   evolveReadyIds={evolveReadyIds}
+                  battlefieldCount={player.battlefield?.length || 0}
                 />
               </div>
             )}

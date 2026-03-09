@@ -977,6 +977,21 @@ vercel --prod                 # Deploy to Vercel
 - Replaced 3 remaining `toast` calls in gameStore.ts with inline `showStatus()` banner
 - Fixed P2PContext.tsx `P2PActions.playCard` type to include `insertionIndex?: number`
 
+### Completed (New Player Starter Experience & Combat Polish)
+
+- New player first-login ceremony: welcome screen → "Claim Your Birthright" → pack-opening animation → 25 starter cards added to collection
+- `starterSet.ts`: 25 cards (3 basic vanillas + 22 common neutrals) across 1-6 mana curve with Taunt, Divine Shield, Windfury, Stealth, Lifesteal, Enrage, Battlecry
+- `starterStore.ts`: Zustand + persist tracks whether starter pack claimed (`ragnarok-starter-claimed` localStorage key)
+- `StarterPackCeremony.tsx`: two-phase flow (welcome → pack opening), reuses `PackOpeningAnimation`, adds cards to HiveDataStore
+- HomePage: "Start Game" button for new players (triggers ceremony), switches to "Play Game" after claiming, "Dev Test" button always visible
+- Fixed card playability glow: minion cards no longer glow green when battlefield is full (5 max)
+- Fixed damage popup positioning: `data-hero-role` attributes + multi-selector fallback chain for hero element lookup
+- Fixed battlefield card hover popup clipping: CSS `:has(.bf-card-wrapper:hover)` promotes parent z-index to escape stacking context
+- Fixed keyword icon overlap with ATK/HP stat badges (z-index 30 on stats, above icon z-index 20)
+- HP bar readability overhaul: 22px height, 0.9rem text with 6-layer text-shadow, glass highlight, removed distracting animations
+- Game log moved from bottom-left to right side of screen (mirrored panel, toggle, badge, and animation direction)
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

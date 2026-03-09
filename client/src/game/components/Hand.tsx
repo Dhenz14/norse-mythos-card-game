@@ -11,6 +11,7 @@ import React, { useRef, useEffect, useMemo, useState, useCallback } from 'react'
 import { CardInstance, CardData } from '../types';
 import { playSound } from '../utils/soundUtils';
 import { debug } from '../config/debugConfig';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
 import DirectCardDrag from './DirectCardDrag';
@@ -29,6 +30,7 @@ interface HandProps {
   registerCardPosition?: (card: CardInstance, position: Position) => void;
   battlefieldRef: React.RefObject<HTMLDivElement>;
   evolveReadyIds?: Set<string>;
+  battlefieldCount?: number;
 }
 
 const NOOP_REGISTER = () => {};
@@ -44,7 +46,8 @@ export const Hand: React.FC<HandProps> = React.memo(({
   isInteractionDisabled = false,
   registerCardPosition,
   battlefieldRef,
-  evolveReadyIds
+  evolveReadyIds,
+  battlefieldCount = 0
 }) => {
   const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -124,10 +127,12 @@ export const Hand: React.FC<HandProps> = React.memo(({
             }
             
             const manaCost = card.card?.manaCost || 0;
-            
-            // Proper playability check: affordable cards only
-            const canPlay = isPlayerTurn && 
-                           !isInteractionDisabled && 
+            const isMinion = card.card?.type === 'minion';
+            const boardFull = isMinion && battlefieldCount >= MAX_BATTLEFIELD_SIZE;
+
+            const canPlay = isPlayerTurn &&
+                           !isInteractionDisabled &&
+                           !boardFull &&
                            manaCost <= currentMana;
             
             // Use the professional hand arc transform system

@@ -464,6 +464,11 @@
   align-items: center;
   gap: 8px;
   min-height: 120px;
+  overflow: visible;
+}
+
+.viewport-mode .unified-opponent-field:has(.bf-card-wrapper:hover) {
+  z-index: 600;
 }
 
 .viewport-mode .unified-opponent-field .simple-battlefield {
@@ -667,6 +672,11 @@
   align-items: center;
   gap: 8px;
   min-height: 120px;
+  overflow: visible;
+}
+
+.viewport-mode .unified-player-field:has(.bf-card-wrapper:hover) {
+  z-index: 600;
 }
 
 .viewport-mode .unified-player-field .simple-battlefield {

@@ -15,6 +15,7 @@ import { Position } from '../types/Position';
 import { useElementalBuff } from '../combat/hooks/useElementalBuff';
 import { CardDrawAnimation } from './CardDrawAnimation';
 import { CardPlayAnimation } from './CardPlayAnimation';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import './HandFan.css';
 
 interface HandFanProps {
@@ -27,6 +28,7 @@ interface HandFanProps {
   registerCardPosition?: (card: CardInstance, position: Position) => void;
   battlefieldRef: React.RefObject<HTMLDivElement>;
   evolveReadyIds?: Set<string>;
+  battlefieldCount?: number;
 }
 
 const MAX_ROTATION = 4;
@@ -44,7 +46,8 @@ export const HandFan = React.memo<HandFanProps>(({
   isInteractionDisabled = false,
   registerCardPosition,
   battlefieldRef,
-  evolveReadyIds
+  evolveReadyIds,
+  battlefieldCount = 0
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [shakingCardId, setShakingCardId] = useState<string | null>(null);
@@ -190,7 +193,9 @@ export const HandFan = React.memo<HandFanProps>(({
         const isBloodMode = bloodModeCardId === card.instanceId && !!bloodCost;
         const canAffordMana = manaCost <= currentMana;
         const canAffordBlood = !!bloodCost && heroHealth > bloodCost;
-        const canPlay = isPlayerTurn && !isInteractionDisabled && (isBloodMode ? canAffordBlood : (canAffordMana || canAffordBlood));
+        const isMinion = card.card?.type === 'minion';
+        const boardFull = isMinion && battlefieldCount >= MAX_BATTLEFIELD_SIZE;
+        const canPlay = isPlayerTurn && !isInteractionDisabled && !boardFull && (isBloodMode ? canAffordBlood : (canAffordMana || canAffordBlood));
         const isHovered = hoveredIndex === index;
         
         const isShaking = shakingCardId === card.instanceId;
@@ -228,7 +233,9 @@ export const HandFan = React.memo<HandFanProps>(({
               if (!canPlay && isPlayerTurn && !isInteractionDisabled) {
                 triggerCardShake(card.instanceId);
                 playSound('error');
-                if (isBloodMode && bloodCost) {
+                if (boardFull) {
+                  showStatus('Battlefield is full', 'error');
+                } else if (isBloodMode && bloodCost) {
                   showStatus(`Need more than ${bloodCost} HP to pay Blood Price`, 'error');
                 } else {
                   const deficit = manaCost - currentMana;

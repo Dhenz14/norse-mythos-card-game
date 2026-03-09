@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useRef } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import { routes } from './lib/routes';
 import { Button } from './components/ui/button';
@@ -12,6 +12,7 @@ import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
 import LoadingScreen from "./game/components/ui/LoadingScreen";
 import AssetDownloadButton from "./game/components/ui/AssetDownloadButton";
 import GoldenCardFilter from "./game/animations/GoldenCardFilter";
+import { useStarterStore } from "./game/stores/starterStore";
 
 const HiveKeychainLogin = lazy(() => import("./game/components/HiveKeychainLogin").then(m => ({ default: m.HiveKeychainLogin })));
 const DailyQuestPanel = lazy(() => import("./game/components/quests/DailyQuestPanel"));
@@ -28,9 +29,12 @@ const TournamentListPage = lazy(() => import('./game/components/tournament/Tourn
 const SpectatorView = lazy(() => import('./game/components/spectator/SpectatorView'));
 const MatchHistoryPage = lazy(() => import('./game/components/replay/MatchHistoryPage'));
 const SettingsPage = lazy(() => import('./game/components/settings/SettingsPage'));
+const StarterPackCeremony = lazy(() => import('./game/components/StarterPackCeremony'));
 
 function HomePage() {
   const bgOverlayRef = useRef<HTMLDivElement>(null);
+  const starterClaimed = useStarterStore(s => s.claimed);
+  const [showCeremony, setShowCeremony] = useState(false);
 
   useEffect(() => {
     if (bgOverlayRef.current) {
@@ -73,9 +77,24 @@ function HomePage() {
         <div className="flex flex-col gap-4 w-full max-w-md px-4">
           <AssetDownloadButton />
 
+          {!starterClaimed ? (
+            <Button
+              className="homepage-btn-primary w-full py-8 text-2xl font-bold tracking-wider uppercase border-2"
+              onClick={() => setShowCeremony(true)}
+            >
+              Start Game
+            </Button>
+          ) : (
+            <Link to={routes.game}>
+              <Button className="homepage-btn-primary w-full py-8 text-2xl font-bold tracking-wider uppercase border-2">
+                Play Game
+              </Button>
+            </Link>
+          )}
+
           <Link to={routes.game}>
-            <Button className="homepage-btn-primary w-full py-8 text-2xl font-bold tracking-wider uppercase border-2">
-              Play Game
+            <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border opacity-60 hover:opacity-100 transition-opacity">
+              Dev Test
             </Button>
           </Link>
 
@@ -136,6 +155,12 @@ function HomePage() {
       </div>
       
       <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none homepage-bottom-gradient" />
+
+      {showCeremony && (
+        <Suspense fallback={null}>
+          <StarterPackCeremony onComplete={() => setShowCeremony(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }
