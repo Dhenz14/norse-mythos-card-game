@@ -954,6 +954,23 @@ vercel --prod                 # Deploy to Vercel
 - GSAP installed as npm dependency (`gsap`)
 - All VFX render into `#battlecry-vfx-layer` div with auto-cleanup
 
+### Completed (Comprehensive Audit & Popup Purge)
+
+- Fixed array bounds crash in gameUtils.ts:761 (empty battlefield after play)
+- Added GSAP `killAllVFX()` cleanup on AnimationLayer unmount + orphan DOM sweep (5s max age)
+- New `GameStatusBanner` component: ephemeral in-game banners replace all corner toast popups
+  - `showStatus(text, type, duration)` API, Zustand micro-store, auto-dismiss
+  - Styled per type: info (blue), error (red), success (green), warning (amber)
+- All 48 GameBoard `showNotification()` calls now route through inline banner (no code changes needed per-call)
+- Replaced 5 HandFan `toast.error/info` Blood Price calls with `showStatus()`
+- Replaced 4 SimpleGame `alert()` calls with `showStatus()`
+- Removed 8 redundant NotificationSubscriber toasts (game start/end, discovery, pet evolution, showdown)
+- Battlecry VFX now fires 150ms before card lands (eliminates 400ms animation gap)
+- Added visible cancel button during spell/battlecry target selection mode
+- Fixed attack deselect: clicking friendly minion while attacker selected deselects first
+- Removed duplicate summoning sickness / already-attacked notification handlers
+- Added prophecy countdown tracker UI (right sidebar with pulsing turn count pip)
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account
