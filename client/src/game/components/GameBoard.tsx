@@ -56,6 +56,7 @@ import { createHandlePlayerCardClick, createHandleOpponentCardClick, createHandl
 import { isMinion, isSpell, isWeapon, isHero, getAttack, getHealth, getDurability, hasOverload, hasBattlecry, hasSpellEffect } from '../utils/cards/typeGuards';
 import { hasKeyword, getKeywords } from '../utils/cards/keywordUtils';
 import { needsPositionChoice } from '../utils/cards/positionUtils';
+import { emitBattlecryTriggered, emitDeathrattleTriggered } from '../actions/gameActions';
 import { debug } from '../config/debugConfig';
 // Ultimate CardWithDrag system handles all interactions now
 
@@ -143,7 +144,7 @@ export const GameBoard: React.FC<{}> = () => {
   }
   
   const { playSoundEffect } = useAudio();
-  const { showNotification, showBattlecryEffect, showAoEDamageEffect, showDeathrattleEffect } = useGameNotifications();
+  const { showNotification } = useGameNotifications();
   
   // Handle viewing card details
   const handleViewCardDetails = useCallback((card: CardInstance | CardData) => {
@@ -775,52 +776,22 @@ export const GameBoard: React.FC<{}> = () => {
         }
       }
       
-      // Check for battlecry effects, especially AoE effects
+      // Emit battlecry event — AnimationLayer renders GSAP VFX (no toast popups)
       if (isMinion(card.card) && hasBattlecry(card.card)) {
         const battlecry = card.card.battlecry;
-        
-        // Check for AoE damage effects
-        if (battlecry?.type === 'aoe_damage' || (battlecry?.type === 'damage' && battlecry?.affectsAllEnemies)) {
-          playHit(); // Play damage sound effect
-          
-          // Show AoE notification
-          if (battlecry?.value) {
-            // Fixed damage amount
-            showAoEDamageEffect(battlecry.value, opponent.battlefield.length);
-          } else if (battlecry?.isBasedOnStats) {
-            // Damage based on stats (like minion's attack)
-            showBattlecryEffect(
-              card.card.name, 
-              'aoe_damage', 
-              getAttack(card.card), 
-              'all enemy minions'
-            );
-          }
-        } else if (battlecry?.type === 'damage') {
-          // Single target damage
-          playHit();
-          showBattlecryEffect(card.card.name, 'damage', battlecry?.value);
-        } else if (battlecry?.type === 'heal') {
-          // Heal effect
-          playSuccess();
-          showBattlecryEffect(card.card.name, 'heal', battlecry?.value);
-        } else if (battlecry?.type === 'buff') {
-          // Buff effect
-          playSuccess();
-          const buffText = `+${battlecry?.buffAttack || 0}/+${battlecry?.buffHealth || 0}`;
-          showBattlecryEffect(card.card.name, 'buff', undefined, buffText);
-        } else if (battlecry?.type === 'summon') {
-          // Summon effect
-          playSuccess();
-          showBattlecryEffect(card.card.name, 'summon', undefined, 'a minion');
-        } else if (battlecry?.type === 'draw') {
-          // Draw effect
-          showBattlecryEffect(card.card.name, 'draw', battlecry?.value);
-        } else if (battlecry?.type === 'draw_both') {
-          // Draw for both players effect (Coldlight Oracle)
-          debug.log(`Executing draw_both battlecry for ${card.card.name}: Each player draws ${battlecry?.value || 2} cards`);
-          showBattlecryEffect(card.card.name, 'draw_both', battlecry?.value || 2, 'cards for both players');
-        }
+        const effectType = battlecry?.type || 'default';
+        const isAoE = effectType === 'aoe_damage' || (effectType === 'damage' && battlecry?.affectsAllEnemies);
+
+        if (isAoE || effectType === 'damage') playHit();
+        else if (effectType === 'heal' || effectType === 'buff' || effectType === 'summon') playSuccess();
+
+        emitBattlecryTriggered({
+          sourceId: card.instanceId,
+          sourceName: card.card.name,
+          effectType: isAoE ? 'aoe_damage' : effectType,
+          player: 'player',
+          value: battlecry?.value ?? battlecry?.buffAttack ?? 0
+        });
       }
     }, animationDelay); // Use our calculated animation delay
   }
@@ -1455,37 +1426,13 @@ export const GameBoard: React.FC<{}> = () => {
         // Attack first
         attackWithCard(attackingCard.instanceId, targetCard.instanceId);
         
-        // Show deathrattle notification
-        const deathrattle = targetCard.card.deathrattle;
-        
-        // Get more descriptive targets based on targetType
-        let targetDescription = '';
-        switch (deathrattle.targetType) {
-          case 'all':
-            targetDescription = 'all minions';
-            break;
-          case 'all_friendly':
-            targetDescription = 'all friendly minions';
-            break;
-          case 'all_enemies':
-            targetDescription = 'all enemy minions';
-            break;
-          case 'friendly_hero':
-            targetDescription = 'your hero';
-            break;
-          case 'enemy_hero':
-            targetDescription = 'enemy hero';
-            break;
-          default:
-            targetDescription = 'targets';
-        }
-        
-        showDeathrattleEffect(
-          targetCard.card.name,
-          deathrattle.type as 'damage' | 'heal' | 'buff' | 'summon' | 'draw',
-          deathrattle.value,
-          targetDescription
-        );
+        // Emit deathrattle event for GSAP VFX (replaces toast popup)
+        emitDeathrattleTriggered({
+          sourceId: targetCard.instanceId,
+          sourceName: targetCard.card.name,
+          effectType: targetCard.card.deathrattle.type || 'default',
+          player: 'opponent'
+        });
       } else {
         // Just perform the attack without notification
         attackWithCard(attackingCard.instanceId, targetCard.instanceId);

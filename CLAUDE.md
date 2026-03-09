@@ -934,6 +934,26 @@ vercel --prod                 # Deploy to Vercel
 - GameBoard: `pendingPositionalCard` state manages two-step positional flow
 - Battlecry targeting, spells, and other existing flows unchanged
 
+### Completed (GSAP Battlecry/Deathrattle VFX)
+
+- Replaced all battlecry/deathrattle toast popup notifications with GSAP-powered visual animations
+- New `BattlecryVFX.ts` engine (380+ lines): timeline-based VFX for 10+ effect types
+  - `playAoeDamageVFX()` — shockwave ring + staggered damage numbers + screen shake
+  - `playTargetedDamageVFX()` — projectile orb source→target + impact burst
+  - `playHealVFX()` — green aura pulse + nature particles + floating +number
+  - `playBuffVFX()` — golden aura + floating stat label
+  - `playSummonVFX()` — portal rift → ground slam with dust + crack lines
+  - `playDrawVFX()` — cards fly from deck with arc
+  - `playFreezeVFX()` — ice crystals converge on target
+  - `playDivineShieldVFX()` — golden bubble materializes
+  - `playMinionEntryVFX()` — ground slam + shockwave (scales with rarity)
+  - `playDeathrattleVFX()` — dark vortex + skull rise + shadow particles
+- AnimationLayer effects (battlecry, deathrattle, summon, buff) replaced from Framer Motion to GSAP
+- GameBoard battlecry/deathrattle toast blocks replaced with `emitBattlecryTriggered()`/`emitDeathrattleTriggered()` event emissions
+- NotificationSubscriber: `showBattlecries` and `showDeathrattles` defaults set to `false`
+- GSAP installed as npm dependency (`gsap`)
+- All VFX render into `#battlecry-vfx-layer` div with auto-cleanup
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

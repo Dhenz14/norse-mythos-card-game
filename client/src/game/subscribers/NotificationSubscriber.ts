@@ -45,8 +45,8 @@ interface NotificationConfig {
 const DEFAULT_CONFIG: NotificationConfig = {
   showCardPlayed: false,       // Too noisy for most games
   showCardDrawn: false,        // Too noisy
-  showBattlecries: true,
-  showDeathrattles: true,
+  showBattlecries: false,      // GSAP VFX handles these now
+  showDeathrattles: false,     // GSAP VFX handles these now
   showSecrets: true,
   showTurnChanges: false,      // Usually shown in UI
   showBuffs: false,            // Too noisy

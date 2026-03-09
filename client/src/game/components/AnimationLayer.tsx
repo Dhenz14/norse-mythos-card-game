@@ -26,6 +26,7 @@ import EnvironmentalEffect from '../animations/EnvironmentalEffect';
 import LegendaryEntrance from '../animations/LegendaryEntrance';
 import { useAnimationAdapter } from '../hooks';
 import { spawnParticleBurst, spawnImpactRing, spawnEmbers, ELEMENT_PALETTES } from '../animations/PixiParticleCanvas';
+import { playBattlecryVFX, playDeathrattleVFX, playMinionEntryVFX, playBuffVFX, playSummonVFX } from '../animations/BattlecryVFX';
 
 // Animation components for different animation types
 const AttackAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
@@ -900,261 +901,46 @@ const BattlecryEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
   const targetPos = animation.targetPosition;
 
   useEffect(() => {
-    spawnParticleBurst(pos.x, pos.y, 40, ELEMENT_PALETTES.lightning);
-    spawnImpactRing(pos.x, pos.y, ELEMENT_PALETTES.lightning);
-    if (targetPos) {
-      setTimeout(() => {
-        spawnParticleBurst(targetPos.x, targetPos.y, 25, ELEMENT_PALETTES.lightning);
-        spawnImpactRing(targetPos.x, targetPos.y, ELEMENT_PALETTES.lightning);
-      }, 200);
-    }
+    playBattlecryVFX(
+      animation.effect || 'default',
+      pos.x, pos.y,
+      targetPos?.x, targetPos?.y,
+      animation.value
+    );
   }, []);
 
-  return (
-    <>
-      {/* Central golden shockwave */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 100, height: 100,
-          left: pos.x - 50, top: pos.y - 50,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(255,165,0,0.5) 30%, rgba(255,100,0,0.2) 60%, transparent 70%)',
-          boxShadow: '0 0 40px rgba(255,215,0,0.6), 0 0 80px rgba(255,165,0,0.3)',
-          zIndex: 100
-        }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: [0, 1.8, 0], opacity: [0, 1, 0] }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-      />
-      {/* Expanding ring */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 120, height: 120,
-          left: pos.x - 60, top: pos.y - 60,
-          borderRadius: '50%',
-          border: '3px solid rgba(255,215,0,0.8)',
-          boxShadow: '0 0 15px rgba(255,215,0,0.5), inset 0 0 15px rgba(255,215,0,0.2)',
-          zIndex: 101
-        }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: [0, 2.5], opacity: [0.9, 0] }}
-        transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
-      />
-      {/* Directional beam to target */}
-      {targetPos && (
-        <motion.div
-          style={{
-            position: 'absolute',
-            width: Math.sqrt((targetPos.x - pos.x) ** 2 + (targetPos.y - pos.y) ** 2),
-            height: 6,
-            left: pos.x,
-            top: pos.y - 3,
-            background: 'linear-gradient(90deg, rgba(255,215,0,0.9), rgba(255,255,200,0.6), rgba(255,215,0,0.3))',
-            boxShadow: '0 0 12px rgba(255,215,0,0.6)',
-            transformOrigin: '0 50%',
-            transform: `rotate(${Math.atan2(targetPos.y - pos.y, targetPos.x - pos.x) * 180 / Math.PI}deg)`,
-            borderRadius: 3,
-            zIndex: 102
-          }}
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: [0, 1, 1], opacity: [0, 1, 0] }}
-          transition={{ duration: 0.5, times: [0, 0.4, 1] }}
-        />
-      )}
-    </>
-  );
+  return null;
 };
 
 const DeathrattleEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
   const pos = animation.position!;
 
   useEffect(() => {
-    spawnParticleBurst(pos.x, pos.y, 35, ELEMENT_PALETTES.shadow);
-    spawnEmbers(pos.x, pos.y, 15, ELEMENT_PALETTES.shadow);
+    playDeathrattleVFX(pos.x, pos.y);
   }, []);
 
-  return (
-    <>
-      {/* Dark vortex */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 100, height: 100,
-          left: pos.x - 50, top: pos.y - 50,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(120,0,255,0.7) 0%, rgba(80,0,160,0.5) 30%, rgba(40,0,80,0.3) 60%, transparent 70%)',
-          boxShadow: '0 0 40px rgba(120,0,255,0.5), 0 0 80px rgba(80,0,160,0.3)',
-          zIndex: 100
-        }}
-        initial={{ scale: 0, opacity: 0, rotate: 0 }}
-        animate={{ scale: [0, 1.5, 0], opacity: [0, 0.9, 0], rotate: [0, 180] }}
-        transition={{ duration: 1.2, ease: 'easeOut' }}
-      />
-      {/* Skull icon with glow */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          left: pos.x - 20, top: pos.y - 20,
-          width: 40, height: 40,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '32px',
-          textShadow: '0 0 20px rgba(120,0,255,0.8), 0 0 40px rgba(80,0,160,0.6)',
-          zIndex: 103
-        }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: [0, 1.5, 1.2, 0], opacity: [0, 1, 1, 0] }}
-        transition={{ duration: 1.2, times: [0, 0.3, 0.7, 1] }}
-      >
-        &#9760;
-      </motion.div>
-      {/* Expanding dark ring */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 80, height: 80,
-          left: pos.x - 40, top: pos.y - 40,
-          borderRadius: '50%',
-          border: '2px solid rgba(120,0,255,0.7)',
-          boxShadow: '0 0 10px rgba(120,0,255,0.5)',
-          zIndex: 101
-        }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: [0, 2], opacity: [0.8, 0] }}
-        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-      />
-    </>
-  );
+  return null;
 };
 
 const SummonEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
   const pos = animation.position!;
 
   useEffect(() => {
-    setTimeout(() => {
-      spawnParticleBurst(pos.x, pos.y, 30, ELEMENT_PALETTES.lightning);
-      spawnImpactRing(pos.x, pos.y, ELEMENT_PALETTES.lightning);
-    }, 300);
+    playSummonVFX(pos.x, pos.y);
   }, []);
 
-  return (
-    <>
-      {/* Light pillar from above */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 60, height: 250,
-          left: pos.x - 30, top: pos.y - 220,
-          background: 'linear-gradient(to bottom, rgba(255,255,200,0) 0%, rgba(255,255,200,0.7) 40%, rgba(255,255,150,0.9) 70%, rgba(255,255,200,0.4) 100%)',
-          boxShadow: '0 0 30px rgba(255,255,200,0.4)',
-          zIndex: 99
-        }}
-        initial={{ scaleY: 0, opacity: 0, transformOrigin: 'center top' }}
-        animate={{ scaleY: [0, 1, 1, 0], opacity: [0, 0.8, 0.8, 0] }}
-        transition={{ duration: 1.0, times: [0, 0.3, 0.7, 1] }}
-      />
-      {/* Ground impact glow */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 100, height: 40,
-          left: pos.x - 50, top: pos.y - 10,
-          borderRadius: '50%',
-          background: 'radial-gradient(ellipse, rgba(255,255,200,0.8) 0%, rgba(255,215,0,0.4) 50%, transparent 70%)',
-          boxShadow: '0 0 30px rgba(255,215,0,0.5)',
-          zIndex: 100
-        }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: [0, 1.5, 1.2], opacity: [0, 0.9, 0] }}
-        transition={{ duration: 0.8, delay: 0.25 }}
-      />
-      {/* Expanding ring at ground level */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 80, height: 80,
-          left: pos.x - 40, top: pos.y - 40,
-          borderRadius: '50%',
-          border: '2px solid rgba(255,215,0,0.8)',
-          zIndex: 101
-        }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: [0, 2.5], opacity: [0.8, 0] }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-      />
-    </>
-  );
+  return null;
 };
 
 const BuffEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
   const pos = animation.position!;
   const val = animation.value || 0;
-  const isPositive = val >= 0;
-  const color = isPositive ? { r: 100, g: 220, b: 100 } : { r: 220, g: 100, b: 100 };
-  const palette = isPositive ? ELEMENT_PALETTES.nature : ELEMENT_PALETTES.fire;
 
   useEffect(() => {
-    spawnParticleBurst(pos.x, pos.y, 20, palette);
+    playBuffVFX(pos.x, pos.y, val, val);
   }, []);
 
-  return (
-    <>
-      {/* Pulsing aura */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          width: 80, height: 80,
-          left: pos.x - 40, top: pos.y - 40,
-          borderRadius: '50%',
-          background: `radial-gradient(circle, rgba(${color.r},${color.g},${color.b},0.5) 0%, transparent 70%)`,
-          boxShadow: `0 0 30px rgba(${color.r},${color.g},${color.b},0.4)`,
-          zIndex: 100
-        }}
-        initial={{ scale: 0.3, opacity: 0 }}
-        animate={{ scale: [0.3, 1.5, 0], opacity: [0, 0.9, 0] }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-      />
-      {/* Double expanding rings */}
-      {[0, 0.15].map((delay, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: 'absolute',
-            width: 70, height: 70,
-            left: pos.x - 35, top: pos.y - 35,
-            borderRadius: '50%',
-            border: `2px solid rgba(${color.r},${color.g},${color.b},0.7)`,
-            boxShadow: `0 0 10px rgba(${color.r},${color.g},${color.b},0.4)`,
-            zIndex: 101
-          }}
-          initial={{ scale: 0.3, opacity: 0 }}
-          animate={{ scale: [0.3, 2], opacity: [0.8, 0] }}
-          transition={{ duration: 0.5, delay }}
-        />
-      ))}
-      {/* Buff value indicator */}
-      {val !== 0 && (
-        <motion.div
-          style={{
-            position: 'absolute',
-            left: pos.x - 20, top: pos.y - 20,
-            width: 40, height: 40,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '24px', fontWeight: 800,
-            color: isPositive ? '#4ade80' : '#f87171',
-            textShadow: `0 0 12px ${isPositive ? 'rgba(74,222,128,0.8)' : 'rgba(248,113,113,0.8)'}, 2px 2px 4px rgba(0,0,0,0.8)`,
-            zIndex: 103
-          }}
-          initial={{ scale: 0, y: 0 }}
-          animate={{ scale: [0, 1.3, 1], y: [0, -25], opacity: [0, 1, 0] }}
-          transition={{ duration: 0.8, times: [0, 0.4, 1] }}
-        >
-          {isPositive ? '+' : ''}{val}
-        </motion.div>
-      )}
-    </>
-  );
+  return null;
 };
 
 const PetAscensionEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
