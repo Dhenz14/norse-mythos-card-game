@@ -148,12 +148,16 @@ server/
 │   ├── socialRoutes.ts     # Friends: heartbeat, challenges, presence
 │   ├── tradeRoutes.ts      # Trading: create/accept/decline/cancel offers
 │   ├── tournamentRoutes.ts # Tournaments: CRUD, register, results, brackets
+│   ├── treasuryRoutes.ts   # Treasury multisig: signers, WoT, transactions, freeze
 │   └── mockBlockchainRoutes.ts # In-memory mock (dev only)
 ├── services/
 │   ├── chainIndexer.ts     # Server-side chain replay (optional convenience)
 │   ├── chainState.ts       # In-memory account state for global queries
 │   ├── tournamentManager.ts # Swiss/elimination pairing logic
-│   └── hiveAuth.ts         # Hive signature verification for server auth
+│   ├── hiveAuth.ts         # Hive signature verification for server auth
+│   ├── treasuryCoordinator.ts # Multisig coordinator (signing, quorum, WoT, freeze)
+│   ├── treasuryHive.ts     # Hive L1 treasury utilities (authority, balance, broadcast)
+│   └── treasuryAnomalyDetector.ts # Anomaly detection (burst, spike, auto-freeze)
 └── storage.ts              # Database interface
 ```
 
@@ -369,6 +373,7 @@ vercel --prod                 # Deploy to Vercel
 /history       → MatchHistoryPage (replay viewer)
 /spectate/:id  → SpectatorView (read-only P2P)
 /settings      → SettingsPage (audio, visual, gameplay)
+/treasury      → TreasuryPage (multisig governance, WoT vouching)
 ```
 
 ## Roadmap
@@ -992,22 +997,28 @@ vercel --prod                 # Deploy to Vercel
 - Game log moved from bottom-left to right side of screen (mirrored panel, toggle, badge, and animation direction)
 - TypeScript: 0 errors
 
-### Multisig Governance Architecture
+### Completed (Multisig Treasury System)
 
 - **Blueprint**: `docs/HIVE_BLOCKCHAIN_BLUEPRINT.md` §17-18 (adapted from [HivePoA](https://github.com/Dhenz14/HivePoA))
-- **Genesis account** (`@ragnarok-genesis`): 2-of-3 posting/active, 3-of-3 owner, `key_auths: []` (no standalone keys)
-- **Treasury account** (`@ragnarok-treasury`): 60% quorum transfers, 80% quorum authority changes, self-healing rotation
-- **Post-seal bricking**: All authorities set to `weight_threshold: 255` — cryptographically inert forever
-- **Signing flow**: Keychain-native multisig (Phase 1), agent auto-signer (Phase 2), WoT open set (Phase 3)
-- **Security**: 6-layer model (digest verify, ops cross-check, nonce replay, spending caps, time delay, anomaly detection)
-- **Emergency controls**: Any-signer freeze, 80% unfreeze, veto window on delayed broadcasts
+- **Genesis multisig**: `genesisAdmin.ts` — `buildUnsignedGenesisTx()`, `buildUnsignedSealTx()`, `buildAuthorityBrickTx()`, `GENESIS_SIGNERS` array, `requireGenesisSigner()` guard
+- **Treasury coordinator**: `server/services/treasuryCoordinator.ts` — signer join/leave, transfer submission, multi-step signing flow, authority sync, freeze/unfreeze/veto, WoT vouching, audit logging
+- **Anomaly detection**: `server/services/treasuryAnomalyDetector.ts` — burst (>5 tx/10min), amount spike (>3x avg), rapid succession, new recipient checks, auto-freeze after 3 anomalies/hour
+- **Hive L1 utilities**: `server/services/treasuryHive.ts` — authority management, threshold computation, witness rank lookup, balance queries, unsigned tx building, broadcast
+- **Treasury routes**: `server/routes/treasuryRoutes.ts` — 13 REST endpoints with Hive signature auth middleware (`X-Hive-Username` + `X-Hive-Signature` + `X-Hive-Timestamp`)
+- **Treasury UI**: `client/src/game/components/treasury/TreasuryPage.tsx` — Norse-themed page with signer ring SVG, transactions list, join/leave, WoT vouching, emergency controls, pending signing
+- **Shared types**: `shared/treasuryTypes.ts` — `SigningRequest`, `TreasuryStatus`, `TreasurySignerInfo`, `TreasuryTransaction`, `VouchCandidate`, all constants
+- **DB schema**: `shared/schema.ts` — 5 Drizzle tables: `treasurySigners`, `treasuryVouches`, `treasuryTransactions`, `treasuryAuditLog`, `treasuryFreezeState`
+- **Config**: `hiveConfig.ts` — `RAGNAROK_GENESIS_ACCOUNT`, `RAGNAROK_TREASURY_ACCOUNT`
+- **Dual quorum**: 60% for transfers, 80% for authority updates
+- **WoT vouching**: Top-150 witnesses join directly; non-witnesses need 3+ vouches from existing signers
+- **Self-healing**: 10-minute authority sync checks, auto-removes deranked witnesses
+- **Route**: `/treasury` added to client routes + App.tsx lazy import
+- TypeScript: 0 errors
 
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)
 - Create @ragnarok-treasury Hive account (2-of-3 initial, expandable)
-- Update hiveConfig.ts with real account names
-- Update genesisAdmin.ts with multisig co-signing flow
 - Upload card art to CDN
 - Multisig genesis → mint batches → seal → brick genesis authority
 - Treasury remains active for ongoing RUNE payouts
