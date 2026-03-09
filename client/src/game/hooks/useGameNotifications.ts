@@ -1,16 +1,16 @@
-import { toast } from "sonner";
+import { showStatus } from '../components/ui/GameStatusBanner';
 
 // Types of game notifications
 type NotificationType = 'success' | 'error' | 'info' | 'warning';
 
 // Game event types
-export type GameEventType = 
-  | 'aoe_damage' 
-  | 'damage' 
-  | 'heal' 
-  | 'buff' 
-  | 'summon' 
-  | 'draw' 
+export type GameEventType =
+  | 'aoe_damage'
+  | 'damage'
+  | 'heal'
+  | 'buff'
+  | 'summon'
+  | 'draw'
   | 'draw_both'
   | 'transform'
   | 'death'
@@ -27,32 +27,22 @@ export interface GameNotification {
 }
 
 /**
- * Custom hook for game notifications
+ * Custom hook for game notifications.
+ * Routes all gameplay notifications through the inline status banner
+ * instead of corner toast popups.
  */
 export function useGameNotifications() {
-  
-  /**
-   * Show a notification for a game event
-   */
+
   const showNotification = ({
     title,
     description,
     type = 'info',
-    duration = 3000
+    duration = 1800
   }: GameNotification) => {
-    switch (type) {
-      case 'success':
-        toast.success(title, { description, duration });
-        break;
-      case 'error':
-        toast.error(title, { description, duration });
-        break;
-      case 'warning':
-        toast.warning(title, { description, duration });
-        break;
-      default:
-        toast.info(title, { description, duration });
-    }
+    const text = description ? `${title} — ${description}` : title;
+    // Strip emoji prefixes for cleaner banner text
+    const clean = text.replace(/^[^\w\s]*\s*/, '');
+    showStatus(clean, type, Math.min(duration, 2500));
   };
 
   /**

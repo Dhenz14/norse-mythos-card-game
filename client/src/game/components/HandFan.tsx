@@ -6,7 +6,7 @@
  */
 import React, { useRef, useEffect, useMemo, useState, useCallback } from 'react';
 import { CardInstance } from '../types';
-import { toast } from 'sonner';
+import { showStatus } from './ui/GameStatusBanner';
 import { playSound } from '../utils/soundUtils';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
@@ -214,11 +214,11 @@ export const HandFan = React.memo<HandFanProps>(({
                   triggerCardShake(card.instanceId);
                   playSound('error');
                   if (isBloodMode && bloodCost) {
-                    toast.error(`Need more than ${bloodCost} HP to pay Blood Price`, { duration: 1500 });
+                    showStatus(`Need more than ${bloodCost} HP to pay Blood Price`, 'error');
                   } else {
                     const deficit = manaCost - currentMana;
                     if (deficit > 0) {
-                      toast.error(bloodCost ? `Need ${deficit} more mana (right-click for Blood Price)` : `Need ${deficit} more mana`, { duration: 1500 });
+                      showStatus(bloodCost ? `Need ${deficit} more mana (right-click for Blood Price)` : `Need ${deficit} more mana`, 'error');
                     }
                   }
                 }
@@ -229,11 +229,11 @@ export const HandFan = React.memo<HandFanProps>(({
                 triggerCardShake(card.instanceId);
                 playSound('error');
                 if (isBloodMode && bloodCost) {
-                  toast.error(`Need more than ${bloodCost} HP to pay Blood Price`, { duration: 1500 });
+                  showStatus(`Need more than ${bloodCost} HP to pay Blood Price`, 'error');
                 } else {
                   const deficit = manaCost - currentMana;
                   if (deficit > 0) {
-                    toast.error(bloodCost ? `Need ${deficit} more mana (right-click for Blood Price)` : `Need ${deficit} more mana`, { duration: 1500 });
+                    showStatus(bloodCost ? `Need ${deficit} more mana (right-click for Blood Price)` : `Need ${deficit} more mana`, 'error');
                   }
                 }
               }
@@ -244,7 +244,7 @@ export const HandFan = React.memo<HandFanProps>(({
               const willBeBloodMode = bloodModeCardId !== card.instanceId;
               setBloodModeCardId(prev => prev === card.instanceId ? null : card.instanceId);
               playSound('card_draw');
-              toast.info(willBeBloodMode ? `Blood Price: pay ${bloodCost} HP` : 'Switched to mana payment', { duration: 1500 });
+              showStatus(willBeBloodMode ? `Blood Price: pay ${bloodCost} HP` : 'Switched to mana payment');
             }}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={clearHover}

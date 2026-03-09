@@ -26,7 +26,7 @@ import EnvironmentalEffect from '../animations/EnvironmentalEffect';
 import LegendaryEntrance from '../animations/LegendaryEntrance';
 import { useAnimationAdapter } from '../hooks';
 import { spawnParticleBurst, spawnImpactRing, spawnEmbers, ELEMENT_PALETTES } from '../animations/PixiParticleCanvas';
-import { playBattlecryVFX, playDeathrattleVFX, playMinionEntryVFX, playBuffVFX, playSummonVFX } from '../animations/BattlecryVFX';
+import { playBattlecryVFX, playDeathrattleVFX, playMinionEntryVFX, playBuffVFX, playSummonVFX, killAllVFX } from '../animations/BattlecryVFX';
 
 // Animation components for different animation types
 const AttackAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
@@ -371,6 +371,8 @@ export const AnimationLayer: React.FC = () => {
       clearInterval(intervalId);
       // Force cleanup of all animations on unmount
       useAnimationStore.getState().clearAnimations();
+      // Kill all GSAP VFX timelines and remove orphaned DOM nodes
+      killAllVFX();
     };
   }, []);
   

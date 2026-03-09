@@ -756,8 +756,12 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   }
   
   // Find the card we just added to battlefield
+  if (player.battlefield.length === 0) {
+    debug.error('Battlefield is empty after playing card');
+    return state;
+  }
   const justPlayedCardInfo = findCardInstance(
-    player.battlefield, 
+    player.battlefield,
     player.battlefield[player.battlefield.length - 1].instanceId
   );
   

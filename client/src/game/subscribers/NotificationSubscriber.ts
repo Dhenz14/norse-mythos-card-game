@@ -15,14 +15,9 @@ import type {
   DeathrattleTriggeredEvent,
   SecretRevealedEvent,
   TurnStartedEvent,
-  GameStartedEvent,
-  GameEndedEvent,
-  DiscoveryCompletedEvent,
   SilenceAppliedEvent,
   OverloadTriggeredEvent,
-  ShowdownResultEvent,
   NotificationEvent,
-  PetEvolvedEvent
 } from '@/core/events/GameEvents';
 import { toast } from 'sonner';
 
@@ -135,47 +130,9 @@ export function initializeNotificationSubscriber(
     );
   }
 
-  // Game Started
-  unsubscribes.push(
-    GameEventBus.subscribe<GameStartedEvent>('GAME_STARTED', (event) => {
-      toast.success('Game Started!', {
-        description: `${event.playerHeroClass} vs ${event.opponentHeroClass}`,
-        duration: 3000
-      });
-    })
-  );
-
-  // Game Ended
-  unsubscribes.push(
-    GameEventBus.subscribe<GameEndedEvent>('GAME_ENDED', (event) => {
-      if (event.winner === 'player') {
-        toast.success('Victory!', {
-          description: `You won in ${event.finalTurn} turns`,
-          duration: 5000
-        });
-      } else if (event.winner === 'opponent') {
-        toast.error('Defeat', {
-          description: `Better luck next time`,
-          duration: 5000
-        });
-      } else {
-        toast.info('Draw', {
-          duration: 5000
-        });
-      }
-    })
-  );
-
-  // Discovery Completed
-  unsubscribes.push(
-    GameEventBus.subscribe<DiscoveryCompletedEvent>('DISCOVERY_COMPLETED', (event) => {
-      if (event.player === 'player') {
-        toast.success(`Foresaw: ${event.chosenCardName}`, {
-          duration: 2000
-        });
-      }
-    })
-  );
+  // Game Started — visual cinematic handles this
+  // Game Ended — victory/defeat cinematic handles this
+  // Discovery Completed — card reveal animation handles this
 
   // Silence Applied
   unsubscribes.push(
@@ -197,46 +154,8 @@ export function initializeNotificationSubscriber(
     })
   );
 
-  // Showdown Result (Poker Combat)
-  if (cfg.showCombatResults) {
-    unsubscribes.push(
-      GameEventBus.subscribe<ShowdownResultEvent>('SHOWDOWN_RESULT', (event) => {
-        if (event.winner === 'player') {
-          toast.success(`You won the showdown!`, {
-            description: `${event.playerHand} beats ${event.opponentHand}`,
-            duration: 3000
-          });
-        } else if (event.winner === 'opponent') {
-          toast.error(`You lost the showdown`, {
-            description: `${event.opponentHand} beats ${event.playerHand}`,
-            duration: 3000
-          });
-        } else {
-          toast.info(`Showdown tie!`, {
-            description: `Both players had ${event.playerHand}`,
-            duration: 3000
-          });
-        }
-      })
-    );
-  }
-
-  // Pet Evolution
-  unsubscribes.push(
-    GameEventBus.subscribe<PetEvolvedEvent>('PET_EVOLVED', (event) => {
-      if (event.toStage === 3) {
-        toast.success(`DIVINE APOTHEOSIS! ${event.cardName}`, {
-          description: `${event.familyName} has achieved ultimate form!`,
-          duration: 4000
-        });
-      } else {
-        toast.success(`Ascended! ${event.cardName}`, {
-          description: `${event.familyName} evolves to Stage ${event.toStage}`,
-          duration: 2500
-        });
-      }
-    })
-  );
+  // Showdown Result — poker celebration animation handles this
+  // Pet Evolution — ascension/apotheosis VFX handles this
 
   // Direct Notification Events
   unsubscribes.push(

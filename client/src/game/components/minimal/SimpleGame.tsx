@@ -4,6 +4,7 @@ import { initializeGame, playCard, endTurn } from '../../utils/gameUtils';
 import { CardInstance, CardRarity } from '../../types';
 import { useAudio } from '../../../lib/stores/useAudio';
 import HexagonBadge from '../../../components/HexagonBadge';
+import { showStatus } from '../ui/GameStatusBanner';
 import { getAttack, getHealth } from '../../utils/cards/typeGuards';
 
 // Function to get rarity color
@@ -132,22 +133,22 @@ export const SimpleGame = () => {
   // Helper function to play a card simply
   const playCardSimple = (card: CardInstance) => {
     if (currentTurn !== 'player') {
-      alert('Not your turn!');
+      showStatus('Not your turn!', 'error');
       return;
     }
-    
+
     if ((card.card.manaCost ?? 0) > players.player.mana.current) {
-      alert(`Not enough mana! You need ${card.card.manaCost} but only have ${players.player.mana.current}`);
+      showStatus(`Need ${card.card.manaCost} mana, have ${players.player.mana.current}`, 'error');
       return;
     }
-    
+
     try {
       const newState = playCard(gameState, card.instanceId);
       setGameState(newState);
-      playHit(); // Play sound effect
+      playHit();
     } catch (error) {
       debug.error('Error playing card:', error);
-      alert('Error playing card');
+      showStatus('Error playing card', 'error');
     }
   };
   
@@ -159,7 +160,7 @@ export const SimpleGame = () => {
       playSuccess(); // Play sound effect
     } catch (error) {
       debug.error('Error ending turn:', error);
-      alert('Error ending turn');
+      showStatus('Error ending turn', 'error');
     }
   };
   

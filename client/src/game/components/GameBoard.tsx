@@ -58,6 +58,7 @@ import { hasKeyword, getKeywords } from '../utils/cards/keywordUtils';
 import { needsPositionChoice } from '../utils/cards/positionUtils';
 import { emitBattlecryTriggered, emitDeathrattleTriggered } from '../actions/gameActions';
 import { debug } from '../config/debugConfig';
+import { GameStatusBanner } from './ui/GameStatusBanner';
 // Ultimate CardWithDrag system handles all interactions now
 
 // CardWithDrag is now the ONLY card interaction system
@@ -743,45 +744,17 @@ export const GameBoard: React.FC<{}> = () => {
       }
     }
     
-    // Delay the actual play to let the animation complete
-    // This creates the feeling of the card "flying" to the battlefield before taking effect
-    // For legendary cards, we use a longer delay to allow the legendary entrance animation to complete
+    // Delay the actual play to let the card travel animation complete
     const animationDelay = (card.card.rarity === 'mythic') ? 3000 : (cardPosition ? 400 : 0);
-    
-    setTimeout(() => {
-      // Regular play card (for minions or spells without special handling)
-      playCard(card.instanceId);
-      
-      // Add mana use animation if mana position is tracked
-      if (manaPositionRef.current) {
-        // The amount to subtract is the card's mana cost
-        addManaUseAnimation(manaPositionRef.current, card.card.manaCost ?? 0);
-        
-        // If this card has Overload, show an overload animation too
-        if (hasOverload(card.card)) {
-          const overloadAmount = (card.card as any).overload?.amount || 0;
-          
-          // Show special animation for overloaded mana crystals
-          if (overloadAmount > 0) {
-            addOverloadAnimation(manaPositionRef.current, overloadAmount);
-            
-            // Show notification for overload
-            showNotification({
-              title: '🔒 Overload',
-              description: `${overloadAmount} mana crystal${overloadAmount > 1 ? 's' : ''} will be locked next turn`,
-              type: 'warning',
-              duration: 3000
-            });
-          }
-        }
-      }
-      
-      // Emit battlecry event — AnimationLayer renders GSAP VFX (no toast popups)
-      if (isMinion(card.card) && hasBattlecry(card.card)) {
-        const battlecry = card.card.battlecry;
-        const effectType = battlecry?.type || 'default';
-        const isAoE = effectType === 'aoe_damage' || (effectType === 'damage' && battlecry?.affectsAllEnemies);
 
+    // Fire battlecry VFX early (at ~80% of card travel) so it lands WITH the card
+    if (isMinion(card.card) && hasBattlecry(card.card)) {
+      const battlecry = card.card.battlecry;
+      const effectType = battlecry?.type || 'default';
+      const isAoE = effectType === 'aoe_damage' || (effectType === 'damage' && battlecry?.affectsAllEnemies);
+      const vfxDelay = Math.max(0, animationDelay - 150);
+
+      setTimeout(() => {
         if (isAoE || effectType === 'damage') playHit();
         else if (effectType === 'heal' || effectType === 'buff' || effectType === 'summon') playSuccess();
 
@@ -792,8 +765,29 @@ export const GameBoard: React.FC<{}> = () => {
           player: 'player',
           value: battlecry?.value ?? battlecry?.buffAttack ?? 0
         });
+      }, vfxDelay);
+    }
+
+    setTimeout(() => {
+      playCard(card.instanceId);
+
+      if (manaPositionRef.current) {
+        addManaUseAnimation(manaPositionRef.current, card.card.manaCost ?? 0);
+
+        if (hasOverload(card.card)) {
+          const overloadAmount = (card.card as any).overload?.amount || 0;
+          if (overloadAmount > 0) {
+            addOverloadAnimation(manaPositionRef.current, overloadAmount);
+            showNotification({
+              title: 'Overload',
+              description: `${overloadAmount} mana locked next turn`,
+              type: 'warning',
+              duration: 2000
+            });
+          }
+        }
       }
-    }, animationDelay); // Use our calculated animation delay
+    }, animationDelay);
   }
   
   
@@ -998,7 +992,31 @@ export const GameBoard: React.FC<{}> = () => {
       }
     } 
     // Otherwise, this is a regular card selection for attack
-    else if (isPlayerTurn && card.isPlayed && !card.isSummoningSick && card.canAttack) {
+    else if (isPlayerTurn && card.isPlayed) {
+      // If another attacker is already selected and we clicked a different friendly minion, deselect first
+      if (attackingCard && attackingCard.instanceId !== card.instanceId) {
+        selectAttacker(null);
+      }
+
+      if (card.isSummoningSick) {
+        showNotification({
+          title: 'Cannot Attack',
+          description: `${card.card.name} has summoning sickness`,
+          type: 'warning',
+          duration: 1500
+        });
+        return;
+      }
+      if (!card.canAttack) {
+        showNotification({
+          title: 'Cannot Attack',
+          description: `${card.card.name} already attacked this turn`,
+          type: 'warning',
+          duration: 1500
+        });
+        return;
+      }
+
       debug.log(`Selected card to attack with: ${card.card.name}`);
       debug.log(`Card details: isPlayed=${card.isPlayed}, isSummoningSick=${card.isSummoningSick}, canAttack=${card.canAttack}, attacks performed=${card.attacksPerformed}`);
       
@@ -1046,24 +1064,6 @@ export const GameBoard: React.FC<{}> = () => {
           });
         }
       }
-    } 
-    else if (card.isPlayed && card.isSummoningSick) {
-      // Show notification for summoning sickness
-      showNotification({
-        title: `Cannot Attack`,
-        description: `${card.card.name} has summoning sickness and cannot attack yet.`,
-        type: 'warning',
-        duration: 2000
-      });
-    } 
-    else if (card.isPlayed && !card.canAttack) {
-      // Show notification for already attacked
-      showNotification({
-        title: `Cannot Attack`,
-        description: `${card.card.name} has already attacked this turn.`,
-        type: 'warning',
-        duration: 2000
-      });
     }
   };
   
@@ -2108,14 +2108,36 @@ export const GameBoard: React.FC<{}> = () => {
         onAnimationComplete={handleAnimationComplete}
       />
       
-      {/* Spell targeting UI */}
+      {/* Spell/battlecry targeting UI */}
       {showTargetingArrow && (
-        <TargetingArrow 
-          from={arrowStartPosition} 
-          to={mousePosition} 
-          color="#ffcc00" 
-          animated={true}
-        />
+        <>
+          <TargetingArrow
+            from={arrowStartPosition}
+            to={mousePosition}
+            color="#ffcc00"
+            animated={true}
+          />
+          <button
+            className="targeting-cancel-btn"
+            onClick={() => {
+              selectCard(null);
+              setShowTargetingArrow(false);
+              setValidTargets([]);
+              playSoundEffect('button_click');
+            }}
+            style={{
+              position: 'absolute', bottom: '220px', left: '50%', transform: 'translateX(-50%)',
+              zIndex: 9100, padding: '8px 20px', border: '1px solid rgba(255,100,100,0.6)',
+              borderRadius: '6px', background: 'rgba(80,20,20,0.85)', color: '#ffb0b0',
+              fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '13px',
+              cursor: 'pointer', pointerEvents: 'auto',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.4)',
+              letterSpacing: '0.5px'
+            }}
+          >
+            Cancel (ESC / Right-click)
+          </button>
+        </>
       )}
       
       {/* Turn transition animation - activated when turn changes */}
@@ -2169,6 +2191,21 @@ export const GameBoard: React.FC<{}> = () => {
       
       {/* Animation layer for visual effects */}
       <AnimationLayer />
+
+      {/* Inline status banners (replaces toast popups) */}
+      <GameStatusBanner />
+
+      {/* Prophecy countdown indicators */}
+      {gameState.prophecies && gameState.prophecies.length > 0 && (
+        <div className="prophecy-tracker">
+          {gameState.prophecies.map(p => (
+            <div key={p.id} className={`prophecy-pip ${p.owner}`}>
+              <span className="prophecy-pip-name">{p.name}</span>
+              <span className="prophecy-pip-turns">{p.turnsRemaining}</span>
+            </div>
+          ))}
+        </div>
+      )}
       
       {/* Dynamic audio that responds to board state */}
       <DynamicAudioLayer />

@@ -13,6 +13,7 @@ import gsap from 'gsap';
 import { spawnParticleBurst, spawnImpactRing, spawnEmbers, ELEMENT_PALETTES } from './PixiParticleCanvas';
 
 const VFX_CONTAINER_ID = 'battlecry-vfx-layer';
+const MAX_ORPHAN_AGE_MS = 5000;
 
 function getOrCreateContainer(): HTMLDivElement {
 	let el = document.getElementById(VFX_CONTAINER_ID) as HTMLDivElement | null;
@@ -28,9 +29,43 @@ function getOrCreateContainer(): HTMLDivElement {
 	return el;
 }
 
+/**
+ * Kill all active GSAP animations in the VFX layer and remove orphaned DOM nodes.
+ * Call on component unmount or scene transitions.
+ */
+export function killAllVFX() {
+	const container = document.getElementById(VFX_CONTAINER_ID);
+	if (container) {
+		gsap.killTweensOf(container.querySelectorAll('*'));
+		container.innerHTML = '';
+	}
+}
+
+// Periodic orphan sweep — removes children that have been in the container
+// longer than MAX_ORPHAN_AGE_MS (safety net if a GSAP callback is interrupted).
+let orphanSweepInterval: ReturnType<typeof setInterval> | null = null;
+
+function startOrphanSweep() {
+	if (orphanSweepInterval) return;
+	orphanSweepInterval = setInterval(() => {
+		const container = document.getElementById(VFX_CONTAINER_ID);
+		if (!container || container.children.length === 0) return;
+		const now = Date.now();
+		Array.from(container.children).forEach(child => {
+			const born = Number((child as HTMLElement).dataset.vfxBorn || '0');
+			if (born && now - born > MAX_ORPHAN_AGE_MS) {
+				child.remove();
+			}
+		});
+	}, 2000);
+}
+
+startOrphanSweep();
+
 function createDiv(styles: Partial<CSSStyleDeclaration>): HTMLDivElement {
 	const div = document.createElement('div');
 	Object.assign(div.style, { position: 'absolute', pointerEvents: 'none', ...styles });
+	div.dataset.vfxBorn = String(Date.now());
 	return div;
 }
 
