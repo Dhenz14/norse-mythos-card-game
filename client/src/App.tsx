@@ -203,7 +203,11 @@ function App() {
       cleanup = initializeGameStoreIntegration();
       loadWasmEngine().catch(err => console.warn('WASM engine load deferred:', err.message));
     })();
-    return () => { cleanup?.(); };
+    return () => {
+      cleanup?.();
+      import("./game/animations/BattlecryVFX").then(m => m.stopOrphanSweep());
+      import("./game/utils/canvasContextManager").then(m => m.default.dispose());
+    };
   }, []);
 
   return (

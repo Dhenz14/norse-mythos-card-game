@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArmySelection as ArmySelectionType, ChessPiece } from '../../types/ChessTypes';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
@@ -348,6 +348,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   const [pokerSlotsSwapped, setPokerSlotsSwapped] = useState(false);
   const [turnCount, setTurnCount] = useState(0);
   const [bossRulesApplied, setBossRulesApplied] = useState(false);
+  const gameEndProcessedRef = useRef(false);
 
   const {
     boardState,
@@ -779,31 +780,31 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   }, [combatPieces, pokerSlotsSwapped, resolveCombat, clearPendingCombat, endCombat, playSoundEffect, updatePieceStamina, updatePieceHealth, incrementAllStamina, nextTurn]);
 
   useEffect(() => {
-    if (boardState.gameStatus === 'player_wins' || boardState.gameStatus === 'opponent_wins') {
-      const winner = boardState.gameStatus === 'player_wins' ? 'player' : 'opponent';
-      playSoundEffect(winner === 'player' ? 'victory' : 'defeat');
-      const timer = setTimeout(() => {
-        if (isCampaign && winner === 'player' && campaignMissionId && campaignData) {
-          completeMission(campaignMissionId, campaignDifficulty, turnCount);
-          const alreadyClaimed = useCampaignStore.getState().rewardsClaimed.includes(campaignMissionId);
-          if (!alreadyClaimed) {
-            for (const reward of campaignData.mission.rewards) {
-              if (reward.type === 'eitr' && reward.amount) {
-                useCraftingStore.getState().addEitr(reward.amount);
-              }
+    if (boardState.gameStatus !== 'player_wins' && boardState.gameStatus !== 'opponent_wins') return;
+    if (gameEndProcessedRef.current) return;
+    gameEndProcessedRef.current = true;
+
+    const winner = boardState.gameStatus === 'player_wins' ? 'player' : 'opponent';
+    playSoundEffect(winner === 'player' ? 'victory' : 'defeat');
+    setTimeout(() => {
+      if (isCampaign && winner === 'player' && campaignMissionId && campaignData) {
+        completeMission(campaignMissionId, campaignDifficulty, turnCount);
+        const alreadyClaimed = useCampaignStore.getState().rewardsClaimed.includes(campaignMissionId);
+        if (!alreadyClaimed) {
+          for (const reward of campaignData.mission.rewards) {
+            if (reward.type === 'eitr' && reward.amount) {
+              useCraftingStore.getState().addEitr(reward.amount);
             }
-            useCampaignStore.getState().claimReward(campaignMissionId);
-            debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId}`);
           }
+          useCampaignStore.getState().claimReward(campaignMissionId);
+          debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId}`);
         }
-        setPhase('game_over');
-        if (onGameEnd) {
-          onGameEnd(winner);
-        }
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
+      }
+      setPhase('game_over');
+      if (onGameEnd) {
+        onGameEnd(winner);
+      }
+    }, 1500);
   }, [boardState.gameStatus, onGameEnd, playSoundEffect]);
 
   useEffect(() => {
@@ -865,6 +866,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     setSharedDeckCardIds([]);
     setCombatPieces(null);
     setTurnCount(0);
+    gameEndProcessedRef.current = false;
     setPhase('army_selection');
   }, [resetBoard, isCampaign, clearCurrent]);
 
@@ -879,6 +881,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     setCombatPieces(null);
     setTurnCount(0);
     setBossRulesApplied(false);
+    gameEndProcessedRef.current = false;
     const defaultArmy = getDefaultArmySelection();
     setPlayerArmy(defaultArmy);
     initializeBoard(defaultArmy, opponentArmy);

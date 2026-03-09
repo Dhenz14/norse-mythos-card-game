@@ -603,7 +603,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     }
     // No eligible target — return card to hand
     player.hand.splice(index, 0, card);
-    return state;
+    return newState;
   }
 
   // Check if battlefield is full before removing card from hand
@@ -758,16 +758,16 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   // Find the card we just added to battlefield
   if (player.battlefield.length === 0) {
     debug.error('Battlefield is empty after playing card');
-    return state;
+    return newState;
   }
   const justPlayedCardInfo = findCardInstance(
     player.battlefield,
     player.battlefield[player.battlefield.length - 1].instanceId
   );
-  
+
   if (!justPlayedCardInfo) {
     debug.error('Card just played not found on battlefield - this should never happen');
-    return state;
+    return newState;
   }
   
   const justPlayedCard = justPlayedCardInfo.card;

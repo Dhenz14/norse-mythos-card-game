@@ -1742,10 +1742,15 @@ function executeDiscoverSpell(
   const discoveryOptions = pool
     .sort(() => 0.5 - Math.random())
     .slice(0, discoveryCount);
-  
+
+  if (discoveryOptions.length === 0) {
+    debug.log('[executeDiscoverSpell] No valid cards to discover — skipping discovery');
+    return state;
+  }
+
   debug.log('[executeDiscoverSpell] Discovery options:', discoveryOptions.map(c => c.name));
   debug.log('[executeDiscoverSpell] Setting discovery.active = true');
-  
+
   // Set discovery state - get fresh state from store in callback
   return {
     ...state,

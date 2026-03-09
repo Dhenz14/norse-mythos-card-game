@@ -306,7 +306,7 @@ function decideWithoutBet(
 }
 
 function getCommunityCards(state: PokerCombatState): PokerCard[] {
-  const cards: PokerCard[] = [...state.communityCards.faith];
+  const cards: PokerCard[] = [...(state.communityCards.faith ?? [])];
   if (state.communityCards.foresight) cards.push(state.communityCards.foresight);
   if (state.communityCards.destiny) cards.push(state.communityCards.destiny);
   return cards;

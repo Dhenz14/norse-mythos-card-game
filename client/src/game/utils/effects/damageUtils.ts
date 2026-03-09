@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { 
-  GameState, 
-  CardInstance, 
-  CardData, 
-  GameLogEvent, 
+import {
+  GameState,
+  CardInstance,
+  CardData,
+  GameLogEvent,
   PlayerState,
   CardType
 } from '../../types';
@@ -27,18 +27,13 @@ export function dealDamage(
   sourceCardId?: number,
   sourcePlayerId?: 'player' | 'opponent'
 ): GameState {
-  const newState = { ...state };
-  const target = newState.players[targetPlayerId];
-  
   if (targetType === 'hero') {
-    // Damage to hero - handle armor
-    return dealDamageToHero(newState, targetPlayerId, amount, sourceCardId, sourcePlayerId);
+    return dealDamageToHero(state, targetPlayerId, amount, sourceCardId, sourcePlayerId);
   } else if (targetInstanceId) {
-    // Damage to minion
-    return dealDamageToMinion(newState, targetPlayerId, targetInstanceId, amount, sourceCardId, sourcePlayerId);
+    return dealDamageToMinion(state, targetPlayerId, targetInstanceId, amount, sourceCardId, sourcePlayerId);
   } else {
     debug.error('Invalid target for damage: missing targetInstanceId for minion');
-    return newState;
+    return state;
   }
 }
 
@@ -52,14 +47,19 @@ export function dealDamageToHero(
   sourceCardId?: number,
   sourcePlayerId?: 'player' | 'opponent'
 ): GameState {
-  let newState = { ...state };
-  const targetPlayer = newState.players[targetPlayerId];
+  let newState: GameState = {
+    ...state,
+    players: { ...state.players },
+    gameLog: [...(state.gameLog || [])],
+  };
+  const targetPlayer = { ...newState.players[targetPlayerId] };
+  newState.players[targetPlayerId] = targetPlayer;
 
   // First check if player has armor
   const armorAmount = targetPlayer.heroArmor || 0;
   let remainingDamage = amount;
   let armorAbsorbed = 0;
-  
+
   // Armor absorbs damage first
   if (armorAmount > 0) {
     if (armorAmount >= remainingDamage) {
@@ -74,7 +74,7 @@ export function dealDamageToHero(
       remainingDamage = remainingDamage - armorAmount;
     }
   }
-  
+
   // Apply remaining damage to health
   if (remainingDamage > 0) {
     targetPlayer.heroHealth = Math.max(0, (targetPlayer.heroHealth ?? 0) - remainingDamage);
@@ -84,9 +84,6 @@ export function dealDamageToHero(
   if (remainingDamage > 0) {
     newState = processArtifactOnHeroDamaged(newState, targetPlayerId, remainingDamage);
   }
-
-  // Add to game log
-  if (!newState.gameLog) newState.gameLog = [];
 
   newState.gameLog.push({
     id: uuidv4(),
@@ -99,25 +96,24 @@ export function dealDamageToHero(
 
   // Check for game over
   if ((targetPlayer.heroHealth ?? 0) <= 0) {
-    newState.gamePhase = 'game_over';
-    newState.winner = targetPlayerId === 'player' ? 'opponent' : 'player';
+    newState = { ...newState, gamePhase: 'game_over', winner: targetPlayerId === 'player' ? 'opponent' : 'player' };
 
     // Process artifact lethal prevention (Oathblade)
     newState = processArtifactOnLethal(newState, targetPlayerId);
 
     // Only log game over if lethal was NOT prevented
     if (newState.gamePhase === 'game_over') {
-      newState.gameLog.push({
+      newState.gameLog = [...newState.gameLog, {
         id: uuidv4(),
-        type: 'effect',
+        type: 'effect' as const,
         player: sourcePlayerId ?? 'player',
         text: `Game over! ${newState.winner} wins!`,
         timestamp: Date.now(),
         turn: newState.turnNumber
-      });
+      }];
     }
   }
-  
+
   return newState;
 }
 
@@ -132,17 +128,26 @@ export function dealDamageToMinion(
   sourceCardId?: number,
   sourcePlayerId?: 'player' | 'opponent'
 ): GameState {
-  const newState = { ...state };
-  const battlefield = newState.players[targetPlayerId].battlefield;
-  
-  if (!battlefield) return newState;
-  
+  const newState: GameState = {
+    ...state,
+    players: { ...state.players },
+    gameLog: [...(state.gameLog || [])],
+  };
+  const player = {
+    ...newState.players[targetPlayerId],
+    battlefield: [...(newState.players[targetPlayerId].battlefield || [])],
+  };
+  newState.players[targetPlayerId] = player;
+  const battlefield = player.battlefield;
+
+  if (!battlefield || battlefield.length === 0) return newState;
+
   const targetIndex = battlefield.findIndex((card: CardInstance) => card.instanceId === targetInstanceId);
   if (targetIndex === -1) return newState;
-  
+
   // Create a copy of the target card for safer modification
   const targetCard = { ...battlefield[targetIndex] };
-  
+
   // Apply status effect damage modifiers (Vulnerable: +3, Bleed: +3)
   let modifiedAmount = amount;
   if (targetCard.isVulnerable) {
@@ -152,18 +157,15 @@ export function dealDamageToMinion(
     modifiedAmount += 3;
   }
   amount = modifiedAmount;
-  
+
   // Check for Divine Shield (prevents damage)
   if (targetCard.hasDivineShield) {
     // Remove Divine Shield instead of taking damage
     targetCard.hasDivineShield = false;
-    
+
     // Update the card in the battlefield
     battlefield[targetIndex] = targetCard;
-    
-    // Add to game log
-    if (!newState.gameLog) newState.gameLog = [];
-    
+
     newState.gameLog.push({
       id: uuidv4(),
       type: 'effect',
@@ -172,29 +174,24 @@ export function dealDamageToMinion(
       timestamp: Date.now(),
       turn: newState.turnNumber,
     });
-    
+
     return newState;
   }
-  
+
   // Apply damage
   if (targetCard.currentHealth !== undefined) {
     // Ensure we're using a valid number for health calculation
     const maxHealth = getHealth(targetCard.card);
     const oldHealth = targetCard.currentHealth || maxHealth || 0;
     const newHealth = Math.max(0, oldHealth - amount);
-    
+
     // Update the health in our copy
     targetCard.currentHealth = newHealth;
-    
+
     // Update the actual card in the battlefield (Mountain Giant fix)
     battlefield[targetIndex] = targetCard;
-    
-    // Debug log
   }
-  
-  // Add to game log
-  if (!newState.gameLog) newState.gameLog = [];
-  
+
   newState.gameLog.push({
     id: uuidv4(),
     type: 'damage',
@@ -204,12 +201,12 @@ export function dealDamageToMinion(
     turn: newState.turnNumber,
     targetId: targetInstanceId,
   });
-  
+
   // Handle death if health is 0
   if (targetCard.currentHealth === 0) {
     return handleMinionDeath(newState, targetPlayerId, targetIndex);
   }
-  
+
   return newState;
 }
 
@@ -223,15 +220,15 @@ export function handleMinionDeath(
   targetIndex: number
 ): GameState {
   const battlefield = state.players[targetPlayerId].battlefield;
-  
+
   if (!battlefield || targetIndex < 0 || targetIndex >= battlefield.length) {
     return state;
   }
-  
+
   // Get the dead minion's instance ID
   const deadMinion = battlefield[targetIndex];
   const minionId = deadMinion.instanceId;
-  
+
   // Use destroyCard to handle the minion death properly, including deathrattle effects
   // This ensures consistency in death processing across the codebase
   return destroyCard(state, minionId, targetPlayerId);
@@ -246,30 +243,32 @@ export function dealDamageToAllEnemyMinions(
   amount: number,
   sourceCardId?: number
 ): GameState {
-  const newState = { ...state };
   const defendingPlayerId = attackingPlayerId === 'player' ? 'opponent' : 'player';
-  const playerMinions = newState.players[defendingPlayerId].battlefield;
-  
+  const newState: GameState = {
+    ...state,
+    players: { ...state.players },
+    gameLog: [...(state.gameLog || [])],
+  };
+  const player = {
+    ...newState.players[defendingPlayerId],
+    battlefield: [...(newState.players[defendingPlayerId].battlefield || [])],
+  };
+  newState.players[defendingPlayerId] = player;
+  const playerMinions = player.battlefield;
+
   if (!playerMinions || playerMinions.length === 0) {
     return newState;
   }
-  
-  // Store minions that need to have damage applied
-  // Using a separate array to avoid issues with Divine Shield blocking
-  const minionsToUpdate: { minion: CardInstance; index: number }[] = [];
-  
-  // First, check Divine Shield and record damage to apply
+
+  // First, check Divine Shield and apply damage with proper copies
   playerMinions.forEach((minion: CardInstance, index: number) => {
     // Create a copy for modification
     const minionCopy = { ...minion };
-    
+
     if (minionCopy.hasDivineShield) {
       // Divine Shield blocks the damage
       minionCopy.hasDivineShield = false;
-      
-      // Add to game log
-      if (!newState.gameLog) newState.gameLog = [];
-      
+
       newState.gameLog.push({
         id: uuidv4(),
         type: 'effect',
@@ -282,10 +281,7 @@ export function dealDamageToAllEnemyMinions(
       // Apply damage calculation
       const oldHealth = minionCopy.currentHealth;
       minionCopy.currentHealth = Math.max(0, minionCopy.currentHealth - amount);
-      
-      // Add to game log
-      if (!newState.gameLog) newState.gameLog = [];
-      
+
       newState.gameLog.push({
         id: uuidv4(),
         type: 'damage',
@@ -296,17 +292,11 @@ export function dealDamageToAllEnemyMinions(
         targetId: minionCopy.instanceId,
       });
     }
-    
-    // Add the copy to our update array with its index
-    minionsToUpdate.push({ minion: minionCopy, index });
+
+    // Update the minion in the battlefield
+    playerMinions[index] = minionCopy;
   });
-  
-  // Apply all the changes to the actual state
-  minionsToUpdate.forEach(({ minion, index }) => {
-    // Update the minion in the actual battlefield
-    playerMinions[index] = minion;
-  });
-  
+
   // Handle any deaths using destroyCard to ensure consistent deathrattle processing
   const deadMinionIds: string[] = [];
   playerMinions.forEach((minion: CardInstance) => {
@@ -314,14 +304,13 @@ export function dealDamageToAllEnemyMinions(
       deadMinionIds.push(minion.instanceId);
     }
   });
-  
+
   // Process deaths one by one using destroyCard
-  // Note: We create a new state for each destroyed minion to ensure proper handling
   let updatedState = newState;
   deadMinionIds.forEach(minionId => {
     updatedState = destroyCard(updatedState, minionId, defendingPlayerId);
   });
-  
+
   return updatedState;
 }
 
@@ -334,26 +323,32 @@ export function dealDamageToAllMinions(
   sourceCardId?: number,
   sourcePlayerId?: 'player' | 'opponent'
 ): GameState {
-  const newState = { ...state };
-  
+  const newState: GameState = {
+    ...state,
+    players: {
+      player: {
+        ...state.players.player,
+        battlefield: [...(state.players.player.battlefield || [])],
+      },
+      opponent: {
+        ...state.players.opponent,
+        battlefield: [...(state.players.opponent.battlefield || [])],
+      },
+    },
+    gameLog: [...(state.gameLog || [])],
+  };
+
   // Deal damage to player minions
   const playerMinions = newState.players.player.battlefield;
   if (playerMinions && playerMinions.length > 0) {
-    // Store minions that need to have damage applied
-    const playerMinionsToUpdate: { minion: CardInstance; index: number }[] = [];
-    
-    // First, check Divine Shield and record damage to apply
     playerMinions.forEach((minion: CardInstance, index: number) => {
       // Create a copy for modification
       const minionCopy = { ...minion };
-      
+
       if (minionCopy.hasDivineShield) {
         // Divine Shield blocks the damage
         minionCopy.hasDivineShield = false;
-        
-        // Add to game log
-        if (!newState.gameLog) newState.gameLog = [];
-        
+
         newState.gameLog.push({
           id: uuidv4(),
           type: 'effect',
@@ -366,10 +361,7 @@ export function dealDamageToAllMinions(
         // Apply damage calculation
         const oldHealth = minionCopy.currentHealth;
         minionCopy.currentHealth = Math.max(0, minionCopy.currentHealth - amount);
-        
-        // Add to game log
-        if (!newState.gameLog) newState.gameLog = [];
-        
+
         newState.gameLog.push({
           id: uuidv4(),
           type: 'damage',
@@ -380,36 +372,23 @@ export function dealDamageToAllMinions(
           targetId: minionCopy.instanceId,
         });
       }
-      
-      // Add the copy to our update array with its index
-      playerMinionsToUpdate.push({ minion: minionCopy, index });
-    });
-    
-    // Apply all the changes to the actual state
-    playerMinionsToUpdate.forEach(({ minion, index }: { minion: CardInstance; index: number }) => {
-      // Update the minion in the actual battlefield
-      playerMinions[index] = minion;
+
+      // Update the minion in the battlefield
+      playerMinions[index] = minionCopy;
     });
   }
-  
+
   // Deal damage to opponent minions
   const opponentMinions = newState.players.opponent.battlefield;
   if (opponentMinions && opponentMinions.length > 0) {
-    // Store minions that need to have damage applied
-    const opponentMinionsToUpdate: { minion: CardInstance; index: number }[] = [];
-    
-    // First, check Divine Shield and record damage to apply
     opponentMinions.forEach((minion: CardInstance, index: number) => {
       // Create a copy for modification
       const minionCopy = { ...minion };
-      
+
       if (minionCopy.hasDivineShield) {
         // Divine Shield blocks the damage
         minionCopy.hasDivineShield = false;
-        
-        // Add to game log
-        if (!newState.gameLog) newState.gameLog = [];
-        
+
         newState.gameLog.push({
           id: uuidv4(),
           type: 'effect',
@@ -422,10 +401,7 @@ export function dealDamageToAllMinions(
         // Apply damage calculation
         const oldHealth = minionCopy.currentHealth;
         minionCopy.currentHealth = Math.max(0, minionCopy.currentHealth - amount);
-        
-        // Add to game log
-        if (!newState.gameLog) newState.gameLog = [];
-        
+
         newState.gameLog.push({
           id: uuidv4(),
           type: 'damage',
@@ -436,18 +412,12 @@ export function dealDamageToAllMinions(
           targetId: minionCopy.instanceId,
         });
       }
-      
-      // Add the copy to our update array with its index
-      opponentMinionsToUpdate.push({ minion: minionCopy, index });
-    });
-    
-    // Apply all the changes to the actual state
-    opponentMinionsToUpdate.forEach(({ minion, index }) => {
-      // Update the minion in the actual battlefield
-      opponentMinions[index] = minion;
+
+      // Update the minion in the battlefield
+      opponentMinions[index] = minionCopy;
     });
   }
-  
+
   // Handle any deaths using destroyCard to ensure consistent deathrattle processing
   // Process player minion deaths
   const playerDeadMinionIds: string[] = [];
@@ -458,8 +428,8 @@ export function dealDamageToAllMinions(
       }
     });
   }
-  
-  // Process opponent minion deaths  
+
+  // Process opponent minion deaths
   const opponentDeadMinionIds: string[] = [];
   if (opponentMinions) {
     opponentMinions.forEach((minion: CardInstance) => {
@@ -468,21 +438,20 @@ export function dealDamageToAllMinions(
       }
     });
   }
-  
+
   // Process deaths one by one using destroyCard to ensure proper deathrattle processing
-  // We need to handle all deaths in a single state to ensure consistency
-  let updatedState = newState;
-  
+  let updatedState: GameState = newState;
+
   // Process player deaths first
   playerDeadMinionIds.forEach(minionId => {
     updatedState = destroyCard(updatedState, minionId, 'player');
   });
-  
+
   // Then process opponent deaths
   opponentDeadMinionIds.forEach(minionId => {
     updatedState = destroyCard(updatedState, minionId, 'opponent');
   });
-  
+
   return updatedState;
 }
 
@@ -495,15 +464,17 @@ export function addArmor(
   amount: number,
   sourceCardId?: number
 ): GameState {
-  const newState = { ...state };
-  const targetPlayer = newState.players[targetPlayerId];
-  
+  const newState: GameState = {
+    ...state,
+    players: { ...state.players },
+    gameLog: [...(state.gameLog || [])],
+  };
+  const targetPlayer = { ...newState.players[targetPlayerId] };
+  newState.players[targetPlayerId] = targetPlayer;
+
   // Add armor
   targetPlayer.heroArmor = (targetPlayer.heroArmor || 0) + amount;
-  
-  // Add to game log
-  if (!newState.gameLog) newState.gameLog = [];
-  
+
   newState.gameLog.push({
     id: uuidv4(),
     type: 'buff',
@@ -512,7 +483,7 @@ export function addArmor(
     timestamp: Date.now(),
     turn: newState.turnNumber,
   });
-  
+
   return newState;
 }
 
@@ -526,15 +497,17 @@ export function setHeroHealth(
   amount: number,
   sourceCardId?: number
 ): GameState {
-  const newState = { ...state };
-  const targetPlayer = newState.players[targetPlayerId];
-  
+  const newState: GameState = {
+    ...state,
+    players: { ...state.players },
+    gameLog: [...(state.gameLog || [])],
+  };
+  const targetPlayer = { ...newState.players[targetPlayerId] };
+  newState.players[targetPlayerId] = targetPlayer;
+
   // Set health
   targetPlayer.heroHealth = amount;
-  
-  // Add to game log
-  if (!newState.gameLog) newState.gameLog = [];
-  
+
   newState.gameLog.push({
     id: uuidv4(),
     type: 'heal',
@@ -543,7 +516,7 @@ export function setHeroHealth(
     timestamp: Date.now(),
     turn: newState.turnNumber,
   });
-  
+
   return newState;
 }
 
@@ -556,24 +529,26 @@ export function healHero(
   amount: number,
   sourceCardId?: number
 ): GameState {
-  const newState = { ...state };
-  const targetPlayer = newState.players[targetPlayerId];
-  
+  const newState: GameState = {
+    ...state,
+    players: { ...state.players },
+    gameLog: [...(state.gameLog || [])],
+  };
+  const targetPlayer = { ...newState.players[targetPlayerId] };
+  newState.players[targetPlayerId] = targetPlayer;
+
   // Calculate actual healing (can't go above max health)
   const maxHealth = targetPlayer.maxHealth;
   const currentHealth = targetPlayer.heroHealth ?? 0;
   const actualHealing = Math.min(amount, maxHealth - currentHealth);
-  
+
   if (actualHealing <= 0) {
     return newState; // No healing needed
   }
-  
+
   // Apply healing
   targetPlayer.heroHealth = (targetPlayer.heroHealth ?? 0) + actualHealing;
-  
-  // Add to game log
-  if (!newState.gameLog) newState.gameLog = [];
-  
+
   newState.gameLog.push({
     id: uuidv4(),
     type: 'heal',
@@ -582,7 +557,7 @@ export function healHero(
     timestamp: Date.now(),
     turn: newState.turnNumber,
   });
-  
+
   return newState;
 }
 
@@ -596,43 +571,49 @@ export function healMinion(
   amount: number,
   sourceCardId?: number
 ): GameState {
-  const newState = { ...state };
-  const battlefield = newState.players[targetPlayerId].battlefield;
-  
-  if (!battlefield) return newState;
-  
+  const newState: GameState = {
+    ...state,
+    players: { ...state.players },
+    gameLog: [...(state.gameLog || [])],
+  };
+  const player = {
+    ...newState.players[targetPlayerId],
+    battlefield: [...(newState.players[targetPlayerId].battlefield || [])],
+  };
+  newState.players[targetPlayerId] = player;
+  const battlefield = player.battlefield;
+
+  if (!battlefield || battlefield.length === 0) return newState;
+
   const targetIndex = battlefield.findIndex((card: CardInstance) => card.instanceId === targetInstanceId);
   if (targetIndex === -1) return newState;
-  
+
   // Create a copy of the target card for safer modification
   const targetCard = { ...battlefield[targetIndex] };
-  
+
   // Check if minion needs healing
   const maxHealth = getHealth(targetCard.card);
-  if (targetCard.currentHealth === undefined || 
+  if (targetCard.currentHealth === undefined ||
       maxHealth === 0 ||
       targetCard.currentHealth >= maxHealth) {
     return newState; // No healing needed
   }
-  
+
   // Calculate actual healing
   const currentHealth = targetCard.currentHealth;
   const actualHealing = Math.min(amount, maxHealth - currentHealth);
-  
+
   if (actualHealing <= 0) {
     return newState; // No healing needed
   }
-  
+
   // Apply healing
   const oldHealth = targetCard.currentHealth;
   targetCard.currentHealth += actualHealing;
-  
+
   // Update the card in the battlefield
   battlefield[targetIndex] = targetCard;
-  
-  // Add to game log
-  if (!newState.gameLog) newState.gameLog = [];
-  
+
   newState.gameLog.push({
     id: uuidv4(),
     type: 'heal',
@@ -642,8 +623,8 @@ export function healMinion(
     turn: newState.turnNumber,
     targetId: targetInstanceId,
   });
-  
-  
+
+
   return newState;
 }
 
@@ -660,7 +641,7 @@ export function getValidTargets(
   cardType?: CardType | string
 ): { targetId: string; targetType: 'minion' | 'hero' | string }[] {
   const validTargets: { targetId: string; targetType: 'minion' | 'hero' | string }[] = [];
-  
+
   // Parse the targeting requirements
   const isFriendly = targetType.includes('friendly');
   const isEnemy = targetType.includes('enemy');
@@ -668,25 +649,25 @@ export function getValidTargets(
   const isHero = targetType.includes('hero');
   const isMinion = targetType.includes('minion');
   const isCharacter = targetType.includes('character') || (!isHero && !isMinion);
-  
+
   // If targeting "all", return a special identifier
   if (targetType === 'all') {
     return [{ targetId: 'all', targetType: 'all' }];
   }
-  
+
   // Check if heroes can be targeted
   if ((isHero || isCharacter || isAny) && !cardType || cardType === 'hero') {
     // Check friendly hero
     if (isFriendly || isAny) {
       validTargets.push({ targetId: 'player', targetType: 'hero' });
     }
-    
+
     // Check enemy hero
     if (isEnemy || isAny) {
       validTargets.push({ targetId: 'opponent', targetType: 'hero' });
     }
   }
-  
+
   // Check if minions can be targeted
   if ((isMinion || isCharacter || isAny) && !cardType || cardType === 'minion') {
     // Check friendly minions
@@ -697,13 +678,13 @@ export function getValidTargets(
         // Skip minions with untargetable flag
         const isUntargetable = hasKeyword(minion, 'untargetable') ||
           (isEnemy && hasKeyword(minion, 'stealth'));
-          
+
         if (!isUntargetable) {
           validTargets.push({ targetId: minion.instanceId, targetType: 'minion' });
         }
       });
     }
-    
+
     // Check enemy minions
     if (isEnemy || isAny) {
       const enemyMinions = state.players.opponent.battlefield || [];
@@ -711,35 +692,35 @@ export function getValidTargets(
         // Skip minions with stealth or untargetable flag
         const isUntargetable = hasKeyword(minion, 'untargetable') ||
           hasKeyword(minion, 'stealth');
-          
+
         if (!isUntargetable) {
           validTargets.push({ targetId: minion.instanceId, targetType: 'minion' });
         }
       });
     }
   }
-  
+
   // Handle special case for damaged minions
   if (targetType === 'damaged_minion') {
     return validTargets.filter(target => {
       if (target.targetType !== 'minion') return false;
-      
+
       // Find the minion in either player's battlefield
       const playerField = state.players.player.battlefield || [];
       const opponentField = state.players.opponent.battlefield || [];
-      
+
       let minion = playerField.find((m: CardInstance) => m.instanceId === target.targetId);
       if (!minion) {
         minion = opponentField.find((m: CardInstance) => m.instanceId === target.targetId);
       }
-      
+
       // Check if it's damaged
       const minionMaxHealth = minion ? getHealth(minion.card) : 0;
-      return minion && minion.currentHealth !== undefined && 
-             minionMaxHealth > 0 && 
+      return minion && minion.currentHealth !== undefined &&
+             minionMaxHealth > 0 &&
              minion.currentHealth < minionMaxHealth;
     });
   }
-  
+
   return validTargets;
 }

@@ -139,7 +139,7 @@ function executeDeathrattleInner(
     case 'mind_control':
       return executeMindControlDeathrattle(newState, deathrattle, playerId);
     case 'damage_conditional':
-      return newState;
+      return executeDamageConditionalDeathrattle(newState, deathrattle, card, playerId);
     case 'deal_damage':
       return executeDamageDeathrattle(newState, deathrattle, playerId);
     case 'recruit':
@@ -161,7 +161,7 @@ function executeDeathrattleInner(
     case 'shuffle_copies_buffed':
       return executeShuffleCopiesBuffedDeathrattle(newState, deathrattle, playerId);
     case 'return_to_hand':
-      return newState;
+      return executeReturnToHandDeathrattle(newState, card, playerId);
     case 'random_damage':
       return executeRandomDamageDeathrattle(newState, deathrattle, playerId);
     case 'grant_keyword':
@@ -474,6 +474,48 @@ function executeDamageDeathrattle(
   // Process pending deathrattles now (since we bypassed destroyCard for AOE deaths)
   // This is safe because processPendingDeathrattles handles the iteration itself
   return processPendingDeathrattles(newState);
+}
+
+function checkDeathrattleCondition(state: GameState, condition: string, playerId: 'player' | 'opponent'): boolean {
+  const player = state.players[playerId];
+  const battlefield = player.battlefield || [];
+  switch (condition) {
+    case 'minion_count_7':
+      return battlefield.length >= 7;
+    case 'minion_died_this_turn':
+      return ((state as any).minionsDeadThisTurn || 0) > 0;
+    default:
+      return true;
+  }
+}
+
+function executeDamageConditionalDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  card: CardInstance,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const condition = (deathrattle as any).condition as string | undefined;
+  if (condition && !checkDeathrattleCondition(state, condition, playerId)) {
+    return state;
+  }
+  return executeDamageDeathrattle(state, deathrattle, playerId);
+}
+
+function executeReturnToHandDeathrattle(
+  state: GameState,
+  card: CardInstance,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = structuredClone(state) as GameState;
+  const player = newState.players[playerId];
+  if ((player.hand || []).length >= MAX_HAND_SIZE) {
+    return newState;
+  }
+  const returnedCard = createCardInstance(card.card);
+  returnedCard.isPlayed = false;
+  player.hand.push(returnedCard);
+  return newState;
 }
 
 /**

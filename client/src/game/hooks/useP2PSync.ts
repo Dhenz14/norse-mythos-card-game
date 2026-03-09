@@ -112,6 +112,9 @@ export function useP2PSync() {
 	const theirCommitmentRef = useRef<string | null>(null);
 	const seedResolvedRef = useRef(false);
 
+	// Slash dedup: only submit one slash per turn
+	const lastSlashTurnRef = useRef<number>(-1);
+
 	// Dual-sig result state
 	const pendingResultRef = useRef<{
 		result: PackagedMatchResult;
@@ -267,7 +270,8 @@ export function useP2PSync() {
 							duration: 8000,
 						});
 
-						if (isHiveMode()) {
+						if (isHiveMode() && data.turnNumber !== lastSlashTurnRef.current) {
+							lastSlashTurnRef.current = data.turnNumber;
 							const matchSeed = useGameStore.getState().matchSeed;
 							const opponentName = usePeerStore.getState().remotePeerId ?? 'unknown';
 							if (matchSeed) {

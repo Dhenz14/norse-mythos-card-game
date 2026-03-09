@@ -1,14 +1,20 @@
 import { GameState } from '../types';
 
 export function checkPetEvolutionTrigger(state: GameState, trigger: string, minionId?: string): GameState {
+	let changed = false;
+	const newPlayers: any = {};
 	for (const side of ['player', 'opponent'] as const) {
-		for (const minion of state.players[side].battlefield) {
-			if (minion.petEvolutionMet) continue;
+		const bf = state.players[side].battlefield;
+		const newBf = bf.map(minion => {
+			if (minion.petEvolutionMet) return minion;
 			const cond = (minion.card as any).evolutionCondition;
-			if (!cond || cond.trigger !== trigger) continue;
-			if (minionId && minion.instanceId !== minionId) continue;
-			minion.petEvolutionMet = true;
-		}
+			if (!cond || cond.trigger !== trigger) return minion;
+			if (minionId && minion.instanceId !== minionId) return minion;
+			changed = true;
+			return { ...minion, petEvolutionMet: true };
+		});
+		newPlayers[side] = newBf !== bf ? { ...state.players[side], battlefield: newBf } : state.players[side];
 	}
-	return state;
+	if (!changed) return state;
+	return { ...state, players: { ...state.players, ...newPlayers } };
 }

@@ -62,6 +62,13 @@ function startOrphanSweep() {
 
 startOrphanSweep();
 
+export function stopOrphanSweep() {
+	if (orphanSweepInterval) {
+		clearInterval(orphanSweepInterval);
+		orphanSweepInterval = null;
+	}
+}
+
 function createDiv(styles: Partial<CSSStyleDeclaration>): HTMLDivElement {
 	const div = document.createElement('div');
 	Object.assign(div.style, { position: 'absolute', pointerEvents: 'none', ...styles });
