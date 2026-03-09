@@ -55,6 +55,7 @@ import { canCardAttack, isValidAttackTarget } from '../combat/attackUtils';
 import { createHandlePlayerCardClick, createHandleOpponentCardClick, createHandleOpponentHeroClick } from './GameBoardHandlers';
 import { isMinion, isSpell, isWeapon, isHero, getAttack, getHealth, getDurability, hasOverload, hasBattlecry, hasSpellEffect } from '../utils/cards/typeGuards';
 import { hasKeyword, getKeywords } from '../utils/cards/keywordUtils';
+import { needsPositionChoice } from '../utils/cards/positionUtils';
 import { debug } from '../config/debugConfig';
 // Ultimate CardWithDrag system handles all interactions now
 
@@ -89,6 +90,9 @@ export const GameBoard: React.FC<{}> = () => {
   
   // State for card detail view
   const [detailCard, setDetailCard] = useState<CardInstance | CardData | null>(null);
+
+  // State for click-to-play position selection (positional cards like magnetic/cleave/buff_adjacent)
+  const [pendingPositionalCard, setPendingPositionalCard] = useState<CardInstance | null>(null);
   
   // Track card positions for attack visualization
   const [attackCardPositions, setAttackCardPositions] = useState<Record<string, Position>>({});
@@ -375,7 +379,30 @@ export const GameBoard: React.FC<{}> = () => {
       setValidTargets([]);
     }
   }, [selectedCard]);
-  
+
+  // Handle position selection for positional cards (click-to-play flow)
+  const handlePositionSelect = useCallback((insertionIndex: number) => {
+    if (!pendingPositionalCard) return;
+    const card = pendingPositionalCard;
+    setPendingPositionalCard(null);
+    playCard(card.instanceId, undefined, undefined, insertionIndex);
+    playSoundEffect('card_play');
+  }, [pendingPositionalCard, playCard, playSoundEffect]);
+
+  // Cancel position selection on Escape or when turn ends
+  useEffect(() => {
+    if (!pendingPositionalCard) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPendingPositionalCard(null);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [pendingPositionalCard]);
+
+  useEffect(() => {
+    if (currentTurn !== 'player') setPendingPositionalCard(null);
+  }, [currentTurn]);
+
   // AI Action Manager to control AI turn spacing and animations
   // Important note: We don't use the AI Action Manager for actual turns,
   // since the GameUtils already handles AI turns synchronously.
@@ -516,9 +543,22 @@ export const GameBoard: React.FC<{}> = () => {
       playSoundEffect('legendary_entrance');
     }
       
+    // Check if this minion needs position choice (magnetic, cleave, buff_adjacent)
+    // Only show picker if there are 2+ minions on board (otherwise position is obvious)
+    if (isMinion(card.card) && needsPositionChoice(card) && player.battlefield.length >= 2) {
+      setPendingPositionalCard(card);
+      showNotification({
+        title: 'Choose Position',
+        description: `Click a gap on the battlefield to place ${card.card.name}.`,
+        type: 'info',
+        duration: 3000
+      });
+      return;
+    }
+
     // Check if it's a card that requires a battlecry target (like Dreadscale)
-    if (isMinion(card.card) && 
-        hasBattlecry(card.card) && 
+    if (isMinion(card.card) &&
+        hasBattlecry(card.card) &&
         card.card.battlecry?.requiresTarget) {
       debug.log(`${card.card.name} requires a battlecry target`);
       
@@ -2421,6 +2461,8 @@ export const GameBoard: React.FC<{}> = () => {
             }
             registerCardPosition={registerCardPosition}
             isInteractionDisabled={isProcessingAIActions}
+            showPositionPicker={!!pendingPositionalCard}
+            onPositionSelect={handlePositionSelect}
           />
           
           {/* Action buttons moved to unified control bar at bottom - removed to prevent duplicate */}

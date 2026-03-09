@@ -920,6 +920,20 @@ vercel --prod                 # Deploy to Vercel
 - Hive RC (resource credits) acts as natural Layer 3 rate limiting — spam costs real HIVE POWER
 - TypeScript: 0 errors
 
+### Completed (Click-to-Play UX)
+
+- Replaced drag-and-drop as primary card play method with single-click
+- Normal minions: click in hand → plays immediately at end of battlefield
+- Positional minions (magnetic, cleave, buff_adjacent): click card → glowing insertion gaps appear between minions → click gap to place
+- Position picker only shown when 2+ minions on board (otherwise position is obvious)
+- Escape key or turn end cancels position selection
+- Drag-and-drop still works as secondary input method
+- Cursor changed from `grab` to `pointer` on playable cards
+- New utility: `positionUtils.ts` — `needsPositionChoice(card)` detects positional cards
+- SimpleBattlefield: `showPositionPicker` + `onPositionSelect` props for clickable insertion gaps
+- GameBoard: `pendingPositionalCard` state manages two-step positional flow
+- Battlecry targeting, spells, and other existing flows unchanged
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok Hive account

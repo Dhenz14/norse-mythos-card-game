@@ -29,6 +29,8 @@ interface SimpleBattlefieldProps {
   renderMode?: 'both' | 'player' | 'opponent';
   shakingTargets?: Set<string>;
   isInteractionDisabled?: boolean;
+  showPositionPicker?: boolean;
+  onPositionSelect?: (insertionIndex: number) => void;
 }
 
 const MAX_SLOTS = MAX_BATTLEFIELD_SIZE;
@@ -44,7 +46,9 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
   isPlayerTurn,
   renderMode = 'both',
   shakingTargets = EMPTY_SET,
-  isInteractionDisabled = false
+  isInteractionDisabled = false,
+  showPositionPicker = false,
+  onPositionSelect
 }) => {
   const showOpponent = renderMode === 'both' || renderMode === 'opponent';
   const showPlayer = renderMode === 'both' || renderMode === 'player';
@@ -269,16 +273,23 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
 
   const occupiedCount = playerCards.length;
   const isBoardFull = occupiedCount >= MAX_SLOTS;
-  const showGaps = isDragging && !isBoardFull && showPlayer;
+  const showGaps = (isDragging || showPositionPicker) && !isBoardFull && showPlayer;
+
+  const [hoveredGap, setHoveredGap] = useState(-1);
 
   const playerSlotsWithGaps = useMemo(() => {
     if (!showGaps) return playerSlots;
     const result: React.ReactNode[] = [];
     for (let i = 0; i <= occupiedCount; i++) {
+      const gapIndex = i;
+      const isActive = showPositionPicker ? hoveredGap === i : activeGap === i;
       result.push(
         <div
           key={`gap-${i}`}
-          className={`bf-insertion-gap ${activeGap === i ? 'active' : ''}`}
+          className={`bf-insertion-gap ${isActive ? 'active' : ''} ${showPositionPicker ? 'clickable' : ''}`}
+          onMouseEnter={showPositionPicker ? () => setHoveredGap(gapIndex) : undefined}
+          onMouseLeave={showPositionPicker ? () => setHoveredGap(-1) : undefined}
+          onClick={showPositionPicker ? (e) => { e.stopPropagation(); onPositionSelect?.(gapIndex); } : undefined}
         />
       );
       if (i < MAX_SLOTS && playerSlots[i]) {
@@ -286,7 +297,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
       }
     }
     return result;
-  }, [showGaps, playerSlots, occupiedCount, activeGap]);
+  }, [showGaps, showPositionPicker, playerSlots, occupiedCount, activeGap, hoveredGap, onPositionSelect]);
 
   return (
     <div className="simple-battlefield">
@@ -297,7 +308,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
       )}
 
       {showPlayer && (
-        <div ref={playerRowRef} className={`bf-row player-row ${showGaps ? 'dragging' : ''}`} aria-label="Player's battlefield">
+        <div ref={playerRowRef} className={`bf-row player-row ${showGaps ? 'dragging' : ''} ${showPositionPicker ? 'position-picking' : ''}`} aria-label="Player's battlefield">
           {playerSlotsWithGaps}
         </div>
       )}

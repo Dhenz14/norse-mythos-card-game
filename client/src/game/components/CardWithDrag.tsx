@@ -160,7 +160,7 @@ export const CardWithDrag: React.FC<CardWithDragProps> = React.memo(({
           position: 'relative',
           transform: isHovering && !isDragging ? 'translateY(-12px)' : 'translateY(0)',
           pointerEvents: isInHand || isPlayable ? 'auto' : 'none',
-          cursor: isPlayable ? 'grab' : 'default',
+          cursor: isPlayable ? 'pointer' : 'default',
           zIndex: isDragging ? 9999 : isHovering ? 100 : 'auto'
         }}
         data-card-id={processedCard.id || (hasCardProperty ? card.card?.id : undefined)}
