@@ -5,6 +5,8 @@ export const HIVE_NODES = [
 ] as const;
 
 export const RAGNAROK_ACCOUNT = 'ragnarok';
+export const RAGNAROK_GENESIS_ACCOUNT = 'ragnarok-genesis';
+export const RAGNAROK_TREASURY_ACCOUNT = 'ragnarok-treasury';
 
 // On-chain NFT metadata URLs (ERC-1155 standard for blockchain explorers/marketplaces).
 // NOT used for in-game art rendering — all runtime art loads via assetPath() from local files.

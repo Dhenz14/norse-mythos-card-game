@@ -192,3 +192,75 @@ export type InsertPackType = z.infer<typeof insertPackTypeSchema>;
 
 export type PackHistory = typeof packHistory.$inferSelect;
 export type InsertPackHistory = z.infer<typeof insertPackHistorySchema>;
+
+// ============================================
+// Treasury Multisig Tables
+// ============================================
+
+export const treasurySigners = pgTable("treasury_signers", {
+	id: serial("id").primaryKey(),
+	username: text("username").notNull().unique(),
+	status: text("status").notNull().default("active"),
+	weight: integer("weight").notNull().default(1),
+	joinedAt: timestamp("joined_at").defaultNow(),
+	leftAt: timestamp("left_at"),
+	cooldownUntil: timestamp("cooldown_until"),
+	lastHeartbeat: timestamp("last_heartbeat"),
+	optEvents: integer("opt_events").notNull().default(0),
+});
+
+export const treasuryVouches = pgTable("treasury_vouches", {
+	id: serial("id").primaryKey(),
+	voucherUsername: text("voucher_username").notNull(),
+	candidateUsername: text("candidate_username").notNull(),
+	voucherRankAtVouch: integer("voucher_rank_at_vouch"),
+	active: boolean("active").notNull().default(true),
+	revokeReason: text("revoke_reason"),
+	createdAt: timestamp("created_at").defaultNow(),
+	revokedAt: timestamp("revoked_at"),
+});
+
+export const treasuryTransactions = pgTable("treasury_transactions", {
+	id: text("id").primaryKey(),
+	txType: text("tx_type").notNull(),
+	status: text("status").notNull().default("pending"),
+	threshold: integer("threshold").notNull(),
+	signatures: text("signatures").notNull().default("{}"),
+	digestHex: text("digest_hex").notNull(),
+	txObject: text("tx_object").notNull(),
+	broadcastAfter: timestamp("broadcast_after"),
+	broadcastTxId: text("broadcast_tx_id"),
+	broadcastBlockNum: integer("broadcast_block_num"),
+	metadata: text("metadata").notNull().default("{}"),
+	createdAt: timestamp("created_at").defaultNow(),
+	broadcastedAt: timestamp("broadcasted_at"),
+	failureReason: text("failure_reason"),
+});
+
+export const treasuryAuditLog = pgTable("treasury_audit_log", {
+	id: serial("id").primaryKey(),
+	txId: text("tx_id").notNull(),
+	action: text("action").notNull(),
+	username: text("username"),
+	rejectReason: text("reject_reason"),
+	anomalyFlags: text("anomaly_flags"),
+	metadata: text("metadata"),
+	createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const treasuryFreezeState = pgTable("treasury_freeze_state", {
+	id: serial("id").primaryKey(),
+	frozen: boolean("frozen").notNull().default(false),
+	frozenBy: text("frozen_by"),
+	frozenAt: timestamp("frozen_at"),
+	unfreezeVotes: text("unfreeze_votes").notNull().default("[]"),
+	unfreezeThreshold: integer("unfreeze_threshold"),
+	reason: text("reason"),
+	updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type TreasurySigner = typeof treasurySigners.$inferSelect;
+export type TreasuryVouch = typeof treasuryVouches.$inferSelect;
+export type TreasuryTransaction = typeof treasuryTransactions.$inferSelect;
+export type TreasuryAuditLogEntry = typeof treasuryAuditLog.$inferSelect;
+export type TreasuryFreezeStateRow = typeof treasuryFreezeState.$inferSelect;

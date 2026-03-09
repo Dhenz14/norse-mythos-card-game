@@ -7,6 +7,7 @@ export const routes = {
   packs: '/packs',
   collection: '/collection',
   trading: '/trading',
+  treasury: '/treasury',
   ladder: '/ladder',
   history: '/history',
   settings: '/settings',

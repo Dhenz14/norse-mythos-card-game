@@ -50,6 +50,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const chainRoutes = (await import("./routes/chainRoutes")).default;
   app.use('/api/chain', chainRoutes);
 
+  // Treasury multisig routes (signer management, WoT vouching, transactions)
+  const treasuryRoutes = (await import("./routes/treasuryRoutes")).default;
+  app.use('/api/treasury', treasuryRoutes);
+
   // Start the server-side chain indexer (polls Hive RPC for ragnarok-cards ops)
   const { startIndexer } = await import("./services/chainIndexer");
   startIndexer();

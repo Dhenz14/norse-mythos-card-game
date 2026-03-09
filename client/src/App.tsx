@@ -29,6 +29,7 @@ const TournamentListPage = lazy(() => import('./game/components/tournament/Tourn
 const SpectatorView = lazy(() => import('./game/components/spectator/SpectatorView'));
 const MatchHistoryPage = lazy(() => import('./game/components/replay/MatchHistoryPage'));
 const SettingsPage = lazy(() => import('./game/components/settings/SettingsPage'));
+const TreasuryPage = lazy(() => import('./game/components/treasury/TreasuryPage'));
 const StarterPackCeremony = lazy(() => import('./game/components/StarterPackCeremony'));
 
 function HomePage() {
@@ -128,6 +129,12 @@ function HomePage() {
             </Button>
           </Link>
 
+          <Link to={routes.treasury}>
+            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
+              Treasury
+            </Button>
+          </Link>
+
           <Link to={routes.tournaments}>
             <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
               Tournaments
@@ -217,6 +224,7 @@ function App() {
               <Route path={routes.collection} element={<CollectionPage />} />
               <Route path={routes.ladder} element={<RankedLadderPage />} />
               <Route path={routes.trading} element={<TradingPage />} />
+              <Route path={routes.treasury} element={<TreasuryPage />} />
               <Route path={routes.tournaments} element={<TournamentListPage />} />
               <Route path={routes.spectate} element={<SpectatorView />} />
               <Route path={routes.history} element={<MatchHistoryPage />} />
