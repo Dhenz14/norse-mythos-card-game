@@ -2,8 +2,7 @@ import { CardInstance, GameState, ZoneType } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { shouldTriggerDeathrattle, processPendingDeathrattles } from './deathrattleUtils';
 import { debug } from '../config/debugConfig';
-// Use the bridge for enhanced deathrattle handling with EffectRegistry support
-import { executeDeathrattle } from '../effects/handlers/deathrattleBridge';
+import { executeDeathrattle } from './deathrattleUtils';
 import { logCardDraw, logCardDeath } from './gameLogUtils';
 import { useAnimationStore } from '../animations/AnimationManager';
 import { logActivity } from '../stores/activityLogStore';

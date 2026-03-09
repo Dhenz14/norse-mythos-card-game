@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { CardData, CardInstance } from '../types';
-import { LegendaryCardScene } from './3D/LegendaryCardScene';
 import { isMinion } from '../utils/cards/typeGuards';
 
 interface CardDetailViewProps {
@@ -9,12 +8,7 @@ interface CardDetailViewProps {
 }
 
 export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose }) => {
-  // Extract the card data properly, handling both CardInstance and CardData
   const cardData = 'card' in card ? card.card : card;
-  const isLegendary = cardData.rarity === 'mythic';
-  
-  // Track if 3D view is active
-  const [is3DActive, setIs3DActive] = useState(isLegendary);
   
   // Get card border color based on rarity
   const getCardBorderColor = () => {
@@ -102,45 +96,28 @@ export const CardDetailView: React.FC<CardDetailViewProps> = ({ card, onClose })
         </div>
         
         <div className="p-6 flex flex-col md:flex-row">
-          {/* Card visual - either 3D or 2D */}
           <div className="flex-shrink-0 w-full md:w-64 mb-6 md:mb-0">
-            {isLegendary && is3DActive ? (
-              <div className="h-96">
-                <LegendaryCardScene card={card} width={300} height={370} />
+            <div className={`${getCardBorderColor()} border-4 rounded-lg overflow-hidden bg-gradient-to-b ${getCardBackgroundColor()} p-4 flex flex-col h-80`}>
+              <div className="text-center text-white font-bold text-xl mb-2">{cardData.name}</div>
+              <div className="bg-black bg-opacity-30 text-white p-3 rounded mb-auto">
+                <p>{cardData.description || "No description available."}</p>
               </div>
-            ) : (
-              <div className={`${getCardBorderColor()} border-4 rounded-lg overflow-hidden bg-gradient-to-b ${getCardBackgroundColor()} p-4 flex flex-col h-80`}>
-                <div className="text-center text-white font-bold text-xl mb-2">{cardData.name}</div>
-                <div className="bg-black bg-opacity-30 text-white p-3 rounded mb-auto">
-                  <p>{cardData.description || "No description available."}</p>
-                </div>
-                <div className="flex justify-between items-center mt-2">
-                  {cardData.type === 'minion' && (
-                    <>
-                      <div className="flex items-center justify-center w-10 h-10 bg-red-600 rounded-full text-white font-bold">
-                        {cardData.attack || 0}
-                      </div>
-                      <div className="flex items-center justify-center w-10 h-10 bg-green-600 rounded-full text-white font-bold">
-                        {cardData.health || 0}
-                      </div>
-                    </>
-                  )}
-                  <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-full text-white font-bold ml-auto">
-                    {cardData.manaCost}
-                  </div>
+              <div className="flex justify-between items-center mt-2">
+                {cardData.type === 'minion' && (
+                  <>
+                    <div className="flex items-center justify-center w-10 h-10 bg-red-600 rounded-full text-white font-bold">
+                      {cardData.attack || 0}
+                    </div>
+                    <div className="flex items-center justify-center w-10 h-10 bg-green-600 rounded-full text-white font-bold">
+                      {cardData.health || 0}
+                    </div>
+                  </>
+                )}
+                <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-full text-white font-bold ml-auto">
+                  {cardData.manaCost}
                 </div>
               </div>
-            )}
-            
-            {/* Toggle 3D View button (for legendary cards only) */}
-            {isLegendary && (
-              <button
-                onClick={() => setIs3DActive(!is3DActive)}
-                className="mt-3 w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
-              >
-                {is3DActive ? "Switch to 2D View" : "Switch to 3D View"}
-              </button>
-            )}
+            </div>
           </div>
           
           {/* Card details */}

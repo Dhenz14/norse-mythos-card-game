@@ -1,52 +1,36 @@
 import React from 'react';
-// Consolidated 3D UI components from components/3D/ui/
-import { ThreeJSWrapper, ArmorShield } from './3D/ui';
 
 interface ArmorDisplayProps {
-  value: number;
-  className?: string;
+	value: number;
+	className?: string;
 }
 
 export function ArmorDisplay({ value, className = '' }: ArmorDisplayProps) {
-  // Only render if there's armor to show
-  if (value <= 0) return null;
-  
-  // Calculate glow intensity based on armor value
-  const getGlowIntensity = () => {
-    if (value >= 20) return 2; // Strong glow for high armor
-    if (value >= 10) return 1.5; // Medium glow for medium armor
-    return 1; // Normal glow for low armor
-  };
+	if (value <= 0) return null;
 
-  // Get text color class based on armor value
-  const getTextColorClass = () => {
-    if (value >= 20) return 'text-blue-400';
-    if (value >= 10) return 'text-blue-300';
-    return 'text-blue-200';
-  };
+	const getTextColorClass = () => {
+		if (value >= 20) return 'text-blue-400';
+		if (value >= 10) return 'text-blue-300';
+		return 'text-blue-200';
+	};
 
-  return (
-    <div className={`relative flex items-center justify-center ${className}`}>
-      <div className="relative">
-        <ThreeJSWrapper 
-          width={60} 
-          height={60}
-          allowZoom={false}
-          allowRotate={true}
-          controlsEnabled={true}
-        >
-          <ArmorShield
-            armor={value}
-            scale={[0.8, 0.8, 0.8]}
-            glowIntensity={getGlowIntensity()}
-          />
-        </ThreeJSWrapper>
-        <div className={`absolute inset-0 flex items-center justify-center font-bold text-base ${getTextColorClass()}`}>
-          {value}
-        </div>
-      </div>
-    </div>
-  );
+	return (
+		<div className={`relative flex items-center justify-center ${className}`}>
+			<div className="relative w-[60px] h-[60px] flex items-center justify-center">
+				<svg viewBox="0 0 40 44" className="absolute inset-0 w-full h-full drop-shadow-lg">
+					<path
+						d="M20 2 L36 10 L36 26 C36 34 28 40 20 42 C12 40 4 34 4 26 L4 10 Z"
+						fill="#1e3a5f"
+						stroke="#60a5fa"
+						strokeWidth="2"
+					/>
+				</svg>
+				<span className={`relative font-bold text-base ${getTextColorClass()}`}>
+					{value}
+				</span>
+			</div>
+		</div>
+	);
 }
 
 export default ArmorDisplay;

@@ -27,9 +27,7 @@ interface GameFlowStore {
   selectedDeckIds: number[];
   
   transition: (transition: GamePhaseTransition) => boolean;
-  canTransition: (transition: GamePhaseTransition) => boolean;
-  getValidTransitions: () => GamePhaseTransition[];
-  
+
   setSelectedKing: (kingId: string) => void;
   addHeroToArmy: (heroId: string) => void;
   removeHeroFromArmy: (heroId: string) => void;
@@ -78,14 +76,6 @@ export const useGameFlowStore = create<GameFlowStore>()(
 
         transition: (transition) => {
           return flowManager.transition(transition);
-        },
-
-        canTransition: (transition) => {
-          return flowManager.canTransition(transition);
-        },
-
-        getValidTransitions: () => {
-          return flowManager.getValidTransitions();
         },
 
         setSelectedKing: (kingId) => {

@@ -2,6 +2,12 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useMatchmakingStore } from '../stores/matchmakingStore';
 import { usePeerStore } from '../stores/peerStore';
 import { useHiveDataStore } from '../../data/HiveDataLayer';
+import { isHiveMode } from '../config/featureFlags';
+import {
+	broadcastQueueJoin,
+	broadcastQueueLeave,
+	startQueuePoller,
+} from '../../data/blockchain/matchmakingOnChain';
 
 const API_BASE = import.meta.env.VITE_API_URL || (window.location.origin);
 
@@ -22,6 +28,8 @@ export function useMatchmaking() {
 	} = useMatchmakingStore();
 
 	const pollIntervalRef = useRef<number | null>(null);
+	const chainPollerCancelRef = useRef<(() => void) | null>(null);
+	const chainLeaveFnRef = useRef<(() => Promise<void>) | null>(null);
 
 	const joinQueue = useCallback(async () => {
 		if (!myPeerId) {
@@ -32,6 +40,34 @@ export function useMatchmaking() {
 		try {
 			setStatus('queued');
 			setError(null);
+
+			if (isHiveMode() && hiveUsername) {
+				const stats = useHiveDataStore.getState().stats;
+				const elo = stats?.odinsEloRating ?? 1200;
+
+				const leaveFn = await broadcastQueueJoin({
+					account: hiveUsername,
+					mode: 'ranked',
+					elo,
+					peerId: myPeerId,
+					deckHash: '',
+				});
+				chainLeaveFnRef.current = leaveFn;
+
+				const cancelPoller = startQueuePoller(
+					hiveUsername,
+					'ranked',
+					elo,
+					(match) => {
+						setStatus('matched');
+						setOpponent(match.peerId, true);
+						setQueuePosition(null);
+						chainPollerCancelRef.current = null;
+					},
+				);
+				chainPollerCancelRef.current = cancelPoller;
+				return;
+			}
 
 			const response = await fetch(`${API_BASE}/api/matchmaking/queue`, {
 				method: 'POST',
@@ -85,21 +121,40 @@ export function useMatchmaking() {
 	}, [myPeerId, hiveUsername, setStatus, setError, setQueuePosition, setOpponent]);
 
 	const leaveQueue = useCallback(async () => {
-		if (!myPeerId) return;
+		if (chainPollerCancelRef.current) {
+			chainPollerCancelRef.current();
+			chainPollerCancelRef.current = null;
+		}
+
+		if (chainLeaveFnRef.current) {
+			try {
+				await chainLeaveFnRef.current();
+			} catch (err) {
+				console.error('[useMatchmaking] Failed to leave on-chain queue:', err);
+			}
+			chainLeaveFnRef.current = null;
+		}
+
+		if (!myPeerId) {
+			reset();
+			return;
+		}
 
 		if (pollIntervalRef.current) {
 			clearInterval(pollIntervalRef.current);
 			pollIntervalRef.current = null;
 		}
 
-		try {
-			await fetch(`${API_BASE}/api/matchmaking/leave`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ peerId: myPeerId }),
-			});
-		} catch (err) {
-			console.error('[useMatchmaking] Failed to leave queue:', err);
+		if (!isHiveMode()) {
+			try {
+				await fetch(`${API_BASE}/api/matchmaking/leave`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ peerId: myPeerId }),
+				});
+			} catch (err) {
+				console.error('[useMatchmaking] Failed to leave queue:', err);
+			}
 		}
 
 		reset();
@@ -109,6 +164,9 @@ export function useMatchmaking() {
 		return () => {
 			if (pollIntervalRef.current) {
 				clearInterval(pollIntervalRef.current);
+			}
+			if (chainPollerCancelRef.current) {
+				chainPollerCancelRef.current();
 			}
 		};
 	}, []);

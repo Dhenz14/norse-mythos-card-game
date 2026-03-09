@@ -152,27 +152,3 @@ export const useTargetingStore = create<TargetingState>((set, get) => ({
     set({ cardPositions: new Map() });
   }
 }));
-
-export function predictAttackOutcome(
-  attackerAttack: number,
-  attackerHealth: number,
-  defenderAttack: number,
-  defenderHealth: number,
-  defenderIsHero: boolean = false
-): DamagePreview {
-  const damageToTarget = attackerAttack;
-  const damageToAttacker = defenderIsHero ? 0 : defenderAttack;
-  
-  const targetRemainingHealth = defenderHealth - damageToTarget;
-  const attackerRemainingHealth = attackerHealth - damageToAttacker;
-  
-  return {
-    targetId: '',
-    damageToTarget,
-    damageToAttacker,
-    isLethalToTarget: targetRemainingHealth <= 0,
-    isLethalToAttacker: attackerRemainingHealth <= 0,
-    targetCurrentHealth: defenderHealth,
-    attackerCurrentHealth: attackerHealth
-  };
-}

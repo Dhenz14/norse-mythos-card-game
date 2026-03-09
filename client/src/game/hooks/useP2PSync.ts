@@ -13,6 +13,8 @@ import { startNewTranscript, getActiveTranscript, clearTranscript } from '../../
 import type { GameMove } from '../../data/blockchain/signedMove';
 import { getWasmHash, loadWasmEngine } from '../engine/wasmLoader';
 import { computeStateHash } from '../engine/engineBridge';
+import { isHiveMode } from '../config/featureFlags';
+import { submitSlashEvidence, findExistingMatchResult } from '../../data/blockchain/slashEvidence';
 
 declare const __BUILD_HASH__: string;
 
@@ -201,6 +203,22 @@ export function useP2PSync() {
 				duration: 8000,
 				description: 'The connection was lost. You may need to start a new game.',
 			});
+
+			if (isHiveMode()) {
+				const gs = useGameStore.getState().gameState;
+				const matchSeed = useGameStore.getState().matchSeed;
+				const opponentName = usePeerStore.getState().remotePeerId ?? 'unknown';
+				if (gs && gs.gamePhase !== 'game_over' && gs.turnNumber > 0 && matchSeed) {
+					submitSlashEvidence({
+						matchId: matchSeed,
+						offender: opponentName,
+						reason: 'fake_disconnect',
+						trxId1: matchSeed,
+						trxId2: `disconnect_turn_${gs.turnNumber}_${Date.now()}`,
+						notes: `Opponent disconnected mid-match at turn ${gs.turnNumber}`,
+					}).catch(err => console.warn('[useP2PSync] Failed to submit fake_disconnect slash:', err));
+				}
+			}
 		};
 
 		connection.on('close', handleClose);
@@ -248,6 +266,21 @@ export function useP2PSync() {
 							description: 'Game state diverged from opponent. Possible cheating detected.',
 							duration: 8000,
 						});
+
+						if (isHiveMode()) {
+							const matchSeed = useGameStore.getState().matchSeed;
+							const opponentName = usePeerStore.getState().remotePeerId ?? 'unknown';
+							if (matchSeed) {
+								submitSlashEvidence({
+									matchId: matchSeed,
+									offender: opponentName,
+									reason: 'forged_move',
+									trxId1: matchSeed,
+									trxId2: `hash_check_fail_turn_${data.turnNumber}_${myHash.slice(0, 16)}`,
+									notes: `Hash check failed at turn ${data.turnNumber}. Local: ${myHash.slice(0, 16)}, remote: ${data.stateHash.slice(0, 16)}`,
+								}).catch(err => console.warn('[useP2PSync] Failed to submit forged_move slash:', err));
+							}
+						}
 					}
 					break;
 				}
@@ -258,6 +291,21 @@ export function useP2PSync() {
 						description: 'Opponent detected state divergence. Game integrity compromised.',
 						duration: 8000,
 					});
+
+					if (isHiveMode()) {
+						const matchSeed = useGameStore.getState().matchSeed;
+						const opponentName = usePeerStore.getState().remotePeerId ?? 'unknown';
+						if (matchSeed) {
+							submitSlashEvidence({
+								matchId: matchSeed,
+								offender: opponentName,
+								reason: 'forged_move',
+								trxId1: matchSeed,
+								trxId2: `hash_mismatch_turn_${data.turnNumber}_${data.myHash.slice(0, 16)}`,
+								notes: `State hash mismatch at turn ${data.turnNumber}. Opponent hash: ${data.myHash.slice(0, 16)}`,
+							}).catch(err => console.warn('[useP2PSync] Failed to submit forged_move slash:', err));
+						}
+					}
 					break;
 
 				case 'seed_commit':
@@ -438,6 +486,25 @@ export function useP2PSync() {
 						send({ type: 'result_reject', reason: 'malformed_proposal' });
 						break;
 					}
+
+					if (isHiveMode() && data.result.matchId) {
+						const proposerUsername = data.result.winner?.username || data.result.loser?.username;
+						findExistingMatchResult(data.result.matchId, proposerUsername)
+							.then(existingTrxId => {
+								if (existingTrxId) {
+									submitSlashEvidence({
+										matchId: data.result.matchId,
+										offender: proposerUsername,
+										reason: 'double_result',
+										trxId1: existingTrxId,
+										trxId2: data.hash,
+										notes: `Duplicate match result proposed for matchId ${data.result.matchId}`,
+									}).catch(err => console.warn('[useP2PSync] Failed to submit double_result slash:', err));
+								}
+							})
+							.catch(err => console.warn('[useP2PSync] Failed to check existing match result:', err));
+					}
+
 					const gs = useGameStore.getState().gameState;
 					const myWinner = gs?.winner;
 

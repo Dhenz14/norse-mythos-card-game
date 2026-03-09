@@ -103,7 +103,7 @@ export const useDailyQuestStore = create<DailyQuestState & DailyQuestActions>()(
 				if (isHiveMode()) {
 					hiveSync.claimReward(`daily_quest:${questId}`)
 					.then(r => { if (r.success) hiveEvents.emitTransactionConfirmed({ trxId: r.trxId ?? '', status: 'confirmed' }); })
-					.catch(() => {});
+					.catch(err => console.warn('[DailyQuest] Error:', err));
 				}
 
 				return quest.reward;

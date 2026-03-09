@@ -1,8 +1,28 @@
 /**
- * @deprecated Not currently integrated into the game flow.
- * The game uses battlecryUtils/deathrattleUtils/spellUtils directly.
- * Handlers here mutate GameContext in-place but the modified context is never
- * written back to GameState — see UnifiedEffectProcessor for details.
+ * @deprecated NOT wired into the live game loop.
+ *
+ * The game executes effects through:
+ *   - battlecryUtils.ts  (battlecries)
+ *   - deathrattleUtils.ts (deathrattles)
+ *   - spellUtils.ts       (spells)
+ *
+ * This registry holds 130+ handler functions (effects/handlers/*) that
+ * operate on GameContext, but the game state is GameState. The two shapes
+ * differ (GameContext has currentPlayer/opponentPlayer; GameState has
+ * players.player/players.opponent). Bridge files that attempted to
+ * translate between them (battlecryBridge, deathrattleBridge, spellBridge)
+ * were removed because:
+ *   1. The deathrattle bridge cast GameState as GameContext (broken).
+ *   2. The battlecry bridge had syncContextToState() but was never
+ *      imported by game code.
+ *   3. The spell bridge had the same casting bug as the deathrattle one.
+ *
+ * The handler files themselves are preserved — they contain significant
+ * effect logic that could be properly integrated if a GameContext adapter
+ * is built. Until then, utils are the canonical execution path.
+ *
+ * initEffectSystem() in App.tsx still registers handlers so that
+ * getRegisteredHandlers() / hasHandler() remain usable for tooling.
  */
 import { GameContext } from '../GameContext';
 import { Card, SpellEffect, BattlecryEffect, DeathrattleEffect } from '../types/CardTypes';

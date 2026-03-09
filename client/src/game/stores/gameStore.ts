@@ -27,7 +27,7 @@ import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
 import { useUnifiedCombatStore } from './unifiedCombatStore';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
-import { useTargetingStore, predictAttackOutcome } from './targetingStore';
+import { useTargetingStore } from './targetingStore';
 import { logActivity } from './activityLogStore';
 import { CombatEventBus } from '../services/CombatEventBus';
 import { getAttack } from '../utils/cards/typeGuards';

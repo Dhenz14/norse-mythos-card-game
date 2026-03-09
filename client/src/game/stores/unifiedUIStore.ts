@@ -176,11 +176,6 @@ interface UnifiedUIStore {
   tooltip: TooltipState;
   modal: ModalState;
   
-  soundEnabled: boolean;
-  musicVolume: number;
-  sfxVolume: number;
-  animationSpeed: 'slow' | 'normal' | 'fast';
-  
   queueAnimation: (animation: Omit<Animation, 'id' | 'startTime'>) => string;
   playNextAnimation: () => Animation | null;
   completeAnimation: (id: string) => void;
@@ -204,11 +199,6 @@ interface UnifiedUIStore {
   
   openModal: (type: string, data?: Record<string, unknown>) => void;
   closeModal: () => void;
-  
-  setSoundEnabled: (enabled: boolean) => void;
-  setMusicVolume: (volume: number) => void;
-  setSfxVolume: (volume: number) => void;
-  setAnimationSpeed: (speed: 'slow' | 'normal' | 'fast') => void;
   
   reset: () => void;
 }
@@ -269,16 +259,11 @@ export const useUnifiedUIStore = create<UnifiedUIStore>((set, get) => ({
     data: {},
   },
   
-  soundEnabled: true,
-  musicVolume: 0.5,
-  sfxVolume: 0.7,
-  animationSpeed: 'normal',
-
   queueAnimation: (animation) => {
     const id = generateId();
     const duration = ANIMATION_DURATIONS[animation.type] || 500;
     
-    const speedMultiplier = get().animationSpeed === 'slow' ? 1.5 : get().animationSpeed === 'fast' ? 0.5 : 1;
+    const speedMultiplier = 1;
     
     const fullAnimation: Animation = {
       ...animation,
@@ -495,22 +480,6 @@ export const useUnifiedUIStore = create<UnifiedUIStore>((set, get) => ({
         data: {},
       },
     });
-  },
-
-  setSoundEnabled: (enabled) => {
-    set({ soundEnabled: enabled });
-  },
-
-  setMusicVolume: (volume) => {
-    set({ musicVolume: Math.max(0, Math.min(1, volume)) });
-  },
-
-  setSfxVolume: (volume) => {
-    set({ sfxVolume: Math.max(0, Math.min(1, volume)) });
-  },
-
-  setAnimationSpeed: (speed) => {
-    set({ animationSpeed: speed });
   },
 
   reset: () => {

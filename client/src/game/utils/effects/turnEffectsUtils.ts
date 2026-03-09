@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { processTurnStartEffects as processStatusTurnStart, clearEndOfTurnEffects } from './statusEffectUtils';
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
-import { executeDeathrattle } from '../../effects/handlers/deathrattleBridge';
+import { executeDeathrattle } from '../deathrattleUtils';
 import { removeDeadMinions } from '../zoneUtils';
 import { getCardById } from '../../data/allCards';
 
