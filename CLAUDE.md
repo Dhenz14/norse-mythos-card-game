@@ -992,8 +992,22 @@ vercel --prod                 # Deploy to Vercel
 - Game log moved from bottom-left to right side of screen (mirrored panel, toggle, badge, and animation direction)
 - TypeScript: 0 errors
 
+### Multisig Governance Architecture
+
+- **Blueprint**: `docs/HIVE_BLOCKCHAIN_BLUEPRINT.md` §17-18 (adapted from [HivePoA](https://github.com/Dhenz14/HivePoA))
+- **Genesis account** (`@ragnarok-genesis`): 2-of-3 posting/active, 3-of-3 owner, `key_auths: []` (no standalone keys)
+- **Treasury account** (`@ragnarok-treasury`): 60% quorum transfers, 80% quorum authority changes, self-healing rotation
+- **Post-seal bricking**: All authorities set to `weight_threshold: 255` — cryptographically inert forever
+- **Signing flow**: Keychain-native multisig (Phase 1), agent auto-signer (Phase 2), WoT open set (Phase 3)
+- **Security**: 6-layer model (digest verify, ops cross-check, nonce replay, spending caps, time delay, anomaly detection)
+- **Emergency controls**: Any-signer freeze, 80% unfreeze, veto window on delayed broadcasts
+
 ### Next (Genesis Launch)
 
-- Create @ragnarok Hive account
+- Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)
+- Create @ragnarok-treasury Hive account (2-of-3 initial, expandable)
+- Update hiveConfig.ts with real account names
+- Update genesisAdmin.ts with multisig co-signing flow
 - Upload card art to CDN
-- Broadcast genesis + seal on Hive mainnet (two Keychain clicks, then admin key irrelevant)
+- Multisig genesis → mint batches → seal → brick genesis authority
+- Treasury remains active for ongoing RUNE payouts

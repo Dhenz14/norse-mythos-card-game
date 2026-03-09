@@ -24,6 +24,8 @@
 14. [Design Philosophy: Ordinals-Style Reader Model](#14-design-philosophy-ordinals-style-reader-model)
 15. [Anti-Cheat Hardening Notes](#15-anti-cheat-hardening-notes)
 16. [Card XP, Leveling & Evolution System](#16-card-xp-leveling--evolution-system)
+17. [Multisig Governance (Genesis & Authority)](#17-multisig-governance-genesis--authority)
+18. [Treasury Multisig & Fund Management](#18-treasury-multisig--fund-management)
 
 ---
 
@@ -1393,6 +1395,396 @@ When a card crosses a level threshold, the client auto-broadcasts a `level_up` o
 ```
 
 The replay engine validates: card exists, broadcaster owns it, card XP warrants the claimed level. This op is a convenience index for quick lookups — the canonical XP state is always derivable from replaying `match_result` ops.
+
+---
+
+## 17. Multisig Governance (Genesis & Authority)
+
+Adapted from [HivePoA's witness-based treasury multisig](https://github.com/Dhenz14/HivePoA). Uses Hive L1 native `account_auths` — no smart contracts, no custom infrastructure.
+
+### 17.1 Hive Authority Primer
+
+Every Hive account has three authority levels, each with weighted signers and a threshold:
+
+```
+owner:    { weight_threshold: 3, account_auths: [["alice",1],["bob",1],["carol",1]], key_auths: [] }
+active:   { weight_threshold: 2, account_auths: [["alice",1],["bob",1],["carol",1]], key_auths: [] }
+posting:  { weight_threshold: 2, account_auths: [["alice",1],["bob",1],["carol",1]], key_auths: [] }
+```
+
+- `key_auths: []` = no standalone keys. Only named accounts can authorize.
+- `weight_threshold: 2` with three weight-1 signers = 2-of-3 multisig.
+- `custom_json` (all Ragnarok ops) uses **posting** authority.
+- `transfer` (HBD/HIVE payments) uses **active** authority.
+- `account_update` (changing authorities) uses **owner** authority.
+
+### 17.2 Two Multisig Accounts
+
+| Account | Purpose | Lifetime |
+|---------|---------|----------|
+| `@ragnarok-genesis` | Genesis, mint batches, seal | Temporary — bricked after seal |
+| `@ragnarok-treasury` | RUNE rewards, tournament prizes, marketplace fees | Permanent, self-healing |
+
+Both use the same Hive L1 multisig primitives. No servers, no agents needed for genesis (Keychain-only). Treasury grows into the full HivePoA pattern over time.
+
+### 17.3 Genesis Account Setup
+
+**Initial authority (at account creation):**
+
+```json
+{
+  "account": "ragnarok-genesis",
+  "owner": {
+    "weight_threshold": 3,
+    "account_auths": [["founder1", 1], ["founder2", 1], ["founder3", 1]],
+    "key_auths": []
+  },
+  "active": {
+    "weight_threshold": 2,
+    "account_auths": [["founder1", 1], ["founder2", 1], ["founder3", 1]],
+    "key_auths": []
+  },
+  "posting": {
+    "weight_threshold": 2,
+    "account_auths": [["founder1", 1], ["founder2", 1], ["founder3", 1]],
+    "key_auths": []
+  }
+}
+```
+
+**Properties:**
+- **Posting** (2-of-3): genesis, mint, seal — all are `custom_json` ops
+- **Active** (2-of-3): account creation costs, delegation if needed
+- **Owner** (3-of-3): authority changes require unanimous agreement
+- **No standalone keys**: `key_auths: []` on all levels. No single person can act alone.
+
+### 17.4 Genesis Ceremony (Multisig Flow)
+
+The genesis ceremony requires co-signing via Hive Keychain:
+
+```
+Step 1: Founder A opens Ragnarok admin panel, clicks "Broadcast Genesis"
+        → Keychain creates partially-signed custom_json
+        → Returns serialized tx + signature A
+
+Step 2: Founder B receives tx (shared via secure channel)
+        → Keychain adds signature B to existing tx
+        → Threshold met (2-of-3) → broadcasts to Hive L1
+
+Step 3: Repeat for each mint batch (pre-seal)
+        → Same 2-of-3 co-signing flow per batch
+
+Step 4: Founders co-sign "seal" operation
+        → Replay engine permanently ignores future admin mints
+
+Step 5: Founders co-sign authority brick (all 3 required for owner update)
+        → Sets all authorities to weight_threshold: 255, key_auths: [], account_auths: []
+        → Account is permanently inert — cryptographic proof of no future admin power
+```
+
+### 17.5 Post-Seal Authority Bricking
+
+After seal, the genesis account should be permanently disabled:
+
+```json
+{
+  "account": "ragnarok-genesis",
+  "owner": {
+    "weight_threshold": 255,
+    "account_auths": [],
+    "key_auths": []
+  },
+  "active": {
+    "weight_threshold": 255,
+    "account_auths": [],
+    "key_auths": []
+  },
+  "posting": {
+    "weight_threshold": 255,
+    "account_auths": [],
+    "key_auths": []
+  }
+}
+```
+
+**Result:** No combination of keys or accounts can ever authorize any operation. The genesis account becomes an immutable historical record — its `custom_json` ops (genesis, mints, seal) are on-chain forever, but no new ops can ever be broadcast.
+
+**Caveat:** Hive's account recovery mechanism (30-day window via `@hive` recovery account) could theoretically restore owner authority. To fully eliminate this: set the recovery account to a bricked account as well, or accept the 30-day theoretical window as acceptable (it requires the recovery account partner to cooperate).
+
+### 17.6 Signing Protocol (Keychain-Native)
+
+For genesis (3 founders, occasional ops), we use Hive Keychain's built-in multisig support — no custom agent infrastructure needed:
+
+1. **Initiator** builds unsigned tx via `hive-tx` library
+2. **Initiator** signs with Keychain → gets `{ signatures: [sigA], tx }`
+3. **Tx + partial signature shared** via secure channel (encrypted DM, Signal, etc.)
+4. **Co-signer** imports tx, adds signature via Keychain → `{ signatures: [sigA, sigB], tx }`
+5. **Threshold met** → co-signer broadcasts (or third signer adds sig first if needed)
+
+**Implementation:** `genesisAdmin.ts` updated with `buildUnsignedGenesisTx()`, `addSignature(tx, sig)`, `broadcastIfThresholdMet(tx)` functions.
+
+### 17.7 Why Not a Single Key?
+
+| Risk | Single Key | 2-of-3 Multisig |
+|------|-----------|-----------------|
+| Key compromise | Attacker mints unlimited NFTs | Attacker needs 2 separate keys |
+| Insider abuse | One person can rug | Requires collusion |
+| Key loss | System locked forever | 2 remaining founders can still operate |
+| Accountability | No proof of who authorized | Each signature is on-chain, attributable |
+| Trust | "Trust me, I deleted the key" | Cryptographic proof (bricked authority) |
+
+---
+
+## 18. Treasury Multisig & Fund Management
+
+Adapted from HivePoA's self-healing treasury. Starts simple (Keychain multisig), scales to full agent-based system as the game grows.
+
+### 18.1 Treasury Account Setup
+
+```json
+{
+  "account": "ragnarok-treasury",
+  "owner": {
+    "weight_threshold": 4,
+    "account_auths": [["founder1",1],["founder2",1],["founder3",1],["community1",1],["community2",1]],
+    "key_auths": []
+  },
+  "active": {
+    "weight_threshold": 3,
+    "account_auths": [["founder1",1],["founder2",1],["founder3",1],["community1",1],["community2",1]],
+    "key_auths": []
+  },
+  "posting": {
+    "weight_threshold": 3,
+    "account_auths": [["founder1",1],["founder2",1],["founder3",1],["community1",1],["community2",1]],
+    "key_auths": []
+  }
+}
+```
+
+**Quorum model** (from HivePoA):
+
+| Operation | Quorum | Rationale |
+|-----------|--------|-----------|
+| RUNE token disbursement | 60% (`ceil(N * 0.6)`) | Routine reward payouts |
+| HBD/HIVE transfers | 60% | Marketplace fee distribution |
+| Authority updates (add/remove signer) | 80% (`ceil(N * 0.8)`) | Higher bar for governance changes |
+| Emergency freeze | 1 signer (any) | Fast response to anomalies |
+| Unfreeze | 80% supermajority | Prevents premature unlock |
+
+### 18.2 Treasury Responsibilities
+
+| Fund | Source | Disbursement |
+|------|--------|-------------|
+| **RUNE token pool** | Match rewards (+10 win, +3 loss) | Self-serve claim via `reward_claim` op |
+| **Tournament prizes** | Entry fees | Post-tournament payout to top N |
+| **Marketplace fees** | Trade commissions (future) | Periodic distribution to stakeholders |
+| **Development fund** | Initial allocation | Bounties, art commissions, hosting |
+
+### 18.3 Phased Treasury Rollout
+
+**Phase 1 — Launch (Keychain-only, 2-of-3)**
+
+Minimal setup, same as genesis signing flow:
+- 3 founding signers with Hive Keychain
+- Manual co-signing for payouts
+- No server infrastructure needed
+- Daily cap: 100 HBD equivalent
+
+**Phase 2 — Growth (Agent-assisted, 3-of-5)**
+
+Adapted from HivePoA when transaction volume justifies automation:
+- 5 signers (3 founders + 2 community-elected)
+- Desktop/CLI agent auto-signer for routine payouts
+- WebSocket signing protocol (server → agent → signature → broadcast)
+- Agent-side policy engine (per-tx cap, daily cap, op-type whitelist)
+- Anomaly detection with auto-freeze
+
+**Phase 3 — Decentralized (WoT-based, N-of-M)**
+
+Full HivePoA model:
+- Open signer set via Web of Trust vouching
+- Top community members vouch for treasury signer candidates
+- 3+ vouches required for eligibility
+- Self-healing authority rotation (10-minute sync checks)
+- Automatic removal of inactive/deranked signers
+- Time-delayed broadcasts with veto window for large amounts
+
+### 18.4 Agent Signing Protocol (Phase 2+)
+
+Adapted from HivePoA's 6-layer security model:
+
+```
+Server                              Agent (Desktop/CLI)
+  │                                    │
+  ├─── SigningRequest ────────────────>│
+  │    { txId, nonce, txDigest,        │
+  │      operations, tx, expiresAt,    │ 1. Protocol version check
+  │      metadata: { txType,           │ 2. Nonce replay check (LRU 10K)
+  │        recipient, amount } }       │ 3. Expiration check (45s max)
+  │                                    │ 4. Digest recomputation & verify
+  │                                    │ 5. Operations cross-check
+  │                                    │ 6. Policy check (caps, whitelist)
+  │                                    │
+  │<─── SigningResponse ──────────────┤
+  │    { txId, nonce, signature,       │
+  │      rejected, rejectReason,       │
+  │      signerUsername }              │
+  │                                    │
+  ├─── (collect threshold sigs) ──────>│
+  │                                    │
+  ├─── Broadcast to Hive L1 ─────────>│
+```
+
+**Security layers:**
+
+| Layer | Protection | How |
+|-------|-----------|-----|
+| Digest verification | Prevents tampered txs | Agent independently computes SHA256 from raw tx |
+| Operations cross-check | Prevents policy bypass | `request.operations` must match `tx.operations` exactly |
+| Nonce replay | Prevents double-signing | LRU cache, auto-evicts oldest 20% at 10K |
+| Spending caps | Limits blast radius | Per-tx max ($5), daily cap ($200), non-overrideable local config |
+| Time delay | Allows human review | Transfers >$1: 1-hour delay. Authority updates: 6-hour delay |
+| Anomaly detection | Auto-halts suspicious patterns | >5 tx/10min, >3x average amount, unknown recipient |
+
+### 18.5 Emergency Controls
+
+**Freeze** (any single signer):
+- `POST /api/treasury/freeze` with optional reason
+- Blocks all operations immediately
+- Persists across server restarts
+
+**Unfreeze** (80% supermajority):
+- Each signer votes to unfreeze
+- Threshold computed at freeze time (prevents moving goalposts)
+- All votes tracked on-chain for transparency
+
+**Veto** (any signer, during delay window):
+- Time-delayed transactions can be vetoed before broadcast
+- Single veto cancels the transaction
+- New proposal required with fresh co-signatures
+
+### 18.6 Self-Healing Authority Sync
+
+Every 10 minutes (adapted from HivePoA):
+
+1. Read on-chain authority for `@ragnarok-treasury`
+2. Compare against active signer database
+3. If mismatch detected (signer left, became inactive, lost vouches):
+   - Build `account_update` operation with corrected authority
+   - Collect 80% co-signatures from remaining signers
+   - Broadcast authority update
+4. Threshold auto-adjusts: `ceil(remainingSigners * quorumRatio)`
+
+**Result:** No manual intervention needed when signers change. The authority self-corrects.
+
+### 18.7 Audit Trail
+
+Every treasury operation logged immutably:
+
+```typescript
+interface TreasuryAuditEntry {
+  txId: string;
+  action: 'requested' | 'signed' | 'rejected' | 'broadcast' | 'failed' | 'vetoed' | 'frozen' | 'unfrozen';
+  signerUsername: string;
+  timestamp: number;
+  nonce: string;
+  txDigest: string;
+  rejectReason?: string;
+  anomalyFlags?: string[];
+  metadata: {
+    txType: 'transfer' | 'authority_update' | 'custom_json';
+    recipient?: string;
+    amount?: string;
+    memo?: string;
+  };
+}
+```
+
+On-chain: all Hive transactions are immutable and publicly visible on any Hive block explorer.
+Off-chain: server-side audit log for signing request/response tracking.
+
+### 18.8 Constants
+
+```typescript
+// Genesis multisig
+const GENESIS_POSTING_THRESHOLD = 2;    // 2-of-3 for custom_json ops
+const GENESIS_ACTIVE_THRESHOLD = 2;     // 2-of-3 for transfers
+const GENESIS_OWNER_THRESHOLD = 3;      // 3-of-3 (unanimous) for authority changes
+const BRICK_THRESHOLD = 255;            // Unreachable — permanently disables authority
+
+// Treasury quorums
+const TRANSFER_QUORUM_RATIO = 0.6;      // 60% for payments
+const AUTHORITY_QUORUM_RATIO = 0.8;     // 80% for signer changes
+const MIN_SIGNERS_FOR_OPERATION = 3;    // Minimum operational signers
+
+// Treasury security
+const SIGNING_TIMEOUT_MS = 45_000;                // Request expiration
+const AUTHORITY_SYNC_INTERVAL_MS = 10 * 60_000;   // Self-healing check interval
+const MAX_PER_TX_HBD = 5.0;                       // Per-transaction spending cap
+const DAILY_CAP_HBD = 200.0;                      // Rolling 24-hour cap
+const IMMEDIATE_BROADCAST_MAX_HBD = 1.0;          // Transfers ≤$1 broadcast instantly
+const TRANSFER_DELAY_SECONDS = 3_600;             // 1-hour delay for >$1 transfers
+const AUTHORITY_UPDATE_DELAY_SECONDS = 21_600;    // 6-hour delay for authority updates
+const NONCE_CACHE_SIZE = 10_000;                  // LRU replay protection cache
+
+// Treasury cooldowns
+const OPT_OUT_COOLDOWN_DAYS = 7;        // Default leave cooldown
+const CHURN_COOLDOWN_DAYS = 30;         // Extended cooldown for frequent leavers
+const CHURN_THRESHOLD = 3;              // Opt-outs triggering extended cooldown
+const CHURN_WINDOW_DAYS = 90;           // Window for churn detection
+
+// WoT (Phase 3)
+const MIN_TREASURY_VOUCHES = 3;         // Vouches needed for non-founder signer
+```
+
+### 18.9 Implementation Files
+
+```
+client/src/data/blockchain/
+├── genesisAdmin.ts          # Updated: multisig genesis/seal/brick + unsigned tx builder
+├── hiveConfig.ts            # Updated: RAGNAROK_GENESIS_ACCOUNT, RAGNAROK_TREASURY_ACCOUNT
+├── multisigUtils.ts         # NEW: buildUnsignedTx, addSignature, broadcastIfThresholdMet
+└── treasuryConfig.ts        # NEW: quorum ratios, spending caps, delay constants
+
+server/
+├── services/
+│   ├── treasuryCoordinator.ts  # NEW (Phase 2): signing request dispatch, threshold tracking
+│   ├── treasuryAnomalyDetector.ts  # NEW (Phase 2): burst/spike/new-recipient detection
+│   └── treasuryAuthoritySync.ts    # NEW (Phase 2): 10-min self-healing check
+├── routes/
+│   └── treasuryRoutes.ts      # NEW (Phase 2): status, join, leave, freeze, unfreeze, veto
+└── storage.ts                 # Updated: treasury tables (signers, transactions, audit, vouches, freeze)
+```
+
+### 18.10 Genesis Launch Checklist
+
+```
+Pre-Launch:
+  [ ] Create @ragnarok-genesis Hive account
+  [ ] Create @ragnarok-treasury Hive account
+  [ ] Set genesis posting authority → 2-of-3 founders (no standalone keys)
+  [ ] Set genesis owner authority → 3-of-3 founders (unanimous)
+  [ ] Set treasury posting/active authority → 2-of-3 founders (initial)
+  [ ] Set treasury owner authority → 3-of-3 founders (initial)
+  [ ] Update hiveConfig.ts with real account names
+  [ ] Update genesisAdmin.ts with multisig flow functions
+  [ ] Test multisig co-signing flow on Hive testnet
+
+Launch Day:
+  [ ] Founder A + B co-sign genesis broadcast (2-of-3)
+  [ ] Founder A + B co-sign initial mint batches
+  [ ] Founder A + B co-sign seal broadcast (permanent)
+  [ ] All 3 founders co-sign authority brick on genesis account (3-of-3)
+  [ ] Verify: genesis account inert on block explorer
+  [ ] Verify: replay engine accepts genesis + seal, rejects post-seal mints
+
+Post-Launch:
+  [ ] Treasury remains active with 2-of-3 for ongoing payouts
+  [ ] Expand treasury to 3-of-5 as community signers join (Phase 2)
+  [ ] Deploy agent-based auto-signing when tx volume justifies (Phase 2)
+  [ ] Transition to WoT-based open signer set (Phase 3)
+```
 
 ---
 
