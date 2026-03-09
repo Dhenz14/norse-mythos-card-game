@@ -54,6 +54,7 @@ export const createKingAbilitySlice: StateCreator<
   selectedMineDirection: null,
   lastMineTriggered: null,
   pendingManaBoost: { player: 0, opponent: 0 },
+  lastClearedTurn: null,
 
   initializeKingAbilities: (playerKingId: string, opponentKingId: string) => {
     const playerState = createInitialKingState(playerKingId);
@@ -65,7 +66,8 @@ export const createKingAbilitySlice: StateCreator<
       allActiveMines: [],
       minePlacementMode: false,
       selectedMineDirection: null,
-      lastMineTriggered: null
+      lastMineTriggered: null,
+      lastClearedTurn: null
     });
 
     debug.chess('[KingAbility] Initialized:', { playerKingId, opponentKingId });
@@ -238,8 +240,11 @@ export const createKingAbilitySlice: StateCreator<
 
   clearExpiredMines: (currentTurn: number) => {
     const state = get();
+
+    if (state.lastClearedTurn === currentTurn) return;
+
     const activeMines = getActiveMines(state.allActiveMines, currentTurn);
-    
+
     const expiredCount = state.allActiveMines.length - activeMines.length;
     if (expiredCount > 0) {
       debug.chess('[KingAbility] Cleared expired mines:', expiredCount);
@@ -250,6 +255,7 @@ export const createKingAbilitySlice: StateCreator<
 
     set({
       allActiveMines: activeMines,
+      lastClearedTurn: currentTurn,
       playerKingAbility: playerKingState ? {
         ...playerKingState,
         activeMines: playerKingState.activeMines.filter(m => !m.triggered && m.expiresOnTurn > currentTurn),
@@ -284,7 +290,8 @@ export const createKingAbilitySlice: StateCreator<
       minePlacementMode: false,
       selectedMineDirection: null,
       lastMineTriggered: null,
-      pendingManaBoost: { player: 0, opponent: 0 }
+      pendingManaBoost: { player: 0, opponent: 0 },
+      lastClearedTurn: null
     });
   },
 

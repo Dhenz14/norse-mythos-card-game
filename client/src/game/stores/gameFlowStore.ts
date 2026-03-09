@@ -46,24 +46,29 @@ interface GameFlowStore {
 
 const flowManager = new GameFlowManager();
 
-let flowManagerSubscribed = false;
+let flowManagerUnsub: (() => void) | null = null;
+
+export function initGameFlowSubscription() {
+  if (flowManagerUnsub) return;
+  flowManagerUnsub = flowManager.subscribe((state) => {
+    useGameFlowStore.setState({
+      phase: state.phase,
+      previousPhase: state.previousPhase,
+      match: state.match,
+      isLoading: state.isLoading,
+      error: state.error,
+    });
+  });
+}
+
+export function disposeGameFlowSubscription() {
+  flowManagerUnsub?.();
+  flowManagerUnsub = null;
+}
 
 export const useGameFlowStore = create<GameFlowStore>()(
   persist(
     (set, get) => {
-      if (!flowManagerSubscribed) {
-        flowManagerSubscribed = true;
-        flowManager.subscribe((state) => {
-          set({
-            phase: state.phase,
-            previousPhase: state.previousPhase,
-            match: state.match,
-            isLoading: state.isLoading,
-            error: state.error,
-          });
-        });
-      }
-
       return {
         phase: 'MAIN_MENU',
         previousPhase: null,

@@ -158,6 +158,8 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 						set({ connection: null, connectionState: 'reconnecting' });
 						reconnectTimerId = setTimeout(() => {
 							reconnectTimerId = null;
+							const currentState = get();
+							if (currentState.connectionState !== 'reconnecting' || currentState.connection) return;
 							get().join(remotePeerId, true).catch(() => {
 								console.error('[PeerStore] Reconnect failed');
 								set({ connectionState: 'disconnected' });

@@ -914,12 +914,13 @@ export const createChessCombatSlice: StateCreator<
       if (movedPiece && get().checkPawnPromotion(movedPiece)) {
         debug.chess(`[Chess] Pawn promoted to Queen after combat at (${movedPiece.position.row}, ${movedPiece.position.col})`);
         get().promotePawn(movedPiece.id, 'queen');
+        get().updateCheckStatus();
       }
     }
 
     const gameStatus = state.checkWinCondition();
-    
-    set({ 
+
+    set({
       pendingCombat: null,
       boardState: {
         ...get().boardState,
@@ -1008,24 +1009,36 @@ export const createChessCombatSlice: StateCreator<
     const moveToExecute = finalMove;
     const pieceId = moveToExecute.piece.id;
     state.selectPiece(moveToExecute.piece);
-    
+
     const attemptMove = () => {
       const currentState = get();
       if (currentState.boardState.gameStatus !== 'playing') return;
       if (currentState.boardState.currentTurn !== 'opponent') return;
-      
+
       if (currentState.pendingAttackAnimation) {
         debug.ai('[AI] Waiting for animation to complete, retrying in 200ms...');
         setTimeout(attemptMove, 200);
         return;
       }
-      
-      const pieceStillExists = currentState.boardState.pieces.some(p => p.id === pieceId);
-      if (!pieceStillExists) {
+
+      const piece = currentState.boardState.pieces.find(p => p.id === pieceId);
+      if (!piece) {
         debug.ai('[AI] Piece no longer exists, skipping move');
         return;
       }
-      
+
+      const { moves, attacks } = currentState.getValidMoves(piece);
+      const targetStillValid = [...moves, ...attacks].some(
+        m => m.row === moveToExecute.target.row && m.col === moveToExecute.target.col
+      );
+      if (!targetStillValid) {
+        debug.ai('[AI] Target no longer valid, recalculating...');
+        currentState.selectPiece(null);
+        currentState.executeAITurn();
+        return;
+      }
+
+      currentState.selectPiece(piece);
       const collision = currentState.movePiece(moveToExecute.target);
       if (!collision) {
         debug.ai(`[AI] Moved ${moveToExecute.piece.type} to (${moveToExecute.target.row}, ${moveToExecute.target.col})`);

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
+import type { DataConnection } from 'peerjs';
 import { usePeerStore } from '../stores/peerStore';
 import { useGameStore } from '../stores/gameStore';
 import { GameState } from '../types';
@@ -15,6 +16,7 @@ import { getWasmHash, loadWasmEngine } from '../engine/wasmLoader';
 import { computeStateHash } from '../engine/engineBridge';
 import { isHiveMode } from '../config/featureFlags';
 import { submitSlashEvidence, findExistingMatchResult } from '../../data/blockchain/slashEvidence';
+import { filterGameStateForSpectator } from '../spectator/spectatorFilter';
 
 declare const __BUILD_HASH__: string;
 
@@ -106,6 +108,7 @@ export function useP2PSync() {
 	const isProcessingRef = useRef(false);
 	const initSentRef = useRef(false);
 	const pendingSyncRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const spectatorConnectionsRef = useRef<DataConnection[]>([]);
 
 	// Commit-reveal seed exchange state
 	const mySaltRef = useRef<string | null>(null);
@@ -202,6 +205,9 @@ export function useP2PSync() {
 				clearTimeout(pendingSyncRef.current);
 				pendingSyncRef.current = null;
 			}
+			// Reset message queue to prevent permanent lock
+			isProcessingRef.current = false;
+			messageQueueRef.current = [];
 			toast.error('Opponent disconnected from the game.', {
 				duration: 8000,
 				description: 'The connection was lost. You may need to start a new game.',
@@ -579,8 +585,14 @@ export function useP2PSync() {
 			}
 		};
 
+		const MAX_QUEUE_SIZE = 100;
 		const handleMessage = (data: P2PMessage) => {
 			messageQueueRef.current.push(data);
+			if (messageQueueRef.current.length > MAX_QUEUE_SIZE) {
+				const dropped = messageQueueRef.current.length - MAX_QUEUE_SIZE;
+				messageQueueRef.current = messageQueueRef.current.slice(dropped);
+				console.warn(`[useP2PSync] Queue exceeded ${MAX_QUEUE_SIZE}, dropped ${dropped} oldest messages`);
+			}
 			processQueue();
 		};
 
@@ -657,11 +669,53 @@ export function useP2PSync() {
 		}
 	}, [connectionState, isHost, send, gameStore, debouncedSync]);
 
-	// Host broadcasts state every 500ms as heartbeat sync
+	// Host: accept incoming spectator connections via PeerJS
+	useEffect(() => {
+		const peer = usePeerStore.getState().peer;
+		if (!peer || !isHost) return;
+
+		const handleConnection = (conn: DataConnection) => {
+			const meta = conn.metadata as { type?: string } | undefined;
+			if (meta?.type !== 'spectator') return;
+
+			conn.on('open', () => {
+				spectatorConnectionsRef.current.push(conn);
+			});
+
+			conn.on('close', () => {
+				spectatorConnectionsRef.current = spectatorConnectionsRef.current.filter(c => c !== conn);
+			});
+
+			conn.on('error', () => {
+				spectatorConnectionsRef.current = spectatorConnectionsRef.current.filter(c => c !== conn);
+			});
+		};
+
+		peer.on('connection', handleConnection);
+		return () => {
+			peer.off('connection', handleConnection);
+			spectatorConnectionsRef.current = [];
+		};
+	}, [isHost, connectionState]);
+
+	// Host broadcasts state every 500ms as heartbeat sync (to opponent + spectators)
 	useEffect(() => {
 		if (connectionState !== 'connected' || !isHost) return;
 		const interval = setInterval(() => {
 			syncGameState();
+
+			const currentState = useGameStore.getState().gameState;
+			if (currentState) {
+				const filteredState = filterGameStateForSpectator(currentState);
+				spectatorConnectionsRef.current = spectatorConnectionsRef.current.filter(c => c.open);
+				spectatorConnectionsRef.current.forEach(conn => {
+					try {
+						conn.send({ type: 'spectator_state', gameState: filteredState });
+					} catch {
+						// Connection may have closed between filter and send
+					}
+				});
+			}
 		}, 500);
 		return () => clearInterval(interval);
 	}, [connectionState, isHost, syncGameState]);

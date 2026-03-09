@@ -1064,75 +1064,74 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   },
 })));
 
-// Subscribe to battlefield changes to trace when minions disappear
-// This captures stack traces to identify the root cause of battlefield clears
-const unsubBattlefieldMonitor = useGameStore.subscribe((state, prevState) => {
-  const currPlayerBattlefield = state.gameState?.players?.player?.battlefield || [];
-  const prevPlayerBattlefield = prevState.gameState?.players?.player?.battlefield || [];
-  const currOpponentBattlefield = state.gameState?.players?.opponent?.battlefield || [];
-  const prevOpponentBattlefield = prevState.gameState?.players?.opponent?.battlefield || [];
-  
-  const prevPlayerCards = prevPlayerBattlefield.map((c: any) => c?.card?.name || `id:${c?.instanceId}` || 'unknown');
-  const currPlayerCards = currPlayerBattlefield.map((c: any) => c?.card?.name || `id:${c?.instanceId}` || 'unknown');
-  const prevOpponentCards = prevOpponentBattlefield.map((c: any) => c?.card?.name || `id:${c?.instanceId}` || 'unknown');
-  const currOpponentCards = currOpponentBattlefield.map((c: any) => c?.card?.name || `id:${c?.instanceId}` || 'unknown');
-  
-  const stack = captureStackTrace();
-  
-  // Track player battlefield changes
-  logBattlefieldChange('player', prevPlayerCards, currPlayerCards, stack);
-  
-  // Track opponent battlefield changes
-  logBattlefieldChange('opponent', prevOpponentCards, currOpponentCards, stack);
-  
-  // Update snapshot for next comparison
-  prevBattlefieldSnapshot = { player: currPlayerCards, opponent: currOpponentCards };
-});
+let _gameStoreUnsubs: (() => void)[] = [];
 
-// Auto-end-turn when player has no possible actions
-const unsubAutoEndTurn = useGameStore.subscribe((state, prevState) => {
-	if (autoEndTurnTimer) {
-		clearTimeout(autoEndTurnTimer);
-		autoEndTurnTimer = null;
-	}
+export function initGameStoreSubscriptions() {
+	if (_gameStoreUnsubs.length > 0) return;
 
-	const gs = state.gameState;
-	if (!gs || gs.currentTurn !== 'player' || gs.gamePhase !== 'playing') return;
+	_gameStoreUnsubs.push(useGameStore.subscribe((state, prevState) => {
+		const currPlayerBattlefield = state.gameState?.players?.player?.battlefield || [];
+		const prevPlayerBattlefield = prevState.gameState?.players?.player?.battlefield || [];
+		const currOpponentBattlefield = state.gameState?.players?.opponent?.battlefield || [];
+		const prevOpponentBattlefield = prevState.gameState?.players?.opponent?.battlefield || [];
 
-	const player = gs.players?.player;
-	if (!player) return;
+		const prevPlayerCards = prevPlayerBattlefield.map((c: any) => c?.card?.name || `id:${c?.instanceId}` || 'unknown');
+		const currPlayerCards = currPlayerBattlefield.map((c: any) => c?.card?.name || `id:${c?.instanceId}` || 'unknown');
+		const prevOpponentCards = prevOpponentBattlefield.map((c: any) => c?.card?.name || `id:${c?.instanceId}` || 'unknown');
+		const currOpponentCards = currOpponentBattlefield.map((c: any) => c?.card?.name || `id:${c?.instanceId}` || 'unknown');
 
-	const currentMana = player.mana?.current ?? 0;
-	const hand = player.hand || [];
-	const battlefield = player.battlefield || [];
+		const stack = captureStackTrace();
 
-	const hasPlayableCard = hand.some((c: CardInstance) => {
-		const cost = c.card?.manaCost ?? 999;
-		return cost <= currentMana;
-	});
+		logBattlefieldChange('player', prevPlayerCards, currPlayerCards, stack);
+		logBattlefieldChange('opponent', prevOpponentCards, currOpponentCards, stack);
 
-	const hasAvailableAttacker = battlefield.some((m: CardInstance) => {
-		if (m.hasAttacked || m.isFrozen || m.isSummoningSick) return false;
-		const atk = m.currentAttack ?? getAttack(m.card);
-		return atk > 0;
-	});
+		prevBattlefieldSnapshot = { player: currPlayerCards, opponent: currOpponentCards };
+	}));
 
-	const heroPower = player.heroPower;
-	const canUseHeroPower = heroPower && !heroPower.used && currentMana >= heroPower.cost;
+	_gameStoreUnsubs.push(useGameStore.subscribe((state, _prevState) => {
+		if (autoEndTurnTimer) {
+			clearTimeout(autoEndTurnTimer);
+			autoEndTurnTimer = null;
+		}
 
-	if (!hasPlayableCard && !hasAvailableAttacker && !canUseHeroPower) {
-		autoEndTurnTimer = setTimeout(() => {
-			const currentGs = useGameStore.getState().gameState;
-			if (currentGs?.currentTurn === 'player' && currentGs?.gamePhase === 'playing') {
-				useGameStore.getState().endTurn();
-			}
-		}, 3000);
-	}
-});
+		const gs = state.gameState;
+		if (!gs || gs.currentTurn !== 'player' || gs.gamePhase !== 'playing') return;
 
-export function cleanupGameStoreSubscriptions() {
-	unsubBattlefieldMonitor();
-	unsubAutoEndTurn();
+		const player = gs.players?.player;
+		if (!player) return;
+
+		const currentMana = player.mana?.current ?? 0;
+		const hand = player.hand || [];
+		const battlefield = player.battlefield || [];
+
+		const hasPlayableCard = hand.some((c: CardInstance) => {
+			const cost = c.card?.manaCost ?? 999;
+			return cost <= currentMana;
+		});
+
+		const hasAvailableAttacker = battlefield.some((m: CardInstance) => {
+			if (m.hasAttacked || m.isFrozen || m.isSummoningSick) return false;
+			const atk = m.currentAttack ?? getAttack(m.card);
+			return atk > 0;
+		});
+
+		const heroPower = player.heroPower;
+		const canUseHeroPower = heroPower && !heroPower.used && currentMana >= heroPower.cost;
+
+		if (!hasPlayableCard && !hasAvailableAttacker && !canUseHeroPower) {
+			autoEndTurnTimer = setTimeout(() => {
+				const currentGs = useGameStore.getState().gameState;
+				if (currentGs?.currentTurn === 'player' && currentGs?.gamePhase === 'playing') {
+					useGameStore.getState().endTurn();
+				}
+			}, 3000);
+		}
+	}));
+}
+
+export function disposeGameStoreSubscriptions() {
+	_gameStoreUnsubs.forEach(unsub => unsub());
+	_gameStoreUnsubs = [];
 	if (autoEndTurnTimer) { clearTimeout(autoEndTurnTimer); autoEndTurnTimer = null; }
 	if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
 }

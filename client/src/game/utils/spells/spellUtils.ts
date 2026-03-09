@@ -734,8 +734,20 @@ export function executeSpell(
     case 'realm_shift': {
       const eff = effect as any;
       const caster = state.currentTurn === 'player' ? 'player' : 'opponent';
-      const foe = caster === 'player' ? 'opponent' : 'player';
-      // Remove old realm attack modifiers first
+      let newState: GameState = {
+        ...state,
+        players: {
+          player: {
+            ...state.players.player,
+            battlefield: state.players.player.battlefield.map(m => ({ ...m })),
+          },
+          opponent: {
+            ...state.players.opponent,
+            battlefield: state.players.opponent.battlefield.map(m => ({ ...m })),
+          },
+        },
+        gameLog: [...(state.gameLog || [])],
+      };
       if (state.activeRealm) {
         for (const oldEff of state.activeRealm.effects) {
           if (oldEff.type === 'buff_all_attack' || oldEff.type === 'debuff_all_attack') {
@@ -743,7 +755,7 @@ export function executeSpell(
             for (const side of ['player', 'opponent'] as const) {
               const isFriendlyToOwner = side === state.activeRealm.owner;
               if (oldEff.target === 'all' || (oldEff.target === 'friendly' && isFriendlyToOwner) || (oldEff.target === 'enemy' && !isFriendlyToOwner)) {
-                for (const minion of state.players[side].battlefield) {
+                for (const minion of newState.players[side].battlefield) {
                   minion.currentAttack = Math.max(0, (minion.currentAttack ?? 0) + mod);
                 }
               }
@@ -752,65 +764,64 @@ export function executeSpell(
         }
       }
       if (eff.realmId === 'midgard') {
-        state.activeRealm = undefined;
+        newState.activeRealm = undefined;
         for (const side of ['player', 'opponent'] as const) {
-          for (const minion of state.players[side].battlefield) {
+          for (const minion of newState.players[side].battlefield) {
             minion.currentAttack = (minion.card as any).attack ?? minion.currentAttack;
             const baseHealth = (minion.card as any).health ?? 1;
             minion.currentHealth = Math.min(minion.currentHealth ?? baseHealth, baseHealth);
           }
         }
       } else {
-        state.activeRealm = {
+        newState.activeRealm = {
           id: eff.realmId,
           name: eff.realmName,
           description: eff.realmDescription,
           owner: caster as 'player' | 'opponent',
           effects: eff.realmEffects || [],
         };
-        // Apply new realm attack modifiers immediately
-        for (const realmEff of state.activeRealm.effects) {
+        for (const realmEff of newState.activeRealm.effects) {
           if (realmEff.type === 'buff_all_attack') {
             for (const side of ['player', 'opponent'] as const) {
               const isFriendly = side === caster;
               if (realmEff.target === 'all' || (realmEff.target === 'friendly' && isFriendly) || (realmEff.target === 'enemy' && !isFriendly)) {
-                for (const minion of state.players[side].battlefield) {
+                for (const minion of newState.players[side].battlefield) {
                   minion.currentAttack = (minion.currentAttack ?? 0) + realmEff.value;
                 }
               }
             }
-            state = checkPetEvolutionTrigger(state, 'on_buff');
+            newState = checkPetEvolutionTrigger(newState, 'on_buff');
           } else if (realmEff.type === 'debuff_all_attack') {
             for (const side of ['player', 'opponent'] as const) {
               const isFriendly = side === caster;
               if (realmEff.target === 'all' || (realmEff.target === 'friendly' && isFriendly) || (realmEff.target === 'enemy' && !isFriendly)) {
-                for (const minion of state.players[side].battlefield) {
+                for (const minion of newState.players[side].battlefield) {
                   minion.currentAttack = Math.max(0, (minion.currentAttack ?? 0) - realmEff.value);
                 }
               }
             }
-            state = checkPetEvolutionTrigger(state, 'on_reduce_attack');
+            newState = checkPetEvolutionTrigger(newState, 'on_reduce_attack');
           }
         }
       }
-      if (!state.gameLog) state.gameLog = [];
-      state.gameLog.push({
+      newState.gameLog.push({
         id: `realm-shift-${Date.now()}`,
         type: 'effect' as any,
-        player: state.currentTurn,
+        player: newState.currentTurn,
         text: eff.realmId === 'midgard'
           ? 'The realm shifts back to Midgard — all realm effects removed.'
           : `Realm shifted to ${eff.realmName}: ${eff.realmDescription}`,
         timestamp: Date.now(),
-        turn: state.turnNumber,
+        turn: newState.turnNumber,
       });
-      resultState = state;
+      resultState = newState;
       break;
     }
     case 'create_prophecy': {
       const eff = effect as any;
-      if (!state.prophecies) state.prophecies = [];
-      state.prophecies.push({
+      if (!eff.resolveEffect) return state;
+      const prophecies = [...(state.prophecies || [])];
+      prophecies.push({
         id: `prophecy-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         name: eff.prophecyName || 'Prophecy',
         description: eff.prophecyDescription || '',
@@ -819,8 +830,8 @@ export function executeSpell(
         owner: state.currentTurn === 'player' ? 'player' : 'opponent',
         sourceCardId: spellCard.card.id,
       });
-      if (!state.gameLog) state.gameLog = [];
-      state.gameLog.push({
+      const gameLog = [...(state.gameLog || [])];
+      gameLog.push({
         id: `prophecy-cast-${Date.now()}`,
         type: 'effect' as any,
         player: state.currentTurn,
@@ -828,7 +839,7 @@ export function executeSpell(
         timestamp: Date.now(),
         turn: state.turnNumber,
       });
-      resultState = state;
+      resultState = { ...state, prophecies, gameLog };
       break;
     }
     default:

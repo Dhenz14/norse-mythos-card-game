@@ -460,7 +460,8 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
 
   // Apply boss rules + difficulty scaling after board initialization
   useEffect(() => {
-    if (!isCampaign || !campaignData || bossRulesApplied) return;
+    if (!isCampaign || !campaignData) return;
+    if (bossRulesApplied) return;
     if (boardState.pieces.length === 0) return;
 
     const rules = campaignData.mission.bossRules;
@@ -855,7 +856,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
         setGameStatus(winnerStatus);
       }
     }
-  }, [phase, boardState.currentTurn, boardState.gameStatus, boardState.pieces]);
+  }, [phase, boardState.currentTurn, boardState.gameStatus, boardState.pieces.length]);
 
   const handleRestart = useCallback(() => {
     if (isCampaign) {

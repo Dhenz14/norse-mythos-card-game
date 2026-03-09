@@ -311,7 +311,7 @@ export function executeBattlecry(
         return checkPetEvolutionTrigger(executeHealBattlecry(newState, battlecry, targetId, targetType), 'on_heal');
 
       case 'buff':
-        return checkPetEvolutionTrigger(checkPetEvolutionTrigger(executeBuffBattlecry(newState, battlecry, targetId), 'on_buff'), 'on_gain_health');
+        return checkPetEvolutionTrigger(executeBuffBattlecry(newState, battlecry, targetId), 'on_buff');
         
       case 'summon':
         return executeSummonBattlecry(newState, battlecry);

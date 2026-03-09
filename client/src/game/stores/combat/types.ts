@@ -259,6 +259,7 @@ export interface KingAbilitySliceState {
   selectedMineDirection: MineDirection | null;
   lastMineTriggered: { mine: ActiveMine; targetPieceId: string } | null;
   pendingManaBoost: { player: number; opponent: number };
+  lastClearedTurn: number | null;
 }
 
 export interface KingAbilitySliceActions {

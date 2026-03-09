@@ -30,20 +30,24 @@ export function useSpectatorSync(hostPeerId: string | null) {
 				conn.send({ type: 'spectator_join' });
 			});
 
-			conn.on('data', (data: any) => {
-				if (data && data.type === 'spectator_state' && data.gameState) {
-					setGameState(filterGameStateForSpectator(data.gameState));
+			const handleData = (data: unknown) => {
+				const msg = data as { type?: string; gameState?: GameState };
+				if (msg && msg.type === 'spectator_state' && msg.gameState) {
+					setGameState(filterGameStateForSpectator(msg.gameState));
 				}
-			});
+			};
+			conn.on('data', handleData);
 
-			conn.on('close', () => {
+			const handleClose = () => {
 				setStatus('disconnected');
-			});
+			};
+			conn.on('close', handleClose);
 
-			conn.on('error', (err) => {
+			const handleError = (err: Error) => {
 				setError(err.message || 'Connection error');
 				setStatus('error');
-			});
+			};
+			conn.on('error', handleError);
 		});
 
 		peer.on('error', (err) => {
@@ -53,13 +57,10 @@ export function useSpectatorSync(hostPeerId: string | null) {
 
 		return () => {
 			if (connRef.current) {
-				connRef.current.off('data');
-				connRef.current.off('close');
-				connRef.current.off('error');
+				connRef.current.removeAllListeners();
 				connRef.current.close();
 			}
-			peer.off('open');
-			peer.off('error');
+			peer.removeAllListeners();
 			peer.destroy();
 			peerRef.current = null;
 			connRef.current = null;
