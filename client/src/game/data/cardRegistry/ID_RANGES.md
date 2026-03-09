@@ -106,6 +106,12 @@ Reserved ID ranges for card organization:
 | 31906-31921 | Norse Mechanic Payoffs | Blood Price, Prophecy, Realm Shift, Einherjar synergy payoffs |
 | 32100-32105 | Norse Naga/Einherjar Neutrals | Skidbladnir's Stowaway, Deckhand of Njord, etc. |
 | 32201-32206 | Greek Mythic Minions | Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa |
+| 40001 | Primordial Expansion | Bestla, Primordial Frost-Mother (mythic neutral Titan) |
+| 40010-40013 | Submerge Cards | Kraken of Ginnungagap, Kraken Spawn, Depths of the Void, Ginnungagap's Hunger |
+| 40020-40021 | Coil Cards | Lindworm Wingless Terror, Young Lindworm |
+| 40025 | Hermod Support | Gjoll Bridge-Keeper (rare neutral Undead deathrattle) |
+| 9060-9063 | Bestla Tokens | Odin-Spark, Vili-Spark, Ve-Spark, Aesir Ascendant (non-collectible) |
+| 90118-90120 | Weapon Upgrades | Frigg (Fensalir's Spindle), Hermod (Sleipnir's Reins), Bestla (Bolthorn's Rime) |
 
 ## Norse Mechanic Card Ranges
 

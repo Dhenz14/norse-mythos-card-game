@@ -21,6 +21,8 @@
    - [Realm Shift](#realm-shift)
    - [Ragnarok Chain](#ragnarok-chain)
    - [Pet Evolution System](#pet-evolution-system)
+   - [Submerge](#submerge)
+   - [Coil](#coil)
 10. [Status Effects](#status-effects)
 11. [Element System](#element-system)
 12. [Deck Building](#deck-building)
@@ -32,8 +34,8 @@
 
 Ragnarok Combat Arena is a multi-mythology digital collectible card game featuring:
 
-- **1,400+ collectible cards** across 5 mythological factions (Norse, Greek, Egyptian, Celtic, Eastern)
-- **77 playable heroes** across 12 classes
+- **2,000+ collectible cards** across 5 mythological factions (Norse, Greek, Egyptian, Celtic, Eastern)
+- **80+ playable heroes** across 12 classes
 - **Two distinct game modes**: Ragnarok Chess and Standard Match
 - **Poker-inspired combat** with Texas Hold'em mechanics
 - **Strategic deck building** with class-specific and neutral cards
@@ -720,6 +722,46 @@ The **3-3-1 Family-Based Evolution System**: 38 Norse-themed pet families, each 
 | 36 | Naglfar's Crew | Dark / Water / Neutral | Naglfar's Admiral | 50350-50356 |
 | 37 | Muspel Phoenixes | Fire / Electric / Light | Muspel Eternal | 50360-50366 |
 | 38 | Ivaldi's Constructs | Fire / Electric / Neutral | Ivaldi's Masterwork | 50370-50376 |
+
+### Submerge
+
+**Submerge** is a delayed-emergence mechanic inspired by sea creatures lurking beneath the waves. When a minion Submerges, it becomes **untargetable and cannot attack** for a set number of turns. When it surfaces, it triggers a powerful effect.
+
+| Rule | Detail |
+|------|--------|
+| **Duration** | 1-2 turns (set by the card) |
+| **Untargetable** | Cannot be targeted by spells, battlecries, or attacks while submerged |
+| **Board Space** | Still occupies a board slot while submerged |
+| **Surface Effect** | Triggers automatically when the submerge timer expires |
+| **Counter** | "Ginnungagap's Hunger" can target submerged minions (the only way to hit them) |
+
+#### Submerge Cards
+
+| Card | Mana | Stats | Rarity | Effect |
+|------|------|-------|--------|--------|
+| **Kraken of Ginnungagap** | 8 | 8/8 | Mythic | Battlecry: Submerge 2 turns. Surface: Deal 8 damage to all enemies. |
+| **Kraken Spawn** | 3 | 2/3 | Rare | Battlecry: Submerge 1 turn. Surface: Gain +2/+2. |
+| **Depths of the Void** | 4 | Spell | Epic | Submerge a friendly minion for 1 turn. Surface: +3/+3. |
+| **Ginnungagap's Hunger** | 2 | Spell | Rare | Deal 5 damage to a Submerged minion. (Tech counter) |
+
+### Coil
+
+**Coil** is a persistent control mechanic inspired by the Norse lindworm (wingless serpent). When a minion Coils an enemy, that enemy's **Attack is set to 0** and it **cannot attack** as long as the Coil source is alive. Killing the Coil source frees the victim.
+
+| Rule | Detail |
+|------|--------|
+| **Attack Lock** | Coiled minion's Attack is set to 0 |
+| **Cannot Attack** | Coiled minion cannot attack while coiled |
+| **One-to-One** | Each Coil source locks exactly one enemy |
+| **Deathrattle Release** | When the Coil source dies, the coiled minion regains its original Attack |
+| **Silence Counter** | Silencing the Coil source also frees the victim |
+
+#### Coil Cards
+
+| Card | Mana | Stats | Rarity | Effect |
+|------|------|-------|--------|--------|
+| **Lindworm, Wingless Terror** | 5 | 3/5 | Epic | Battlecry: Coil an enemy minion. Deathrattle: Free it. |
+| **Young Lindworm** | 2 | 1/3 | Common | Battlecry: Coil an enemy with 2 or less Attack. |
 
 ---
 
