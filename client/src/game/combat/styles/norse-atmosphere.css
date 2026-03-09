@@ -192,7 +192,6 @@
     0 0 40px 12px rgba(212, 175, 55, 0.35),
     0 0 60px 18px rgba(212, 175, 55, 0.15);
   animation: turn-glow-pulse 2.5s ease-in-out infinite;
-  will-change: opacity;
 }
 
 .ragnarok-combat-arena.opponent-turn .unified-opponent-hero .battlefield-hero-square {
@@ -201,7 +200,6 @@
     0 0 40px 12px rgba(220, 38, 38, 0.3),
     0 0 60px 18px rgba(220, 38, 38, 0.12);
   animation: turn-glow-pulse 2.5s ease-in-out infinite;
-  will-change: opacity;
 }
 
 @keyframes turn-glow-pulse {
@@ -440,7 +438,6 @@
     inset 0 -1px 0 rgba(0, 0, 0, 0.3);
   animation: pot-ambient 3s ease-in-out infinite;
   transition: box-shadow 0.5s ease-out, border-color 0.5s ease-out;
-  will-change: opacity;
 }
 
 @keyframes pot-ambient {

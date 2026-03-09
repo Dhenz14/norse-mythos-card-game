@@ -4,7 +4,7 @@ import { useGameStore } from '../stores/gameStore';
 import { GameState } from '../types';
 
 interface P2PActions {
-	playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero') => void;
+	playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number) => void;
 	attackWithCard: (attackerId: string, defenderId: string) => void;
 	endTurn: () => void;
 	useHeroPower: (targetId?: string) => void;

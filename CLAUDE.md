@@ -970,6 +970,12 @@ vercel --prod                 # Deploy to Vercel
 - Fixed attack deselect: clicking friendly minion while attacker selected deselects first
 - Removed duplicate summoning sickness / already-attacked notification handlers
 - Added prophecy countdown tracker UI (right sidebar with pulsing turn count pip)
+- CSS performance: hero-damage-flash, hero-heal-glow, armor-gain-flash switched from filter animations to transform/opacity-only
+- CSS performance: game-over-fade-in no longer animates `backdrop-filter` (static blur, opacity-only)
+- CSS performance: victoryTitlePulse switched from text-shadow animation to opacity
+- Removed 8 unnecessary `will-change` declarations from combat-animations.css + norse-atmosphere.css (kept ambient elements)
+- Replaced 3 remaining `toast` calls in gameStore.ts with inline `showStatus()` banner
+- Fixed P2PContext.tsx `P2PActions.playCard` type to include `insertionIndex?: number`
 
 ### Next (Genesis Launch)
 

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { toast } from 'sonner';
+import { showStatus } from '../components/ui/GameStatusBanner';
 import { createCardInstance, findCardInstance } from '../utils/cards/cardUtils';
 import { hasKeyword } from '../utils/cards/keywordUtils';
 import {
@@ -461,7 +461,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const hasWindfury = hasKeyword(attackerCard, 'windfury');
       const maxAttacks = hasMegaWindfury ? 4 : hasWindfury ? 2 : 1;
       if ((attackerCard.attacksPerformed || 0) >= maxAttacks) {
-        toast.error("This minion already attacked this turn!");
+        showStatus("This minion already attacked this turn!", 'error');
         targetingStore.cancelTargeting();
         set({ attackingCard: null });
         isAttackProcessing = false;
@@ -854,7 +854,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       if (needsTarget && (!targetId || !targetType)) {
         if (!heroTargetMode) {
           set({ heroTargetMode: true });
-          toast.info('Select a target for your hero power');
+          showStatus('Select a target for your hero power', 'info');
           return;
         }
         throw new Error('This hero power requires a target');
@@ -894,7 +894,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       });
       
       // Success notification
-      toast.success(`Used Hero Power: ${player.heroPower.name}`);
+      showStatus(`Used Hero Power: ${player.heroPower.name}`, 'success');
       
       // Show visual feedback - we'll create a temporary div for the effect
       const heroPowerEffect = document.createElement('div');
