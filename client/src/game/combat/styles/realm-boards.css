@@ -41,44 +41,64 @@
 	--realm-bg-mid: #1e1610;
 	--realm-bg-lower: #221a12;
 	--realm-bg-bottom: #0a0804;
-	--realm-glow-color: rgba(212, 165, 45, 0.5);
-	--realm-divider-color: rgba(212, 175, 55, 0.7);
-	--realm-divider-glow: rgba(255, 180, 60, 0.35);
-	--realm-fog-color: rgba(12, 8, 4, 0.5);
-	--realm-vignette-color: rgba(5, 3, 0, 0.65);
-	--realm-torch-color: rgba(255, 140, 40, 0.22);
-	--realm-dust-opacity: 0.7;
+	--realm-glow-color: rgba(255, 180, 50, 0.7);
+	--realm-divider-color: rgba(255, 200, 80, 0.9);
+	--realm-divider-glow: rgba(255, 180, 60, 0.6);
+	--realm-fog-color: rgba(12, 8, 4, 0.7);
+	--realm-vignette-color: rgba(5, 3, 0, 0.82);
+	--realm-torch-color: rgba(255, 140, 40, 0.45);
+	--realm-dust-opacity: 1;
 }
 
 .game-viewport.realm-midgard {
 	background:
-		/* Wood grain texture */
-		repeating-conic-gradient(rgba(180,140,80,0.02) 0% 25%, transparent 0% 50%) 0 0 / 5px 5px,
-		repeating-conic-gradient(rgba(160,120,60,0.015) 0% 25%, transparent 0% 50%) 2px 2px / 5px 5px,
-		/* Warm torch glow from corners */
-		radial-gradient(ellipse 50% 60% at 5% 20%, rgba(255, 140, 40, 0.06) 0%, transparent 60%),
-		radial-gradient(ellipse 50% 60% at 95% 20%, rgba(255, 140, 40, 0.06) 0%, transparent 60%),
-		/* Central fire pit glow */
-		radial-gradient(ellipse 60% 40% at 50% 55%, rgba(255, 160, 50, 0.04) 0%, transparent 50%),
-		/* Stone hall gradient */
-		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(16, 12, 8, 0.98) 0%, transparent 70%),
-		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(30, 22, 14, 0.95) 0%, transparent 70%),
-		linear-gradient(180deg, #0c0806 0%, #1e1610 30%, #221a12 70%, #0a0804 100%) !important;
+		/* LAYER 1: Heavy stone block masonry — visible mortar joints */
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='80'%3E%3Crect width='160' height='80' fill='%23100c08'/%3E%3Crect x='2' y='2' width='76' height='36' rx='2' fill='%23201810' stroke='%230a0806' stroke-width='2'/%3E%3Crect x='82' y='2' width='76' height='36' rx='2' fill='%231c1410' stroke='%230a0806' stroke-width='2'/%3E%3Crect x='42' y='42' width='76' height='36' rx='2' fill='%231e160e' stroke='%230a0806' stroke-width='2'/%3E%3Crect x='122' y='42' width='38' height='36' rx='2' fill='%23221a10' stroke='%230a0806' stroke-width='2'/%3E%3Crect x='0' y='42' width='38' height='36' rx='2' fill='%231a1210' stroke='%230a0806' stroke-width='2'/%3E%3C/svg%3E") repeat,
+		/* LAYER 2: Fractal stone grain — rough surface feel */
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E") repeat,
+		/* LAYER 3: Battle damage cracks — diagonal fractures across stone */
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cpath d='M80 0 L85 60 L78 120 L90 180 L82 240 L88 300 L80 360 L84 400' fill='none' stroke='rgba(0,0,0,0.4)' stroke-width='1.5'/%3E%3Cpath d='M80 0 L86 60 L79 120 L91 180 L83 240 L89 300 L81 360 L85 400' fill='none' stroke='rgba(40,30,15,0.25)' stroke-width='3'/%3E%3Cpath d='M280 50 L275 110 L285 170 L272 220 L282 290 L278 350' fill='none' stroke='rgba(0,0,0,0.35)' stroke-width='1.5'/%3E%3Cpath d='M280 50 L276 110 L286 170 L273 220 L283 290 L279 350' fill='none' stroke='rgba(40,30,15,0.2)' stroke-width='3'/%3E%3Cpath d='M180 100 L220 105 L260 98 L300 108' fill='none' stroke='rgba(0,0,0,0.25)' stroke-width='1'/%3E%3Cpath d='M50 280 L100 275 L150 285 L200 278' fill='none' stroke='rgba(0,0,0,0.2)' stroke-width='1'/%3E%3C/svg%3E") repeat,
+		/* LAYER 4: Blood splatter stains — faded war marks */
+		radial-gradient(ellipse 8% 6% at 25% 60%, rgba(80, 10, 5, 0.15) 0%, transparent 80%),
+		radial-gradient(ellipse 5% 8% at 70% 35%, rgba(60, 8, 3, 0.12) 0%, transparent 80%),
+		radial-gradient(ellipse 6% 4% at 45% 75%, rgba(70, 12, 6, 0.1) 0%, transparent 80%),
+		/* LAYER 5: Blazing torch pools — 4 visible fire sources */
+		radial-gradient(ellipse 30% 40% at 2% 18%, rgba(255, 160, 50, 0.3) 0%, rgba(255, 100, 20, 0.1) 40%, transparent 75%),
+		radial-gradient(ellipse 30% 40% at 98% 18%, rgba(255, 160, 50, 0.3) 0%, rgba(255, 100, 20, 0.1) 40%, transparent 75%),
+		radial-gradient(ellipse 25% 30% at 3% 82%, rgba(255, 130, 30, 0.25) 0%, rgba(255, 80, 10, 0.06) 50%, transparent 80%),
+		radial-gradient(ellipse 25% 30% at 97% 82%, rgba(255, 130, 30, 0.25) 0%, rgba(255, 80, 10, 0.06) 50%, transparent 80%),
+		/* LAYER 6: Central hearth — large warm glow where warriors face off */
+		radial-gradient(ellipse 45% 25% at 50% 48%, rgba(255, 160, 50, 0.14) 0%, rgba(255, 120, 30, 0.05) 40%, transparent 70%),
+		/* LAYER 7: Rune glow strip — faint golden light along the midline */
+		radial-gradient(ellipse 80% 4% at 50% 45%, rgba(255, 200, 80, 0.08) 0%, transparent 100%),
+		/* LAYER 8: Heavy overhead shadows — dark rafters / canopy */
+		radial-gradient(ellipse 400% 50% at 50% 0%, rgba(4, 3, 1, 0.97) 0%, transparent 55%),
+		/* LAYER 9: Floor shadow — deepest darkness at the edges */
+		radial-gradient(ellipse 400% 45% at 50% 100%, rgba(6, 4, 2, 0.95) 0%, transparent 50%),
+		/* LAYER 10: Side wall darkness */
+		radial-gradient(ellipse 15% 100% at 0% 50%, rgba(3, 2, 1, 0.7) 0%, transparent 100%),
+		radial-gradient(ellipse 15% 100% at 100% 50%, rgba(3, 2, 1, 0.7) 0%, transparent 100%),
+		/* Base stone gradient */
+		linear-gradient(180deg, #080604 0%, #14100a 15%, #1e1610 35%, #241c14 50%, #1e1610 65%, #14100a 85%, #080604 100%) !important;
 }
 
-/* Warm torch glow overlays */
+/* Blazing torch light pools — massive warm light cones on walls */
 .game-viewport.realm-midgard .board-torch-glow::before {
-	background: radial-gradient(ellipse at 10% 30%, rgba(255, 140, 40, 0.1) 0%, transparent 50%);
-	width: 40%;
-	height: 60%;
+	background:
+		radial-gradient(ellipse 280px 380px at 3% 18%, rgba(255, 160, 50, 0.35) 0%, rgba(255, 100, 20, 0.08) 50%, transparent 80%),
+		radial-gradient(ellipse 200px 260px at 4% 80%, rgba(255, 130, 30, 0.28) 0%, rgba(255, 80, 10, 0.06) 50%, transparent 80%);
+	width: 55%;
+	height: 100%;
 	top: 0;
 	bottom: auto;
 }
 
 .game-viewport.realm-midgard .board-torch-glow::after {
-	background: radial-gradient(ellipse at 90% 30%, rgba(255, 140, 40, 0.1) 0%, transparent 50%);
-	width: 40%;
-	height: 60%;
+	background:
+		radial-gradient(ellipse 280px 380px at 97% 18%, rgba(255, 160, 50, 0.35) 0%, rgba(255, 100, 20, 0.08) 50%, transparent 80%),
+		radial-gradient(ellipse 200px 260px at 96% 80%, rgba(255, 130, 30, 0.28) 0%, rgba(255, 80, 10, 0.06) 50%, transparent 80%);
+	width: 55%;
+	height: 100%;
 	top: 0;
 	bottom: auto;
 	left: auto;
@@ -440,12 +460,13 @@
 }
 
 /* ============================================================
-   REALM-AWARE VIGNETTE
+   REALM-AWARE VIGNETTE — Heavy cinematic edges
    ============================================================ */
 .game-viewport[class*="realm-"] {
 	box-shadow:
-		inset 0 0 100px 40px var(--realm-vignette-color, rgba(0, 0, 0, 0.6)),
-		inset 0 0 250px 80px rgba(0, 0, 0, 0.35);
+		inset 0 0 60px 30px var(--realm-vignette-color, rgba(0, 0, 0, 0.7)),
+		inset 0 0 150px 60px rgba(0, 0, 0, 0.5),
+		inset 0 0 300px 100px rgba(0, 0, 0, 0.3);
 }
 
 /* ============================================================
@@ -600,39 +621,47 @@
 	border: 2px solid transparent;
 	border-image: linear-gradient(
 		180deg,
-		rgba(212, 175, 55, 0.08) 0%,
-		rgba(212, 175, 55, 0.25) 20%,
-		rgba(212, 175, 55, 0.15) 50%,
-		rgba(212, 175, 55, 0.25) 80%,
-		rgba(212, 175, 55, 0.08) 100%
+		rgba(212, 175, 55, 0.05) 0%,
+		rgba(212, 175, 55, 0.35) 15%,
+		rgba(212, 175, 55, 0.2) 50%,
+		rgba(212, 175, 55, 0.35) 85%,
+		rgba(212, 175, 55, 0.05) 100%
 	) 1;
+	box-shadow:
+		inset 0 0 1px rgba(212, 175, 55, 0.15);
 }
 
-/* Corner flourishes */
+/* Corner rune flourishes */
 .board-border-ornament::before,
 .board-border-ornament::after {
 	content: '';
 	position: absolute;
-	width: 60px;
-	height: 60px;
-	border: 2px solid rgba(212, 175, 55, 0.2);
+	width: 80px;
+	height: 80px;
 	pointer-events: none;
+	opacity: 0.5;
 }
 
 .board-border-ornament::before {
-	top: 8px;
-	left: 8px;
-	border-right: none;
-	border-bottom: none;
-	border-radius: 4px 0 0 0;
+	top: 4px;
+	left: 4px;
+	border-top: 2px solid rgba(212, 175, 55, 0.4);
+	border-left: 2px solid rgba(212, 175, 55, 0.4);
+	border-radius: 3px 0 0 0;
+	box-shadow:
+		inset 8px 8px 0 -6px rgba(212, 175, 55, 0.15),
+		4px 4px 12px rgba(212, 175, 55, 0.08);
 }
 
 .board-border-ornament::after {
-	bottom: 8px;
-	right: 8px;
-	border-left: none;
-	border-top: none;
-	border-radius: 0 0 4px 0;
+	bottom: 4px;
+	right: 4px;
+	border-bottom: 2px solid rgba(212, 175, 55, 0.4);
+	border-right: 2px solid rgba(212, 175, 55, 0.4);
+	border-radius: 0 0 3px 0;
+	box-shadow:
+		inset -8px -8px 0 -6px rgba(212, 175, 55, 0.15),
+		-4px -4px 12px rgba(212, 175, 55, 0.08);
 }
 
 /* Realm-tinted border */
@@ -640,17 +669,17 @@
 	border-image: linear-gradient(
 		180deg,
 		transparent 0%,
-		var(--realm-divider-color, rgba(212, 175, 55, 0.15)) 20%,
-		var(--realm-divider-color, rgba(212, 175, 55, 0.08)) 50%,
-		var(--realm-divider-color, rgba(212, 175, 55, 0.15)) 80%,
+		var(--realm-divider-color, rgba(212, 175, 55, 0.3)) 15%,
+		var(--realm-divider-color, rgba(212, 175, 55, 0.12)) 50%,
+		var(--realm-divider-color, rgba(212, 175, 55, 0.3)) 85%,
 		transparent 100%
 	) 1;
 }
 
 .game-viewport[class*="realm-"] .board-border-ornament::before,
 .game-viewport[class*="realm-"] .board-border-ornament::after {
-	border-color: var(--realm-divider-color, rgba(212, 175, 55, 0.2));
-	opacity: 0.5;
+	border-color: var(--realm-divider-color, rgba(212, 175, 55, 0.4));
+	opacity: 0.6;
 }
 
 /* ============================================================
