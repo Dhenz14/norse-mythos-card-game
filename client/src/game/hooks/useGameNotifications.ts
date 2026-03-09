@@ -37,12 +37,12 @@ export function useGameNotifications() {
     title,
     description,
     type = 'info',
-    duration = 1800
+    duration = 2800
   }: GameNotification) => {
     const text = description ? `${title} — ${description}` : title;
     // Strip emoji prefixes for cleaner banner text
     const clean = text.replace(/^[^\w\s]*\s*/, '');
-    showStatus(clean, type, Math.min(duration, 2500));
+    showStatus(clean, type, Math.min(duration, 3500));
   };
 
   /**

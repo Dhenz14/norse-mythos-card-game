@@ -3449,7 +3449,7 @@
   line-height: 1;
   pointer-events: none;
   user-select: none;
-  animation: damageFloat 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: damageFloat 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: transform, opacity;
   font-family: 'Cinzel', 'Georgia', serif;
 }
@@ -3497,7 +3497,7 @@
     1px -1px 0 #1a1000,
     -1px 1px 0 #1a1000,
     1px 1px 0 #1a1000;
-  animation: damageFloatCrit 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: damageFloatCrit 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .damage-crit-label {
@@ -3508,7 +3508,7 @@
   color: #fbbf24;
   text-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
   margin-top: 2px;
-  animation: critLabelFade 1.4s ease-out forwards;
+  animation: critLabelFade 2s ease-out forwards;
 }
 
 @keyframes damageFloat {
@@ -3516,21 +3516,25 @@
     opacity: 0;
     transform: translateX(-50%) translateY(10px) scale(2);
   }
-  8% {
+  6% {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1.1);
   }
-  25% {
+  18% {
     opacity: 1;
-    transform: translateX(-50%) translateY(-20px) scale(1);
+    transform: translateX(-50%) translateY(-15px) scale(1);
   }
-  70% {
+  55% {
     opacity: 1;
-    transform: translateX(-50%) translateY(-48px) scale(0.95);
+    transform: translateX(-50%) translateY(-35px) scale(0.97);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translateX(-50%) translateY(-50px) scale(0.9);
   }
   100% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-72px) scale(0.75);
+    transform: translateX(-50%) translateY(-65px) scale(0.8);
   }
 }
 
@@ -3539,24 +3543,28 @@
     opacity: 0;
     transform: translateX(-50%) translateY(14px) scale(2.4);
   }
-  8% {
+  6% {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1.15);
   }
-  20% {
+  15% {
     transform: translateX(-50%) translateY(-5px) scale(1.05);
   }
-  35% {
+  30% {
     opacity: 1;
-    transform: translateX(-50%) translateY(-25px) scale(1);
+    transform: translateX(-50%) translateY(-20px) scale(1);
   }
-  75% {
+  60% {
     opacity: 1;
-    transform: translateX(-50%) translateY(-55px) scale(0.92);
+    transform: translateX(-50%) translateY(-40px) scale(0.95);
+  }
+  85% {
+    opacity: 0.7;
+    transform: translateX(-50%) translateY(-55px) scale(0.85);
   }
   100% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-80px) scale(0.7);
+    transform: translateX(-50%) translateY(-70px) scale(0.75);
   }
 }
 

@@ -403,10 +403,15 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     const prev = prevHealthRef.current;
     if (prev) {
       const getHeroPos = (selector: string) => {
-        const el = document.querySelector(selector);
+        const classMap: Record<string, string> = {
+          '.player-hero': '.unified-hero-section',
+          '.opponent-hero': '.unified-opponent-hero',
+        };
+        const mapped = classMap[selector] || selector;
+        const el = document.querySelector(mapped);
         if (el) {
           const rect = el.getBoundingClientRect();
-          return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+          return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 3 };
         }
         return { x: window.innerWidth / 2, y: window.innerHeight * 0.8 };
       };

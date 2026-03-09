@@ -28,7 +28,7 @@ let nextId = 0;
 
 export const useBannerStore = create<BannerStore>((set) => ({
 	messages: [],
-	push: (text, type = 'info', duration = 1800) => {
+	push: (text, type = 'info', duration = 2800) => {
 		const id = ++nextId;
 		set(s => ({ messages: [...s.messages.slice(-2), { id, text, type, duration }] }));
 		setTimeout(() => set(s => ({ messages: s.messages.filter(m => m.id !== id) })), duration);
@@ -36,7 +36,7 @@ export const useBannerStore = create<BannerStore>((set) => ({
 	remove: (id) => set(s => ({ messages: s.messages.filter(m => m.id !== id) })),
 }));
 
-export function showStatus(text: string, type: BannerType = 'info', duration = 1800) {
+export function showStatus(text: string, type: BannerType = 'info', duration = 2800) {
 	useBannerStore.getState().push(text, type, duration);
 }
 
@@ -47,7 +47,7 @@ const BannerItem: React.FC<{ msg: BannerMessage }> = React.memo(({ msg }) => {
 		const el = ref.current;
 		if (!el) return;
 		el.classList.add('banner-enter');
-		const fadeTimer = setTimeout(() => el.classList.add('banner-exit'), msg.duration - 300);
+		const fadeTimer = setTimeout(() => el.classList.add('banner-exit'), msg.duration - 500);
 		return () => clearTimeout(fadeTimer);
 	}, [msg.duration]);
 
