@@ -76,6 +76,7 @@ Hero Death            ▼             │
 | **tradeStore** | `tradeStore.ts` | Trade offers + chain transfers on accept |
 | **craftingStore** | `craftingStore.ts` | Eitr balance (forge/dissolve) |
 | **settingsStore** | `settingsStore.ts` | Audio, visual, gameplay preferences |
+| **starterStore** | `starterStore.ts` | New player starter pack claim tracking |
 
 ---
 
@@ -388,6 +389,116 @@ type AnimationType =
 
 ---
 
+## Treasury Governance Flow
+
+### Overview
+
+The treasury page (`/treasury`) provides a management interface for the Hive L1 multisig treasury. Only authenticated Hive users who are treasury signers (or vouched candidates) can perform actions.
+
+### State Machine
+
+```
+┌──────────────┐
+│  Not Logged  │ ← View-only: status, signers, balance
+│    In        │
+└──────┬───────┘
+       │ Keychain Login
+       ▼
+┌──────────────┐     ┌────────────────┐
+│   Eligible   │────►│  Join Request  │ (top-150 witness = direct join)
+│   Visitor    │     │   (WoT Vouch)  │ (non-witness = need 3+ vouches)
+└──────────────┘     └───────┬────────┘
+                             │ Approved
+                             ▼
+                     ┌────────────────┐
+                     │  Active Signer │
+                     └───────┬────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              ▼              ▼              ▼
+        ┌──────────┐  ┌──────────┐  ┌──────────────┐
+        │  Sign    │  │  Freeze  │  │  Leave       │
+        │  Pending │  │  (any    │  │  (7/30-day   │
+        │  Tx      │  │  signer) │  │   cooldown)  │
+        └──────────┘  └────┬─────┘  └──────────────┘
+                           │
+                           ▼
+                     ┌──────────────┐
+                     │   Frozen     │ (all ops blocked)
+                     │  Unfreeze:   │
+                     │  80% vote    │
+                     └──────────────┘
+```
+
+### Data Flow
+
+```
+TreasuryPage.tsx
+  ├── GET /api/treasury/status     (10s polling)
+  ├── GET /api/treasury/signers    (10s polling)
+  ├── GET /api/treasury/transactions
+  ├── GET /api/treasury/pending-signing
+  └── POST /api/treasury/...       (mutations via Keychain auth)
+        │
+        ▼
+  treasuryRoutes.ts (auth middleware: X-Hive-Username + Signature)
+        │
+        ▼
+  treasuryCoordinator.ts
+        ├── treasuryHive.ts          (Hive L1 queries + broadcast)
+        ├── treasuryAnomalyDetector.ts (burst/spike/rapid detection)
+        └── shared/schema.ts         (Drizzle ORM: 5 treasury tables)
+```
+
+### Key Interactions
+
+| Action | Endpoint | Quorum | Delay |
+|--------|----------|--------|-------|
+| Transfer ≤$1 | POST /submit-signature | 60% | None |
+| Transfer >$1 | POST /submit-signature | 60% | 1 hour |
+| Authority update | POST /submit-signature | 80% | 6 hours |
+| Emergency freeze | POST /freeze | 1 signer | Instant |
+| Unfreeze | POST /unfreeze | 80% | Instant |
+| Veto pending tx | POST /transactions/:id/veto | 1 signer | During delay |
+
+---
+
+## New Player Starter Experience
+
+### Flow
+
+```
+First Visit → HomePage
+  │
+  ▼ (starterStore.claimed === false)
+"Start Game" button shown
+  │
+  ▼ Click
+StarterPackCeremony.tsx
+  │
+  ├── Phase 1: Welcome Screen
+  │   "The Norns have foreseen your arrival"
+  │   "Claim Your Birthright" button
+  │
+  ▼ Click
+  ├── Phase 2: Pack Opening Animation
+  │   25 starter cards revealed (PackOpeningAnimation reuse)
+  │   Cards added to HiveDataStore
+  │   starterStore.markClaimed()
+  │
+  ▼ Animation complete
+HomePage (starterStore.claimed === true)
+  "Play Game" button shown
+```
+
+### Starter Set
+
+- 25 cards: 3 basic vanillas + 22 common neutrals
+- Mana curve 1-6, includes Taunt, Divine Shield, Windfury, Stealth, Lifesteal
+- Stored in `starterSet.ts`, tracked via `starterStore.ts` (localStorage persist)
+
+---
+
 ## Activity Logging
 
 ### Event Types
@@ -437,6 +548,7 @@ client/src/
 │   │   ├── chess/              # Chess board, pieces
 │   │   ├── 3D/                 # 3D card effects
 │   │   ├── packs/              # Pack opening
+│   │   ├── treasury/           # Treasury multisig management
 │   │   └── ui/                 # Tooltips, buttons
 │   ├── stores/                 # Zustand state
 │   ├── data/                   # Card/hero definitions

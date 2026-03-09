@@ -1741,20 +1741,95 @@ const MIN_TREASURY_VOUCHES = 3;         // Vouches needed for non-founder signer
 ### 18.9 Implementation Files
 
 ```
-client/src/data/blockchain/
-├── genesisAdmin.ts          # Updated: multisig genesis/seal/brick + unsigned tx builder
-├── hiveConfig.ts            # Updated: RAGNAROK_GENESIS_ACCOUNT, RAGNAROK_TREASURY_ACCOUNT
-├── multisigUtils.ts         # NEW: buildUnsignedTx, addSignature, broadcastIfThresholdMet
-└── treasuryConfig.ts        # NEW: quorum ratios, spending caps, delay constants
+client/src/
+├── data/blockchain/
+│   ├── genesisAdmin.ts          # Multisig genesis/seal/brick + unsigned tx builders
+│   │   ├── buildUnsignedGenesisTx()   — genesis tx with SHA-256 digest
+│   │   ├── buildUnsignedSealTx()      — seal tx with digest
+│   │   ├── buildAuthorityBrickTx()    — account_update with threshold 255
+│   │   ├── GENESIS_SIGNERS            — authorized signer list
+│   │   └── requireGenesisSigner()     — auth guard for signing ops
+│   └── hiveConfig.ts            # RAGNAROK_GENESIS_ACCOUNT, RAGNAROK_TREASURY_ACCOUNT
+├── game/components/treasury/
+│   └── TreasuryPage.tsx         # Full treasury management UI
+│       ├── StatusBanner          — frozen/operational, signer count, HBD balance, authority sync
+│       ├── AuthorityRing         — SVG circle visualization of signer positions + weights
+│       ├── SignersTable          — username, online status, weight, vouch count, joined date
+│       ├── JoinLeaveActions      — conditional join/leave with eligibility + cooldown warnings
+│       ├── WebOfTrust            — vouch input, candidate progress bars, revoke button
+│       ├── RecentTransactions    — tx list with Sign/Veto buttons per pending tx
+│       ├── EmergencyControls     — freeze button, unfreeze vote with progress bar
+│       └── PendingSigningPanel   — tx details + Approve via Keychain requestSignBuffer
+└── lib/routes.ts                # /treasury route
+
+shared/
+├── treasuryTypes.ts             # All shared types + constants
+│   ├── SigningRequest            — protocol version, expiration, metadata
+│   ├── SigningResponse           — signature + rejection handling
+│   ├── TreasuryStatus            — frozen state, signer counts, thresholds, balance
+│   ├── TreasurySignerInfo        — per-signer metadata (online, weight, vouches)
+│   ├── TreasuryTransaction       — 7 statuses (pending→signing→broadcast→completed/failed/vetoed/expired)
+│   ├── VouchCandidate            — WoT candidate progress tracking
+│   └── Constants                 — quorum ratios, timeouts, caps, delays, cooldowns
+└── schema.ts                    # Drizzle ORM treasury tables
+    ├── treasurySigners           — username, weight, online, joinedAt, leftAt
+    ├── treasuryVouches           — voucher → candidate, witnessRank, createdAt
+    ├── treasuryTransactions      — type, status, signatures, recipient, amount, memo, delays
+    ├── treasuryAuditLog          — action, signer, nonce, txDigest, anomalyFlags, metadata
+    └── treasuryFreezeState       — frozen, frozenBy, reason, unfreezeVotes, threshold
 
 server/
 ├── services/
-│   ├── treasuryCoordinator.ts  # NEW (Phase 2): signing request dispatch, threshold tracking
-│   ├── treasuryAnomalyDetector.ts  # NEW (Phase 2): burst/spike/new-recipient detection
-│   └── treasuryAuthoritySync.ts    # NEW (Phase 2): 10-min self-healing check
-├── routes/
-│   └── treasuryRoutes.ts      # NEW (Phase 2): status, join, leave, freeze, unfreeze, veto
-└── storage.ts                 # Updated: treasury tables (signers, transactions, audit, vouches, freeze)
+│   ├── treasuryCoordinator.ts   # Core coordinator (consolidates signing + authority sync)
+│   │   ├── getStatus()           — treasury operational status
+│   │   ├── getSignerInfoList()   — online tracking with heartbeat
+│   │   ├── joinSigner()          — WoT-verified join with witness rank check
+│   │   ├── leaveSigner()         — with 7/30-day cooldown (churn detection)
+│   │   ├── submitTransfer()      — daily caps, per-tx limits, anomaly check
+│   │   ├── submitSignature()     — threshold tracking, auto-broadcast
+│   │   ├── freeze()              — any-signer emergency freeze
+│   │   ├── voteUnfreeze()        — 80% supermajority vote tracking
+│   │   ├── vetoTransaction()     — cancel during delay window
+│   │   ├── vouchForCandidate()   — WoT vouch (witness rank verified)
+│   │   ├── revokeVouch()         — remove vouch
+│   │   ├── syncAuthority()       — 10-min self-healing (compare DB vs on-chain)
+│   │   └── auditLog()            — immutable action logging
+│   ├── treasuryAnomalyDetector.ts # In-memory anomaly detection
+│   │   ├── recordTransaction()   — track amount, recipient, timing
+│   │   ├── checkBurst()          — >5 tx in 10 minutes
+│   │   ├── checkSpike()          — >3x rolling average amount
+│   │   ├── checkRapidSuccession() — <60s between transfers
+│   │   ├── checkNewRecipient()   — first-time recipient flag
+│   │   └── shouldAutoFreeze()    — 3+ anomalies/hour triggers freeze
+│   └── treasuryHive.ts          # Pure Hive L1 blockchain utilities
+│       ├── computeThreshold()    — ceil(signerCount * quorumRatio)
+│       ├── authorityMatchesSigners() — compare on-chain authority vs DB
+│       ├── buildAuthorityUpdatePayload() — account_update ops
+│       ├── buildTransferPayload()  — transfer/transfer_to_vesting ops
+│       ├── getAccountAuthority()   — fetch account posting/active/owner auths
+│       ├── getWitnessRank()        — current witness ranking lookup
+│       ├── isTopWitness()          — check if within top 150
+│       ├── getTreasuryBalance()    — HBD + HIVE balance
+│       ├── getDynamicGlobalProperties() — head block, time, etc.
+│       ├── buildUnsignedTransaction() — construct Hive tx with ref_block
+│       └── broadcastSignedTransaction() — broadcast with collected signatures
+└── routes/
+    └── treasuryRoutes.ts        # 14 REST endpoints with Hive signature auth
+        ├── GET  /status              — public: frozen state, signer count, balance
+        ├── GET  /signers             — public: all signers with online status
+        ├── GET  /transactions        — auth: recent transactions with status
+        ├── GET  /transactions/:id    — auth: single transaction details
+        ├── POST /transactions/:id/veto — auth: veto pending transaction
+        ├── GET  /pending-signing     — auth: transactions awaiting this signer
+        ├── POST /submit-signature    — auth: submit Keychain signature for tx
+        ├── POST /join                — auth: join treasury (WoT verified)
+        ├── POST /leave               — auth: leave treasury (cooldown enforced)
+        ├── POST /freeze              — auth: emergency freeze (any signer)
+        ├── POST /unfreeze            — auth: vote to unfreeze (80% required)
+        ├── POST /wot/vouch           — auth: vouch for candidate
+        ├── DELETE /wot/vouch         — auth: revoke vouch
+        └── GET  /wot/vouches         — public: all pending vouch candidates
+        Auth: X-Hive-Username + X-Hive-Signature + X-Hive-Timestamp headers
 ```
 
 ### 18.10 Genesis Launch Checklist
@@ -1767,8 +1842,6 @@ Pre-Launch:
   [ ] Set genesis owner authority → 3-of-3 founders (unanimous)
   [ ] Set treasury posting/active authority → 2-of-3 founders (initial)
   [ ] Set treasury owner authority → 3-of-3 founders (initial)
-  [ ] Update hiveConfig.ts with real account names
-  [ ] Update genesisAdmin.ts with multisig flow functions
   [ ] Test multisig co-signing flow on Hive testnet
 
 Launch Day:
@@ -1781,9 +1854,9 @@ Launch Day:
 
 Post-Launch:
   [ ] Treasury remains active with 2-of-3 for ongoing payouts
-  [ ] Expand treasury to 3-of-5 as community signers join (Phase 2)
-  [ ] Deploy agent-based auto-signing when tx volume justifies (Phase 2)
-  [ ] Transition to WoT-based open signer set (Phase 3)
+  [ ] Expand treasury to 3-of-5 as community signers join via WoT
+  [ ] Monitor anomaly detector logs, tune thresholds as needed
+  [ ] Transition to fully open WoT signer set when critical mass reached
 ```
 
 ---

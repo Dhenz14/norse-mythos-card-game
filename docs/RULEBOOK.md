@@ -26,7 +26,8 @@
 10. [Status Effects](#status-effects)
 11. [Element System](#element-system)
 12. [Deck Building](#deck-building)
-13. [Glossary](#glossary)
+13. [Treasury & Governance](#treasury--governance)
+14. [Glossary](#glossary)
 
 ---
 
@@ -863,6 +864,77 @@ For Ragnarok Chess mode, select heroes for each piece slot:
 | **Rook** | Warrior or Paladin heroes |
 | **Bishop** | Priest or Druid heroes |
 | **Knight** | Rogue or Hunter heroes |
+
+---
+
+## Treasury & Governance
+
+Ragnarok uses a fully decentralized governance model built on Hive Layer 1 native multisig. No smart contracts, no centralized servers — pure blockchain authority management.
+
+### How It Works
+
+The game's economy is managed by two on-chain accounts:
+
+| Account | Purpose | After Seal |
+|---------|---------|------------|
+| **@ragnarok-genesis** | One-time NFT creation (genesis → mint → seal) | Permanently bricked (threshold 255) |
+| **@ragnarok-treasury** | Ongoing RUNE payouts, tournament rewards, development funds | Active forever, community-controlled |
+
+### Genesis Ceremony (One-Time)
+
+1. **Genesis broadcast**: Initialize card supply caps (1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
+2. **Mint batches**: Create all collectible NFT cards (~2,082 unique cards)
+3. **Seal broadcast**: Permanently lock minting — no new NFTs can ever be created
+4. **Authority brick**: Set all authority thresholds to 255 (unreachable) — the genesis account becomes cryptographically inert forever
+
+Once sealed, even the original creators cannot mint new cards. The supply is permanently fixed on-chain.
+
+### Treasury Multisig
+
+The treasury is controlled by a **community multisig** — multiple signers must co-approve any transaction:
+
+| Operation | Quorum Required |
+|-----------|----------------|
+| Transfer funds (HIVE/HBD) | **60%** of signers |
+| Change authority (add/remove signers) | **80%** of signers |
+| Emergency freeze | **Any single signer** |
+| Unfreeze | **80%** supermajority |
+
+### Becoming a Treasury Signer
+
+**Top-150 Hive Witnesses** can join the treasury directly — their witness rank proves community trust.
+
+**Non-witnesses** need 3+ vouches from existing treasury signers through the **Web of Trust (WoT)** system. This ensures only trusted community members control funds.
+
+### Security Protections
+
+| Protection | Detail |
+|-----------|--------|
+| **Spending caps** | Max $5 per transaction, $200 daily rolling cap |
+| **Time delays** | Transfers >$1 delayed 1 hour; authority changes delayed 6 hours |
+| **Veto window** | Any signer can cancel a delayed transaction before broadcast |
+| **Anomaly detection** | Auto-freeze on suspicious patterns (burst transactions, amount spikes, unknown recipients) |
+| **Self-healing** | Authority auto-corrects every 10 minutes if signers change |
+| **Cooldown periods** | 7-day leave cooldown (30 days for frequent leavers) |
+
+### Emergency Controls
+
+- **Freeze**: Any single signer can instantly freeze all treasury operations (blocks everything)
+- **Unfreeze**: Requires 80% of signers to vote (threshold locked at freeze time)
+- **Veto**: Any signer can cancel a pending transaction during its delay window
+
+### Audit Trail
+
+Every treasury operation is logged both on-chain (immutable Hive transactions) and off-chain (signing request/response tracking). All Hive transactions are publicly visible on any block explorer.
+
+### Treasury Page
+
+Access the treasury management interface at `/treasury` in the game client. Signers can:
+- View treasury status (balance, signer count, authority sync health)
+- Join or leave the signer set
+- Vouch for new signer candidates
+- Sign or veto pending transactions
+- Trigger emergency freeze/unfreeze
 
 ---
 
