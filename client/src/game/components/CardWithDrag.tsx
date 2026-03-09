@@ -147,6 +147,7 @@ export const CardWithDrag: React.FC<CardWithDragProps> = React.memo(({
       boardRef={boardRef}
       disabled={!isPlayable}
       onHoverChange={handleHoverChange}
+      onClick={handleClick}
     >
       <div 
         ref={cardRef} 

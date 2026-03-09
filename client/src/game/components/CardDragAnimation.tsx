@@ -46,6 +46,7 @@ interface CardDragAnimationProps {
   children: React.ReactNode;
   disabled?: boolean;
   onHoverChange?: (isHovering: boolean) => void;
+  onClick?: () => void;
 }
 
 export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
@@ -58,7 +59,8 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
   boardRef,
   children,
   disabled = false,
-  onHoverChange
+  onHoverChange,
+  onClick
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [showPlacementEffect, setShowPlacementEffect] = useState(false);
@@ -430,19 +432,22 @@ export const CardDragAnimation: React.FC<CardDragAnimationProps> = ({
         if (onDragEnd) onDragEnd(false, currentPosRef.current);
       }
     } else {
-      debug.drag("🧪 handlePointerUp: Not dragging or no currentPos, resetting styles");
+      debug.drag("🧪 handlePointerUp: Not dragging — treating as click");
       if (dragWrapperRef.current) {
         dragWrapperRef.current.style.transform = '';
       }
       if (cardRef.current) {
         cardRef.current.classList.remove('card-dragging');
       }
+      if (onClick) {
+        onClick();
+      }
     }
     
     isDraggingRef.current = false;
     setIsDragging(false);
     window.dispatchEvent(new Event('card-drag-end'));
-  }, [animateToPosition, boardRef, cardRef, isPlayable, isValidDrop, onDragEnd, onValidDrop]);
+  }, [animateToPosition, boardRef, cardRef, isPlayable, isValidDrop, onClick, onDragEnd, onValidDrop]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     debug.drag("🎮 CardDragAnimation: PointerDown event received", { disabled, isPlayable, card: card?.card?.name });

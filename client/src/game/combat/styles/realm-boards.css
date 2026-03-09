@@ -33,16 +33,56 @@
 }
 
 /* ============================================================
-   MIDGARD — Mortal Realm (warm stone, torchlight)
-   Default theme, earthy browns and warm amber
+   MIDGARD — Mortal Realm (Viking longhouse, torchlit stone)
+   Warm amber torchlight, carved stone, leather and iron
    ============================================================ */
 .game-viewport.realm-midgard {
-	--realm-bg-top: #0c0a06;
-	--realm-bg-mid: #1a1510;
-	--realm-bg-lower: #1e1812;
-	--realm-bg-bottom: #0c0a06;
-	--realm-torch-color: rgba(255, 160, 60, 0.18);
-	--realm-dust-opacity: 0.6;
+	--realm-bg-top: #0c0806;
+	--realm-bg-mid: #1e1610;
+	--realm-bg-lower: #221a12;
+	--realm-bg-bottom: #0a0804;
+	--realm-glow-color: rgba(212, 165, 45, 0.5);
+	--realm-divider-color: rgba(212, 175, 55, 0.7);
+	--realm-divider-glow: rgba(255, 180, 60, 0.35);
+	--realm-fog-color: rgba(12, 8, 4, 0.5);
+	--realm-vignette-color: rgba(5, 3, 0, 0.65);
+	--realm-torch-color: rgba(255, 140, 40, 0.22);
+	--realm-dust-opacity: 0.7;
+}
+
+.game-viewport.realm-midgard {
+	background:
+		/* Wood grain texture */
+		repeating-conic-gradient(rgba(180,140,80,0.02) 0% 25%, transparent 0% 50%) 0 0 / 5px 5px,
+		repeating-conic-gradient(rgba(160,120,60,0.015) 0% 25%, transparent 0% 50%) 2px 2px / 5px 5px,
+		/* Warm torch glow from corners */
+		radial-gradient(ellipse 50% 60% at 5% 20%, rgba(255, 140, 40, 0.06) 0%, transparent 60%),
+		radial-gradient(ellipse 50% 60% at 95% 20%, rgba(255, 140, 40, 0.06) 0%, transparent 60%),
+		/* Central fire pit glow */
+		radial-gradient(ellipse 60% 40% at 50% 55%, rgba(255, 160, 50, 0.04) 0%, transparent 50%),
+		/* Stone hall gradient */
+		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(16, 12, 8, 0.98) 0%, transparent 70%),
+		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(30, 22, 14, 0.95) 0%, transparent 70%),
+		linear-gradient(180deg, #0c0806 0%, #1e1610 30%, #221a12 70%, #0a0804 100%) !important;
+}
+
+/* Warm torch glow overlays */
+.game-viewport.realm-midgard .board-torch-glow::before {
+	background: radial-gradient(ellipse at 10% 30%, rgba(255, 140, 40, 0.1) 0%, transparent 50%);
+	width: 40%;
+	height: 60%;
+	top: 0;
+	bottom: auto;
+}
+
+.game-viewport.realm-midgard .board-torch-glow::after {
+	background: radial-gradient(ellipse at 90% 30%, rgba(255, 140, 40, 0.1) 0%, transparent 50%);
+	width: 40%;
+	height: 60%;
+	top: 0;
+	bottom: auto;
+	left: auto;
+	right: 0;
 }
 
 /* ============================================================

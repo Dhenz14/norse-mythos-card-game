@@ -5589,8 +5589,7 @@
   min-width: 0;
   overflow: visible;
   padding-bottom: 8px;
-  /* Raised by 2 inches (~50px higher than previous translateY(60px)) */
-  transform: translateY(10px);
+  transform: translateY(70px);
 }
 
 /* ========================================

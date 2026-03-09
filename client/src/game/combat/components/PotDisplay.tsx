@@ -80,8 +80,8 @@ export function PotDisplay({
     <div 
       className="
         pot-display-container
-        absolute left-[var(--zone-pot-unified-left,15%)] bottom-[var(--zone-pot-unified-bottom,30%)]
-        z-[var(--z-pot,35)]
+        absolute left-[var(--zone-pot-unified-left,15%)] bottom-[var(--zone-pot-unified-bottom,340px)]
+        z-[var(--z-pot,50)]
         flex items-center gap-3
         px-4 py-2
         rounded-xl
