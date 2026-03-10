@@ -415,18 +415,9 @@ const HERO_TO_CHARACTER: Record<string, string> = {
 
 /**
  * King ID to character name mapping
+ * Kings use their own portrait PNGs from /portraits/kings/ — not the AI art override system
  */
-const KING_TO_CHARACTER: Record<string, string> = {
-  'king-ymir': 'ymir',
-  'king-buri': 'bestla',
-  'king-surtr': 'surtr',
-  'king-borr': 'borr',
-  'king-yggdrasil': 'yggdrasil-world-tree',  // Custom art - tree being humanoid
-  'king-audumbla': 'audumbla-cow',
-  'king-gaia': 'dwarves',
-  'king-brimir': 'brimir',
-  'king-ginnungagap': 'ginnungagap-void',
-};
+const KING_TO_CHARACTER: Record<string, string> = {};
 
 /**
  * Direct hero art overrides — highest priority

@@ -23,15 +23,7 @@ export function useHeroArt(
   explicitPortrait?: string
 ): UseHeroArtResult {
   return useMemo(() => {
-    if (explicitPortrait) {
-      return { artPath: explicitPortrait, hasArt: true };
-    }
-
-    if (!heroId) {
-      return { artPath: null, hasArt: false };
-    }
-
-    const artPath = resolveHeroPortrait(heroId) ?? null;
+    const artPath = resolveHeroPortrait(heroId, explicitPortrait) ?? null;
     return { artPath, hasArt: artPath !== null };
   }, [heroId, explicitPortrait]);
 }

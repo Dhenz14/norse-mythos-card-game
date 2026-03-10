@@ -106,7 +106,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'light',
       norseHeroId: 'hero-kvasir',
-      portrait: '/portraits/heroes/kvasir.png',
     },
     {
       id: 'hero-forseti',
@@ -153,7 +152,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'electric',
       norseHeroId: 'hero-zeus',
-      portrait: '/portraits/heroes/zeus.png',
     },
     {
       id: 'hero-athena',
@@ -163,7 +161,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'light',
       norseHeroId: 'hero-athena',
-      portrait: '/portraits/heroes/athena.png',
     },
     {
       id: 'hero-hyperion',
@@ -173,7 +170,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'light',
       norseHeroId: 'hero-hyperion',
-      portrait: '/portraits/heroes/hyperion.png',
     },
     {
       id: 'hero-chronos',
@@ -183,7 +179,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'light',
       norseHeroId: 'hero-chronos',
-      portrait: '/portraits/heroes/chronos.png',
     },
     {
       id: 'hero-hades',
@@ -193,7 +188,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'dark',
       norseHeroId: 'hero-hades',
-      portrait: '/portraits/heroes/hades.png',
     },
     {
       id: 'hero-dionysus',
@@ -212,7 +206,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'dark',
       norseHeroId: 'hero-persephone',
-      portrait: '/portraits/heroes/persephone.png',
     },
     {
       id: 'hero-hel',
@@ -329,7 +322,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'fire',
       norseHeroId: 'hero-magni',
-      portrait: '/portraits/heroes/magni.png',
     },
     {
       id: 'hero-brakki',
@@ -339,7 +331,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'fire',
       norseHeroId: 'hero-brakki',
-      portrait: '/portraits/heroes/brakki.png',
     },
     {
       id: 'hero-tyr',
@@ -386,7 +377,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'fire',
       norseHeroId: 'hero-ares',
-      portrait: '/portraits/heroes/ares.png',
     },
     {
       id: 'hero-hephaestus',
@@ -396,7 +386,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'fire',
       norseHeroId: 'hero-hephaestus',
-      portrait: '/portraits/heroes/hephaestus.png',
     },
     {
       id: 'hero-baldur',
@@ -435,7 +424,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'fire',
       norseHeroId: 'hero-logi',
-      portrait: '/portraits/heroes/logi.png',
     },
     {
       id: 'hero-thryma',
@@ -568,7 +556,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'water',
       norseHeroId: 'hero-ran',
-      portrait: '/portraits/heroes/ran.png',
     },
     // ===== GREEK HEROES =====
     {
@@ -579,7 +566,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'water',
       norseHeroId: 'hero-poseidon',
-      portrait: '/portraits/heroes/poseidon.png',
     },
     {
       id: 'hero-aphrodite',
@@ -589,7 +575,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'grass',
       norseHeroId: 'hero-aphrodite',
-      portrait: '/portraits/heroes/aphrodite.png',
     },
     {
       id: 'hero-hera',
@@ -599,7 +584,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'light',
       norseHeroId: 'hero-hera',
-      portrait: '/portraits/heroes/hera.png',
     },
     {
       id: 'hero-eros',
@@ -618,7 +602,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'fire',
       norseHeroId: 'hero-hestia',
-      portrait: '/portraits/heroes/hestia.png',
     },
     {
       id: 'hero-demeter',
@@ -780,7 +763,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'water',
       norseHeroId: 'hero-myrka',
-      portrait: '/portraits/heroes/myrka.png',
     },
     {
       id: 'hero-ylva',
@@ -827,7 +809,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'dark',
       norseHeroId: 'hero-nyx',
-      portrait: '/portraits/heroes/nyx.png',
     },
     {
       id: 'hero-apollo',
@@ -837,7 +818,6 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'fire',
       norseHeroId: 'hero-apollo',
-      portrait: '/portraits/heroes/apollo.png',
     },
     {
       id: 'hero-artemis',
