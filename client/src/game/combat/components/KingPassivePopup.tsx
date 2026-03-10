@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKingPassiveEventStore, KingPassiveEvent } from '../../stores/kingPassiveEventStore';
 import { proceduralAudio } from '../../audio/proceduralAudio';
+import { assetPath } from '../../utils/assetPath';
 import './KingPassivePopup.css';
 
 const POPUP_DURATION = 2200;
@@ -22,7 +23,7 @@ const KING_PORTRAIT_MAP: Record<string, string> = {
 };
 
 function getKingPortraitPath(kingId: string): string {
-	return KING_PORTRAIT_MAP[kingId] || `/portraits/kings/${kingId.replace('king-', '')}.png`;
+	return assetPath(KING_PORTRAIT_MAP[kingId] || `/portraits/kings/${kingId.replace('king-', '')}.png`);
 }
 
 const KingPopupBubble: React.FC<{

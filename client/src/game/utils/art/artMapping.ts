@@ -653,7 +653,7 @@ const LOCAL_HERO_PORTRAITS = new Set([
  * Priority: explicit portrait > local /portraits/heroes/ > CDN art mapping
  */
 export function resolveHeroPortrait(heroId?: string, explicitPortrait?: string): string | undefined {
-  if (explicitPortrait) return explicitPortrait;
+  if (explicitPortrait) return assetPath(explicitPortrait);
   if (!heroId) return undefined;
   const name = heroId.replace(/^hero-/, '').toLowerCase();
   if (LOCAL_HERO_PORTRAITS.has(name)) {

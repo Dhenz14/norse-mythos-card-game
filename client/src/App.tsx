@@ -226,7 +226,6 @@ function App() {
       import("./game/stores/gameStore").then(m => m.disposeGameStoreSubscriptions());
       import("./game/stores/gameFlowStore").then(m => m.disposeGameFlowSubscription());
       import("./game/animations/BattlecryVFX").then(m => m.stopOrphanSweep());
-      import("./game/utils/canvasContextManager").then(m => m.default.dispose());
     };
   }, []);
 

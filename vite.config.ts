@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { execSync } from "child_process";
-import glsl from "vite-plugin-glsl";
 import { visualizer } from "rollup-plugin-visualizer";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +22,6 @@ export default defineConfig(({ command }) => ({
   },
   plugins: [
     react(),
-    glsl(),
     ...(command === 'build' ? [visualizer({ filename: 'dist/bundle-stats.html', gzipSize: true, brotliSize: true })] : []),
   ],
   resolve: {
@@ -48,7 +46,6 @@ export default defineConfig(({ command }) => ({
           // Vendor splits — isolate heavy node_modules
           if (id.includes('node_modules')) {
             if (id.includes('react-dom') || id.includes('react/')) return 'react-vendor';
-            if (id.includes('three') || id.includes('@react-three')) return 'three-vendor';
             if (id.includes('pixi')) return 'pixi-vendor';
             if (id.includes('framer-motion') || id.includes('@react-spring')) return 'ui-vendor';
             if (id.includes('@radix-ui')) return 'radix-vendor';
@@ -83,6 +80,5 @@ export default defineConfig(({ command }) => ({
       },
     },
   },
-  // Add support for large models and audio files
-  assetsInclude: ["**/*.gltf", "**/*.glb", "**/*.mp3", "**/*.ogg", "**/*.wav"],
+  assetsInclude: ["**/*.mp3", "**/*.ogg", "**/*.wav"],
 }));

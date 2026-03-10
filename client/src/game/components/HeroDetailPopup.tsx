@@ -8,6 +8,7 @@ import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { NORSE_KINGS } from '../data/norseKings/kingDefinitions';
 import { useKingDivineCommandDisplay } from '../hooks/useKingDivineCommandDisplay';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
+import { assetPath } from '../utils/assetPath';
 import { getEditionInfo } from '../utils/heroRarity';
 
 interface HeroDetailPopupProps {
@@ -362,13 +363,13 @@ const styles = `
 
   .card-front.rarity-common .portrait-foil-overlay { background-image: none; }
   .card-front.rarity-rare .portrait-foil-overlay {
-    background-image: url('/textures/epic_holographic2.png');
+    background-image: url('${assetPath('/textures/epic_holographic2.png')}');
   }
   .card-front.rarity-epic .portrait-foil-overlay {
-    background-image: url('/textures/foil_epic.png');
+    background-image: url('${assetPath('/textures/foil_epic.png')}');
   }
   .card-front.rarity-mythic .portrait-foil-overlay {
-    background-image: url('/textures/foil_mythic.png');
+    background-image: url('${assetPath('/textures/foil_mythic.png')}');
   }
 
   /* Foil opacity — very subtle texture shimmer */
