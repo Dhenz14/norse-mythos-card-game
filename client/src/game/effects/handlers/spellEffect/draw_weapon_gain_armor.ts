@@ -7,6 +7,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 /**
  * Execute a Draw Weapon Gain Armor effect
@@ -36,7 +37,7 @@ export default function executeDrawWeaponGainArmor(
     const deck = context.currentPlayer.deck;
     const weaponIndex = deck.findIndex((card: any) => card.card?.type === 'weapon');
 
-    if (weaponIndex !== -1) {
+    if (weaponIndex !== -1 && context.currentPlayer.hand.length < MAX_HAND_SIZE) {
       const weaponCard = deck.splice(weaponIndex, 1)[0];
       context.currentPlayer.hand.push(weaponCard);
       weaponDrawn = true;

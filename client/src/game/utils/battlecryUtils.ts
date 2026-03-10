@@ -1827,12 +1827,10 @@ function executeDrawBattlecry(
       // This is a special case for when we had to use the fallback
     }
     
-    // Create a card instance and add it to the hand
+    if (state.players.player.hand.length >= MAX_HAND_SIZE) break;
     const cardInstance = createCardInstance(drawnCard);
-    
-    // Add the card instance to hand (not just the card data)
     state.players.player.hand.push(cardInstance);
-    
+
     drawnCount++;
   }
   
@@ -1897,23 +1895,18 @@ function executeDrawBothBattlecry(
   
   // Draw cards for player
   for (let i = 0; i < cardsToDraw; i++) {
-    if (state.players.player.deck.length > 0) {
+    if (state.players.player.deck.length > 0 && state.players.player.hand.length < MAX_HAND_SIZE) {
       const drawnCard = state.players.player.deck.shift()!;
-      // Create a card instance and add it to the hand
       const cardInstance = createCardInstance(drawnCard);
       state.players.player.hand.push(cardInstance);
       playerDrawnCount++;
-    } else {
-      // Apply fatigue damage here if needed when deck is empty
-      // This would be where you'd increment fatigue counter and deal increasing damage
     }
   }
-  
+
   // Draw cards for opponent
   for (let i = 0; i < cardsToDraw; i++) {
-    if (state.players.opponent.deck.length > 0) {
+    if (state.players.opponent.deck.length > 0 && state.players.opponent.hand.length < MAX_HAND_SIZE) {
       const drawnCard = state.players.opponent.deck.shift()!;
-      // Create a card instance and add it to the hand
       const cardInstance = createCardInstance(drawnCard);
       state.players.opponent.hand.push(cardInstance);
       opponentDrawnCount++;
@@ -2074,8 +2067,10 @@ function executeDiscoverBattlecry(
       
       
       // Add the selected card directly to the opponent's hand as CardInstance
-      const cardInstance = createCardInstance(selectedCard);
-      state.players.opponent.hand.push(cardInstance);
+      if (state.players.opponent.hand.length < MAX_HAND_SIZE) {
+        const cardInstance = createCardInstance(selectedCard);
+        state.players.opponent.hand.push(cardInstance);
+      }
       
       // Return the state without setting up the discovery UI since the AI handled it
       return state;
@@ -4077,7 +4072,7 @@ function executeCopyToHandBattlecry(state: GameState, targetId?: string): GameSt
   const target = player.battlefield.find(c => c.instanceId === targetId);
   if (!target) return state;
 
-  if ((player.hand?.length ?? 0) >= 10) return state;
+  if ((player.hand?.length ?? 0) >= MAX_HAND_SIZE) return state;
 
   const copy = createCardInstance(target.card);
   player.hand = player.hand || [];

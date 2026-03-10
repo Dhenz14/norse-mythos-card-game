@@ -53,3 +53,6 @@
 
 /* Cursors */
 @import './cursors.css';
+
+/* Art-based UI Upgrade */
+@import './ragnarok-art-ui.css';

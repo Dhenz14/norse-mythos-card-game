@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 
 const LORE_QUOTES = [
 	'The World Tree trembles as the age of Ragnarok draws near...',
@@ -15,41 +15,60 @@ const LORE_QUOTES = [
 	'Anubis weighs the hearts of fallen warriors. May yours prove worthy.',
 ];
 
-function getRandomQuote(): string {
-	return LORE_QUOTES[Math.floor(Math.random() * LORE_QUOTES.length)];
+interface LoadingScreenProps {
+	message?: string;
 }
 
-export default function LoadingScreen({ message }: { message?: string }) {
-	const [quote, setQuote] = useState(getRandomQuote);
-	useEffect(() => {
-		const quoteInterval = setInterval(() => setQuote(getRandomQuote()), 5000);
-		return () => clearInterval(quoteInterval);
-	}, []);
+interface LoadingScreenState {
+	quote: string;
+}
 
-	return (
-		<div className="fixed inset-0 z-[9999] bg-gray-950 flex flex-col items-center justify-center">
-			{/* Rune spinner */}
-			<div className="relative w-24 h-24 mb-8">
-				<div className="absolute inset-0 rounded-full border-2 border-amber-500/30 animate-spin"
-					style={{ animationDuration: '3s' }} />
-				<div className="absolute inset-2 rounded-full border-2 border-amber-400/50 animate-spin"
-					style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
-				<div className="absolute inset-4 rounded-full border-2 border-amber-300/70 animate-spin"
-					style={{ animationDuration: '1.5s' }} />
-				<div className="absolute inset-0 flex items-center justify-center">
-					<span className="text-3xl text-amber-400 font-bold">R</span>
+export default class LoadingScreen extends Component<LoadingScreenProps, LoadingScreenState> {
+	private quoteInterval: ReturnType<typeof setInterval> | null = null;
+
+	state: LoadingScreenState = {
+		quote: LORE_QUOTES[Math.floor(Math.random() * LORE_QUOTES.length)]
+	};
+
+	componentDidMount() {
+		this.quoteInterval = setInterval(() => {
+			this.setState({ quote: LORE_QUOTES[Math.floor(Math.random() * LORE_QUOTES.length)] });
+		}, 5000);
+	}
+
+	componentWillUnmount() {
+		if (this.quoteInterval) clearInterval(this.quoteInterval);
+	}
+
+	render() {
+		const { message } = this.props;
+		const { quote } = this.state;
+
+		return (
+			<div className="fixed inset-0 z-[9999] bg-gray-950 flex flex-col items-center justify-center">
+				{/* Rune spinner */}
+				<div className="relative w-24 h-24 mb-8">
+					<div className="absolute inset-0 rounded-full border-2 border-amber-500/30 animate-spin"
+						style={{ animationDuration: '3s' }} />
+					<div className="absolute inset-2 rounded-full border-2 border-amber-400/50 animate-spin"
+						style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
+					<div className="absolute inset-4 rounded-full border-2 border-amber-300/70 animate-spin"
+						style={{ animationDuration: '1.5s' }} />
+					<div className="absolute inset-0 flex items-center justify-center">
+						<span className="text-3xl text-amber-400 font-bold">R</span>
+					</div>
 				</div>
+
+				{/* Loading text */}
+				<p className="text-amber-400 text-lg font-semibold mb-2">
+					{message || 'Loading'}...
+				</p>
+
+				{/* Lore quote */}
+				<p key={quote} className="text-gray-500 text-sm italic max-w-md text-center px-4 transition-opacity duration-500">
+					&ldquo;{quote}&rdquo;
+				</p>
 			</div>
-
-			{/* Loading text */}
-			<p className="text-amber-400 text-lg font-semibold mb-2">
-				{message || 'Loading'}...
-			</p>
-
-			{/* Lore quote */}
-			<p key={quote} className="text-gray-500 text-sm italic max-w-md text-center px-4 transition-opacity duration-500">
-				"{quote}"
-			</p>
-		</div>
-	);
+		);
+	}
 }

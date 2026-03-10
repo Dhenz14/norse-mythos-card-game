@@ -3260,36 +3260,52 @@ export function applyDamage(
  * @deprecated Use manual attack system (attackStore.ts + AttackSystem.tsx) instead.
  * This auto-attack function is kept for backwards compatibility only.
  */
-export function autoAttackWithAllCards(state: GameState): GameState {
+export function autoAttackWithAllCards(state: GameState, mode: 'minion' | 'hero' = 'minion'): GameState {
   try {
-    // Only allow auto-attack during player's turn, except for AI simulation
-    const isAISimulation = typeof window !== 'undefined' && 
-      (window.location.pathname.includes('ai') || window.location.href.includes('ai-game'));
-    
-    if (state.currentTurn !== 'player' && !isAISimulation) {
+    if (state.currentTurn !== 'player') {
       return state;
     }
-    
-    // Get all cards that can attack
+
     const attackableCards = state.players.player.battlefield
       .filter(card => !card.isSummoningSick && card.canAttack)
-      .sort((a, b) => getAttack(b.card) - getAttack(a.card)); // Sort by attack power (highest first)
-    
-    // No cards can attack
+      .sort((a, b) => getAttack(a.card) - getAttack(b.card)); // Lowest attack first (save big hitters)
+
     if (attackableCards.length === 0) {
       return state;
     }
-    
-    // Execute attacks one by one, modifying the state each time
+
     let newState = structuredClone(state) as GameState;
-    
-    attackableCards.forEach(card => {
-      newState = autoAttackWithCard(newState, card.instanceId);
-    });
-    
+
+    for (const card of attackableCards) {
+      const attacker = newState.players.player.battlefield.find(c => c.instanceId === card.instanceId);
+      if (!attacker || !attacker.canAttack) continue;
+
+      const opponentField = newState.players.opponent.battlefield;
+      const tauntMinions = getTauntMinions(opponentField);
+
+      if (tauntMinions.length > 0) {
+        // Must attack taunt — pick lowest HP taunt
+        const target = tauntMinions.reduce((low, cur) =>
+          (cur.currentHealth || 999) < (low.currentHealth || 999) ? cur : low
+        );
+        newState = processAttack(newState, card.instanceId, target.instanceId);
+      } else if (mode === 'hero' || opponentField.length === 0) {
+        // Hero mode or no minions — go face
+        if (isValidRushTarget(attacker, 'hero')) {
+          newState = processAttack(newState, card.instanceId);
+        }
+      } else {
+        // Minion mode — attack lowest HP enemy minion
+        const target = opponentField.reduce((low, cur) =>
+          (cur.currentHealth || 999) < (low.currentHealth || 999) ? cur : low
+        );
+        newState = processAttack(newState, card.instanceId, target.instanceId);
+      }
+    }
+
     return newState;
   } catch (error) {
     debug.error('Auto-attack all error:', error);
-    return state; // Return unchanged state if there's an error
+    return state;
   }
 }

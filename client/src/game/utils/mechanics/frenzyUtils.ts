@@ -4,6 +4,7 @@ import { findCardInstance, findCardById } from '../cards/cardUtils';
 import { dealDamageToMinion } from '../effects/damageUtils';
 import { isMinion, getAttack, getHealth } from '../cards/typeGuards';
 import { debug } from '../../config/debugConfig';
+import { MAX_HAND_SIZE } from '../../constants/gameConstants';
 
 /**
  * Initializes a card's frenzy effect
@@ -194,8 +195,8 @@ export function executeFrenzyEffect(
       
     case 'add_to_hand':
       // Add cards to hand
-      if (effect.cardType === 'spell' && effect.isRandom) {
-        const spell = findCardById(1001); // Assuming 1001 is a valid spell ID
+      if (effect.cardType === 'spell' && effect.isRandom && updatedState.players[playerId].hand.length < MAX_HAND_SIZE) {
+        const spell = findCardById(1001);
         if (spell) {
           updatedState.players[playerId].hand.push({
             instanceId: uuidv4(),

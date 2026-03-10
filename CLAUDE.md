@@ -1062,10 +1062,37 @@ vercel --prod                 # Deploy to Vercel
 - Three-tier minion art lookup confirmed working: `CARD_ID_TO_ART` (484 IDs) → `VERCEL_CARD_ART` (331 names) → `MINION_CARD_TO_ART` (86 creature maps) via `getCardArtPath(name, id)`
 - TypeScript: 0 errors
 
+### Completed (Battle Screen UX Overhaul)
+
+- **AI Art UI Layers**: Wired 8 AI-generated art assets to game UI via `ragnarok-art-ui.css`
+  - Background, card frame, hero frame, battlefield divider, board frame, action buttons, mana tray, HP bar
+  - All use `mix-blend-mode: overlay` at low opacity for subtle layering
+- **Auto-Attack with Toggle**: Hero mode (go face) and Minion mode (attack lowest HP first)
+  - Taunt overrides both modes (must attack lowest HP taunt)
+  - Lowest-attack minions attack first to save big hitters
+  - Toggle UI in `end-turn-button.css` with `.auto-attack-group` component
+- **Click-Only Card Play**: Removed drag-and-drop entirely from SimpleBattlefield + GameBoard
+  - Positional minions (magnetic, cleave, adjacent) placed at random index
+  - `CardWithDrag` simplified to click-only wrapper
+- **Battlecry Targeting Highlights**: Darken non-targetable side, highlight targetable side
+  - `.targeting-friendly`, `.targeting-enemy`, `.targeting-any` CSS classes on SimpleBattlefield
+- **LoadingScreen HMR Fix**: Rewrote as class component (immune to Vite HMR hook dispatcher null bug)
+- **Damage Popup Fix**: Moved `data-hero-role` attributes to tight hero wrapper divs
+
+### Completed (Hero Art Pipeline Fix — HERO_ART_OVERRIDE)
+
+- Root cause: `HERO_TO_CHARACTER` had key mismatches (`'hero-bjorn'` vs `'hero-bjorn-ironside'`), 27 heroes missing, and old portrait PNGs overriding new art
+- Created `HERO_ART_OVERRIDE` map (89 entries) — direct heroId → art file ID lookup, highest priority
+- 35 heroes use new AI-generated art from `ragnarok-art-export.json` (Odin, Thor, Zeus, Athena, all major gods)
+- 54 heroes use best-match local character art as proxies
+- Changed `resolveHeroPortrait()` priority: HERO_ART_OVERRIDE > CHARACTER_ART_IDS > portrait PNG
+- 89/89 heroes now have art, all files verified on disk
+- Removed all CDN references — art is 100% local, bundled with game (no external dependencies)
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)
 - Create @ragnarok-treasury Hive account (2-of-3 initial, expandable)
-- Upload card art to CDN
 - Multisig genesis → mint batches → seal → brick genesis authority
 - Treasury remains active for ongoing RUNE payouts

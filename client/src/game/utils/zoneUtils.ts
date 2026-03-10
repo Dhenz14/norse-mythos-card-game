@@ -110,6 +110,9 @@ export function moveCard(
   switch (toZone) {
     case 'hand':
       // When adding to hand, make sure it's not marked as played
+      if (player.hand.length >= MAX_HAND_SIZE) {
+        break;
+      }
       movedCard.isPlayed = false;
       player.hand.push(movedCard);
       break;

@@ -111,7 +111,10 @@ export const handleDiscoverSelection = (
   // Create a copy of the game state to modify
   let newGameState = { ...gameState };
   
-  // Add the selected card to player's hand
+  // Add the selected card to player's hand (respect hand limit)
+  if (newGameState.players[player].hand.length >= MAX_HAND_SIZE) {
+    return newGameState;
+  }
   const cardInstance = createCardInstance(selectedCard);
   newGameState.players[player].hand.push(cardInstance);
   
@@ -193,7 +196,7 @@ export const handleTradeable = (
   newGameState.players[player].deck.sort(() => Math.random() - 0.5);
   
   // Draw a card (simplified implementation)
-  if (newGameState.players[player].deck.length > 0) {
+  if (newGameState.players[player].deck.length > 0 && newGameState.players[player].hand.length < MAX_HAND_SIZE) {
     const drawnCard = newGameState.players[player].deck.pop();
     if (drawnCard) {
       const newCardInstance = createCardInstance(drawnCard);
@@ -299,8 +302,7 @@ export const handleInspireEffects = (
         // Simplified version:
         if (inspireEffect.value && inspireEffect.value > 0) {
           for (let i = 0; i < inspireEffect.value; i++) {
-            // Simplified - would actually add a specific card
-            if (newGameState.players[player].deck.length > 0) {
+            if (newGameState.players[player].deck.length > 0 && newGameState.players[player].hand.length < MAX_HAND_SIZE) {
               const drawnCard = newGameState.players[player].deck.pop();
               if (drawnCard) {
                 const newCardInstance = createCardInstance(drawnCard);

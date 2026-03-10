@@ -7,6 +7,7 @@ import { GameState, CardInstance, CardData, GameLogEventType } from '../types';
 import { createGameLogEvent } from '../utils/gameLogUtils';
 import { getRandomInt } from '../utils/randomUtils';
 import { fireAnnouncementAdapter } from '../hooks';
+import { MAX_HAND_SIZE } from '../constants/gameConstants';
 
 /**
  * Check if a player's deck has no duplicates (for Highlander card effects)
@@ -249,7 +250,10 @@ export function executeKazakusBattlecry(
     isPlayed: false
   };
   
-  // Add to player's hand
+  // Add to player's hand (respect hand limit)
+  if (newState.players[playerType].hand.length >= MAX_HAND_SIZE) {
+    return newState;
+  }
   newState.players[playerType].hand.push(customPotion);
   
   // Log the potion creation
@@ -582,7 +586,7 @@ export function castKazakusPotion(
       opponent.battlefield = opponent.battlefield.filter((m: CardInstance) => (m.currentHealth ?? 0) > 0);
     } else if (effect.description.startsWith('Draw')) {
       const count = parseInt(effect.description.match(/\d+/)?.[0] || '1');
-      for (let d = 0; d < count && player.deck.length > 0 && player.hand.length < 10; d++) {
+      for (let d = 0; d < count && player.deck.length > 0 && player.hand.length < MAX_HAND_SIZE; d++) {
         player.hand.push(player.deck.shift()! as unknown as CardInstance);
       }
     } else if (effect.description.includes('Freeze') && effect.description.includes('enemy')) {

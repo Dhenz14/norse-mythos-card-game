@@ -102,8 +102,8 @@ export function useArtManager(options: UseArtManagerOptions = {}): UseArtManager
   }, [cards]);
 
   const getImageUrl = useCallback((card: ArtCard) => {
-    return getArtImageUrl(card, useLocalImages);
-  }, [useLocalImages]);
+    return getArtImageUrl(card);
+  }, []);
 
   const findCard = useCallback((id: string) => {
     return findCardById(cards, id);

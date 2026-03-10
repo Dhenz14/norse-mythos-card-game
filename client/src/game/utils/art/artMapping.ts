@@ -112,7 +112,7 @@ const CREATURE_ART_CHARACTERS = new Set([
 
 /**
  * Main art IDs for each character (mainArt: true from metadata) - 197 characters
- * Generated from cdn.ragnaroknft.quest API
+ * Character name → local art file ID mapping (all files in client/public/art/)
  */
 const CHARACTER_ART_IDS: Record<string, string> = {
   'aegir': '150b-2gudiaxw',
@@ -312,7 +312,7 @@ const CHARACTER_ART_IDS: Record<string, string> = {
   'ymir': '8f78-n51onie8',
   'ymirfrost': '3a09-gm3gx5tq',
   'ymirshell': 'b1d0-z8eue8gt',
-  // Custom art entries (not from CDN)
+  // Custom art entries
   'yggdrasil-world-tree': 'yggdrasil-new',  // Custom tree being art for Yggdrasil king
   'ginnungagap-void': 'ginnungagap-void',   // Custom primordial void art for Ginnungagap king
   'audumbla-cow': 'audumbla-cow',           // Custom primordial cow art for Audumbla king
@@ -381,7 +381,7 @@ const HERO_TO_CHARACTER: Record<string, string> = {
   'hero-jarnsaxa': 'jarnsaxa',
   'hero-hyrrokkin': 'hyrrokkin',
   
-  // Alternate heroes — no dedicated portrait, use closest CDN art
+  // Alternate heroes — no dedicated portrait, use closest match
   'hero-njord': 'nerthus',
   'hero-hoenir': 'mimir',
   'hero-ve': 'vidarr',
@@ -393,7 +393,7 @@ const HERO_TO_CHARACTER: Record<string, string> = {
   'hero-fjora': 'skadi',
   // hero-magni, hero-myrka, hero-logi removed — have dedicated portraits
 
-  // Greek heroes — no dedicated portrait, use closest CDN art
+  // Greek heroes — no dedicated portrait, use closest match
   'hero-ammit': 'nott',
   'hero-artemis': 'hefring',
   'hero-demeter': 'hronn',
@@ -429,6 +429,118 @@ const KING_TO_CHARACTER: Record<string, string> = {
 };
 
 /**
+ * Direct hero art overrides — highest priority
+ * Maps hero IDs directly to art file IDs (bypasses CHARACTER_ART_IDS)
+ * Sources: ragnarok-art-export.json (AI-generated hero portraits)
+ */
+const HERO_ART_OVERRIDE: Record<string, string> = {
+	// ── Norse Gods (new AI art from export JSON) ──
+	'hero-odin': '17c1-d273b6d8',
+	'hero-thor': 'fb79-a09ea9b3',
+	'hero-loki': 'e8f6-c135e81a',
+	'hero-freya': 'cda6-d28df479',
+	'hero-bragi': 'c76a-a581a7c5',
+	'hero-eir': 'e1c3-e2d51bc2',
+	'hero-forseti': '4bb3-ce4b2ed9',
+	'hero-idunn': 'd9ce-c81a7cad',
+	'hero-sol': 'f5d6-01ff0c12',
+	'hero-kvasir': '2a21-f54a507f',
+	'hero-skadi': '2a03-58ae797a',
+	'hero-heimdall': 'b62d-d2625495',
+	'hero-vili': '6975-92010e2a',
+	'hero-aegir': '01f2-91d6d978',
+	'hero-hel': '62e5-8d33485a',
+	'hero-baldur': 'be87-7f6e4b1b',
+	'hero-tyr': '5a19-57185498',
+	'hero-vidar': '9a25-fbad0a4b',
+	'hero-hoenir': 'b03b-7d0873e9',
+
+	// ── Greek Gods (new AI art from export JSON) ──
+	'hero-zeus': '761d-b53ad267',
+	'hero-athena': 'f552-7a8f56df',
+	'hero-hades': 'e444-2488ac9c',
+	'hero-poseidon': 'f386-d67122f8',
+	'hero-apollo': 'f2e8-0b20f068',
+	'hero-ares': 'b17a-ec608a43',
+	'hero-hermes': '9576-e4d01974',
+	'hero-aphrodite': 'b082-88cee63a',
+	'hero-hephaestus': '54df-42ef3878',
+	'hero-dionysus': 'e2c3-fc9ad5a2',
+	'hero-artemis': 'c380-df49fbd2',
+	'hero-demeter': '6ddf-0f8740b6',
+	'hero-hyperion': '378a-1bff480f',
+	'hero-chronos': '4128-54b33535',
+	'hero-persephone': '3c41-d5bf8c82',
+	'hero-nyx': '502a-6dafa318',
+
+	// ── Norse heroes (local art for heroes not in export) ──
+	'hero-frigg': '6333-p1fmzcky',
+	'hero-groa': 'c7cd-wbifyi1w',
+	'hero-frey': '7458-t0n1oqgs',
+	'hero-gullveig': 'df09-mj5d0z0j',
+	'hero-sinmara': '27de-qwzzvho5',
+	'hero-mani': 'd638-pfkjzzuo',
+	'hero-hoder': 'a08f-a2xbq9k1',
+	'hero-gefjon': '3e44-araj8dlb',
+	'hero-gerd': 'efdf-cwyuxjfl',
+	'hero-sigyn': '03d8-lf9wcao3',
+	'hero-ullr': 'cef7-2dqqiy45',
+	'hero-njord': '23d6-nesirs51',
+	'hero-fjorgyn': '6333-p1fmzcky',
+	'hero-gormr': 'e1e3-gg3jq3u0',
+	'hero-ve': 'd25c-fa7g75kn',
+
+	// ── Base/Common heroes ──
+	'hero-erik-flameheart': 'd986-20v9k725',
+	'hero-ragnar-ironside': '1ca8-tdtfqurr',
+	'hero-bjorn-ironside': '5388-g9bbr777',
+	'hero-hervor': '8e3b-ublpaurd',
+	'hero-bestla': '84b2-r6m51iu5',
+	'hero-brynhild': 'd4b7-2cece17d',
+	'hero-nanna': '23d6-nesirs51',
+	'hero-volva': 'c7cd-wbifyi1w',
+	'hero-sigurd': 'b972-ast4s29y',
+	'hero-gudrun': '1d97-35odajjd',
+	'hero-starkad': '145a-ra98jlmw',
+	'hero-hermod': '82c3-dmd7qmn8',
+	'hero-solvi': '8585-51vtraoh',
+	'hero-ylva': '660e-4jck4nlz',
+	'hero-fjora': 'fdfd-7p1e2ch9',
+	'hero-lirien': 'efdf-cwyuxjfl',
+
+	// ── Vikings / fictional heroes ──
+	'hero-thorgrim': '46c2-sy7byy2d',
+	'hero-valthrud': '9aae-tccijmav',
+	'hero-thryma': '984f-0o06zvr0',
+	'hero-eldrin': 'c500-5pv67lfk',
+	'hero-magni': '89f2-bsi72zws',
+	'hero-brakki': '92f4-85792li4',
+	'hero-myrka': 'c7cd-wbifyi1w',
+	'hero-logi': 'dbeb-b0mibte9',
+
+	// ── Eastern mythology (closest Norse proxy) ──
+	'hero-izanami': '6ea4-mrar7o70',
+	'hero-fujin': 'd032-qyw3nqpe',
+	'hero-tsukuyomi': 'd638-pfkjzzuo',
+	'hero-sarutahiko': '9a82-xjclj2bn',
+	'hero-kamimusubi': '7458-t0n1oqgs',
+
+	// ── Egyptian mythology (closest Norse proxy) ──
+	'hero-ammit': '71c1-s6o2do75',
+	'hero-shu': 'd032-qyw3nqpe',
+	'hero-maat': '3e44-araj8dlb',
+	'hero-serqet': '5579-rtdz78q8',
+	'hero-khepri': '9370-t2s89bww',
+
+	// ── Greek misc ──
+	'hero-eros': 'a994-8f90349e',
+	'hero-hera': '4bf1-2423017c',
+	'hero-hestia': '091c-2a9202cb',
+	'hero-blainn': '23a5-lrnxovtk',
+	'hero-ran': '4434-4nu5rrrf',
+};
+
+/**
  * HERO-RESERVED characters - DERIVED from HERO_TO_CHARACTER and KING_TO_CHARACTER
  * All character artwork used by playable heroes/kings is reserved
  * These should NEVER be used for minion/spell cards
@@ -438,11 +550,12 @@ const HERO_RESERVED_CHARACTERS = new Set([
   ...Object.values(KING_TO_CHARACTER)
 ]);
 
-const HERO_RESERVED_ART_IDS = new Set(
-  [...HERO_RESERVED_CHARACTERS]
+const HERO_RESERVED_ART_IDS = new Set([
+  ...[...HERO_RESERVED_CHARACTERS]
     .map(char => CHARACTER_ART_IDS[char])
-    .filter((id): id is string => !!id)
-);
+    .filter((id): id is string => !!id),
+  ...Object.values(HERO_ART_OVERRIDE),
+]);
 
 const CREATURE_RESERVED_ART_IDS = new Set(
   [...CREATURE_ART_CHARACTERS]
@@ -596,6 +709,8 @@ const MINION_CARD_TO_ART: Record<string, string> = {
  * Get art ID for a hero
  */
 export function getHeroArtId(heroId: string): string | null {
+  const override = HERO_ART_OVERRIDE[heroId];
+  if (override) return override;
   const character = HERO_TO_CHARACTER[heroId];
   if (!character) return null;
   return CHARACTER_ART_IDS[character] || null;
@@ -643,12 +758,15 @@ export function getCharacterArtPath(id: string): string | null {
 
 /**
  * Resolve the best available portrait for a hero or king.
- * Priority: explicit portrait > CHARACTER_ART_IDS art pack
+ * Priority: HERO_ART_OVERRIDE > CHARACTER_ART_IDS > explicit portrait PNG
  */
 export function resolveHeroPortrait(heroId?: string, explicitPortrait?: string): string | undefined {
+  if (heroId) {
+    const artPath = getCharacterArtPath(heroId);
+    if (artPath) return artPath;
+  }
   if (explicitPortrait) return assetPath(explicitPortrait);
-  if (!heroId) return undefined;
-  return getCharacterArtPath(heroId) ?? undefined;
+  return undefined;
 }
 
 /**

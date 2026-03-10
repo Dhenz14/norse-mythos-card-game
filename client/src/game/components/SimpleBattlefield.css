@@ -1204,3 +1204,32 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
+
+/* ═══ Battlecry/Spell Targeting Highlights ═══ */
+
+/* Friendly targeting: darken opponents, highlight player side */
+.simple-battlefield.targeting-friendly .opponent-row {
+  opacity: 0.3;
+  filter: brightness(0.4);
+  pointer-events: none;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+.simple-battlefield.targeting-friendly .player-row .bf-slot.occupied {
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+}
+
+/* Enemy targeting: darken player side, highlight opponent side */
+.simple-battlefield.targeting-enemy .player-row {
+  opacity: 0.3;
+  filter: brightness(0.4);
+  pointer-events: none;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+.simple-battlefield.targeting-enemy .opponent-row .bf-slot.occupied {
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+}
+
+/* Any targeting: highlight both sides */
+.simple-battlefield.targeting-any .bf-slot.occupied {
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+}

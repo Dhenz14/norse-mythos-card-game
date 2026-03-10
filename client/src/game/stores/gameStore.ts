@@ -8,7 +8,8 @@ import {
   playCard,
   endTurn,
   processAttack,
-  processAITurn
+  processAITurn,
+  autoAttackWithAllCards
 } from '../utils/gameUtils';
 import { executeHeroPower } from '../utils/heroPowerUtils';
 import { processDiscovery } from '../utils/discoveryUtils';
@@ -90,6 +91,7 @@ interface GameStore {
   initGame: () => void;
   playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number, payWithBlood?: boolean) => void;
   attackWithCard: (attackerId: string, defenderId?: string) => void; // If defenderId is undefined, attack hero
+  autoAttackAll: (mode?: 'minion' | 'hero') => void; // Auto-attack with all minions
   selectAttacker: (card: CardInstance | CardInstanceWithCardData | null) => void; // Select card to attack with
   useHeroPower: (targetId?: string, targetType?: 'card' | 'hero') => void; // Use hero power
   toggleHeroTargetMode: () => void; // Toggle hero power targeting mode
@@ -631,6 +633,15 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     }
   },
   
+  autoAttackAll: (mode: 'minion' | 'hero' = 'minion') => {
+    const { gameState } = get();
+    if (gameState.currentTurn !== 'player') return;
+    const newState = autoAttackWithAllCards(gameState, mode);
+    if (newState !== gameState) {
+      set({ gameState: newState, attackingCard: null, selectedCard: null });
+    }
+  },
+
   selectCard: (card: CardInstance | CardInstanceWithCardData | null) => {
     if (card) {
       set({ selectedCard: card as CardInstance });

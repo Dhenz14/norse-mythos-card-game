@@ -27,9 +27,7 @@ import AIAttackAnimationProcessor from './AIAttackAnimationProcessor';
 const CardDetailView = React.lazy(() => import('./CardDetailView').then(m => ({ default: m.CardDetailView })));
 import ManaBar from './ManaBar';
 import GameAreaContainer from './GameAreaContainer';
-import { useCardDragAnimation } from '../hooks/useCardDragAnimation';
 import { useEventAnimationBridge } from '../hooks/useEventAnimationBridge';
-import { CardDragLayer } from './CardDragLayer';
 import { useGraveyardTracking } from '../hooks/useGraveyardTracking';
 import TurnTransition from '../animations/TurnTransition';
 import EnvironmentalEffect from '../animations/EnvironmentalEffect';
@@ -201,18 +199,6 @@ export const GameBoard: React.FC<{}> = () => {
       manaPositionRef.current = position;
     }
   }, []);
-  
-  // Card drag animation system
-  const { 
-    isDragging,
-    draggedCard,
-    startPosition,
-    targetPosition,
-    registerCardPosition: registerDragCardPosition,
-    getCardPosition: getDragCardPosition,
-    animateCard,
-    handleAnimationComplete
-  } = useCardDragAnimation();
   
   // Animation system
   const { 
@@ -433,9 +419,20 @@ export const GameBoard: React.FC<{}> = () => {
   
   // Player's turn flag
   const isPlayerTurn = currentTurn === 'player';
-  
+
   const player = gameState.players.player;
   const opponent = gameState.players.opponent;
+
+  const targetingMode = useMemo((): 'friendly' | 'enemy' | 'any' | null => {
+    if (!selectedCard) return null;
+    const battlecryTarget = isMinion(selectedCard.card) ? selectedCard.card.battlecry?.targetType : undefined;
+    const spellTarget = isSpell(selectedCard.card) ? selectedCard.card.spellEffect?.targetType : undefined;
+    const t = battlecryTarget || spellTarget;
+    if (!t) return null;
+    if (t === 'friendly_minion' || t === 'friendly') return 'friendly';
+    if (t === 'enemy_minion' || t === 'enemy' || t === 'enemy_character') return 'enemy';
+    return 'any';
+  }, [selectedCard]);
   
   // Compute which hand cards can evolve a battlefield pet right now
   const evolveReadyIds = useMemo(() => {
@@ -484,18 +481,6 @@ export const GameBoard: React.FC<{}> = () => {
   // (Already initialized earlier in the component)
   
   // Function to get the center of the battlefield
-  const getBattlefieldCenter = useCallback((): Position => {
-    if (battlefieldRef.current) {
-      const rect = battlefieldRef.current.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-      };
-    }
-    // Fallback position if ref is not available
-    return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-  }, []);
-  
   // Handle playing a card
   const handlePlayCard = (card: CardInstance, cardPosition?: Position) => {
     debug.log(`[CARD-DEBUG] Attempting to play card:`, card);
@@ -545,16 +530,11 @@ export const GameBoard: React.FC<{}> = () => {
       playSoundEffect('legendary_entrance');
     }
       
-    // Check if this minion needs position choice (magnetic, cleave, buff_adjacent)
-    // Only show picker if there are 2+ minions on board (otherwise position is obvious)
+    // Positional minions (magnetic, cleave, buff_adjacent) go to random position
     if (isMinion(card.card) && needsPositionChoice(card) && player.battlefield.length >= 2) {
-      setPendingPositionalCard(card);
-      showNotification({
-        title: 'Choose Position',
-        description: `Click a gap on the battlefield to place ${card.card.name}.`,
-        type: 'info',
-        duration: 3000
-      });
+      const randomIndex = Math.floor(Math.random() * (player.battlefield.length + 1));
+      playCard(card.instanceId, undefined, undefined, randomIndex);
+      playSoundEffect('card_play');
       return;
     }
 
@@ -580,15 +560,8 @@ export const GameBoard: React.FC<{}> = () => {
       return;
     }
     
-    // Calculate target position (center of battlefield)
-    const targetPos = getBattlefieldCenter();
-    
-    // Start drag animation if we have the card's position
+    // Play card placement sound
     if (cardPosition) {
-      debug.log(`Starting card drag animation from:`, cardPosition, `to:`, targetPos);
-      animateCard(card, cardPosition, targetPos);
-      
-      // Play card placement sound
       playSoundEffect('card_play');
     }
       
@@ -2099,14 +2072,6 @@ export const GameBoard: React.FC<{}> = () => {
       {/* Quest Tracker - displays active quests with progress */}
       <QuestTracker owner="player" />
       
-      {/* Card drag animation layer */}
-      <CardDragLayer
-        card={draggedCard}
-        startPosition={startPosition}
-        targetPosition={targetPosition}
-        isAnimating={isDragging}
-        onAnimationComplete={handleAnimationComplete}
-      />
       
       {/* Spell/battlecry targeting UI */}
       {showTargetingArrow && (
@@ -2447,6 +2412,7 @@ export const GameBoard: React.FC<{}> = () => {
             isInteractionDisabled={isProcessingAIActions}
             showPositionPicker={!!pendingPositionalCard}
             onPositionSelect={handlePositionSelect}
+            targetingMode={targetingMode}
           />
           
           {/* Action buttons moved to unified control bar at bottom - removed to prevent duplicate */}

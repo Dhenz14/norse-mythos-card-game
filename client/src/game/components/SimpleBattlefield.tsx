@@ -9,7 +9,7 @@
  */
 
 import { debug } from '../config/debugConfig';
-import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import CardRenderer from './CardRendering/CardRenderer';
@@ -31,6 +31,7 @@ interface SimpleBattlefieldProps {
   isInteractionDisabled?: boolean;
   showPositionPicker?: boolean;
   onPositionSelect?: (insertionIndex: number) => void;
+  targetingMode?: 'friendly' | 'enemy' | 'any' | null;
 }
 
 const MAX_SLOTS = MAX_BATTLEFIELD_SIZE;
@@ -48,7 +49,8 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
   shakingTargets = EMPTY_SET,
   isInteractionDisabled = false,
   showPositionPicker = false,
-  onPositionSelect
+  onPositionSelect,
+  targetingMode = null
 }) => {
   const showOpponent = renderMode === 'both' || renderMode === 'opponent';
   const showPlayer = renderMode === 'both' || renderMode === 'player';
@@ -231,49 +233,11 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
     [opponentCards, onOpponentCardClick, shakingTargets, attackingCard, isPlayerTurn, isInteractionDisabled, opponentHasTaunt]
   );
 
-  // ── Drag state: show insertion gaps when a card is being dragged ──
-  const [isDragging, setIsDragging] = useState(false);
-  const [activeGap, setActiveGap] = useState(-1);
   const playerRowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onDragStart = () => setIsDragging(true);
-    const onDragEnd = () => { setIsDragging(false); setActiveGap(-1); };
-    window.addEventListener('card-drag-start', onDragStart);
-    window.addEventListener('card-drag-end', onDragEnd);
-    return () => {
-      window.removeEventListener('card-drag-start', onDragStart);
-      window.removeEventListener('card-drag-end', onDragEnd);
-    };
-  }, []);
-
-  const handlePointerMoveForGaps = useCallback((e: PointerEvent) => {
-    if (!playerRowRef.current) return;
-    const slots = playerRowRef.current.querySelectorAll('.bf-slot.occupied');
-    const centers: number[] = [];
-    slots.forEach(slot => {
-      const rect = slot.getBoundingClientRect();
-      centers.push(rect.left + rect.width / 2);
-    });
-    let closest = centers.length;
-    for (let i = 0; i < centers.length; i++) {
-      if (e.clientX < centers[i]) { closest = i; break; }
-    }
-    setActiveGap(closest);
-  }, []);
-
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('pointermove', handlePointerMoveForGaps);
-    } else {
-      document.removeEventListener('pointermove', handlePointerMoveForGaps);
-    }
-    return () => document.removeEventListener('pointermove', handlePointerMoveForGaps);
-  }, [isDragging, handlePointerMoveForGaps]);
 
   const occupiedCount = playerCards.length;
   const isBoardFull = occupiedCount >= MAX_SLOTS;
-  const showGaps = (isDragging || showPositionPicker) && !isBoardFull && showPlayer;
+  const showGaps = showPositionPicker && !isBoardFull && showPlayer;
 
   const [hoveredGap, setHoveredGap] = useState(-1);
 
@@ -282,7 +246,7 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
     const result: React.ReactNode[] = [];
     for (let i = 0; i <= occupiedCount; i++) {
       const gapIndex = i;
-      const isActive = showPositionPicker ? hoveredGap === i : activeGap === i;
+      const isActive = hoveredGap === i;
       result.push(
         <div
           key={`gap-${i}`}
@@ -297,10 +261,12 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
       }
     }
     return result;
-  }, [showGaps, showPositionPicker, playerSlots, occupiedCount, activeGap, hoveredGap, onPositionSelect]);
+  }, [showGaps, showPositionPicker, playerSlots, occupiedCount, hoveredGap, onPositionSelect]);
+
+  const targetClass = targetingMode === 'friendly' ? 'targeting-friendly' : targetingMode === 'enemy' ? 'targeting-enemy' : targetingMode === 'any' ? 'targeting-any' : '';
 
   return (
-    <div className="simple-battlefield">
+    <div className={`simple-battlefield ${targetClass}`}>
       {showOpponent && (
         <div className="bf-row opponent-row" aria-label="Opponent's battlefield">
           {opponentSlots}

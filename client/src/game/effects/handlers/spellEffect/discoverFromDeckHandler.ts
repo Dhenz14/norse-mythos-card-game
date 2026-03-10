@@ -7,6 +7,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 
 export function executeDiscoverFromDeckDiscoverFromDeck(
   context: GameContext,
@@ -37,6 +38,10 @@ export function executeDiscoverFromDeckDiscoverFromDeck(
     }
 
     const chosen = choices[0];
+    if (context.currentPlayer.hand.length >= MAX_HAND_SIZE) {
+      for (const c of choices) deck.push(c);
+      return { success: false, error: 'Hand is full' };
+    }
     context.currentPlayer.hand.push(chosen);
     context.logGameEvent(`Foresaw ${chosen.card.name} and added to hand`);
 

@@ -187,6 +187,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const rawAttackingCard = useGameStore(s => s.attackingCard);
   const selectAttacker = useGameStore(s => s.selectAttacker);
   const attackWithCard = useGameStore(s => s.attackWithCard);
+  const autoAttackAll = useGameStore(s => s.autoAttackAll);
+  const endTurn = useGameStore(s => s.endTurn);
   const selectedCard = useGameStore(s => s.selectedCard);
   const selectCard = useGameStore(s => s.selectCard);
   
@@ -194,6 +196,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   
   const [communityCardsRevealed, setCommunityCardsRevealed] = useState(false);
   const [showGearPanel, setShowGearPanel] = useState(false);
+  const [autoAttackMode, setAutoAttackMode] = useState<'minion' | 'hero'>('minion');
 
   useEffect(() => {
     if (!combatState?.phase) return;
@@ -405,8 +408,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       const getHeroPos = (selector: string) => {
         const isPlayer = selector.includes('player');
         const selectors = isPlayer
-          ? ['[data-hero-role="player"]', '.unified-hero-section', '.poker-hero-container']
-          : ['[data-hero-role="opponent"]', '.unified-opponent-hero', '.opponent-hero-container'];
+          ? ['[data-hero-role="player"] .battlefield-hero-square', '[data-hero-role="player"]', '.poker-hero-container']
+          : ['[data-hero-role="opponent"] .battlefield-hero-square', '[data-hero-role="opponent"]', '.opponent-hero-container'];
         for (const sel of selectors) {
           const el = document.querySelector(sel);
           if (el) {
@@ -739,9 +742,9 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       </div>
       
       {/* Opponent Hero - with hole cards overlay below (true mirror - opponent faces you across the table) */}
-      <div data-hero-role="opponent" className={`unified-opponent-hero ${shakingTargets.has('opponent-hero') ? 'damage-shake damage-flash' : ''} ${!isPlayerTurn ? 'turn-active' : ''}`}>
+      <div className={`unified-opponent-hero ${shakingTargets.has('opponent-hero') ? 'damage-shake damage-flash' : ''} ${!isPlayerTurn ? 'turn-active' : ''}`}>
         {opponentPet && (
-          <div className="opponent-hero-container">
+          <div data-hero-role="opponent" className="opponent-hero-container">
             <BattlefieldHero
               pet={enrichedOpponentPet}
               hpCommitted={opponentHpCommitted}
@@ -899,13 +902,54 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       )}
 
-      {/* Info Row: End Turn Button + Last Action Log */}
+      {/* Info Row: Auto Attack + End Turn */}
       <div className="unified-info-row">
-        {!isMulligan && (
-          <div className="poker-info-row">
+        {!isMulligan && isPlayerTurn && (
+          <div className="info-row-buttons">
+            <div className="auto-attack-group">
+              <button
+                type="button"
+                className="ragnarok-end-turn active ragnarok-auto-attack"
+                onClick={() => autoAttackAll(autoAttackMode)}
+              >
+                <span className="end-turn-text">AUTO ATTACK</span>
+                <span className="end-turn-hint">{autoAttackMode === 'hero' ? 'go face' : 'minions'}</span>
+              </button>
+              <div className="auto-attack-toggle">
+                <button
+                  type="button"
+                  className={`toggle-option ${autoAttackMode === 'minion' ? 'active' : ''}`}
+                  onClick={() => setAutoAttackMode('minion')}
+                >
+                  Minion
+                </button>
+                <button
+                  type="button"
+                  className={`toggle-option ${autoAttackMode === 'hero' ? 'active' : ''}`}
+                  onClick={() => setAutoAttackMode('hero')}
+                >
+                  Hero
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="ragnarok-end-turn active"
+              onClick={() => endTurn()}
+            >
+              <span className="end-turn-text">END TURN</span>
+              <span className="end-turn-hint">Space</span>
+            </button>
           </div>
         )}
-        {/* End Turn: Space key only (button removed from HUD) */}
+        {!isMulligan && !isPlayerTurn && (
+          <div className="info-row-buttons">
+            <button type="button" className="ragnarok-end-turn inactive" disabled>
+              <span className="end-turn-text">OPPONENT</span>
+              <span className="end-turn-hint">waiting...</span>
+            </button>
+          </div>
+        )}
       </div>
       
       {/* Player Area - Hero + Hole Cards + Hand Cards in a row */}
@@ -913,8 +957,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         <div className="unified-hero-hand-row">
           {/* Hero section with hole cards behind */}
           {playerPet && (
-            <div data-hero-role="player" className={`unified-hero-section ${shakingTargets.has('player-hero') ? 'damage-shake damage-flash' : ''} ${isPlayerTurn ? 'turn-active' : ''}`}>
-              <div className="poker-hero-container">
+            <div className={`unified-hero-section ${shakingTargets.has('player-hero') ? 'damage-shake damage-flash' : ''} ${isPlayerTurn ? 'turn-active' : ''}`}>
+              <div data-hero-role="player" className="poker-hero-container">
                 <BattlefieldHero
                   pet={enrichedPlayerPet}
                   hpCommitted={playerHpCommitted}

@@ -7,13 +7,10 @@ import type { ArtCard, ArtMetadata, CharacterGroup, ArtFilters } from './types';
 
 /**
  * Get the image URL for an art card
- * Uses CDN URL for now, supports local path when images are downloaded
+ * All art is bundled locally — no external CDN dependency
  */
-export function getArtImageUrl(card: ArtCard, useLocal = false): string {
-  if (useLocal) {
-    return card._localPath;
-  }
-  return card._cdnUrl;
+export function getArtImageUrl(card: ArtCard): string {
+  return card._localPath || card._cdnUrl;
 }
 
 /**
