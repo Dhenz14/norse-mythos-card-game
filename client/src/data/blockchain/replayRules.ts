@@ -30,6 +30,7 @@ import { decodeCardIds } from './matchResultPackager';
 import { sha256Hash, canonicalStringify } from './hashUtils';
 import { verifyHiveSignature } from './hiveSignatureVerifier';
 import { RAGNAROK_ACCOUNT, NFT_ART_BASE_URL } from './hiveConfig';
+import { buildStampWithUrls, buildOfficialMint } from './explorerLinks';
 import { getCardById } from '../../game/data/allCards';
 import { getCardArtPath } from '../../game/utils/art/artMapping';
 import { getRewardById } from './tournamentRewards';
@@ -202,7 +203,7 @@ async function applyMint(
 		const parsedCardId = typeof card.card_id === 'number' ? card.card_id : parseInt(card.card_id, 10) || 0;
 		const cardDef = getCardById(parsedCardId);
 		const cardName = (card.name as string) || cardDef?.name || '';
-		const artPath = card.image || (cardName ? getCardArtPath(cardName) : null);
+		const artPath = card.image || (cardName ? getCardArtPath(cardName, parsedCardId) : null);
 
 		const asset: HiveCardAsset = {
 			uid: card.nft_id,
@@ -220,8 +221,10 @@ async function applyMint(
 			name: cardName,
 			type: (card.type as string) || cardDef?.type || 'minion',
 			race: card.race || cardDef?.race || undefined,
+			artPath: artPath || undefined,
 			image: artPath ? (artPath.startsWith('http') ? artPath : `${NFT_ART_BASE_URL}${artPath}`) : undefined,
-			provenanceChain: [{ from: '', to, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }],
+			provenanceChain: [buildStampWithUrls('', to, op.trxId, op.blockNum, op.timestamp, op.broadcaster)],
+			officialMint: buildOfficialMint(op.broadcaster, op.trxId, op.blockNum, op.timestamp),
 		};
 
 		await putCard(asset);
@@ -829,7 +832,7 @@ async function transferSingleCard(
 	}
 
 	const previousOwner = existing.ownerId;
-	const chain = [...(existing.provenanceChain ?? []), { from: previousOwner, to, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }];
+	const chain = [...(existing.provenanceChain ?? []), buildStampWithUrls(previousOwner, to, op.trxId, op.blockNum, op.timestamp, op.broadcaster)];
 	const { provenanceChain, compactedProvenance } = compactStampChain(chain, existing);
 
 	const updated: HiveCardAsset = {
@@ -979,7 +982,7 @@ async function applyPackOpen(
 		if (counter && counter.minted >= counter.cap) continue;
 
 		const cardDef = getCardById(cardIds[i]);
-		const artPath = cardDef ? getCardArtPath(cardDef.name) : null;
+		const artPath = cardDef ? getCardArtPath(cardDef.name, cardIds[i]) : null;
 
 		const card: HiveCardAsset = {
 			uid,
@@ -997,8 +1000,10 @@ async function applyPackOpen(
 			name: cardDef?.name ?? '',
 			type: cardDef?.type ?? 'minion',
 			race: cardDef?.race || undefined,
+			artPath: artPath || undefined,
 			image: artPath ? `${NFT_ART_BASE_URL}${artPath}` : undefined,
-			provenanceChain: [{ from: '', to: op.broadcaster, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }],
+			provenanceChain: [buildStampWithUrls('', op.broadcaster, op.trxId, op.blockNum, op.timestamp, op.broadcaster)],
+			officialMint: buildOfficialMint(op.broadcaster, op.trxId, op.blockNum, op.timestamp),
 		};
 		await putCard(card);
 
@@ -1052,7 +1057,7 @@ async function applyRewardClaim(
 		if (counter && counter.minted >= counter.cap) continue;
 
 		const gameDef = getCardById(rewardCard.cardId);
-		const artPath = gameDef ? getCardArtPath(gameDef.name) : null;
+		const artPath = gameDef ? getCardArtPath(gameDef.name, rewardCard.cardId) : null;
 
 		const card: HiveCardAsset = {
 			uid,
@@ -1070,8 +1075,10 @@ async function applyRewardClaim(
 			name: gameDef?.name ?? '',
 			type: gameDef?.type ?? 'minion',
 			race: gameDef?.race || undefined,
+			artPath: artPath || undefined,
 			image: artPath ? `${NFT_ART_BASE_URL}${artPath}` : undefined,
-			provenanceChain: [{ from: '', to: op.broadcaster, trxId: op.trxId, block: op.blockNum, timestamp: op.timestamp }],
+			provenanceChain: [buildStampWithUrls('', op.broadcaster, op.trxId, op.blockNum, op.timestamp, op.broadcaster)],
+			officialMint: buildOfficialMint(op.broadcaster, op.trxId, op.blockNum, op.timestamp),
 		};
 		await putCard(card);
 

@@ -64,6 +64,39 @@ const NFTProvenanceViewer: React.FC<NFTProvenanceViewerProps> = ({ nft, onClose,
 							<Field label="Type" value={nft.type} />
 						</div>
 
+						{nft.officialMint && (
+							<div className="border-t border-gray-700 pt-3 space-y-1">
+								<h3 className="text-xs font-semibold text-green-400 uppercase tracking-wider">Official Mint</h3>
+								<div className="bg-green-900/20 border border-green-700/30 rounded-lg px-3 py-2 space-y-1">
+									<div className="flex items-center justify-between">
+										<span className="text-green-300 text-xs font-mono">Signer: {nft.officialMint.signer}</span>
+										<a
+											href={nft.officialMint.txUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-xs bg-green-600/20 text-green-300 hover:bg-green-600/40 px-2 py-1 rounded font-mono transition-colors"
+											title={nft.officialMint.trxId}
+										>
+											{nft.officialMint.trxId.slice(0, 8)}...
+										</a>
+									</div>
+									<div className="flex items-center gap-2 text-xs">
+										<a
+											href={nft.officialMint.blockUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-green-400 hover:text-green-300 font-mono"
+										>
+											Block #{nft.officialMint.blockNum}
+										</a>
+										<span className="text-gray-500">
+											{new Date(nft.officialMint.timestamp).toLocaleString()}
+										</span>
+									</div>
+								</div>
+							</div>
+						)}
+
 						<div className="border-t border-gray-700 pt-3 space-y-2">
 							<h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">On-Chain History</h3>
 
@@ -135,6 +168,8 @@ function StampRow({ stamp, index }: { stamp: ProvenanceStamp; index: number }) {
 	const detail = isMint
 		? `to ${stamp.to}`
 		: `${stamp.from} \u2192 ${stamp.to}`;
+	const blockHref = stamp.blockUrl || getBlockUrl(stamp.block);
+	const txHref = stamp.txUrl || getTransactionUrl(stamp.trxId);
 
 	return (
 		<div className="bg-gray-800 rounded-lg px-3 py-2 space-y-1">
@@ -142,7 +177,7 @@ function StampRow({ stamp, index }: { stamp: ProvenanceStamp; index: number }) {
 				<span className="text-gray-400 text-xs font-medium">{label}</span>
 				<div className="flex items-center gap-2">
 					<a
-						href={getBlockUrl(stamp.block)}
+						href={blockHref}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="text-xs text-blue-400 hover:text-blue-300 font-mono"
@@ -150,7 +185,7 @@ function StampRow({ stamp, index }: { stamp: ProvenanceStamp; index: number }) {
 						Block #{stamp.block}
 					</a>
 					<a
-						href={getTransactionUrl(stamp.trxId)}
+						href={txHref}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="text-xs bg-blue-600/20 text-blue-300 hover:bg-blue-600/40 px-2 py-1 rounded font-mono transition-colors"
@@ -161,6 +196,9 @@ function StampRow({ stamp, index }: { stamp: ProvenanceStamp; index: number }) {
 				</div>
 			</div>
 			<p className="text-xs text-gray-300 font-mono truncate">{detail}</p>
+			{stamp.signer && stamp.signer !== stamp.from && (
+				<p className="text-xs text-gray-500 font-mono">Signed by: {stamp.signer}</p>
+			)}
 		</div>
 	);
 }
@@ -180,7 +218,7 @@ function CompactedSummary({ compacted }: { compacted: CompactedProvenance }) {
 				<span className="text-gray-400">Originally minted to</span>
 				<span className="text-gray-300 font-mono">{compacted.firstMint.to}</span>
 				<a
-					href={getTransactionUrl(compacted.firstMint.trxId)}
+					href={compacted.firstMint.txUrl || getTransactionUrl(compacted.firstMint.trxId)}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-blue-400 hover:text-blue-300 font-mono"

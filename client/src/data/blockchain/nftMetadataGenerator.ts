@@ -2,6 +2,7 @@ import type { NFTMetadata, NFTAttribute, MintInfo } from './types';
 import { hashNFTMetadata } from './hashUtils';
 import { getCardArtPath } from '../../game/utils/art/artMapping';
 import { NFT_ART_BASE_URL, EXTERNAL_URL_BASE } from './hiveConfig';
+import { getTransactionUrl, getBlockUrl } from './explorerLinks';
 
 interface CardDefinition {
 	id: number;
@@ -76,12 +77,20 @@ function buildAttributes(cardDef: CardDefinition, mintInfo: MintInfo): NFTAttrib
 	return attrs;
 }
 
+export interface MintProvenance {
+	signer: string;
+	trxId: string;
+	blockNum: number;
+	timestamp: number;
+}
+
 export async function generateNFTMetadata(
 	cardDef: CardDefinition,
-	mintInfo: MintInfo
+	mintInfo: MintInfo,
+	provenance?: MintProvenance,
 ): Promise<NFTMetadata> {
 	const heroClass = cardDef.heroClass || cardDef.class || 'neutral';
-	const localPath = getCardArtPath(cardDef.name);
+	const localPath = getCardArtPath(cardDef.name, cardDef.id);
 	const image = localPath ? `${NFT_ART_BASE_URL}${localPath}` : '';
 
 	const metadataWithoutHash: Omit<NFTMetadata, 'hash'> = {
@@ -106,6 +115,7 @@ export async function generateNFTMetadata(
 		mintedAt: Date.now(),
 		mintedBy: mintInfo.mintedBy,
 		image,
+		artPath: localPath || undefined,
 		externalUrl: `${EXTERNAL_URL_BASE}/${cardDef.id}`,
 		race: cardDef.race || 'none',
 		set: cardDef.set || 'core',
@@ -116,6 +126,14 @@ export async function generateNFTMetadata(
 			family: COLLECTION_FAMILY,
 		},
 		attributes: buildAttributes(cardDef, mintInfo),
+		provenance: provenance ? {
+			signer: provenance.signer,
+			trxId: provenance.trxId,
+			blockNum: provenance.blockNum,
+			timestamp: provenance.timestamp,
+			txUrl: getTransactionUrl(provenance.trxId),
+			blockUrl: getBlockUrl(provenance.blockNum),
+		} : undefined,
 	};
 
 	const hash = await hashNFTMetadata(metadataWithoutHash);

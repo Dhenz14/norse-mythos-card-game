@@ -137,6 +137,7 @@ export interface NFTMetadata {
 	mintedBy: string;
 	hash: string;
 	image: string;
+	artPath?: string;
 	externalUrl: string;
 	race: string;
 	set: string;
@@ -147,6 +148,14 @@ export interface NFTMetadata {
 		family: string;
 	};
 	attributes: NFTAttribute[];
+	provenance?: {
+		signer: string;
+		trxId: string;
+		blockNum: number;
+		timestamp: number;
+		txUrl: string;
+		blockUrl: string;
+	};
 }
 
 export interface MutableCardState {

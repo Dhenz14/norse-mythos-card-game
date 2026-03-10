@@ -106,6 +106,9 @@ export interface ProvenanceStamp {
 	trxId: string;
 	block: number;
 	timestamp?: number;
+	txUrl?: string;
+	blockUrl?: string;
+	signer?: string;
 }
 
 export interface CompactedProvenance {
@@ -113,6 +116,15 @@ export interface CompactedProvenance {
 	firstMint: ProvenanceStamp;
 	compactedAt: number;
 	compactedCount: number;
+}
+
+export interface OfficialMint {
+	signer: string;
+	trxId: string;
+	blockNum: number;
+	timestamp: number;
+	txUrl: string;
+	blockUrl: string;
 }
 
 export interface HiveCardAsset {
@@ -132,8 +144,10 @@ export interface HiveCardAsset {
   type: string;
   race?: string;
   image?: string;
+  artPath?: string;
   provenanceChain?: ProvenanceStamp[];
   compactedProvenance?: CompactedProvenance;
+  officialMint?: OfficialMint;
 }
 
 export interface HiveTokenBalance {

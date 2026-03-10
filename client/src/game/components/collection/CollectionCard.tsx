@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CardData } from '../../types';
 import { CardRenderer } from '../CardRenderer';
 import { UnifiedCard, extractCardData } from '../../utils/cards/cardTypeAdapter';
+import { getCardArtPath } from '../../utils/art/artMapping';
 
 const GLOW_COLORS = {
   common: 'rgba(255, 255, 255, 0.7)',
@@ -45,6 +46,7 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
   }, []);
 
   const cardData = useMemo(() => extractCardData(card), [card]);
+  const artPath = useMemo(() => getCardArtPath(cardData.name, cardData.id), [cardData.name, cardData.id]);
 
   const handleShowCardDetails = useCallback(() => {
     showCardDetails(cardData);
@@ -83,16 +85,47 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
       }}
       transition={TRANSITION}
     >
-      {/* Using the universal CardRenderer for consistent rendering */}
       <div className="relative h-full w-full flex items-center justify-center p-3">
         <div className="w-full h-full" onClick={handleClick} onContextMenu={handleRightClick}>
-          <CardRenderer
-            card={cardData}
-            enableHolographic={true}
-            forceHolographic={cardData.rarity === 'mythic' || cardData.rarity === 'epic'}
-            renderQuality="medium"
-            isPlayable={canAdd && count < maxCount}
-          />
+          {artPath ? (
+            <div className="relative w-full h-full rounded-lg overflow-hidden border border-gray-600">
+              <img
+                src={artPath}
+                alt={cardData.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                draggable={false}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-2 py-1.5">
+                <p className="text-white text-xs font-semibold truncate">{cardData.name}</p>
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="text-blue-300 font-bold">{cardData.manaCost ?? '?'} mana</span>
+                  {'attack' in cardData && 'health' in cardData && cardData.attack != null && cardData.health != null && (
+                    <span className="text-gray-300">{cardData.attack}/{cardData.health}</span>
+                  )}
+                </div>
+              </div>
+              {(cardData.rarity === 'mythic' || cardData.rarity === 'epic') && (
+                <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold"
+                  style={{
+                    background: cardData.rarity === 'mythic' ? 'rgba(255,128,0,0.8)' : 'rgba(163,53,238,0.8)',
+                    color: 'white'
+                  }}
+                >
+                  {cardData.rarity === 'mythic' ? 'MYTHIC' : 'EPIC'}
+                </div>
+              )}
+            </div>
+          ) : (
+            <CardRenderer
+              card={cardData}
+              enableHolographic={true}
+              forceHolographic={cardData.rarity === 'mythic' || cardData.rarity === 'epic'}
+              renderQuality="medium"
+              isPlayable={canAdd && count < maxCount}
+            />
+          )}
         </div>
         
         {/* Card glow effect (CCG style) */}

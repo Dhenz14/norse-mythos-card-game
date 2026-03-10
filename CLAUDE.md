@@ -161,6 +161,8 @@ server/
 └── storage.ts              # Database interface
 ```
 
+Card art lives in `client/public/art/` (1,039 files covering ~38% of cards). Art lookup uses `CARD_ID_TO_ART` map in `artMapping.ts` (ID-based, highest priority) with name-based fallback via `getCardArtPath()`.
+
 ## Key Subsystems
 
 ### Card System (`game/data/`)
@@ -250,6 +252,8 @@ Code splitting with manual chunks in `vite.config.ts`:
 | Animation vendor | ~38KB |
 | Three.js (lazy) | ~250KB |
 | Full game | ~286KB |
+
+Note: `client/public/models/` (127MB .glb 3D models) and `client/public/geometries/` (.gltf) were deleted — unused assets removed from build.
 
 ## Coding Standards
 
@@ -1013,6 +1017,49 @@ vercel --prod                 # Deploy to Vercel
 - **WoT vouching**: Top-150 witnesses join directly; non-witnesses need 3+ vouches from existing signers
 - **Self-healing**: 10-minute authority sync checks, auto-removes deranked witnesses
 - **Route**: `/treasury` added to client routes + App.tsx lazy import
+- TypeScript: 0 errors
+
+### Completed (Card Art Integration — Part 1)
+
+- Imported 479 card art files from external art pack (531 total, 17 king art skipped per policy, 13 duplicates skipped, 1 concept skipped)
+- Art covers: 314 pets (50000-50615), 118 artifacts/armor (29800-29967), 36 Norse/Greek deity minion cards, 8 tokens (9200-9207), 3 misc
+- New `CARD_ID_TO_ART` map (479 entries) in `artMapping.ts` — ID-based lookup takes highest priority
+- `getCardArtPath(name, cardId?)` now accepts optional card ID parameter — checks ID map first, falls back to name-based lookup
+- All callers updated: SimpleCard, HeroDeckBuilder, nftMetadataGenerator, replayRules
+- Deleted `client/public/models/` (127MB unused .glb 3D models) and `client/public/geometries/` (unused .gltf)
+- Removed `.glb`/`.gltf` from service worker cache extensions and asset manifest generator
+- Total art files: 560 → 1,039; Asset manifest: 650 files/220.6MB → 1,129 files/255.6MB
+- Art coverage: ~16% → ~38% of cards now have dedicated art (was 356, now 835 cards with art)
+- TypeScript: 0 errors
+
+### Completed (Self-Describing NFTs)
+
+- Every NFT now carries its complete on-chain locator — no external indexer (HAF) needed
+- `ProvenanceStamp` extended with `txUrl`, `blockUrl`, `signer` fields (explorer links baked at creation)
+- New `OfficialMint` interface: signer, trxId, blockNum, timestamp, txUrl, blockUrl — proves card was minted by authorized account
+- `buildStampWithUrls()` and `buildOfficialMint()` helpers in `explorerLinks.ts` — all stamp/mint creation uses these
+- `replayRules.ts`: all 4 card creation paths (applyMint, applyPackOpen, applyRewardClaim, transferSingleCard) now use `buildStampWithUrls` + `buildOfficialMint`
+- `HiveCardAsset` extended with `artPath` (relative path for local resolution) and `officialMint` (proof of official mint)
+- `NFTMetadata` type extended with `artPath` and `provenance` fields
+- `nftMetadataGenerator.ts`: accepts optional `MintProvenance` parameter, populates `artPath` and `provenance` with explorer URLs
+- `NFTProvenanceViewer.tsx`: displays `officialMint` section (green badge with signer + explorer links), uses stored stamp URLs with fallback, shows signer when it differs from `from`
+- `CompactedSummary` uses stored `txUrl` from firstMint stamp with fallback
+- Zero API calls needed for ownership verification — card object has everything
+- TypeScript: 0 errors
+
+### Completed (Hero Art Fix & Collection Art Wiring)
+
+- Fixed hero art not showing in deck builder after old portraits were sidelined
+- Root cause: `HERO_TO_CHARACTER` had heroes commented out ("have dedicated portraits"), but portrait files were moved to `art/old-portraits/` and `portrait:` fields removed from ChessPieceConfig
+- Three-category fix:
+  - **Category A (~45 Norse gods)**: Art works via `CHARACTER_ART_IDS` — no changes needed (Odin, Thor, Freya, Loki, etc.)
+  - **Category B (20 Greek/misc heroes)**: Restored `portrait: '/portraits/heroes/{name}.png'` in ChessPieceConfig + moved files back from `art/old-portraits/`
+  - **Category C (~15 base/common heroes)**: No art exists — show placeholder icon (expected)
+- Moved 20 portrait files: `art/old-portraits/{name}.png` → `portraits/heroes/{name}.png` (aphrodite, apollo, ares, athena, brakki, chronos, hades, hephaestus, hera, hestia, hyperion, kvasir, logi, magni, myrka, nyx, persephone, poseidon, ran, zeus)
+- 17 superseded portraits archived in `art/old-portraits/` (baldur, eir, freya, heimdall, loki, odin, thor, tyr, etc.)
+- Re-added `hero-aegir` → `'aegir'` mapping in `HERO_TO_CHARACTER` (has CHARACTER_ART_IDS entry)
+- Wired real card art into `CollectionCard.tsx`: `getCardArtPath()` renders actual art with name/stats overlay, falls back to `CardRenderer` holographic when no art
+- Three-tier minion art lookup confirmed working: `CARD_ID_TO_ART` (484 IDs) → `VERCEL_CARD_ART` (331 names) → `MINION_CARD_TO_ART` (86 creature maps) via `getCardArtPath(name, id)`
 - TypeScript: 0 errors
 
 ### Next (Genesis Launch)

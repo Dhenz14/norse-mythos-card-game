@@ -334,7 +334,7 @@ export const rogueCards: CardData[] = [
     set: "core",
     deathrattle: {
       type: "summon",
-      summonCardId: 40115,
+      summonCardId: 9070,
       targetType: "none"
     }
   },

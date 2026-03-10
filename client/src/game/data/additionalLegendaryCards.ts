@@ -290,7 +290,7 @@ export const additionalLegendaryCards: CardData[] = [
     class: "Rogue",
     deathrattle: {
       type: "summon",
-      summonCardId: 40115,
+      summonCardId: 9070,
       targetType: "none"
     },
     collectible: true

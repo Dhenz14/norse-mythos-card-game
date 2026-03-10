@@ -363,7 +363,7 @@ export const   mechanicCards: CardData[] = [{
       deathrattle: {
         type: "summon",
 
-        summonCardId: 40115, // ID for 1/2 Slime (would need to be defined)
+        summonCardId: 9070, // ID for 1/2 Slime token
       targetType: "none"
 
        },
@@ -753,7 +753,7 @@ export const tokenCards: CardData[] = [
     collectible: false
   },
   {
-    id: 40115,
+    id: 9070,
     name: "Slime",
     manaCost: 1,
     attack: 1,

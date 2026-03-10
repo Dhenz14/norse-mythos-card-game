@@ -198,7 +198,7 @@ const neutralTokens: CardData[] = [
     collectible: false
   },
   {
-    id: 40115,
+    id: 9070,
     name: 'Slime',
     description: 'Taunt',
     type: 'minion',
