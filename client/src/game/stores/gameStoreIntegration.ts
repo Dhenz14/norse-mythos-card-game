@@ -22,6 +22,8 @@ import { isBlockchainPackagingEnabled, isHiveMode } from '../config/featureFlags
 import { debug } from '../config/debugConfig';
 import { hiveEvents } from '@/data/HiveEvents';
 import { toast } from 'sonner';
+import { useSettingsStore } from '@/game/stores/settingsStore';
+import { useAudio } from '@/lib/stores/useAudio';
 
 let isInitialized = false;
 let cleanupFunctions: (() => void)[] = [];
@@ -77,6 +79,15 @@ export function initializeGameStoreIntegration(): () => void {
       cleanupFunctions.push(stopTransactionProcessor);
       debug.log('[GameStoreIntegration] Blockchain subscriber + transaction processor started');
     });
+  }
+
+  const settings = useSettingsStore.getState();
+  const audioStore = useAudio.getState();
+  if (typeof audioStore.setMusicVolume === 'function') {
+    audioStore.setMusicVolume(settings.musicVolume ?? 0.5);
+  }
+  if (typeof audioStore.setSoundVolume === 'function') {
+    audioStore.setSoundVolume(settings.sfxVolume ?? 0.7);
   }
 
   isInitialized = true;

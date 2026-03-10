@@ -68,7 +68,7 @@ function calculateTotalRounds(playerCount: number, format: TournamentFormat): nu
 	return Math.ceil(Math.log2(Math.max(playerCount, 2))) * 2;
 }
 
-function swissPair(players: TournamentPlayer[], round: TournamentRound[]): TournamentMatch[] {
+function swissPair(players: TournamentPlayer[], previousRounds: TournamentRound[]): TournamentMatch[] {
 	const active = players
 		.filter(p => !p.dropped)
 		.sort((a, b) => {
@@ -81,9 +81,20 @@ function swissPair(players: TournamentPlayer[], round: TournamentRound[]): Tourn
 	const matches: TournamentMatch[] = [];
 	const paired = new Set<string>();
 
+	const previousOpponents = new Map<string, Set<string>>();
+	for (const r of previousRounds) {
+		for (const m of r.matches) {
+			if (!m.player1 || !m.player2) continue;
+			if (!previousOpponents.has(m.player1)) previousOpponents.set(m.player1, new Set());
+			if (!previousOpponents.has(m.player2)) previousOpponents.set(m.player2, new Set());
+			previousOpponents.get(m.player1)!.add(m.player2);
+			previousOpponents.get(m.player2)!.add(m.player1);
+		}
+	}
+
 	// Count previous byes per player to rotate fairly
 	const byeCount = new Map<string, number>();
-	for (const r of round) {
+	for (const r of previousRounds) {
 		for (const m of r.matches) {
 			if (m.player2 === null) {
 				byeCount.set(m.player1, (byeCount.get(m.player1) ?? 0) + 1);
@@ -106,7 +117,7 @@ function swissPair(players: TournamentPlayer[], round: TournamentRound[]): Tourn
 		byePlayer.wins++;
 		matches.push({
 			id: generateMatchId(),
-			round: round.length + 1,
+			round: previousRounds.length + 1,
 			player1: byePlayer.username,
 			player2: null,
 			winner: byePlayer.username,
@@ -122,6 +133,8 @@ function swissPair(players: TournamentPlayer[], round: TournamentRound[]): Tourn
 
 		for (let j = i + 1; j < active.length; j++) {
 			if (paired.has(active[j].username)) continue;
+			const prevOpps = previousOpponents.get(active[i].username);
+			if (prevOpps?.has(active[j].username)) continue;
 			opponent = active[j];
 			paired.add(active[j].username);
 			break;
@@ -132,7 +145,7 @@ function swissPair(players: TournamentPlayer[], round: TournamentRound[]): Tourn
 		paired.add(active[i].username);
 		matches.push({
 			id: generateMatchId(),
-			round: round.length + 1,
+			round: previousRounds.length + 1,
 			player1: active[i].username,
 			player2: opponent.username,
 			winner: null,

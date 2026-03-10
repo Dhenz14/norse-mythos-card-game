@@ -813,15 +813,15 @@ vercel --prod                 # Deploy to Vercel
   - **Hermod** (Knight/Rogue): Ride to Hel — `resurrect_to_hand` from graveyard at HP cost, passive reduces cost of resurrected cards
 - Added 11 new cards introducing 2 novel mechanics:
   - **Submerge**: Card enters play face-down/untargetable for N turns, surfaces with powerful effect
-    - Kraken of Ginnungagap (40010): 8/8 mythic, Submerge 2, surface 8 AOE damage
-    - Kraken Spawn (40011): 2/3 rare, Submerge 1, surface +2/+2
-    - Depths of the Void (40012): 4-mana epic spell, Submerge friendly +3/+3
-    - Ginnungagap's Hunger (40013): 2-mana rare tech counter — 5 damage to Submerged minion
+    - Kraken of Ginnungagap (40100): 8/8 mythic, Submerge 2, surface 8 AOE damage
+    - Kraken Spawn (40101): 2/3 rare, Submerge 1, surface +2/+2
+    - Depths of the Void (40102): 4-mana epic spell, Submerge friendly +3/+3
+    - Ginnungagap's Hunger (40103): 2-mana rare tech counter — 5 damage to Submerged minion
   - **Coil**: Lock enemy minion's attack to 0 while Coil source lives (Deathrattle frees)
-    - Lindworm, Wingless Terror (40020): 3/5 epic Dragon, Coil any enemy
-    - Young Lindworm (40021): 1/3 common Dragon, Coil enemy ≤2 attack
+    - Lindworm, Wingless Terror (40110): 3/5 epic Dragon, Coil any enemy
+    - Young Lindworm (40111): 1/3 common Dragon, Coil enemy ≤2 attack
   - **Bestla tokens**: Odin-Spark (9060), Vili-Spark (9061), Ve-Spark (9062) → merge into 6/6 Aesir Ascendant (9063)
-  - **Gjoll Bridge-Keeper** (40025): 3/4 rare Undead, Deathrattle resurrect to hand (Hermod synergy)
+  - **Gjoll Bridge-Keeper** (40115): 3/4 rare Undead, Deathrattle resurrect to hand (Hermod synergy)
 - New card data file: `cardRegistry/sets/core/neutrals/primordialExpansionCards.ts`
 - Type extensions in NorseTypes.ts: `resurrect_to_hand` effect, `graveyard` target, `on_shield_break`/`on_freeze`/`on_card_play` triggers, `healOnBreak`/`costHealth`/`buffAttack` fields
 - Weapon upgrade IDs: 90118-90120

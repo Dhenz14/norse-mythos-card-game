@@ -1,5 +1,7 @@
 import { GameEventBus } from '../../core/events/GameEventBus';
 import type { GameEvent } from '../../core/events/GameEvents';
+import { CombatEventBus } from '../services/CombatEventBus';
+import type { DamageResolvedEvent } from '../services/CombatEventBus';
 import { useDailyQuestStore } from '../stores/dailyQuestStore';
 
 type UnsubscribeFn = () => void;
@@ -54,6 +56,14 @@ export function initializeDailyQuestSubscriber(): UnsubscribeFn {
 			const data = event as GameEvent & { player?: string };
 			if (data.player === 'player') {
 				useDailyQuestStore.getState().updateProgress('use_hero_power', 1);
+			}
+		})
+	);
+
+	unsubscribes.push(
+		CombatEventBus.subscribe<DamageResolvedEvent>('DAMAGE_RESOLVED', (event) => {
+			if (event.attackerOwner === 'player' && event.actualDamage > 0) {
+				useDailyQuestStore.getState().updateProgress('deal_damage', event.actualDamage);
 			}
 		})
 	);

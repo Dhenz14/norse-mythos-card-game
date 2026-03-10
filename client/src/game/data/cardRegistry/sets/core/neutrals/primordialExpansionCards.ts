@@ -7,7 +7,7 @@
  *
  * Also includes Bestla's token cards for her Primordial Lineage battlecry.
  *
- * ID Range: 40001-40025 (minions/spells), 9060-9063 (tokens)
+ * ID Range: 40001, 40100-40115 (minions/spells), 9060-9063 (tokens)
  */
 
 import { CardData } from '../../../../../types';
@@ -99,7 +99,7 @@ export const primordialExpansionCards: CardData[] = [
 	// ==================== KRAKEN — SUBMERGE MECHANIC ====================
 
 	{
-		id: 40010,
+		id: 40100,
 		name: 'Kraken of Ginnungagap',
 		manaCost: 8,
 		attack: 8,
@@ -115,7 +115,7 @@ export const primordialExpansionCards: CardData[] = [
 		flavorText: 'In the void between creation and nothing, something stirs. It has waited since before the frost and the fire, patient as the abyss itself. When it rises, the sea remembers fear.',
 	},
 	{
-		id: 40011,
+		id: 40101,
 		name: 'Kraken Spawn',
 		manaCost: 3,
 		attack: 2,
@@ -131,7 +131,7 @@ export const primordialExpansionCards: CardData[] = [
 		flavorText: 'The fishermen of Midgard know the signs: a shadow beneath the hull, then silence, then screaming.',
 	},
 	{
-		id: 40012,
+		id: 40102,
 		name: 'Depths of the Void',
 		manaCost: 4,
 		type: 'spell',
@@ -143,7 +143,7 @@ export const primordialExpansionCards: CardData[] = [
 		flavorText: 'Ginnungagap gives nothing freely. But what it returns, it returns changed.',
 	},
 	{
-		id: 40013,
+		id: 40103,
 		name: 'Ginnungagap\'s Hunger',
 		manaCost: 2,
 		type: 'spell',
@@ -158,7 +158,7 @@ export const primordialExpansionCards: CardData[] = [
 	// ==================== LINDWORM — COIL MECHANIC ====================
 
 	{
-		id: 40020,
+		id: 40110,
 		name: 'Lindworm, Wingless Terror',
 		manaCost: 5,
 		attack: 3,
@@ -175,7 +175,7 @@ export const primordialExpansionCards: CardData[] = [
 		flavorText: 'The lindworm has no wings, no fire, no hoard. It needs none. It wraps its prey in coils of iron muscle and waits. The sagas say killing one requires not a sword but a shirt soaked in lye — cunning, not strength.',
 	},
 	{
-		id: 40021,
+		id: 40111,
 		name: 'Young Lindworm',
 		manaCost: 2,
 		attack: 1,
@@ -194,7 +194,7 @@ export const primordialExpansionCards: CardData[] = [
 	// ==================== HERMOD SUPPORT CARD ====================
 
 	{
-		id: 40025,
+		id: 40115,
 		name: 'Gjoll Bridge-Keeper',
 		manaCost: 4,
 		attack: 3,

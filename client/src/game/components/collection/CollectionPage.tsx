@@ -745,14 +745,16 @@ export default function CollectionPage() {
 																	}
 																	return prev.map((c, i) => i === idx ? { ...c, quantity: c.quantity - 1 } : c);
 																});
-																removeCard(nft?.uid ?? String(selectedCard.id));
+																if (nft?.uid) {
+																removeCard(nft.uid);
+															}
 																if (selectedCard.quantity <= 1) setSelectedCard(null);
 																else setSelectedCard({ ...selectedCard, quantity: selectedCard.quantity - 1 });
 															} else {
+																const pool = cardRegistry.filter(c => c.rarity?.toLowerCase() === selectedCard.rarity?.toLowerCase() && c.type !== 'hero' && c.collectible !== false);
+																if (pool.length === 0) return;
 																if (!spendEitr(craftCostVal)) return;
 																hiveEvents.emitTokenUpdate('Eitr', eitr - craftCostVal, -craftCostVal);
-																const pool = cardRegistry.filter(c => c.rarity === selectedCard.rarity && c.type !== 'hero');
-																if (pool.length === 0) return;
 																const pick = pool[Math.floor(Math.random() * pool.length)];
 																const pickId = typeof pick.id === 'number' ? pick.id : parseInt(pick.id as string, 10);
 																const forgedCard: OwnedCard = {

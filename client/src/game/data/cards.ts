@@ -1275,7 +1275,7 @@ export const fullCardDatabase: CardData[] = [
       spellEffect: {
         type: 'summon',
 
-        summonCardId: 3003,
+        summonCardId: 9051,
       value: 3,
 
       targetType: 'none'

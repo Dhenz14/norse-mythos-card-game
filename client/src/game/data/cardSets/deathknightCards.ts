@@ -58,7 +58,7 @@ export function registerDeathKnightCards(): void {
     .class("DeathKnight")
     .spellEffect({
       type: "summon",
-      summonCardId: 3003,
+      summonCardId: 9051,
       value: 3,
       targetType: "none" as SpellTargetType
     })

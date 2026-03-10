@@ -30,7 +30,7 @@ export const deathknightCards: CardData[] = [
     class: "DeathKnight",
     spellEffect: {
       type: "summon",
-      summonCardId: 3003,
+      summonCardId: 9051,
       value: 3,
       targetType: "none"
     },
@@ -985,5 +985,20 @@ export const deathknightCards: CardData[] = [
     },
     collectible: true,
     set: "core"
+  },
+  {
+    id: 9051,
+    name: "Ghoul",
+    manaCost: 2,
+    attack: 2,
+    health: 2,
+    description: "Taunt",
+    type: "minion",
+    rarity: "basic",
+    class: "DeathKnight",
+    race: "Undead",
+    keywords: ["taunt"],
+    collectible: false,
+    flavorText: "The dead of Helheim rise to serve."
   }
 ];

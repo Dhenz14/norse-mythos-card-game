@@ -52,17 +52,23 @@ function HomePage() {
 
       {/* Hive Wallet — top-right corner */}
       <div className="absolute top-4 right-4 z-20">
-        <HiveKeychainLogin />
+        <Suspense fallback={<div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />}>
+          <HiveKeychainLogin />
+        </Suspense>
       </div>
 
       {/* Daily Quests — top-left corner */}
       <div className="absolute top-4 left-4 z-20">
-        <DailyQuestPanel />
+        <Suspense fallback={<div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />}>
+          <DailyQuestPanel />
+        </Suspense>
       </div>
 
       {/* Friends — bottom-right corner */}
       <div className="absolute bottom-8 right-4 z-20">
-        <FriendsPanel />
+        <Suspense fallback={<div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />}>
+          <FriendsPanel />
+        </Suspense>
       </div>
       
       <div className="relative z-10 flex flex-col items-center">
@@ -93,11 +99,13 @@ function HomePage() {
             </Link>
           )}
 
-          <Link to={routes.game}>
-            <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border opacity-60 hover:opacity-100 transition-opacity">
-              Dev Test
-            </Button>
-          </Link>
+          {import.meta.env.DEV && (
+            <Link to={routes.game}>
+              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border opacity-60 hover:opacity-100 transition-opacity">
+                Dev Test
+              </Button>
+            </Link>
+          )}
 
           <Link to={routes.campaign}>
             <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">

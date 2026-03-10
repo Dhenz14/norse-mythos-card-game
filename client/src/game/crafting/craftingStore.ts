@@ -20,6 +20,7 @@ export const useCraftingStore = create<CraftingState & CraftingActions>()(
 			eitr: 0,
 
 			addEitr: (amount) => {
+				if (amount <= 0) return;
 				set(state => ({ eitr: state.eitr + amount }));
 			},
 
