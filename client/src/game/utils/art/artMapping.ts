@@ -487,7 +487,7 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-bjorn-ironside': '5388-g9bbr777',
 	'hero-hervor': '8e3b-ublpaurd',
 	'hero-bestla': '84b2-r6m51iu5',
-	'hero-brynhild': 'd4b7-2cece17d',
+	// hero-brynhild needs god art (d4b7 is pet card "Brynhildr Awakened")
 	'hero-nanna': '23d6-nesirs51',
 	'hero-volva': 'c7cd-wbifyi1w',
 	'hero-sigurd': 'b972-ast4s29y',
@@ -511,22 +511,17 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 
 	// ── Eastern mythology (closest Norse proxy) ──
 	'hero-izanami': '6ea4-mrar7o70',
-	'hero-fujin': 'd032-qyw3nqpe',
-	'hero-tsukuyomi': 'd638-pfkjzzuo',
+	// hero-tsukuyomi needs god art (d638 is Mani's female-presenting art)
 	'hero-sarutahiko': '9a82-xjclj2bn',
 	'hero-kamimusubi': '7458-t0n1oqgs',
 
 	// ── Egyptian mythology (closest Norse proxy) ──
 	'hero-ammit': '71c1-s6o2do75',
-	'hero-shu': 'd032-qyw3nqpe',
 	'hero-maat': '3e44-araj8dlb',
 	'hero-serqet': '5579-rtdz78q8',
 	'hero-khepri': '9370-t2s89bww',
 
-	// ── Greek misc ──
-	'hero-eros': 'a994-8f90349e',
-	'hero-hera': '4bf1-2423017c',
-	'hero-hestia': '091c-2a9202cb',
+	// ── Greek misc (eros, hera, hestia need god art — export only has their weapons) ──
 	'hero-blainn': '23a5-lrnxovtk',
 	'hero-ran': '4434-4nu5rrrf',
 };

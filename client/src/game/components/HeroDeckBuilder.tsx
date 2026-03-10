@@ -14,14 +14,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PieceType } from '../stores/heroDeckStore';
 import { useDeckBuilder, DECK_SIZE, isClassCard, getMaxCopies } from './deckbuilder';
 import type { CardGroup } from './deckbuilder';
-import { ArtGallery } from './art';
 import { getCardArtPath } from '../utils/art/artMapping';
 import { CardData } from '../types';
 import { getSuperMinionForHero, getAllSuperMinionsForHero, isSuperMinion } from '../data/sets/superMinions/heroSuperMinions';
 import './deckbuilder/tokens.css';
 import './deckbuilder/deckbuilder.css';
 
-type ViewTab = 'cards' | 'art';
 type RarityFilter = 'all' | 'common' | 'rare' | 'epic' | 'mythic';
 
 interface HeroDeckBuilderProps {
@@ -70,7 +68,6 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 	onSave,
 }) => {
 	const db = useDeckBuilder({ pieceType, heroId, heroClass, onClose, onSave });
-	const [viewTab, setViewTab] = useState<ViewTab>('cards');
 	const [rarityFilter, setRarityFilter] = useState<RarityFilter>('all');
 	const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
 	const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -158,28 +155,6 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 				<div className="db-main-split">
 					{/* Card Collection / Art Gallery */}
 					<div className="db-collection-pane">
-						{/* Tab Toggle */}
-						<div className="db-tab-bar">
-							<button
-								type="button"
-								onClick={() => setViewTab('cards')}
-								className={`db-tab ${viewTab === 'cards' ? 'active' : ''}`}
-							>
-								Cards
-							</button>
-							<button
-								type="button"
-								onClick={() => setViewTab('art')}
-								className={`db-tab ${viewTab === 'art' ? 'active' : ''}`}
-							>
-								Artwork (406)
-							</button>
-						</div>
-
-						{/* Art Gallery View */}
-						{viewTab === 'art' ? (
-							<ArtGallery compact />
-						) : (
 						<>
 						{/* Filters */}
 						<div className="db-filter-bar">
@@ -384,7 +359,6 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 							))}
 						</div>
 						</>
-						)}
 					</div>
 
 					{/* Deck Sidebar */}
