@@ -4,8 +4,6 @@ import { shouldTriggerDeathrattle, processPendingDeathrattles } from './deathrat
 import { debug } from '../config/debugConfig';
 import { executeDeathrattle } from './deathrattleUtils';
 import { logCardDraw, logCardDeath } from './gameLogUtils';
-import { useAnimationStore } from '../animations/AnimationManager';
-import { logActivity } from '../stores/activityLogStore';
 import { processAllOnMinionDeathEffects, isNorseActive } from './norseIntegration';
 import { processArtifactOnMinionDeath } from './artifactTriggerProcessor';
 import { isMinion, getHealth } from './cards/typeGuards';
@@ -15,25 +13,6 @@ import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 import { removeKeyword } from './cards/keywordUtils';
 
 const MAX_HAND_SIZE = 7;
-
-function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent') {
-  try {
-    const addAnimation = useAnimationStore.getState().addAnimation;
-    addAnimation({
-      id: `card-burn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      type: 'card_burn',
-      startTime: Date.now(),
-      duration: 2500,
-      cardName,
-      playerId
-    });
-    
-    logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
-    
-  } catch (error) {
-    debug.error('[CardBurn] Failed to queue animation:', error);
-  }
-}
 
 /**
  * Moves a card from one zone to another
@@ -181,16 +160,15 @@ export function drawCardFromDeck(
   // Get the top card from the deck
   const cardData = player.deck[0];
 
+  if (player.hand.length >= MAX_HAND_SIZE) {
+    return newState;
+  }
+
   // Remove the card from the deck
   player.deck.splice(0, 1);
 
   // Create a card instance for the hand
   const cardInstance = createCardInstance(cardData);
-
-  if (player.hand.length >= MAX_HAND_SIZE) {
-    queueCardBurnAnimation(cardInstance.card.name, playerId);
-    return newState;
-  }
 
   // Add the card to the hand if there's room
   player.hand.push(cardInstance);
@@ -350,8 +328,7 @@ export function destroyCard(
             isPlayerOwned: playerId === 'player',
           } as any);
         } else {
-          queueCardBurnAnimation(cardToDestroy.card.name, playerId);
-          debug.state(`[Helheim] ${cardToDestroy.card.name} burned — ${playerId}'s hand is full`);
+          debug.state(`[Helheim] ${cardToDestroy.card.name} could not return — ${playerId}'s hand is full`);
         }
       }
     }

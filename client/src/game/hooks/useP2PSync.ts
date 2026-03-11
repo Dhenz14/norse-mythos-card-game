@@ -34,10 +34,6 @@ function flipGameState(state: GameState): GameState {
 		},
 		currentTurn: state.currentTurn === 'player' ? 'opponent' : 'player',
 		winner: state.winner === 'player' ? 'opponent' : state.winner === 'opponent' ? 'player' : state.winner,
-		fatigueCount: state.fatigueCount ? {
-			player: state.fatigueCount.opponent ?? 0,
-			opponent: state.fatigueCount.player ?? 0,
-		} : state.fatigueCount,
 		mulligan: state.mulligan ? {
 			...state.mulligan,
 			playerReady: (state.mulligan as any).opponentReady ?? false,

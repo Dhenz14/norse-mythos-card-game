@@ -945,10 +945,10 @@ Access the treasury management interface at `/treasury` in the game client. Sign
 | **AoE** | Area of Effect - affects multiple targets |
 | **Board** | The play area where minions are placed |
 | **Buff** | Positive stat modification (+Attack, +Health) |
-| **Burn** | Cards drawn with a full hand are destroyed |
 | **Debuff** | Negative stat modification (-Attack, -Health) |
 | **Face** | Attacking the enemy hero directly |
-| **Empty Deck** | When your deck runs out, you simply cannot draw more cards. There is no fatigue damage — plan your resources wisely |
+| **Empty Deck** | When your deck runs out, you simply cannot draw more cards. There is no fatigue damage and no card burn — plan your resources wisely |
+| **Full Hand** | When your hand is full, draw attempts are skipped — no cards are destroyed |
 | **Hand** | Cards currently held (max 9) |
 | **Hole Cards** | Your 2 private poker cards |
 | **HP** | Health Points |

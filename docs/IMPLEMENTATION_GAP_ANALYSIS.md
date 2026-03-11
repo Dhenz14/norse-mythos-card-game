@@ -188,13 +188,7 @@ These handlers exist but contain only stub implementations:
 
 ## OTHER STUBS
 
-### 1. Fatigue Damage
-**File:** `client/src/game/GameContext.ts:231`
-```typescript
-// TODO: Implement fatigue damage
-```
-
-### 2. Highlander Utils
+### 1. Highlander Utils
 **File:** `client/src/game/utils/highlanderUtils.ts:534`
 ```typescript
 // TODO: Implement actual effect logic

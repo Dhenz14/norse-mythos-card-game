@@ -37,9 +37,8 @@ import {
   logCardPlay, 
   logAttack, 
   logHeroPower, 
-  logTurnStart, 
-  logTurnEnd, 
-  logCardDraw,
+  logTurnStart,
+  logTurnEnd,
   logCardDeath,
   logDamage,
   logBuff
@@ -290,77 +289,22 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
       opponentReady: false
     },
     mulliganCompleted: false, // Mulligan happens once per game
-    fatigueCount: {
-      player: 0,
-      opponent: 0
-    },
-    gameLog: [] // Initialize empty game log
+    gameLog: []
   };
 }
 
 /**
- * Draw a card for the current player
- * Includes fatigue mechanic where damage increases with each empty draw
+ * Draw a card for the current player.
+ * No fatigue damage — empty deck simply means no draw.
  */
 export function drawCard(state: GameState): GameState {
   const currentPlayer = state.currentTurn;
   const player = state.players[currentPlayer];
-  
-  // Initialize fatigue count if not already done
-  if (!state.fatigueCount) {
-    state = {
-      ...state,
-      fatigueCount: {
-        player: 0,
-        opponent: 0
-      }
-    };
-  }
-  
-  // No more cards to draw, player takes fatigue damage
+
   if (player.deck.length === 0) {
-    // Ensure fatigueCount exists
-    if (!state.fatigueCount) {
-      state = {
-        ...state,
-        fatigueCount: { player: 0, opponent: 0 }
-      };
-    }
-    
-    // Increment fatigue counter for this player
-    const currentFatigue = state.fatigueCount![currentPlayer] || 0;
-    const newFatigue = currentFatigue + 1;
-    
-    // Log fatigue damage
-    
-    // Apply fatigue counter update
-    let updatedState: GameState = {
-      ...state,
-      fatigueCount: {
-        player: state.fatigueCount?.player ?? 0,
-        opponent: state.fatigueCount?.opponent ?? 0,
-        [currentPlayer]: newFatigue
-      }
-    } as GameState;
-
-    // Apply fatigue damage via canonical path (handles heroArmor, heroHealth, game-over)
-    const enemyPlayer = currentPlayer === 'player' ? 'opponent' : 'player';
-    updatedState = dealDamage(updatedState, currentPlayer as 'player' | 'opponent', 'hero', newFatigue, undefined, undefined, enemyPlayer as 'player' | 'opponent');
-
-    // Add to game log
-    updatedState = logCardDraw(
-      updatedState,
-      currentPlayer as 'player' | 'opponent',
-      undefined, // cardId
-      false, // isBurned
-      true, // isFatigue
-      newFatigue // fatigueDamage
-    );
-    
-    return updatedState as GameState;
+    return state;
   }
-  
-  // Use the drawCardFromDeck utility to draw a card from deck to hand
+
   return drawCardFromDeck(state, currentPlayer);
 }
 

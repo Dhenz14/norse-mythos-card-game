@@ -87,9 +87,7 @@ export function initializeAudioSubscriber(): UnsubscribeFn {
     GameEventBus.subscribe<CardDrawnEvent>('CARD_DRAWN', (event) => {
       const audioStore = useAudio.getState();
 
-      if (event.fromFatigue) {
-        audioStore.playSoundEffect('damage');
-      } else if (event.burned) {
+      if (event.burned) {
         audioStore.playSoundEffect('error');
       } else {
         audioStore.playSoundEffect('card_draw');

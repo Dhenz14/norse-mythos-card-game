@@ -263,18 +263,13 @@ export function logCardDraw(
   player: 'player' | 'opponent',
   cardId?: string,
   isBurned: boolean = false,
-  isFatigue: boolean = false,
-  fatigueDamage?: number
 ): GameState {
   const playerName = player === 'player' ? 'You' : 'Opponent';
-  
+
   let text = "";
   let eventType: GameLogEventType = 'draw';
-  
-  if (isFatigue) {
-    text = `${playerName} took ${fatigueDamage} fatigue damage (out of cards)`;
-    eventType = 'fatigue';
-  } else if (isBurned) {
+
+  if (isBurned) {
     // Card was drawn but burned because hand was full (10 cards)
     text = `${playerName} burned a card (hand full)`;
     eventType = 'burn';
@@ -303,8 +298,7 @@ export function logCardDraw(
     player,
     text,
     {
-      cardId,
-      value: fatigueDamage
+      cardId
     }
   );
   

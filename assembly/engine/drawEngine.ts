@@ -1,5 +1,5 @@
 /**
- * Draw engine — handles card drawing and fatigue.
+ * Draw engine — handles card drawing.
  * Port of drawCard logic from gameUtils.ts
  */
 
@@ -16,8 +16,8 @@ export const MAX_HAND_SIZE: i32 = 7;
 
 /**
  * Draw a card for the specified player.
- * If deck is empty, apply fatigue damage instead.
- * If hand is full (7), the card is discarded (no mill mechanic).
+ * If deck is empty, nothing happens (no fatigue damage).
+ * If hand is full (7), the card is discarded.
  */
 export function drawCard(state: GameState, playerId: i32): void {
 	const player = playerId == PLAYER_SELF ? state.player : state.opponent;
@@ -26,19 +26,15 @@ export function drawCard(state: GameState, playerId: i32): void {
 
 export function drawCardForPlayer(state: GameState, player: Player): void {
 	if (player.deck.length == 0) {
-		// Fatigue: deal escalating damage
-		player.fatigueCounter++;
-		dealFatigueDamage(player, player.fatigueCounter);
+		return;
+	}
+
+	if (player.hand.length >= MAX_HAND_SIZE) {
 		return;
 	}
 
 	// Pop top card from deck
 	const cardId = player.deck.shift();
-
-	if (player.hand.length >= MAX_HAND_SIZE) {
-		// Hand full — card burned (not added to hand)
-		return;
-	}
 
 	// Create card instance
 	const cardDef = getCardDef(cardId);
@@ -65,15 +61,6 @@ export function drawCards(state: GameState, player: Player, count: i32): void {
 	for (let i: i32 = 0; i < count; i++) {
 		drawCardForPlayer(state, player);
 	}
-}
-
-/**
- * Apply fatigue damage to a player's hero
- */
-function dealFatigueDamage(player: Player, amount: i32): void {
-	// Fatigue bypasses armor
-	player.heroHealth -= amount;
-	player.health -= amount;
 }
 
 /**

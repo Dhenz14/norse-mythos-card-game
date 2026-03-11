@@ -11,14 +11,14 @@ interface DeckPileProps {
 export const DeckPile: React.FC<DeckPileProps> = ({ count, isOpponent = false, onClick }) => {
 	const maxVisibleCards = 5;
 	const visibleCards = Math.min(count, maxVisibleCards);
-	const isFatigue = count <= 0;
+	const isEmpty = count <= 0;
 	const isLow = count > 0 && count <= 5;
 
 	return (
 		<div
-			className={`deck-pile ${isOpponent ? 'opponent' : 'player'} ${isFatigue ? 'fatigue' : ''} ${isLow ? 'low' : ''}`}
+			className={`deck-pile ${isOpponent ? 'opponent' : 'player'} ${isEmpty ? 'empty' : ''} ${isLow ? 'low' : ''}`}
 			onClick={onClick}
-			title={isFatigue ? 'FATIGUE - No cards remaining!' : `${count} cards remaining`}
+			title={isEmpty ? 'No cards remaining' : `${count} cards remaining`}
 		>
 			<div className="deck-pile-stack">
 				{Array.from({ length: visibleCards }).map((_, i) => (
@@ -35,14 +35,14 @@ export const DeckPile: React.FC<DeckPileProps> = ({ count, isOpponent = false, o
 						</div>
 					</div>
 				))}
-				{isFatigue && (
+				{isEmpty && (
 					<div className="deck-pile-empty">
-						<span className="fatigue-icon">{'\uD83D\uDD25'}</span>
+						<span className="empty-icon">{'\u16B1'}</span>
 					</div>
 				)}
 			</div>
 
-			<div className={`deck-count-badge ${isFatigue ? 'fatigue' : ''} ${isLow ? 'low' : ''}`}>
+			<div className={`deck-count-badge ${isEmpty ? 'empty' : ''} ${isLow ? 'low' : ''}`}>
 				<AnimatePresence mode="wait">
 					<motion.span
 						key={count}

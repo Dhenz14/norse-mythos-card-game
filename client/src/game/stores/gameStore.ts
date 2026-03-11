@@ -127,6 +127,13 @@ let attackWatchdogTimer: ReturnType<typeof setTimeout> | null = null;
 // Auto-end-turn timer (declared early so initGame/resetGameState can clear it)
 let autoEndTurnTimer: ReturnType<typeof setTimeout> | null = null;
 
+// Guard: prevents double-firing endTurn while AI is thinking
+let isAITurnProcessing = false;
+
+// Guard: cap retries for grantPokerHandRewards discovery deferral
+let pokerRewardRetries = 0;
+const MAX_POKER_REWARD_RETRIES = 10;
+
 // Create store with subscribeWithSelector middleware for precise battlefield monitoring
 export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get) => ({
   gameState: initializeGame(),
@@ -316,6 +323,12 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   },
 
   endTurn: () => {
+    // Guard: prevent double-firing while AI is thinking
+    if (isAITurnProcessing) {
+      debug.log('[EndTurn] Blocked — AI turn still processing');
+      return;
+    }
+
     const { gameState } = get();
     const audioStore = useAudio.getState();
 
@@ -361,21 +374,26 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       // Skip AI processing if opponent is a real human (P2P connected)
       const aiDelay = 800 + Math.random() * 700; // 800-1500ms
       const scheduledTurnNumber = intermediateState.turnNumber;
+      isAITurnProcessing = true;
       setTimeout(() => {
-        const { gameState: currentState } = get();
-        if (currentState.currentTurn !== 'opponent') return;
-        if (currentState.gamePhase === 'game_over') return;
-        if (currentState.turnNumber !== scheduledTurnNumber) return;
+        try {
+          const { gameState: currentState } = get();
+          if (currentState.currentTurn !== 'opponent') return;
+          if (currentState.gamePhase === 'game_over') return;
+          if (currentState.turnNumber !== scheduledTurnNumber) return;
 
-        // If P2P connected, the opponent is a real human — do NOT run AI
-        if (usePeerStore.getState().connectionState === 'connected') return;
+          // If P2P connected, the opponent is a real human — do NOT run AI
+          if (usePeerStore.getState().connectionState === 'connected') return;
 
-        const finalState = processAITurn(currentState);
+          const finalState = processAITurn(currentState);
 
-        logActivity('turn_start', 'player',
-          `Turn ${finalState.turnNumber} - Your turn`);
+          logActivity('turn_start', 'player',
+            `Turn ${finalState.turnNumber} - Your turn`);
 
-        set({ gameState: finalState });
+          set({ gameState: finalState });
+        } finally {
+          isAITurnProcessing = false;
+        }
       }, aiDelay);
     } catch (error) {
       debug.error('Error ending turn:', error);
@@ -653,6 +671,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   // Reset the game state to initial values
   resetGameState: () => {
     if (autoEndTurnTimer) { clearTimeout(autoEndTurnTimer); autoEndTurnTimer = null; }
+    isAITurnProcessing = false;
     debug.log('Resetting game state to initial values');
     set({
       gameState: initializeGame(),
@@ -946,9 +965,17 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     }
     
     if (gameState?.discovery?.active) {
-      debug.combat('[PokerRewards] Deferred: discovery selection in progress, retrying in 500ms');
-      setTimeout(() => get().grantPokerHandRewards(), 500);
-      return;
+      if (pokerRewardRetries >= MAX_POKER_REWARD_RETRIES) {
+        debug.error('[PokerRewards] Max retries reached while waiting for discovery — granting anyway');
+        pokerRewardRetries = 0;
+      } else {
+        pokerRewardRetries++;
+        debug.combat(`[PokerRewards] Deferred: discovery active, retry ${pokerRewardRetries}/${MAX_POKER_REWARD_RETRIES}`);
+        setTimeout(() => get().grantPokerHandRewards(), 500);
+        return;
+      }
+    } else {
+      pokerRewardRetries = 0;
     }
     
     try {
@@ -964,36 +991,22 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       let newPlayerHand = [...player.hand];
       let newPlayerDeck = [...player.deck];
       
-      if (newPlayerDeck.length > 0) {
+      if (newPlayerDeck.length > 0 && newPlayerHand.length < MAX_HAND_SIZE) {
         const drawnCardData = newPlayerDeck.pop()!;
-        if (newPlayerHand.length < MAX_HAND_SIZE) {
-          // Properly convert CardData to CardInstance using createCardInstance
-          const cardInstance = createCardInstance(drawnCardData);
-          newPlayerHand.push(cardInstance);
-          debug.log(`[PokerRewards] Player drew card: ${cardInstance.card.name}`);
-        } else {
-          debug.log('[PokerRewards] Player hand is full - card burned');
-        }
-      } else {
-        debug.log('[PokerRewards] Player has no cards left in deck');
+        const cardInstance = createCardInstance(drawnCardData);
+        newPlayerHand.push(cardInstance);
+        debug.log(`[PokerRewards] Player drew card: ${cardInstance.card.name}`);
       }
       
       // Draw a card for opponent from deck to hand
       let newOpponentHand = [...opponent.hand];
       let newOpponentDeck = [...opponent.deck];
       
-      if (newOpponentDeck.length > 0) {
+      if (newOpponentDeck.length > 0 && newOpponentHand.length < MAX_HAND_SIZE) {
         const drawnCardData = newOpponentDeck.pop()!;
-        if (newOpponentHand.length < MAX_HAND_SIZE) {
-          // Properly convert CardData to CardInstance using createCardInstance
-          const cardInstance = createCardInstance(drawnCardData);
-          newOpponentHand.push(cardInstance);
-          debug.log(`[PokerRewards] Opponent drew card: ${cardInstance.card.name}`);
-        } else {
-          debug.log('[PokerRewards] Opponent hand is full - card burned');
-        }
-      } else {
-        debug.log('[PokerRewards] Opponent has no cards left in deck');
+        const cardInstance = createCardInstance(drawnCardData);
+        newOpponentHand.push(cardInstance);
+        debug.log(`[PokerRewards] Opponent drew card: ${cardInstance.card.name}`);
       }
       
       // Grant +1 mana crystal to both players (cap at 10)

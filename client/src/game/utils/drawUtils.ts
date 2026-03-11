@@ -1,30 +1,8 @@
 import { GameState, CardData, CardInstance } from '../types';
-import { useAnimationStore } from '../animations/AnimationManager';
-import { logActivity } from '../stores/activityLogStore';
 import { debug } from '../config/debugConfig';
-import { dealDamage } from './effects/damageUtils';
 import { createCardInstance } from './cards/cardUtils';
 
 const MAX_HAND_SIZE = 7;
-
-function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent') {
-  try {
-    const addAnimation = useAnimationStore.getState().addAnimation;
-    addAnimation({
-      id: `card-burn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      type: 'card_burn',
-      startTime: Date.now(),
-      duration: 2500,
-      cardName,
-      playerId
-    });
-    
-    logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
-    
-  } catch (error) {
-    debug.error('[CardBurn] Failed to queue animation:', error);
-  }
-}
 
 /**
  * Draw a card from a player's deck to their hand
@@ -39,27 +17,15 @@ export function drawCardFromDeck(
   const player = newState.players[playerId];
 
   if (player.deck.length === 0) {
-    if (!newState.fatigueCount) {
-      newState.fatigueCount = {
-        player: 0,
-        opponent: 0
-      };
-    }
-
-    const currentFatigue = newState.fatigueCount[playerId] || 0;
-    const newFatigue = currentFatigue + 1;
-    newState.fatigueCount[playerId] = newFatigue;
-    newState = dealDamage(newState, playerId, 'hero', newFatigue, undefined, undefined, playerId);
-
     return newState;
   }
   
+  if (player.hand.length >= MAX_HAND_SIZE) {
+    return newState;
+  }
+
   const cardData = player.deck[0];
   player.deck.splice(0, 1);
-
-  if (player.hand.length >= MAX_HAND_SIZE) {
-    return newState; // hand full — card stays in deck, draw is missed
-  }
 
   const cardInstance = createCardInstance(cardData);
 

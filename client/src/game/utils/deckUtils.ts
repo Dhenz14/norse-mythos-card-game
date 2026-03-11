@@ -1,31 +1,9 @@
 import { GameState, CardData, Player } from '../types';
-import { useAnimationStore } from '../animations/AnimationManager';
-import { logActivity } from '../stores/activityLogStore';
 import { getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
-import { dealDamage } from './effects/damageUtils';
 import { createCardInstance } from './cards/cardUtils';
 
 const MAX_HAND_SIZE = 7;
-
-function queueCardBurnAnimation(cardName: string, playerId: 'player' | 'opponent') {
-  try {
-    const addAnimation = useAnimationStore.getState().addAnimation;
-    addAnimation({
-      id: `card-burn-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      type: 'card_burn',
-      startTime: Date.now(),
-      duration: 2500,
-      cardName,
-      playerId
-    });
-    
-    logActivity('card_burn', playerId, `${cardName} burned - hand full!`, { cardName });
-    
-  } catch (error) {
-    debug.error('[CardBurn] Failed to queue animation:', error);
-  }
-}
 
 /**
  * Draw a card from player's deck and add it to their hand
@@ -34,24 +12,7 @@ export function drawCard(state: GameState, playerType: 'player' | 'opponent'): G
   let newState = structuredClone(state) as GameState;
   const player = newState.players[playerType];
 
-  // Check if the deck is empty (fatigue)
   if (player.deck.length === 0) {
-    // Initialize fatigue counter if not exists
-    if (!newState.fatigueCount) {
-      newState.fatigueCount = {
-        player: 0,
-        opponent: 0
-      };
-    }
-
-    // Increment fatigue counter for this player
-    newState.fatigueCount[playerType] += 1;
-    const fatigueDamage = newState.fatigueCount[playerType];
-
-    // Apply fatigue damage via dealDamage (handles armor + heroHealth + game-over)
-    const enemyType = playerType === 'player' ? 'opponent' : 'player';
-    newState = dealDamage(newState, playerType, 'hero', fatigueDamage, undefined, undefined, enemyType);
-
     return newState;
   }
   
@@ -77,9 +38,7 @@ export function addCardToHand(state: GameState, playerType: 'player' | 'opponent
   const newState = structuredClone(state) as GameState;
   const player = newState.players[playerType];
   
-  // Check if the hand is full (max 9 cards by design)
   if (player.hand.length >= MAX_HAND_SIZE) {
-    queueCardBurnAnimation(cardData.name, playerType);
     return newState;
   }
   

@@ -353,8 +353,6 @@ function executeDrawDeathrattle(
   const player = newState.players[playerId];
   
   if (player.deck.length === 0) {
-    // Drawing from an empty deck causes fatigue damage
-    // For simplicity, we'll just skip the draw without causing fatigue damage
     return newState;
   }
   
