@@ -470,7 +470,7 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-frey': '7458-t0n1oqgs',
 	'hero-gullveig': 'df09-mj5d0z0j',
 	'hero-sinmara': '27de-qwzzvho5',
-	'hero-mani': 'd638-pfkjzzuo',
+	'hero-mani': '78e9-6mupjfob',
 	'hero-hoder': 'a08f-a2xbq9k1',
 	'hero-gefjon': '3e44-araj8dlb',
 	'hero-gerd': 'efdf-cwyuxjfl',
@@ -521,7 +521,8 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-serqet': '5579-rtdz78q8',
 	'hero-khepri': '9370-t2s89bww',
 
-	// ── Greek misc (eros, hera, hestia need god art — export only has their weapons) ──
+	// ── Greek misc (eros, hera need god art — export only has their weapons) ──
+	'hero-hestia': 'd638-pfkjzzuo',
 	'hero-blainn': '23a5-lrnxovtk',
 	'hero-ran': '4434-4nu5rrrf',
 };
