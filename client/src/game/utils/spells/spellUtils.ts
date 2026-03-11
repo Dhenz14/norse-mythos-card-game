@@ -842,6 +842,36 @@ export function executeSpell(
       resultState = { ...state, prophecies, gameLog };
       break;
     }
+    case 'damage_submerged': {
+      const dmgVal = effect.value || 5;
+      const opponent = state.currentTurn === 'player' ? 'opponent' : 'player';
+      const subTargets = state.players[opponent].battlefield.filter((m: any) => m.isSubmerged);
+      let dmgState = state;
+      for (const target of subTargets) {
+        dmgState = dealDamage(dmgState, opponent, 'minion', dmgVal, target.instanceId, undefined, state.currentTurn);
+      }
+      if (subTargets.length === 0) {
+        dmgState = dealDamage(dmgState, opponent, 'hero', dmgVal, undefined, undefined, state.currentTurn);
+      }
+      resultState = dmgState;
+      break;
+    }
+    case 'submerge_friendly': {
+      const ownSide = state.currentTurn;
+      if (targetId) {
+        const bf = state.players[ownSide].battlefield;
+        const target = bf.find((m: any) => m.instanceId === targetId);
+        if (target) {
+          (target as any).isSubmerged = true;
+          const buffAtk = (effect as any).buffAttack || 0;
+          const buffHp = (effect as any).buffHealth || 0;
+          target.currentAttack = (target.currentAttack ?? 0) + buffAtk;
+          target.currentHealth = (target.currentHealth ?? 0) + buffHp;
+        }
+      }
+      resultState = state;
+      break;
+    }
     default:
       debug.error(`Unknown spell effect type: ${effect.type}`);
       return state;

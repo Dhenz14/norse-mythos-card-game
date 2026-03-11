@@ -8,6 +8,7 @@ import { debug } from '../config/debugConfig';
 import { dealDamage } from './effects/damageUtils';
 import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 import { addKeyword } from './cards/keywordUtils';
+import { isMinion } from './cards/typeGuards';
 
 const MAX_DEATHRATTLE_DEPTH = 10;
 let deathrattleDepth = 0;
@@ -271,6 +272,87 @@ function executeDeathrattleInner(
           (minion as any).hasLifesteal = false;
           (minion as any).silenced = true;
         }
+      }
+      return newState;
+    }
+    case 'resummon_self': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
+        const selfCopy = createCardInstance(card.card);
+        selfCopy.currentHealth = 1;
+        selfCopy.isSummoningSick = true;
+        selfCopy.canAttack = false;
+        selfCopy.card = { ...selfCopy.card, deathrattle: undefined } as any;
+        player.battlefield.push(selfCopy);
+      }
+      return newState;
+    }
+    case 'add_copy_to_hand': {
+      const player = newState.players[playerId];
+      if (player.hand.length < 7) {
+        const handCopy = createCardInstance(card.card);
+        player.hand.push(handCopy);
+      }
+      return newState;
+    }
+    case 'add_random_class_card': {
+      const player = newState.players[playerId];
+      if (player.hand.length < 7 && player.deck.length > 0) {
+        const randomIdx = Math.floor(Math.random() * player.deck.length);
+        const randomCard = player.deck[randomIdx];
+        const inst = createCardInstance(randomCard);
+        player.hand.push(inst);
+      }
+      return newState;
+    }
+    case 'deal_attack_damage_random_enemy': {
+      const opponent = playerId === 'player' ? 'opponent' : 'player';
+      const atkDmg = card.currentAttack ?? (card.card as MinionCardData).attack ?? 0;
+      if (atkDmg > 0) {
+        const targets = newState.players[opponent].battlefield;
+        if (targets.length > 0) {
+          const target = targets[Math.floor(Math.random() * targets.length)];
+          if (target.hasDivineShield) {
+            target.hasDivineShield = false;
+          } else {
+            target.currentHealth = (target.currentHealth ?? (target.card as MinionCardData).health ?? 1) - atkDmg;
+          }
+        }
+      }
+      return newState;
+    }
+    case 'resurrect_to_hand': {
+      const player = newState.players[playerId];
+      const graveyard = player.graveyard || [];
+      const deadMinions = graveyard.filter(c => isMinion(c.card));
+      if (deadMinions.length > 0 && player.hand.length < 7) {
+        const pick = deadMinions[Math.floor(Math.random() * deadMinions.length)];
+        const inst = createCardInstance(pick.card);
+        player.hand.push(inst);
+      }
+      return newState;
+    }
+    case 'return_to_hand_cost_increase': {
+      const player = newState.players[playerId];
+      if (player.hand.length < 7) {
+        const handCopy = createCardInstance(card.card);
+        const mana = (handCopy.card as any).manaCost ?? (handCopy.card as any).cost ?? 0;
+        (handCopy.card as any).manaCost = mana + ((deathrattle as any).costIncrease || 2);
+        (handCopy.card as any).cost = mana + ((deathrattle as any).costIncrease || 2);
+        handCopy.card = { ...handCopy.card, deathrattle: undefined } as any;
+        player.hand.push(handCopy);
+      }
+      return newState;
+    }
+    case 'summon_devoured_copies': {
+      const player = newState.players[playerId];
+      const devoured = (card as any).devouredCards || [];
+      for (const devouredCard of devoured) {
+        if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+        const inst = createCardInstance(devouredCard);
+        inst.isSummoningSick = true;
+        inst.canAttack = false;
+        player.battlefield.push(inst);
       }
       return newState;
     }
