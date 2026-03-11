@@ -106,6 +106,9 @@ const RARE_PIECES = new Set([
 	'hero-eros',
 	'hero-demeter',
 	'hero-hestia',
+	// Greek demigods
+	'hero-heracles',
+	'hero-perseus',
 	'hero-selene',
 	'hero-hecate',
 	'hero-helios',

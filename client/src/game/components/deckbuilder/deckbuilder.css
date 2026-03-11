@@ -20,26 +20,6 @@
 	50% { background-position: 100% 100%; }
 }
 
-@keyframes db-mythic-foil {
-	0%, 100% { background-position: 0% 0%; }
-	50% { background-position: 100% 100%; }
-}
-
-@keyframes db-epic-foil {
-	0%   { background-position: 0% 0%; }
-	100% { background-position: 100% 100%; }
-}
-
-@keyframes db-rare-foil {
-	0%, 85%  { background-position: 0% 0%; }
-	100%     { background-position: 100% 100%; }
-}
-
-@keyframes db-common-breathe {
-	0%, 100% { opacity: 0.2; }
-	50%      { opacity: 0.45; }
-}
-
 /* ===== Card Grid ===== */
 .db-card-grid {
 	display: grid;
@@ -207,52 +187,7 @@
 	box-shadow: 0 0 5px rgba(59, 130, 246, 0.35);
 }
 
-/* --- Foil overlay (over art area) — texture-based per rarity --- */
-.db-foil-overlay {
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-	z-index: 2;
-	transition: opacity 0.3s ease;
-	background-size: 150% 150%;
-	mix-blend-mode: screen;
-}
-.db-foil-overlay.rarity-mythic {
-	background-image: url('/textures/foil_mythic.png');
-	background-size: 150% 150%;
-	opacity: 0;
-	animation: db-mythic-foil 3s ease-in-out infinite;
-	border: 2px solid rgba(255, 170, 0, 0.5);
-	box-shadow: inset 0 0 15px rgba(255, 170, 0, 0.2);
-}
-.db-card:hover .db-foil-overlay.rarity-mythic { opacity: 0.6; }
-.db-foil-overlay.rarity-epic {
-	background-image: url('/textures/foil_epic.png');
-	background-size: 200% 200%;
-	opacity: 0;
-	animation: db-epic-foil 4s ease-in-out infinite;
-	border: 2px solid rgba(163, 53, 238, 0.4);
-	box-shadow: inset 0 0 12px rgba(163, 53, 238, 0.15);
-}
-.db-card:hover .db-foil-overlay.rarity-epic { opacity: 0.5; }
-
-.db-foil-overlay.rarity-rare {
-	background-image: url('/textures/epic_holographic2.png');
-	background-size: 200% 200%;
-	opacity: 0;
-	animation: db-rare-foil 5s ease-in-out infinite;
-	border: 1px solid rgba(0, 150, 255, 0.35);
-	box-shadow: inset 0 0 10px rgba(0, 150, 255, 0.1);
-}
-.db-card:hover .db-foil-overlay.rarity-rare { opacity: 0.4; }
-
-.db-foil-overlay.rarity-common {
-	background: radial-gradient(ellipse at center, transparent 40%, rgba(156, 163, 175, 0.06) 70%, rgba(120, 130, 145, 0.1) 100%);
-	opacity: 0.3;
-	animation: db-common-breathe 6s ease-in-out infinite;
-	mix-blend-mode: normal;
-}
-.db-card:hover .db-foil-overlay.rarity-common { opacity: 0.5; }
+/* Holo effects moved to styles/holoEffect.css */
 
 .db-card.not-playable {
 	opacity: 0.45;
@@ -1063,27 +998,72 @@
 	opacity: 0.2;
 }
 
-/* Front face foil */
+/* Front face foil — Pokemon-151 sunpillar gradient */
 .cd-front-foil {
 	position: absolute;
 	inset: 0;
 	pointer-events: none;
 	z-index: 2;
-	mix-blend-mode: screen;
-	background-size: 150% 150%;
+	border-radius: inherit;
+	opacity: 0;
 }
-.cd-front-foil.rarity-mythic {
-	background-image: url('/textures/foil_mythic.png');
-	opacity: 0.5;
-	animation: db-mythic-foil 3s ease-in-out infinite;
-	border: 2px solid rgba(255, 170, 0, 0.4);
+.cd-front-foil.rarity-rare {
+	background: linear-gradient(
+		115deg,
+		transparent 20%,
+		hsl(176, 100%, 76%) 36%,
+		hsl(228, 100%, 74%) 43%,
+		hsl(283, 100%, 73%) 50%,
+		hsl(2, 100%, 73%) 57%,
+		hsl(53, 100%, 69%) 64%,
+		transparent 80%
+	);
+	mix-blend-mode: overlay;
+	opacity: 0.3;
+	filter: brightness(1.25) contrast(3) saturate(0.75);
+	background-size: 200% 200%;
+	animation: cd-foil-shimmer 4s ease-in-out infinite;
 }
 .cd-front-foil.rarity-epic {
-	background-image: url('/textures/foil_epic.png');
+	background: linear-gradient(
+		115deg,
+		transparent 10%,
+		hsl(283, 100%, 73%) 25%,
+		hsl(228, 100%, 74%) 35%,
+		hsl(176, 100%, 76%) 45%,
+		hsl(93, 100%, 69%) 55%,
+		hsl(53, 100%, 69%) 65%,
+		hsl(2, 100%, 73%) 75%,
+		transparent 90%
+	);
+	mix-blend-mode: color-dodge;
+	opacity: 0.35;
+	filter: brightness(0.8) contrast(2.95) saturate(0.65);
 	background-size: 200% 200%;
+	animation: cd-foil-shimmer 3.5s ease-in-out infinite;
+	border: 2px solid rgba(163, 53, 238, 0.25);
+}
+.cd-front-foil.rarity-mythic {
+	background: linear-gradient(
+		115deg,
+		hsl(2, 100%, 73%) 0%,
+		hsl(53, 100%, 69%) 15%,
+		hsl(93, 100%, 69%) 30%,
+		hsl(176, 100%, 76%) 45%,
+		hsl(228, 100%, 74%) 60%,
+		hsl(283, 100%, 73%) 75%,
+		hsl(2, 100%, 73%) 100%
+	);
+	mix-blend-mode: color-dodge;
 	opacity: 0.45;
-	animation: db-epic-foil 4s ease-in-out infinite;
-	border: 2px solid rgba(163, 53, 238, 0.35);
+	filter: brightness(0.6) contrast(1.5) saturate(1);
+	background-size: 300% 300%;
+	animation: cd-foil-shimmer 3s ease-in-out infinite;
+	border: 2px solid rgba(255, 170, 0, 0.3);
+}
+@keyframes cd-foil-shimmer {
+	0%, 100% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
 }
 
 /* Front face mana gem */

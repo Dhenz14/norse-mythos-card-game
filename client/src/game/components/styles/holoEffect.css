@@ -1,0 +1,1291 @@
+/* ============================================================
+   Pokemon-Cards-151 Style Holographic Effects
+   10 distinct variants ported from simeydotme/pokemon-cards-css
+   Pure CSS gradients — no texture images.
+   ============================================================ */
+
+:root {
+	--sunpillar-1: hsl(2, 100%, 73%);
+	--sunpillar-2: hsl(53, 100%, 69%);
+	--sunpillar-3: hsl(93, 100%, 69%);
+	--sunpillar-4: hsl(176, 100%, 76%);
+	--sunpillar-5: hsl(228, 100%, 74%);
+	--sunpillar-6: hsl(283, 100%, 73%);
+}
+
+/* ============================================================
+   Base Layer Styles
+   ============================================================ */
+
+.holo-shine,
+.holo-glare {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.4s ease;
+	will-change: opacity, background-position;
+	contain: strict;
+}
+
+.holo-shine {
+	z-index: 5;
+}
+
+.holo-glare {
+	z-index: 6;
+}
+
+/* ============================================================
+   3D Tilt — applied to the card container via .holo-active
+   ============================================================ */
+
+.holo-active {
+	transform: perspective(800px) rotateY(var(--rotate-x, 0deg)) rotateX(var(--rotate-y, 0deg));
+}
+
+[style*="--rotate-x"] {
+	transition: transform 0.35s ease-out;
+}
+
+/* ============================================================
+   1. HOLO-RARE — Classic rare holo (Pokemon "rare holo")
+   overlay blend, scanline overlay, gentle rainbow
+   ============================================================ */
+
+.holo-rare > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			110deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-2) 17%,
+			var(--sunpillar-3) 33%,
+			var(--sunpillar-4) 50%,
+			var(--sunpillar-5) 67%,
+			var(--sunpillar-6) 83%,
+			var(--sunpillar-1) 100%
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0px, transparent 2px,
+			rgba(255, 255, 255, 0.04) 2px, rgba(255, 255, 255, 0.04) 4px
+		);
+	background-size: 400% 400%, 100% 4px;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		center center;
+	background-blend-mode: overlay;
+	mix-blend-mode: overlay;
+	filter: brightness(1.1) contrast(1.1) saturate(1.2);
+}
+
+.holo-rare.holo-active > .holo-shine {
+	opacity: 0.55;
+}
+
+.holo-rare > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(3);
+}
+
+.holo-rare > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.65) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.9) contrast(1.3);
+}
+
+.holo-rare.holo-active > .holo-glare {
+	opacity: 0.35;
+}
+
+/* ============================================================
+   2. HOLO-COSMOS — Galaxy/sparkle style (Pokemon "cosmos holo")
+   82deg repeating rainbow, multi-layer parallax
+   ============================================================ */
+
+.holo-cosmos > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			82deg,
+			hsl(53, 100%, 69%) 0%,
+			hsl(93, 100%, 69%) 15%,
+			hsl(176, 100%, 76%) 30%,
+			hsl(228, 100%, 74%) 45%,
+			hsl(283, 100%, 73%) 60%,
+			hsl(2, 100%, 73%) 75%,
+			hsl(53, 100%, 69%) 100%
+		),
+		repeating-linear-gradient(
+			190deg,
+			var(--sunpillar-6) 0%,
+			var(--sunpillar-4) 25%,
+			var(--sunpillar-2) 50%,
+			var(--sunpillar-5) 75%,
+			var(--sunpillar-6) 100%
+		),
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(0, 0%, 100%, 0.6) 5%,
+			hsla(0, 0%, 0%, 0.5) 80%
+		);
+	background-size: 250% 600%, 350% 350%, 100% 100%;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		calc(var(--bg-x, 50%) * 1.5) calc(var(--bg-y, 50%) * 1.5),
+		center center;
+	background-blend-mode: overlay, multiply;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.3) + 0.5))
+		contrast(2.5)
+		saturate(0.8);
+}
+
+.holo-cosmos.holo-active > .holo-shine {
+	opacity: 0.5;
+}
+
+.holo-cosmos > .holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image:
+		radial-gradient(circle at 20% 30%, hsla(53, 100%, 80%, 0.2) 0%, transparent 15%),
+		radial-gradient(circle at 70% 60%, hsla(283, 100%, 80%, 0.2) 0%, transparent 15%),
+		radial-gradient(circle at 40% 80%, hsla(176, 100%, 80%, 0.15) 0%, transparent 12%),
+		radial-gradient(circle at 85% 20%, hsla(228, 100%, 80%, 0.15) 0%, transparent 12%),
+		radial-gradient(circle at 50% 50%, hsla(93, 100%, 80%, 0.1) 0%, transparent 20%);
+	mix-blend-mode: lighten;
+	opacity: 0.6;
+}
+
+.holo-cosmos > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(3);
+}
+
+.holo-cosmos > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.7) 10%,
+		hsla(0, 0%, 100%, 0.5) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.75) contrast(2) saturate(2);
+}
+
+.holo-cosmos.holo-active > .holo-glare {
+	opacity: 0.3;
+}
+
+/* ============================================================
+   3. HOLO-REVERSE — Reverse holo (Pokemon "reverse holo")
+   soft-light/difference blend, subtle iridescent sheen
+   ============================================================ */
+
+.holo-reverse > .holo-shine {
+	background-image:
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(0, 0%, 100%, 0.6) 0%,
+			transparent 60%
+		),
+		linear-gradient(
+			-45deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-3) 25%,
+			var(--sunpillar-5) 50%,
+			var(--sunpillar-2) 75%,
+			var(--sunpillar-4) 100%
+		);
+	background-size: 100% 100%, 300% 300%;
+	background-position:
+		center center,
+		calc(((50% - var(--bg-x, 50%)) * 2) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 2) + 50%);
+	background-blend-mode: soft-light;
+	mix-blend-mode: color-dodge;
+	filter: brightness(0.7) contrast(1.5) saturate(0.55);
+}
+
+.holo-reverse.holo-active > .holo-shine {
+	opacity: 0.45;
+}
+
+.holo-reverse > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(3);
+}
+
+.holo-reverse > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.65) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(1) contrast(1.5);
+}
+
+.holo-reverse.holo-active > .holo-glare {
+	opacity: 0.3;
+}
+
+/* ============================================================
+   4. HOLO-V — V-card style (Pokemon "rare holo v")
+   screen/hue/hard-light triple blend, grain scanlines
+   ============================================================ */
+
+.holo-v > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-2) 5%,
+			var(--sunpillar-3) 10%,
+			var(--sunpillar-4) 15%,
+			var(--sunpillar-5) 20%,
+			var(--sunpillar-6) 25%,
+			var(--sunpillar-1) 30%
+		),
+		repeating-linear-gradient(
+			133deg,
+			var(--sunpillar-6) 0%,
+			var(--sunpillar-5) 17%,
+			var(--sunpillar-4) 33%,
+			var(--sunpillar-3) 50%,
+			var(--sunpillar-2) 67%,
+			var(--sunpillar-1) 83%,
+			var(--sunpillar-6) 100%
+		),
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(0, 0%, 100%, 0.5) 10%,
+			hsla(0, 0%, 0%, 0.5) 80%
+		);
+	background-size: 100% 800%, 300% 400%, 100% 100%;
+	background-position:
+		0% calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		var(--bg-x, 50%) var(--bg-y, 50%),
+		center center;
+	background-blend-mode: screen, hue, hard-light;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.4) + 0.4))
+		contrast(2.95)
+		saturate(0.65);
+}
+
+.holo-v.holo-active > .holo-shine {
+	opacity: 0.6;
+}
+
+.holo-v > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-3) 10%,
+			var(--sunpillar-5) 20%,
+			var(--sunpillar-1) 30%
+		);
+	background-size: 100% 800%;
+	background-position:
+		0% calc(((var(--bg-y, 50%) - 50%) * 3.5) + 50%);
+	mix-blend-mode: soft-light;
+	filter: contrast(2.5) saturate(1.75);
+	opacity: 0.3;
+}
+
+.holo-v > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.55) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: hard-light;
+	filter: brightness(0.9) contrast(1.75);
+}
+
+.holo-v.holo-active > .holo-glare {
+	opacity: 0.4;
+}
+
+/* ============================================================
+   5. HOLO-VSTAR — V-Star compound (Pokemon "vstar")
+   Foil + radial mask + sunpillars, intense hue shifting
+   ============================================================ */
+
+.holo-vstar > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			110deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-2) 5%,
+			var(--sunpillar-3) 10%,
+			var(--sunpillar-4) 15%,
+			var(--sunpillar-5) 20%,
+			var(--sunpillar-6) 25%,
+			var(--sunpillar-1) 30%
+		),
+		repeating-linear-gradient(
+			133deg,
+			var(--sunpillar-6) 0%,
+			var(--sunpillar-4) 20%,
+			var(--sunpillar-2) 40%,
+			var(--sunpillar-6) 60%
+		),
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(0, 0%, 100%, 0.5) 10%,
+			hsla(0, 0%, 0%, 0.5) 80%
+		);
+	background-size: 200% 800%, 300% 400%, 100% 100%;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		var(--bg-x, 50%) var(--bg-y, 50%),
+		center center;
+	background-blend-mode: soft-light, hue, hard-light;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.4) + 0.5))
+		contrast(2.75)
+		saturate(0.65);
+}
+
+.holo-vstar.holo-active > .holo-shine {
+	opacity: 0.6;
+}
+
+.holo-vstar > .holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: repeating-linear-gradient(
+		133deg,
+		var(--sunpillar-6) 0%,
+		var(--sunpillar-5) 17%,
+		var(--sunpillar-4) 33%,
+		var(--sunpillar-3) 50%,
+		var(--sunpillar-2) 67%,
+		var(--sunpillar-1) 83%,
+		var(--sunpillar-6) 100%
+	);
+	background-size: 300% 400%;
+	background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+	mix-blend-mode: hard-light;
+	opacity: 0.25;
+}
+
+.holo-vstar > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(4);
+}
+
+.holo-vstar > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.65) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: hard-light;
+	filter: brightness(0.9) contrast(1.6);
+}
+
+.holo-vstar.holo-active > .holo-glare {
+	opacity: 0.4;
+}
+
+/* ============================================================
+   6. HOLO-RADIANT — Diamond crosshatch (Pokemon "radiant")
+   ±45deg repeating lines, exclusion/darken/color-dodge
+   ============================================================ */
+
+.holo-radiant > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			45deg,
+			hsl(0, 0%, 10%) 0%,
+			hsl(0, 0%, 50%) 5%,
+			hsl(0, 0%, 10%) 10%,
+			hsl(0, 0%, 50%) 15%,
+			hsl(0, 0%, 10%) 20%
+		),
+		repeating-linear-gradient(
+			-45deg,
+			hsl(0, 0%, 10%) 0%,
+			hsl(0, 0%, 50%) 5%,
+			hsl(0, 0%, 10%) 10%,
+			hsl(0, 0%, 50%) 15%,
+			hsl(0, 0%, 10%) 20%
+		),
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(0, 0%, 100%, 0.4) 10%,
+			hsla(0, 0%, 0%, 0.5) 80%
+		);
+	background-size: 250% 250%, 250% 250%, 100% 100%;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 2) + 50%),
+		calc(((50% - var(--bg-x, 50%)) * 2) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 2) + 50%),
+		center center;
+	background-blend-mode: exclusion, darken;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.3) + 0.6))
+		contrast(2)
+		saturate(0.7);
+}
+
+.holo-radiant.holo-active > .holo-shine {
+	opacity: 0.55;
+}
+
+.holo-radiant > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: repeating-linear-gradient(
+		55deg,
+		var(--sunpillar-1) 0%,
+		var(--sunpillar-2) 12%,
+		var(--sunpillar-3) 25%,
+		var(--sunpillar-4) 37%,
+		var(--sunpillar-5) 50%,
+		var(--sunpillar-6) 62%,
+		var(--sunpillar-1) 75%
+	);
+	background-size: 350% 350%;
+	background-position:
+		calc(((var(--bg-x, 50%) - 50%) * -2.5) + 50%)
+		calc(((var(--bg-y, 50%) - 50%) * -2.5) + 50%);
+	mix-blend-mode: hard-light;
+	opacity: 0.4;
+}
+
+.holo-radiant > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.5) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.9) contrast(1.4);
+}
+
+.holo-radiant.holo-active > .holo-glare {
+	opacity: 0.35;
+}
+
+/* ============================================================
+   7. HOLO-AMAZING — Amazing rare (Pokemon "amazing rare")
+   Glitter-like effect + color-burn + saturated sunpillars
+   ============================================================ */
+
+.holo-amazing > .holo-shine {
+	background-image:
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(0, 0%, 100%, 0.5) 0%,
+			transparent 50%
+		),
+		repeating-linear-gradient(
+			110deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-2) 12%,
+			var(--sunpillar-3) 25%,
+			var(--sunpillar-4) 37%,
+			var(--sunpillar-5) 50%,
+			var(--sunpillar-6) 62%,
+			var(--sunpillar-1) 75%,
+			var(--sunpillar-3) 87%,
+			var(--sunpillar-5) 100%
+		);
+	background-size: 100% 100%, 300% 600%;
+	background-position:
+		center center,
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%);
+	background-blend-mode: soft-light;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.4) + 0.5))
+		contrast(2.5)
+		saturate(0.8);
+}
+
+.holo-amazing.holo-active > .holo-shine {
+	opacity: 0.6;
+}
+
+.holo-amazing > .holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: repeating-linear-gradient(
+		133deg,
+		var(--sunpillar-6) 0%,
+		var(--sunpillar-4) 20%,
+		var(--sunpillar-2) 40%,
+		var(--sunpillar-6) 60%,
+		var(--sunpillar-3) 80%,
+		var(--sunpillar-1) 100%
+	);
+	background-size: 250% 350%;
+	background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+	mix-blend-mode: color-burn;
+	opacity: 0.2;
+}
+
+.holo-amazing > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(3.5);
+}
+
+.holo-amazing > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.6) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.85) contrast(1.5);
+}
+
+.holo-amazing.holo-active > .holo-glare {
+	opacity: 0.4;
+}
+
+/* ============================================================
+   8. HOLO-RAINBOW — Rainbow foil (Pokemon "rare rainbow")
+   luminosity/soft-light base, intense dynamic brightness
+   This is the Stage 3 / Blastoise-level effect
+   ============================================================ */
+
+.holo-rainbow > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			110deg,
+			hsl(2, 100%, 55%) 0%,
+			hsl(35, 100%, 55%) 10%,
+			hsl(53, 100%, 55%) 20%,
+			hsl(93, 100%, 55%) 30%,
+			hsl(176, 100%, 55%) 40%,
+			hsl(228, 100%, 55%) 50%,
+			hsl(283, 100%, 55%) 60%,
+			hsl(330, 100%, 55%) 70%,
+			hsl(2, 100%, 55%) 80%
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0px, transparent 1px,
+			rgba(255, 255, 255, 0.08) 1px, rgba(255, 255, 255, 0.08) 2px
+		),
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(0, 0%, 100%, 0.4) 5%,
+			hsla(0, 0%, 0%, 0.3) 80%
+		);
+	background-size: 200% 800%, 100% 2px, 100% 100%;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		center center,
+		center center;
+	background-blend-mode: luminosity, soft-light;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.5) + 0.4))
+		contrast(2.5)
+		saturate(0.75);
+}
+
+.holo-rainbow.holo-active > .holo-shine {
+	opacity: 0.75;
+}
+
+.holo-rainbow > .holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: repeating-linear-gradient(
+		-60deg,
+		hsl(2, 100%, 55%) 0%,
+		hsl(93, 100%, 55%) 14%,
+		hsl(176, 100%, 55%) 28%,
+		hsl(228, 100%, 55%) 42%,
+		hsl(283, 100%, 55%) 56%,
+		hsl(53, 100%, 55%) 70%,
+		hsl(2, 100%, 55%) 84%
+	);
+	background-size: 400% 400%;
+	background-position:
+		calc(((var(--bg-x, 50%) - 50%) * -2) + 50%)
+		calc(((var(--bg-y, 50%) - 50%) * -2) + 50%);
+	mix-blend-mode: difference;
+	opacity: 0.25;
+}
+
+.holo-rainbow > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 95%, 0.9) 5%,
+		hsla(0, 0%, 70%, 0.4) 35%,
+		hsl(0, 0%, 0%) 85%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.5) contrast(4);
+}
+
+.holo-rainbow > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.9) 5%,
+		hsla(0, 0%, 100%, 0.7) 15%,
+		hsla(0, 0%, 0%, 0.6) 85%
+	);
+	mix-blend-mode: hard-light;
+	filter: brightness(0.9) contrast(1.5);
+}
+
+.holo-rainbow > .holo-glare::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(
+		circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(180, 80%, 90%, 0.3) 0%,
+		transparent 35%
+	);
+	mix-blend-mode: screen;
+}
+
+.holo-rainbow.holo-active > .holo-glare {
+	opacity: 0.5;
+}
+
+/* ============================================================
+   9. HOLO-SECRET — Secret rare gold (Pokemon "secret rare")
+   conic-gradient, gold sunpillars, intense shimmer
+   ============================================================ */
+
+.holo-secret > .holo-shine {
+	--gold-1: hsl(40, 100%, 55%);
+	--gold-2: hsl(46, 95%, 50%);
+	--gold-3: hsl(52, 100%, 69%);
+	--gold-4: hsl(38, 100%, 45%);
+	--gold-5: hsl(48, 90%, 60%);
+	--gold-6: hsl(42, 100%, 50%);
+
+	background-image:
+		conic-gradient(
+			from calc(var(--pointer-from-left, 0.5) * 360deg) at 50% 50%,
+			var(--gold-1) 0%,
+			var(--gold-2) 17%,
+			var(--gold-3) 33%,
+			var(--gold-4) 50%,
+			var(--gold-5) 67%,
+			var(--gold-6) 83%,
+			var(--gold-1) 100%
+		),
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(45, 100%, 80%, 0.5) 10%,
+			hsla(0, 0%, 0%, 0.4) 80%
+		);
+	background-size: 200% 200%, 100% 100%;
+	background-position: var(--bg-x, 50%) var(--bg-y, 50%), center center;
+	background-blend-mode: soft-light;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc(0.4 + (var(--pointer-from-center, 0) * 0.2)))
+		contrast(2.5)
+		saturate(0.8);
+}
+
+.holo-secret.holo-active > .holo-shine {
+	opacity: 0.65;
+}
+
+.holo-secret > .holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: repeating-linear-gradient(
+		133deg,
+		var(--gold-1) 0%,
+		var(--gold-3) 20%,
+		var(--gold-5) 40%,
+		var(--gold-2) 60%,
+		var(--gold-4) 80%,
+		var(--gold-1) 100%
+	);
+	background-size: 300% 300%;
+	background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+	mix-blend-mode: hard-light;
+	opacity: 0.3;
+}
+
+.holo-secret > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(45, 80%, 90%, 0.9) 5%,
+		hsla(45, 60%, 60%, 0.3) 40%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(3.5);
+}
+
+.holo-secret > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(45, 100%, 90%, 0.8) 10%,
+		hsla(45, 80%, 70%, 0.5) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: hard-light;
+	filter: brightness(1.3) contrast(1.2);
+}
+
+.holo-secret.holo-active > .holo-glare {
+	opacity: 0.45;
+}
+
+/* ============================================================
+   10. HOLO-FULLART — Ultra/full art (Pokemon "v full art")
+   soft-light/hue/hard-light triple stack, max intensity
+   ============================================================ */
+
+.holo-fullart > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-2) 5%,
+			var(--sunpillar-3) 10%,
+			var(--sunpillar-4) 15%,
+			var(--sunpillar-5) 20%,
+			var(--sunpillar-6) 25%,
+			var(--sunpillar-1) 30%
+		),
+		repeating-linear-gradient(
+			133deg,
+			var(--sunpillar-6) 0%,
+			var(--sunpillar-5) 17%,
+			var(--sunpillar-4) 33%,
+			var(--sunpillar-3) 50%,
+			var(--sunpillar-2) 67%,
+			var(--sunpillar-1) 83%,
+			var(--sunpillar-6) 100%
+		),
+		radial-gradient(
+			farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+			hsla(0, 0%, 100%, 0.5) 10%,
+			hsla(0, 0%, 0%, 0.5) 80%
+		);
+	background-size: 100% 800%, 300% 400%, 100% 100%;
+	background-position:
+		0% calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		var(--bg-x, 50%) var(--bg-y, 50%),
+		center center;
+	background-blend-mode: soft-light, hue, hard-light;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.4) + 0.35))
+		contrast(3)
+		saturate(0.65);
+}
+
+.holo-fullart.holo-active > .holo-shine {
+	opacity: 0.75;
+}
+
+.holo-fullart > .holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: repeating-linear-gradient(
+		133deg,
+		var(--sunpillar-6) 0%,
+		var(--sunpillar-4) 20%,
+		var(--sunpillar-2) 40%,
+		var(--sunpillar-1) 60%,
+		var(--sunpillar-3) 80%,
+		var(--sunpillar-5) 100%
+	);
+	background-size: 250% 350%;
+	background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+	mix-blend-mode: hard-light;
+	opacity: 0.35;
+}
+
+.holo-fullart > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.5) contrast(4.5);
+}
+
+.holo-fullart > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.9) 5%,
+		hsla(0, 0%, 100%, 0.7) 15%,
+		hsla(0, 0%, 0%, 0.6) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.85) contrast(1.5);
+}
+
+.holo-fullart > .holo-glare::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(
+		circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(180, 80%, 90%, 0.25) 0%,
+		transparent 40%
+	);
+	mix-blend-mode: screen;
+}
+
+.holo-fullart.holo-active > .holo-glare {
+	opacity: 0.5;
+}
+
+/* ============================================================
+   Backwards-compat: rarity-* classes map to default variants
+   So existing code without variant class still works
+   ============================================================ */
+
+.rarity-rare:not([class*="holo-"]) > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			110deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-2) 17%,
+			var(--sunpillar-3) 33%,
+			var(--sunpillar-4) 50%,
+			var(--sunpillar-5) 67%,
+			var(--sunpillar-6) 83%,
+			var(--sunpillar-1) 100%
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0px, transparent 2px,
+			rgba(255, 255, 255, 0.04) 2px, rgba(255, 255, 255, 0.04) 4px
+		);
+	background-size: 400% 400%, 100% 4px;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		center center;
+	background-blend-mode: overlay;
+	mix-blend-mode: overlay;
+	filter: brightness(1.1) contrast(1.1) saturate(1.2);
+}
+
+.rarity-rare:not([class*="holo-"]).holo-active > .holo-shine {
+	opacity: 0.55;
+}
+
+.rarity-rare:not([class*="holo-"]) > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(3);
+}
+
+.rarity-rare:not([class*="holo-"]) > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.65) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.9) contrast(1.3);
+}
+
+.rarity-rare:not([class*="holo-"]).holo-active > .holo-glare {
+	opacity: 0.35;
+}
+
+.rarity-epic:not([class*="holo-"]) > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			110deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-2) 17%,
+			var(--sunpillar-3) 33%,
+			var(--sunpillar-4) 50%,
+			var(--sunpillar-5) 67%,
+			var(--sunpillar-6) 83%,
+			var(--sunpillar-1) 100%
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0px, transparent 2px,
+			rgba(255, 255, 255, 0.04) 2px, rgba(255, 255, 255, 0.04) 3px
+		);
+	background-size: 300% 600%, 100% 3px;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		center center;
+	background-blend-mode: overlay;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.4) + 0.5))
+		contrast(2.75)
+		saturate(0.65);
+}
+
+.rarity-epic:not([class*="holo-"]) > .holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: repeating-linear-gradient(
+		133deg,
+		var(--sunpillar-6) 0%,
+		var(--sunpillar-5) 17%,
+		var(--sunpillar-4) 33%,
+		var(--sunpillar-3) 50%,
+		var(--sunpillar-2) 67%,
+		var(--sunpillar-1) 83%,
+		var(--sunpillar-6) 100%
+	);
+	background-size: 300% 400%;
+	background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+	mix-blend-mode: hard-light;
+	opacity: 0.3;
+}
+
+.rarity-epic:not([class*="holo-"]) > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(4);
+}
+
+.rarity-epic:not([class*="holo-"]).holo-active > .holo-shine {
+	opacity: 0.6;
+}
+
+.rarity-epic:not([class*="holo-"]) > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.65) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.9) contrast(1.4);
+}
+
+.rarity-epic:not([class*="holo-"]).holo-active > .holo-glare {
+	opacity: 0.4;
+}
+
+.rarity-mythic:not([class*="holo-"]) > .holo-shine {
+	background-image:
+		repeating-linear-gradient(
+			110deg,
+			var(--sunpillar-1) 0%,
+			var(--sunpillar-2) 12%,
+			var(--sunpillar-3) 25%,
+			var(--sunpillar-4) 40%,
+			var(--sunpillar-5) 55%,
+			var(--sunpillar-6) 70%,
+			var(--sunpillar-1) 85%,
+			var(--sunpillar-3) 100%
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0px, transparent 1px,
+			rgba(255, 255, 255, 0.06) 1px, rgba(255, 255, 255, 0.06) 2px
+		);
+	background-size: 200% 800%, 100% 2px;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%),
+		center center;
+	background-blend-mode: overlay;
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.4) + 0.4))
+		contrast(2.75)
+		saturate(0.65);
+}
+
+.rarity-mythic:not([class*="holo-"]) > .holo-shine::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: repeating-linear-gradient(
+		133deg,
+		var(--sunpillar-6) 0%,
+		var(--sunpillar-4) 20%,
+		var(--sunpillar-2) 40%,
+		var(--sunpillar-1) 60%,
+		var(--sunpillar-3) 80%,
+		var(--sunpillar-5) 100%
+	);
+	background-size: 250% 350%;
+	background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+	mix-blend-mode: hard-light;
+	opacity: 0.35;
+}
+
+.rarity-mythic:not([class*="holo-"]) > .holo-shine::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background-image: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 90%, 0.8) 10%,
+		hsla(0, 0%, 60%, 0.3) 45%,
+		hsl(0, 0%, 0%) 90%
+	);
+	mix-blend-mode: luminosity;
+	filter: brightness(0.6) contrast(4);
+}
+
+.rarity-mythic:not([class*="holo-"]).holo-active > .holo-shine {
+	opacity: 0.7;
+}
+
+.rarity-mythic:not([class*="holo-"]) > .holo-glare {
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.8) 10%,
+		hsla(0, 0%, 100%, 0.65) 20%,
+		hsla(0, 0%, 0%, 0.5) 90%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.85) contrast(1.5);
+}
+
+.rarity-mythic:not([class*="holo-"]) > .holo-glare::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(
+		circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(180, 80%, 90%, 0.25) 0%,
+		transparent 40%
+	);
+	mix-blend-mode: screen;
+}
+
+.rarity-mythic:not([class*="holo-"]).holo-active > .holo-glare {
+	opacity: 0.5;
+}
+
+/* ============================================================
+   Element-Themed Variants — override sunpillar colors
+   Applied via .element-holo-{theme} on the card container
+   ============================================================ */
+
+.element-holo-fire {
+	--sunpillar-1: hsl(0, 100%, 65%);
+	--sunpillar-2: hsl(20, 100%, 60%);
+	--sunpillar-3: hsl(40, 100%, 65%);
+	--sunpillar-4: hsl(30, 100%, 55%);
+	--sunpillar-5: hsl(10, 90%, 50%);
+	--sunpillar-6: hsl(350, 100%, 60%);
+}
+
+.element-holo-ice {
+	--sunpillar-1: hsl(190, 100%, 75%);
+	--sunpillar-2: hsl(200, 100%, 80%);
+	--sunpillar-3: hsl(210, 90%, 85%);
+	--sunpillar-4: hsl(220, 100%, 75%);
+	--sunpillar-5: hsl(195, 100%, 70%);
+	--sunpillar-6: hsl(185, 90%, 80%);
+}
+
+.element-holo-electric {
+	--sunpillar-1: hsl(50, 100%, 65%);
+	--sunpillar-2: hsl(45, 100%, 70%);
+	--sunpillar-3: hsl(55, 100%, 75%);
+	--sunpillar-4: hsl(40, 100%, 60%);
+	--sunpillar-5: hsl(60, 90%, 65%);
+	--sunpillar-6: hsl(35, 100%, 55%);
+}
+
+.element-holo-shadow {
+	--sunpillar-1: hsl(270, 60%, 50%);
+	--sunpillar-2: hsl(280, 50%, 40%);
+	--sunpillar-3: hsl(260, 70%, 55%);
+	--sunpillar-4: hsl(290, 60%, 45%);
+	--sunpillar-5: hsl(250, 50%, 50%);
+	--sunpillar-6: hsl(300, 60%, 40%);
+}
+
+.element-holo-light {
+	--sunpillar-1: hsl(45, 100%, 80%);
+	--sunpillar-2: hsl(50, 100%, 85%);
+	--sunpillar-3: hsl(40, 100%, 90%);
+	--sunpillar-4: hsl(55, 90%, 80%);
+	--sunpillar-5: hsl(35, 100%, 75%);
+	--sunpillar-6: hsl(60, 80%, 85%);
+}
+
+.element-holo-water {
+	--sunpillar-1: hsl(200, 100%, 65%);
+	--sunpillar-2: hsl(210, 100%, 70%);
+	--sunpillar-3: hsl(195, 90%, 60%);
+	--sunpillar-4: hsl(220, 100%, 65%);
+	--sunpillar-5: hsl(190, 100%, 55%);
+	--sunpillar-6: hsl(205, 90%, 70%);
+}
+
+.element-holo-grass {
+	--sunpillar-1: hsl(120, 70%, 55%);
+	--sunpillar-2: hsl(130, 60%, 60%);
+	--sunpillar-3: hsl(100, 70%, 50%);
+	--sunpillar-4: hsl(140, 60%, 55%);
+	--sunpillar-5: hsl(110, 70%, 45%);
+	--sunpillar-6: hsl(150, 50%, 55%);
+}
+
+/* ============================================================
+   Stage 3 Evolved — always show holo at max intensity
+   ============================================================ */
+
+.stage3-evolved > .holo-shine {
+	opacity: 0.75 !important;
+}
+
+.stage3-evolved > .holo-glare {
+	opacity: 0.5 !important;
+}
+
+/* ============================================================
+   Reduced Motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+	.holo-shine,
+	.holo-glare {
+		display: none;
+	}
+}

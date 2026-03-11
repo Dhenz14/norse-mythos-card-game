@@ -249,7 +249,7 @@ const styles = `
    */
 
   .card-front {
-    --card-opacity: 0;
+    --card-opacity: 1;
     --pointer-x: 50%;
     --pointer-y: 50%;
     --pointer-from-center: 0;
@@ -260,6 +260,10 @@ const styles = `
   }
 
   /* --- Layer 1: SHINE — rainbow spectrum, color-dodge blend --- */
+  /* Ported from simeydotme/pokemon-cards-css:
+     - Multi-background: rainbow at 110deg + scanlines, blended via background-blend-mode
+     - Dynamic brightness from --pointer-from-center
+     - Luminosity ::after mask focuses rainbow near cursor */
   .portrait-holo-shine {
     position: absolute;
     inset: 0;
@@ -268,122 +272,89 @@ const styles = `
     border-radius: 4px;
     overflow: hidden;
 
-    /* Very low brightness so rainbow only tints brightest highlights;
-       high contrast kills midtones; low saturation prevents color wash.
-       Dark painted art needs much lower values than Pokemon's light backgrounds */
-    filter: brightness(0.5) contrast(3) saturate(0.4);
-    mix-blend-mode: color-dodge;
-
-    /* Rainbow sunpillar gradient — cursor-tracked position, NO scanlines */
     background-image:
       repeating-linear-gradient(
-        0deg,
-        hsl(2, 100%, 73%) calc(5% * 1),
-        hsl(53, 100%, 69%) calc(5% * 2),
-        hsl(93, 100%, 69%) calc(5% * 3),
-        hsl(176, 100%, 76%) calc(5% * 4),
-        hsl(228, 100%, 74%) calc(5% * 5),
-        hsl(283, 100%, 73%) calc(5% * 6),
-        hsl(2, 100%, 73%) calc(5% * 7)
+        110deg,
+        hsl(2, 100%, 73%) 0%,
+        hsl(53, 100%, 69%) 12%,
+        hsl(93, 100%, 69%) 25%,
+        hsl(176, 100%, 76%) 40%,
+        hsl(228, 100%, 74%) 55%,
+        hsl(283, 100%, 73%) 70%,
+        hsl(2, 100%, 73%) 85%,
+        hsl(93, 100%, 69%) 100%
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px, transparent 1px,
+        rgba(255, 255, 255, 0.06) 1px, rgba(255, 255, 255, 0.06) 2px
       );
 
-    background-size: 400% 400%;
+    background-size: 200% 800%, 100% 2px;
     background-position:
       calc(((50% - var(--bg-x)) * 2.6) + 50%)
-      calc(((50% - var(--bg-y)) * 3.5) + 50%);
+      calc(((50% - var(--bg-y)) * 3.5) + 50%),
+      center center;
+    background-blend-mode: overlay;
+    mix-blend-mode: color-dodge;
+    filter:
+      brightness(calc((var(--pointer-from-center) * 0.4) + 0.4))
+      contrast(2.75)
+      saturate(0.65);
 
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
-  /* Shine ::before — very subtle fine scanlines for texture */
+  /* Shine ::before — perpendicular bar pattern (hard-light) */
   .portrait-holo-shine::before {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: 4px;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent 0, transparent 2px,
-      rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px
+    background-image: repeating-linear-gradient(
+      133deg,
+      hsl(283, 100%, 73%) 0%,
+      hsl(176, 100%, 76%) 20%,
+      hsl(53, 100%, 69%) 40%,
+      hsl(2, 100%, 73%) 60%,
+      hsl(93, 100%, 69%) 80%,
+      hsl(228, 100%, 74%) 100%
     );
-    background-size: 100% 4px;
-    mix-blend-mode: overlay;
+    background-size: 250% 350%;
+    background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+    mix-blend-mode: hard-light;
+    opacity: 0.35;
   }
 
-  /* Shine ::after — luminosity mask (focus light near cursor) */
+  /* Shine ::after — luminosity vignette (bright near cursor, dark edges) */
   .portrait-holo-shine::after {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: 4px;
-
     background-image: radial-gradient(
       farthest-corner circle at var(--pointer-x) var(--pointer-y),
-      hsla(0, 0%, 90%, 0.8) 0%,
-      hsla(0, 0%, 78%, 0.1) 25%,
+      hsla(0, 0%, 90%, 0.8) 10%,
+      hsla(0, 0%, 60%, 0.3) 45%,
       hsl(0, 0%, 0%) 90%
     );
-    background-size: cover;
     mix-blend-mode: luminosity;
-    filter: brightness(0.5) contrast(5);
+    filter: brightness(0.6) contrast(4);
   }
 
-  /* Per-rarity shine opacity — art must remain clearly visible */
   .card-front.rarity-common .portrait-holo-shine { opacity: 0; }
   .card-front.rarity-rare .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.2);
+    opacity: calc(var(--card-opacity) * 0.5);
   }
   .card-front.rarity-epic .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.3);
+    opacity: calc(var(--card-opacity) * 0.6);
   }
   .card-front.rarity-mythic .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.4);
+    opacity: calc(var(--card-opacity) * 0.7);
   }
 
-  /* --- Layer 2: FOIL — texture overlay, soft-light blend --- */
-  .portrait-foil-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 10;
-    border-radius: 4px;
-    overflow: hidden;
-
-    background-size: 150% 150%;
-    background-position: var(--pointer-x, 50%) var(--pointer-y, 50%);
-
-    /* soft-light only affects midtones — preserves darks and lights */
-    mix-blend-mode: soft-light;
-    filter: brightness(1.2) contrast(1.2);
-
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .card-front.rarity-common .portrait-foil-overlay { background-image: none; }
-  .card-front.rarity-rare .portrait-foil-overlay {
-    background-image: url('${assetPath('/textures/epic_holographic2.png')}');
-  }
-  .card-front.rarity-epic .portrait-foil-overlay {
-    background-image: url('${assetPath('/textures/foil_epic.png')}');
-  }
-  .card-front.rarity-mythic .portrait-foil-overlay {
-    background-image: url('${assetPath('/textures/foil_mythic.png')}');
-  }
-
-  /* Foil opacity — very subtle texture shimmer */
-  .card-front.rarity-rare .portrait-foil-overlay {
-    opacity: calc(var(--card-opacity) * 0.12);
-  }
-  .card-front.rarity-epic .portrait-foil-overlay {
-    opacity: calc(var(--card-opacity) * 0.18);
-  }
-  .card-front.rarity-mythic .portrait-foil-overlay {
-    opacity: calc(var(--card-opacity) * 0.25);
-  }
-
-  /* --- Layer 3: GLARE — spotlight, overlay blend --- */
+  /* --- Layer 2: GLARE — cursor spotlight, overlay blend --- */
   .portrait-holo-glare {
     position: absolute;
     inset: 0;
@@ -392,8 +363,6 @@ const styles = `
     border-radius: 4px;
     overflow: hidden;
 
-    /* Pokemon-style radial: bright center, dark surround
-       Much tighter bright area than before (10%/20% not 15%/35%) */
     background-image: radial-gradient(
       farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
       hsla(0, 0%, 100%, 0.8) 10%,
@@ -402,38 +371,35 @@ const styles = `
     );
 
     mix-blend-mode: overlay;
-    filter: brightness(0.8) contrast(1.5);
+    filter: brightness(0.85) contrast(1.5);
 
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
-  /* Glare ::after — edge highlight ring */
+  /* Glare ::after — secondary screen-blend highlight for depth */
   .portrait-holo-glare::after {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: 4px;
-    background-image: radial-gradient(
-      farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
-      hsl(180, 100%, 95%) 5%,
-      hsla(0, 0%, 39%, 0.25) 55%,
-      hsla(0, 0%, 0%, 0.36) 110%
+    background: radial-gradient(
+      circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      hsla(180, 80%, 90%, 0.25) 0%,
+      transparent 40%
     );
-    mix-blend-mode: overlay;
-    filter: brightness(0.6) contrast(3);
+    mix-blend-mode: screen;
   }
 
-  /* Glare opacity — subtle spotlight, art stays visible */
   .card-front.rarity-common .portrait-holo-glare { opacity: 0; }
   .card-front.rarity-rare .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.25);
+    opacity: calc(var(--card-opacity) * 0.3);
   }
   .card-front.rarity-epic .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.35);
+    opacity: calc(var(--card-opacity) * 0.4);
   }
   .card-front.rarity-mythic .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.45);
+    opacity: calc(var(--card-opacity) * 0.5);
   }
 
   /* --- Layer 4: DEPTH SHADOW — moves opposite to cursor for embossed/raised feel --- */
@@ -1443,7 +1409,7 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 									'--pointer-from-center': Math.min(Math.sqrt(Math.pow((mousePercent.y - 50) / 50, 2) + Math.pow((mousePercent.x - 50) / 50, 2)), 1),
 									'--pointer-from-top': mousePercent.y / 100,
 									'--pointer-from-left': mousePercent.x / 100,
-									'--card-opacity': isHovering ? 1 : 0,
+									'--card-opacity': 1,
 									'--bg-x': `${37 + ((mousePercent.x - 50) / 50) * 13}%`,
 									'--bg-y': `${37 + ((mousePercent.y - 50) / 50) * 13}%`,
 								} as React.CSSProperties}
@@ -1460,7 +1426,6 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 										/>
 									)}
 
-									<div className="portrait-foil-overlay" />
 									<div className="portrait-holo-shine" />
 									<div className="portrait-holo-glare" />
 									<div

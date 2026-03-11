@@ -715,24 +715,34 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
             </g>
           </svg>
           
-          {/* Holographic foil overlay for art area — matches rarity foil */}
+          {/* Pokemon-151 style sunpillar holo overlay */}
           <div style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundImage: `url('${assetPath(
-              card.rarity.toLowerCase() === 'mythic' ? '/textures/foil_mythic.png' :
-              card.rarity.toLowerCase() === 'epic' ? '/textures/foil_epic.png' :
-              card.rarity.toLowerCase() === 'rare' ? '/textures/epic_holographic2.png' :
-              '/textures/foil.png'
-            )}')`,
-            backgroundSize: '200%',
-            backgroundPosition: `${50 + rotation.y * 1.2}% ${50 + rotation.x * 1.2}%`,
-            mixBlendMode: 'screen',
-            opacity: Math.min(0.45, 0.15 + (Math.abs(rotation.x) + Math.abs(rotation.y)) * 0.01),
-            filter: `hue-rotate(${rotation.y * 8}deg) saturate(1.5) brightness(1.3)`,
+            backgroundImage: `repeating-linear-gradient(
+              0deg,
+              hsl(2, 100%, 73%) 0%,
+              hsl(53, 100%, 69%) 17%,
+              hsl(93, 100%, 69%) 33%,
+              hsl(176, 100%, 76%) 50%,
+              hsl(228, 100%, 74%) 67%,
+              hsl(283, 100%, 73%) 83%,
+              hsl(2, 100%, 73%) 100%
+            )`,
+            backgroundSize: '300% 600%',
+            backgroundPosition: `${37 + (rotation.y / 50) * 13}% ${37 + (rotation.x / 50) * 13}%`,
+            mixBlendMode: card.rarity.toLowerCase() === 'rare' ? 'overlay' as const : 'color-dodge' as const,
+            opacity: Math.min(
+              card.rarity.toLowerCase() === 'mythic' ? 0.55 :
+              card.rarity.toLowerCase() === 'epic' ? 0.45 : 0.35,
+              0.1 + (Math.abs(rotation.x) + Math.abs(rotation.y)) * 0.008
+            ),
+            filter: card.rarity.toLowerCase() === 'rare'
+              ? 'brightness(1.25) contrast(3) saturate(0.75)'
+              : 'brightness(0.8) contrast(2.95) saturate(0.65)',
             zIndex: 42
           }} />
           
@@ -859,9 +869,8 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
             </div>
           </div>
         )}
-        {/* Foil texture overlay — renders for ALL rarities, different texture each */}
-        {/* Uses 'screen' blend to brighten and show texture on dark card backgrounds */}
-        {isHovering && (
+        {/* Pokemon-151 style sunpillar holo — whole card overlay */}
+        {isHovering && card.rarity.toLowerCase() !== 'common' && card.rarity.toLowerCase() !== 'basic' && (
           <>
             <div
               style={{
@@ -871,47 +880,26 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
                 right: 0,
                 bottom: 0,
                 borderRadius: '12px',
-                backgroundImage: `url('${assetPath(
-                  card.rarity.toLowerCase() === 'mythic' ? '/textures/foil_mythic.png' :
-                  card.rarity.toLowerCase() === 'epic' ? '/textures/foil_epic.png' :
-                  card.rarity.toLowerCase() === 'rare' ? '/textures/epic_holographic2.png' :
-                  '/textures/foil.png'
-                )}')`,
-                backgroundSize: '150% 150%',
-                backgroundPosition: `${50 + rotation.y * 1.5}% ${50 + rotation.x * 1.5}%`,
-                mixBlendMode: 'screen',
+                backgroundImage: `repeating-linear-gradient(
+                  0deg,
+                  hsl(2, 100%, 73%) 0%,
+                  hsl(53, 100%, 69%) 17%,
+                  hsl(93, 100%, 69%) 33%,
+                  hsl(176, 100%, 76%) 50%,
+                  hsl(228, 100%, 74%) 67%,
+                  hsl(283, 100%, 73%) 83%,
+                  hsl(2, 100%, 73%) 100%
+                )`,
+                backgroundSize: '300% 600%',
+                backgroundPosition: `${37 + (rotation.y / 50) * 13}% ${37 + (rotation.x / 50) * 13}%`,
+                mixBlendMode: card.rarity.toLowerCase() === 'rare' ? 'overlay' as const : 'color-dodge' as const,
                 opacity: card.rarity.toLowerCase() === 'mythic' ? 0.55 :
-                  card.rarity.toLowerCase() === 'epic' ? 0.45 :
-                  card.rarity.toLowerCase() === 'rare' ? 0.35 : 0.2,
+                  card.rarity.toLowerCase() === 'epic' ? 0.45 : 0.35,
                 pointerEvents: 'none',
                 zIndex: 10,
-                filter: `saturate(1.5) brightness(1.2)`,
-                transition: 'opacity 0.3s ease'
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: '12px',
-                backgroundImage: `url('${assetPath(
-                  card.rarity.toLowerCase() === 'mythic' ? '/textures/foil_mythic.png' :
-                  card.rarity.toLowerCase() === 'epic' ? '/textures/foil_epic.png' :
-                  card.rarity.toLowerCase() === 'rare' ? '/textures/epic_holographic2.png' :
-                  '/textures/foil.png'
-                )}')`,
-                backgroundSize: '150% 150%',
-                backgroundPosition: `${50 + rotation.y * 1.5}% ${50 + rotation.x * 1.5}%`,
-                mixBlendMode: 'color-dodge',
-                opacity: card.rarity.toLowerCase() === 'mythic' ? 0.3 :
-                  card.rarity.toLowerCase() === 'epic' ? 0.2 :
-                  card.rarity.toLowerCase() === 'rare' ? 0.15 : 0.06,
-                pointerEvents: 'none',
-                zIndex: 11,
-                filter: `hue-rotate(${rotation.y * 5}deg) saturate(2)`,
+                filter: card.rarity.toLowerCase() === 'rare'
+                  ? 'brightness(1.25) contrast(3) saturate(0.75)'
+                  : 'brightness(0.8) contrast(2.95) saturate(0.65)',
                 transition: 'opacity 0.3s ease'
               }}
             />

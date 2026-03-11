@@ -12,7 +12,9 @@ import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
 import { getCardArtPath } from '../utils/art/artMapping';
+import { useHoloTracking, getHoloVariant } from '../hooks/useHoloTracking';
 import './SimpleCard.css';
+import './styles/holoEffect.css';
 
 export interface SimpleCardData {
   id: number | string;
@@ -226,43 +228,15 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
   const { ref: artRef, inView: artInView } = useInView({ triggerOnce: true, rootMargin: '200px' });
 
-  const cardRef = useRef<HTMLDivElement>(null);
+  const holoVariant = useMemo(() => getHoloVariant(card.rarity, card.id, card.type, card.petStage), [card.rarity, card.id, card.type, card.petStage]);
 
-  const handleHoloMove = useCallback((e: React.MouseEvent) => {
-    const el = cardRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const px = ((e.clientX - rect.left) / rect.width) * 100;
-    const py = ((e.clientY - rect.top) / rect.height) * 100;
-    const cx = px - 50;
-    const cy = py - 50;
-    el.style.setProperty('--pointer-x', `${px}%`);
-    el.style.setProperty('--pointer-y', `${py}%`);
-    el.style.setProperty('--rotate-x', `${-(cx / 2.5)}deg`);
-    el.style.setProperty('--rotate-y', `${(cy / 2.5)}deg`);
-    el.style.setProperty('--shadow-x', `${cx / -4}px`);
-    el.style.setProperty('--shadow-y', `${cy / 3}px`);
-    el.style.setProperty('--bg-x', `${37 + (cx / 50) * 13}%`);
-    el.style.setProperty('--bg-y', `${37 + (cy / 50) * 13}%`);
-    if (!el.classList.contains('holo-tracking')) {
-      el.classList.add('holo-tracking');
-    }
-  }, []);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const holo = useHoloTracking(cardRef);
 
   const handleHoloLeave = useCallback((e: React.MouseEvent) => {
-    const el = cardRef.current;
-    if (!el) return;
-    el.classList.remove('holo-tracking');
-    el.style.setProperty('--rotate-x', '0deg');
-    el.style.setProperty('--rotate-y', '0deg');
-    el.style.setProperty('--pointer-x', '50%');
-    el.style.setProperty('--pointer-y', '50%');
-    el.style.setProperty('--shadow-x', '0px');
-    el.style.setProperty('--shadow-y', '0px');
-    el.style.setProperty('--bg-x', '50%');
-    el.style.setProperty('--bg-y', '50%');
+    holo.onMouseLeave(e);
     onMouseLeave?.(e);
-  }, [onMouseLeave]);
+  }, [holo, onMouseLeave]);
 
   const [badgeTooltip, setBadgeTooltip] = useState<BadgeTooltipState | null>(null);
 
@@ -375,14 +349,14 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
   return (
     <div
-      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${evolutionClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${cardTheme ? `element-holo-${cardTheme}` : ''} ${card.petStage === 'master' && card.element && !card.hasStage3Variants ? 'stage3-evolved' : ''} ${className}`}
+      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${evolutionClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${cardTheme ? `element-holo-${cardTheme}` : ''} ${holoVariant || ''} ${card.petStage === 'master' && card.element && !card.hasStage3Variants ? 'stage3-evolved' : ''} ${className}`}
       role="button"
       aria-label={`${card.name}, ${card.manaCost} mana ${card.type}${card.attack !== undefined ? `, ${card.attack} attack` : ''}${card.health !== undefined ? `, ${card.health} health` : ''}`}
       tabIndex={0}
       ref={cardRef}
       onClick={onClick}
       onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && onClick) { e.preventDefault(); onClick(); } }}
-      onMouseMove={handleHoloMove}
+      onMouseMove={holo.onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={handleHoloLeave}
       style={style}
@@ -408,6 +382,12 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
       {card.element && ELEMENT_BADGE[card.element] && (
         <div className="element-badge">
           {ELEMENT_BADGE[card.element].icon}
+        </div>
+      )}
+
+      {card.petStage && (
+        <div className={`pet-stage-badge stage-${card.petStage === 'basic' ? '1' : card.petStage === 'adept' ? '2' : '3'}`}>
+          {card.petStage === 'basic' ? 'I' : card.petStage === 'adept' ? 'II' : 'III'}
         </div>
       )}
 
@@ -451,25 +431,12 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
         </>
       )}
 
-      {card.rarity === 'epic' && (
-        <div className="foil-overlay epic-foil" />
+      {card.rarity !== 'common' && card.rarity !== 'basic' && (
+        <>
+          <div className="holo-shine" />
+          <div className="holo-glare" />
+        </>
       )}
-
-      {card.rarity === 'rare' && (
-        <div className="foil-overlay rare-foil" />
-      )}
-
-      {card.rarity === 'mythic' && (
-        <div className="foil-overlay mythic-foil" />
-      )}
-
-      {(card.rarity === 'common' || card.rarity === 'basic') && (
-        <div className="foil-overlay common-foil" />
-      )}
-
-      <div className="holo-foil" />
-      <div className="holo-shine" />
-      <div className="holo-glare" />
 
       {cardTheme && <div className={`card-particles theme-${cardTheme}`} />}
 

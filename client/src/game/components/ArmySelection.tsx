@@ -17,7 +17,9 @@ import { HeroPortrait } from './ui/HeroPortrait';
 import { HeroArtImage } from './ui/HeroArtImage';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { getHeroRarity, RARITY_COLORS } from '../utils/heroRarity';
+import { useHoloTracking, getHoloVariant } from '../hooks/useHoloTracking';
 import './styles/ArmySelectionNorse.css';
+import './styles/holoEffect.css';
 
 const ICE_RE = /\b(ymir|buri|niflheim|frost|ice|snow|skadi|jotun|glacier|blizzard|frozen|winter|cold)\b/i;
 const FIRE_RE = /\b(surtr|muspel|fire|flame|ember|inferno|burn|ash|volcanic|magma|lava|pyre)\b/i;
@@ -87,30 +89,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
     return getRegistryCardById(id);
   };
 
-  const handleHoloMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    const rect = el.getBoundingClientRect();
-    const px = ((e.clientX - rect.left) / rect.width) * 100;
-    const py = ((e.clientY - rect.top) / rect.height) * 100;
-    const cx = px - 50;
-    const cy = py - 50;
-    el.style.setProperty('--pointer-x', `${px}%`);
-    el.style.setProperty('--pointer-y', `${py}%`);
-    el.style.setProperty('--bg-x', `${37 + (cx / 50) * 13}%`);
-    el.style.setProperty('--bg-y', `${37 + (cy / 50) * 13}%`);
-    if (!el.classList.contains('holo-tracking')) {
-      el.classList.add('holo-tracking');
-    }
-  }, []);
-
-  const handleHoloLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    el.classList.remove('holo-tracking');
-    el.style.setProperty('--pointer-x', '50%');
-    el.style.setProperty('--pointer-y', '50%');
-    el.style.setProperty('--bg-x', '50%');
-    el.style.setProperty('--bg-y', '50%');
-  }, []);
+  const holo = useHoloTracking();
 
   const validDecks = useMemo(() => {
     return Array.isArray(savedDecks) ? savedDecks.filter(d => d && typeof d === 'object') : [];
@@ -339,9 +318,9 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                   setPopupHero(hero);
                   playSoundEffect('button_click');
                 }}
-                className={`norse-hero-card rarity-${rarity} ${isCurrentSelection ? 'selected' : ''}`}
-                onMouseMove={handleHoloMove}
-                onMouseLeave={handleHoloLeave}
+                className={`norse-hero-card rarity-${rarity} ${getHoloVariant(rarity, hero.id) || ''} ${isCurrentSelection ? 'selected' : ''}`}
+                onMouseMove={holo.onMouseMove}
+                onMouseLeave={holo.onMouseLeave}
               >
                 <div className="norse-hero-media">
                   <HeroArtImage
@@ -357,10 +336,12 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                       </div>
                     }
                   />
-                  <div className={`norse-foil-overlay rarity-${rarity}`} />
-                  <div className="hero-holo-foil" />
-                  <div className="hero-holo-shine" />
-                  <div className="hero-holo-glare" />
+                  {rarity !== 'common' && (
+                    <>
+                      <div className="holo-shine" />
+                      <div className="holo-glare" />
+                    </>
+                  )}
                   {(() => { const t = getHeroTheme(hero.name, hero.element); return t ? <div className={`card-particles theme-${t}`} /> : null; })()}
                   <div className="norse-hero-gradient-overlay" />
                   {rarity !== 'common' && (

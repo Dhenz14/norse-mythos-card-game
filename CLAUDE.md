@@ -1118,6 +1118,28 @@ vercel --prod                 # Deploy to Vercel
 - 48 art files listed in export JSON but not on disk (need re-generation)
 - Heroes still needing god art: Hera, Eros, Fujin, Shu, Brynhild, Tsukuyomi
 
+### Completed (Pokemon-151 Holographic Overhaul)
+
+- Replaced 3 inconsistent holo systems (~740 lines) with unified Pokemon-cards-151 style
+- New shared hook: `useHoloTracking.ts` — sets 9 CSS variables (`--pointer-x/y`, `--rotate-x/y`, `--bg-x/y`, `--pointer-from-center/left/top`) + toggles `.holo-active` class
+- New unified CSS: `holoEffect.css` — sunpillar rainbow gradients (6 HSL colors), 2 layers (`.holo-shine` + `.holo-glare`) down from 4-5
+- Rarity tiers: common/basic (none), rare (overlay blend, 0.35 opacity), epic (color-dodge + scanlines, 0.45), mythic (color-dodge + cross-hatch + gloss, 0.55)
+- 7 element variant classes override sunpillar colors (fire, ice, electric, shadow, light, water, grass)
+- Applied uniformly: SimpleCard, ArmySelection, HeroDeckBuilder (interactive holo for first time), HeroDetailPopup, SimpleHolographicCard
+- Deck builder CardDetailFlip popup: replaced broken texture PNGs + deleted keyframes with sunpillar gradient shimmer animation
+- Deleted: ~470 lines from SimpleCard.css, ~220 lines from ArmySelectionNorse.css, ~50 lines from deckbuilder.css
+- Pure CSS gradients (no texture HTTP requests), `contain: strict` + `will-change` for GPU compositing
+- `@media (prefers-reduced-motion: reduce)` hides all effects
+
+### Completed (Pet Stage Indicators)
+
+- Added roman numeral badges to all pet cards (top-right corner) in SimpleCard
+- Stage 1 (`petStage === 'basic'`): **I** — bronze metallic gradient
+- Stage 2 (`petStage === 'adept'`): **II** — platinum/silver metallic gradient
+- Stage 3 (`petStage === 'master'`): **III** — glossy gold gradient with glow
+- Badge auto-shifts down when element badge is present (no overlap)
+- Scales proportionally on small card sizes
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)

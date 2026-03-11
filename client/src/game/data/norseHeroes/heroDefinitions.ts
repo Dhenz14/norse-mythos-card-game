@@ -3068,6 +3068,62 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     }
   },
 
+  // ==================== 54b. PERSEUS ====================
+  'hero-perseus': {
+    id: 'hero-perseus',
+    name: 'Perseus',
+    title: 'The Gorgon Slayer',
+    element: 'light',
+    weakness: 'dark',
+    startingHealth: 100,
+    description: 'Son of Zeus and Danaë, slayer of Medusa. Armed with divine gifts — winged sandals, cap of invisibility, and the curved blade of Hermes.',
+    lore: 'Cast adrift as a babe, raised by fishermen, sent on a suicide quest by a tyrant king. He beheaded Medusa with Athena\'s mirrored shield and Hermes\' adamantine sickle. From her blood sprang Pegasus. He saved Andromeda from the sea-beast and turned Polydectes to stone. Apollodorus: "Perseus flew to the Ocean and found the Gorgons sleeping." (Library 2.4.2)',
+    hasSpells: true,
+    heroClass: 'hunter',
+    fixedCardIds: [],
+    heroPower: {
+      id: 'perseus-power',
+      name: 'Gorgon\'s Gaze',
+      description: 'Deal 2 damage to an enemy minion. If it dies, Freeze an adjacent minion.',
+      cost: 2,
+      targetType: 'enemy_minion',
+      effectType: 'damage_single',
+      value: 2
+    },
+    weaponUpgrade: {
+      id: 90125,
+      name: 'Harpe of Hermes',
+      heroId: 'hero-perseus',
+      manaCost: 5,
+      description: 'Deal 3 damage to all enemy minions. Gain Stealth until your next turn. Permanently upgrade your hero power.',
+      immediateEffect: {
+        type: 'aoe_damage',
+        value: 3,
+        description: 'Deal 3 damage to all enemy minions. Gain Stealth.'
+      },
+      upgradedPowerId: 'perseus-power-upgraded'
+    },
+    upgradedHeroPower: {
+      id: 'perseus-power-upgraded',
+      name: 'Gorgon\'s Gaze+',
+      description: 'Deal 3 damage to an enemy minion. If it dies, Freeze an adjacent minion.',
+      cost: 2,
+      targetType: 'enemy_minion',
+      effectType: 'damage_single',
+      value: 3,
+      isUpgraded: true,
+      baseHeroPowerId: 'perseus-power'
+    },
+    passive: {
+      id: 'perseus-passive',
+      name: 'Aegis Shield',
+      description: 'After you destroy an enemy minion, gain +1 Attack this turn.',
+      trigger: 'on_enemy_minion_death',
+      effectType: 'buff_hero_attack',
+      value: 1
+    }
+  },
+
   // ==================== 55. RHEA ====================
   'hero-rhea': {
     id: 'hero-rhea',

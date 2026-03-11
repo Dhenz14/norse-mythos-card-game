@@ -388,6 +388,15 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       norseHeroId: 'hero-hephaestus',
     },
     {
+      id: 'hero-heracles',
+      name: 'Heracles',
+      heroClass: 'warrior',
+      description: 'The Greatest Hero: Gain armor from slaying enemies, unstoppable strength.',
+      fixedCardIds: [],
+      element: 'fire',
+      norseHeroId: 'hero-heracles',
+    },
+    {
       id: 'hero-baldur',
       name: 'Baldur',
       heroClass: 'paladin',
@@ -836,6 +845,15 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'ice',
       norseHeroId: 'hero-ullr'
+    },
+    {
+      id: 'hero-perseus',
+      name: 'Perseus',
+      heroClass: 'hunter',
+      description: 'The Gorgon Slayer: Precise strikes that freeze survivors in fear.',
+      fixedCardIds: [],
+      element: 'light',
+      norseHeroId: 'hero-perseus',
     },
     // ===== JAPANESE (SHINTO) HEROES =====
     {

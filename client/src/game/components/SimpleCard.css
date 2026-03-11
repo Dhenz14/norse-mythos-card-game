@@ -68,7 +68,7 @@
 }
 
 /* During active mouse tracking — fast transform response */
-.simple-card.holo-tracking {
+.simple-card.holo-active {
   transition: transform 0.05s ease-out, box-shadow 0.2s ease-out;
 }
 
@@ -929,481 +929,8 @@
 }
 
 /* ==========================================================================
-   FOIL OVERLAYS - Activated on rare+ cards on hover
+   HOLO EFFECTS — see styles/holoEffect.css (Pokemon-151 style)
    ========================================================================== */
-
-.foil-overlay {
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  pointer-events: none;
-  z-index: 5;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.foil-overlay.epic-foil {
-  background: linear-gradient(
-    135deg,
-    transparent 0%,
-    rgba(88, 28, 135, 0.08) 15%,
-    rgba(124, 58, 237, 0.15) 30%,
-    rgba(192, 132, 252, 0.22) 50%,
-    rgba(124, 58, 237, 0.15) 70%,
-    rgba(88, 28, 135, 0.08) 85%,
-    transparent 100%
-  );
-  background-size: 300% 300%;
-  opacity: 0.3;
-  animation: epic-sweep 4s ease-in-out infinite;
-}
-
-.foil-overlay.rare-foil {
-  background: linear-gradient(
-    105deg,
-    transparent 0%,
-    transparent 40%,
-    rgba(255, 255, 255, 0.12) 46%,
-    rgba(147, 197, 253, 0.22) 50%,
-    rgba(255, 255, 255, 0.12) 54%,
-    transparent 60%,
-    transparent 100%
-  );
-  background-size: 300% 100%;
-  opacity: 0.5;
-  animation: rare-glint 5s ease-in-out infinite;
-}
-
-.foil-overlay.common-foil {
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(156, 163, 175, 0.06) 70%, rgba(120, 130, 145, 0.1) 100%);
-  opacity: 0.3;
-  animation: common-breathe 6s ease-in-out infinite;
-}
-
-.foil-overlay.mythic-foil {
-  background: linear-gradient(135deg,
-    rgba(236,72,153,0.08) 0%,
-    rgba(168,85,247,0.10) 25%,
-    rgba(59,130,246,0.10) 50%,
-    rgba(34,197,94,0.08) 75%,
-    rgba(245,158,11,0.08) 100%);
-}
-
-.simple-card:hover .foil-overlay.epic-foil { opacity: 0.55; }
-.simple-card:hover .foil-overlay.rare-foil { opacity: 0.8; }
-.simple-card:hover .foil-overlay.mythic-foil { opacity: 1; }
-.simple-card:hover .foil-overlay.common-foil { opacity: 0.5; }
-
-/* ==========================================================================
-   HOLOGRAPHIC INTERACTIVE EFFECT - Mouse-tracked rainbow shine + glare
-   Adapted from pokemon-cards-css (simeydotme). Uses CSS custom properties
-   set by onMouseMove JS for real-time cursor tracking.
-   ========================================================================== */
-
-/* Foil texture layer — real holographic texture images per rarity tier */
-.holo-foil {
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  pointer-events: none;
-  z-index: 5;
-  opacity: 0;
-  overflow: hidden;
-  background-size: 150% 150%;
-  background-position: var(--pointer-x, 50%) var(--pointer-y, 50%);
-  mix-blend-mode: screen;
-  filter: brightness(1.1) saturate(1.4);
-  transition: opacity 0.4s ease;
-}
-
-.simple-card.rarity-rare .holo-foil {
-  background-image: url('/textures/epic_holographic2.png');
-}
-.simple-card.rarity-epic .holo-foil {
-  background-image: url('/textures/foil_epic.png');
-}
-.simple-card.rarity-mythic .holo-foil {
-  background-image: url('/textures/foil_mythic.png');
-}
-
-.simple-card.rarity-rare:hover .holo-foil { opacity: 0.45; }
-.simple-card.rarity-epic:hover .holo-foil { opacity: 0.55; }
-.simple-card.rarity-mythic:hover .holo-foil { opacity: 0.7; }
-
-/* Shine layer — rainbow spectrum with scanlines, follows cursor */
-.holo-shine {
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  pointer-events: none;
-  z-index: 6;
-  opacity: 0;
-  overflow: hidden;
-  mix-blend-mode: color-dodge;
-  filter: brightness(0.8) contrast(2.75) saturate(0.75);
-  background:
-    repeating-linear-gradient(
-      0deg,
-      rgb(255, 119, 115) calc(5% * 1),
-      rgba(255, 237, 95, 1) calc(5% * 2),
-      rgba(168, 255, 95, 1) calc(5% * 3),
-      rgba(131, 255, 247, 1) calc(5% * 4),
-      rgba(120, 148, 255, 1) calc(5% * 5),
-      rgb(216, 117, 255) calc(5% * 6),
-      rgb(255, 119, 115) calc(5% * 7)
-    );
-  background-size: 200% 700%;
-  background-position: var(--pointer-x) var(--pointer-y);
-  transition: opacity 0.4s ease;
-}
-
-/* Scanline texture — fine horizontal lines like real holo foil */
-.holo-shine::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0,
-      transparent 1px,
-      rgba(255, 255, 255, 0.06) 1px,
-      rgba(255, 255, 255, 0.06) 2px
-    );
-  background-size: 100% 3px;
-  mix-blend-mode: overlay;
-}
-
-/* Secondary diagonal shine — adds depth and "sun pillar" feel */
-.holo-shine::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      133deg,
-      rgb(216, 117, 255) calc(5% * 1),
-      rgb(120, 148, 255) calc(5% * 2),
-      rgba(131, 255, 247, 1) calc(5% * 3),
-      rgba(255, 237, 95, 1) calc(5% * 4),
-      rgb(255, 119, 115) calc(5% * 5),
-      rgba(168, 255, 95, 1) calc(5% * 6),
-      rgb(216, 117, 255) calc(5% * 7)
-    );
-  background-size: 300% 400%;
-  background-position: var(--bg-x, 50%) var(--bg-y, 50%);
-  mix-blend-mode: hard-light;
-  opacity: 0.4;
-}
-
-/* Glare layer — bright light spot + edge highlight */
-.holo-glare {
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  pointer-events: none;
-  z-index: 7;
-  opacity: 0;
-  overflow: hidden;
-  mix-blend-mode: overlay;
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(0, 0%, 100%, 0.9) 5%,
-    hsla(0, 0%, 100%, 0.7) 15%,
-    hsla(0, 0%, 100%, 0.3) 35%,
-    hsla(0, 0%, 0%, 0.5) 90%
-  );
-  filter: brightness(0.95) contrast(1.5);
-  transition: opacity 0.4s ease;
-}
-
-/* Edge sparkle — bright rim on lit side */
-.holo-glare::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 11px;
-  background: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(0, 0%, 100%, 0.5) 0%,
-    transparent 50%
-  );
-  mix-blend-mode: screen;
-  opacity: 0.6;
-}
-
-/* Rarity-scaled holographic intensity */
-.simple-card.rarity-common:hover .holo-shine { opacity: 0.12; }
-.simple-card.rarity-common:hover .holo-glare { opacity: 0.2; }
-
-.simple-card.rarity-rare:hover .holo-shine { opacity: 0.5; }
-.simple-card.rarity-rare:hover .holo-glare { opacity: 0.4; }
-
-.simple-card.rarity-epic:hover .holo-shine { opacity: 0.65; }
-.simple-card.rarity-epic:hover .holo-glare { opacity: 0.5; }
-
-.simple-card.rarity-mythic:hover .holo-shine { opacity: 0.85; }
-.simple-card.rarity-mythic:hover .holo-glare { opacity: 0.6; }
-
-/* ==========================================================================
-   ELEMENT-THEMED HOLOGRAPHIC EFFECTS
-   Stage 3 evolved pets get element-specific holo colors instead of rainbow.
-   Each element replaces the shine gradient with its own palette while keeping
-   the same scanline/glare/foil structure. Stage 3 evolved pets always get
-   max holo intensity regardless of rarity.
-   ========================================================================== */
-
-/* --- Stage 3 evolved: always max holo intensity --- */
-.simple-card.stage3-evolved:hover .holo-shine { opacity: 0.9 !important; }
-.simple-card.stage3-evolved:hover .holo-glare { opacity: 0.65 !important; }
-.simple-card.stage3-evolved:hover .holo-foil { opacity: 0.75 !important; }
-
-/* --- Fire: ember orange / crimson / gold --- */
-.simple-card.element-holo-fire .holo-shine {
-  background:
-    repeating-linear-gradient(0deg,
-      #ff6b35 calc(5% * 1),
-      #ff4500 calc(5% * 2),
-      #ffa500 calc(5% * 3),
-      #ff8c00 calc(5% * 4),
-      #dc143c calc(5% * 5),
-      #ffd700 calc(5% * 6),
-      #ff6b35 calc(5% * 7)
-    );
-  background-size: 200% 700%;
-  background-position: var(--pointer-x) var(--pointer-y);
-  filter: brightness(0.8) contrast(2.5) saturate(1.2);
-}
-.simple-card.element-holo-fire .holo-glare {
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(20, 100%, 70%, 0.9) 5%,
-    hsla(15, 100%, 55%, 0.6) 15%,
-    hsla(10, 80%, 40%, 0.25) 35%,
-    hsla(0, 0%, 0%, 0.5) 90%
-  );
-}
-.simple-card.element-holo-fire .holo-shine::after {
-  background:
-    repeating-linear-gradient(133deg,
-      #ffd700 calc(5% * 1),
-      #ff4500 calc(5% * 2),
-      #ff6b35 calc(5% * 3),
-      #dc143c calc(5% * 4),
-      #ffa500 calc(5% * 5),
-      #ff8c00 calc(5% * 6),
-      #ffd700 calc(5% * 7)
-    );
-  background-size: 300% 400%;
-  background-position: var(--bg-x, 50%) var(--bg-y, 50%);
-}
-
-/* --- Water / Ice: cyan / blue / white frost --- */
-.simple-card.element-holo-water .holo-shine,
-.simple-card.element-holo-ice .holo-shine {
-  background:
-    repeating-linear-gradient(0deg,
-      #4fc3f7 calc(5% * 1),
-      #00bcd4 calc(5% * 2),
-      #e0f7fa calc(5% * 3),
-      #0288d1 calc(5% * 4),
-      #b3e5fc calc(5% * 5),
-      #00acc1 calc(5% * 6),
-      #4fc3f7 calc(5% * 7)
-    );
-  background-size: 200% 700%;
-  background-position: var(--pointer-x) var(--pointer-y);
-  filter: brightness(0.85) contrast(2.5) saturate(0.9);
-}
-.simple-card.element-holo-water .holo-glare,
-.simple-card.element-holo-ice .holo-glare {
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(195, 100%, 85%, 0.9) 5%,
-    hsla(195, 80%, 65%, 0.6) 15%,
-    hsla(200, 60%, 40%, 0.25) 35%,
-    hsla(0, 0%, 0%, 0.5) 90%
-  );
-}
-.simple-card.element-holo-water .holo-shine::after,
-.simple-card.element-holo-ice .holo-shine::after {
-  background:
-    repeating-linear-gradient(133deg,
-      #b3e5fc calc(5% * 1),
-      #00bcd4 calc(5% * 2),
-      #e0f7fa calc(5% * 3),
-      #0288d1 calc(5% * 4),
-      #4fc3f7 calc(5% * 5),
-      #00acc1 calc(5% * 6),
-      #b3e5fc calc(5% * 7)
-    );
-  background-size: 300% 400%;
-  background-position: var(--bg-x, 50%) var(--bg-y, 50%);
-}
-
-/* --- Grass: emerald / lime / gold-green --- */
-.simple-card.element-holo-grass .holo-shine {
-  background:
-    repeating-linear-gradient(0deg,
-      #22c55e calc(5% * 1),
-      #16a34a calc(5% * 2),
-      #a3e635 calc(5% * 3),
-      #059669 calc(5% * 4),
-      #d4ed72 calc(5% * 5),
-      #10b981 calc(5% * 6),
-      #22c55e calc(5% * 7)
-    );
-  background-size: 200% 700%;
-  background-position: var(--pointer-x) var(--pointer-y);
-  filter: brightness(0.8) contrast(2.5) saturate(1.1);
-}
-.simple-card.element-holo-grass .holo-glare {
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(140, 80%, 70%, 0.9) 5%,
-    hsla(145, 70%, 50%, 0.6) 15%,
-    hsla(150, 50%, 35%, 0.25) 35%,
-    hsla(0, 0%, 0%, 0.5) 90%
-  );
-}
-.simple-card.element-holo-grass .holo-shine::after {
-  background:
-    repeating-linear-gradient(133deg,
-      #d4ed72 calc(5% * 1),
-      #16a34a calc(5% * 2),
-      #22c55e calc(5% * 3),
-      #a3e635 calc(5% * 4),
-      #059669 calc(5% * 5),
-      #10b981 calc(5% * 6),
-      #d4ed72 calc(5% * 7)
-    );
-  background-size: 300% 400%;
-  background-position: var(--bg-x, 50%) var(--bg-y, 50%);
-}
-
-/* --- Electric: yellow / purple / white crackling --- */
-.simple-card.element-holo-electric .holo-shine {
-  background:
-    repeating-linear-gradient(0deg,
-      #ffd700 calc(5% * 1),
-      #7c3aed calc(5% * 2),
-      #fafafa calc(5% * 3),
-      #eab308 calc(5% * 4),
-      #a78bfa calc(5% * 5),
-      #facc15 calc(5% * 6),
-      #ffd700 calc(5% * 7)
-    );
-  background-size: 200% 700%;
-  background-position: var(--pointer-x) var(--pointer-y);
-  filter: brightness(0.85) contrast(3) saturate(0.9);
-}
-.simple-card.element-holo-electric .holo-glare {
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(50, 100%, 80%, 0.95) 5%,
-    hsla(55, 100%, 60%, 0.65) 15%,
-    hsla(270, 60%, 55%, 0.25) 35%,
-    hsla(0, 0%, 0%, 0.5) 90%
-  );
-}
-.simple-card.element-holo-electric .holo-shine::after {
-  background:
-    repeating-linear-gradient(133deg,
-      #a78bfa calc(5% * 1),
-      #ffd700 calc(5% * 2),
-      #fafafa calc(5% * 3),
-      #eab308 calc(5% * 4),
-      #7c3aed calc(5% * 5),
-      #facc15 calc(5% * 6),
-      #a78bfa calc(5% * 7)
-    );
-  background-size: 300% 400%;
-  background-position: var(--bg-x, 50%) var(--bg-y, 50%);
-}
-
-/* --- Light: white / gold / pale blue radiance --- */
-.simple-card.element-holo-light .holo-shine {
-  background:
-    repeating-linear-gradient(0deg,
-      #fafafa calc(5% * 1),
-      #ffd700 calc(5% * 2),
-      #bfdbfe calc(5% * 3),
-      #fef08a calc(5% * 4),
-      #fafafa calc(5% * 5),
-      #fde68a calc(5% * 6),
-      #fafafa calc(5% * 7)
-    );
-  background-size: 200% 700%;
-  background-position: var(--pointer-x) var(--pointer-y);
-  filter: brightness(1) contrast(2) saturate(0.6);
-}
-.simple-card.element-holo-light .holo-glare {
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(45, 100%, 90%, 0.95) 5%,
-    hsla(45, 100%, 75%, 0.7) 15%,
-    hsla(45, 50%, 50%, 0.3) 35%,
-    hsla(0, 0%, 0%, 0.4) 90%
-  );
-}
-.simple-card.element-holo-light .holo-shine::after {
-  background:
-    repeating-linear-gradient(133deg,
-      #fde68a calc(5% * 1),
-      #fafafa calc(5% * 2),
-      #ffd700 calc(5% * 3),
-      #bfdbfe calc(5% * 4),
-      #fef08a calc(5% * 5),
-      #fafafa calc(5% * 6),
-      #fde68a calc(5% * 7)
-    );
-  background-size: 300% 400%;
-  background-position: var(--bg-x, 50%) var(--bg-y, 50%);
-}
-
-/* --- Shadow / Dark: purple / black / deep red --- */
-.simple-card.element-holo-shadow .holo-shine {
-  background:
-    repeating-linear-gradient(0deg,
-      #9333ea calc(5% * 1),
-      #1a1a2e calc(5% * 2),
-      #dc2626 calc(5% * 3),
-      #7c3aed calc(5% * 4),
-      #0f0f1a calc(5% * 5),
-      #a855f7 calc(5% * 6),
-      #9333ea calc(5% * 7)
-    );
-  background-size: 200% 700%;
-  background-position: var(--pointer-x) var(--pointer-y);
-  filter: brightness(0.7) contrast(3) saturate(1.3);
-}
-.simple-card.element-holo-shadow .holo-glare {
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(275, 80%, 65%, 0.8) 5%,
-    hsla(280, 70%, 45%, 0.5) 15%,
-    hsla(280, 50%, 25%, 0.2) 35%,
-    hsla(0, 0%, 0%, 0.6) 90%
-  );
-}
-.simple-card.element-holo-shadow .holo-shine::after {
-  background:
-    repeating-linear-gradient(133deg,
-      #a855f7 calc(5% * 1),
-      #0f0f1a calc(5% * 2),
-      #dc2626 calc(5% * 3),
-      #9333ea calc(5% * 4),
-      #1a1a2e calc(5% * 5),
-      #7c3aed calc(5% * 6),
-      #a855f7 calc(5% * 7)
-    );
-  background-size: 300% 400%;
-  background-position: var(--bg-x, 50%) var(--bg-y, 50%);
-}
-
-/* --- Neutral: prismatic rainbow (same as default, but boosted for Stage 3) --- */
-/* No override needed — default rainbow holo already applies. Stage3-evolved class
-   handles boosted intensity via the !important rules above. */
 
 /* ==========================================================================
    THEMED CARD PARTICLES — element-specific ambient effects on hover
@@ -1826,12 +1353,6 @@
       0 0 0 2px rgba(72,187,120,0.6);
   }
 
-  .simple-card:hover .foil-overlay.epic-foil,
-  .simple-card:hover .foil-overlay.rare-foil {
-    opacity: 0;
-  }
-
-  .simple-card:hover .holo-foil,
   .simple-card:hover .holo-shine,
   .simple-card:hover .holo-glare {
     opacity: 0 !important;
@@ -1858,11 +1379,6 @@
       0 0 0 3px rgba(72,187,120,0.8);
   }
 
-  .foil-overlay {
-    transition: none;
-  }
-
-  .holo-foil,
   .holo-shine,
   .holo-glare {
     display: none;
@@ -1961,6 +1477,63 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ==========================================================================
+   PET STAGE BADGE — Roman numeral indicator (top-right)
+   Stage 1 = bronze, Stage 2 = platinum, Stage 3 = glossy gold
+   ========================================================================== */
+
+.pet-stage-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 6;
+  width: 1.4em;
+  height: 1.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.65em;
+  line-height: 1;
+  border-radius: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  letter-spacing: -0.5px;
+}
+
+.simple-card .element-badge + .pet-stage-badge,
+.simple-card .element-badge ~ .pet-stage-badge {
+  top: calc(2px + 1.4em);
+}
+
+.pet-stage-badge.stage-1 {
+  background: linear-gradient(160deg, #cd7f32 0%, #a0522d 40%, #cd9b5a 70%, #8b6914 100%);
+  color: #fff8e7;
+  border: 1px solid rgba(205, 127, 50, 0.6);
+}
+
+.pet-stage-badge.stage-2 {
+  background: linear-gradient(160deg, #e8e8ee 0%, #b0b0c0 30%, #d8d8e8 60%, #a0a0b8 100%);
+  color: #1a1a2e;
+  border: 1px solid rgba(200, 200, 220, 0.7);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.pet-stage-badge.stage-3 {
+  background: linear-gradient(160deg, #ffd700 0%, #ffaa00 25%, #ffe066 50%, #ffcc00 75%, #ffd700 100%);
+  color: #1a0f00;
+  border: 1px solid rgba(255, 215, 0, 0.8);
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.6);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6), 0 0 8px rgba(255, 215, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+.simple-card.small .pet-stage-badge {
+  width: 1.2em;
+  height: 1.2em;
+  font-size: 0.55em;
 }
 
 /* ==========================================================================
@@ -2094,11 +1667,6 @@
   animation: golden-flow 4s ease-in-out infinite;
 }
 
-/* Mythic foil overlay gets hue-shifting animation */
-.simple-card.rarity-mythic .foil-overlay.mythic-foil {
-  animation: golden-hue-shift 6s ease-in-out infinite;
-}
-
 /* Mythic hover — 3D tilt handled by mouse tracking */
 
 /* Epic purple surface — flowing amethyst over card art */
@@ -2166,8 +1734,5 @@
   .simple-card.rarity-epic .card-art-container img,
   .simple-card.rarity-epic .card-art-container .card-art {
     filter: none;
-  }
-  .simple-card.rarity-mythic .foil-overlay.mythic-foil {
-    animation: none;
   }
 }

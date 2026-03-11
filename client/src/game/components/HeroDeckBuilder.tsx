@@ -17,8 +17,10 @@ import type { CardGroup } from './deckbuilder';
 import { getCardArtPath } from '../utils/art/artMapping';
 import { CardData } from '../types';
 import { getSuperMinionForHero, getAllSuperMinionsForHero, isSuperMinion } from '../data/sets/superMinions/heroSuperMinions';
+import { useHoloTracking, getHoloVariant } from '../hooks/useHoloTracking';
 import './deckbuilder/tokens.css';
 import './deckbuilder/deckbuilder.css';
+import './styles/holoEffect.css';
 
 type RarityFilter = 'all' | 'common' | 'rare' | 'epic' | 'mythic';
 
@@ -73,6 +75,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 	const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 	const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const classColor = getClassColor(heroClass);
+	const holo = useHoloTracking();
 
 	const filteredGroupedCards = useMemo(() => {
 		if (rarityFilter === 'all') return db.groupedCards;
@@ -261,8 +264,9 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 														db.setSelectedCard(card);
 													}}
 													onMouseEnter={e => handleCardMouseEnter(card, e)}
-													onMouseLeave={handleCardMouseLeave}
-													className={`db-card rarity-${rarityKey} ${isMaxed ? 'not-playable' : ''} ${isLinkedSuper ? 'super-minion-linked' : ''}`}
+													onMouseMove={holo.onMouseMove}
+													onMouseLeave={e => { holo.onMouseLeave(e); handleCardMouseLeave(); }}
+													className={`db-card rarity-${rarityKey} ${getHoloVariant(rarityKey, card.id, card.type, (card as any).petStage) || ''} ${isMaxed ? 'not-playable' : ''} ${isLinkedSuper ? 'super-minion-linked' : ''}`}
 													title={canAdd ? 'Click to add \u2022 Right-click for details' : 'Right-click for details'}
 												>
 													{/* Art Section */}
@@ -278,7 +282,12 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 															</div>
 														)}
 
-														<div className={`db-foil-overlay rarity-${rarityKey}`} />
+														{rarityKey !== 'common' && rarityKey !== 'basic' && (
+														<>
+															<div className="holo-shine" />
+															<div className="holo-glare" />
+														</>
+													)}
 
 														{/* Mana Badge */}
 														<div className="db-mana-badge">{card.manaCost ?? 0}</div>

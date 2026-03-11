@@ -149,6 +149,8 @@ export const HERO_ID_TO_CONFIG_KEY: Record<string, string> = {
   'hero-nanna': 'priest-anduin',
   'hero-volva': 'shaman-thrall',
   'hero-gudrun': 'hunter-rexxar',
+  'hero-heracles': 'warrior-garrosh',
+  'hero-perseus': 'hunter-rexxar',
   'hero-starkad': 'berserker-illidan',
   'hero-frigg': 'priest-frigg',
   'hero-bestla': 'shaman-bestla',
@@ -253,6 +255,7 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-ullr': 'hunter',
   'hero-apollo': 'hunter',
   'hero-artemis': 'hunter',
+  'hero-perseus': 'hunter',
   
   // KNIGHT - Berserker (2 heroes)
   'hero-myrka': 'berserker',
