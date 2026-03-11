@@ -729,9 +729,10 @@ export function useP2PSync() {
 	useEffect(() => {
 		if (connectionState !== 'connected' || !isHost) return;
 		let cancelled = false;
+		let timerId: ReturnType<typeof setTimeout> | null = null;
 		const scheduleCheck = () => {
 			if (cancelled) return;
-			setTimeout(async () => {
+			timerId = setTimeout(async () => {
 				if (cancelled) return;
 				const gs = useGameStore.getState().gameState;
 				if (gs && gs.gamePhase !== 'game_over') {
@@ -744,7 +745,10 @@ export function useP2PSync() {
 			}, 2000);
 		};
 		scheduleCheck();
-		return () => { cancelled = true; };
+		return () => {
+			cancelled = true;
+			if (timerId) clearTimeout(timerId);
+		};
 	}, [connectionState, isHost, send]);
 
 	// Send our deck's NFT IDs to the opponent for ownership verification
