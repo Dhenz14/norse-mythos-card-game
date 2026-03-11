@@ -1090,6 +1090,34 @@ vercel --prod                 # Deploy to Vercel
 - Removed all CDN references — art is 100% local, bundled with game (no external dependencies)
 - TypeScript: 0 errors
 
+### Completed (Procedural Pet Sound Effects)
+
+- 38 unique procedural audio signatures for pet families using Web Audio API
+- Each family has biologically-appropriate synthesis (wolves howl, snakes hiss, bears roar, eagles screech, etc.)
+- `proceduralAudio.playPetSound(family)` public method + `petSoundHandlers` lookup table + `petGenericBeast()` fallback
+- AudioSubscriber plays pet family sound on CARD_PLAYED (if card has petFamily) and PET_EVOLVED events
+- Zero sound files — all synthesized in real-time via oscillators, noise buffers, filters, LFOs, waveshapers
+
+### Completed (Hero Art Override Priority Fix)
+
+- Fixed 20 heroes showing old art instead of new AI art (Zeus, Hades, Athena, etc.)
+- Root cause: `ChessPieceConfig.ts` had hardcoded `portrait: '/portraits/heroes/X.png'` that bypassed `HERO_ART_OVERRIDE`
+- Removed 20 hero portrait fields from ChessPieceConfig (heroes now resolve through override system)
+- Fixed `useHeroArt` hook priority: delegates to `resolveHeroPortrait()` (override > explicit portrait)
+- Kings are OFF LIMITS — all 14 king portraits remain hardcoded in ChessPieceConfig + KingPassivePopup
+- Emptied `KING_TO_CHARACTER` map so kings bypass AI art override system entirely
+
+### Completed (Art Audit & Cleanup)
+
+- Removed Artwork (406) tab from HeroDeckBuilder (was showing unused art stockpile)
+- Fixed 7 wrong hero art assignments: Hera/Eros/Hestia had weapon art, Fujin/Shu shared wrong character, Brynhild had pet art, Tsukuyomi had female art
+- Swapped Mani → Borr's art (masculine), gave Mani's old art → Hestia
+- Consolidated old-portraits/ (17 files) + portraits/heroes/ (20 files) into `art/unused/`
+- 82 hero art overrides verified clean (no weapons, no pets, no missing files)
+- Art stockpile: 804 unused .webp files + 37 unused PNGs in `art/unused/`
+- 48 art files listed in export JSON but not on disk (need re-generation)
+- Heroes still needing god art: Hera, Eros, Fujin, Shu, Brynhild, Tsukuyomi
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)
