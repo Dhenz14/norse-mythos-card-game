@@ -155,6 +155,8 @@ export const HERO_ID_TO_CONFIG_KEY: Record<string, string> = {
   'hero-frigg': 'priest-frigg',
   'hero-bestla': 'shaman-bestla',
   'hero-hermod': 'rogue-hermod',
+  // Greek primordial
+  'hero-uranus': 'mage-jaina',
 };
 
 /**
@@ -176,6 +178,7 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-zeus': 'mage',
   'hero-athena': 'mage',
   'hero-hyperion': 'mage',
+  'hero-uranus': 'mage',
   'hero-chronos': 'mage',
 
   // QUEEN - Warlock (6 heroes)
