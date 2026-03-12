@@ -7,8 +7,8 @@
  *
  * Also includes Bestla's token cards for her Primordial Lineage battlecry.
  *
- * ID Range: 40001, 40100-40122 (minions/spells), 9060-9063 (tokens)
- * - Hecatoncheires (40120-40122): Trio Pact mechanic — all 3 must be in hand to play
+ * ID Range: 40001, 40100-40127 (minions/spells), 9060-9063 (tokens)
+ * - Hecatoncheires (40125-40127): Trio Pact mechanic — all 3 must be in hand to play
  */
 
 import { CardData } from '../../../../../types';
@@ -205,7 +205,7 @@ export const primordialExpansionCards: CardData[] = [
 	// ========================================
 
 	{
-		id: 40120,
+		id: 40125,
 		name: 'Cottus, the Striker',
 		manaCost: 0,
 		attack: 8,
@@ -217,7 +217,7 @@ export const primordialExpansionCards: CardData[] = [
 		class: 'Neutral',
 		race: 'Titan',
 		keywords: ['taunt'],
-		trioPact: [40120, 40121, 40122],
+		trioPact: [40125, 40126, 40127],
 		effects: [
 			{
 				type: 'end_of_turn',
@@ -230,7 +230,7 @@ export const primordialExpansionCards: CardData[] = [
 	},
 
 	{
-		id: 40121,
+		id: 40126,
 		name: 'Gyges, Warden of Tartarus',
 		manaCost: 0,
 		attack: 7,
@@ -242,7 +242,7 @@ export const primordialExpansionCards: CardData[] = [
 		class: 'Neutral',
 		race: 'Titan',
 		keywords: ['taunt'],
-		trioPact: [40120, 40121, 40122],
+		trioPact: [40125, 40126, 40127],
 		effects: [
 			{
 				type: 'end_of_turn',
@@ -260,7 +260,7 @@ export const primordialExpansionCards: CardData[] = [
 	},
 
 	{
-		id: 40122,
+		id: 40127,
 		name: 'Briareos, the Vigorous',
 		manaCost: 0,
 		attack: 9,
@@ -272,7 +272,7 @@ export const primordialExpansionCards: CardData[] = [
 		class: 'Neutral',
 		race: 'Titan',
 		keywords: ['taunt', 'elusive'],
-		trioPact: [40120, 40121, 40122],
+		trioPact: [40125, 40126, 40127],
 		startOfTurn: {
 			type: 'debuff_all_enemies',
 			value: 1,
