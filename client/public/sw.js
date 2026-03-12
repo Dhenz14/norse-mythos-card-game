@@ -1,4 +1,5 @@
-const CACHE_NAME = 'ragnarok-assets-v1';
+/* eslint-disable no-undef */
+const CACHE_NAME = 'ragnarok-assets-v2';
 
 const ASSET_DIRS = [
 	'/art/', '/models/', '/portraits/', '/textures/', '/sounds/',
@@ -68,8 +69,7 @@ self.addEventListener('fetch', function(event) {
 	if (isAssetRequest(request.url)) {
 		event.respondWith(
 			caches.match(request).then(function(cached) {
-				if (cached) return cached;
-				return fetch(request).then(function(response) {
+				var fetchPromise = fetch(request).then(function(response) {
 					if (response.ok) {
 						var clone = response.clone();
 						caches.open(CACHE_NAME).then(function(cache) {
@@ -78,6 +78,7 @@ self.addEventListener('fetch', function(event) {
 					}
 					return response;
 				});
+				return cached || fetchPromise;
 			})
 		);
 		return;
