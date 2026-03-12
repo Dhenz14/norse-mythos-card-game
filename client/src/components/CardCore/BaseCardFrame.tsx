@@ -3,7 +3,6 @@ import HexagonBadge from './HexagonBadge';
 import { CardBaseProps } from './types';
 import { assetPath } from '../../game/utils/assetPath';
 import '../../game/components/CardEnhancements.css';
-import '../../game/components/HolographicEffect.css';
 
 /**
  * BaseCardFrame Component

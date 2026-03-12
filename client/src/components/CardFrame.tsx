@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import HexagonBadge from './HexagonBadge';
 import { assetPath } from '../game/utils/assetPath';
 import '../game/components/CardEnhancements.css'; // Import the exact same CSS used in the game
-import '../game/components/HolographicEffect.css'; // Import the holographic effects CSS
 
 interface CardFrameProps {
   attack: number;

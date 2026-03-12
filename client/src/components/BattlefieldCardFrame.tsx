@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { assetPath } from '../game/utils/assetPath';
 import '../game/components/CardEnhancements.css';
-import '../game/components/HolographicEffect.css';
+
 
 // Keyword icons mapping for visual effect indicators
 const keywordIcons: Record<string, { icon: string; color: string; bgColor: string }> = {

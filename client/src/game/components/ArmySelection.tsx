@@ -17,7 +17,7 @@ import { HeroPortrait } from './ui/HeroPortrait';
 import { HeroArtImage } from './ui/HeroArtImage';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { getHeroRarity, RARITY_COLORS } from '../utils/heroRarity';
-import { useHoloTracking, getHoloVariant } from '../hooks/useHoloTracking';
+import { useHoloTracking, getHoloTier } from '../hooks/useHoloTracking';
 import './styles/ArmySelectionNorse.css';
 import './styles/holoEffect.css';
 
@@ -318,7 +318,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                   setPopupHero(hero);
                   playSoundEffect('button_click');
                 }}
-                className={`norse-hero-card rarity-${rarity} ${getHoloVariant(rarity, hero.id) || ''} ${isCurrentSelection ? 'selected' : ''}`}
+                className={`norse-hero-card rarity-${rarity} ${getHoloTier(rarity) || ''} ${isCurrentSelection ? 'selected' : ''}`}
                 onMouseMove={holo.onMouseMove}
                 onMouseLeave={holo.onMouseLeave}
               >
@@ -338,7 +338,8 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                   />
                   {rarity !== 'common' && (
                     <>
-                      <div className="holo-shine" />
+                      <div className="holo-foil" />
+                      <div className="holo-glitter" />
                       <div className="holo-glare" />
                     </>
                   )}

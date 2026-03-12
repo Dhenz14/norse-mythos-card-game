@@ -12,7 +12,7 @@ import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
 import { getCardArtPath } from '../utils/art/artMapping';
-import { useHoloTracking, getHoloVariant } from '../hooks/useHoloTracking';
+import { useHoloTracking, getHoloTier } from '../hooks/useHoloTracking';
 import './SimpleCard.css';
 import './styles/holoEffect.css';
 
@@ -228,7 +228,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
   const { ref: artRef, inView: artInView } = useInView({ triggerOnce: true, rootMargin: '200px' });
 
-  const holoVariant = useMemo(() => getHoloVariant(card.rarity, card.id, card.type, card.petStage), [card.rarity, card.id, card.type, card.petStage]);
+  const holoTier = useMemo(() => getHoloTier(card.rarity), [card.rarity]);
 
   const cardRef = useRef<HTMLDivElement>(null);
   const holo = useHoloTracking(cardRef);
@@ -349,7 +349,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
   return (
     <div
-      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${evolutionClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${cardTheme ? `element-holo-${cardTheme}` : ''} ${holoVariant || ''} ${card.petStage === 'master' && card.element && !card.hasStage3Variants ? 'stage3-evolved' : ''} ${className}`}
+      className={`simple-card ${size} ${getRarityClass(card.rarity)} ${cardTypeClass} ${evolutionClass} ${isPlayable ? 'playable' : 'not-playable'} ${isHighlighted ? 'highlighted' : ''} ${cardTheme ? `element-holo-${cardTheme}` : ''} ${holoTier || ''} ${card.petStage === 'master' && card.element && !card.hasStage3Variants ? 'stage3-evolved' : ''} ${className}`}
       role="button"
       aria-label={`${card.name}, ${card.manaCost} mana ${card.type}${card.attack !== undefined ? `, ${card.attack} attack` : ''}${card.health !== undefined ? `, ${card.health} health` : ''}`}
       tabIndex={0}
@@ -431,9 +431,10 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
         </>
       )}
 
-      {card.rarity !== 'common' && card.rarity !== 'basic' && (
+      {holoTier && (
         <>
-          <div className="holo-shine" />
+          <div className="holo-foil" />
+          <div className="holo-glitter" />
           <div className="holo-glare" />
         </>
       )}

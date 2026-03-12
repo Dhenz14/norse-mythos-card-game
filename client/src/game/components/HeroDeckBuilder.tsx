@@ -17,7 +17,7 @@ import type { CardGroup } from './deckbuilder';
 import { getCardArtPath } from '../utils/art/artMapping';
 import { CardData } from '../types';
 import { getSuperMinionForHero, getAllSuperMinionsForHero, isSuperMinion } from '../data/sets/superMinions/heroSuperMinions';
-import { useHoloTracking, getHoloVariant } from '../hooks/useHoloTracking';
+import { useHoloTracking, getHoloTier } from '../hooks/useHoloTracking';
 import './deckbuilder/tokens.css';
 import './deckbuilder/deckbuilder.css';
 import './styles/holoEffect.css';
@@ -266,7 +266,7 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 													onMouseEnter={e => handleCardMouseEnter(card, e)}
 													onMouseMove={holo.onMouseMove}
 													onMouseLeave={e => { holo.onMouseLeave(e); handleCardMouseLeave(); }}
-													className={`db-card rarity-${rarityKey} ${getHoloVariant(rarityKey, card.id, card.type, (card as any).petStage) || ''} ${isMaxed ? 'not-playable' : ''} ${isLinkedSuper ? 'super-minion-linked' : ''}`}
+													className={`db-card rarity-${rarityKey} ${getHoloTier(rarityKey) || ''} ${isMaxed ? 'not-playable' : ''} ${isLinkedSuper ? 'super-minion-linked' : ''}`}
 													title={canAdd ? 'Click to add \u2022 Right-click for details' : 'Right-click for details'}
 												>
 													{/* Art Section */}
@@ -284,7 +284,8 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 
 														{rarityKey !== 'common' && rarityKey !== 'basic' && (
 														<>
-															<div className="holo-shine" />
+															<div className="holo-foil" />
+															<div className="holo-glitter" />
 															<div className="holo-glare" />
 														</>
 													)}

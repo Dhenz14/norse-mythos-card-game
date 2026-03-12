@@ -1353,7 +1353,8 @@
       0 0 0 2px rgba(72,187,120,0.6);
   }
 
-  .simple-card:hover .holo-shine,
+  .simple-card:hover .holo-foil,
+  .simple-card:hover .holo-glitter,
   .simple-card:hover .holo-glare {
     opacity: 0 !important;
   }
@@ -1379,7 +1380,8 @@
       0 0 0 3px rgba(72,187,120,0.8);
   }
 
-  .holo-shine,
+  .holo-foil,
+  .holo-glitter,
   .holo-glare {
     display: none;
   }

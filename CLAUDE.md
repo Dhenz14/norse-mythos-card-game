@@ -1173,6 +1173,29 @@ vercel --prod                 # Deploy to Vercel
 - Renamed tokens: "Aegir's Hand" → "Tidal Hand" (90202), "Spirit of Vidar" → "Undying Spirit" (32077)
 - TypeScript: 0 errors
 
+### Completed (Authentic 90s Holographic Foil)
+
+- Replaced 10-variant Pokemon-cards-css port (1,292 lines) with physics-accurate 4-tier foil system (~300 lines)
+- 3 holo layers: `.holo-foil` (rainbow diffraction), `.holo-glitter` (tiled PNG sparkle), `.holo-glare` (specular highlight)
+- `color-dodge` mix-blend on foil layer — only brightens bright art areas, dark areas stay readable
+- Luminosity mask (`::after`) with `brightness(0.55) contrast(3.5)` restricts rainbow to tight cursor area
+- Art-window `mask-image` — foil/glitter restricted to art rectangle only (border + text stay clean)
+- Dynamic brightness: `calc((var(--pointer-from-center) * 0.3) + 0.4)` — brighter at center, dimmer at edges
+- Parallax `::before` second rainbow at -47deg (epic+) — shifts at 1.5x rate for dimensional depth
+- 256x256 glitter PNG texture (tiled `soft-light` blend) replaces SVG feTurbulence — more convincing sparkle
+- Epic: scanline groove pattern overlay. Mythic: crosshatch diamond grid (secret rare embossing)
+- Mythic glare `::after` screen-blend halo for metallic sheen
+- Mythic art parallax: card art shifts 3px based on tilt via CSS `transform`
+- Idle shimmer via CSS `@property --holo-idle-x/y` — cards glint without interaction (rare 0.1, epic 0.15, mythic 0.22 opacity)
+- `getHoloVariant()` → `getHoloTier()`: returns `null | 'holo-rare' | 'holo-epic' | 'holo-mythic'`
+- `stage3-evolved` override: max intensity (foil 0.8, glitter 0.45, glare 0.55)
+- 7 element themes preserved (fire, ice, electric, shadow, light, water, grass) — override `--foil-*` palette
+- Applied to SimpleCard, ArmySelection, HeroDeckBuilder (all now use `holo-foil` + `holo-glitter` + `holo-glare`)
+- Removed 3 dead `HolographicEffect.css` imports (BattlefieldCardFrame, CardFrame, BaseCardFrame)
+- Spring physics unchanged (SPRING_STIFFNESS=0.066, SPRING_DAMPING=0.25)
+- `@media (prefers-reduced-motion: reduce)` hides all effects
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)

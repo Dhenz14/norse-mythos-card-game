@@ -1,9 +1,9 @@
 import { useCallback, useRef, useEffect, RefObject } from 'react';
 
 /**
- * Pokemon-cards-151 style holographic mouse tracking.
+ * Holographic mouse tracking hook.
  * Sets CSS custom properties on the card element for gradient positioning.
- * Uses spring-based smoothing (like Svelte's spring()) for organic motion.
+ * Uses spring-based smoothing for organic motion.
  *
  * Supports two modes:
  *   1. Ref-based: pass a cardRef, handlers use ref.current
@@ -172,40 +172,22 @@ export function useHoloTracking(cardRef?: RefObject<HTMLDivElement | null>): Hol
 	return { onMouseMove, onMouseLeave };
 }
 
-export type HoloVariant =
-	| 'holo-rare'
-	| 'holo-cosmos'
-	| 'holo-reverse'
-	| 'holo-v'
-	| 'holo-vstar'
-	| 'holo-radiant'
-	| 'holo-amazing'
-	| 'holo-rainbow'
-	| 'holo-secret'
-	| 'holo-fullart';
+export type HoloTier = 'holo-rare' | 'holo-epic' | 'holo-mythic';
 
-const RARE_VARIANTS: HoloVariant[] = ['holo-rare', 'holo-cosmos', 'holo-reverse'];
-const EPIC_VARIANTS: HoloVariant[] = ['holo-v', 'holo-vstar', 'holo-radiant', 'holo-amazing'];
-const MYTHIC_VARIANTS: HoloVariant[] = ['holo-rainbow', 'holo-secret', 'holo-fullart'];
+/** @deprecated Kept for backwards compat — use HoloTier */
+export type HoloVariant = HoloTier;
 
-export function getHoloVariant(
-	rarity?: string,
-	cardId?: number | string,
-	cardType?: string,
-	petStage?: string,
-): HoloVariant | null {
-	if (!rarity || rarity === 'common' || rarity === 'basic') return null;
-
-	if (petStage === 'master') return 'holo-rainbow';
-	if (cardType === 'spell') return 'holo-radiant';
-	if (cardType === 'weapon') return 'holo-secret';
-	if (cardType === 'artifact') return 'holo-secret';
-
-	const id = typeof cardId === 'string' ? parseInt(cardId, 10) || 0 : (cardId ?? 0);
-
-	if (rarity === 'mythic') return MYTHIC_VARIANTS[id % MYTHIC_VARIANTS.length];
-	if (rarity === 'epic') return EPIC_VARIANTS[id % EPIC_VARIANTS.length];
-	return RARE_VARIANTS[id % RARE_VARIANTS.length];
+export function getHoloTier(rarity?: string): HoloTier | null {
+	if (!rarity) return null;
+	switch (rarity.toLowerCase()) {
+		case 'mythic': return 'holo-mythic';
+		case 'epic': return 'holo-epic';
+		case 'rare': return 'holo-rare';
+		default: return null;
+	}
 }
+
+/** @deprecated Use getHoloTier instead */
+export const getHoloVariant = (rarity?: string, _cardId?: number | string, _cardType?: string, _petStage?: string): HoloTier | null => getHoloTier(rarity);
 
 export { applyHoloVarsInstant as applyHoloVars, resetHoloVars };
