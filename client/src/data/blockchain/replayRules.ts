@@ -29,7 +29,7 @@ import { getLevelForXP, calculateXPGain } from './cardXPSystem';
 import { decodeCardIds } from './matchResultPackager';
 import { sha256Hash, canonicalStringify } from './hashUtils';
 import { verifyHiveSignature } from './hiveSignatureVerifier';
-import { RAGNAROK_ACCOUNT, NFT_ART_BASE_URL } from './hiveConfig';
+import { RAGNAROK_ACCOUNT, NFT_ART_BASE_URL, ALPHA_EDITION_CUTOFF_BLOCK } from './hiveConfig';
 import { buildStampWithUrls, buildOfficialMint } from './explorerLinks';
 import allCards, { getCardById } from '../../game/data/allCards';
 import { getCardArtPath } from '../../game/utils/art/artMapping';
@@ -200,14 +200,13 @@ async function applyMint(
 		const existing = await getCard(card.nft_id);
 		if (existing) continue;
 
-		const parsedCardId = typeof card.card_id === 'number' ? card.card_id : parseInt(card.card_id, 10) || 0;
-		const cardDef = getCardById(parsedCardId);
+		const cardDef = getCardById(parsedId);
 		const cardName = (card.name as string) || cardDef?.name || '';
-		const artPath = card.image || (cardName ? getCardArtPath(cardName, parsedCardId) : null);
+		const artPath = card.image || (cardName ? getCardArtPath(cardName, parsedId) : null);
 
 		const asset: HiveCardAsset = {
 			uid: card.nft_id,
-			cardId: parsedCardId,
+			cardId: parsedId,
 			ownerId: to,
 			edition: 'alpha',
 			foil: (card.foil as HiveCardAsset['foil']) || 'standard',
@@ -779,11 +778,25 @@ function compactStampChain(
 	const mintStamp = chain[0];
 	const trimCount = chain.length - MAX_RECENT_STAMPS;
 	const prevCompacted = existing.compactedProvenance;
+	// totalTransfers = ALL ownership changes (transfers) ever for this card.
+	// On first compaction: chain has mint + N transfers. totalTransfers = N = chain.length - 1.
+	// On subsequent compactions: prevTotal already tracked, we added (chain.length - prevKept) new transfers.
+	// Simplest correct formula: previous total + number of NEW stamps added since last compaction.
+	// The new stamps = chain.length - MAX_RECENT_STAMPS (since we kept MAX_RECENT_STAMPS last time,
+	// and chain grew by the new additions). On first compaction, all stamps are "new".
+	const newCompactedCount = (prevCompacted?.compactedCount ?? 0) + trimCount;
+	const prevTotalTransfers = prevCompacted?.totalTransfers ?? 0;
+	// New transfers since last snapshot = stamps added since last compaction.
+	// First compaction: all transfers are new = chain.length - 1 (exclude mint).
+	// Subsequent: chain grew from MAX_RECENT_STAMPS to current length, so new = chain.length - MAX_RECENT_STAMPS.
+	const newTransfers = prevCompacted
+		? chain.length - MAX_RECENT_STAMPS
+		: chain.length - 1; // exclude mint on first compaction
 	const compactedProvenance: CompactedProvenance = {
-		totalTransfers: (prevCompacted?.compactedCount ?? 0) + trimCount + chain.length - 1,
+		totalTransfers: prevTotalTransfers + newTransfers,
 		firstMint: prevCompacted?.firstMint ?? mintStamp,
 		compactedAt: chain[trimCount - 1].block,
-		compactedCount: (prevCompacted?.compactedCount ?? 0) + trimCount,
+		compactedCount: newCompactedCount,
 	};
 	return { provenanceChain: chain.slice(trimCount), compactedProvenance };
 }
@@ -978,7 +991,7 @@ async function applyPackOpen(
 	});
 
 	const isGold = (lcgNext(seed) % 20) === 0;
-	const edition: HiveCardAsset['edition'] = op.blockNum < 1_000_000 ? 'alpha' : 'beta';
+	const edition: HiveCardAsset['edition'] = op.blockNum < ALPHA_EDITION_CUTOFF_BLOCK ? 'alpha' : 'beta';
 
 	// Pre-fetch supply counters to avoid repeated IDB reads in loop
 	const supplyCache = new Map<string, SupplyCounter>();
@@ -987,19 +1000,33 @@ async function applyPackOpen(
 		if (c) supplyCache.set(r, { ...c });
 	}
 
+	// Pre-fetch per-card supply counters for duplicate cap enforcement
+	const perCardSupplyCache = new Map<string, number>();
+
 	for (let i = 0; i < cardIds.length; i++) {
 		const uid = `${op.trxId}-${i}`;
-		// Derive rarity from a secondary LCG roll per card
-		s = lcgNext(s);
-		const rarityRoll = s % 100;
-		const rarity = rarityRoll < 1 ? 'mythic' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
-
-		// Supply cap enforcement — check cached counter
-		const counter = supplyCache.get(rarity);
-		if (counter && counter.minted >= counter.cap) continue;
 
 		const cardDef = getCardById(cardIds[i]);
 		if (!cardDef) continue; // Skip phantom IDs with no card definition
+
+		// NFT rarity MUST match card definition — the LCG selected which card,
+		// not which rarity. A mythic card is always a mythic NFT.
+		const rarity = cardDef.rarity || 'common';
+
+		// Per-rarity global supply cap enforcement
+		const counter = supplyCache.get(rarity);
+		if (counter && counter.minted >= counter.cap) continue;
+
+		// Per-card supply cap enforcement (same logic as applyMint)
+		const cardKey = `card:${cardIds[i]}`;
+		if (!perCardSupplyCache.has(cardKey)) {
+			const cardCounter = await getSupplyCounter(cardKey);
+			perCardSupplyCache.set(cardKey, cardCounter?.minted ?? 0);
+		}
+		const cardMinted = perCardSupplyCache.get(cardKey) ?? 0;
+		const rarityCap = counter?.cap ?? Infinity;
+		if (cardMinted >= rarityCap) continue; // per-card cap reached
+
 		const artPath = getCardArtPath(cardDef.name, cardIds[i]);
 
 		const card: HiveCardAsset = {
@@ -1028,11 +1055,18 @@ async function applyPackOpen(
 		if (counter) {
 			counter.minted++;
 		}
+		perCardSupplyCache.set(cardKey, cardMinted + 1);
 	}
 
-	// Flush updated supply counters back to IDB
+	// Flush updated supply counters back to IDB (global rarity counters)
 	for (const counter of supplyCache.values()) {
 		await putSupplyCounter(counter);
+	}
+
+	// Flush per-card supply counters
+	for (const [cardKey, minted] of perCardSupplyCache.entries()) {
+		const rarityCap = supplyCache.get('common')?.cap ?? 1800; // fallback
+		await putSupplyCounter({ rarity: cardKey, cap: rarityCap, minted });
 	}
 }
 
@@ -1062,7 +1096,7 @@ async function applyRewardClaim(
 		return;
 	}
 
-	const edition: HiveCardAsset['edition'] = op.blockNum < 1_000_000 ? 'alpha' : 'beta';
+	const edition: HiveCardAsset['edition'] = op.blockNum < ALPHA_EDITION_CUTOFF_BLOCK ? 'alpha' : 'beta';
 
 	for (let i = 0; i < reward.cards.length; i++) {
 		const rewardCard = reward.cards[i];

@@ -1,18 +1,28 @@
 /**
  * replayDB.ts - IndexedDB layer for Hive chain replay
  *
- * Object stores:
- *   cards            keyed by uid         — HiveCardAsset rows
- *   matches          keyed by matchId     — HiveMatchResult rows
- *   sync_cursors     keyed by account     — replay progress per account
- *   token_balances   keyed by username    — RUNE/VALKYRIE/SEASON_POINTS per account
- *   genesis_state    keyed by 'singleton' — sealed flag, supply caps, reader version
- *   supply_counters  keyed by rarity      — minted count vs cap per rarity
- *   match_anchors    keyed by matchId     — dual-sig match_start records
- *   queue_entries    keyed by account     — active matchmaking queue entries
- *   slashed_accounts keyed by account     — accounts with confirmed slash evidence
+ * Every player runs this as their local light indexer (HAF replacement).
+ * The replay engine reads Hive L1 custom_json ops, applies deterministic
+ * rules (replayRules.ts), and writes results here. All game state is
+ * derived from the chain — no server, no trust assumptions.
+ *
+ * Object stores (13 total):
+ *   cards            keyed by uid              — HiveCardAsset NFT records
+ *   matches          keyed by matchId          — HiveMatchResult rows (indexed by participant)
+ *   sync_cursors     keyed by account          — replay progress per account (lastHistoryIndex, lastSyncedAt)
+ *   token_balances   keyed by hiveUsername     — RUNE/VALKYRIE/SEASON_POINTS per account
+ *   genesis_state    keyed by 'singleton'      — sealed flag, supply caps, reader hash, genesis block
+ *   supply_counters  keyed by rarity|card:ID   — minted count vs cap (per-rarity AND per-card)
+ *   match_anchors    keyed by matchId          — dual-sig match_start records (24h TTL)
+ *   queue_entries    keyed by account          — active matchmaking queue entries (10min TTL)
+ *   slashed_accounts keyed by account          — accounts with confirmed slash evidence
+ *   player_nonces    keyed by account          — monotonic anti-replay nonces for match_result
+ *   elo_ratings      keyed by account          — chain-derived ELO (K=32), wins, losses
+ *   pending_slashes  keyed by evidenceKey      — queued slash evidence awaiting RPC verification
+ *   reward_claims    keyed by claimKey          — tracks which milestone rewards each account claimed
  *
  * All writes are idempotent — safe to re-apply the same op.
+ * DB version 6 — upgrade handler creates any missing stores.
  */
 
 import type { HiveCardAsset, HiveMatchResult, HiveTokenBalance } from '../schemas/HiveTypes';

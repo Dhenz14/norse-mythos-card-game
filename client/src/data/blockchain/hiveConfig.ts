@@ -20,3 +20,7 @@ export const HIVE_EXPLORER_URL = 'https://hivehub.dev/tx/';
 export const HIVE_BLOCK_EXPLORER_URL = 'https://hivehub.dev/b/';
 
 export const DEFAULT_ELO_RATING = 1000;
+
+// Edition boundary: cards minted before this Hive block number are 'alpha', after are 'beta'.
+// Set to a future block; update before beta launch.
+export const ALPHA_EDITION_CUTOFF_BLOCK = 100_000_000;
