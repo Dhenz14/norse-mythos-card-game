@@ -27,7 +27,7 @@ export const neutralLegendaryMinions: CardData[] = [];
 export const classLegendaryMinions: CardData[] = [
   {
     id: 20006,
-    name: "Týr, Champion of Justice",
+    name: "Echo of the Champion",
     manaCost: 8,
     attack: 6,
     health: 6,

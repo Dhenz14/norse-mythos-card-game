@@ -95,7 +95,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 96005,
-    name: "Víðarr the Bold",
+    name: "Echo of the Bold",
     manaCost: 5,
     attack: 6,
     health: 2,
@@ -136,7 +136,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 96007,
-    name: "Perseus the Relic Hunter",
+    name: "Echo of the Relic Hunter",
     manaCost: 5,
     attack: 5,
     health: 4,

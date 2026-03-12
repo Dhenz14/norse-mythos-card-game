@@ -1122,7 +1122,7 @@ const VERCEL_CARD_ART: Record<string, string> = {
  * @returns The art path (/art/{id}.webp) or null if no explicit mapping exists
  */
 const CARD_ID_TO_ART: Record<number, string> = {
-	2202: '/art/4128-54b33535.webp',
+	// 2202: hero-chronos art removed
 	3001: '/art/d8dc-6c8aea91.webp',
 	3005: '/art/098c-f2eb06ca.webp',
 	3007: '/art/4869-44ee81ed.webp',
@@ -1155,7 +1155,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	4118: '/art/a9c7-a76a4c04.webp',
 	4119: '/art/f8a2-84177c04.webp',
 	4200: '/art/77ac-f7a6d593.webp',
-	4393: '/art/be87-7f6e4b1b.webp',
+	// 4393: hero-baldur art removed
 	5001: '/art/ddbb-b37e34cd.webp',
 	5011: '/art/02d7-a15ee6d2.webp',
 	5013: '/art/ca1c-0caa98f9.webp',
@@ -1167,7 +1167,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	5025: '/art/736d-ab055fd7.webp',
 	5026: '/art/78bb-d07b4fb8.webp',
 	5029: '/art/df68-17b59148.webp',
-	5108: '/art/3c41-d5bf8c82.webp',
+	// 5108: hero-persephone art removed
 	5114: '/art/c629-4ec7c61d.webp',
 	5116: '/art/8972-1981311b.webp',
 	5118: '/art/2754-800ba2aa.webp',
@@ -1318,31 +1318,21 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	17504: '/art/014c-4683eafa.webp',
 	17505: '/art/93bb-c2779a3c.webp',
 	17506: '/art/c3a8-f2f86b91.webp',
-	// 20001-20004: god art removed (hero-reserved)
-	20005: '/art/5a19-57185498.webp',
+	// 20001-20005, 20016-17, 20023, 20027, 20030, 20032-34: hero art removed
 	20009: '/art/4974-c1fcd35a.webp',
 	20011: '/art/0d51-cfff8374.webp',
 	20015: '/art/c933-44fa8b3a.webp',
-	20016: '/art/b082-88cee63a.webp',
-	20017: '/art/e2c3-fc9ad5a2.webp',
 	20019: '/art/bbe0-786d23f0.webp',
-	// 20020: god art removed (hero-reserved)
 	20022: '/art/b3d3-b364c9c9.webp',
-	20023: '/art/f552-7a8f56df.webp',
-	20027: '/art/e444-2488ac9c.webp',
-	20030: '/art/2a03-58ae797a.webp',
-	20032: '/art/c380-df49fbd2.webp',
-	20033: '/art/502a-6dafa318.webp',
-	20034: '/art/f2e8-0b20f068.webp',
 	20036: '/art/7228-ee76269d.webp',
 	// 20106: god art removed (hero-reserved)
 	20114: '/art/f7f3-352992b6.webp',
 	// 20116: god art removed (hero-reserved)
 	20118: '/art/5eff-e0406d21.webp',
-	20119: '/art/f386-d67122f8.webp',
+	// 20119: hero-poseidon art removed
 	20213: '/art/0f71-ceaceac3.webp',
 	20217: '/art/b55a-2c916440.webp',
-	20300: '/art/54df-42ef3878.webp',
+	// 20300: hero-hephaestus art removed
 	20403: '/art/306c-e2f06c7d.webp',
 	20404: '/art/6be9-3140e0b7.webp',
 	20405: '/art/ee59-5348f3b4.webp',
@@ -1351,9 +1341,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	20702: '/art/75b9-8165babe.webp',
 	20709: '/art/292a-d14b1e8b.webp',
 	20710: '/art/347d-295fa15f.webp',
-	20806: '/art/b17a-ec608a43.webp',
-	20808: '/art/9576-e4d01974.webp',
-	20809: '/art/d9ce-c81a7cad.webp',
+	// 20806, 20808, 20809: hero art removed (ares, hermes, idunn)
 	// 28002: god art removed (hero-reserved)
 	29001: '/art/bd6e-0dbe7c29.webp',
 	29002: '/art/cc96-5c2a4a1f.webp',
@@ -1476,11 +1464,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	29965: '/art/8f79-c0e1ae47.webp',
 	29966: '/art/491a-fef98c3f.webp',
 	29967: '/art/684b-e052658e.webp',
-	31002: '/art/b03b-7d0873e9.webp',
-	31003: '/art/4bb3-ce4b2ed9.webp',
-	31004: '/art/2a21-f54a507f.webp',
-	31006: '/art/6975-92010e2a.webp',
-	31007: '/art/c76a-a581a7c5.webp',
+	// 31002-31007: hero art removed (hoenir, forseti, kvasir, vili, bragi)
 	31009: '/art/df37-c092d66b.webp',
 	31017: '/art/c8b2-54178ac7.webp',
 	31019: '/art/d0e1-0bf77be6.webp',
@@ -1499,7 +1483,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	31059: '/art/b7b0-c8efe9a4.webp',
 	31104: '/art/e0a8-b2784e21.webp',
 	31501: '/art/93d4-514494fa.webp',
-	31512: '/art/9a25-fbad0a4b.webp',
+	// 31512: hero-vidar art removed
 	5050: '/art/43b1-28482b60.webp',
 	31303: '/art/a1eb-fa3fb055.webp',
 	31403: '/art/4c00-12f6f52f.webp',
@@ -1553,10 +1537,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	37008: '/art/01dc-c7be74bc.webp',
 	37009: '/art/20f0-3a5c0725.webp',
 	37010: '/art/55c6-7f5bc11e.webp',
-	38010: '/art/378a-1bff480f.webp',
-	38208: '/art/01f2-91d6d978.webp',
-	38506: '/art/62e5-8d33485a.webp',
-	40006: '/art/f5d6-01ff0c12.webp',
+	// 38010, 38208, 38506, 40006: hero art removed (hyperion, aegir, hel, sol)
 	40008: '/art/b3c0-abb9990a.webp',
 	40009: '/art/cd77-b63c2d2d.webp',
 	40010: '/art/d1d5-ed57b8d5.webp',
@@ -1922,11 +1903,25 @@ const CARD_ID_TO_ART: Record<number, string> = {
 
 };
 
+/** Set of all art file paths reserved for heroes — built once from HERO_ART_OVERRIDE */
+const HERO_ART_PATHS = new Set(
+	Object.values(HERO_ART_OVERRIDE).map(id => `/art/${id}.webp`)
+);
+
+/** Set of all hero art IDs (without path/extension) for VERCEL_CARD_ART guard */
+const HERO_ART_IDS_SET = new Set(Object.values(HERO_ART_OVERRIDE));
+
 export function getCardArtById(cardId: number | string): string | null {
 	const id = typeof cardId === 'string' ? parseInt(cardId, 10) : cardId;
 	if (isNaN(id)) return null;
 	const path = CARD_ID_TO_ART[id];
-	return path ? assetPath(path) : null;
+	if (!path) return null;
+	// Guard: never serve hero-reserved art for card IDs
+	if (HERO_ART_PATHS.has(path)) {
+		debug.warn(`Blocked hero art ${path} for card ${id}`);
+		return null;
+	}
+	return assetPath(path);
 }
 
 const _artPathCache = new Map<string, string | null>();
@@ -1960,7 +1955,9 @@ export function getCardArtPath(cardName: string, cardId?: number | string): stri
       const artId = artIdMatch[1];
       // Block if art belongs to any named character that is NOT a creature
       // (covers heroes, kings, gods, humans, and any other non-creature characters)
-      if (ALL_CHARACTER_ART_IDS_SET.has(artId) && !CREATURE_RESERVED_ART_IDS.has(artId)) {
+      // Also block art reserved for heroes via HERO_ART_OVERRIDE (closes gap where
+      // 35+ hero art IDs exist outside CHARACTER_ART_IDS)
+      if ((ALL_CHARACTER_ART_IDS_SET.has(artId) && !CREATURE_RESERVED_ART_IDS.has(artId)) || HERO_ART_IDS_SET.has(artId)) {
         _artPathCache.set(lowerName, null);
         return null;
       }

@@ -199,7 +199,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20017,
-    name: "Tyr, Bladedancer",
+    name: "Echo of the Bladedancer",
     manaCost: 4,
     attack: 3,
     health: 4,
@@ -220,7 +220,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20018,
-    name: "Baldur, the Shining",
+    name: "Echo of the Shining",
     manaCost: 8,
     attack: 6,
     health: 8,

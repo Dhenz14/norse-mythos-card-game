@@ -573,7 +573,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 95422,
 
-      name: "Tyr, Dragon Slayer",
+      name: "Echo of the Dragon Slayer",
       manaCost: 7,
 
       attack: 8,

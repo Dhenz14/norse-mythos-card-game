@@ -1200,7 +1200,7 @@ export const norseMythologyCards: CardData[] = [
   // Baldur, God of Light
   {
     id: 4392,
-    name: "Baldur, God of Light",
+    name: "Echo of the Light God",
     manaCost: 7,
     attack: 6,
     health: 6,
@@ -1232,7 +1232,7 @@ export const norseMythologyCards: CardData[] = [
   // Sol, the Sun Goddess
   {
     id: 4393,
-    name: "Sol, the Sun Goddess",
+    name: "Echo of the Sun Goddess",
     manaCost: 6,
     attack: 4,
     health: 5,
@@ -1270,7 +1270,7 @@ export const norseMythologyCards: CardData[] = [
   // Heimdall, Guardian of Bifrost
   {
     id: 4394,
-    name: "Heimdall, Guardian of Bifrost",
+    name: "Echo of the Bifrost Guardian",
     manaCost: 8,
     attack: 5,
     health: 10,
