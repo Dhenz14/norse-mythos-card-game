@@ -2532,63 +2532,6 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     }
   },
 
-  // ==================== URANUS ====================
-  'hero-uranus': {
-    id: 'hero-uranus',
-    name: 'Uranus',
-    title: 'The Starry Sky',
-    element: 'light',
-    weakness: 'ice',
-    startingHealth: 100,
-    description: 'The primordial sky god who covered the earth and fathered the Titans.',
-    lore: 'Before the Titans, before Olympus, Uranus stretched across all of Gaia. He feared his own children and cast the Cyclopes and Hecatonchires into Tartarus. His son Cronus severed him from the sky with an adamant sickle.',
-    hasSpells: true,
-    heroClass: 'mage',
-    fixedCardIds: [4400, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    heroPower: {
-      id: 'uranus-power',
-      name: 'Crushing Sky',
-      description: 'Deal 2 damage to an enemy minion.',
-      cost: 2,
-      targetType: 'enemy_minion',
-      effectType: 'damage_single',
-      value: 2
-    },
-    weaponUpgrade: {
-      id: 90126,
-      name: 'Sickle of Adamant',
-      heroId: 'hero-uranus',
-      manaCost: 5,
-      description: 'Deal 5 damage to an enemy. If it dies, deal 2 damage to all other enemies.',
-      immediateEffect: {
-        type: 'damage_single',
-        value: 5,
-        description: 'Deal 5 damage to an enemy. If it dies, deal 2 damage to all other enemies.'
-      },
-      upgradedPowerId: 'uranus-power-upgraded'
-    },
-    upgradedHeroPower: {
-      id: 'uranus-power-upgraded',
-      name: 'Starfall',
-      description: 'Deal 3 damage to an enemy minion.',
-      cost: 2,
-      targetType: 'enemy_minion',
-      effectType: 'damage_single',
-      value: 3,
-      isUpgraded: true,
-      baseHeroPowerId: 'uranus-power'
-    },
-    passive: {
-      id: 'uranus-passive',
-      name: "Weight of the Heavens",
-      description: 'Your spells deal 1 extra damage.',
-      trigger: 'start_of_turn',
-      condition: { minionElement: 'light' },
-      effectType: 'buff_attack',
-      value: 1
-    }
-  },
-
   // ==================== 44. HERA ====================
   'hero-hera': {
     id: 'hero-hera',

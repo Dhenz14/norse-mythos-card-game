@@ -460,7 +460,6 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-artemis': 'c380-df49fbd2',
 	'hero-demeter': '6ddf-0f8740b6',
 	'hero-hyperion': '378a-1bff480f',
-	'hero-uranus': 'uranus',
 	'hero-chronos': '4128-54b33535',
 	'hero-persephone': '3c41-d5bf8c82',
 	'hero-nyx': '502a-6dafa318',
