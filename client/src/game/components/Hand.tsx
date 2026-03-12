@@ -135,11 +135,18 @@ export const Hand: React.FC<HandProps> = React.memo(({
             const sacrificeCost = card.card?.sacrificeCost || 0;
             const meetsSacrifice = sacrificeCost === 0 || activeMinionCount >= sacrificeCost;
 
+            const trioPact = card.card?.trioPact;
+            const meetsTrioPact = !trioPact || trioPact.every(
+              (reqId: number) => adaptedCards.some(c => c.card?.id === reqId)
+            );
+            const trioPactBoardOk = trioPact ? true : !boardFull;
+
             const canPlay = isPlayerTurn &&
                            !isInteractionDisabled &&
-                           !boardFull &&
+                           trioPactBoardOk &&
                            manaCost <= currentMana &&
-                           meetsSacrifice;
+                           meetsSacrifice &&
+                           meetsTrioPact;
             
             // Use the professional hand arc transform system
             const transform = handArcTransforms[index];

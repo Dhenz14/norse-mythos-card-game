@@ -573,6 +573,52 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     return newState;
   }
 
+  // Trio Pact: all pact members must be in hand — summons all, destroys hand + battlefield
+  const trioPact = card.card.trioPact;
+  if (trioPact && trioPact.length > 0) {
+    const pactCards = trioPact.map((pactId: number) =>
+      player.hand.find((c: CardInstance) => c.card.id === pactId)
+    );
+    if (pactCards.some((c: CardInstance | undefined) => !c)) {
+      return state;
+    }
+
+    // Destroy all friendly minions on battlefield
+    const toDestroy = [...player.battlefield];
+    for (const m of toDestroy) {
+      newState = destroyCard(newState, m.instanceId, currentPlayer);
+    }
+    const updatedPlayer = newState.players[currentPlayer];
+
+    // Remove ALL cards from hand (trio pact devastation)
+    updatedPlayer.hand = [];
+
+    // Place all 3 pact minions on battlefield with summoning sickness
+    for (const pactCard of pactCards) {
+      if (!pactCard) continue;
+      const placed: CardInstance = {
+        ...pactCard,
+        isPlayed: true,
+        isSummoningSick: true,
+        canAttack: false,
+        attacksPerformed: 0
+      };
+      updatedPlayer.battlefield.push(placed);
+      GameEventBus.emitCardPlayed({
+        player: currentPlayer,
+        cardId: String(placed.card.id),
+        instanceId: placed.instanceId,
+        cardName: placed.card.name,
+        cardType: 'minion',
+        manaCost: placed.card.manaCost || 0,
+        rarity: placed.card.rarity
+      });
+    }
+
+    updatedPlayer.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
+    return newState;
+  }
+
   // Check if battlefield is full before removing card from hand
   if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     debug.error(`Cannot play ${card.card.name}: Battlefield is full (${MAX_BATTLEFIELD_SIZE} minions maximum)`);

@@ -181,6 +181,15 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       norseHeroId: 'hero-chronos',
     },
     {
+      id: 'hero-uranus',
+      name: 'Uranus',
+      heroClass: 'mage',
+      description: 'The Starry Sky: Primordial sky god whose crushing weight imprisons all beneath.',
+      fixedCardIds: [],
+      element: 'light',
+      norseHeroId: 'hero-uranus',
+    },
+    {
       id: 'hero-hades',
       name: 'Hades',
       heroClass: 'warlock',

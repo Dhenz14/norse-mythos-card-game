@@ -7,7 +7,8 @@
  *
  * Also includes Bestla's token cards for her Primordial Lineage battlecry.
  *
- * ID Range: 40001, 40100-40115 (minions/spells), 9060-9063 (tokens)
+ * ID Range: 40001, 40100-40122 (minions/spells), 9060-9063 (tokens)
+ * - Hecatoncheires (40120-40122): Trio Pact mechanic — all 3 must be in hand to play
  */
 
 import { CardData } from '../../../../../types';
@@ -192,6 +193,94 @@ export const primordialExpansionCards: CardData[] = [
 	},
 
 	// ==================== HERMOD SUPPORT CARD ====================
+
+	// ========================================
+	// HECATONCHEIRES — THE HUNDRED-HANDERS
+	// Trio Pact: All 3 must be in hand to play. Playing one summons all three.
+	// Destroys all other cards in your hand and all friendly minions on the battlefield.
+	// All three arrive with summoning sickness.
+	// Lore: Sons of Uranus and Gaia, imprisoned in Tartarus for their terrible power.
+	// Zeus freed them during the Titanomachy — they hurled 300 boulders at once,
+	// shattering the Titan army. After the war, they guard Tartarus's gates forever.
+	// ========================================
+
+	{
+		id: 40120,
+		name: 'Cottus, the Striker',
+		manaCost: 0,
+		attack: 8,
+		health: 10,
+		description: 'Trio Pact: Requires all 3 Hecatoncheires in hand. Summons all three, destroys your hand and friendly minions. Taunt. End of turn: Deal 3 damage randomly split among all enemies.',
+		flavorText: 'Uranus imprisoned him for his uncontrollable rage. When freed, his hundred hands hurled boulders that darkened the sky over Othrys.',
+		type: 'minion',
+		rarity: 'mythic',
+		class: 'Neutral',
+		race: 'Titan',
+		keywords: ['taunt'],
+		trioPact: [40120, 40121, 40122],
+		effects: [
+			{
+				type: 'end_of_turn',
+				value: 3,
+				endOfTurnEffect: 'random_damage_enemies'
+			}
+		],
+		set: 'core',
+		collectible: true
+	},
+
+	{
+		id: 40121,
+		name: 'Gyges, Warden of Tartarus',
+		manaCost: 0,
+		attack: 7,
+		health: 12,
+		description: 'Trio Pact: Requires all 3 Hecatoncheires in hand. Summons all three, destroys your hand and friendly minions. Taunt. Enemy minions cost (2) more. End of turn: Freeze a random enemy minion.',
+		flavorText: 'His hundred hands grip the chains of every imprisoned Titan. None have escaped his watch since the fall of Othrys.',
+		type: 'minion',
+		rarity: 'mythic',
+		class: 'Neutral',
+		race: 'Titan',
+		keywords: ['taunt'],
+		trioPact: [40120, 40121, 40122],
+		effects: [
+			{
+				type: 'end_of_turn',
+				value: 1,
+				endOfTurnEffect: 'freeze_random_enemy'
+			},
+			{
+				type: 'aura',
+				auraEffect: 'increase_enemy_minion_cost',
+				value: 2
+			}
+		],
+		set: 'core',
+		collectible: true
+	},
+
+	{
+		id: 40122,
+		name: 'Briareos, the Vigorous',
+		manaCost: 0,
+		attack: 9,
+		health: 12,
+		description: 'Trio Pact: Requires all 3 Hecatoncheires in hand. Summons all three, destroys your hand and friendly minions. Taunt. Can\'t be targeted by spells or Hero Powers. Start of turn: All enemy minions lose 1 Attack permanently.',
+		flavorText: 'When Hera, Poseidon, and Athena conspired to chain Zeus, Thetis summoned Briareos. He sat beside the throne. The gods fled in terror at the sight of him.',
+		type: 'minion',
+		rarity: 'mythic',
+		class: 'Neutral',
+		race: 'Titan',
+		keywords: ['taunt', 'elusive'],
+		trioPact: [40120, 40121, 40122],
+		startOfTurn: {
+			type: 'debuff_all_enemies',
+			value: 1,
+			targetType: 'all_enemy_minions'
+		},
+		set: 'core',
+		collectible: true
+	},
 
 	{
 		id: 40115,
