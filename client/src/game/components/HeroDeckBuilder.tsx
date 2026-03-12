@@ -516,8 +516,10 @@ const CardDetailFlip: React.FC<{
 }> = ({ card, classColor, onClose, canAdd, inDeckCount, maxCopies, onAddCard, onRemoveCard }) => {
 	const [isFlipped, setIsFlipped] = useState(false);
 	const [isFlipping, setIsFlipping] = useState(false);
+	const holo = useHoloTracking();
 
 	const rarityKey = (card.rarity || 'common').toLowerCase();
+	const holoTier = getHoloTier(rarityKey);
 	const cardArtPath = getCardArtPath(card.name, card.id);
 	const isMinion = card.type === 'minion';
 	const keywords = (card as any).keywords as string[] | undefined;
@@ -555,7 +557,11 @@ const CardDetailFlip: React.FC<{
 					onContextMenu={handleFlip}
 				>
 					{/* FRONT FACE */}
-					<div className={`cd-front rarity-${rarityKey}`}>
+					<div
+						className={`cd-front rarity-${rarityKey} ${holoTier || ''}`}
+						onMouseMove={holo.onMouseMove}
+						onMouseLeave={holo.onMouseLeave}
+					>
 						<div className="cd-front-art">
 							{cardArtPath ? (
 								<img src={cardArtPath} alt="" loading="lazy" />
@@ -565,7 +571,13 @@ const CardDetailFlip: React.FC<{
 								</div>
 							)}
 
-							<div className={`cd-front-foil rarity-${rarityKey}`} />
+							{holoTier && (
+								<>
+									<div className="holo-foil" />
+									<div className="holo-glitter" />
+									<div className="holo-glare" />
+								</>
+							)}
 						</div>
 
 						{/* Mana gem */}

@@ -234,15 +234,15 @@
    Tier 1: Rare — subtle foil + gentle glitter
    ============================================================ */
 
-.holo-rare.holo-active > .holo-foil {
+.holo-rare.holo-active .holo-foil {
 	opacity: 0.35;
 }
 
-.holo-rare.holo-active > .holo-glitter {
+.holo-rare.holo-active .holo-glitter {
 	opacity: 0.15;
 }
 
-.holo-rare.holo-active > .holo-glare {
+.holo-rare.holo-active .holo-glare {
 	opacity: calc(0.2 + var(--pointer-from-center, 0) * 0.25);
 }
 
@@ -250,15 +250,15 @@
    Tier 2: Epic — strong prism + parallax + grooves
    ============================================================ */
 
-.holo-epic.holo-active > .holo-foil {
+.holo-epic.holo-active .holo-foil {
 	opacity: 0.5;
 }
 
-.holo-epic.holo-active > .holo-glitter {
+.holo-epic.holo-active .holo-glitter {
 	opacity: 0.25;
 }
 
-.holo-epic.holo-active > .holo-glare {
+.holo-epic.holo-active .holo-glare {
 	opacity: calc(0.3 + var(--pointer-from-center, 0) * 0.35);
 }
 
@@ -266,15 +266,15 @@
    Tier 3: Mythic — full spectrum + crosshatch + art parallax
    ============================================================ */
 
-.holo-mythic.holo-active > .holo-foil {
+.holo-mythic.holo-active .holo-foil {
 	opacity: 0.65;
 }
 
-.holo-mythic.holo-active > .holo-glitter {
+.holo-mythic.holo-active .holo-glitter {
 	opacity: 0.35;
 }
 
-.holo-mythic.holo-active > .holo-glare {
+.holo-mythic.holo-active .holo-glare {
 	opacity: calc(0.4 + var(--pointer-from-center, 0) * 0.4);
 }
 
@@ -306,19 +306,19 @@
 }
 
 /* Idle foil: visible at low opacity, overridden by holo-active */
-.holo-rare:not(.holo-active) > .holo-foil {
+.holo-rare:not(.holo-active) .holo-foil {
 	background-position: var(--holo-idle-x) var(--holo-idle-y);
 	animation: idle-shimmer 6s ease-in-out infinite;
 	opacity: 0.1;
 }
 
-.holo-epic:not(.holo-active) > .holo-foil {
+.holo-epic:not(.holo-active) .holo-foil {
 	background-position: var(--holo-idle-x) var(--holo-idle-y);
 	animation: idle-shimmer 6s ease-in-out infinite;
 	opacity: 0.15;
 }
 
-.holo-mythic:not(.holo-active) > .holo-foil {
+.holo-mythic:not(.holo-active) .holo-foil {
 	background-position: var(--holo-idle-x) var(--holo-idle-y);
 	animation: idle-shimmer 6s ease-in-out infinite;
 	opacity: 0.22;
@@ -328,19 +328,19 @@
    Stage 3 Evolved Pets — max intensity override
    ============================================================ */
 
-.stage3-evolved.holo-active > .holo-foil {
+.stage3-evolved.holo-active .holo-foil {
 	opacity: 0.8 !important;
 }
 
-.stage3-evolved.holo-active > .holo-glitter {
+.stage3-evolved.holo-active .holo-glitter {
 	opacity: 0.45 !important;
 }
 
-.stage3-evolved.holo-active > .holo-glare {
+.stage3-evolved.holo-active .holo-glare {
 	opacity: 0.55 !important;
 }
 
-.stage3-evolved:not(.holo-active) > .holo-foil {
+.stage3-evolved:not(.holo-active) .holo-foil {
 	opacity: 0.3;
 }
 

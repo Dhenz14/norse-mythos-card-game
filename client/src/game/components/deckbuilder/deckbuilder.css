@@ -998,72 +998,15 @@
 	opacity: 0.2;
 }
 
-/* Front face foil — Pokemon-151 sunpillar gradient */
-.cd-front-foil {
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-	z-index: 2;
-	border-radius: inherit;
-	opacity: 0;
-}
-.cd-front-foil.rarity-rare {
-	background: linear-gradient(
-		115deg,
-		transparent 20%,
-		hsl(176, 100%, 76%) 36%,
-		hsl(228, 100%, 74%) 43%,
-		hsl(283, 100%, 73%) 50%,
-		hsl(2, 100%, 73%) 57%,
-		hsl(53, 100%, 69%) 64%,
-		transparent 80%
-	);
-	mix-blend-mode: overlay;
-	opacity: 0.3;
-	filter: brightness(1.25) contrast(3) saturate(0.75);
-	background-size: 200% 200%;
-	animation: cd-foil-shimmer 4s ease-in-out infinite;
-}
-.cd-front-foil.rarity-epic {
-	background: linear-gradient(
-		115deg,
-		transparent 10%,
-		hsl(283, 100%, 73%) 25%,
-		hsl(228, 100%, 74%) 35%,
-		hsl(176, 100%, 76%) 45%,
-		hsl(93, 100%, 69%) 55%,
-		hsl(53, 100%, 69%) 65%,
-		hsl(2, 100%, 73%) 75%,
-		transparent 90%
-	);
-	mix-blend-mode: color-dodge;
-	opacity: 0.35;
-	filter: brightness(0.8) contrast(2.95) saturate(0.65);
-	background-size: 200% 200%;
-	animation: cd-foil-shimmer 3.5s ease-in-out infinite;
-	border: 2px solid rgba(163, 53, 238, 0.25);
-}
-.cd-front-foil.rarity-mythic {
-	background: linear-gradient(
-		115deg,
-		hsl(2, 100%, 73%) 0%,
-		hsl(53, 100%, 69%) 15%,
-		hsl(93, 100%, 69%) 30%,
-		hsl(176, 100%, 76%) 45%,
-		hsl(228, 100%, 74%) 60%,
-		hsl(283, 100%, 73%) 75%,
-		hsl(2, 100%, 73%) 100%
-	);
-	mix-blend-mode: color-dodge;
-	opacity: 0.45;
-	filter: brightness(0.6) contrast(1.5) saturate(1);
-	background-size: 300% 300%;
-	animation: cd-foil-shimmer 3s ease-in-out infinite;
-	border: 2px solid rgba(255, 170, 0, 0.3);
-}
-@keyframes cd-foil-shimmer {
-	0%, 100% { background-position: 0% 50%; }
-	50% { background-position: 100% 50%; }
+/* Deck builder: holo layers fill their art container (no art-window crop) */
+.db-card-art .holo-foil,
+.db-card-art .holo-glitter,
+.cd-front-art .holo-foil,
+.cd-front-art .holo-glitter {
+	-webkit-mask-size: 100% 100%;
+	-webkit-mask-position: center center;
+	mask-size: 100% 100%;
+	mask-position: center center;
 }
 
 /* Front face mana gem */
