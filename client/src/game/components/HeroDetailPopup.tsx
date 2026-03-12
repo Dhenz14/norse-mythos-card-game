@@ -10,6 +10,8 @@ import { useKingDivineCommandDisplay } from '../hooks/useKingDivineCommandDispla
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { assetPath } from '../utils/assetPath';
 import { getEditionInfo } from '../utils/heroRarity';
+import { getHoloTier } from '../hooks/useHoloTracking';
+import './styles/holoEffect.css';
 
 interface HeroDetailPopupProps {
 	hero: ChessPieceHero | null;
@@ -259,147 +261,18 @@ const styles = `
     --bg-y: 50%;
   }
 
-  /* --- Layer 1: SHINE — rainbow spectrum, color-dodge blend --- */
-  /* Ported from simeydotme/pokemon-cards-css:
-     - Multi-background: rainbow at 110deg + scanlines, blended via background-blend-mode
-     - Dynamic brightness from --pointer-from-center
-     - Luminosity ::after mask focuses rainbow near cursor */
-  .portrait-holo-shine {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
+  /* --- Holo layers: use shared holoEffect.css system --- */
+  /* Override mask to fill entire portrait area (no art-window crop) */
+  .hero-popup-portrait .holo-foil,
+  .hero-popup-portrait .holo-glitter {
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-position: center center;
+    mask-size: 100% 100%;
+    mask-position: center center;
     z-index: 11;
-    border-radius: 4px;
-    overflow: hidden;
-
-    background-image:
-      repeating-linear-gradient(
-        110deg,
-        hsl(2, 100%, 73%) 0%,
-        hsl(53, 100%, 69%) 12%,
-        hsl(93, 100%, 69%) 25%,
-        hsl(176, 100%, 76%) 40%,
-        hsl(228, 100%, 74%) 55%,
-        hsl(283, 100%, 73%) 70%,
-        hsl(2, 100%, 73%) 85%,
-        hsl(93, 100%, 69%) 100%
-      ),
-      repeating-linear-gradient(
-        90deg,
-        transparent 0px, transparent 1px,
-        rgba(255, 255, 255, 0.06) 1px, rgba(255, 255, 255, 0.06) 2px
-      );
-
-    background-size: 200% 800%, 100% 2px;
-    background-position:
-      calc(((50% - var(--bg-x)) * 2.6) + 50%)
-      calc(((50% - var(--bg-y)) * 3.5) + 50%),
-      center center;
-    background-blend-mode: overlay;
-    mix-blend-mode: color-dodge;
-    filter:
-      brightness(calc((var(--pointer-from-center) * 0.4) + 0.4))
-      contrast(2.75)
-      saturate(0.65);
-
-    opacity: 0;
-    transition: opacity 0.3s ease;
   }
-
-  /* Shine ::before — perpendicular bar pattern (hard-light) */
-  .portrait-holo-shine::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 4px;
-    background-image: repeating-linear-gradient(
-      133deg,
-      hsl(283, 100%, 73%) 0%,
-      hsl(176, 100%, 76%) 20%,
-      hsl(53, 100%, 69%) 40%,
-      hsl(2, 100%, 73%) 60%,
-      hsl(93, 100%, 69%) 80%,
-      hsl(228, 100%, 74%) 100%
-    );
-    background-size: 250% 350%;
-    background-position: var(--bg-x, 50%) var(--bg-y, 50%);
-    mix-blend-mode: hard-light;
-    opacity: 0.35;
-  }
-
-  /* Shine ::after — luminosity vignette (bright near cursor, dark edges) */
-  .portrait-holo-shine::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 4px;
-    background-image: radial-gradient(
-      farthest-corner circle at var(--pointer-x) var(--pointer-y),
-      hsla(0, 0%, 90%, 0.8) 10%,
-      hsla(0, 0%, 60%, 0.3) 45%,
-      hsl(0, 0%, 0%) 90%
-    );
-    mix-blend-mode: luminosity;
-    filter: brightness(0.6) contrast(4);
-  }
-
-  .card-front.rarity-common .portrait-holo-shine { opacity: 0; }
-  .card-front.rarity-rare .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.5);
-  }
-  .card-front.rarity-epic .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.6);
-  }
-  .card-front.rarity-mythic .portrait-holo-shine {
-    opacity: calc(var(--card-opacity) * 0.7);
-  }
-
-  /* --- Layer 2: GLARE — cursor spotlight, overlay blend --- */
-  .portrait-holo-glare {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
+  .hero-popup-portrait .holo-glare {
     z-index: 12;
-    border-radius: 4px;
-    overflow: hidden;
-
-    background-image: radial-gradient(
-      farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
-      hsla(0, 0%, 100%, 0.8) 10%,
-      hsla(0, 0%, 100%, 0.65) 20%,
-      hsla(0, 0%, 0%, 0.5) 90%
-    );
-
-    mix-blend-mode: overlay;
-    filter: brightness(0.85) contrast(1.5);
-
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  /* Glare ::after — secondary screen-blend highlight for depth */
-  .portrait-holo-glare::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 4px;
-    background: radial-gradient(
-      circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
-      hsla(180, 80%, 90%, 0.25) 0%,
-      transparent 40%
-    );
-    mix-blend-mode: screen;
-  }
-
-  .card-front.rarity-common .portrait-holo-glare { opacity: 0; }
-  .card-front.rarity-rare .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.3);
-  }
-  .card-front.rarity-epic .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.4);
-  }
-  .card-front.rarity-mythic .portrait-holo-glare {
-    opacity: calc(var(--card-opacity) * 0.5);
   }
 
   /* --- Layer 4: DEPTH SHADOW — moves opposite to cursor for embossed/raised feel --- */
@@ -1401,7 +1274,7 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 
 							{/* ===== FRONT FACE — Portrait ===== */}
 							<div
-								className={`card-front rarity-${edition.rarity}`}
+								className={`card-front rarity-${edition.rarity} ${getHoloTier(edition.rarity) || ''} holo-active`}
 								onClick={handleFlip}
 								style={{
 									'--pointer-x': `${mousePercent.x}%`,
@@ -1426,8 +1299,9 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 										/>
 									)}
 
-									<div className="portrait-holo-shine" />
-									<div className="portrait-holo-glare" />
+									<div className="holo-foil" />
+									<div className="holo-glitter" />
+									<div className="holo-glare" />
 									<div
 										className="portrait-depth-shadow"
 										style={{
