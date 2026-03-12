@@ -1902,8 +1902,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	85010: '/art/9c72-799a4917.webp',
 	85011: '/art/1f12-c371d891.webp',
 	85020: '/art/ef80-c0086c13.webp',
-	85001001: '/art/82ae-8fd7158e.webp',
-	85001002: '/art/d74e-bdd750c1.webp',
+	85012: '/art/d74e-bdd750c1.webp',
 
 };
 

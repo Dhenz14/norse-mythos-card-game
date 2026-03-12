@@ -31,7 +31,7 @@ import { sha256Hash, canonicalStringify } from './hashUtils';
 import { verifyHiveSignature } from './hiveSignatureVerifier';
 import { RAGNAROK_ACCOUNT, NFT_ART_BASE_URL } from './hiveConfig';
 import { buildStampWithUrls, buildOfficialMint } from './explorerLinks';
-import { getCardById } from '../../game/data/allCards';
+import allCards, { getCardById } from '../../game/data/allCards';
 import { getCardArtPath } from '../../game/utils/art/artMapping';
 import { getRewardById } from './tournamentRewards';
 
@@ -915,20 +915,37 @@ function lcgNext(seed: number): number {
 	return (seed * 16807) % 2147483647;
 }
 
-const CARD_RANGES: Record<string, [number, number]> = {
-	starter:  [1000, 1999],
-	booster:  [1000, 3999],
-	standard: [1000, 3999],
-	premium:  [1000, 8999],
-	mythic:   [20000, 29999],
-	class:    [4000, 8999],
-	mega:     [1000, 8999],
-	norse:    [20000, 29999],
+const PACK_ID_RANGES: Record<string, [number, number][]> = {
+	starter:  [[1000, 3999], [20000, 29999]],
+	booster:  [[1000, 3999], [20000, 31999]],
+	standard: [[1000, 8999], [20000, 31999]],
+	premium:  [[1000, 8999], [20000, 40999], [50000, 50999]],
+	mythic:   [[20000, 29999], [30001, 31999], [95001, 96999]],
+	class:    [[4000, 8999], [35001, 40999]],
+	mega:     [[1000, 8999], [20000, 40999], [50000, 50999], [85001, 86999]],
+	norse:    [[20000, 29999], [30001, 31999]],
 };
 
+let _mintableCache: Map<string, number[]> | null = null;
+
+function getMintableIds(packType: string): number[] {
+	if (!_mintableCache) {
+		_mintableCache = new Map();
+		const collectible = allCards.filter(c => c.collectible !== false && typeof c.id === 'number');
+		for (const [type, ranges] of Object.entries(PACK_ID_RANGES)) {
+			const ids = collectible
+				.filter(c => ranges.some(([lo, hi]) => (c.id as number) >= lo && (c.id as number) <= hi))
+				.map(c => c.id as number);
+			_mintableCache.set(type, ids);
+		}
+	}
+	return _mintableCache.get(packType) ?? _mintableCache.get('standard') ?? [];
+}
+
 function mintedCardId(packType: string, lcgValue: number): number {
-	const [start, end] = CARD_RANGES[packType] ?? CARD_RANGES.standard;
-	return start + (lcgValue % (end - start + 1));
+	const ids = getMintableIds(packType);
+	if (ids.length === 0) return 0;
+	return ids[lcgValue % ids.length];
 }
 
 async function applyPackOpen(
@@ -982,7 +999,8 @@ async function applyPackOpen(
 		if (counter && counter.minted >= counter.cap) continue;
 
 		const cardDef = getCardById(cardIds[i]);
-		const artPath = cardDef ? getCardArtPath(cardDef.name, cardIds[i]) : null;
+		if (!cardDef) continue; // Skip phantom IDs with no card definition
+		const artPath = getCardArtPath(cardDef.name, cardIds[i]);
 
 		const card: HiveCardAsset = {
 			uid,
@@ -997,9 +1015,9 @@ async function applyPackOpen(
 			lastTransferTrxId: op.trxId,
 			mintBlockNum: op.blockNum,
 			mintTrxId: op.trxId,
-			name: cardDef?.name ?? '',
-			type: cardDef?.type ?? 'minion',
-			race: cardDef?.race || undefined,
+			name: cardDef.name,
+			type: cardDef.type,
+			race: cardDef.race || undefined,
 			artPath: artPath || undefined,
 			image: artPath ? `${NFT_ART_BASE_URL}${artPath}` : undefined,
 			provenanceChain: [buildStampWithUrls('', op.broadcaster, op.trxId, op.blockNum, op.timestamp, op.broadcaster)],
