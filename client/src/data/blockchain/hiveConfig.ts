@@ -11,9 +11,10 @@ export const RAGNAROK_TREASURY_ACCOUNT = 'ragnarok-treasury';
 // On-chain NFT metadata URLs (ERC-1155 standard for blockchain explorers/marketplaces).
 // NOT used for in-game art rendering — all runtime art loads via assetPath() from local files.
 // Players download all art; each player is their own CDN. No centralized servers.
-export const NFT_ART_BASE_URL = 'https://ragnarok.cards/art';
+// Points to GitHub Pages deployment — permanent, decentralized hosting.
+export const NFT_ART_BASE_URL = 'https://dhenz14.github.io/norse-mythos-card-game';
 
-export const EXTERNAL_URL_BASE = 'https://ragnarok.cards/card';
+export const EXTERNAL_URL_BASE = 'https://dhenz14.github.io/norse-mythos-card-game';
 
 export const HIVE_EXPLORER_URL = 'https://hivehub.dev/tx/';
 export const HIVE_BLOCK_EXPLORER_URL = 'https://hivehub.dev/b/';
