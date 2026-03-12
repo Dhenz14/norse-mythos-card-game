@@ -1163,6 +1163,16 @@ vercel --prod                 # Deploy to Vercel
   - Deferred `transactionQueueStore` auto-cleanup from immediate to `setTimeout(0)`
 - TypeScript: 0 errors
 
+### Completed (Card Art Batch 2 + God-Minion Rename)
+
+- Imported 317 new card art files (webp) from external art pack, mapped 307 new entries to `CARD_ID_TO_ART`
+- Total art files on disk: 1,358; total `CARD_ID_TO_ART` entries: ~783 (8 removed for god-minions)
+- Renamed 23 god-minion cards that shared names with playable heroes (e.g., "Odin, Allfather" → "Echo of the Allfather")
+- Pattern: Norse/Greek gods use "Echo of [Title]" naming; demigods/heroes use generic titles (e.g., "Gorgon Slayer", "Immortal Warrior")
+- Removed 8 hero-art mappings from god-minion cards (IDs 20001-20004, 20020, 20106, 20116, 28002) — hero art reserved for playable heroes only
+- Renamed tokens: "Aegir's Hand" → "Tidal Hand" (90202), "Spirit of Vidar" → "Undying Spirit" (32077)
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)

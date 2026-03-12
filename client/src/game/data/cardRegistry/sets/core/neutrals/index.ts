@@ -2688,7 +2688,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20001,
-    name: 'Odin, Allfather',
+    name: 'Echo of the Allfather',
     manaCost: 9,
     attack: 8,
     health: 8,
@@ -2710,7 +2710,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20002,
-    name: 'Zeus, Sky Sovereign',
+    name: 'Echo of the Sky Sovereign',
     manaCost: 10,
     attack: 10,
     health: 10,
@@ -2731,7 +2731,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20003,
-    name: 'Thor, Thunderlord',
+    name: 'Echo of the Thunderlord',
     manaCost: 8,
     attack: 7,
     health: 7,
@@ -2752,7 +2752,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20004,
-    name: 'Loki, Trickster God',
+    name: 'Echo of the Trickster',
     manaCost: 5,
     attack: 5,
     health: 5,
@@ -2772,7 +2772,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 28001,
-    name: 'Hera, Queen of Gods',
+    name: 'Echo of the Divine Queen',
     manaCost: 7,
     attack: 5,
     health: 8,
@@ -2787,7 +2787,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 28002,
-    name: 'Freya, Valkyrie Queen',
+    name: 'Echo of the Valkyrie Queen',
     manaCost: 6,
     attack: 4,
     health: 6,
@@ -2807,7 +2807,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20016,
-    name: 'Aphrodite, Love Goddess',
+    name: 'Enchantress of Sessrumnir',
     manaCost: 4,
     attack: 3,
     health: 5,
@@ -2828,7 +2828,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20017,
-    name: 'Dionysus, Revelry Lord',
+    name: 'Reveler of the Mead Hall',
     manaCost: 5,
     attack: 5,
     health: 4,
@@ -2851,7 +2851,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20020,
-    name: 'Heimdall, Bifrost Watcher',
+    name: 'Echo of the Bifrost Watcher',
     manaCost: 4,
     attack: 3,
     health: 6,
@@ -2866,7 +2866,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20021,
-    name: 'Hecate, Crossroads Witch',
+    name: 'Witch of the Crossroads',
     manaCost: 6,
     attack: 4,
     health: 6,
@@ -2888,7 +2888,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20024,
-    name: 'Heracles, Lion Slayer',
+    name: 'Champion of the Twelve Labors',
     manaCost: 6,
     attack: 6,
     health: 6,
@@ -2903,7 +2903,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20025,
-    name: 'Perseus, Gorgon Slayer',
+    name: 'Gorgon Slayer',
     manaCost: 5,
     attack: 5,
     health: 5,
@@ -2924,7 +2924,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20026,
-    name: 'Achilles, Immortal Warrior',
+    name: 'Immortal Warrior',
     manaCost: 5,
     attack: 4,
     health: 6,
@@ -2944,7 +2944,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20050,
-    name: 'Baldr, the Radiant',
+    name: 'Echo of the Radiant One',
     manaCost: 8,
     attack: 6,
     health: 8,
@@ -2964,7 +2964,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20100,
-    name: 'Bragi, Bard of the Gods',
+    name: 'Bard of Asgard',
     manaCost: 3,
     attack: 2,
     health: 4,
@@ -3009,7 +3009,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20104,
-    name: 'Hephaestus, Divine Smith',
+    name: 'Smith of Olympus',
     manaCost: 5,
     attack: 4,
     health: 5,
@@ -3031,7 +3031,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20105,
-    name: 'Ares, War Incarnate',
+    name: 'Avatar of War',
     manaCost: 7,
     attack: 6,
     health: 6,
@@ -3046,7 +3046,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20106,
-    name: 'Demeter, Harvest Goddess',
+    name: 'Harvest Priestess',
     manaCost: 5,
     attack: 3,
     health: 6,
@@ -3104,7 +3104,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20109,
-    name: 'Nyx, Night Primordial',
+    name: 'Shade of Primordial Night',
     manaCost: 4,
     attack: 4,
     health: 4,
@@ -3148,7 +3148,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20111,
-    name: 'Tyr, One-Handed God',
+    name: 'Echo of the One-Handed God',
     manaCost: 4,
     attack: 5,
     health: 4,
@@ -3170,7 +3170,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20112,
-    name: 'Idunn, Apple of Youth',
+    name: 'Keeper of the Golden Apples',
     manaCost: 4,
     attack: 3,
     health: 5,
@@ -3248,7 +3248,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20116,
-    name: 'Eir, Valkyrie Healer',
+    name: 'Healer of Valhalla',
     manaCost: 3,
     attack: 2,
     health: 4,
@@ -5048,13 +5048,13 @@ const legendaryNeutralMinions: CardData[] = [
   // ============================================
   {
     id: 90201,
-    name: "Aegir, Tidehunter",
+    name: "Tidehunter of the Deep",
     manaCost: 8,
     attack: 7,
     health: 7,
     type: 'minion',
     rarity: 'epic',
-    description: "Colossal +2. Battlecry: Summon two Aegir's Hands. Whenever an Aegir's Hand attacks, add a random Elemental to your hand.",
+    description: "Colossal +2. Battlecry: Summon two Tidal Hands. Whenever a Tidal Hand attacks, add a random Elemental to your hand.",
     flavorText: "Lord of the ocean giants, his hands reach across the nine seas.",
     keywords: ['colossal', 'battlecry'],
     class: 'Neutral',
@@ -5068,14 +5068,14 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 90202,
-    name: "Aegir's Hand",
+    name: "Tidal Hand",
     manaCost: 2,
     attack: 4,
     health: 2,
     type: 'minion',
     rarity: 'rare',
-    description: "Part of Aegir, Tidehunter. After this attacks, add a random Elemental to your hand.",
-    flavorText: "The hands of the sea god grasp treasures from the deep.",
+    description: "Part of Tidehunter of the Deep. After this attacks, add a random Elemental to your hand.",
+    flavorText: "The hands of the deep grasp treasures from below.",
     keywords: [],
     class: 'Neutral',
     collectible: false,
@@ -5233,7 +5233,7 @@ const legendaryNeutralMinions: CardData[] = [
   // ============================================
   {
     id: 90401,
-    name: "Artemis the Huntress",
+    name: "Huntress of the Wilds",
     manaCost: 3,
     attack: 2,
     health: 4,
@@ -6653,14 +6653,14 @@ const mythologyEpicMinions: CardData[] = [
 const mythologyLegendaryMinions: CardData[] = [
   {
     id: 32056,
-    name: 'Vidar the Undying',
+    name: 'Echo of the Undying Son',
     manaCost: 6,
     attack: 4,
     health: 5,
     type: 'minion',
     rarity: 'epic',
-    description: 'Deathrattle: Summon a 4/5 Spirit of Vidar.',
-    flavorText: 'Vidar, son of Odin, is destined to survive Ragnarok.',
+    description: 'Deathrattle: Summon a 4/5 Undying Spirit.',
+    flavorText: 'An echo of the one who is destined to survive Ragnarok.',
     keywords: ['deathrattle'],
     class: 'Neutral',
     collectible: true,
@@ -6901,7 +6901,7 @@ const mythologyNorseCards: CardData[] = [
   },
   {
     id: 32086,
-    name: 'Bragi the Twice-Speaker',
+    name: 'Bard of the Twice-Spoken Word',
     manaCost: 3,
     attack: 2,
     health: 4,
@@ -8250,7 +8250,7 @@ const mythologyTokens: CardData[] = [
   },
   {
     id: 32077,
-    name: 'Spirit of Vidar',
+    name: 'Undying Spirit',
     manaCost: 4,
     attack: 4,
     health: 5,
@@ -9190,7 +9190,7 @@ const controlRemovalCards: CardData[] = [
   },
   {
     id: 33246,
-    name: 'Prometheus Unbound',
+    name: 'Unbound Fire Titan',
     description: 'At the end of your turn, deal 2 damage to ALL other characters.',
     flavorText: 'The fire baron\'s fury knows no friend or foe.',
     type: 'minion',
