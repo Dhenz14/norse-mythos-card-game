@@ -5,7 +5,7 @@ export type DailyQuestType =
 	| 'deal_damage'
 	| 'destroy_minions'
 	| 'use_hero_power'
-	| 'play_legendary'
+	| 'play_mythic'
 	| 'play_weapons'
 	| 'win_with_class'
 	| 'play_cards';
@@ -32,8 +32,8 @@ export const QUEST_POOL: QuestTemplate[] = [
 	{ type: 'destroy_minions', title: 'Bane of the Jotnar', description: 'Destroy {goal} enemy minions', goal: 15, reward: { rune: 50, xp: 70 } },
 	{ type: 'use_hero_power', title: 'Channel the Gods', description: 'Use your hero power {goal} times', goal: 5, reward: { rune: 20, xp: 35 } },
 	{ type: 'use_hero_power', title: 'Divine Authority', description: 'Use your hero power {goal} times', goal: 10, reward: { rune: 40, xp: 60 } },
-	{ type: 'play_legendary', title: 'Summon the Aesir', description: 'Play {goal} mythic cards', goal: 2, reward: { rune: 35, xp: 50 } },
-	{ type: 'play_legendary', title: 'Pantheon Assembled', description: 'Play {goal} mythic cards', goal: 4, reward: { rune: 60, xp: 80 } },
+	{ type: 'play_mythic', title: 'Summon the Aesir', description: 'Play {goal} mythic cards', goal: 2, reward: { rune: 35, xp: 50 } },
+	{ type: 'play_mythic', title: 'Pantheon Assembled', description: 'Play {goal} mythic cards', goal: 4, reward: { rune: 60, xp: 80 } },
 	{ type: 'play_weapons', title: 'Forge of Brokkr', description: 'Equip {goal} weapons', goal: 3, reward: { rune: 25, xp: 40 } },
 	{ type: 'play_cards', title: 'Card Collector', description: 'Play {goal} cards from your hand', goal: 15, reward: { rune: 20, xp: 35 } },
 	{ type: 'play_cards', title: 'The Great Saga', description: 'Play {goal} cards from your hand', goal: 30, reward: { rune: 45, xp: 65 } },

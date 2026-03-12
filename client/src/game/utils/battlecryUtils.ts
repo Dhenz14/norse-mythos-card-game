@@ -720,8 +720,8 @@ export function executeBattlecry(
       case 'summon_horseman':
         return executeSummonHorsemanBattlecry(newState, battlecry);
 
-      case 'summon_random_legendary':
-        return executeSummonRandomLegendaryBattlecry(newState);
+      case 'summon_random_mythic':
+        return executeSummonRandomMythicBattlecry(newState);
 
       case 'summon_splitting':
         return executeSummonSplittingBattlecry(newState, battlecry);
@@ -3885,7 +3885,7 @@ function executeSummonHorsemanBattlecry(
   return state;
 }
 
-function executeSummonRandomLegendaryBattlecry(
+function executeSummonRandomMythicBattlecry(
   state: GameState
 ): GameState {
   if (!state.players.player.battlefield) state.players.player.battlefield = [];

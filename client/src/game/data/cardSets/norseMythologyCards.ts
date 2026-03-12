@@ -76,7 +76,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: false
   },
 
-  // ===== DARK LEGENDARY CREATURES =====
+  // ===== DARK MYTHIC CREATURES =====
 
   // Fenrir, the Bound Wolf
   {
@@ -108,7 +108,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'bleed',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "dark_legendary"],
+    categories: ["norse_mythology", "dark_mythic"],
     collectible: true
   },
 
@@ -143,7 +143,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'poison_dot',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "dark_legendary"],
+    categories: ["norse_mythology", "dark_mythic"],
     collectible: true
   },
 
@@ -177,7 +177,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'weakness',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "dark_legendary"],
+    categories: ["norse_mythology", "dark_mythic"],
     collectible: true
   },
 
@@ -211,7 +211,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'poison_dot',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "dark_legendary"],
+    categories: ["norse_mythology", "dark_mythic"],
     collectible: true
   },
 
@@ -242,7 +242,7 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 1,
       buffHealth: 1
     },
-    categories: ["norse_mythology", "dark_legendary"],
+    categories: ["norse_mythology", "dark_mythic"],
     collectible: true
   },
 
@@ -273,11 +273,11 @@ export const norseMythologyCards: CardData[] = [
       summonCardId: 4313,
       value: 1
     },
-    categories: ["norse_mythology", "dark_legendary"],
+    categories: ["norse_mythology", "dark_mythic"],
     collectible: true
   },
 
-  // ===== MYTHOLOGICAL LEGENDARY CREATURES =====
+  // ===== MYTHOLOGICAL MYTHIC CREATURES =====
 
   // Hafgufa, the Sea-Mist
   {
@@ -311,7 +311,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "all_enemies",
       value: 5
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -342,7 +342,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "all_other_minions",
       value: 3
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -375,7 +375,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "all_enemies",
       value: 5
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -405,7 +405,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "friendly_hero",
       value: "damage_dealt"
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -430,7 +430,7 @@ export const norseMythologyCards: CardData[] = [
       keyword: "poisonous",
       duration: "this_turn"
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -459,7 +459,7 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 0,
       buffHealth: 2
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -487,7 +487,7 @@ export const norseMythologyCards: CardData[] = [
       type: "heal_self",
       value: 3
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -515,7 +515,7 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 1,
       buffHealth: 0
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -544,7 +544,7 @@ export const norseMythologyCards: CardData[] = [
       keyword: "stealth",
       duration: "until_next_turn"
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -572,7 +572,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "random_enemy_minion" as BattlecryTargetType,
       requiresTarget: false
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
@@ -598,11 +598,11 @@ export const norseMythologyCards: CardData[] = [
       type: "destroy_frozen",
       condition: "target_is_frozen"
     },
-    categories: ["norse_mythology", "mythological_legendary"],
+    categories: ["norse_mythology", "mythological_mythic"],
     collectible: true
   },
 
-  // ===== DARK LEGENDARY TOKEN CARDS =====
+  // ===== DARK MYTHIC TOKEN CARDS =====
 
   // Shadow Hound (token for Garm)
   {
@@ -702,7 +702,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: false
   },
 
-  // ===== FIRE ELEMENT LEGENDARY CREATURES =====
+  // ===== FIRE ELEMENT MYTHIC CREATURES =====
 
   // Muspel's Wyrm
   {
@@ -729,7 +729,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'burn',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "fire_legendary"],
+    categories: ["norse_mythology", "fire_mythic"],
     collectible: true
   },
 
@@ -758,7 +758,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'vulnerable',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "fire_legendary"],
+    categories: ["norse_mythology", "fire_mythic"],
     collectible: true
   },
 
@@ -790,7 +790,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'burn',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "fire_legendary"],
+    categories: ["norse_mythology", "fire_mythic"],
     collectible: true
   },
 
@@ -819,7 +819,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'burn',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "fire_legendary"],
+    categories: ["norse_mythology", "fire_mythic"],
     collectible: true
   },
 
@@ -849,7 +849,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'paralysis',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "fire_legendary"],
+    categories: ["norse_mythology", "fire_mythic"],
     collectible: true
   },
 
@@ -866,11 +866,11 @@ export const norseMythologyCards: CardData[] = [
     type: "minion",
     class: "Neutral",
     heroClass: "neutral",
-    categories: ["norse_mythology", "fire_legendary", "token"],
+    categories: ["norse_mythology", "fire_mythic", "token"],
     collectible: false
   },
 
-  // ===== EARTH/GRASS ELEMENT LEGENDARY CREATURES =====
+  // ===== EARTH/GRASS ELEMENT MYTHIC CREATURES =====
 
   // Eikthyrnir, the Stag of Valhalla
   {
@@ -903,7 +903,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'poison_dot',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "earth_legendary"],
+    categories: ["norse_mythology", "earth_mythic"],
     collectible: true
   },
 
@@ -935,7 +935,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'marked',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "earth_legendary"],
+    categories: ["norse_mythology", "earth_mythic"],
     collectible: true
   },
 
@@ -965,7 +965,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'freeze',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "earth_legendary"],
+    categories: ["norse_mythology", "earth_mythic"],
     collectible: true
   },
 
@@ -994,7 +994,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'freeze',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "earth_legendary"],
+    categories: ["norse_mythology", "earth_mythic"],
     collectible: true
   },
 
@@ -1028,7 +1028,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'freeze',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "earth_legendary"],
+    categories: ["norse_mythology", "earth_mythic"],
     collectible: true
   },
 
@@ -1046,7 +1046,7 @@ export const norseMythologyCards: CardData[] = [
     class: "Neutral",
     heroClass: "neutral",
     keywords: ["taunt"],
-    categories: ["norse_mythology", "earth_legendary", "token"],
+    categories: ["norse_mythology", "earth_mythic", "token"],
     collectible: false
   },
 
@@ -1075,7 +1075,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'freeze',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "earth_legendary"],
+    categories: ["norse_mythology", "earth_mythic"],
     collectible: true
   },
 
@@ -1104,7 +1104,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "friendly_minions",
       value: 1
     },
-    categories: ["norse_mythology", "earth_legendary"],
+    categories: ["norse_mythology", "earth_mythic"],
     collectible: true
   },
 
@@ -1128,11 +1128,11 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 0,
       buffHealth: 1
     },
-    categories: ["norse_mythology", "earth_legendary"],
+    categories: ["norse_mythology", "earth_mythic"],
     collectible: true
   },
 
-  // ===== HOLY/LIGHT ELEMENT LEGENDARY CREATURES =====
+  // ===== HOLY/LIGHT ELEMENT MYTHIC CREATURES =====
 
   // Huginn, Odin's Raven of Thought
   {
@@ -1161,7 +1161,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'marked',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "holy_legendary"],
+    categories: ["norse_mythology", "holy_mythic"],
     collectible: true
   },
 
@@ -1193,7 +1193,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'marked',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "holy_legendary"],
+    categories: ["norse_mythology", "holy_mythic"],
     collectible: true
   },
 
@@ -1225,7 +1225,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'vulnerable',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "holy_legendary"],
+    categories: ["norse_mythology", "holy_mythic"],
     collectible: true
   },
 
@@ -1263,7 +1263,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'burn',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "holy_legendary"],
+    categories: ["norse_mythology", "holy_mythic"],
     collectible: true
   },
 
@@ -1292,7 +1292,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'marked',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "holy_legendary"],
+    categories: ["norse_mythology", "holy_mythic"],
     collectible: true
   },
 
@@ -1320,11 +1320,11 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'marked',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "holy_legendary"],
+    categories: ["norse_mythology", "holy_mythic"],
     collectible: true
   },
 
-  // ===== WATER ELEMENT LEGENDARY CREATURES =====
+  // ===== WATER ELEMENT MYTHIC CREATURES =====
 
   // Abyssal Kraken
   {
@@ -1355,7 +1355,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'freeze',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "water_legendary"],
+    categories: ["norse_mythology", "water_mythic"],
     collectible: true
   },
 
@@ -1384,7 +1384,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'freeze',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "water_legendary"],
+    categories: ["norse_mythology", "water_mythic"],
     collectible: true
   },
 
@@ -1413,7 +1413,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'weakness',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "water_legendary"],
+    categories: ["norse_mythology", "water_mythic"],
     collectible: true
   },
 
@@ -1441,7 +1441,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'weakness',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "water_legendary"],
+    categories: ["norse_mythology", "water_mythic"],
     collectible: true
   },
 
@@ -1468,7 +1468,7 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'freeze',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "water_legendary"],
+    categories: ["norse_mythology", "water_mythic"],
     collectible: true
   },
 
@@ -1489,7 +1489,7 @@ export const norseMythologyCards: CardData[] = [
       type: "freeze_random",
       targetType: "random_enemy_minion"
     },
-    categories: ["norse_mythology", "water_legendary", "token"],
+    categories: ["norse_mythology", "water_mythic", "token"],
     collectible: false
   },
 
@@ -1514,11 +1514,11 @@ export const norseMythologyCards: CardData[] = [
       value: 1,
       requiresTarget: true
     },
-    categories: ["norse_mythology", "water_legendary"],
+    categories: ["norse_mythology", "water_mythic"],
     collectible: true
   },
 
-  // ===== LIGHTNING ELEMENT LEGENDARY CREATURES =====
+  // ===== LIGHTNING ELEMENT MYTHIC CREATURES =====
 
   // Hábrók, the Storm Hawk
   {
@@ -1541,7 +1541,7 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 1,
       buffHealth: 0
     },
-    categories: ["norse_mythology", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_mythic"],
     collectible: true
   },
 
@@ -1565,7 +1565,7 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 1,
       buffHealth: 0
     },
-    categories: ["norse_mythology", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_mythic"],
     collectible: true
   },
 
@@ -1596,7 +1596,7 @@ export const norseMythologyCards: CardData[] = [
       value: -2,
       duration: "end_of_turn"
     },
-    categories: ["norse_mythology", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_mythic"],
     collectible: true
   },
 
@@ -1625,7 +1625,7 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 1,
       buffHealth: 0
     },
-    categories: ["norse_mythology", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_mythic"],
     collectible: true
   },
 
@@ -1649,7 +1649,7 @@ export const norseMythologyCards: CardData[] = [
       value: 1,
       duration: "next_spell"
     },
-    categories: ["norse_mythology", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_mythic"],
     collectible: true
   },
 
@@ -1673,7 +1673,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "enemy_minions",
       value: 2
     },
-    categories: ["norse_mythology", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_mythic"],
     collectible: true
   },
 
@@ -1697,7 +1697,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "enemy_minions",
       value: 1
     },
-    categories: ["norse_mythology", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_mythic"],
     collectible: true
   },
 
@@ -1728,7 +1728,7 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 0,
       buffHealth: 1
     },
-    categories: ["norse_mythology", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_mythic"],
     collectible: true
   },
 
@@ -1747,7 +1747,7 @@ export const norseMythologyCards: CardData[] = [
     heroClass: "neutral",
     race: "Beast",
     keywords: ["charge"],
-    categories: ["norse_mythology", "lightning_legendary", "token"],
+    categories: ["norse_mythology", "lightning_mythic", "token"],
     collectible: false
   },
 
@@ -1976,7 +1976,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: false
   },
 
-  // ===== FIRE MINIONS (Evolution Pets - Legendary) =====
+  // ===== FIRE MINIONS (Evolution Pets - Mythic) =====
 
   // Surtr's Spawn (Evolution)
   {
@@ -2003,7 +2003,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "random_enemy",
       value: 1
     },
-    categories: ["norse_mythology", "fire_minion", "fire_legendary"],
+    categories: ["norse_mythology", "fire_minion", "fire_mythic"],
     collectible: false
   },
 
@@ -2026,7 +2026,7 @@ export const norseMythologyCards: CardData[] = [
       type: "on_burn_applied",
       description: "When Burn is applied, give a random friendly Fire minion +1 Attack."
     },
-    categories: ["norse_mythology", "fire_minion", "fire_legendary"],
+    categories: ["norse_mythology", "fire_minion", "fire_mythic"],
     collectible: false
   },
 
@@ -2050,7 +2050,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "enemy_minions" as BattlecryTargetType,
       value: 3
     },
-    categories: ["norse_mythology", "fire_minion", "fire_legendary"],
+    categories: ["norse_mythology", "fire_minion", "fire_mythic"],
     collectible: false
   },
 
@@ -2089,7 +2089,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "enemy_hero",
       value: 1
     },
-    categories: ["norse_mythology", "fire_minion", "fire_legendary"],
+    categories: ["norse_mythology", "fire_minion", "fire_mythic"],
     collectible: false
   },
 
@@ -2113,7 +2113,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "all_enemies" as BattlecryTargetType,
       value: 2
     },
-    categories: ["norse_mythology", "fire_minion", "fire_legendary"],
+    categories: ["norse_mythology", "fire_minion", "fire_mythic"],
     collectible: false
   },
 
@@ -2136,7 +2136,7 @@ export const norseMythologyCards: CardData[] = [
       type: "on_burn_trigger",
       description: "When Burn triggers, deal 1 damage to a random enemy."
     },
-    categories: ["norse_mythology", "fire_minion", "fire_legendary"],
+    categories: ["norse_mythology", "fire_minion", "fire_mythic"],
     collectible: false
   },
 
@@ -2165,7 +2165,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "all_enemies",
       value: 1
     },
-    categories: ["norse_mythology", "fire_minion", "fire_legendary"],
+    categories: ["norse_mythology", "fire_minion", "fire_mythic"],
     collectible: false
   },
 
@@ -2330,7 +2330,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: false
   },
 
-  // Þundrvættr, the Storm Spirit (Evolution - Legendary)
+  // Þundrvættr, the Storm Spirit (Evolution - Mythic)
   {
     id: 5306,
     name: "Þundrvættr, the Storm Spirit",
@@ -2354,11 +2354,11 @@ export const norseMythologyCards: CardData[] = [
       type: "on_enemy_play",
       description: "When an enemy minion is played, deal 1 damage to it."
     },
-    categories: ["norse_mythology", "lightning_minion", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_minion", "lightning_mythic"],
     collectible: false
   },
 
-  // Skoll's Storm (Evolution - Legendary)
+  // Skoll's Storm (Evolution - Mythic)
   {
     id: 5307,
     name: "Skoll's Storm",
@@ -2393,11 +2393,11 @@ export const norseMythologyCards: CardData[] = [
         }
       ]
     },
-    categories: ["norse_mythology", "lightning_minion", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_minion", "lightning_mythic"],
     collectible: false
   },
 
-  // Sleipnir's Charge (Evolution - Legendary)
+  // Sleipnir's Charge (Evolution - Mythic)
   {
     id: 5308,
     name: "Sleipnir's Charge",
@@ -2427,11 +2427,11 @@ export const norseMythologyCards: CardData[] = [
       statusEffect: 'freeze',
       targetType: 'target'
     },
-    categories: ["norse_mythology", "lightning_minion", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_minion", "lightning_mythic"],
     collectible: false
   },
 
-  // Frey's Thunder (Evolution - Legendary)
+  // Frey's Thunder (Evolution - Mythic)
   {
     id: 5309,
     name: "Frey's Thunder",
@@ -2466,7 +2466,7 @@ export const norseMythologyCards: CardData[] = [
         }
       ]
     },
-    categories: ["norse_mythology", "lightning_minion", "lightning_legendary"],
+    categories: ["norse_mythology", "lightning_minion", "lightning_mythic"],
     collectible: false
   },
 
@@ -2579,7 +2579,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: false
   },
 
-  // Hel's Stallion (Evolution - Legendary)
+  // Hel's Stallion (Evolution - Mythic)
   {
     id: 5404,
     name: "Hel's Stallion",
@@ -2605,11 +2605,11 @@ export const norseMythologyCards: CardData[] = [
       value: 3,
       requiresTarget: true
     },
-    categories: ["norse_mythology", "dark_minion", "dark_legendary"],
+    categories: ["norse_mythology", "dark_minion", "dark_mythic"],
     collectible: false
   },
 
-  // Voidfang (Evolution - Legendary)
+  // Voidfang (Evolution - Mythic)
   {
     id: 5405,
     name: "Voidfang",
@@ -2636,11 +2636,11 @@ export const norseMythologyCards: CardData[] = [
       attackThreshold: 2,
       requiresTarget: true
     },
-    categories: ["norse_mythology", "dark_minion", "dark_legendary"],
+    categories: ["norse_mythology", "dark_minion", "dark_mythic"],
     collectible: false
   },
 
-  // Garmr's Howl (Evolution - Legendary)
+  // Garmr's Howl (Evolution - Mythic)
   {
     id: 5406,
     name: "Garmr's Howl",
@@ -2673,7 +2673,7 @@ export const norseMythologyCards: CardData[] = [
       targetType: "all_enemies" as BattlecryTargetType,
       value: 2
     },
-    categories: ["norse_mythology", "dark_minion", "dark_legendary"],
+    categories: ["norse_mythology", "dark_minion", "dark_mythic"],
     collectible: false
   },
 
@@ -2753,7 +2753,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: false
   },
 
-  // Ljósálfr (Evolution - Legendary)
+  // Ljósálfr (Evolution - Mythic)
   {
     id: 5503,
     name: "Ljósálfr",
@@ -2780,7 +2780,7 @@ export const norseMythologyCards: CardData[] = [
       buffHealth: 2,
       duration: "this_turn"
     },
-    categories: ["norse_mythology", "light_minion", "light_legendary"],
+    categories: ["norse_mythology", "light_minion", "light_mythic"],
     collectible: false
   },
 
@@ -2987,7 +2987,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: false
   },
 
-  // Granite Hound (Evolution - Legendary)
+  // Granite Hound (Evolution - Mythic)
   {
     id: 5558,
     name: "Granite Hound",
@@ -3013,11 +3013,11 @@ export const norseMythologyCards: CardData[] = [
       buffHealth: 3,
       duration: "this_turn"
     },
-    categories: ["norse_mythology", "neutral_minion", "neutral_legendary"],
+    categories: ["norse_mythology", "neutral_minion", "neutral_mythic"],
     collectible: false
   },
 
-  // ===== GREEK GODS LEGENDARY CREATURES =====
+  // ===== GREEK GODS MYTHIC CREATURES =====
 
   // Skinfaxi, the Day Horse
   {
@@ -3048,7 +3048,7 @@ export const norseMythologyCards: CardData[] = [
       buffAttack: 1,
       buffHealth: 0
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3081,7 +3081,7 @@ export const norseMythologyCards: CardData[] = [
         buffHealth: 1
       }
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3114,7 +3114,7 @@ export const norseMythologyCards: CardData[] = [
         permanent: true
       }
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3148,7 +3148,7 @@ export const norseMythologyCards: CardData[] = [
         buffHealth: 0
       }
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3179,7 +3179,7 @@ export const norseMythologyCards: CardData[] = [
       value: 1,
       condition: "minion_count_7"
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3213,7 +3213,7 @@ export const norseMythologyCards: CardData[] = [
         permanent: true
       }
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3243,7 +3243,7 @@ export const norseMythologyCards: CardData[] = [
       condition: "has_stealthed_minion",
       value: 1
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3276,7 +3276,7 @@ export const norseMythologyCards: CardData[] = [
         buffHealth: 1
       }
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3309,7 +3309,7 @@ export const norseMythologyCards: CardData[] = [
         buffHealth: 2
       }
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   },
 
@@ -3344,7 +3344,7 @@ export const norseMythologyCards: CardData[] = [
         buffHealth: 0
       }
     },
-    categories: ["norse_mythology", "greek_legendary"],
+    categories: ["norse_mythology", "greek_mythic"],
     collectible: true
   }
 ];
@@ -3413,7 +3413,7 @@ export function registerNorseMythologyCards(): void {
     .collectible(false)
     .build();
 
-  // ===== DARK LEGENDARY CREATURES =====
+  // ===== DARK MYTHIC CREATURES =====
 
   // Fenrir, the Bound Wolf
   createCard()
@@ -3442,7 +3442,7 @@ export function registerNorseMythologyCards(): void {
       buffHealth: 0
     })
     .addCategory("norse_mythology")
-    .addCategory("dark_legendary")
+    .addCategory("dark_mythic")
     .collectible(true)
     .build();
 
@@ -3474,7 +3474,7 @@ export function registerNorseMythologyCards(): void {
       value: 1
     })
     .addCategory("norse_mythology")
-    .addCategory("dark_legendary")
+    .addCategory("dark_mythic")
     .collectible(true)
     .build();
 
@@ -3505,7 +3505,7 @@ export function registerNorseMythologyCards(): void {
       targetType: "random_friendly_minion"
     })
     .addCategory("norse_mythology")
-    .addCategory("dark_legendary")
+    .addCategory("dark_mythic")
     .collectible(true)
     .build();
 
@@ -3536,7 +3536,7 @@ export function registerNorseMythologyCards(): void {
       targetType: "enemy_minions"
     })
     .addCategory("norse_mythology")
-    .addCategory("dark_legendary")
+    .addCategory("dark_mythic")
     .collectible(true)
     .build();
 
@@ -3569,7 +3569,7 @@ export function registerNorseMythologyCards(): void {
       buffHealth: 1
     })
     .addCategory("norse_mythology")
-    .addCategory("dark_legendary")
+    .addCategory("dark_mythic")
     .collectible(true)
     .build();
 
@@ -3602,11 +3602,11 @@ export function registerNorseMythologyCards(): void {
       value: 1
     })
     .addCategory("norse_mythology")
-    .addCategory("dark_legendary")
+    .addCategory("dark_mythic")
     .collectible(true)
     .build();
 
-  // ===== DARK LEGENDARY TOKEN CARDS =====
+  // ===== DARK MYTHIC TOKEN CARDS =====
 
   // Shadow Hound (token for Garm)
   createCard()
@@ -3688,7 +3688,7 @@ export function registerNorseMythologyCards(): void {
     .collectible(false)
     .build();
 
-  // ===== MYTHOLOGICAL LEGENDARY CREATURES =====
+  // ===== MYTHOLOGICAL MYTHIC CREATURES =====
 
   // Hafgufa, the Sea-Mist
   createCard()
@@ -3724,7 +3724,7 @@ export function registerNorseMythologyCards(): void {
       value: 5
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3756,7 +3756,7 @@ export function registerNorseMythologyCards(): void {
       value: 3
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3791,7 +3791,7 @@ export function registerNorseMythologyCards(): void {
       value: 5
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3823,7 +3823,7 @@ export function registerNorseMythologyCards(): void {
       value: "damage_dealt"
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3849,7 +3849,7 @@ export function registerNorseMythologyCards(): void {
       duration: "this_turn"
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3879,7 +3879,7 @@ export function registerNorseMythologyCards(): void {
       buffHealth: 2
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3909,7 +3909,7 @@ export function registerNorseMythologyCards(): void {
       value: 3
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3938,7 +3938,7 @@ export function registerNorseMythologyCards(): void {
       buffHealth: 0
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3968,7 +3968,7 @@ export function registerNorseMythologyCards(): void {
       duration: "until_next_turn"
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -3998,7 +3998,7 @@ export function registerNorseMythologyCards(): void {
       requiresTarget: false
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -4025,7 +4025,7 @@ export function registerNorseMythologyCards(): void {
       condition: "target_is_frozen"
     })
     .addCategory("norse_mythology")
-    .addCategory("mythological_legendary")
+    .addCategory("mythological_mythic")
     .collectible(true)
     .build();
 
@@ -4052,7 +4052,7 @@ export function registerNorseMythologyCards(): void {
     .collectible(false)
     .build();
 
-  // ===== FIRE ELEMENT LEGENDARY CREATURES =====
+  // ===== FIRE ELEMENT MYTHIC CREATURES =====
 
   // Muspel's Wyrm
   createCard()
@@ -4075,7 +4075,7 @@ export function registerNorseMythologyCards(): void {
       value: 2
     })
     .addCategory("norse_mythology")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -4100,7 +4100,7 @@ export function registerNorseMythologyCards(): void {
       targetType: "all_enemies"
     })
     .addCategory("norse_mythology")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -4129,7 +4129,7 @@ export function registerNorseMythologyCards(): void {
       requiresTarget: true
     })
     .addCategory("norse_mythology")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -4154,7 +4154,7 @@ export function registerNorseMythologyCards(): void {
       damagePerMinion: 3
     })
     .addCategory("norse_mythology")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -4181,7 +4181,7 @@ export function registerNorseMythologyCards(): void {
       requiresTarget: true
     })
     .addCategory("norse_mythology")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -4199,12 +4199,12 @@ export function registerNorseMythologyCards(): void {
     .class("Neutral")
     .heroClass("neutral")
     .addCategory("norse_mythology")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .addCategory("token")
     .collectible(false)
     .build();
 
-  // ===== EARTH/GRASS ELEMENT LEGENDARY CREATURES =====
+  // ===== EARTH/GRASS ELEMENT MYTHIC CREATURES =====
 
   // Eikthyrnir, the Stag of Valhalla
   createCard()
@@ -4234,7 +4234,7 @@ export function registerNorseMythologyCards(): void {
       value: 1
     })
     .addCategory("norse_mythology")
-    .addCategory("earth_legendary")
+    .addCategory("earth_mythic")
     .collectible(true)
     .build();
 
@@ -4264,7 +4264,7 @@ export function registerNorseMythologyCards(): void {
       value: 2
     })
     .addCategory("norse_mythology")
-    .addCategory("earth_legendary")
+    .addCategory("earth_mythic")
     .collectible(true)
     .build();
 
@@ -4291,7 +4291,7 @@ export function registerNorseMythologyCards(): void {
       summonCountCondition: "friendly_minion_count"
     })
     .addCategory("norse_mythology")
-    .addCategory("earth_legendary")
+    .addCategory("earth_mythic")
     .collectible(true)
     .build();
 
@@ -4316,7 +4316,7 @@ export function registerNorseMythologyCards(): void {
       buffHealth: 2
     })
     .addCategory("norse_mythology")
-    .addCategory("earth_legendary")
+    .addCategory("earth_mythic")
     .collectible(true)
     .build();
 
@@ -4347,7 +4347,7 @@ export function registerNorseMythologyCards(): void {
       buffHealth: 2
     })
     .addCategory("norse_mythology")
-    .addCategory("earth_legendary")
+    .addCategory("earth_mythic")
     .collectible(true)
     .build();
 
@@ -4366,12 +4366,12 @@ export function registerNorseMythologyCards(): void {
     .heroClass("neutral")
     .addKeyword("taunt")
     .addCategory("norse_mythology")
-    .addCategory("earth_legendary")
+    .addCategory("earth_mythic")
     .addCategory("token")
     .collectible(false)
     .build();
 
-  // ===== HOLY/LIGHT ELEMENT LEGENDARY CREATURES =====
+  // ===== HOLY/LIGHT ELEMENT MYTHIC CREATURES =====
 
   // Huginn, Odin's Raven of Thought
   createCard()
@@ -4397,7 +4397,7 @@ export function registerNorseMythologyCards(): void {
       conditionValue: 2
     })
     .addCategory("norse_mythology")
-    .addCategory("holy_legendary")
+    .addCategory("holy_mythic")
     .collectible(true)
     .build();
 
@@ -4426,7 +4426,7 @@ export function registerNorseMythologyCards(): void {
       requiresTarget: true
     })
     .addCategory("norse_mythology")
-    .addCategory("holy_legendary")
+    .addCategory("holy_mythic")
     .collectible(true)
     .build();
 
@@ -4456,7 +4456,7 @@ export function registerNorseMythologyCards(): void {
       targetType: "friendly_hero"
     })
     .addCategory("norse_mythology")
-    .addCategory("holy_legendary")
+    .addCategory("holy_mythic")
     .collectible(true)
     .build();
 
@@ -4489,7 +4489,7 @@ export function registerNorseMythologyCards(): void {
       ]
     })
     .addCategory("norse_mythology")
-    .addCategory("holy_legendary")
+    .addCategory("holy_mythic")
     .collectible(true)
     .build();
 
@@ -4515,7 +4515,7 @@ export function registerNorseMythologyCards(): void {
       discoverSource: "deck"
     })
     .addCategory("norse_mythology")
-    .addCategory("holy_legendary")
+    .addCategory("holy_mythic")
     .collectible(true)
     .build();
 
@@ -4539,11 +4539,11 @@ export function registerNorseMythologyCards(): void {
       requiresTarget: true
     })
     .addCategory("norse_mythology")
-    .addCategory("holy_legendary")
+    .addCategory("holy_mythic")
     .collectible(true)
     .build();
 
-  // ===== WATER ELEMENT LEGENDARY CREATURES =====
+  // ===== WATER ELEMENT MYTHIC CREATURES =====
 
   // Abyssal Kraken
   createCard()
@@ -4570,7 +4570,7 @@ export function registerNorseMythologyCards(): void {
       value: 2
     })
     .addCategory("norse_mythology")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -4596,7 +4596,7 @@ export function registerNorseMythologyCards(): void {
       requiresTarget: true
     })
     .addCategory("norse_mythology")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -4621,7 +4621,7 @@ export function registerNorseMythologyCards(): void {
       summonCount: 2
     })
     .addCategory("norse_mythology")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -4645,7 +4645,7 @@ export function registerNorseMythologyCards(): void {
       targetType: "random_enemy_minion"
     })
     .addCategory("norse_mythology")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -4668,7 +4668,7 @@ export function registerNorseMythologyCards(): void {
       targetType: "enemy_minions" as BattlecryTargetType
     })
     .addCategory("norse_mythology")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -4690,7 +4690,7 @@ export function registerNorseMythologyCards(): void {
       targetType: "random_enemy_minion"
     })
     .addCategory("norse_mythology")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .addCategory("token")
     .collectible(false)
     .build();
@@ -4933,7 +4933,7 @@ export function registerNorseMythologyCards(): void {
     .collectible(true)
     .build();
 
-  // ===== FIRE MINIONS (Evolution Pets - Legendary) =====
+  // ===== FIRE MINIONS (Evolution Pets - Mythic) =====
 
   // Surtr's Spawn (Evolution)
   createCard()
@@ -4967,7 +4967,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("fire_minion")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -4999,7 +4999,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("fire_minion")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -5026,7 +5026,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("fire_minion")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -5068,7 +5068,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("fire_minion")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -5095,7 +5095,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("fire_minion")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -5127,7 +5127,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("fire_minion")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -5159,7 +5159,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("fire_minion")
-    .addCategory("fire_legendary")
+    .addCategory("fire_mythic")
     .collectible(true)
     .build();
 
@@ -5457,7 +5457,7 @@ export function registerNorseMythologyCards(): void {
     .collectible(true)
     .build();
 
-  // ===== WATER MINIONS (Evolution Pets - Legendary) =====
+  // ===== WATER MINIONS (Evolution Pets - Mythic) =====
 
   // Sea Wyrm (Evolution)
   createCard()
@@ -5500,7 +5500,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("water_minion")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -5532,7 +5532,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("water_minion")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -5566,7 +5566,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("water_minion")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -5601,7 +5601,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("water_minion")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -5640,7 +5640,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("water_minion")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -5673,7 +5673,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("water_minion")
-    .addCategory("water_legendary")
+    .addCategory("water_mythic")
     .collectible(true)
     .build();
 
@@ -5846,7 +5846,7 @@ export function registerNorseMythologyCards(): void {
     .collectible(true)
     .build();
 
-  // Thorn Warden (Evolution - Legendary)
+  // Thorn Warden (Evolution - Mythic)
   createCard()
     .id(6220)
     .name("Thorn Warden")
@@ -5883,11 +5883,11 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("grass_minion")
-    .addCategory("grass_legendary")
+    .addCategory("grass_mythic")
     .collectible(true)
     .build();
 
-  // Yggdrasil's Bough (Evolution - Legendary)
+  // Yggdrasil's Bough (Evolution - Mythic)
   createCard()
     .id(6221)
     .name("Yggdrasil's Bough")
@@ -5920,11 +5920,11 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("grass_minion")
-    .addCategory("grass_legendary")
+    .addCategory("grass_mythic")
     .collectible(true)
     .build();
 
-  // Elven Hart (Evolution - Legendary)
+  // Elven Hart (Evolution - Mythic)
   createCard()
     .id(6222)
     .name("Elven Hart")
@@ -5961,11 +5961,11 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("grass_minion")
-    .addCategory("grass_legendary")
+    .addCategory("grass_mythic")
     .collectible(true)
     .build();
 
-  // Idunn's Apple (Evolution - Legendary)
+  // Idunn's Apple (Evolution - Mythic)
   createCard()
     .id(6223)
     .name("Idunn's Apple")
@@ -5995,7 +5995,7 @@ export function registerNorseMythologyCards(): void {
     })
     .addCategory("norse_mythology")
     .addCategory("grass_minion")
-    .addCategory("grass_legendary")
+    .addCategory("grass_mythic")
     .collectible(true)
     .build();
 

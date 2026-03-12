@@ -1,11 +1,11 @@
 /**
- * Modern legendary cards for Echoes of Ymir
+ * Modern mythic cards for Echoes of Ymir
  * Powerful and unique cards from recent card expansions
  */
 import { CardData } from '../types';
 
 /**
- * Collection of modern legendary minions
+ * Collection of modern mythic minions
  * Covering recent card expansions
  */
 export const modernLegendaryCards: CardData[] = [
@@ -315,7 +315,7 @@ export const modernLegendaryCards: CardData[] = [
         requiresTarget: false,
 
       targetType: "none",
-        condition: "random_legendary_minion",
+        condition: "random_mythic_minion",
 
       value: 1
     }
@@ -368,7 +368,7 @@ export const modernLegendaryCards: CardData[] = [
       collectible: true,
       inspireEffect: {
       type: "summon",
-      condition: "random_legendary",
+      condition: "random_mythic",
 
       summonCount: 1
     }

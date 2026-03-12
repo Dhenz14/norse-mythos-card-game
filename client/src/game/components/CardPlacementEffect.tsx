@@ -74,7 +74,7 @@ const CardPlacementEffect: React.FC<CardPlacementEffectProps> = ({
     const burstAngles = 12; // Create particles in these many directions
     
     for (let i = 0; i < numParticles; i++) {
-      // Create more structured pattern for legendary/premium cards
+      // Create more structured pattern for mythic/premium cards
       let angle;
       
       if (isLegendary || isPremium) {
@@ -93,7 +93,7 @@ const CardPlacementEffect: React.FC<CardPlacementEffectProps> = ({
       
       // Random speed - varies by card quality
       const speed = isLegendary ? 
-        2.5 + Math.random() * 5 : // Fastest for legendary 
+        2.5 + Math.random() * 5 : // Fastest for mythic
         isPremium ?
         2 + Math.random() * 4 : // Faster for premium
         1 + Math.random() * 3;  // Standard for regular
@@ -102,7 +102,7 @@ const CardPlacementEffect: React.FC<CardPlacementEffectProps> = ({
       let types: ('circle' | 'star' | 'diamond')[];
       
       if (isLegendary) {
-        types = ['star', 'star', 'diamond', 'circle']; // More stars and diamonds for legendary
+        types = ['star', 'star', 'diamond', 'circle']; // More stars and diamonds for mythic
       } else if (isPremium) {
         types = ['star', 'diamond', 'circle', 'circle']; // More diamonds for premium
       } else {

@@ -106,7 +106,7 @@
 .pet-card.common { border-color: #6b7280; }
 .pet-card.rare { border-color: #3b82f6; }
 .pet-card.epic { border-color: #a855f7; }
-.pet-card.legendary { 
+.pet-card.mythic {
   border-color: #f59e0b;
   box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
 }

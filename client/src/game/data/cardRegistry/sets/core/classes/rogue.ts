@@ -377,7 +377,7 @@ export const rogueCards: CardData[] = [
       type: "add_card",
       requiresTarget: false,
       targetType: "none",
-      condition: "random_legendary_minion",
+      condition: "random_mythic_minion",
       value: 1
     }
   },

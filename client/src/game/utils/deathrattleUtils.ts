@@ -155,8 +155,8 @@ function executeDeathrattleInner(
       return executeSummonForOpponentDeathrattle(newState, deathrattle, playerId);
     case 'add_random_to_hand':
       return executeAddRandomToHandDeathrattle(newState, deathrattle, playerId);
-    case 'summon_random_legendary':
-      return executeSummonRandomLegendaryDeathrattle(newState, deathrattle, playerId);
+    case 'summon_random_mythic':
+      return executeSummonRandomMythicDeathrattle(newState, deathrattle, playerId);
     case 'summon_from_hand':
       return executeSummonFromHandDeathrattle(newState, deathrattle, playerId);
     case 'shuffle_copies_buffed':
@@ -1046,7 +1046,7 @@ function executeAddRandomToHandDeathrattle(
   return newState;
 }
 
-function executeSummonRandomLegendaryDeathrattle(
+function executeSummonRandomMythicDeathrattle(
   state: GameState,
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'

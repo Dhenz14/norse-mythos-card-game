@@ -515,17 +515,17 @@ export const GameBoard: React.FC<{}> = () => {
       return; // Don't proceed with playing the card
     }
     
-    // Check if it's a legendary card and show special entrance animation
+    // Check if it's a mythic card and show special entrance animation
     if (card.card.rarity === 'mythic' && cardPosition) {
-      debug.log(`[LEGENDARY-DEBUG] Triggering legendary entrance for ${card.card.name}`);
-      
-      // Set the legendary card to trigger the animation component
+      debug.log(`[LEGENDARY-DEBUG] Triggering mythic entrance for ${card.card.name}`);
+
+      // Set the mythic card to trigger the animation component
       setActiveLegendaryCard({ 
         card: card.card, 
         position: cardPosition 
       });
       
-      // Play special legendary sound effect
+      // Play special mythic sound effect
       playSoundEffect('legendary_entrance');
     }
       
@@ -850,7 +850,7 @@ export const GameBoard: React.FC<{}> = () => {
           }
         }
         
-        // Legendary-specific sound
+        // Mythic-specific sound
         if(battlecryCard.card.rarity === 'mythic') {
           playSuccess();
         } else {
@@ -2079,7 +2079,7 @@ export const GameBoard: React.FC<{}> = () => {
             // Play turn-specific environmental effect
             if (isPlayerTurn) {
               // Only show environmental effect for the player's turn
-              // and only for higher-value cards (rare, epic, legendary)
+              // and only for higher-value cards (rare, epic, mythic)
               const highValueCards = player.hand.filter(card => 
                 card.card.rarity && ['rare', 'epic', 'mythic'].includes(card.card.rarity.toLowerCase())
               );
@@ -2100,7 +2100,7 @@ export const GameBoard: React.FC<{}> = () => {
         />
       )}
       
-      {/* Legendary card entrance animation for when legendaries are played */}
+      {/* Mythic card entrance animation for when mythic cards are played */}
       {activeLegendaryCard && (
         <LegendaryEntrance
           card={activeLegendaryCard.card}

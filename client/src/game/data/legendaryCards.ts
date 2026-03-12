@@ -1,7 +1,7 @@
 import { CardData } from '../types';
 
 /**
- * Collection of legendary cards
+ * Collection of mythic cards
  * Powerful unique cards with game-changing effects
  */
 export const legendaryCards: CardData[] = [
@@ -500,5 +500,5 @@ export const legendaryCards: CardData[] = [
   }
 ];
 
-// Export the legendary cards
+// Export the mythic cards
 export default legendaryCards;

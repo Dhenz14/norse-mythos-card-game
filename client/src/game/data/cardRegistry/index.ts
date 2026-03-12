@@ -5,7 +5,7 @@
  * - Core Set: Basic neutral and class cards
  * - Norse Set: Norse mythology themed expansion
  * - Tokens: Non-collectible cards summoned by other cards
- * - Legendary Sets: Additional legendary cards from various expansions
+ * - Mythic Sets: Additional mythic cards from various expansions
  * - Mechanic Cards: Cards with specific mechanics (quest, outcast, etc.)
  * 
  * All card data flows through this registry with validation.
@@ -24,7 +24,7 @@ import { heroSuperMinions } from '../sets/superMinions/heroSuperMinions';
 // Import poker spells from original location (has proper PokerSpellCardData type)
 import { pokerSpellCards } from '../pokerSpellCards';
 
-// Import additional legendary card sets (previously scattered files)
+// Import additional mythic card sets (previously scattered files)
 import { additionalLegendaryCards } from '../additionalLegendaryCards';
 import { iconicLegendaryCards } from '../iconicLegendaryCards';
 import { modernLegendaryCards } from '../modernLegendaryCards';
@@ -53,7 +53,7 @@ const rawRegistry: CardData[] = [
   // Cast poker spells to CardData for type compatibility
   // PokerSpellCard extends CardData with additional pokerSpellEffect property
   ...(pokerSpellCards as unknown as CardData[]),
-  // Additional legendary cards from various expansions
+  // Additional mythic cards from various expansions
   ...additionalLegendaryCards,
   ...iconicLegendaryCards,
   ...modernLegendaryCards,

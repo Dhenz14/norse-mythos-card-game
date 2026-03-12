@@ -12,7 +12,11 @@ import allCards, { getCardById } from '../../data/allCards';
 import { useAnimationStore } from '../../animations/AnimationManager';
 import { logActivity } from '../../stores/activityLogStore';
 import { scheduleSpellEffect, SpellEffectType } from '../../animations/UnifiedAnimationOrchestrator';
-import { useGameStore } from '../../stores/gameStore';
+// Lazy access to break game-engine <-> game-store circular dependency
+const useGameStore = {
+	getState: () => ((globalThis as Record<string, unknown>).__ragnarokGameStore as
+		{ getState: () => { gameState: GameState } }).getState()
+};
 import { isMinion, isSpell, isWeapon, getAttack, getHealth, hasAttack, hasHealth } from '../cards/typeGuards';
 import { trackQuestProgress } from '../quests/questProgress';
 import { debug } from '../../config/debugConfig';

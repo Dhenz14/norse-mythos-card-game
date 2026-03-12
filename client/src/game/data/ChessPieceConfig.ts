@@ -1034,7 +1034,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'uranus_passives',
       chessAbility: 'king-uranus',
-      portrait: '/portraits/kings/uranus.png'
+      portrait: '/portraits/kings/uranus.webp'
     }
   ],
   pawn: [

@@ -479,7 +479,7 @@ export const priestCards: CardData[] = [
     set: "core",
     inspireEffect: {
       type: "summon",
-      condition: "random_legendary",
+      condition: "random_mythic",
       summonCount: 1
     }
   },

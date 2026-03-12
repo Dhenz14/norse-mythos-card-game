@@ -2648,7 +2648,7 @@ const epicNeutralSpells: CardData[] = [
 ];
 
 // ============================================
-// LEGENDARY NEUTRAL MINIONS
+// MYTHIC NEUTRAL MINIONS
 // ============================================
 const legendaryNeutralMinions: CardData[] = [
   {
@@ -5330,7 +5330,7 @@ const legendaryNeutralMinions: CardData[] = [
     set: 'core'
   },
   // ============================================
-  // MYTHOLOGY LEGENDARY CARDS (92001-92025)
+  // MYTHOLOGY MYTHIC CARDS (92001-92025)
   // Norse/Greek Mythology Theming
   // ============================================
   {
@@ -7004,7 +7004,7 @@ const mythologyNorseCards: CardData[] = [
     collectible: true,
     set: 'core',
     deathrattle: {
-      type: 'summon_random_legendary',
+      type: 'summon_random_mythic',
       requiresTarget: false
     }
   },
@@ -7581,7 +7581,7 @@ const epicDragonMinions: CardData[] = [
   }
 ];
 
-// Legendary Dragon Minions (5 cards)
+// Mythic Dragon Minions (5 cards)
 const legendaryDragonMinions: CardData[] = [
   {
     id: 33120,
@@ -8082,7 +8082,7 @@ const epicBeastMinions: CardData[] = [
   }
 ];
 
-// Legendary Beast Minions (IDs 33145-33149)
+// Mythic Beast Minions (IDs 33145-33149)
 const legendaryBeastMinions: CardData[] = [
   {
     id: 33145,

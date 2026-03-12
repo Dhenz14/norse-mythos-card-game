@@ -10,7 +10,7 @@
  * - Death sequences
  * - Battlecry effects
  * - Turn transitions
- * - Legendary card entrances
+ * - Mythic card entrances
  * 
  * This component sits above the game board and provides high-quality
  * visual feedback for all game actions.

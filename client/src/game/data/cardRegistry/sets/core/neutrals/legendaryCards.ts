@@ -1,5 +1,5 @@
 /**
- * Legendary Cards - Core Set
+ * Mythic Cards - Core Set
  * Migrated from multiple source files on 2026-02-02:
  * - client/src/game/data/legendaryCards.ts
  * - client/src/game/data/additionalLegendaryCards.ts
@@ -17,12 +17,12 @@
 import { CardData } from '../../../../../types';
 
 // ============================================
-// NEUTRAL LEGENDARY MINIONS (from legendaryCards.ts)
+// NEUTRAL MYTHIC MINIONS (from legendaryCards.ts)
 // ============================================
 export const neutralLegendaryMinions: CardData[] = [];
 
 // ============================================
-// CLASS LEGENDARY MINIONS (from legendaryCards.ts)
+// CLASS MYTHIC MINIONS (from legendaryCards.ts)
 // ============================================
 export const classLegendaryMinions: CardData[] = [
   {
@@ -86,22 +86,22 @@ export const classLegendaryMinions: CardData[] = [
 ];
 
 // ============================================
-// LEGENDARY HERO CARDS
+// MYTHIC HERO CARDS
 // ============================================
 export const legendaryHeroCards: CardData[] = [];
 
 // ============================================
-// LEGENDARY WEAPONS
+// MYTHIC WEAPONS
 // ============================================
 export const legendaryWeapons: CardData[] = [];
 
 // ============================================
-// LEGENDARY SPELLS
+// MYTHIC SPELLS
 // ============================================
 export const legendarySpells: CardData[] = [];
 
 // ============================================
-// LEGENDARY TOKENS
+// MYTHIC TOKENS
 // ============================================
 export const legendaryTokens: CardData[] = [];
 

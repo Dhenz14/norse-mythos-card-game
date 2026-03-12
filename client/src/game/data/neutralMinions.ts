@@ -6,7 +6,7 @@ import { CardData, BattlecryTargetType } from '../types';
 
 /**
  * Collection of iconic neutral minions from the game
- * This includes a mix of common, rare, epic, and some additional legendary minions
+ * This includes a mix of common, rare, epic, and some additional mythic minions
  */
 export const   neutralMinions: CardData[] = [{
       id: 29970,

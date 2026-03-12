@@ -1,6 +1,6 @@
 /**
  * Status Effect Utilities
- * Manages all Ragnarok-specific status effects for god legendary minions
+ * Manages all Ragnarok-specific status effects for god mythic minions
  */
 
 import { CardInstance } from '../../types/CardTypes';

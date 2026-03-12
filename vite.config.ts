@@ -60,18 +60,13 @@ export default defineConfig(({ command }) => ({
           if (id.includes('/game/data/cardRegistry/sets/core/classes/')) return 'card-data-classes';
           if (id.includes('/game/data/cardRegistry/sets/')) return 'card-data-sets';
           if (id.includes('/game/data/norseHeroes/')) return 'card-data-heroes';
-          if (id.includes('/game/data/cardSets/')) return 'card-data-legacy-sets';
-          if (id.includes('/game/data/allCards')) return 'card-data';
+          if (id.includes('/game/data/allCards') || id.includes('/game/data/cardSets/')) return 'card-data';
           if (id.includes('/game/data/')) return 'card-data';
-          // Game logic splits
-          if (id.includes('/game/effects/handlers/battlecry/')) return 'effects-battlecry';
-          if (id.includes('/game/effects/handlers/spellEffect/')) return 'effects-spells';
-          if (id.includes('/game/effects/')) return 'effects-core';
-          if (id.includes('/game/utils/spells/')) return 'engine-spells';
-          if (id.includes('/game/utils/battlecry')) return 'engine-battlecry';
-          if (id.includes('/game/utils/heroPower') || id.includes('/game/utils/norseHeroPower')) return 'engine-heropower';
-          if (id.includes('/game/utils/deathrattle')) return 'engine-deathrattle';
-          if (id.includes('/game/utils/')) return 'game-engine';
+          // Shared leaf chunks — imported by multiple game chunks, must not create cycles
+          if (id.includes('/game/types/') || id.includes('/game/flow/') || id.includes('/game/utils/elements') || id.includes('/game/utils/assetPath') || id.includes('/game/audio/')) return 'game-types';
+          if (id.includes('/lib/stores/')) return 'game-types';
+          // Game logic — single chunk for all tightly-coupled utils + effects (avoids intra-engine circular deps)
+          if (id.includes('/game/effects/') || id.includes('/game/utils/')) return 'game-engine';
           if (id.includes('/game/stores/combat/')) return 'combat-stores';
           if (id.includes('/game/stores/gameStore')) return 'game-store';
           if (id.includes('/game/campaign/')) return 'campaign';

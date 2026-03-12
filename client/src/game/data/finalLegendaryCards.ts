@@ -1,12 +1,12 @@
 /**
- * Final batch of legendary cards for Echoes of Ymir
+ * Final batch of mythic cards for Echoes of Ymir
  * Powerful and unique cards from various card expansions
  */
 import { CardData } from '../types';
 
 /**
- * Collection of final legendary cards
- * Includes some of the most impactful legendary cards from the game
+ * Collection of final mythic cards
+ * Includes some of the most impactful mythic cards from the game
  */
 export const finalLegendaryCards: CardData[] = [
   {

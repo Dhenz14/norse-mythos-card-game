@@ -778,7 +778,7 @@ export const getRarityTextStyle = (rarity: string = 'common') => {
         `,
         // Stronger outline for better visibility against dark backgrounds
         WebkitTextStroke: '0.75px rgba(0,0,0,0.5)',
-        // Additional styles specific to legendary cards
+        // Additional styles specific to mythic cards
         fontWeight: 800 as const,
         letterSpacing: '0.03em',
         // Light glow around the text

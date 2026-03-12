@@ -49,13 +49,13 @@ interface SimpleHolographicCardProps {
  * @returns Holographic parameters object with appropriate settings based on rarity
  */
 export function getStandardHolographicParams(cardRarity?: string) {
-  // Only force holographic effects for legendary and epic cards
+  // Only force holographic effects for mythic and epic cards
   const isPremiumRarity = cardRarity && 
     (cardRarity.toLowerCase() === 'mythic' || cardRarity.toLowerCase() === 'epic');
   
   return {
     enableHolographic: true,
-    // Only force holographic on epic and legendary cards
+    // Only force holographic on epic and mythic cards
     forceHolographic: !!isPremiumRarity,
     // Adjust intensity based on rarity
     effectIntensity: isPremiumRarity ? 1.0 : 0.4
@@ -102,7 +102,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
   // Determine if card should have holographic effects based on rarity
   const isPremiumRarity = card.rarity.toLowerCase() === 'mythic' || card.rarity.toLowerCase() === 'epic';
   // Card will have holographic effects if:
-  // 1. It's a premium rarity (legendary or epic) AND enableHolographic is true (legacy mode), OR
+  // 1. It's a premium rarity (mythic or epic) AND enableHolographic is true (legacy mode), OR
   // 2. forceHolographic is explicitly set to true (override mode)
   const hasHolographicEffects = (isPremiumRarity && enableHolographic) || forceHolographic === true;
   
@@ -380,7 +380,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
           background: isMythic 
             ? `radial-gradient(circle at 30% 30%, #3A2E52 0%, #36294B 40%, #271A38 80%, #221833 100%)` 
             : `radial-gradient(circle at 30% 30%, #333752 0%, #283147 40%, #232A3D 80%, #1A2133 100%)`,
-          // Enhanced border effects to match test simulation with thick gold borders for legendary cards
+          // Enhanced border effects to match test simulation with thick gold borders for mythic cards
           border: isMythic 
             ? `3px solid ${rarityBorderColor}` 
             : card.rarity.toLowerCase() === 'epic' 

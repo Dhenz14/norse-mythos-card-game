@@ -1491,6 +1491,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	40125: '/art/cottus.webp',
 	40126: '/art/gyges.webp',
 	40127: '/art/briareos.webp',
+	95077: '/art/jut.webp',
 	32001: '/art/7926-bd63b140.webp',
 	32002: '/art/68bc-a4c95451.webp',
 	32004: '/art/b9af-9f73c29d.webp',

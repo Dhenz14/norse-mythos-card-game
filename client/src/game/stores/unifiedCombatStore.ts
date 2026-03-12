@@ -87,3 +87,6 @@ export const useUnifiedCombatStore = create<UnifiedCombatStore>()((set, get, api
     });
   },
 }));
+
+// Register on globalThis for lazy access by blockchain chunk (avoids circular import)
+(globalThis as Record<string, unknown>).__ragnarokCombatStore = useUnifiedCombatStore;

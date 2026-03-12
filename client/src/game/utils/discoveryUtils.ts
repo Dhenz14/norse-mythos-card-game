@@ -1,6 +1,10 @@
 import { CardData, SpellEffect, GameState, DiscoveryState, CardRarity, CardType, HeroClass } from '../types';
 import allCards from '../data/allCards';
-import { useGameStore } from '../stores/gameStore';
+// Lazy access to break game-engine <-> game-store circular dependency
+const useGameStore = {
+	getState: () => ((globalThis as Record<string, unknown>).__ragnarokGameStore as
+		{ getState: () => { gameState: GameState } }).getState()
+};
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { MAX_HAND_SIZE } from '../constants/gameConstants';

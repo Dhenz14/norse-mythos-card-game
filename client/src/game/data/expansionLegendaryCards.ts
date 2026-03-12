@@ -1,11 +1,11 @@
 /**
- * Expansion legendary cards for Echoes of Ymir
+ * Expansion mythic cards for Echoes of Ymir
  * Powerful and unique cards from various card expansions
  */
 import { CardData } from '../types';
 
 /**
- * Collection of expansion legendary minions
+ * Collection of expansion mythic minions
  * These cards cover several card expansions
  */
 export const expansionLegendaryCards: CardData[] = [{
@@ -52,7 +52,7 @@ export const expansionLegendaryCards: CardData[] = [{
         type: "add_card",
 
         targetType: "none",
-      condition: "random_legendary",
+      condition: "random_mythic",
 
       value: 1
     }
@@ -535,8 +535,8 @@ export const expansionLegendaryCards: CardData[] = [{
         type: "summon",
         targetType: "none",
 
-        // Special handling for summoning a random legendary minion
-        condition: "random_legendary",
+        // Special handling for summoning a random mythic minion
+        condition: "random_mythic",
 
         summonCardId: 95421
     }
@@ -594,7 +594,7 @@ export const expansionLegendaryCards: CardData[] = [{
         type: "destroy",
 
           requiresTarget: true,
-        targetType: "legendary_minion",
+        targetType: "mythic_minion",
 
         condition: "holding_dragon"
     }

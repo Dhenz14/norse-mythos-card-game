@@ -1074,6 +1074,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   },
 })));
 
+// Register on globalThis for lazy access by game-engine chunk (avoids circular import)
+(globalThis as Record<string, unknown>).__ragnarokGameStore = useGameStore;
+
 let _gameStoreUnsubs: (() => void)[] = [];
 
 export function initGameStoreSubscriptions() {

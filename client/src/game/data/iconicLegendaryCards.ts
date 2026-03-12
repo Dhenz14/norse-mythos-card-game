@@ -5,7 +5,7 @@
 import { CardData } from '../types';
 
 /**
- * Collection of iconic legendary minions
+ * Collection of iconic mythic minions
  * These cards have had significant impact on the meta over the years
  */
 export const   iconicLegendaryCards: CardData[] = [{
@@ -981,5 +981,5 @@ export const   iconicLegendaryCards: CardData[] = [{
   }
       ];
 
-// Export the iconic legendary cards
+// Export the iconic mythic cards
 export default iconicLegendaryCards;

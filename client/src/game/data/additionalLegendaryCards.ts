@@ -1,12 +1,12 @@
 /**
- * Additional legendary cards for Echoes of Ymir
+ * Additional mythic cards for Echoes of Ymir
  * More powerful and unique cards with game-changing effects
  */
 import { CardData } from '../types';
 
 /**
- * Collection of additional legendary minions
- * Expanding the legendary roster with more class-specific and neutral options
+ * Collection of additional mythic minions
+ * Expanding the mythic roster with more class-specific and neutral options
  */
 export const additionalLegendaryCards: CardData[] = [
 {
@@ -342,5 +342,5 @@ export const additionalLegendaryCards: CardData[] = [
   }
 ];
 
-// Export the additional legendary cards
+// Export the additional mythic cards
 export default additionalLegendaryCards;

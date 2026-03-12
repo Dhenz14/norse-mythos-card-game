@@ -12,7 +12,15 @@ import { hashMatchResult, sha256Hash, canonicalStringify } from './hashUtils';
 import { calculateXPRewards } from './cardXPSystem';
 import type { HiveCardAsset } from '../schemas/HiveTypes';
 import { getPlayerNonce, advancePlayerNonce } from './replayDB';
-import { useUnifiedCombatStore } from '../../game/stores/unifiedCombatStore';
+// Access combat store lazily to break blockchain ↔ combat-stores circular dependency
+// The store registers itself on globalThis at creation time (see unifiedCombatStore.ts)
+function getPokerHandsWon(side: 'player' | 'opponent'): number {
+	const store = (globalThis as Record<string, unknown>).__ragnarokCombatStore as
+		{ getState: () => { pokerHandsWonPlayer: number; pokerHandsWonOpponent: number } } | undefined;
+	if (!store) return 0;
+	const state = store.getState();
+	return side === 'player' ? state.pokerHandsWonPlayer : state.pokerHandsWonOpponent;
+}
 
 const ELO_K_FACTOR = 32;
 const RUNE_WIN_RANKED  = 10;
@@ -67,9 +75,7 @@ function extractPlayerData(
 		heroId: isPlayerSide ? input.playerHeroId : input.opponentHeroId,
 		finalHp: player.heroHealth ?? player.health ?? 0,
 		damageDealt,
-		pokerHandsWon: side === 'player'
-			? useUnifiedCombatStore.getState().pokerHandsWonPlayer
-			: useUnifiedCombatStore.getState().pokerHandsWonOpponent,
+		pokerHandsWon: getPokerHandsWon(side),
 		cardsUsed: uniqueCardIds,
 	};
 }
@@ -120,8 +126,8 @@ export async function packageMatchResult(
 
 	// Monotonic anti-replay nonce. Advance locally so the next call gets +2, etc.
 	const nonceRecord = await getPlayerNonce(input.playerUsername);
-	const result_nonce = nonceRecord.highestMatchNonce + 1;
-	await advancePlayerNonce(input.playerUsername, result_nonce);
+	const resultNonce = nonceRecord.highestMatchNonce + 1;
+	await advancePlayerNonce(input.playerUsername, resultNonce);
 
 	const resultWithoutHash: Omit<PackagedMatchResult, 'hash'> = {
 		matchId: input.matchId,
@@ -136,7 +142,7 @@ export async function packageMatchResult(
 		runeRewards,
 		seed: input.seed,
 		version: MATCH_RESULT_VERSION,
-		result_nonce,
+		result_nonce: resultNonce,
 	};
 
 	const hash = await hashMatchResult(resultWithoutHash);

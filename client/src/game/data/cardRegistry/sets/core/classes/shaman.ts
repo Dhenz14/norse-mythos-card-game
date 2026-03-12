@@ -721,7 +721,7 @@ export const shamanCards: CardData[] = [
       type: "transform_all",
       requiresTarget: false,
       targetType: "friendly_minions",
-      transformType: "random_legendary_minion"
+      transformType: "random_mythic_minion"
     },
     collectible: true,
     set: "core"
