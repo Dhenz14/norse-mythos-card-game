@@ -27,8 +27,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
 
 	return (
 		<div className="game-hud">
-			<div className="hud-turn-counter">Turn {turnNumber}</div>
-
 			{showMatchup && (
 				<div
 					className={`hud-matchup-badge ${playerHasAdvantage ? 'advantage' : opponentHasAdvantage ? 'disadvantage' : 'neutral-matchup'}`}
@@ -52,12 +50,12 @@ export const GameHUD: React.FC<GameHUDProps> = ({
 				</div>
 			)}
 
-			<div className={`hud-deck-badge hud-player-deck ${playerDeckCount <= 0 ? 'fatigue' : playerDeckCount <= 5 ? 'low-deck' : ''}`}>
+			<div className={`hud-deck-badge hud-player-deck ${playerDeckCount <= 0 ? 'empty' : playerDeckCount <= 5 ? 'low-deck' : ''}`}>
 				<span className="hud-icon">{'\uD83C\uDCA0'}</span>
 				<span className="hud-count">{playerDeckCount}</span>
 			</div>
 
-			<div className={`hud-deck-badge hud-opponent-deck ${opponentDeckCount <= 0 ? 'fatigue' : opponentDeckCount <= 5 ? 'low-deck' : ''}`}>
+			<div className={`hud-deck-badge hud-opponent-deck ${opponentDeckCount <= 0 ? 'empty' : opponentDeckCount <= 5 ? 'low-deck' : ''}`}>
 				<span className="hud-icon">{'\uD83C\uDCA0'}</span>
 				<span className="hud-count">{opponentDeckCount}</span>
 			</div>

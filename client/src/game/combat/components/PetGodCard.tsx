@@ -15,7 +15,7 @@ import React from 'react';
 export interface PetGodCardProps {
   /** The pet/god data object containing name, stats, and rarity */
   pet: any;
-  /** Amount of HP committed to the current bet */
+  /** Amount of HP committed (risk) */
   hpCommitted?: number;
   /** Whether this is the player's pet (vs opponent) */
   isPlayer?: boolean;
@@ -81,7 +81,7 @@ export const PetGodCard: React.FC<PetGodCardProps> = ({
           <div className="health-committed" style={{ transform: `scaleX(${committedPercent / 100})` }} />
           <div className="health-fill" style={{ transform: `scaleX(${healthPercent / 100})` }} />
         </div>
-        <span className="health-text">{pet.stats.currentHealth} HP ({hpCommitted > 0 ? `${hpCommitted} bet` : 'none bet'})</span>
+        <span className="health-text">{pet.stats.currentHealth} HP ({hpCommitted > 0 ? `${hpCommitted} at risk` : 'none'})</span>
       </div>
     </div>
   );

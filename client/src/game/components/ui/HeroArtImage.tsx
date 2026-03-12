@@ -37,7 +37,7 @@ export function HeroArtImage({
       onError={(e) => {
         (e.target as HTMLImageElement).style.display = 'none';
       }}
-      loading="lazy"
+      loading="eager"
     />
   );
 }

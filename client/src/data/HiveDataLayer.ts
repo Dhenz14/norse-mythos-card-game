@@ -43,6 +43,7 @@ interface HiveDataStore extends HiveGameState {
   logout: () => void;
 }
 
+// Register on globalThis so game-engine can access without circular import
 export const useHiveDataStore = create<HiveDataStore>()(
   persist(
     (set, get) => ({
@@ -176,3 +177,6 @@ export const generateMatchId = (): string => {
 export const generateCardUid = (): string => {
   return `C-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 };
+
+// Expose on globalThis so game-engine can access without circular chunk dependency
+(globalThis as any).__ragnarokHiveDataStore = useHiveDataStore;

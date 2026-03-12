@@ -196,12 +196,12 @@ export const useTransactionQueueStore = create<TransactionQueueStore>()(
 	)
 );
 
-// Auto-cleanup on load and periodically
+// Auto-cleanup on load and periodically (deferred to avoid TDZ in bundled chunks)
 const _doCleanup = () => {
 	const store = useTransactionQueueStore.getState();
 	store.cleanupExpired();
 	store.cleanupConfirmed(60 * 60 * 1000); // confirmed > 1 hour
 	store.cleanupFailed(7 * 24 * 60 * 60 * 1000); // failed > 7 days
 };
-_doCleanup();
+setTimeout(_doCleanup, 0);
 setInterval(_doCleanup, 5 * 60 * 1000); // every 5 minutes

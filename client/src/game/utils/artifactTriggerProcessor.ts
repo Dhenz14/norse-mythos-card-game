@@ -1,7 +1,7 @@
 import { GameState, GameLogEvent, CardInstance } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { dealDamage } from './effects/damageUtils';
-import { MAX_HAND_SIZE } from '../constants/gameConstants';
+import { MAX_HAND_SIZE, MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 
 function getArtifactEffect(state: GameState, playerType: 'player' | 'opponent'): any {
 	const player = state.players[playerType];
@@ -36,7 +36,7 @@ function summonToken(
 	tokenId = 9092
 ): CardInstance | null {
 	const bf = state.players[playerType].battlefield;
-	if (bf.length >= 5) return null;
+	if (bf.length >= MAX_BATTLEFIELD_SIZE) return null;
 	const kw = token.keywords || [];
 	const inst = {
 		instanceId: uuidv4(),

@@ -3051,9 +3051,9 @@ function executeMindControlSpell(
     return state;
   }
   
-  // Check if player's battlefield is full (max 7 minions)
-  if (myBattlefield.length >= 7) {
-    debug.warn(`Cannot take control of ${enemyBattlefield[targetIdx].card.name}: your battlefield is full (7/7)`);
+  // Check if player's battlefield is full
+  if (myBattlefield.length >= MAX_BATTLEFIELD_SIZE) {
+    debug.warn(`Cannot take control of ${enemyBattlefield[targetIdx].card.name}: your battlefield is full`);
     return state;
   }
   

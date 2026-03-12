@@ -31,6 +31,7 @@ interface HandProps {
   battlefieldRef: React.RefObject<HTMLDivElement>;
   evolveReadyIds?: Set<string>;
   battlefieldCount?: number;
+  activeMinionCount?: number;
 }
 
 const NOOP_REGISTER = () => {};
@@ -47,7 +48,8 @@ export const Hand: React.FC<HandProps> = React.memo(({
   registerCardPosition,
   battlefieldRef,
   evolveReadyIds,
-  battlefieldCount = 0
+  battlefieldCount = 0,
+  activeMinionCount = 0
 }) => {
   const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -130,10 +132,14 @@ export const Hand: React.FC<HandProps> = React.memo(({
             const isMinion = card.card?.type === 'minion';
             const boardFull = isMinion && battlefieldCount >= MAX_BATTLEFIELD_SIZE;
 
+            const sacrificeCost = card.card?.sacrificeCost || 0;
+            const meetsSacrifice = sacrificeCost === 0 || activeMinionCount >= sacrificeCost;
+
             const canPlay = isPlayerTurn &&
                            !isInteractionDisabled &&
                            !boardFull &&
-                           manaCost <= currentMana;
+                           manaCost <= currentMana &&
+                           meetsSacrifice;
             
             // Use the professional hand arc transform system
             const transform = handArcTransforms[index];

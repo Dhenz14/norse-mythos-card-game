@@ -43,7 +43,7 @@ import { ElementBuffPopup } from './components/ElementBuffPopup';
 import { ElementMatchupBanner } from './components/ElementMatchupBanner';
 import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
 import { PhaseBanner } from './components/PhaseBanner';
-import { PotDisplay } from './components/PotDisplay';
+import { RiskDisplay } from './components/PotDisplay';
 import { useElementalBuff } from './hooks/useElementalBuff';
 import { canCardAttack as canCardAttackCheck } from './attackUtils';
 import { GameViewport } from './GameViewport';
@@ -188,7 +188,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const selectAttacker = useGameStore(s => s.selectAttacker);
   const attackWithCard = useGameStore(s => s.attackWithCard);
   const autoAttackAll = useGameStore(s => s.autoAttackAll);
-  const endTurn = useGameStore(s => s.endTurn);
   const selectedCard = useGameStore(s => s.selectedCard);
   const selectCard = useGameStore(s => s.selectCard);
   
@@ -196,7 +195,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   
   const [communityCardsRevealed, setCommunityCardsRevealed] = useState(false);
   const [showGearPanel, setShowGearPanel] = useState(false);
-  const [autoAttackMode, setAutoAttackMode] = useState<'minion' | 'hero'>('minion');
 
   useEffect(() => {
     if (!combatState?.phase) return;
@@ -748,6 +746,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
             <BattlefieldHero
               pet={enrichedOpponentPet}
               hpCommitted={opponentHpCommitted}
+              pokerPosition={combatState.opponentPosition}
               level={opponentLevel}
               onClick={onOpponentHeroClick}
               isTargetable={isOpponentTargetable}
@@ -842,15 +841,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       </div>
       
-      {/* Unified Pot Display - consolidates FOE HP, POT total, and YOU HP into single component */}
-      <PotDisplay
-        playerHpCommitted={combatState.player.hpCommitted}
-        opponentHpCommitted={combatState.opponent.hpCommitted}
-        playerPosition={combatState.playerPosition}
-        opponentPosition={combatState.opponentPosition}
-        pot={combatState.pot}
-        hidden={isMulligan}
-      />
+      {/* Risk Display - total HP at stake */}
+      <RiskDisplay risk={combatState.pot} hidden={isMulligan} />
       
       {/* Opponent Field */}
       <div className="unified-opponent-field">
@@ -902,54 +894,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       )}
 
-      {/* Info Row: Auto Attack + End Turn */}
+      {/* Info Row */}
       <div className="unified-info-row">
-        {!isMulligan && isPlayerTurn && (
-          <div className="info-row-buttons">
-            <div className="auto-attack-group">
-              <button
-                type="button"
-                className="ragnarok-end-turn active ragnarok-auto-attack"
-                onClick={() => autoAttackAll(autoAttackMode)}
-              >
-                <span className="end-turn-text">AUTO ATTACK</span>
-                <span className="end-turn-hint">{autoAttackMode === 'hero' ? 'go face' : 'minions'}</span>
-              </button>
-              <div className="auto-attack-toggle">
-                <button
-                  type="button"
-                  className={`toggle-option ${autoAttackMode === 'minion' ? 'active' : ''}`}
-                  onClick={() => setAutoAttackMode('minion')}
-                >
-                  Minion
-                </button>
-                <button
-                  type="button"
-                  className={`toggle-option ${autoAttackMode === 'hero' ? 'active' : ''}`}
-                  onClick={() => setAutoAttackMode('hero')}
-                >
-                  Hero
-                </button>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="ragnarok-end-turn active"
-              onClick={() => endTurn()}
-            >
-              <span className="end-turn-text">END TURN</span>
-              <span className="end-turn-hint">Space</span>
-            </button>
-          </div>
-        )}
-        {!isMulligan && !isPlayerTurn && (
-          <div className="info-row-buttons">
-            <button type="button" className="ragnarok-end-turn inactive" disabled>
-              <span className="end-turn-text">OPPONENT</span>
-              <span className="end-turn-hint">waiting...</span>
-            </button>
-          </div>
-        )}
       </div>
       
       {/* Player Area - Hero + Hole Cards + Hand Cards in a row */}
@@ -962,6 +908,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                 <BattlefieldHero
                   pet={enrichedPlayerPet}
                   hpCommitted={playerHpCommitted}
+                  pokerPosition={combatState.playerPosition}
                   level={playerLevel}
                   onClick={() => { onPlayerHeroClick?.(); setShowGearPanel(true); }}
                   isTargetable={isPlayerTargetable}
@@ -1104,6 +1051,18 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                    >
                      <ShieldIcon />
                    </button>
+
+                   {!isMulligan && isPlayerTurn && playerBattlefield.length > 0 && (
+                     <button
+                       type="button"
+                       className="poker-btn auto-attack-btn"
+                       onClick={() => autoAttackAll('minion')}
+                       title="Auto-attack all minions into enemy minions"
+                     >
+                       <CrossedSwordsIcon />
+                       <span className="btn-text">Auto</span>
+                     </button>
+                   )}
                  </div>
                );
             })()}
@@ -1312,10 +1271,128 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   return (
     <GameViewport extraClassName={`${outerShakeClass} ${realmClass}`.trim()}>
       <div className={`ragnarok-combat-arena viewport-mode ${isPlayerTurn ? 'player-turn' : 'opponent-turn'}`}>
-        {/* Minimal Timer at Top Center */}
-        <div className={`zone-timer minimal-timer ${combatState.turnTimer <= 10 ? 'low-time' : ''}`}>
-          {combatState.turnTimer}
-        </div>
+        {/* Hourglass Timer at Top Center */}
+        {(() => {
+          const t = combatState.turnTimer;
+          const maxT = 30;
+          const pct = Math.max(0, Math.min(1, t / maxT));
+          const topH = pct * 30;
+          const botH = (1 - pct) * 30;
+          return (
+            <div className={`hourglass-timer ${t <= 10 ? 'low-time' : ''} ${t <= 5 ? 'critical' : ''}`}>
+              <svg className="hourglass-svg" viewBox="0 0 60 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="hg-gold" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#f5d060" />
+                    <stop offset="30%" stopColor="#d4a017" />
+                    <stop offset="60%" stopColor="#b8860b" />
+                    <stop offset="100%" stopColor="#8b6508" />
+                  </linearGradient>
+                  <linearGradient id="hg-gold-cap" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ffe680" />
+                    <stop offset="40%" stopColor="#d4a017" />
+                    <stop offset="100%" stopColor="#8b6508" />
+                  </linearGradient>
+                  <linearGradient id="hg-sand-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#f5c842" />
+                    <stop offset="100%" stopColor="#c89520" />
+                  </linearGradient>
+                  <linearGradient id="hg-glass-shine" x1="0.2" y1="0" x2="0.8" y2="1">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.25)" />
+                    <stop offset="50%" stopColor="rgba(255,255,255,0)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
+                  </linearGradient>
+                  <radialGradient id="hg-glow">
+                    <stop offset="0%" stopColor="rgba(245,208,96,0.6)" />
+                    <stop offset="100%" stopColor="rgba(245,208,96,0)" />
+                  </radialGradient>
+                  <clipPath id="hg-top-clip">
+                    <path d="M12 12 C12 12 12 38 30 50 C48 38 48 12 48 12 Z" />
+                  </clipPath>
+                  <clipPath id="hg-bottom-clip">
+                    <path d="M12 88 C12 88 12 62 30 50 C48 62 48 88 48 88 Z" />
+                  </clipPath>
+                  <filter id="hg-inner-shadow">
+                    <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.4" />
+                  </filter>
+                </defs>
+
+                {/* Ambient glow behind hourglass */}
+                <ellipse cx="30" cy="50" rx="28" ry="44" fill="url(#hg-glow)" className="hg-ambient-glow" />
+
+                {/* Ornate top cap — layered for depth */}
+                <rect x="6" y="2" width="48" height="10" rx="3" fill="url(#hg-gold-cap)" stroke="#8b6508" strokeWidth="1" />
+                <rect x="10" y="0" width="40" height="4" rx="2" fill="url(#hg-gold-cap)" stroke="#a07818" strokeWidth="0.5" />
+                <line x1="12" y1="7" x2="48" y2="7" stroke="rgba(255,230,128,0.5)" strokeWidth="0.5" />
+                {/* Top cap ornamental dots */}
+                <circle cx="16" cy="6" r="1.2" fill="#ffe680" opacity="0.8" />
+                <circle cx="30" cy="6" r="1.5" fill="#ffe680" opacity="0.9" />
+                <circle cx="44" cy="6" r="1.2" fill="#ffe680" opacity="0.8" />
+
+                {/* Ornate bottom cap */}
+                <rect x="6" y="88" width="48" height="10" rx="3" fill="url(#hg-gold-cap)" stroke="#8b6508" strokeWidth="1" />
+                <rect x="10" y="96" width="40" height="4" rx="2" fill="url(#hg-gold-cap)" stroke="#a07818" strokeWidth="0.5" />
+                <line x1="12" y1="93" x2="48" y2="93" stroke="rgba(255,230,128,0.5)" strokeWidth="0.5" />
+                <circle cx="16" cy="93" r="1.2" fill="#ffe680" opacity="0.8" />
+                <circle cx="30" cy="93" r="1.5" fill="#ffe680" opacity="0.9" />
+                <circle cx="44" cy="93" r="1.2" fill="#ffe680" opacity="0.8" />
+
+                {/* Glass frame — two curved bulbs */}
+                <path
+                  d="M12 12 C12 12 12 38 30 50 C12 62 12 88 12 88 M48 12 C48 12 48 38 30 50 C48 62 48 88 48 88"
+                  stroke="url(#hg-gold)" strokeWidth="2.5" strokeLinecap="round" fill="none"
+                />
+
+                {/* Sand in top bulb — drains down */}
+                <rect
+                  className="hg-sand-top"
+                  clipPath="url(#hg-top-clip)"
+                  x="11" width="38"
+                  fill="url(#hg-sand-grad)"
+                  filter="url(#hg-inner-shadow)"
+                  style={{ y: 12 + (30 - topH), height: topH, transition: 'height 1s linear, y 1s linear' }}
+                />
+
+                {/* Sand in bottom bulb — fills up */}
+                <rect
+                  className="hg-sand-bottom"
+                  clipPath="url(#hg-bottom-clip)"
+                  x="11" width="38"
+                  fill="url(#hg-sand-grad)"
+                  style={{ y: 88 - botH, height: botH, transition: 'height 1s linear, y 1s linear' }}
+                />
+
+                {/* Falling sand stream — thin line through the neck */}
+                {t > 0 && t < maxT && (
+                  <g className="hg-stream-group">
+                    <line x1="30" y1="42" x2="30" y2="58" stroke="#e8b830" strokeWidth="1.2" className="hg-stream" />
+                    {/* Sand particles falling */}
+                    <circle cx="30" cy="46" r="0.8" fill="#f5d060" className="hg-particle hg-p1" />
+                    <circle cx="29" cy="52" r="0.6" fill="#d4a017" className="hg-particle hg-p2" />
+                    <circle cx="31" cy="49" r="0.7" fill="#f5c842" className="hg-particle hg-p3" />
+                  </g>
+                )}
+
+                {/* Glass shine highlight — curved reflections */}
+                <path
+                  d="M18 16 C18 16 20 32 28 42"
+                  stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" fill="none"
+                  className="hg-shine-top"
+                />
+                <path
+                  d="M18 84 C18 84 20 68 28 58"
+                  stroke="rgba(255,255,255,0.15)" strokeWidth="1.2" strokeLinecap="round" fill="none"
+                  className="hg-shine-bottom"
+                />
+
+                {/* Center neck ring ornament */}
+                <ellipse cx="30" cy="50" rx="5" ry="2.5" fill="none" stroke="url(#hg-gold)" strokeWidth="1.5" />
+                <ellipse cx="30" cy="50" rx="3" ry="1.5" fill="#b8860b" opacity="0.6" />
+              </svg>
+              <span className="hg-countdown">{t}</span>
+            </div>
+          );
+        })()}
         
         <PhaseBanner phase={combatState.phase} forceHide={!!showdownCelebration} />
 

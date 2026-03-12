@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Difficulty } from './campaignTypes';
-import { hiveSync } from '../../data/HiveSync';
-import { hiveEvents } from '../../data/HiveEvents';
 import { isHiveMode } from '../config/featureFlags';
 
 interface MissionCompletion {
@@ -68,9 +66,14 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 					rewardsClaimed: [...state.rewardsClaimed, missionId],
 				}));
 				if (isHiveMode()) {
-					hiveSync.claimReward(`campaign:${missionId}`)
-					.then(r => { if (r.success) hiveEvents.emitTransactionConfirmed({ trxId: r.trxId ?? '', status: 'confirmed' }); })
-					.catch(() => {});
+					Promise.all([
+						import('../../data/HiveSync'),
+						import('../../data/HiveEvents'),
+					]).then(([{ hiveSync }, { hiveEvents }]) => {
+						hiveSync.claimReward(`campaign:${missionId}`)
+						.then(r => { if (r.success) hiveEvents.emitTransactionConfirmed({ trxId: r.trxId ?? '', status: 'confirmed' }); })
+						.catch(() => {});
+					});
 				}
 			},
 

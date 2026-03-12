@@ -28,8 +28,10 @@ import '../styles/hp-bar.css';
 export interface BattlefieldHeroProps {
   /** The pet/hero data object containing name, stats, and norseHeroId */
   pet: any;
-  /** Amount of HP committed to the current bet */
+  /** Amount of HP committed (risk) */
   hpCommitted: number;
+  /** Poker position (SB/BB) */
+  pokerPosition?: 'small_blind' | 'big_blind';
   /** Hero level */
   level: number;
   /** Click handler for the hero card */
@@ -84,16 +86,17 @@ const SECRET_TEXT_STYLE: React.CSSProperties = { opacity: 0.8 };
  */
 export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   pet, 
-  hpCommitted, 
-  level, 
-  onClick, 
-  isTargetable = false, 
+  hpCommitted,
+  pokerPosition,
+  level,
+  onClick,
+  isTargetable = false,
   isOpponent = false,
-  secrets = [], 
-  heroClass = 'neutral', 
-  element: elementProp, 
-  mana = 0, 
-  maxMana = 10, 
+  secrets = [],
+  heroClass = 'neutral',
+  element: elementProp,
+  mana = 0,
+  maxMana = 10,
   onHeroPowerClick,
   onWeaponUpgradeClick,
   isWeaponUpgraded = false,
@@ -534,6 +537,32 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
             </div>
           )}
         </div>
+
+        {/* Risk chip — shows committed HP as poker chip badge */}
+        {hpCommitted > 0 && (
+          <div className={`hero-risk-chip ${isOpponent ? 'opponent' : 'player'}`}>
+            <span className="risk-chip-amount">{hpCommitted}</span>
+            <span className="risk-chip-unit">HP</span>
+          </div>
+        )}
+
+        {/* Dealer button — gold Norse coin on the small blind (button) player */}
+        {pokerPosition === 'small_blind' && (
+          <div className={`dealer-button ${isOpponent ? 'opponent' : 'player'}`} title="Dealer">
+            <svg viewBox="0 0 32 32" className="dealer-coin">
+              <defs>
+                <linearGradient id="coinGold" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#ffe680" />
+                  <stop offset="40%" stopColor="#d4a017" />
+                  <stop offset="100%" stopColor="#8b6508" />
+                </linearGradient>
+              </defs>
+              <circle cx="16" cy="16" r="14" fill="url(#coinGold)" stroke="#8b6508" strokeWidth="1.5" />
+              <circle cx="16" cy="16" r="11" fill="none" stroke="rgba(255,230,128,0.5)" strokeWidth="0.8" />
+              <text x="16" y="20" textAnchor="middle" fontSize="12" fontWeight="900" fill="#5c3d0a" fontFamily="Cinzel, serif">D</text>
+            </svg>
+          </div>
+        )}
       </div>
     </div>
   );

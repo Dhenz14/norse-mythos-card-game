@@ -1140,6 +1140,29 @@ vercel --prod                 # Deploy to Vercel
 - Badge auto-shifts down when element badge is present (no overlap)
 - Scales proportionally on small card sizes
 
+### Completed (Combat UX & Production Build Fix)
+
+- **Poker UI overhaul**: Renamed "Pot" → "Risk" throughout display text and CSS (internal code keeps `combatState.pot`)
+- **RiskDisplay**: Simplified PotDisplay from 3-section layout to compact single "RISK" center badge
+- **Hero risk chips**: PokerStars-style HP commitment shown as chip badges on hero portraits
+- **Dealer button**: Gold Norse coin SVG on the small blind player each round
+- **Hourglass timer**: Replaced plain number timer with animated SVG hourglass (sand physics, glass shine, low-time/critical states)
+- **Auto-attack moved**: Button now inside `.action-buttons-group` next to Brace (was floating separately)
+- **Removed turn counter** badge from GameHUD
+- **Removed summoning sick dotted outline** from SimpleBattlefield.css
+- **Game limits reduced**: Hand size 7→6, battlefield size 5→4 via `gameConstants.ts`
+  - Fixed 3 local `MAX_HAND_SIZE = 7` overrides (drawUtils.ts, gameStore.ts, deckUtils.ts)
+  - Fixed hardcoded battlefield checks in spellUtils, comboUtils, artifactTriggerProcessor, gameUtils
+- **Realm background art**: 7 realm board skins use actual art images from `art/realms/` (asgard, niflheim, muspelheim, helheim, jotunheim, alfheim, vanaheim)
+- **Behemoth card** (ID 31923): 0-mana 9/14 mythic Beast with Taunt, requires sacrificing 2 non-summoning-sick friendly minions to play. Battlecry: destroy all other minions (+2/+2 per kill), opponent discards highest cost card. Art: `art/behemoth.webp`
+- **Production build circular dependency fix**: Broke 3 circular chunk chains that caused `Cannot access 'Er' before initialization` TDZ error on GitHub Pages
+  - `blockchain ↔ campaign`: Converted `campaignStore.ts` hiveSync/hiveEvents to dynamic `import()`
+  - `blockchain ↔ game-engine`: Removed static `useHiveDataStore` import from gameUtils.ts, replaced with `globalThis.__ragnarokHiveDataStore` lazy access
+  - `blockchain ↔ card-data`: Assigned `allCards.ts` to explicit `card-data` chunk (was floating, Rollup placed it in blockchain)
+  - Added `hive-data` chunk for shared data layer files (`HiveSync`, `HiveEvents`, `HiveDataLayer`, `schemas/`)
+  - Deferred `transactionQueueStore` auto-cleanup from immediate to `setTimeout(0)`
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)

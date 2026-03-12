@@ -39,13 +39,7 @@
 	z-index: 1;
 }
 
-/* 4. BATTLEFIELD DIVIDER — rune chain image replaces CSS gradient */
-.ragnarok-combat-arena.viewport-mode::after {
-	background: url('/ui/rune-chain-divider-v2.jpg') center center / contain no-repeat !important;
-	height: 20px !important;
-	opacity: 0.7 !important;
-	box-shadow: 0 0 30px rgba(212, 175, 55, 0.4) !important;
-}
+/* 4. BATTLEFIELD DIVIDER — removed for clean seamless arena */
 
 /* 5. BOARD FRAME — ornate border around the game area */
 .game-viewport-wrapper::after {
@@ -59,13 +53,7 @@
 	opacity: 0.5;
 }
 
-/* 6. ACTION BUTTONS — ornate button skin on End Turn / Auto Attack */
-.ragnarok-end-turn.active {
-	background: url('/ui/attack-button-v2.jpg') center center / cover no-repeat !important;
-	border-color: #e6c65a !important;
-	color: #fff !important;
-	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
-}
+/* 6. ACTION BUTTONS — removed (End Turn / Auto Attack buttons removed) */
 
 .ragnarok-end-turn.active:hover {
 	filter: brightness(1.15);

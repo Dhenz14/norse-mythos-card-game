@@ -125,19 +125,9 @@
      ======================================== */
   --hero-card-height: calc(var(--hero-card-width, 130px) * 1.4);
 
-  --zone-pot-foe-left: 24px;
-  --zone-pot-foe-top: calc(12px + var(--hero-card-height) + 6px);
-
-  --zone-pot-player-left: calc(24px + var(--hero-card-width, 130px) + 6px);
-  --zone-pot-player-bottom: calc(16px + var(--hero-card-height) - 30px);
-
-  --zone-pot-z: var(--token-z-community, 25);
-
-  /* Legacy pot (deprecated) */
-  --zone-pot-left: 16px;
-  --zone-pot-top: 48%;
-  --zone-pot-width: 80px;
-  --zone-pot-margin-right: 2px;
+  --zone-risk-left: 15%;
+  --zone-risk-bottom: 340px;
+  --z-risk: 50;
 
   /* ========================================
      COMMUNITY CARDS (Flop/Turn/River) — left side

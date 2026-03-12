@@ -8,11 +8,9 @@ import { processAllOnMinionDeathEffects, isNorseActive } from './norseIntegratio
 import { processArtifactOnMinionDeath } from './artifactTriggerProcessor';
 import { isMinion, getHealth } from './cards/typeGuards';
 import { createCardInstance } from './cards/cardUtils';
-import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 import { removeKeyword } from './cards/keywordUtils';
-
-const MAX_HAND_SIZE = 7;
 
 /**
  * Moves a card from one zone to another

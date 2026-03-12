@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useGameStore } from '../stores/gameStore';
-import GameHUD from './GameHUD';
 import SimpleBattlefield from './SimpleBattlefield';
 import Hand from './Hand';
 import { Graveyard } from './Graveyard';
@@ -1733,40 +1732,6 @@ export const GameBoard: React.FC<{}> = () => {
     }
   };
   
-  // Handle end turn
-  
-  const handleEndTurn = useCallback(() => {
-    // Prevent ending turn during mulligan phase
-    if (gamePhase === 'mulligan') {
-      showNotification({
-        title: '⚠️ Mulligan in Progress',
-        description: 'Please complete the mulligan phase before ending your turn.',
-        type: 'warning',
-        duration: 3000
-      });
-      return;
-    }
-    
-    // If it's the player's turn and about to end, show mana animation for the
-    // next turn's opponent (the current player) will get +1 max mana
-    if (isPlayerTurn && manaPositionRef.current && player.mana?.max < 10) {
-      // Add animation for gaining a mana crystal on the next turn
-      addManaGainAnimation(manaPositionRef.current, 1);
-    }
-    
-    // Display a "thinking" message if the player is ending their turn
-    if (isPlayerTurn) {
-      showNotification({
-        title: '💭 Opponent Thinking',
-        description: 'The opponent is planning their turn...',
-        type: 'info',
-        duration: 2000
-      });
-    }
-    
-    // End the turn (the AI action manager will handle opponent's turn)
-    endTurn();
-  }, [gamePhase, isPlayerTurn, player.mana?.max, endTurn, addManaGainAnimation, showNotification]);
   
   // Toggle hero power mode
   const handleToggleHeroPower = () => {
@@ -2514,6 +2479,7 @@ export const GameBoard: React.FC<{}> = () => {
                   battlefieldRef={battlefieldRef}
                   evolveReadyIds={evolveReadyIds}
                   battlefieldCount={player.battlefield?.length || 0}
+                  activeMinionCount={player.battlefield?.filter((m: any) => !m.isSummoningSick && m.canAttack !== false).length || 0}
                 />
               </div>
             )}

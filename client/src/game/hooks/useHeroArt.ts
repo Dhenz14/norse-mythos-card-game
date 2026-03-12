@@ -4,7 +4,6 @@
  * Follows TSX → Hook → Utils architecture pattern
  */
 
-import { useMemo } from 'react';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 
 interface UseHeroArtResult {
@@ -22,10 +21,8 @@ export function useHeroArt(
   heroId?: string,
   explicitPortrait?: string
 ): UseHeroArtResult {
-  return useMemo(() => {
-    const artPath = resolveHeroPortrait(heroId, explicitPortrait) ?? null;
-    return { artPath, hasArt: artPath !== null };
-  }, [heroId, explicitPortrait]);
+  const artPath = resolveHeroPortrait(heroId, explicitPortrait) ?? null;
+  return { artPath, hasArt: artPath !== null };
 }
 
 /**

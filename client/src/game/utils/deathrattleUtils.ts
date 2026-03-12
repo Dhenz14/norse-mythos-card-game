@@ -289,7 +289,7 @@ function executeDeathrattleInner(
     }
     case 'add_copy_to_hand': {
       const player = newState.players[playerId];
-      if (player.hand.length < 7) {
+      if (player.hand.length < MAX_HAND_SIZE) {
         const handCopy = createCardInstance(card.card);
         player.hand.push(handCopy);
       }
@@ -297,7 +297,7 @@ function executeDeathrattleInner(
     }
     case 'add_random_class_card': {
       const player = newState.players[playerId];
-      if (player.hand.length < 7 && player.deck.length > 0) {
+      if (player.hand.length < MAX_HAND_SIZE && player.deck.length > 0) {
         const randomIdx = Math.floor(Math.random() * player.deck.length);
         const randomCard = player.deck[randomIdx];
         const inst = createCardInstance(randomCard);
@@ -325,7 +325,7 @@ function executeDeathrattleInner(
       const player = newState.players[playerId];
       const graveyard = player.graveyard || [];
       const deadMinions = graveyard.filter(c => isMinion(c.card));
-      if (deadMinions.length > 0 && player.hand.length < 7) {
+      if (deadMinions.length > 0 && player.hand.length < MAX_HAND_SIZE) {
         const pick = deadMinions[Math.floor(Math.random() * deadMinions.length)];
         const inst = createCardInstance(pick.card);
         player.hand.push(inst);
@@ -334,7 +334,7 @@ function executeDeathrattleInner(
     }
     case 'return_to_hand_cost_increase': {
       const player = newState.players[playerId];
-      if (player.hand.length < 7) {
+      if (player.hand.length < MAX_HAND_SIZE) {
         const handCopy = createCardInstance(card.card);
         const mana = (handCopy.card as any).manaCost ?? (handCopy.card as any).cost ?? 0;
         (handCopy.card as any).manaCost = mana + ((deathrattle as any).costIncrease || 2);

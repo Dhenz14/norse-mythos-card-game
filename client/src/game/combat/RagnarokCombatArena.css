@@ -1975,7 +1975,7 @@
     rgba(101, 67, 33, 0.12) 50%,
     rgba(139, 69, 19, 0.08) 100%
   );
-  border-bottom: 2px solid rgba(139, 69, 19, 0.3);
+  border-bottom: none;
   pointer-events: none;
 }
 
@@ -2344,13 +2344,14 @@
 }
 
 .battlefield-hero-square.targetable .hero-card-frame {
-  box-shadow: 0 0 25px rgba(239, 68, 68, 0.9);
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
   animation: heroSquarePulse 1.2s ease-in-out infinite;
+  border-radius: 16px;
 }
 
 @keyframes heroSquarePulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.6); }
 }
 
 /* ========================================
@@ -4035,8 +4036,8 @@
 .hero-card-frame.premium-glow::before {
   content: '';
   position: absolute;
-  inset: -3px;
-  border-radius: 18px;
+  inset: -4px;
+  border-radius: 20px;
   background: linear-gradient(90deg,
     rgba(0, 255, 204, 0.15) 0%,
     rgba(34, 197, 94, 0.1) 50%,
@@ -5009,7 +5010,7 @@
   width: 100%;
   height: 100%;
   min-height: 0;
-  gap: 4px 8px;
+  gap: 0 8px;
   padding: 8px;
   background: linear-gradient(180deg, 
     rgba(15, 23, 42, 0.98) 0%, 
@@ -5052,8 +5053,8 @@
   padding: 8px;
 }
 
-/* Pot Display Zone - left column, below community */
-.pot-container {
+/* Risk Display Zone - left column, below community */
+.risk-container {
   grid-area: pot;
   display: flex;
   flex-direction: column;
@@ -5068,7 +5069,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  padding: 8px;
+  padding: 8px 8px 14px 8px;
 }
 
 /* Player Field Zone - battlefield column, bottom half */
@@ -5077,7 +5078,86 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 8px;
+  padding: 14px 8px 8px 8px;
+  position: relative;
+}
+
+/* Auto-attack button inherits .poker-btn styles, no extra rules needed */
+
+/* ============================================================
+   RISK CHIP — Committed HP badge on hero portraits
+   ============================================================ */
+.hero-risk-chip {
+  position: absolute;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 900;
+  background: radial-gradient(circle, rgba(15, 15, 15, 0.95) 50%, rgba(30, 30, 30, 0.9));
+  border: 2px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  animation: risk-chip-appear 0.3s ease-out;
+  left: 50%;
+}
+
+.hero-risk-chip.player {
+  bottom: -14px;
+  transform: translateX(-50%);
+  border-color: rgba(96, 165, 250, 0.8);
+  color: #93c5fd;
+}
+
+.hero-risk-chip.opponent {
+  top: -14px;
+  transform: translateX(-50%);
+  border-color: rgba(248, 113, 113, 0.8);
+  color: #fca5a5;
+}
+
+.risk-chip-amount {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.risk-chip-unit {
+  font-size: 0.55rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+@keyframes risk-chip-appear {
+  from { opacity: 0; transform: translateX(-50%) scale(0.6); }
+  to { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+/* Dealer button — gold Norse coin */
+.dealer-button {
+  position: absolute;
+  z-index: 16;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 6px rgba(212, 175, 55, 0.3));
+}
+
+.dealer-button.player {
+  bottom: -8px;
+  right: -8px;
+}
+
+.dealer-button.opponent {
+  top: -8px;
+  right: -8px;
+}
+
+.dealer-coin {
+  width: 100%;
+  height: 100%;
 }
 
 /* Player Hero Zone - bottom-left of poker column */
@@ -5134,7 +5214,7 @@
   align-items: center;
 }
 
-/* Old .unified-pot styles removed - see styles/pot-display.css for .pot-container */
+/* Old pot styles removed — risk display is in styles/pot-display.css */
 
 /* POSITIONING: Handled by GameViewport.css using zones.css variables */
 /* This file only handles non-positional styling (flex layout, gap) */
@@ -5256,7 +5336,7 @@
   letter-spacing: 1px;
 }
 
-/* Old .unified-pot .pot-label/.pot-value styles removed - see styles/pot-display.css */
+/* Risk display styles in styles/pot-display.css */
 
 .info-row-item {
   display: flex;
@@ -5976,7 +6056,7 @@
   
   /* Hide elements not in mobile grid template */
   .activity-logs-dock,
-  .pot-container,
+  .risk-container,
   .unified-hero-section {
     display: none;
   }

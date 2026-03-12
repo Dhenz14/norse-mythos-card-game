@@ -34,7 +34,6 @@ interface GameHUDProps {
   isPlayerTurn: boolean;
   turnNumber: number;
   isHeroPowerTargetMode: boolean;
-  onEndTurn: () => void;
   onHeroPowerUse: () => void;
   onOpponentHeroClick: () => void;
   registerHeroPosition?: (type: 'player' | 'opponent', position: Position) => void;
@@ -48,7 +47,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   isPlayerTurn,
   turnNumber,
   isHeroPowerTargetMode,
-  onEndTurn,
   onHeroPowerUse,
   onOpponentHeroClick,
   registerHeroPosition,
@@ -113,18 +111,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             </div>
           </div>
           
-          <button
-            onClick={onEndTurn}
-            disabled={!isPlayerTurn || isInteractionDisabled}
-            className={`px-6 py-3 rounded-lg font-bold text-lg shadow-lg transition transform hover:scale-105 ${
-              isPlayerTurn && !isInteractionDisabled
-                ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white cursor-pointer' 
-                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-            }`}
-            aria-label="End turn"
-          >
-            END TURN
-          </button>
           
           {isHeroPowerTargetMode && (
             <div className="mt-2 text-yellow-400 font-semibold text-sm">

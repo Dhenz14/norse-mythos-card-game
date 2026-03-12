@@ -41,7 +41,7 @@
     rgba(101, 67, 33, 0.12) 50%,
     rgba(139, 69, 19, 0.08) 100%
   );
-  border-bottom: 2px solid rgba(139, 69, 19, 0.3);
+  border-bottom: none;
   pointer-events: none;
 }
 

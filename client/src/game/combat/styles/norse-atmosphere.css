@@ -153,55 +153,7 @@
   }
 }
 
-/* ========================================
-   BATTLEFIELD DIVIDER - Glowing rune-engraved line
-   Triple-layer: outer glow + core line + inner bright
-   ======================================== */
-.ragnarok-combat-arena.viewport-mode::after {
-  content: '';
-  position: absolute;
-  left: 1%;
-  right: 1%;
-  top: 45%;
-  height: 3px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(180, 140, 40, 0.2) 3%,
-    rgba(212, 175, 55, 0.7) 10%,
-    rgba(255, 200, 80, 0.9) 25%,
-    rgba(255, 230, 140, 1) 40%,
-    rgba(255, 240, 180, 1) 50%,
-    rgba(255, 230, 140, 1) 60%,
-    rgba(255, 200, 80, 0.9) 75%,
-    rgba(212, 175, 55, 0.7) 90%,
-    rgba(180, 140, 40, 0.2) 97%,
-    transparent 100%
-  );
-  z-index: 2;
-  pointer-events: none;
-  box-shadow:
-    0 0 3px rgba(255, 240, 180, 1),
-    0 0 8px rgba(255, 220, 120, 0.9),
-    0 0 18px rgba(255, 200, 80, 0.7),
-    0 0 40px rgba(212, 175, 55, 0.5),
-    0 0 70px rgba(212, 175, 55, 0.25),
-    0 0 120px rgba(212, 175, 55, 0.1),
-    0 -2px 0 rgba(255, 240, 180, 0.3),
-    0 2px 0 rgba(180, 140, 40, 0.2);
-  animation: divider-pulse 4s ease-in-out infinite;
-}
-
-@keyframes divider-pulse {
-  0%, 100% { opacity: 0.75; }
-  50% { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ragnarok-combat-arena.viewport-mode::after {
-    animation: none;
-    opacity: 0.7;
-  }
-}
+/* Battlefield divider removed — clean seamless arena */
 
 /* ========================================
    ACTIVE TURN INDICATOR - Hero Portrait Glow
@@ -450,27 +402,19 @@
 }
 
 /* ========================================
-   POT DISPLAY - Norse Treasure Offering
+   RISK DISPLAY - Norse Treasure Offering
    ======================================== */
-.pot-display-container {
-  --pot-glow: rgba(212, 175, 55, calc(0.2 + var(--pot-intensity, 0) * 0.5));
-  border: 1px solid rgba(212, 175, 55, calc(0.3 + var(--pot-intensity, 0) * 0.4)) !important;
-  box-shadow:
-    0 0 calc(10px + var(--pot-intensity, 0) * 22px) var(--pot-glow),
-    0 0 calc(6px + var(--pot-intensity, 0) * 45px) rgba(212, 175, 55, calc(0.06 + var(--pot-intensity, 0) * 0.18)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  animation: pot-ambient 3s ease-in-out infinite;
-  transition: box-shadow 0.5s ease-out, border-color 0.5s ease-out;
+.risk-display {
+  animation: risk-ambient 3s ease-in-out infinite;
 }
 
-@keyframes pot-ambient {
-  0%, 100% { opacity: 0.8; }
+@keyframes risk-ambient {
+  0%, 100% { opacity: 0.85; }
   50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pot-display-container {
+  .risk-display {
     animation: none;
   }
 }

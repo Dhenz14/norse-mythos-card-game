@@ -450,8 +450,7 @@
   border: none;
 }
 
-/* Pot Display - Norse themed panel (see styles/pot-display.css) */
-/* Positioning is handled in pot-display.css .pot-container */
+/* Risk Display - positioned via styles/pot-display.css */
 
 /* Opponent Minion Field - RIGHT SIDE to avoid poker card overlap
    Shifted right from center (was 50%, now 60%) */

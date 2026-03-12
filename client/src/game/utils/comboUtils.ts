@@ -3,6 +3,7 @@
  * Handling the activation and effects of Combo cards
  */
 import { GameState, CardInstance, CardData } from '../types';
+import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { ComboEffect } from '../types/CardTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { createGameLogEvent } from './gameLogUtils';
@@ -264,7 +265,7 @@ function handleComboSummon(
   
   // Check if the battlefield is full
   const battlefield = newState.players[playerType].battlefield;
-  if (battlefield.length >= 5) {
+  if (battlefield.length >= MAX_BATTLEFIELD_SIZE) {
     newState.gameLog.push(
       createGameLogEvent(
         newState,

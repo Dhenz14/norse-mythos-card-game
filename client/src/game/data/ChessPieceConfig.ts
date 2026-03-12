@@ -904,8 +904,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       description: 'All friendly pieces gain +1 Health. At the start of your turn, restore 1 Health to your most damaged piece.',
       fixedCardIds: [],
       passiveEffect: 'leif_passives',
-      chessAbility: 'king-leif',
-      portrait: '/portraits/kings/leif.png'
+      chessAbility: 'king-leif'
     },
     // ===== COMMON =====
     {
@@ -915,8 +914,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       description: 'First Man: All friendly pieces gain +1 Attack. Simple but relentless.',
       fixedCardIds: [],
       passiveEffect: 'askr_passives',
-      chessAbility: 'king-askr',
-      portrait: '/portraits/kings/askr.png'
+      chessAbility: 'king-askr'
     },
     {
       id: 'king-embla',
@@ -925,8 +923,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       description: 'First Woman: All friendly pieces gain +1 Health. At end of turn, restore 1 Health to all allies.',
       fixedCardIds: [],
       passiveEffect: 'embla_passives',
-      chessAbility: 'king-embla',
-      portrait: '/portraits/kings/embla.png'
+      chessAbility: 'king-embla'
     },
     // ===== PREMIUM =====
     {

@@ -27,7 +27,7 @@ import { isAISimulationMode, debug, getDebugConfig } from '../config/debugConfig
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
 import { useUnifiedCombatStore } from './unifiedCombatStore';
-import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 import { useTargetingStore } from './targetingStore';
 import { logActivity } from './activityLogStore';
 import { CombatEventBus } from '../services/CombatEventBus';
@@ -239,19 +239,6 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
             value: cardInstance.card.spellEffect?.value as number
           });
         } else if (cardInstance.card.type === 'minion') {
-          if (hasKeyword(cardInstance, 'battlecry') &&
-              cardInstance.card.battlecry) {
-            const battlecryDescription = cardInstance.card.description ||
-              `Battlecry: ${cardInstance.card.battlecry.type || 'Special effect'}`;
-
-            fireAnnouncement('battlecry', cardInstance.card.name, {
-              subtitle: battlecryDescription,
-              rarity: cardInstance.card.rarity as 'common' | 'rare' | 'epic' | 'mythic',
-              cardClass: cardInstance.card.class as any,
-              duration: 2500
-            });
-          }
-
           logActivity('minion_summoned', 'player', `Summoned ${cardInstance.card.name} (${cardInstance.card.attack}/${cardInstance.card.health})`, {
             cardName: cardInstance.card.name,
             cardId: typeof cardInstance.card.id === 'number' ? cardInstance.card.id : undefined
@@ -984,7 +971,6 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const player = gameState.players.player;
       const opponent = gameState.players.opponent;
       
-      const MAX_HAND_SIZE = 7;
       const MAX_MANA = 10;
       
       // Draw a card for player from deck to hand

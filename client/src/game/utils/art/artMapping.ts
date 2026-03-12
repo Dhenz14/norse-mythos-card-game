@@ -1122,6 +1122,7 @@ const VERCEL_CARD_ART: Record<string, string> = {
  * @returns The art path (/art/{id}.webp) or null if no explicit mapping exists
  */
 const CARD_ID_TO_ART: Record<number, string> = {
+	31923: '/art/behemoth.webp',
 	2202: '/art/4128-54b33535.webp',
 	4393: '/art/be87-7f6e4b1b.webp',
 	5108: '/art/3c41-d5bf8c82.webp',

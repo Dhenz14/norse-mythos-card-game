@@ -474,8 +474,8 @@ Poker Spells are cast during the **Spell/Pet Phase** (before the Faith phase). E
 
 ### Board Limit
 
-- Maximum 7 minions per side
-- Hand limit: 10 cards (excess cards are burned)
+- Maximum 4 minions per side
+- Hand limit: 6 cards (excess draws are skipped)
 - Deck limit: 30 cards
 
 ---
@@ -830,7 +830,7 @@ When attacking with elemental advantage:
 
 ### Basic Rules
 
-- **9 cards** per hand (max)
+- **6 cards** per hand (max)
 - Maximum **2 copies** of any card (except Mythics)
 - Maximum **1 copy** of Mythic cards
 - Can include **class cards** and **neutral cards**
@@ -949,7 +949,7 @@ Access the treasury management interface at `/treasury` in the game client. Sign
 | **Face** | Attacking the enemy hero directly |
 | **Empty Deck** | When your deck runs out, you simply cannot draw more cards. There is no fatigue damage and no card burn — plan your resources wisely |
 | **Full Hand** | When your hand is full, draw attempts are skipped — no cards are destroyed |
-| **Hand** | Cards currently held (max 9) |
+| **Hand** | Cards currently held (max 6) |
 | **Hole Cards** | Your 2 private poker cards |
 | **HP** | Health Points |
 | **Lethal** | Enough damage to kill the opponent |

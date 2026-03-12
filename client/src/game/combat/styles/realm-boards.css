@@ -97,12 +97,8 @@
 
 .game-viewport.realm-asgard {
 	background:
-		repeating-conic-gradient(rgba(255,215,0,0.02) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
-		repeating-conic-gradient(rgba(255,200,0,0.015) 0% 25%, transparent 0% 50%) 2px 2px / 4px 4px,
-		radial-gradient(ellipse 120% 60% at 50% 0%, rgba(255, 215, 0, 0.08) 0%, transparent 60%),
-		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(40, 30, 8, 0.95) 0%, transparent 70%),
-		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(30, 24, 10, 0.95) 0%, transparent 70%),
-		linear-gradient(180deg, #1a1505 0%, #2a2008 30%, #1e180a 70%, #0f0c04 100%) !important;
+		linear-gradient(180deg, rgba(26, 21, 5, 0.55) 0%, rgba(42, 32, 8, 0.45) 50%, rgba(15, 12, 4, 0.6) 100%),
+		url('/art/realms/asgard.webp') center center / cover no-repeat !important;
 }
 
 /* God-ray overlay */
@@ -136,12 +132,8 @@
 
 .game-viewport.realm-niflheim {
 	background:
-		repeating-conic-gradient(rgba(150,200,255,0.02) 0% 25%, transparent 0% 50%) 0 0 / 6px 6px,
-		repeating-conic-gradient(rgba(100,180,255,0.015) 0% 25%, transparent 0% 50%) 3px 3px / 6px 6px,
-		radial-gradient(ellipse 100% 40% at 50% 100%, rgba(100, 180, 255, 0.06) 0%, transparent 50%),
-		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(4, 8, 20, 0.98) 0%, transparent 70%),
-		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(8, 16, 40, 0.95) 0%, transparent 70%),
-		linear-gradient(180deg, #040810 0%, #081020 30%, #0a1428 70%, #030608 100%) !important;
+		linear-gradient(180deg, rgba(4, 8, 16, 0.55) 0%, rgba(8, 16, 32, 0.45) 50%, rgba(3, 6, 8, 0.6) 100%),
+		url('/art/realms/niflheim.webp') center center / cover no-repeat !important;
 }
 
 /* Frost mist crawling from edges */
@@ -182,12 +174,8 @@
 
 .game-viewport.realm-muspelheim {
 	background:
-		repeating-conic-gradient(rgba(255,60,0,0.025) 0% 25%, transparent 0% 50%) 0 0 / 5px 5px,
-		repeating-conic-gradient(rgba(255,100,0,0.02) 0% 25%, transparent 0% 50%) 2px 2px / 5px 5px,
-		radial-gradient(ellipse 80% 30% at 50% 100%, rgba(255, 60, 0, 0.1) 0%, transparent 50%),
-		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(18, 4, 4, 0.98) 0%, transparent 70%),
-		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(30, 10, 4, 0.95) 0%, transparent 70%),
-		linear-gradient(180deg, #120404 0%, #1a0808 30%, #200a04 70%, #0a0202 100%) !important;
+		linear-gradient(180deg, rgba(18, 4, 4, 0.55) 0%, rgba(26, 8, 8, 0.4) 50%, rgba(10, 2, 2, 0.6) 100%),
+		url('/art/realms/muspelheim.webp') center center / cover no-repeat !important;
 }
 
 /* Lava glow from below */
@@ -224,12 +212,8 @@
 
 .game-viewport.realm-helheim {
 	background:
-		repeating-conic-gradient(rgba(130,50,200,0.02) 0% 25%, transparent 0% 50%) 0 0 / 5px 5px,
-		repeating-conic-gradient(rgba(80,200,80,0.01) 0% 25%, transparent 0% 50%) 2px 2px / 5px 5px,
-		radial-gradient(ellipse 60% 40% at 50% 100%, rgba(50, 200, 50, 0.04) 0%, transparent 50%),
-		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(8, 4, 14, 0.98) 0%, transparent 70%),
-		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(14, 6, 24, 0.95) 0%, transparent 70%),
-		linear-gradient(180deg, #08040e 0%, #0e0618 30%, #0a0812 70%, #050208 100%) !important;
+		linear-gradient(180deg, rgba(8, 4, 14, 0.55) 0%, rgba(14, 6, 24, 0.4) 50%, rgba(5, 2, 8, 0.6) 100%),
+		url('/art/realms/helheim.webp') center center / cover no-repeat !important;
 }
 
 /* Spectral mist from below */
@@ -266,11 +250,8 @@
 
 .game-viewport.realm-jotunheim {
 	background:
-		repeating-conic-gradient(rgba(200,220,255,0.025) 0% 25%, transparent 0% 50%) 0 0 / 8px 8px,
-		repeating-conic-gradient(rgba(150,200,255,0.015) 0% 25%, transparent 0% 50%) 4px 4px / 8px 8px,
-		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(6, 12, 24, 0.98) 0%, transparent 70%),
-		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(12, 20, 35, 0.95) 0%, transparent 70%),
-		linear-gradient(180deg, #060a12 0%, #0c1220 30%, #101828 70%, #040810 100%) !important;
+		linear-gradient(180deg, rgba(6, 10, 18, 0.55) 0%, rgba(12, 18, 32, 0.4) 50%, rgba(4, 8, 16, 0.6) 100%),
+		url('/art/realms/jotunheim.webp') center center / cover no-repeat !important;
 }
 
 /* ============================================================
@@ -294,12 +275,8 @@
 
 .game-viewport.realm-alfheim {
 	background:
-		repeating-conic-gradient(rgba(180,140,255,0.02) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
-		repeating-conic-gradient(rgba(200,160,255,0.015) 0% 25%, transparent 0% 50%) 2px 2px / 4px 4px,
-		radial-gradient(ellipse 80% 50% at 50% 20%, rgba(167, 139, 250, 0.04) 0%, transparent 50%),
-		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(10, 6, 16, 0.98) 0%, transparent 70%),
-		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(14, 10, 22, 0.95) 0%, transparent 70%),
-		linear-gradient(180deg, #0a0610 0%, #14101e 30%, #100c18 70%, #06040a 100%) !important;
+		linear-gradient(180deg, rgba(10, 6, 16, 0.55) 0%, rgba(20, 16, 30, 0.4) 50%, rgba(6, 4, 10, 0.6) 100%),
+		url('/art/realms/alfheim.webp') center center / cover no-repeat !important;
 }
 
 /* ============================================================
@@ -323,12 +300,8 @@
 
 .game-viewport.realm-vanaheim {
 	background:
-		repeating-conic-gradient(rgba(80,200,80,0.02) 0% 25%, transparent 0% 50%) 0 0 / 5px 5px,
-		repeating-conic-gradient(rgba(60,180,60,0.015) 0% 25%, transparent 0% 50%) 2px 2px / 5px 5px,
-		radial-gradient(ellipse 60% 30% at 40% 10%, rgba(100, 200, 60, 0.04) 0%, transparent 50%),
-		radial-gradient(ellipse 600% 100% at 50% 0%, rgba(4, 10, 4, 0.98) 0%, transparent 70%),
-		radial-gradient(ellipse 600% 100% at 50% 100%, rgba(10, 20, 10, 0.95) 0%, transparent 70%),
-		linear-gradient(180deg, #040a04 0%, #081408 30%, #0a160a 70%, #030803 100%) !important;
+		linear-gradient(180deg, rgba(4, 10, 4, 0.55) 0%, rgba(8, 20, 8, 0.4) 50%, rgba(3, 8, 3, 0.6) 100%),
+		url('/art/realms/vanaheim.webp') center center / cover no-repeat !important;
 }
 
 /* Dappled sunlight from above */

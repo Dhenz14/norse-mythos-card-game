@@ -1,13 +1,11 @@
 import { GameState, CardData, CardInstance } from '../types';
 import { debug } from '../config/debugConfig';
 import { createCardInstance } from './cards/cardUtils';
-
-const MAX_HAND_SIZE = 7;
+import { MAX_HAND_SIZE } from '../constants/gameConstants';
 
 /**
  * Draw a card from a player's deck to their hand
  * Used for all card draw effects in the game
- * Implements 9-card hand limit by design - if hand is full, card is burned
  */
 export function drawCardFromDeck(
   state: GameState,

@@ -330,7 +330,37 @@ export const einherjarPayoffCards: CardData[] = [
 ];
 
 // ============================================
-// TECH CARDS (31922-31923)
+// SACRIFICE CARDS (31923)
+// Mythic minions requiring minion sacrifice to play
+// ============================================
+
+export const sacrificeCards: CardData[] = [
+	{
+		id: 31923,
+		name: 'Behemoth',
+		manaCost: 0,
+		attack: 9,
+		health: 14,
+		description: 'Sacrifice 2 active friendly minions to play. Battlecry: Destroy all other minions. For each destroyed, gain +2/+2. Your opponent discards their highest cost card.',
+		flavorText: 'God may have created it, but even the heavens fear its steps.',
+		type: 'minion',
+		rarity: 'mythic',
+		class: 'Neutral',
+		race: 'Beast',
+		keywords: ['taunt', 'battlecry'],
+		sacrificeCost: 2,
+		battlecry: {
+			type: 'sacrifice_and_devastate',
+			targetType: 'all',
+			requiresTarget: false
+		},
+		set: 'core',
+		collectible: true
+	},
+];
+
+// ============================================
+// TECH CARDS (31922)
 // Neutral utility / removal tech
 // ============================================
 
@@ -363,5 +393,6 @@ export const norseMechanicPayoffCards: CardData[] = [
 	...prophecyPayoffCards,
 	...realmShiftPayoffCards,
 	...einherjarPayoffCards,
-	...norseTechCards
+	...norseTechCards,
+	...sacrificeCards
 ];

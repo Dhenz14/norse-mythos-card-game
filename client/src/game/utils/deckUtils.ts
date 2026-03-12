@@ -2,8 +2,7 @@ import { GameState, CardData, Player } from '../types';
 import { getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { createCardInstance } from './cards/cardUtils';
-
-const MAX_HAND_SIZE = 7;
+import { MAX_HAND_SIZE } from '../constants/gameConstants';
 
 /**
  * Draw a card from player's deck and add it to their hand

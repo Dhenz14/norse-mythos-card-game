@@ -862,6 +862,59 @@ export function executeBattlecry(
         return newState;
       }
 
+      case 'sacrifice_and_devastate': {
+        const currentP = newState.currentTurn;
+        const opponentKey = currentP === 'player' ? 'opponent' : 'player';
+        const selfCard = newState.players[currentP].battlefield.find(
+          (m: CardInstance) => m.instanceId === cardInstanceId
+        );
+
+        // Destroy all other minions on both sides, count kills
+        let killCount = 0;
+        const friendlyOthers = newState.players[currentP].battlefield
+          .filter((m: CardInstance) => m.instanceId !== cardInstanceId)
+          .map((m: CardInstance) => m.instanceId);
+        const enemyAll = newState.players[opponentKey].battlefield
+          .map((m: CardInstance) => m.instanceId);
+
+        for (const id of friendlyOthers) {
+          newState = destroyCard(newState, id, currentP);
+          killCount++;
+        }
+        for (const id of enemyAll) {
+          newState = destroyCard(newState, id, opponentKey);
+          killCount++;
+        }
+
+        // Buff Behemoth +2/+2 per kill
+        if (selfCard && killCount > 0) {
+          const refreshed = newState.players[currentP].battlefield.find(
+            (m: CardInstance) => m.instanceId === cardInstanceId
+          );
+          if (refreshed) {
+            refreshed.currentAttack = (refreshed.currentAttack ?? (refreshed.card as MinionCardData).attack ?? 0) + (killCount * 2);
+            refreshed.currentHealth = (refreshed.currentHealth ?? (refreshed.card as MinionCardData).health ?? 0) + (killCount * 2);
+          }
+        }
+
+        // Opponent discards their highest cost card
+        const oppHand = newState.players[opponentKey].hand;
+        if (oppHand.length > 0) {
+          let highestIdx = 0;
+          let highestCost = oppHand[0].card.manaCost ?? 0;
+          for (let i = 1; i < oppHand.length; i++) {
+            const cost = oppHand[i].card.manaCost ?? 0;
+            if (cost > highestCost) {
+              highestCost = cost;
+              highestIdx = i;
+            }
+          }
+          oppHand.splice(highestIdx, 1);
+        }
+
+        return newState;
+      }
+
       default:
         debug.error('Unknown battlecry type: ' + battlecry.type);
         return newState;

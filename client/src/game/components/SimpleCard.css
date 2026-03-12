@@ -826,7 +826,7 @@
   height: 32px;
   background: linear-gradient(135deg, #FBBF24 0%, #D97706 40%, #B45309 70%, #92400E 100%);
   border: 2px solid #FDE68A;
-  border-radius: 6px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -866,7 +866,7 @@
   height: 32px;
   background: linear-gradient(135deg, #EF4444 0%, #DC2626 40%, #B91C1C 70%, #7F1D1D 100%);
   border: 2px solid #FCA5A5;
-  border-radius: 6px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;

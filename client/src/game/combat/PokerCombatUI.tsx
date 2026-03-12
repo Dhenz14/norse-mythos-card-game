@@ -350,7 +350,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
             {combatState.turnTimer}
           </span>
         </div>
-        <div className="pot-display">Pot: {combatState.pot} HP</div>
+        <div className="risk-display-inline">Risk: {combatState.pot} HP</div>
       </div>
 
       <div className="battle-arena">
@@ -424,7 +424,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
           {/* Special "Ready to Battle" button during SPELL_PET phase */}
           {combatState.phase === CombatPhase.SPELL_PET && (
             <div className="spell-pet-actions">
-              <p className="phase-hint">Play your cards or bet HP! Click Ready to see the flop.</p>
+              <p className="phase-hint">Play your cards or risk HP! Click Ready to see the flop.</p>
               <button 
                 className="action-btn ready-to-battle"
                 onClick={() => setPlayerReady(combatState.player.playerId)}
@@ -496,7 +496,7 @@ export const PokerCombatUI: React.FC<PokerCombatUIProps> = ({ onCombatEnd }) => 
               {/* Live HP display - shows remaining HP after bet like poker sites */}
               {/* HP is already deducted when committed, so just subtract the new bet amount */}
               <div className="remaining-hp-display">
-                <span className="remaining-hp-label">HP After Bet:</span>
+                <span className="remaining-hp-label">HP After Risk:</span>
                 <span className="remaining-hp-value">
                   {combatState.player.pet.stats.currentHealth - effectiveBet} HP
                 </span>

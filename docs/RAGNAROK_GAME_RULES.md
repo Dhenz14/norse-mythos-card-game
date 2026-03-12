@@ -73,7 +73,7 @@ This creates strategic tension:
 #### Mana Management
 - **Purpose:** Mana is ONLY for playing cards and using hero powers
 - **Starting Value:** Players start each match with 1 mana
-- **Growth:** Gain +1 mana at end of each turn (when poker hand ends via fold/end turn)
+- **Growth:** Gain +1 mana at end of each turn (when poker hand ends via fold/showdown)
 - **Maximum:** 9 mana
 - **Source of Truth:** Single mana pool shared between card game and poker combat
 - **NO RELATION TO POKER:** Mana has nothing to do with poker betting mechanics
@@ -456,11 +456,6 @@ When fighting an opponent you are **strong against**, you receive combat buffs:
 3. **Combat Phase:** Resolve attacks
 4. **End Phase:** Apply end-of-turn effects
 
-### End Turn Button
-- Ends current turn
-- Passes priority to opponent
-- Any unspent mana is lost
-
 ---
 
 ## 13. Victory Conditions
@@ -516,7 +511,7 @@ Based on the Ragnarok poker combat UI (HP = dual stat design):
 │  └─────────────────────────────────────────────────────────┘ │
 ├──────────────────────────────────────────────────────────────┤
 │                         PLAYER AREA                           │
-│  [End Turn: 27]                                               │
+│                                                                │
 │                                                               │
 │  ┌───┐ ┌───┐    [Speed][Stamina][PET CARD][Rage]             │
 │  │ A♣│ │ 6♠│         0.00  10/10    🃏      0                 │
@@ -559,7 +554,6 @@ Based on the Ragnarok poker combat UI (HP = dual stat design):
 |--------|--------|--------|
 | **Attack** | Initiate attack phase | Commit HP as your wager |
 | **Brace** | Defensive stance | Exit combat early, lose 5% of committed HP |
-| **End Turn** | Finish turn | Pass to opponent |
 
 ---
 

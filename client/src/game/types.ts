@@ -96,6 +96,7 @@ export interface BaseCardData {
   set?: string;
   keywords?: string[];
   bloodPrice?: number;
+  sacrificeCost?: number;
   startOfGameEffect?: {
     type: string;
     healthValue?: number;

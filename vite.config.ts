@@ -61,7 +61,8 @@ export default defineConfig(({ command }) => ({
           if (id.includes('/game/data/cardRegistry/sets/')) return 'card-data-sets';
           if (id.includes('/game/data/norseHeroes/')) return 'card-data-heroes';
           if (id.includes('/game/data/cardSets/')) return 'card-data-legacy-sets';
-          if (id.includes('/game/data/') && !id.includes('/game/data/allCards')) return 'card-data';
+          if (id.includes('/game/data/allCards')) return 'card-data';
+          if (id.includes('/game/data/')) return 'card-data';
           // Game logic splits
           if (id.includes('/game/effects/handlers/battlecry/')) return 'effects-battlecry';
           if (id.includes('/game/effects/handlers/spellEffect/')) return 'effects-spells';
@@ -74,6 +75,8 @@ export default defineConfig(({ command }) => ({
           if (id.includes('/game/stores/combat/')) return 'combat-stores';
           if (id.includes('/game/stores/gameStore')) return 'game-store';
           if (id.includes('/game/campaign/')) return 'campaign';
+          // Hive data layer — shared by many chunks, must be in its own chunk to avoid circulars
+          if (id.includes('/data/HiveSync') || id.includes('/data/HiveEvents') || id.includes('/data/HiveDataLayer') || id.includes('/data/schemas/')) return 'hive-data';
           if (id.includes('/data/blockchain/')) return 'blockchain';
           return undefined;
         },

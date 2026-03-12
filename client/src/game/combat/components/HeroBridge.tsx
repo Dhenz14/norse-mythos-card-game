@@ -16,7 +16,7 @@ import React from 'react';
 export interface HeroBridgeProps {
   /** The pet/hero data object containing name and stats */
   pet: any;
-  /** Amount of HP committed to the current bet */
+  /** Amount of HP committed (risk) */
   hpCommitted: number;
   /** Hero level */
   level: number;
@@ -75,9 +75,9 @@ export const HeroBridge: React.FC<HeroBridgeProps> = ({
           </div>
           
           {hpCommitted > 0 && (
-            <div className="hero-bridge-bet">
-              <span className="bet-label">Bet:</span>
-              <span className="bet-value">{hpCommitted} HP</span>
+            <div className="hero-bridge-risk">
+              <span className="risk-label">Risk:</span>
+              <span className="risk-value">{hpCommitted} HP</span>
             </div>
           )}
         </div>

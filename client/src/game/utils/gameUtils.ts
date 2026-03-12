@@ -55,7 +55,6 @@ import {
 import { processOnAttackStatusEffect } from '../effects/handlers/onAttackStatusHandler';
 import { isSuperMinion, shouldGetHeroBonus } from '../data/sets/superMinions/heroSuperMinions';
 import { enrichDeckWithNFTLevels } from './cards/cardLevelScaling';
-import { useHiveDataStore } from '../../data/HiveDataLayer';
 import { NORSE_TO_GAME_ELEMENT } from '../types/NorseTypes';
 import { getElementAdvantage } from './elements/elementAdvantage';
 import { getNorseHeroById } from './norseHeroPowerUtils';
@@ -205,10 +204,14 @@ export function initializeGame(selectedDeckId?: string, selectedHeroClass?: Hero
   }
   
   // Apply NFT card levels from collection (lower-level NFTs get weaker stats)
-  const hiveCollection = useHiveDataStore.getState().cardCollection;
-  if (hiveCollection?.length) {
-    playerDeck = enrichDeckWithNFTLevels(playerDeck, hiveCollection);
-  }
+  // Access HiveDataLayer lazily to avoid circular chunk dependency (game-engine ↔ blockchain)
+  try {
+    const hiveStore = (globalThis as any).__ragnarokHiveDataStore;
+    const hiveCollection = hiveStore?.getState?.()?.cardCollection;
+    if (hiveCollection?.length) {
+      playerDeck = enrichDeckWithNFTLevels(playerDeck, hiveCollection);
+    }
+  } catch { /* HiveDataLayer not loaded yet */ }
 
   // Create opponent deck (AI always gets max-level cards)
   const opponentClass: HeroClass = 'hunter';
@@ -368,7 +371,27 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
       return state;
     }
   }
-  
+
+  // Sacrifice Cost: destroy N active friendly minions to play this card
+  const sacrificeCost = card.card.sacrificeCost;
+  if (sacrificeCost && sacrificeCost > 0) {
+    const eligible = player.battlefield.filter(
+      (m: CardInstance) => !m.isSummoningSick && m.canAttack !== false
+    );
+    if (eligible.length < sacrificeCost) {
+      return state;
+    }
+    // Auto-sacrifice the weakest eligible minions (lowest attack first)
+    const sorted = [...eligible].sort((a, b) => {
+      const atkA = a.currentAttack ?? (a.card as any).attack ?? 0;
+      const atkB = b.currentAttack ?? (b.card as any).attack ?? 0;
+      return atkA - atkB;
+    });
+    for (let i = 0; i < sacrificeCost; i++) {
+      newState = destroyCard(newState, sorted[i].instanceId, currentPlayer);
+    }
+  }
+
   // Update cards played this turn counter (for Combo)
   const updatedCardsPlayedThisTurn = player.cardsPlayedThisTurn + 1;
   const isComboActive = updatedCardsPlayedThisTurn > 1 && hasKeyword(card, 'combo');
@@ -1034,7 +1057,7 @@ function resolveProphecy(state: GameState, prophecy: import('../types').Prophecy
     }
     case 'summon': {
       const bf = newState.players[owner].battlefield;
-      if (bf.length < 5) {
+      if (bf.length < MAX_BATTLEFIELD_SIZE) {
         const kw: string[] = effect.keywords || [];
         bf.push({
           instanceId: `prophecy-summon-${Date.now()}`,

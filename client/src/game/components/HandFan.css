@@ -24,18 +24,19 @@
   height: var(--fan-card-height);
   position: relative;
   flex-shrink: 0;
+  isolation: isolate;
   /* Spring physics for smooth, satisfying motion */
-  transition: 
-    transform 0.35s var(--spring-easing), 
+  transition:
+    transform 0.35s var(--spring-easing),
     z-index 0s,
     filter 0.2s ease;
   transform-origin: bottom center;
   cursor: pointer;
 }
 
-/* Overlap - each card overlaps the previous by ~40% */
+/* Overlap - each card overlaps the previous by ~30% */
 .hand-fan-card:not(:first-child) {
-  margin-left: calc(var(--fan-card-width) * -0.40);
+  margin-left: calc(var(--fan-card-width) * -0.30);
 }
 
 /* Hovered state - handled via JS inline styles, but CSS fallback */
@@ -170,7 +171,7 @@
 /* Intermediate screens (1281px-1440px): tighter overlap to prevent overflow */
 @media (min-width: 1281px) and (max-width: 1440px) {
   .hand-fan-card:not(:first-child) {
-    margin-left: calc(var(--fan-card-width) * -0.44);
+    margin-left: calc(var(--fan-card-width) * -0.34);
   }
 }
 
@@ -181,7 +182,7 @@
   }
 
   .hand-fan-card:not(:first-child) {
-    margin-left: calc(var(--fan-card-width) * -0.42);
+    margin-left: calc(var(--fan-card-width) * -0.32);
   }
 }
 
@@ -190,8 +191,8 @@
     --fan-card-width: clamp(80px, 16vw, 130px);
     --fan-card-height: clamp(112px, 22vw, 182px);
   }
-  
+
   .hand-fan-card:not(:first-child) {
-    margin-left: calc(var(--fan-card-width) * -0.35);
+    margin-left: calc(var(--fan-card-width) * -0.28);
   }
 }
