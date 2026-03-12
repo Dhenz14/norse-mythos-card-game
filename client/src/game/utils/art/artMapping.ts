@@ -1930,6 +1930,12 @@ export function getCardArtById(cardId: number | string): string | null {
 
 const _artPathCache = new Map<string, string | null>();
 
+if (import.meta.hot) {
+	import.meta.hot.accept(() => {
+		_artPathCache.clear();
+	});
+}
+
 export function getCardArtPath(cardName: string, cardId?: number | string): string | null {
   if (!cardName) return null;
 
