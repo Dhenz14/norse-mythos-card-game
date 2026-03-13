@@ -866,14 +866,59 @@ export function executeSpell(
         const bf = state.players[ownSide].battlefield;
         const target = bf.find((m: any) => m.instanceId === targetId);
         if (target) {
-          (target as any).isSubmerged = true;
+          target.isSubmerged = true;
+          target.submergeTurnsLeft = (effect as any).value || 1;
+          target.canAttack = false;
           const buffAtk = (effect as any).buffAttack || 0;
           const buffHp = (effect as any).buffHealth || 0;
-          target.currentAttack = (target.currentAttack ?? 0) + buffAtk;
-          target.currentHealth = (target.currentHealth ?? 0) + buffHp;
+          target.submergeBuff = { attack: buffAtk, health: buffHp };
         }
       }
       resultState = state;
+      break;
+    }
+    case 'copy_prophecy': {
+      const prophecies = state.prophecies || [];
+      if (prophecies.length === 0) {
+        resultState = state;
+        break;
+      }
+      const ownerSide = state.currentTurn === 'player' ? 'player' : 'opponent';
+      const friendly = prophecies.filter(p => p.owner === ownerSide);
+      if (friendly.length === 0) {
+        resultState = state;
+        break;
+      }
+      const source = friendly[Math.floor(Math.random() * friendly.length)];
+      const copy = {
+        ...structuredClone(source),
+        id: `prophecy-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      };
+      resultState = { ...state, prophecies: [...prophecies, copy] };
+      break;
+    }
+    case 'einherjar_count_heal': {
+      const eff = effect as any;
+      const ownerKey = state.currentTurn;
+      const graveyard = state.players[ownerKey].graveyard || [];
+      const einherjarDead = graveyard.filter(
+        c => c.card.type === 'minion' && c.card.keywords?.includes('einherjar')
+      ).length;
+      const healAmount = (eff.healPerEinherjar || 3) * einherjarDead;
+      let healState = state;
+      if (healAmount > 0) {
+        const player = healState.players[ownerKey];
+        const maxHp = player.maxHealth || 100;
+        player.heroHealth = Math.min((player.heroHealth ?? player.health ?? maxHp) + healAmount, maxHp);
+        if (player.health !== undefined) player.health = player.heroHealth;
+      }
+      if (eff.bonusEffect?.type === 'draw') {
+        const drawCount = eff.bonusEffect.value || 1;
+        for (let i = 0; i < drawCount; i++) {
+          healState = drawCard(healState);
+        }
+      }
+      resultState = healState;
       break;
     }
     default:

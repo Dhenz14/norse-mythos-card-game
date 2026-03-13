@@ -174,9 +174,6 @@ export function useHoloTracking(cardRef?: RefObject<HTMLDivElement | null>): Hol
 
 export type HoloTier = 'holo-rare' | 'holo-epic' | 'holo-mythic';
 
-/** @deprecated Kept for backwards compat — use HoloTier */
-export type HoloVariant = HoloTier;
-
 export function getHoloTier(rarity?: string): HoloTier | null {
 	if (!rarity) return null;
 	switch (rarity.toLowerCase()) {
@@ -186,8 +183,5 @@ export function getHoloTier(rarity?: string): HoloTier | null {
 		default: return null;
 	}
 }
-
-/** @deprecated Use getHoloTier instead */
-export const getHoloVariant = (rarity?: string, _cardId?: number | string, _cardType?: string, _petStage?: string): HoloTier | null => getHoloTier(rarity);
 
 export { applyHoloVarsInstant as applyHoloVars, resetHoloVars };

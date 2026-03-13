@@ -1195,6 +1195,9 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
     state.prophecies = (state.prophecies || []).filter(p => !resolved.includes(p));
   }
 
+  // Tick submerge countdowns — surface minions whose timer hits 0
+  state = processSubmergeCountdowns(state, currentPlayer);
+
   // Apply realm end-of-turn effects (e.g., Muspelheim damage)
   if (state.activeRealm) {
     for (const eff of state.activeRealm.effects) {
@@ -3321,4 +3324,47 @@ export function autoAttackWithAllCards(state: GameState, mode: 'minion' | 'hero'
     debug.error('Auto-attack all error:', error);
     return state;
   }
+}
+
+function processSubmergeCountdowns(
+  state: GameState,
+  currentPlayer: 'player' | 'opponent'
+): GameState {
+  const bf = state.players[currentPlayer].battlefield;
+  const surfaced: CardInstance[] = [];
+
+  for (const minion of bf) {
+    if (!minion.isSubmerged) continue;
+    minion.submergeTurnsLeft = (minion.submergeTurnsLeft ?? 1) - 1;
+    if (minion.submergeTurnsLeft <= 0) {
+      minion.isSubmerged = false;
+      minion.submergeTurnsLeft = undefined;
+      minion.isSummoningSick = false;
+      minion.canAttack = true;
+      if (minion.submergeBuff) {
+        minion.currentAttack = (minion.currentAttack ?? 0) + minion.submergeBuff.attack;
+        minion.currentHealth = (minion.currentHealth ?? 0) + minion.submergeBuff.health;
+        minion.submergeBuff = undefined;
+      }
+      surfaced.push(minion);
+    }
+  }
+
+  for (const minion of surfaced) {
+    const sfx = minion.surfaceEffect;
+    const dmg = minion.surfaceDamage || 0;
+    minion.surfaceEffect = undefined;
+    minion.surfaceDamage = undefined;
+
+    if (sfx === 'damage_all_enemies' && dmg > 0) {
+      const opponent = currentPlayer === 'player' ? 'opponent' : 'player';
+      state = dealDamageToAllEnemyMinions(state, currentPlayer, dmg);
+      state = dealDamage(state, opponent, 'hero', dmg);
+    } else if (sfx === 'buff_self') {
+      minion.currentAttack = (minion.currentAttack ?? 0) + 2;
+      minion.currentHealth = (minion.currentHealth ?? 0) + 2;
+    }
+  }
+
+  return state;
 }

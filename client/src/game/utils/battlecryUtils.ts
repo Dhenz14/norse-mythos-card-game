@@ -915,6 +915,26 @@ export function executeBattlecry(
         return newState;
       }
 
+      case 'submerge': {
+        return executeSubmergeBattlecry(newState, battlecry, cardInstanceId);
+      }
+
+      case 'coil_enemy': {
+        return executeCoilEnemyBattlecry(newState, battlecry, cardInstanceId, targetId);
+      }
+
+      case 'blood_price_count_aoe': {
+        return executeBloodPriceCountAoE(newState, cardInstanceId);
+      }
+
+      case 'destroy_weapon_or_artifact': {
+        return executeDestroyWeaponOrArtifact(newState);
+      }
+
+      case 'buff_einherjar_in_deck': {
+        return executeBuffEinherjarInDeck(newState, battlecry);
+      }
+
       default:
         debug.error('Unknown battlecry type: ' + battlecry.type);
         return newState;
@@ -4130,6 +4150,127 @@ function executeCopyToHandBattlecry(state: GameState, targetId?: string): GameSt
   const copy = createCardInstance(target.card);
   player.hand = player.hand || [];
   player.hand.push(copy);
+
+  return state;
+}
+
+function executeSubmergeBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect,
+  cardInstanceId?: string
+): GameState {
+  if (!cardInstanceId) return state;
+  const player = state.players[state.currentTurn];
+  const minion = player.battlefield.find(m => m.instanceId === cardInstanceId);
+  if (!minion) return state;
+
+  const bc = battlecry as any;
+  minion.isSubmerged = true;
+  minion.submergeTurnsLeft = bc.value || 1;
+  minion.surfaceEffect = bc.surfaceEffect || '';
+  minion.surfaceDamage = bc.surfaceDamage || 0;
+  minion.canAttack = false;
+  minion.isSummoningSick = true;
+
+  return state;
+}
+
+function executeCoilEnemyBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect,
+  cardInstanceId?: string,
+  targetId?: string
+): GameState {
+  if (!targetId || !cardInstanceId) return state;
+  const opponent = state.currentTurn === 'player' ? 'opponent' : 'player';
+  const target = state.players[opponent].battlefield.find(m => m.instanceId === targetId);
+  if (!target) return state;
+
+  const bc = battlecry as any;
+  if (bc.maxAttack !== undefined) {
+    const currentAtk = target.currentAttack ?? (target.card as MinionCardData).attack ?? 0;
+    if (currentAtk > bc.maxAttack) return state;
+  }
+
+  target.originalAttackBeforeCoil = target.currentAttack ?? (target.card as MinionCardData).attack ?? 0;
+  target.currentAttack = 0;
+  target.coiledBy = cardInstanceId;
+  target.canAttack = false;
+
+  return state;
+}
+
+function executeBloodPriceCountAoE(
+  state: GameState,
+  _cardInstanceId?: string
+): GameState {
+  const currentPlayer = state.currentTurn;
+  const opponent = currentPlayer === 'player' ? 'opponent' : 'player';
+
+  const bloodPriceCount = (state.gameLog || []).filter(
+    entry => entry.player === currentPlayer && entry.text?.includes('Blood Price')
+  ).length;
+
+  if (bloodPriceCount <= 0) return state;
+
+  const oppBf = state.players[opponent].battlefield;
+  for (let i = 0; i < oppBf.length; i++) {
+    if (oppBf[i].currentHealth === undefined) {
+      oppBf[i].currentHealth = (oppBf[i].card as MinionCardData).health || 1;
+    }
+    if (oppBf[i].hasDivineShield) {
+      oppBf[i].hasDivineShield = false;
+    } else {
+      oppBf[i].currentHealth! -= bloodPriceCount;
+    }
+  }
+  state.players[opponent].battlefield = oppBf.filter(m => (m.currentHealth ?? 1) > 0);
+  state = dealDamage(state, opponent, 'hero', bloodPriceCount);
+
+  return state;
+}
+
+function executeDestroyWeaponOrArtifact(state: GameState): GameState {
+  const opponent = state.currentTurn === 'player' ? 'opponent' : 'player';
+  const oppPlayer = state.players[opponent];
+
+  if (oppPlayer.weapon) {
+    oppPlayer.weapon = undefined;
+    return state;
+  }
+
+  if (oppPlayer.artifact) {
+    oppPlayer.artifact = undefined;
+    oppPlayer.artifactState = undefined;
+    return state;
+  }
+
+  return state;
+}
+
+function executeBuffEinherjarInDeck(
+  state: GameState,
+  battlecry: BattlecryEffect
+): GameState {
+  const bc = battlecry as any;
+  const buffAtk = bc.buffAttack || 2;
+  const buffHp = bc.buffHealth || 2;
+  const grantKw: string[] = bc.grantKeywords || [];
+  const player = state.players[state.currentTurn];
+
+  for (let i = 0; i < player.deck.length; i++) {
+    const card = player.deck[i];
+    if (card.type !== 'minion') continue;
+    if (!card.keywords?.includes('einherjar')) continue;
+
+    const mc = card as MinionCardData;
+    player.deck[i] = {
+      ...mc,
+      attack: (mc.attack || 0) + buffAtk,
+      health: (mc.health || 0) + buffHp,
+      keywords: [...(mc.keywords || []), ...grantKw.filter(k => !mc.keywords?.includes(k))],
+    };
+  }
 
   return state;
 }

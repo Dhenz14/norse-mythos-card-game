@@ -743,6 +743,17 @@ export interface CardInstance {
   // Blood Price: true when card is queued to pay with health instead of mana
   payWithBlood?: boolean;
 
+  // Submerge: untargetable for N turns, then surfaces with effect
+  isSubmerged?: boolean;
+  submergeTurnsLeft?: number;
+  surfaceEffect?: string;
+  surfaceDamage?: number;
+  submergeBuff?: { attack: number; health: number };
+
+  // Coil: attack locked to 0 while coil source lives
+  coiledBy?: string;
+  originalAttackBeforeCoil?: number;
+
   // Instance-level keyword overrides (takes precedence over card.keywords when present)
   instanceKeywords?: string[];
 

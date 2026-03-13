@@ -10,7 +10,7 @@ import { CardData, Position } from '../types';
 import { useAudio } from '../../lib/stores/useAudio';
 import { SimpleCard, SimpleCardData } from '../components/SimpleCard';
 import gsap from 'gsap';
-import { spawnParticleBurst, spawnImpactRing, spawnEmbers, ELEMENT_PALETTES } from './PixiParticleCanvas';
+import { spawnParticleBurst, spawnImpactRing, spawnEmbers } from './PixiParticleCanvas';
 
 interface LegendaryEntranceProps {
   card: CardData;

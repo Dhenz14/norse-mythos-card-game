@@ -356,6 +356,9 @@ function executeDeathrattleInner(
       }
       return newState;
     }
+    case 'uncoil': {
+      return executeUncoilDeathrattle(newState, card, playerId);
+    }
     default:
       debug.warn(`Unknown deathrattle type: ${deathrattle.type}`);
       return newState;
@@ -1320,4 +1323,27 @@ function executeDestroyDeathrattle(
 
   // Use destroyCard to properly handle graveyard and deathrattle triggers
   return destroyCard(newState, toDestroy.instanceId, enemyId);
+}
+
+function executeUncoilDeathrattle(
+  state: GameState,
+  card: CardInstance,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const newState = structuredClone(state) as GameState;
+  const coilSourceId = card.instanceId;
+
+  for (const side of ['player', 'opponent'] as const) {
+    const bf = newState.players[side].battlefield;
+    for (const minion of bf) {
+      if (minion.coiledBy === coilSourceId) {
+        minion.currentAttack = minion.originalAttackBeforeCoil ?? (minion.card as MinionCardData).attack ?? 0;
+        minion.coiledBy = undefined;
+        minion.originalAttackBeforeCoil = undefined;
+        minion.canAttack = true;
+      }
+    }
+  }
+
+  return newState;
 }
