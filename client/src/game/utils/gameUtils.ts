@@ -60,6 +60,8 @@ import { getElementAdvantage } from './elements/elementAdvantage';
 import { getNorseHeroById } from './norseHeroPowerUtils';
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 import { applyLifestealHealing } from './mechanics/lifestealUtils';
+import { recalculateAuras } from './mechanics/auraUtils';
+import { processSpellburst } from './mechanics/spellburstUtils';
 import { GameEventBus } from '@/core/events/GameEventBus';
 
 function attemptPetEvolution(
@@ -505,10 +507,14 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
     // If combo is active and the card has a combo effect, execute that instead
     if (isComboActive && card.card.comboEffect) {
-      return executeComboSpellEffect(newState, cardInstanceId, targetId, targetType);
+      let comboResult = executeComboSpellEffect(newState, cardInstanceId, targetId, targetType);
+      comboResult = processSpellburst(comboResult, card.card);
+      return comboResult;
     }
 
-    return executeSpell(newState, card, targetId, targetType);
+    let spellResult = executeSpell(newState, card, targetId, targetType);
+    spellResult = processSpellburst(spellResult, card.card);
+    return spellResult;
   }
   
   // 3. Handle Minion cards
@@ -963,13 +969,14 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // We've already handled combo effects earlier so this section is no longer needed
   // The effects are applied when the card is played
-  
+
   // Handle Echo mechanic - if the card has Echo, create a copy that can be played again this turn
   if (card && hasEcho(card)) {
     newState = createEchoCopy(newState, card, currentPlayer);
-    // Echo copy created - available to play again this turn
   }
-  
+
+  newState = recalculateAuras(newState);
+
   return newState;
 }
 
@@ -1027,12 +1034,15 @@ function applyTurnStartPipeline(state: GameState, player: 'player' | 'opponent')
     }
   }
 
-  // 4. Reset minions for the turn (clears summoning sickness, attack counters, etc.)
+  // 4. Recalculate aura buffs (minions may have changed during start-of-turn effects)
+  newState = recalculateAuras(newState);
+
+  // 5. Reset minions for the turn (clears summoning sickness, attack counters, etc.)
   newState = performTurnStartResets(newState);
-  
-  // 5. Draw a card for the player
+
+  // 6. Draw a card for the player
   newState = drawCard(newState);
-  
+
   return newState;
 }
 

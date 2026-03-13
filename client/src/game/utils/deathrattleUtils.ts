@@ -359,6 +359,15 @@ function executeDeathrattleInner(
     case 'uncoil': {
       return executeUncoilDeathrattle(newState, card, playerId);
     }
+    case 'add_to_hand': {
+      return executeAddToHandDeathrattle(newState, deathrattle, card, playerId);
+    }
+    case 'shuffle_card': {
+      return executeShuffleCardDeathrattle(newState, deathrattle, card, playerId);
+    }
+    case 'summon_random': {
+      return executeSummonRandomDeathrattle(newState, deathrattle, playerId);
+    }
     default:
       debug.warn(`Unknown deathrattle type: ${deathrattle.type}`);
       return newState;
@@ -903,19 +912,29 @@ function executeRecruitDeathrattle(
 ): GameState {
   const newState = structuredClone(state) as GameState;
   const player = newState.players[playerId];
+  const maxCost = (deathrattle as any).maxCost;
+  const recruitRace = (deathrattle as any).recruitRace;
 
   if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
 
   const minionIndices: number[] = [];
-  player.deck.forEach((cardData, i) => {
-    if (cardData.type === 'minion') minionIndices.push(i);
+  player.deck.forEach((cardData: any, i: number) => {
+    const card = cardData.card ? cardData.card : cardData;
+    if (card.type !== 'minion') return;
+    if (maxCost !== undefined && (card.manaCost || 0) > maxCost) return;
+    if (recruitRace && (card.race || '').toLowerCase() !== recruitRace.toLowerCase()) return;
+    minionIndices.push(i);
   });
 
   if (minionIndices.length === 0) return newState;
 
   const randomIdx = minionIndices[Math.floor(Math.random() * minionIndices.length)];
-  const recruitedCardData = player.deck.splice(randomIdx, 1)[0];
-  const instance = createCardInstance(recruitedCardData);
+  const recruitedCardData = player.deck.splice(randomIdx, 1)[0] as any;
+  const cardData = recruitedCardData.card || recruitedCardData;
+  const instance = createCardInstance(cardData);
+  instance.isSummoningSick = true;
+  instance.canAttack = false;
+  instance.attacksPerformed = 0;
   player.battlefield.push(instance);
   trackQuestProgress(playerId, 'summon_minion', instance.card);
 
@@ -1346,4 +1365,78 @@ function executeUncoilDeathrattle(
   }
 
   return newState;
+}
+
+function executeAddToHandDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  card: CardInstance,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const player = state.players[playerId];
+  if (player.hand.length >= MAX_HAND_SIZE) return state;
+
+  const cardId = (deathrattle as any).cardId;
+  let cardData: CardData | undefined;
+  if (cardId) {
+    cardData = getCardById(cardId);
+  }
+  if (!cardData) {
+    cardData = card.card;
+  }
+
+  const copy = createCardInstance(cardData);
+  player.hand.push(copy);
+  debug.log(`[Deathrattle] add_to_hand: Added ${cardData.name} to ${playerId}'s hand`);
+  return state;
+}
+
+function executeShuffleCardDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  card: CardInstance,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const cardId = (deathrattle as any).cardId;
+  let cardData: CardData | undefined;
+  if (cardId) {
+    cardData = getCardById(cardId);
+  }
+  if (!cardData) {
+    cardData = card.card;
+  }
+
+  const player = state.players[playerId];
+  const cardCopy = { ...cardData };
+  const insertIdx = Math.floor(Math.random() * (player.deck.length + 1));
+  player.deck.splice(insertIdx, 0, cardCopy);
+  debug.log(`[Deathrattle] shuffle_card: Shuffled ${cardData.name} into ${playerId}'s deck`);
+  return state;
+}
+
+function executeSummonRandomDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const player = state.players[playerId];
+  if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return state;
+
+  const costFilter = (deathrattle as any).specificManaCost ?? (deathrattle as any).costFilter;
+  const candidates = allCards.filter(c =>
+    c.type === 'minion' &&
+    c.collectible !== false &&
+    (costFilter === undefined || c.manaCost === costFilter)
+  );
+
+  if (candidates.length === 0) return state;
+
+  const picked = candidates[Math.floor(Math.random() * candidates.length)];
+  const inst = createCardInstance(picked);
+  inst.isSummoningSick = true;
+  inst.canAttack = false;
+  player.battlefield.push(inst);
+  trackQuestProgress(playerId, 'summon_minion', inst.card);
+  debug.log(`[Deathrattle] summon_random: Summoned ${picked.name} for ${playerId}`);
+  return state;
 }

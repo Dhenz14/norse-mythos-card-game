@@ -2,7 +2,7 @@ import { GameState, SpellEffect, CardData, CardInstance, Position, MinionCardDat
 import { v4 as uuidv4 } from 'uuid';
 import { playCard as gamePlayCard } from '../gameUtils';
 import { executeBattlecry } from '../battlecryUtils';
-import { getRandomCards } from '../cards/cardUtils';
+import { getRandomCards, createCardInstance } from '../cards/cardUtils';
 import { updateEnrageEffects } from '../mechanics/enrageUtils';
 import { dealDamage } from '../effects/damageUtils';
 import { removeDeadMinions, destroyCard as destroyCardFromZone } from '../zoneUtils';
@@ -303,7 +303,6 @@ export function executeSpell(
       resultState = executeSummonYggdrasilGolemSpell(state);
       break;
     case 'gain_mana':
-    case 'mana_gain':
     case 'gain_temporary_mana':
       resultState = executeGainManaSpell(state, effect);
       break;
@@ -324,9 +323,6 @@ export function executeSpell(
       break;
     case 'summon_highest_cost_from_graveyard':
       resultState = executeSummonHighestCostFromGraveyardSpell(state, effect);
-      break;
-    case 'summon_rush_minions':
-      resultState = executeSummonRushMinionsSpell(state, effect);
       break;
     case 'summon_stored':
       resultState = executeSummonStoredSpell(state, effect);
@@ -919,6 +915,53 @@ export function executeSpell(
         }
       }
       resultState = healState;
+      break;
+    }
+    case 'blood_price_discount': {
+      const eff = effect as any;
+      const discountValue = eff.value || 99;
+      const ownerSide = state.currentTurn;
+      let discountState = structuredClone(state) as GameState;
+      const hand = discountState.players[ownerSide].hand;
+      let applied = false;
+      for (const inst of hand) {
+        if (inst.card.keywords?.includes('blood_price') && !applied) {
+          const mana = (inst.card as any).manaCost ?? 0;
+          (inst.card as any).manaCost = Math.max(0, mana - discountValue);
+          applied = true;
+        }
+      }
+      if (eff.bonusEffect?.type === 'draw') {
+        const drawCount = eff.bonusEffect.value || 1;
+        for (let i = 0; i < drawCount; i++) {
+          discountState = drawCard(discountState);
+        }
+      }
+      resultState = discountState;
+      break;
+    }
+    case 'reveal_hand': {
+      const eff = effect as any;
+      let revealState = structuredClone(state) as GameState;
+      const casterSide = state.currentTurn;
+      const oppSide = casterSide === 'player' ? 'opponent' : 'player';
+      (revealState.players[oppSide] as any).handRevealed = true;
+      debug.log(`[Spell] ${casterSide} revealed ${oppSide}'s hand`);
+      if (eff.bonusEffect?.type === 'copy_random_card') {
+        const oppHand = revealState.players[oppSide].hand;
+        if (oppHand.length > 0) {
+          const wasPaidWithBlood = (revealState as any).lastCardPaidWithBloodPrice === true;
+          if (!eff.bonusEffect.condition || eff.bonusEffect.condition !== 'blood_price_paid' || wasPaidWithBlood) {
+            const pick = oppHand[Math.floor(Math.random() * oppHand.length)];
+            const playerHand = revealState.players[casterSide].hand;
+            if (playerHand.length < MAX_HAND_SIZE) {
+              const copy = createCardInstance(pick.card);
+              playerHand.push(copy);
+            }
+          }
+        }
+      }
+      resultState = revealState;
       break;
     }
     default:
@@ -3916,57 +3959,6 @@ function executeSummonHighestCostFromGraveyardSpell(
   playerState.battlefield.push(minionToSummon);
   graveyard.splice(highestCostIndex, 1);
   playerState.graveyard = graveyard;
-  
-  
-  return newState;
-}
-
-/**
- * Execute summon_rush_minions spell effect
- * Summons minions that have the Rush keyword
- */
-function executeSummonRushMinionsSpell(
-  state: GameState,
-  effect: SpellEffect
-): GameState {
-  let newState = { ...state };
-  const currentPlayer = state.currentTurn;
-  const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
-  
-  if (!effect.count) {
-    debug.error('Summon rush minions spell missing count');
-    return state;
-  }
-  
-  // Get all rush minions
-  const rushMinions = allCards.filter(card => 
-    card && card.type === 'minion' && card.keywords && card.keywords.includes('Rush')
-  );
-  
-  if (rushMinions.length === 0) {
-    return newState;
-  }
-  
-  // Summon random rush minions
-  for (let i = 0; i < effect.count; i++) {
-    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
-      break;
-    }
-    
-    const randomRushMinion = rushMinions[Math.floor(Math.random() * rushMinions.length)];
-    
-    const summonedInstance: CardInstance = {
-      instanceId: uuidv4(),
-      card: randomRushMinion as CardData,
-      currentHealth: getHealth(randomRushMinion as CardData),
-      canAttack: true,  // Rush minions can attack immediately
-      isPlayed: true,
-      isSummoningSick: false,
-      attacksPerformed: 0
-    };
-    
-    playerState.battlefield.push(summonedInstance);
-  }
   
   
   return newState;
@@ -7639,32 +7631,40 @@ function executeRecruitSpell(state: GameState, effect: SpellEffect): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
-  if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) return state;
+  const count = (effect as any).recruitCount || 1;
   const condition = (effect as any).recruitCondition;
-  let eligible = playerState.deck.filter((entry: any) => {
-    const card = entry.card ? entry.card : entry;
-    if (card.type !== 'minion') return false;
-    if (condition === 'cost_4_or_less' && (card.manaCost || 0) > 4) return false;
-    if (condition === 'cost_3_or_less' && (card.manaCost || 0) > 3) return false;
-    return true;
-  });
-  if (eligible.length === 0) return state;
-  const picked = eligible[Math.floor(Math.random() * eligible.length)];
-  const cardData = (picked as any).card ? (picked as any).card : picked;
-  const idx = playerState.deck.indexOf(picked);
-  if (idx !== -1) playerState.deck.splice(idx, 1);
-  const instance: CardInstance = {
-    instanceId: uuidv4(),
-    card: cardData,
-    currentHealth: getHealth(cardData) || 1,
-    currentAttack: getAttack(cardData) || 0,
-    canAttack: false,
-    isPlayed: true,
-    isSummoningSick: true,
-    attacksPerformed: 0
-  };
-  playerState.battlefield.push(instance);
-  trackQuestProgress(currentPlayer, 'summon_minion', cardData);
+  const maxCost = (effect as any).maxCost;
+  const recruitRace = (effect as any).recruitRace;
+
+  for (let r = 0; r < count; r++) {
+    if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+    const eligible = playerState.deck.filter((entry: any) => {
+      const card = entry.card ? entry.card : entry;
+      if (card.type !== 'minion') return false;
+      if (condition === 'cost_4_or_less' && (card.manaCost || 0) > 4) return false;
+      if (condition === 'cost_3_or_less' && (card.manaCost || 0) > 3) return false;
+      if (maxCost !== undefined && (card.manaCost || 0) > maxCost) return false;
+      if (recruitRace && (card.race || '').toLowerCase() !== recruitRace.toLowerCase()) return false;
+      return true;
+    });
+    if (eligible.length === 0) break;
+    const picked = eligible[Math.floor(Math.random() * eligible.length)];
+    const cardData = (picked as any).card ? (picked as any).card : picked;
+    const idx = playerState.deck.indexOf(picked);
+    if (idx !== -1) playerState.deck.splice(idx, 1);
+    const instance: CardInstance = {
+      instanceId: uuidv4(),
+      card: cardData,
+      currentHealth: getHealth(cardData) || 1,
+      currentAttack: getAttack(cardData) || 0,
+      canAttack: false,
+      isPlayed: true,
+      isSummoningSick: true,
+      attacksPerformed: 0
+    };
+    playerState.battlefield.push(instance);
+    trackQuestProgress(currentPlayer, 'summon_minion', cardData);
+  }
   return newState;
 }
 

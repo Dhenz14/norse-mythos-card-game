@@ -56,6 +56,7 @@ import { needsPositionChoice } from '../utils/cards/positionUtils';
 import { emitBattlecryTriggered, emitDeathrattleTriggered } from '../actions/gameActions';
 import { debug } from '../config/debugConfig';
 import { GameStatusBanner } from './ui/GameStatusBanner';
+import TutorialOverlay from './tutorial/TutorialOverlay';
 // Ultimate CardWithDrag system handles all interactions now
 
 // CardWithDrag is now the ONLY card interaction system
@@ -2124,6 +2125,9 @@ export const GameBoard: React.FC<{}> = () => {
 
       {/* Inline status banners (replaces toast popups) */}
       <GameStatusBanner />
+
+      {/* Tutorial overlay for new players */}
+      <TutorialOverlay />
 
       {/* Prophecy countdown indicators */}
       {gameState.prophecies && gameState.prophecies.length > 0 && (

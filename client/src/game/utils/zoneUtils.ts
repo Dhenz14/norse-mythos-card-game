@@ -11,6 +11,7 @@ import { createCardInstance } from './cards/cardUtils';
 import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 import { removeKeyword } from './cards/keywordUtils';
+import { recalculateAuras } from './mechanics/auraUtils';
 
 /**
  * Moves a card from one zone to another
@@ -305,6 +306,8 @@ export function destroyCard(
         }
       }
     }
+
+    newState = recalculateAuras(newState);
 
     // Helheim realm: return dead minion to owner's hand costing more
     if (newState.activeRealm?.effects?.some(e => e.type === 'return_to_hand_on_death')) {

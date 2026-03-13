@@ -33,12 +33,8 @@ import { healTarget } from './effects/effectUtils';
 import { setHeroHealth } from './effects/healthModifierUtils';
 import { getCardsFromPool } from '../data/discoverPools';
 import { getDiscoveryOptions, createDiscoveryFromSpell } from './discoveryUtils';
-import { 
-  executeRenoJacksonBattlecry, 
-  executeKazakusBattlecry,
-  executeSoliaBattlecry,
-  executeRazaBattlecry,
-  executeKrulBattlecry 
+import {
+  executeRazaBattlecry
 } from './highlanderUtils';
 import { summonColossalParts } from './mechanics/colossalUtils';
 import executeReturnReturn from '../effects/handlers/battlecry/returnHandler';
@@ -452,25 +448,9 @@ export function executeBattlecry(
         return executeMindControlBattlecry(newState, battlecry, targetId);
         
       // Highlander card battlecries (no duplicates in deck)
-      case 'conditional_full_heal':
-        // Execute The Wanderer's battlecry (full heal)
-        return executeRenoJacksonBattlecry(newState, 'player');
-        
-      case 'kazakus_potion':
-        // Execute Alchemist's custom potion creation battlecry
-        return executeKazakusBattlecry(newState, 'player');
-        
-      case 'conditional_next_spell_costs_zero':
-        // Execute Arcane-Master's battlecry (next spell free)
-        return executeSoliaBattlecry(newState, 'player');
-        
       case 'conditional_free_hero_power':
         // Execute Bound-Spirit's battlecry (hero power costs 0)
         return executeRazaBattlecry(newState, 'player');
-        
-      case 'conditional_summon_hand_titans':
-        // Execute The Unshackled's battlecry (summon titans from hand)
-        return executeKrulBattlecry(newState, 'player');
         
       // Elder Titan battlecries (Gullveig/Hyrrokkin/Utgarda-Loki — implemented in oldGodsUtils.ts)
       case 'cthun_damage':
@@ -741,9 +721,6 @@ export function executeBattlecry(
       case 'summon_from_opponent_hand':
         return executeSummonFromOpponentHandBattlecry(newState);
 
-      case 'summon_deathrattle_minions_that_died':
-        return executeSummonDeathrattleMinionsThatDiedBattlecry(newState);
-
       case 'summon_all_totems':
         return executeSummonAllTotemsBattlecry(newState);
 
@@ -933,6 +910,726 @@ export function executeBattlecry(
 
       case 'buff_einherjar_in_deck': {
         return executeBuffEinherjarInDeck(newState, battlecry);
+      }
+
+      case 'conditional_draw':
+        return executeConditionalDrawBattlecry(newState, battlecry);
+
+      case 'grant_persistent_effect': {
+        const gpe = battlecry as any;
+        if (gpe.targetType === 'self') {
+          const selfMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+          if (selfMinion && gpe.effect) {
+            addKeyword(selfMinion, gpe.effect);
+          }
+        } else if (gpe.targetType === 'friendly_mech' || gpe.targetType === 'friendly_automaton') {
+          for (const m of newState.players.player.battlefield) {
+            const race = ((m.card as any).race || '').toLowerCase();
+            if (race === 'automaton' || race === 'mech') {
+              if (gpe.effect) addKeyword(m, gpe.effect);
+            }
+          }
+        }
+        return newState;
+      }
+
+      case 'summon_copy_if_blood': {
+        if (!checkBattlecryCondition(newState, 'blood_price_paid')) return newState;
+        if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+        const srcMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+        if (srcMinion) {
+          const copy = createCardInstance(srcMinion.card);
+          copy.isSummoningSick = true;
+          copy.isPlayed = true;
+          copy.currentHealth = (srcMinion.card as MinionCardData).health || 1;
+          newState.players.player.battlefield.push(copy);
+        }
+        return newState;
+      }
+
+      case 'destroy_random_enemy': {
+        const dreOppBf = newState.players.opponent.battlefield || [];
+        if (dreOppBf.length > 0) {
+          const dreRandIdx = Math.floor(Math.random() * dreOppBf.length);
+          const dreTarget = dreOppBf[dreRandIdx];
+          newState = destroyCard(newState, dreTarget.instanceId, 'opponent');
+        }
+        return newState;
+      }
+
+      case 'destroy_target': {
+        if (!targetId) return newState;
+        const dtOnOpp = (newState.players.opponent.battlefield || []).some(m => m.instanceId === targetId);
+        newState = destroyCard(newState, targetId, dtOnOpp ? 'opponent' : 'player');
+        return newState;
+      }
+
+      case 'conditional_buff_and_add': {
+        const cba = battlecry as any;
+        if (checkBattlecryCondition(newState, cba.condition || '')) {
+          const cbaMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+          if (cbaMinion) {
+            cbaMinion.currentAttack = (cbaMinion.currentAttack ?? (cbaMinion.card as MinionCardData).attack ?? 0) + (cba.buffAttack || 0);
+            cbaMinion.currentHealth = (cbaMinion.currentHealth ?? (cbaMinion.card as MinionCardData).health ?? 0) + (cba.buffHealth || 0);
+          }
+        }
+        return newState;
+      }
+
+      case 'gain_stealth_until_next_turn': {
+        const stealthMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+        if (stealthMinion) {
+          (stealthMinion as any).hasStealth = true;
+          (stealthMinion as any).stealthUntilNextTurn = true;
+        }
+        return newState;
+      }
+
+      case 'reduce_hero_power_cost': {
+        const rpCost = battlecry.value ?? 0;
+        const rpPlayer = newState.players.player;
+        if ((rpPlayer as any).heroPower) {
+          (rpPlayer as any).heroPower.manaCost = rpCost;
+        }
+        return newState;
+      }
+
+      case 'deal_damage_to_hero': {
+        const heroDmg = battlecry.value || 1;
+        return dealDamage(newState, 'opponent', 'hero', heroDmg);
+      }
+
+      case 'conditional_gain_taunt': {
+        const cgt = battlecry as any;
+        if (checkBattlecryCondition(newState, cgt.condition || '')) {
+          const cgtMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+          if (cgtMinion) {
+            (cgtMinion as any).hasTaunt = true;
+          }
+        }
+        return newState;
+      }
+
+      case 'conditional_adapt': {
+        const caEffect = battlecry as any;
+        if (checkBattlecryCondition(newState, caEffect.condition || '')) {
+          return executeAdaptBattlecry(newState, cardInstanceId);
+        }
+        return newState;
+      }
+
+      case 'copy_from_opponent_hand': {
+        const cfohHand = newState.players.opponent.hand || [];
+        const cfohCount = battlecry.value || 1;
+        for (let i = 0; i < cfohCount; i++) {
+          if (cfohHand.length === 0 || newState.players.player.hand.length >= MAX_HAND_SIZE) break;
+          const cfohIdx = Math.floor(Math.random() * cfohHand.length);
+          const cfohCopy = createCardInstance(cfohHand[cfohIdx].card);
+          newState.players.player.hand.push(cfohCopy);
+        }
+        return newState;
+      }
+
+      case 'destroy_and_buff': {
+        const dab = battlecry as any;
+        if (!targetId) return newState;
+        const dabOnOpp = (newState.players.opponent.battlefield || []).some(m => m.instanceId === targetId);
+        const dabOwner = dabOnOpp ? 'opponent' : 'player';
+        newState = destroyCard(newState, targetId, dabOwner);
+        const dabSelf = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+        if (dabSelf) {
+          dabSelf.currentAttack = (dabSelf.currentAttack ?? (dabSelf.card as MinionCardData).attack ?? 0) + (dab.buffAttack || 0);
+          dabSelf.currentHealth = (dabSelf.currentHealth ?? (dabSelf.card as MinionCardData).health ?? 0) + (dab.buffHealth || 0);
+        }
+        return newState;
+      }
+
+      case 'conditional_mind_control': {
+        const cmcEffect = battlecry as any;
+        if (!checkBattlecryCondition(newState, cmcEffect.condition || '')) return newState;
+        const cmcOppBf = newState.players.opponent.battlefield || [];
+        if (cmcOppBf.length === 0 || newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+        const cmcIdx = Math.floor(Math.random() * cmcOppBf.length);
+        const cmcStolen = cmcOppBf.splice(cmcIdx, 1)[0];
+        cmcStolen.isSummoningSick = true;
+        cmcStolen.canAttack = false;
+        newState.players.player.battlefield.push(cmcStolen);
+        return newState;
+      }
+
+      case 'copy_deathrattle': {
+        if (!targetId) return newState;
+        const cdBf = newState.players.player.battlefield || [];
+        const cdTarget = cdBf.find(c => c.instanceId === targetId);
+        const cdSelf = cdBf.find(c => c.instanceId === cardInstanceId);
+        if (cdTarget && cdSelf) {
+          const cdData = cdTarget.card as MinionCardData;
+          if (cdData.deathrattle) {
+            (cdSelf.card as any).deathrattle = structuredClone(cdData.deathrattle);
+            const kw = cdSelf.card.keywords || [];
+            if (!kw.includes('deathrattle')) {
+              cdSelf.card.keywords = [...kw, 'deathrattle'];
+            }
+          }
+        }
+        return newState;
+      }
+
+      case 'mass_silence': {
+        const msTargetType = (battlecry as any).targetType as string | undefined;
+        const msTargets = msTargetType === 'all_enemy_minions'
+          ? [...newState.players.opponent.battlefield]
+          : [...newState.players.player.battlefield, ...newState.players.opponent.battlefield];
+        for (const m of msTargets) {
+          newState = silenceMinion(newState, m.instanceId);
+        }
+        return newState;
+      }
+
+      case 'cost_reduction': {
+        const crEffect = battlecry as any;
+        const crValue = crEffect.value || 1;
+        const crCardType = crEffect.cardType?.toLowerCase();
+        for (const c of newState.players.player.hand) {
+          if (crCardType && c.card.type !== crCardType) continue;
+          c.card = { ...c.card, manaCost: Math.max(0, (c.card.manaCost ?? 0) - crValue) };
+        }
+        return newState;
+      }
+
+      case 'joust': {
+        const jstEffect = battlecry as any;
+        const jstPlayerDeck = newState.players.player.deck;
+        const jstOppDeck = newState.players.opponent.deck;
+        if (jstPlayerDeck.length === 0 || jstOppDeck.length === 0) return newState;
+        const jstPlayerCard = jstPlayerDeck[Math.floor(Math.random() * jstPlayerDeck.length)];
+        const jstOppCard = jstOppDeck[Math.floor(Math.random() * jstOppDeck.length)];
+        const jstPlayerCost = jstPlayerCard.manaCost ?? 0;
+        const jstOppCost = jstOppCard.manaCost ?? 0;
+        if (jstPlayerCost > jstOppCost && jstEffect.winEffect === 'draw') {
+          if (jstPlayerDeck.length > 0 && newState.players.player.hand.length < MAX_HAND_SIZE) {
+            const drawn = jstPlayerDeck.shift()!;
+            newState.players.player.hand.push(createCardInstance(drawn));
+          }
+        }
+        return newState;
+      }
+
+      case 'increase_spell_cost': {
+        const iscEffect = battlecry as any;
+        const iscValue = iscEffect.value || 1;
+        if (!(newState.players.opponent as any).activeEffects) (newState.players.opponent as any).activeEffects = [];
+        ((newState.players.opponent as any).activeEffects as any[]).push({
+          type: 'spell_cost_increase',
+          value: iscValue,
+          duration: iscEffect.duration || 1,
+          source: cardInstanceId
+        });
+        return newState;
+      }
+
+      case 'draw_for_both':
+        return executeDrawBothBattlecry(newState, battlecry);
+
+      case 'grant_keyword_adjacent': {
+        const gkaEffect = battlecry as any;
+        const gkaKeywords = gkaEffect.grantKeywords || [];
+        const gkaBf = newState.players.player.battlefield || [];
+        const gkaSelfIdx = gkaBf.findIndex(c => c.instanceId === cardInstanceId);
+        if (gkaSelfIdx === -1) return newState;
+        const gkaAdjIdxs = [gkaSelfIdx - 1, gkaSelfIdx + 1];
+        for (const idx of gkaAdjIdxs) {
+          if (idx >= 0 && idx < gkaBf.length) {
+            for (const kw of gkaKeywords) {
+              addKeyword(gkaBf[idx], kw);
+              if (kw === 'taunt') (gkaBf[idx] as any).hasTaunt = true;
+            }
+          }
+        }
+        return newState;
+      }
+
+      case 'copy_minion': {
+        if (!targetId) return newState;
+        return executeCopyBattlecry(newState, { ...battlecry, requiresTarget: true }, targetId);
+      }
+
+      case 'destroy_weapon': {
+        const dwOpp = newState.players.opponent;
+        if ((dwOpp as any).weapon) {
+          (dwOpp as any).weapon = undefined;
+        }
+        return newState;
+      }
+
+      case 'destroy_weapon_draw': {
+        const dwdOpp = newState.players.opponent;
+        if ((dwdOpp as any).weapon) {
+          (dwdOpp as any).weapon = undefined;
+          if (newState.players.player.deck.length > 0 && newState.players.player.hand.length < MAX_HAND_SIZE) {
+            const dwdDrawn = newState.players.player.deck.shift()!;
+            newState.players.player.hand.push(createCardInstance(dwdDrawn));
+          }
+        }
+        return newState;
+      }
+
+      case 'destroy_all_and_discard': {
+        newState.players.player.battlefield = newState.players.player.battlefield.filter(
+          m => m.instanceId === cardInstanceId
+        );
+        newState.players.opponent.battlefield = [];
+        newState.players.player.hand = [];
+        return newState;
+      }
+
+      case 'gain_weapon_attack': {
+        const gwaWpn = (newState.players.player as any).weapon;
+        if (gwaWpn) {
+          const gwaMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+          if (gwaMinion) {
+            const gwaAtk = gwaWpn.attack || 0;
+            gwaMinion.currentAttack = (gwaMinion.currentAttack ?? (gwaMinion.card as MinionCardData).attack ?? 0) + gwaAtk;
+          }
+        }
+        return newState;
+      }
+
+      case 'conditional_destroy': {
+        const cdEffect = battlecry as any;
+        if (!checkBattlecryCondition(newState, cdEffect.condition || '')) return newState;
+        if (!targetId) return newState;
+        if (cdEffect.attackFilter) {
+          const cdAllM = [...(newState.players.opponent.battlefield || []), ...(newState.players.player.battlefield || [])];
+          const cdTgt = cdAllM.find(m => m.instanceId === targetId);
+          if (cdTgt) {
+            const cdAtk = cdTgt.currentAttack ?? (cdTgt.card as MinionCardData).attack ?? 0;
+            if (cdAtk > cdEffect.attackFilter) return newState;
+          }
+        }
+        const cdOnOpp = (newState.players.opponent.battlefield || []).some(m => m.instanceId === targetId);
+        newState = destroyCard(newState, targetId, cdOnOpp ? 'opponent' : 'player');
+        return newState;
+      }
+
+      case 'conditional_buff_and_rush': {
+        const cbrEffect = battlecry as any;
+        if (!checkBattlecryCondition(newState, cbrEffect.condition || '')) return newState;
+        const cbrMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+        if (cbrMinion) {
+          cbrMinion.currentAttack = (cbrMinion.currentAttack ?? (cbrMinion.card as MinionCardData).attack ?? 0) + (cbrEffect.buffAttack || 0);
+          cbrMinion.currentHealth = (cbrMinion.currentHealth ?? (cbrMinion.card as MinionCardData).health ?? 0) + (cbrEffect.buffHealth || 0);
+          if (cbrEffect.grantRush) {
+            addKeyword(cbrMinion, 'rush');
+            cbrMinion.canAttack = true;
+            cbrMinion.isSummoningSick = false;
+          }
+        }
+        return newState;
+      }
+
+      case 'draw_until_non_dragon': {
+        const dunPlayer = newState.players.player;
+        while (dunPlayer.deck.length > 0 && dunPlayer.hand.length < MAX_HAND_SIZE) {
+          const dunTop = dunPlayer.deck[0];
+          const dunIsDragon = isCardOfTribe(dunTop, 'dragon');
+          const dunDrawn = dunPlayer.deck.shift()!;
+          dunPlayer.hand.push(createCardInstance(dunDrawn));
+          if (!dunIsDragon) break;
+        }
+        return newState;
+      }
+
+      case 'extra_turns': {
+        const etEffect = battlecry as any;
+        if (!(newState.players.player as any).activeEffects) (newState.players.player as any).activeEffects = [];
+        if (etEffect.opponentTurns) {
+          if (!(newState.players.opponent as any).activeEffects) (newState.players.opponent as any).activeEffects = [];
+          ((newState.players.opponent as any).activeEffects as any[]).push({
+            type: 'extra_turns',
+            value: etEffect.opponentTurns,
+            source: cardInstanceId
+          });
+        }
+        if (etEffect.playerTurns) {
+          ((newState.players.player as any).activeEffects as any[]).push({
+            type: 'extra_turns',
+            value: etEffect.playerTurns,
+            source: cardInstanceId
+          });
+        }
+        return newState;
+      }
+
+      case 'conditional_craft_spell': {
+        const ccsEffect = battlecry as any;
+        if (!checkBattlecryCondition(newState, ccsEffect.condition || '')) return newState;
+        return executeDiscoverBattlecry(newState, cardInstanceId, {
+          ...battlecry,
+          type: 'discover',
+          cardType: ccsEffect.spellType || 'spell',
+        });
+      }
+
+      case 'lose_health_per_opponent_cards': {
+        const lhpocSize = (newState.players.opponent.hand || []).length;
+        if (lhpocSize > 0) {
+          newState = dealDamage(newState, 'player', 'hero', lhpocSize);
+        }
+        return newState;
+      }
+
+      case 'damage_equal_to_attack':
+      case 'deal_damage_equal_to_attack': {
+        if (!targetId) return newState;
+        const deaMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+        const deaAtk = deaMinion
+          ? (deaMinion.currentAttack ?? (deaMinion.card as MinionCardData).attack ?? 0)
+          : 0;
+        if (deaAtk <= 0) return newState;
+        const deaOnOpp = (newState.players.opponent.battlefield || []).some(m => m.instanceId === targetId);
+        if (deaOnOpp) {
+          const deaTgt = newState.players.opponent.battlefield.find(m => m.instanceId === targetId);
+          if (deaTgt) {
+            if (deaTgt.currentHealth === undefined) deaTgt.currentHealth = (deaTgt.card as MinionCardData).health || 1;
+            if (deaTgt.hasDivineShield) {
+              deaTgt.hasDivineShield = false;
+            } else {
+              deaTgt.currentHealth -= deaAtk;
+              if (deaTgt.currentHealth <= 0) {
+                newState = destroyCard(newState, targetId, 'opponent');
+              }
+            }
+          }
+        } else if (targetType === 'hero') {
+          newState = dealDamage(newState, 'opponent', 'hero', deaAtk);
+        }
+        return newState;
+      }
+
+      case 'give_opponent_cards': {
+        const gocEffect = battlecry as any;
+        const gocCardId = gocEffect.cardId;
+        const gocCount = gocEffect.count || 1;
+        const gocCardData = getCardById(gocCardId);
+        if (!gocCardData) return newState;
+        for (let i = 0; i < gocCount; i++) {
+          if (newState.players.opponent.hand.length >= MAX_HAND_SIZE) break;
+          newState.players.opponent.hand.push(createCardInstance(gocCardData));
+        }
+        return newState;
+      }
+
+      case 'draw_per_spell_cast': {
+        const dpsEffect = battlecry as any;
+        const dpsSpells = (newState.gameLog || []).filter(
+          entry => entry.player === newState.currentTurn && entry.type === 'spell_cast'
+        ).length;
+        const dpsCount = Math.min(dpsSpells, dpsEffect.maxValue || 3);
+        for (let i = 0; i < dpsCount; i++) {
+          if (newState.players.player.deck.length === 0 || newState.players.player.hand.length >= MAX_HAND_SIZE) break;
+          const dpsDrawn = newState.players.player.deck.shift()!;
+          newState.players.player.hand.push(createCardInstance(dpsDrawn));
+        }
+        return newState;
+      }
+
+      case 'draw_until_hand_size': {
+        const duhsEffect = battlecry as any;
+        const duhsTarget = duhsEffect.targetHandSize || 5;
+        const duhsPlayer = newState.players.player;
+        while (duhsPlayer.hand.length < duhsTarget && duhsPlayer.deck.length > 0) {
+          const duhsDrawn = duhsPlayer.deck.shift()!;
+          duhsPlayer.hand.push(createCardInstance(duhsDrawn));
+        }
+        return newState;
+      }
+
+      case 'copy_random_card_in_hand': {
+        const crcHand = newState.players.player.hand || [];
+        if (crcHand.length === 0 || crcHand.length >= MAX_HAND_SIZE) return newState;
+        const crcIdx = Math.floor(Math.random() * crcHand.length);
+        const crcCopy = createCardInstance(crcHand[crcIdx].card);
+        newState.players.player.hand.push(crcCopy);
+        return newState;
+      }
+
+      case 'set_random_card_cost': {
+        const srcEffect = battlecry as any;
+        const srcCost = srcEffect.value ?? 1;
+        const srcHand = newState.players.player.hand || [];
+        if (srcHand.length === 0) return newState;
+        const srcIdx = Math.floor(Math.random() * srcHand.length);
+        srcHand[srcIdx].card = { ...srcHand[srcIdx].card, manaCost: srcCost };
+        return newState;
+      }
+
+      case 'increase_opponent_costs': {
+        const iocEffect = battlecry as any;
+        const iocValue = iocEffect.value || 1;
+        if (!(newState.players.opponent as any).activeEffects) (newState.players.opponent as any).activeEffects = [];
+        ((newState.players.opponent as any).activeEffects as any[]).push({
+          type: 'cost_increase_all',
+          value: iocValue,
+          duration: iocEffect.duration || 'next_turn',
+          source: cardInstanceId
+        });
+        return newState;
+      }
+
+      case 'copy_minion_to_hand': {
+        if (!targetId) return newState;
+        const cmthAll = [...(newState.players.player.battlefield || []), ...(newState.players.opponent.battlefield || [])];
+        const cmthTgt = cmthAll.find(m => m.instanceId === targetId);
+        if (!cmthTgt || newState.players.player.hand.length >= MAX_HAND_SIZE) return newState;
+        const cmthCopy = createCardInstance(cmthTgt.card);
+        newState.players.player.hand.push(cmthCopy);
+        return newState;
+      }
+
+      case 'draw_tribes': {
+        const dtEffect = battlecry as any;
+        const dtTribes: string[] = dtEffect.tribes || [];
+        const dtPlayer = newState.players.player;
+        for (const tribe of dtTribes) {
+          const dtIdx = dtPlayer.deck.findIndex(c => isCardOfTribe(c, tribe.toLowerCase()));
+          if (dtIdx !== -1 && dtPlayer.hand.length < MAX_HAND_SIZE) {
+            const dtDrawn = dtPlayer.deck.splice(dtIdx, 1)[0];
+            dtPlayer.hand.push(createCardInstance(dtDrawn));
+          }
+        }
+        return newState;
+      }
+
+      case 'draw_lowest_cost_minion': {
+        const dlcPlayer = newState.players.player;
+        if (dlcPlayer.hand.length >= MAX_HAND_SIZE) return newState;
+        let dlcLowestCost = Infinity;
+        let dlcLowestIdx = -1;
+        for (let i = 0; i < dlcPlayer.deck.length; i++) {
+          if (dlcPlayer.deck[i].type === 'minion' && (dlcPlayer.deck[i].manaCost ?? 0) < dlcLowestCost) {
+            dlcLowestCost = dlcPlayer.deck[i].manaCost ?? 0;
+            dlcLowestIdx = i;
+          }
+        }
+        if (dlcLowestIdx !== -1) {
+          const dlcDrawn = dlcPlayer.deck.splice(dlcLowestIdx, 1)[0];
+          dlcPlayer.hand.push(createCardInstance(dlcDrawn));
+        }
+        return newState;
+      }
+
+      case 'draw_tribe': {
+        const dtbEffect = battlecry as any;
+        const dtbTribe = (dtbEffect.tribe || '').toLowerCase();
+        const dtbPlayer = newState.players.player;
+        const dtbIdx = dtbPlayer.deck.findIndex(c => isCardOfTribe(c, dtbTribe));
+        if (dtbIdx !== -1 && dtbPlayer.hand.length < MAX_HAND_SIZE) {
+          const dtbDrawn = dtbPlayer.deck.splice(dtbIdx, 1)[0];
+          dtbPlayer.hand.push(createCardInstance(dtbDrawn));
+        }
+        return newState;
+      }
+
+      case 'destroy_and_shuffle': {
+        if (!targetId) return newState;
+        const dasAllM = [...(newState.players.player.battlefield || []), ...(newState.players.opponent.battlefield || [])];
+        const dasTgt = dasAllM.find(m => m.instanceId === targetId);
+        if (!dasTgt) return newState;
+        const dasOnOpp = (newState.players.opponent.battlefield || []).some(m => m.instanceId === targetId);
+        const dasOwner = dasOnOpp ? 'opponent' : 'player';
+        const dasCardData = { ...dasTgt.card };
+        newState = destroyCard(newState, targetId, dasOwner);
+        const dasEffect = battlecry as any;
+        const dasShuffleTarget = dasEffect.shuffleTarget === 'opponent_deck' ? 'opponent' : dasOwner;
+        const dasDeck = newState.players[dasShuffleTarget].deck;
+        const dasInsertIdx = Math.floor(Math.random() * (dasDeck.length + 1));
+        dasDeck.splice(dasInsertIdx, 0, dasCardData);
+        return newState;
+      }
+
+      case 'increase_hero_power_cost': {
+        const ihpcEffect = battlecry as any;
+        const ihpcValue = ihpcEffect.value || 5;
+        const ihpcOpp = newState.players.opponent;
+        if ((ihpcOpp as any).heroPower) {
+          (ihpcOpp as any).heroPower.manaCost = ((ihpcOpp as any).heroPower.manaCost || 2) + ihpcValue;
+        }
+        return newState;
+      }
+
+      case 'draw_and_set_cost': {
+        const dascEffect = battlecry as any;
+        const dascDrawCount = dascEffect.drawCount || 1;
+        const dascSetCost = dascEffect.setCost ?? 5;
+        const dascPlayer = newState.players.player;
+        for (let i = 0; i < dascDrawCount; i++) {
+          if (dascPlayer.deck.length === 0 || dascPlayer.hand.length >= MAX_HAND_SIZE) break;
+          const dascDrawn = dascPlayer.deck.shift()!;
+          const dascInst = createCardInstance({ ...dascDrawn, manaCost: dascSetCost });
+          dascPlayer.hand.push(dascInst);
+        }
+        return newState;
+      }
+
+      case 'deathrattle_double': {
+        if (!(newState.players.player as any).activeEffects) (newState.players.player as any).activeEffects = [];
+        ((newState.players.player as any).activeEffects as any[]).push({
+          type: 'deathrattle_double',
+          duration: 'this_turn',
+          source: cardInstanceId
+        });
+        return newState;
+      }
+
+      case 'conditional_buff_deck': {
+        const cbdEffect = battlecry as any;
+        if (!checkBattlecryCondition(newState, cbdEffect.condition || '')) return newState;
+        const cbdBuffAtk = cbdEffect.buffAttack || 0;
+        const cbdBuffHp = cbdEffect.buffHealth || 0;
+        for (let i = 0; i < newState.players.player.deck.length; i++) {
+          const cbdCard = newState.players.player.deck[i];
+          if (cbdCard.type !== 'minion') continue;
+          const cbdMc = cbdCard as MinionCardData;
+          newState.players.player.deck[i] = {
+            ...cbdMc,
+            attack: (cbdMc.attack || 0) + cbdBuffAtk,
+            health: (cbdMc.health || 0) + cbdBuffHp,
+          };
+        }
+        return newState;
+      }
+
+      case 'transform_and_silence': {
+        const tasTargetType = (battlecry as any).targetType as string | undefined;
+        if (tasTargetType === 'all_enemy_minions') {
+          const tasOppBf = newState.players.opponent.battlefield || [];
+          for (let i = 0; i < tasOppBf.length; i++) {
+            newState = silenceMinion(newState, tasOppBf[i].instanceId);
+            const m = newState.players.opponent.battlefield[i];
+            if (m) {
+              m.currentAttack = 1;
+              m.currentHealth = 1;
+              m.card = { ...m.card, name: 'Sheep', attack: 1, health: 1 } as any;
+            }
+          }
+        } else if (targetId) {
+          newState = silenceMinion(newState, targetId);
+          const tasAllM = [...(newState.players.player.battlefield || []), ...(newState.players.opponent.battlefield || [])];
+          const tasTgt = tasAllM.find(m => m.instanceId === targetId);
+          if (tasTgt) {
+            tasTgt.currentAttack = 1;
+            tasTgt.currentHealth = 1;
+            tasTgt.card = { ...tasTgt.card, name: 'Sheep', attack: 1, health: 1 } as any;
+          }
+        }
+        return newState;
+      }
+
+      case 'summon_token': {
+        const stEffect = battlecry as any;
+        const stTokenIds = [stEffect.summonCardId, ...(stEffect.additionalSummons || [])];
+        for (const stTokenId of stTokenIds) {
+          if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+          const stTokenCard = getCardById(stTokenId);
+          if (stTokenCard) {
+            const stInst = createCardInstance(stTokenCard);
+            stInst.isSummoningSick = true;
+            stInst.isPlayed = true;
+            stInst.currentHealth = (stTokenCard as MinionCardData).health || 1;
+            newState.players.player.battlefield.push(stInst);
+          }
+        }
+        return newState;
+      }
+
+      case 'damage_and_buff': {
+        const dnbEffect = battlecry as any;
+        const dnbDmg = dnbEffect.value || 1;
+        const dnbBuffAtk = dnbEffect.buffAttack || 0;
+        if (!targetId) return newState;
+        const dnbAllM = [...(newState.players.player.battlefield || []), ...(newState.players.opponent.battlefield || [])];
+        const dnbTgt = dnbAllM.find(m => m.instanceId === targetId);
+        if (dnbTgt) {
+          if (dnbTgt.currentHealth === undefined) dnbTgt.currentHealth = (dnbTgt.card as MinionCardData).health || 1;
+          if (dnbTgt.hasDivineShield) {
+            dnbTgt.hasDivineShield = false;
+          } else {
+            dnbTgt.currentHealth -= dnbDmg;
+          }
+          const dnbSelf = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+          if (dnbSelf) {
+            dnbSelf.currentAttack = (dnbSelf.currentAttack ?? (dnbSelf.card as MinionCardData).attack ?? 0) + dnbBuffAtk;
+          }
+          const dnbOnOpp = (newState.players.opponent.battlefield || []).some(m => m.instanceId === targetId);
+          if (dnbTgt.currentHealth <= 0) {
+            newState = destroyCard(newState, targetId, dnbOnOpp ? 'opponent' : 'player');
+          }
+        }
+        return newState;
+      }
+
+      case 'equip_helgrind':
+        return executeEquipWeaponBattlecry(newState, { ...battlecry, type: 'equip_weapon' });
+
+      case 'consume_adjacent': {
+        const caBf = newState.players.player.battlefield || [];
+        const caSelfIdx = caBf.findIndex(c => c.instanceId === cardInstanceId);
+        if (caSelfIdx === -1) return newState;
+        const caAdjacentIds: string[] = [];
+        if (caSelfIdx - 1 >= 0) caAdjacentIds.push(caBf[caSelfIdx - 1].instanceId);
+        if (caSelfIdx + 1 < caBf.length) caAdjacentIds.push(caBf[caSelfIdx + 1].instanceId);
+        let caTotalAtk = 0;
+        let caTotalHp = 0;
+        for (const adjId of caAdjacentIds) {
+          const caAdj = caBf.find(m => m.instanceId === adjId);
+          if (caAdj) {
+            caTotalAtk += caAdj.currentAttack ?? (caAdj.card as MinionCardData).attack ?? 0;
+            caTotalHp += caAdj.currentHealth ?? (caAdj.card as MinionCardData).health ?? 0;
+          }
+        }
+        for (const adjId of caAdjacentIds) {
+          newState = destroyCard(newState, adjId, 'player');
+        }
+        const caRefreshed = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
+        if (caRefreshed && (battlecry as any).gainStats) {
+          caRefreshed.currentAttack = (caRefreshed.currentAttack ?? (caRefreshed.card as MinionCardData).attack ?? 0) + caTotalAtk;
+          caRefreshed.currentHealth = (caRefreshed.currentHealth ?? (caRefreshed.card as MinionCardData).health ?? 0) + caTotalHp;
+        }
+        return newState;
+      }
+
+      case 'destroy_mana_crystal': {
+        const dmcEffect = battlecry as any;
+        const dmcCrystals = dmcEffect.value || 1;
+        const dmcOppMana = newState.players.opponent.mana;
+        if (dmcOppMana) {
+          dmcOppMana.max = Math.max(0, (dmcOppMana.max || 0) - dmcCrystals);
+          dmcOppMana.current = Math.min(dmcOppMana.current || 0, dmcOppMana.max);
+        }
+        return newState;
+      }
+
+      case 'resurrect_all': {
+        const raEffect = battlecry as any;
+        const raRace = (raEffect.race || '').toLowerCase();
+        const raGraveyard = newState.players.player.graveyard || [];
+        const raToRes = raRace
+          ? raGraveyard.filter(m => m.card.type === 'minion' && ((m.card as any).race || '').toLowerCase() === raRace)
+          : raGraveyard.filter(m => m.card.type === 'minion');
+        for (const dead of raToRes) {
+          if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+          const raResurrected: CardInstance = {
+            ...structuredClone(dead),
+            instanceId: uuidv4(),
+            canAttack: false,
+            isSummoningSick: true,
+            currentHealth: (dead.card as MinionCardData).health || 1,
+            currentAttack: (dead.card as MinionCardData).attack || 0,
+          };
+          newState.players.player.battlefield.push(raResurrected);
+        }
+        return newState;
       }
 
       default:
@@ -2971,13 +3668,18 @@ function executeRecruitBattlecry(
   if (!state.players.player.battlefield) state.players.player.battlefield = [];
   const count = battlecry.value || 1;
   const deck = state.players.player.deck as any[];
+  const maxCost = (battlecry as any).maxCost;
+  const recruitRace = (battlecry as any).recruitRace;
 
   for (let i = 0; i < count; i++) {
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
     const minionIndices: number[] = [];
     deck.forEach((c, idx) => {
-      const type = c.card ? c.card.type : c.type;
-      if (type === 'minion') minionIndices.push(idx);
+      const card = c.card ? c.card : c;
+      if (card.type !== 'minion') return;
+      if (maxCost !== undefined && (card.manaCost || 0) > maxCost) return;
+      if (recruitRace && (card.race || '').toLowerCase() !== recruitRace.toLowerCase()) return;
+      minionIndices.push(idx);
     });
     if (minionIndices.length === 0) break;
 
@@ -2987,6 +3689,9 @@ function executeRecruitBattlecry(
     const lookupCard = getCardById(cardData.id as number);
     const instance = createCardInstance(lookupCard || cardData);
     instance.isPlayed = true;
+    instance.isSummoningSick = true;
+    instance.canAttack = false;
+    instance.attacksPerformed = 0;
     state.players.player.battlefield.push(instance);
   }
   return state;
@@ -3159,6 +3864,22 @@ function checkBattlecryCondition(state: GameState, condition: string): boolean {
       return (player.mana?.max ?? 0) >= 10;
     case 'enemy_minion_count_2_or_more':
       return (state.players.opponent.battlefield || []).length >= 2;
+    case 'opponent_controls_dragon':
+      return (state.players.opponent.battlefield || []).some(c => isCardOfTribe(c.card, 'dragon'));
+    case 'opponent_has_4_minions':
+      return (state.players.opponent.battlefield || []).length >= 4;
+    case 'blood_price_paid':
+      return (state.gameLog || []).some(entry => entry.player === state.currentTurn && entry.text?.includes('Blood Price'));
+    case 'no_2_cost_in_deck': {
+      const deck2 = player.deck || [];
+      return !deck2.some(c => (c.manaCost ?? 0) === 2);
+    }
+    case 'no_1_cost_cards_in_deck': {
+      const deck1 = player.deck || [];
+      return !deck1.some(c => (c.manaCost ?? 0) === 1);
+    }
+    case 'hand_size_10_plus':
+      return (player.hand || []).length >= 10;
     default:
       return true;
   }
@@ -4046,31 +4767,6 @@ function executeSummonFromOpponentHandBattlecry(
   return state;
 }
 
-function executeSummonDeathrattleMinionsThatDiedBattlecry(
-  state: GameState
-): GameState {
-  if (!state.players.player.battlefield) state.players.player.battlefield = [];
-  if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) return state;
-
-  const graveyard = (state.players.player.graveyard || []) as any[];
-  const deathrattleMinions = graveyard.filter(c => {
-    const card = c.card || c;
-    if ((card.type || '') !== 'minion') return false;
-    const kw = card.keywords || [];
-    return kw.includes('deathrattle');
-  });
-
-  if (deathrattleMinions.length === 0) return state;
-
-  const randomPick = deathrattleMinions[Math.floor(Math.random() * deathrattleMinions.length)];
-  const cardData = randomPick.card || randomPick;
-  const lookupCard = getCardById(cardData.id as number);
-  const instance = createCardInstance(lookupCard || cardData);
-  instance.isPlayed = true;
-  state.players.player.battlefield.push(instance);
-  return state;
-}
-
 function executeSummonAllTotemsBattlecry(
   state: GameState
 ): GameState {
@@ -4270,6 +4966,28 @@ function executeBuffEinherjarInDeck(
       health: (mc.health || 0) + buffHp,
       keywords: [...(mc.keywords || []), ...grantKw.filter(k => !mc.keywords?.includes(k))],
     };
+  }
+
+  return state;
+}
+
+function executeConditionalDrawBattlecry(
+  state: GameState,
+  battlecry: BattlecryEffect
+): GameState {
+  const bc = battlecry as any;
+  const condition = bc.condition || '';
+  const baseValue = bc.baseValue || bc.value || 1;
+  const bonusValue = bc.bonusValue || 0;
+
+  const conditionMet = condition ? checkBattlecryCondition(state, condition) : true;
+  const drawCount = conditionMet ? baseValue + bonusValue : baseValue;
+
+  const player = state.players.player;
+  for (let i = 0; i < drawCount; i++) {
+    if (player.deck.length === 0 || player.hand.length >= MAX_HAND_SIZE) break;
+    const drawn = player.deck.shift()!;
+    player.hand.push(createCardInstance(drawn));
   }
 
   return state;

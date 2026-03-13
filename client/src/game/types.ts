@@ -754,6 +754,13 @@ export interface CardInstance {
   coiledBy?: string;
   originalAttackBeforeCoil?: number;
 
+  // Spellburst: one-time trigger after a spell is cast
+  spellburstUsed?: boolean;
+
+  // Aura: tracks base stats before aura buffs (for recalculation)
+  auraBuffAttack?: number;
+  auraBuffHealth?: number;
+
   // Instance-level keyword overrides (takes precedence over card.keywords when present)
   instanceKeywords?: string[];
 
