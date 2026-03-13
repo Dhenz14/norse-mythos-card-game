@@ -213,7 +213,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
   // Render the entire ArmySelection as a PORTAL to document.body
   // Uses CSS Grid layout - no inline style overrides needed
   return ReactDOM.createPortal(
-    <div className="norse-army-selection">
+    <div className="norse-army-selection" style={{ position: 'fixed', inset: 0, width: '100vw', height: '100dvh', display: 'grid', gridTemplateColumns: '212px 1fr 276px', gridTemplateRows: '56px 1fr 64px' }}>
       <div className="norse-army-bg" />
       <div className="norse-lightning-overlay" />
       

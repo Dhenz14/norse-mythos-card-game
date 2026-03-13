@@ -86,7 +86,7 @@
      Center-right, above player area (280px from bottom)
      ======================================== */
   --zone-player-field-left: 60%;
-  --zone-player-field-bottom: 360px;
+  --zone-player-field-bottom: 420px;
   --zone-player-field-z: 20;
 
   /* ========================================
@@ -116,7 +116,7 @@
      Center-right, below opponent area (260px from top)
      ======================================== */
   --zone-opponent-field-left: 60%;
-  --zone-opponent-field-top: 260px;
+  --zone-opponent-field-top: 200px;
   --zone-opponent-field-z: 20;
 
   /* ========================================
@@ -160,7 +160,7 @@
   /* ========================================
      HOLE CARDS offset from hero
      ======================================== */
-  --zone-hole-cards-player-offset: -50px;
+  --zone-hole-cards-player-offset: -20px;
   --zone-hole-cards-opponent-offset: -80px;
 
   /* ========================================

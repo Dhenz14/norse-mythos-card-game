@@ -34,7 +34,38 @@ import {
 } from './cards/typeGuards';
 import { destroyCard } from './zoneUtils';
 import { dealDamage, dealDamageToAllEnemyMinions } from './effects/damageUtils';
-import { addKeyword } from './cards/keywordUtils';
+import { addKeyword, hasKeyword } from './cards/keywordUtils';
+import allCards from '../data/allCards';
+
+function pickRandom<T>(arr: T[], count: number): T[] {
+	const pool = [...arr];
+	const result: T[] = [];
+	for (let i = 0; i < count && pool.length > 0; i++) {
+		const idx = Math.floor(Math.random() * pool.length);
+		result.push(pool.splice(idx, 1)[0]);
+	}
+	return result;
+}
+
+function buildDiscoverPool(
+	type: 'spell' | 'minion' | 'weapon' | 'secret' | 'any',
+	heroClass: string,
+	race?: string,
+	costFilter?: { min?: number; max?: number }
+): CardData[] {
+	return (allCards as CardData[]).filter(c => {
+		if (!c.collectible) return false;
+		if (type !== 'any' && c.type !== type) return false;
+		if (heroClass !== 'any' && c.class && c.class !== 'Neutral' && c.class !== heroClass) return false;
+		if (race && isMinion(c) && c.race?.toLowerCase() !== race.toLowerCase()) return false;
+		if (costFilter) {
+			const cost = c.manaCost ?? 0;
+			if (costFilter.min != null && cost < costFilter.min) return false;
+			if (costFilter.max != null && cost > costFilter.max) return false;
+		}
+		return true;
+	});
+}
 
 // ===================== DISCOVER MECHANICS =====================
 /**
@@ -55,13 +86,12 @@ export const handleDiscover = (
   discoveryCount: number = 3,
   discoveryClass: string = 'any'
 ): GameState => {
-  // In a real implementation, you would filter cards based on the discovery criteria
-  // and populate the options. This is a simplified placeholder.
-  
-  // Creating discovery state
+  const pool = buildDiscoverPool(discoveryType, discoveryClass);
+  const options = pickRandom(pool, discoveryCount);
+
   const discoveryState: DiscoveryState = {
     active: true,
-    options: [], // This would be populated with actual card options based on filters
+    options,
     sourceCardId: sourceCard.id.toString(),
     filters: {
       type: discoveryType === 'any' ? 'any' : (discoveryType as CardType),
@@ -618,9 +648,19 @@ export const handleAdapt = (
     return gameState; // Target not found
   }
   
-  // Get adaptation options
-  // In a real implementation, you'd load from your card database
-  const adaptOptions = [] as CardData[]; // Placeholder for adaptation options
+  const ADAPT_OPTIONS: CardData[] = [
+    { id: 99901, name: 'Crackling Shield', description: 'Divine Shield', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99902, name: 'Flaming Claws', description: '+3 Attack', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99903, name: 'Living Spores', description: 'Deathrattle: Summon two 1/1 Plants', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99904, name: 'Lightning Speed', description: 'Windfury', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99905, name: 'Liquid Membrane', description: "Can't be targeted by spells", type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99906, name: 'Massive', description: 'Taunt', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99907, name: 'Rocky Carapace', description: '+3 Health', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99908, name: 'Shrouding Mist', description: 'Stealth until next turn', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99909, name: 'Volcanic Might', description: '+1/+1', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+    { id: 99910, name: 'Poison Spit', description: 'Poisonous', type: 'spell', rarity: 'common', manaCost: 0, collectible: false },
+  ] as CardData[];
+  const adaptOptions = pickRandom(ADAPT_OPTIONS, 3);
   
   // Create discovery state for the adaptation
   const discoveryState: DiscoveryState = {
@@ -695,8 +735,10 @@ export const applyAdaptation = (
       break;
       
     case "Living Spores":
-      // Add Deathrattle: Summon two 1/1 Plants
-      // In a real implementation, you'd add the deathrattle effect
+      addKeyword(minion, 'deathrattle');
+      if (isMinion(minion.card)) {
+        minion.card = { ...minion.card, deathrattle: { type: 'summon_token', count: 2, tokenAttack: 1, tokenHealth: 1, tokenName: 'Plant' } };
+      }
       break;
       
     case "Lightning Speed":
@@ -716,9 +758,8 @@ export const applyAdaptation = (
       
     case "Rocky Carapace":
       // +3 Health
-      if (minion.currentHealth) {
-        minion.currentHealth += 3;
-      }
+      minion.currentHealth = (minion.currentHealth ?? (isMinion(minion.card) ? minion.card.health ?? 0 : 0)) + 3;
+      if (isMinion(minion.card)) minion.card = { ...minion.card, health: (minion.card.health ?? 0) + 3 };
       break;
       
     case "Shrouding Mist":
@@ -731,19 +772,14 @@ export const applyAdaptation = (
     case "Volcanic Might":
       // +1/+1
       if (isMinion(minion.card)) {
-        minion.card = {
-          ...minion.card,
-          attack: (minion.card.attack || 0) + 1
-        };
+        minion.card = { ...minion.card, attack: (minion.card.attack || 0) + 1, health: (minion.card.health ?? 0) + 1 };
       }
-      if (minion.currentHealth) {
-        minion.currentHealth += 1;
-      }
+      minion.currentHealth = (minion.currentHealth ?? (isMinion(minion.card) ? minion.card.health ?? 0 : 0)) + 1;
       break;
       
     case "Liquid Membrane":
       // Can't be targeted by spells or Hero Powers (Elusive)
-      (minion as any).isElusive = true;
+      addKeyword(minion, 'elusive');
       break;
       
     default:

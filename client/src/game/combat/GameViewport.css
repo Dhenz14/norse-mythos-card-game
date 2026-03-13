@@ -457,7 +457,7 @@
 .viewport-mode .unified-opponent-field {
   position: absolute;
   left: var(--zone-opponent-field-left, 60%);
-  top: var(--zone-opponent-field-top, 26%);
+  top: var(--zone-opponent-field-top, 260px);
   transform: translateX(-50%);
   z-index: var(--z-battlefield, 10);
   display: flex;
@@ -514,6 +514,7 @@
 
 /* Player Hero Section */
 .viewport-mode .unified-hero-section {
+  position: relative;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -664,7 +665,7 @@
 .viewport-mode .unified-player-field {
   position: absolute;
   left: var(--zone-player-field-left, 60%);
-  bottom: var(--zone-player-field-bottom, 30%);
+  bottom: var(--zone-player-field-bottom, 360px);
   transform: translateX(-50%);
   z-index: var(--z-battlefield, 10);
   display: flex;

@@ -111,8 +111,21 @@ function executeSpellburstEffect(
 			}
 			break;
 		}
-		case 'summon':
+		case 'summon': {
+			if (player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
+				const summonId = effect.summonCardId || effect.value;
+				if (summonId) {
+					const cardDef = allCards.find(c => c.id === Number(summonId));
+					if (cardDef) {
+						const summoned = createCardInstance(cardDef as CardData);
+						summoned.isSummoningSick = true;
+						summoned.canAttack = false;
+						player.battlefield.push(summoned);
+					}
+				}
+			}
 			break;
+		}
 	}
 
 	return state;

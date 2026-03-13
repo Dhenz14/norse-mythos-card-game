@@ -2,7 +2,7 @@ import { GameState, CardInstance, Player, HeroClass, CardData } from '../types';
 import { debug } from '../config/debugConfig';
 import { createStartingDeck, createClassDeck, drawCards, findCardInstance } from './cards/cardUtils';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
-import { getDefaultHeroPower, resetHeroPower } from './heroPowerUtils';
+import { getDefaultHeroPower, resetHeroPower, executeHeroPower } from './heroPowerUtils';
 import { requiresBattlecryTarget, executeBattlecry } from './battlecryUtils';
 import { equipWeapon } from './weaponUtils';
 import { equipArtifact, canPlayArtifact, resetArtifactTurnState } from './artifactUtils';
@@ -1735,7 +1735,7 @@ function simulateOpponentTurn(state: GameState): GameState {
 			currentTurn: currentState.currentTurn
 		});
 
-		const maxBoard = 5;
+		const maxBoard = MAX_BATTLEFIELD_SIZE;
 		const playerMinions = currentState.players.player.battlefield;
 		const cardsToPlay = aiKnapsackManaFill(
 			opponent.hand,
@@ -1791,6 +1791,91 @@ function simulateOpponentTurn(state: GameState): GameState {
 			manaLeft: currentState.players.opponent.mana.current,
 			minionsOnBoard: currentState.players.opponent.battlefield.map(m => m.card.name)
 		});
+
+		// Phase 1.5: Use hero power if available
+		const oppHP = currentState.players.opponent;
+		if (!oppHP.heroPower.used && oppHP.mana.current >= oppHP.heroPower.cost) {
+			try {
+				const effectStr = typeof oppHP.heroPower.effect === 'string' ? oppHP.heroPower.effect : (oppHP.heroPower.effect as Record<string, unknown>)?.type as string || '';
+				const isDamage = /damage|deal|burn|shot|arrow|blast/i.test(effectStr);
+				const isHeal = /heal|restore/i.test(effectStr);
+				const isBuff = /buff|armor|shield/i.test(effectStr);
+				const isSummon = /summon|totem|recruit/i.test(effectStr);
+				const isDraw = /draw|card/i.test(effectStr);
+
+				let hpTargetId: string | undefined;
+				let hpTargetType: 'card' | 'hero' | undefined;
+
+				if (isDamage) {
+					const pField = currentState.players.player.battlefield;
+					const hpDmg = typeof oppHP.heroPower.effect === 'object' ? ((oppHP.heroPower.effect as Record<string, unknown>)?.value as number || 1) : 1;
+					const killable = pField.find(m => aiGetHp(m) <= hpDmg);
+					if (killable) {
+						hpTargetId = killable.instanceId;
+						hpTargetType = 'card';
+					} else {
+						hpTargetId = 'hero';
+						hpTargetType = 'hero';
+					}
+				} else if (isHeal) {
+					const damaged = currentState.players.opponent.battlefield
+						.filter(m => aiGetHp(m) < (isMinion(m.card) ? (m.card.health ?? 0) : 0))
+						.sort((a, b) => aiGetHp(a) - aiGetHp(b));
+					if (damaged.length > 0) {
+						hpTargetId = damaged[0].instanceId;
+						hpTargetType = 'card';
+					} else {
+						hpTargetId = 'hero';
+						hpTargetType = 'hero';
+					}
+				} else if (isSummon && currentState.players.opponent.battlefield.length >= maxBoard) {
+					// Skip summon if board full
+				} else {
+					// Buff, draw, armor, summon with space — use without target
+				}
+
+				if (!(isSummon && currentState.players.opponent.battlefield.length >= maxBoard)) {
+					debug.ai(`[AI Turn] Using hero power: ${effectStr}`, { hpTargetId, hpTargetType });
+					currentState = executeHeroPower(currentState, 'opponent', hpTargetId, hpTargetType);
+				}
+			} catch (error) {
+				debug.error('AI hero power error:', error);
+			}
+		}
+
+		// Phase 1.75: Attack with weapon if equipped
+		const oppWeapon = currentState.players.opponent.weapon;
+		const wpnAtk = oppWeapon ? getAttack(oppWeapon.card) : 0;
+		const wpnDur = oppWeapon?.currentHealth ?? 0;
+		if (oppWeapon && wpnAtk > 0 && wpnDur > 0) {
+			try {
+				const cloned = structuredClone(currentState) as GameState;
+				const wpn = cloned.players.opponent.weapon!;
+				const pField = cloned.players.player.battlefield;
+				const pTaunts = getTauntMinions(pField);
+				let weaponTarget: CardInstance | null = null;
+
+				if (pTaunts.length > 0) {
+					weaponTarget = pTaunts.sort((a, b) => aiGetHp(a) - aiGetHp(b))[0];
+				} else {
+					weaponTarget = pField.find(m => aiGetHp(m) <= wpnAtk) || null;
+				}
+
+				if (weaponTarget) {
+					const tgt = pField.find(m => m.instanceId === weaponTarget!.instanceId);
+					if (tgt) tgt.currentHealth = (tgt.currentHealth ?? (isMinion(tgt.card) ? (tgt.card.health ?? 0) : 0)) - wpnAtk;
+				} else {
+					const plr = cloned.players.player;
+					plr.heroHealth = (plr.heroHealth ?? plr.health ?? 100) - wpnAtk;
+				}
+				wpn.currentHealth = (wpn.currentHealth ?? 1) - 1;
+				if (wpn.currentHealth <= 0) cloned.players.opponent.weapon = undefined;
+				debug.ai(`[AI Turn] Weapon attack (${wpnAtk} dmg), durability now: ${wpn.currentHealth}`);
+				currentState = cloned;
+			} catch (error) {
+				debug.error('AI weapon attack error:', error);
+			}
+		}
 
 		// Phase 2: Attack with minions
 		const attackers = currentState.players.opponent.battlefield
