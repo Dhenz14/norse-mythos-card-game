@@ -59,6 +59,11 @@ export function getAttackEligibility(card: CardInstance, isPlayerTurn: boolean):
     return { canAttack: false, reason: 'Only minions can attack' };
   }
   
+  // Check for cant_attack keyword
+  if (hasKeyword(card, 'cant_attack')) {
+    return { canAttack: false, reason: 'Minion cannot attack' };
+  }
+
   // Check for 0 attack
   const attackValue = (card.card as any).attack || 0;
   if (attackValue <= 0) {
@@ -107,10 +112,14 @@ export function isValidAttackTarget(
 ): boolean {
   // Check if opponent has any taunt minions
   const hasTaunt = opponentTauntCards.length > 0;
-  
+
+  // Flying minions bypass taunt — they can attack any target
+  const hasFlying = hasKeyword(attackingCard, 'flying');
+
   // If opponent has taunt minions, can only attack those, unless target is also a taunt
-  if (hasTaunt && 
-      !opponentTauntCards.some(card => card.instanceId === targetCard.instanceId) && 
+  // Exception: flying minions ignore taunt
+  if (hasTaunt && !hasFlying &&
+      !opponentTauntCards.some(card => card.instanceId === targetCard.instanceId) &&
       targetCard.card.type !== 'hero') {
     return false;
   }
@@ -144,9 +153,12 @@ export function getValidTargets(
   const tauntMinions = opponentCards.filter(card =>
     hasKeyword(card, 'taunt')
   );
-  
-  // If there are taunt minions, they are the only valid targets
-  if (tauntMinions.length > 0) {
+
+  // Flying minions bypass taunt — all targets remain valid
+  const attackerFlying = hasKeyword(attackingCard, 'flying');
+
+  // If there are taunt minions and attacker is NOT flying, they are the only valid targets
+  if (tauntMinions.length > 0 && !attackerFlying) {
     return tauntMinions;
   }
   

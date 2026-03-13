@@ -332,6 +332,10 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
   const { card, index } = cardResult;
 
+  // Outcast: check if the card is at the leftmost or rightmost position in hand
+  const isOutcast = hasKeyword(card, 'outcast') &&
+    (index === 0 || index === player.hand.length - 1);
+
   // Save the original card data for reference (before we remove it from hand)
   const originalCardData = structuredClone(card.card);
 
@@ -343,6 +347,12 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   let effectiveManaCost = card.card.manaCost || 0;
   if (card.card.type === 'spell') {
     effectiveManaCost = Math.max(0, effectiveManaCost - getArtifactSpellCostReduction(newState, currentPlayer));
+  }
+
+  // Outcast mana discount: reduce cost when played from edge of hand
+  const outcastEff = (card.card as any).outcastEffect;
+  if (isOutcast && outcastEff?.type === 'mana_discount') {
+    effectiveManaCost = Math.max(0, effectiveManaCost - (outcastEff.manaDiscount || 0));
   }
 
   // Asgard realm: enemy spells cost (1) more
@@ -504,6 +514,16 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
     // Process artifact on-spell-cast triggers (Gungnir, Master Bolt)
     newState = processArtifactOnSpellCast(newState, currentPlayer);
+
+    // Outcast bonus effects for spells (non-mana-discount)
+    if (isOutcast && outcastEff && outcastEff.type !== 'mana_discount') {
+      if (outcastEff.type === 'draw') {
+        const drawCount = outcastEff.value || 1;
+        for (let i = 0; i < drawCount; i++) {
+          newState = drawCardFromDeck(newState, currentPlayer);
+        }
+      }
+    }
 
     // If combo is active and the card has a combo effect, execute that instead
     if (isComboActive && card.card.comboEffect) {
@@ -703,7 +723,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
   // Update player state
   player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-  if (!isBloodPayment) player.mana.current -= (card.card.manaCost || 0);
+  if (!isBloodPayment) player.mana.current -= effectiveManaCost;
   player.mana.pendingOverload = pendingOverload;
   
   // Track quest progress for minion plays
@@ -969,6 +989,16 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   
   // We've already handled combo effects earlier so this section is no longer needed
   // The effects are applied when the card is played
+
+  // Outcast bonus effects for minions (non-mana-discount): draw, discover, etc.
+  if (isOutcast && outcastEff && outcastEff.type !== 'mana_discount') {
+    if (outcastEff.type === 'draw') {
+      const drawCount = outcastEff.value || 1;
+      for (let i = 0; i < drawCount; i++) {
+        newState = drawCardFromDeck(newState, currentPlayer);
+      }
+    }
+  }
 
   // Handle Echo mechanic - if the card has Echo, create a copy that can be played again this turn
   if (card && hasEcho(card)) {

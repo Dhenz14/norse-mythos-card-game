@@ -368,8 +368,530 @@ function executeDeathrattleInner(
     case 'summon_random': {
       return executeSummonRandomDeathrattle(newState, deathrattle, playerId);
     }
+    case 'compound':
+      return executeCompoundDeathrattle(newState, deathrattle, card, playerId);
+    case 'heal_hero': {
+      const healVal = deathrattle.value || 1;
+      const targetHero = deathrattle.targetType === 'friendly_hero' ? playerId : (playerId === 'player' ? 'opponent' : 'player');
+      const p = newState.players[targetHero as 'player' | 'opponent'];
+      p.heroHealth = Math.min((p.heroHealth ?? p.health) + healVal, p.maxHealth);
+      return newState;
+    }
+    case 'add_card': {
+      const player = newState.players[playerId];
+      if (player.hand.length >= MAX_HAND_SIZE) return newState;
+      const addCardCondition = (deathrattle as any).condition as string | undefined;
+      if (addCardCondition === 'random_mythic') {
+        const mythics = allCards.filter(c => c.rarity === 'mythic');
+        if (mythics.length > 0) {
+          const pick = mythics[Math.floor(Math.random() * mythics.length)];
+          player.hand.push(createCardInstance(pick));
+        }
+      } else if (addCardCondition && addCardCondition.startsWith('random_')) {
+        const className = addCardCondition.replace('random_', '');
+        const classCards = allCards.filter(c => (c as any).heroClass?.toLowerCase() === className.toLowerCase() || (c as any).class?.toLowerCase() === className.toLowerCase());
+        if (classCards.length > 0) {
+          const pick = classCards[Math.floor(Math.random() * classCards.length)];
+          player.hand.push(createCardInstance(pick));
+        }
+      } else {
+        const addId = (deathrattle as any).cardId || (deathrattle as any).summonCardId;
+        if (addId) {
+          const cardData = getCardById(typeof addId === 'string' ? parseInt(addId, 10) : addId);
+          if (cardData) {
+            player.hand.push(createCardInstance(cardData));
+          }
+        } else {
+          const cardName = (deathrattle as any).cardName as string | undefined;
+          if (cardName) {
+            const found = allCards.find(c => c.name === cardName);
+            if (found) {
+              player.hand.push(createCardInstance(found));
+            }
+          }
+        }
+      }
+      return newState;
+    }
+    case 'summon_token': {
+      const player = newState.players[playerId];
+      const tokenId = deathrattle.summonCardId || (deathrattle as any).cardId;
+      const tokenCount = deathrattle.value || 1;
+      if (tokenId) {
+        const tokenData = getCardById(typeof tokenId === 'number' ? tokenId : parseInt(tokenId, 10));
+        if (tokenData) {
+          for (let i = 0; i < tokenCount; i++) {
+            if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+            const inst = createCardInstance(tokenData);
+            inst.isSummoningSick = true;
+            inst.canAttack = false;
+            player.battlefield.push(inst);
+            trackQuestProgress(playerId, 'summon_minion', inst.card);
+          }
+        }
+      }
+      return newState;
+    }
+    case 'summon_copy': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+      const targetFromBattlecry = (deathrattle as any).targetFromBattlecry;
+      if (targetFromBattlecry && (card as any).battlecryTargetCard) {
+        const storedCard = (card as any).battlecryTargetCard;
+        const inst = createCardInstance(storedCard);
+        inst.isSummoningSick = true;
+        inst.canAttack = false;
+        player.battlefield.push(inst);
+        trackQuestProgress(playerId, 'summon_minion', inst.card);
+      } else {
+        const selfCopy = createCardInstance(card.card);
+        selfCopy.isSummoningSick = true;
+        selfCopy.canAttack = false;
+        player.battlefield.push(selfCopy);
+        trackQuestProgress(playerId, 'summon_minion', selfCopy.card);
+      }
+      return newState;
+    }
+    case 'summon_yggdrasil_golem': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+      const currentCounter = (player as any).yggdrasilGolemCounter || 0;
+      (player as any).yggdrasilGolemCounter = currentCounter + 1;
+      const golemSize = Math.min(currentCounter + 1, 30);
+      const golemCard: CardData = {
+        id: 85100 + golemSize,
+        name: 'Yggdrasil Golem',
+        type: 'minion',
+        manaCost: golemSize,
+        attack: golemSize,
+        health: golemSize,
+        description: '',
+        rarity: 'common',
+        class: 'Neutral',
+        race: 'Elemental',
+        collectible: false
+      } as CardData;
+      const golemInst = createCardInstance(golemCard);
+      golemInst.isSummoningSick = true;
+      golemInst.canAttack = false;
+      player.battlefield.push(golemInst);
+      trackQuestProgress(playerId, 'summon_minion', golemInst.card);
+      return newState;
+    }
+    case 'heal_all_friendly': {
+      const healAmount = deathrattle.value || 1;
+      const player = newState.players[playerId];
+      player.battlefield.forEach(minion => {
+        if (minion.card.type === 'minion') {
+          const maxHp = (minion.card as MinionCardData).health ?? 0;
+          minion.currentHealth = Math.min((minion.currentHealth ?? maxHp) + healAmount, maxHp);
+        }
+      });
+      player.heroHealth = Math.min((player.heroHealth ?? player.health) + healAmount, player.maxHealth);
+      return newState;
+    }
+    case 'shuffle_into_deck': {
+      const player = newState.players[playerId];
+      const shuffleId = (deathrattle as any).cardId || deathrattle.summonCardId;
+      let shuffleCardData: CardData | undefined;
+      if (shuffleId) {
+        shuffleCardData = getCardById(typeof shuffleId === 'string' ? parseInt(shuffleId, 10) : shuffleId);
+        if (!shuffleCardData) {
+          const found = allCards.find(c => c.name === shuffleId);
+          if (found) shuffleCardData = found;
+        }
+      }
+      if (!shuffleCardData) {
+        shuffleCardData = card.card;
+      }
+      const count = deathrattle.value || 1;
+      for (let i = 0; i < count; i++) {
+        const copy = structuredClone(shuffleCardData) as CardData;
+        const insertIdx = Math.floor(Math.random() * (player.deck.length + 1));
+        player.deck.splice(insertIdx, 0, copy);
+      }
+      return newState;
+    }
+    case 'damage_hero': {
+      const dmgVal = deathrattle.value || 1;
+      const dmgTarget = deathrattle.targetType === 'friendly_hero' ? playerId : (playerId === 'player' ? 'opponent' : 'player');
+      newState = dealDamage(newState, dmgTarget as 'player' | 'opponent', 'hero', dmgVal, undefined, undefined, playerId);
+      if (newState.players.player.health <= 0) {
+        newState.gamePhase = 'game_over';
+        newState.winner = 'opponent';
+      } else if (newState.players.opponent.health <= 0) {
+        newState.gamePhase = 'game_over';
+        newState.winner = 'player';
+      }
+      return newState;
+    }
+    case 'copy_from_opponent_deck': {
+      const player = newState.players[playerId];
+      const oppId = playerId === 'player' ? 'opponent' : 'player';
+      const opponent = newState.players[oppId];
+      const copyCount = (deathrattle as any).count || deathrattle.value || 1;
+      for (let i = 0; i < copyCount; i++) {
+        if (player.hand.length >= MAX_HAND_SIZE) break;
+        if (opponent.deck.length === 0) break;
+        const randomIdx = Math.floor(Math.random() * opponent.deck.length);
+        const copiedCardData = structuredClone(opponent.deck[randomIdx]) as CardData;
+        const inst = createCardInstance(copiedCardData);
+        player.hand.push(inst);
+      }
+      return newState;
+    }
+    case 'conditional_summon': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+      const condSummonId = deathrattle.summonCardId || (deathrattle as any).cardId;
+      if (!condSummonId) return newState;
+      const condition = (deathrattle as any).condition as string | undefined;
+      if (condition && !checkDeathrattleCondition(newState, condition, playerId)) {
+        return newState;
+      }
+      const condCardData = getCardById(typeof condSummonId === 'number' ? condSummonId : parseInt(condSummonId, 10));
+      if (!condCardData) return newState;
+      const condInst = createCardInstance(condCardData);
+      condInst.isSummoningSick = true;
+      condInst.canAttack = false;
+      player.battlefield.push(condInst);
+      trackQuestProgress(playerId, 'summon_minion', condInst.card);
+      return newState;
+    }
+    case 'summon_highest_cost_from_graveyard': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+      const graveyard = player.graveyard || [];
+      const deadMinions = graveyard.filter(c => c.card.type === 'minion');
+      if (deadMinions.length === 0) return newState;
+      let highest = deadMinions[0];
+      for (const m of deadMinions) {
+        if (((m.card as any).manaCost ?? 0) > ((highest.card as any).manaCost ?? 0)) {
+          highest = m;
+        }
+      }
+      const resurrected = createCardInstance(highest.card);
+      resurrected.isSummoningSick = true;
+      resurrected.canAttack = false;
+      player.battlefield.push(resurrected);
+      trackQuestProgress(playerId, 'summon_minion', resurrected.card);
+      return newState;
+    }
+    case 'shuffle': {
+      const player = newState.players[playerId];
+      const shuffCardId = deathrattle.summonCardId || (deathrattle as any).cardId;
+      let cardToShuffle: CardData;
+      if (shuffCardId) {
+        const found = getCardById(typeof shuffCardId === 'number' ? shuffCardId : parseInt(shuffCardId, 10));
+        cardToShuffle = found ? structuredClone(found) as CardData : structuredClone(card.card) as CardData;
+      } else {
+        cardToShuffle = structuredClone(card.card) as CardData;
+      }
+      const insertIdx = Math.floor(Math.random() * (player.deck.length + 1));
+      player.deck.splice(insertIdx, 0, cardToShuffle);
+      return newState;
+    }
+    case 'add_random_class_spell': {
+      const player = newState.players[playerId];
+      if (player.hand.length >= MAX_HAND_SIZE) return newState;
+      const targetClass = ((deathrattle as any).class || player.heroClass || '').toLowerCase();
+      const classSpells = allCards.filter(c =>
+        c.type === 'spell' &&
+        ((c as any).heroClass?.toLowerCase() === targetClass || (c as any).class?.toLowerCase() === targetClass)
+      );
+      if (classSpells.length === 0) return newState;
+      const picked = classSpells[Math.floor(Math.random() * classSpells.length)];
+      player.hand.push(createCardInstance(picked));
+      return newState;
+    }
+    case 'summon_with_triggered': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+      const summonName = (deathrattle as any).summonName || 'Summoned Minion';
+      const summonAtk = (deathrattle as any).summonAttack || deathrattle.value || 1;
+      const summonHp = (deathrattle as any).summonHealth || deathrattle.value || 1;
+      const tokenCard: CardData = {
+        id: 99990,
+        name: summonName,
+        type: 'minion',
+        manaCost: 0,
+        attack: summonAtk,
+        health: summonHp,
+        description: '',
+        rarity: 'common',
+        class: 'Neutral',
+        collectible: false
+      } as CardData;
+      const tokenInst = createCardInstance(tokenCard);
+      tokenInst.isSummoningSick = true;
+      tokenInst.canAttack = false;
+      player.battlefield.push(tokenInst);
+      trackQuestProgress(playerId, 'summon_minion', tokenInst.card);
+      return newState;
+    }
+    case 'summon_stored': {
+      const player = newState.players[playerId];
+      const devoured = (card as any).devouredCards || (card as any).storedCards || [];
+      const storedCount = deathrattle.value || devoured.length || 1;
+      for (let i = 0; i < Math.min(storedCount, devoured.length); i++) {
+        if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+        const inst = createCardInstance(devoured[i]);
+        inst.isSummoningSick = true;
+        inst.canAttack = false;
+        player.battlefield.push(inst);
+        trackQuestProgress(playerId, 'summon_minion', inst.card);
+      }
+      return newState;
+    }
+    case 'return_to_hand_buffed': {
+      const player = newState.players[playerId];
+      if (player.hand.length >= MAX_HAND_SIZE) return newState;
+      const buffVal = deathrattle.value || 1;
+      const buffedCopy = createCardInstance(card.card);
+      if (buffedCopy.card.type === 'minion') {
+        const mc = buffedCopy.card as MinionCardData;
+        mc.attack = (mc.attack ?? 0) + buffVal;
+        mc.health = (mc.health ?? 0) + buffVal;
+      }
+      buffedCopy.isPlayed = false;
+      player.hand.push(buffedCopy);
+      return newState;
+    }
+    case 'return_stolen_minion': {
+      const opponentId = playerId === 'player' ? 'opponent' : 'player';
+      const ownBf = newState.players[playerId].battlefield;
+      const oppPlayer = newState.players[opponentId];
+      const stolenMinions = ownBf.filter(m => m.originalOwner === opponentId);
+      for (const stolen of stolenMinions) {
+        if (oppPlayer.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+        newState.players[playerId].battlefield = newState.players[playerId].battlefield.filter(
+          m => m.instanceId !== stolen.instanceId
+        );
+        stolen.isSummoningSick = true;
+        stolen.canAttack = false;
+        stolen.originalOwner = undefined;
+        oppPlayer.battlefield.push(stolen);
+      }
+      return newState;
+    }
+    case 'resurrect_self': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+      const selfCopy = createCardInstance(card.card);
+      selfCopy.currentHealth = deathrattle.value || 1;
+      selfCopy.isSummoningSick = true;
+      selfCopy.canAttack = false;
+      selfCopy.card = { ...selfCopy.card, deathrattle: undefined } as any;
+      player.battlefield.push(selfCopy);
+      trackQuestProgress(playerId, 'summon_minion', selfCopy.card);
+      return newState;
+    }
+    case 'resurrect_buffed': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
+      const graveyard = player.graveyard || [];
+      const deadMinions = graveyard.filter(c => c.card.type === 'minion');
+      if (deadMinions.length === 0) return newState;
+      const pick = deadMinions[Math.floor(Math.random() * deadMinions.length)];
+      const resInst = createCardInstance(pick.card);
+      if (resInst.card.type === 'minion') {
+        const mc = resInst.card as MinionCardData;
+        mc.attack = (mc.attack ?? 0) + (deathrattle.buffAttack || 0);
+        mc.health = (mc.health ?? 0) + (deathrattle.buffHealth || 0);
+        resInst.currentHealth = mc.health;
+      }
+      resInst.isSummoningSick = true;
+      resInst.canAttack = false;
+      player.battlefield.push(resInst);
+      trackQuestProgress(playerId, 'summon_minion', resInst.card);
+      return newState;
+    }
+    case 'draw_and_damage_hero': {
+      const drawCount = deathrattle.value || 1;
+      const dmg = (deathrattle as any).damage || 1;
+      for (let i = 0; i < drawCount; i++) {
+        if (newState.players[playerId].deck.length > 0) {
+          newState = drawCardFromDeck(newState, playerId);
+        }
+      }
+      newState = dealDamage(newState, playerId, 'hero', dmg, undefined, undefined, playerId === 'player' ? 'opponent' : 'player');
+      if (newState.players.player.health <= 0) {
+        newState.gamePhase = 'game_over';
+        newState.winner = 'opponent';
+      } else if (newState.players.opponent.health <= 0) {
+        newState.gamePhase = 'game_over';
+        newState.winner = 'player';
+      }
+      return newState;
+    }
+    case 'debuff_adjacent': {
+      const enemyId = playerId === 'player' ? 'opponent' : 'player';
+      const enemyBf = newState.players[enemyId].battlefield;
+      const debuffAtk = (deathrattle as any).buffAttack || 0;
+      const debuffHp = (deathrattle as any).buffHealth || 0;
+      for (const minion of enemyBf) {
+        if (minion.card.type === 'minion') {
+          const mc = minion.card as MinionCardData;
+          if (debuffAtk) {
+            mc.attack = Math.max((mc.attack ?? 0) + debuffAtk, 0);
+            minion.currentAttack = Math.max((minion.currentAttack ?? mc.attack ?? 0) + debuffAtk, 0);
+          }
+          if (debuffHp) {
+            mc.health = Math.max((mc.health ?? 0) + debuffHp, 1);
+            minion.currentHealth = Math.max((minion.currentHealth ?? mc.health ?? 0) + debuffHp, 1);
+          }
+        }
+      }
+      return newState;
+    }
+    case 'damage_enemy_hero': {
+      const dmgAmount = deathrattle.value || 1;
+      const enemyId = playerId === 'player' ? 'opponent' : 'player';
+      newState = dealDamage(newState, enemyId, 'hero', dmgAmount, undefined, undefined, playerId);
+      if (newState.players.player.health <= 0) {
+        newState.gamePhase = 'game_over';
+        newState.winner = 'opponent';
+      } else if (newState.players.opponent.health <= 0) {
+        newState.gamePhase = 'game_over';
+        newState.winner = 'player';
+      }
+      return newState;
+    }
+    case 'buff_random_friendly': {
+      const player = newState.players[playerId];
+      if (player.battlefield.length === 0) return newState;
+      const buffAmount = deathrattle.value || 1;
+      const randomIdx = Math.floor(Math.random() * player.battlefield.length);
+      const target = player.battlefield[randomIdx];
+      if (target.card.type === 'minion') {
+        const mc = target.card as MinionCardData;
+        mc.attack = (mc.attack ?? 0) + buffAmount;
+        mc.health = (mc.health ?? 0) + buffAmount;
+        target.currentHealth = (target.currentHealth ?? mc.health ?? 0) + buffAmount;
+      }
+      return newState;
+    }
     default:
       debug.warn(`Unknown deathrattle type: ${deathrattle.type}`);
+      return newState;
+  }
+}
+
+function executeCompoundDeathrattle(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  card: CardInstance,
+  playerId: 'player' | 'opponent'
+): GameState {
+  const effects = (deathrattle as any).effects as DeathrattleEffect[] | undefined;
+  if (!effects || !Array.isArray(effects) || effects.length === 0) {
+    debug.warn('[Deathrattle] compound deathrattle has no effects array');
+    return state;
+  }
+  let currentState = state;
+  for (const subEffect of effects) {
+    currentState = executeDeathrattleEffect(currentState, subEffect, card, playerId);
+  }
+  return currentState;
+}
+
+function executeDeathrattleEffect(
+  state: GameState,
+  deathrattle: DeathrattleEffect,
+  card: CardInstance,
+  playerId: 'player' | 'opponent'
+): GameState {
+  let newState = structuredClone(state) as GameState;
+  switch (deathrattle.type) {
+    case 'damage': {
+      const dmg = deathrattle.value || 1;
+      const target = deathrattle.targetType;
+      if (target === 'all_enemies' || target === 'all_enemy_minions' || target === 'enemy_minions') {
+        const enemyId = playerId === 'player' ? 'opponent' : 'player';
+        const enemyBf = newState.players[enemyId].battlefield;
+        for (const m of enemyBf) {
+          if (m.hasDivineShield) { m.hasDivineShield = false; }
+          else { m.currentHealth = (m.currentHealth ?? (m.card as MinionCardData).health ?? 1) - dmg; }
+        }
+        if (target === 'all_enemies') {
+          newState = dealDamage(newState, enemyId, 'hero', dmg, undefined, undefined, playerId);
+        }
+      }
+      return removeDeadMinions(newState);
+    }
+    case 'heal': case 'heal_all': {
+      const healVal = deathrattle.value || 1;
+      const target = deathrattle.targetType;
+      if (target === 'friendly_characters' || target === 'all_friendly') {
+        const p = newState.players[playerId];
+        p.battlefield.forEach(m => {
+          if (m.card.type === 'minion') {
+            const maxHp = (m.card as MinionCardData).health ?? 0;
+            m.currentHealth = Math.min((m.currentHealth ?? maxHp) + healVal, maxHp);
+          }
+        });
+        p.heroHealth = Math.min((p.heroHealth ?? p.health) + healVal, p.maxHealth);
+      }
+      return newState;
+    }
+    case 'buff': {
+      const bAtk = deathrattle.buffAttack || 0;
+      const bHp = deathrattle.buffHealth || 0;
+      newState.players[playerId].battlefield.forEach(m => {
+        if (m.card.type === 'minion') {
+          const mc = m.card as MinionCardData;
+          mc.attack = (mc.attack ?? 0) + bAtk;
+          mc.health = (mc.health ?? 0) + bHp;
+          m.currentHealth = (m.currentHealth ?? mc.health ?? 0) + bHp;
+        }
+      });
+      return newState;
+    }
+    case 'summon': {
+      const summonId = deathrattle.summonCardId || (deathrattle as any).cardId;
+      if (!summonId) return newState;
+      const cardData = getCardById(typeof summonId === 'number' ? summonId : parseInt(summonId, 10));
+      if (!cardData) return newState;
+      const p = newState.players[playerId];
+      const count = deathrattle.value || 1;
+      for (let i = 0; i < count; i++) {
+        if (p.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
+        const inst = createCardInstance(cardData);
+        inst.isSummoningSick = true;
+        inst.canAttack = false;
+        p.battlefield.push(inst);
+      }
+      return newState;
+    }
+    case 'draw': {
+      const drawCount = deathrattle.value || 1;
+      for (let i = 0; i < drawCount; i++) {
+        if (newState.players[playerId].deck.length > 0) {
+          newState = drawCardFromDeck(newState, playerId);
+        }
+      }
+      return newState;
+    }
+    case 'destroy': {
+      const enemyId = playerId === 'player' ? 'opponent' : 'player';
+      const specificId = (deathrattle as any).specificCardId;
+      if (specificId) {
+        const bf = newState.players[enemyId].battlefield;
+        const toDestroy = bf.filter(m => m.card.id === specificId);
+        for (const m of toDestroy) {
+          newState = destroyCard(newState, m.instanceId, enemyId);
+        }
+      } else {
+        const bf = newState.players[enemyId].battlefield;
+        if (bf.length > 0) {
+          const idx = Math.floor(Math.random() * bf.length);
+          newState = destroyCard(newState, bf[idx].instanceId, enemyId);
+        }
+      }
+      return newState;
+    }
+    default:
+      debug.warn(`[Deathrattle] Unknown compound sub-effect type: ${deathrattle.type}`);
       return newState;
   }
 }

@@ -674,7 +674,7 @@ export function executeBattlecry(
         return executeBrawlBattlecry(newState);
 
       case 'cast_opponent_spell':
-        return newState;
+        return executeCastOpponentSpellBattlecry(newState);
 
       case 'choose_keywords':
         return executeChooseKeywordsBattlecry(newState, cardInstanceId);
@@ -733,9 +733,8 @@ export function executeBattlecry(
           m => m.card.type === 'minion' && hasKeyword(m, 'einherjar')
         );
         const bf = newState.players.player.battlefield;
-        const maxBf = 5;
         for (const dead of deadEinherjar) {
-          if (bf.length >= maxBf) break;
+          if (bf.length >= MAX_BATTLEFIELD_SIZE) break;
           const resummoned: CardInstance = {
             ...structuredClone(dead),
             instanceId: uuidv4(),
@@ -2038,8 +2037,8 @@ function executeBuffTribeBattlecry(
     
     
     // Get buff values from the battlecry
-    const attackBuff = battlecry.buffs?.attack || 0;
-    const healthBuff = battlecry.buffs?.health || 0;
+    const attackBuff = battlecry.buffAttack || (battlecry as any).buffs?.attack || 0;
+    const healthBuff = battlecry.buffHealth || (battlecry as any).buffs?.health || 0;
     
     // Only proceed if at least one stat is being buffed
     if (attackBuff === 0 && healthBuff === 0) {
@@ -2141,7 +2140,7 @@ function executeSummonBattlecry(
   return state;
 }
 
-const MAX_BOARD_SIZE = 5;
+const MAX_BOARD_SIZE = MAX_BATTLEFIELD_SIZE;
 
 function executeSummonRandomBattlecry(
   state: GameState,
@@ -2932,6 +2931,39 @@ function executeCastAllSpellsBattlecry(state: GameState): GameState {
     }
   }
   return result;
+}
+
+/**
+ * Cast a random spell from the opponent's hand with random targets.
+ */
+function executeCastOpponentSpellBattlecry(state: GameState): GameState {
+	const newState = structuredClone(state) as GameState;
+	const opponentHand = newState.players.opponent.hand || [];
+	const spellIndices: number[] = [];
+	opponentHand.forEach((c, i) => {
+		if (c.card.type === 'spell') spellIndices.push(i);
+	});
+	if (spellIndices.length === 0) return newState;
+
+	const pickedIndex = spellIndices[Math.floor(Math.random() * spellIndices.length)];
+	const spellCard = opponentHand[pickedIndex];
+	newState.players.opponent.hand = opponentHand.filter((_, i) => i !== pickedIndex);
+
+	const { executeSpell } = require('./spells/spellUtils');
+	const fakeInstance = {
+		instanceId: `cast-opponent-spell-${uuidv4()}`,
+		card: spellCard.card,
+		currentHealth: 0,
+		canAttack: false,
+		isPlayed: true,
+		isSummoningSick: false,
+		attacksPerformed: 0,
+	} as CardInstance;
+
+	if ((spellCard.card as any).spellEffect) {
+		return executeSpell(newState, fakeInstance);
+	}
+	return newState;
 }
 
 /**
