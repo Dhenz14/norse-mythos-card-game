@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { usePeerStore } from '../../stores/peerStore';
-import { P2PProvider } from '../../context/P2PContext';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import RagnarokChessGame from '../chess/RagnarokChessGame';
 import ArmySelectionComponent from '../ArmySelection';
@@ -86,10 +85,10 @@ export const MultiplayerGame: React.FC = () => {
 	}
 
 	return (
-		<P2PProvider>
+		<>
 			<Toaster position="top-right" richColors />
 			<P2PStatusBadge />
 			<RagnarokChessGame initialArmy={playerArmy} />
-		</P2PProvider>
+		</>
 	);
 };

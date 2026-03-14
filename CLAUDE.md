@@ -1209,6 +1209,20 @@ vercel --prod                 # Deploy to Vercel
 - Implemented 3 missing keywords: Outcast (hand edge bonus), Flying (bypass taunt), Cant Attack (attack prevention)
 - TypeScript: 0 errors
 
+### Completed (Architecture Consolidation)
+
+- Removed 4 unused dependencies: wouter, react-use-gesture, react-use, @tanstack/react-query (~180KB bundle savings)
+- Deleted dead `queryClient.ts`, removed `QueryClientProvider` from main.tsx
+- Removed all DOM manipulation from gameStore.ts: querySelector, createElement, innerHTML, GSAP timeline — replaced with GameEventBus.emit() calls
+- gameStore.ts is now a pure state machine (zero DOM, zero GSAP, zero animation timing)
+- Extracted 5 hooks from GameBoard.tsx (~2,541 → ~2,370 lines): useCardPositioning, useTargetingArrows, useCardDetailModal, useAttackVisualization, useGameAnimationEffects
+- Extracted 5 hooks from RagnarokCombatArena.tsx (~1,650 → ~1,200 lines): useDamageAnimations, usePokerCardClickHandlers, usePokerKeyboardShortcuts, useRealmAnnouncement, useHeroHealthEffects
+- Extracted 3 sub-stores from gameStore.ts: mulliganStore, discoveryStore, pokerRewardStore (220 lines moved)
+- Made chain indexer optional: gated behind `ENABLE_CHAIN_INDEXER` env var in server/routes.ts
+- Added 7 Zustand slice selectors: usePlayerHand, usePlayerBattlefield, useOpponentBattlefield, useGamePhase, useCurrentTurn, usePlayerMana, usePlayerHeroHealth
+- Removed P2PContext wrapper from MultiplayerGame.tsx (was unused indirection over Zustand)
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)

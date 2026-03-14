@@ -14,15 +14,15 @@ import {
 import { executeHeroPower } from '../utils/heroPowerUtils';
 import { processDiscovery } from '../utils/discoveryUtils';
 import { toggleCardSelection, confirmMulligan, skipMulligan } from '../utils/mulliganUtils';
-import { CardInstance, GameState, AnimationParams, CardData } from '../types';
-import { Position } from '../types/Position';
-import { reverseAdaptCardInstance } from '../utils/cards/cardInstanceAdapter';
+import { useMulliganStore } from './mulliganStore';
+import { useDiscoveryStore } from './discoveryStore';
+import { usePokerRewardStore } from './pokerRewardStore';
+import { CardInstance, GameState, CardData } from '../types';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { useAudio } from '../../lib/stores/useAudio';
 import useGame from '../../lib/stores/useGame';
-import { useAnimationStore } from '../animations/AnimationManager';
-import { useUnifiedUIStore as useAnnouncementStore, fireAnnouncement } from './unifiedUIStore';
-import gsap from 'gsap';
+import { useUnifiedUIStore as useAnnouncementStore } from './unifiedUIStore';
+import { GameEventBus } from '../../core/events/GameEventBus';
 import { isAISimulationMode, debug, getDebugConfig } from '../config/debugConfig';
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
@@ -38,9 +38,10 @@ import { computeStateHash } from '../engine/engineBridge';
 // ============== BATTLEFIELD DEBUG MONITOR ==============
 // Track battlefield changes with stack traces to identify root cause of minion disappearance
 // Controlled by debugConfig.logBattlefieldChanges (default: false)
-let prevBattlefieldSnapshot: { player: string[], opponent: string[] } = { player: [], opponent: [] };
+// All debug-only — guarded behind getDebugConfig() checks
 
 function captureStackTrace(): string {
+  if (!getDebugConfig().logBattlefieldChanges) return '';
   const err = new Error();
   return err.stack?.split('\n').slice(2, 10).join('\n') || 'Stack not available';
 }
@@ -52,12 +53,12 @@ function logBattlefieldChange(
   stack: string
 ) {
   if (!getDebugConfig().logBattlefieldChanges) return;
-  
+
   const newSet = new Set(newCards);
   const prevSet = new Set(prevCards);
   const removed = prevCards.filter(c => !newSet.has(c));
   const added = newCards.filter(c => !prevSet.has(c));
-  
+
   if (removed.length > 0 || added.length > 0) {
     debug.warn(`[BattlefieldDebug] ${side} battlefield CHANGED:`);
     debug.warn(`  Previous (${prevCards.length}):`, prevCards);
@@ -65,8 +66,7 @@ function logBattlefieldChange(
     if (removed.length > 0) debug.warn(`  REMOVED:`, removed);
     if (added.length > 0) debug.warn(`  Added:`, added);
     debug.warn(`  Stack trace:\n${stack}`);
-    
-    // Special alert if battlefield was cleared unexpectedly
+
     if (prevCards.length > 0 && newCards.length === 0) {
       debug.error(`[BattlefieldDebug] CRITICAL: ${side} battlefield CLEARED to empty!`);
     }
@@ -117,9 +117,6 @@ interface GameStore {
   hoveredCard: CardInstance | null;
 }
 
-// Create a battlefield monitor that tracks changes with stack traces
-let prevBattlefieldLength = 0;
-
 // Guard: prevents a second attack from being initiated while one is already animating
 let isAttackProcessing = false;
 let attackWatchdogTimer: ReturnType<typeof setTimeout> | null = null;
@@ -130,9 +127,7 @@ let autoEndTurnTimer: ReturnType<typeof setTimeout> | null = null;
 // Guard: prevents double-firing endTurn while AI is thinking
 let isAITurnProcessing = false;
 
-// Guard: cap retries for grantPokerHandRewards discovery deferral
-let pokerRewardRetries = 0;
-const MAX_POKER_REWARD_RETRIES = 10;
+// Guard: poker reward retries moved to pokerRewardStore.ts
 
 // Create store with subscribeWithSelector middleware for precise battlefield monitoring
 export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get) => ({
@@ -454,11 +449,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     const audioStore = useAudio.getState();
     const targetingStore = useTargetingStore.getState();
 
-    // Get animation stores - use getState() since we're outside React component
-    const animationManager = useAnimationStore.getState();
-    const announcementStore = useAnnouncementStore.getState();
-
-    // Find the attacker card for animation — use fresh state for accurate attacksPerformed
+    // Find the attacker card — use fresh state for accurate attacksPerformed
     const attackerCard = get().gameState.players.player.battlefield.find(
       c => c.instanceId === attackerId
     );
@@ -476,165 +467,94 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         return;
       }
     }
-    
-    // Get attacker position for animation
-    const attackerPosition = (attackerCard as any)?.animationPosition || { x: 400, y: 500 };
-    
-    // Get target position (hero or minion)
-    let targetPosition = { x: 600, y: 150 }; // Default opponent hero position
-    
-    if (defenderId && defenderId !== 'opponent-hero') {
-      // Find target minion position
-      const targetCard = gameState.players.opponent.battlefield.find(
-        c => c.instanceId === defenderId
-      );
-      if ((targetCard as any)?.animationPosition) {
-        targetPosition = (targetCard as any).animationPosition;
-      }
-    } else {
-      // Attacking hero - try to get hero position from DOM
-      const heroElement = document.querySelector('.opponent-hero-portrait, .opponent-hero, [class*="hero"]');
-      if (heroElement) {
-        const rect = heroElement.getBoundingClientRect();
-        targetPosition = {
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2
-        };
-      }
-    }
-    
-    // Animation duration in ms - slowed down for better visibility (800ms for clear attack visual)
-    const attackAnimationDuration = 800;
-    
+
     try {
-      // GSAP directional lunge — animate the attacker card toward its target
-      const attackerEl = document.querySelector(`[data-instance-id="${attackerId}"]`) as HTMLElement | null;
-      const isHeroAttack = !defenderId || defenderId === 'opponent-hero';
-      const targetEl = isHeroAttack
-        ? document.querySelector('.battlefield-hero-square.opponent, .opponent-hero-zone') as HTMLElement | null
-        : document.querySelector(`[data-instance-id="${defenderId}"]`) as HTMLElement | null;
+      // Emit animation request — rendering layer handles the visual lunge
+      GameEventBus.emitAnimationRequest({
+        animationType: 'attack_lunge',
+        sourceId: attackerId,
+        targetId: defenderId || 'opponent-hero',
+        params: { attackerSide: 'player' }
+      });
 
-      if (attackerEl && targetEl) {
-        const aRect = attackerEl.getBoundingClientRect();
-        const tRect = targetEl.getBoundingClientRect();
-        const dx = (tRect.left + tRect.width / 2) - (aRect.left + aRect.width / 2);
-        const dy = (tRect.top + tRect.height / 2) - (aRect.top + aRect.height / 2);
-        const lungePercent = isHeroAttack ? 0.3 : 0.55;
-
-        gsap.timeline()
-          .to(attackerEl, { y: dy > 0 ? 6 : -6, scale: 1.08, duration: 0.12, ease: 'power2.in' })
-          .to(attackerEl, { x: dx * lungePercent, y: dy * lungePercent, scale: 1.05, duration: 0.18, ease: 'power2.out' })
-          .to(attackerEl, { duration: 0.08 })
-          .to(attackerEl, { x: 0, y: 0, scale: 1, duration: 0.22, ease: 'power2.inOut' });
+      // Process attack logic immediately (animation is purely visual, non-blocking)
+      if (!attackerCard) {
+        targetingStore.cancelTargeting();
+        set({ attackingCard: null, selectedCard: null });
+        isAttackProcessing = false;
+        if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
+        return;
       }
 
-      // Delay the actual attack processing to allow lunge to reach target
-      const impactDelay = 380;
-      
-      setTimeout(() => {
-        try {
-          const { gameState: freshState } = get();
+      const newState = processAttack(gameState, attackerId, defenderId);
 
-          const freshAttackerCard = freshState.players.player.battlefield.find(
-            c => c.instanceId === attackerId
-          );
-
-          if (!freshAttackerCard) {
-            targetingStore.cancelTargeting();
-            set({ attackingCard: null, selectedCard: null });
-            isAttackProcessing = false;
-            if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
-            return;
-          }
-
-          const newState = processAttack(freshState, attackerId, defenderId);
-
-          // If the state changed, it means the attack was successful
-          if (newState !== freshState) {
-            // Play sound effect at impact time
-            if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-              audioStore.playSoundEffect('attack');
-            }
-
-            // PROFESSIONAL EVENT-DRIVEN DAMAGE: Emit IMPACT_PHASE event
-            // All subscribers (PokerCombatStore, animations, sound, etc.) react independently
-            // This replaces the old direct bridge call for a cleaner architecture
-            if (freshAttackerCard) {
-              const damage = getAttack(freshAttackerCard.card);
-              const targetMinion = freshState.players.opponent.battlefield.find(c => c.instanceId === defenderId);
-              const counterDamage = targetMinion ? getAttack(targetMinion.card) : 0;
-
-              // Determine target type
-              const isHeroTarget = !defenderId || defenderId === 'opponent-hero';
-
-              // Emit impact phase event - all subscribers will react
-              CombatEventBus.emitImpactPhase({
-                attackerId: attackerId,
-                targetId: defenderId || 'opponent-hero',
-                damageToTarget: damage,
-                damageToAttacker: isHeroTarget ? 0 : counterDamage
-              });
-
-              // Emit damage resolved for complete event chain
-              CombatEventBus.emitDamageResolved({
-                sourceId: attackerId,
-                sourceType: 'minion',
-                targetId: defenderId || 'opponent-hero',
-                targetType: isHeroTarget ? 'hero' : 'minion',
-                actualDamage: damage,
-                damageSource: 'minion_attack',
-                attackerOwner: 'player',
-                defenderOwner: 'opponent',
-                targetHealthBefore: 0,
-                targetHealthAfter: 0,
-                targetDied: false,
-                counterDamage: isHeroTarget ? undefined : counterDamage
-              });
-            }
-
-            // Log attack to saga feed
-            if (freshAttackerCard) {
-              const targetName = defenderId === 'opponent-hero' || !defenderId
-                ? 'enemy hero'
-                : freshState.players.opponent.battlefield.find(c => c.instanceId === defenderId)?.card.name || 'enemy minion';
-
-              logActivity('attack', 'player', `${freshAttackerCard.card.name} attacked ${targetName}`, {
-                cardName: freshAttackerCard.card.name,
-                targetName: targetName,
-                value: getAttack(freshAttackerCard.card)
-              });
-            }
-
-            // Clear targeting state - attack completed
-            targetingStore.cancelTargeting();
-
-            // Update game state
-            set({
-              gameState: newState,
-              attackingCard: null,
-              selectedCard: null
-            });
-          } else {
-            // Attack failed - clear targeting
-            targetingStore.cancelTargeting();
-            set({ attackingCard: null });
-          }
-        } catch (err) {
-          debug.error('Error in attack setTimeout callback:', err);
-          targetingStore.cancelTargeting();
-          set({ attackingCard: null, selectedCard: null });
-        } finally {
-          isAttackProcessing = false;
-          if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
+      // If the state changed, it means the attack was successful
+      if (newState !== gameState) {
+        // Play sound effect
+        if (audioStore && typeof audioStore.playSoundEffect === 'function') {
+          audioStore.playSoundEffect('attack');
         }
-      }, impactDelay);
 
+        // Emit combat events for subscribers (PokerCombatStore, animations, sound, etc.)
+        const damage = getAttack(attackerCard.card);
+        const targetMinion = gameState.players.opponent.battlefield.find(c => c.instanceId === defenderId);
+        const counterDamage = targetMinion ? getAttack(targetMinion.card) : 0;
+        const isHeroTarget = !defenderId || defenderId === 'opponent-hero';
+
+        CombatEventBus.emitImpactPhase({
+          attackerId: attackerId,
+          targetId: defenderId || 'opponent-hero',
+          damageToTarget: damage,
+          damageToAttacker: isHeroTarget ? 0 : counterDamage
+        });
+
+        CombatEventBus.emitDamageResolved({
+          sourceId: attackerId,
+          sourceType: 'minion',
+          targetId: defenderId || 'opponent-hero',
+          targetType: isHeroTarget ? 'hero' : 'minion',
+          actualDamage: damage,
+          damageSource: 'minion_attack',
+          attackerOwner: 'player',
+          defenderOwner: 'opponent',
+          targetHealthBefore: 0,
+          targetHealthAfter: 0,
+          targetDied: false,
+          counterDamage: isHeroTarget ? undefined : counterDamage
+        });
+
+        // Log attack to saga feed
+        const targetName = defenderId === 'opponent-hero' || !defenderId
+          ? 'enemy hero'
+          : gameState.players.opponent.battlefield.find(c => c.instanceId === defenderId)?.card.name || 'enemy minion';
+
+        logActivity('attack', 'player', `${attackerCard.card.name} attacked ${targetName}`, {
+          cardName: attackerCard.card.name,
+          targetName: targetName,
+          value: getAttack(attackerCard.card)
+        });
+
+        // Clear targeting state - attack completed
+        targetingStore.cancelTargeting();
+
+        // Update game state
+        set({
+          gameState: newState,
+          attackingCard: null,
+          selectedCard: null
+        });
+      } else {
+        // Attack failed - clear targeting
+        targetingStore.cancelTargeting();
+        set({ attackingCard: null });
+      }
     } catch (error) {
       debug.error('Error processing attack:', error);
+      targetingStore.cancelTargeting();
+      set({ attackingCard: null, selectedCard: null });
+    } finally {
       isAttackProcessing = false;
       if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
-      // Clear targeting on error
-      targetingStore.cancelTargeting();
     }
   },
   
@@ -681,23 +601,9 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
 
   selectDiscoveryOption: (card: CardData | null) => {
     const { gameState } = get();
-    if (!gameState.discovery || !gameState.discovery.active) return;
-    
-    debug.log(`[GameStore] Selecting discovery option: ${card?.name || 'Skip'}`);
-    
-    // Execute the callback stored in discovery state
-    if (!gameState.discovery.callback) return;
-    const newState = gameState.discovery.callback(card);
-    
-    // Ensure discovery is deactivated in the new state
+    const newState = useDiscoveryStore.getState().selectDiscoveryOption(gameState, card);
     if (newState) {
-      newState.discovery = {
-        ...newState.discovery,
-        active: false,
-        options: []
-      };
       set({ gameState: newState });
-      
       setTimeout(() => {
         debug.log('[GameStore] Discovery complete, granting deferred poker hand rewards');
         get().grantPokerHandRewards();
@@ -769,71 +675,22 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   // Toggle a card selection during mulligan phase
   toggleMulliganCard: (cardId: string) => {
     const { gameState } = get();
-    
-    try {
-      // Only process during mulligan phase
-      if (gameState.gamePhase !== 'mulligan' || !gameState.mulligan?.active) {
-        throw new Error('Not in mulligan phase');
-      }
-      
-      const newState = toggleCardSelection(gameState, cardId);
-      set({ gameState: newState });
-      debug.log(`Toggled mulligan selection for card ${cardId}`);
-    } catch (error) {
-      debug.error('Error during mulligan selection:', error);
-    }
+    const newState = useMulliganStore.getState().toggleMulliganCard(gameState, cardId);
+    if (newState) set({ gameState: newState });
   },
-  
+
   // Confirm mulligan selections and replace selected cards
   confirmMulligan: () => {
     const { gameState } = get();
-    const audioStore = useAudio.getState();
-    
-    try {
-      // Only process during mulligan phase
-      if (gameState.gamePhase !== 'mulligan' || !gameState.mulligan?.active) {
-        throw new Error('Not in mulligan phase');
-      }
-      
-      const newState = confirmMulligan(gameState);
-      
-      // Play success sound effect
-      if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-        audioStore.playSoundEffect('battlecry');
-      }
-      
-      set({ gameState: newState });
-      debug.log('Mulligan confirmed, replacing selected cards');
-      // Note: RagnarokCombatArena watches mulligan.active state directly for poker integration
-    } catch (error) {
-      debug.error('Error confirming mulligan:', error);
-    }
+    const newState = useMulliganStore.getState().confirmMulligan(gameState);
+    if (newState) set({ gameState: newState });
   },
-  
+
   // Skip mulligan and keep all cards
   skipMulligan: () => {
     const { gameState } = get();
-    const audioStore = useAudio.getState();
-    
-    try {
-      // Only process during mulligan phase
-      if (gameState.gamePhase !== 'mulligan' || !gameState.mulligan?.active) {
-        throw new Error('Not in mulligan phase');
-      }
-      
-      const newState = skipMulligan(gameState);
-      
-      // Play success sound effect
-      if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-        audioStore.playSoundEffect('battlecry');
-      }
-      
-      set({ gameState: newState });
-      debug.log('Mulligan skipped, keeping all cards');
-      // Note: RagnarokCombatArena watches mulligan.active state directly for poker integration
-    } catch (error) {
-      debug.error('Error skipping mulligan:', error);
-    }
+    const newState = useMulliganStore.getState().skipMulligan(gameState);
+    if (newState) set({ gameState: newState });
   },
   
   // Use hero power on a target (or no target for some powers like Armor Up)
@@ -912,31 +769,14 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       
       // Success notification
       showStatus(`Used Hero Power: ${player.heroPower.name}`, 'success');
-      
-      // Show visual feedback - we'll create a temporary div for the effect
-      const heroPowerEffect = document.createElement('div');
-      heroPowerEffect.className = 'fixed inset-0 pointer-events-none z-50 flex items-center justify-center';
-      const heroEmoji = (() => {
-        switch(heroClass) {
-          case 'mage': return '🔥';
-          case 'warrior': return '🛡️';
-          case 'paladin': return '👑';
-          case 'hunter': return '🏹';
-          default: return '⚡';
-        }
-      })();
-      heroPowerEffect.innerHTML = `
-        <div class="w-32 h-32 flex items-center justify-center rounded-full bg-purple-600 bg-opacity-30 animate-pulse">
-          <div class="text-4xl">${heroEmoji}</div>
-        </div>
-      `;
-      document.body.appendChild(heroPowerEffect);
-      
-      // Remove the effect after animation
-      setTimeout(() => {
-        document.body.removeChild(heroPowerEffect);
-      }, 1000);
-      
+
+      // Emit hero power effect event — rendering layer handles the visual
+      GameEventBus.emitAnimationRequest({
+        animationType: 'hero_power_effect',
+        sourceId: 'player',
+        params: { heroClass, effectType: player.heroPower.name }
+      });
+
       debug.log(`Hero power ${player.heroPower.name} used successfully`);
     } catch (error) {
       debug.error('Error using hero power:', error);
@@ -945,121 +785,21 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   
   grantPokerHandRewards: () => {
     const { gameState } = get();
-    
+    const rewardStore = usePokerRewardStore.getState();
+
     if (gameState?.mulligan?.active) {
       debug.log('[PokerRewards] Blocked: card game mulligan still active');
       return;
     }
-    
-    if (gameState?.discovery?.active) {
-      if (pokerRewardRetries >= MAX_POKER_REWARD_RETRIES) {
-        debug.error('[PokerRewards] Max retries reached while waiting for discovery — granting anyway');
-        pokerRewardRetries = 0;
-      } else {
-        pokerRewardRetries++;
-        debug.combat(`[PokerRewards] Deferred: discovery active, retry ${pokerRewardRetries}/${MAX_POKER_REWARD_RETRIES}`);
-        setTimeout(() => get().grantPokerHandRewards(), 500);
-        return;
-      }
-    } else {
-      pokerRewardRetries = 0;
-    }
-    
-    try {
-      debug.log('[PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal');
-      
-      const player = gameState.players.player;
-      const opponent = gameState.players.opponent;
-      
-      const MAX_MANA = 10;
-      
-      // Draw a card for player from deck to hand
-      let newPlayerHand = [...player.hand];
-      let newPlayerDeck = [...player.deck];
-      
-      if (newPlayerDeck.length > 0 && newPlayerHand.length < MAX_HAND_SIZE) {
-        const drawnCardData = newPlayerDeck.pop()!;
-        const cardInstance = createCardInstance(drawnCardData);
-        newPlayerHand.push(cardInstance);
-        debug.log(`[PokerRewards] Player drew card: ${cardInstance.card.name}`);
-      }
-      
-      // Draw a card for opponent from deck to hand
-      let newOpponentHand = [...opponent.hand];
-      let newOpponentDeck = [...opponent.deck];
-      
-      if (newOpponentDeck.length > 0 && newOpponentHand.length < MAX_HAND_SIZE) {
-        const drawnCardData = newOpponentDeck.pop()!;
-        const cardInstance = createCardInstance(drawnCardData);
-        newOpponentHand.push(cardInstance);
-        debug.log(`[PokerRewards] Opponent drew card: ${cardInstance.card.name}`);
-      }
-      
-      // Grant +1 mana crystal to both players (cap at 10)
-      // RESPECT OVERLOAD: Available mana = max - overloaded
-      // New max mana, capped at 10
-      const newPlayerMax = Math.min(player.mana.max + 1, MAX_MANA);
-      const newOpponentMax = Math.min(opponent.mana.max + 1, MAX_MANA);
-      
-      // Preserve overload values and calculate available mana correctly
-      const playerOverloaded = player.mana.overloaded || 0;
-      const opponentOverloaded = opponent.mana.overloaded || 0;
-      
-      const newPlayerMana = {
-        ...player.mana,
-        max: newPlayerMax,
-        // Refresh mana but respect overloaded crystals
-        current: Math.max(0, newPlayerMax - playerOverloaded),
-        // Preserve overload fields
-        overloaded: playerOverloaded,
-        pendingOverload: player.mana.pendingOverload || 0
-      };
-      
-      const newOpponentMana = {
-        ...opponent.mana,
-        max: newOpponentMax,
-        // Refresh mana but respect overloaded crystals
-        current: Math.max(0, newOpponentMax - opponentOverloaded),
-        // Preserve overload fields
-        overloaded: opponentOverloaded,
-        pendingOverload: opponent.mana.pendingOverload || 0
-      };
-      
-      debug.log(`[PokerRewards] Player mana: ${player.mana.max} → ${newPlayerMana.max} (${newPlayerMana.current} available, ${playerOverloaded} overloaded)`);
-      debug.log(`[PokerRewards] Opponent mana: ${opponent.mana.max} → ${newOpponentMana.max} (${newOpponentMana.current} available, ${opponentOverloaded} overloaded)`);
-      
-      const clearSummoningSickness = (battlefield: typeof player.battlefield) =>
-        battlefield.map(m => m.isSummoningSick
-          ? { ...m, isSummoningSick: false, canAttack: !m.isFrozen, attacksPerformed: 0 }
-          : { ...m, attacksPerformed: 0 }
-        );
 
-      set({
-        gameState: {
-          ...gameState,
-          players: {
-            ...gameState.players,
-            player: {
-              ...player,
-              hand: newPlayerHand,
-              deck: newPlayerDeck,
-              mana: newPlayerMana,
-              battlefield: clearSummoningSickness(player.battlefield)
-            },
-            opponent: {
-              ...opponent,
-              hand: newOpponentHand,
-              deck: newOpponentDeck,
-              mana: newOpponentMana,
-              battlefield: clearSummoningSickness(opponent.battlefield)
-            }
-          }
-        }
-      });
-      
-      debug.log(`[PokerRewards] Card draw and mana grant complete`);
-    } catch (error) {
-      debug.error('[PokerRewards] Error granting rewards:', error);
+    if (rewardStore.shouldDeferForDiscovery(gameState)) {
+      setTimeout(() => get().grantPokerHandRewards(), 500);
+      return;
+    }
+
+    const newState = rewardStore.grantPokerHandRewards(gameState);
+    if (newState) {
+      set({ gameState: newState });
     }
   },
 
@@ -1097,8 +837,6 @@ export function initGameStoreSubscriptions() {
 
 		logBattlefieldChange('player', prevPlayerCards, currPlayerCards, stack);
 		logBattlefieldChange('opponent', prevOpponentCards, currOpponentCards, stack);
-
-		prevBattlefieldSnapshot = { player: currPlayerCards, opponent: currOpponentCards };
 	}));
 
 	_gameStoreUnsubs.push(useGameStore.subscribe((state, _prevState) => {
@@ -1148,3 +886,12 @@ export function disposeGameStoreSubscriptions() {
 	if (autoEndTurnTimer) { clearTimeout(autoEndTurnTimer); autoEndTurnTimer = null; }
 	if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
 }
+
+// Zustand slice selectors — subscribe to specific state slices to avoid excess re-renders
+export const usePlayerHand = () => useGameStore(s => s.gameState?.players?.player?.hand);
+export const usePlayerBattlefield = () => useGameStore(s => s.gameState?.players?.player?.battlefield);
+export const useOpponentBattlefield = () => useGameStore(s => s.gameState?.players?.opponent?.battlefield);
+export const useGamePhase = () => useGameStore(s => s.gameState?.gamePhase);
+export const useCurrentTurn = () => useGameStore(s => s.gameState?.currentTurn);
+export const usePlayerMana = () => useGameStore(s => s.gameState?.players?.player?.mana);
+export const usePlayerHeroHealth = () => useGameStore(s => s.gameState?.players?.player?.heroHealth);

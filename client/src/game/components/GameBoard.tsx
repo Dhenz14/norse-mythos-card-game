@@ -57,9 +57,11 @@ import { emitBattlecryTriggered, emitDeathrattleTriggered } from '../actions/gam
 import { debug } from '../config/debugConfig';
 import { GameStatusBanner } from './ui/GameStatusBanner';
 import TutorialOverlay from './tutorial/TutorialOverlay';
-// Ultimate CardWithDrag system handles all interactions now
-
-// CardWithDrag is now the ONLY card interaction system
+import { useCardPositioning } from '../hooks/useCardPositioning';
+import { useTargetingArrows } from '../hooks/useTargetingArrows';
+import { useCardDetailModal } from '../hooks/useCardDetailModal';
+import { useAttackVisualization } from '../hooks/useAttackVisualization';
+import { useGameAnimationEffects } from '../hooks/useGameAnimationEffects';
 
 export const GameBoard: React.FC<{}> = () => {
   const gameState = useGameStore(state => state.gameState);
@@ -76,57 +78,47 @@ export const GameBoard: React.FC<{}> = () => {
   const selectCard = useGameStore(state => state.selectCard);
   const selectDiscoveryOption = useGameStore(state => state.selectDiscoveryOption);
   
-  // Mouse position tracking for targeting arrow
-  const [mousePosition, setMousePosition] = useState<Position>({ x: 0, y: 0 });
-  const [showTargetingArrow, setShowTargetingArrow] = useState(false);
-  const [arrowStartPosition, setArrowStartPosition] = useState<Position>({ x: 0, y: 0 });
-  const [validTargets, setValidTargets] = useState<string[]>([]);
-  
   // Reference to the game container for effects like screen shake and spell flashes
   const gameContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // Reference to the battlefield container for card drop validation
   const battlefieldRef = useRef<HTMLDivElement>(null);
-  
-  // State for card detail view
-  const [detailCard, setDetailCard] = useState<CardInstance | CardData | null>(null);
 
-  // State for click-to-play position selection (positional cards like magnetic/cleave/buff_adjacent)
-  const [pendingPositionalCard, setPendingPositionalCard] = useState<CardInstance | null>(null);
-  
-  // Track card positions for attack visualization
-  const [attackCardPositions, setAttackCardPositions] = useState<Record<string, Position>>({});
-  
-  // Function to get the center of the game board for attack visualization
-  const getBoardCenter = (): Position => {
-    if (battlefieldRef.current) {
-      const rect = battlefieldRef.current.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-      };
-    }
-    return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-  };
-  
-  // Function to register a card's position for attack visualization
-  const registerAttackCardPosition = (cardId: string, position: Position) => {
-    setAttackCardPositions(prev => ({ ...prev, [cardId]: position }));
-  };
-  
-  // Function to get all card positions for the attack indicator
-  const getCardPositionsMap = useCallback((): Record<string, Position> => {
-    return attackCardPositions;
-  }, [attackCardPositions]);
-  
-  // State for animation enhancements
-  const [activeLegendaryCard, setActiveLegendaryCard] = useState<{ card: CardData, position: Position } | null>(null);
-  const [activeEnvironmentalEffect, setActiveEnvironmentalEffect] = useState<{ 
-    card: CardData, 
-    duration: number, 
-    intensity: 'low' | 'medium' | 'high' 
-  } | null>(null);
-  
+  // Extracted hooks
+  const {
+    mousePosition,
+    showTargetingArrow,
+    setShowTargetingArrow,
+    arrowStartPosition,
+    setArrowStartPosition,
+    validTargets,
+    setValidTargets
+  } = useTargetingArrows();
+
+  const { detailCard, handleViewCardDetails, handleCloseCardDetails } = useCardDetailModal();
+
+  const {
+    pendingPositionalCard,
+    setPendingPositionalCard,
+    handlePositionSelect,
+    cancelPositionSelection
+  } = useCardPositioning(playCard, gameState.currentTurn);
+
+  const {
+    attackCardPositions,
+    getBoardCenter,
+    registerAttackCardPosition,
+    getCardPositionsMap,
+    clearPositions
+  } = useAttackVisualization(battlefieldRef);
+
+  const {
+    activeLegendaryCard,
+    setActiveLegendaryCard,
+    activeEnvironmentalEffect,
+    setActiveEnvironmentalEffect
+  } = useGameAnimationEffects();
+
   // Reference to track turn changes for turn transition
   const lastTurnRef = useRef<string | null>(null);
 
@@ -144,18 +136,6 @@ export const GameBoard: React.FC<{}> = () => {
   
   const { playSoundEffect } = useAudio();
   const { showNotification } = useGameNotifications();
-  
-  // Handle viewing card details
-  const handleViewCardDetails = useCallback((card: CardInstance | CardData) => {
-    setDetailCard(card);
-    // Play a sound effect for user feedback
-    playSoundEffect('card_hover');
-  }, [playSoundEffect]);
-  
-  // Handle closing card details view
-  const handleCloseCardDetails = useCallback(() => {
-    setDetailCard(null);
-  }, []);
   
   // Convenience functions for common sound effects with enhanced gameplay feedback
   const playHit = () => {
@@ -217,60 +197,6 @@ export const GameBoard: React.FC<{}> = () => {
 
   useEventAnimationBridge();
 
-  // Mouse position tracking for targeting
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
-  
-  // Handle right-click to cancel targeting (adding industry standard behavior)
-  useEffect(() => {
-    const handleRightClick = (e: MouseEvent) => {
-      // Cancel targeting when in spell target mode or battlecry target mode
-      const hasSpellTargeting = selectedCard && isSpell(selectedCard.card) && selectedCard.card.spellEffect?.requiresTarget;
-      const hasBattlecryTargeting = selectedCard && isMinion(selectedCard.card) && selectedCard.card.battlecry?.requiresTarget;
-      
-      if ((showTargetingArrow && selectedCard) || hasSpellTargeting || hasBattlecryTargeting) {
-        
-        // Prevent default context menu
-        e.preventDefault();
-        
-        debug.log('[TARGETING] Right-click detected, cancelling targeting mode');
-        
-        // Clear targeting state
-        selectCard(null);
-        setShowTargetingArrow(false);
-        setValidTargets([]);
-        
-        // Play a cancel sound (using button_click as fallback since 'cancel' is not in SoundEffectType)
-        playSoundEffect('button_click');
-        
-        // Show a notification to indicate targeting was cancelled
-        showNotification({
-          title: 'Targeting Cancelled',
-          description: 'Spell targeting has been cancelled',
-          type: 'info',
-          duration: 1500
-        });
-      }
-    };
-    
-    // Add event listener for right-click (contextmenu)
-    document.addEventListener('contextmenu', handleRightClick);
-    
-    // Cleanup on unmount
-    return () => {
-      document.removeEventListener('contextmenu', handleRightClick);
-    };
-  }, [showTargetingArrow, selectedCard, selectCard, playSoundEffect, showNotification]);
-
   useEffect(() => {
     const handleCardPlayEvent = (e: CustomEvent) => {
       const { instanceId, position } = e.detail;
@@ -293,103 +219,6 @@ export const GameBoard: React.FC<{}> = () => {
       document.removeEventListener('ragnarok-card-play', handleCardPlayEvent as EventListener);
     };
   }, [gameState.players, playCard, playSoundEffect]);
-
-  // Handle click anywhere to cancel targeting
-  useEffect(() => {
-    const handleDocumentClick = (e: MouseEvent) => {
-      // Only do this if we're in targeting mode
-      if (showTargetingArrow && selectedCard) {
-        debug.log('[TARGETING] Document click detected, checking if we should cancel targeting');
-        
-        // We should NOT cancel targeting when:
-        // 1. Clicking on a card (these are handled by their own click handlers)
-        // 2. Clicking on the selected card itself
-        // 3. Clicking on any valid target elements
-        // 4. Clicking on the game board elements that might contain our targets
-        
-        // Check if click was on a card element (more comprehensive selectors)
-        const clickedElement = e.target as Element;
-        const isClickOnCard = clickedElement?.closest('.card, .minion, .hero, .player-minion, .opponent-minion, .player-hero, .opponent-hero, .target-highlight');
-        
-        // Also check if click was on the targeting arrow or highlight or any battlefield element
-        const isClickOnTargetingUI = clickedElement?.closest('.targeting-arrow, .target-highlight, .battlefield, .player-battlefield, .opponent-battlefield');
-        
-        // Most important - check if the clicked element has a data-card-id attribute that matches a valid target
-        const cardElement = clickedElement?.closest('[data-card-id]');
-        const clickedCardId = cardElement?.getAttribute('data-card-id');
-        const isValidTargetCard = clickedCardId && validTargets.includes(clickedCardId);
-        
-        // Log more detailed information for debugging
-        if (isClickOnCard) {
-          debug.log('[TARGETING] Click was detected on a card element:', clickedElement?.className);
-          if (clickedCardId) {
-            debug.log('[TARGETING] Clicked card ID:', clickedCardId, 'Valid target?', isValidTargetCard);
-          }
-        }
-        if (isClickOnTargetingUI) {
-          debug.log('[TARGETING] Click was detected on targeting UI or battlefield:', clickedElement?.className);
-        }
-        
-        // If the click is on a valid target, UI element, or any card-like element, don't cancel
-        if (isClickOnCard || isClickOnTargetingUI || isValidTargetCard) {
-          debug.log('[TARGETING] Click was on a card, targeting UI, or battlefield - not canceling targeting');
-          return;
-        }
-        
-        // If we reach here, the click was outside valid targets
-        debug.log('[TARGETING] Click was outside valid targets, canceling targeting');
-        setShowTargetingArrow(false);
-        selectCard(null);
-        
-        // Show notification to the user
-        showNotification({
-          title: `❌ Targeting Canceled`,
-          description: `Spell targeting has been canceled.`,
-          type: 'info',
-          duration: 2000
-        });
-      }
-    };
-    
-    // Add the event listener
-    document.addEventListener('click', handleDocumentClick);
-    
-    // Clean up the event listener
-    return () => {
-      document.removeEventListener('click', handleDocumentClick);
-    };
-  }, [showTargetingArrow, selectedCard, selectCard, showNotification, validTargets]);
-
-  // Reset targeting UI when selected card changes
-  useEffect(() => {
-    if (!selectedCard) {
-      setShowTargetingArrow(false);
-      setValidTargets([]);
-    }
-  }, [selectedCard]);
-
-  // Handle position selection for positional cards (click-to-play flow)
-  const handlePositionSelect = useCallback((insertionIndex: number) => {
-    if (!pendingPositionalCard) return;
-    const card = pendingPositionalCard;
-    setPendingPositionalCard(null);
-    playCard(card.instanceId, undefined, undefined, insertionIndex);
-    playSoundEffect('card_play');
-  }, [pendingPositionalCard, playCard, playSoundEffect]);
-
-  // Cancel position selection on Escape or when turn ends
-  useEffect(() => {
-    if (!pendingPositionalCard) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setPendingPositionalCard(null);
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [pendingPositionalCard]);
-
-  useEffect(() => {
-    if (currentTurn !== 'player') setPendingPositionalCard(null);
-  }, [currentTurn]);
 
   // AI Action Manager to control AI turn spacing and animations
   // Important note: We don't use the AI Action Manager for actual turns,

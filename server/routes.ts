@@ -55,8 +55,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/treasury', treasuryRoutes);
 
   // Start the server-side chain indexer (polls Hive RPC for ragnarok-cards ops)
-  const { startIndexer } = await import("./services/chainIndexer");
-  startIndexer();
+  if (process.env.ENABLE_CHAIN_INDEXER !== 'false') {
+    const { startIndexer } = await import("./services/chainIndexer");
+    startIndexer();
+  } else {
+    console.log('[Server] Chain indexer disabled (ENABLE_CHAIN_INDEXER=false)');
+  }
 
   const httpServer = createServer(app);
 

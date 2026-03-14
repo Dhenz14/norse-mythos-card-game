@@ -60,6 +60,12 @@ import { GameLog } from '../components/GameLog';
 import { useGameLogIntegration } from '../hooks/useGameLogIntegration';
 import { useEventAnimationBridge } from '../hooks/useEventAnimationBridge';
 import { useKingPassiveEventStore } from '../stores/kingPassiveEventStore';
+import { useDamageAnimations } from './hooks/useDamageAnimations';
+import type { HealthSnapshot } from './hooks/useDamageAnimations';
+import { usePokerCardClickHandlers } from './hooks/usePokerCardClickHandlers';
+import { usePokerKeyboardShortcuts } from './hooks/usePokerKeyboardShortcuts';
+import { useRealmAnnouncement } from './hooks/useRealmAnnouncement';
+import { useHeroHealthEffects } from './hooks/useHeroHealthEffects';
 
 const SwordIcon = () => (
 	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -92,24 +98,7 @@ interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
 }
 
-interface DamageAnimation {
-  id: string;
-  damage: number;
-  targetId: string;
-  x: number;
-  y: number;
-  timestamp: number;
-  isHeal?: boolean;
-}
-
-interface HealthSnapshot {
-  playerHeroHealth: number;
-  playerHeroArmor: number;
-  opponentHeroHealth: number;
-  opponentHeroArmor: number;
-  playerMinions: Map<string, number>;
-  opponentMinions: Map<string, number>;
-}
+// DamageAnimation and HealthSnapshot types imported from hooks/useDamageAnimations
 
 // ========================================
 // UNIFIED COMBAT ARENA - Merges PokerPanel + BattlefieldPanel
@@ -183,16 +172,11 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   
   // Game state for battlefield — use individual selectors to avoid unnecessary re-renders
   const gameState = useGameStore(s => s.gameState);
-  const playCard = useGameStore(s => s.playCard);
-  const rawAttackingCard = useGameStore(s => s.attackingCard);
-  const selectAttacker = useGameStore(s => s.selectAttacker);
-  const attackWithCard = useGameStore(s => s.attackWithCard);
   const autoAttackAll = useGameStore(s => s.autoAttackAll);
-  const selectedCard = useGameStore(s => s.selectedCard);
-  const selectCard = useGameStore(s => s.selectCard);
-  
+  const selectAttacker = useGameStore(s => s.selectAttacker);
+
   const isPlayerTurn = gameState?.currentTurn === 'player';
-  
+
   const [communityCardsRevealed, setCommunityCardsRevealed] = useState(false);
   const [showGearPanel, setShowGearPanel] = useState(false);
 
@@ -214,69 +198,22 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   // Refs for battlefield
   const internalBattlefieldRef = useRef<HTMLDivElement>(null);
   const battlefieldRef = externalBattlefieldRef || internalBattlefieldRef;
-  const [damageAnimations, setDamageAnimations] = useState<DamageAnimation[]>([]);
-  const [shakingTargets, setShakingTargets] = useState<Set<string>>(new Set());
-  const prevHealthRef = useRef<HealthSnapshot | null>(null);
   const minionPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const prevMinionPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
-  
-  // Keyboard shortcuts refs
-  const betAmountRef = useRef(betAmount);
-  const onActionRef = useRef(onAction);
-  betAmountRef.current = betAmount;
-  onActionRef.current = onAction;
-  
-  // Poker keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || 
-          e.target instanceof HTMLTextAreaElement ||
-          (e.target as HTMLElement)?.isContentEditable) return;
-      
-      const currentState = getPokerCombatAdapterState().combatState;
-      if (!currentState || currentState.player.isReady || currentState.phase === CombatPhase.MULLIGAN) return;
-      
-      const permissions = getActionPermissions(currentState, true);
-      if (!permissions) return;
-      
-      const key = e.key.toLowerCase();
-      const currentBet = betAmountRef.current;
-      const action = (a: CombatAction, hp?: number) => {
-        setCommunityCardsRevealed(true);
-        onActionRef.current(a, hp);
-      };
-      
-      switch (key) {
-        case 'b':
-          if (permissions.canBet && !permissions.hasBetToCall) {
-            action(CombatAction.ATTACK, currentBet);
-          } else if (permissions.canRaise && permissions.hasBetToCall) {
-            action(CombatAction.COUNTER_ATTACK, currentBet);
-          }
-          break;
-        case 'c':
-          if (permissions.canCall) {
-            action(CombatAction.ENGAGE);
-          } else if (permissions.canCheck) {
-            action(CombatAction.DEFEND);
-          }
-          break;
-        case 'f':
-          if (permissions.canFold) {
-            action(CombatAction.BRACE);
-          }
-          break;
-        case 'k':
-          if (permissions.canCheck) {
-            action(CombatAction.DEFEND);
-          }
-          break;
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+
+  // Extracted hooks
+  const {
+    damageAnimations,
+    shakingTargets,
+    screenShakeClass,
+    prevHealthRef,
+    triggerScreenShake,
+    triggerDamageAnimation,
+    removeDamageAnimation,
+    addShakingTarget,
+  } = useDamageAnimations();
+
+  usePokerKeyboardShortcuts({ betAmount, onAction, setCommunityCardsRevealed });
   
   // Battlefield card data
   const playerBattlefield = useMemo(() => {
@@ -331,13 +268,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     };
   }, [opponentPet, combatState?.opponent?.heroArmor]);
 
+  const rawAttackingCard = useGameStore(s => s.attackingCard);
   const attackingCard = useMemo(() => {
     return rawAttackingCard ? adaptCardInstance(rawAttackingCard as any) : null;
   }, [rawAttackingCard]);
-  
-  // Screen shake state
-  const [screenShakeClass, setScreenShakeClass] = useState('');
-  const screenShakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Turn transition flash
   const [turnFlash, setTurnFlash] = useState<'player' | 'opponent' | null>(null);
@@ -351,40 +285,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     }
     return () => { if (id !== undefined) clearTimeout(id); };
   }, [isPlayerTurn]);
-
-  const triggerScreenShake = useCallback((damage: number) => {
-    if (damage < 5) return;
-    const shakeClass = damage >= 8 ? 'screen-shake-strong' : 'screen-shake-mild';
-    setScreenShakeClass(shakeClass);
-    if (screenShakeTimeoutRef.current) clearTimeout(screenShakeTimeoutRef.current);
-    screenShakeTimeoutRef.current = setTimeout(() => setScreenShakeClass(''), 350);
-  }, []);
-
-  // Damage animation handlers
-  const triggerDamageAnimation = useCallback((targetId: string, damage: number, x: number, y: number, isHeal = false) => {
-    const animId = `dmg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    setDamageAnimations(prev => [...prev, { id: animId, damage, targetId, x, y, timestamp: Date.now(), isHeal }]);
-    if (!isHeal) {
-      setShakingTargets(prev => new Set(prev).add(targetId));
-      setTimeout(() => {
-        setShakingTargets(prev => {
-          const next = new Set(prev);
-          next.delete(targetId);
-          return next;
-        });
-      }, 300);
-      triggerScreenShake(damage);
-      if (targetId === 'player-hero' || targetId === 'opponent-hero') {
-        playSound('damage');
-      }
-    } else if (targetId === 'player-hero' || targetId === 'opponent-hero') {
-      playSound('heal');
-    }
-  }, [triggerScreenShake]);
-
-  const removeDamageAnimation = useCallback((id: string) => {
-    setDamageAnimations(prev => prev.filter(a => a.id !== id));
-  }, []);
 
   // Health change detection — triggers floating damage/heal numbers
   useEffect(() => {
@@ -434,7 +334,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         return null;
       };
 
-      // Player hero damage/heal
       const playerDiff = prev.playerHeroHealth - currentSnapshot.playerHeroHealth;
       if (playerDiff > 0) {
         const pos = getHeroPos('.player-hero');
@@ -444,7 +343,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         triggerDamageAnimation('player-hero', Math.abs(playerDiff), pos.x, pos.y, true);
       }
 
-      // Opponent hero damage/heal
       const opponentDiff = prev.opponentHeroHealth - currentSnapshot.opponentHeroHealth;
       if (opponentDiff > 0) {
         const pos = getHeroPos('.opponent-hero');
@@ -454,7 +352,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         triggerDamageAnimation('opponent-hero', Math.abs(opponentDiff), pos.x, pos.y, true);
       }
 
-      // Minion damage detection
       for (const [id, prevHp] of prev.playerMinions) {
         const currHp = currentSnapshot.playerMinions.get(id);
         if (currHp !== undefined && prevHp > currHp) {
@@ -472,206 +369,16 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     }
 
     prevHealthRef.current = currentSnapshot;
-  }, [gameState, triggerDamageAnimation]);
-  
-  // Card click handlers
-  const handlePlayerCardClick = useCallback((card: any) => {
-    if (heroPowerTargeting?.active && executeHeroPowerEffect) {
-      const targetType = heroPowerTargeting.targetType;
-      if (targetType === 'friendly_minion' || targetType === 'friendly_mech' || targetType === 'any_minion' || targetType === 'any') {
-        const norseHero = ALL_NORSE_HEROES[heroPowerTargeting.norseHeroId];
-        if (norseHero) {
-          executeHeroPowerEffect(norseHero, norseHero.heroPower, card);
-        }
-        return;
-      }
-    }
-    
-    if (selectedCard) {
-      const targetType = (selectedCard.card as any)?.spellEffect?.targetType || (selectedCard.card as any)?.battlecry?.targetType;
-      debug.combat('[Battlecry Debug] Player minion clicked while selectedCard set:', {
-        selectedCardName: selectedCard.card?.name,
-        targetType,
-        clickedMinion: card.card?.name
-      });
-      if (targetType === 'friendly_minion' || targetType === 'friendly_mech' || targetType === 'any_minion' || targetType === 'any' || targetType === 'minion' || targetType === 'any_character' || targetType === 'character') {
-        const cardId = selectedCard.instanceId || (selectedCard as any).id;
-        debug.combat('[Battlecry Debug] Playing card with target:', { cardId, targetId: card.instanceId });
-        playCard(cardId, card.instanceId);
-        return;
-      }
-    }
+  }, [gameState, triggerDamageAnimation, prevHealthRef]);
 
-    if (!isPlayerTurn) {
-      debug.combat('[Attack Debug] Not player turn - ignoring click');
-      return;
-    }
-    if (attackingCard) {
-      if (card.instanceId === attackingCard.instanceId) {
-        debug.combat('[Attack Debug] Deselecting attacker:', card.card?.name);
-        selectAttacker(null);
-      } else {
-        debug.combat('[Attack Debug] Already have attacker selected - cannot select another');
-      }
-    } else {
-      // Get fresh card state from gameStore to ensure we have latest canAttack status
-      const freshBattlefield = gameState?.players?.player?.battlefield || [];
-      const freshCard = freshBattlefield.find((c: any) => c.instanceId === card.instanceId);
-      
-      // Use fresh card data if available, otherwise fall back to adapted card
-      const cardToCheck = freshCard || card;
-      
-      debug.combat('[Attack Debug] Checking if card can attack:', {
-        name: card.card?.name,
-        freshCardFound: !!freshCard,
-        canAttackFresh: freshCard?.canAttack,
-        canAttackAdapted: card.canAttack,
-        isSummoningSickFresh: freshCard?.isSummoningSick,
-        isSummoningSickAdapted: card.isSummoningSick,
-        attacksPerformed: cardToCheck.attacksPerformed,
-        isFrozen: cardToCheck.isFrozen
-      });
-      
-      // Check if the card can attack using fresh state
-      const canAttackNow = cardToCheck.canAttack === true && 
-                           !cardToCheck.isSummoningSick && 
-                           !cardToCheck.isFrozen;
-      
-      if (canAttackNow) {
-        debug.combat('[Attack Debug] Selecting attacker:', card.card?.name);
-        selectAttacker(card);
-      } else {
-        // Also try the authoritative check as fallback
-        const cardAsInstance = {
-          ...cardToCheck,
-          card: card.card,
-          instanceId: card.instanceId,
-          isSummoningSick: cardToCheck.isSummoningSick ?? true,
-          canAttack: cardToCheck.canAttack ?? false,
-          attacksPerformed: cardToCheck.attacksPerformed ?? 0,
-          isFrozen: cardToCheck.isFrozen ?? false
-        };
-        
-        const canAttackResult = canCardAttackCheck(cardAsInstance as any, isPlayerTurn, true);
-        
-        if (canAttackResult) {
-          debug.combat('[Attack Debug] Authoritative check passed, selecting attacker:', card.card?.name);
-          selectAttacker(card);
-        } else {
-          debug.combat('[Attack Debug] Card cannot attack - summoning sickness or exhausted');
-          setShakingTargets(prev => new Set(prev).add(card.instanceId));
-          setTimeout(() => setShakingTargets(prev => { const n = new Set(prev); n.delete(card.instanceId); return n; }), 500);
-        }
-      }
-    }
-  }, [isPlayerTurn, attackingCard, selectAttacker, selectedCard, playCard, heroPowerTargeting, executeHeroPowerEffect, gameState?.players?.player?.battlefield]);
-
-  const handleOpponentCardClick = useCallback((card: any) => {
-    if (heroPowerTargeting?.active && executeHeroPowerEffect) {
-      const targetType = heroPowerTargeting.targetType;
-      if (targetType === 'enemy_minion' || targetType === 'any_minion' || targetType === 'any') {
-        const norseHero = ALL_NORSE_HEROES[heroPowerTargeting.norseHeroId];
-        if (norseHero) {
-          executeHeroPowerEffect(norseHero, norseHero.heroPower, card);
-        }
-        return;
-      }
-    }
-    
-    if (selectedCard) {
-      const targetType = (selectedCard.card as any)?.spellEffect?.targetType || (selectedCard.card as any)?.battlecry?.targetType;
-      debug.combat('[Battlecry Debug] Opponent minion clicked while selectedCard set:', {
-        selectedCardName: selectedCard.card?.name,
-        targetType,
-        clickedMinion: card.card?.name
-      });
-      if (targetType === 'enemy_minion' || targetType === 'any_minion' || targetType === 'any' || targetType === 'enemy' || targetType === 'minion' || targetType === 'any_character' || targetType === 'character') {
-        const cardId = selectedCard.instanceId || (selectedCard as any).id;
-        debug.combat('[Battlecry Debug] Playing card with enemy target:', { cardId, targetId: card.instanceId });
-        playCard(cardId, card.instanceId);
-        return;
-      }
-    }
-    
-    if (!isPlayerTurn || !attackingCard) {
-      debug.combat('[Attack Debug] handleOpponentCardClick - no attacker selected or not player turn');
-      return;
-    }
-    debug.combat('[Attack Debug] Attacking', card.card?.name, 'with', attackingCard?.card?.name);
-    attackWithCard(attackingCard.instanceId, card.instanceId);
-  }, [isPlayerTurn, attackingCard, attackWithCard, selectedCard, playCard, heroPowerTargeting, executeHeroPowerEffect]);
-
-  const handleCardPlay = useCallback((card: any, position?: Position) => {
-    debug.combat('[handleCardPlay Debug] Card clicked:', {
-      name: card.card?.name || card.name,
-      type: card.card?.type || card.type,
-      hasBattlecry: !!(card.card?.battlecry || card.battlecry),
-      battlecry: card.card?.battlecry || card.battlecry,
-      keywords: card.card?.keywords || card.keywords,
-      cardStructure: Object.keys(card)
-    });
-    
-    if (!isPlayerTurn) return;
-    const cardId = card.instanceId || card.id;
-    if (!cardId) return;
-    
-    const spellEffect = card.card?.spellEffect;
-    // Check if spell requires individual target selection
-    // "all_" prefixed targetTypes don't need individual targeting (they affect all targets automatically)
-    const targetType = spellEffect?.targetType || '';
-    const isAoE = targetType.startsWith('all_') || targetType === 'all' || targetType === 'none' || targetType === 'self';
-    const needsTarget = spellEffect?.requiresTarget === true || 
-      (!isAoE && spellEffect?.requiresTarget !== false && spellEffect?.targetType && (
-        spellEffect.targetType.includes('minion') ||
-        spellEffect.targetType.includes('character') ||
-        spellEffect.targetType.includes('enemy') ||
-        spellEffect.targetType.includes('friendly') ||
-        spellEffect.targetType === 'any'
-      ));
-    if (card.card?.type === 'spell' && needsTarget) {
-      const playerMinions = gameState?.players?.player?.battlefield || [];
-      const opponentMinions = gameState?.players?.opponent?.battlefield || [];
-      const targetType = spellEffect?.targetType || '';
-      
-      let hasValidTargets = true;
-      if (targetType.includes('friendly_minion') || targetType === 'friendly_minion') {
-        hasValidTargets = playerMinions.length > 0;
-      } else if (targetType.includes('enemy_minion') || targetType === 'enemy_minion') {
-        hasValidTargets = opponentMinions.length > 0;
-      } else if (targetType.includes('any_minion') || targetType === 'any_minion') {
-        hasValidTargets = playerMinions.length > 0 || opponentMinions.length > 0;
-      }
-      
-      if (!hasValidTargets) {
-        const { addAnnouncement } = useUnifiedUIStore.getState();
-        addAnnouncement({
-          type: 'warning',
-          title: 'No Valid Targets',
-          subtitle: `${card.card.name} requires a minion to target`,
-          icon: '⚠️',
-          duration: 2000
-        });
-        return;
-      }
-      
-      selectCard(card);
-      return;
-    }
-    
-    // Check for battlecry requiring target - handle both card.card.battlecry and card.battlecry structures
-    const cardType = card.card?.type || card.type;
-    const battlecry = card.card?.battlecry || card.battlecry;
-    
-    if (cardType === 'minion' && battlecry?.requiresTarget) {
-      debug.combat('[Battlecry Debug] Card requires battlecry target, selecting:', card.card?.name || card.name);
-      debug.combat('[Battlecry Debug] Battlecry details:', battlecry);
-      selectCard(card);
-      return;
-    }
-
-    const useBlood = !!(card as any).payWithBlood;
-    playCard(cardId, undefined, undefined, position?.insertionIndex, useBlood);
-  }, [isPlayerTurn, playCard, selectCard, gameState]);
+  // Card click handlers (extracted to hook)
+  const { handlePlayerCardClick, handleOpponentCardClick, handleCardPlay } = usePokerCardClickHandlers({
+    isPlayerTurn,
+    heroPowerTargeting,
+    executeHeroPowerEffect,
+    addShakingTarget,
+    gameState,
+  });
   
   const basePermissions = useMemo(
     () => getActionPermissions(combatState, true),
@@ -1157,29 +864,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     return () => { resetKingEvents(); };
   }, [resetKingEvents]);
 
-  // Realm selector — drives board skin + ambient particles
-  const activeRealmId = useGameStore(state => state.gameState?.activeRealm?.id);
-  const activeRealmName = useGameStore(state => state.gameState?.activeRealm?.name);
-  const [realmAnnouncement, setRealmAnnouncement] = useState<string | null>(null);
-  const prevRealmRef = useRef<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (activeRealmId && activeRealmId !== prevRealmRef.current) {
-      const isShift = prevRealmRef.current !== undefined;
-      prevRealmRef.current = activeRealmId;
-      if (isShift) {
-        setRealmAnnouncement(activeRealmName || activeRealmId);
-        const timer = setTimeout(() => setRealmAnnouncement(null), 2500);
-        return () => clearTimeout(timer);
-      }
-    } else if (!activeRealmId && prevRealmRef.current) {
-      prevRealmRef.current = undefined;
-    }
-    return undefined;
-  }, [activeRealmId, activeRealmName]);
-
-  // Build realm class for GameViewport
-  const realmClass = activeRealmId ? `realm-${activeRealmId}` : 'realm-midgard';
+  // Realm selector — drives board skin + ambient particles (extracted to hook)
+  const { realmAnnouncement, realmClass, activeRealmId, activeRealmName } = useRealmAnnouncement();
 
   // Prophecy tracker
   const prophecies = useGameStore(state => state.gameState?.prophecies);
@@ -1208,27 +894,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     return p ? (p.heroHealth ?? p.health) : 0;
   });
 
-  // Screen shake in the outer component (RagnarokCombatArena owns the GameViewport)
-  const [outerShakeClass, setOuterShakeClass] = useState('');
-  const outerShakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const prevHeroHealthRef = useRef<{ player: number; opponent: number } | null>(null);
-
-  useEffect(() => {
-    const curr = { player: playerHeroHealth, opponent: opponentHeroHealth };
-    const prev = prevHeroHealthRef.current;
-    if (prev) {
-      const playerDmg = prev.player - curr.player;
-      const opponentDmg = prev.opponent - curr.opponent;
-      const maxDmg = Math.max(playerDmg, opponentDmg);
-      if (maxDmg >= 5) {
-        const cls = maxDmg >= 8 ? 'screen-shake-strong' : 'screen-shake-mild';
-        setOuterShakeClass(cls);
-        if (outerShakeTimeoutRef.current) clearTimeout(outerShakeTimeoutRef.current);
-        outerShakeTimeoutRef.current = setTimeout(() => setOuterShakeClass(''), 350);
-      }
-    }
-    prevHeroHealthRef.current = curr;
-  }, [playerHeroHealth, opponentHeroHealth]);
+  // Screen shake in the outer component (extracted to hook)
+  const { outerShakeClass } = useHeroHealthEffects({ playerHeroHealth, opponentHeroHealth });
 
   // Keyboard shortcuts + right-click cancel for targeting
   useEffect(() => {
