@@ -1,46 +1,16 @@
-import { Router, type Request, type Response, type NextFunction } from 'express';
-import { verifyHiveAuth, isValidHiveUsername, isTimestampFresh } from '../services/hiveAuth';
+import { Router, type Request, type Response } from 'express';
+import { requireHiveHeaderAuth, type HiveAuthenticatedRequest } from '../middleware/hiveAuth';
 import { treasuryCoordinator } from '../services/treasuryCoordinator';
 import type { SigningResponse } from '../../shared/treasuryTypes';
 
 const router = Router();
 
-interface AuthenticatedRequest extends Request {
-	hiveUsername?: string;
-}
-
-async function requireHiveAuth(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
-	const username = req.headers['x-hive-username'] as string;
-	const signature = req.headers['x-hive-signature'] as string;
-	const timestamp = req.headers['x-hive-timestamp'] as string;
-
-	if (!username || !signature || !timestamp) {
-		res.status(401).json({ error: 'Missing authentication headers' });
-		return;
-	}
-
-	if (!isValidHiveUsername(username)) {
-		res.status(401).json({ error: 'Invalid Hive username' });
-		return;
-	}
-
-	const ts = parseInt(timestamp, 10);
-	if (isNaN(ts) || !isTimestampFresh(ts)) {
-		res.status(401).json({ error: 'Timestamp expired or invalid' });
-		return;
-	}
-
-	const message = `${username}:${timestamp}`;
-	const result = await verifyHiveAuth(username, message, signature);
-	if (!result.valid) {
-		res.status(401).json({ error: 'Invalid signature', detail: result.error });
-		return;
-	}
-
-	req.hiveUsername = username;
-	await treasuryCoordinator.heartbeat(username);
-	next();
-}
+const requireHiveAuth = requireHiveHeaderAuth({
+	buildMessage: (_req, username, timestamp) => `${username}:${timestamp}`,
+	onSuccess: async (_req, username) => {
+		await treasuryCoordinator.heartbeat(username);
+	},
+});
 
 router.get('/status', async (_req: Request, res: Response) => {
 	try {
@@ -60,7 +30,7 @@ router.get('/signers', async (_req: Request, res: Response) => {
 	}
 });
 
-router.post('/join', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/join', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const result = await treasuryCoordinator.joinSigner(req.hiveUsername!);
 		if (result.success) {
@@ -73,7 +43,7 @@ router.post('/join', requireHiveAuth, async (req: AuthenticatedRequest, res: Res
 	}
 });
 
-router.post('/leave', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/leave', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const result = await treasuryCoordinator.leaveSigner(req.hiveUsername!);
 		if (result.success) {
@@ -86,7 +56,7 @@ router.post('/leave', requireHiveAuth, async (req: AuthenticatedRequest, res: Re
 	}
 });
 
-router.get('/transactions', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/transactions', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
 		const transactions = await treasuryCoordinator.getRecentTransactions(limit);
@@ -96,7 +66,7 @@ router.get('/transactions', requireHiveAuth, async (req: AuthenticatedRequest, r
 	}
 });
 
-router.get('/transactions/:id', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/transactions/:id', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const tx = await treasuryCoordinator.getTransactionById(req.params.id);
 		if (!tx) {
@@ -109,7 +79,7 @@ router.get('/transactions/:id', requireHiveAuth, async (req: AuthenticatedReques
 	}
 });
 
-router.post('/freeze', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/freeze', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const { reason } = req.body || {};
 		const result = await treasuryCoordinator.freeze(req.hiveUsername!, reason);
@@ -123,7 +93,7 @@ router.post('/freeze', requireHiveAuth, async (req: AuthenticatedRequest, res: R
 	}
 });
 
-router.post('/unfreeze', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/unfreeze', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const result = await treasuryCoordinator.voteUnfreeze(req.hiveUsername!);
 		res.json(result);
@@ -132,7 +102,7 @@ router.post('/unfreeze', requireHiveAuth, async (req: AuthenticatedRequest, res:
 	}
 });
 
-router.post('/transactions/:id/veto', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/transactions/:id/veto', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const result = await treasuryCoordinator.vetoTransaction(req.params.id, req.hiveUsername!);
 		if (result.success) {
@@ -145,7 +115,7 @@ router.post('/transactions/:id/veto', requireHiveAuth, async (req: Authenticated
 	}
 });
 
-router.get('/pending-signing', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/pending-signing', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const requests = treasuryCoordinator.getPendingSigningRequests(req.hiveUsername!);
 		res.json({ requests });
@@ -154,7 +124,7 @@ router.get('/pending-signing', requireHiveAuth, async (req: AuthenticatedRequest
 	}
 });
 
-router.post('/submit-signature', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/submit-signature', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const { txId, nonce, signature, rejected, rejectReason } = req.body;
 		if (!txId || !nonce) {
@@ -180,7 +150,7 @@ router.post('/submit-signature', requireHiveAuth, async (req: AuthenticatedReque
 	}
 });
 
-router.post('/wot/vouch', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/wot/vouch', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const { candidateUsername } = req.body;
 		if (!candidateUsername) {
@@ -198,7 +168,7 @@ router.post('/wot/vouch', requireHiveAuth, async (req: AuthenticatedRequest, res
 	}
 });
 
-router.delete('/wot/vouch', requireHiveAuth, async (req: AuthenticatedRequest, res: Response) => {
+router.delete('/wot/vouch', requireHiveAuth, async (req: HiveAuthenticatedRequest, res: Response) => {
 	try {
 		const { candidateUsername } = req.body;
 		if (!candidateUsername) {

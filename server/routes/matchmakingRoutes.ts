@@ -2,9 +2,16 @@ import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
-import { verifyHiveAuth, isValidHiveUsername, isTimestampFresh } from '../services/hiveAuth';
+import { requireHiveBodyAuthIfUsernamePresent } from '../middleware/hiveAuth';
+import { isValidHiveUsername } from '../services/hiveAuth';
 
 const router = Router();
+
+const requireQueueAuthWhenUsernameProvided = requireHiveBodyAuthIfUsernamePresent({
+	usernameField: 'username',
+	buildMessage: (_req, username, timestamp) => `ragnarok-queue:${username}:${timestamp}`,
+	missingAuthMessage: 'Hive signature required for authenticated matchmaking',
+});
 
 interface QueuedPlayer {
 	peerId: string;
@@ -130,8 +137,8 @@ function findBestEloMatch(newPlayer: QueuedPlayer): QueuedPlayer | null {
 	return matchmakingQueue.splice(bestIdx, 1)[0];
 }
 
-router.post('/queue', async (req: Request, res: Response) => {
-	const { peerId, username, timestamp, signature } = req.body;
+router.post('/queue', requireQueueAuthWhenUsernameProvided, async (req: Request, res: Response) => {
+	const { peerId, username } = req.body;
 
 	if (!peerId || typeof peerId !== 'string') {
 		return res.status(400).json({ success: false, error: 'peerId required' });
@@ -140,18 +147,6 @@ router.post('/queue', async (req: Request, res: Response) => {
 	if (username && typeof username === 'string') {
 		if (!isValidHiveUsername(username)) {
 			return res.status(400).json({ success: false, error: 'Invalid Hive username format' });
-		}
-		if (!signature || !timestamp) {
-			return res.status(401).json({ success: false, error: 'Hive signature required for authenticated matchmaking' });
-		}
-		if (!isTimestampFresh(timestamp)) {
-			return res.status(401).json({ success: false, error: 'Timestamp expired' });
-		}
-		const message = `ragnarok-queue:${username}:${timestamp}`;
-		const authResult = await verifyHiveAuth(username, message, signature);
-		if (!authResult.valid) {
-			const status = authResult.error === 'network_error' ? 503 : 401;
-			return res.status(status).json({ success: false, error: authResult.error === 'network_error' ? 'Auth service unavailable' : 'Invalid Hive signature' });
 		}
 	}
 

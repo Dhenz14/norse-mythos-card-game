@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Tournament, TournamentListItem } from './tournamentTypes';
+import { hiveSync } from '../../data/HiveSync';
 
 interface TournamentState {
 	tournaments: TournamentListItem[];
@@ -54,10 +55,19 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
 
 	register: async (tournamentId, username) => {
 		try {
+			const timestamp = Date.now();
+			const signatureResult = await hiveSync.signMessage(
+				`ragnarok-tournament-register:${username}:${tournamentId}:${timestamp}`,
+				{ username, title: 'Register for tournament' },
+			);
+			if (!signatureResult.success || !signatureResult.signature) {
+				return false;
+			}
+
 			const res = await fetch(`/api/tournaments/${tournamentId}/register`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify({ username, timestamp, signature: signatureResult.signature }),
 			});
 			if (res.ok) {
 				const data = await res.json();
@@ -72,10 +82,19 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
 
 	reportResult: async (tournamentId, matchId, winner) => {
 		try {
+			const timestamp = Date.now();
+			const signatureResult = await hiveSync.signMessage(
+				`ragnarok-tournament-result:${winner}:${tournamentId}:${matchId}:${timestamp}`,
+				{ username: winner, title: 'Report tournament result' },
+			);
+			if (!signatureResult.success || !signatureResult.signature) {
+				return false;
+			}
+
 			const res = await fetch(`/api/tournaments/${tournamentId}/result`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ matchId, winner }),
+				body: JSON.stringify({ matchId, winner, timestamp, signature: signatureResult.signature }),
 			});
 			if (res.ok) {
 				const data = await res.json();
@@ -90,10 +109,19 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
 
 	drop: async (tournamentId, username) => {
 		try {
+			const timestamp = Date.now();
+			const signatureResult = await hiveSync.signMessage(
+				`ragnarok-tournament-drop:${username}:${tournamentId}:${timestamp}`,
+				{ username, title: 'Drop from tournament' },
+			);
+			if (!signatureResult.success || !signatureResult.signature) {
+				return false;
+			}
+
 			const res = await fetch(`/api/tournaments/${tournamentId}/drop`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify({ username, timestamp, signature: signatureResult.signature }),
 			});
 			if (res.ok) {
 				const data = await res.json();

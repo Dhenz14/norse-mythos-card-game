@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useMatchmakingStore } from '../stores/matchmakingStore';
 import { usePeerStore } from '../stores/peerStore';
 import { useHiveDataStore } from '../../data/HiveDataLayer';
+import { hiveSync } from '../../data/HiveSync';
 import { isHiveMode } from '../config/featureFlags';
 import {
 	broadcastQueueJoin,
@@ -69,10 +70,27 @@ export function useMatchmaking() {
 				return;
 			}
 
+			const timestamp = hiveUsername ? Date.now() : undefined;
+			const signatureResult = hiveUsername
+				? await hiveSync.signMessage(
+					`ragnarok-queue:${hiveUsername}:${timestamp}`,
+					{ username: hiveUsername, title: 'Join matchmaking queue' },
+				)
+				: null;
+
+			if (hiveUsername && (!signatureResult?.success || !signatureResult.signature)) {
+				throw new Error(signatureResult?.error || 'Queue signature failed');
+			}
+
 			const response = await fetch(`${API_BASE}/api/matchmaking/queue`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ peerId: myPeerId, username: hiveUsername }),
+				body: JSON.stringify({
+					peerId: myPeerId,
+					username: hiveUsername,
+					timestamp,
+					signature: signatureResult?.signature,
+				}),
 			}).catch(() => {
 				throw new Error('Matchmaking service unavailable. Please use manual match.');
 			});

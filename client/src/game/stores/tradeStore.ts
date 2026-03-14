@@ -69,12 +69,24 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 		if (selectedOfferedCards.length === 0 && offeredDust === 0) return false;
 		set({ loading: true, error: null });
 		try {
+			const timestamp = Date.now();
+			const signatureResult = await hiveSync.signMessage(
+				`ragnarok-trade-create:${fromUser}:${toUser}:${timestamp}`,
+				{ username: fromUser, title: 'Create trade offer' },
+			);
+			if (!signatureResult.success || !signatureResult.signature) {
+				set({ error: signatureResult.error ?? 'Trade signature failed', loading: false });
+				return false;
+			}
+
 			const res = await fetch('/api/trades', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					fromUser,
 					toUser,
+					timestamp,
+					signature: signatureResult.signature,
 					offeredCardIds: selectedOfferedCards,
 					requestedCardIds: selectedRequestedCards,
 					offeredDust,
@@ -97,10 +109,19 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 
 	acceptOffer: async (offerId, username) => {
 		try {
+			const timestamp = Date.now();
+			const signatureResult = await hiveSync.signMessage(
+				`ragnarok-trade-accept:${username}:${offerId}:${timestamp}`,
+				{ username, title: 'Accept trade' },
+			);
+			if (!signatureResult.success || !signatureResult.signature) {
+				return false;
+			}
+
 			const res = await fetch(`/api/trades/${offerId}/accept`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify({ username, timestamp, signature: signatureResult.signature }),
 			});
 			if (res.ok) {
 				const offer = get().offers.find(o => o.id === offerId);
@@ -131,10 +152,19 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 
 	declineOffer: async (offerId, username) => {
 		try {
+			const timestamp = Date.now();
+			const signatureResult = await hiveSync.signMessage(
+				`ragnarok-trade-decline:${username}:${offerId}:${timestamp}`,
+				{ username, title: 'Decline trade' },
+			);
+			if (!signatureResult.success || !signatureResult.signature) {
+				return false;
+			}
+
 			const res = await fetch(`/api/trades/${offerId}/decline`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify({ username, timestamp, signature: signatureResult.signature }),
 			});
 			if (res.ok) {
 				set(s => ({
@@ -150,10 +180,19 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 
 	cancelOffer: async (offerId, username) => {
 		try {
+			const timestamp = Date.now();
+			const signatureResult = await hiveSync.signMessage(
+				`ragnarok-trade-cancel:${username}:${offerId}:${timestamp}`,
+				{ username, title: 'Cancel trade' },
+			);
+			if (!signatureResult.success || !signatureResult.signature) {
+				return false;
+			}
+
 			const res = await fetch(`/api/trades/${offerId}/cancel`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify({ username, timestamp, signature: signatureResult.signature }),
 			});
 			if (res.ok) {
 				set(s => ({

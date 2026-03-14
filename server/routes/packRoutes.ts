@@ -6,12 +6,21 @@
 
 import express, { Request, Response } from 'express';
 import { directDb as _directDb } from '../db';
-import { verifyHiveAuth, isValidHiveUsername, isTimestampFresh } from '../services/hiveAuth';
+import { requireHiveBodyAuth } from '../middleware/hiveAuth';
+import { isValidHiveUsername } from '../services/hiveAuth';
 
 // This file is only imported when DATABASE_URL is set (see server/routes.ts)
 const directDb = _directDb!;
 
 const router = express.Router();
+
+const requirePackOpenAuth = requireHiveBodyAuth({
+	usernameField: 'userId',
+	buildMessage: (req, username, timestamp) =>
+		`ragnarok-pack-open:${username}:${req.body?.packTypeId}:${timestamp}`,
+	missingAuthMessage: 'Hive signature required',
+	invalidSignatureMessage: 'Invalid signature',
+});
 
 // In-memory TTL cache for read-heavy endpoints
 const cache = new Map<string, { data: any; expiry: number }>();
@@ -122,8 +131,8 @@ const WILDCARD_TYPES = ['hero', 'spell', 'minion'];
  * POST /api/packs/open
  * Opens a pack and returns the cards pulled
  */
-router.post('/open', async (req: Request, res: Response) => {
-	const { packTypeId, userId, signature, timestamp } = req.body;
+router.post('/open', requirePackOpenAuth, async (req: Request, res: Response) => {
+	const { packTypeId, userId } = req.body;
 
 	if (!packTypeId || !userId) {
 		return res.status(400).json({
@@ -134,17 +143,6 @@ router.post('/open', async (req: Request, res: Response) => {
 
 	if (!isValidHiveUsername(userId)) {
 		return res.status(400).json({ success: false, error: 'Invalid username format' });
-	}
-
-	if (signature && timestamp) {
-		if (!isTimestampFresh(timestamp)) {
-			return res.status(401).json({ success: false, error: 'Stale timestamp' });
-		}
-		const message = `ragnarok-pack-open:${userId}:${packTypeId}:${timestamp}`;
-		const authResult = await verifyHiveAuth(userId, message, signature);
-		if (!authResult.valid) {
-			return res.status(401).json({ success: false, error: 'Invalid signature' });
-		}
 	}
 
 	const client = await directDb.connect();

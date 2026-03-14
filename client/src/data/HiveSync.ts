@@ -21,6 +21,12 @@ export interface HiveBroadcastResult {
   error?: string;
 }
 
+export interface HiveSignatureResult {
+  success: boolean;
+  signature?: string;
+  error?: string;
+}
+
 export interface HiveKeychainResponse {
   success: boolean;
   result?: {
@@ -201,6 +207,46 @@ export class HiveSync {
     return this.broadcastCustomJson('rp_reward_claim', {
       reward_id: rewardId,
     });
+  }
+
+  async signMessage(
+    message: string,
+    options: {
+      username?: string;
+      keyType?: 'Active' | 'Posting' | 'Memo';
+      title?: string;
+    } = {}
+  ): Promise<HiveSignatureResult> {
+    const username = options.username ?? this.username;
+    if (!username) {
+      return { success: false, error: 'No username set' };
+    }
+    if (!this.isKeychainAvailable()) {
+      return { success: false, error: 'Hive Keychain not available' };
+    }
+
+    const keychainPromise = new Promise<HiveSignatureResult>((resolve) => {
+      window.hive_keychain!.requestSignBuffer(
+        username,
+        message,
+        options.keyType ?? 'Posting',
+        (response) => {
+          resolve({
+            success: response.success,
+            signature: response.success ? response.result?.id : undefined,
+            error: response.error || response.message,
+          });
+        },
+        undefined,
+        options.title
+      );
+    });
+
+    const timeout = new Promise<HiveSignatureResult>((resolve) =>
+      setTimeout(() => resolve({ success: false, error: 'Keychain timeout (60s)' }), KEYCHAIN_TIMEOUT_MS)
+    );
+
+    return Promise.race([keychainPromise, timeout]);
   }
 
   async signResultHash(hash: string): Promise<string> {
