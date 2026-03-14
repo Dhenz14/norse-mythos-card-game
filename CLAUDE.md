@@ -161,7 +161,7 @@ server/
 └── storage.ts              # Database interface
 ```
 
-Card art lives in `client/public/art/` (1,039 files covering ~38% of cards). Art lookup uses `CARD_ID_TO_ART` map in `artMapping.ts` (ID-based, highest priority) with name-based fallback via `getCardArtPath()`.
+Card art lives in `client/public/art/` (2,054 files covering ~65% of cards). Art lookup uses `CARD_ID_TO_ART` map in `artMapping.ts` (1,458 ID-based entries, highest priority) with name-based fallback via `getCardArtPath()`.
 
 ## Key Subsystems
 
@@ -1194,6 +1194,19 @@ vercel --prod                 # Deploy to Vercel
 - Removed 3 dead `HolographicEffect.css` imports (BattlefieldCardFrame, CardFrame, BaseCardFrame)
 - Spring physics unchanged (SPRING_STIFFNESS=0.066, SPRING_DAMPING=0.25)
 - `@media (prefers-reduced-motion: reduce)` hides all effects
+- TypeScript: 0 errors
+
+### Completed (Card Art Batch 3 + Full Ability Audit)
+
+- Imported 691 new card art files (webp) from `ragnarok-art-691` art drop
+- Added 689 new entries to `CARD_ID_TO_ART` (2 duplicates skipped)
+- Total art files on disk: 2,054; total `CARD_ID_TO_ART` entries: 1,458
+- Art coverage: ~38% → ~65% of cards now have dedicated art
+- ID ranges covered: 1000-9999 (108), 10000-19999 (82), 20000-29999 (26), 30000-39999 (309), 40000-49999 (22), 60000-69999 (4), 80000-89999 (11), 90000-99999 (129)
+- All UI components already pass cardId to `getCardArtPath()` — no component changes needed
+- Implemented 24 missing deathrattle handlers (103 cards were silently failing)
+- Fixed 3 battlecry bugs: `cast_opponent_spell` stub, hardcoded `MAX_BOARD_SIZE=5`, `executeBuffTribeBattlecry` wrong field
+- Implemented 3 missing keywords: Outcast (hand edge bonus), Flying (bypass taunt), Cant Attack (attack prevention)
 - TypeScript: 0 errors
 
 ### Next (Genesis Launch)
