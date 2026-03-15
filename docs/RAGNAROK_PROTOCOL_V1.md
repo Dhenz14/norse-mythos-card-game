@@ -50,7 +50,17 @@ The codebase currently uses `rp_match_start` for match anchoring. The v1 spec re
 - Writers MUST emit the canonical form (`ragnarok-cards` with `"action": "match_anchor"`) for all new ops.
 - No cutover block is defined; both forms are valid indefinitely. The legacy form is a compatibility alias, not a separate op.
 
-This same rule applies to all legacy `rp_*` ids: `rp_mint` = `mint_batch`, `rp_transfer` = `card_transfer`, `rp_burn` = `burn`, `rp_pack_open` = `pack_commit`/`pack_reveal` (split), `rp_match_result` = `match_result`, `rp_level_up` = `level_up`, `rp_queue_join` = `queue_join`, `rp_queue_leave` = `queue_leave`, `rp_reward_claim` = `reward_claim`, `rp_slash_evidence` = `slash_evidence`.
+This same rule applies to all legacy `rp_*` ids: `rp_mint` = `mint_batch`, `rp_transfer` = `card_transfer`, `rp_burn` = `burn`, `rp_match_result` = `match_result`, `rp_level_up` = `level_up`, `rp_queue_join` = `queue_join`, `rp_queue_leave` = `queue_leave`, `rp_reward_claim` = `reward_claim`, `rp_slash_evidence` = `slash_evidence`.
+
+### 3.1.1 Legacy `rp_pack_open` Replay Rule
+
+`rp_pack_open` is the only legacy op that does NOT map 1:1 to a v1 canonical op (the new flow splits into `pack_commit` + `pack_reveal`).
+
+**Rule**: historical `rp_pack_open` ops that appear in irreversible blocks BEFORE the v1 protocol activation block are replayed under **legacy terminal-open semantics**: the pack is opened in one step using the original txid-seeded LCG algorithm. These ops are NOT reinterpreted as synthetic commit+reveal pairs.
+
+After the v1 activation block, `rp_pack_open` is no longer a valid op. Readers MUST reject any `rp_pack_open` appearing after the activation block. Only `pack_commit` + `pack_reveal` are valid for new pack openings.
+
+The **v1 activation block** is defined as: the `block_num` of the `seal` operation. Before seal, the system is in genesis/distribution mode and legacy ops are expected. After seal, all new ops must follow v1 semantics.
 
 ## 3.2 Schema-Code Alignment Requirements
 

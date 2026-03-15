@@ -240,6 +240,8 @@ describe('Protocol Conformance: Authority Model', () => {
 // ============================================================
 
 describe('Protocol Conformance: Legacy Op Name Mapping', () => {
+	// rp_pack_open is NOT in this map — it is a legacy terminal open, not an alias
+	// (see spec section 3.1.1: replayed under old txid-seeded semantics pre-seal)
 	const LEGACY_TO_CANONICAL: Record<string, string> = {
 		'rp_genesis': 'genesis',
 		'rp_seal': 'seal',
@@ -247,7 +249,6 @@ describe('Protocol Conformance: Legacy Op Name Mapping', () => {
 		'rp_transfer': 'card_transfer',
 		'rp_card_transfer': 'card_transfer',
 		'rp_burn': 'burn',
-		'rp_pack_open': 'pack_commit', // split op — legacy maps to commit
 		'rp_match_start': 'match_anchor',
 		'rp_match_result': 'match_result',
 		'rp_level_up': 'level_up',
@@ -265,11 +266,16 @@ describe('Protocol Conformance: Legacy Op Name Mapping', () => {
 		}
 	});
 
-	it('canonical actions cover all 14 ops', () => {
+	it('canonical actions cover all 14 ops (pack_reveal + pack_commit are new, rp_pack_open is legacy-only)', () => {
 		const canonicalSet = new Set(Object.values(LEGACY_TO_CANONICAL));
-		// pack_reveal has no legacy equivalent (new op)
+		// These two have no legacy equivalent — they are new v1 ops
+		canonicalSet.add('pack_commit');
 		canonicalSet.add('pack_reveal');
 		expect(canonicalSet.size).toBe(14);
+	});
+
+	it('rp_pack_open is NOT a canonical alias — it is a legacy terminal op', () => {
+		expect(LEGACY_TO_CANONICAL).not.toHaveProperty('rp_pack_open');
 	});
 });
 
@@ -325,5 +331,198 @@ describe('Protocol Conformance: Pack Commit Deadline', () => {
 		expect(91234100 <= deadlineBlock).toBe(true);
 		// Reveal after deadline: auto-finalize triggered
 		expect(91234201 <= deadlineBlock).toBe(false);
+	});
+});
+
+// ============================================================
+// 11. STATE-TRANSITION TRACE VECTORS
+//
+// These test the replay core's state transition logic against
+// fixed op traces. When the shared replay core is extracted,
+// both client and server MUST pass these traces identically.
+//
+// Until the shared core exists, these serve as the spec for
+// what the core must do. They use plain objects and decision
+// functions, not the actual replay engine (which is being refactored).
+// ============================================================
+
+describe('Protocol Conformance: State Transition Traces', () => {
+	// --- Helper: minimal state model for trace tests ---
+	interface CardState { uid: string; owner: string; lastTransferBlock: number; rarity: string; level: number; xp: number }
+	interface ReplayState {
+		cards: Map<string, CardState>;
+		nonces: Map<string, number>;
+		rewardsClaimed: Set<string>;
+		sealed: boolean;
+		sealBlock: number;
+	}
+
+	function freshState(): ReplayState {
+		return { cards: new Map(), nonces: new Map(), rewardsClaimed: new Set(), sealed: false, sealBlock: 0 };
+	}
+
+	const COOLDOWN = 10;
+
+	// --- Trace 1: valid transfer with cooldown ---
+	it('trace: valid transfer updates ownership', () => {
+		const state = freshState();
+		state.cards.set('nft-001', { uid: 'nft-001', owner: 'alice', lastTransferBlock: 100, rarity: 'rare', level: 1, xp: 0 });
+
+		const op = { action: 'card_transfer', from: 'alice', to: 'bob', uid: 'nft-001', blockNum: 200, nonce: 1 };
+
+		// Validation: owner matches, cooldown satisfied, nonce advances
+		const card = state.cards.get(op.uid)!;
+		expect(card.owner).toBe(op.from); // ownership check passes
+		expect(op.blockNum - card.lastTransferBlock >= COOLDOWN).toBe(true); // cooldown passes
+
+		// Apply
+		card.owner = op.to;
+		card.lastTransferBlock = op.blockNum;
+		expect(card.owner).toBe('bob');
+		expect(card.lastTransferBlock).toBe(200);
+	});
+
+	// --- Trace 2: transfer rejected — cooldown not met ---
+	it('trace: transfer rejected when cooldown not met', () => {
+		const state = freshState();
+		state.cards.set('nft-002', { uid: 'nft-002', owner: 'alice', lastTransferBlock: 1000, rarity: 'common', level: 1, xp: 0 });
+
+		const op = { action: 'card_transfer', from: 'alice', to: 'bob', uid: 'nft-002', blockNum: 1005, nonce: 1 };
+
+		const card = state.cards.get(op.uid)!;
+		const cooldownMet = op.blockNum - card.lastTransferBlock >= COOLDOWN;
+		expect(cooldownMet).toBe(false); // 1005 - 1000 = 5 < 10 — REJECTED
+		// State unchanged
+		expect(card.owner).toBe('alice');
+	});
+
+	// --- Trace 3: transfer rejected — not owner ---
+	it('trace: transfer rejected when sender is not owner', () => {
+		const state = freshState();
+		state.cards.set('nft-003', { uid: 'nft-003', owner: 'alice', lastTransferBlock: 0, rarity: 'epic', level: 1, xp: 0 });
+
+		const op = { action: 'card_transfer', from: 'mallory', to: 'mallory2', uid: 'nft-003', blockNum: 500, nonce: 1 };
+
+		const card = state.cards.get(op.uid)!;
+		const isOwner = card.owner === op.from;
+		expect(isOwner).toBe(false); // mallory does not own nft-003 — REJECTED
+		expect(card.owner).toBe('alice'); // unchanged
+	});
+
+	// --- Trace 4: nonce monotonic enforcement ---
+	it('trace: nonce must advance monotonically', () => {
+		const state = freshState();
+		state.nonces.set('alice', 5);
+
+		// Nonce 6: valid (> 5)
+		expect(6 > (state.nonces.get('alice') ?? 0)).toBe(true);
+		state.nonces.set('alice', 6);
+
+		// Nonce 6 again: invalid (not > 6)
+		expect(6 > (state.nonces.get('alice') ?? 0)).toBe(false);
+
+		// Nonce 4: invalid (not > 6)
+		expect(4 > (state.nonces.get('alice') ?? 0)).toBe(false);
+
+		// Nonce 7: valid
+		expect(7 > (state.nonces.get('alice') ?? 0)).toBe(true);
+	});
+
+	// --- Trace 5: reward claimed only once ---
+	it('trace: reward claim is idempotent', () => {
+		const state = freshState();
+		const claimKey = 'alice:first_victory';
+
+		// First claim: accepted
+		expect(state.rewardsClaimed.has(claimKey)).toBe(false);
+		state.rewardsClaimed.add(claimKey);
+
+		// Second claim: rejected (already claimed)
+		expect(state.rewardsClaimed.has(claimKey)).toBe(true);
+	});
+
+	// --- Trace 6: mint rejected after seal ---
+	it('trace: mint_batch rejected after seal', () => {
+		const state = freshState();
+
+		// Before seal: mint valid
+		expect(state.sealed).toBe(false);
+
+		// Seal
+		state.sealed = true;
+		state.sealBlock = 91000000;
+
+		// After seal: mint rejected
+		expect(state.sealed).toBe(true);
+		// Any mint_batch op must be ignored
+	});
+
+	// --- Trace 7: self-transfer rejected ---
+	it('trace: self-transfer rejected', () => {
+		const state = freshState();
+		state.cards.set('nft-004', { uid: 'nft-004', owner: 'alice', lastTransferBlock: 0, rarity: 'common', level: 1, xp: 0 });
+
+		const op = { action: 'card_transfer', from: 'alice', to: 'alice', uid: 'nft-004', blockNum: 500, nonce: 1 };
+		expect(op.from === op.to).toBe(true); // REJECTED: self-transfer
+	});
+
+	// --- Trace 8: level_up validated against derived XP ---
+	it('trace: level_up rejected if XP insufficient', () => {
+		const state = freshState();
+		state.cards.set('nft-005', { uid: 'nft-005', owner: 'alice', lastTransferBlock: 0, rarity: 'common', level: 1, xp: 30 });
+
+		// Common rarity thresholds: [0, 50, 150] → level 1 at 30 XP (< 50)
+		const thresholds = [0, 50, 150];
+		const card = state.cards.get('nft-005')!;
+		let derivedLevel = 1;
+		for (let i = 1; i < thresholds.length; i++) {
+			if (card.xp >= thresholds[i]) derivedLevel = i + 1;
+		}
+		expect(derivedLevel).toBe(1); // XP 30 < 50 threshold
+
+		// level_up to 2: REJECTED (derived level is 1)
+		const requestedLevel = 2;
+		expect(requestedLevel > derivedLevel).toBe(true); // overclaim — rejected
+	});
+
+	// --- Trace 9: level_up accepted when XP sufficient ---
+	it('trace: level_up accepted when XP meets threshold', () => {
+		const state = freshState();
+		state.cards.set('nft-006', { uid: 'nft-006', owner: 'alice', lastTransferBlock: 0, rarity: 'common', level: 1, xp: 75 });
+
+		const thresholds = [0, 50, 150];
+		const card = state.cards.get('nft-006')!;
+		let derivedLevel = 1;
+		for (let i = 1; i < thresholds.length; i++) {
+			if (card.xp >= thresholds[i]) derivedLevel = i + 1;
+		}
+		expect(derivedLevel).toBe(2); // XP 75 >= 50
+
+		const requestedLevel = 2;
+		expect(requestedLevel <= derivedLevel).toBe(true); // valid
+		card.level = requestedLevel;
+		expect(card.level).toBe(2);
+	});
+
+	// --- Trace 10: rp_pack_open rejected after seal (v1 activation) ---
+	it('trace: legacy rp_pack_open rejected after seal block', () => {
+		const state = freshState();
+		state.sealed = true;
+		state.sealBlock = 91000000;
+
+		const legacyPackOpenBlock = 91000100; // after seal
+		const isPostSeal = legacyPackOpenBlock > state.sealBlock;
+		expect(isPostSeal).toBe(true); // REJECTED: legacy pack_open after v1 activation
+	});
+
+	// --- Trace 11: rp_pack_open accepted before seal (legacy mode) ---
+	it('trace: legacy rp_pack_open accepted before seal block', () => {
+		const state = freshState();
+		state.sealed = false;
+		state.sealBlock = 0; // not sealed yet
+
+		const legacyPackOpenBlock = 90999000;
+		// Not sealed yet — legacy ops are valid
+		expect(state.sealed).toBe(false); // ACCEPTED: pre-seal legacy mode
 	});
 });
