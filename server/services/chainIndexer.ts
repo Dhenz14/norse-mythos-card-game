@@ -1,11 +1,12 @@
 /**
  * chainIndexer.ts — Server-side Hive chain indexer
  *
- * PR 2A: Wired to shared protocol-core for normalize + validate + apply.
- * Still uses get_account_history for fetching (canonical block scan is PR 2B).
- *
- * The protocol-core handles ALL validation: PoW, signatures, nonces,
- * cooldowns, supply caps, ELO, RUNE, XP. No duplicate logic here.
+ * PR 2B: Block-complete sequential scan via get_ops_in_block.
+ * - Replays irreversible blocks from cursor+1 through LIB
+ * - Cursor is block-based and only advances AFTER entire block is applied
+ * - All protocol semantics live in shared/protocol-core
+ * - Block-header lookup for entropy block IDs (pack auto-finalize)
+ * - Crash-safe: partial block failure = cursor stays, next restart retries
  */
 
 import {
@@ -19,11 +20,10 @@ import {
 	type SignatureVerifier,
 } from '../../shared/protocol-core';
 import { serverStateAdapter } from './serverStateAdapter';
+import { serverSignatureVerifier } from './hiveSignatureVerifier';
 import {
 	registerAccount,
-	getKnownAccounts,
-	getSyncCursor,
-	setSyncCursor,
+	getBlockCursor, setBlockCursor,
 	loadState,
 	startPersistence,
 	stopPersistence,
@@ -40,11 +40,9 @@ const HIVE_NODES = [
 	'https://api.openhive.network',
 ];
 
-const HISTORY_PAGE_SIZE = 1000;
 const NODE_TIMEOUT_MS = 8000;
-const POLL_INTERVAL_MS = 30_000;
-
-const RAGNAROK_ACCOUNT = 'ragnarok';
+const POLL_INTERVAL_MS = 10_000;
+const BLOCKS_PER_BATCH = 50;
 
 // ---------------------------------------------------------------------------
 // Hive RPC
@@ -84,56 +82,53 @@ async function callHive<T>(method: string, params: unknown[]): Promise<T> {
 }
 
 // ---------------------------------------------------------------------------
-// Account history types
+// Block-level APIs
 // ---------------------------------------------------------------------------
 
-type CustomJsonOpData = {
-	required_auths: string[];
-	required_posting_auths: string[];
-	id: string;
-	json: string;
-};
-
-type HiveHistoryEntry = {
+interface BlockOp {
 	trx_id: string;
 	block: number;
+	trx_in_block: number;
+	op_in_trx: number;
 	timestamp: string;
-	op: ['custom_json', CustomJsonOpData] | [string, unknown];
-};
-
-type HistoryPage = [number, HiveHistoryEntry][];
-
-async function fetchHistoryPage(account: string, start: number, limit: number): Promise<HistoryPage> {
-	return callHive<HistoryPage>('condenser_api.get_account_history', [account, start, limit]);
+	op: [string, Record<string, unknown>];
 }
 
-// ---------------------------------------------------------------------------
-// Block header lookup (stub for PR 2A — real implementation in PR 2B)
-// ---------------------------------------------------------------------------
-
-async function getBlockId(blockNum: number): Promise<string | null> {
-	try {
-		const result = await callHive<{ block_id: string } | null>(
-			'condenser_api.get_block_header', [blockNum],
-		);
-		return result?.block_id ?? null;
-	} catch {
-		return null;
-	}
+async function getOpsInBlock(blockNum: number): Promise<BlockOp[]> {
+	return callHive<BlockOp[]>('condenser_api.get_ops_in_block', [blockNum, false]);
 }
-
-// ---------------------------------------------------------------------------
-// LIB lookup
-// ---------------------------------------------------------------------------
 
 async function getLastIrreversibleBlock(): Promise<number> {
+	const props = await callHive<{ last_irreversible_block_num: number }>(
+		'condenser_api.get_dynamic_global_properties', [],
+	);
+	return props.last_irreversible_block_num;
+}
+
+// Block ID lookup for pack entropy (uses get_block, not get_block_header,
+// because get_block returns block_id while get_block_header does not in all Hive APIs)
+const blockIdCache = new Map<number, string>();
+
+async function getBlockId(blockNum: number): Promise<string | null> {
+	const cached = blockIdCache.get(blockNum);
+	if (cached) return cached;
+
 	try {
-		const props = await callHive<{ last_irreversible_block_num: number }>(
-			'condenser_api.get_dynamic_global_properties', [],
+		const block = await callHive<{ block_id: string } | null>(
+			'condenser_api.get_block', [blockNum],
 		);
-		return props.last_irreversible_block_num;
+		const id = block?.block_id ?? null;
+		if (id) {
+			blockIdCache.set(blockNum, id);
+			// Keep cache bounded
+			if (blockIdCache.size > 1000) {
+				const oldest = blockIdCache.keys().next().value;
+				if (oldest !== undefined) blockIdCache.delete(oldest);
+			}
+		}
+		return id;
 	} catch {
-		return 999_999_999; // fallback: treat all blocks as irreversible (legacy behavior)
+		return null;
 	}
 }
 
@@ -141,7 +136,6 @@ async function getLastIrreversibleBlock(): Promise<number> {
 // Protocol-core dependencies
 // ---------------------------------------------------------------------------
 
-// Minimal card data provider for server (no full card registry)
 const serverCardData: CardDataProvider = {
 	getCardById(id: number) {
 		if (id >= 1000 && id <= 99999) {
@@ -159,12 +153,7 @@ const serverCardData: CardDataProvider = {
 };
 
 const serverRewards: RewardProvider = {
-	getRewardById() { return null; }, // Server doesn't process reward claims yet
-};
-
-const serverSigs: SignatureVerifier = {
-	async verifyAnchored() { return true; },   // TODO: real sig verification in PR 2B
-	async verifyCurrentKey() { return true; },  // TODO: real sig verification in PR 2B
+	getRewardById() { return null; },
 };
 
 function buildDeps(): ProtocolCoreDeps {
@@ -172,7 +161,7 @@ function buildDeps(): ProtocolCoreDeps {
 		state: serverStateAdapter,
 		cards: serverCardData,
 		rewards: serverRewards,
-		sigs: serverSigs,
+		sigs: serverSignatureVerifier,
 	};
 }
 
@@ -182,99 +171,98 @@ function buildDeps(): ProtocolCoreDeps {
 
 let _pollTimer: ReturnType<typeof setInterval> | null = null;
 let _isSyncing = false;
-let _accountIndex = 0;
 
 // ---------------------------------------------------------------------------
-// Sync single account
+// Block scanner
 // ---------------------------------------------------------------------------
 
-async function syncAccount(username: string): Promise<number> {
-	const lastIndex = getSyncCursor(username);
-	const opsToApply: Array<{
-		idx: number;
-		rawOp: RawHiveOp;
-	}> = [];
+async function scanBlocks(): Promise<number> {
+	const cursor = getBlockCursor();
+	let lib: number;
 
-	let pageStart = -1;
-	let done = false;
-
-	while (!done) {
-		const page = await fetchHistoryPage(username, pageStart, HISTORY_PAGE_SIZE);
-		if (!page || page.length === 0) break;
-
-		for (const [idx, entry] of page) {
-			if (idx <= lastIndex) { done = true; break; }
-			if (entry.op[0] !== 'custom_json') continue;
-
-			const opData = entry.op[1] as CustomJsonOpData;
-			// Quick pre-filter: only ragnarok protocol ops
-			if (!opData.id?.startsWith('rp_') && opData.id !== 'ragnarok-cards' && opData.id !== 'ragnarok_level_up') continue;
-
-			const broadcaster = opData.required_posting_auths?.[0] ?? opData.required_auths?.[0] ?? username;
-
-			opsToApply.push({
-				idx,
-				rawOp: {
-					customJsonId: opData.id,
-					json: opData.json,
-					broadcaster,
-					trxId: entry.trx_id,
-					blockNum: entry.block,
-					timestamp: new Date(entry.timestamp).getTime(),
-					requiredPostingAuths: opData.required_posting_auths ?? [],
-					requiredAuths: opData.required_auths ?? [],
-				},
-			});
-		}
-
-		if (!done && page.length >= HISTORY_PAGE_SIZE) {
-			const lowestIdx = page[0][0];
-			if (lowestIdx <= lastIndex + 1) break;
-			pageStart = lowestIdx - 1;
-		} else {
-			break;
-		}
-	}
-
-	if (opsToApply.length === 0) {
-		setSyncCursor(username, lastIndex);
+	try {
+		lib = await getLastIrreversibleBlock();
+	} catch (err) {
+		console.warn('[chainIndexer] Failed to get LIB:', err instanceof Error ? err.message : err);
 		return 0;
 	}
 
-	opsToApply.sort((a, b) => a.idx - b.idx);
+	if (cursor >= lib) return 0; // fully caught up
 
-	const lib = await getLastIrreversibleBlock();
+	const startBlock = cursor + 1;
+	const endBlock = Math.min(startBlock + BLOCKS_PER_BATCH - 1, lib);
+
 	const ctx: ReplayContext = { lastIrreversibleBlock: lib, getBlockId };
 	const deps = buildDeps();
+	let totalApplied = 0;
 
-	let highestIdx = lastIndex;
-	let appliedCount = 0;
-
-	for (const { idx, rawOp } of opsToApply) {
-		// Normalize through protocol-core (legacy mapping, authority check)
-		const normalized = normalizeRawOp(rawOp);
-
-		if (normalized.status === 'ignore') {
-			if (idx > highestIdx) highestIdx = idx;
-			continue;
+	for (let blockNum = startBlock; blockNum <= endBlock; blockNum++) {
+		let ops: BlockOp[];
+		try {
+			ops = await getOpsInBlock(blockNum);
+		} catch (err) {
+			// RPC failure mid-batch: stop here, cursor stays at last completed block
+			console.warn(`[chainIndexer] Failed to fetch block ${blockNum}:`, err instanceof Error ? err.message : err);
+			break;
 		}
 
-		// Apply through protocol-core (all validation lives here)
-		const result = await applyOp(normalized.op, ctx, deps);
+		let blockApplied = 0;
 
-		if (result.status === 'applied') {
-			appliedCount++;
-			// Register accounts discovered from ops
-			registerAccount(rawOp.broadcaster);
-		} else if (result.status === 'rejected') {
-			console.warn(`[chainIndexer] REJECTED ${normalized.op.action} from ${rawOp.broadcaster} block=${rawOp.blockNum}: ${result.reason}`);
+		// Process all protocol ops in this block, in order
+		for (const op of ops) {
+			if (op.op[0] !== 'custom_json') continue;
+
+			const opData = op.op[1] as {
+				required_auths?: string[];
+				required_posting_auths?: string[];
+				id?: string;
+				json?: string;
+			};
+
+			// Quick pre-filter
+			const opId = opData.id ?? '';
+			if (!opId.startsWith('rp_') && opId !== 'ragnarok-cards' && opId !== 'ragnarok_level_up') continue;
+
+			const broadcaster = opData.required_posting_auths?.[0] ?? opData.required_auths?.[0] ?? '';
+			if (!broadcaster) continue;
+
+			const rawOp: RawHiveOp = {
+				customJsonId: opId,
+				json: opData.json ?? '{}',
+				broadcaster,
+				trxId: op.trx_id,
+				blockNum: op.block,
+				timestamp: new Date(op.timestamp + 'Z').getTime(),
+				requiredPostingAuths: opData.required_posting_auths ?? [],
+				requiredAuths: opData.required_auths ?? [],
+			};
+
+			// Normalize through protocol-core
+			const normalized = normalizeRawOp(rawOp);
+			if (normalized.status === 'ignore') continue;
+
+			// Apply through protocol-core (all validation lives here)
+			const result = await applyOp(normalized.op, ctx, deps);
+
+			if (result.status === 'applied') {
+				blockApplied++;
+				registerAccount(broadcaster);
+			} else if (result.status === 'rejected') {
+				console.warn(`[chainIndexer] REJECTED ${normalized.op.action} from ${broadcaster} block=${blockNum}: ${result.reason}`);
+			}
 		}
 
-		if (idx > highestIdx) highestIdx = idx;
+		// Block fully processed — advance cursor atomically
+		setBlockCursor(blockNum);
+		totalApplied += blockApplied;
 	}
 
-	setSyncCursor(username, highestIdx);
-	return appliedCount;
+	if (totalApplied > 0) {
+		// Flush state to disk after each batch to ensure crash safety
+		saveState();
+	}
+
+	return totalApplied;
 }
 
 // ---------------------------------------------------------------------------
@@ -286,19 +274,9 @@ async function pollNext(): Promise<void> {
 	_isSyncing = true;
 
 	try {
-		const accounts = getKnownAccounts();
-		if (accounts.length === 0) {
-			registerAccount(RAGNAROK_ACCOUNT);
-			return;
-		}
-
-		_accountIndex = _accountIndex % accounts.length;
-		const account = accounts[_accountIndex];
-		_accountIndex++;
-
-		const opsProcessed = await syncAccount(account);
-		if (opsProcessed > 0) {
-			console.log(`[chainIndexer] Synced ${account}: ${opsProcessed} ops processed via protocol-core`);
+		const applied = await scanBlocks();
+		if (applied > 0) {
+			console.log(`[chainIndexer] Processed ${applied} ops, cursor now at block ${getBlockCursor()}`);
 		}
 	} catch (err) {
 		console.warn('[chainIndexer] Poll error:', err instanceof Error ? err.message : err);
@@ -316,11 +294,12 @@ export function startIndexer(): void {
 
 	loadState();
 	startPersistence();
-	registerAccount(RAGNAROK_ACCOUNT);
+
+	// Immediate first scan
 	pollNext();
 
 	_pollTimer = setInterval(pollNext, POLL_INTERVAL_MS);
-	console.log('[chainIndexer] Started with protocol-core (polling every %ds)', POLL_INTERVAL_MS / 1000);
+	console.log('[chainIndexer] Started block scanner (every %ds, cursor at block %d)', POLL_INTERVAL_MS / 1000, getBlockCursor());
 }
 
 export function stopIndexer(): void {
@@ -334,10 +313,6 @@ export function stopIndexer(): void {
 
 export async function syncAccountNow(username: string): Promise<number> {
 	registerAccount(username);
-	try {
-		return await syncAccount(username);
-	} catch (err) {
-		console.warn(`[chainIndexer] On-demand sync failed for ${username}:`, err instanceof Error ? err.message : err);
-		return 0;
-	}
+	// In block-scanning mode, account-specific sync triggers a full batch scan
+	return scanBlocks();
 }

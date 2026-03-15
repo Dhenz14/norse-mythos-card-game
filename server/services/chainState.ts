@@ -49,6 +49,53 @@ export interface MatchRecord {
 	blockNum: number;
 }
 
+// ---------------------------------------------------------------------------
+// Protocol-core state (persisted alongside legacy state)
+// ---------------------------------------------------------------------------
+
+export interface GenesisStateRecord {
+	version: string;
+	sealed: boolean;
+	sealBlock: number;
+	packSupply: Record<string, number>;
+	rewardSupply: Record<string, number>;
+}
+
+export interface SupplyCounterRecord {
+	key: string;
+	pool: 'pack' | 'reward';
+	cap: number;
+	minted: number;
+}
+
+export interface MatchAnchorStateRecord {
+	matchId: string;
+	playerA: string;
+	playerB: string;
+	pubkeyA?: string;
+	pubkeyB?: string;
+	deckHashA?: string;
+	deckHashB?: string;
+	engineHash?: string;
+	dualAnchored: boolean;
+	timestamp: number;
+}
+
+export interface PackCommitStateRecord {
+	trxId: string;
+	account: string;
+	packType: string;
+	quantity: number;
+	saltCommit: string;
+	commitBlock: number;
+	revealed: boolean;
+}
+
+export interface TokenBalanceRecord {
+	account: string;
+	RUNE: number;
+}
+
 interface SerializedState {
 	players: [string, PlayerRecord][];
 	cards: [string, CardRecord][];
@@ -57,6 +104,15 @@ interface SerializedState {
 	syncCursors: [string, number][];
 	lastSyncedAt: number;
 	playerNonces: [string, number][];
+	// PR 2B: global block cursor + protocol-core state
+	lastIrreversibleBlockProcessed?: number;
+	genesis?: GenesisStateRecord | null;
+	supplyCounters?: [string, SupplyCounterRecord][];
+	tokenBalances?: [string, TokenBalanceRecord][];
+	matchAnchors?: [string, MatchAnchorStateRecord][];
+	packCommits?: [string, PackCommitStateRecord][];
+	rewardClaims?: string[];
+	slashedAccounts?: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -70,6 +126,17 @@ const knownAccounts = new Set<string>();
 const syncCursors = new Map<string, number>();
 const playerNonces = new Map<string, number>();
 let lastSyncedAt = 0;
+
+// PR 2B: global block cursor + protocol-core state
+let lastIrreversibleBlockProcessed = 0;
+let genesisState: GenesisStateRecord | null = null;
+const supplyCounters = new Map<string, SupplyCounterRecord>();
+const tokenBalances = new Map<string, TokenBalanceRecord>();
+const matchAnchors = new Map<string, MatchAnchorStateRecord>();
+const packCommits = new Map<string, PackCommitStateRecord>();
+const rewardClaims = new Set<string>();
+const slashedAccounts = new Set<string>();
+const queueEntries = new Map<string, { timestamp: number }>();
 
 const MAX_MATCHES = 10000;
 const STATE_FILE = path.join(process.cwd(), 'data', 'chain-state.json');
@@ -115,7 +182,29 @@ export function loadState(): void {
 
 		lastSyncedAt = data.lastSyncedAt ?? 0;
 
-		console.log(`[chainState] Loaded: ${players.size} players, ${cards.size} cards, ${matches.length} matches, ${knownAccounts.size} accounts`);
+		// PR 2B: protocol-core state
+		lastIrreversibleBlockProcessed = data.lastIrreversibleBlockProcessed ?? 0;
+		genesisState = data.genesis ?? null;
+
+		supplyCounters.clear();
+		for (const [k, v] of data.supplyCounters ?? []) supplyCounters.set(k, v);
+
+		tokenBalances.clear();
+		for (const [k, v] of data.tokenBalances ?? []) tokenBalances.set(k, v);
+
+		matchAnchors.clear();
+		for (const [k, v] of data.matchAnchors ?? []) matchAnchors.set(k, v);
+
+		packCommits.clear();
+		for (const [k, v] of data.packCommits ?? []) packCommits.set(k, v);
+
+		rewardClaims.clear();
+		for (const c of data.rewardClaims ?? []) rewardClaims.add(c);
+
+		slashedAccounts.clear();
+		for (const a of data.slashedAccounts ?? []) slashedAccounts.add(a);
+
+		console.log(`[chainState] Loaded: ${players.size} players, ${cards.size} cards, ${matches.length} matches, blockCursor=${lastIrreversibleBlockProcessed}`);
 	} catch (err) {
 		console.warn('[chainState] Failed to load state:', err);
 	}
@@ -133,6 +222,15 @@ export function saveState(): void {
 			syncCursors: [...syncCursors.entries()],
 			lastSyncedAt,
 			playerNonces: [...playerNonces.entries()],
+			// PR 2B: protocol-core state
+			lastIrreversibleBlockProcessed,
+			genesis: genesisState,
+			supplyCounters: [...supplyCounters.entries()],
+			tokenBalances: [...tokenBalances.entries()],
+			matchAnchors: [...matchAnchors.entries()],
+			packCommits: [...packCommits.entries()],
+			rewardClaims: [...rewardClaims],
+			slashedAccounts: [...slashedAccounts],
 		};
 		const tmpFile = STATE_FILE + '.tmp';
 		fs.writeFileSync(tmpFile, JSON.stringify(data), 'utf8');
@@ -337,6 +435,7 @@ export function getStats(): {
 	totalMatches: number;
 	knownAccounts: number;
 	lastSyncedAt: number;
+	lastIrreversibleBlockProcessed: number;
 } {
 	return {
 		totalPlayers: players.size,
@@ -344,5 +443,48 @@ export function getStats(): {
 		totalMatches: matches.length,
 		knownAccounts: knownAccounts.size,
 		lastSyncedAt,
+		lastIrreversibleBlockProcessed,
 	};
 }
+
+// ---------------------------------------------------------------------------
+// PR 2B: Global block cursor
+// ---------------------------------------------------------------------------
+
+export function getBlockCursor(): number {
+	return lastIrreversibleBlockProcessed;
+}
+
+export function setBlockCursor(blockNum: number): void {
+	lastIrreversibleBlockProcessed = blockNum;
+	markDirty();
+}
+
+// ---------------------------------------------------------------------------
+// PR 2B: Protocol-core state accessors
+// ---------------------------------------------------------------------------
+
+export function getGenesisState(): GenesisStateRecord | null { return genesisState; }
+export function setGenesisState(g: GenesisStateRecord | null): void { genesisState = g; markDirty(); }
+
+export function getSupplyCounter(key: string): SupplyCounterRecord | undefined { return supplyCounters.get(key); }
+export function setSupplyCounter(key: string, r: SupplyCounterRecord): void { supplyCounters.set(key, r); markDirty(); }
+
+export function getTokenBalance(account: string): TokenBalanceRecord | undefined { return tokenBalances.get(account); }
+export function setTokenBalance(account: string, b: TokenBalanceRecord): void { tokenBalances.set(account, b); markDirty(); }
+
+export function getMatchAnchor(matchId: string): MatchAnchorStateRecord | undefined { return matchAnchors.get(matchId); }
+export function setMatchAnchor(matchId: string, a: MatchAnchorStateRecord): void { matchAnchors.set(matchId, a); markDirty(); }
+
+export function getPackCommit(trxId: string): PackCommitStateRecord | undefined { return packCommits.get(trxId); }
+export function setPackCommit(trxId: string, c: PackCommitStateRecord): void { packCommits.set(trxId, c); markDirty(); }
+
+export function hasRewardClaim(key: string): boolean { return rewardClaims.has(key); }
+export function addRewardClaim(key: string): void { rewardClaims.add(key); markDirty(); }
+
+export function isSlashed(account: string): boolean { return slashedAccounts.has(account); }
+export function addSlashed(account: string): void { slashedAccounts.add(account); markDirty(); }
+
+export function getQueueEntry(account: string): { timestamp: number } | undefined { return queueEntries.get(account); }
+export function setQueueEntry(account: string, data: { timestamp: number }): void { queueEntries.set(account, data); markDirty(); }
+export function deleteQueueEntryFn(account: string): void { queueEntries.delete(account); markDirty(); }

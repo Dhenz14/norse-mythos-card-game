@@ -1,9 +1,9 @@
 /**
- * serverStateAdapter.ts — StateAdapter implementation backed by chainState.ts Maps.
+ * serverStateAdapter.ts — StateAdapter backed by durable chainState.ts
  *
- * Bridges the protocol-core's abstract StateAdapter interface to the server's
- * existing in-memory Map + JSON persistence system. No new storage layer —
- * just an adapter over what already exists.
+ * PR 2B: ALL protocol state delegates to chainState Maps (persisted to JSON).
+ * No module-local Maps — crash-safe resume requires every state mutation
+ * to flow through the persistence layer.
  */
 
 import type {
@@ -15,63 +15,92 @@ import {
 	getCardsByOwner as csGetCardsByOwner,
 	getOrCreatePlayer, advanceNonce as csAdvanceNonce,
 	registerAccount,
+	getGenesisState, setGenesisState,
+	getSupplyCounter, setSupplyCounter,
+	getTokenBalance as csGetTokenBalance, setTokenBalance as csSetTokenBalance,
+	getMatchAnchor as csGetMatchAnchor, setMatchAnchor as csSetMatchAnchor,
+	getPackCommit as csGetPackCommit, setPackCommit as csSetPackCommit,
+	hasRewardClaim as csHasRewardClaim, addRewardClaim as csAddRewardClaim,
+	isSlashed as csIsSlashed, addSlashed as csAddSlashed,
+	getQueueEntry as csGetQueueEntry, setQueueEntry as csSetQueueEntry,
+	deleteQueueEntryFn as csDeleteQueueEntry,
 	type CardRecord,
+	type GenesisStateRecord,
+	type SupplyCounterRecord,
+	type MatchAnchorStateRecord,
+	type PackCommitStateRecord,
+	type TokenBalanceRecord,
 } from './chainState';
 
 // ============================================================
-// Extended state Maps (protocol-core needs state the old indexer didn't track)
-// ============================================================
-
-let genesisState: GenesisRecord | null = null;
-const supplyCounters = new Map<string, SupplyRecord>();
-const tokenBalances = new Map<string, TokenBalance>();
-const matchAnchors = new Map<string, MatchAnchorRecord>();
-const packCommits = new Map<string, PackCommitRecord>();
-const rewardClaims = new Set<string>();
-const slashedAccounts = new Set<string>();
-const queueEntries = new Map<string, { timestamp: number }>();
-
-// ============================================================
-// Converters: chainState.CardRecord ↔ protocol-core.CardAsset
+// Converters
 // ============================================================
 
 function cardRecordToAsset(r: CardRecord): CardAsset {
 	return {
-		uid: r.uid,
-		cardId: r.cardId,
-		owner: r.owner,
-		rarity: r.rarity,
-		level: r.level,
-		xp: r.xp,
-		edition: 'alpha',
-		mintSource: 'genesis',
-		mintTrxId: '',
-		mintBlockNum: 0,
-		lastTransferBlock: 0,
+		uid: r.uid, cardId: r.cardId, owner: r.owner, rarity: r.rarity,
+		level: r.level, xp: r.xp, edition: 'alpha', mintSource: 'genesis',
+		mintTrxId: '', mintBlockNum: 0, lastTransferBlock: 0,
 	};
 }
 
 function assetToCardRecord(a: CardAsset): CardRecord {
+	return { uid: a.uid, cardId: a.cardId, owner: a.owner, rarity: a.rarity, level: a.level, xp: a.xp };
+}
+
+function genesisToRecord(g: GenesisRecord): GenesisStateRecord {
+	return { version: g.version, sealed: g.sealed, sealBlock: g.sealBlock, packSupply: g.packSupply, rewardSupply: g.rewardSupply };
+}
+
+function recordToGenesis(r: GenesisStateRecord): GenesisRecord {
+	return { version: r.version, sealed: r.sealed, sealBlock: r.sealBlock, packSupply: r.packSupply, rewardSupply: r.rewardSupply };
+}
+
+function supplyToRecord(s: SupplyRecord): SupplyCounterRecord {
+	return { key: s.key, pool: s.pool, cap: s.cap, minted: s.minted };
+}
+
+function recordToSupply(r: SupplyCounterRecord): SupplyRecord {
+	return { key: r.key, pool: r.pool, cap: r.cap, minted: r.minted };
+}
+
+function anchorToRecord(a: MatchAnchorRecord): MatchAnchorStateRecord {
 	return {
-		uid: a.uid,
-		cardId: a.cardId,
-		owner: a.owner,
-		rarity: a.rarity,
-		level: a.level,
-		xp: a.xp,
+		matchId: a.matchId, playerA: a.playerA, playerB: a.playerB,
+		pubkeyA: a.pubkeyA, pubkeyB: a.pubkeyB,
+		deckHashA: a.deckHashA, deckHashB: a.deckHashB,
+		engineHash: a.engineHash, dualAnchored: a.dualAnchored, timestamp: a.timestamp,
 	};
 }
 
+function recordToAnchor(r: MatchAnchorStateRecord): MatchAnchorRecord {
+	return {
+		matchId: r.matchId, playerA: r.playerA, playerB: r.playerB,
+		pubkeyA: r.pubkeyA, pubkeyB: r.pubkeyB,
+		deckHashA: r.deckHashA, deckHashB: r.deckHashB,
+		engineHash: r.engineHash, dualAnchored: r.dualAnchored, timestamp: r.timestamp,
+	};
+}
+
+function commitToRecord(c: PackCommitRecord): PackCommitStateRecord {
+	return { trxId: c.trxId, account: c.account, packType: c.packType, quantity: c.quantity, saltCommit: c.saltCommit, commitBlock: c.commitBlock, revealed: c.revealed };
+}
+
+function recordToCommit(r: PackCommitStateRecord): PackCommitRecord {
+	return { trxId: r.trxId, account: r.account, packType: r.packType, quantity: r.quantity, saltCommit: r.saltCommit, commitBlock: r.commitBlock, revealed: r.revealed };
+}
+
 // ============================================================
-// StateAdapter implementation
+// StateAdapter — all delegates to chainState (durable)
 // ============================================================
 
 export const serverStateAdapter: StateAdapter = {
-	// Genesis
-	async getGenesis() { return genesisState; },
-	async putGenesis(g) { genesisState = g; },
+	async getGenesis() {
+		const r = getGenesisState();
+		return r ? recordToGenesis(r) : null;
+	},
+	async putGenesis(g) { setGenesisState(genesisToRecord(g)); },
 
-	// Cards — delegate to chainState Maps
 	async getCard(uid) {
 		const r = csGetCard(uid);
 		return r ? cardRecordToAsset(r) : null;
@@ -81,24 +110,17 @@ export const serverStateAdapter: StateAdapter = {
 		registerAccount(card.owner);
 	},
 	async deleteCard(uid) { csDeleteCard(uid); },
-	async getCardsByOwner(owner) {
-		return csGetCardsByOwner(owner).map(cardRecordToAsset);
-	},
+	async getCardsByOwner(owner) { return csGetCardsByOwner(owner).map(cardRecordToAsset); },
 
-	// Supply
 	async getSupply(key, pool) {
-		return supplyCounters.get(`${pool}:${key}`) ?? null;
+		const mapKey = `${pool}:${key}`;
+		const r = getSupplyCounter(mapKey);
+		return r ? recordToSupply(r) : null;
 	},
-	async putSupply(r) {
-		supplyCounters.set(`${r.pool}:${r.key}`, r);
-	},
+	async putSupply(s) { setSupplyCounter(`${s.pool}:${s.key}`, supplyToRecord(s)); },
 
-	// Nonces — delegate to chainState
-	async advanceNonce(account, nonce) {
-		return csAdvanceNonce(account, nonce);
-	},
+	async advanceNonce(account, nonce) { return csAdvanceNonce(account, nonce); },
 
-	// ELO
 	async getElo(account) {
 		const p = getOrCreatePlayer(account);
 		return { account, elo: p.elo, wins: p.wins, losses: p.losses };
@@ -110,30 +132,31 @@ export const serverStateAdapter: StateAdapter = {
 		p.losses = r.losses;
 	},
 
-	// Tokens
 	async getTokenBalance(account) {
-		return tokenBalances.get(account) ?? { account, RUNE: 0 };
+		const r = csGetTokenBalance(account);
+		return r ? { account: r.account, RUNE: r.RUNE } : { account, RUNE: 0 };
 	},
-	async putTokenBalance(b) { tokenBalances.set(b.account, b); },
+	async putTokenBalance(b) { csSetTokenBalance(b.account, { account: b.account, RUNE: b.RUNE }); },
 
-	// Match anchors
-	async getMatchAnchor(matchId) { return matchAnchors.get(matchId) ?? null; },
-	async putMatchAnchor(a) { matchAnchors.set(a.matchId, a); },
+	async getMatchAnchor(matchId) {
+		const r = csGetMatchAnchor(matchId);
+		return r ? recordToAnchor(r) : null;
+	},
+	async putMatchAnchor(a) { csSetMatchAnchor(a.matchId, anchorToRecord(a)); },
 
-	// Pack commits
-	async getPackCommit(trxId) { return packCommits.get(trxId) ?? null; },
-	async putPackCommit(c) { packCommits.set(c.trxId, c); },
+	async getPackCommit(trxId) {
+		const r = csGetPackCommit(trxId);
+		return r ? recordToCommit(r) : null;
+	},
+	async putPackCommit(c) { csSetPackCommit(c.trxId, commitToRecord(c)); },
 
-	// Reward claims
-	async hasRewardClaim(account, rewardId) { return rewardClaims.has(`${account}:${rewardId}`); },
-	async putRewardClaim(account, rewardId) { rewardClaims.add(`${account}:${rewardId}`); },
+	async hasRewardClaim(account, rewardId) { return csHasRewardClaim(`${account}:${rewardId}`); },
+	async putRewardClaim(account, rewardId) { csAddRewardClaim(`${account}:${rewardId}`); },
 
-	// Slash
-	async isSlashed(account) { return slashedAccounts.has(account); },
-	async slash(account) { slashedAccounts.add(account); },
+	async isSlashed(account) { return csIsSlashed(account); },
+	async slash(account) { csAddSlashed(account); },
 
-	// Queue
-	async getQueueEntry(account) { return queueEntries.get(account) ?? null; },
-	async putQueueEntry(account, data) { queueEntries.set(account, { timestamp: data.timestamp }); },
-	async deleteQueueEntry(account) { queueEntries.delete(account); },
+	async getQueueEntry(account) { return csGetQueueEntry(account) ?? null; },
+	async putQueueEntry(account, data) { csSetQueueEntry(account, { timestamp: data.timestamp }); },
+	async deleteQueueEntry(account) { csDeleteQueueEntry(account); },
 };
