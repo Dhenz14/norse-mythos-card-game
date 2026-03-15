@@ -16,7 +16,7 @@ export default defineConfig({
 		globals: true,
 		environment: "node",
 		root: path.resolve(__dirname),
-		include: ["client/src/**/*.test.ts", "server/**/*.test.ts"],
+		include: ["client/src/**/*.test.ts", "server/**/*.test.ts", "shared/**/*.test.ts"],
 		exclude: ["node_modules"],
 	},
 });
