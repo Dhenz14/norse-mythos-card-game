@@ -78,6 +78,7 @@ tests/
 __tests__/
 *.test.js
 *.test.ts
+!**/protocolConformance.test.ts
 *.spec.js
 *.spec.ts
 *.test.tsx
