@@ -4,7 +4,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29800,
 		name: 'Gungnir',
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'mage',
@@ -24,7 +24,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29801,
 		name: 'Master Bolt',
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'mage',
@@ -39,12 +39,12 @@ const norseArtifacts: ArtifactCardData[] = [
 			firstSpellDouble: true,
 			activated: { manaCost: 1, damage: 1, targetType: 'random_enemy' }
 		},
-		categories: ['norse_artifact']
+		categories: ['greek_artifact']
 	},
 	{
 		id: 29802,
 		name: 'Mjolnir',
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'warrior',
@@ -63,7 +63,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29803,
-		name: 'Dagger of Deceit',
+		name: 'Lævateinn',
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
@@ -71,7 +71,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		heroId: 'hero-loki',
 		attack: 1,
 		description: 'Whenever you play a card that summons a minion, also summon a 1/1 Illusion. Your Illusions have +1/+1.',
-		flavorText: 'Loki\'s blade cuts through reality itself, leaving reflections that bite.',
+		flavorText: 'The damage-twig, named in the Fjölsvinnsmál. Loki retrieved it from beneath the gates of death. What it cuts never heals.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -83,7 +83,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29804,
-		name: 'Aegis of Strategy',
+		name: 'The Aegis',
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
@@ -91,7 +91,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		heroId: 'hero-athena',
 		attack: 0,
 		description: 'Your minions have +1 Health. Once per turn, prevent the first damage dealt to your hero.',
-		flavorText: 'Athena\'s shield reflects not blows, but the foolishness of those who strike.',
+		flavorText: 'Forged by Hephaestus, borne by Zeus and lent to Athena. The Aegis needs no modifier — it IS divine protection.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -103,15 +103,15 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29805,
-		name: 'Blade of Carnage',
-		manaCost: 5,
+		name: 'Enyalios',
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'warrior',
 		heroId: 'hero-ares',
 		attack: 3,
 		description: 'After your hero kills a minion, gain +1 Attack permanently. Your hero takes 1 damage after attacking.',
-		flavorText: 'The god of war feeds on violence — and so does his blade.',
+		flavorText: 'Enyalios — the war-name of Ares, invoked by Spartans before battle. The blade answers only to that name.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -123,7 +123,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29806,
-		name: 'Helm of the Underworld',
+		name: 'Cap of Invisibility',
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
@@ -131,7 +131,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		heroId: 'hero-hades',
 		attack: 1,
 		description: 'Whenever any minion dies, gain +1 Soul. Spend 3 Souls: Summon a 3/3 Spirit.',
-		flavorText: 'Every soul that passes through the gates of the Underworld strengthens its lord.',
+		flavorText: 'The Kynee of Hades, forged by the Cyclopes. Perseus borrowed it to slay Medusa. Its wearer vanishes from sight and memory.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -144,7 +144,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29807,
 		name: 'Brisingamen',
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'priest',
@@ -164,7 +164,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29808,
 		name: 'Trident of the Deep',
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'shaman',
@@ -183,7 +183,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29809,
 		name: 'Oathblade',
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'paladin',
@@ -208,7 +208,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29900,
 		name: 'Harp of Bragi',
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'mage',
@@ -298,7 +298,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29904,
 		name: "Sol's Sunfire Chariot",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'necromancer',
@@ -317,7 +317,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29905,
 		name: 'Laevateinn',
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'necromancer',
@@ -381,15 +381,15 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29908,
-		name: "Thorgrim's Runic Battleaxe",
-		manaCost: 5,
+		name: 'The Mammen Axe',
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'warrior',
 		heroId: 'hero-thorgrim',
 		attack: 3,
 		description: 'After your hero attacks, gain +2 Armor. If your hero has 5+ Armor, your hero attacks deal +2 damage.',
-		flavorText: 'Silver-inlaid with Yggdrasil, forged in the style of the Mammen axe. A mortal weapon worthy of the gods.',
+		flavorText: 'Unearthed from a 10th-century Viking burial at Mammen, Denmark. Silver-inlaid with Yggdrasil — a mortal weapon worthy of the gods.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -401,7 +401,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29909,
-		name: 'Seidr Staff of the Volva',
+		name: 'Seidstafr',
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
@@ -409,7 +409,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		heroId: 'hero-valthrud',
 		attack: 0,
 		description: 'After you cast a spell, give a random friendly minion +1/+2. End of turn: if you control 4+ minions, give them all +1 Health.',
-		flavorText: 'The seidstafr channels the old magic. Volvas wielded it with a reverence that made even Odin kneel.',
+		flavorText: 'The seidr-staff in Old Norse. Völvas carried the seidstafr to channel galdr magic. Even Odin sought their counsel.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -422,7 +422,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29910,
 		name: "Logi's Consuming Flame",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'warrior',
@@ -447,7 +447,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29911,
 		name: 'Megingjord',
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'DeathKnight',
@@ -466,15 +466,15 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29912,
-		name: "Brakki's Frostbound Chains",
-		manaCost: 5,
+		name: 'Gleipnir',
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'DeathKnight',
 		heroId: 'hero-brakki',
 		attack: 2,
 		description: 'After your hero attacks, Freeze the target for 2 turns. Frozen enemy minions have -2 Attack.',
-		flavorText: 'Forged like Gleipnir from impossible things: a cat\'s footstep, a mountain\'s roots, a fish\'s breath.',
+		flavorText: 'The fetter that binds Fenrir, forged by dwarves from impossible things: a cat\'s footstep, a mountain\'s roots, a fish\'s breath.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -512,7 +512,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29914,
 		name: "Vidarr's Iron Boot",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'paladin',
@@ -532,7 +532,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29915,
 		name: 'Gjallarhorn',
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'paladin',
@@ -592,7 +592,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29918,
-		name: "Eldrin's Dawn Shard",
+		name: "Delling's Shard",
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
@@ -600,7 +600,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		heroId: 'hero-eldrin',
 		attack: 1,
 		description: 'After you play a spell, give your hero +1 Attack this turn. Start of turn: if your hero has Armor, refresh your Hero Power.',
-		flavorText: 'A shard of the first light that broke over Ginnungagap — the spark that began creation itself.',
+		flavorText: 'Delling, father of Dagr, is the dawn-god of Norse myth. This shard carries the first light that broke over Ginnungagap.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -702,7 +702,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29923,
 		name: "Fjorgyn's Earthroot Staff",
-		manaCost: 5,
+		manaCost: 4,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'druid',
@@ -743,7 +743,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29925,
 		name: "Ve's Gift of Speech",
-		manaCost: 5,
+		manaCost: 4,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'berserker',
@@ -763,7 +763,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29926,
 		name: "Blainn's Masterwork Anvil",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'druid',
@@ -849,7 +849,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29930,
 		name: "Njord's Tide-Caller",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'shaman',
@@ -895,15 +895,15 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29932,
-		name: "Gormr's Shadow Fang",
-		manaCost: 5,
+		name: "Gnipahellir's Tooth",
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'rogue',
 		heroId: 'hero-gormr',
 		attack: 2,
 		description: 'First attack each turn deals double damage. After attacking, your hero gains Stealth until your next turn.',
-		flavorText: 'Garmr, the blood-stained hound at Gnipahellir, will break free at Ragnarok. Until then, he watches from the shadows.',
+		flavorText: 'From the cave Gnipahellir where Garmr is chained. The blood-stained hound will break free at Ragnarok — but his shed fang bites still.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -915,7 +915,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29933,
-		name: "Lirien's Moonthread Garrote",
+		name: "Máni's Thread",
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
@@ -923,7 +923,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		heroId: 'hero-lirien',
 		attack: 2,
 		description: 'Combo: After your hero attacks, return the target to its owner\'s hand. Cards cost (1) less after you play a Combo card.',
-		flavorText: 'Woven from the threads of fate that the Norns spin at the Well of Urd. What it binds, destiny unravels.',
+		flavorText: 'Máni, the Norse moon god, is chased across the sky by the wolf Hati. His silver thread binds what fate would unravel.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -981,7 +981,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29936,
 		name: "Ullr's Yew Longbow",
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'hunter',
@@ -1000,15 +1000,15 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29937,
-		name: "Fjora's Stormhawk Talon",
-		manaCost: 5,
+		name: "Veðrfölnir's Talon",
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'hunter',
 		heroId: 'hero-fjora',
 		attack: 2,
 		description: 'After your hero attacks a minion, deal its Attack as damage to the enemy hero. +1 Attack for each enemy minion.',
-		flavorText: 'Vedfolnir sees all from atop Yggdrasil. When the hawk dives, nothing escapes its talons.',
+		flavorText: 'The hawk Veðrfölnir perches atop Yggdrasil, seeing all. When it dives, nothing escapes its talons.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -1025,15 +1025,15 @@ const norseArtifacts: ArtifactCardData[] = [
 
 	{
 		id: 29938,
-		name: "Myrka's Void Scythe",
-		manaCost: 5,
+		name: "Naglfar's Keel",
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'berserker',
 		heroId: 'hero-myrka',
 		attack: 3,
 		description: 'After your hero attacks, destroy all enemy minions with less Attack than damage dealt. Your hero takes 2 self-damage after attacking.',
-		flavorText: 'Born of Ginnungagap, the yawning void before creation. Its edge cuts through existence itself.',
+		flavorText: 'Naglfar, the ship of dead men\'s nails, carries the armies of Muspelheim to Ragnarok. A splinter from its keel cuts through existence itself.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -1045,7 +1045,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	},
 	{
 		id: 29939,
-		name: "Ylva's Fang of Fenrir",
+		name: "Gleipnir's Fang",
 		manaCost: 5,
 		type: 'artifact',
 		rarity: 'mythic',
@@ -1053,7 +1053,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		heroId: 'hero-ylva',
 		attack: 2,
 		description: 'After your hero attacks and kills a minion, gain +1 Attack permanently. Your hero can attack the turn this is equipped.',
-		flavorText: 'Fenrir\'s fangs reach from earth to sky. Even a fragment of that dread jaw carries the hunger of the world-eater.',
+		flavorText: 'When Gleipnir was bound around Fenrir\'s jaw, the wolf snapped — and a fang broke free. It carries the hunger of the world-eater.',
 		keywords: ['artifact'],
 		collectible: true,
 		artifactEffect: {
@@ -1071,7 +1071,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29940,
 		name: "Hyperion's Solar Crown",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'mage',
@@ -1091,7 +1091,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29941,
 		name: 'Vault of Ouranos',
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'mage',
@@ -1111,7 +1111,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29942,
 		name: "Kronos's Adamantine Sickle",
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'mage',
@@ -1156,7 +1156,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29944,
 		name: "Persephone's Pomegranate",
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'warlock',
@@ -1203,7 +1203,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29946,
 		name: 'Hammer of the Divine Forge',
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'warrior',
@@ -1289,7 +1289,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29950,
 		name: "Hestia's Eternal Flame",
-		manaCost: 5,
+		manaCost: 4,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'priest',
@@ -1408,7 +1408,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29955,
 		name: "Artemis's Silver Bow",
-		manaCost: 5,
+		manaCost: 7,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'hunter',
@@ -1454,7 +1454,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29957,
 		name: "Hecate's Twin Torches",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'warlock',
@@ -1561,7 +1561,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29962,
 		name: "Kamimusubi's Seed of Creation",
-		manaCost: 5,
+		manaCost: 4,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'shaman',
@@ -1586,7 +1586,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29963,
 		name: "Ammit's Devouring Maw",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'warlock',
@@ -1627,7 +1627,7 @@ const norseArtifacts: ArtifactCardData[] = [
 	{
 		id: 29965,
 		name: "Serqet's Venomous Tail",
-		manaCost: 5,
+		manaCost: 6,
 		type: 'artifact',
 		rarity: 'mythic',
 		heroClass: 'rogue',

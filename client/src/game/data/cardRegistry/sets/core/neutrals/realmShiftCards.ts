@@ -81,8 +81,8 @@ export const realmShiftCards: CardData[] = [
 		id: 30304,
 		name: 'Gate to Helheim',
 		manaCost: 4,
-		description: 'Realm Shift: Minions that die return to their owner\'s hand costing (2) more.',
-		flavorText: 'The dead do not rest in Hel\'s domain. They linger, waiting to return.',
+		description: 'Realm Shift: Deathrattles don\'t trigger. Dead minions are banished.',
+		flavorText: 'Baldur could not return from Helheim. Nothing can. The dead stay dead in Hel\'s domain.',
 		type: 'spell',
 		rarity: 'epic',
 		class: 'Necromancer',
@@ -91,9 +91,9 @@ export const realmShiftCards: CardData[] = [
 			type: 'realm_shift',
 			realmId: 'helheim',
 			realmName: 'Helheim',
-			realmDescription: 'Minions that die return to hand costing (2) more.',
+			realmDescription: 'Deathrattles don\'t trigger. Dead minions are banished.',
 			realmEffects: [
-				{ type: 'return_to_hand_on_death', value: 2, target: 'all' }
+				{ type: 'banish_on_death', target: 'all' }
 			]
 		},
 		set: 'core',

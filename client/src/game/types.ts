@@ -956,7 +956,7 @@ export interface RealmState {
 }
 
 export interface RealmEffect {
-  type: 'buff_all_attack' | 'debuff_all_attack' | 'damage_all_end_turn' | 'heal_all_start_turn' | 'cost_increase' | 'keyword_grant' | 'return_to_hand_on_death' | 'stealth_on_play';
+  type: 'buff_all_attack' | 'debuff_all_attack' | 'damage_all_end_turn' | 'heal_all_start_turn' | 'cost_increase' | 'keyword_grant' | 'return_to_hand_on_death' | 'banish_on_death' | 'stealth_on_play';
   value: number;
   target: 'all' | 'friendly' | 'enemy';
 }

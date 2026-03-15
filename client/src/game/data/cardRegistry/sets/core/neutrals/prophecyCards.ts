@@ -31,17 +31,17 @@ export const prophecyCards: CardData[] = [
 	},
 	{
 		id: 30102,
-		name: 'Ragnarok Herald',
+		name: "Heimdall's Warning",
 		manaCost: 4,
 		description: 'Prophecy (2): Deal 5 damage to both heroes.',
-		flavorText: 'The end draws near. Both gods and giants will burn.',
+		flavorText: 'When Heimdall raises Gjallarhorn to his lips, all Nine Realms hear the blast. Ragnarok approaches.',
 		type: 'spell',
 		rarity: 'common',
 		class: 'Neutral',
 		keywords: ['prophecy'],
 		spellEffect: {
 			type: 'create_prophecy',
-			prophecyName: 'Ragnarok Herald',
+			prophecyName: "Heimdall's Warning",
 			prophecyDescription: 'Deal 5 damage to both heroes',
 			turnsRemaining: 2,
 			resolveEffect: { type: 'damage_both_heroes', value: 5 }

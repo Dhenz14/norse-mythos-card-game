@@ -1,6 +1,6 @@
 import { CardData } from '../../../../../types';
 import { allYggdrasilGolemCards } from './yggdrasilGolems';
-import { oldGodsCards } from './oldGods';
+import { elderTitanCards } from './elderTitans';
 import { allAdaptCards } from './adaptCards';
 import { allMechanicCards } from './mechanicCards';
 import { allLegendaryCards } from './legendaryCards';
@@ -10328,7 +10328,7 @@ export const coreNeutralCards: CardData[] = [
   ...cheatRecruitRampCards,
   ...synergyPackageCards,
   ...allYggdrasilGolemCards,
-  ...oldGodsCards,
+  ...elderTitanCards,
   ...allAdaptCards,
   ...allMechanicCards,
   ...allLegendaryCards,
@@ -10349,5 +10349,5 @@ export const coreNeutralCards: CardData[] = [
   ...primordialExpansionCards
 ];
 
-export { allYggdrasilGolemCards, oldGodsCards, allAdaptCards, allMechanicCards, allLegendaryCards, allSpellCards };
+export { allYggdrasilGolemCards, elderTitanCards, allAdaptCards, allMechanicCards, allLegendaryCards, allSpellCards };
 export default coreNeutralCards;

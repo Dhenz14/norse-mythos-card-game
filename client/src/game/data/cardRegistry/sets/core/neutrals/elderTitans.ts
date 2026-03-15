@@ -1,12 +1,13 @@
 /**
  * Elder Titans Cards
  *
- * Migrated from client/src/game/data/oldGodsCards.ts on 2026-02-02
- * Contains the powerful Elder Titan mythic minions with unique effects:
- * - Gullveig: Grows stronger throughout the game and deals her damage when played
- * - Hyrrokkin: Resurrects friendly Deathrattle minions that died this game
- * - Utgarda-Loki: Casts random spells for each spell you've cast this game
- * - Fornjot: Summons a minion from your deck at the end of your turn
+ * Norse primordial powers — beings older than the Aesir who shaped the cosmos.
+ * Each titan has a unique game-warping effect and a coterie of support cards.
+ *
+ * - Gullveig: Burned thrice in Völuspá st. 21-22, sparked the Aesir-Vanir war
+ * - Hyrrokkin: Launched Hringhorni (Baldur's funeral ship) with such force the earth shook
+ * - Utgarda-Loki: Jötunn illusionist from Gylfaginning ch. 44-47 (Thor's humiliation contests)
+ * - Fornjot: Primordial ancestor of elemental jötnar (Ægir=sea, Logi=fire, Kári=wind)
  *
  * ID Range: 60001-60103
  *
@@ -15,7 +16,7 @@
  */
 import { CardData } from '../../../../../types';
 
-export const oldGodsCards: CardData[] = [
+export const elderTitanCards: CardData[] = [
   {
     id: 60001,
     name: "Gullveig, the Thrice-Burned",
@@ -25,7 +26,7 @@ export const oldGodsCards: CardData[] = [
     type: "minion",
     rarity: "mythic",
     description: "Battlecry: Deal damage equal to this minion's Attack randomly split among all enemies.",
-    flavorText: "They burned her thrice upon Odin's pyre. Thrice she rose, and thrice the Aesir trembled.",
+    flavorText: "Völuspá st. 21: 'Thrice burned, thrice reborn, oft and again, yet ever she lives.' Her burning sparked the first war between gods.",
     keywords: ["battlecry"],
     class: "Neutral",
     set: "core",
@@ -38,14 +39,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60002,
-    name: "Seidr Acolyte",
+    name: "Ember of Gullveig",
     manaCost: 2,
     attack: 2,
     health: 3,
     type: "minion",
     rarity: "common",
     description: "Battlecry: Give your Gullveig +2/+2 (wherever she is).",
-    flavorText: "She channels the forbidden art of seidr, feeding power to the sleeping goddess.",
+    flavorText: "A spark from her first burning. Even cold, it remembers the pyre and yearns to return.",
     keywords: ["battlecry"],
     class: "Neutral",
     set: "core",
@@ -60,14 +61,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60005,
-    name: "Gullveig's Ember-Keeper",
+    name: "Keeper of the Thrice-Flame",
     manaCost: 3,
     attack: 3,
     health: 4,
     type: "minion",
     rarity: "common",
     description: "At the end of your turn, give your Gullveig +1/+1 (wherever she is).",
-    flavorText: "He tends the embers of her third burning, feeding them with his own life-force.",
+    flavorText: "Three pyres burned her. Three pyres she survived. This one tends the embers between burnings, ensuring the fourth never comes.",
     keywords: [],
     class: "Neutral",
     set: "core",
@@ -82,14 +83,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60008,
-    name: "Jotun Shieldbearer",
+    name: "Gullveig's Ash Guardian",
     manaCost: 7,
     attack: 6,
     health: 6,
     type: "minion",
     rarity: "rare",
     description: "Battlecry: If your Gullveig has at least 10 Attack, gain 10 Armor.",
-    flavorText: "The frost giant stands ready to defend the reborn goddess with his life.",
+    flavorText: "Born from the ashes of her third pyre, this guardian carries the weight of three deaths upon its shoulders.",
     keywords: ["battlecry"],
     class: "Warrior",
     set: "core",
@@ -104,14 +105,14 @@ export const oldGodsCards: CardData[] = [
   },
   {
     id: 60010,
-    name: "Thrall of Gullveig",
+    name: "Risen from the Pyre",
     manaCost: 7,
     attack: 4,
     health: 6,
     type: "minion",
     rarity: 'epic',
     description: "Taunt",
-    flavorText: "A warrior enslaved by Gullveig's burning gaze, doomed to serve beyond death.",
+    flavorText: "Not Gullveig herself, but something shaped in the flames of her rebirth — fire given form and purpose.",
     keywords: ["taunt"],
     class: "Neutral",
     set: "core",
@@ -126,7 +127,7 @@ export const oldGodsCards: CardData[] = [
     type: "minion",
     rarity: "mythic",
     description: "Battlecry: Summon your Deathrattle minions that died this game.",
-    flavorText: "She pushed Baldur's ship to sea with a single hand. Now she pushes the dead back from their graves.",
+    flavorText: "When no god could push Baldur's funeral ship Hringhorni to sea, they summoned Hyrrokkin. Her single shove caused earthquakes across all Nine Realms.",
     keywords: ["battlecry"],
     class: "Neutral",
     set: "core",
@@ -146,7 +147,7 @@ export const oldGodsCards: CardData[] = [
     type: "minion",
     rarity: "mythic",
     description: "Battlecry: Cast a random spell for each spell you've cast this game (targets chosen randomly).",
-    flavorText: "He made Thor drink the sea, wrestle Old Age, and lift the World Serpent. Imagine what his spells could do to you.",
+    flavorText: "In Gylfaginning, he made Thor drink the ocean, wrestle Old Age herself, and race against Thought. Every contest was an illusion — and Thor never won a single one.",
     keywords: ["battlecry"],
     class: "Neutral",
     set: "core",
@@ -166,7 +167,7 @@ export const oldGodsCards: CardData[] = [
     type: "minion",
     rarity: "mythic",
     description: "At the end of your turn, summon a minion from your deck.",
-    flavorText: "Before the gods, before the Nine Realms, Fornjot stirred. From his blood came fire, sea, and wind.",
+    flavorText: "The primordial jötunn, ancestor of the elemental forces. His sons: Ægir, lord of the sea; Logi, the living flame; Kári, the howling wind.",
     keywords: [],
     class: "Neutral",
     set: "core",

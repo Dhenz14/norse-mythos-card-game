@@ -93,15 +93,15 @@ export const vanillaMinions: CardData[] = [
 	},
 	{
 		id: 1906,
-		name: 'Svartalfheim Titan',
+		name: 'Svartalfheim Construct',
 		description: '',
-		flavorText: 'Forged in the deepest caverns, it is ore given purpose.',
+		flavorText: 'The dwarves of Svartalfheim build, not in flesh, but in stone and rune-forged iron. This one remembers its makers\' commands.',
 		type: 'minion',
 		rarity: 'rare',
 		manaCost: 7,
 		attack: 7,
 		health: 8,
-		race: 'Giant',
+		race: 'Automaton',
 		class: 'Neutral',
 		set: 'core',
 		collectible: true

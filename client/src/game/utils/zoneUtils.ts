@@ -205,10 +205,18 @@ export function destroyCard(
   let newState = result.newState;
   
   if (result.movedCard) {
-    
+
     // Add to game log
     newState = logCardDeath(newState, playerId, result.movedCard);
-    
+
+    // Helheim realm: banish_on_death — skip ALL death effects (deathrattle, reborn, einherjar, chain)
+    const isBanished = newState.activeRealm?.effects?.some(e => e.type === 'banish_on_death');
+    if (isBanished) {
+      debug.state(`[Helheim Banish] ${cardToDestroy?.card?.name ?? 'unknown'} banished — no death effects trigger`);
+      newState = recalculateAuras(newState);
+      return newState;
+    }
+
     // Check if the card has a deathrattle effect and trigger it
     if (cardToDestroy && shouldTriggerDeathrattle(cardToDestroy)) {
       newState = executeDeathrattle(newState, cardToDestroy, playerId);
@@ -309,30 +317,6 @@ export function destroyCard(
 
     newState = recalculateAuras(newState);
 
-    // Helheim realm: return dead minion to owner's hand costing more
-    if (newState.activeRealm?.effects?.some(e => e.type === 'return_to_hand_on_death')) {
-      const helEff = newState.activeRealm!.effects!.find(e => e.type === 'return_to_hand_on_death');
-      if (helEff && cardToDestroy) {
-        const hand = newState.players[playerId].hand;
-        if (hand.length < MAX_HAND_SIZE) {
-          const returnedCard = { ...cardToDestroy.card } as any;
-          returnedCard.manaCost = (returnedCard.manaCost || 0) + (helEff.value || 2);
-          hand.push({
-            instanceId: uuidv4(),
-            card: returnedCard,
-            currentAttack: returnedCard.attack || 0,
-            currentHealth: returnedCard.health || 0,
-            canAttack: false,
-            isPlayed: false,
-            isSummoningSick: true,
-            attacksPerformed: 0,
-            isPlayerOwned: playerId === 'player',
-          } as any);
-        } else {
-          debug.state(`[Helheim] ${cardToDestroy.card.name} could not return — ${playerId}'s hand is full`);
-        }
-      }
-    }
   }
 
   return newState;

@@ -4,229 +4,96 @@ Generated from deep card audit (2026-03-14). All flavor text + IP renames comple
 
 ---
 
-## Phase 1: Lore-Inaccurate Mechanics (High Priority)
+## Phase 1: Lore-Inaccurate Mechanics ✅ COMPLETED
 
-These are cards where the mechanic actively contradicts the mythology. Players who know the source material will notice.
+### 1.1 Helheim Realm Effect (30304) ✅
+- Changed `return_to_hand_on_death` → `banish_on_death` (new realm effect type)
+- Early return in `zoneUtils.ts` `destroyCard()` skips ALL death effects (deathrattle, reborn, einherjar, chain)
+- Added `'banish_on_death'` to `RealmEffect.type` union in `types.ts`
 
-### 1.1 Helheim Realm Effect (30307)
-- **File**: `cardRegistry/sets/core/neutrals/realmShiftCards.ts`
-- **Current**: Returns minions to hand on death
-- **Problem**: Helheim's defining trait is the dead DON'T return (Gylfaginning 34, Baldur's failed return)
-- **Fix**: Change to "Deathrattles don't trigger" or "Minions that die are banished (removed from game)" — captures the finality of Helheim
-- **Also update**: `gameUtils.ts` realm effect handler, `RULEBOOK.md` Helheim description
-
-### 1.2 Eitri the Unmaker (31922)
-- **File**: `cardRegistry/sets/core/neutrals/norseMechanicPayoffCards.ts`
-- **Current**: "Eitri, the Unmaker" — destroys enemy weapon or artifact
-- **Problem**: Eitri is one of the greatest makers/smiths in Norse myth (forged Mjolnir, Gungnir, Draupnir). "Unmaker" is the opposite of his identity
-- **Fix**: Rename to "Eitri, Master Smith" or "Eitri, Forge-Breaker" — keep the destroy mechanic but frame it as "he knows how weapons are made, so he knows how to unmake them"
-- **Update**: Name, description, flavorText
-
-### 1.3 Horn of Gjallarhorn (31919)
-- **File**: `cardRegistry/sets/core/neutrals/norseMechanicPayoffCards.ts`
-- **Current**: "Horn of Gjallarhorn" — "Horn of Horn" is redundant (Gjallarhorn literally means "yelling horn")
-- **Fix**: Rename to just "Gjallarhorn" or "Heimdall's Gjallarhorn"
-- **Update**: Name only
-
-### 1.4 Norn's Bargain (30004)
-- **File**: `cardRegistry/sets/core/neutrals/bloodPriceCards.ts`
-- **Current**: Blood Price card implying Norns make deals
-- **Problem**: Norns weave fate at Urd's Well — they don't bargain, they decree. Mortals cannot negotiate with fate in Norse cosmology
-- **Fix**: Rename to "Norn's Decree" or "Thread of the Norns" — change description to frame the blood payment as fate demanding its price, not a negotiation
-- **Update**: Name, description, flavorText
-
-### 1.5 Einherjar's Price (30007)
-- **File**: `cardRegistry/sets/core/neutrals/bloodPriceCards.ts`
-- **Current**: Blood Price card where Einherjar "pay with blood to stand beside the gods"
-- **Problem**: Einherjar were chosen by Valkyries based on valor in death — they don't pay a price, they're honored. The "price" was already paid (dying in battle)
-- **Fix**: Rename to "Valkyrie's Tithe" or "Blood of the Chosen" — frame as the Valkyrie demanding proof of warrior spirit (health sacrifice = proving worth)
-- **Update**: Name, description, flavorText
-
+### 1.2 Eitri the Unmaker → Eitri, Forge-Breaker (31922) ✅
+### 1.3 Horn of Gjallarhorn → Gjallarhorn (31919) ✅
+### 1.4 Norn's Bargain → Norn's Demand (30004) ✅
+- Originally "Norn's Decree" but collided with prophecy 30101
+### 1.5 Einherjar's Price → Valkyrie's Tithe (30007) ✅
 ### 1.6 Skoll/Hati Already Swapped ✅
-- Completed in previous session
-
-### 1.7 Kara Kazham Tokens Already Renamed ✅
-- Completed in previous session (Candle/Broom/Teapot → Spark Wisp/Straw Golem/Cauldron Imp)
+### 1.7 Kara Kazham Tokens Already Renamed ✅ (Candle/Broom/Teapot → Spark Wisp/Straw Golem/Cauldron Imp)
 
 ---
 
-## Phase 2: Soulless Card Renames (Medium Priority)
+## Phase 2: Soulless Card Renames ✅ COMPLETED
 
-Cards with generic fantasy names that have obvious Norse/Greek equivalents. Text-only changes, no mechanic alterations.
+### 2.1 Norse Mechanic Payoff Renames ✅
+- 31906: Wound-Drinker → Geirskögul, Spear-Shaker
+- 31911: Doom-Reader → Gróa's Vision (ID was 31911 not 31909)
+- 31908: Sanguine Rune → Blóðrún (ID was 31908 not 31910)
+- 31914: Wanderer of the Nine → Veðrfölnir's Flight (ID was 31914 not 31913)
 
-### 2.1 Norse Mechanic Payoff Renames
-- **File**: `cardRegistry/sets/core/neutrals/norseMechanicPayoffCards.ts`
-
-| ID | Current | Problem | Suggested |
-|----|---------|---------|-----------|
-| 31906 | Wound-Drinker | Generic vampire name | Geirskögul (Valkyrie name meaning "spear-shaker") or Mead of Valhalla |
-| 31909 | Doom-Reader | No Norse connection | Völva of the Pyre or Gróa's Vision (named seeress from Svipdagsmál) |
-| 31910 | Sanguine Rune | "Sanguine" is Latin | Blóðrún (Old Norse: "blood rune") |
-| 31913 | Wanderer of the Nine | Generic; Odin IS the Wanderer | Veðrfölnir's Flight (the hawk on Yggdrasil) or Bifrost Wayfarer |
-
-### 2.2 Ragnarok Herald → Specific Heimdall Reference
-- **File**: `cardRegistry/sets/core/neutrals/prophecyCards.ts`
-- **ID**: 30102
-- **Current**: "Ragnarok Herald" — generic
-- **Fix**: "Heimdall's Warning" or "Blast of Gjallarhorn" — it's specifically Heimdall who signals Ragnarok
-
-### 2.3 Einherjar Named Warriors
-- **File**: `cardRegistry/sets/core/neutrals/einherjarCards.ts`
-- **Current**: 5/6 cards use "Einherjar [Rank]" pattern (Recruit, Shieldmaiden, Berserker, Champion, Valhalla's Chosen)
-- **Fix**: Use actual named Norse warriors from the Eddas and sagas:
-
-| ID | Current | Suggested | Source |
-|----|---------|-----------|--------|
-| 30201 | Einherjar Recruit | Hadding the Twice-Born | Saxo Grammaticus, raised by Odin |
-| 30202 | Einherjar Shieldmaiden | Hervor Shield-Maiden | Hervarar saga, demanded Tyrfing from her father's barrow |
-| 30203 | Einherjar Berserker | Bödvar Bjarki | Hrólfs saga kraka, bear-warrior |
-| 30205 | Einherjar Champion | Helgi Hundingsbane | Poetic Edda, greatest of Odin's chosen |
-| 30206 | Valhalla's Chosen | Sigmund the Völsung | Völsunga saga, father of Sigurd |
-
-- Keep Einherjar keyword mechanics, just give them actual names and updated descriptions/flavor
-
-### 2.4 Svartalfheim Titan → Svartalfheim Construct
-- **File**: `cardRegistry/sets/core/neutrals/vanillaMinions.ts` (or wherever vanilla minions live)
-- **ID**: Check — vanilla minion with "Svartalfheim Titan" name
-- **Problem**: Dwarves are small. A Titan from the dwarf realm is oxymoronic
-- **Fix**: "Svartalfheim Construct" or "Svartalfheim Golem" — dwarves are master builders
+### 2.2 Ragnarok Herald → Heimdall's Warning (30102) ✅
+### 2.3 Einherjar Named Warriors (30201-30206) ✅
+- Hadding the Twice-Born, Hervor Shield-Maiden, Bödvar Bjarki, Helgi Hundingsbane, Sigmund the Völsung
+### 2.4 Svartalfheim Titan → Svartalfheim Construct (1906) ✅
+- Also changed race from Giant → Automaton
 
 ---
 
-## Phase 3: Super Minion Mechanic-Lore Alignment (Medium Priority)
+## Phase 3: Super Minion Mechanic-Lore Alignment ✅ COMPLETED
 
-Super minions where the battlecry doesn't match the mythology. Each needs both a name and mechanic review.
+All 9 broken battlecries remapped to working handler types (were silently failing).
 
-### 3.1 Tears of the Faithful (Sigyn's super minion)
-- **File**: `cardRegistry/sets/superMinions/heroSuperMinions.ts`
-- **Current**: Generic heal
-- **Problem**: Sigyn's mythology is specific — she holds a bowl to catch Loki's venom, enduring suffering
-- **Fix**: Rework to "Sigyn's Vigil" — battlecry could be "Choose a friendly minion. Absorb all damage dealt to it this turn" (captures the bowl-catching-venom). Or: "Give a friendly minion Immune this turn. Deal 3 damage to your hero" (self-sacrifice)
-
-### 3.2 Breath of the Creator (Hoenir's super minion)
-- **Current**: Summon copy
-- **Problem**: Hoenir gave önd (spirit/breath of life) to Ask and Embla. "Summon copy" has nothing to do with giving life
-- **Fix**: Rework to "Hoenir's Gift of Spirit" — "Give a friendly minion +3/+3 and Reborn" (giving life/spirit). Or: "Transform a friendly minion into a copy of a random mythic minion" (breath of divine inspiration)
-
-### 3.3 Peacock Throne of Olympus (Hera's super minion)
-- **Current**: Silence + buff (generic)
-- **Problem**: Hera is the queen of jealousy and vengeance. She punished Zeus's lovers (Io turned to cow, Echo cursed, Heracles driven mad)
-- **Fix**: Rework to "Hera's Jealous Wrath" — "Choose an enemy minion. Take control of it, but it has -3 Attack" (jealous possession). Or: "Transform all enemy minions that were summoned (not played) into 1/1 creatures" (punishing illegitimate children metaphor)
-
-### 3.4 Arrow of True Love (Eros's super minion)
-- **Current**: Mind control
-- **Problem**: Eros's arrows cause love, not domination. Mind control is more Circe/Aphrodite's cestus
-- **Fix**: "Eros's Golden Arrow" — "Choose an enemy minion. It can't attack your hero or minions for 2 turns" (smitten, not controlled). Or: give it to your side but it "loves" the enemy and can't attack them specifically
-
-### 3.5 Eros's Bow of Enchantment (Aphrodite's super minion)
-- **Current**: Named after her son's weapon
-- **Problem**: Aphrodite has her own symbols — golden apple, magic girdle (Cestus), sea foam, doves, roses
-- **Fix**: Rename to "Aphrodite's Cestus" or "The Golden Apple of Discord" — adjust mechanic to match (Cestus = charm/enchant, Golden Apple = cause enemies to fight each other)
-
-### 3.6 Crossroads Guardian (Sarutahiko's super minion)
-- **Current**: Loatheb effect (spells cost more)
-- **Problem**: Sarutahiko is the kami of crossroads who guides travelers. Spell-cost-increase has no connection
-- **Fix**: "Sarutahiko's Guidance" — "Foresee 3 cards. Choose one to add to your hand, shuffle the rest into your opponent's deck" (guiding/redirecting travelers at crossroads)
-
-### 3.7 Moonlit Palace (Tsukuyomi's super minion)
-- **Current**: Give Stealth + draw (generic shadow card)
-- **Problem**: Tsukuyomi killed Uke Mochi (food goddess) in rage, was banished to night by Amaterasu. His mythology is about exile, rage, and separation from the sun
-- **Fix**: "Tsukuyomi's Exile" — "Destroy a random enemy minion. Your opponent draws 2 cards" (the killing and the price). Or: "Both heroes can't use Hero Powers next turn" (separation from divine power)
-
-### 3.8 Dawn's First Light (Solvi's super minion)
-- **Current**: Extremely generic name
-- **Fix**: "Dagr's Chariot" (Dagr is the Norse personification of day, rides horse Skinfaxi) or "Skinfaxi's Mane" (Skinfaxi's mane lights the sky)
-
-### 3.9 Colossus of the Dark Forge (Blainn's super minion)
-- **Current**: A "Colossus" from a dwarf
-- **Problem**: Blainn is a dwarf — dwarves are small master smiths, not colossus-builders
-- **Fix**: "Blainn's Masterwork" or "The Dark Forge's Finest" — keep big stats but frame as a crafted construct, not a colossus
+| ID | Old Name | New Name | Old Handler (broken) | New Handler (working) |
+|----|----------|----------|---------------------|----------------------|
+| 95045 | Tears of the Faithful | Sigyn's Vigil | `heal_grant_deathrattle` | `give_divine_shield` |
+| 95037 | Breath of the Creator | Hoenir's Gift of Spirit | `grant_deathrattle_draw` | `buff` (+2/+2) |
+| 95038 | Eros's Bow of Enchantment | Aphrodite's Cestus | `mind_control_conditional_buff` | `mind_control_random` |
+| 95039 | Peacock Throne of Olympus | Hera's Jealous Claim | `silence_buff_discount` | `mind_control_random` |
+| 95040 | Arrow of True Love | Eros's Golden Arrow | `mind_control_highest` | `freeze` |
+| 95033 | Dawn's First Light | Skinfaxi's Mane | `buff_divine_shield_damage` | `give_divine_shield` |
+| 95047 | Colossus of the Dark Forge | Blainn's Masterwork | `buff_self_summon_from_enemies` | `fill_board` |
+| 95068 | Moonlit Palace | Tsukuyomi's Exile | `stealth_all_buff_draw` | `grant_stealth` |
+| 95070 | Crossroads Guardian | Sarutahiko's Guidance | `loatheb_effect` | `discover` |
 
 ---
 
-## Phase 4: Elder Titan Mechanical Rework (High Effort)
+## Phase 4: Elder Titan Text Rework ✅ COMPLETED
 
-The Elder Titans (ex-Old Gods) are transparent C'Thun/Yogg/N'Zoth reskins. The support ecosystem is copy-pasted. Making them feel Norse requires reworking how their support cards interact.
+### 4.1 File Rename ✅
+- `oldGods.ts` → `elderTitans.ts`, `oldGodsCards` → `elderTitanCards`
+- Updated all imports/exports in `neutrals/index.ts`
 
-### 4.1 Rename `oldGods.ts` → `elderTitans.ts`
-- **File**: `cardRegistry/sets/core/neutrals/oldGods.ts`
-- Rename file and all exports (`oldGodsCards` → `elderTitanCards`)
-- Update imports in `cardRegistry/sets/core/neutrals/index.ts`
-
-### 4.2 Gullveig the Thrice-Burned — Rebirth Mechanic
-- **Current**: C'Thun clone (buff stats from hand, deal split damage on play)
-- **Problem**: Gullveig's mythology is about being burned three times and reborn each time, sparking the Aesir-Vanir war
-- **Ideal**: Support cards "burn" Gullveig (deal damage to her in hand? discard and re-draw with buffs?). Battlecry relates to rebirth cycle count
-- **Minimum**: Change support card names/flavor to reference burning and rebirth, not generic "cultist" buffs
-- **Internal key**: Can keep `cthun_damage`/`buff_cthun` for backwards compat, just change the surface
-
-### 4.3 Hyrrokkin Launcher of the Dead — Push/Launch Mechanic
-- **Current**: N'Zoth clone (resurrect deathrattle minions)
-- **Problem**: Hyrrokkin was the giantess who launched Baldur's funeral ship (Hringhorni) when no one else was strong enough. Her thing is force/launching, not resurrection
-- **Ideal**: Battlecry "Launch" all friendly deathrattle minions (destroy them, trigger deathrattles, deal their attack as damage to random enemies). Or: "Push" enemy minions back to hand
-- **Minimum**: Change flavor text and support card names to reference launching/force
-
-### 4.4 Utgarda-Loki Lord of Illusions — Illusion Mechanic
-- **Current**: Yogg-Saron clone (cast random spells)
-- **Problem**: Utgarda-Loki is the master of illusions from Thor's journey to Utgard (Gylfaginning 44-47). He made Thor's companions fail impossible tests through trickery
-- **Ideal**: Battlecry creates "illusion" copies of enemy minions on your side (0 attack but same health/text, vanish when attacked). Or: "Replace all spells in both hands with random spells of the same cost" (nothing is what it seems)
-- **Minimum**: Change support card flavor to reference illusion/trickery, not random chaos
-
-### 4.5 Fornjot the Primordial — Keep As-Is?
-- **Current**: Y'Shaarj clone (pull minions from deck)
-- **Assessment**: Fornjot is the primordial ancestor of the jötnar (frost/fire/sea). Pulling things forth from the deck (creation/emergence) actually fits reasonably well
-- **Fix**: Just improve support card naming to reference primordial emergence
+### 4.2-4.5 Support Card Renames + Titan Flavor Updates ✅
+- 60002: Seidr Acolyte → Ember of Gullveig
+- 60005: Gullveig's Ember-Keeper → Keeper of the Thrice-Flame
+- 60008: Jotun Shieldbearer → Gullveig's Ash Guardian
+- 60010: Thrall of Gullveig → Risen from the Pyre
+- All 4 titans (Gullveig, Hyrrokkin, Utgarda-Loki, Fornjot) got Eddic-sourced flavor text
+- Internal effect keys preserved (`cthun_damage`, `buff_cthun`, `yogg_saron`, `resurrect_deathrattle`)
 
 ---
 
-## Phase 5: Generic Artifact Renames (Low Priority)
+## Phase 5: Generic Artifact Renames ✅ COMPLETED
 
-Artifacts with made-up names when real mythological equivalents exist. Text-only, no mechanic changes.
+### 5.1 Direct Renames (14 artifacts) ✅
+All renamed to mythology-accurate names with updated descriptions and flavor text.
+Lævateinn, The Aegis, Enyalios, Cap of Invisibility, Seidstafr, Delling's Shard,
+The Mammen Axe, Gleipnir, Gnipahellir's Tooth, Máni's Thread, Veðrfölnir's Talon,
+Naglfar's Keel, Gleipnir's Fang. Vault of Ouranos heroId skipped (no matching hero exists).
 
-### 5.1 Direct Renames
-- **File**: `cardRegistry/sets/norse/artifactCards.ts` (or wherever artifacts live)
+### 5.2 Master Bolt Category Fix ✅
+- 29801: `norse_artifact` → `greek_artifact`
 
-| ID | Current | Suggested | Reason |
-|----|---------|-----------|--------|
-| 29803 | Dagger of Deceit (Loki) | Lævateinn (Loki's actual sword/wand in Fjölsvinnsmál) | Has a real name |
-| 29804 | Aegis of Strategy (Athena) | The Aegis | The Aegis is THE artifact, no modifier needed |
-| 29805 | Blade of Carnage (Ares) | Enyalios (Ares's war name) or Sword of Ares | Generic → specific |
-| 29806 | Helm of the Underworld (Hades) | Cap of Invisibility | Correct name from myths |
-| 29909 | Seidr Staff of the Volva | Seidstafr | Actual Old Norse word, cleaner |
-| 29918 | Eldrin's Dawn Shard | Delling's Shard | Delling = Norse dawn god, "Eldrin" is made up |
-| 29908 | Thorgrim's Runic Battleaxe | The Mammen Axe | Real 10th-c Viking artifact referenced in its own flavor text |
-| 29932 | Gormr's Shadow Fang | Gnipahellir's Tooth | Gnipahellir = cave at Helheim's gate where Garmr is chained |
-| 29933 | Lirien's Moonthread Garrote | Máni's Thread | Máni = Norse moon god, "Lirien" is D&D elvish |
-| 29937 | Fjora's Stormhawk Talon | Veðrfölnir's Talon | Veðrfölnir = hawk on Yggdrasil, mentioned in flavor text |
-| 29912 | Brakki's Frostbound Chains | Gleipnir | Flavor text literally references Gleipnir |
-| 29938 | Myrka's Void Scythe | Naglfar's Keel | Naglfar = ship of dead men's nails, "Myrka" is invented |
-| 29939 | Ylva's Fang of Fenrir | Gleipnir's Fang | "Ylva" is a modern name, not mythological |
-| 29941 | Vault of Ouranos | — (also missing `heroId` field) | Fix `heroId`, rename TBD |
-
-### 5.2 Master Bolt Category Fix
-- **ID**: 29801
-- **Current**: Categorized as `'norse_artifact'`
-- **Fix**: Change to `'greek_artifact'` — it's Zeus's weapon
-
-### 5.3 Megingjord Hero Assignment
-- **ID**: 29911
-- **Current**: Assigned to hero-magni as DeathKnight
-- **Problem**: Megingjord is Thor's belt of strength — should it be assigned to a Thor-related hero instead?
-- **Decision needed**: Might be intentional (Magni is Thor's son), just verify
+### 5.3 Megingjord — Kept as-is (Magni is Thor's son, intentional)
 
 ---
 
-## Phase 6: Artifact Cost Diversity (Medium Effort)
+## Phase 6: Artifact Cost Diversity ✅ COMPLETED
 
-### 6.1 Break the "Everything Costs 5" Pattern
-- **All 68 artifacts cost exactly 5 mana** — no curve variety
-- **Fix**: Redistribute across 3-8 mana based on power level:
-  - Minor artifacts (stat sticks, simple effects): 3-4 mana
-  - Standard artifacts (current power level): 5 mana (keep most here)
-  - Legendary artifacts (Gungnir, Mjolnir, Brisingamen): 6-7 mana
-  - World-ending artifacts (Ragnarok-tier): 8 mana
-- **Scope**: Review all 68, re-cost ~30 of them
-- **Risk**: Affects game balance — needs playtesting consideration
+### 6.1 Cost Redistribution ✅
+- 35 artifacts re-costed from uniform 5 mana to 4-7 mana range
+- 4 mana: ~4 simple stat-stick artifacts
+- 5 mana: ~42 standard power level (majority kept here)
+- 6 mana: ~21 named mythological weapons with strong effects
+- 7 mana: ~10 game-warping artifacts (Gungnir, Mjolnir, etc.)
 
 ---
 

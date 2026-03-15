@@ -1272,6 +1272,32 @@ vercel --prod                 # Deploy to Vercel
 - Updated vite.config.ts: `game/nft/` assigned to `game-types` shared chunk
 - TypeScript: 0 errors, build succeeds
 
+### Completed (Card Soul Audit — Phases 1-6)
+
+- **Phase 1: Lore-Inaccurate Mechanics**
+  - Helheim realm effect (30304): `return_to_hand_on_death` → `banish_on_death` — skips ALL death effects (deathrattle, reborn, einherjar, chain)
+  - Added `'banish_on_death'` to `RealmEffect.type` union in `types.ts`
+  - Removed old `return_to_hand_on_death` handler block from `zoneUtils.ts`
+  - 4 text renames: Eitri Forge-Breaker, Gjallarhorn, Norn's Demand, Valkyrie's Tithe
+- **Phase 2: Soulless Card Renames** (10 cards)
+  - Norse payoffs: Geirskögul, Gróa's Vision, Blóðrún, Veðrfölnir's Flight
+  - Prophecy: Ragnarok Herald → Heimdall's Warning
+  - Einherjar: 5 named saga warriors (Hadding, Hervor, Bödvar Bjarki, Helgi, Sigmund)
+  - Vanilla: Svartalfheim Titan → Svartalfheim Construct (race Giant → Automaton)
+- **Phase 3: Super Minion Battlecry Fixes** (9 cards)
+  - Remapped 9 broken battlecry types to working handlers (were silently failing)
+  - Sigyn→give_divine_shield, Hoenir→buff, Aphrodite→mind_control_random, Hera→mind_control_random, Eros→freeze, Solvi→give_divine_shield, Blainn→fill_board, Tsukuyomi→grant_stealth, Sarutahiko→discover
+- **Phase 4: Elder Titan Text Rework**
+  - Renamed `oldGods.ts` → `elderTitans.ts`, variable `oldGodsCards` → `elderTitanCards`
+  - 4 support cards renamed with Gullveig/Völuspá references
+  - All 4 titan flavor texts updated with Eddic sources
+- **Phase 5: Artifact Renames** (14 cards + 1 field fix)
+  - 14 artifacts renamed to mythology-accurate names (Lævateinn, The Aegis, Enyalios, etc.)
+  - Master Bolt (29801): `norse_artifact` → `greek_artifact`
+- **Phase 6: Artifact Cost Diversity**
+  - 35 artifacts re-costed from uniform 5 mana to 4-7 mana range
+- TypeScript: 0 errors, production build succeeds
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)
