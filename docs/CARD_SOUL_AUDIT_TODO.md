@@ -259,3 +259,36 @@ sdk/
 - **Type proliferation**: DTO conversion layer adds boilerplate
 - **Event bus unification**: HiveEvents + GameEventBus should merge into one system
 - **Testing**: Need mock adapters for all interfaces (local mode already works as template)
+
+---
+
+## Future Ideas (Backlog)
+
+### F1: Class Pet Synergy Cards (instead of class-locking families)
+
+**Context**: Considered hard-locking 12 pet families to specific classes (1 per class, 26 remain neutral). After analysis, hard-locking was rejected:
+- 30-card decks + 4-minion battlefield = only 1 class family (7 cards) gives zero choice
+- 26 neutral families would still dwarf 1 class family, making the signal weak
+- Trigger distribution is lopsided (16 families use `on_deal_damage`) — would create class imbalance
+- Removes cross-class pet creativity (warrior running healer pets, etc.)
+
+**Better approach**: Add 12 class-specific pet synergy cards (one per class) that reference a specific `petFamily`, giving a soft incentive without hard restriction.
+
+**Proposed thematic pairings**:
+
+| Class | Signature Pet Family | Synergy Theme |
+|-------|---------------------|---------------|
+| Warrior | Bears | Tanky beasts, berserker bear-warriors (Bödvar Bjarki) |
+| Hunter | Wolves | Pack hunting, Fenrir lineage |
+| Rogue | Ravens | Huginn/Muninn — stealth, intelligence |
+| Mage | Drakes | Magical creatures, elemental breath |
+| Paladin | Bifrost | Rainbow bridge guardians, divine shield |
+| Shaman | Stormkin | Lightning, elemental forces |
+| Priest | Fylgja | Spirit animals, Norse guardian spirits |
+| Warlock | Hellhounds | Underworld fire, Garmr |
+| Druid | Ents | Nature, Yggdrasil |
+| Necromancer | Draugr | Undead, risen dead |
+| DeathKnight | Giants | Niflheim cold, jotun lords |
+| Berserker | Einherjar Warriors | Fallen warriors, Valhalla |
+
+**Implementation**: 12 new class cards (one per class, ~3 mana minions) with effects like "Your [Family] pets evolve one trigger faster" or "When a [Family] pet evolves, draw a card". All pet families stay `class: 'Neutral'`.

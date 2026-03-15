@@ -1314,6 +1314,23 @@ vercel --prod                 # Deploy to Vercel
   - Race fixes: Typhon + Porphyrion Elemental→Titan, Porphyrion epic→mythic, Medusa added Spirit race
 - TypeScript: 0 errors
 
+### Completed (Poker Combat Drama System)
+
+- GSAP-powered VFX engine (`PokerDramaVFX.ts`): card deal slams, betting action animations, showdown damage, Ragnarok cinematic
+- Re-raise pressure system: escalating screen shake, bass hit audio, hero slam + opponent recoil, risk badge pulse, edge glow (stacks per re-raise level)
+- Community card reveals: suit-colored particle impacts, river slow-mo + screen flash, flop staggered slams
+- Betting action VFX: Attack (hero lunge + gold flash), Counter-Attack (pressure shake + time dilation), Engage (center clash spark), Defend (shield tint), Brace (retreat + desaturate)
+- Phase banner overhaul: FIRST BLOOD, THE NORNS SPEAK, THE VEIL THINS, RAGNAROK'S EDGE — with phase-specific CSS colors and horizontal slash VFX
+- Hand strength indicator: live display of current best poker hand with 4-tier coloring (low/mid/high/godly), pulse on improvement
+- Tension-reactive CSS: `data-tension-level` vignette, `data-player-hp-zone` board darkening, momentum/streak glow on hero wrappers
+- Win streak announcements: DOMINATION / DEFIANCE / LAST STAND text slams
+- Procedural audio: bass hits (re-raise), card slam thump (noise burst + lowpass), steel clash (call action)
+- Ragnarok (Royal Flush) cinematic: white-out flash, 3 staggered fire particle bursts, heavy screen shake, 6rem text slam
+- Showdown damage: flying damage number from winner to loser, scaled by hand rank gap, crushing wins get screen flash + extra particles
+- `@media (prefers-reduced-motion: reduce)` disables all effects
+- All VFX non-critical (wrapped in try/catch at wiring points)
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)

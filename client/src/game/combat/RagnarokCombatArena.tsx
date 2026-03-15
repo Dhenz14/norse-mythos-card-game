@@ -58,6 +58,9 @@ import { debug } from '../config/debugConfig';
 import { playSound } from '../utils/soundUtils';
 import { GameLog } from '../components/GameLog';
 import { useGameLogIntegration } from '../hooks/useGameLogIntegration';
+import { usePokerDrama } from './hooks/usePokerDrama';
+import { HandStrengthIndicator } from './components/HandStrengthIndicator';
+import './styles/poker-drama.css';
 import { useEventAnimationBridge } from '../hooks/useEventAnimationBridge';
 import { useKingPassiveEventStore } from '../stores/kingPassiveEventStore';
 import { useDamageAnimations } from './hooks/useDamageAnimations';
@@ -848,6 +851,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     removeHeroBattlePopup,
   } = useRagnarokCombatController({ onCombatEnd });
 
+  const pokerDrama = usePokerDrama({ combatState, isActive });
+
   const elementalBuff = useElementalBuff();
 
   // Element matchup banner — show once when combat first initializes
@@ -1062,6 +1067,13 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         })()}
         
         <PhaseBanner phase={combatState.phase} forceHide={!!showdownCelebration} />
+
+        {/* Hand strength indicator — live display of current best hand */}
+        <HandStrengthIndicator
+          handRank={pokerDrama.currentHandRank}
+          handName={pokerDrama.currentHandName}
+          tier={pokerDrama.handTier}
+        />
 
         {/* Opponent thinking indicator — shown when it's not the player's turn */}
         {!isPlayerTurn && (

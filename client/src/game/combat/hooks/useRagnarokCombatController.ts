@@ -40,6 +40,7 @@ import { COMBAT_DEBUG } from '../debugConfig';
 import { hasKeyword } from '../../utils/cards/keywordUtils';
 import { debug } from '../../config/debugConfig';
 import type { HeroBattlePopupData, BattlePopupAction, BattlePopupTarget } from '../components/HeroBattlePopup';
+import { getPokerDramaCallbacks } from './usePokerDrama';
 
 /**
  * Hero power targeting state structure
@@ -831,6 +832,12 @@ export function useRagnarokCombatController(
 
     performAction(freshState.player.playerId, action, hp);
 
+    // Trigger poker drama VFX for the betting action
+    try {
+      const dramaCallbacks = getPokerDramaCallbacks();
+      dramaCallbacks.onBettingAction(action, true);
+    } catch { /* drama VFX is non-critical */ }
+
     if (action === CombatAction.BRACE) {
       endTurn();
     }
@@ -910,7 +917,13 @@ export function useRagnarokCombatController(
         }
         
         getPokerCombatAdapterState().performAction(freshStateAfterAction.opponent.playerId, aiDecision.action, aiDecision.betAmount);
-        
+
+        // Trigger poker drama VFX for AI action
+        try {
+          const dramaCallbacks = getPokerDramaCallbacks();
+          dramaCallbacks.onBettingAction(aiDecision.action, false);
+        } catch { /* drama VFX is non-critical */ }
+
         setTimeout(() => {
           const adapterAfterAI = getPokerCombatAdapterState();
           if (adapterAfterAI.combatState && 

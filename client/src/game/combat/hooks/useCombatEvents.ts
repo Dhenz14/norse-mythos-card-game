@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { CombatPhase, PokerCombatState, PokerCard } from '../../types/PokerCombatTypes';
 import { initializeCombatEventSubscribers, cleanupCombatEventSubscribers } from '../../services/CombatEventSubscribers';
 import { useGameStore } from '../../stores/gameStore';
+import { getPokerDramaCallbacks } from './usePokerDrama';
 
 export interface ShowdownCelebration {
   resolution: {
@@ -105,6 +106,18 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
           },
           winningCards
         });
+
+        // Trigger showdown drama VFX
+        try {
+          const dramaCallbacks = getPokerDramaCallbacks();
+          const damage = result.winner === 'player' ? result.opponentDamage : result.playerDamage;
+          dramaCallbacks.onShowdown(
+            result.playerHand?.rank || 1,
+            result.opponentHand?.rank || 1,
+            result.winner,
+            damage || 0
+          );
+        } catch { /* drama VFX is non-critical */ }
       }
     }
   }, [combatState?.phase, combatState?.player?.isReady, combatState?.opponent?.isReady, isActive, resolveCombat, onShowdownCelebration, onHeroDeath, setResolution, cardGameMulliganActive]);
