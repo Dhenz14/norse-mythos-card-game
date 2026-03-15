@@ -1331,6 +1331,16 @@ vercel --prod                 # Deploy to Vercel
 - All VFX non-critical (wrapped in try/catch at wiring points)
 - TypeScript: 0 errors
 
+### Completed (Super Minion Battlecry Full Implementation)
+
+- Implemented 67 missing composite battlecry handlers in `battlecryUtils.ts` (~700 lines)
+- All 81 super minion battlecries now functional (was: 8 working, 73 silently failing)
+- Each handler composes existing primitives (dealDamage, healTarget, destroyCard, createCardInstance, addKeyword, etc.)
+- Handler categories: damage variants (13), buff variants (10), destroy variants (8), summon variants (8), stealth (4), freeze (3), bounce (3), copy (2), mind control (1), draw/discover (4), misc (11)
+- Every handler is faithful to its card's description text — no design compromises
+- Deck draw operations properly wrap CardData with `createCardInstance()` before pushing to hand
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)
