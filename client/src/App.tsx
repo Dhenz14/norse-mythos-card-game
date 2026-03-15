@@ -208,13 +208,27 @@ function App() {
         { loadWasmEngine },
         { initGameStoreSubscriptions },
         { initGameFlowSubscription },
+        { initializeNFTBridge },
+        { setCardDataProvider },
+        allCardsModule,
+        artMappingModule,
       ] = await Promise.all([
         import("./game/effects/initEffectSystem"),
         import("./game/stores/gameStoreIntegration"),
         import("./game/engine/wasmLoader"),
         import("./game/stores/gameStore"),
         import("./game/stores/gameFlowStore"),
+        import("./game/nft"),
+        import("./data/blockchain/ICardDataProvider"),
+        import("./game/data/allCards"),
+        import("./game/utils/art/artMapping"),
       ]);
+      setCardDataProvider({
+        getCardById: (id: number) => allCardsModule.getCardById(id) as any,
+        getAllCards: () => allCardsModule.default as any,
+        getCardArtPath: (name: string, cardId?: number) => artMappingModule.getRawCardArtPath(name, cardId),
+      });
+      await initializeNFTBridge();
       initEffectSystem();
       initGameStoreSubscriptions();
       initGameFlowSubscription();

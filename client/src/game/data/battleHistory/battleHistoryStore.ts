@@ -12,7 +12,11 @@ import { persist } from 'zustand/middleware';
 import { StorageKeys } from '@/game/config/storageKeys';
 import { debug } from '@/game/config/debugConfig';
 import { FeatureFlags, isBattleHistoryEnabled } from '@/game/config/featureFlags';
-import { generateBattleSessionId } from '@/game/data/hive/adapters/IHiveDataAdapter';
+function generateBattleSessionId(mode: 'pvp' | 'pve' | 'practice') {
+	const ts = Date.now();
+	const rand = Math.random().toString(36).substring(2, 8);
+	return { sessionId: `battle_${ts}_${rand}_${mode}`, startedAt: ts, mode };
+}
 import type { BattleHistoryEntry, BattleHistoryState } from './types';
 
 interface BattleHistoryStore extends BattleHistoryState {

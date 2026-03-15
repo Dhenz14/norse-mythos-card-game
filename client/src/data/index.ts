@@ -31,4 +31,5 @@ export { HiveSync, hiveSync, type HiveBroadcastResult } from './HiveSync';
 
 export { hiveEvents, type HiveEvent, type HiveEventType } from './HiveEvents';
 
-export * from './blockchain';
+// Blockchain exports removed — game code should import via getNFTBridge()
+// Direct blockchain imports only allowed in: HiveNFTBridge.ts, HiveKeychainLogin.tsx, BlockchainSubscriber.ts

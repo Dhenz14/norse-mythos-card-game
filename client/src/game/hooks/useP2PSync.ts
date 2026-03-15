@@ -7,7 +7,7 @@ import { GameState } from '../types';
 import { verifyDeckOwnership } from '../../data/blockchain/deckVerification';
 import { sha256Hash } from '../../data/blockchain/hashUtils';
 import { verifyDeck as verifyDeckOnServer } from '../../data/chainAPI';
-import { hiveSync } from '../../data/HiveSync';
+import { getNFTBridge } from '../nft';
 import type { PackagedMatchResult } from '../../data/blockchain/types';
 import { createSeededRng, seededShuffle } from '../utils/seededRng';
 import { startNewTranscript, getActiveTranscript, clearTranscript } from '../../data/blockchain/transcriptBuilder';
@@ -520,14 +520,14 @@ export function useP2PSync() {
 						? (expectedHostWinner === 'player' ? data.result.winner.username : data.result.loser.username)
 						: proposedWinner;
 
-					const clientUsername = hiveSync.getUsername();
+					const clientUsername = getNFTBridge().getUsername();
 					const iAmWinner = myWinner === 'player';
 					const resultSaysIWon = data.result.winner.username === clientUsername;
 					const resultSaysILost = data.result.loser.username === clientUsername;
 
 					if ((iAmWinner && resultSaysIWon) || (!iAmWinner && resultSaysILost)) {
 						try {
-							const sig = await hiveSync.signResultHash(data.hash);
+							const sig = await getNFTBridge().signResultHash(data.hash);
 							send({ type: 'result_countersign', counterpartySig: sig });
 						} catch {
 							send({ type: 'result_reject', reason: 'signing_failed' });

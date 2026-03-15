@@ -1,6 +1,6 @@
 import type { NFTMetadata, NFTAttribute, MintInfo } from './types';
 import { hashNFTMetadata } from './hashUtils';
-import { getCardArtPath } from '../../game/utils/art/artMapping';
+import { getCardDataProvider } from './ICardDataProvider';
 import { NFT_ART_BASE_URL, EXTERNAL_URL_BASE } from './hiveConfig';
 import { getTransactionUrl, getBlockUrl } from './explorerLinks';
 
@@ -90,7 +90,7 @@ export async function generateNFTMetadata(
 	provenance?: MintProvenance,
 ): Promise<NFTMetadata> {
 	const heroClass = cardDef.heroClass || cardDef.class || 'neutral';
-	const localPath = getCardArtPath(cardDef.name, cardDef.id);
+	const localPath = getCardDataProvider().getCardArtPath(cardDef.name, cardDef.id);
 	const image = localPath ? `${NFT_ART_BASE_URL}${localPath}` : '';
 
 	const metadataWithoutHash: Omit<NFTMetadata, 'hash'> = {
@@ -112,7 +112,7 @@ export async function generateNFTMetadata(
 		foil: mintInfo.foil,
 		mintNumber: mintInfo.mintNumber,
 		maxSupply: mintInfo.maxSupply,
-		mintedAt: Date.now(),
+		mintedAt: provenance?.timestamp ?? Date.now(),
 		mintedBy: mintInfo.mintedBy,
 		image,
 		artPath: localPath || undefined,

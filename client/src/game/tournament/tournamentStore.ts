@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getNFTBridge } from '../nft';
 import type { Tournament, TournamentListItem } from './tournamentTypes';
 
 interface TournamentState {
@@ -54,10 +55,13 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
 
 	register: async (tournamentId, username) => {
 		try {
+			const body = getNFTBridge().isHiveMode()
+				? await getNFTBridge().buildAuthBody(username, 'tournament-register', { username })
+				: { username };
 			const res = await fetch(`/api/tournaments/${tournamentId}/register`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify(body),
 			});
 			if (res.ok) {
 				const data = await res.json();
@@ -72,10 +76,13 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
 
 	reportResult: async (tournamentId, matchId, winner) => {
 		try {
+			const body = getNFTBridge().isHiveMode()
+				? await getNFTBridge().buildAuthBody(winner, 'tournament-result', { matchId, winner })
+				: { matchId, winner };
 			const res = await fetch(`/api/tournaments/${tournamentId}/result`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ matchId, winner }),
+				body: JSON.stringify(body),
 			});
 			if (res.ok) {
 				const data = await res.json();
@@ -90,10 +97,13 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
 
 	drop: async (tournamentId, username) => {
 		try {
+			const body = getNFTBridge().isHiveMode()
+				? await getNFTBridge().buildAuthBody(username, 'tournament-drop', { username })
+				: { username };
 			const res = await fetch(`/api/tournaments/${tournamentId}/drop`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify(body),
 			});
 			if (res.ok) {
 				const data = await res.json();

@@ -18,9 +18,9 @@ import { initializeAudioSubscriber } from '@/game/subscribers/AudioSubscriber';
 import { initializeNotificationSubscriber } from '@/game/subscribers/NotificationSubscriber';
 import { initializeAnimationSubscriber } from '@/game/subscribers/AnimationSubscriber';
 import { initializeDailyQuestSubscriber } from '@/game/subscribers/DailyQuestSubscriber';
-import { isBlockchainPackagingEnabled, isHiveMode } from '../config/featureFlags';
+import { isBlockchainPackagingEnabled } from '../config/featureFlags';
 import { debug } from '../config/debugConfig';
-import { hiveEvents } from '@/data/HiveEvents';
+import { getNFTBridge } from '../nft';
 import { toast } from 'sonner';
 import { useSettingsStore } from '@/game/stores/settingsStore';
 import { useAudio } from '@/lib/stores/useAudio';
@@ -46,23 +46,24 @@ export function initializeGameStoreIntegration(): () => void {
   cleanupFunctions.push(initializeAnimationSubscriber());
   cleanupFunctions.push(initializeDailyQuestSubscriber());
 
-  if (isHiveMode()) {
+  if (getNFTBridge().isHiveMode()) {
+    const bridge = getNFTBridge();
     cleanupFunctions.push(
-      hiveEvents.on('card:transferred', (e) => {
+      bridge.onEvent('card:transferred', (e) => {
         const p = e.payload as { cardUid?: string; from?: string; to?: string };
         if (!p?.cardUid || !p.to) return;
         toast.info(`Card ${p.cardUid.slice(0, 8)}… transferred to ${p.to}`, { duration: 3000 });
       }),
-      hiveEvents.on('token:updated', (e) => {
+      bridge.onEvent('token:updated', (e) => {
         const p = e.payload as { token?: string; amount?: number; change?: number };
         if (!p?.token || p.amount == null || p.change == null) return;
         const sign = p.change > 0 ? '+' : '';
         toast.success(`${p.token}: ${sign}${p.change} (total: ${p.amount})`, { duration: 3000 });
       }),
-      hiveEvents.on('transaction:confirmed', () => {
+      bridge.onEvent('transaction:confirmed', () => {
         toast.success('Transaction confirmed on Hive', { duration: 2000 });
       }),
-      hiveEvents.on('transaction:failed', (e) => {
+      bridge.onEvent('transaction:failed', (e) => {
         const p = e.payload as { errorMessage?: string };
         toast.error(`Transaction failed: ${p?.errorMessage ?? 'unknown error'}`, { duration: 4000 });
       }),

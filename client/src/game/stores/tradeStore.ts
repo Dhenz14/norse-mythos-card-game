@@ -1,8 +1,5 @@
 import { create } from 'zustand';
-import { hiveSync } from '../../data/HiveSync';
-import { useHiveDataStore } from '../../data/HiveDataLayer';
-import { hiveEvents } from '../../data/HiveEvents';
-import { isHiveMode } from '../config/featureFlags';
+import { getNFTBridge } from '../nft';
 
 export interface TradeOffer {
 	id: string;
@@ -69,17 +66,23 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 		if (selectedOfferedCards.length === 0 && offeredDust === 0) return false;
 		set({ loading: true, error: null });
 		try {
+			const authBody = getNFTBridge().isHiveMode()
+				? await getNFTBridge().buildAuthBody(fromUser, 'trade-create', {
+					fromUser, toUser,
+					offeredCardIds: selectedOfferedCards,
+					requestedCardIds: selectedRequestedCards,
+					offeredDust, requestedDust,
+				})
+				: {
+					fromUser, toUser,
+					offeredCardIds: selectedOfferedCards,
+					requestedCardIds: selectedRequestedCards,
+					offeredDust, requestedDust,
+				};
 			const res = await fetch('/api/trades', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					fromUser,
-					toUser,
-					offeredCardIds: selectedOfferedCards,
-					requestedCardIds: selectedRequestedCards,
-					offeredDust,
-					requestedDust,
-				}),
+				body: JSON.stringify(authBody),
 			});
 			if (res.ok) {
 				const data = await res.json();
@@ -97,10 +100,13 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 
 	acceptOffer: async (offerId, username) => {
 		try {
+			const authBody = getNFTBridge().isHiveMode()
+				? await getNFTBridge().buildAuthBody(username, 'trade-accept', { username })
+				: { username };
 			const res = await fetch(`/api/trades/${offerId}/accept`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify(authBody),
 			});
 			if (res.ok) {
 				const offer = get().offers.find(o => o.id === offerId);
@@ -108,15 +114,16 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 					offers: s.offers.map(o => o.id === offerId ? { ...o, status: 'accepted' as const } : o),
 				}));
 
-				if (isHiveMode() && offer) {
-					const collection = useHiveDataStore.getState().cardCollection;
+				if (getNFTBridge().isHiveMode() && offer) {
+					const bridge = getNFTBridge();
+					const collection = bridge.getCardCollection();
 					for (const cardId of offer.offeredCardIds) {
 						const nft = collection.find(c => c.cardId === cardId);
 						if (nft) {
-							const result = await hiveSync.transferCard(nft.uid, offer.toUser, `trade:${offerId}`);
+							const result = await bridge.transferCard(nft.uid, offer.toUser, `trade:${offerId}`);
 							if (result.success) {
-								useHiveDataStore.getState().removeCard(nft.uid);
-								hiveEvents.emitCardTransferred(nft.uid, offer.fromUser, offer.toUser);
+								bridge.removeCard(nft.uid);
+								bridge.emitCardTransferred(nft.uid, offer.fromUser, offer.toUser);
 							}
 						}
 					}
@@ -131,10 +138,13 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 
 	declineOffer: async (offerId, username) => {
 		try {
+			const authBody = getNFTBridge().isHiveMode()
+				? await getNFTBridge().buildAuthBody(username, 'trade-decline', { username })
+				: { username };
 			const res = await fetch(`/api/trades/${offerId}/decline`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify(authBody),
 			});
 			if (res.ok) {
 				set(s => ({
@@ -150,10 +160,13 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 
 	cancelOffer: async (offerId, username) => {
 		try {
+			const authBody = getNFTBridge().isHiveMode()
+				? await getNFTBridge().buildAuthBody(username, 'trade-cancel', { username })
+				: { username };
 			const res = await fetch(`/api/trades/${offerId}/cancel`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username }),
+				body: JSON.stringify(authBody),
 			});
 			if (res.ok) {
 				set(s => ({

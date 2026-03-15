@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { HiveCardAsset } from '../../../data/schemas/HiveTypes';
-import { hiveSync } from '../../../data/HiveSync';
-import { useHiveDataStore } from '../../../data/HiveDataLayer';
-import { hiveEvents } from '../../../data/HiveEvents';
+import { getNFTBridge } from '../../nft';
 import { toast } from 'sonner';
 
 interface SendCardModalProps {
@@ -22,7 +20,7 @@ const SendCardModal: React.FC<SendCardModalProps> = ({ nft, onClose, onSuccess }
 
 	if (!nft) return null;
 
-	const currentUser = useHiveDataStore.getState().user?.hiveUsername ?? '';
+	const currentUser = getNFTBridge().getUsername() ?? '';
 	const validRecipient = HIVE_USERNAME_RE.test(recipient) && recipient !== currentUser;
 
 	const handleSend = async () => {
@@ -35,10 +33,11 @@ const SendCardModal: React.FC<SendCardModalProps> = ({ nft, onClose, onSuccess }
 
 		setSending(true);
 		try {
-			const result = await hiveSync.transferCard(nft.uid, recipient, memo || undefined);
+			const bridge = getNFTBridge();
+			const result = await bridge.transferCard(nft.uid, recipient, memo || undefined);
 			if (result.success) {
-				useHiveDataStore.getState().removeCard(nft.uid);
-				hiveEvents.emitCardTransferred(nft.uid, currentUser, recipient);
+				bridge.removeCard(nft.uid);
+				bridge.emitCardTransferred(nft.uid, currentUser, recipient);
 				toast.success(`Sent ${nft.name} to @${recipient}`);
 				onSuccess?.();
 				onClose();

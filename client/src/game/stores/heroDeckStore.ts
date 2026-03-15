@@ -9,8 +9,7 @@
 import { create } from 'zustand';
 import { cardRegistry } from '../data/cardRegistry';
 import { debug } from '../config/debugConfig';
-import { useHiveDataStore } from '../../data/HiveDataLayer';
-import { isHiveMode } from '../config/featureFlags';
+import { getNFTBridge } from '../nft';
 
 export type PieceType = 'queen' | 'rook' | 'bishop' | 'knight';
 
@@ -81,9 +80,7 @@ function countCardCopies(cardIds: number[], cardId: number): number {
 }
 
 function getOwnedCopies(cardId: number): number {
-  if (!isHiveMode()) return Infinity;
-  const collection = useHiveDataStore.getState().cardCollection;
-  return collection.filter(c => c.cardId === cardId).length;
+  return getNFTBridge().getOwnedCopies(cardId);
 }
 
 function isCardMythic(cardId: number): boolean {
@@ -275,7 +272,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
       }
     }
 
-    if (isHiveMode()) {
+    if (getNFTBridge().isHiveMode()) {
       for (const [cardIdStr, count] of Object.entries(cardCounts)) {
         const cardId = Number(cardIdStr);
         const owned = getOwnedCopies(cardId);

@@ -5,10 +5,9 @@ import { motion } from 'framer-motion';
 import { routes } from '../../../lib/routes';
 import PackOpeningAnimation from './PackOpeningAnimation';
 import { getRarityColor } from '../../utils/rarityUtils';
-import { useHiveDataStore } from '../../../data/HiveDataLayer';
-import { hiveSync } from '../../../data/HiveSync';
 import { cardRegistry } from '../../data/cardRegistry';
-import { isHiveMode } from '../../config/featureFlags';
+import { getNFTBridge } from '../../nft';
+import { useNFTUsername, useNFTTokenBalance } from '../../nft/hooks';
 import { RAGNAROK_ACCOUNT } from '../../../data/blockchain/hiveConfig';
 import { derivePackCards } from '../../../data/blockchain/packDerivation';
 import { forceSync } from '../../../data/blockchain/replayEngine';
@@ -122,9 +121,8 @@ function parseNum(v: string | number): number {
 }
 
 export default function PacksPage() {
-	const tokenBalance = useHiveDataStore((s) => s.tokenBalance);
-	const user = useHiveDataStore((s) => s.user);
-	const updateTokenBalance = useHiveDataStore((s) => s.updateTokenBalance);
+	const tokenBalance = useNFTTokenBalance();
+	const hiveUsername = useNFTUsername();
 	const runeBalance = tokenBalance?.RUNE ?? 0;
 
 	const [packTypes, setPackTypes] = useState<PackType[]>([]);
@@ -139,7 +137,7 @@ export default function PacksPage() {
 	const [testMinting, setTestMinting] = useState(false);
 
 	const handleTestMint = async () => {
-		if (!user || testMinting) return;
+		if (!hiveUsername || testMinting) return;
 		setTestMinting(true);
 		try {
 			const { getGenesisState } = await import('../../../data/blockchain/replayDB');
@@ -170,7 +168,7 @@ export default function PacksPage() {
 				});
 			}
 
-			const mintResult = await broadcastMint({ to: user.hiveUsername, cards: testCards });
+			const mintResult = await broadcastMint({ to: hiveUsername!, cards: testCards });
 			if (mintResult.success) {
 				const mapped: RevealedCard[] = testCards.map(c => ({
 					id: c.card_id,
@@ -181,10 +179,10 @@ export default function PacksPage() {
 				}));
 
 				testCards.forEach(c => {
-					useHiveDataStore.getState().addCard({
+					getNFTBridge().addCard({
 						uid: c.nft_id,
 						cardId: c.card_id,
-						ownerId: user.hiveUsername,
+						ownerId: hiveUsername!,
 						edition: 'alpha',
 						foil: 'standard',
 						rarity: c.rarity,
@@ -204,7 +202,7 @@ export default function PacksPage() {
 				setRevealedCards(mapped);
 				setIsOpening(true);
 
-				forceSync(user.hiveUsername).catch(() => {});
+				forceSync(hiveUsername!).catch(() => {});
 				toast.success(`Minted ${testCards.length} test NFTs on-chain!`);
 			} else {
 				toast.error(`Mint failed: ${mintResult.error}`);
@@ -317,12 +315,8 @@ export default function PacksPage() {
 
 		const packKey = pack.name.split(' ')[0].toLowerCase();
 
-		if (isHiveMode() && user) {
-			const result = await hiveSync.broadcastCustomJson(
-				'rp_pack_open',
-				{ pack_type: packKey, quantity: 1 },
-				false,
-			);
+		if (getNFTBridge().isHiveMode() && hiveUsername) {
+			const result = await getNFTBridge().openPack(packKey, 1);
 
 			if (result.success && result.trxId) {
 				const derived = derivePackCards(result.trxId, packKey, 1);
@@ -336,10 +330,10 @@ export default function PacksPage() {
 				setRevealedCards(mappedCards);
 
 				derived.forEach(c => {
-					useHiveDataStore.getState().addCard({
+					getNFTBridge().addCard({
 						uid: c.uid,
 						cardId: c.cardId,
-						ownerId: user.hiveUsername,
+						ownerId: hiveUsername!,
 						edition: 'alpha',
 						foil: c.foil,
 						rarity: c.rarity,
@@ -355,7 +349,7 @@ export default function PacksPage() {
 					});
 				});
 
-				forceSync(user.hiveUsername).catch(() => {});
+				forceSync(hiveUsername!).catch(() => {});
 				toast.success(`Opened ${derived.length} cards on-chain!`);
 				return;
 			}
@@ -419,22 +413,18 @@ export default function PacksPage() {
 		const packKey = pack.name.split(' ')[0].toLowerCase();
 		const cost = RUNE_COST[packKey] ?? 100;
 		if (runeBalance < cost) return;
-		if (!user) return;
+		if (!hiveUsername) return;
 
 		setRuneOpening(pack.id.toString());
 		setOpeningPack(pack);
 		setIsOpening(true);
 		setPackError(null);
 
-		const result = await hiveSync.broadcastCustomJson(
-			'rp_pack_open',
-			{ pack_type: packKey, quantity: 1 },
-			false,
-		);
+		const result = await getNFTBridge().openPack(packKey, 1);
 		setRuneOpening(null);
 
 		if (result.success && result.trxId) {
-			updateTokenBalance({ RUNE: runeBalance - cost });
+			getNFTBridge().updateTokenBalance({ RUNE: runeBalance - cost });
 
 			const derived = derivePackCards(result.trxId, packKey, 1);
 			const mappedCards: RevealedCard[] = derived.map(c => ({
@@ -447,10 +437,10 @@ export default function PacksPage() {
 			setRevealedCards(mappedCards);
 
 			derived.forEach(c => {
-				useHiveDataStore.getState().addCard({
+				getNFTBridge().addCard({
 					uid: c.uid,
 					cardId: c.cardId,
-					ownerId: user.hiveUsername,
+					ownerId: hiveUsername!,
 					edition: 'alpha',
 					foil: c.foil,
 					rarity: c.rarity,
@@ -466,7 +456,7 @@ export default function PacksPage() {
 				});
 			});
 
-			forceSync(user.hiveUsername).catch(() => {});
+			forceSync(hiveUsername!).catch(() => {});
 			toast.success(`Opened ${derived.length} cards with RUNE!`);
 		} else {
 			setPackError(result.error ?? 'RUNE pack open failed. Please try again.');
@@ -552,14 +542,14 @@ export default function PacksPage() {
 						</motion.button>
 					</Link>
 					<div className="flex items-center gap-3">
-						{user && (
+						{hiveUsername && (
 							<div className="flex items-center gap-2 px-4 py-2 bg-amber-900/40 border border-amber-600/40 rounded-lg text-sm">
 								<span className="text-amber-400">⚡</span>
 								<span className="text-amber-200 font-bold">{runeBalance.toLocaleString()}</span>
 								<span className="text-amber-500 text-xs">RUNE</span>
 							</div>
 						)}
-						{isHiveMode() && user && user.hiveUsername === RAGNAROK_ACCOUNT && (
+						{getNFTBridge().isHiveMode() && hiveUsername && hiveUsername! === RAGNAROK_ACCOUNT && (
 							<motion.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
@@ -797,7 +787,7 @@ export default function PacksPage() {
 										</motion.button>
 
 										{/* Open with RUNE */}
-										{user && (() => {
+										{hiveUsername && (() => {
 											const packKey = pack.name.split(' ')[0].toLowerCase();
 											const cost = RUNE_COST[packKey] ?? 100;
 											const canAfford = runeBalance >= cost;

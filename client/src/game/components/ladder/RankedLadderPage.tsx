@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
-import { useHiveDataStore } from '../../../data/HiveDataLayer';
+import { useNFTUsername } from '../../nft/hooks';
 import { getMatchesByAccount } from '../../../data/blockchain/replayDB';
 import type { HiveMatchResult } from '../../../data/schemas/HiveTypes';
 import { getSeasonInfo, formatTimeRemaining } from '../../utils/seasonUtils';
@@ -95,8 +95,7 @@ export default function RankedLadderPage() {
 	const [allMatches, setAllMatches] = useState<HiveMatchResult[]>([]);
 	const [loading, setLoading] = useState(true);
 
-	const user = useHiveDataStore(s => s.user);
-	const myUsername = user?.hiveUsername ?? '';
+	const myUsername = useNFTUsername() ?? '';
 
 	useEffect(() => {
 		if (!myUsername) {

@@ -31,9 +31,9 @@ import { sha256Hash, canonicalStringify } from './hashUtils';
 import { verifyHiveSignature } from './hiveSignatureVerifier';
 import { RAGNAROK_ACCOUNT, NFT_ART_BASE_URL, ALPHA_EDITION_CUTOFF_BLOCK } from './hiveConfig';
 import { buildStampWithUrls, buildOfficialMint } from './explorerLinks';
-import allCards, { getCardById } from '../../game/data/allCards';
-import { getCardArtPath } from '../../game/utils/art/artMapping';
+import { getCardDataProvider } from './ICardDataProvider';
 import { getRewardById } from './tournamentRewards';
+import { validateOpPayload } from './opSchemas';
 
 export interface RawOp {
 	id: string;           // normalized to "rp_<action>" by replay engine
@@ -53,11 +53,18 @@ function rejectOp(op: RawOp, reason: string): void {
 }
 
 export async function applyOp(op: RawOp): Promise<void> {
-	let payload: Record<string, unknown>;
+	let rawPayload: Record<string, unknown>;
 	try {
-		payload = JSON.parse(op.json) as Record<string, unknown>;
+		rawPayload = JSON.parse(op.json) as Record<string, unknown>;
 	} catch {
 		rejectOp(op, 'malformed JSON');
+		return;
+	}
+
+	// Validate payload against Zod schema at the chain boundary
+	const payload = validateOpPayload(op.id, rawPayload);
+	if (payload === null) {
+		rejectOp(op, 'payload validation failed');
 		return;
 	}
 
@@ -200,9 +207,9 @@ async function applyMint(
 		const existing = await getCard(card.nft_id);
 		if (existing) continue;
 
-		const cardDef = getCardById(parsedId);
+		const cardDef = getCardDataProvider().getCardById(parsedId);
 		const cardName = (card.name as string) || cardDef?.name || '';
-		const artPath = card.image || (cardName ? getCardArtPath(cardName, parsedId) : null);
+		const artPath = card.image || (cardName ? getCardDataProvider().getCardArtPath(cardName, parsedId) : null);
 
 		const asset: HiveCardAsset = {
 			uid: card.nft_id,
@@ -944,7 +951,7 @@ let _mintableCache: Map<string, number[]> | null = null;
 function getMintableIds(packType: string): number[] {
 	if (!_mintableCache) {
 		_mintableCache = new Map();
-		const collectible = allCards.filter(c => c.collectible !== false && typeof c.id === 'number');
+		const collectible = getCardDataProvider().getAllCards().filter(c => c.collectible !== false);
 		for (const [type, ranges] of Object.entries(PACK_ID_RANGES)) {
 			const ids = collectible
 				.filter(c => ranges.some(([lo, hi]) => (c.id as number) >= lo && (c.id as number) <= hi))
@@ -1001,12 +1008,12 @@ async function applyPackOpen(
 	}
 
 	// Pre-fetch per-card supply counters for duplicate cap enforcement
-	const perCardSupplyCache = new Map<string, number>();
+	const perCardSupplyCache = new Map<string, { minted: number; rarity: string }>();
 
 	for (let i = 0; i < cardIds.length; i++) {
 		const uid = `${op.trxId}-${i}`;
 
-		const cardDef = getCardById(cardIds[i]);
+		const cardDef = getCardDataProvider().getCardById(cardIds[i]);
 		if (!cardDef) continue; // Skip phantom IDs with no card definition
 
 		// NFT rarity MUST match card definition — the LCG selected which card,
@@ -1021,13 +1028,13 @@ async function applyPackOpen(
 		const cardKey = `card:${cardIds[i]}`;
 		if (!perCardSupplyCache.has(cardKey)) {
 			const cardCounter = await getSupplyCounter(cardKey);
-			perCardSupplyCache.set(cardKey, cardCounter?.minted ?? 0);
+			perCardSupplyCache.set(cardKey, { minted: cardCounter?.minted ?? 0, rarity });
 		}
-		const cardMinted = perCardSupplyCache.get(cardKey) ?? 0;
+		const cardEntry = perCardSupplyCache.get(cardKey)!;
 		const rarityCap = counter?.cap ?? Infinity;
-		if (cardMinted >= rarityCap) continue; // per-card cap reached
+		if (cardEntry.minted >= rarityCap) continue; // per-card cap reached
 
-		const artPath = getCardArtPath(cardDef.name, cardIds[i]);
+		const artPath = getCardDataProvider().getCardArtPath(cardDef.name, cardIds[i]);
 
 		const card: HiveCardAsset = {
 			uid,
@@ -1055,7 +1062,7 @@ async function applyPackOpen(
 		if (counter) {
 			counter.minted++;
 		}
-		perCardSupplyCache.set(cardKey, cardMinted + 1);
+		cardEntry.minted++;
 	}
 
 	// Flush updated supply counters back to IDB (global rarity counters)
@@ -1063,10 +1070,10 @@ async function applyPackOpen(
 		await putSupplyCounter(counter);
 	}
 
-	// Flush per-card supply counters
-	for (const [cardKey, minted] of perCardSupplyCache.entries()) {
-		const rarityCap = supplyCache.get('common')?.cap ?? 1800; // fallback
-		await putSupplyCounter({ rarity: cardKey, cap: rarityCap, minted });
+	// Flush per-card supply counters (use each card's actual rarity cap)
+	for (const [cardKey, entry] of perCardSupplyCache.entries()) {
+		const rarityCap = supplyCache.get(entry.rarity)?.cap ?? 1800;
+		await putSupplyCounter({ rarity: cardKey, cap: rarityCap, minted: entry.minted });
 	}
 }
 
@@ -1108,8 +1115,15 @@ async function applyRewardClaim(
 		const counter = await getSupplyCounter(rewardCard.rarity);
 		if (counter && counter.minted >= counter.cap) continue;
 
-		const gameDef = getCardById(rewardCard.cardId);
-		const artPath = gameDef ? getCardArtPath(gameDef.name, rewardCard.cardId) : null;
+		// Per-card supply cap enforcement (same as applyMint/applyPackOpen)
+		const cardKey = `card:${rewardCard.cardId}`;
+		const cardCounter = await getSupplyCounter(cardKey);
+		const cardMinted = cardCounter?.minted ?? 0;
+		const rarityCap = counter?.cap ?? Infinity;
+		if (cardMinted >= rarityCap) continue;
+
+		const gameDef = getCardDataProvider().getCardById(rewardCard.cardId);
+		const artPath = gameDef ? getCardDataProvider().getCardArtPath(gameDef.name, rewardCard.cardId) : null;
 
 		const card: HiveCardAsset = {
 			uid,
@@ -1137,6 +1151,8 @@ async function applyRewardClaim(
 		if (counter) {
 			await putSupplyCounter({ ...counter, minted: counter.minted + 1 });
 		}
+		// Increment per-card supply counter
+		await putSupplyCounter({ rarity: cardKey, cap: counter?.cap ?? 1800, minted: cardMinted + 1 });
 	}
 
 	if (reward.runeBonus > 0) {

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
 import { getStarterCards, STARTER_PACK_NAME } from '../data/starterSet';
 import { useStarterStore } from '../stores/starterStore';
-import { useHiveDataStore } from '../../data/HiveDataLayer';
+import { getNFTBridge } from '../nft';
 import type { HiveCardAsset } from '../../data/schemas/HiveTypes';
 import PackOpeningAnimation from './packs/PackOpeningAnimation';
 
@@ -15,7 +15,7 @@ interface StarterPackCeremonyProps {
 export default function StarterPackCeremony({ onComplete }: StarterPackCeremonyProps) {
 	const [phase, setPhase] = useState<'welcome' | 'opening' | 'done'>('welcome');
 	const markClaimed = useStarterStore(s => s.markClaimed);
-	const addCard = useHiveDataStore(s => s.addCard);
+	const addCard = (card: HiveCardAsset) => getNFTBridge().addCard(card);
 	const navigate = useNavigate();
 
 	const starterCards = getStarterCards();

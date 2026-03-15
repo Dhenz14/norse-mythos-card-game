@@ -15,7 +15,7 @@
 
 import { getCard } from './replayDB';
 import { sha256Hash } from './hashUtils';
-import { isHiveMode } from '@/game/config/featureFlags';
+import { isHiveMode } from '@/config/featureFlags';
 
 export interface CardRef {
 	nft_id?: string;

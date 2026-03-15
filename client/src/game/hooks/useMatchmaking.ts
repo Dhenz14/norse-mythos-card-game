@@ -1,8 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useMatchmakingStore } from '../stores/matchmakingStore';
 import { usePeerStore } from '../stores/peerStore';
-import { useHiveDataStore } from '../../data/HiveDataLayer';
-import { isHiveMode } from '../config/featureFlags';
+import { getNFTBridge } from '../nft';
+import { useNFTUsername } from '../nft/hooks';
 import {
 	broadcastQueueJoin,
 	broadcastQueueLeave,
@@ -13,7 +13,7 @@ const API_BASE = import.meta.env.VITE_API_URL || (window.location.origin);
 
 export function useMatchmaking() {
 	const { myPeerId } = usePeerStore();
-	const hiveUsername = useHiveDataStore(s => s.user?.hiveUsername);
+	const hiveUsername = useNFTUsername();
 	const {
 		status,
 		queuePosition,
@@ -41,9 +41,8 @@ export function useMatchmaking() {
 			setStatus('queued');
 			setError(null);
 
-			if (isHiveMode() && hiveUsername) {
-				const stats = useHiveDataStore.getState().stats;
-				const elo = stats?.odinsEloRating ?? 1200;
+			if (getNFTBridge().isHiveMode() && hiveUsername) {
+				const elo = getNFTBridge().getElo();
 
 				const leaveFn = await broadcastQueueJoin({
 					account: hiveUsername,
@@ -69,10 +68,13 @@ export function useMatchmaking() {
 				return;
 			}
 
+			const queueBody = hiveUsername
+				? await getNFTBridge().buildAuthBody(hiveUsername, 'queue', { peerId: myPeerId, username: hiveUsername })
+				: { peerId: myPeerId, username: hiveUsername };
 			const response = await fetch(`${API_BASE}/api/matchmaking/queue`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ peerId: myPeerId, username: hiveUsername }),
+				body: JSON.stringify(queueBody),
 			}).catch(() => {
 				throw new Error('Matchmaking service unavailable. Please use manual match.');
 			});
@@ -145,7 +147,7 @@ export function useMatchmaking() {
 			pollIntervalRef.current = null;
 		}
 
-		if (!isHiveMode()) {
+		if (!getNFTBridge().isHiveMode()) {
 			try {
 				await fetch(`${API_BASE}/api/matchmaking/leave`, {
 					method: 'POST',

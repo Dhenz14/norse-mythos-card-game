@@ -18,7 +18,7 @@
  */
 
 import { useTransactionQueueStore } from './transactionQueueStore';
-import { getDataLayerMode } from '@/game/config/featureFlags';
+import { getDataLayerMode } from '@/config/featureFlags';
 import type { TransactionEntry, PackagedMatchResult } from './types';
 import { hiveSync } from '../HiveSync';
 import { hiveEvents } from '../HiveEvents';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFriendStore, type Friend, type FriendPresence } from '../../stores/friendStore';
-import { useHiveDataStore } from '../../../data/HiveDataLayer';
+import { useNFTUsername } from '../../nft/hooks';
 
 function AddFriendDialog({ onAdd, onClose }: { onAdd: (name: string) => void; onClose: () => void }) {
 	const [name, setName] = useState('');
@@ -56,7 +56,7 @@ function FriendCard({ friend, presence }: { friend: Friend; presence?: FriendPre
 }
 
 export default function FriendsPanel() {
-	const user = useHiveDataStore(s => s.user);
+	const hiveUsername = useNFTUsername();
 	const friends = useFriendStore(s => s.friends);
 	const onlineStatus = useFriendStore(s => s.onlineStatus);
 	const addFriend = useFriendStore(s => s.addFriend);
@@ -65,13 +65,13 @@ export default function FriendsPanel() {
 	const [expanded, setExpanded] = useState(true);
 
 	const pollPresence = useCallback(async (signal?: AbortSignal) => {
-		if (!user || friends.length === 0) return;
+		if (!hiveUsername || friends.length === 0) return;
 		try {
 			const res = await fetch('/api/friends/heartbeat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					username: user.hiveUsername,
+					username: hiveUsername,
 					friends: friends.map(f => f.hiveUsername),
 				}),
 				signal,
@@ -83,7 +83,7 @@ export default function FriendsPanel() {
 		} catch (e) {
 			if (e instanceof Error && e.name === 'AbortError') return;
 		}
-	}, [user, friends, updatePresence]);
+	}, [hiveUsername, friends, updatePresence]);
 
 	useEffect(() => {
 		const controller = new AbortController();

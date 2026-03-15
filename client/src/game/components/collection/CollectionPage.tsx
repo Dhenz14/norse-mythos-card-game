@@ -6,14 +6,12 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { routes } from '../../../lib/routes';
 import { getRarityColor, getRarityBackground, getTypeIcon } from '../../utils/rarityUtils';
 import type { OwnedCard, InventoryResponse, InventoryCard } from '../packs/types';
-import { useHiveDataStore } from '../../../data/HiveDataLayer';
 import { getMasteryTier } from '../../../data/blockchain/cardXPSystem';
 import { useCraftingStore } from '../../crafting/craftingStore';
 import { getEitrValue, getCraftCost } from '../../crafting/craftingConstants';
 import { cardRegistry } from '../../data/cardRegistry';
-import { hiveSync } from '../../../data/HiveSync';
-import { hiveEvents } from '../../../data/HiveEvents';
-import { isHiveMode } from '../../config/featureFlags';
+import { getNFTBridge } from '../../nft';
+import { useNFTCollection } from '../../nft/hooks';
 import NFTProvenanceViewer from './NFTProvenanceViewer';
 import SendCardModal from './SendCardModal';
 import './collection.css';
@@ -82,12 +80,10 @@ function getShimmerClass(rarity: string): string {
 }
 
 export default function CollectionPage() {
-	const hiveCards = useHiveDataStore((s) => s.cardCollection);
+	const hiveCards = useNFTCollection();
 	const eitr = useCraftingStore(s => s.eitr);
 	const addEitr = useCraftingStore(s => s.addEitr);
 	const spendEitr = useCraftingStore(s => s.spendEitr);
-	const addCard = useHiveDataStore(s => s.addCard);
-	const removeCard = useHiveDataStore(s => s.removeCard);
 	const [craftConfirm, setCraftConfirm] = useState<'craft' | 'disenchant' | null>(null);
 	const [provenanceNft, setProvenanceNft] = useState<typeof hiveCards[0] | null>(null);
 	const [sendNft, setSendNft] = useState<typeof hiveCards[0] | null>(null);
@@ -731,11 +727,14 @@ export default function CollectionPage() {
 														onClick={() => {
 															if (craftConfirm === 'disenchant') {
 																const nft = hiveCards.find(c => c.cardId === selectedCard.id);
-																if (isHiveMode() && nft) {
-																	hiveSync.broadcastCustomJson('rp_burn' as any, { nft_id: nft.uid }).catch(() => {});
+																const bridge = getNFTBridge();
+																if (bridge.isHiveMode() && nft) {
+																	import('../../../data/HiveSync').then(({ hiveSync }) => {
+																		hiveSync.broadcastCustomJson('rp_burn' as any, { nft_id: nft.uid }).catch(() => {});
+																	});
 																}
 																addEitr(eitrVal);
-																hiveEvents.emitTokenUpdate('Eitr', eitr + eitrVal, eitrVal);
+																bridge.emitTokenUpdate('Eitr', eitr + eitrVal, eitrVal);
 																setCards(prev => {
 																	const idx = prev.findIndex(c => c.id === selectedCard.id);
 																	if (idx === -1) return prev;
@@ -746,7 +745,7 @@ export default function CollectionPage() {
 																	return prev.map((c, i) => i === idx ? { ...c, quantity: c.quantity - 1 } : c);
 																});
 																if (nft?.uid) {
-																removeCard(nft.uid);
+																getNFTBridge().removeCard(nft.uid);
 															}
 																if (selectedCard.quantity <= 1) setSelectedCard(null);
 																else setSelectedCard({ ...selectedCard, quantity: selectedCard.quantity - 1 });
@@ -754,7 +753,7 @@ export default function CollectionPage() {
 																const pool = cardRegistry.filter(c => c.rarity?.toLowerCase() === selectedCard.rarity?.toLowerCase() && c.type !== 'hero' && c.collectible !== false);
 																if (pool.length === 0) return;
 																if (!spendEitr(craftCostVal)) return;
-																hiveEvents.emitTokenUpdate('Eitr', eitr - craftCostVal, -craftCostVal);
+																getNFTBridge().emitTokenUpdate('Eitr', eitr - craftCostVal, -craftCostVal);
 																const pick = pool[Math.floor(Math.random() * pool.length)];
 																const pickId = typeof pick.id === 'number' ? pick.id : parseInt(pick.id as string, 10);
 																const forgedCard: OwnedCard = {
@@ -776,7 +775,7 @@ export default function CollectionPage() {
 																	}
 																	return [forgedCard, ...prev];
 																});
-																addCard({
+																getNFTBridge().addCard({
 																	uid: `forge-${Date.now()}-${pickId}`,
 																	cardId: pickId,
 																	ownerId: hiveCards.length > 0 ? hiveCards[0].ownerId : 'local',
@@ -842,7 +841,7 @@ export default function CollectionPage() {
 										>
 											View on Chain
 										</button>
-										{isHiveMode() && (
+										{getNFTBridge().isHiveMode() && (
 											<button
 												onClick={() => setSendNft(nftAsset)}
 												className="flex-1 px-3 py-2 bg-emerald-900/50 hover:bg-emerald-800/60 text-emerald-300 rounded-lg text-xs font-medium border border-emerald-700/40 transition-colors"

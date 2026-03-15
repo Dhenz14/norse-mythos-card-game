@@ -63,6 +63,7 @@ export default defineConfig(({ command }) => ({
           if (id.includes('/game/data/allCards') || id.includes('/game/data/cardSets/')) return 'card-data';
           if (id.includes('/game/data/')) return 'card-data';
           // Shared leaf chunks — imported by multiple game chunks, must not create cycles
+          if (id.includes('/game/nft/')) return 'game-types';
           if (id.includes('/game/types/') || id.includes('/game/flow/') || id.includes('/game/utils/elements') || id.includes('/game/utils/assetPath') || id.includes('/game/audio/')) return 'game-types';
           if (id.includes('/lib/stores/')) return 'game-types';
           // Game logic — single chunk for all tightly-coupled utils + effects (avoids intra-engine circular deps)

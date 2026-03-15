@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Difficulty } from './campaignTypes';
-import { isHiveMode } from '../config/featureFlags';
+import { getNFTBridge } from '../nft';
 
 interface MissionCompletion {
 	difficulty: Difficulty;
@@ -65,15 +65,10 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 				set(state => ({
 					rewardsClaimed: [...state.rewardsClaimed, missionId],
 				}));
-				if (isHiveMode()) {
-					Promise.all([
-						import('../../data/HiveSync'),
-						import('../../data/HiveEvents'),
-					]).then(([{ hiveSync }, { hiveEvents }]) => {
-						hiveSync.claimReward(`campaign:${missionId}`)
-						.then(r => { if (r.success) hiveEvents.emitTransactionConfirmed({ trxId: r.trxId ?? '', status: 'confirmed' }); })
-						.catch(() => {});
-					});
+				if (getNFTBridge().isHiveMode()) {
+					getNFTBridge().claimReward(`campaign:${missionId}`)
+					.then(r => { if (r.success && r.trxId) getNFTBridge().emitTransactionConfirmed(r.trxId); })
+					.catch(() => {});
 				}
 			},
 

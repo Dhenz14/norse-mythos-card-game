@@ -1,9 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { pickRandomQuests, type DailyQuestType, type QuestTemplate } from '../data/dailyQuestPool';
-import { hiveSync } from '../../data/HiveSync';
-import { hiveEvents } from '../../data/HiveEvents';
-import { isHiveMode } from '../config/featureFlags';
+import { getNFTBridge } from '../nft';
 
 export interface DailyQuest {
 	id: string;
@@ -100,9 +98,9 @@ export const useDailyQuestStore = create<DailyQuestState & DailyQuestActions>()(
 					totalCompleted: state.totalCompleted + 1,
 				}));
 
-				if (isHiveMode()) {
-					hiveSync.claimReward(`daily_quest:${questId}`)
-					.then(r => { if (r.success) hiveEvents.emitTransactionConfirmed({ trxId: r.trxId ?? '', status: 'confirmed' }); })
+				if (getNFTBridge().isHiveMode()) {
+					getNFTBridge().claimReward(`daily_quest:${questId}`)
+					.then(r => { if (r.success && r.trxId) getNFTBridge().emitTransactionConfirmed(r.trxId); })
 					.catch(err => console.warn('[DailyQuest] Error:', err));
 				}
 

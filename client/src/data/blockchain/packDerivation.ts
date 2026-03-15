@@ -7,7 +7,7 @@
  * without waiting for chain replay.
  */
 
-import { getCardById } from '../../game/data/allCards';
+import { getCardDataProvider } from './ICardDataProvider';
 
 const PACK_SIZES: Record<string, number> = {
 	starter: 5,
@@ -79,7 +79,7 @@ export function derivePackCards(
 		const rarityRoll = s % 100;
 		const rarity = rarityRoll < 1 ? 'mythic' : rarityRoll < 6 ? 'epic' : rarityRoll < 20 ? 'rare' : 'common';
 
-		const cardDef = getCardById(cardIds[i]);
+		const cardDef = getCardDataProvider().getCardById(cardIds[i]);
 		cards.push({
 			uid: `${trxId}-${i}`,
 			cardId: cardIds[i],

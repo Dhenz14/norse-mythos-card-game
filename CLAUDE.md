@@ -67,6 +67,8 @@ client/src/
 │   │   ├── explorerLinks.ts    # Hive explorer URL builders (tx + block)
 │   │   ├── tournamentRewards.ts # 11 milestone rewards (wins/ELO/matches → cards + RUNE)
 │   │   ├── nftMetadataGenerator.ts # ERC-1155 metadata with attributes
+│   │   ├── opSchemas.ts        # Zod runtime validation for all 15 chain op types
+│   │   ├── ICardDataProvider.ts # Interface breaking reverse coupling (blockchain → game)
 │   │   └── index.ts            # Barrel exports
 │   ├── HiveSync.ts             # Keychain: login, broadcast, transferCard, claimReward
 │   ├── HiveDataLayer.ts        # Zustand store: collection, stats, tokens
@@ -86,14 +88,20 @@ client/src/
 │   │   ├── tutorial/       # TutorialOverlay (step-by-step onboarding)
 │   │   ├── quests/         # DailyQuestPanel (3 daily quests)
 │   │   └── ui/             # LoadingScreen + shared UI
+│   ├── nft/                # NFT Bridge — clean contract boundary for blockchain access
+│   │   ├── INFTBridge.ts   # Contract interface (26 methods)
+│   │   ├── HiveNFTBridge.ts # Hive blockchain implementation (delegates to HiveSync/Events/DataLayer)
+│   │   ├── LocalNFTBridge.ts # Local/test mode implementation (chain ops are no-ops)
+│   │   ├── hooks.ts        # React hooks: useNFTUsername, useNFTCollection, useNFTStats, etc.
+│   │   └── index.ts        # Factory: getNFTBridge(), initializeNFTBridge()
 │   ├── stores/             # Zustand state stores
 │   │   ├── gameStore.ts    # Main game store
-│   │   ├── gameStoreIntegration.ts # Event-driven architecture init + HiveEvents toasts
-│   │   ├── heroDeckStore.ts # Deck building (NFT ownership enforcement in Hive mode)
+│   │   ├── gameStoreIntegration.ts # Event-driven architecture init + NFT bridge event toasts
+│   │   ├── heroDeckStore.ts # Deck building (NFT ownership via bridge)
 │   │   ├── settingsStore.ts # Settings (audio, visual, gameplay)
-│   │   ├── dailyQuestStore.ts # Daily quest progress + refresh + chain reward claims
+│   │   ├── dailyQuestStore.ts # Daily quest progress + refresh + bridge reward claims
 │   │   ├── friendStore.ts  # Friends list + online status
-│   │   ├── tradeStore.ts   # Trade offers + chain transfers on accept
+│   │   ├── tradeStore.ts   # Trade offers + bridge transfers on accept
 │   │   └── replayStore.ts  # Match history + replay playback
 │   ├── data/               # Card definitions, heroes
 │   │   ├── allCards.ts     # Single source of truth (1400+ cards)
@@ -161,7 +169,7 @@ server/
 └── storage.ts              # Database interface
 ```
 
-Card art lives in `client/public/art/` (2,054 files covering ~65% of cards). Art lookup uses `CARD_ID_TO_ART` map in `artMapping.ts` (1,458 ID-based entries, highest priority) with name-based fallback via `getCardArtPath()`.
+Card art lives in `client/public/art/` (2,054 webp files). Art lookup uses 3-tier system: `CARD_ID_TO_ART` (1,458 ID-based entries) > `VERCEL_CARD_ART` (330 name matches) > `MINION_CARD_TO_ART` (85 creature maps). Effective coverage: ~75% of cards (514 still missing art, mostly expansion cards in 32000-39999 range).
 
 ## Key Subsystems
 
@@ -238,7 +246,21 @@ Game logic for these mechanics lives in:
 - **Ownership enforcement**: `heroDeckStore.ts` gates deck building on chain-derived NFT collection
 - **Event bus**: `HiveEvents.ts` emits card:transferred, token:updated, transaction:confirmed/failed → toast notifications via `gameStoreIntegration.ts`
 - **Post-match refresh**: `BlockchainSubscriber.ts` re-reads IndexedDB → HiveDataStore after each match (XP, levels, RUNE rewards)
-- **Reward claiming**: campaign, daily quests broadcast `reward_claim` on chain via `hiveSync.claimReward()`
+- **Reward claiming**: campaign, daily quests broadcast `reward_claim` on chain via bridge `claimReward()`
+
+### NFT Bridge (`game/nft/`)
+
+Clean contract boundary between game code and the blockchain/NFT layer. Game code imports `getNFTBridge()` instead of directly importing from `data/`.
+
+- **INFTBridge interface**: 26 methods covering mode, identity, collection, stats, tokens, auth, transactions, events, lifecycle
+- **HiveNFTBridge**: Delegates to HiveSync, HiveEvents, HiveDataLayer — the ONE file allowed to import from `data/blockchain/`
+- **LocalNFTBridge**: No-ops for chain operations, `getOwnedCopies()` returns `Infinity` (unlimited in local mode)
+- **Factory**: `initializeNFTBridge()` dynamically imports the correct bridge based on `getDataLayerMode()`
+- **React hooks**: `useNFTUsername()`, `useNFTCollection()`, `useNFTStats()`, `useNFTTokenBalance()`, `useIsHiveMode()`, `useNFTElo()`
+- **Zod at boundaries**: `opSchemas.ts` validates all 15 chain op payloads in `applyOp()` before entering deterministic handlers
+- **ICardDataProvider**: Interface that blockchain code uses instead of importing `allCards` directly (wired at app startup)
+- **Shared featureFlags**: `client/src/config/featureFlags.ts` re-exports from `game/config/` so both `game/` and `data/` can import
+- **Allowed direct imports**: `HiveKeychainLogin.tsx` (IS blockchain UI), `BlockchainSubscriber.ts` (IS blockchain layer), chain-specific ops in CollectionPage/PacksPage/useP2PSync
 
 ## Bundle Architecture
 
@@ -287,6 +309,10 @@ client/src/game/combat/styles/tokens.css
 client/src/data/blockchain/replayRules.ts
 client/src/data/blockchain/replayDB.ts
 client/src/data/blockchain/tournamentRewards.ts
+
+# NFT Bridge - Contract interface, don't change signatures without review
+client/src/game/nft/INFTBridge.ts
+client/src/data/blockchain/opSchemas.ts
 ```
 
 ## Known Architecture Decisions
@@ -333,11 +359,14 @@ client/src/data/blockchain/tournamentRewards.ts
 - ELO is chain-derived (K=32, computed from match_result history)
 - Supply caps hard-enforced by every reader (~3.3M: 1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
 - Every NFT stores mint + transfer trxIds — provenance viewer links directly to Hive explorer
-- Direct gifting via `SendCardModal` + `hiveSync.transferCard()` — no trade negotiation needed
-- Deck builder enforces NFT ownership in Hive mode (local mode = unlimited)
-- `HiveEvents` bus drives real-time toast notifications for transfers, token changes, tx status
+- Direct gifting via `SendCardModal` + bridge `transferCard()` — no trade negotiation needed
+- Deck builder enforces NFT ownership via bridge `getOwnedCopies()` (local mode = unlimited)
+- NFT Bridge (`game/nft/`) is the single access point — game code imports `getNFTBridge()` instead of `data/` directly
+- Zod validates all 15 chain op payloads at the `applyOp()` boundary (runtime protection for raw JSON from chain)
+- `ICardDataProvider` breaks reverse coupling — blockchain code never imports `game/data/allCards` directly
+- `HiveEvents` bus drives real-time toast notifications for transfers, token changes, tx status (wired through bridge)
 - `BlockchainSubscriber` refreshes HiveDataStore from IndexedDB after each match (XP, RUNE, levels)
-- Campaign + daily quest rewards broadcast `reward_claim` on chain
+- Campaign + daily quest rewards broadcast `reward_claim` on chain via bridge
 
 ## Known Issues & Fixes
 
@@ -1201,7 +1230,9 @@ vercel --prod                 # Deploy to Vercel
 - Imported 691 new card art files (webp) from `ragnarok-art-691` art drop
 - Added 689 new entries to `CARD_ID_TO_ART` (2 duplicates skipped)
 - Total art files on disk: 2,054; total `CARD_ID_TO_ART` entries: 1,458
-- Art coverage: ~38% → ~65% of cards now have dedicated art
+- Art coverage: ~38% → ~75% effective (ID-based 58.5% + name-based ~16.2% = 1,517/2,031 cards)
+- 269 orphan art map entries point to non-existent card IDs (stale mappings from art batch)
+- 514 cards still missing art, mostly expansions (32000-39999: 192), weapons (90000: 74), core (1000-9999: 77)
 - ID ranges covered: 1000-9999 (108), 10000-19999 (82), 20000-29999 (26), 30000-39999 (309), 40000-49999 (22), 60000-69999 (4), 80000-89999 (11), 90000-99999 (129)
 - All UI components already pass cardId to `getCardArtPath()` — no component changes needed
 - Implemented 24 missing deathrattle handlers (103 cards were silently failing)
@@ -1222,6 +1253,24 @@ vercel --prod                 # Deploy to Vercel
 - Added 7 Zustand slice selectors: usePlayerHand, usePlayerBattlefield, useOpponentBattlefield, useGamePhase, useCurrentTurn, usePlayerMana, usePlayerHeroHealth
 - Removed P2PContext wrapper from MultiplayerGame.tsx (was unused indirection over Zustand)
 - TypeScript: 0 errors
+
+### Completed (NFT SDK Separation)
+
+- Created `INFTBridge` contract interface (26 methods) in `game/nft/INFTBridge.ts`
+- Implemented `HiveNFTBridge` (delegates to HiveSync/Events/DataLayer) and `LocalNFTBridge` (chain ops are no-ops)
+- Factory with dynamic imports: `initializeNFTBridge()` code-splits HiveNFTBridge vs LocalNFTBridge based on mode
+- React hooks: `useNFTUsername`, `useNFTCollection`, `useNFTStats`, `useNFTTokenBalance`, `useIsHiveMode`, `useNFTElo`
+- Migrated 18 game files from direct blockchain imports to bridge: heroDeckStore, dailyQuestStore, campaignStore, tournamentStore, tradeStore, gameStoreIntegration, useMatchmaking, FriendsPanel, TradingPage, TournamentListPage, StarterPackCeremony, SendCardModal, CollectionPage, PacksPage, RankedLadderPage, useP2PSync
+- Created Zod schemas for all 15 chain op types in `opSchemas.ts`, wired into `replayRules.ts` `applyOp()` dispatch
+- Created `ICardDataProvider` interface to break reverse coupling (blockchain → game card data)
+- Migrated `replayRules.ts`, `packDerivation.ts`, `nftMetadataGenerator.ts` to use `ICardDataProvider` instead of direct `allCards` imports
+- Created shared `config/featureFlags.ts` re-export so `data/` doesn't import from `game/`
+- Migrated `transactionProcessor.ts`, `deckVerification.ts` to shared featureFlags path
+- Deleted abandoned `game/data/hive/` adapter infrastructure (6 files with incompatible types)
+- Removed `export * from './blockchain'` barrel from `data/index.ts`
+- Wired `setCardDataProvider()` and `initializeNFTBridge()` at app startup in `App.tsx`
+- Updated vite.config.ts: `game/nft/` assigned to `game-types` shared chunk
+- TypeScript: 0 errors, build succeeds
 
 ### Next (Genesis Launch)
 

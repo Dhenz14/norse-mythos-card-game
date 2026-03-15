@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
 import { useTournamentStore } from '../../tournament/tournamentStore';
 import type { Tournament, TournamentListItem, TournamentMatch } from '../../tournament/tournamentTypes';
-import { useHiveDataStore } from '../../../data/HiveDataLayer';
+import { useNFTUsername } from '../../nft/hooks';
 
 function TournamentCard({ item, onSelect }: { item: TournamentListItem; onSelect: () => void }) {
 	const formatLabels: Record<string, string> = {
@@ -148,8 +148,7 @@ function MatchRow({ match, username, onReport }: {
 }
 
 export default function TournamentListPage() {
-	const hiveUser = useHiveDataStore(s => s.user);
-	const username = hiveUser?.hiveUsername || 'guest';
+	const username = useNFTUsername() || 'guest';
 	const tournaments = useTournamentStore(s => s.tournaments);
 	const activeTournament = useTournamentStore(s => s.activeTournament);
 	const loading = useTournamentStore(s => s.loading);

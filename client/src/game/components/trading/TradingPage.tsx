@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
 import { useTradeStore, type TradeOffer } from '../../stores/tradeStore';
-import { useHiveDataStore } from '../../../data/HiveDataLayer';
+import { useNFTUsername } from '../../nft/hooks';
 
 function TradeOfferCard({ offer, currentUser, onAccept, onDecline, onCancel }: {
 	offer: TradeOffer;
@@ -171,8 +171,7 @@ function CreateTradePanel({ onSend }: { onSend: (toUser: string) => void }) {
 }
 
 export default function TradingPage() {
-	const hiveUser = useHiveDataStore(s => s.user);
-	const username = hiveUser?.hiveUsername || 'guest';
+	const username = useNFTUsername() || 'guest';
 	const offers = useTradeStore(s => s.offers);
 	const loading = useTradeStore(s => s.loading);
 	const error = useTradeStore(s => s.error);
