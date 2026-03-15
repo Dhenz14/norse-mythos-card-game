@@ -39,7 +39,7 @@ export const greekMythicMinions: CardData[] = [
 		keywords: ['taunt'],
 		collectible: true,
 		effects: [{ type: 'end_of_turn', endOfTurnEffect: 'summon_token', value: 1, summonName: 'Serpent Head', summonAttack: 2, summonHealth: 2 }],
-		flavorText: '"A hundred dragon-heads grew upon his shoulders, flickering dark tongues of flame." (Theogony 824-828)',
+		flavorText: 'A hundred serpent heads, each breathing fire. Zeus himself could barely contain him. (Theogony 824-828)',
 	},
 	{
 		id: 32203,

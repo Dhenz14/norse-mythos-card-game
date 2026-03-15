@@ -50,7 +50,7 @@ export const ragnarokChainCards: CardData[] = [
 	// === Pair 2: Skoll & Hati ===
 	{
 		id: 30403,
-		name: 'Skoll, Moon Chaser',
+		name: 'Skoll, Sun Chaser',
 		manaCost: 4,
 		description: 'Chain: When Hati dies, gain +3/+3 and Windfury.',
 		flavorText: 'One wolf chases the moon, the other the sun. Together, they end the world.',
@@ -69,7 +69,7 @@ export const ragnarokChainCards: CardData[] = [
 	},
 	{
 		id: 30404,
-		name: 'Hati, Sun Chaser',
+		name: 'Hati, Moon Chaser',
 		manaCost: 4,
 		description: 'Chain: When Skoll dies, gain +3/+3 and Windfury.',
 		flavorText: 'The sun flees. The wolf gains. At Ragnarok, the chase ends.',

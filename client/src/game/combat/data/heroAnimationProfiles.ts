@@ -565,14 +565,6 @@ export const HERO_ANIMATION_PROFILES: Record<string, HeroAnimationProfile> = {
 		particleEmoji: '🪲',
 		screenShakeIntensity: 0.6,
 	},
-	'hero-shu': {
-		heroId: 'hero-shu',
-		attackName: 'Gale Force',
-		archetype: 'magic_blast',
-		element: 'electric',
-		particleEmoji: '💨',
-		screenShakeIntensity: 0.7,
-	},
 };
 
 const DEFAULT_PROFILE: HeroAnimationProfile = {

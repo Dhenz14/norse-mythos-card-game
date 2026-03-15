@@ -519,6 +519,7 @@ export const hunterCards: CardData[] = [
     type: "minion",
     rarity: "common",
     description: "Echo. Rush",
+    flavorText: "Small enough to hold in your arms. That will not last.",
     keywords: ["echo", "rush"],
     class: "Hunter",
     collectible: true,
@@ -558,6 +559,7 @@ export const hunterCards: CardData[] = [
     rarity: "rare",
     race: "Beast",
     description: "Frenzy: Deal 1 damage to all enemy minions.",
+    flavorText: "It growls at everything larger than itself. That includes most things.",
     keywords: ["frenzy"],
     class: "Hunter",
     collectible: true,
@@ -580,6 +582,7 @@ export const hunterCards: CardData[] = [
     rarity: "rare",
     race: "Automaton",
     description: "Runic Bond, Deathrattle: Deal 100 damage to a random enemy minion.",
+    flavorText: "The weaver who dared challenge Athena. Her web is her vengeance.",
     keywords: ["magnetic", "deathrattle"],
     class: "Hunter",
     deathrattle: {
@@ -761,6 +764,7 @@ export const hunterCards: CardData[] = [
     type: "spell",
     rarity: "common",
     description: "Deal 3 damage. If you control a Beast, deal 5 damage instead.",
+    flavorText: "Skadi hunts in the frozen wastes. Her arrows fly true even in blizzards.",
     class: "Hunter",
     spellEffect: {
       type: "damage",
@@ -780,6 +784,7 @@ export const hunterCards: CardData[] = [
     type: "spell",
     rarity: "common",
     description: "Look at the top 3 cards of your deck. Draw one and discard the others.",
+    flavorText: "The rune reveals what is hidden. Some truths are better left buried.",
     class: "Hunter",
     spellEffect: {
       type: "tracking",
@@ -796,6 +801,7 @@ export const hunterCards: CardData[] = [
     type: "spell",
     rarity: "common",
     description: "Deal 3 damage to two random enemy minions.",
+    flavorText: "Ullr loosens three arrows before the first one lands.",
     class: "Hunter",
     spellEffect: {
       type: "damage",
@@ -813,6 +819,7 @@ export const hunterCards: CardData[] = [
     type: "spell",
     rarity: "rare",
     description: "Rune: When your hero is attacked, deal 2 damage to all enemy minions.",
+    flavorText: "Step too close, and the rune answers with fire.",
     class: "Hunter",
     keywords: ["secret"],
     collectible: true,
@@ -827,6 +834,7 @@ export const hunterCards: CardData[] = [
     type: "minion",
     rarity: "common",
     description: "Battlecry: Give a friendly Beast +2/+2 and Taunt.",
+    flavorText: "Freya's beasts fight with the devotion of those who are truly loved.",
     class: "Hunter",
     keywords: ["battlecry"],
     battlecry: {
@@ -850,6 +858,7 @@ export const hunterCards: CardData[] = [
     rarity: 'epic',
     race: "Beast",
     description: "Deathrattle: Summon two 2/2 Hyenas.",
+    flavorText: "It stalks the golden grass, patient as stone, swift as lightning.",
     class: "Hunter",
     keywords: ["deathrattle"],
     deathrattle: {
@@ -869,6 +878,7 @@ export const hunterCards: CardData[] = [
     type: "spell",
     rarity: "common",
     description: "Deal 2 damage to the enemy hero. Draw a card.",
+    flavorText: "The huntress draws her silver bow. The moon watches approvingly.",
     class: "Hunter",
     spellEffect: {
       type: "damage_and_draw",
@@ -889,6 +899,7 @@ export const hunterCards: CardData[] = [
     rarity: "mythic",
     race: "Beast",
     description: "Rush. Overkill: Summon a copy of this minion.",
+    flavorText: "The great wolf at the height of his power. All lesser beasts bow or flee.",
     class: "Hunter",
     keywords: ["rush", "overkill"],
     collectible: true,

@@ -64,7 +64,7 @@ export const easternChapter: CampaignChapter = {
 			narrativeAfter: 'Amaterasu dims her radiance to something bearable. "There is light in you that no shadow could hide," she says. "You may walk my lands."',
 			narrativeVictory: 'You endure the purest light in existence. Amaterasu sees your true nature — and approves.',
 			narrativeDefeat: 'The sun\'s full radiance unmakes every shadow you hid behind.',
-			aiHeroId: 'hero-shu', aiHeroClass: 'mage',
+			aiHeroId: 'hero-fujin', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.amaterasu,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Amaterasu has 110 health' },

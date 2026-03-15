@@ -556,9 +556,10 @@ const ALL_CHARACTER_ART_IDS_SET = new Set(Object.values(CHARACTER_ART_IDS));
 
 /**
  * MINION_CARD_TO_ART Mapping - STRICT 1:1 MAPPINGS
+ * DEPRECATED: Kept for backwards compatibility. All entries have been merged into CARD_ID_TO_ART.
  * Each artwork character can ONLY be used by ONE minion card
  * Maps minion card names (lowercase) to creature artwork character names
- * 
+ *
  * RULES:
  * 1. Each artwork = exactly ONE card (no duplicates)
  * 2. Best thematic match wins
@@ -774,6 +775,7 @@ export function getAllCharacterArtIds(): Record<string, string> {
 
 /**
  * Direct card art mappings from the Ragnarok New Art gallery
+ * DEPRECATED: Kept for backwards compatibility. All entries have been merged into CARD_ID_TO_ART.
  * Maps card names (lowercase) to full image URLs
  * These take priority over MINION_CARD_TO_ART creature mappings
  */
@@ -1121,6 +1123,7 @@ const VERCEL_CARD_ART: Record<string, string> = {
  * @param cardName - The minion card name
  * @returns The art path (/art/{id}.webp) or null if no explicit mapping exists
  */
+// Single source of truth for card art — all card art lookups go through this map
 const CARD_ID_TO_ART: Record<number, string> = {
 	// 2202: hero-chronos art removed
 	1001: '/art/a8a4-5835d804.webp',
@@ -1666,7 +1669,6 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	29964: '/art/31e6-17946162.webp',
 	29965: '/art/8f79-c0e1ae47.webp',
 	29966: '/art/491a-fef98c3f.webp',
-	29967: '/art/684b-e052658e.webp',
 	29970: '/art/4317-765c07ed.webp',
 	29971: '/art/ebaa-1df9cc92.webp',
 	29972: '/art/ccc7-6cfa219e.webp',
@@ -2581,6 +2583,266 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	96014: '/art/48bc-a4ab5163.webp',
 	96015: '/art/1913-79012baf.webp',
 	96016: '/art/31df-83834d65.webp',
+	// ─── Merged from VERCEL_CARD_ART (221 entries) ───
+	1004: '/art/ce88-79840db1.webp',
+	3008: '/art/18a0-28a73ca8.webp',
+	3019: '/art/1d05-1hgo14ai.webp',
+	3027: '/art/5dce-80i1xfeu.webp',
+	3100: '/art/7130-0b8094b7.webp',
+	4000: '/art/7338-zus0zamb.webp',
+	4001: '/art/adf6-9j5o3f2q.webp',
+	4002: '/art/486e-5yogife3.webp',
+	4006: '/art/130a-hq7tmpye.webp',
+	4007: '/art/08dc-1f4jdlb9.webp',
+	4009: '/art/1665-xqnaw540.webp',
+	4010: '/art/4a8d-9eh0ajkz.webp',
+	4011: '/art/645f-iplk8zo8.webp',
+	4301: '/art/97a8-frcm436d.webp',
+	4304: '/art/afc6-ob20nnf5.webp',
+	4310: '/art/1f54-72m2h14b.webp',
+	4311: '/art/95d0-m51nszio.webp',
+	4312: '/art/95d0-m51nszio.webp',
+	4320: '/art/801c-e9u5oyne.webp',
+	4321: '/art/5183-o1b3xh13.webp',
+	4323: '/art/a8e2-ea7daa72.webp',
+	4324: '/art/b608-d0c0d2e0.webp',
+	4325: '/art/d9b1-5876ff9a.webp',
+	4326: '/art/0182-c9b3b483.webp',
+	4327: '/art/af3b-b6cab5a5.webp',
+	4328: '/art/0cf9-oarixvli.webp',
+	4329: '/art/6ec8-1643d76c.webp',
+	4330: '/art/447a-296da71d.webp',
+	4352: '/art/d829-1b2npvad.webp',
+	4354: '/art/d37d-h5qceohb.webp',
+	4373: '/art/1517-8aad873a.webp',
+	4381: '/art/d0b0-nv2dx1yn.webp',
+	4383: '/art/cc1f-5ha7i6v8.webp',
+	4384: '/art/7076-201ce228.webp',
+	4395: '/art/c7c8-3eygeu3y.webp',
+	4402: '/art/f06f-uuaa5bw6.webp',
+	4412: '/art/5556-2013936e.webp',
+	4413: '/art/72c5-3bf0fa09.webp',
+	4516: '/art/7c91-a7f00b87.webp',
+	4900: '/art/1d05-1hgo14ai.webp',
+	4901: '/art/7062-xwoh2ewg.webp',
+	5000: '/art/5940-n3snb3ua.webp',
+	5012: '/art/f437-jkhxemxt.webp',
+	5015: '/art/2008-54tu9mt9.webp',
+	5016: '/art/4246-w193m7p3.webp',
+	5024: '/art/7c7b-10nz846g.webp',
+	5030: '/art/953e-swf1tvb2.webp',
+	5034: '/art/b6be-4ae475dc.webp',
+	5035: '/art/ce51-63dd2bd9.webp',
+	5040: '/art/be99-pev40ohb.webp',
+	5051: '/art/5071-2f4d005e.webp',
+	5053: '/art/9952-qpi0lscp.webp',
+	5058: '/art/d359-69ckithi.webp',
+	5071: '/art/af80-gn10s1bb.webp',
+	5111: '/art/8628-8m5v40u3.webp',
+	5112: '/art/f01d-9dcmv9ao.webp',
+	5113: '/art/d028-mlwffxtg.webp',
+	5115: '/art/8b14-cmovodff.webp',
+	5253: '/art/1ca6-k1sl785t.webp',
+	5401: '/art/386d-ig168es7.webp',
+	5405: '/art/582b-32906c05.webp',
+	5503: '/art/ed22-fa7284c2.webp',
+	5555: '/art/e211-43420d15.webp',
+	7010: '/art/6e64-l30c5tei.webp',
+	7012: '/art/9126-gqnsbj5d.webp',
+	7013: '/art/9b16-1fmfzodt.webp',
+	7020: '/art/1af7-g502sskx.webp',
+	8021: '/art/884e-569bv7e0.webp',
+	8025: '/art/e808-9qy2tzqo.webp',
+	8030: '/art/8368-kj9k8gw3.webp',
+	8502: '/art/d06b-vk7ei0k7.webp',
+	9003: '/art/eea9-f6e3d8dd.webp',
+	9010: '/art/067b-uw4uaq9s.webp',
+	9013: '/art/ce30-dbajbor3.webp',
+	9021: '/art/dfb5-guy6bfcm.webp',
+	9051: '/art/645f-iplk8zo8.webp',
+	9112: '/art/e9c6-ogupxww1.webp',
+	9501: '/art/c6c8-od6agjtc.webp',
+	10005: '/art/6c4b-otijmg2l.webp',
+	10010: '/art/b8f6-f8451592.webp',
+	11041: '/art/c684-rogi9xw2.webp',
+	11044: '/art/208d-4ilzugfo.webp',
+	11046: '/art/2874-0kzcb8hn.webp',
+	11047: '/art/79bd-szc13qxf.webp',
+	11048: '/art/25ec-sh4r71a9.webp',
+	11049: '/art/e949-r3yc9gw8.webp',
+	11051: '/art/e0c8-pwdgii2c.webp',
+	11055: '/art/652d-3fruptt2.webp',
+	11056: '/art/621f-x6pjrh99.webp',
+	12204: '/art/beca-xje1t9e8.webp',
+	12402: '/art/177f-g7hu5cng.webp',
+	12404: '/art/8de8-8b814790.webp',
+	12405: '/art/f2eb-osv793c7.webp',
+	12501: '/art/6dd3-6l9wd7rf.webp',
+	13005: '/art/1ca6-k1sl785t.webp',
+	13045: '/art/b62c-ac1dc6a1.webp',
+	13047: '/art/647d-890bd83b.webp',
+	14002: '/art/c5f8-ct2dhwm7.webp',
+	14003: '/art/6d85-xznex7yq.webp',
+	14004: '/art/a053-bn3oyk4c.webp',
+	14005: '/art/e304-1sebgpwj.webp',
+	14006: '/art/76b5-bwzyb3c4.webp',
+	15018: '/art/7431-9wkai9y0.webp',
+	16101: '/art/9605-zfp4egv7.webp',
+	16102: '/art/552c-j4hbss6i.webp',
+	16201: '/art/8684-xe3hb2fr.webp',
+	16511: '/art/6dd4-df5ea380.webp',
+	17001: '/art/c408-9xxu9a72.webp',
+	17004: '/art/8711-tnk2u5sb.webp',
+	17007: '/art/bb14-c6ht768i.webp',
+	17008: '/art/3d86-2lvnvzvs.webp',
+	17101: '/art/73f8-itgrlfi4.webp',
+	17108: '/art/d0bf-blddgqgk.webp',
+	17110: '/art/22ae-5dn5jjkx.webp',
+	17501: '/art/fd15-esta87rq.webp',
+	17502: '/art/c7ec-e4ivcgjc.webp',
+	18001: '/art/b507-gvhjbjgz.webp',
+	18002: '/art/4242-vz7cy9vj.webp',
+	18004: '/art/dc43-bu47ikb8.webp',
+	19002: '/art/6dfd-wnbc3xxu.webp',
+	19003: '/art/bd2a-m76xauwn.webp',
+	19004: '/art/769b-8lxrumdk.webp',
+	19007: '/art/e9bd-94bce6e3.webp',
+	20007: '/art/a8d9-eee8c126.webp',
+	20012: '/art/8de8-8b814790.webp',
+	20013: '/art/450c-0fc107e1.webp',
+	20014: '/art/0520-abfd3215.webp',
+	20018: '/art/e808-9qy2tzqo.webp',
+	20031: '/art/bfc4-iejwrheq.webp',
+	20035: '/art/1aaa-333ts18j.webp',
+	20102: '/art/0b0b-xzlu2e8y.webp',
+	20117: '/art/4c0f-wurcp818.webp',
+	20126: '/art/9690-1zwekh9e.webp',
+	20127: '/art/ba8e-1tdq0rli.webp',
+	20402: '/art/8bb6-r8ug7jzo.webp',
+	20406: '/art/6c5f-q5se4d7c.webp',
+	20703: '/art/3c0d-k7hegp81.webp',
+	20708: '/art/fb18-qx4m1ksv.webp',
+	20801: '/art/41ce-m0jd0ymi.webp',
+	20802: '/art/2bbb-oxl7d7ni.webp',
+	20804: '/art/65de-h9kigxwq.webp',
+	20807: '/art/77fd-h2r8tkg6.webp',
+	20810: '/art/7bd1-b4ip7ji2.webp',
+	29003: '/art/a231-2mm7gjmc.webp',
+	30050: '/art/3a95-a09cvqxa.webp',
+	30064: '/art/f31c-128c125b.webp',
+	30080: '/art/f9bc-04e778a9.webp',
+	30084: '/art/85c9-yz0ua28c.webp',
+	30087: '/art/1ca6-k1sl785t.webp',
+	30201: '/art/d06b-vk7ei0k7.webp',
+	32008: '/art/9600-2uc6ue3n.webp',
+	32031: '/art/9600-2uc6ue3n.webp',
+	32206: '/art/fb7d-82f7181c.webp',
+	33002: '/art/72aa-13a9lxuc.webp',
+	33010: '/art/b17e-v6jm83fs.webp',
+	35006: '/art/d7fb-sss1cjes.webp',
+	35010: '/art/a55b-gwo99sp4.webp',
+	35013: '/art/7e79-wuvfl370.webp',
+	35015: '/art/9135-1vcfatl1.webp',
+	35016: '/art/6a5e-ocn2s6ak.webp',
+	39102: '/art/953e-swf1tvb2.webp',
+	40004: '/art/1ca8-wgo85bl3.webp',
+	40007: '/art/0433-1465k5g4.webp',
+	40012: '/art/030b-ipmne5nf.webp',
+	40013: '/art/7c47-5aad6343.webp',
+	40015: '/art/312d-g7hdk1bi.webp',
+	40018: '/art/9936-c9deeae7.webp',
+	40021: '/art/f65f-p0cr7tc7.webp',
+	40022: '/art/a642-s6opcphd.webp',
+	40023: '/art/ce57-n14wzrp3.webp',
+	40026: '/art/0441-ujzwxfqa.webp',
+	40027: '/art/2265-zp8fovec.webp',
+	40028: '/art/75e9-7vtupj6s.webp',
+	40029: '/art/e7a2-46blwsht.webp',
+	40050: '/art/7c91-a7f00b87.webp',
+	40131: '/art/3db9-zkg5entq.webp',
+	47002: '/art/71db-t2s6902m.webp',
+	47004: '/art/3937-ax7x9u4g.webp',
+	47006: '/art/68ac-d6r8xk8x.webp',
+	47009: '/art/817f-wv8q3s76.webp',
+	48006: '/art/adbf-lp8ye61z.webp',
+	48104: '/art/addf-4wjxxka4.webp',
+	48116: '/art/8f32-5atoaan3.webp',
+	60007: '/art/92c0-5zvr6h9k.webp',
+	70014: '/art/cb93-m8ivjgjw.webp',
+	70015: '/art/095a-g7gjlt5b.webp',
+	70016: '/art/a521-vsi1eae3.webp',
+	80001: '/art/58c7-7miu0kuo.webp',
+	80002: '/art/da50-xxfxd3on.webp',
+	85007: '/art/bbb4-16zr8qmq.webp',
+	85021: '/art/e9e2-rognnfhy.webp',
+	85101: '/art/aeff-q23xlmep.webp',
+	95043: '/art/37dc-8lo9azf3.webp',
+	95101: '/art/ab9c-df065bfa.webp',
+	95102: '/art/0b0b-xzlu2e8y.webp',
+	95125: '/art/283e-wed4vq3l.webp',
+	95126: '/art/ba8e-1tdq0rli.webp',
+	95136: '/art/0705-wkjpdj4e.webp',
+	95201: '/art/860f-b5f9e513.webp',
+	95208: '/art/d1be-5ae8e3a4.webp',
+	95209: '/art/983c-33dnmgxq.webp',
+	95210: '/art/bf25-9aygfsaf.webp',
+	95214: '/art/258c-cx4vkfm3.webp',
+	95220: '/art/c34e-1db07574.webp',
+	95228: '/art/556e-5fd736ca.webp',
+	95231: '/art/7d57-f8490489.webp',
+	95232: '/art/8abb-6bf6aeea.webp',
+	95305: '/art/33fe-9f2e4a77.webp',
+	95308: '/art/5081-59720b15.webp',
+	95309: '/art/5109-14028336.webp',
+	95314: '/art/e17d-219031e7.webp',
+	95401: '/art/c552-72aaf7cb.webp',
+	95410: '/art/c838-ebed9878.webp',
+	95415: '/art/c692-fb4e009e.webp',
+	95426: '/art/c088-ad2fc9ed.webp',
+	95701: '/art/f2be-1df95b47.webp',
+	95808: '/art/a893-df4b505c.webp',
+	96001: '/art/c672-c9142811.webp',
+	96003: '/art/dfe6-c8f1baeb.webp',
+	96004: '/art/005d-62d607f5.webp',
+	96009: '/art/b776-859ca4d2.webp',
+	// ─── Merged from MINION_CARD_TO_ART (37 entries) ───
+	2002: '/art/690d-xbplsbwm.webp',
+	4302: '/art/e6bc-wg7xls1q.webp',
+	4303: '/art/fd76-ri6lnzuz.webp',
+	4305: '/art/5fb2-sc9m8ncs.webp',
+	4355: '/art/d5ff-wq899zve.webp',
+	4371: '/art/dcb5-jryrjh20.webp',
+	4376: '/art/4655-o4xbxsth.webp',
+	4386: '/art/a395-in0vknq1.webp',
+	4400: '/art/3edc-cebgseku.webp',
+	4404: '/art/a738-4s7wc7uu.webp',
+	4405: '/art/a913-axqs13eu.webp',
+	4406: '/art/998a-1dhipeiq.webp',
+	4416: '/art/e4d7-fxhqn1cf.webp',
+	5006: '/art/14b8-isr8t5zt.webp',
+	5045: '/art/239c-hh1wqqe1.webp',
+	5046: '/art/c282-2z5tb1rj.webp',
+	5047: '/art/c750-jx3qs9o9.webp',
+	5107: '/art/6c1c-zrjkhyy0.webp',
+	5400: '/art/8328-uu8iihq1.webp',
+	5501: '/art/dec0-esnj3ywr.webp',
+	5553: '/art/64f4-24yr8hxe.webp',
+	7501: '/art/a606-18xuaznq.webp',
+	9004: '/art/c3ed-38q1x82a.webp',
+	9091: '/art/a606-18xuaznq.webp',
+	16513: '/art/f973-5zs03o10.webp',
+	29980: '/art/b1d0-z8eue8gt.webp',
+	30062: '/art/7b6c-r5dyl06h.webp',
+	30065: '/art/293c-du2ktesl.webp',
+	30095: '/art/b089-yi2eckk3.webp',
+	30099: '/art/6e23-pn86oy72.webp',
+	30100: '/art/f7fa-n6v3b7o4.webp',
+	30109: '/art/45ee-yk4gye4j.webp',
+	33006: '/art/cb76-puxvnjh7.webp',
+	40003: '/art/8562-hlad99em.webp',
+	40020: '/art/7669-e4j8057b.webp',
+	95012: '/art/e6bc-wg7xls1q.webp',
+	95301: '/art/d485-79u29gow.webp',
 };
 
 /** Set of all art file paths reserved for heroes — built once from HERO_ART_OVERRIDE */
@@ -2602,6 +2864,35 @@ export function getCardArtById(cardId: number | string): string | null {
 		return null;
 	}
 	return assetPath(path);
+}
+
+/**
+ * Returns the raw art path (e.g. `/art/filename.webp`) without deployment prefix.
+ * Used by blockchain layer to build NFT image URLs that won't double the base path.
+ */
+export function getRawCardArtPath(cardName: string, cardId?: number | string): string | null {
+	if (!cardName) return null;
+	if (cardId != null) {
+		const id = typeof cardId === 'string' ? parseInt(cardId, 10) : cardId;
+		if (!isNaN(id)) {
+			const path = CARD_ID_TO_ART[id];
+			if (path && !HERO_ART_PATHS.has(path)) return path;
+		}
+	}
+	const lowerName = cardName.toLowerCase().trim();
+	const vercelUrl = VERCEL_CARD_ART[lowerName];
+	if (vercelUrl) {
+		const artIdMatch = vercelUrl.match(/\/art\/(.+)\.webp$/);
+		if (artIdMatch) {
+			const artId = artIdMatch[1];
+			if ((ALL_CHARACTER_ART_IDS_SET.has(artId) && !CREATURE_RESERVED_ART_IDS.has(artId)) || HERO_ART_IDS_SET.has(artId)) return null;
+		}
+		return vercelUrl;
+	}
+	const character = MINION_CARD_TO_ART[lowerName];
+	if (!character || !CREATURE_ART_CHARACTERS.has(character)) return null;
+	const artId = CHARACTER_ART_IDS[character];
+	return artId ? `/art/${artId}.webp` : null;
 }
 
 const _artPathCache = new Map<string, string | null>();

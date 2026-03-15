@@ -31,7 +31,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 1001,
     name: 'Sea Sprite Raider',
-    description: '',
+    description: 'A scaled naga warrior clutching a coral-tipped spear.',
     flavorText: "From the depths of Aegir's realm, they come with shells as shields!",
     type: 'minion',
     rarity: 'common',
@@ -46,7 +46,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 1002,
     name: 'Fenris Cub',
-    description: '',
+    description: 'A scrappy wolf pup with oversized paws and glowing amber eyes.',
     flavorText: 'A young spawn of the great wolf Fenrir, destined to grow mighty.',
     type: 'minion',
     rarity: 'common',
@@ -61,7 +61,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 1003,
     name: 'Midgard Serpent Spawn',
-    description: '',
+    description: 'A coiling green serpent with iridescent scales and a forked tongue.',
     flavorText: 'A lesser offspring of Jörmungandr, the World Serpent.',
     type: 'minion',
     rarity: 'common',
@@ -76,7 +76,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 1004,
     name: 'Jotun Brute',
-    description: '',
+    description: 'A hulking frost giant wielding a jagged ice club.',
     flavorText: 'From the frozen wastes of Jotunheim, a faithful warrior of the frost giants.',
     type: 'minion',
     rarity: 'common',
@@ -303,7 +303,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 5047,
     name: 'Swamp Turtle of Midgard',
-    description: '',
+    description: 'A moss-covered turtle with a stone-hard shell, half-submerged in murk.',
     flavorText: 'Ancient turtles that have witnessed the ages.',
     type: 'minion',
     rarity: 'common',
@@ -420,7 +420,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 5106,
     name: 'Will-o-wisp',
-    description: '',
+    description: 'A flickering orb of pale ghostlight drifting through the fog.',
     flavorText: 'Ethereal lights that guide—or mislead—travelers.',
     type: 'minion',
     rarity: 'common',
@@ -707,7 +707,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 30070,
     name: 'Velociraptor of Midgard',
-    description: '',
+    description: 'A swift, feathered raptor with razor claws bounding through ferns.',
     flavorText: 'Swift predators from the primordial forests.',
     type: 'minion',
     rarity: 'common',
@@ -722,7 +722,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 30071,
     name: 'River Serpent of Aegir',
-    description: '',
+    description: 'A sleek water snake gliding through Aegir\'s moonlit rivers.',
     flavorText: 'Lurking in the waters of the sea god.',
     type: 'minion',
     rarity: 'common',
@@ -830,7 +830,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 30078,
     name: 'Automaton of Ivaldi',
-    description: '',
+    description: 'A squat dwarven machine of riveted bronze with glowing rune-eyes.',
     flavorText: 'Crafted by the sons of Ivaldi themselves.',
     type: 'minion',
     rarity: 'common',
@@ -1271,7 +1271,7 @@ const commonNeutralMinions: CardData[] = [
   {
     id: 29978,
     name: 'Dusk Boar',
-    description: '',
+    description: 'A tusked boar with dark bristled hide roaming the twilight forests.',
     flavorText: 'Roaming the twilight between worlds.',
     type: 'minion',
     rarity: 'common',
@@ -4580,7 +4580,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 1,
     type: 'minion',
     rarity: 'common',
-    description: '',
+    description: 'A palm-sized clockwork spider skittering on needle-thin legs.',
     keywords: [],
     race: 'Automaton',
     class: 'Neutral',
@@ -5889,7 +5889,7 @@ const legendaryNeutralMinions: CardData[] = [
     health: 1,
     type: 'minion',
     rarity: 'common',
-    description: '',
+    description: 'A tiny dragon hatchling with smoldering scales.',
     flavorText: 'A tiny dragon hatchling.',
     keywords: [],
     race: 'Dragon',
@@ -6922,7 +6922,7 @@ const mythologyNorseCards: CardData[] = [
     health: 11,
     type: 'minion',
     rarity: 'epic',
-    description: '',
+    description: 'A colossal elemental born from the union of flame and storm.',
     flavorText: "Born from the union of flame and storm, Surtr's Creation rises.",
     class: 'Neutral',
     collectible: false,
@@ -7181,7 +7181,7 @@ const commonDragonMinions: CardData[] = [
   {
     id: 33100,
     name: 'Whelp of Nidhogg',
-    description: '',
+    description: 'A tiny black dragon hatchling with smoldering red eyes.',
     flavorText: 'A tiny spawn of the dragon that gnaws at Yggdrasil\'s roots.',
     type: 'minion',
     rarity: 'common',
@@ -7196,7 +7196,7 @@ const commonDragonMinions: CardData[] = [
   {
     id: 33101,
     name: 'Ember Drake',
-    description: '',
+    description: 'A crimson-scaled drake trailing wisps of flame from its jaws.',
     flavorText: 'Born from the flames of Muspelheim, it seeks to spread fire across the realms.',
     type: 'minion',
     rarity: 'common',
@@ -7232,7 +7232,7 @@ const commonDragonMinions: CardData[] = [
   {
     id: 33103,
     name: 'Bronze Hatchling',
-    description: '',
+    description: 'A young dragon with gleaming bronze scales and stubby wings.',
     flavorText: 'Forged in the bronze age, when gods walked among mortals.',
     type: 'minion',
     rarity: 'common',
@@ -7585,8 +7585,8 @@ const epicDragonMinions: CardData[] = [
 const legendaryDragonMinions: CardData[] = [
   {
     id: 33120,
-    name: 'Sindragosa, Frost Queen',
-    description: 'Battlecry: Summon two 0/1 Frozen Champions.',
+    name: 'Niflheim Wyrm, Frost Queen',
+    description: 'Battlecry: Summon two 0/1 Frost-Bound Champions.',
     flavorText: 'Queen of the frost wyrms, she brings eternal winter to all who oppose her.',
     type: 'minion',
     rarity: 'epic',
@@ -7697,7 +7697,7 @@ const legendaryDragonMinions: CardData[] = [
 const dragonTokens: CardData[] = [
   {
     id: 33999,
-    name: 'Frozen Champion',
+    name: 'Frost-Bound Champion',
     description: 'Deathrattle: Add a random Mythic minion to your hand.',
     flavorText: 'Frozen in eternal slumber, awaiting the moment of release.',
     type: 'minion',
@@ -7725,7 +7725,7 @@ const commonBeastMinions: CardData[] = [
   {
     id: 33125,
     name: 'Cub of Fenrir',
-    description: '',
+    description: 'A small grey wolf cub baring tiny fangs, already fierce.',
     flavorText: 'A young pup of the great wolf Fenrir, already showing signs of its legendary heritage.',
     type: 'minion',
     rarity: 'common',
@@ -7756,7 +7756,7 @@ const commonBeastMinions: CardData[] = [
   {
     id: 33127,
     name: 'Bloodfen Raptor of Midgard',
-    description: '',
+    description: 'A red-feathered raptor with blood-stained claws stalking the marshes.',
     flavorText: 'These swift predators hunt in the marshlands between the nine realms.',
     type: 'minion',
     rarity: 'common',
@@ -7771,7 +7771,7 @@ const commonBeastMinions: CardData[] = [
   {
     id: 33128,
     name: 'River Crocolisk of Aegir',
-    description: '',
+    description: 'An armored reptile with snapping jaws lurking in shallow waters.',
     flavorText: 'Aegir, god of the sea, keeps these beasts in the rivers that flow through the realms.',
     type: 'minion',
     rarity: 'common',
@@ -7802,7 +7802,7 @@ const commonBeastMinions: CardData[] = [
   {
     id: 33130,
     name: 'Oasis Snapjaw of the Nile',
-    description: '',
+    description: 'A massive desert tortoise with a sun-bleached shell and crushing bite.',
     flavorText: 'Sacred to the Egyptian gods, these ancient turtles guard the desert springs.',
     type: 'minion',
     rarity: 'common',
@@ -8184,7 +8184,7 @@ const beastTokens: CardData[] = [
   {
     id: 33150,
     name: 'Spider of Hati',
-    description: '',
+    description: 'A pale spider spun from moonlight, trailing silk threads of shadow.',
     flavorText: 'Creatures of darkness spawned from the moon-chaser.',
     type: 'minion',
     rarity: 'common',
@@ -8218,7 +8218,7 @@ const beastTokens: CardData[] = [
   {
     id: 33152,
     name: "Sindri's Apprentice",
-    description: '',
+    description: 'A soot-covered young dwarf clutching a glowing hammer.',
     flavorText: 'Freed from the belly of the beast!',
     type: 'minion',
     rarity: 'rare',
@@ -8241,7 +8241,7 @@ const mythologyTokens: CardData[] = [
     health: 1,
     type: 'minion',
     rarity: 'common',
-    description: '',
+    description: 'A dented automaton sparking from cracked rune-plates.',
     flavorText: 'Still functional, if a bit dented.',
     race: 'Automaton',
     class: 'Neutral',
@@ -8256,7 +8256,7 @@ const mythologyTokens: CardData[] = [
     health: 5,
     type: 'minion',
     rarity: 'rare',
-    description: '',
+    description: 'A spectral warrior that refuses to stay dead.',
     flavorText: 'The undying spirit fights on.',
     class: 'Neutral',
     collectible: false,
@@ -8270,7 +8270,7 @@ const mythologyTokens: CardData[] = [
     health: 2,
     type: 'minion',
     rarity: 'common',
-    description: '',
+    description: 'A young lion cub with impenetrable golden fur.',
     flavorText: 'Small but fierce.',
     race: 'Beast',
     class: 'Neutral',
@@ -8285,7 +8285,7 @@ const mythologyTokens: CardData[] = [
     health: 1,
     type: 'minion',
     rarity: 'common',
-    description: '',
+    description: 'A tiny serpentine dragon spawn of the Mother of Monsters.',
     flavorText: 'One of many.',
     race: 'Dragon',
     class: 'Neutral',
@@ -8300,7 +8300,7 @@ const mythologyTokens: CardData[] = [
     durability: 3,
     type: 'weapon',
     rarity: 'epic',
-    description: '',
+    description: 'A radiant greatsword blessed by Tyr, its blade etched with golden justice runes.',
     flavorText: 'A blade blessed by the god of war and justice.',
     class: 'Neutral',
     collectible: false,
@@ -9264,7 +9264,7 @@ const controlRemovalCards: CardData[] = [
   {
     id: 33300,
     name: 'Stone Snake',
-    description: '',
+    description: 'A petrified serpent of grey rock, coiled and eerily still.',
     flavorText: 'Once a warrior, now cold stone.',
     type: 'minion',
     rarity: 'common',
@@ -9279,7 +9279,7 @@ const controlRemovalCards: CardData[] = [
   {
     id: 33301,
     name: 'Locust',
-    description: '',
+    description: 'A chitinous insect with translucent wings buzzing in a swarm.',
     flavorText: 'One of countless.',
     type: 'minion',
     rarity: 'common',
@@ -10249,7 +10249,7 @@ const synergyPackageCards: CardData[] = [
   {
     id: 33401,
     name: 'Rusty Hook',
-    description: '',
+    description: 'A corroded iron hook trailing seaweed and barnacles.',
     flavorText: 'A corroded hook from the depths of the ocean.',
     type: 'weapon',
     rarity: 'common',

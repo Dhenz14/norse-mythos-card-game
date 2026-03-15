@@ -246,14 +246,14 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       norseHeroId: 'hero-ammit'
     },
     {
-      id: 'hero-shu',
-      name: 'Shu',
-      heroClass: 'mage',
-      description: 'God of Air: Bounce enemies to their hand with powerful gusts.',
+      id: 'hero-hecate',
+      name: 'Hecate',
+      heroClass: 'warlock',
+      description: 'Goddess of Magic: Destroy weak enemy minions and harvest their souls.',
       fixedCardIds: [],
-      element: 'electric',
-      norseHeroId: 'hero-shu'
-    }
+      element: 'dark',
+      norseHeroId: 'hero-hecate'
+    },
   ],
   rook: [
     // ===== BASE (FREE STARTER) =====
@@ -677,6 +677,34 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       element: 'light',
       norseHeroId: 'hero-maat'
     },
+    // ===== GREEK ALT-SKIN HEROES =====
+    {
+      id: 'hero-helios',
+      name: 'Helios',
+      heroClass: 'priest',
+      description: 'Titan of the Sun: Heal allies with radiant solar energy.',
+      fixedCardIds: [],
+      element: 'light',
+      norseHeroId: 'hero-helios'
+    },
+    {
+      id: 'hero-rhea',
+      name: 'Rhea',
+      heroClass: 'priest',
+      description: 'Mother of the Gods: Restore health and nurture allies.',
+      fixedCardIds: [],
+      element: 'grass',
+      norseHeroId: 'hero-rhea'
+    },
+    {
+      id: 'hero-prometheus',
+      name: 'Prometheus',
+      heroClass: 'druid',
+      description: 'The Fire-Bringer: Sacrifice health to empower friendly minions.',
+      fixedCardIds: [],
+      element: 'fire',
+      norseHeroId: 'hero-prometheus'
+    },
   ],
   knight: [
     // ===== BASE (FREE STARTER) =====
@@ -874,6 +902,16 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       element: 'dark',
       norseHeroId: 'hero-serqet'
+    },
+    // ===== GREEK ALT-SKIN HEROES =====
+    {
+      id: 'hero-selene',
+      name: 'Selene',
+      heroClass: 'rogue',
+      description: 'Titaness of the Moon: Grant Stealth and strike from shadow.',
+      fixedCardIds: [],
+      element: 'dark',
+      norseHeroId: 'hero-selene'
     },
     // ===== PROMOTED FROM BISHOP =====
     {

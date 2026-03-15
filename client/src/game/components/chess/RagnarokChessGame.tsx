@@ -40,7 +40,7 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, piece
   const fallbackPortrait = assetPath(`/portraits/heroes/${king.heroClass}.png`);
   const safeFallback = DEFAULT_PORTRAIT;
   const isPlayer = side === 'player';
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, x: isPlayer ? -50 : 50 }}
@@ -74,7 +74,7 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, piece
           {isPlayer ? 'Aesir Commander' : 'Jotun Warlord'}
         </div>
       </div>
-      
+
       {pieceCount !== undefined && (
         <div className={`chess-piece-count-shield mt-2 ${isPlayer ? 'chess-piece-count-player' : 'chess-piece-count-opponent'}`}>
           <span className="font-bold text-sm">{pieceCount}</span>
@@ -85,12 +85,19 @@ const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, piece
   );
 };
 
-interface DivineCommandButtonProps {
-  playerArmy: ArmySelectionType | null;
-  isPlayerTurn: boolean;
+interface PlayerPortraitProps {
+  army: ArmySelectionType;
+  pieceCount?: number;
 }
 
-const DivineCommandButton: React.FC<DivineCommandButtonProps> = ({ playerArmy, isPlayerTurn }) => {
+const PlayerHeroPortrait: React.FC<PlayerPortraitProps> = ({ army, pieceCount }) => {
+  const king = army.king;
+  const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || assetPath(`/portraits/kings/${king.id?.replace('king-', '')}.png`);
+  const fallbackPortrait = assetPath(`/portraits/heroes/${king.heroClass}.png`);
+  const safeFallback = DEFAULT_PORTRAIT;
+  const [isCasting, setIsCasting] = useState(false);
+  const prevMinesRef = useRef<number | null>(null);
+
   const {
     canPlaceMine,
     minesRemaining,
@@ -100,133 +107,135 @@ const DivineCommandButton: React.FC<DivineCommandButtonProps> = ({ playerArmy, i
     exitPlacementMode,
     selectDirection
   } = useKingChessAbility('player');
-  
-  const kingId = playerArmy?.king?.id || '';
+
+  const kingId = king.id || '';
   const config = getKingAbilityConfig(kingId);
   const description = getAbilityDescription(kingId);
   const needsDirection = requiresDirectionSelection(kingId);
   const availableDirections = getAvailableDirections(kingId);
-  
-  const handleClick = () => {
+
+  useEffect(() => {
+    if (prevMinesRef.current !== null && minesRemaining < prevMinesRef.current) {
+      setIsCasting(true);
+      const timer = setTimeout(() => setIsCasting(false), 900);
+      prevMinesRef.current = minesRemaining;
+      return () => clearTimeout(timer);
+    }
+    prevMinesRef.current = minesRemaining;
+    return undefined;
+  }, [minesRemaining]);
+
+  const handlePortraitClick = () => {
     if (isPlacementMode) {
       exitPlacementMode();
     } else if (canPlaceMine) {
       enterPlacementMode();
     }
   };
-  
-  const handleDirectionSelect = (dir: MineDirection) => {
-    selectDirection(dir);
-  };
-  
-  const isDisabled = !canPlaceMine && !isPlacementMode;
-  
-  const abilityName = config?.abilityType 
-    ? config.abilityType.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-    : 'Divine Command';
-  const rarityColor = config?.rarity === 'mythic' ? '#f59e0b'
-    : config?.rarity === 'epic' ? '#a855f7'
-    : config?.rarity === 'rare' ? '#10b981'
-    : '#3b82f6';
-  
+
+  const isClickable = canPlaceMine || isPlacementMode;
+
   const tooltipContent = (
-    <div 
-      className="portal-tooltip-content"
-      style={{ 
-        borderColor: rarityColor,
-        boxShadow: `0 4px 20px rgba(0, 0, 0, 0.5), 0 0 20px ${rarityColor}40`
-      }}
-    >
-      <div className="portal-tooltip-header" style={{ color: rarityColor }}>
-        <span>{abilityName}</span>
-        <span 
-          className="portal-tooltip-cost"
-          style={{ 
-            background: `linear-gradient(135deg, ${rarityColor}, ${rarityColor}cc)` 
-          }}
-        >
-          {config?.rarity?.replace('_', ' ').toUpperCase() || 'STANDARD'}
-        </span>
+    <div className="portal-tooltip-content" style={{ borderColor: '#fbbf24', boxShadow: '0 4px 20px rgba(0,0,0,0.5), 0 0 20px rgba(251,191,36,0.25)' }}>
+      <div className="portal-tooltip-header" style={{ color: '#fbbf24' }}>
+        <span>Divine Command</span>
       </div>
       <div className="portal-tooltip-description">{description}</div>
       <div className="portal-tooltip-meta">
-        <div style={{ color: '#fbbf24' }}>⚡ Uses: {minesRemaining}/5 remaining</div>
-        <div style={{ color: '#ef4444', marginTop: '4px' }}>💀 STA Penalty: -{config?.staPenalty || 2} when triggered</div>
-        <div style={{ color: '#22d3ee', marginTop: '4px' }}>✨ Mana Reward: +{config?.manaBoost || 1} mana next PvP</div>
-        <div style={{ color: '#9ca3af', marginTop: '4px', fontStyle: 'italic' }}>Mines expire after {config?.turnDuration || 2} turn{(config?.turnDuration || 2) > 1 ? 's' : ''}</div>
+        <div style={{ color: '#fbbf24' }}>⚡ {minesRemaining}/5 uses</div>
+        <div style={{ color: '#ef4444', marginTop: '4px' }}>💀 STA: -{config?.staPenalty || 2}</div>
+        <div style={{ color: '#22d3ee', marginTop: '4px' }}>✨ Mana: +{config?.manaBoost || 1} next PvP</div>
+        <div style={{ color: '#9ca3af', marginTop: '4px', fontStyle: 'italic' }}>Click portrait to {isPlacementMode ? 'cancel' : 'activate'}</div>
       </div>
     </div>
   );
-  
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.3 }}
-      className="mt-4 flex flex-col items-center"
+      initial={{ opacity: 0, x: -50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="flex flex-col items-center mr-6"
     >
-      <Tooltip content={tooltipContent} position="top" delay={200}>
-        <button
-          onClick={handleClick}
-          disabled={isDisabled}
-          className={`divine-command-btn ${isPlacementMode ? 'divine-command-active' : isDisabled ? 'divine-command-disabled' : ''} ${minesRemaining === 5 && !isPlacementMode && !isDisabled ? 'divine-command-full' : ''}`}
+      <Tooltip content={tooltipContent} position="right" delay={400}>
+        <div
+          className={`hero-portrait-frame hero-portrait-player ${isClickable ? 'king-clickable' : ''} ${isPlacementMode ? 'king-placement-active' : ''} ${isCasting ? 'king-casting' : ''}`}
+          data-element={king.element || 'holy'}
+          onClick={handlePortraitClick}
+          style={{ cursor: isClickable ? 'pointer' : 'default' }}
         >
-          <div className="flex items-center gap-2">
-            <span className="text-xl">{isPlacementMode ? '✕' : '⚡'}</span>
-            <span>{isPlacementMode ? 'Cancel Command' : 'Divine Command'}</span>
-          </div>
-          
-          <div 
-            className={`divine-command-badge ${minesRemaining === 0 ? 'divine-command-badge-empty' : ''}`}
-          >
+          <img
+            src={kingPortrait}
+            alt={king.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (!target.src.includes(fallbackPortrait) && !target.src.startsWith('data:')) {
+                target.src = fallbackPortrait;
+              } else if (!target.src.startsWith('data:')) {
+                target.src = safeFallback;
+              }
+            }}
+            loading="lazy"
+          />
+
+          <div className={`king-uses-badge ${minesRemaining === 0 ? 'king-uses-empty' : ''} ${isPlacementMode ? 'king-uses-active' : ''}`}>
             {minesRemaining}/5
           </div>
-        </button>
+
+          <AnimatePresence>
+            {isCasting && (
+              <motion.div
+                className="king-cast-burst"
+                initial={{ opacity: 1, scale: 0.3 }}
+                animate={{ opacity: 0, scale: 2.5 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              />
+            )}
+          </AnimatePresence>
+        </div>
       </Tooltip>
-      
+
+      <div className="hero-nameplate">
+        <div className="hero-nameplate-text">{king.name}</div>
+        <div className="hero-nameplate-subtitle">Aesir Commander</div>
+      </div>
+
+      {pieceCount !== undefined && (
+        <div className="chess-piece-count-shield mt-2 chess-piece-count-player">
+          <span className="font-bold text-sm">{pieceCount}</span>
+          <span className="text-[10px] opacity-60 ml-1">pieces</span>
+        </div>
+      )}
+
       {needsDirection && isPlacementMode && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="mt-3 flex gap-2"
+          className="mt-2 flex gap-1"
         >
           {availableDirections.map((dir) => (
             <button
               key={dir}
-              onClick={() => handleDirectionSelect(dir)}
-              className={`
-                px-3 py-2 rounded-lg text-sm font-semibold transition-all
-                ${selectedDirection === dir 
-                  ? 'bg-yellow-600 text-white border-2 border-yellow-400' 
-                  : 'bg-gray-700 text-gray-300 border-2 border-gray-600 hover:bg-gray-600'
-                }
-              `}
+              onClick={() => selectDirection(dir)}
+              className={`px-2 py-1 rounded text-xs font-semibold transition-all ${selectedDirection === dir ? 'bg-yellow-600 text-white border border-yellow-400' : 'bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600'}`}
             >
-              {dir === 'horizontal' ? '↔️ Horizontal' : 
-               dir === 'vertical' ? '↕️ Vertical' : 
-               dir === 'diagonal_up' ? '↗️ Diagonal ↗' : '↘️ Diagonal ↘'}
+              {dir === 'horizontal' ? '↔' : dir === 'vertical' ? '↕' : dir === 'diagonal_up' ? '↗' : '↘'}
             </button>
           ))}
         </motion.div>
       )}
-      
+
       {isPlacementMode && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-2 text-center"
-        >
-          <div className="text-sm text-yellow-400">Click a tile to place your trap!</div>
-          <div className="text-xs text-gray-500 mt-1">{description}</div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-1 text-center">
+          <div className="text-xs text-yellow-400">Click a tile to place trap</div>
         </motion.div>
-      )}
-      
-      {!isPlayerTurn && !isPlacementMode && (
-        <div className="mt-2 text-xs text-gray-500">Wait for your turn</div>
       )}
     </motion.div>
   );
 };
+
 
 interface ChessPhaseContentProps {
   boardState: any;
@@ -275,19 +284,24 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
       
       <div className="flex items-center justify-center">
         {playerArmy && (
-          <HeroPortraitPanel army={playerArmy} side="player" pieceCount={playerPieceCount} />
+          <PlayerHeroPortrait army={playerArmy} pieceCount={playerPieceCount} />
         )}
-        
-        <div className="relative">
-          <ChessBoard 
-            onCombatTriggered={handleCombatTriggered} 
+
+        <div className="relative flex flex-col items-center">
+          <ChessBoard
+            onCombatTriggered={handleCombatTriggered}
             disabled={isPlacementMode}
           />
-          
+
+          {boardState.inCheck === boardState.currentTurn && (
+            <div className="mt-2 text-center text-sm">
+              <p className="text-yellow-400 font-semibold">You must escape check! Move King, block, or capture the threat.</p>
+            </div>
+          )}
         </div>
-        
+
         <HeroPortraitPanel army={opponentArmy} side="opponent" pieceCount={opponentPieceCount} />
-        
+
         <button
           onClick={(e) => {
             e.preventDefault();
@@ -300,19 +314,6 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
           ⚔️ Test Battle
         </button>
       </div>
-      
-      {playerArmy && (
-        <DivineCommandButton 
-          playerArmy={playerArmy} 
-          isPlayerTurn={boardState.currentTurn === 'player'}
-        />
-      )}
-      
-      {boardState.inCheck === boardState.currentTurn && (
-        <div className="mt-4 text-center text-sm">
-          <p className="text-yellow-400 font-semibold">You must escape check! Move King, block, or capture the threat.</p>
-        </div>
-      )}
     </motion.div>
   );
 };

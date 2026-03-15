@@ -53,7 +53,7 @@ export const egyptianChapter: CampaignChapter = {
 			aiDeckCardIds: deck(0), aiProfile: AI_PROFILES.easy,
 			bossRules: [], prerequisiteIds: [],
 			rewards: [{ type: 'rune', amount: 20 }],
-			campaignArmy: { king: 'king-gaia', queen: 'hero-shu', rook: 'hero-baldur', bishop: 'hero-maat', knight: 'hero-khepri' },
+			campaignArmy: { king: 'king-gaia', queen: 'hero-ammit', rook: 'hero-baldur', bishop: 'hero-maat', knight: 'hero-khepri' },
 		},
 		{
 			id: 'egyptian-2', chapterId: 'egyptian', missionNumber: 2, realm: 'thebes',
@@ -82,7 +82,7 @@ export const egyptianChapter: CampaignChapter = {
 			bossRules: [{ type: 'bonus_draw', value: 1, description: 'Ma\'at draws wisdom from the scales' }],
 			prerequisiteIds: ['egyptian-2'],
 			rewards: [{ type: 'rune', amount: 30 }],
-			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-shu', rook: 'hero-heimdall', bishop: 'hero-maat', knight: 'hero-khepri' },
+			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-ammit', rook: 'hero-heimdall', bishop: 'hero-maat', knight: 'hero-khepri' },
 		},
 		{
 			id: 'egyptian-4', chapterId: 'egyptian', missionNumber: 4, realm: 'duat',
@@ -125,7 +125,7 @@ export const egyptianChapter: CampaignChapter = {
 			narrativeAfter: 'The twelfth hour passes and the eastern horizon glows gold. Ra nods. "You have kept the light alive."',
 			narrativeVictory: 'Dawn breaks because of you. Ra will remember.',
 			narrativeDefeat: 'The serpents overwhelm the barge. For the first time, dawn is delayed.',
-			aiHeroId: 'hero-shu', aiHeroClass: 'mage',
+			aiHeroId: 'hero-fujin', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(75), aiProfile: AI_PROFILES.ra,
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Ra has 110 health' },
@@ -133,7 +133,7 @@ export const egyptianChapter: CampaignChapter = {
 			],
 			prerequisiteIds: ['egyptian-5'],
 			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 20108 }],
-			campaignArmy: { king: 'king-audumbla', queen: 'hero-shu', rook: 'hero-baldur', bishop: 'hero-hestia', knight: 'hero-apollo' },
+			campaignArmy: { king: 'king-audumbla', queen: 'hero-fujin', rook: 'hero-baldur', bishop: 'hero-hestia', knight: 'hero-apollo' },
 		},
 		{
 			id: 'egyptian-7', chapterId: 'egyptian', missionNumber: 7, realm: 'memphis',

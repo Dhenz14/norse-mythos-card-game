@@ -116,7 +116,7 @@ export function processArtifactOnSpellCast(
 		}
 	}
 
-	// Bounce random enemy on spell cast (Shu)
+	// Bounce random enemy on spell cast
 	if (effect.onSpellCast?.bounceRandomEnemy) {
 		const opp = state.players[opponentType];
 		const target = getRandomMinion(opp.battlefield);
@@ -754,7 +754,7 @@ export function processArtifactOnLethal(
 		logArtifactTrigger(state, dyingPlayerType, `${name} prevents lethal damage! HP set to ${player.heroHealth}`);
 	}
 
-	// Immune at 1 HP once per game (Shu)
+	// Immune at 1 HP once per game
 	if (effect.oncePerGame?.immuneAtOneHealth && artifactState) {
 		if (!artifactState.oncePerGame?.['immuneAtOneHealth']) {
 			if (!artifactState.oncePerGame) artifactState.oncePerGame = {};

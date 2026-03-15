@@ -109,9 +109,6 @@ const RARE_PIECES = new Set([
 	// Greek demigods
 	'hero-heracles',
 	'hero-perseus',
-	'hero-selene',
-	'hero-hecate',
-	'hero-helios',
 	// Japanese
 	'hero-tsukuyomi',
 	'hero-fujin',
@@ -120,7 +117,6 @@ const RARE_PIECES = new Set([
 	// Egyptian
 	'hero-maat',
 	'hero-serqet',
-	'hero-shu',
 	'hero-khepri',
 	// Kings — supporting primordial figures
 	'king-borr',

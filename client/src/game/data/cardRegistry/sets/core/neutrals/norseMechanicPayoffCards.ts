@@ -263,7 +263,7 @@ export const einherjarPayoffCards: CardData[] = [
 	},
 	{
 		id: 31919,
-		name: 'Horn of Gjallarhorn',
+		name: 'Gjallarhorn',
 		manaCost: 2,
 		description: 'Give an Einherjar +2/+2 and "Deathrattle: Draw a card."',
 		flavorText: 'Its blast carries across all Nine Realms, heralding glory.',
@@ -367,7 +367,7 @@ export const sacrificeCards: CardData[] = [
 export const norseTechCards: CardData[] = [
 	{
 		id: 31922,
-		name: 'Eitri, the Unmaker',
+		name: 'Eitri, the Unforger',
 		manaCost: 3,
 		attack: 3,
 		health: 3,

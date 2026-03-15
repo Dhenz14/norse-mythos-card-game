@@ -1665,27 +1665,6 @@ const norseArtifacts: ArtifactCardData[] = [
 		},
 		categories: ['egyptian_artifact']
 	},
-	{
-		id: 29967,
-		name: "Shu's Pillar of Sky",
-		manaCost: 5,
-		type: 'artifact',
-		rarity: 'mythic',
-		heroClass: 'mage',
-		heroId: 'hero-shu',
-		attack: 0,
-		description: 'After casting a spell: return a random enemy minion to hand. Hero takes -1 damage from all sources. At 1 HP: Immune this turn (once/game).',
-		flavorText: 'Shu stands between Nut and Geb, holding the sky apart from the earth. He IS the atmosphere.',
-		keywords: ['artifact'],
-		collectible: true,
-		artifactEffect: {
-			type: 'shu_pillar',
-			onSpellCast: { bounceRandomEnemy: true },
-			passiveDamageReduction: 1,
-			oncePerGame: { immuneAtOneHealth: true }
-		},
-		categories: ['egyptian_artifact']
-	}
 ];
 
 export default norseArtifacts;

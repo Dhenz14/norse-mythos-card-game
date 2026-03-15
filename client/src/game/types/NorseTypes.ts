@@ -158,8 +158,8 @@ export type HeroPowerEffectType =
   | 'conditional_destroy'     // Destroy target if condition met (Ammit)
   | 'set_stats'               // Set attack and health to specific value (Ma'at)
   | 'damage_and_poison'       // Deal damage and apply poison (Serqet)
-  | 'bounce_to_hand'          // Return minion to hand (Shu)
-  | 'bounce_and_damage_hero'  // Return to hand and damage hero (Shu+)
+  | 'bounce_to_hand'          // Return minion to hand (Fujin)
+  | 'bounce_and_damage_hero'  // Return to hand and damage hero (Fujin+)
   | 'bounce'                  // Return minion to board/hand (generic bounce)
   | 'bounce_damage'           // Bounce minion and deal damage
   // Greek-specific effect types

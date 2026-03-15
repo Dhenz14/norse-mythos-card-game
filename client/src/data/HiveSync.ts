@@ -21,6 +21,12 @@ export interface HiveBroadcastResult {
   error?: string;
 }
 
+export interface HiveSignatureResult {
+  success: boolean;
+  signature?: string;
+  error?: string;
+}
+
 export interface HiveKeychainResponse {
   success: boolean;
   result?: {
@@ -203,6 +209,45 @@ export class HiveSync {
     });
   }
 
+  async signMessage(
+    message: string,
+    options?: { username?: string; keyType?: 'Active' | 'Posting' | 'Memo'; title?: string }
+  ): Promise<HiveSignatureResult> {
+    const user = options?.username ?? this.username;
+    if (!user) {
+      return { success: false, error: 'No username set' };
+    }
+    if (!this.isKeychainAvailable()) {
+      return { success: false, error: 'Hive Keychain not available' };
+    }
+
+    const keyType = options?.keyType ?? 'Posting';
+    const title = options?.title ?? 'Sign message';
+
+    const keychainPromise = new Promise<HiveSignatureResult>((resolve) => {
+      window.hive_keychain!.requestSignBuffer(
+        user,
+        message,
+        keyType,
+        (response) => {
+          if (response.success && response.result) {
+            resolve({ success: true, signature: response.result.id });
+          } else {
+            resolve({ success: false, error: response.error || response.message });
+          }
+        },
+        undefined,
+        title
+      );
+    });
+
+    const timeout = new Promise<HiveSignatureResult>((resolve) =>
+      setTimeout(() => resolve({ success: false, error: 'Keychain timeout (60s)' }), KEYCHAIN_TIMEOUT_MS)
+    );
+
+    return Promise.race([keychainPromise, timeout]);
+  }
+
   async signResultHash(hash: string): Promise<string> {
     if (!this.username) {
       throw new Error('No username set');
@@ -237,3 +282,21 @@ export class HiveSync {
 }
 
 export const hiveSync = new HiveSync();
+
+export async function buildHiveAuthBody(
+	username: string,
+	action: string,
+	bodyFields: Record<string, unknown> = {},
+): Promise<Record<string, unknown>> {
+	const timestamp = Date.now();
+	const message = `ragnarok-${action}:${username}:${timestamp}`;
+	const result = await hiveSync.signMessage(message, {
+		title: `Ragnarok: ${action.replace(/-/g, ' ')}`,
+	});
+	return {
+		...bodyFields,
+		username,
+		timestamp,
+		signature: result.success ? result.signature : undefined,
+	};
+}

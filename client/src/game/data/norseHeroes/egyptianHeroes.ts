@@ -242,61 +242,6 @@ export const EGYPTIAN_HEROES: Record<string, NorseHero> = {
 		}
 	},
 
-	// ==================== 5. SHU - Bounce Mechanic ====================
-	'hero-shu': {
-		id: 'hero-shu',
-		name: 'Shu',
-		title: 'God of Air and Light',
-		element: 'electric',
-		weakness: 'grass',
-		startingHealth: 100,
-		description: 'The primordial god of air who holds the sky above the earth, separating Nut from Geb for eternity.',
-		lore: 'When Nut the sky goddess and Geb the earth god embraced so tightly that nothing could exist between them, Ra commanded Shu to stand between them and hold them apart forever. He is the air that fills every lung, the wind that carries every seed, and the breath that sustains all life. His power is invisible and omnipresent — those caught in his gales are hurled across the battlefield like leaves in a storm.',
-		gender: 'male',
-		hasSpells: true,
-		fixedCardIds: [],
-		heroClass: 'mage',
-		heroPower: {
-			id: 'shu-power',
-			name: 'Breath of the Sky',
-			description: 'Return an enemy minion to its owner\'s hand.',
-			cost: 2,
-			targetType: 'enemy_minion',
-			effectType: 'bounce_to_hand'
-		},
-		weaponUpgrade: {
-			id: 90054,
-			name: 'Pillar of Air',
-			heroId: 'hero-shu',
-			manaCost: 5,
-			description: 'Return all enemy minions to their owner\'s hand. Permanently upgrade your hero power.',
-			immediateEffect: {
-				type: 'bounce_all_enemies',
-				description: 'Return all enemy minions to their owner\'s hand.'
-			},
-			upgradedPowerId: 'shu-power-upgraded'
-		},
-		upgradedHeroPower: {
-			id: 'shu-power-upgraded',
-			name: 'Breath of the Sky+',
-			description: 'Return an enemy minion to its owner\'s hand and deal 2 damage to their hero.',
-			cost: 2,
-			targetType: 'enemy_minion',
-			effectType: 'bounce_and_damage_hero',
-			value: 2,
-			isUpgraded: true,
-			baseHeroPowerId: 'shu-power'
-		},
-		passive: {
-			id: 'shu-passive',
-			name: "Sky Lord's Aura",
-			description: 'Your Electric minions have +1 Attack.',
-			trigger: 'passive',
-			condition: { minionElement: 'electric' },
-			effectType: 'buff_attack',
-			value: 1
-		}
-	}
 };
 
 // Export hero count for validation

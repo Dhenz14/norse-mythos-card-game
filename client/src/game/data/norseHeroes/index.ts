@@ -155,6 +155,11 @@ export const HERO_ID_TO_CONFIG_KEY: Record<string, string> = {
   'hero-frigg': 'priest-frigg',
   'hero-bestla': 'shaman-bestla',
   'hero-hermod': 'rogue-hermod',
+  'hero-hecate': 'warlock-guldan',
+  'hero-helios': 'priest-anduin',
+  'hero-prometheus': 'druid-malfurion',
+  'hero-rhea': 'priest-anduin',
+  'hero-selene': 'rogue-valeera',
 };
 
 /**
@@ -268,13 +273,11 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-sarutahiko': 'paladin',
   'hero-kamimusubi': 'shaman',
   
-  // EGYPTIAN HEROES (5 heroes)
+  // EGYPTIAN HEROES (4 heroes)
   'hero-ammit': 'warlock',      // Devourer of Souls - conditional destroy
   'hero-maat': 'priest',        // Goddess of Balance - stat transformation
   'hero-serqet': 'rogue',       // Scorpion Goddess - poison
   'hero-khepri': 'berserker',  // Scarab of Wrath - aggro
-  'hero-shu': 'mage',           // God of Air - bounce
-
   // BASE (FREE STARTER) HEROES (4 heroes)
   'hero-erik-flameheart': 'mage',
   'hero-ragnar-ironside': 'warrior',
