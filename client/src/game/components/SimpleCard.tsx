@@ -313,10 +313,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
                 <div
                   key={idx}
                   className="keyword-icon-badge"
-                  style={{
-                    borderColor: effect.color,
-                    boxShadow: `0 2px 8px rgba(0,0,0,0.6), 0 0 6px ${effect.color}88`,
-                  }}
+                  style={{ '--badge-color': effect.color } as React.CSSProperties}
                   data-keyword={effect.keyword}
                   onMouseEnter={(e) => handleBadgeEnter(e, effect)}
                   onMouseLeave={handleBadgeLeave}

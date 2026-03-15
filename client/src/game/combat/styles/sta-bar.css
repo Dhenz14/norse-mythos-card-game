@@ -32,7 +32,6 @@
   border-radius: 2px;
   transition: transform 0.3s ease-out;
   transform-origin: left;
-  will-change: transform;
   right: 2px;
   box-shadow: 
     0 0 8px rgba(245, 158, 11, 0.5),

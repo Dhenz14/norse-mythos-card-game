@@ -21,6 +21,7 @@ interface CardWithDragProps {
 	isPlayable: boolean;
 	isHighlighted?: boolean;
 	onClick?: () => void;
+	onPlay?: (card: CardInstanceWithCardData, position?: Position) => void;
 	onDragStart?: () => void;
 	onDragEnd?: (wasDropped: boolean, position: Position) => void;
 	onValidDrop?: (position: Position) => void;
@@ -38,6 +39,7 @@ export const CardWithDrag: React.FC<CardWithDragProps> = React.memo(({
 	isInHand,
 	isPlayable,
 	onClick,
+	onPlay,
 	className = "",
 	attackBuff = 0,
 	healthBuff = 0
@@ -79,28 +81,19 @@ export const CardWithDrag: React.FC<CardWithDragProps> = React.memo(({
 	const processedCard = getCardDataSafely(card);
 
 	const handleClick = useCallback(() => {
-		if (onClick && isPlayable) {
-			playSound('card_hover');
+		if (!isPlayable) return;
+		playSound('card_hover');
+		if (onPlay && isCardInstanceWithCardData(card)) {
+			onPlay(card);
+		} else if (onClick) {
 			onClick();
 		}
-	}, [onClick, isPlayable]);
+	}, [onPlay, onClick, isPlayable, card]);
 
 	return (
 		<div
 			ref={cardRef}
-			className={`card-with-drag hand-card-flat ${className} ${isPlayable ? 'playable' : 'not-playable'} ${isHovering ? 'is-hovering' : ''}`}
-			style={{
-				width: 'var(--card-width, 140px)',
-				height: 'var(--card-height, 200px)',
-				filter: isPlayable ? 'brightness(1.05)' : 'brightness(0.6) grayscale(0.3)',
-				transition: 'transform 0.2s ease-out, filter 0.2s ease',
-				transformStyle: 'flat',
-				position: 'relative',
-				transform: isHovering ? 'translateY(-12px)' : 'translateY(0)',
-				pointerEvents: isInHand || isPlayable ? 'auto' : 'none',
-				cursor: isPlayable ? 'pointer' : 'default',
-				zIndex: isHovering ? 100 : 'auto'
-			}}
+			className={`card-with-drag hand-card-flat ${className} ${isPlayable ? 'playable' : 'not-playable'} ${isHovering ? 'is-hovering' : ''} ${isInHand ? 'in-hand' : ''}`}
 			onClick={handleClick}
 			onMouseEnter={() => {
 				setIsHovering(true);

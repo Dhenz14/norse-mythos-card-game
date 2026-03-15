@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { assetPath } from '../utils/assetPath';
 
-const boardTexture = assetPath('/textures/norse_rune_stone_game_board.png');
+const boardTexture = assetPath('/textures/norse_rune_stone_game_board.webp');
 
 interface NorseBackgroundProps {
   children: React.ReactNode;

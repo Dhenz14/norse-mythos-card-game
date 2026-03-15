@@ -674,7 +674,7 @@ const MINION_CARD_TO_ART: Record<string, string> = {
   "audhumla, the primordial cow": "valhallagrazer",// valhallagrazer → primordial cow
 
   // ========== DEMON/ABYSS ARTWORKS ==========
-  "titan lord of helheim": "/art/demon_lord_helheim.png",
+  "titan lord of helheim": "/art/demon_lord_helheim.webp",
 
   // ========== GIANT/APE ARTWORKS (2) - ONE card each ==========
   "elder gorilla of the forest": "bergrisigorilla",// bergrisigorilla → gorilla

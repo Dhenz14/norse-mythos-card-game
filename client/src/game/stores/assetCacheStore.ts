@@ -4,32 +4,49 @@ import { StorageKeys } from '../config/storageKeys';
 
 declare const __BUILD_HASH__: string;
 
-interface AssetFile {
-	path: string;
-	size: number;
+interface PackInfo {
+	name: string;
+	fileCount: number;
+	uncompressedSize: number;
+	compressedSize: number;
+	files: string[];
 }
 
-interface AssetManifest {
+interface PackManifest {
 	version: string;
-	totalSize: number;
+	packs: PackInfo[];
 	totalFiles: number;
-	files: AssetFile[];
+	totalSize: number;
 }
 
-const CACHE_NAME = 'ragnarok-assets-v1';
-const BATCH_SIZE = 6;
+const CACHE_NAME = 'ragnarok-assets-v2';
 const BASE = import.meta.env.BASE_URL || '/';
 
 function toFullUrl(filePath: string): string {
 	const clean = filePath.startsWith('/') ? filePath.slice(1) : filePath;
-	return `${BASE}${clean}`;
+	return new URL(`${BASE}${clean}`, window.location.origin).href;
 }
 
-function formatBytes(bytes: number): string {
+export function formatBytes(bytes: number): string {
 	if (bytes < 1024) return `${bytes} B`;
 	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
 	if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 	return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+}
+
+function getExtMimeType(path: string): string {
+	const ext = path.split('.').pop()?.toLowerCase();
+	switch (ext) {
+		case 'webp': return 'image/webp';
+		case 'png': return 'image/png';
+		case 'jpg': case 'jpeg': return 'image/jpeg';
+		case 'gif': return 'image/gif';
+		case 'svg': return 'image/svg+xml';
+		case 'mp3': return 'audio/mpeg';
+		case 'ogg': return 'audio/ogg';
+		case 'wav': return 'audio/wav';
+		default: return 'application/octet-stream';
+	}
 }
 
 interface AssetCacheState {
@@ -51,8 +68,6 @@ interface AssetCacheActions {
 }
 
 let abortController: AbortController | null = null;
-
-export { formatBytes };
 
 export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 	persist(
@@ -88,125 +103,87 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 					if (navigator.storage?.estimate) {
 						const { quota = 0, usage = 0 } = await navigator.storage.estimate();
 						const available = quota - usage;
-						if (available < 350 * 1024 * 1024) {
+						if (available < 300 * 1024 * 1024) {
 							set({
 								isDownloading: false,
-								downloadError: `Not enough storage. Available: ${formatBytes(available)}. Need ~338 MB.`,
+								downloadError: `Not enough storage. Available: ${formatBytes(available)}. Need ~256 MB.`,
 							});
 							return;
 						}
 					}
 
-					const manifestUrl = toFullUrl('asset-manifest.json');
+					const manifestUrl = toFullUrl('packs/manifest.json');
 					const manifestRes = await fetch(manifestUrl, { signal: controller.signal });
-					if (!manifestRes.ok) throw new Error('Failed to fetch asset manifest');
-					const manifest: AssetManifest = await manifestRes.json();
+					if (!manifestRes.ok) throw new Error('Failed to fetch pack manifest');
+					const manifest: PackManifest = await manifestRes.json();
 
-					set({ filesTotal: manifest.totalFiles, bytesTotal: manifest.totalSize });
+					const totalCompressed = manifest.packs.reduce((s, p) => s + p.compressedSize, 0);
+					set({
+						filesTotal: manifest.totalFiles,
+						bytesTotal: totalCompressed,
+					});
 
 					const cache = await caches.open(CACHE_NAME);
 
-					const uncached: AssetFile[] = [];
-					let alreadyCachedBytes = 0;
-					let alreadyCachedFiles = 0;
+					const { unzipSync } = await import('fflate');
 
-					for (const file of manifest.files) {
-						const url = toFullUrl(file.path);
-						const match = await cache.match(url);
-						if (match) {
-							alreadyCachedBytes += file.size;
-							alreadyCachedFiles++;
-						} else {
-							uncached.push(file);
-						}
-					}
+					let totalFilesExtracted = 0;
+					let totalBytesDownloaded = 0;
 
-					set({
-						filesDownloaded: alreadyCachedFiles,
-						bytesDownloaded: alreadyCachedBytes,
-						downloadProgress: manifest.totalFiles > 0
-							? Math.round((alreadyCachedFiles / manifest.totalFiles) * 100)
-							: 0,
-					});
-
-					if (uncached.length === 0) {
-						set({
-							isDownloading: false,
-							isFullyDownloaded: true,
-							downloadedVersion: manifest.version,
-							downloadProgress: 100,
-						});
-						return;
-					}
-
-					const failed: AssetFile[] = [];
-
-					const downloadFile = async (file: AssetFile) => {
-						const url = toFullUrl(file.path);
-						try {
-							const res = await fetch(url, { signal: controller.signal });
-							if (res.ok) {
-								await cache.put(url, res);
-								set(state => {
-									const filesDownloaded = state.filesDownloaded + 1;
-									const bytesDownloaded = state.bytesDownloaded + file.size;
-									return {
-										filesDownloaded,
-										bytesDownloaded,
-										downloadProgress: Math.round((filesDownloaded / manifest.totalFiles) * 100),
-									};
-								});
-							} else {
-								failed.push(file);
-							}
-						} catch (err: unknown) {
-							if (err instanceof Error && err.name === 'AbortError') throw err;
-							failed.push(file);
-						}
-					};
-
-					for (let i = 0; i < uncached.length; i += BATCH_SIZE) {
+					for (let i = 0; i < manifest.packs.length; i++) {
 						if (controller.signal.aborted) break;
-						const batch = uncached.slice(i, i + BATCH_SIZE);
-						await Promise.allSettled(batch.map(downloadFile));
-					}
 
-					if (failed.length > 0 && !controller.signal.aborted) {
-						const retryFailed: AssetFile[] = [];
-						for (let i = 0; i < failed.length; i += BATCH_SIZE) {
-							const batch = failed.slice(i, i + BATCH_SIZE);
-							const results = await Promise.allSettled(batch.map(async (file) => {
-								const url = toFullUrl(file.path);
-								const res = await fetch(url, { signal: controller.signal });
-								if (res.ok) {
-									await cache.put(url, res);
-									set(state => {
-										const filesDownloaded = state.filesDownloaded + 1;
-										const bytesDownloaded = state.bytesDownloaded + file.size;
-										return {
-											filesDownloaded,
-											bytesDownloaded,
-											downloadProgress: Math.round((filesDownloaded / manifest.totalFiles) * 100),
-										};
-									});
-								} else {
-									retryFailed.push(file);
-								}
-							}));
-							results.forEach((r, idx) => {
-								if (r.status === 'rejected' && !(r.reason?.name === 'AbortError')) {
-									retryFailed.push(batch[idx]);
-								}
-							});
-						}
+						const pack = manifest.packs[i];
+						const packUrl = toFullUrl(`packs/${pack.name}`);
 
-						if (retryFailed.length > 0) {
+						const packRes = await fetch(packUrl, { signal: controller.signal });
+						if (!packRes.ok) throw new Error(`Failed to download ${pack.name}: ${packRes.status}`);
+
+						const reader = packRes.body?.getReader();
+						if (!reader) throw new Error('ReadableStream not supported');
+
+						const chunks: Uint8Array[] = [];
+						let packBytes = 0;
+
+						while (true) {
+							const { done, value } = await reader.read();
+							if (done) break;
+							chunks.push(value);
+							packBytes += value.length;
+							totalBytesDownloaded += value.length;
 							set({
-								isDownloading: false,
-								downloadError: `${retryFailed.length} files failed to download. Click retry.`,
+								bytesDownloaded: totalBytesDownloaded,
+								downloadProgress: Math.round((totalBytesDownloaded / totalCompressed) * 90),
 							});
-							return;
 						}
+
+						const zipBuffer = new Uint8Array(packBytes);
+						let offset = 0;
+						for (const chunk of chunks) {
+							zipBuffer.set(chunk, offset);
+							offset += chunk.length;
+						}
+
+						const extracted = unzipSync(zipBuffer);
+
+						for (const [filePath, fileData] of Object.entries(extracted)) {
+							const normalizedPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
+							const url = toFullUrl(normalizedPath);
+							const mimeType = getExtMimeType(normalizedPath);
+							const response = new Response(fileData, {
+								headers: {
+									'Content-Type': mimeType,
+									'Content-Length': fileData.length.toString(),
+								},
+							});
+							await cache.put(new Request(url), response);
+							totalFilesExtracted++;
+						}
+
+						set({
+							filesDownloaded: totalFilesExtracted,
+							downloadProgress: 90 + Math.round(((i + 1) / manifest.packs.length) * 10),
+						});
 					}
 
 					set({
@@ -214,6 +191,7 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 						isFullyDownloaded: true,
 						downloadedVersion: manifest.version,
 						downloadProgress: 100,
+						filesDownloaded: totalFilesExtracted,
 					});
 				} catch (err: unknown) {
 					if (err instanceof Error && err.name === 'AbortError') {

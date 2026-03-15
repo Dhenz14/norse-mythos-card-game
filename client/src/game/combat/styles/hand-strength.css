@@ -35,7 +35,6 @@
   border-radius: 3px;
   transition: transform 0.4s ease, background 0.4s ease;
   transform-origin: left;
-  will-change: transform;
 }
 
 /* ========================================

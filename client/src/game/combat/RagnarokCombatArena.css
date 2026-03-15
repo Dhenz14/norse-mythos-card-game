@@ -2821,7 +2821,6 @@
   top: 0;
   right: 0;
   transform-origin: left;
-  will-change: transform;
 }
 
 .stat-bar-fill.hp-fill {
@@ -3451,7 +3450,6 @@
   pointer-events: none;
   user-select: none;
   animation: damageFloat 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  will-change: transform, opacity;
   font-family: 'Cinzel', 'Georgia', serif;
 }
 
@@ -3648,7 +3646,6 @@
   border-radius: 3px;
   transition: transform 0.4s ease, background 0.4s ease;
   transform-origin: left;
-  will-change: transform;
 }
 
 /* ========================================

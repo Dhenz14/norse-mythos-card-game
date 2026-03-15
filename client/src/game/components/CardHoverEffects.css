@@ -23,7 +23,6 @@
   pointer-events: auto;
   overflow: visible;
   z-index: 20;
-  will-change: transform;
 }
 
 /* Hover state - spring lift */
@@ -84,4 +83,41 @@
 .hand-card-container .hoverable-card-container,
 .hand-card-container .card-with-drag {
   pointer-events: auto;
+}
+
+/* ========================================
+   CardWithDrag — base (replaces inline style)
+   ======================================== */
+
+.card-with-drag {
+  width: var(--card-width, 140px);
+  height: var(--card-height, 200px);
+  transform-style: flat;
+  position: relative;
+  transition: transform 0.2s ease-out, filter 0.2s ease;
+  transform: translateY(0);
+}
+
+.card-with-drag.in-hand,
+.card-with-drag.playable {
+  pointer-events: auto;
+}
+
+.card-with-drag.not-playable:not(.in-hand) {
+  pointer-events: none;
+}
+
+.card-with-drag.playable {
+  cursor: pointer;
+  filter: brightness(1.05);
+}
+
+.card-with-drag.not-playable {
+  cursor: default;
+  filter: brightness(0.6) grayscale(0.3);
+}
+
+.card-with-drag.is-hovering {
+  transform: translateY(-12px);
+  z-index: 100;
 }

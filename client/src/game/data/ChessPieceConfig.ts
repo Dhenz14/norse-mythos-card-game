@@ -972,7 +972,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'ymir_passives',
       chessAbility: 'king-ymir',
-      portrait: '/portraits/kings/ymir.png'
+      portrait: '/portraits/kings/ymir.webp'
     },
     {
       id: 'king-buri',
@@ -982,7 +982,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'buri_passives',
       chessAbility: 'king-buri',
-      portrait: '/portraits/kings/buri.png'
+      portrait: '/portraits/kings/buri.webp'
     },
     {
       id: 'king-surtr',
@@ -992,7 +992,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'surtr_passives',
       chessAbility: 'king-surtr',
-      portrait: '/portraits/kings/surtr.png'
+      portrait: '/portraits/kings/surtr.webp'
     },
     {
       id: 'king-borr',
@@ -1002,7 +1002,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'borr_passives',
       chessAbility: 'king-borr',
-      portrait: '/portraits/kings/borr.png'
+      portrait: '/portraits/kings/borr.webp'
     },
     {
       id: 'king-yggdrasil',
@@ -1032,7 +1032,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'gaia_passives',
       chessAbility: 'king-gaia',
-      portrait: '/portraits/kings/gaia.png'
+      portrait: '/portraits/kings/gaia.webp'
     },
     {
       id: 'king-brimir',
@@ -1042,7 +1042,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'brimir_passives',
       chessAbility: 'king-brimir',
-      portrait: '/portraits/kings/brimir.png'
+      portrait: '/portraits/kings/brimir.webp'
     },
     {
       id: 'king-ginnungagap',
@@ -1062,7 +1062,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       fixedCardIds: [],
       passiveEffect: 'tartarus_passives',
       chessAbility: 'king-tartarus',
-      portrait: '/portraits/kings/tartarus.png'
+      portrait: '/portraits/kings/tartarus.webp'
     },
     {
       id: 'king-uranus',

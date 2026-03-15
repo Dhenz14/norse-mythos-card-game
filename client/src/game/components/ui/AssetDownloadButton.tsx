@@ -93,7 +93,7 @@ export default function AssetDownloadButton() {
 			onClick={startDownload}
 			className="homepage-btn-download w-full py-6 text-lg font-bold tracking-wide uppercase border-2"
 		>
-			{updateAvailable ? 'Update Game Assets' : 'Download Game Assets (338 MB)'}
+			{updateAvailable ? 'Update Game Assets' : 'Download Game Assets (256 MB)'}
 		</Button>
 	);
 }

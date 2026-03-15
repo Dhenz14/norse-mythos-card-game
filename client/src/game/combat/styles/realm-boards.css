@@ -643,7 +643,7 @@
 	background: rgba(0, 0, 0, 0.6);
 	border: 1px solid var(--realm-divider-color, rgba(212, 175, 55, 0.4));
 	border-radius: 16px;
-	backdrop-filter: blur(4px);
+	/* backdrop-filter removed for perf */
 	pointer-events: none;
 	animation: realm-indicator-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
@@ -680,7 +680,7 @@
 	border-radius: 8px;
 	padding: 8px 12px;
 	pointer-events: none;
-	backdrop-filter: blur(4px);
+	/* backdrop-filter removed for perf */
 	max-width: 220px;
 	animation: realm-indicator-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
@@ -732,7 +732,7 @@
 	border-radius: 8px;
 	padding: 8px 12px;
 	pointer-events: none;
-	backdrop-filter: blur(4px);
+	/* backdrop-filter removed for perf */
 	max-width: 200px;
 	animation: realm-indicator-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }

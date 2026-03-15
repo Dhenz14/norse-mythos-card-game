@@ -185,15 +185,11 @@ export const Hand: React.FC<HandProps> = React.memo(({
                   setHoveredCardIndex(null);
                 }}
               >
-                <CardWithDrag 
+                <CardWithDrag
                   card={card}
                   isInHand={true}
                   isPlayable={canPlay}
-                  onClick={canPlay ? () => handleCardPlay(card) : undefined}
-                  onValidDrop={canPlay ? (position) => {
-                    debug.log("🎯 Card dropped on battlefield:", card.card.name, "at position:", position);
-                    handleCardPlay(card, position);
-                  } : undefined}
+                  onPlay={canPlay ? handleCardPlay : undefined}
                   boardRef={battlefieldRef}
                   registerPosition={registerCardPosition || NOOP_REGISTER}
                 />

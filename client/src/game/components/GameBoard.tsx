@@ -63,20 +63,25 @@ import { useCardDetailModal } from '../hooks/useCardDetailModal';
 import { useAttackVisualization } from '../hooks/useAttackVisualization';
 import { useGameAnimationEffects } from '../hooks/useGameAnimationEffects';
 
+// Stable action references — grabbed once, never trigger rerenders
+const gameActions = useGameStore.getState();
+const playCard = gameActions.playCard;
+const endTurn = gameActions.endTurn;
+const selectAttacker = gameActions.selectAttacker;
+const attackWithCard = gameActions.attackWithCard;
+const toggleHeroTargetMode = gameActions.toggleHeroTargetMode;
+const useHeroPowerAction = gameActions.useHeroPower;
+const selectCard = gameActions.selectCard;
+const selectDiscoveryOption = gameActions.selectDiscoveryOption;
+
 export const GameBoard: React.FC<{}> = () => {
+  // Only subscribe to state that actually drives renders
   const gameState = useGameStore(state => state.gameState);
-  const playCard = useGameStore(state => state.playCard);
-  const endTurn = useGameStore(state => state.endTurn);
   const hoveredCard = useGameStore(state => state.hoveredCard);
   const attackingCard = useGameStore(state => state.attackingCard);
   const selectedCard = useGameStore(state => state.selectedCard);
-  const selectAttacker = useGameStore(state => state.selectAttacker);
-  const attackWithCard = useGameStore(state => state.attackWithCard);
   const heroTargetMode = useGameStore(state => state.heroTargetMode);
-  const toggleHeroTargetMode = useGameStore(state => state.toggleHeroTargetMode);
-  const useHeroPower = useGameStore(state => state.useHeroPower);
-  const selectCard = useGameStore(state => state.selectCard);
-  const selectDiscoveryOption = useGameStore(state => state.selectDiscoveryOption);
+  const useHeroPower = useHeroPowerAction;
   
   // Reference to the game container for effects like screen shake and spell flashes
   const gameContainerRef = useRef<HTMLDivElement>(null);

@@ -63,7 +63,6 @@
     0 16px 40px rgba(0,0,0,0.3);
   user-select: none;
   flex-shrink: 0;
-  will-change: transform;
   transform-style: preserve-3d;
 }
 
@@ -688,7 +687,8 @@
   justify-content: center;
   border-radius: 50%;
   background: linear-gradient(135deg, #1a1a2e 0%, #0d0d15 100%);
-  border: 2px solid currentColor;
+  border: 2px solid var(--badge-color, currentColor);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 0 6px color-mix(in srgb, var(--badge-color, transparent) 53%, transparent);
   font-size: 14px;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
   cursor: help;

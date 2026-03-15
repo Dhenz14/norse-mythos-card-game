@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useRef, ReactNode } from 'react';
 import { useP2PSync } from '../hooks/useP2PSync';
 import { useGameStore } from '../stores/gameStore';
 import { GameState } from '../types';
@@ -23,33 +23,27 @@ export const P2PProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 	const gsUseHeroPower = useGameStore(s => s.useHeroPower);
 	const gameState = useGameStore(s => s.gameState);
 
-	const actionsRef = useRef<Omit<P2PActions, 'gameState'>>({
+	// Single ref object — mutated in place so the context value never changes identity
+	const ref = useRef<P2PActions>({
 		playCard: gsPlayCard,
 		attackWithCard: gsAttackWithCard,
 		endTurn: gsEndTurn,
 		useHeroPower: gsUseHeroPower,
+		gameState: null,
 		isConnected: false,
 		isHost: false,
 	});
 
-	const stableActions = useMemo(() => {
-		actionsRef.current = {
-			playCard: p2pSync.isConnected ? p2pSync.playCard : gsPlayCard,
-			attackWithCard: p2pSync.isConnected ? p2pSync.attackWithCard : gsAttackWithCard,
-			endTurn: p2pSync.isConnected ? p2pSync.endTurn : gsEndTurn,
-			useHeroPower: p2pSync.isConnected ? p2pSync.useHeroPower : gsUseHeroPower,
-			isConnected: p2pSync.isConnected,
-			isHost: p2pSync.isHost,
-		};
-		return actionsRef.current;
-	}, [p2pSync.isConnected, p2pSync.playCard, p2pSync.attackWithCard, p2pSync.endTurn, p2pSync.useHeroPower, p2pSync.isHost, gsPlayCard, gsAttackWithCard, gsEndTurn, gsUseHeroPower]);
+	// Mutate ref fields — zero allocations, zero new object identity
+	ref.current.playCard = p2pSync.isConnected ? p2pSync.playCard : gsPlayCard;
+	ref.current.attackWithCard = p2pSync.isConnected ? p2pSync.attackWithCard : gsAttackWithCard;
+	ref.current.endTurn = p2pSync.isConnected ? p2pSync.endTurn : gsEndTurn;
+	ref.current.useHeroPower = p2pSync.isConnected ? p2pSync.useHeroPower : gsUseHeroPower;
+	ref.current.gameState = gameState;
+	ref.current.isConnected = p2pSync.isConnected;
+	ref.current.isHost = p2pSync.isHost;
 
-	const value: P2PActions = useMemo(() => ({
-		...stableActions,
-		gameState,
-	}), [stableActions, gameState]);
-
-	return <P2PContext.Provider value={value}>{children}</P2PContext.Provider>;
+	return <P2PContext.Provider value={ref.current}>{children}</P2PContext.Provider>;
 };
 
 export const useP2PActions = () => {

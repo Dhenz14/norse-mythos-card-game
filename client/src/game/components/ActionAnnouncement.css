@@ -28,7 +28,6 @@
     0 8px 32px rgba(0, 0, 0, 0.6);
   position: relative;
   overflow: hidden;
-  will-change: transform, opacity;
 }
 
 .action-announcement::before {
@@ -193,7 +192,6 @@
   --rarity-color: #FFD700;
   box-shadow: 0 0 80px rgba(255, 215, 0, 1);
   animation: victoryGlow 0.5s ease-in-out infinite alternate;
-  will-change: opacity;
 }
 
 @keyframes victoryGlow {

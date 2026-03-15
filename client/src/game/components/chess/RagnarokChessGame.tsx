@@ -36,7 +36,7 @@ interface HeroPortraitPanelProps {
 
 const HeroPortraitPanel: React.FC<HeroPortraitPanelProps> = ({ army, side, pieceCount }) => {
   const king = army.king;
-  const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || assetPath(`/portraits/kings/${king.id?.replace('king-', '')}.png`);
+  const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || assetPath(`/portraits/kings/${king.id?.replace('king-', '')}.webp`);
   const fallbackPortrait = assetPath(`/portraits/heroes/${king.heroClass}.png`);
   const safeFallback = DEFAULT_PORTRAIT;
   const isPlayer = side === 'player';
@@ -92,7 +92,7 @@ interface PlayerPortraitProps {
 
 const PlayerHeroPortrait: React.FC<PlayerPortraitProps> = ({ army, pieceCount }) => {
   const king = army.king;
-  const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || assetPath(`/portraits/kings/${king.id?.replace('king-', '')}.png`);
+  const kingPortrait = resolveHeroPortrait(king.id, king.portrait) || assetPath(`/portraits/kings/${king.id?.replace('king-', '')}.webp`);
   const fallbackPortrait = assetPath(`/portraits/heroes/${king.heroClass}.png`);
   const safeFallback = DEFAULT_PORTRAIT;
   const [isCasting, setIsCasting] = useState(false);

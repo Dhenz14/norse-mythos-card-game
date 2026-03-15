@@ -6,12 +6,12 @@ import { assetPath } from '../../utils/assetPath';
 import './ChessPiece.css';
 
 const ELEMENT_IMAGES: Record<ElementType, string | null> = {
-  fire: assetPath('/textures/elements/fire.png'),
-  water: assetPath('/textures/elements/water.png'),
-  wind: assetPath('/textures/elements/wind.png'),
-  earth: assetPath('/textures/elements/earth.png'),
-  holy: assetPath('/textures/elements/holy.png'),
-  shadow: assetPath('/textures/elements/shadow.png'),
+  fire: assetPath('/textures/elements/fire.webp'),
+  water: assetPath('/textures/elements/water.webp'),
+  wind: assetPath('/textures/elements/wind.webp'),
+  earth: assetPath('/textures/elements/earth.webp'),
+  holy: assetPath('/textures/elements/holy.webp'),
+  shadow: assetPath('/textures/elements/shadow.webp'),
   neutral: null
 };
 

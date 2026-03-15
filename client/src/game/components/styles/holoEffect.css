@@ -160,7 +160,7 @@
    ============================================================ */
 
 .holo-glitter {
-	background-image: url('/art/textures/glitter-256.png');
+	background-image: url('/art/textures/glitter-256.webp');
 	background-size: 256px 256px;
 	background-repeat: repeat;
 	background-position:
@@ -172,7 +172,7 @@
 /* Epic: add scanline grooves */
 .holo-epic .holo-glitter {
 	background-image:
-		url('/art/textures/glitter-256.png'),
+		url('/art/textures/glitter-256.webp'),
 		repeating-linear-gradient(
 			110deg,
 			transparent 0px, transparent 3px,
@@ -184,7 +184,7 @@
 /* Mythic: crosshatch diamond grid (secret rare embossing) */
 .holo-mythic .holo-glitter {
 	background-image:
-		url('/art/textures/glitter-256.png'),
+		url('/art/textures/glitter-256.webp'),
 		repeating-linear-gradient(
 			45deg,
 			transparent 0px, transparent 4px,
