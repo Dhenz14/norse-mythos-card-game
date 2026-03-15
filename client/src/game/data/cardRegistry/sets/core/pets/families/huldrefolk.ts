@@ -162,7 +162,7 @@ export const huldrefolkPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Enchantment given form — beauty and danger entwined.',
 		flavorText: 'Queen of the hidden folk, mistress of illusions.',
 		keywords: ['stealth', 'battlecry'],
 		class: 'Neutral',

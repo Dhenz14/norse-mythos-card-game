@@ -21,7 +21,7 @@ export const warlockCards: CardData[] = [
   // BASIC WARLOCK CARDS
   {
     id: 17001,
-    name: "Void Wanderer",
+    name: "Ginnungagap Wanderer",
     manaCost: 1,
     attack: 1,
     health: 3,
@@ -134,7 +134,7 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 17007,
-    name: "Void Shade",
+    name: "Ginnungagap Shade",
     manaCost: 3,
     attack: 3,
     health: 3,
@@ -174,7 +174,7 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 17009,
-    name: "Nether Void",
+    name: "Ginnungagap Abyss",
     manaCost: 8,
     type: "spell",
     rarity: "epic",
@@ -248,7 +248,7 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 17103,
-    name: "Void Pact",
+    name: "Hel's Covenant",
     manaCost: 0,
     type: "spell",
     rarity: "common",
@@ -429,7 +429,7 @@ export const warlockCards: CardData[] = [
   },
   {
     id: 37002,
-    name: "Void Covenant",
+    name: "Muspel Covenant",
     manaCost: 1,
     type: "spell",
     rarity: "common",

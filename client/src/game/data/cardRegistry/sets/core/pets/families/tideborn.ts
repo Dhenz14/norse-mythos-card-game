@@ -167,7 +167,7 @@ export const tidebornPets: CardData[] = [
 		health: 9,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'The deep answers its call — tides rise and shores crumble.',
 		flavorText: 'The sea itself bows to the lord of the deep.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',

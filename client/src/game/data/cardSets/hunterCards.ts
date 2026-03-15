@@ -190,10 +190,10 @@ const hunterCards = [
     .collectible(true)
     .build(),
   
-  // Stealthy Jaguar
+  // Svartalfheim Stalker
   createCard()
     .id(7011)
-    .name("Stealthy Jaguar")
+    .name("Svartalfheim Stalker")
     .manaCost(2)
     .attack(2)
     .health(2)
@@ -203,14 +203,14 @@ const hunterCards = [
     .race("Beast")
     .addKeyword("stealth")
     .description("Stealth")
-    .flavorText("You'll never see it coming until it's too late.")
+    .flavorText('Dark elf hunters bred it in the sunless realm — it sees without light.')
     .collectible(true)
     .build(),
   
-  // Pack Alpha
+  // Fenrir's Packleader
   createCard()
     .id(7012)
-    .name("Pack Alpha")
+    .name("Fenrir's Packleader")
     .manaCost(3)
     .attack(2)
     .health(3)
@@ -225,7 +225,7 @@ const hunterCards = [
       buffHealth: 1
     })
     .description("Battlecry: Give adjacent minions +1/+1.")
-    .flavorText("The leader of the pack always looks out for its own.")
+    .flavorText('Lesser wolves obey the bloodline of the great wolf without question.')
     .collectible(true)
     .build(),
   
@@ -268,10 +268,10 @@ const hunterCards = [
     .collectible(true)
     .build(),
   
-  // Timber Wolf Alpha
+  // Garmr's Kin
   createCard()
     .id(7015)
-    .name("Timber Wolf Alpha")
+    .name("Garmr's Kin")
     .manaCost(2)
     .attack(2)
     .health(2)
@@ -285,7 +285,7 @@ const hunterCards = [
       condition: "beast"
     })
     .description("Your other Beasts have +1 Attack.")
-    .flavorText("The alpha leads by example, teeth bared.")
+    .flavorText("Descended from the hound that guards Helheim's gate.")
     .collectible(true)
     .build(),
   
@@ -354,10 +354,10 @@ const hunterCards = [
     .collectible(true)
     .build(),
   
-  // Savannah Guardian
+  // Freya's Pride
   createCard()
     .id(7019)
-    .name("Savannah Guardian")
+    .name("Freya's Pride")
     .manaCost(6)
     .attack(5)
     .health(6)
@@ -373,14 +373,14 @@ const hunterCards = [
       summonCardId: 7501 // Hound
     })
     .description("Taunt. At the end of your turn, if you control at least 2 other Beasts, summon a 1/1 Hound with Charge.")
-    .flavorText("The pride protects its own.")
+    .flavorText("Freya's cats are not the gentle creatures of Midgard.")
     .collectible(true)
     .build(),
   
-  // Fang Commander
+  // Skadi's Huntmaster
   createCard()
     .id(7020)
-    .name("Fang Commander")
+    .name("Skadi's Huntmaster")
     .manaCost(7)
     .attack(5)
     .health(5)
@@ -394,7 +394,7 @@ const hunterCards = [
       value: 2
     })
     .description("Battlecry: Summon 2 copies of a random Beast from your deck.")
-    .flavorText("When she calls, the forest answers in force.")
+    .flavorText("Skadi chose the mountains over Asgard's golden halls — her beasts followed.")
     .collectible(true)
     .build(),
 

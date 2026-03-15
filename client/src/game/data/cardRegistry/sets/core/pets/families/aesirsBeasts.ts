@@ -170,7 +170,7 @@ export const aesirsBeastsPets: CardData[] = [
 		health: 6,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Sacred beast of the Aesir, divine fury unleashed.',
 		flavorText: 'Champion of the gods, forged in divine fire and thunder.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',

@@ -164,7 +164,7 @@ export const svartalfarPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Shadow-forged perfection — the dark elves\' finest creation.',
 		flavorText: 'In the darkest forge, the greatest weapon awakens.',
 		keywords: ['stealth'],
 		class: 'Neutral',

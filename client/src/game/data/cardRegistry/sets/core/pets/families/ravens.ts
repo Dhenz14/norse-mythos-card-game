@@ -165,7 +165,7 @@ export const ravensPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Huginn and Muninn return — thought and memory made manifest.',
 		flavorText: "Odin's will made manifest, soaring between the Nine Realms.",
 		keywords: ['stealth', 'battlecry'],
 		class: 'Neutral',

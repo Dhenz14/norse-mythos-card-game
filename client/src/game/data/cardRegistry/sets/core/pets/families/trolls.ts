@@ -162,7 +162,7 @@ export const trollsPets: CardData[] = [
 		health: 9,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Stone-skinned and ancient, it remembers when gods were young.',
 		flavorText: 'All trolls bow to the one who endures longest.',
 		keywords: ['taunt', 'lifesteal'],
 		class: 'Neutral',

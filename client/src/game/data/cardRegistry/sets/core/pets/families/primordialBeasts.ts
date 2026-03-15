@@ -168,7 +168,7 @@ export const primordialBeastsPets: CardData[] = [
 		health: 9,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'From the void before time, a creature of raw creation.',
 		flavorText: 'From the dawn of creation, the primordial guardian endures.',
 		keywords: ['taunt'],
 		class: 'Neutral',

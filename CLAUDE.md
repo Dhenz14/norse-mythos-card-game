@@ -1298,6 +1298,22 @@ vercel --prod                 # Deploy to Vercel
   - 35 artifacts re-costed from uniform 5 mana to 4-7 mana range
 - TypeScript: 0 errors, production build succeeds
 
+### Completed (Card Soul Audit — Phases 7-9)
+
+- **Phase 7: Pet Evolution Variety**
+  - Diversified triggers in 8 families: wolves→`on_destroy`, bears→`on_gain_health`, drakes→`on_apply_burn`, hellhounds→`on_apply_burn`, stormkin→`on_summon`, giants→`on_reduce_attack`, draugr→`on_silence`, dwarven forgemasters→`on_return_to_hand`
+  - Stage 3 stat outliers: wolves 10/3 (glass cannon), serpents 3/12 (wall), ents 2/11, stormkin 9/4, draugr 8/6
+  - All 38 Stage 3 pets now have unique thematic descriptions (was all "The final form depends on its evolution path")
+  - Element fixes: Bifrost electric→light, Einherjar Warriors fire→light
+- **Phase 8: Class Identity Renames** (12 cards)
+  - Warlock: 5 "Void" cards → Ginnungagap/Hel/Muspel equivalents
+  - Hunter: 5 generic animal names → Svartalfheim Stalker, Fenrir's Packleader, Garmr's Kin, Freya's Pride, Skadi's Huntmaster
+  - Rogue: 2 generic thief names → Svartalfheim Trader, Loki's Pickpocket
+- **Phase 9: Greek Card Gaps**
+  - Added 7 Greek mythic/epic minions (IDs 32207-32213): Hydra, Minotaur, Sphinx, Chimera, Scylla, Pegasus, The Furies
+  - Race fixes: Typhon + Porphyrion Elemental→Titan, Porphyrion epic→mythic, Medusa added Spirit race
+- TypeScript: 0 errors
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)

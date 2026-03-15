@@ -170,7 +170,7 @@ export const norseSeaSpiritsPets: CardData[] = [
 		health: 9,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'The ocean\'s fury given form — shipbreaker and stormcaller.',
 		flavorText: 'The ancient spirit rises from the abyss — all tremble before the deep.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',

@@ -163,7 +163,7 @@ export const muspelPhoenixesPets: CardData[] = [
 		health: 4,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Reborn in flame eternal — Muspelheim\'s undying child.',
 		flavorText: 'From the fires of Muspelheim, an eternal flame ascends.',
 		keywords: ['charge', 'reborn', 'battlecry'],
 		class: 'Neutral',

@@ -163,7 +163,7 @@ export const naglfarPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Crew of the death-ship — they sail for the final war.',
 		flavorText: 'Admiral of the ship of the dead, herald of Ragnarok.',
 		keywords: ['stealth'],
 		class: 'Neutral',

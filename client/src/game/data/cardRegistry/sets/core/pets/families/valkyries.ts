@@ -162,7 +162,7 @@ export const valkyriesPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'She rides the storm, choosing who lives and who dies.',
 		flavorText: 'Awakened from enchanted sleep, she rides to war once more.',
 		keywords: ['windfury', 'rush', 'battlecry'],
 		class: 'Neutral',

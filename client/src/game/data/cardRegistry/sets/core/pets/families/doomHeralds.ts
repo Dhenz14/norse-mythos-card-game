@@ -170,7 +170,7 @@ export const doomHeraldsPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Its cry heralds Ragnarok — the end of all things.',
 		flavorText: 'The end has come. The herald announces the twilight of the gods.',
 		keywords: ['stealth'],
 		class: 'Neutral',

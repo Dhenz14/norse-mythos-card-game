@@ -168,7 +168,7 @@ export const warSteedsPets: CardData[] = [
 		health: 7,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'War-mount of legends, it has charged through a thousand battles.',
 		flavorText: 'The gods ride to battle on steeds forged in starlight and blood.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',

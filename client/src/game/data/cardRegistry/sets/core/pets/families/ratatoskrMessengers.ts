@@ -162,7 +162,7 @@ export const ratatoskrMessengersPets: CardData[] = [
 		health: 4,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Swift as gossip between gods, sharp as Nidhogg\'s spite.',
 		flavorText: 'Master of all messages between eagle and serpent.',
 		keywords: ['windfury', 'charge', 'battlecry'],
 		class: 'Neutral',

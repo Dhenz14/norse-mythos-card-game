@@ -169,7 +169,7 @@ export const freyjasCompanionsPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Freyja\'s chosen familiar, wild magic given form.',
 		flavorText: 'Chosen by Freyja herself, it embodies the goddess of love and war.',
 		keywords: ['windfury', 'rush'],
 		class: 'Neutral',

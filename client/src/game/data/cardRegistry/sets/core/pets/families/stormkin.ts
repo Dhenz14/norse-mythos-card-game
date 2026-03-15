@@ -10,7 +10,7 @@ export const stormkinPets: CardData[] = [
 		health: 2,
 		type: 'minion',
 		rarity: 'common',
-		description: 'Evolves after dealing damage.',
+		description: 'Evolves after a minion is summoned.',
 		flavorText: 'The sun-chaser pup crackles with static from birth.',
 		keywords: [],
 		class: 'Neutral',
@@ -23,8 +23,8 @@ export const stormkinPets: CardData[] = [
 		petFamilyTier: 1,
 		evolvesInto: 50133,
 		evolutionCondition: {
-			trigger: 'on_deal_damage',
-			description: 'After dealing damage to an enemy',
+			trigger: 'on_summon',
+			description: 'After a minion is summoned',
 		},
 	} as CardData,
 	{
@@ -101,8 +101,8 @@ export const stormkinPets: CardData[] = [
 		evolvesFrom: 50130,
 		evolvesInto: 50136,
 		evolutionCondition: {
-			trigger: 'on_deal_damage',
-			description: 'After dealing damage to an enemy',
+			trigger: 'on_summon',
+			description: 'After a minion is summoned',
 		},
 	} as CardData,
 	{
@@ -165,11 +165,11 @@ export const stormkinPets: CardData[] = [
 		id: 50136,
 		name: "Hraesvelgr's Wrath",
 		manaCost: 0,
-		attack: 7,
-		health: 5,
+		attack: 9,
+		health: 4,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Thunder incarnate — the sky splits at its roar.',
 		flavorText: 'The corpse-swallower spreads its wings and the world shudders.',
 		keywords: ['windfury', 'rush'],
 		class: 'Neutral',
@@ -183,8 +183,8 @@ export const stormkinPets: CardData[] = [
 		stage3Variants: [
 			{
 				fromStage2Id: 50133,
-				attack: 7,
-				health: 5,
+				attack: 9,
+				health: 4,
 				manaCost: 0,
 				keywords: ['windfury', 'rush'],
 				description: 'Windfury. Rush. The storm incarnate.',

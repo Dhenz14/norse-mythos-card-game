@@ -97,77 +97,71 @@ Naglfar's Keel, Gleipnir's Fang. Vault of Ouranos heroId skipped (no matching he
 
 ---
 
-## Phase 7: Pet Evolution Variety (High Effort)
+## Phase 7: Pet Evolution Variety ✅ COMPLETED
 
-### 7.1 Diversify Evolution Triggers
-- **Current**: Only 11 unique triggers across 38 families, `on_deal_damage` and `on_survive_turn` everywhere
-- **Fix**: Add 5-8 new evolution triggers:
-  - `on_spell_cast` — evolve when you cast a spell
-  - `on_hero_damaged` — evolve when your hero takes damage
-  - `on_friendly_death` — evolve when an ally dies
-  - `on_heal` — evolve when healed
-  - `on_discard` — evolve when a card is discarded
-  - `on_draw` — evolve after drawing N cards
-  - `on_opponent_spell` — evolve when enemy casts spell
-  - `on_board_full` — evolve when battlefield is full
+### 7.1 Diversify Evolution Triggers ✅
+Reassigned 8 families from overused `on_deal_damage`/`on_survive_turn` to thematically fitting underused triggers:
+- Wolves → `on_destroy`, Bears → `on_gain_health`, Drakes → `on_apply_burn`
+- Hellhounds → `on_apply_burn`, Stormkin → `on_summon`, Giants → `on_reduce_attack`
+- Draugr → `on_silence`, Dwarven Forgemasters → `on_return_to_hand`
 
-### 7.2 Diversify Stage 3 Stats
-- **Current**: All cluster at 5-7/5-8 — no wild outliers
-- **Fix**: Some Stage 3 pets should be extreme:
-  - Glass cannons: 12/3 (massive attack, fragile)
-  - Walls: 1/15 with Taunt
-  - Board-warping: 0/0 with "Set all other minions' stats to 1/1"
-  - Token generators: 3/3 that fills board with 1/1s
+### 7.2 Diversify Stage 3 Stats ✅
+5 families now have extreme stat profiles:
+- Wolves (Fenrir Reborn): 10/3 glass cannon
+- Serpents (Jormungandr's Heir): 3/12 tanky wall
+- Ents: 2/11 defensive wall
+- Stormkin: 9/4 burst damage
+- Draugr: 8/6 undead brute
 
-### 7.3 Fix Stage 3 Description Repetition
-- **Current**: Every Stage 3 says "The final form depends on its evolution path"
-- **Fix**: Each Stage 3 should have a unique description referencing its specific power
+### 7.3 Fix Stage 3 Description Repetition ✅
+All 38 Stage 3 pets now have unique thematic descriptions instead of generic "The final form depends on its evolution path."
 
-### 7.4 Fix Element Assignments
-- Bifrost pets: electric → light (Bifrost is a rainbow bridge of light)
-- Fylgja: random elements → match their animal form's nature
-- Einherjar Warriors: fire → light (holy warriors of Valhalla)
+### 7.4 Fix Element Assignments ✅
+- Bifrost: Sun Foal + Arvakr's Glow `electric` → `light` (with dark weakness)
+- Einherjar Warriors: Fallen Recruit + Einherjar Berserker + Eternal `fire` → `light`
+- Fylgja: Kept as-is (fire/water/dark already matches Ember/Tide/Shadow Spirit themes)
 
 ---
 
-## Phase 8: Class Identity Fixes (High Effort, Low Priority)
+## Phase 8: Class Identity Fixes ✅ COMPLETED
 
-### 8.1 Warlock Norse Identity (Grade C → B+)
-- **Problem**: Generic "Void/Shadow" naming, weakest Norse identity
-- **Direction**: Lean into Muspelheim fire pacts, Loki's forbidden bargains, or Hel's domain
-- **Scope**: Rename 10-15 cards, adjust flavor text to reference Surtr's flames or Hel's bargains
-- **Key renames**: All "Void" → "Ginnungagap" or "Muspel" prefixes
+### 8.1 Warlock Norse Identity ✅
+5 "Void" cards renamed to Norse equivalents:
+- Void Wanderer → Ginnungagap Wanderer (17001)
+- Void Shade → Ginnungagap Shade (17007)
+- Nether Void → Ginnungagap Abyss (17009)
+- Void Pact → Hel's Covenant (17103)
+- Void Covenant → Muspel Covenant (37002)
 
-### 8.2 Priest Norse Identity (Grade C+ → B+)
-- **Problem**: Overwhelmingly Greek (Selene, Persephone, Asclepius, Chronos, Moirai, Styx)
-- **Direction**: Should be the Hel/Norn/Baldur class — death, fate, and light
-- **Scope**: This is a multi-mythology game, so Greek cards are fine, but need more Norse representation
-- **Fix**: Add 4-6 Norse priest cards (Baldur's Light, Norn's Weaving, Hel's Judgment) to balance the Greek dominance
+### 8.2 Priest Norse Identity — Deferred
+Multi-mythology game; Greek priest cards (Selene, Persephone, Chronos) are valid. Norse priest cards already exist (Hel's Priestess, Hel's Whisper, Baldur refs). Adding new cards is a separate card-design task.
 
-### 8.3 Hunter Pick a Lane (Grade B- → B+)
-- **Problem**: Split between Artemis (Greek) and Skadi (Norse) with no coherent identity
-- **Direction**: Both are valid hunt goddesses — lean into "divine hunt" as the unifying theme
-- **Fix**: Rename generic cards ("Stealthy Jaguar," "Pack Alpha," "Timber Wolf Alpha") to mythology-specific names
-- **Scope**: 5-8 renames
+### 8.3 Hunter Renames ✅
+5 generic animal names → mythology-specific:
+- Stealthy Jaguar → Svartalfheim Stalker (7011)
+- Pack Alpha → Fenrir's Packleader (7012)
+- Timber Wolf Alpha → Garmr's Kin (7015)
+- Savannah Guardian → Freya's Pride (7019)
+- Fang Commander → Skadi's Huntmaster (7020)
 
-### 8.4 Rogue Card Count Trim
-- **Current**: 48 cards (largest class, others 33-41)
-- **Fix**: Identify 5-8 weakest/most generic rogue cards, consider moving to neutral or cutting
-- **Low priority**: Doesn't affect player experience much
+### 8.4 Rogue Renames ✅
+2 generic thief names → Norse-themed:
+- Shady Dealer → Svartalfheim Trader (85001)
+- Cutpurse → Loki's Pickpocket (85007)
+Rogue card count trim deferred (41 cards, not excessive).
 
 ---
 
-## Phase 9: Remaining Greek Card Gaps
+## Phase 9: Remaining Greek Card Gaps ✅ COMPLETED
 
-### 9.1 Missing Greek Mythic Minions
-- **Current**: Only 6 Greek mythic minions (Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa)
-- **Missing obvious creatures**: Hydra, Minotaur, Sphinx, Chimera, Scylla, Charybdis, Pegasus, the Furies, Argus Panoptes
-- **Scope**: Add 6-10 Greek mythic minions with mechanics matching their myths
-- **Priority**: Low — Greek is secondary mythology, but mythology fans will notice the gaps
+### 9.1 New Greek Mythic Minions ✅
+Added 7 cards (IDs 32207-32213): Hydra, Minotaur, Sphinx, Chimera, Scylla, Pegasus, The Furies.
+All with lore-accurate mechanics (Hydra gains ATK on damage, Sphinx discovers, Furies summon copies, etc.)
 
-### 9.2 Typhon/Porphyrion Race Fix
-- **Current**: Both listed as "Elemental" race
-- **Fix**: Both should be "Titan" — Typhon is Father of Monsters, Porphyrion is king of the Gigantes
+### 9.2 Race Fixes ✅
+- Typhon (32202): Elemental → Titan
+- Porphyrion (32203): Elemental → Titan, rarity epic → mythic
+- Medusa (32206): Added missing `race: 'Spirit'`
 
 ---
 
@@ -181,9 +175,9 @@ Naglfar's Keel, Gleipnir's Fang. Vault of Ouranos heroId skipped (no matching he
 
 ---
 
-## Phase 10: NFT SDK Architecture (Future — Separate Engineer)
+## Phase 10: NFT SDK Architecture ✅ COMPLETED (Previous Session)
 
-Decouple game domain from NFT/blockchain domain so another engineer can develop the SDK independently.
+Completed in "NFT SDK Separation" session — see CLAUDE.md changelog for details.
 
 ### 10.1 Core Problem
 Game code has 15+ direct imports from blockchain layer (`HiveDataLayer`, `HiveSync`, `HiveEvents`, `HiveTypes`). Changes to `HiveCardAsset` require updates in 9+ game files. Trade execution chains 7 components for a single operation.

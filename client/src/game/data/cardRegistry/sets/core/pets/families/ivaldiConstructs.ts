@@ -167,7 +167,7 @@ export const ivaldiConstructsPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Ivaldi\'s greatest automaton — precision forged beyond mortal craft.',
 		flavorText: 'The crowning achievement of dwarven artifice — a construct that rivals the gods.',
 		keywords: ['battlecry'],
 		class: 'Neutral',

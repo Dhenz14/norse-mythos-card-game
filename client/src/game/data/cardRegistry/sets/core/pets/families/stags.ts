@@ -164,7 +164,7 @@ export const stagsPets: CardData[] = [
 		health: 8,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Crown of antlers ablaze with the light of Yggdrasil.',
 		flavorText: 'The great stag atop Yggdrasil, whose antlers drip with the waters of life.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',

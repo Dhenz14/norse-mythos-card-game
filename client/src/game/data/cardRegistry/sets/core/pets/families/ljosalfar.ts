@@ -162,7 +162,7 @@ export const ljosalfarPets: CardData[] = [
 		health: 7,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Pure light of Alfheim, blinding in its radiance.',
 		flavorText: 'The light of Alfheim made flesh and fury.',
 		keywords: ['divine_shield', 'taunt', 'battlecry'],
 		class: 'Neutral',

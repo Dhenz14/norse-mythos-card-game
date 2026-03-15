@@ -169,7 +169,7 @@ export const rootkinPets: CardData[] = [
 		health: 8,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Roots that drink from Urd\'s Well, branches that touch the stars.',
 		flavorText: 'The goddess of youth bestows her gift upon the worthy.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',

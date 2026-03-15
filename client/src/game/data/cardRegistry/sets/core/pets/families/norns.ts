@@ -165,7 +165,7 @@ export const nornsPets: CardData[] = [
 		health: 8,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Past, present, and future converge in a single weaving.',
 		flavorText: 'Past, present, and future converge into one.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',

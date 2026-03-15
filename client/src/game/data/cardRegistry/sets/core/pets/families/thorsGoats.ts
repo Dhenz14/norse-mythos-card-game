@@ -163,7 +163,7 @@ export const thorsGoatsPets: CardData[] = [
 		health: 4,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Tanngrisnir and Tanngnjóstr reborn — unkillable servants of Thor.',
 		flavorText: 'The goat that pulls Thor\'s chariot across the storm.',
 		keywords: ['charge', 'reborn', 'battlecry'],
 		class: 'Neutral',

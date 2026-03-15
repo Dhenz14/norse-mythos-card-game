@@ -168,7 +168,7 @@ export const celestialHorsesPets: CardData[] = [
 		health: 7,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'A steed of the gods, swift as starlight across the void.',
 		flavorText: 'Day and night gallop as one — the sky bows to the celestial steed.',
 		keywords: ['divine_shield', 'battlecry'],
 		class: 'Neutral',

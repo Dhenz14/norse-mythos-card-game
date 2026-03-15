@@ -24,7 +24,7 @@ export function registerWarlockCards(): void {
   // BASIC WARLOCK CARDS
   createCard()
     .id(17001)
-    .name("Void Wanderer")
+    .name("Ginnungagap Wanderer")
     .manaCost(1)
     .attack(1)
     .health(3)
@@ -146,7 +146,7 @@ export function registerWarlockCards(): void {
 
   createCard()
     .id(17007)
-    .name("Void Shade")
+    .name("Ginnungagap Shade")
     .manaCost(3)
     .attack(3)
     .health(3)
@@ -191,7 +191,7 @@ export function registerWarlockCards(): void {
 
   createCard()
     .id(17009)
-    .name("Nether Void")
+    .name("Ginnungagap Abyss")
     .manaCost(8)
     .type("spell")
     .rarity("epic")
@@ -269,7 +269,7 @@ export function registerWarlockCards(): void {
 
   createCard()
     .id(17103)
-    .name("Void Pact")
+    .name("Hel's Covenant")
     .manaCost(0)
     .type("spell")
     .rarity("common")

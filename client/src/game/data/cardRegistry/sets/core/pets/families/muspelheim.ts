@@ -170,7 +170,7 @@ export const muspelheimPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Born in the fires before creation, it burns with Surtr\'s wrath.',
 		flavorText: 'When Surtr marches, even the gods tremble before his herald.',
 		keywords: ['battlecry'],
 		class: 'Neutral',

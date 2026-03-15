@@ -168,7 +168,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 		health: 5,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Eternal sentinel of the World Tree, witness to all fates.',
 		flavorText: 'The World Tree speaks through its chosen guardian.',
 		keywords: ['battlecry'],
 		class: 'Neutral',

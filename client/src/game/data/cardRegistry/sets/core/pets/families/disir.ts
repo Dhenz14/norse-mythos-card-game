@@ -162,7 +162,7 @@ export const disirPets: CardData[] = [
 		health: 6,
 		type: 'minion',
 		rarity: 'mythic',
-		description: 'The final form depends on its evolution path.',
+		description: 'Ancestral guardian spirit — it fights for the bloodline.',
 		flavorText: 'Mother of spirits, keeper of the eternal flame.',
 		keywords: ['divine_shield', 'reborn', 'battlecry'],
 		class: 'Neutral',
