@@ -1044,7 +1044,7 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8021,
-    name: 'Acolyte of Valhalla',
+    name: 'Aspirant of Valhalla',
   description: 'A warrior training for the eternal halls.',
   
   flavorText: 'Young warriors training for their place in the eternal halls.',
@@ -1132,7 +1132,7 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8025,
-    name: 'Baldur the Radiant',
+    name: 'Baldur, Shield of Light',
       description: 'Battlecry: Equip a 5/3 Ashbringer.',
 
       flavorText: 'The beloved god of light and purity.',
@@ -1168,7 +1168,7 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8027,
-    name: 'Rider of Famine',
+    name: 'Horseman of Famine',
   description: 'One of the Four Horsemen of Ragnarök.',
   
   flavorText: 'Starvation follows in this rider\'s wake.',
@@ -1185,7 +1185,7 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 8028,
-    name: 'Rider of Pestilence',
+    name: 'Horseman of Pestilence',
   description: 'One of the Four Horsemen of Ragnarök.',
   
   flavorText: 'Disease spreads wherever this horseman rides.',
@@ -1202,7 +1202,7 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 8029,
-    name: 'Rider of War',
+    name: 'Horseman of War',
   description: 'One of the Four Horsemen of Ragnarök.',
   
   flavorText: 'Battle and bloodshed ride in his shadow.',
@@ -1219,7 +1219,7 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 8030,
-    name: 'Rider of Death',
+    name: 'Horseman of Death',
   description: 'One of the Four Horsemen of Ragnarök.',
   
   flavorText: 'Hel herself empowered this final rider.',

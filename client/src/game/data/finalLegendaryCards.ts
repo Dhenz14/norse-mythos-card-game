@@ -11,7 +11,7 @@ import { CardData } from '../types';
 export const finalLegendaryCards: CardData[] = [
   {
     id: 95301,
-    name: "Fenrir",
+    name: "Fenrir, the Unchained",
     manaCost: 9,
     attack: 8,
     health: 8,
@@ -161,7 +161,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 95308,
-    name: "Daedalus the Inventor",
+    name: "Daedalus, Master Artificer",
     manaCost: 3,
     attack: 3,
     health: 3,

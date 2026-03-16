@@ -1805,7 +1805,7 @@ export const norseMythologyCards: CardData[] = [
   // Fire Chick (Basic)
   {
     id: 5002,
-    name: "Fire Chick",
+    name: "Ember Hatchling",
     manaCost: 1,
     attack: 1,
     health: 1,
@@ -1981,7 +1981,7 @@ export const norseMythologyCards: CardData[] = [
   // Surtr's Spawn (Evolution)
   {
     id: 5020,
-    name: "Surtr's Spawn",
+    name: "Surtr, the Scorched's Spawn",
     manaCost: 5,
     attack: 3,
     health: 5,
@@ -2010,7 +2010,7 @@ export const norseMythologyCards: CardData[] = [
   // Logi's Fang (Evolution)
   {
     id: 5021,
-    name: "Logi's Fang",
+    name: "Logi, Wildfire Incarnate's Fang",
     manaCost: 5,
     attack: 5,
     health: 3,
@@ -2174,7 +2174,7 @@ export const norseMythologyCards: CardData[] = [
   // Þórr's Spark (Basic - Common)
   {
     id: 5300,
-    name: "Þórr's Spark",
+    name: "Þórr, Son of Odin's Spark",
     manaCost: 2,
     attack: 3,
     health: 1,
@@ -2198,7 +2198,7 @@ export const norseMythologyCards: CardData[] = [
   // Skoll's Pup (Basic - Common)
   {
     id: 5301,
-    name: "Skoll's Pup",
+    name: "Skoll, Sun-Chaser's Pup",
     manaCost: 2,
     attack: 2,
     health: 1,
@@ -2248,7 +2248,7 @@ export const norseMythologyCards: CardData[] = [
   // Sleipnir's Hoof (Basic - Common)
   {
     id: 5303,
-    name: "Sleipnir's Hoof",
+    name: "Sleipnir, the Eight-Legged's Hoof",
     manaCost: 3,
     attack: 3,
     health: 2,
@@ -2273,7 +2273,7 @@ export const norseMythologyCards: CardData[] = [
   // Frey's Bolt (Basic - Common)
   {
     id: 5304,
-    name: "Frey's Bolt",
+    name: "Freyr, Lord of Alfheim's Bolt",
     manaCost: 2,
     attack: 2,
     health: 2,
@@ -2361,7 +2361,7 @@ export const norseMythologyCards: CardData[] = [
   // Skoll's Storm (Evolution - Mythic)
   {
     id: 5307,
-    name: "Skoll's Storm",
+    name: "Skoll, the Ravenous's Storm",
     manaCost: 5,
     attack: 5,
     health: 3,
@@ -2400,7 +2400,7 @@ export const norseMythologyCards: CardData[] = [
   // Sleipnir's Charge (Evolution - Mythic)
   {
     id: 5308,
-    name: "Sleipnir's Charge",
+    name: "Sleipnir, Odin's Mount's Charge",
     manaCost: 6,
     attack: 5,
     health: 4,
@@ -2434,7 +2434,7 @@ export const norseMythologyCards: CardData[] = [
   // Frey's Thunder (Evolution - Mythic)
   {
     id: 5309,
-    name: "Frey's Thunder",
+    name: "Freyr, Harvest God's Thunder",
     manaCost: 5,
     attack: 3,
     health: 5,
@@ -3316,7 +3316,7 @@ export const norseMythologyCards: CardData[] = [
   // Gullinbursti, the Golden Boar
   {
     id: 4409,
-    name: "Gullinbursti, the Golden Boar",
+    name: "Gullinbursti, Freyr's Boar",
     manaCost: 5,
     attack: 4,
     health: 6,

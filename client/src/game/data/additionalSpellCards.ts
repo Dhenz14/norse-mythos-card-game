@@ -998,7 +998,7 @@ export const additionalSpellCards: CardData[] = [
   },
   {
       id: 31023,
-      name: "Hel's Siphon",
+      name: "Gateway to Hel's Siphon",
       manaCost: 6,
       type: "spell",
       rarity: "rare",

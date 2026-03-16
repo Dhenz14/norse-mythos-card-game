@@ -477,7 +477,7 @@ export const heroSuperMinions: CardData[] = [
   },
   {
     id: 95012,
-    name: "Hati, the Moon-Devourer",
+    name: "Hati, Moonbane",
     manaCost: 10,
     attack: 8,
     health: 8,

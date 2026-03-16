@@ -11,7 +11,7 @@ import { CardData } from '../types';
 export const additionalLegendaryCards: CardData[] = [
 {
     id: 96001,
-    name: "Níðhöggr",
+    name: "Nidhöggr, Root-Gnawer",
     manaCost: 9,
     attack: 8,
     health: 8,

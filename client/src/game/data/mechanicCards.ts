@@ -372,7 +372,7 @@ export const   mechanicCards: CardData[] = [{
   {
       id: 4516,
 
-      name: "Mechanical Whelp",
+      name: "Clockwork Whelp",
       manaCost: 6,
 
       attack: 2,

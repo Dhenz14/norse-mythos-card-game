@@ -32,7 +32,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 95102,
 
-      name: "Jormungandr, Echo Serpent",
+      name: "Echo of the World Serpent",
       manaCost: 9,
 
       attack: 6,
@@ -665,7 +665,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
   id: 95126,
 
-  name: "The Storm Guardian",
+  name: "Stormwatch Sentinel",
   manaCost: 5,
 
   attack: 8,

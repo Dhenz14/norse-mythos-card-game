@@ -259,9 +259,9 @@ const neutralTokens: CardData[] = [
 const hunterTokens: CardData[] = [
   {
     id: 7510,
-    name: 'Bjorn, the Sacred Bear',
+    name: 'Bear of Bjorn',
     description: 'Taunt',
-    flavorText: 'A mighty bear blessed by the gods of the forest.',
+    flavorText: 'Bjorn never hunts alone. His sacred bear answers only to him.',
     type: 'minion',
     rarity: 'common',
     manaCost: 3,
