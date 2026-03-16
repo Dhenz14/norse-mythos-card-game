@@ -32,6 +32,15 @@ function isReducedMotion(): boolean {
 	return reducedMotion;
 }
 
+function isEnhancedVFXEnabled(): boolean {
+	try {
+		const { useSettingsStore } = require('../stores/settingsStore');
+		return useSettingsStore.getState().enhancedVFX !== false;
+	} catch {
+		return true;
+	}
+}
+
 function addScreenClass(className: string, duration: number): void {
 	const viewport = document.querySelector('.game-viewport');
 	if (!viewport) return;
@@ -87,7 +96,7 @@ export function playComposition(
 	targetX?: number,
 	targetY?: number,
 ): gsap.core.Timeline | null {
-	if (isReducedMotion()) return null;
+	if (isReducedMotion() || !isEnhancedVFXEnabled()) return null;
 
 	try {
 		switch (name) {

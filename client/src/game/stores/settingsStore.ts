@@ -10,6 +10,7 @@ export interface SettingsState {
 
 	animationsEnabled: boolean;
 	reduceMotion: boolean;
+	enhancedVFX: boolean;
 	cardQuality: 'low' | 'medium' | 'high';
 
 	autoEndTurn: boolean;
@@ -39,6 +40,7 @@ const DEFAULT_SETTINGS: SettingsState = {
 	sfxEnabled: true,
 	animationsEnabled: true,
 	reduceMotion: false,
+	enhancedVFX: true,
 	cardQuality: 'high',
 	autoEndTurn: false,
 	confirmAttacks: false,

@@ -100,6 +100,12 @@ export default function SettingsPanel() {
 				onChange={(v) => settings.setSetting('animationsEnabled', v)}
 			/>
 			<ToggleControl
+				label="Enhanced VFX"
+				description="GPU spell circles, shader effects, and elemental particles"
+				checked={settings.enhancedVFX}
+				onChange={(v) => settings.setSetting('enhancedVFX', v)}
+			/>
+			<ToggleControl
 				label="Reduce Motion"
 				description="Minimize screen shake and particle effects"
 				checked={settings.reduceMotion}

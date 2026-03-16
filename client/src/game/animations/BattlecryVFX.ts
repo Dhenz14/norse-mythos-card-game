@@ -525,6 +525,10 @@ export function playBattlecryVFX(
 			case 'summon': playComposition('DIVINE_SUMMON', targetX ?? sourceX, targetY ?? sourceY); break;
 			case 'freeze': playComposition('FREEZE_SPELL', targetX ?? sourceX, targetY ?? sourceY); break;
 			case 'divine_shield': playComposition('DIVINE_SUMMON', targetX ?? sourceX, targetY ?? sourceY); break;
+			case 'deathrattle': playComposition('SHADOW_DEATH', sourceX, sourceY); break;
+			case 'blood_price': playComposition('BLOOD_PRICE', sourceX, sourceY); break;
+			case 'minion_entry': case 'mythic_entrance': playComposition('MINION_ENTRY', sourceX, sourceY); break;
+			case 'lightning': case 'lightning_bolt': playComposition('LIGHTNING_STRIKE', sourceX, sourceY, targetX, targetY); break;
 		}
 	} catch { /* compositions are non-critical enhancement */ }
 
