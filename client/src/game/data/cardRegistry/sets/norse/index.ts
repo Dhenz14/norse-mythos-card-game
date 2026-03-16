@@ -158,7 +158,7 @@ const norseGods: CardData[] = [
 const norseLegendaryCreatures: CardData[] = [
   {
     id: 20620,
-    name: "Jormungandr",
+    name: "World Serpent Spawn",
     manaCost: 7,
     attack: 6,
     health: 6,

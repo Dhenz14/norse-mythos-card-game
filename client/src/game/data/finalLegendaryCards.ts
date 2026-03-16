@@ -39,7 +39,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 95302,
-    name: "Fenrir, the Worldbreaker",
+    name: "Worldbreaker Wolf",
     manaCost: 12,
     attack: 12,
     health: 12,

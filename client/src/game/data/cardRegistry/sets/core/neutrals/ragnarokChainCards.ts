@@ -90,7 +90,7 @@ export const ragnarokChainCards: CardData[] = [
 	// === Pair 3: Huginn & Muninn ===
 	{
 		id: 30405,
-		name: 'Huginn',
+		name: 'Thought-Raven',
 		manaCost: 2,
 		description: 'Chain: When both are in play, both gain +2/+2. When Muninn dies, draw 2.',
 		flavorText: 'Thought flies faster than memory, but neither flies alone.',
@@ -111,7 +111,7 @@ export const ragnarokChainCards: CardData[] = [
 	},
 	{
 		id: 30406,
-		name: 'Muninn',
+		name: 'Memory-Raven',
 		manaCost: 2,
 		description: 'Chain: When both are in play, both gain +2/+2. When Huginn dies, draw 2.',
 		flavorText: 'Memory lingers where thought has gone, piecing together what was lost.',

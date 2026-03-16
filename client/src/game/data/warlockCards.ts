@@ -211,7 +211,7 @@ export const warlockCards: CardData[] = [
   // ADVANCED WARLOCK CARDS
   {
     id: 17101,
-    name: "Surtr, Flame Lord",
+    name: "Flame-Lord of Muspelheim",
     manaCost: 9,
     attack: 3,
     health: 15,

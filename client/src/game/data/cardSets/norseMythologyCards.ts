@@ -17,7 +17,7 @@ export const norseMythologyCards: CardData[] = [
   // Jormungandr - The World Serpent
   {
     id: 20620,
-    name: "Jormungandr",
+    name: "World Serpent Spawn",
     manaCost: 7,
     attack: 6,
     health: 6,
@@ -78,10 +78,10 @@ export const norseMythologyCards: CardData[] = [
 
   // ===== DARK MYTHIC CREATURES =====
 
-  // Fenrir, the Bound Wolf
+  // Gleipnir's Captive
   {
     id: 4300,
-    name: "Fenrir, the Bound Wolf",
+    name: "Gleipnir's Captive",
     manaCost: 8,
     attack: 7,
     health: 7,
@@ -147,10 +147,10 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Hati, the Moon-Devourer
+  // Moon-Devourer Wolf
   {
     id: 4302,
-    name: "Hati, the Moon-Devourer",
+    name: "Moon-Devourer Wolf",
     manaCost: 6,
     attack: 5,
     health: 5,
@@ -181,10 +181,10 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Nidhogg, the Root-Gnawer
+  // Root-Gnawer of Yggdrasil
   {
     id: 4303,
-    name: "Nidhogg, the Root-Gnawer",
+    name: "Root-Gnawer of Yggdrasil",
     manaCost: 10,
     attack: 8,
     health: 8,
@@ -548,10 +548,10 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Scylla, the World-Render
+  // World-Rending Terror
   {
     id: 4329,
-    name: "Scylla, the World-Render",
+    name: "World-Rending Terror",
     manaCost: 8,
     attack: 6,
     health: 9,
@@ -762,10 +762,10 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Gullinbursti, Golden Boar
+  // Golden War-Boar
   {
     id: 4353,
-    name: "Gullinbursti, Golden Boar",
+    name: "Golden War-Boar",
     manaCost: 6,
     attack: 5,
     health: 5,
@@ -823,10 +823,10 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Skoll, Sun-Chaser
+  // Sun-Chaser of the Eclipse
   {
     id: 4355,
-    name: "Skoll, Sun-Chaser",
+    name: "Sun-Chaser of the Eclipse",
     manaCost: 6,
     attack: 6,
     health: 4,
@@ -1388,10 +1388,10 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Ran, Goddess of the Sea
+  // Sovereign of the Drowned
   {
     id: 4382,
-    name: "Ran, Goddess of the Sea",
+    name: "Sovereign of the Drowned",
     manaCost: 8,
     attack: 5,
     health: 8,
@@ -1445,10 +1445,10 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Aegir, Lord of the Deep
+  // Tidelord of the Abyss
   {
     id: 4384,
-    name: "Aegir, Lord of the Deep",
+    name: "Tidelord of the Abyss",
     manaCost: 7,
     attack: 6,
     health: 7,
@@ -3250,7 +3250,7 @@ export const norseMythologyCards: CardData[] = [
   // Thought-Raven of Odin
   {
     id: 4407,
-    name: "Huginn, Raven of Thought",
+    name: "Thought-Raven of Odin",
     manaCost: 5,
     attack: 3,
     health: 4,
@@ -3283,7 +3283,7 @@ export const norseMythologyCards: CardData[] = [
   // Memory-Raven of Odin
   {
     id: 4408,
-    name: "Muninn, Raven of Memory",
+    name: "Memory-Raven of Odin",
     manaCost: 5,
     attack: 2,
     health: 5,
