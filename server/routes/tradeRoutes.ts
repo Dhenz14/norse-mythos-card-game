@@ -10,8 +10,8 @@ interface TradeOffer {
 	toUser: string;
 	offeredCardIds: number[];
 	requestedCardIds: number[];
-	offeredDust: number;
-	requestedDust: number;
+	offeredEitr: number;
+	requestedEitr: number;
 	status: 'pending' | 'accepted' | 'declined' | 'cancelled';
 	createdAt: number;
 	expiresAt: number;
@@ -61,7 +61,7 @@ const tradeActionAuth = attachHiveBodyAuthIfPresent({
 });
 
 router.post('/', createTradeAuth, (req: Request, res: Response) => {
-	const { fromUser, toUser, offeredCardIds, requestedCardIds, offeredDust, requestedDust } = req.body;
+	const { fromUser, toUser, offeredCardIds, requestedCardIds, offeredEitr, requestedEitr } = req.body;
 
 	if (!fromUser || !toUser) {
 		res.status(400).json({ error: 'fromUser and toUser required' });
@@ -85,8 +85,8 @@ router.post('/', createTradeAuth, (req: Request, res: Response) => {
 		toUser,
 		offeredCardIds: offeredCardIds || [],
 		requestedCardIds: requestedCardIds || [],
-		offeredDust: offeredDust || 0,
-		requestedDust: requestedDust || 0,
+		offeredEitr: offeredEitr || 0,
+		requestedEitr: requestedEitr || 0,
 		status: 'pending',
 		createdAt: Date.now(),
 		expiresAt: Date.now() + 24 * 60 * 60 * 1000,

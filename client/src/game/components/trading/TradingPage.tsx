@@ -92,13 +92,13 @@ function TradeOfferCard({ offer, currentUser, onAccept, onDecline, onCancel }: {
 function CreateTradePanel({ onSend }: { onSend: (toUser: string) => void }) {
 	const [toUser, setToUser] = useState('');
 	const selectedOffered = useTradeStore(s => s.selectedOfferedCards);
-	const offeredDust = useTradeStore(s => s.offeredEitr);
-	const requestedDust = useTradeStore(s => s.requestedEitr);
-	const setOfferedDust = useTradeStore(s => s.setOfferedEitr);
-	const setRequestedDust = useTradeStore(s => s.setRequestedEitr);
+	const offeredEitr = useTradeStore(s => s.offeredEitr);
+	const requestedEitr = useTradeStore(s => s.requestedEitr);
+	const setOfferedEitr = useTradeStore(s => s.setOfferedEitr);
+	const setRequestedEitr = useTradeStore(s => s.setRequestedEitr);
 	const clearSelections = useTradeStore(s => s.clearSelections);
 
-	const canSend = toUser.trim().length > 0 && (selectedOffered.length > 0 || offeredDust > 0);
+	const canSend = toUser.trim().length > 0 && (selectedOffered.length > 0 || offeredEitr > 0);
 
 	return (
 		<div className="bg-gray-900/60 border border-gray-700/50 rounded-xl p-5">
