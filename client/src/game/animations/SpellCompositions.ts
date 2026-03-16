@@ -18,6 +18,11 @@ import {
 	spawnParticleBurst, spawnImpactRing, spawnEmbers, spawnSlashTrail,
 	ELEMENT_PALETTES,
 } from './PixiParticleCanvas';
+import { playSpellCircle } from './SpellCircles';
+import {
+	spawnFireBurst, spawnIceShatter, spawnLightningSparks,
+	spawnShadowWisps, spawnNatureBloom, spawnBloodBurst, spawnDivineRadiance,
+} from './ElementalParticles';
 
 let reducedMotion: boolean | null = null;
 function isReducedMotion(): boolean {
@@ -106,9 +111,10 @@ export function playComposition(
 // ── FREEZE SPELL ──────────────────────────────────────────────────────
 function composeFreezeSpell(x: number, y: number): gsap.core.Timeline {
 	const tl = gsap.timeline();
+	tl.call(() => void playSpellCircle('ice_mandala', x, y, 1.2, 0.8), [], 0);
 	tl.call(() => addScreenClass('screen-freeze', 1.0), [], 0);
 	tl.call(() => applyFreezeDistortion(x, y, 0.8), [], 0.05);
-	tl.call(() => spawnParticleBurst(x, y, 20, ELEMENT_PALETTES.ice), [], 0.15);
+	tl.call(() => spawnIceShatter(x, y, 18), [], 0.15);
 	tl.call(() => applyShockwave(x, y, 2.5, 15, 0.5), [], 0.2);
 	tl.call(() => spawnImpactRing(x, y, ELEMENT_PALETTES.ice), [], 0.25);
 	return tl;
@@ -117,11 +123,12 @@ function composeFreezeSpell(x: number, y: number): gsap.core.Timeline {
 // ── FIRE AOE ──────────────────────────────────────────────────────────
 function composeFireAOE(x: number, y: number): gsap.core.Timeline {
 	const tl = gsap.timeline();
+	tl.call(() => void playSpellCircle('fire_sigil', x, y, 1.5, 0.8), [], 0);
 	tl.call(() => applyHeatHaze(x, y, 80, 0.8), [], 0);
 	tl.call(() => addScreenClass('screen-burn', 0.8), [], 0.05);
 	tl.call(() => screenShake(6, 0.4), [], 0.15);
 	tl.call(() => applyShockwave(x, y, 3.5, 25, 0.6), [], 0.15);
-	tl.call(() => spawnParticleBurst(x, y, 30, ELEMENT_PALETTES.fire), [], 0.18);
+	tl.call(() => spawnFireBurst(x, y, 30), [], 0.18);
 	tl.call(() => spawnEmbers(x, y, 20, ELEMENT_PALETTES.fire), [], 0.25);
 	tl.call(() => screenFlash('rgba(255,120,0,0.2)', 0.1), [], 0.15);
 	return tl;
@@ -132,24 +139,24 @@ function composeLightningStrike(sx: number, sy: number, tx?: number, ty?: number
 	const targetX = tx ?? sx;
 	const targetY = ty ?? sy;
 	const tl = gsap.timeline();
+	tl.call(() => void playSpellCircle('lightning_seal', targetX, targetY, 1.0, 0.5), [], 0);
 	tl.call(() => screenFlash('rgba(255,255,255,0.4)', 0.08), [], 0);
 	tl.call(() => applyLightningStrike(targetX, targetY, 0.4), [], 0.02);
 	tl.call(() => addScreenClass('screen-lightning', 0.15), [], 0.02);
 	tl.call(() => screenShake(8, 0.2), [], 0.05);
 	tl.call(() => applyBloomPulse(targetX, targetY, 2.5, 0.4), [], 0.05);
-	tl.call(() => spawnParticleBurst(targetX, targetY, 15, ELEMENT_PALETTES.lightning), [], 0.08);
+	tl.call(() => spawnLightningSparks(targetX, targetY, 20), [], 0.08);
 	return tl;
 }
 
 // ── DIVINE SUMMON ─────────────────────────────────────────────────────
 function composeDivineSummon(x: number, y: number): gsap.core.Timeline {
 	const tl = gsap.timeline();
+	tl.call(() => void playSpellCircle('divine_halo', x, y, 1.5, 1.2), [], 0);
 	tl.call(() => addScreenClass('screen-holy', 1.5), [], 0);
 	tl.call(() => applyGodray(x, y, 1.2), [], 0);
 	tl.call(() => applyBloomPulse(x, y, 3, 0.8), [], 0.3);
-	tl.call(() => spawnParticleBurst(x, y, 25, {
-		primary: '#ffd700', secondary: '#ffffff', glow: 'rgba(255,215,0,0.8)'
-	}), [], 0.4);
+	tl.call(() => spawnDivineRadiance(x, y, 25), [], 0.4);
 	tl.call(() => screenFlash('rgba(255,215,0,0.15)', 0.2), [], 0.35);
 	return tl;
 }
@@ -157,9 +164,10 @@ function composeDivineSummon(x: number, y: number): gsap.core.Timeline {
 // ── SHADOW DEATH ──────────────────────────────────────────────────────
 function composeShadowDeath(x: number, y: number): gsap.core.Timeline {
 	const tl = gsap.timeline();
+	tl.call(() => void playSpellCircle('shadow_pentagram', x, y, 1.3, 0.8), [], 0);
 	tl.call(() => addScreenClass('screen-shadow', 0.8), [], 0);
 	tl.call(() => applyDissolve(x, y, 0.6), [], 0.05);
-	tl.call(() => spawnParticleBurst(x, y, 18, ELEMENT_PALETTES.shadow), [], 0.1);
+	tl.call(() => spawnShadowWisps(x, y, 15), [], 0.1);
 	tl.call(() => screenFlash('rgba(0,0,0,0.15)', 0.2), [], 0.5);
 	return tl;
 }
@@ -167,18 +175,20 @@ function composeShadowDeath(x: number, y: number): gsap.core.Timeline {
 // ── NATURE HEAL ───────────────────────────────────────────────────────
 function composeNatureHeal(x: number, y: number): gsap.core.Timeline {
 	const tl = gsap.timeline();
+	tl.call(() => void playSpellCircle('nature_bloom', x, y, 1.0, 0.8), [], 0);
 	tl.call(() => addScreenClass('screen-nature', 1.0), [], 0);
 	tl.call(() => applyBloomPulse(x, y, 1.5, 0.6), [], 0.1);
-	tl.call(() => spawnParticleBurst(x, y, 15, ELEMENT_PALETTES.nature), [], 0.15);
-	tl.call(() => spawnEmbers(x, y, 10, ELEMENT_PALETTES.nature), [], 0.2);
+	tl.call(() => spawnNatureBloom(x, y, 15), [], 0.15);
 	return tl;
 }
 
 // ── BLOOD PRICE ───────────────────────────────────────────────────────
 function composeBloodPrice(x: number, y: number): gsap.core.Timeline {
 	const tl = gsap.timeline();
+	tl.call(() => void playSpellCircle('blood_ritual', x, y, 1.0, 0.6), [], 0);
 	tl.call(() => addScreenClass('screen-blood', 0.6), [], 0);
 	tl.call(() => applyBloodSplash(x, y, 0.5), [], 0.05);
+	tl.call(() => spawnBloodBurst(x, y, 12), [], 0.08);
 	tl.call(() => screenShake(3, 0.15), [], 0.08);
 	tl.call(() => screenFlash('rgba(180,0,0,0.15)', 0.1), [], 0.05);
 	return tl;
@@ -207,7 +217,8 @@ function composeTargetedDamage(sx: number, sy: number, tx: number, ty: number): 
 // ── MINION ENTRY ──────────────────────────────────────────────────────
 function composeMinionEntry(x: number, y: number): gsap.core.Timeline {
 	const tl = gsap.timeline();
-	tl.call(() => applyShockwave(x, y + 20, 1.5, 10, 0.4), [], 0);
-	tl.call(() => spawnParticleBurst(x, y + 20, 10, ELEMENT_PALETTES.neutral), [], 0.05);
+	tl.call(() => void playSpellCircle('norse_rune', x, y + 10, 0.8, 0.6), [], 0);
+	tl.call(() => applyShockwave(x, y + 20, 1.5, 10, 0.4), [], 0.05);
+	tl.call(() => spawnParticleBurst(x, y + 20, 10, ELEMENT_PALETTES.neutral), [], 0.1);
 	return tl;
 }
