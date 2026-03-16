@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/cards-1%2C500%2B-gold?style=flat-square" />
+  <img src="https://img.shields.io/badge/cards-2%2C400%2B-gold?style=flat-square" />
   <img src="https://img.shields.io/badge/heroes-80-blue?style=flat-square" />
   <img src="https://img.shields.io/badge/mythologies-5-red?style=flat-square" />
   <img src="https://img.shields.io/badge/campaign_missions-49-green?style=flat-square" />
@@ -43,7 +43,7 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 ## Features
 
 ### Core Gameplay
-- **1,500+ collectible cards** with battlecry, deathrattle, combo, discover, and 47 keyword mechanics
+- **2,400+ collectible cards** with battlecry, deathrattle, combo, discover, and 47 keyword mechanics
 - **80 playable heroes** across 12 classes — Mage, Warrior, Priest, Rogue, Paladin, Hunter, Druid, Warlock, Shaman, Berserker, Death Knight, Necromancer
 - **6 unique Norse mechanics** — Blood Price, Einherjar, Prophecy, Realm Shift, Ragnarok Chain, Pet Evolution
 - **Ragnarok Chess** — 7x5 board where god-pieces maneuver and collisions trigger poker combat
@@ -317,7 +317,7 @@ Every status effect has full visual feedback — themed glows, overlays, and ico
 
 ## Card System
 
-### 1,500+ Cards Across 6 Sets
+### 2,400+ Cards Across 6 Sets
 
 | Range | Category |
 |-------|----------|
@@ -447,7 +447,7 @@ client/src/
 │   ├── combat/            # Poker combat arena + hooks
 │   ├── components/        # Card, chess, campaign, collection, trading UI
 │   ├── crafting/          # Eitr economy (display only in v1)
-│   ├── data/              # 1,500+ cards + 80 heroes + 38 pet families
+│   ├── data/              # 2,400+ cards + 80 heroes + 38 pet families
 │   ├── effects/           # 181 effect handlers (battlecry, deathrattle, spell)
 │   ├── engine/            # WASM loader + bridge (mandatory, no TS fallback)
 │   ├── spectator/         # Read-only P2P viewer
@@ -475,7 +475,7 @@ server/
 
 ### Completed
 
-- [x] 1,500+ cards with 181 effect handlers (94 battlecry, 16 deathrattle, 71 spell)
+- [x] 2,400+ cards with 181 effect handlers (94 battlecry, 16 deathrattle, 71 spell)
 - [x] 80 heroes across 12 classes and 5 mythological factions
 - [x] 6 Norse-original mechanics (Blood Price, Einherjar, Prophecy, Realm Shift, Ragnarok Chain, Pet Evolution)
 - [x] Pet Evolution 3-3-1 system (38 families, 266 cards, element advantage, hero synergy)

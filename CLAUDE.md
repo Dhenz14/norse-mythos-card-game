@@ -33,7 +33,7 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - **Blockchain**: Hive Layer 1 NFTs (custom_json ops, deterministic reader, Keychain auth)
 
 ### Game Features
-- 2,000+ collectible cards across 4 mythological factions
+- 2,400+ collectible cards across 5 mythological factions
 - 80+ playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
@@ -104,7 +104,7 @@ client/src/
 │   │   ├── tradeStore.ts   # Trade offers + bridge transfers on accept
 │   │   └── replayStore.ts  # Match history + replay playback
 │   ├── data/               # Card definitions, heroes
-│   │   ├── allCards.ts     # Single source of truth (1400+ cards)
+│   │   ├── allCards.ts     # Single source of truth (2,400+ cards)
 │   │   ├── cardRegistry/   # Card sets by ID ranges
 │   │   ├── dailyQuestPool.ts # 19 quest templates
 │   │   ├── keywordDefinitions.ts # All keyword names + descriptions
@@ -169,7 +169,7 @@ server/
 └── storage.ts              # Database interface
 ```
 
-Card art lives in `client/public/art/` (2,054 webp files). Art lookup uses 3-tier system: `CARD_ID_TO_ART` (1,458 ID-based entries) > `VERCEL_CARD_ART` (330 name matches) > `MINION_CARD_TO_ART` (85 creature maps). Effective coverage: ~75% of cards (514 still missing art, mostly expansion cards in 32000-39999 range).
+Card art lives in `client/public/art/` (2,700+ webp files). Art lookup uses 3-tier system: `CARD_ID_TO_ART` (2,459 ID-based entries) > `VERCEL_CARD_ART` (330 name matches) > `MINION_CARD_TO_ART` (85 creature maps). Effective coverage: 100% of cards — every card has art.
 
 ## Key Subsystems
 
@@ -1379,6 +1379,23 @@ vercel --prod                 # Deploy to Vercel
 - Real Hive signature verification on server (hive-tx ECDSA recovery, not stubbed)
 - Legacy `rp_pack_open` valid pre-seal only; `rp_match_start` aliased to `match_anchor` indefinitely
 - Eitr dissolve remains as cosmetic display; forge button hidden; trade Eitr inputs removed
+
+### Completed (100% Art Coverage & Production Polish)
+
+- Card art batch 4: 657 new art files imported, 559 new card mappings
+- Visual art scan: manually matched 83 remaining cards from 372 unmapped art files
+- Total: 2,459 CARD_ID_TO_ART entries, 0 cards missing art
+- Pack opening animation: wired real card art (was emoji placeholders)
+- NFT bridge: eagerly initialized LocalNFTBridge (fixed race condition crash)
+- Trade store: crash-safe batch transfers, error toasts on all failures
+- Renamed `offeredDust`/`requestedDust` → `offeredEitr`/`requestedEitr` (server + client)
+- Poker reward store: retry counter moved into Zustand state
+- Console cleanup: all stores use `debug.*` instead of `console.*`
+- Deleted 5 dead files (4 dev scripts + empty CSS stub)
+- God-name rename: 104 minion cards renamed to not pose as gods (heroes locked)
+- 17 empty card descriptions filled (vanilla + token cards)
+- Deleted browse-available/ duplicate art folder (112MB savings)
+- All documentation updated to reflect 2,400+ cards, 5 factions, 100% art
 
 ### Next (Genesis Launch)
 
