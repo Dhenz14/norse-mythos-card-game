@@ -31,7 +31,7 @@ export const modernLegendaryCards: CardData[] = [
 },
   {
     id: 95202,
-    name: "Persephone, Death Queen",
+    name: "Death-Queen's Revenant",
     manaCost: 8,
     attack: 6,
     health: 8,
@@ -164,7 +164,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 95209,
 
-      name: "Chronos, Time Dragon",
+      name: "Time-Dragon of the Void",
       manaCost: 7,
 
       attack: 6,
@@ -273,7 +273,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 95214,
   
-  name: "Ares, War Commander",
+  name: "War-Commander of Olympus",
   manaCost: 5,
   
   attack: 4,
@@ -323,7 +323,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 95216,
 
-      name: "Hermes, Spell Messenger",
+      name: "Spell-Herald of Olympus",
       manaCost: 8,
 
       attack: 7,
@@ -486,7 +486,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 95223,
 
-      name: "Hermes, Treasure Hunter",
+      name: "Treasure-Seeker of Olympus",
       manaCost: 8,
 
       attack: 6,
@@ -688,7 +688,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 95230,
 
-      name: "Mimir, Lore Keeper",
+      name: "Lore-Keeper of the Well",
       manaCost: 4,
 
       attack: 4,
@@ -905,7 +905,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 95238,
   
-  name: "Vidar, the Silent",
+  name: "Silent Avenger",
   manaCost: 3,
   
   attack: 3,
@@ -927,7 +927,7 @@ export const modernLegendaryCards: CardData[] = [
   {
       id: 95239,
 
-      name: "Nidhogg, World Eater",
+      name: "World-Eater Wyrm",
       manaCost: 10,
 
       attack: 10,

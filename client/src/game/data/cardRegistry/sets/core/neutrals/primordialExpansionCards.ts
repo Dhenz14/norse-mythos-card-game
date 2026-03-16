@@ -82,7 +82,7 @@ export const primordialExpansionCards: CardData[] = [
 
 	{
 		id: 40001,
-		name: 'Bestla, Primordial Frost-Mother',
+		name: 'Primordial Frost-Mother',
 		manaCost: 7,
 		attack: 4,
 		health: 6,

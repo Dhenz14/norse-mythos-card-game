@@ -100,7 +100,7 @@ export const classMinions: CardData[] = [
 
 {
   id: 16514,
-  name: "Baldur's Warden",
+  name: "Light-Touched Zealot's Warden",
   manaCost: 1,
   attack: 1,
   health: 2,

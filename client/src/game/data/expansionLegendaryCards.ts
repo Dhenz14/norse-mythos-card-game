@@ -81,7 +81,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 95404,
 
-      name: "Arachne, Web Weaver",
+      name: "Web-Weaver of the Dark",
       manaCost: 9,
 
       attack: 3,
@@ -544,7 +544,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 95421,
 
-      name: "Forseti, Judge",
+      name: "Judge of the Aesir Court",
       manaCost: 6,
 
       attack: 6,
@@ -663,7 +663,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 95425,
 
-      name: "Medusa, Venom Mind",
+      name: "Venom-Mind Gorgon",
       manaCost: 4,
 
       attack: 3,
@@ -803,7 +803,7 @@ export const expansionLegendaryCards: CardData[] = [{
   {
       id: 95430,
 
-      name: "Ares, Crime Lord",
+      name: "Crime-Lord of the Arena",
       manaCost: 7,
 
       attack: 5,

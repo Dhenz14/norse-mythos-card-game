@@ -27,7 +27,7 @@ export const greekMythicMinions: CardData[] = [
 	},
 	{
 		id: 32202,
-		name: 'Typhon, Father of Monsters',
+		name: 'Father of Monsters',
 		manaCost: 10,
 		attack: 6,
 		health: 10,
@@ -91,7 +91,7 @@ export const greekMythicMinions: CardData[] = [
 	},
 	{
 		id: 32206,
-		name: 'Medusa, Gorgon Queen',
+		name: 'Gaze of the Gorgon',
 		manaCost: 6,
 		attack: 4,
 		health: 4,
@@ -174,7 +174,7 @@ export const greekMythicMinions: CardData[] = [
 	},
 	{
 		id: 32211,
-		name: 'Scylla, Terror of the Strait',
+		name: 'Strait-Terror of the Deep',
 		manaCost: 8,
 		attack: 5,
 		health: 7,
@@ -190,7 +190,7 @@ export const greekMythicMinions: CardData[] = [
 	},
 	{
 		id: 32212,
-		name: 'Pegasus, Winged Divine',
+		name: 'Divine Winged Steed',
 		manaCost: 4,
 		attack: 4,
 		health: 3,

@@ -262,7 +262,7 @@ export const additionalLegendaryCards: CardData[] = [
   },
 {
     id: 96013,
-    name: "Odin's Apprentice",
+    name: "Allfather's Projection's Apprentice",
     manaCost: 2,
     attack: 2,
     health: 2,

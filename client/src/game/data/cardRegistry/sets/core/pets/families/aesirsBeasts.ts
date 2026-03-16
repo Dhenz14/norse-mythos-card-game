@@ -81,7 +81,7 @@ export const aesirsBeastsPets: CardData[] = [
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
 		id: 50203,
-		name: 'Gullinbursti, the Golden Boar',
+		name: 'Ascended War-Boar',
 		manaCost: 0,
 		attack: 4,
 		health: 4,

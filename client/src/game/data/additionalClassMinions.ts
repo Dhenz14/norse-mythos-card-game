@@ -475,7 +475,7 @@ export const additionalClassMinions: CardData[] = [
   },
   {
     id: 40012,
-    name: "Hel's Shadow Priest",
+    name: "Helheim Dreadknight's Shadow Priest",
       manaCost: 6,
 
       attack: 4,

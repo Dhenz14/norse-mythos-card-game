@@ -3247,7 +3247,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Huginn, Raven of Thought
+  // Thought-Raven of Odin
   {
     id: 4407,
     name: "Huginn, Raven of Thought",
@@ -3280,7 +3280,7 @@ export const norseMythologyCards: CardData[] = [
     collectible: true
   },
 
-  // Muninn, Raven of Memory
+  // Memory-Raven of Odin
   {
     id: 4408,
     name: "Muninn, Raven of Memory",

@@ -673,7 +673,7 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 7021,
-    name: 'Gullinbursti, Golden Boar',
+    name: 'Golden Charge-Boar',
       description: 'Your Beasts have Charge.',
 
       flavorText: 'Freyr\'s golden boar could run faster than any horse.',

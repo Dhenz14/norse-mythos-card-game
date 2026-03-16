@@ -219,7 +219,7 @@ export const heroSuperMinions: CardData[] = [
   
   {
     id: 95001,
-    name: "Huginn & Muninn, the All-Seeing",
+    name: "All-Seeing Ravens",
     manaCost: 10,
     attack: 8,
     health: 8,
@@ -477,7 +477,7 @@ export const heroSuperMinions: CardData[] = [
   },
   {
     id: 95012,
-    name: "Hati, Moonbane",
+    name: "Moonbane Wolf",
     manaCost: 10,
     attack: 8,
     health: 8,
@@ -525,7 +525,7 @@ export const heroSuperMinions: CardData[] = [
   },
   {
     id: 95014,
-    name: "Cerberus, Guardian of the Dead",
+    name: "Guardian of the Dead Gate",
     manaCost: 11,
     attack: 9,
     health: 9,
@@ -629,7 +629,7 @@ export const heroSuperMinions: CardData[] = [
   
   {
     id: 95018,
-    name: "Skoll, the Sun-Devourer",
+    name: "Sun-Devourer Wolf",
     manaCost: 10,
     attack: 9,
     health: 8,
@@ -1105,7 +1105,7 @@ export const heroSuperMinions: CardData[] = [
   },
   {
     id: 95036,
-    name: "Gullinbursti, the Golden Boar",
+    name: "Golden War-Boar of Freyr",
     manaCost: 10,
     attack: 8,
     health: 8,
@@ -1525,7 +1525,7 @@ export const heroSuperMinions: CardData[] = [
   
   {
     id: 95053,
-    name: "Fenrir, the Unbound Wolf",
+    name: "Unbound Wolf of Ragnarok",
     manaCost: 12,
     attack: 10,
     health: 10,

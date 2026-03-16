@@ -100,7 +100,7 @@ const norseGods: CardData[] = [
   },
   {
     id: 4382,
-    name: "Ran, Goddess of the Sea",
+    name: "Sovereign of the Drowned",
     manaCost: 8,
     attack: 5,
     health: 8,
@@ -127,7 +127,7 @@ const norseGods: CardData[] = [
   },
   {
     id: 4384,
-    name: "Aegir, Lord of the Deep",
+    name: "Tidelord of the Abyss",
     manaCost: 7,
     attack: 6,
     health: 7,
@@ -188,7 +188,7 @@ const norseLegendaryCreatures: CardData[] = [
   },
   {
     id: 4300,
-    name: "Fenrir, the Bound Wolf",
+    name: "Gleipnir's Captive",
     manaCost: 8,
     attack: 7,
     health: 7,
@@ -253,7 +253,7 @@ const norseLegendaryCreatures: CardData[] = [
   },
   {
     id: 4302,
-    name: "Hati, the Moon-Devourer",
+    name: "Moon-Devourer Wolf",
     manaCost: 6,
     attack: 5,
     health: 5,
@@ -285,7 +285,7 @@ const norseLegendaryCreatures: CardData[] = [
   },
   {
     id: 4303,
-    name: "Nidhogg, the Root-Gnawer",
+    name: "Root-Gnawer of Yggdrasil",
     manaCost: 10,
     attack: 8,
     health: 8,
@@ -626,7 +626,7 @@ const norseLegendaryCreatures: CardData[] = [
   },
   {
     id: 4329,
-    name: "Scylla, the World-Render",
+    name: "World-Rending Terror",
     manaCost: 8,
     attack: 6,
     health: 13,
@@ -736,7 +736,7 @@ const fireElementLegendaries: CardData[] = [
   },
   {
     id: 4353,
-    name: "Gullinbursti, Golden Boar",
+    name: "Golden War-Boar",
     manaCost: 6,
     attack: 5,
     health: 5,
@@ -793,7 +793,7 @@ const fireElementLegendaries: CardData[] = [
   },
   {
     id: 4355,
-    name: "Skoll, Sun-Chaser",
+    name: "Sun-Chaser of the Eclipse",
     manaCost: 6,
     attack: 6,
     health: 4,
@@ -1054,7 +1054,7 @@ const earthElementLegendaries: CardData[] = [
 const holyElementLegendaries: CardData[] = [
   {
     id: 4390,
-    name: "Huginn, Odin's Raven of Thought",
+    name: "Thought-Raven of the Allfather's Raven of Thought",
     manaCost: 4,
     attack: 3,
     health: 3,
@@ -1083,7 +1083,7 @@ const holyElementLegendaries: CardData[] = [
   },
   {
     id: 4391,
-    name: "Muninn, Odin's Raven of Memory",
+    name: "Memory-Raven of the Allfather's Raven of Memory",
     manaCost: 4,
     attack: 3,
     health: 3,

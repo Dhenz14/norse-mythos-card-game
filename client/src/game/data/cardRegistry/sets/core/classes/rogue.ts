@@ -335,7 +335,7 @@ export const rogueCards: CardData[] = [
   },
   {
     id: 20035,
-    name: "Arachne, Spider Lord",
+    name: "Silk-Lord of Arachne",
     manaCost: 9,
     attack: 8,
     health: 4,

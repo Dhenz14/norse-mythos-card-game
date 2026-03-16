@@ -65,7 +65,7 @@ export const mageCards: CardData[] = [
   },
   {
     id: 14005,
-    name: "Prometheus the Firebringer",
+    name: "Flame-Bearer of Prometheus",
     manaCost: 7,
     attack: 5,
     health: 7,
@@ -464,7 +464,7 @@ export const mageCards: CardData[] = [
   },
   {
     id: 20117,
-    name: "Typhon, Chaos Elemental",
+    name: "Chaos-Spawn of Typhon",
     manaCost: 8,
     attack: 8,
     health: 6,
@@ -485,7 +485,7 @@ export const mageCards: CardData[] = [
   },
   {
     id: 20405,
-    name: "Prometheus, Fire Bringer",
+    name: "Ember Herald of Prometheus",
     manaCost: 6,
     attack: 4,
     health: 5,
@@ -500,7 +500,7 @@ export const mageCards: CardData[] = [
   },
   {
     id: 20808,
-    name: "Hermes, Divine Messenger",
+    name: "Swift Herald of Hermes",
     manaCost: 8,
     attack: 7,
     health: 7,
@@ -926,7 +926,7 @@ export const mageCards: CardData[] = [
   },
   {
     id: 38010,
-    name: "Hyperion, Sun Archmage",
+    name: "Sun-Archon of Hyperion",
     manaCost: 7,
     attack: 5,
     health: 5,

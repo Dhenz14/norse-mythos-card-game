@@ -321,7 +321,7 @@ export const priestCards: CardData[] = [
   },
   {
     id: 5114,
-    name: "Nidhogg the Eternal",
+    name: "Eternal Echo of Nidhogg",
     manaCost: 8,
     attack: 8,
     health: 8,
@@ -372,7 +372,7 @@ export const priestCards: CardData[] = [
   },
   {
     id: 48104,
-    name: "Nyx, Dark Inquisitor",
+    name: "Nightmother's Inquisitor",
     manaCost: 7,
     attack: 5,
     health: 7,
@@ -393,7 +393,7 @@ export const priestCards: CardData[] = [
   },
   {
     id: 5108,
-    name: "Persephone, Queen of Shades",
+    name: "Shade-Queen's Revenant",
     manaCost: 8,
     attack: 6,
     health: 8,
@@ -448,7 +448,7 @@ export const priestCards: CardData[] = [
   },
   {
     id: 20801,
-    name: "Chronos, Time Weaver",
+    name: "Loom of Chronos",
     manaCost: 7,
     attack: 6,
     health: 6,
@@ -827,7 +827,7 @@ export const priestCards: CardData[] = [
   },
   {
     id: 38506,
-    name: "Hel, Queen of Shadows",
+    name: "Shadow-Warden of Helheim",
     manaCost: 8,
     attack: 6,
     health: 6,

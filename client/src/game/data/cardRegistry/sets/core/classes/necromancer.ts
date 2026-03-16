@@ -713,7 +713,7 @@ export const necromancerCards: CardData[] = [
   },
   {
     id: 36112,
-    name: "Nidhogg, the Corpse-Eater",
+    name: "Corpse-Glutton of Nidhogg",
     manaCost: 9,
     attack: 8,
     health: 10,

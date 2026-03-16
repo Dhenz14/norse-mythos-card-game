@@ -12,7 +12,7 @@ export const ragnarokChainCards: CardData[] = [
 	// === Pair 1: Fenrir & Gleipnir ===
 	{
 		id: 30401,
-		name: 'Fenrir, the Chained',
+		name: 'Gleipnir-Bound Beast',
 		manaCost: 5,
 		description: 'Chain: When Gleipnir dies, gain +5/+5 and Rush.',
 		flavorText: 'The great wolf strains against his bonds, waiting for the moment of release.',
@@ -50,7 +50,7 @@ export const ragnarokChainCards: CardData[] = [
 	// === Pair 2: Skoll & Hati ===
 	{
 		id: 30403,
-		name: 'Skoll, Sun Chaser',
+		name: 'Sun-Chaser Wolf',
 		manaCost: 4,
 		description: 'Chain: When Hati dies, gain +3/+3 and Windfury.',
 		flavorText: 'One wolf chases the moon, the other the sun. Together, they end the world.',
@@ -69,7 +69,7 @@ export const ragnarokChainCards: CardData[] = [
 	},
 	{
 		id: 30404,
-		name: 'Hati, Moon Chaser',
+		name: 'Moon-Chaser Wolf',
 		manaCost: 4,
 		description: 'Chain: When Skoll dies, gain +3/+3 and Windfury.',
 		flavorText: 'The sun flees. The wolf gains. At Ragnarok, the chase ends.',
@@ -134,7 +134,7 @@ export const ragnarokChainCards: CardData[] = [
 	// === Pair 4: Nidhogg & Ratatoskr ===
 	{
 		id: 30407,
-		name: 'Nidhogg, Root Gnawer',
+		name: 'Root-Gnawer Drake',
 		manaCost: 6,
 		description: 'Chain: While Ratatoskr is in play, gain +3 Attack. Deathrattle: Transform Ratatoskr into a 6/6.',
 		flavorText: 'The serpent gnaws the roots of Yggdrasil, hastening the end of all things.',

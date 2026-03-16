@@ -107,7 +107,7 @@ export const berserkerCards: CardData[] = [
   },
   {
     id: 9112,
-    name: "Prometheus the Outcast",
+    name: "Titan-Branded Outcast",
     manaCost: 4,
     attack: 4,
     health: 3,
@@ -511,7 +511,7 @@ export const berserkerCards: CardData[] = [
   },
   {
     id: 31510,
-    name: "Hati, Shadow-Chaser",
+    name: "Shadow-Chaser of Hati",
     manaCost: 4,
     attack: 4,
     health: 4,
@@ -543,7 +543,7 @@ export const berserkerCards: CardData[] = [
   },
   {
     id: 31512,
-    name: "Vidar, the Silent God",
+    name: "Silent Blade of Vidar",
     manaCost: 7,
     attack: 7,
     health: 5,
@@ -585,7 +585,7 @@ export const berserkerCards: CardData[] = [
   },
   {
     id: 36202,
-    name: "Surtr, Lord of Muspelheim",
+    name: "Muspelheim Overlord",
     manaCost: 10,
     attack: 10,
     health: 10,

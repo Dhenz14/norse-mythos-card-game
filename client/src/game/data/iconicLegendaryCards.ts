@@ -84,7 +84,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 95104,
 
-      name: "Dionysus the Showman",
+      name: "Reveler of the Wine-God",
       manaCost: 4,
 
       attack: 3,
@@ -327,7 +327,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 95114,
 
-      name: "Typhon, Dragon Lord",
+      name: "Dragon-Lord of Chaos",
       manaCost: 9,
 
       attack: 8,
@@ -361,7 +361,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 95115,
 
-      name: "Skoll, Frost Wyrm",
+      name: "Frost-Wyrm of the Eclipse",
       manaCost: 7,
 
       attack: 6,
@@ -778,7 +778,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
   id: 95131,
   
-  name: "Typhon, Storm Titan",
+  name: "Storm-Titan of Tartarus",
   manaCost: 6,
   
   attack: 7,
@@ -948,7 +948,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   {
       id: 95137,
 
-      name: "Skadi the Mighty",
+      name: "Mountain-Queen's Champion",
       manaCost: 5,
 
       attack: 5,

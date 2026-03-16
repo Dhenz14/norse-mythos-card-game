@@ -241,7 +241,7 @@ export const druidCards: CardData[] = [
   },
   {
     id: 20703,
-    name: "Arachne, Taunt Weaver",
+    name: "Web-Mother of Arachne",
     manaCost: 9,
     attack: 3,
     health: 7,
@@ -262,7 +262,7 @@ export const druidCards: CardData[] = [
   },
   {
     id: 20809,
-    name: "Idunn, Grove Mother",
+    name: "Heartwood of Idunn",
     manaCost: 9,
     attack: 5,
     health: 5,

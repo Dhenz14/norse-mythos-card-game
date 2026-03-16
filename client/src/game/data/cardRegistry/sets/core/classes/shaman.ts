@@ -351,7 +351,7 @@ export const shamanCards: CardData[] = [
   },
   {
     id: 20102,
-    name: "Jormungandr, Echo Serpent",
+    name: "Echo of the World Serpent",
     manaCost: 9,
     attack: 6,
     health: 6,

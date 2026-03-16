@@ -900,7 +900,7 @@ export const deathknightCards: CardData[] = [
   },
   {
     id: 38110,
-    name: "Nidhogg, Corpse Eater",
+    name: "Root-Gnawer's Maw",
     manaCost: 8,
     attack: 5,
     health: 7,

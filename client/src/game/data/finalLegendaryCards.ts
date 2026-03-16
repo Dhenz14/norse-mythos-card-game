@@ -11,13 +11,13 @@ import { CardData } from '../types';
 export const finalLegendaryCards: CardData[] = [
   {
     id: 95301,
-    name: "Fenrir, the Unchained",
+    name: "Unchained Maw",
     manaCost: 9,
     attack: 8,
     health: 8,
     type: "minion",
     rarity: 'epic',
-    description: "Battlecry: Destroy all enemy minions with 5 or less Attack. Deathrattle: If destroyed by a spell or Hero Power, summon a 12/12 Fenrir, the Worldbreaker.",
+    description: "Battlecry: Destroy all enemy minions with 5 or less Attack. Deathrattle: If destroyed by a spell or Hero Power, summon a 12/12 Worldbreaker Wolf.",
     flavorText: "Bound by chains of fate, his howl heralds the end of all things.",
     keywords: ["battlecry", "deathrattle"],
     heroClass: "neutral", 
@@ -77,7 +77,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 95304,
-    name: "Fenrir, Soul Flayer",
+    name: "Soul-Flayer of the Pack",
     manaCost: 10,
     attack: 9,
     health: 6,
@@ -198,7 +198,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 95310,
-    name: "Ares, the Impaler",
+    name: "Impaler of Olympus",
     manaCost: 4,
     attack: 4,
     health: 4,
@@ -264,7 +264,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 95313,
-    name: "Ares, Blood Sworn",
+    name: "Blood-Sworn Warlord",
     manaCost: 2,
     attack: 2,
     health: 2,
@@ -286,7 +286,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 95314,
-    name: "Bragi, Battle Conductor",
+    name: "Battle-Conductor of the Skalds",
     manaCost: 5,
     attack: 5,
     health: 5,
@@ -302,7 +302,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 95315,
-    name: "Hel, the Accused",
+    name: "Accused Shade of Helheim",
     manaCost: 5,
     attack: 5,
     health: 5,
@@ -326,7 +326,7 @@ export const finalLegendaryCards: CardData[] = [
   },
   {
     id: 95316,
-    name: "Sleipnir, the Immortal",
+    name: "Immortal Eight-Legged Steed",
     manaCost: 7,
     attack: 7,
     health: 7,

@@ -284,7 +284,7 @@ export const paladinCards: CardData[] = [
   },
   {
     id: 20018,
-    name: "Baldur the Radiant",
+    name: "Radiant Paragon of Baldur",
     manaCost: 8,
     attack: 6,
     health: 8,
@@ -324,7 +324,7 @@ export const paladinCards: CardData[] = [
   },
   {
     id: 20404,
-    name: "Pegasus, the Immortal",
+    name: "Undying Steed of Pegasus",
     manaCost: 7,
     attack: 7,
     health: 7,

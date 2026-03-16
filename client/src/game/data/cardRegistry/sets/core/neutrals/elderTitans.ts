@@ -19,7 +19,7 @@ import { CardData } from '../../../../../types';
 export const elderTitanCards: CardData[] = [
   {
     id: 60001,
-    name: "Gullveig, the Thrice-Burned",
+    name: "Thrice-Burned Elder",
     manaCost: 10,
     attack: 6,
     health: 6,

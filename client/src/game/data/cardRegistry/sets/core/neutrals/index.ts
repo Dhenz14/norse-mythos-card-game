@@ -3061,7 +3061,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20107,
-    name: 'Skoll and Hati',
+    name: 'Twin Wolves of Twilight',
     manaCost: 6,
     attack: 4,
     health: 4,
@@ -3126,7 +3126,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20110,
-    name: 'Mimir, Wisdom Keeper',
+    name: 'Keeper of the Wisdom Well',
     manaCost: 3,
     attack: 2,
     health: 4,
@@ -3191,7 +3191,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20113,
-    name: 'Baldr, Invulnerable',
+    name: 'Light-Warded Champion',
     manaCost: 5,
     attack: 4,
     health: 5,
@@ -3207,7 +3207,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20114,
-    name: 'Surtr, Fire Giant',
+    name: 'Flame Colossus of Muspel',
     manaCost: 8,
     attack: 8,
     health: 8,
@@ -3313,7 +3313,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20200,
-    name: 'Cerberus, Hell Hound',
+    name: 'Hell-Hound of the Gate',
     manaCost: 6,
     attack: 4,
     health: 5,
@@ -3351,7 +3351,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20202,
-    name: 'Medusa, Gorgon Queen',
+    name: 'Gorgon Sovereign',
     manaCost: 5,
     attack: 3,
     health: 5,
@@ -3445,7 +3445,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 20207,
-    name: 'Scylla and Charybdis',
+    name: 'Twin Terrors of the Strait',
     manaCost: 8,
     attack: 5,
     health: 5,
@@ -5025,7 +5025,7 @@ const legendaryNeutralMinions: CardData[] = [
   // Hyrrokkin (60101) and Utgarda-Loki (60102) in oldGods.ts
   {
     id: 91103,
-    name: "Surtr, Rage Unbound",
+    name: "Unbound Rage of Muspel",
     manaCost: 10,
     attack: 10,
     health: 10,
@@ -5083,7 +5083,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 90203,
-    name: "Scylla, Terror of Depths",
+    name: "Depth-Terror of the Strait",
     manaCost: 7,
     attack: 5,
     health: 8,
@@ -6011,7 +6011,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 33032,
-    name: 'Arachne the Weaver',
+    name: 'Silk-Weaver of the Dark',
     manaCost: 6,
     attack: 2,
     health: 8,
@@ -6222,7 +6222,7 @@ const legendaryNeutralMinions: CardData[] = [
   },
   {
     id: 33045,
-    name: 'Skoll the Dawn Wolf',
+    name: 'Dawn-Wolf Alpha',
     manaCost: 1,
     attack: 1,
     health: 1,
@@ -6766,7 +6766,7 @@ const mythologyLegendaryMinions: CardData[] = [
   },
   {
     id: 32062,
-    name: 'Nidhogg the World-Ender',
+    name: 'World-Ender Wyrm',
     manaCost: 10,
     attack: 12,
     health: 12,
@@ -6787,7 +6787,7 @@ const mythologyLegendaryMinions: CardData[] = [
   },
   {
     id: 32063,
-    name: 'Chronos the Time Dragon',
+    name: 'Time-Wyrm of the Void',
     manaCost: 9,
     attack: 8,
     health: 8,
@@ -9590,7 +9590,7 @@ const cheatRecruitRampCards: CardData[] = [
   },
   {
     id: 33266,
-    name: 'Aviana, Goddess of Birds',
+    name: 'Feathered Sovereign of the Skies',
     description: 'Your minions cost (1).',
     flavorText: 'The winged goddess lifts the burden of mana from her faithful.',
     type: 'minion',
@@ -9605,7 +9605,7 @@ const cheatRecruitRampCards: CardData[] = [
   },
   {
     id: 33267,
-    name: 'Chronos the Forgotten',
+    name: 'Forgotten Time-Walker',
     description: 'Choose One - Gain 10 Armor; or Refresh your Mana Crystals.',
     flavorText: 'Forgotten by the realms, but his power endures through the ages.',
     type: 'minion',
@@ -9926,7 +9926,7 @@ const synergyPackageCards: CardData[] = [
   // === HANDBUFF/HAND SYNERGY (8 cards) ===
   {
     id: 33283,
-    name: "Sigurd the Kingpin",
+    name: "Dragonslayer Kingpin",
     description: 'Battlecry: Give a random minion in your hand +5/+5.',
     flavorText: 'The crime lords of the nine realms share their power generously.',
     type: 'minion',

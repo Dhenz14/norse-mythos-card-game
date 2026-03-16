@@ -81,7 +81,7 @@ export const doomHeraldsPets: CardData[] = [
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
 		id: 50223,
-		name: 'Hati, the Moon-Devourer',
+		name: 'Ascended Moon-Devourer',
 		manaCost: 0,
 		attack: 4,
 		health: 4,

@@ -891,7 +891,7 @@ export const hunterCards: CardData[] = [
   },
   {
     id: 38608,
-    name: "Fenrir, Alpha Predator",
+    name: "Alpha of the Wolf-God",
     manaCost: 7,
     attack: 5,
     health: 5,

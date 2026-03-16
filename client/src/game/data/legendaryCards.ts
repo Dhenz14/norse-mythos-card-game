@@ -7,7 +7,7 @@ import { CardData } from '../types';
 export const legendaryCards: CardData[] = [
   {
     id: 20003,
-    name: "Prometheus Unbound",
+    name: "Unbound Flame of Olympus",
     manaCost: 7,
     attack: 7,
     health: 5,
@@ -170,7 +170,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20015,
-    name: "Surtr, Flame Eternal",
+    name: "Eternal Flame of Muspel",
     manaCost: 7,
     attack: 4,
     health: 7,
@@ -260,7 +260,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20021,
-    name: "Ran, Queen of the Deep",
+    name: "Drowned Sovereign",
     manaCost: 5,
     attack: 5,
     health: 5,
@@ -302,7 +302,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20023,
-    name: "Sigyn, the Faithful",
+    name: "Faithful Keeper of Loki",
     manaCost: 7,
     attack: 4,
     health: 6,
@@ -322,7 +322,7 @@ export const legendaryCards: CardData[] = [
   },
   {
     id: 20024,
-    name: "Hermes the Perfect",
+    name: "Perfect Envoy of Olympus",
     manaCost: 2,
     attack: 3,
     health: 2,

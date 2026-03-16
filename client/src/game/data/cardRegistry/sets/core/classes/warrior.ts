@@ -362,7 +362,7 @@ export const warriorCards: CardData[] = [
   },
   {
     id: 20806,
-    name: "Ares, Relentless Warrior",
+    name: "War-Champion of Ares",
     manaCost: 5,
     attack: 4,
     health: 4,
