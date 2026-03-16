@@ -149,6 +149,10 @@ export const serverStateAdapter: StateAdapter = {
 		return r ? recordToCommit(r) : null;
 	},
 	async putPackCommit(c) { csSetPackCommit(c.trxId, commitToRecord(c)); },
+	async getUnrevealedCommitsBefore(deadlineBlock: number) {
+		const { getUnrevealedCommitsBefore: csGetUnrevealed } = await import('./chainState');
+		return csGetUnrevealed(deadlineBlock).map(recordToCommit);
+	},
 
 	async hasRewardClaim(account, rewardId) { return csHasRewardClaim(`${account}:${rewardId}`); },
 	async putRewardClaim(account, rewardId) { csAddRewardClaim(`${account}:${rewardId}`); },

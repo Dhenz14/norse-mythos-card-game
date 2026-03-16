@@ -7,7 +7,7 @@
 
 export { normalizeRawOp } from './normalize';
 export type { NormalizeResult } from './normalize';
-export { applyOp } from './apply';
+export { applyOp, autoFinalizeExpiredCommits } from './apply';
 export type { ProtocolCoreDeps } from './apply';
 export { canonicalStringify, sha256Hash } from './hash';
 export { verifyPoW, deriveChallenge, POW_CONFIG } from './pow';

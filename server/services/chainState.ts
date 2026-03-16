@@ -478,6 +478,9 @@ export function setMatchAnchor(matchId: string, a: MatchAnchorStateRecord): void
 
 export function getPackCommit(trxId: string): PackCommitStateRecord | undefined { return packCommits.get(trxId); }
 export function setPackCommit(trxId: string, c: PackCommitStateRecord): void { packCommits.set(trxId, c); markDirty(); }
+export function getUnrevealedCommitsBefore(deadlineBlock: number): PackCommitStateRecord[] {
+	return [...packCommits.values()].filter(c => !c.revealed && c.commitBlock + 200 <= deadlineBlock);
+}
 
 export function hasRewardClaim(key: string): boolean { return rewardClaims.has(key); }
 export function addRewardClaim(key: string): void { rewardClaims.add(key); markDirty(); }

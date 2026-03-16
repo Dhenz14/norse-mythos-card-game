@@ -62,6 +62,9 @@ class MemoryState implements StateAdapter {
 	async putMatchAnchor(a: MatchAnchorRecord) { this.anchors.set(a.matchId, a); }
 	async getPackCommit(trxId: string) { return this.commits.get(trxId) ?? null; }
 	async putPackCommit(c: PackCommitRecord) { this.commits.set(c.trxId, c); }
+	async getUnrevealedCommitsBefore(deadlineBlock: number) {
+		return [...this.commits.values()].filter(c => !c.revealed && c.commitBlock + 200 <= deadlineBlock);
+	}
 	async hasRewardClaim(account: string, rewardId: string) { return this.rewards.has(`${account}:${rewardId}`); }
 	async putRewardClaim(account: string, rewardId: string) { this.rewards.add(`${account}:${rewardId}`); }
 	async isSlashed(account: string) { return this.slashed.has(account); }
@@ -582,5 +585,154 @@ describe('Protocol Core: Replay Traces', () => {
 
 		// The apply.ts code now requires: if sealed AND no anchor with pubkeys → reject
 		// This is the spec invariant: post-seal ranked matches require match_anchor
+	});
+
+	// --- Pack commit-reveal flow ---
+
+	it('pack_commit → pack_reveal happy path mints cards', async () => {
+		await seedGenesis(state, deps);
+		// Seal so we're in v1 mode
+		await applyOp(makeOp('seal', {}, { broadcaster: 'ragnarok', usedActiveAuth: true, blockNum: 900 }), defaultCtx, deps);
+
+		const userSalt = 'mysecretvalue123';
+		const { sha256Hash: hash } = await import('./hash');
+		const saltCommit = await hash(userSalt);
+
+		// Commit
+		const commitResult = await applyOp(makeOp('pack_commit', {
+			pack_type: 'standard', quantity: 1, salt_commit: saltCommit,
+		}, { trxId: 'commit-tx-100', blockNum: 5000 }), defaultCtx, deps);
+		expect(commitResult.status).toBe('applied');
+
+		// Reveal
+		const revealResult = await applyOp(makeOp('pack_reveal', {
+			commit_trx_id: 'commit-tx-100', user_salt: userSalt,
+		}, { trxId: 'reveal-tx-100', blockNum: 5010 }), defaultCtx, deps);
+		expect(revealResult.status).toBe('applied');
+
+		// Cards were minted
+		const aliceCards = await deps.state.getCardsByOwner('alice');
+		expect(aliceCards.length).toBeGreaterThan(0);
+		expect(aliceCards[0].mintSource).toBe('pack');
+	});
+
+	it('pack_reveal rejected with wrong salt', async () => {
+		await seedGenesis(state, deps);
+		const { sha256Hash: hash } = await import('./hash');
+		const saltCommit = await hash('real-salt');
+
+		await applyOp(makeOp('pack_commit', {
+			pack_type: 'standard', quantity: 1, salt_commit: saltCommit,
+		}, { trxId: 'commit-tx-200', blockNum: 5000 }), defaultCtx, deps);
+
+		const result = await applyOp(makeOp('pack_reveal', {
+			commit_trx_id: 'commit-tx-200', user_salt: 'wrong-salt',
+		}, { trxId: 'reveal-tx-200', blockNum: 5010 }), defaultCtx, deps);
+
+		expect(result.status).toBe('rejected');
+		expect((result as { reason: string }).reason).toContain('salt');
+	});
+
+	it('pack_reveal rejected when entropy block not yet irreversible', async () => {
+		await seedGenesis(state, deps);
+		const { sha256Hash: hash } = await import('./hash');
+		const userSalt = 'test-salt';
+		const saltCommit = await hash(userSalt);
+
+		// Commit at block 5000 → entropy block = 5003
+		await applyOp(makeOp('pack_commit', {
+			pack_type: 'standard', quantity: 1, salt_commit: saltCommit,
+		}, { trxId: 'commit-tx-300', blockNum: 5000 }), defaultCtx, deps);
+
+		// LIB is 5002 — the reveal op (block 5001) is within LIB,
+		// but entropy block 5003 > LIB 5002, so entropy is not yet irreversible
+		const restrictedCtx: ReplayContext = {
+			lastIrreversibleBlock: 5002,
+			getBlockId: async () => 'deadbeef'.repeat(5),
+		};
+
+		const result = await applyOp(makeOp('pack_reveal', {
+			commit_trx_id: 'commit-tx-300', user_salt: userSalt,
+		}, { trxId: 'reveal-tx-300', blockNum: 5001 }), restrictedCtx, deps);
+
+		expect(result.status).toBe('rejected');
+		expect((result as { reason: string }).reason).toContain('entropy');
+	});
+
+	it('duplicate pack_reveal is idempotent', async () => {
+		await seedGenesis(state, deps);
+		const { sha256Hash: hash } = await import('./hash');
+		const userSalt = 'dup-test';
+		const saltCommit = await hash(userSalt);
+
+		await applyOp(makeOp('pack_commit', {
+			pack_type: 'standard', quantity: 1, salt_commit: saltCommit,
+		}, { trxId: 'commit-tx-400', blockNum: 5000 }), defaultCtx, deps);
+
+		// First reveal
+		await applyOp(makeOp('pack_reveal', {
+			commit_trx_id: 'commit-tx-400', user_salt: userSalt,
+		}, { trxId: 'reveal-tx-400', blockNum: 5010 }), defaultCtx, deps);
+
+		const cardsAfterFirst = (await deps.state.getCardsByOwner('alice')).length;
+
+		// Second reveal — should be ignored
+		const result = await applyOp(makeOp('pack_reveal', {
+			commit_trx_id: 'commit-tx-400', user_salt: userSalt,
+		}, { trxId: 'reveal-tx-400b', blockNum: 5020 }), defaultCtx, deps);
+
+		expect(result.status).toBe('ignored');
+		expect((await deps.state.getCardsByOwner('alice')).length).toBe(cardsAfterFirst);
+	});
+
+	it('auto-finalize mints cards for expired unrevealed commits', async () => {
+		await seedGenesis(state, deps);
+		const { autoFinalizeExpiredCommits } = await import('./apply');
+		const { sha256Hash: hash } = await import('./hash');
+
+		// Create a commit that will expire (never revealed)
+		await applyOp(makeOp('pack_commit', {
+			pack_type: 'standard', quantity: 1,
+			salt_commit: await hash('some-salt'),
+		}, { trxId: 'commit-tx-500', blockNum: 1000 }), defaultCtx, deps);
+
+		// Verify commit exists and is unrevealed
+		const commit = await deps.state.getPackCommit('commit-tx-500');
+		expect(commit).not.toBeNull();
+		expect(commit!.revealed).toBe(false);
+
+		// No cards yet
+		expect((await deps.state.getCardsByOwner('alice')).length).toBe(0);
+
+		// Auto-finalize at block 1201 (deadline = 1000 + 200 = 1200, so 1201 > deadline)
+		const finalized = await autoFinalizeExpiredCommits(1201, defaultCtx, deps);
+		expect(finalized).toBe(1);
+
+		// Commit is now marked revealed
+		const updated = await deps.state.getPackCommit('commit-tx-500');
+		expect(updated!.revealed).toBe(true);
+
+		// Cards were minted with forfeit seed
+		const cards = await deps.state.getCardsByOwner('alice');
+		expect(cards.length).toBeGreaterThan(0);
+	});
+
+	it('legacy pack_open still works pre-seal but not post-seal', async () => {
+		await seedGenesis(state, deps);
+
+		// Pre-seal: legacy works
+		const r1 = await applyOp(makeOp('legacy_pack_open', {
+			pack_type: 'standard', quantity: 1,
+		}, { trxId: 'legacy-tx-1', blockNum: 500 }), defaultCtx, deps);
+		expect(r1.status).toBe('applied');
+
+		// Seal
+		await applyOp(makeOp('seal', {}, { broadcaster: 'ragnarok', usedActiveAuth: true, blockNum: 900 }), defaultCtx, deps);
+
+		// Post-seal: legacy rejected
+		const r2 = await applyOp(makeOp('legacy_pack_open', {
+			pack_type: 'standard', quantity: 1,
+		}, { trxId: 'legacy-tx-2', blockNum: 1000 }), defaultCtx, deps);
+		expect(r2.status).toBe('rejected');
 	});
 });

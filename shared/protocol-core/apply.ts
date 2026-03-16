@@ -721,10 +721,135 @@ async function applyPackReveal(
 	// Mark revealed
 	await deps.state.putPackCommit({ ...commit, revealed: true });
 
-	// TODO: deterministic card draw from seed against pack_supply
-	// (will be implemented when wiring to actual card drawing logic)
+	// Deterministic card draw from seed against pack_supply
+	await drawPackCards(seed, commit.packType, commit.quantity, commit.account, op.trxId, op.blockNum, deps);
 
 	return { status: 'applied' };
+}
+
+// ============================================================
+// Shared pack card draw (used by reveal + auto-finalize)
+// ============================================================
+
+const PACK_SIZES: Record<string, number> = { starter: 5, booster: 5, standard: 5, premium: 7, mythic: 7, mega: 15 };
+
+const PACK_ID_RANGES: Record<string, [number, number][]> = {
+	starter:  [[1000, 3999], [20000, 29999]],
+	booster:  [[1000, 3999], [20000, 31999]],
+	standard: [[1000, 8999], [20000, 31999]],
+	premium:  [[1000, 8999], [20000, 40999], [50000, 50999]],
+	mythic:   [[20000, 29999], [30001, 31999], [95001, 96999]],
+	class:    [[4000, 8999], [35001, 40999]],
+	mega:     [[1000, 8999], [20000, 40999], [50000, 50999], [85001, 86999]],
+	norse:    [[20000, 29999], [30001, 31999]],
+};
+
+async function drawPackCards(
+	seedHex: string,
+	packType: string,
+	quantity: number,
+	owner: string,
+	trxId: string,
+	blockNum: number,
+	deps: ProtocolCoreDeps,
+): Promise<number> {
+	const ranges = PACK_ID_RANGES[packType] ?? PACK_ID_RANGES.standard;
+	const mintableIds = deps.cards.getCollectibleIdsInRanges(ranges);
+	if (mintableIds.length === 0) return 0;
+
+	const cardCount = (PACK_SIZES[packType] ?? 5) * quantity;
+
+	// Use first 8 chars of SHA-256 seed as LCG starting point
+	let s = parseInt(seedHex.slice(0, 8), 16) || 1;
+	s = Math.max(s, 1);
+
+	let minted = 0;
+	for (let i = 0; i < cardCount; i++) {
+		s = lcgNext(s);
+		const cardId = mintableIds[s % mintableIds.length];
+		const uid = `${trxId}:${i}`;
+
+		const existing = await deps.state.getCard(uid);
+		if (existing) continue;
+
+		const cardDef = deps.cards.getCardById(cardId);
+		if (!cardDef) continue;
+
+		const rarity = cardDef.rarity || 'common';
+		const supply = await deps.state.getSupply(rarity, 'pack');
+		if (supply && supply.minted >= supply.cap) continue;
+
+		await deps.state.putCard({
+			uid,
+			cardId,
+			owner,
+			rarity,
+			level: 1,
+			xp: 0,
+			edition: 'alpha',
+			mintSource: 'pack',
+			mintTrxId: trxId,
+			mintBlockNum: blockNum,
+			lastTransferBlock: blockNum,
+		});
+
+		if (supply) {
+			await deps.state.putSupply({ ...supply, minted: supply.minted + 1 });
+		}
+		minted++;
+	}
+
+	return minted;
+}
+
+// ============================================================
+// Auto-finalize expired pack commits
+//
+// Called by the block scanner after each block. Checks for any
+// unrevealed commits whose deadline has passed and finalizes
+// them with the deterministic forfeit seed.
+//
+// Spec formula: seed = sha256(commit_trx_id + entropy_block_id + "forfeit")
+// ============================================================
+
+export async function autoFinalizeExpiredCommits(
+	currentBlock: number,
+	ctx: ReplayContext,
+	deps: ProtocolCoreDeps,
+): Promise<number> {
+	// Only finalize commits whose deadline block <= currentBlock AND currentBlock <= LIB
+	if (currentBlock > ctx.lastIrreversibleBlock) return 0;
+
+	const expired = await deps.state.getUnrevealedCommitsBefore(currentBlock);
+	let finalized = 0;
+
+	for (const commit of expired) {
+		const deadline = commit.commitBlock + 200;
+		if (currentBlock < deadline) continue; // not yet expired
+
+		const entropyBlock = commit.commitBlock + 3;
+		if (entropyBlock > ctx.lastIrreversibleBlock) continue; // entropy not yet irreversible
+
+		const entropyBlockId = await ctx.getBlockId(entropyBlock);
+		if (!entropyBlockId) continue; // RPC unavailable — retry later
+
+		// Forfeit seed: no user salt (they never revealed it)
+		const forfeitSeed = await sha256Hash(`${commit.trxId}${entropyBlockId}forfeit`);
+
+		// Mark as revealed (auto-finalized)
+		await deps.state.putPackCommit({ ...commit, revealed: true });
+
+		// Draw cards with forfeit seed
+		await drawPackCards(
+			forfeitSeed, commit.packType, commit.quantity,
+			commit.account, `${commit.trxId}:forfeit`, commit.commitBlock,
+			deps,
+		);
+
+		finalized++;
+	}
+
+	return finalized;
 }
 
 // ============================================================
@@ -751,20 +876,8 @@ async function applyLegacyPackOpen(op: ProtocolOp, deps: ProtocolCoreDeps): Prom
 	const seed = parseInt(seedHex || 'a7f3', 16);
 
 	const packType = (op.payload.pack_type as string) ?? 'standard';
-	const PACK_SIZES: Record<string, number> = { starter: 5, booster: 5, standard: 5, premium: 7, mythic: 7, mega: 15 };
 	const quantity = Math.min(Number(op.payload.quantity ?? 1), 10);
 	const cardCount = (PACK_SIZES[packType] ?? 5) * quantity;
-
-	const PACK_ID_RANGES: Record<string, [number, number][]> = {
-		starter:  [[1000, 3999], [20000, 29999]],
-		booster:  [[1000, 3999], [20000, 31999]],
-		standard: [[1000, 8999], [20000, 31999]],
-		premium:  [[1000, 8999], [20000, 40999], [50000, 50999]],
-		mythic:   [[20000, 29999], [30001, 31999], [95001, 96999]],
-		class:    [[4000, 8999], [35001, 40999]],
-		mega:     [[1000, 8999], [20000, 40999], [50000, 50999], [85001, 86999]],
-		norse:    [[20000, 29999], [30001, 31999]],
-	};
 
 	const ranges = PACK_ID_RANGES[packType] ?? PACK_ID_RANGES.standard;
 	const mintableIds = deps.cards.getCollectibleIdsInRanges(ranges);

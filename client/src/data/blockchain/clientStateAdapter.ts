@@ -132,9 +132,10 @@ export const clientStateAdapter: StateAdapter = {
 		});
 	},
 
-	// Pack commits (v1 new flow — not yet used pre-PR4, but wired for parity)
+	// Pack commits (v1 new flow)
 	async getPackCommit() { return null; },
-	async putPackCommit() { /* no-op until PR 4 adds IDB store */ },
+	async putPackCommit() { /* client fast-mode delegates pack state to server */ },
+	async getUnrevealedCommitsBefore() { return []; /* auto-finalize runs on server only */ },
 
 	async hasRewardClaim(account, rewardId) {
 		const r = await getRewardClaim(account, rewardId);

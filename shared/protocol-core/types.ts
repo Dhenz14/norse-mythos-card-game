@@ -220,6 +220,7 @@ export interface StateAdapter {
 	// Pack commits (v1 new flow)
 	getPackCommit(trxId: string): Promise<PackCommitRecord | null>;
 	putPackCommit(commit: PackCommitRecord): Promise<void>;
+	getUnrevealedCommitsBefore(deadlineBlock: number): Promise<PackCommitRecord[]>;
 
 	// Reward claims
 	hasRewardClaim(account: string, rewardId: string): Promise<boolean>;
