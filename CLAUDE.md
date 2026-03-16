@@ -1367,6 +1367,19 @@ vercel --prod                 # Deploy to Vercel
 - **P2PContext**: eliminated double-useMemo wrapper (11 deps, always invalidated) — now uses mutable ref, context identity never changes
 - TypeScript: 0 errors, 95/95 tests pass, production build clean
 
+### Completed (Protocol v1.0 — 5 Launch Gates)
+
+- **Spec frozen**: `docs/RAGNAROK_PROTOCOL_V1.md` — 14 canonical ops, authority matrix, finality rules
+- **Conformance suite**: 37 golden vectors + 38 replay traces (170 total tests)
+- **Gate 1**: Shared `protocol-core` module — one replay engine, client + server both call it
+- **Gate 2**: Server indexer rewritten to `get_ops_in_block` + LIB cursor (block-complete, crash-safe)
+- **Gate 3**: Pack commit-reveal with delayed irreversible entropy + auto-finalize on 200-block deadline
+- **Gate 4**: `match_anchor` with pinned pubkeys — post-seal verification uses anchored keys only
+- **Gate 5**: Eitr removed from P2P trade offers and scarce card forging until replay-derived
+- Real Hive signature verification on server (hive-tx ECDSA recovery, not stubbed)
+- Legacy `rp_pack_open` valid pre-seal only; `rp_match_start` aliased to `match_anchor` indefinitely
+- Eitr dissolve remains as cosmetic display; forge button hidden; trade Eitr inputs removed
+
 ### Next (Genesis Launch)
 
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)

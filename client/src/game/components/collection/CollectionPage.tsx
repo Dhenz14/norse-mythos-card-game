@@ -708,7 +708,7 @@ export default function CollectionPage() {
 									{selectedCard.quantity > 1 && <span className="text-gray-500"> copies</span>}
 								</div>
 
-								{/* Eitr Forge Actions */}
+								{/* Eitr Forge Actions — forge disabled in v1 (non-canonical until replay-derived) */}
 								{(() => {
 									const eitrVal = getEitrValue(selectedCard.rarity);
 									const craftCostVal = getCraftCost(selectedCard.rarity);
@@ -816,15 +816,7 @@ export default function CollectionPage() {
 													Dissolve ({eitrVal} Eitr)
 												</button>
 											)}
-											{craftCostVal > 0 && (
-												<button
-													onClick={() => canAfford && setCraftConfirm('craft')}
-													disabled={!canAfford}
-													className="flex-1 px-3 py-2 bg-blue-900/50 hover:bg-blue-800/60 disabled:bg-gray-800/40 disabled:text-gray-600 text-blue-300 rounded-lg text-xs font-medium border border-blue-700/40 transition-colors"
-												>
-													Forge Random ({craftCostVal} Eitr)
-												</button>
-											)}
+											{/* Forge disabled in v1 — Eitr non-canonical until replay-derived */}
 										</div>
 									);
 								})()}

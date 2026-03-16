@@ -39,10 +39,7 @@ function TradeOfferCard({ offer, currentUser, onAccept, onDecline, onCancel }: {
 					{offer.offeredCardIds.length > 0 && (
 						<p className="text-xs text-gray-300">{offer.offeredCardIds.length} card(s)</p>
 					)}
-					{offer.offeredDust > 0 && (
-						<p className="text-xs text-blue-400">{offer.offeredDust} Eitr</p>
-					)}
-					{offer.offeredCardIds.length === 0 && offer.offeredDust === 0 && (
+					{offer.offeredCardIds.length === 0 && (
 						<p className="text-xs text-gray-600">Nothing</p>
 					)}
 				</div>
@@ -51,10 +48,7 @@ function TradeOfferCard({ offer, currentUser, onAccept, onDecline, onCancel }: {
 					{offer.requestedCardIds.length > 0 && (
 						<p className="text-xs text-gray-300">{offer.requestedCardIds.length} card(s)</p>
 					)}
-					{offer.requestedDust > 0 && (
-						<p className="text-xs text-blue-400">{offer.requestedDust} Eitr</p>
-					)}
-					{offer.requestedCardIds.length === 0 && offer.requestedDust === 0 && (
+					{offer.requestedCardIds.length === 0 && (
 						<p className="text-xs text-gray-600">Nothing</p>
 					)}
 				</div>
@@ -122,30 +116,7 @@ function CreateTradePanel({ onSend }: { onSend: (toUser: string) => void }) {
 				/>
 			</div>
 
-			<div className="grid grid-cols-2 gap-4 mb-4">
-				<div>
-					<label htmlFor="trade-offer-dust" className="block text-xs text-gray-500 mb-1">Offer Eitr</label>
-					<input
-						id="trade-offer-dust"
-						type="number"
-						min={0}
-						value={offeredDust}
-						onChange={e => setOfferedDust(parseInt(e.target.value) || 0)}
-						className="w-full px-3 py-2 bg-gray-800/60 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:border-amber-500/50"
-					/>
-				</div>
-				<div>
-					<label htmlFor="trade-request-dust" className="block text-xs text-gray-500 mb-1">Request Eitr</label>
-					<input
-						id="trade-request-dust"
-						type="number"
-						min={0}
-						value={requestedDust}
-						onChange={e => setRequestedDust(parseInt(e.target.value) || 0)}
-						className="w-full px-3 py-2 bg-gray-800/60 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:border-amber-500/50"
-					/>
-				</div>
-			</div>
+			{/* Eitr trading disabled in v1 — non-canonical until replay-derived (see RAGNAROK_PROTOCOL_V1.md §13) */}
 
 			{selectedOffered.length > 0 && (
 				<div className="mb-4">
