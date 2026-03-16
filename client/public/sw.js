@@ -2,13 +2,13 @@
 const CACHE_NAME = 'ragnarok-assets-v2';
 
 const ASSET_DIRS = [
-	'/art/', '/models/', '/portraits/', '/textures/', '/sounds/',
-	'/icons/', '/heroes/', '/ui/', '/geometries/', '/fonts/',
+	'/art/', '/portraits/', '/textures/', '/sounds/',
+	'/icons/', '/heroes/', '/ui/', '/fonts/',
 ];
 
 const ASSET_EXTS = [
 	'.webp', '.png', '.jpg', '.jpeg', '.gif', '.svg',
-	'.glb', '.gltf', '.mp3', '.ogg', '.wav',
+	'.mp3', '.ogg', '.wav',
 ];
 
 function getBase() {

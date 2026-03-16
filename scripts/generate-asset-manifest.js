@@ -8,7 +8,6 @@ const __dirname = path.dirname(__filename);
 
 const CACHEABLE_EXTS = new Set([
 	'.webp', '.png', '.jpg', '.jpeg', '.gif', '.svg',
-	'.glb', '.gltf',
 	'.mp3', '.ogg', '.wav',
 ]);
 
@@ -56,4 +55,5 @@ const outPath = path.join(publicDir, 'asset-manifest.json');
 fs.writeFileSync(outPath, JSON.stringify(manifest));
 
 const mb = (manifest.totalSize / (1024 * 1024)).toFixed(1);
+// eslint-disable-next-line no-undef
 console.log(`Asset manifest: ${manifest.totalFiles} files, ${mb} MB, version ${version}`);
