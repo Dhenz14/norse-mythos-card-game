@@ -12,6 +12,8 @@
 
 import gsap from 'gsap';
 import { spawnParticleBurst, spawnImpactRing, spawnEmbers, ELEMENT_PALETTES } from './PixiParticleCanvas';
+import { cleanupAllFilters } from './ShaderVFX';
+import { playComposition } from './SpellCompositions';
 
 const VFX_CONTAINER_ID = 'battlecry-vfx-layer';
 const MAX_ORPHAN_AGE_MS = 5000;
@@ -41,10 +43,7 @@ export function killAllVFX() {
 		container.innerHTML = '';
 	}
 	// Clean up GPU shader effects
-	try {
-		const { cleanupAllFilters } = require('./ShaderVFX');
-		cleanupAllFilters();
-	} catch { /* non-critical */ }
+	try { cleanupAllFilters(); } catch { /* non-critical */ }
 }
 
 // Periodic orphan sweep — removes children that have been in the container
@@ -516,7 +515,6 @@ export function playBattlecryVFX(
 	// Layer 1: AAA spell compositions (shader effects, screen tints, shockwaves)
 	// These are additive — they enhance the base VFX below, wrapped in try/catch
 	try {
-		const { playComposition } = require('./SpellCompositions');
 		switch (effectType) {
 			case 'aoe_damage': playComposition('FIRE_AOE', sourceX, sourceY); break;
 			case 'damage': playComposition('TARGETED_DAMAGE', sourceX, sourceY, targetX, targetY); break;
