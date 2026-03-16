@@ -7,6 +7,7 @@
  *
  * Uses GSAP for timeline sequencing and DOM animation,
  * Pixi particle canvas for GPU particle bursts.
+ * SpellCompositions for AAA shader + screen effects layered on top.
  */
 
 import gsap from 'gsap';
@@ -39,6 +40,11 @@ export function killAllVFX() {
 		gsap.killTweensOf(container.querySelectorAll('*'));
 		container.innerHTML = '';
 	}
+	// Clean up GPU shader effects
+	try {
+		const { cleanupAllFilters } = require('./ShaderVFX');
+		cleanupAllFilters();
+	} catch { /* non-critical */ }
 }
 
 // Periodic orphan sweep — removes children that have been in the container
@@ -499,6 +505,7 @@ export function playDeathrattleVFX(x: number, y: number) {
 }
 
 // Generic battlecry dispatcher — called from AnimationLayer
+// Layers SpellCompositions (shader + screen effects) ON TOP of existing VFX
 export function playBattlecryVFX(
 	effectType: string,
 	sourceX: number, sourceY: number,
@@ -506,6 +513,22 @@ export function playBattlecryVFX(
 	value?: number,
 	allTargets?: { x: number; y: number }[]
 ) {
+	// Layer 1: AAA spell compositions (shader effects, screen tints, shockwaves)
+	// These are additive — they enhance the base VFX below, wrapped in try/catch
+	try {
+		const { playComposition } = require('./SpellCompositions');
+		switch (effectType) {
+			case 'aoe_damage': playComposition('FIRE_AOE', sourceX, sourceY); break;
+			case 'damage': playComposition('TARGETED_DAMAGE', sourceX, sourceY, targetX, targetY); break;
+			case 'heal': playComposition('NATURE_HEAL', targetX ?? sourceX, targetY ?? sourceY); break;
+			case 'buff': case 'buff_adjacent': playComposition('BUFF_AURA', targetX ?? sourceX, targetY ?? sourceY); break;
+			case 'summon': playComposition('DIVINE_SUMMON', targetX ?? sourceX, targetY ?? sourceY); break;
+			case 'freeze': playComposition('FREEZE_SPELL', targetX ?? sourceX, targetY ?? sourceY); break;
+			case 'divine_shield': playComposition('DIVINE_SUMMON', targetX ?? sourceX, targetY ?? sourceY); break;
+		}
+	} catch { /* compositions are non-critical enhancement */ }
+
+	// Layer 2: Original VFX (GSAP DOM + Pixi particles) — unchanged
 	switch (effectType) {
 		case 'aoe_damage':
 			playAoeDamageVFX(sourceX, sourceY, allTargets || [], value || 0);

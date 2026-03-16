@@ -47,6 +47,7 @@
 
 /* Atmosphere */
 @import './norse-atmosphere.css';
+@import './spell-screen-effects.css';
 
 /* Realm Board Skins */
 @import './realm-boards.css';

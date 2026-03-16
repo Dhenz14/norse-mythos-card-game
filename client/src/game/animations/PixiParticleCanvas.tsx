@@ -30,8 +30,15 @@ let pixiApp: Application | null = null;
 let trailContainer: Container | null = null;
 let burstContainer: Container | null = null;
 let ambientContainer: Container | null = null;
+let filterContainer: Container | null = null;
+let emitterContainer: Container | null = null;
 let ambientTimers: ReturnType<typeof setTimeout>[] = [];
 let currentRealm: string | undefined;
+
+export function getPixiApp(): Application | null { return pixiApp; }
+export function getBurstContainer(): Container | null { return burstContainer; }
+export function getFilterContainer(): Container | null { return filterContainer; }
+export function getEmitterContainer(): Container | null { return emitterContainer; }
 
 interface RealmParticleConfig {
 	colors: number[];
@@ -318,8 +325,12 @@ export const PixiParticleCanvas: React.FC<{ realm?: string }> = ({ realm }) => {
 			trailContainer = new Container();
 			burstContainer = new Container();
 			ambientContainer = new Container();
+			filterContainer = new Container();
+			emitterContainer = new Container();
 			app.stage.addChild(ambientContainer);
 			app.stage.addChild(trailContainer);
+			app.stage.addChild(filterContainer);
+			app.stage.addChild(emitterContainer);
 			app.stage.addChild(burstContainer);
 		});
 
@@ -328,6 +339,8 @@ export const PixiParticleCanvas: React.FC<{ realm?: string }> = ({ realm }) => {
 			stopAmbientParticles();
 			if (ambientContainer) { ambientContainer.destroy({ children: true }); ambientContainer = null; }
 			if (trailContainer) { trailContainer.destroy({ children: true }); trailContainer = null; }
+			if (filterContainer) { filterContainer.destroy({ children: true }); filterContainer = null; }
+			if (emitterContainer) { emitterContainer.destroy({ children: true }); emitterContainer = null; }
 			if (burstContainer) { burstContainer.destroy({ children: true }); burstContainer = null; }
 			if (pixiApp === app) pixiApp = null;
 			app.destroy(true);
