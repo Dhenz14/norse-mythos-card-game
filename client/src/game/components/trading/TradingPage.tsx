@@ -92,10 +92,10 @@ function TradeOfferCard({ offer, currentUser, onAccept, onDecline, onCancel }: {
 function CreateTradePanel({ onSend }: { onSend: (toUser: string) => void }) {
 	const [toUser, setToUser] = useState('');
 	const selectedOffered = useTradeStore(s => s.selectedOfferedCards);
-	const offeredDust = useTradeStore(s => s.offeredDust);
-	const requestedDust = useTradeStore(s => s.requestedDust);
-	const setOfferedDust = useTradeStore(s => s.setOfferedDust);
-	const setRequestedDust = useTradeStore(s => s.setRequestedDust);
+	const offeredDust = useTradeStore(s => s.offeredEitr);
+	const requestedDust = useTradeStore(s => s.requestedEitr);
+	const setOfferedDust = useTradeStore(s => s.setOfferedEitr);
+	const setRequestedDust = useTradeStore(s => s.setRequestedEitr);
 	const clearSelections = useTradeStore(s => s.clearSelections);
 
 	const canSend = toUser.trim().length > 0 && (selectedOffered.length > 0 || offeredDust > 0);

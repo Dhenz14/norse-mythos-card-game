@@ -118,7 +118,7 @@ export const mageCards: CardData[] = [
     manaCost: 1,
     attack: 1,
     health: 1,
-    description: "",
+    description: "Transformed by Mage polymorph.",
     flavorText: "Baaaaaaa.",
     type: "minion",
     rarity: "common",

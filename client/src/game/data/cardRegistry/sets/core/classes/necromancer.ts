@@ -499,7 +499,7 @@ export const necromancerCards: CardData[] = [
     manaCost: 2,
     attack: 2,
     health: 2,
-    description: "",
+    description: "Summoned by Necromancer spells.",
     flavorText: "It moves slowly, but it never stops coming.",
     type: "minion",
     rarity: "common",

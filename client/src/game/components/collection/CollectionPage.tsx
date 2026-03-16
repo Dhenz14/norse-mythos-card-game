@@ -1,4 +1,5 @@
 import { debug } from '../../config/debugConfig';
+import { showStatus } from '../ui/GameStatusBanner';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -730,7 +731,7 @@ export default function CollectionPage() {
 																const bridge = getNFTBridge();
 																if (bridge.isHiveMode() && nft) {
 																	import('../../../data/HiveSync').then(({ hiveSync }) => {
-																		hiveSync.broadcastCustomJson('rp_burn' as any, { nft_id: nft.uid }).catch(() => {});
+																		hiveSync.broadcastCustomJson('rp_burn' as any, { nft_id: nft.uid }).catch(() => { showStatus('On-chain burn failed — Eitr added locally only', 'warning'); });
 																	});
 																}
 																addEitr(eitrVal);

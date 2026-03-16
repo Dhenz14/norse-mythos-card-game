@@ -9,7 +9,7 @@ export const vanillaMinions: CardData[] = [
 	{
 		id: 1900,
 		name: 'Niflheim Hatchling',
-		description: '',
+		description: 'No abilities. Pure stat baseline.',
 		flavorText: 'Born from the mists of Niflheim, it knows only cold silence.',
 		type: 'minion',
 		rarity: 'basic',
@@ -23,7 +23,7 @@ export const vanillaMinions: CardData[] = [
 	{
 		id: 1901,
 		name: 'Midgard Footman',
-		description: '',
+		description: 'No abilities. Pure stat baseline.',
 		flavorText: 'Neither god nor giant — just a mortal with a sturdy shield.',
 		type: 'minion',
 		rarity: 'basic',
@@ -37,7 +37,7 @@ export const vanillaMinions: CardData[] = [
 	{
 		id: 1902,
 		name: 'Asgard Recruit',
-		description: '',
+		description: 'No abilities. Pure stat baseline.',
 		flavorText: 'Too reckless for the Einherjar, too brave for Midgard.',
 		type: 'minion',
 		rarity: 'basic',
@@ -51,7 +51,7 @@ export const vanillaMinions: CardData[] = [
 	{
 		id: 1903,
 		name: 'Vanaheim Guard',
-		description: '',
+		description: 'No abilities. Pure stat baseline.',
 		flavorText: 'The Vanir may prefer peace, but their guards hit hard enough.',
 		type: 'minion',
 		rarity: 'common',
@@ -65,7 +65,7 @@ export const vanillaMinions: CardData[] = [
 	{
 		id: 1904,
 		name: 'Jotunheim Brute',
-		description: '',
+		description: 'No abilities. Pure stat baseline.',
 		flavorText: 'Small for a giant. Still bigger than you.',
 		type: 'minion',
 		rarity: 'common',
@@ -80,7 +80,7 @@ export const vanillaMinions: CardData[] = [
 	{
 		id: 1905,
 		name: 'Muspel Marauder',
-		description: '',
+		description: 'No abilities. Pure stat baseline.',
 		flavorText: 'He raids not for treasure, but for the sheer joy of flame.',
 		type: 'minion',
 		rarity: 'common',
@@ -94,7 +94,7 @@ export const vanillaMinions: CardData[] = [
 	{
 		id: 1906,
 		name: 'Svartalfheim Construct',
-		description: '',
+		description: 'No abilities. Pure stat baseline.',
 		flavorText: 'The dwarves of Svartalfheim build, not in flesh, but in stone and rune-forged iron. This one remembers its makers\' commands.',
 		type: 'minion',
 		rarity: 'rare',

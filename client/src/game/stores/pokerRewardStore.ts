@@ -4,10 +4,10 @@ import { debug } from '../config/debugConfig';
 import { MAX_HAND_SIZE } from '../constants/gameConstants';
 import type { GameState } from '../types';
 
-let pokerRewardRetries = 0;
 const MAX_POKER_REWARD_RETRIES = 10;
 
 interface PokerRewardStore {
+	retries: number;
 	grantPokerHandRewards: (gameState: GameState) => GameState | null;
 	shouldDeferForDiscovery: (gameState: GameState) => boolean;
 	resetRetries: () => void;
@@ -15,14 +15,16 @@ interface PokerRewardStore {
 	isMaxRetries: () => boolean;
 }
 
-export const usePokerRewardStore = create<PokerRewardStore>()(() => ({
+export const usePokerRewardStore = create<PokerRewardStore>()((set, get) => ({
+	retries: 0,
+
 	grantPokerHandRewards: (gameState: GameState): GameState | null => {
 		if (gameState?.mulligan?.active) {
 			debug.log('[PokerRewards] Blocked: card game mulligan still active');
 			return null;
 		}
 
-		pokerRewardRetries = 0;
+		set({ retries: 0 });
 
 		try {
 			debug.log('[PokerRewards] Granting poker hand rewards - card draw and +1 mana crystal');
@@ -32,8 +34,8 @@ export const usePokerRewardStore = create<PokerRewardStore>()(() => ({
 
 			const MAX_MANA = 10;
 
-			let newPlayerHand = [...player.hand];
-			let newPlayerDeck = [...player.deck];
+			const newPlayerHand = [...player.hand];
+			const newPlayerDeck = [...player.deck];
 
 			if (newPlayerDeck.length > 0 && newPlayerHand.length < MAX_HAND_SIZE) {
 				const drawnCardData = newPlayerDeck.pop()!;
@@ -42,8 +44,8 @@ export const usePokerRewardStore = create<PokerRewardStore>()(() => ({
 				debug.log(`[PokerRewards] Player drew card: ${cardInstance.card.name}`);
 			}
 
-			let newOpponentHand = [...opponent.hand];
-			let newOpponentDeck = [...opponent.deck];
+			const newOpponentHand = [...opponent.hand];
+			const newOpponentDeck = [...opponent.deck];
 
 			if (newOpponentDeck.length > 0 && newOpponentHand.length < MAX_HAND_SIZE) {
 				const drawnCardData = newOpponentDeck.pop()!;
@@ -114,26 +116,26 @@ export const usePokerRewardStore = create<PokerRewardStore>()(() => ({
 
 	shouldDeferForDiscovery: (gameState: GameState): boolean => {
 		if (!gameState?.discovery?.active) return false;
-		if (pokerRewardRetries >= MAX_POKER_REWARD_RETRIES) {
+		const { retries } = get();
+		if (retries >= MAX_POKER_REWARD_RETRIES) {
 			debug.error('[PokerRewards] Max retries reached while waiting for discovery — granting anyway');
-			pokerRewardRetries = 0;
+			set({ retries: 0 });
 			return false;
 		}
-		pokerRewardRetries++;
-		debug.combat(`[PokerRewards] Deferred: discovery active, retry ${pokerRewardRetries}/${MAX_POKER_REWARD_RETRIES}`);
+		set({ retries: retries + 1 });
+		debug.combat(`[PokerRewards] Deferred: discovery active, retry ${retries + 1}/${MAX_POKER_REWARD_RETRIES}`);
 		return true;
 	},
 
-	resetRetries: () => {
-		pokerRewardRetries = 0;
-	},
+	resetRetries: () => set({ retries: 0 }),
 
 	incrementRetries: (): number => {
-		pokerRewardRetries++;
-		return pokerRewardRetries;
+		const next = get().retries + 1;
+		set({ retries: next });
+		return next;
 	},
 
 	isMaxRetries: (): boolean => {
-		return pokerRewardRetries >= MAX_POKER_REWARD_RETRIES;
+		return get().retries >= MAX_POKER_REWARD_RETRIES;
 	},
 }));

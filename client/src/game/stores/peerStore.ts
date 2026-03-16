@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import Peer, { DataConnection } from 'peerjs';
+import { debug } from '../config/debugConfig';
 
 let reconnectTimerId: ReturnType<typeof setTimeout> | null = null;
 const PEER_CONNECT_TIMEOUT_MS = 10_000;
@@ -154,14 +155,14 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 					const { remotePeerId } = get();
 					if (!isReconnect && remotePeerId) {
 						// First drop — attempt one auto-reconnect after 2 seconds
-						console.warn('[PeerStore] Connection lost — attempting reconnect in 2s');
+						debug.warn('[PeerStore] Connection lost — attempting reconnect in 2s');
 						set({ connection: null, connectionState: 'reconnecting' });
 						reconnectTimerId = setTimeout(() => {
 							reconnectTimerId = null;
 							const currentState = get();
 							if (currentState.connectionState !== 'reconnecting' || currentState.connection) return;
 							get().join(remotePeerId, true).catch(() => {
-								console.error('[PeerStore] Reconnect failed');
+								debug.error('[PeerStore] Reconnect failed');
 								set({ connectionState: 'disconnected' });
 							});
 						}, 2000);
@@ -210,11 +211,11 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 			try {
 				connection.send(data);
 			} catch (err) {
-				console.error('[PeerStore] Failed to send data:', err);
+				debug.error('[PeerStore] Failed to send data:', err);
 				set({ error: 'Failed to send data' });
 			}
 		} else {
-			console.warn('[PeerStore] Cannot send - not connected');
+			debug.warn('[PeerStore] Cannot send - not connected');
 		}
 	},
 }));

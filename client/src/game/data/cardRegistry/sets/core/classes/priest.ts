@@ -340,7 +340,7 @@ export const priestCards: CardData[] = [
     manaCost: 4,
     attack: 4,
     health: 4,
-    description: "",
+    description: "Summoned by Priest transformation.",
     flavorText: "Not every lesson ends well. This one ended very poorly indeed.",
     type: "minion",
     rarity: "common",

@@ -202,7 +202,7 @@ export default function PacksPage() {
 				setRevealedCards(mapped);
 				setIsOpening(true);
 
-				forceSync(hiveUsername!).catch(() => {});
+				forceSync(hiveUsername!).catch(err => debug.warn('[Packs] Sync error:', err));
 				toast.success(`Minted ${testCards.length} test NFTs on-chain!`);
 			} else {
 				toast.error(`Mint failed: ${mintResult.error}`);
@@ -349,7 +349,7 @@ export default function PacksPage() {
 					});
 				});
 
-				forceSync(hiveUsername!).catch(() => {});
+				forceSync(hiveUsername!).catch(err => debug.warn('[Packs] Sync error:', err));
 				toast.success(`Opened ${derived.length} cards on-chain!`);
 				return;
 			}
@@ -456,7 +456,7 @@ export default function PacksPage() {
 				});
 			});
 
-			forceSync(hiveUsername!).catch(() => {});
+			forceSync(hiveUsername!).catch(err => debug.warn('[Packs] Sync error:', err));
 			toast.success(`Opened ${derived.length} cards with RUNE!`);
 		} else {
 			setPackError(result.error ?? 'RUNE pack open failed. Please try again.');

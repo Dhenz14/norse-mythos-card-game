@@ -4434,7 +4434,7 @@ const legendaryNeutralMinions: CardData[] = [
     rarity: 'common',
     class: 'Neutral',
     keywords: [],
-    description: '',
+    description: 'Summoned by combat effects.',
     collectible: false,
     set: 'core'
   },
