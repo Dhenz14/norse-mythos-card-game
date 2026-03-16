@@ -1382,7 +1382,10 @@ vercel --prod                 # Deploy to Vercel
 
 ### Next (Genesis Launch)
 
-- Create @ragnarok-genesis Hive account (2-of-3 multisig, no standalone keys)
-- Create @ragnarok-treasury Hive account (2-of-3 initial, expandable)
+- Create @ragnarok Hive account (2-of-3 multisig, no standalone keys)
+- Create @ragnarok-genesis Hive account (2-of-3 multisig, same signers)
+- Create @ragnarok-treasury Hive account (2-of-3 initial, expandable via WoT)
+- Tabletop rehearsal (4 exercises: signing, retry, invariants, hash bundle)
 - Multisig genesis → mint batches → seal → brick genesis authority
 - Treasury remains active for ongoing RUNE payouts
+- Full ceremony procedures: [GENESIS_RUNBOOK.md](docs/GENESIS_RUNBOOK.md)

@@ -90,7 +90,7 @@ export async function submitSlashEvidence(
 	};
 
 	return hiveSync.broadcastCustomJson(
-		'rp_slash_evidence' as Parameters<typeof hiveSync.broadcastCustomJson>[0],
+		'rp_slash_evidence',
 		payload as unknown as Record<string, unknown>,
 		false, // Posting key
 	);

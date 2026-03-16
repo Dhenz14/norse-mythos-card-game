@@ -136,7 +136,7 @@ export async function broadcastMatchAnchor(params: {
 
 	// Emit canonical ragnarok-cards format (not legacy rp_match_start)
 	return hiveSync.broadcastCustomJson(
-		'ragnarok-cards' as Parameters<typeof hiveSync.broadcastCustomJson>[0],
+		'ragnarok-cards',
 		payload as unknown as Record<string, unknown>,
 		false, // Posting key
 	);

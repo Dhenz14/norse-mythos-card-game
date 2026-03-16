@@ -6,8 +6,10 @@
  *   await broadcastGenesis();   // Initialize supply caps (one-time, irreversible)
  *   await broadcastSeal();      // Permanently lock direct minting
  *
- * All ops are broadcast as custom_json id="ragnarok-cards" with { action: "genesis"|"mint"|"seal" }.
- * Only the @ragnarok account can execute these.
+ * Ceremony ops use v1 canonical format: custom_json id="ragnarok-cards"
+ * with { p: "ragnarok-cards", action: "genesis"|"mint_batch"|"seal" }.
+ * Unsigned tx builders produce the same canonical payloads for multisig signing.
+ * Only the @ragnarok account (2-of-3 multisig) can execute these.
  */
 
 import { hiveSync } from '../HiveSync';
@@ -59,11 +61,16 @@ export async function broadcastGenesis(): Promise<HiveBroadcastResult> {
 		console.warn('[genesisAdmin] Could not hash WASM binary:', err);
 	}
 
-	return hiveSync.broadcastCustomJson('rp_genesis', {
-		version: '1.0',
-		supply_model: 'per_card',
-		card_supply_caps: SUPPLY_CAPS,
-		reader_hash: readerHash,
+	return hiveSync.broadcastCustomJson('ragnarok-cards', {
+		p: 'ragnarok-cards',
+		action: 'genesis',
+		version: 1,
+		collection: 'ragnarok-alpha',
+		engine_hash: readerHash,
+		supply: {
+			pack_supply: SUPPLY_CAPS,
+			reward_supply: { common: 0, rare: 0, epic: 150, mythic: 50 },
+		},
 	});
 }
 
@@ -71,7 +78,11 @@ export async function broadcastSeal(): Promise<HiveBroadcastResult> {
 	const err = requireAdmin();
 	if (err) return err;
 
-	return hiveSync.broadcastCustomJson('rp_seal', {});
+	return hiveSync.broadcastCustomJson('ragnarok-cards', {
+		p: 'ragnarok-cards',
+		action: 'seal',
+		version: 1,
+	});
 }
 
 export async function broadcastMint(params: {
@@ -94,7 +105,9 @@ export async function broadcastMint(params: {
 		return { success: false, error: 'to and cards[] are required' };
 	}
 
-	return hiveSync.broadcastCustomJson('rp_mint', {
+	return hiveSync.broadcastCustomJson('ragnarok-cards', {
+		p: 'ragnarok-cards',
+		action: 'mint_batch',
 		to: params.to,
 		cards: params.cards,
 	});
@@ -119,30 +132,39 @@ export async function buildUnsignedGenesisTx(): Promise<UnsignedGenesisTx> {
 		// WASM hash optional for unsigned tx building
 	}
 
-	const payload = {
-		version: '1.0',
-		supply_model: 'per_card',
-		card_supply_caps: SUPPLY_CAPS,
-		reader_hash: readerHash,
+	const payload: Record<string, unknown> = {
+		p: 'ragnarok-cards',
+		action: 'genesis',
+		version: 1,
+		collection: 'ragnarok-alpha',
+		engine_hash: readerHash,
+		supply: {
+			pack_supply: SUPPLY_CAPS,
+			reward_supply: { common: 0, rare: 0, epic: 150, mythic: 50 },
+		},
 	};
 
-	const payloadStr = JSON.stringify({ app: 'ragnarok-cards', action: 'genesis', ...payload });
+	const payloadStr = JSON.stringify(payload);
 	const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(payloadStr));
 	const txDigest = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 
-	return { customJsonId: 'rp_genesis', payload, txDigest };
+	return { customJsonId: 'ragnarok-cards', payload, txDigest };
 }
 
 export async function buildUnsignedSealTx(): Promise<UnsignedGenesisTx> {
 	const err = requireGenesisSigner();
 	if (err) throw new Error(err.error);
 
-	const payload = {};
-	const payloadStr = JSON.stringify({ app: 'ragnarok-cards', action: 'seal' });
+	const payload: Record<string, unknown> = {
+		p: 'ragnarok-cards',
+		action: 'seal',
+		version: 1,
+	};
+	const payloadStr = JSON.stringify(payload);
 	const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(payloadStr));
 	const txDigest = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 
-	return { customJsonId: 'rp_seal', payload, txDigest };
+	return { customJsonId: 'ragnarok-cards', payload, txDigest };
 }
 
 export async function buildAuthorityBrickTx(account: string): Promise<{ operations: unknown[] }> {

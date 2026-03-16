@@ -517,10 +517,13 @@ server/
 
 ### Next: Genesis Launch
 
-- [ ] Create @ragnarok Hive account (cold 2-of-3 multisig)
-- [ ] Broadcast genesis → verify irreversible → mint batches → verify supply → seal
-- [ ] Verify post-seal behavior (legacy pack_open rejected, canonical writes accepted)
-- [ ] Public beta
+- [ ] Create @ragnarok Hive account (2-of-3 multisig, no standalone keys)
+- [ ] Create @ragnarok-genesis Hive account (2-of-3 multisig, same signers)
+- [ ] Create @ragnarok-treasury Hive account (2-of-3 initial, expandable via WoT)
+- [ ] Tabletop rehearsal (signing flow, retry ledger, LIB verification, hash bundle)
+- [ ] Multisig genesis → mint batches → seal → brick genesis authority
+- [ ] Post-seal validation (fresh replay, pack opening, cross-node consistency)
+- [ ] See [GENESIS_RUNBOOK.md](docs/GENESIS_RUNBOOK.md) for full ceremony procedures
 
 ---
 
@@ -532,6 +535,7 @@ server/
 | [RULEBOOK.md](docs/RULEBOOK.md) | Complete game rules with examples |
 | [GAME_FLOW.md](docs/GAME_FLOW.md) | Game flow diagrams and state management |
 | [RAGNAROK_GAME_RULES.md](docs/RAGNAROK_GAME_RULES.md) | Detailed P2E rules and status effects |
+| [GENESIS_RUNBOOK.md](docs/GENESIS_RUNBOOK.md) | **Operational ceremony guide** — multisig signing, checkpoints, emergency procedures |
 | [HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md) | Hive NFT architecture (legacy — protocol spec is now canonical) |
 | [CLAUDE.md](CLAUDE.md) | Technical architecture reference |
 

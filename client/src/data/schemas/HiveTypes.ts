@@ -33,6 +33,7 @@ export type RagnarokAction =
   | 'reward_claim';
 
 export type RagnarokTransactionType =
+  | 'ragnarok-cards'
   | 'rp_genesis'
   | 'rp_mint'
   | 'rp_seal'
@@ -43,7 +44,8 @@ export type RagnarokTransactionType =
   | 'rp_level_up'
   | 'rp_queue_join'
   | 'rp_queue_leave'
-  | 'rp_reward_claim';
+  | 'rp_reward_claim'
+  | 'rp_slash_evidence';
 
 export interface HiveUserRecord {
   hiveUsername: string;
