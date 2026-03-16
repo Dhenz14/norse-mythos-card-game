@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
 import { getRarityColor, getRarityBorder, getRarityGlow, getRarityBackground, getTypeIcon } from '../../utils/rarityUtils';
+import { getCardArtPath } from '../../utils/art/artMapping';
 
 interface RevealedCard {
   id: number;
@@ -211,17 +212,17 @@ export default function PackOpeningAnimation({
                     </div>
 
                     <div className="flex-1 flex items-center justify-center">
-                      <div className="w-24 h-24 rounded-lg bg-black/30 border border-white/20 flex items-center justify-center">
-                        <motion.span
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                          className="text-4xl"
-                        >
-                          {card.rarity === 'mythic' ? '🌟' : 
-                           card.rarity === 'mythic' ? '👑' :
-                           card.rarity === 'epic' ? '💎' :
-                           card.rarity === 'rare' ? '💠' : '⚔️'}
-                        </motion.span>
+                      <div className="w-28 h-28 rounded-lg bg-black/30 border border-white/20 overflow-hidden">
+                        {(() => {
+                          const artPath = getCardArtPath(card.name, card.id);
+                          return artPath ? (
+                            <img src={artPath} alt={card.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="text-4xl">{getTypeIcon(card.type)}</span>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
 
