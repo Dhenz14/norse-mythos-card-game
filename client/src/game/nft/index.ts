@@ -10,15 +10,11 @@
 
 import type { INFTBridge } from './INFTBridge';
 import { getDataLayerMode } from '@/game/config/featureFlags';
+import { LocalNFTBridge } from './LocalNFTBridge';
 
-let bridge: INFTBridge | null = null;
+let bridge: INFTBridge = new LocalNFTBridge();
 
 export function getNFTBridge(): INFTBridge {
-	if (!bridge) {
-		throw new Error(
-			'NFT bridge not initialized. Call initializeNFTBridge() at app startup.',
-		);
-	}
 	return bridge;
 }
 
