@@ -70,19 +70,24 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 - **Deck import/export** via shareable base64 codes
 
 ### Economy & Progression
-- **Eitr crafting** — dissolve cards into Eitr (primordial essence), forge random cards of chosen rarity (8:1 cost ratio)
-- **Card trading** — P2P trade offers with cards and Eitr
+- **Card trading** — P2P trade offers with NFT cards
 - **Card evolution** — 3 tiers: Mortal (60-70%) → Ascended (80-90%) → Divine (100%)
 - **Daily quest system** — 19 quest templates, 3 active per day
-- **Pack opening** with rarity-weighted pulls and premium animations
+- **Pack opening** — commit-reveal with delayed irreversible Hive block entropy (anti-grind, anti-selective-reveal)
+- **RUNE rewards** — +10 per ranked win, +3 per loss, milestone bonuses (non-transferable in v1)
+- **Eitr crafting** — dissolve cards to see Eitr value (display only in v1 — forging and Eitr trading disabled until replay-derived)
 
-### Blockchain (Hive Layer 1)
-- **NFT card ownership** on Hive blockchain with deterministic client-side chain replay
-- **15 operation types** — mint, transfer, burn, pack_open, match_result, level_up, and more
-- **Dual-signature match results** with Merkle transcript anchoring
+### Blockchain (Hive Layer 1 — Protocol v1.0)
+- **Reader-defined L1 asset protocol** — canonical state derived from irreversible Hive block replay, not a smart contract
+- **14 canonical operations** — genesis, seal, mint_batch, card_transfer, burn, pack_commit, pack_reveal, reward_claim, level_up, queue_join, queue_leave, match_anchor, match_result, slash_evidence
+- **Shared replay core** — one isomorphic protocol engine used by both browser and server (no duplicate validation)
+- **Commit-reveal pack opening** — delayed irreversible block entropy with auto-finalize on 200-block deadline
+- **Pinned-pubkey match anchoring** — post-seal signature verification uses payload-anchored keys, not current chain keys
+- **Dual-signature match results** with Merkle transcript anchoring and PoW
 - **Self-serve tournament rewards** — 11 milestones, players claim via Keychain
-- **Supply caps** — per-card limits: 1,800 common, 1,250 rare, 750 epic, 500 mythic (~3.3M total NFTs)
-- **Anti-cheat** — Mandatory WASM engine (no TS fallback), hash verification, PoW, slash evidence, nonce anti-replay
+- **Supply caps** — separate pack and reward pools; per-card limits: 1,800 common, 1,250 rare, 750 epic, 500 mythic
+- **Anti-cheat** — Mandatory WASM engine, PoW (64×6-bit for match results), slash evidence, nonce anti-replay
+- **Cold multisig governance** — genesis → seal lifecycle permanently closes admin minting
 
 ---
 
@@ -332,12 +337,12 @@ Every status effect has full visual feedback — themed glows, overlays, and ico
 
 ### Rarities
 
-| Rarity | Deck Limit | Forge Cost | Dissolve Value |
-|--------|-----------|------------|----------------|
-| Common | 2 copies | 40 Eitr | 5 Eitr |
-| Rare | 2 copies | 100 Eitr | 20 Eitr |
-| Epic | 2 copies | 400 Eitr | 100 Eitr |
-| Mythic | 1 copy | 1,600 Eitr | 400 Eitr |
+| Rarity | Deck Limit | NFT Supply (per card) |
+|--------|-----------|----------------------|
+| Common | 2 copies | 1,800 |
+| Rare | 2 copies | 1,250 |
+| Epic | 2 copies | 750 |
+| Mythic | 1 copy | 500 |
 
 ### Races
 
@@ -376,20 +381,21 @@ Attacking with elemental advantage grants **+2 Attack, +2 Health, +20 Armor**.
 
 ## Blockchain: Hive NFT System
 
-All card ownership, match results, and rewards live on Hive Layer 1 as `custom_json` operations. The client runs a deterministic chain replay engine — no centralized server needed.
+All card ownership, match results, and rewards live on Hive Layer 1 as `custom_json` operations. Canonical state is derived from irreversible block replay — the server is a cache, the chain is truth.
 
 ```
-Genesis → Seal → Admin key irrelevant forever
-              ↓
-    Players claim rewards via Keychain
-    ELO derived from match_result history
-    Supply caps hard-enforced by every reader
+Genesis → Mint Batches → Seal → Admin minting permanently closed
+                                  ↓
+    Canonical writes use `ragnarok-cards` app ID
+    Legacy `rp_*` ops accepted as aliases indefinitely
+    Pack opening via commit-reveal (not txid-seeded)
+    ELO, RUNE, XP all chain-derived by replay engine
 ```
 
-- **Chain replay**: Browser fetches ops from Hive → applies deterministic rules → builds IndexedDB
-- **Merkle transcripts**: SHA-256 tree root anchored in each match_result
-- **Dual signatures**: Host signs → client counter-signs → both on-chain
-- **Supply**: Per-card caps (1,800 common / 1,250 rare / 750 epic / 500 mythic per card, ~3.3M total NFTs)
+- **Protocol spec**: [`docs/RAGNAROK_PROTOCOL_V1.md`](docs/RAGNAROK_PROTOCOL_V1.md) — frozen normative specification
+- **Conformance suite**: 170 tests (37 golden vectors + 38 replay traces + 95 existing)
+- **Server indexer**: Sequential irreversible block scan via `get_ops_in_block` + LIB cursor
+- **Client replay**: Shared `protocol-core` module with LIB-gated application
 
 ---
 
@@ -440,7 +446,7 @@ client/src/
 │   ├── campaign/          # 49 missions, 5 chapters, world maps
 │   ├── combat/            # Poker combat arena + hooks
 │   ├── components/        # Card, chess, campaign, collection, trading UI
-│   ├── crafting/          # Eitr economy (dissolve/forge)
+│   ├── crafting/          # Eitr economy (display only in v1)
 │   ├── data/              # 1,500+ cards + 80 heroes + 38 pet families
 │   ├── effects/           # 181 effect handlers (battlecry, deathrattle, spell)
 │   ├── engine/            # WASM loader + bridge (mandatory, no TS fallback)
@@ -448,12 +454,19 @@ client/src/
 │   ├── stores/            # 20+ Zustand stores
 │   ├── tournament/        # Swiss + elimination brackets
 │   └── tutorial/          # 15-step onboarding
-├── data/blockchain/       # Hive NFT replay engine (15 op types, 13 IDB stores)
+├── data/blockchain/       # Hive NFT replay adapter (delegates to shared/protocol-core)
 └── components/ui/         # Radix/shadcn components
+
+shared/protocol-core/      # Isomorphic replay engine (browser + Node)
+├── types.ts               # StateAdapter, CardAsset, GenesisRecord, etc.
+├── normalize.ts           # Legacy mapping, authority checking
+├── apply.ts               # 14 canonical op handlers + legacy pack_open
+├── hash.ts                # Canonical serialization + SHA-256
+└── pow.ts                 # PoW verification
 
 server/
 ├── routes/                # Matchmaking, social, trading, tournaments
-└── services/              # Chain indexer, tournament manager, auth
+└── services/              # Block-scanning indexer, tournament manager, auth
 ```
 
 ---
@@ -478,7 +491,7 @@ server/
 - [x] P2P multiplayer via WebRTC
 - [x] Ranked matchmaking with ELO ladder
 - [x] Tournament system (Swiss + elimination)
-- [x] Eitr crafting (dissolve/forge random) & trading
+- [x] Eitr crafting system (dissolve display; forge and Eitr trading disabled in v1 until replay-derived)
 - [x] Spectator mode + match replay viewer
 - [x] Daily quest system (19 templates)
 - [x] Friends list with presence + challenges
@@ -494,11 +507,19 @@ server/
 - [x] 47 keyword definitions with descriptions
 - [x] Norse terminology throughout (Rune, Runic Bond, Yggdrasil Golem, Automaton, Naga)
 
+- [x] Protocol v1.0 frozen — 14 canonical ops, 5 launch gates closed
+- [x] Shared `protocol-core` module — one replay engine for browser + server
+- [x] Block-complete server indexer (`get_ops_in_block` + LIB cursor)
+- [x] Commit-reveal pack opening with auto-finalize (anti-grind, anti-selective-reveal)
+- [x] Pinned-pubkey match anchoring (post-seal verification uses payload keys only)
+- [x] Real Hive signature verification (hive-tx ECDSA recovery)
+- [x] 170 tests (37 conformance vectors + 38 replay traces + 95 existing)
+
 ### Next: Genesis Launch
 
-- [ ] Create @ragnarok Hive account
-- [ ] Upload card art to CDN
-- [ ] Broadcast genesis + seal on Hive mainnet
+- [ ] Create @ragnarok Hive account (cold 2-of-3 multisig)
+- [ ] Broadcast genesis → verify irreversible → mint batches → verify supply → seal
+- [ ] Verify post-seal behavior (legacy pack_open rejected, canonical writes accepted)
 - [ ] Public beta
 
 ---
@@ -507,10 +528,11 @@ server/
 
 | Document | Description |
 |----------|-------------|
+| [RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md) | **Frozen protocol spec** — 14 ops, authority matrix, finality rules, launch gates |
 | [RULEBOOK.md](docs/RULEBOOK.md) | Complete game rules with examples |
 | [GAME_FLOW.md](docs/GAME_FLOW.md) | Game flow diagrams and state management |
 | [RAGNAROK_GAME_RULES.md](docs/RAGNAROK_GAME_RULES.md) | Detailed P2E rules and status effects |
-| [HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md) | Hive NFT architecture and chain replay |
+| [HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md) | Hive NFT architecture (legacy — protocol spec is now canonical) |
 | [CLAUDE.md](CLAUDE.md) | Technical architecture reference |
 
 ---
