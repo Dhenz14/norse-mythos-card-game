@@ -13,9 +13,10 @@ import { HeroDeckBuilder } from './HeroDeckBuilder';
 import { useHeroDeckStore, PieceType } from '../stores/heroDeckStore';
 import { HeroDetailPopup } from './HeroDetailPopup';
 import { ALL_NORSE_HEROES } from '../data/norseHeroes';
+import { preloadImages } from '../utils/assetPreloader';
+import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { HeroPortrait } from './ui/HeroPortrait';
 import { HeroArtImage } from './ui/HeroArtImage';
-import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { getHeroRarity, RARITY_COLORS } from '../utils/heroRarity';
 import { useHoloTracking, getHoloTier } from '../hooks/useHoloTracking';
 import './styles/ArmySelectionNorse.css';
@@ -83,6 +84,14 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
     const allCards = getAllCards();
     debug.log(`[ArmySelection] Card registry has ${allCards.length} cards`);
     setCardsLoaded(allCards.length > 0);
+
+    // Preload hero portraits so grid images appear instantly
+    const heroArtPaths: string[] = [];
+    for (const hero of Object.values(ALL_NORSE_HEROES)) {
+      const art = resolveHeroPortrait(hero.id);
+      if (art) heroArtPaths.push(art);
+    }
+    preloadImages(heroArtPaths);
   }, []);
   
   const getCardById = (id: number): CardData | undefined => {

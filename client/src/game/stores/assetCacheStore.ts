@@ -21,6 +21,8 @@ interface PackManifest {
 
 const CACHE_NAME = 'ragnarok-assets-v2';
 const BASE = import.meta.env.BASE_URL || '/';
+const MAX_RETRIES = 2;
+const PARALLEL_PACKS = 2;
 
 function toFullUrl(filePath: string): string {
 	const clean = filePath.startsWith('/') ? filePath.slice(1) : filePath;
@@ -69,6 +71,78 @@ interface AssetCacheActions {
 
 let abortController: AbortController | null = null;
 
+async function fetchWithRetry(url: string, signal: AbortSignal, retries = MAX_RETRIES): Promise<Response> {
+	for (let attempt = 0; attempt <= retries; attempt++) {
+		try {
+			const res = await fetch(url, { signal });
+			if (res.ok) return res;
+			if (attempt === retries) throw new Error(`HTTP ${res.status}: ${url.split('/').pop()}`);
+		} catch (err) {
+			if (err instanceof Error && err.name === 'AbortError') throw err;
+			if (attempt === retries) throw err;
+		}
+		// Back off before retry
+		await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+	}
+	throw new Error('Unreachable');
+}
+
+async function downloadAndExtractPack(
+	pack: PackInfo,
+	cache: Cache,
+	signal: AbortSignal,
+	onBytes: (delta: number) => void,
+	onFiles: (delta: number) => void,
+) {
+	const packUrl = toFullUrl(`packs/${pack.name}`);
+	const packRes = await fetchWithRetry(packUrl, signal);
+
+	const reader = packRes.body?.getReader();
+	if (!reader) throw new Error('ReadableStream not supported');
+
+	const chunks: Uint8Array[] = [];
+	let packBytes = 0;
+
+	while (true) {
+		const { done, value } = await reader.read();
+		if (done) break;
+		chunks.push(value);
+		packBytes += value.length;
+		onBytes(value.length);
+	}
+
+	const zipBuffer = new Uint8Array(packBytes);
+	let offset = 0;
+	for (const chunk of chunks) {
+		zipBuffer.set(chunk, offset);
+		offset += chunk.length;
+	}
+
+	const { unzipSync } = await import('fflate');
+	const extracted = unzipSync(zipBuffer);
+
+	// Batch cache puts — process 50 files at a time to avoid locking the main thread
+	const entries = Object.entries(extracted);
+	const BATCH = 50;
+	for (let b = 0; b < entries.length; b += BATCH) {
+		const batch = entries.slice(b, b + BATCH);
+		await Promise.all(batch.map(([filePath, fileData]) => {
+			const normalizedPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
+			const url = toFullUrl(normalizedPath);
+			const mimeType = getExtMimeType(normalizedPath);
+			const response = new Response(fileData, {
+				headers: {
+					'Content-Type': mimeType,
+					'Content-Length': String(fileData.length),
+					'Cache-Control': 'public, max-age=31536000, immutable',
+				},
+			});
+			return cache.put(new Request(url), response);
+		}));
+		onFiles(batch.length);
+	}
+}
+
 export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 	persist(
 		(set, get) => ({
@@ -113,8 +187,7 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 					}
 
 					const manifestUrl = toFullUrl('packs/manifest.json');
-					const manifestRes = await fetch(manifestUrl, { signal: controller.signal });
-					if (!manifestRes.ok) throw new Error('Failed to fetch pack manifest');
+					const manifestRes = await fetchWithRetry(manifestUrl, controller.signal);
 					const manifest: PackManifest = await manifestRes.json();
 
 					const totalCompressed = manifest.packs.reduce((s, p) => s + p.compressedSize, 0);
@@ -125,74 +198,53 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 
 					const cache = await caches.open(CACHE_NAME);
 
-					const { unzipSync } = await import('fflate');
+					let totalBytes = 0;
+					let totalFiles = 0;
 
-					let totalFilesExtracted = 0;
-					let totalBytesDownloaded = 0;
-
-					for (let i = 0; i < manifest.packs.length; i++) {
-						if (controller.signal.aborted) break;
-
-						const pack = manifest.packs[i];
-						const packUrl = toFullUrl(`packs/${pack.name}`);
-
-						const packRes = await fetch(packUrl, { signal: controller.signal });
-						if (!packRes.ok) throw new Error(`Failed to download ${pack.name}: ${packRes.status}`);
-
-						const reader = packRes.body?.getReader();
-						if (!reader) throw new Error('ReadableStream not supported');
-
-						const chunks: Uint8Array[] = [];
-						let packBytes = 0;
-
-						while (true) {
-							const { done, value } = await reader.read();
-							if (done) break;
-							chunks.push(value);
-							packBytes += value.length;
-							totalBytesDownloaded += value.length;
-							set({
-								bytesDownloaded: totalBytesDownloaded,
-								downloadProgress: Math.round((totalBytesDownloaded / totalCompressed) * 90),
-							});
-						}
-
-						const zipBuffer = new Uint8Array(packBytes);
-						let offset = 0;
-						for (const chunk of chunks) {
-							zipBuffer.set(chunk, offset);
-							offset += chunk.length;
-						}
-
-						const extracted = unzipSync(zipBuffer);
-
-						for (const [filePath, fileData] of Object.entries(extracted)) {
-							const normalizedPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
-							const url = toFullUrl(normalizedPath);
-							const mimeType = getExtMimeType(normalizedPath);
-							const response = new Response(fileData, {
-								headers: {
-									'Content-Type': mimeType,
-									'Content-Length': fileData.length.toString(),
-								},
-							});
-							await cache.put(new Request(url), response);
-							totalFilesExtracted++;
-						}
-
+					const updateProgress = () => {
+						const byteRatio = totalCompressed > 0 ? totalBytes / totalCompressed : 0;
+						const fileRatio = manifest.totalFiles > 0 ? totalFiles / manifest.totalFiles : 0;
+						// Weighted: 70% download progress, 30% extraction progress
+						const progress = Math.min(99, Math.round(byteRatio * 70 + fileRatio * 30));
 						set({
-							filesDownloaded: totalFilesExtracted,
-							downloadProgress: 90 + Math.round(((i + 1) / manifest.packs.length) * 10),
+							bytesDownloaded: totalBytes,
+							filesDownloaded: totalFiles,
+							downloadProgress: progress,
+						});
+					};
+
+					// Download packs in parallel (PARALLEL_PACKS at a time)
+					const queue = [...manifest.packs];
+					const workers: Promise<void>[] = [];
+
+					const processNext = async (): Promise<void> => {
+						while (queue.length > 0) {
+							if (controller.signal.aborted) return;
+							const pack = queue.shift()!;
+							await downloadAndExtractPack(
+								pack,
+								cache,
+								controller.signal,
+								(delta) => { totalBytes += delta; updateProgress(); },
+								(delta) => { totalFiles += delta; updateProgress(); },
+							);
+						}
+					};
+
+					for (let w = 0; w < Math.min(PARALLEL_PACKS, queue.length); w++) {
+						workers.push(processNext());
+					}
+					await Promise.all(workers);
+
+					if (!controller.signal.aborted) {
+						set({
+							isDownloading: false,
+							isFullyDownloaded: true,
+							downloadedVersion: typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : manifest.version,
+							downloadProgress: 100,
+							filesDownloaded: totalFiles,
 						});
 					}
-
-					set({
-						isDownloading: false,
-						isFullyDownloaded: true,
-						downloadedVersion: manifest.version,
-						downloadProgress: 100,
-						filesDownloaded: totalFilesExtracted,
-					});
 				} catch (err: unknown) {
 					if (err instanceof Error && err.name === 'AbortError') {
 						set({ isDownloading: false, downloadError: null });

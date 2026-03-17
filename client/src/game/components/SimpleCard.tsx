@@ -394,7 +394,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
         style={artPath && owned ? undefined : { background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}
       >
         {artPath && artInView && owned ? (
-          <img src={artPath} alt="" className="card-art-image" draggable={false} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          <img src={artPath} alt="" className="card-art-image" draggable={false} loading="lazy" decoding="async" width={256} height={256} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         ) : !owned ? (
           <div className="card-art-locked">
             <span className="lock-icon">🔒</span>

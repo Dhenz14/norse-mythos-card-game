@@ -8,6 +8,7 @@
 import archiver from 'archiver';
 import { createWriteStream, mkdirSync, existsSync, statSync, readdirSync, writeFileSync } from 'fs';
 import { join, relative, extname } from 'path';
+import { execSync } from 'child_process';
 
 const PUBLIC = 'client/public';
 const PACKS_DIR = join(PUBLIC, 'packs');
@@ -81,8 +82,15 @@ async function main() {
 
 	mkdirSync(PACKS_DIR, { recursive: true });
 
+	let buildHash;
+	try {
+		buildHash = execSync('git rev-parse --short HEAD').toString().trim();
+	} catch {
+		buildHash = Date.now().toString(36);
+	}
+
 	const packManifest = {
-		version: Date.now().toString(36),
+		version: buildHash,
 		packs: [],
 		totalFiles: files.length,
 		totalSize: files.reduce((s, f) => s + f.size, 0),

@@ -21,6 +21,8 @@ import { useAIActionManager } from '../animations/AIActionManager';
 import { Button } from '../../components/ui/button';
 import { Toaster } from '../../components/ui/sonner';
 import DebugRenderCheck from './DebugRenderCheck';
+import { preloadImages } from '../utils/assetPreloader';
+import { getCardArtPath } from '../utils/art/artMapping';
 import ActionNotification from './ActionNotification';
 import AIAttackAnimationProcessor from './AIAttackAnimationProcessor';
 const CardDetailView = React.lazy(() => import('./CardDetailView').then(m => ({ default: m.CardDetailView })));
@@ -201,6 +203,21 @@ export const GameBoard: React.FC<{}> = () => {
   } = useAnimations();
 
   useEventAnimationBridge();
+
+  // Preload all card art in both players' decks + hands on mount
+  useEffect(() => {
+    const paths: string[] = [];
+    for (const side of ['player', 'opponent'] as const) {
+      const p = gameState.players[side];
+      if (!p) continue;
+      for (const ci of [...(p.hand || []), ...(p.deck || [])]) {
+        const c = 'card' in ci ? ci.card : ci;
+        const art = getCardArtPath(c.name, c.id);
+        if (art) paths.push(art);
+      }
+    }
+    if (paths.length > 0) preloadImages(paths);
+  }, []);
 
   useEffect(() => {
     const handleCardPlayEvent = (e: CustomEvent) => {
