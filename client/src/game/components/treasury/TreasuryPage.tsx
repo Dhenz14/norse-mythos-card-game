@@ -790,7 +790,12 @@ export default function TreasuryPage() {
 			setVouches(vouchRes);
 			setError(null);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to fetch treasury data');
+			const msg = err instanceof Error ? err.message : 'Failed to fetch treasury data';
+			if (msg.includes('Unexpected token') || msg.includes('<!DOCTYPE')) {
+				setError('Treasury requires a running game server. This feature is unavailable on static hosting.');
+			} else {
+				setError(msg);
+			}
 		}
 	}, []);
 

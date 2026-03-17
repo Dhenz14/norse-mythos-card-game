@@ -114,6 +114,24 @@ export default function CollectionPage() {
 		setPage(1);
 	}, [filterRarity, filterType, searchQuery]);
 
+	const loadLocalCollection = () => {
+		const allCards = cardRegistry.filter(c => c.collectible !== false);
+		const localCards: OwnedCard[] = allCards.map(c => ({
+			id: typeof c.id === 'string' ? parseInt(c.id, 10) : c.id,
+			name: c.name,
+			rarity: c.rarity || 'common',
+			type: c.type,
+			heroClass: (c as any).heroClass || (c as any).cardClass || 'neutral',
+			quantity: 1,
+		}));
+		setCards(localCards);
+		setTotalCards(localCards.length);
+		setTotalPages(1);
+		setPage(1);
+		setError(null);
+		setLoading(false);
+	};
+
 	const fetchInventory = async (pageNum: number, signal?: AbortSignal) => {
 		try {
 			if (pageNum === 1) setLoading(true);
@@ -143,14 +161,12 @@ export default function CollectionPage() {
 					setTotalCards(data.pagination.total);
 				}
 			} else {
-				setError('Failed to load collection.');
-				setCards([]);
+				loadLocalCollection();
 			}
 		} catch (err) {
 			if (err instanceof DOMException && err.name === 'AbortError') return;
-			debug.error('Error fetching inventory:', err);
-			setError('Failed to load collection.');
-			setCards([]);
+			debug.warn('API unavailable, using local collection:', err);
+			loadLocalCollection();
 		} finally {
 			setLoading(false);
 			setIsLoadingMore(false);
