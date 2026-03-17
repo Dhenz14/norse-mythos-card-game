@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import type { DataConnection } from 'peerjs';
 import { usePeerStore } from '../stores/peerStore';
 import { useGameStore } from '../stores/gameStore';
+import { debug } from '../config/debugConfig';
 import { GameState } from '../types';
 import { verifyDeckOwnership } from '../../data/blockchain/deckVerification';
 import { sha256Hash } from '../../data/blockchain/hashUtils';
@@ -572,27 +573,31 @@ export function useP2PSync() {
 			try {
 				while (messageQueueRef.current.length > 0) {
 					const msg = messageQueueRef.current.shift()!;
-					await processMessage(msg);
+					try {
+						await processMessage(msg);
+					} catch (err) {
+						debug.error(`[useP2PSync] Error processing ${msg.type}:`, err);
+					}
 				}
-			} catch (err) {
-				console.error('[useP2PSync] Error processing message:', err);
 			} finally {
 				isProcessingRef.current = false;
 			}
 		};
 
 		const MAX_QUEUE_SIZE = 100;
-		const handleMessage = (data: P2PMessage) => {
-			messageQueueRef.current.push(data);
-			if (messageQueueRef.current.length > MAX_QUEUE_SIZE) {
-				const dropped = messageQueueRef.current.length - MAX_QUEUE_SIZE;
-				messageQueueRef.current = messageQueueRef.current.slice(dropped);
-				console.warn(`[useP2PSync] Queue exceeded ${MAX_QUEUE_SIZE}, dropped ${dropped} oldest messages`);
+		const handleMessage = (data: unknown) => {
+			if (!data || typeof data !== 'object') return;
+			const msg = data as P2PMessage;
+			if (!msg.type) return;
+			if (messageQueueRef.current.length >= MAX_QUEUE_SIZE) {
+				debug.warn(`[useP2PSync] Queue full (${MAX_QUEUE_SIZE}), dropping newest message: ${msg.type}`);
+				return;
 			}
+			messageQueueRef.current.push(msg);
 			processQueue();
 		};
 
-		const handleMessageWrapper = (data: unknown) => handleMessage(data as P2PMessage);
+		const handleMessageWrapper = (data: unknown) => handleMessage(data);
 		connection.on('data', handleMessageWrapper);
 
 		return () => {

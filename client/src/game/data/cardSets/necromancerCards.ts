@@ -12,7 +12,7 @@
  */
 
 import { debug } from '../../config/debugConfig';
-import { SpellTargetType, BattlecryTargetType } from "../../types";
+import { SpellTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -185,7 +185,7 @@ const necromancerCards = [
     .addKeyword("battlecry")
     .battlecry({
       type: "silence",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .description("Battlecry: Silence a minion.")
@@ -251,7 +251,7 @@ const necromancerCards = [
     .addKeyword("battlecry")
     .battlecry({
       type: "consume_target",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .description("Battlecry: Destroy a minion and gain its Attack and Health.")
@@ -352,7 +352,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "summon_from_graveyard",
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .description("Summon a random minion that died this game.")
     .flavorText("Some say it's unnatural to raise the dead. Necromancers say it's recycling.")
@@ -369,7 +369,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "damage_based_on_race_count",
-      targetType: "enemy_minions" as SpellTargetType,
+      targetType: "enemy_minions",
       value: 1, // Damage per Undead
       requiresTarget: false
     })
@@ -389,7 +389,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "hero_power",
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       value: 2 // Self-damage amount
     })
     .customProperty("summonCardId", 4900) // Skeleton ID
@@ -408,7 +408,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "discover_from_graveyard",
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       discoveryCount: 3
     })
     .customProperty("buffAmount", 2) // Custom property for buff amount
@@ -427,7 +427,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "damage",
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       value: 3,
       requiresTarget: true
     })
@@ -450,7 +450,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "summon_multiple",
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       summonCardId: 4901, // Zombie ID
       count: 3
     })
@@ -469,7 +469,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "destroy_all",
-      targetType: "all_minions" as SpellTargetType,
+      targetType: "all_minions",
       requiresTarget: false
     })
     .customProperty("healthThreshold", 2)
@@ -490,7 +490,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "buff",
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       value: 2, // Base buff amount
       requiresTarget: true
     })
@@ -511,7 +511,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "sacrifice",
-      targetType: "friendly_minion" as SpellTargetType,
+      targetType: "friendly_minion",
       requiresTarget: true
     })
     .customProperty("drawCards", 2) // Number of cards to draw
@@ -530,7 +530,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "discover_and_summon_from_graveyard",
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       discoveryCount: 3
     })
     .description("Foresee a minion from your graveyard and summon it.")
@@ -548,7 +548,7 @@ const necromancerCards = [
     .type("spell")
     .spellEffect({
       type: "resurrect_multiple",
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       count: 3
     })
     .description("Summon three random friendly minions that died this game.")

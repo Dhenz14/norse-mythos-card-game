@@ -2,7 +2,7 @@
  * Neutral minions for Echoes of Ymir
  * Expanding the neutral minion collection with more iconic cards
  */
-import { CardData, BattlecryTargetType } from '../types';
+import { CardData } from '../types';
 
 /**
  * Collection of iconic neutral minions from the game
@@ -30,7 +30,7 @@ export const   neutralMinions: CardData[] = [{
       value: 3,
 
       requiresTarget: true,
-      targetType: BattlecryTargetType.ANY
+      targetType: 'any'
 
        },
       collectible: true
@@ -122,7 +122,7 @@ export const   neutralMinions: CardData[] = [{
 
         requiresTarget: true,
 
-      targetType: BattlecryTargetType.ANY
+      targetType: 'any'
     },
       collectible: true
   },
@@ -334,7 +334,7 @@ export const   neutralMinions: CardData[] = [{
                   battlecry: {
         type: "destroy_and_store",
 
-        targetType: BattlecryTargetType.FRIENDLY_MINION,
+        targetType: 'friendly_minion',
       requiresTarget: false
 
        },
@@ -395,7 +395,7 @@ export const   neutralMinions: CardData[] = [{
         type: "destroy_spells_by_cost",
       value: 1,
 
-      targetType: BattlecryTargetType.ANY
+      targetType: 'any'
     },
       collectible: true
   },
@@ -421,7 +421,7 @@ export const   neutralMinions: CardData[] = [{
         type: "damage",
       value: 2,
 
-      targetType: BattlecryTargetType.ANY
+      targetType: 'any'
     },
       collectible: true
   },
@@ -535,7 +535,7 @@ export const   neutralMinions: CardData[] = [{
       class: "Neutral",
                   battlecry: {
         type: "divine_shield_gain",
-      targetType: BattlecryTargetType.ALL_MINIONS,
+      targetType: 'all_minions',
 
       requiresTarget: false
     },
@@ -612,7 +612,7 @@ export const   neutralMinions: CardData[] = [{
         condition: "elemental_last_turn",
       value: 5,
 
-      targetType: BattlecryTargetType.ANY,
+      targetType: 'any',
       requiresTarget: false
 
        },
@@ -736,7 +736,7 @@ export const   neutralMinions: CardData[] = [{
       class: "Neutral",
                   battlecry: {
         type: "swap_stats_with_target",
-      targetType: BattlecryTargetType.FRIENDLY_MINION,
+      targetType: 'friendly_minion',
 
       requiresTarget: false
     },
@@ -831,7 +831,7 @@ export const   neutralMinions: CardData[] = [{
         condition: "have_10_mana",
       value: 10,
 
-      targetType: BattlecryTargetType.ANY_MINION,
+      targetType: 'any_minion',
       requiresTarget: false
 
        },
@@ -1204,7 +1204,7 @@ export const   neutralMinions: CardData[] = [{
                   battlecry: {
         type: "heal",
         value: 2,
-        targetType: BattlecryTargetType.ALL,
+        targetType: 'all',
         requiresTarget: false
       },
       collectible: true
@@ -1310,7 +1310,7 @@ export const   neutralMinions: CardData[] = [{
       class: "Neutral",
                   battlecry: {
         type: "buff",
-        targetType: BattlecryTargetType.FRIENDLY_MINION,
+        targetType: 'friendly_minion',
         requiresTarget: true,
         buffAttack: 1,
         buffHealth: 1
@@ -1630,7 +1630,7 @@ export const   neutralMinions: CardData[] = [{
       race: "Automaton",
       deathrattle: {
         type: "deal_damage",
-        targetType: BattlecryTargetType.ENEMY_HERO,
+        targetType: 'enemy_hero',
         value: 2
       },
       collectible: false
@@ -1654,7 +1654,7 @@ export const   neutralMinions: CardData[] = [{
       class: "Neutral",
                   battlecry: {
         type: "buff",
-        targetType: BattlecryTargetType.FRIENDLY_MECH,
+        targetType: 'friendly_mech',
         requiresTarget: true,
         buffAttack: 1,
         buffHealth: 1
@@ -1761,7 +1761,7 @@ export const   neutralMinions: CardData[] = [{
       race: "Automaton",
                   battlecry: {
         type: "deal_damage",
-        targetType: BattlecryTargetType.ANY,
+        targetType: 'any',
         requiresTarget: true,
         value: 2
       },
@@ -1878,7 +1878,7 @@ export const   neutralMinions: CardData[] = [{
       class: "Neutral",
                   battlecry: {
         type: "deal_damage",
-        targetType: BattlecryTargetType.ANY,
+        targetType: 'any',
         requiresTarget: true,
         value: 1
       },

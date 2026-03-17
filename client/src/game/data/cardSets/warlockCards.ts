@@ -110,7 +110,7 @@ export function registerWarlockCards(): void {
     .spellEffect({
       type: "damage",
       value: 4,
-      targetType: BattlecryTargetType.ANY,
+      targetType: 'any',
       requiresTarget: true,
       bonusEffect: {
         type: "discard_random",
@@ -221,7 +221,7 @@ export function registerWarlockCards(): void {
     .battlecry({
       type: "damage",
       value: 3,
-      targetType: BattlecryTargetType.FRIENDLY_HERO
+      targetType: 'friendly_hero'
     })
     .collectible(true)
     .addCategory("basic")

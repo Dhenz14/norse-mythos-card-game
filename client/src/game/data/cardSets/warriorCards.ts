@@ -11,7 +11,7 @@
  * - Control tools: Removal and board control options
  */
 import { debug } from '../../config/debugConfig';
-import { SpellTargetType, BattlecryTargetType } from "../../types";
+import { SpellTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -60,7 +60,7 @@ export function registerWarriorCards(): void {
       type: "damage_and_buff",
       value: 1,
       buffAttack: 2,
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .collectible(true)
@@ -100,7 +100,7 @@ export function registerWarriorCards(): void {
       type: "damage_and_buff",
       value: 1,
       buffAttack: 2,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .collectible(true)
@@ -192,7 +192,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "damage_draw_if_survives",
       value: 2,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .collectible(true)
@@ -210,7 +210,7 @@ export function registerWarriorCards(): void {
     .class("Warrior")
     .spellEffect({
       type: "draw_for_damaged",
-      targetType: "friendly_characters" as SpellTargetType
+      targetType: "friendly_characters"
     })
     .collectible(true)
     .build();
@@ -266,7 +266,7 @@ export function registerWarriorCards(): void {
     .class("Warrior")
     .spellEffect({
       type: "damage_based_on_armor",
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .collectible(true)
@@ -284,7 +284,7 @@ export function registerWarriorCards(): void {
     .class("Warrior")
     .spellEffect({
       type: "brawl",
-      targetType: "all_minions" as SpellTargetType
+      targetType: "all_minions"
     })
     .collectible(true)
     .build();
@@ -321,7 +321,7 @@ export function registerWarriorCards(): void {
     .class("Warrior")
     .spellEffect({
       type: "destroy",
-      targetType: "damaged_enemy_minion" as SpellTargetType,
+      targetType: "damaged_enemy_minion",
       requiresTarget: true
     })
     .collectible(true)
@@ -340,7 +340,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "gain_armor",
       value: 5,
-      targetType: "friendly_hero" as SpellTargetType
+      targetType: "friendly_hero"
     })
     .customProperty("drawCards", 1)
     .collectible(true)
@@ -359,7 +359,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "cleave_damage",
       value: 2,
-      targetType: "random_enemy_minions" as SpellTargetType
+      targetType: "random_enemy_minions"
     })
     .customProperty("targetCount", 2)
     .collectible(true)
@@ -438,7 +438,7 @@ export function registerWarriorCards(): void {
       type: "armor",
       value: 5,
       requiresTarget: false,
-      targetType: "friendly_hero" as SpellTargetType
+      targetType: "friendly_hero"
     })
     .customProperty("drawCards", 1)
     .collectible(true)
@@ -458,7 +458,7 @@ export function registerWarriorCards(): void {
       type: "gain_armor_reduce_cost",
       value: 4,
       requiresTarget: false,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("costReduction", 1)
     .collectible(true)
@@ -478,7 +478,7 @@ export function registerWarriorCards(): void {
       type: "damage_with_self_damage",
       value: 3,
       requiresTarget: true,
-      targetType: "any_minion" as SpellTargetType
+      targetType: "any_minion"
     })
     .customProperty("selfDamage", 1)
     .collectible(true)
@@ -497,7 +497,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "damage_based_on_armor",
       requiresTarget: true,
-      targetType: "any_minion" as SpellTargetType
+      targetType: "any_minion"
     })
     .customProperty("minimumDamage", 2)
     .collectible(true)
@@ -516,7 +516,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "buff_weapon",
       requiresTarget: false,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("buffAttack", 1)
     .customProperty("buffDurability", 1)
@@ -536,7 +536,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "buff_damaged_minions",
       requiresTarget: false,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("buffAttack", 2)
     .customProperty("buffHealth", 0)
@@ -556,7 +556,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "draw_weapon_gain_armor",
       requiresTarget: false,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .collectible(true)
     .build();
@@ -575,7 +575,7 @@ export function registerWarriorCards(): void {
       type: "gain_armor_reduce_hero_power",
       value: 8,
       requiresTarget: false,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("heroReduction", 2)
     .collectible(true)
@@ -595,7 +595,7 @@ export function registerWarriorCards(): void {
       type: "cleave_damage",
       value: 2,
       requiresTarget: true,
-      targetType: "any_minion" as SpellTargetType
+      targetType: "any_minion"
     })
     .collectible(true)
     .build();
@@ -613,7 +613,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "armor_based_on_missing_health",
       requiresTarget: false,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .collectible(true)
     .build();
@@ -631,7 +631,7 @@ export function registerWarriorCards(): void {
     .spellEffect({
       type: "equip_special_weapon",
       requiresTarget: false,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("weaponAttack", 5)
     .customProperty("weaponDurability", 2)

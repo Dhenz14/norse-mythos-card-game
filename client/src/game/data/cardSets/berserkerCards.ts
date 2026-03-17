@@ -11,7 +11,7 @@
  * - Mobility: Cards with aggressive positioning and tempo
  */
 import { debug } from '../../config/debugConfig';
-import { SpellTargetType, BattlecryTargetType } from "../../types";
+import { SpellTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -59,7 +59,7 @@ export function registerBerserkerCards(): void {
     .spellEffect({
       type: "multi_target_damage_heal",
       value: 2,
-      targetType: "random_enemy_minions" as SpellTargetType
+      targetType: "random_enemy_minions"
     })
     .customProperty("targetCount", 2)
     .customProperty("healValue", 2)
@@ -78,7 +78,7 @@ export function registerBerserkerCards(): void {
     .class("Berserker")
     .spellEffect({
       type: "grant_immunity",
-      targetType: "friendly_hero" as SpellTargetType
+      targetType: "friendly_hero"
     })
     .customProperty("duration", "current_turn")
     .collectible(true)
@@ -140,7 +140,7 @@ export function registerBerserkerCards(): void {
     .battlecry({
       type: "damage",
       value: 4,
-      targetType: "any" as BattlecryTargetType,
+      targetType: "any",
       requiresTarget: true,
       condition: "hero_attacked_this_turn"
     })
@@ -197,7 +197,7 @@ export function registerBerserkerCards(): void {
     .spellEffect({
       type: "damage",
       value: 4,
-      targetType: "any" as SpellTargetType,
+      targetType: "any",
       requiresTarget: true
     })
     .collectible(false)
@@ -252,7 +252,7 @@ export function registerBerserkerCards(): void {
       type: "damage",
       value: 3,
       requiresTarget: true,
-      targetType: "any_minion" as SpellTargetType
+      targetType: "any_minion"
     })
     .customProperty("outcast", {
       type: "mana_discount",

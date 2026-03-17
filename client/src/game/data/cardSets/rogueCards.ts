@@ -284,7 +284,7 @@ export function registerRogueCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "give_stealth",
-      targetType: BattlecryTargetType.FRIENDLY_MINION,
+      targetType: 'friendly_minion',
       requiresTarget: true,
       // Note: duration is handled internally by the effect logic
     })
@@ -387,13 +387,13 @@ export function registerRogueCards(): void {
     .battlecry({
       type: "damage",
       value: 1,
-      targetType: BattlecryTargetType.ANY,
+      targetType: 'any',
       requiresTarget: true
     })
     .customProperty("combo", {
       type: "damage",
       value: 2,
-      targetType: BattlecryTargetType.ANY
+      targetType: 'any'
     })
     .collectible(true)
     .addCategory("basic")

@@ -8,7 +8,7 @@
  * The authoritative source for Warlock cards is now cardSets/warlockCards.ts using the
  * createCard() builder API pattern.
  */
-import { CardData, BattlecryTargetType } from '../types';
+import { CardData } from '../types';
 
 /**
  * Collection of Warlock class cards
@@ -102,7 +102,7 @@ export const warlockCards: CardData[] = [
     spellEffect: {
       type: "damage",
       value: 4,
-      targetType: BattlecryTargetType.ANY,
+      targetType: 'any',
       requiresTarget: true,
       sideEffect: {
         type: "discard_random",
@@ -204,7 +204,7 @@ export const warlockCards: CardData[] = [
     battlecry: {
       type: "damage",
       value: 3,
-      targetType: BattlecryTargetType.FRIENDLY_HERO
+      targetType: 'friendly_hero'
     }
   },
 
@@ -463,7 +463,7 @@ export const warlockCards: CardData[] = [
     spellEffect: {
       type: "damage",
       value: 2,
-      targetType: BattlecryTargetType.ANY,
+      targetType: 'any',
       requiresTarget: true,
       sideEffect: {
         type: "restore_health",
@@ -486,7 +486,7 @@ export const warlockCards: CardData[] = [
     spellEffect: {
       type: "damage",
       value: 2,
-      targetType: BattlecryTargetType.ANY,
+      targetType: 'any',
       requiresTarget: true,
       deathEffect: {
         type: "summon_random_titan"

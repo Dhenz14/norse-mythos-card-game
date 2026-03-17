@@ -12,7 +12,7 @@
  */
 
 import { debug } from '../../config/debugConfig';
-import { SpellTargetType, BattlecryTargetType } from "../../types";
+import { SpellTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -32,7 +32,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "summon",
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       summonCardId: 7501 // Hound token
     })
     .description("For each enemy minion, summon a 1/1 Hound with Charge.")
@@ -51,7 +51,7 @@ const hunterCards = [
     .spellEffect({
       type: "summon",
       value: 1,
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       summonCardId: 7503 // Will randomly choose between Bjorn, Geri, and Freki
     })
     .description("Summon a random Beast Companion.")
@@ -88,7 +88,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "destroy_random",
-      targetType: "enemy_minion" as SpellTargetType
+      targetType: "enemy_minion"
     })
     .description("Destroy a random enemy minion.")
     .flavorText("Accuracy is not the strong suit - just make sure you hit something.")
@@ -324,7 +324,7 @@ const hunterCards = [
     .addKeyword("battlecry")
     .battlecry({
       type: "summon_copy",
-      targetType: "beast_in_hand" as BattlecryTargetType,
+      targetType: "beast_in_hand",
       requiresTarget: true
     })
     .description("Battlecry: Choose a Beast in your hand and summon a copy of it.")
@@ -465,7 +465,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "discover",
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       value: 1
     })
     .description("Foresee a card from your deck.")
@@ -484,7 +484,7 @@ const hunterCards = [
     .addKeyword("secret")
     .spellEffect({
       type: "secret",
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("secretTrigger", "enemy_hero_attacks")
     .customProperty("secretEffect", {
@@ -508,7 +508,7 @@ const hunterCards = [
     .addKeyword("secret")
     .spellEffect({
       type: "secret",
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("secretTrigger", "enemy_minion_attacks")
     .customProperty("secretEffect", {
@@ -531,7 +531,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "damage_random",
-      targetType: "enemy_minions" as SpellTargetType,
+      targetType: "enemy_minions",
       value: 3
     })
     .customProperty("randomTargets", 2)
@@ -550,7 +550,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "damage",
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       value: 3,
       requiresTarget: true
     })
@@ -574,7 +574,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "set_health",
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       value: 1,
       requiresTarget: true
     })
@@ -593,7 +593,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "buff_all",
-      targetType: "friendly_beasts" as SpellTargetType,
+      targetType: "friendly_beasts",
       buffAttack: 2,
       buffHealth: 2
     })
@@ -612,7 +612,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "buff",
-      targetType: "friendly_beast" as SpellTargetType,
+      targetType: "friendly_beast",
       buffAttack: 2,
       buffHealth: 1,
       requiresTarget: true
@@ -636,7 +636,7 @@ const hunterCards = [
     .type("spell")
     .spellEffect({
       type: "summon",
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("summonMultiple", [7503, 7504, 7505]) // All three Beast Companions
     .description("Summon all three Beast Companions.")
@@ -655,7 +655,7 @@ const hunterCards = [
     .addKeyword("secret")
     .spellEffect({
       type: "secret",
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("secretTrigger", "enemy_plays_minion")
     .customProperty("secretEffect", {
@@ -679,7 +679,7 @@ const hunterCards = [
     .addKeyword("secret")
     .spellEffect({
       type: "secret",
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .customProperty("secretTrigger", "enemy_hero_attacks")
     .customProperty("secretEffect", {

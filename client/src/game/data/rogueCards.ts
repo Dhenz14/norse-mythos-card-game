@@ -8,7 +8,7 @@
  * The authoritative source for Rogue cards is now cardSets/rogueCards.ts using the
  * createCard() builder API pattern.
  */
-import { CardData, BattlecryTargetType } from '../types';
+import { CardData } from '../types';
 
 /**
  * Collection of Rogue class cards
@@ -257,7 +257,7 @@ export const rogueCards: CardData[] = [
     collectible: true,
     battlecry: {
       type: "give_stealth",
-      targetType: BattlecryTargetType.FRIENDLY_MINION,
+      targetType: 'friendly_minion',
       requiresTarget: true,
       // Note: duration is handled internally by the effect logic
     }
@@ -297,7 +297,7 @@ export const rogueCards: CardData[] = [
     battlecry: {
       type: "heal",
       value: 3,
-      targetType: BattlecryTargetType.ANY,
+      targetType: 'any',
       requiresTarget: true
     }
   },
@@ -365,7 +365,7 @@ export const rogueCards: CardData[] = [
     battlecry: {
       type: "damage",
       value: 1,
-      targetType: BattlecryTargetType.ANY,
+      targetType: 'any',
       requiresTarget: true
     }
   },

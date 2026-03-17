@@ -50,7 +50,7 @@ export function registerShamanCards(): void {
       type: "damage",
       value: 3,
       requiresTarget: true,
-      targetType: BattlecryTargetType.ANY
+      targetType: 'any'
     })
     .collectible(true)
     .addCategory("classic")
@@ -247,7 +247,7 @@ export function registerShamanCards(): void {
     .battlecry({
       type: "damage",
       value: 3,
-      targetType: BattlecryTargetType.ENEMY_MINION,
+      targetType: 'enemy_minion',
       requiresTarget: true
     })
     .customProperty("chainDamage", true)

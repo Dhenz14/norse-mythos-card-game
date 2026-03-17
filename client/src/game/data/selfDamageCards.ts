@@ -5,7 +5,7 @@
  * These cards offer powerful effects at the cost of damaging the player's own hero.
  * This mechanic embodies the Warlock's theme of sacrificing health for power.
  */
-import { CardData, BattlecryTargetType } from '../types';
+import { CardData } from '../types';
 
 /**
  * Collection of cards with self-damage mechanics
@@ -49,7 +49,7 @@ export const selfDamageCards: CardData[] = [
     battlecry: {
       type: "damage",
       value: 5,
-      targetType: BattlecryTargetType.FRIENDLY_HERO
+      targetType: 'friendly_hero'
     }
   },
   {
@@ -66,7 +66,7 @@ export const selfDamageCards: CardData[] = [
     spellEffect: {
       type: "damage",
       value: 2,
-      targetType: BattlecryTargetType.FRIENDLY_HERO, // Using the enum for consistency
+      targetType: 'friendly_hero', // Using the enum for consistency
       sideEffect: {
         type: "draw",
         count: 2
@@ -93,7 +93,7 @@ export const selfDamageCards: CardData[] = [
         attack: 1,
         health: 1
       },
-      targetType: BattlecryTargetType.NONE // No specific target - affects all friendly titans
+      targetType: 'none' // No specific target - affects all friendly titans
     }
   },
   {
@@ -110,7 +110,7 @@ export const selfDamageCards: CardData[] = [
     spellEffect: {
       type: "damage",
       value: 3,
-      targetType: BattlecryTargetType.FRIENDLY_HERO, // Using the same enum for consistency
+      targetType: 'friendly_hero', // Using the same enum for consistency
       sideEffect: {
         type: "gain_armor_and_draw",
         armor: 3,
@@ -152,7 +152,7 @@ export const selfDamageCards: CardData[] = [
       type: "random_damage_with_self_damage",
       minValue: 2,
       maxValue: 4,
-      targetType: BattlecryTargetType.ANY_MINION, // Using the enum for consistency
+      targetType: 'any_minion', // Using the enum for consistency
       requiresTarget: true
     }
   },
@@ -173,7 +173,7 @@ export const selfDamageCards: CardData[] = [
     battlecry: {
       type: "damage",
       value: 5,
-      targetType: BattlecryTargetType.FRIENDLY_HERO
+      targetType: 'friendly_hero'
     }
   },
   {
@@ -193,7 +193,7 @@ export const selfDamageCards: CardData[] = [
       type: "buff",
       buffAttack: 2, // Using the property defined in BattlecryEffect
       buffHealth: 2, // Using the property defined in BattlecryEffect
-      targetType: BattlecryTargetType.FRIENDLY_MINION, // Using existing enum value for friendly minion
+      targetType: 'friendly_minion', // Using existing enum value for friendly minion
       requiresTarget: true
     }
   },
@@ -211,7 +211,7 @@ export const selfDamageCards: CardData[] = [
     spellEffect: {
       type: "damage",
       value: 4,
-      targetType: BattlecryTargetType.FRIENDLY_HERO, // Using the enum for consistency
+      targetType: 'friendly_hero', // Using the enum for consistency
       sideEffect: {
         type: "destroy_random_opponent_card"
       }

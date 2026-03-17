@@ -11,7 +11,7 @@
  * Druid cards focus on "Choose One" mechanics, mana manipulation, and 
  * transformations themed around natural elements and beasts.
  */
-import { CardData, BattlecryTargetType, SpellTargetType } from '../types';
+import { CardData } from '../types';
 
 // Druid cards will use 11xxx range for regular cards and 33xxx range for Choose One mechanic cards
 export const druidCards: CardData[] = [
@@ -122,7 +122,7 @@ export const druidCards: CardData[] = [
     battlecry: {
       type: "conditional_self_buff",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       condition: "cthun_attack_10",
       buffHealth: 5
     },
@@ -469,7 +469,7 @@ export const druidCards: CardData[] = [
     collectible: true,
     battlecry: {
       type: "transform",
-      targetType: BattlecryTargetType.FRIENDLY_MINION,
+      targetType: 'friendly_minion',
       requiresTarget: true,
       transformType: "cost_increase",
       value: 2
@@ -853,7 +853,7 @@ export const chooseOneCards: CardData[] = [
           type: "draw",
           value: 2,
           requiresTarget: false,
-          targetType: SpellTargetType.NONE
+          targetType: 'none'
         }
       },
       {
@@ -864,7 +864,7 @@ export const chooseOneCards: CardData[] = [
           type: "heal",
           value: 5,
           requiresTarget: true,
-          targetType: SpellTargetType.ANY
+          targetType: 'any'
         }
       }
     ]

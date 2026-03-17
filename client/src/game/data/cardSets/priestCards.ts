@@ -517,7 +517,7 @@ export function registerPriestCards(): void {
     .customProperty("chooseTargetBattlecry", {
       type: "choose",
       requiresTarget: true,
-      targetType: BattlecryTargetType.ENEMY_MINION,
+      targetType: 'enemy_minion',
       storeTarget: true
     })
     .customProperty("copyTargetDeathrattle", {
@@ -543,7 +543,7 @@ export function registerPriestCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "replay_opponent_turn",
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     })
     .collectible(true)
     .addCategory("legendary")
@@ -565,7 +565,7 @@ export function registerPriestCards(): void {
     .battlecry({
       type: "conditional_free_hero_power",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       condition: "no_duplicates_in_deck"
     })
     .collectible(true)

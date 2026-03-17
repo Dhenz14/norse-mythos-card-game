@@ -5,7 +5,7 @@
  */
 import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
-import { BattlecryTargetType, CardData } from '../../types';
+import { CardData } from '../../types';
 
 const IS_DEV = import.meta.env?.DEV ?? false;
 
@@ -31,7 +31,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "summon",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       summonCardId: 20621,
       summonCount: 2
     },
@@ -95,7 +95,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "destroy",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     },
     endOfTurn: {
@@ -129,7 +129,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "resurrect_random_buffed",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 1,
       buffHealth: 1
     },
@@ -164,7 +164,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 1
     },
     endOfTurn: {
@@ -198,7 +198,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "destroy_low_health",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       healthThreshold: 2
     },
     endOfTurn: {
@@ -232,7 +232,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "summon",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4311,
       summonCount: 2
     },
@@ -263,7 +263,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "destroy_and_summon",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true,
       attackThreshold: 4,
       summonCardId: 4312
@@ -296,7 +296,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "damage_all",
-      targetType: "all_other_minions" as BattlecryTargetType,
+      targetType: "all_other_minions",
       value: 3
     },
     aura: {
@@ -363,7 +363,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "summon",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4340,
       summonCount: 1
     },
@@ -396,7 +396,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["lifesteal", "battlecry"],
     battlecry: {
       type: "aura_debuff",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       debuffAttack: -2,
       condition: "while_alive"
     },
@@ -480,7 +480,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "silence_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       duration: "until_next_turn"
     },
     onDamage: {
@@ -569,7 +569,7 @@ export const norseMythologyCards: CardData[] = [
     },
     battlecry: {
       type: "destroy",
-      targetType: "random_enemy_minion" as BattlecryTargetType,
+      targetType: "random_enemy_minion",
       requiresTarget: false
     },
     categories: ["norse_mythology", "mythological_mythic"],
@@ -721,7 +721,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_and_scale",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 2
     },
     onAttack: {
@@ -779,7 +779,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_and_grant_deathrattle",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       buffAttack: 2,
       buffHealth: 2,
       summonCardId: 4361,
@@ -811,7 +811,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "destroy_frozen_and_damage",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       damagePerMinion: 3
     },
     onAttack: {
@@ -840,7 +840,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "conditional_damage",
-      targetType: "enemy_character" as BattlecryTargetType,
+      targetType: "enemy_character",
       value: 3,
       requiresTarget: true
     },
@@ -889,7 +889,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_adjacent",
-      targetType: "adjacent_minions" as BattlecryTargetType,
+      targetType: "adjacent_minions",
       buffAttack: 1,
       buffHealth: 2
     },
@@ -924,7 +924,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry", "deathrattle"],
     battlecry: {
       type: "buff_by_hand_size",
-      targetType: "self" as BattlecryTargetType
+      targetType: "self"
     },
     deathrattle: {
       type: "draw",
@@ -956,7 +956,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "summon_by_condition",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4377,
       summonCountCondition: "friendly_minion_count"
     },
@@ -1015,7 +1015,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "heal_hero",
-      targetType: "friendly_hero" as BattlecryTargetType,
+      targetType: "friendly_hero",
       value: 5
     },
     endOfTurn: {
@@ -1096,7 +1096,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 2
     },
     onDamage: {
@@ -1151,7 +1151,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "draw_conditional",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       condition: "muninn_in_play",
       value: 1,
       conditionValue: 2
@@ -1182,7 +1182,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "resurrect_conditional",
-      targetType: "graveyard_card" as BattlecryTargetType,
+      targetType: "graveyard_card",
       condition: "huginn_in_play",
       value: 1,
       conditionValue: 2,
@@ -1213,7 +1213,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["divine_shield", "battlecry", "deathrattle"],
     battlecry: {
       type: "grant_divine_shield",
-      targetType: "friendly_minions" as BattlecryTargetType
+      targetType: "friendly_minions"
     },
     deathrattle: {
       type: "heal_hero",
@@ -1283,7 +1283,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "discover",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       discoverCount: 3,
       discoverSource: "deck"
     },
@@ -1312,7 +1312,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "grant_deathrattle_resurrect",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       requiresTarget: true
     },
     onAttack: {
@@ -1343,7 +1343,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "freeze_all",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     },
     endOfTurn: {
       type: "damage_frozen",
@@ -1376,7 +1376,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["poisonous", "battlecry"],
     battlecry: {
       type: "freeze_or_destroy",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     },
     onAttack: {
@@ -1404,7 +1404,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "summon",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       summonCardId: 4385,
       summonCount: 2
     },
@@ -1461,7 +1461,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "draw_and_freeze",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     },
     onAttack: {
       type: 'apply_status',
@@ -1510,7 +1510,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "bounce_and_damage",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       value: 1,
       requiresTarget: true
     },
@@ -1592,7 +1592,7 @@ export const norseMythologyCards: CardData[] = [
     },
     battlecry: {
       type: "debuff_attack",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: -2,
       duration: "end_of_turn"
     },
@@ -1617,7 +1617,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_and_stun",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 3
     },
     onSurviveDamage: {
@@ -1718,7 +1718,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "summon",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       summonCardId: 4418,
       summonCount: 1
     },
@@ -1770,7 +1770,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     },
@@ -1795,7 +1795,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "apply_burn",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     },
     categories: ["norse_mythology", "fire_minion"],
@@ -1844,7 +1844,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["charge", "battlecry"],
     battlecry: {
       type: "buff_self_temporary",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       buffAttack: 2,
       duration: "this_turn"
     },
@@ -1869,7 +1869,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 1
     },
     categories: ["norse_mythology", "fire_minion"],
@@ -1893,7 +1893,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_and_burn",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     },
@@ -1918,7 +1918,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 2,
       requiresTarget: true
     },
@@ -1945,7 +1945,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "apply_burn_all",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     },
     categories: ["norse_mythology", "fire_minion"],
     collectible: false
@@ -1968,7 +1968,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_self_temporary",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       buffAttack: 2,
       duration: "this_turn"
     },
@@ -1995,7 +1995,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_random",
-      targetType: "random_enemy" as BattlecryTargetType,
+      targetType: "random_enemy",
       value: 1
     },
     endOfTurn: {
@@ -2047,7 +2047,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["flying", "reborn", "battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 3
     },
     categories: ["norse_mythology", "fire_minion", "fire_mythic"],
@@ -2110,7 +2110,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "all_enemies" as BattlecryTargetType,
+      targetType: "all_enemies",
       value: 2
     },
     categories: ["norse_mythology", "fire_minion", "fire_mythic"],
@@ -2157,7 +2157,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "all_enemies" as BattlecryTargetType,
+      targetType: "all_enemies",
       value: 3
     },
     onAttack: {
@@ -2188,7 +2188,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "random_enemy_minion" as BattlecryTargetType,
+      targetType: "random_enemy_minion",
       value: 1
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_common"],
@@ -2212,7 +2212,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["charge", "battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     },
@@ -2237,7 +2237,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     },
@@ -2262,7 +2262,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     },
@@ -2323,7 +2323,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "random_enemy_minion" as BattlecryTargetType,
+      targetType: "random_enemy_minion",
       value: 2
     },
     categories: ["norse_mythology", "lightning_minion", "lightning_rare"],
@@ -2347,7 +2347,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 2
     },
     passive: {
@@ -2375,7 +2375,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["charge", "battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "all_enemies" as BattlecryTargetType,
+      targetType: "all_enemies",
       value: 2
     },
     onAttack: {
@@ -2414,7 +2414,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy" as BattlecryTargetType,
+      targetType: "enemy",
       value: 3,
       requiresTarget: true
     },
@@ -2448,7 +2448,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "all_enemies" as BattlecryTargetType,
+      targetType: "all_enemies",
       value: 2
     },
     onAttack: {
@@ -2489,7 +2489,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     },
@@ -2514,7 +2514,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "debuff",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       debuffAttack: -2,
       duration: "this_turn",
       requiresTarget: true
@@ -2540,7 +2540,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "compound",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       effects: [
         { type: "damage", value: 1 },
         { type: "debuff", debuffAttack: -1, duration: "this_turn" }
@@ -2568,7 +2568,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["poisonous", "battlecry"],
     battlecry: {
       type: "compound",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       effects: [
         { type: "damage", value: 2 },
         { type: "apply_debuff", debuffType: "poison", damagePerTurn: 1 }
@@ -2601,7 +2601,7 @@ export const norseMythologyCards: CardData[] = [
     },
     battlecry: {
       type: "damage",
-      targetType: "enemy" as BattlecryTargetType,
+      targetType: "enemy",
       value: 3,
       requiresTarget: true
     },
@@ -2632,7 +2632,7 @@ export const norseMythologyCards: CardData[] = [
     },
     battlecry: {
       type: "destroy",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       attackThreshold: 2,
       requiresTarget: true
     },
@@ -2670,7 +2670,7 @@ export const norseMythologyCards: CardData[] = [
     },
     battlecry: {
       type: "damage_all",
-      targetType: "all_enemies" as BattlecryTargetType,
+      targetType: "all_enemies",
       value: 2
     },
     categories: ["norse_mythology", "dark_minion", "dark_mythic"],
@@ -2696,7 +2696,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "heal",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       value: 2,
       requiresTarget: true
     },
@@ -2746,7 +2746,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "heal_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       value: 3
     },
     categories: ["norse_mythology", "light_minion", "light_rare"],
@@ -2775,7 +2775,7 @@ export const norseMythologyCards: CardData[] = [
     },
     battlecry: {
       type: "buff_temporary_all",
-      targetType: "friendly_minions" as BattlecryTargetType,
+      targetType: "friendly_minions",
       buffAttack: 0,
       buffHealth: 2,
       duration: "this_turn"
@@ -2803,7 +2803,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_temporary_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 0,
       buffHealth: 2,
       duration: "this_turn"
@@ -2829,7 +2829,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_buff_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       condition: "control_another_beast",
       buffAttack: 1,
       buffHealth: 1
@@ -2855,7 +2855,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_grant_keyword",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       condition: "control_another_beast",
       keyword: "taunt"
     },
@@ -2880,7 +2880,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_buff_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       condition: "control_beast",
       buffAttack: 1,
       buffHealth: 1
@@ -2906,7 +2906,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "buff",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       targetRace: "beast",
       buffAttack: 1,
       buffHealth: 1,
@@ -2933,7 +2933,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_temporary_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 2,
       buffHealth: 0,
       duration: "this_turn"
@@ -2959,7 +2959,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_conditional",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 2,
       healthThreshold: 2,
       requiresTarget: true
@@ -3008,7 +3008,7 @@ export const norseMythologyCards: CardData[] = [
     },
     battlecry: {
       type: "buff_temporary_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 0,
       buffHealth: 3,
       duration: "this_turn"
@@ -3036,7 +3036,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "buff_temporary",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       buffAttack: 2,
       buffHealth: 0,
       duration: "this_turn",
@@ -3069,7 +3069,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "heal_hero",
-      targetType: "friendly_hero" as BattlecryTargetType,
+      targetType: "friendly_hero",
       value: 5
     },
     passive: {
@@ -3102,7 +3102,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "force_attack_adjacent",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     },
     passive: {
@@ -3135,7 +3135,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "discover",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       discoverCount: 3,
       discoverSource: "deck_top"
     },
@@ -3234,7 +3234,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "grant_stealth_temporary",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       duration: "until_next_turn",
       requiresTarget: true
     },
@@ -3264,7 +3264,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "draw",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       value: 1
     },
     passive: {
@@ -3330,7 +3330,7 @@ export const norseMythologyCards: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_temporary_all",
-      targetType: "friendly_minions" as BattlecryTargetType,
+      targetType: "friendly_minions",
       buffAttack: 1,
       buffHealth: 0,
       duration: "this_turn"
@@ -3373,7 +3373,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("deathrattle")
     .battlecry({
       type: "summon",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       summonCardId: 20621,
       summonCount: 2
     })
@@ -3433,7 +3433,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "destroy",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     })
     .customProperty("endOfTurn", {
@@ -3464,7 +3464,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "resurrect_random_buffed",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 1,
       buffHealth: 1
     })
@@ -3496,7 +3496,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 1
     })
     .customProperty("endOfTurn", {
@@ -3527,7 +3527,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "destroy_low_health",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       healthThreshold: 2
     })
     .customProperty("endOfTurn", {
@@ -3558,7 +3558,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "summon",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4311,
       summonCount: 2
     })
@@ -3591,7 +3591,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "destroy_and_summon",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true,
       attackThreshold: 4,
       summonCardId: 4312
@@ -3708,7 +3708,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("deathrattle")
     .battlecry({
       type: "damage_all",
-      targetType: "all_other_minions" as BattlecryTargetType,
+      targetType: "all_other_minions",
       value: 3
     })
     .customProperty("aura", {
@@ -3778,7 +3778,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("deathrattle")
     .battlecry({
       type: "summon",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4340,
       summonCount: 1
     })
@@ -3813,7 +3813,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "aura_debuff",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       debuffAttack: -2,
       condition: "while_alive"
     })
@@ -3901,7 +3901,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("flying")
     .battlecry({
       type: "silence_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       duration: "until_next_turn"
     })
     .customProperty("onDamage", {
@@ -3994,7 +3994,7 @@ export function registerNorseMythologyCards(): void {
     })
     .battlecry({
       type: "destroy",
-      targetType: "random_enemy_minion" as BattlecryTargetType,
+      targetType: "random_enemy_minion",
       requiresTarget: false
     })
     .addCategory("norse_mythology")
@@ -4071,7 +4071,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_and_scale",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 2
     })
     .addCategory("norse_mythology")
@@ -4122,7 +4122,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_and_grant_deathrattle",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       buffAttack: 2,
       buffHealth: 2,
       summonCardId: 4361,
@@ -4150,7 +4150,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "destroy_frozen_and_damage",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       damagePerMinion: 3
     })
     .addCategory("norse_mythology")
@@ -4176,7 +4176,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "conditional_damage",
-      targetType: "enemy_character" as BattlecryTargetType,
+      targetType: "enemy_character",
       value: 3,
       requiresTarget: true
     })
@@ -4224,7 +4224,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_adjacent",
-      targetType: "adjacent_minions" as BattlecryTargetType,
+      targetType: "adjacent_minions",
       buffAttack: 1,
       buffHealth: 2
     })
@@ -4257,7 +4257,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("deathrattle")
     .battlecry({
       type: "buff_by_hand_size",
-      targetType: "self" as BattlecryTargetType
+      targetType: "self"
     })
     .deathrattle({
       type: "draw",
@@ -4286,7 +4286,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "summon_by_condition",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4377,
       summonCountCondition: "friendly_minion_count"
     })
@@ -4338,7 +4338,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "heal_hero",
-      targetType: "friendly_hero" as BattlecryTargetType,
+      targetType: "friendly_hero",
       value: 5
     })
     .customProperty("endOfTurn", {
@@ -4391,7 +4391,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("flying")
     .battlecry({
       type: "draw_conditional",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       condition: "muninn_in_play",
       value: 1,
       conditionValue: 2
@@ -4419,7 +4419,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("flying")
     .battlecry({
       type: "resurrect_conditional",
-      targetType: "graveyard_card" as BattlecryTargetType,
+      targetType: "graveyard_card",
       condition: "huginn_in_play",
       value: 1,
       conditionValue: 2,
@@ -4448,7 +4448,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("deathrattle")
     .battlecry({
       type: "grant_divine_shield",
-      targetType: "friendly_minions" as BattlecryTargetType
+      targetType: "friendly_minions"
     })
     .deathrattle({
       type: "heal_hero",
@@ -4510,7 +4510,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "discover",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       discoverCount: 3,
       discoverSource: "deck"
     })
@@ -4535,7 +4535,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "grant_deathrattle_resurrect",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       requiresTarget: true
     })
     .addCategory("norse_mythology")
@@ -4562,7 +4562,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "freeze_all",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     })
     .customProperty("endOfTurn", {
       type: "damage_frozen",
@@ -4592,7 +4592,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "freeze_or_destroy",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     })
     .addCategory("norse_mythology")
@@ -4616,7 +4616,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "summon",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       summonCardId: 4385,
       summonCount: 2
     })
@@ -4665,7 +4665,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "draw_and_freeze",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     })
     .addCategory("norse_mythology")
     .addCategory("water_mythic")
@@ -4714,7 +4714,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     })
@@ -4740,7 +4740,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "apply_burn",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     })
     .addCategory("norse_mythology")
@@ -4765,7 +4765,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     })
@@ -4792,7 +4792,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_self_temporary",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       buffAttack: 2,
       duration: "this_turn"
     })
@@ -4818,7 +4818,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 1
     })
     .addCategory("norse_mythology")
@@ -4843,7 +4843,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_and_burn",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     })
@@ -4870,7 +4870,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 2,
       requiresTarget: true
     })
@@ -4899,7 +4899,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "apply_burn_all",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     })
     .addCategory("norse_mythology")
     .addCategory("fire_minion")
@@ -4924,7 +4924,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_self_temporary",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       buffAttack: 2,
       duration: "this_turn"
     })
@@ -4952,7 +4952,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_random",
-      targetType: "random_enemy" as BattlecryTargetType,
+      targetType: "random_enemy",
       value: 1
     })
     .customProperty("endOfTurn", {
@@ -5021,7 +5021,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 3
     })
     .addCategory("norse_mythology")
@@ -5090,7 +5090,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_all",
-      targetType: "all_enemies" as BattlecryTargetType,
+      targetType: "all_enemies",
       value: 2
     })
     .addCategory("norse_mythology")
@@ -5149,7 +5149,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_all",
-      targetType: "all_enemies" as BattlecryTargetType,
+      targetType: "all_enemies",
       value: 3
     })
     .customProperty("onAttack", {
@@ -5183,7 +5183,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_self_temporary",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       buffHealth: 2,
       duration: "this_turn"
     })
@@ -5209,7 +5209,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     })
@@ -5235,7 +5235,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "freeze",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     })
     .addCategory("norse_mythology")
@@ -5261,7 +5261,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "heal_self",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       value: 2
     })
     .addCategory("norse_mythology")
@@ -5286,7 +5286,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "discover",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       discoverType: "beast_from_deck"
     })
     .addCategory("norse_mythology")
@@ -5336,7 +5336,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "freeze",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .addCategory("norse_mythology")
@@ -5361,7 +5361,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "debuff",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       debuffAttack: -2,
       requiresTarget: true
     })
@@ -5424,7 +5424,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_self_temporary",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       buffHealth: 3,
       duration: "this_turn"
     })
@@ -5521,7 +5521,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "damage_conditional",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 3,
       condition: { attackLessOrEqual: 2 }
     })
@@ -5553,7 +5553,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "freeze_all",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     })
     .customProperty("onDamageTaken", {
       type: "freeze",
@@ -5588,7 +5588,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "heal_all",
-      targetType: "friendly_minions" as BattlecryTargetType,
+      targetType: "friendly_minions",
       value: 3
     })
     .customProperty("passive", {
@@ -5622,7 +5622,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "debuff_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       debuffAttack: -2
     })
     .customProperty("onAttack", {
@@ -5661,7 +5661,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "freeze",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     })
     .customProperty("passive", {
@@ -5696,7 +5696,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "heal",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       value: 2,
       requiresTarget: true
     })
@@ -5722,7 +5722,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_temporary",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       buffAttack: 0,
       buffHealth: 2,
       duration: "this_turn",
@@ -5750,7 +5750,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "heal",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       value: 2,
       requiresTarget: true
     })
@@ -5776,7 +5776,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "heal",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       value: 2,
       requiresTarget: true
     })
@@ -5803,7 +5803,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_temporary",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       buffAttack: 0,
       buffHealth: 2,
       duration: "this_turn",
@@ -5864,7 +5864,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "heal_all",
-      targetType: "friendly_minions" as BattlecryTargetType,
+      targetType: "friendly_minions",
       value: 3
     })
     .customProperty("passive", {
@@ -5905,7 +5905,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "buff_temporary_all",
-      targetType: "friendly_minions" as BattlecryTargetType,
+      targetType: "friendly_minions",
       buffAttack: 0,
       buffHealth: 2,
       duration: "this_turn"
@@ -5941,7 +5941,7 @@ export function registerNorseMythologyCards(): void {
     .addKeyword("battlecry")
     .battlecry({
       type: "heal_all",
-      targetType: "friendly_minions" as BattlecryTargetType,
+      targetType: "friendly_minions",
       value: 3
     })
     .customProperty("onHealed", {

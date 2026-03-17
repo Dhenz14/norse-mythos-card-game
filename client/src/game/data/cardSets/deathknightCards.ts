@@ -11,7 +11,7 @@
  * - Rune empowerment: Cards that interact with runes
  */
 import { debug } from '../../config/debugConfig';
-import { SpellTargetType, BattlecryTargetType } from "../../types";
+import { SpellTargetType } from "../../types";
 import { createCard } from "../cardManagement/cardBuilder";
 
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -40,7 +40,7 @@ export function registerDeathKnightCards(): void {
     .spellEffect({
       type: "death_coil",
       value: 3,
-      targetType: "any" as SpellTargetType,
+      targetType: "any",
       requiresTarget: true
     })
     .collectible(true)
@@ -60,7 +60,7 @@ export function registerDeathKnightCards(): void {
       type: "summon",
       summonCardId: 9051,
       value: 3,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .collectible(true)
     .build();
@@ -78,7 +78,7 @@ export function registerDeathKnightCards(): void {
     .spellEffect({
       type: "freeze_and_damage",
       value: 2,
-      targetType: "all_enemy_minions" as SpellTargetType
+      targetType: "all_enemy_minions"
     })
     .collectible(true)
     .build();
@@ -114,7 +114,7 @@ export function registerDeathKnightCards(): void {
     .spellEffect({
       type: "aoe_with_on_kill",
       value: 1,
-      targetType: "all_minions" as SpellTargetType
+      targetType: "all_minions"
     })
     .customProperty("healOnKill", 3)
     .collectible(true)
@@ -151,7 +151,7 @@ export function registerDeathKnightCards(): void {
     .spellEffect({
       type: "gain_armor_and_immunity",
       value: 5,
-      targetType: "friendly_hero" as SpellTargetType
+      targetType: "friendly_hero"
     })
     .customProperty("duration", "current_turn")
     .collectible(true)
@@ -169,7 +169,7 @@ export function registerDeathKnightCards(): void {
     .class("DeathKnight")
     .spellEffect({
       type: "mind_control_temporary",
-      targetType: "enemy_minion" as SpellTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     })
     .customProperty("condition", "attack_less_than_4")
@@ -222,7 +222,7 @@ export function registerDeathKnightCards(): void {
     .spellEffect({
       type: "resurrect_random",
       value: 1,
-      targetType: "none" as SpellTargetType
+      targetType: "none"
     })
     .collectible(true)
     .build();
@@ -240,7 +240,7 @@ export function registerDeathKnightCards(): void {
     .spellEffect({
       type: "buff_and_enchant",
       buffHealth: 2,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .customProperty("enchantEffect", {
@@ -278,7 +278,7 @@ export function registerDeathKnightCards(): void {
     .spellEffect({
       type: "gain_armor_and_lifesteal",
       value: 4,
-      targetType: "friendly_hero" as SpellTargetType
+      targetType: "friendly_hero"
     })
     .customProperty("duration", "current_turn")
     .collectible(true)
@@ -296,7 +296,7 @@ export function registerDeathKnightCards(): void {
     .class("DeathKnight")
     .spellEffect({
       type: "freeze_adjacent",
-      targetType: "enemy_minion" as SpellTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     })
     .collectible(true)
@@ -316,7 +316,7 @@ export function registerDeathKnightCards(): void {
       type: "buff_all_with_deathrattle",
       buffAttack: 1,
       buffHealth: 1,
-      targetType: "friendly_minions" as SpellTargetType
+      targetType: "friendly_minions"
     })
     .customProperty("deathrattleEffect", {
       type: "damage",
@@ -353,7 +353,7 @@ export function registerDeathKnightCards(): void {
     .class("DeathKnight")
     .spellEffect({
       type: "freeze_and_draw",
-      targetType: "any_enemy" as SpellTargetType,
+      targetType: "any_enemy",
       requiresTarget: true,
       drawCards: 1
     })
@@ -372,7 +372,7 @@ export function registerDeathKnightCards(): void {
     .class("DeathKnight")
     .spellEffect({
       type: "damage_based_on_missing_health",
-      targetType: "any" as SpellTargetType,
+      targetType: "any",
       requiresTarget: true
     })
     .customProperty("healValue", 3)
@@ -417,7 +417,7 @@ export function registerDeathKnightCards(): void {
       type: "buff_and_taunt",
       buffAttack: 2,
       buffHealth: 2,
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       requiresTarget: true
     })
     .collectible(true)

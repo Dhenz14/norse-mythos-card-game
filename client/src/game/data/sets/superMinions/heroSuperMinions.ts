@@ -8,7 +8,7 @@
  * ID Range: 95000-95999 (Super Minions)
  */
 
-import { CardData, BattlecryTargetType } from '../../../types';
+import { CardData } from '../../../types';
 
 /**
  * Hero-to-Super Minion linking data
@@ -237,7 +237,7 @@ export const heroSuperMinions: CardData[] = [
       type: "reveal_and_draw",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -260,7 +260,7 @@ export const heroSuperMinions: CardData[] = [
       type: "discover_spells",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     aura: {
       type: "spell_damage",
@@ -287,7 +287,7 @@ export const heroSuperMinions: CardData[] = [
       type: "draw_and_buff_self",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -311,7 +311,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_enemies",
       value: 6,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "return_to_hand_buffed",
@@ -339,7 +339,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_split",
       value: 8,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -363,7 +363,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_enemies",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     triggeredEffect: {
       trigger: "on_spell_cast",
@@ -391,7 +391,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_all_friendly_divine_shield",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -415,7 +415,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_enemies",
       value: 5,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     triggeredEffect: {
       trigger: "end_of_turn",
@@ -443,7 +443,7 @@ export const heroSuperMinions: CardData[] = [
       type: "extra_turn",
       value: 1,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -471,7 +471,7 @@ export const heroSuperMinions: CardData[] = [
       type: "destroy_and_draw",
       value: 5,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -495,7 +495,7 @@ export const heroSuperMinions: CardData[] = [
       type: "stealth_all_and_summon",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -519,7 +519,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_and_bounce",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -543,7 +543,7 @@ export const heroSuperMinions: CardData[] = [
       type: "conditional_destroy_summon",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -566,7 +566,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_all_attack",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     triggeredEffect: {
       trigger: "end_of_turn",
@@ -595,7 +595,7 @@ export const heroSuperMinions: CardData[] = [
       type: "destroy_extremes_gain_stats",
       value: 0,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -618,7 +618,7 @@ export const heroSuperMinions: CardData[] = [
       type: "resurrect_buff",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -647,7 +647,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_enemies",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "summon_with_triggered",
@@ -677,7 +677,7 @@ export const heroSuperMinions: CardData[] = [
       type: "overkill_cleave",
       value: 10,
       requiresTarget: true,
-      targetType: BattlecryTargetType.ANY_MINION
+      targetType: 'any_minion'
     },
     collectible: true
   },
@@ -701,7 +701,7 @@ export const heroSuperMinions: CardData[] = [
       type: "destroy_low_health_summon",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "resurrect_self",
@@ -734,7 +734,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_enemies_armor",
       value: 5,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "summon_multiple",
@@ -765,7 +765,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_from_damaged",
       value: 1,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -789,7 +789,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_buff_self",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -812,7 +812,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_attack_draw_on_kill",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -835,7 +835,7 @@ export const heroSuperMinions: CardData[] = [
       type: "summon_pair",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -859,7 +859,7 @@ export const heroSuperMinions: CardData[] = [
       type: "equip_weapon_summon",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -887,7 +887,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_enemies_armor",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "summon",
@@ -916,7 +916,7 @@ export const heroSuperMinions: CardData[] = [
       type: "discover_weapon_buff_all",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -944,7 +944,7 @@ export const heroSuperMinions: CardData[] = [
       type: "silence_freeze_draw",
       value: 0,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -967,7 +967,7 @@ export const heroSuperMinions: CardData[] = [
       type: "destroy_gain_armor",
       value: 0,
       requiresTarget: true,
-      targetType: BattlecryTargetType.ENEMY_MINION
+      targetType: 'enemy_minion'
     },
     deathrattle: {
       type: "summon",
@@ -996,7 +996,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_taunt_reveal_draw",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1019,7 +1019,7 @@ export const heroSuperMinions: CardData[] = [
       type: "divine_shield_all_immune",
       value: 0,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "heal_all_friendly",
@@ -1045,7 +1045,7 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "give_divine_shield",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1073,7 +1073,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_lifesteal_heal",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     aura: {
       type: "double_healing"
@@ -1099,7 +1099,7 @@ export const heroSuperMinions: CardData[] = [
       type: "heal_all_protect",
       value: 99,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1123,7 +1123,7 @@ export const heroSuperMinions: CardData[] = [
       type: "summon_copy",
       value: 0,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "buff_random_friendly",
@@ -1150,7 +1150,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff",
       buffAttack: 2,
       buffHealth: 2,
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       requiresTarget: false
     },
     collectible: true
@@ -1173,7 +1173,7 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "mind_control_random",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1195,7 +1195,7 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "mind_control_random",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1217,7 +1217,7 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "freeze",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1241,7 +1241,7 @@ export const heroSuperMinions: CardData[] = [
       type: "heal_hero",
       value: 15,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     triggeredEffect: {
       trigger: "end_of_turn",
@@ -1274,7 +1274,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_grant_deathrattle_draw",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1297,7 +1297,7 @@ export const heroSuperMinions: CardData[] = [
       type: "summon_growing_pair",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1320,7 +1320,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_from_treants_summon",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1342,7 +1342,7 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "give_divine_shield",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1365,7 +1365,7 @@ export const heroSuperMinions: CardData[] = [
       type: "fill_hand_discount_armor",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1391,7 +1391,7 @@ export const heroSuperMinions: CardData[] = [
       summonAttack: 3,
       summonHealth: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1420,7 +1420,7 @@ export const heroSuperMinions: CardData[] = [
       type: "freeze_all_summon",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1444,7 +1444,7 @@ export const heroSuperMinions: CardData[] = [
       type: "summon_with_death_buff",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1467,7 +1467,7 @@ export const heroSuperMinions: CardData[] = [
       type: "bounce_weak_summon",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1490,7 +1490,7 @@ export const heroSuperMinions: CardData[] = [
       type: "summon_all_totems_buff",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1514,7 +1514,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_summon",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1543,7 +1543,7 @@ export const heroSuperMinions: CardData[] = [
       type: "copy_strongest_buff",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "return_to_hand"
@@ -1569,7 +1569,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_split_restealth",
       value: 8,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1593,7 +1593,7 @@ export const heroSuperMinions: CardData[] = [
       type: "destroy_deathrattle_buff",
       value: 1,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1617,7 +1617,7 @@ export const heroSuperMinions: CardData[] = [
       type: "copy_lowest_free",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1640,7 +1640,7 @@ export const heroSuperMinions: CardData[] = [
       type: "bounce_free_draw",
       value: 3,
       requiresTarget: true,
-      targetType: BattlecryTargetType.FRIENDLY_MINION
+      targetType: 'friendly_minion'
     },
     collectible: true
   },
@@ -1663,7 +1663,7 @@ export const heroSuperMinions: CardData[] = [
       type: "stealth_all_damage",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1692,7 +1692,7 @@ export const heroSuperMinions: CardData[] = [
       type: "freeze_damage_buff",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1715,7 +1715,7 @@ export const heroSuperMinions: CardData[] = [
       type: "recruit_beasts_buff",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1739,7 +1739,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_hero_execute",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1762,7 +1762,7 @@ export const heroSuperMinions: CardData[] = [
       type: "chain_damage",
       value: 5,
       requiresTarget: true,
-      targetType: BattlecryTargetType.ANY
+      targetType: 'any'
     },
     collectible: true
   },
@@ -1785,7 +1785,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_immune",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1809,7 +1809,7 @@ export const heroSuperMinions: CardData[] = [
       type: "summon_beast_synergy",
       value: 5,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1838,7 +1838,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_draw_on_kill",
       value: 6,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1862,7 +1862,7 @@ export const heroSuperMinions: CardData[] = [
       type: "summon_from_dead_beasts",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1890,7 +1890,7 @@ export const heroSuperMinions: CardData[] = [
       type: "sacrifice_all_summon",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "summon_multiple",
@@ -1919,7 +1919,7 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "grant_stealth",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1943,7 +1943,7 @@ export const heroSuperMinions: CardData[] = [
       type: "bounce_all_increase_cost",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1965,7 +1965,7 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "discover",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -1988,7 +1988,7 @@ export const heroSuperMinions: CardData[] = [
       type: "summon_totems_draw",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2016,7 +2016,7 @@ export const heroSuperMinions: CardData[] = [
       type: "destroy_weak_buff",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2039,7 +2039,7 @@ export const heroSuperMinions: CardData[] = [
       type: "set_all_stats_draw",
       value: 3,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2063,7 +2063,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_split_poison",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2087,7 +2087,7 @@ export const heroSuperMinions: CardData[] = [
       type: "heal_all_grant_reborn",
       value: 99,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2116,7 +2116,7 @@ export const heroSuperMinions: CardData[] = [
       type: "damage_all_poison",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     deathrattle: {
       type: "damage_enemy_hero",
@@ -2150,7 +2150,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_all_friendly_divine_shield",
       value: 0,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2199,7 +2199,7 @@ export const heroSuperMinions: CardData[] = [
       type: "buff_all_friendly_attack_lifesteal",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2224,7 +2224,7 @@ export const heroSuperMinions: CardData[] = [
       type: "freeze_all_damage_hero",
       value: 2,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2251,7 +2251,7 @@ export const heroSuperMinions: CardData[] = [
     battlecry: {
       type: "stealth_all_friendly",
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2276,7 +2276,7 @@ export const heroSuperMinions: CardData[] = [
       type: "destroy_low_attack_summon_shades",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   },
@@ -2300,7 +2300,7 @@ export const heroSuperMinions: CardData[] = [
       type: "full_heal_and_aoe",
       value: 4,
       requiresTarget: false,
-      targetType: BattlecryTargetType.NONE
+      targetType: 'none'
     },
     collectible: true
   }

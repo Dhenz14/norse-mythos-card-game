@@ -12,7 +12,7 @@
  */
 import { debug } from '../../config/debugConfig';
 import { createCard } from '../cardManagement';
-import { BattlecryTargetType, SpellTargetType } from '../../types';
+import { SpellTargetType } from '../../types';
 
 const IS_DEV = import.meta.env?.DEV ?? false;
 
@@ -155,7 +155,7 @@ export function registerMageCards(): void {
     .class("Mage")
     .spellEffect({
       type: "transform",
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true,
       summonCardId: 14010
     })
@@ -212,7 +212,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "conditional_freeze_or_damage",
       value: 4,
-      targetType: "any" as SpellTargetType,
+      targetType: "any",
       requiresTarget: true,
       condition: "is_frozen"
     })
@@ -233,7 +233,7 @@ export function registerMageCards(): void {
       type: "discover",
       discoveryType: "minion",
       discoveryCount: 1,
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       requiresTarget: false
     })
     .customProperty("manaReduction", 3)
@@ -275,7 +275,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage",
       value: 2,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .customProperty("spellDamageMultiplier", 2)
@@ -294,7 +294,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage",
       value: 3,
-      targetType: "random_enemies" as SpellTargetType,
+      targetType: "random_enemies",
       requiresTarget: false
     })
     .customProperty("isRandomlySplit", true)
@@ -313,7 +313,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage",
       value: 6,
-      targetType: "any_character" as SpellTargetType,
+      targetType: "any_character",
       requiresTarget: true
     })
     .collectible(true)
@@ -331,7 +331,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "aoe_damage",
       value: 0,
-      targetType: "all_enemy_minions" as SpellTargetType,
+      targetType: "all_enemy_minions",
       requiresTarget: false
     })
     .customProperty("freezeTarget", true)
@@ -350,7 +350,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage",
       value: 3,
-      targetType: "any_character" as SpellTargetType,
+      targetType: "any_character",
       requiresTarget: true
     })
     .customProperty("freezeTarget", true)
@@ -369,7 +369,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "draw",
       value: 2,
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       requiresTarget: false
     })
     .collectible(true)
@@ -387,7 +387,7 @@ export function registerMageCards(): void {
     .addKeyword("transform")
     .spellEffect({
       type: "transform",
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true,
       transformInto: 31025
     })
@@ -407,7 +407,7 @@ export function registerMageCards(): void {
       type: "summon",
       summonCardId: 32031, // Mirror Image token
       count: 2,
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       requiresTarget: false
     })
     .collectible(true)
@@ -424,7 +424,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "aoe_damage",
       value: 2,
-      targetType: "all_enemy_minions" as SpellTargetType,
+      targetType: "all_enemy_minions",
       requiresTarget: false
     })
     .customProperty("freezeTarget", true)
@@ -443,7 +443,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "aoe_damage",
       value: 4,
-      targetType: "all_enemy_minions" as SpellTargetType,
+      targetType: "all_enemy_minions",
       requiresTarget: false
     })
     .collectible(true)
@@ -461,7 +461,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "cleave_damage",
       value: 1,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .customProperty("freezeTarget", true)
@@ -480,7 +480,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "aoe_damage",
       value: 1,
-      targetType: "all_enemy_minions" as SpellTargetType,
+      targetType: "all_enemy_minions",
       requiresTarget: false
     })
     .collectible(true)
@@ -498,7 +498,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage",
       value: 10,
-      targetType: "any_character" as SpellTargetType,
+      targetType: "any_character",
       requiresTarget: true
     })
     .collectible(true)
@@ -516,7 +516,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage",
       value: 8,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .collectible(true)
@@ -534,7 +534,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage",
       value: 4,
-      targetType: "any_character" as SpellTargetType,
+      targetType: "any_character",
       requiresTarget: true
     })
     .customProperty("costReductionPerDeadMinion", 1)
@@ -555,7 +555,7 @@ export function registerMageCards(): void {
       discoveryType: "spell",
       discoveryClass: "Mage",
       discoveryCount: 3,
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       requiresTarget: false,
       autoSelect: true
     })
@@ -659,7 +659,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "cleave_damage",
       value: 3,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true
     })
     .collectible(true)
@@ -676,7 +676,7 @@ export function registerMageCards(): void {
     .class("Mage")
     .spellEffect({
       type: "destroy",
-      targetType: "frozen_minion" as SpellTargetType,
+      targetType: "frozen_minion",
       requiresTarget: true,
       condition: "is_frozen"
     })
@@ -695,7 +695,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage_and_shuffle",
       value: 3,
-      targetType: "any_character" as SpellTargetType,
+      targetType: "any_character",
       requiresTarget: true,
       shuffleCardId: 32033
     })
@@ -716,7 +716,7 @@ export function registerMageCards(): void {
       discoveryType: "spell",
       discoveryClass: "Mage",
       discoveryCount: 3,
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       requiresTarget: false,
       autoSelect: true
     })
@@ -736,7 +736,7 @@ export function registerMageCards(): void {
       type: "conditional_damage",
       value: 4,
       enhancedValue: 8,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true,
       condition: "is_frozen"
     })
@@ -755,7 +755,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "cleave_damage_with_freeze",
       value: 4,
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true,
       freezeAdjacent: true
     })
@@ -773,7 +773,7 @@ export function registerMageCards(): void {
     .class("Mage")
     .spellEffect({
       type: "draw_and_damage",
-      targetType: "any_character" as SpellTargetType,
+      targetType: "any_character",
       requiresTarget: true,
       drawCards: 1,
       damageBasedOnDrawnCardCost: true
@@ -793,7 +793,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "cost_reduction",
       value: 2,
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       requiresTarget: false,
       specificRace: "elemental",
       temporaryEffect: true
@@ -813,7 +813,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "draw_both",
       value: 2,
-      targetType: "none" as SpellTargetType,
+      targetType: "none",
       requiresTarget: false
     })
     .collectible(true)
@@ -830,7 +830,7 @@ export function registerMageCards(): void {
     .class("Mage")
     .spellEffect({
       type: "conditional_freeze_or_destroy",
-      targetType: "any_minion" as SpellTargetType,
+      targetType: "any_minion",
       requiresTarget: true,
       condition: "is_frozen"
     })
@@ -878,7 +878,7 @@ export function registerMageCards(): void {
     .spellEffect({
       type: "damage",
       value: 6,
-      targetType: "any_character" as SpellTargetType,
+      targetType: "any_character",
       requiresTarget: true
     })
     .collectible(false)
