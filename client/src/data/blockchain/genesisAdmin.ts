@@ -54,7 +54,7 @@ export async function broadcastGenesis(): Promise<HiveBroadcastResult> {
 
 	let readerHash = '';
 	try {
-		const wasmBinary = await fetch('/engine.wasm').then(r => r.arrayBuffer());
+		const wasmBinary = await fetch(import.meta.env.BASE_URL + 'engine.wasm').then(r => r.arrayBuffer());
 		const hashBuffer = await crypto.subtle.digest('SHA-256', wasmBinary);
 		readerHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 	} catch (err) {
@@ -125,7 +125,7 @@ export async function buildUnsignedGenesisTx(): Promise<UnsignedGenesisTx> {
 
 	let readerHash = '';
 	try {
-		const wasmBinary = await fetch('/engine.wasm').then(r => r.arrayBuffer());
+		const wasmBinary = await fetch(import.meta.env.BASE_URL + 'engine.wasm').then(r => r.arrayBuffer());
 		const hashBuffer = await crypto.subtle.digest('SHA-256', wasmBinary);
 		readerHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 	} catch {

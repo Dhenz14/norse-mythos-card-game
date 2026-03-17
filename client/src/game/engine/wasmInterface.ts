@@ -43,7 +43,7 @@ export async function initializeWasm(): Promise<boolean> {
 	if (wasmExports) return true;
 
 	try {
-		const response = await fetch('/engine.wasm');
+		const response = await fetch(import.meta.env.BASE_URL + 'engine.wasm');
 		if (!response.ok) {
 			loadError = 'WASM module not found at /engine.wasm';
 			return false;
