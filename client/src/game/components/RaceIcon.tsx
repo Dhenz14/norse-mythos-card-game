@@ -12,8 +12,8 @@ export interface RaceIconProps {
  * 
  * Used to replace the text race indicator with a visual element
  */
-export const RaceIcon: React.FC<RaceIconProps> = ({ 
-  race, 
+export const RaceIcon: React.FC<RaceIconProps> = React.memo(({
+  race,
   rarity = 'common',
   scale = 1
 }) => {
@@ -83,6 +83,6 @@ export const RaceIcon: React.FC<RaceIconProps> = ({
       <span className="race-icon-symbol">{symbol}</span>
     </div>
   );
-};
+});
 
 export default RaceIcon;

@@ -1,3 +1,5 @@
+import { shuffleArray } from '../utils/seededRng';
+
 export type DailyQuestType =
 	| 'win_games'
 	| 'play_minions'
@@ -41,6 +43,6 @@ export const QUEST_POOL: QuestTemplate[] = [
 
 export function pickRandomQuests(count: number, exclude: string[] = []): QuestTemplate[] {
 	const available = QUEST_POOL.filter(q => !exclude.includes(q.title));
-	const shuffled = [...available].sort(() => Math.random() - 0.5);
+	const shuffled = shuffleArray(available);
 	return shuffled.slice(0, count);
 }

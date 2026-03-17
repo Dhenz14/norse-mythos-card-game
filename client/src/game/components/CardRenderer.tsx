@@ -46,7 +46,7 @@ interface CardRendererProps {
 /**
  * Pure rendering component for cards with no transformation logic
  */
-export const CardRenderer: React.FC<CardRendererProps> = ({
+export const CardRenderer: React.FC<CardRendererProps> = React.memo(({
   card,
   renderQuality = 'high',
   use3D = true,
@@ -242,6 +242,6 @@ export const CardRenderer: React.FC<CardRendererProps> = ({
       )}
     </div>
   );
-};
+});
 
 export default CardRenderer;

@@ -26,3 +26,21 @@ export function seededShuffle<T>(arr: T[], rng: () => number): T[] {
 	}
 	return result;
 }
+
+/** Proper Fisher-Yates shuffle using Math.random() (for non-P2P, single-player contexts). */
+export function shuffleArray<T>(arr: T[]): T[] {
+	const result = [...arr];
+	for (let i = result.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[result[i], result[j]] = [result[j], result[i]];
+	}
+	return result;
+}
+
+/** In-place Fisher-Yates shuffle using Math.random(). Mutates the array. */
+export function shuffleInPlace<T>(arr: T[]): void {
+	for (let i = arr.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[arr[i], arr[j]] = [arr[j], arr[i]];
+	}
+}

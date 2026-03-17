@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { debug } from '../../config/debugConfig';
 import { usePeerStore } from '../../stores/peerStore';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import RagnarokChessGame from '../chess/RagnarokChessGame';
@@ -37,7 +38,7 @@ export const MultiplayerGame: React.FC = () => {
 					// Host already has a running peer from the initial host() call in handleMatchmakingStart
 					// The client will connect to us - no action needed
 				} catch (err) {
-					console.error('Failed to connect to opponent:', err);
+					debug.error('Failed to connect to opponent:', err);
 				}
 			};
 			connectToOpponent();
@@ -58,7 +59,7 @@ export const MultiplayerGame: React.FC = () => {
 			try {
 				await host();
 			} catch (err) {
-				console.error('[MultiplayerGame] Failed to initialize peer for matchmaking:', err);
+				debug.error('[MultiplayerGame] Failed to initialize peer for matchmaking:', err);
 				return;
 			}
 		}

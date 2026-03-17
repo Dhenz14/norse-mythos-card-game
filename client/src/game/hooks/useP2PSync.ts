@@ -170,7 +170,7 @@ export function useP2PSync() {
 		if (!seedResolvedRef.current) {
 			const timeout = setTimeout(() => {
 				if (!seedResolvedRef.current) {
-					console.error('[useP2PSync] Seed exchange timed out after 10s');
+					debug.error('[useP2PSync] Seed exchange timed out after 10s');
 					toast.error('Seed exchange timed out. Disconnecting.', { duration: 5000 });
 					usePeerStore.getState().disconnect();
 				}
@@ -191,7 +191,7 @@ export function useP2PSync() {
 		if (!connection) return;
 
 		const handleClose = () => {
-			console.warn('[useP2PSync] Connection to opponent closed');
+			debug.warn('[useP2PSync] Connection to opponent closed');
 			// Clean up pending result to prevent stale closures
 			if (pendingResultRef.current) {
 				pendingResultRef.current.reject(new Error('Connection closed'));
@@ -222,7 +222,7 @@ export function useP2PSync() {
 						trxId1: matchSeed,
 						trxId2: `disconnect_turn_${gs.turnNumber}_${Date.now()}`,
 						notes: `Opponent disconnected mid-match at turn ${gs.turnNumber}`,
-					}).catch(err => console.warn('[useP2PSync] Failed to submit fake_disconnect slash:', err));
+					}).catch(err => debug.warn('[useP2PSync] Failed to submit fake_disconnect slash:', err));
 				}
 			}
 		};
@@ -266,7 +266,7 @@ export function useP2PSync() {
 					if (!gs) break;
 					const myHash = await computeStateHash(gs);
 					if (myHash !== data.stateHash) {
-						console.error(`[useP2PSync] State hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
+						debug.error(`[useP2PSync] State hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
 						send({ type: 'hash_mismatch', turnNumber: data.turnNumber, myHash });
 						toast.error('State verification failed', {
 							description: 'Game state diverged from opponent. Possible cheating detected.',
@@ -285,7 +285,7 @@ export function useP2PSync() {
 									trxId1: matchSeed,
 									trxId2: `hash_check_fail_turn_${data.turnNumber}_${myHash.slice(0, 16)}`,
 									notes: `Hash check failed at turn ${data.turnNumber}. Local: ${myHash.slice(0, 16)}, remote: ${data.stateHash.slice(0, 16)}`,
-								}).catch(err => console.warn('[useP2PSync] Failed to submit forged_move slash:', err));
+								}).catch(err => debug.warn('[useP2PSync] Failed to submit forged_move slash:', err));
 							}
 						}
 					}
@@ -293,7 +293,7 @@ export function useP2PSync() {
 				}
 
 				case 'hash_mismatch':
-					console.error(`[useP2PSync] Opponent reports hash mismatch at turn ${data.turnNumber}: theirHash=${data.myHash.slice(0, 16)}`);
+					debug.error(`[useP2PSync] Opponent reports hash mismatch at turn ${data.turnNumber}: theirHash=${data.myHash.slice(0, 16)}`);
 					toast.error('State verification failed', {
 						description: 'Opponent detected state divergence. Game integrity compromised.',
 						duration: 8000,
@@ -310,7 +310,7 @@ export function useP2PSync() {
 								trxId1: matchSeed,
 								trxId2: `hash_mismatch_turn_${data.turnNumber}_${data.myHash.slice(0, 16)}`,
 								notes: `State hash mismatch at turn ${data.turnNumber}. Opponent hash: ${data.myHash.slice(0, 16)}`,
-							}).catch(err => console.warn('[useP2PSync] Failed to submit forged_move slash:', err));
+							}).catch(err => debug.warn('[useP2PSync] Failed to submit forged_move slash:', err));
 						}
 					}
 					break;
@@ -326,13 +326,13 @@ export function useP2PSync() {
 					const theirSalt = data.salt;
 					const theirCommitment = theirCommitmentRef.current;
 					if (!theirCommitment) {
-						console.warn('[useP2PSync] Received seed_reveal before seed_commit');
+						debug.warn('[useP2PSync] Received seed_reveal before seed_commit');
 						break;
 					}
 
 					const expectedCommitment = await sha256Hash(theirSalt);
 					if (expectedCommitment !== theirCommitment) {
-						console.error('[useP2PSync] Seed commitment mismatch — possible cheating');
+						debug.error('[useP2PSync] Seed commitment mismatch — possible cheating');
 						toast.error('Seed verification failed. Disconnecting.', { duration: 5000 });
 						usePeerStore.getState().disconnect();
 						break;
@@ -439,7 +439,7 @@ export function useP2PSync() {
 					break;
 
 				case 'opponentDisconnected':
-					console.warn('[useP2PSync] Opponent disconnected from game');
+					debug.warn('[useP2PSync] Opponent disconnected from game');
 					toast.error('Opponent disconnected.', { duration: 8000 });
 					break;
 
@@ -506,10 +506,10 @@ export function useP2PSync() {
 										trxId1: existingTrxId,
 										trxId2: data.hash,
 										notes: `Duplicate match result proposed for matchId ${data.result.matchId}`,
-									}).catch(err => console.warn('[useP2PSync] Failed to submit double_result slash:', err));
+									}).catch(err => debug.warn('[useP2PSync] Failed to submit double_result slash:', err));
 								}
 							})
-							.catch(err => console.warn('[useP2PSync] Failed to check existing match result:', err));
+							.catch(err => debug.warn('[useP2PSync] Failed to check existing match result:', err));
 					}
 
 					const gs = useGameStore.getState().gameState;
@@ -563,7 +563,7 @@ export function useP2PSync() {
 				}
 
 				default:
-					console.warn('[useP2PSync] Unknown message type:', (data as any).type);
+					debug.warn('[useP2PSync] Unknown message type:', (data as any).type);
 			}
 		};
 

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Difficulty } from './campaignTypes';
 import { getNFTBridge } from '../nft';
+import { debug } from '../config/debugConfig';
 
 interface MissionCompletion {
 	difficulty: Difficulty;
@@ -68,7 +69,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 				if (getNFTBridge().isHiveMode()) {
 					getNFTBridge().claimReward(`campaign:${missionId}`)
 					.then(r => { if (r.success && r.trxId) getNFTBridge().emitTransactionConfirmed(r.trxId); })
-					.catch(() => {});
+					.catch(err => debug.warn('[campaignStore] Reward claim failed:', err));
 				}
 			},
 

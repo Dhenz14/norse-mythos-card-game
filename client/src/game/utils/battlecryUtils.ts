@@ -3734,7 +3734,7 @@ function executeDrawBattlecry(
           })();
           a.volume = 0.7;
           a.currentTime = 0;
-          a.play().catch(() => {});
+          a.play().catch(err => debug.warn('[battlecryUtils] Audio play blocked:', err));
         } catch { /* no audio */ }
       }
     }, 100);

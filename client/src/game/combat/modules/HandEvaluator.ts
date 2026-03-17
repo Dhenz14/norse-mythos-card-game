@@ -12,6 +12,7 @@ import {
   HAND_DAMAGE_MULTIPLIERS,
   HAND_RANK_NAMES
 } from '../../types/PokerCombatTypes';
+import { debug } from '../../config/debugConfig';
 
 /**
  * Evaluate a 5-card poker hand and return its rank
@@ -142,7 +143,7 @@ export function findBestHand(holeCards: PokerCard[], communityCards: PokerCard[]
   if (allCards.length < 5) {
     const sortedCards = allCards.sort((a, b) => b.numericValue - a.numericValue);
     if (sortedCards.length === 0) {
-      console.warn('[HandEvaluator] findBestHand called with 0 cards — returning fallback High Card');
+      debug.warn('[HandEvaluator] findBestHand called with 0 cards — returning fallback High Card');
       return {
         rank: PokerHandRank.HIGH_CARD,
         cards: [],

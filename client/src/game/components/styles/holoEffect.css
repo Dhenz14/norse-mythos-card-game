@@ -50,12 +50,12 @@
 
 .holo-foil {
 	z-index: 5;
-	will-change: opacity, background-position;
+	will-change: opacity;
 }
 
 .holo-glitter {
 	z-index: 5;
-	will-change: opacity, background-position;
+	will-change: opacity;
 }
 
 .holo-glare {

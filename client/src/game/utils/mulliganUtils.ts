@@ -1,6 +1,7 @@
 import { GameState, CardInstance } from '../types';
 import { drawCards } from './cards/cardUtils';
 import { getManaCost } from './cards/typeGuards';
+import { shuffleInPlace } from './seededRng';
 
 export interface MulliganState {
   active: boolean;
@@ -100,8 +101,7 @@ export function completeMulligan(state: GameState): GameState {
       ...playerSelectedCards.map(card => card.card)
     ];
     
-    // Shuffle deck (basic implementation)
-    newState.players.player.deck.sort(() => Math.random() - 0.5);
+    shuffleInPlace(newState.players.player.deck);
     
     // Draw new cards equal to the number of replaced cards
     const { drawnCards, remainingDeck } = drawCards(
@@ -128,8 +128,7 @@ export function completeMulligan(state: GameState): GameState {
       ...opponentSelectedCards.map(card => card.card)
     ];
     
-    // Shuffle deck
-    newState.players.opponent.deck.sort(() => Math.random() - 0.5);
+    shuffleInPlace(newState.players.opponent.deck);
     
     // Draw new cards equal to the number of replaced cards
     const { drawnCards, remainingDeck } = drawCards(

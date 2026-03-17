@@ -23,6 +23,7 @@ import { debug } from '../../config/debugConfig';
 import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../../constants/gameConstants';
 import { checkPetEvolutionTrigger } from '../petEvolutionTriggers';
 import { addKeyword, removeKeyword, clearKeywords, hasKeyword } from '../cards/keywordUtils';
+import { shuffleInPlace, shuffleArray } from '../seededRng';
 
 function getSpellEffectType(effectType: string): SpellEffectType {
   const typeMap: Record<string, SpellEffectType> = {
@@ -3464,15 +3465,14 @@ function executeShuffleIntoDeckSpell(
     if (playerIdx !== -1) {
       const minion = player.battlefield.splice(playerIdx, 1)[0];
       (player.deck as any[]).push(minion);
-      // Shuffle
-      player.deck.sort(() => Math.random() - 0.5);
+      shuffleInPlace(player.deck);
     }
-    
+
     const oppIdx = opponent.battlefield.findIndex(m => m.instanceId === targetId);
     if (oppIdx !== -1) {
       const minion = opponent.battlefield.splice(oppIdx, 1)[0];
       (opponent.deck as any[]).push(minion);
-      opponent.deck.sort(() => Math.random() - 0.5);
+      shuffleInPlace(opponent.deck);
     }
   } else if (effect.shuffleCardId) {
     // Shuffle a specific card into deck
@@ -3486,12 +3486,12 @@ function executeShuffleIntoDeckSpell(
         isSummoningSick: true,
         attacksPerformed: 0
       };
-      
-      const deck = currentPlayer === 'player' ? 
-        newState.players.player.deck : 
+
+      const deck = currentPlayer === 'player' ?
+        newState.players.player.deck :
         newState.players.opponent.deck;
       (deck as any[]).push(instance);
-      deck.sort(() => Math.random() - 0.5);
+      shuffleInPlace(deck);
     }
   }
   
@@ -5221,7 +5221,7 @@ function executeReplaySpellsSpell(
     .filter((c: any): c is CardData => c != null && c.type === 'spell');
 
   // Pick random spells to replay (up to spellCount)
-  const shuffled = [...castSpells].sort(() => Math.random() - 0.5);
+  const shuffled = shuffleArray(castSpells);
   const toReplay = shuffled.slice(0, Math.min(spellCount, shuffled.length));
 
   for (const spell of toReplay) {

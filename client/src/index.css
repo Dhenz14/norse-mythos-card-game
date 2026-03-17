@@ -172,7 +172,7 @@ canvas {
   transform-style: preserve-3d;
   perspective: 1000px;
   z-index: 30;
-  will-change: transform, box-shadow;
+  will-change: transform;
 }
 
 /* Apply optimal scale to battlefield cards */
