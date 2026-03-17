@@ -99,19 +99,30 @@ export function useMatchmaking() {
 			setQueuePosition(data.position || null);
 
 			const interval = window.setInterval(async () => {
-				const statusResponse = await fetch(`${API_BASE}/api/matchmaking/status/${myPeerId}`);
-				const statusData = await statusResponse.json();
+				try {
+					const statusResponse = await fetch(`${API_BASE}/api/matchmaking/status/${myPeerId}`);
+					if (!statusResponse.ok) return;
+					const statusData = await statusResponse.json();
 
-				if (statusData.success && statusData.status === 'matched') {
-					setStatus('matched');
-					setOpponent(statusData.opponentPeerId, statusData.isHost);
-					setQueuePosition(null);
+					if (statusData.success && statusData.status === 'matched') {
+						setStatus('matched');
+						setOpponent(statusData.opponentPeerId, statusData.isHost);
+						setQueuePosition(null);
+						if (pollIntervalRef.current) {
+							clearInterval(pollIntervalRef.current);
+							pollIntervalRef.current = null;
+						}
+					} else if (statusData.success && statusData.status === 'queued') {
+						setQueuePosition(statusData.position || null);
+					}
+				} catch {
+					// Server unavailable — stop polling
 					if (pollIntervalRef.current) {
 						clearInterval(pollIntervalRef.current);
 						pollIntervalRef.current = null;
 					}
-				} else if (statusData.success && statusData.status === 'queued') {
-					setQueuePosition(statusData.position || null);
+					setError('Matchmaking server unavailable');
+					setStatus('error');
 				}
 			}, 2000);
 

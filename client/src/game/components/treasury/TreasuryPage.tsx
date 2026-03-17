@@ -777,25 +777,25 @@ export default function TreasuryPage() {
 	}, []);
 
 	const fetchAll = useCallback(async () => {
+		const safeJson = async (url: string) => {
+			const r = await fetch(url);
+			if (!r.ok) throw new Error(`Server unavailable (${r.status})`);
+			return r.json();
+		};
 		try {
 			const [statusRes, signersRes, txRes, vouchRes] = await Promise.all([
-				fetch(`${API_BASE}/status`).then(r => r.json()),
-				fetch(`${API_BASE}/signers`).then(r => r.json()),
-				fetch(`${API_BASE}/transactions?limit=20`).then(r => r.json()),
-				fetch(`${API_BASE}/wot/vouches`).then(r => r.json()),
+				safeJson(`${API_BASE}/status`),
+				safeJson(`${API_BASE}/signers`),
+				safeJson(`${API_BASE}/transactions?limit=20`),
+				safeJson(`${API_BASE}/wot/vouches`),
 			]);
 			setStatus(statusRes);
 			setSigners(signersRes);
 			setTransactions(txRes);
 			setVouches(vouchRes);
 			setError(null);
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : 'Failed to fetch treasury data';
-			if (msg.includes('Unexpected token') || msg.includes('<!DOCTYPE')) {
-				setError('Treasury requires a running game server. This feature is unavailable on static hosting.');
-			} else {
-				setError(msg);
-			}
+		} catch {
+			setError('Treasury requires a running game server. This feature is unavailable on static hosting.');
 		}
 	}, []);
 
