@@ -1,5 +1,4 @@
 import { CardData } from '../../../../types';
-import { BattlecryTargetType } from '../../../../types';
 import norseArtifacts from './artifacts';
 import norseArmorCards from './armorCards';
 
@@ -28,7 +27,7 @@ const norseGods: CardData[] = [
     keywords: ["divine_shield", "battlecry", "deathrattle"],
     battlecry: {
       type: "grant_divine_shield",
-      targetType: "friendly_minions" as BattlecryTargetType
+      targetType: "friendly_minions"
     },
     deathrattle: {
       type: "heal_hero",
@@ -86,7 +85,7 @@ const norseGods: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "discover",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       discoverCount: 3,
       discoverSource: "deck"
     },
@@ -113,7 +112,7 @@ const norseGods: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "summon",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       summonCardId: 4385,
       summonCount: 2
     },
@@ -140,7 +139,7 @@ const norseGods: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "draw_and_freeze",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     },
     onAttack: {
       type: 'apply_status',
@@ -172,7 +171,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "summon",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       summonCardId: 20621,
       summonCount: 2
     },
@@ -202,7 +201,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "destroy",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     },
     endOfTurn: {
@@ -234,7 +233,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "resurrect_random_buffed",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 1,
       buffHealth: 1
     },
@@ -267,7 +266,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 1
     },
     endOfTurn: {
@@ -299,7 +298,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "destroy_low_health",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       healthThreshold: 2
     },
     endOfTurn: {
@@ -331,7 +330,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "summon",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4311,
       summonCount: 2
     },
@@ -360,7 +359,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "destroy_and_summon",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true,
       attackThreshold: 4,
       summonCardId: 4312
@@ -389,7 +388,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "damage_all",
-      targetType: "all_other_minions" as BattlecryTargetType,
+      targetType: "all_other_minions",
       value: 3
     },
     aura: {
@@ -452,7 +451,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["battlecry", "deathrattle"],
     battlecry: {
       type: "summon",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4340,
       summonCount: 1
     },
@@ -483,7 +482,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["lifesteal", "battlecry"],
     battlecry: {
       type: "aura_debuff",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       debuffAttack: -2,
       condition: "while_alive"
     },
@@ -561,7 +560,7 @@ const norseLegendaryCreatures: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "silence_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       duration: "until_next_turn"
     },
     onDamage: {
@@ -644,7 +643,7 @@ const norseLegendaryCreatures: CardData[] = [
     },
     battlecry: {
       type: "destroy",
-      targetType: "random_enemy_minion" as BattlecryTargetType,
+      targetType: "random_enemy_minion",
       requiresTarget: false
     },
     categories: ["norse_mythology", "mythological_legendary"],
@@ -696,7 +695,7 @@ const fireElementLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_and_scale",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 2
     },
     onAttack: {
@@ -750,7 +749,7 @@ const fireElementLegendaries: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_and_grant_deathrattle",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       buffAttack: 2,
       buffHealth: 2,
       summonCardId: 4361,
@@ -780,7 +779,7 @@ const fireElementLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "destroy_frozen_and_damage",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       damagePerMinion: 3
     },
     onAttack: {
@@ -807,7 +806,7 @@ const fireElementLegendaries: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "conditional_damage",
-      targetType: "enemy_character" as BattlecryTargetType,
+      targetType: "enemy_character",
       value: 3,
       requiresTarget: true
     },
@@ -841,7 +840,7 @@ const earthElementLegendaries: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_adjacent",
-      targetType: "adjacent_minions" as BattlecryTargetType,
+      targetType: "adjacent_minions",
       buffAttack: 1,
       buffHealth: 2
     },
@@ -874,7 +873,7 @@ const earthElementLegendaries: CardData[] = [
     keywords: ["taunt", "battlecry", "deathrattle"],
     battlecry: {
       type: "buff_by_hand_size",
-      targetType: "self" as BattlecryTargetType
+      targetType: "self"
     },
     deathrattle: {
       type: "draw",
@@ -904,7 +903,7 @@ const earthElementLegendaries: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "summon_by_condition",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       summonCardId: 4377,
       summonCountCondition: "friendly_minion_count"
     },
@@ -954,7 +953,7 @@ const earthElementLegendaries: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "heal_hero",
-      targetType: "friendly_hero" as BattlecryTargetType,
+      targetType: "friendly_hero",
       value: 5
     },
     endOfTurn: {
@@ -1013,7 +1012,7 @@ const earthElementLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage_all",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 2
     },
     onDamage: {
@@ -1068,7 +1067,7 @@ const holyElementLegendaries: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "draw_conditional",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       condition: "muninn_in_play",
       value: 1,
       conditionValue: 2
@@ -1097,7 +1096,7 @@ const holyElementLegendaries: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "resurrect_conditional",
-      targetType: "graveyard_card" as BattlecryTargetType,
+      targetType: "graveyard_card",
       condition: "huginn_in_play",
       value: 1,
       conditionValue: 2,
@@ -1126,7 +1125,7 @@ const holyElementLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "grant_deathrattle_resurrect",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       requiresTarget: true
     },
     onAttack: {
@@ -1159,7 +1158,7 @@ const waterElementLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "freeze_all",
-      targetType: "enemy_minions" as BattlecryTargetType
+      targetType: "enemy_minions"
     },
     endOfTurn: {
       type: "damage_frozen",
@@ -1190,7 +1189,7 @@ const waterElementLegendaries: CardData[] = [
     keywords: ["poisonous", "battlecry"],
     battlecry: {
       type: "freeze_or_destroy",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     },
     onAttack: {
@@ -1243,7 +1242,7 @@ const waterElementLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "bounce_and_damage",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       value: 1,
       requiresTarget: true
     },
@@ -1323,7 +1322,7 @@ const lightningElementLegendaries: CardData[] = [
     },
     battlecry: {
       type: "debuff_attack",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: -2,
       duration: "end_of_turn"
     },
@@ -1346,7 +1345,7 @@ const lightningElementLegendaries: CardData[] = [
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_and_stun",
-      targetType: "enemy_minions" as BattlecryTargetType,
+      targetType: "enemy_minions",
       value: 3
     },
     onSurviveDamage: {
@@ -1439,7 +1438,7 @@ const lightningElementLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "summon",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       summonCardId: 4418,
       summonCount: 1
     },
@@ -1474,7 +1473,7 @@ const fireMinions: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     },
@@ -1503,7 +1502,7 @@ const darkMinions: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: {
       type: "damage",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 1,
       requiresTarget: true
     },
@@ -1526,7 +1525,7 @@ const darkMinions: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "debuff",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       debuffAttack: -2,
       duration: "this_turn",
       requiresTarget: true
@@ -1550,7 +1549,7 @@ const darkMinions: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "compound",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       effects: [
         { type: "damage", value: 1 },
         { type: "debuff", debuffAttack: -1, duration: "this_turn" }
@@ -1576,7 +1575,7 @@ const darkMinions: CardData[] = [
     keywords: ["poisonous", "battlecry"],
     battlecry: {
       type: "compound",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       effects: [
         { type: "damage", value: 2 },
         { type: "apply_debuff", debuffType: "poison", damagePerTurn: 1 }
@@ -1607,7 +1606,7 @@ const darkMinions: CardData[] = [
     },
     battlecry: {
       type: "damage",
-      targetType: "enemy" as BattlecryTargetType,
+      targetType: "enemy",
       value: 3,
       requiresTarget: true
     },
@@ -1636,7 +1635,7 @@ const darkMinions: CardData[] = [
     },
     battlecry: {
       type: "destroy",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       attackThreshold: 2,
       requiresTarget: true
     },
@@ -1672,7 +1671,7 @@ const darkMinions: CardData[] = [
     },
     battlecry: {
       type: "damage_all",
-      targetType: "all_enemies" as BattlecryTargetType,
+      targetType: "all_enemies",
       value: 2
     },
     categories: ["norse_mythology", "dark_minion", "dark_legendary"],
@@ -1700,7 +1699,7 @@ const lightMinions: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "heal",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       value: 2,
       requiresTarget: true
     },
@@ -1746,7 +1745,7 @@ const lightMinions: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "heal_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       value: 3
     },
     categories: ["norse_mythology", "light_minion", "light_rare"],
@@ -1773,7 +1772,7 @@ const lightMinions: CardData[] = [
     },
     battlecry: {
       type: "buff_temporary_all",
-      targetType: "friendly_minions" as BattlecryTargetType,
+      targetType: "friendly_minions",
       buffAttack: 0,
       buffHealth: 2,
       duration: "this_turn"
@@ -1803,7 +1802,7 @@ const neutralMinions: CardData[] = [
     keywords: ["taunt", "battlecry"],
     battlecry: {
       type: "buff_temporary_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 0,
       buffHealth: 2,
       duration: "this_turn"
@@ -1827,7 +1826,7 @@ const neutralMinions: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_buff_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       condition: "control_another_beast",
       buffAttack: 1,
       buffHealth: 1
@@ -1851,7 +1850,7 @@ const neutralMinions: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_grant_keyword",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       condition: "control_another_beast",
       keyword: "taunt"
     },
@@ -1874,7 +1873,7 @@ const neutralMinions: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "conditional_buff_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       condition: "control_beast",
       buffAttack: 1,
       buffHealth: 1
@@ -1898,7 +1897,7 @@ const neutralMinions: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "buff",
-      targetType: "friendly_minion" as BattlecryTargetType,
+      targetType: "friendly_minion",
       targetRace: "beast",
       buffAttack: 1,
       buffHealth: 1,
@@ -1923,7 +1922,7 @@ const neutralMinions: CardData[] = [
     keywords: ["rush", "battlecry"],
     battlecry: {
       type: "buff_temporary_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 2,
       buffHealth: 0,
       duration: "this_turn"
@@ -1947,7 +1946,7 @@ const neutralMinions: CardData[] = [
     keywords: ["flying", "battlecry"],
     battlecry: {
       type: "damage_conditional",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       value: 2,
       healthThreshold: 2,
       requiresTarget: true
@@ -1992,7 +1991,7 @@ const neutralMinions: CardData[] = [
     },
     battlecry: {
       type: "buff_temporary_self",
-      targetType: "none" as BattlecryTargetType,
+      targetType: "none",
       buffAttack: 0,
       buffHealth: 3,
       duration: "this_turn"
@@ -2022,7 +2021,7 @@ const greekLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "buff_temporary",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       buffAttack: 2,
       buffHealth: 0,
       duration: "this_turn",
@@ -2053,7 +2052,7 @@ const greekLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "heal_hero",
-      targetType: "friendly_hero" as BattlecryTargetType,
+      targetType: "friendly_hero",
       value: 5
     },
     passive: {
@@ -2084,7 +2083,7 @@ const greekLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "force_attack_adjacent",
-      targetType: "enemy_minion" as BattlecryTargetType,
+      targetType: "enemy_minion",
       requiresTarget: true
     },
     passive: {
@@ -2115,7 +2114,7 @@ const greekLegendaries: CardData[] = [
     keywords: ["battlecry", "flying"],
     battlecry: {
       type: "discover",
-      targetType: BattlecryTargetType.NONE,
+      targetType: 'none',
       discoverCount: 3,
       discoverSource: "deck_top"
     },
@@ -2208,7 +2207,7 @@ const greekLegendaries: CardData[] = [
     keywords: ["battlecry"],
     battlecry: {
       type: "grant_stealth_temporary",
-      targetType: "any_minion" as BattlecryTargetType,
+      targetType: "any_minion",
       duration: "until_next_turn",
       requiresTarget: true
     },
