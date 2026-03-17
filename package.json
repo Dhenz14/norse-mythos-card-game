@@ -24,7 +24,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.2.5",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@modelcontextprotocol/sdk": "^1.10.1",
     "@neondatabase/serverless": "^0.10.4",

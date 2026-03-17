@@ -3,7 +3,6 @@ import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import { routes } from './lib/routes';
 import { Button } from './components/ui/button';
 import UnifiedCardSystem from "./game/components/UnifiedCardSystem";
-import "@fontsource/inter";
 import "./index.css";
 import "./styles/homepage.css";
 import { CardTransformProvider } from "./game/context/CardTransformContext";
