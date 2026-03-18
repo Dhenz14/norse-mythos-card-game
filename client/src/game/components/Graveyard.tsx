@@ -1,48 +1,49 @@
 import React, { useState } from 'react';
 import { CardInstance } from '../types';
-import { Card } from './Card';
+import SimpleCard, { SimpleCardData } from './SimpleCard';
 
 interface GraveyardProps {
   cards: CardInstance[];
   playerName: string;
 }
 
+function toSimpleCard(ci: CardInstance): SimpleCardData {
+  const c = ci.card;
+  return {
+    id: c.id, name: c.name, manaCost: c.manaCost ?? 0,
+    attack: (c as unknown as Record<string, unknown>).attack as number | undefined,
+    health: (c as unknown as Record<string, unknown>).health as number | undefined,
+    description: c.description, type: (c.type ?? 'minion') as SimpleCardData['type'],
+    rarity: c.rarity as SimpleCardData['rarity'],
+    keywords: c.keywords,
+  };
+}
+
 export const Graveyard: React.FC<GraveyardProps> = ({ cards, playerName }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  
-  if (cards.length === 0) {
-    return null; // Don't render anything if there are no dead cards
-  }
-  
+
+  if (cards.length === 0) return null;
+
   return (
     <div className="relative">
-      <button 
+      <button
+        type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`
-          flex items-center space-x-2 px-2 py-1 
-          bg-gray-800 bg-opacity-70 rounded 
-          text-white text-sm 
-          hover:bg-gray-700 hover:bg-opacity-90
-          transition-colors
-        `}
+        className="flex items-center space-x-2 px-2 py-1 bg-gray-800/70 rounded text-white text-sm hover:bg-gray-700/90 transition-colors"
       >
-        <span className="text-red-400">⚰️</span>
+        <span className="text-red-400">☠</span>
         <span>{playerName}'s Graveyard ({cards.length})</span>
         <span>{isExpanded ? '▲' : '▼'}</span>
       </button>
-      
+
       {isExpanded && (
-        <div className="absolute z-50 bg-gray-900 bg-opacity-95 p-3 rounded-md shadow-lg border border-gray-700 mt-1 flex flex-wrap gap-2 max-w-[600px]">
+        <div className="absolute z-50 bg-gray-900/95 p-3 rounded-md shadow-lg border border-gray-700 mt-1 flex flex-wrap gap-2 max-w-[600px]">
           <h3 className="w-full text-white text-sm mb-2">{playerName}'s Graveyard ({cards.length} cards)</h3>
-          {cards.length === 0 ? (
-            <p className="text-gray-400 text-sm">No cards in graveyard yet.</p>
-          ) : (
-            cards.map((card) => (
-              <div key={card.instanceId} className="transform scale-75 origin-top-left">
-                <Card card={card} isInHand={false} />
-              </div>
-            ))
-          )}
+          {cards.map((card) => (
+            <div key={card.instanceId} className="transform scale-75 origin-top-left">
+              <SimpleCard card={toSimpleCard(card)} size="small" />
+            </div>
+          ))}
         </div>
       )}
     </div>

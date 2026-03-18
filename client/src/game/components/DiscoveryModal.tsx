@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { CardData, DiscoveryState, CardType, CardRarity, HeroClass } from '../types';
-import { Card } from './Card';
+import SimpleCard, { SimpleCardData } from './SimpleCard';
 import { createCardInstance } from '../utils/cards/cardUtils';
 import { filterCards } from '../utils/discoveryUtils';
 import { useAudio } from '../../lib/stores/useAudio';
@@ -242,15 +242,22 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                   }
                 }}
               >
-                <Card 
-                  card={card}
-                  isInHand={false}
-                  isPlayable={true}
-                  scale={1.1}
+                <SimpleCard
+                  card={{
+                    id: card.id, name: card.name, manaCost: card.manaCost ?? 0,
+                    attack: isMinion(card) ? getAttack(card) : isWeapon(card) ? getAttack(card) : undefined,
+                    health: isMinion(card) ? getHealth(card) : undefined,
+                    description: card.description,
+                    type: (card.type ?? 'minion') as SimpleCardData['type'],
+                    rarity: card.rarity as SimpleCardData['rarity'],
+                    keywords: card.keywords,
+                  }}
+                  isPlayable
                   onClick={() => {
                     debug.log("DiscoveryModal: Card selected:", card.name);
                     handleCardClick(card);
                   }}
+                  size="medium"
                 />
                 
                 <div className="mt-2 text-center" style={{ minWidth: '140px' }}>

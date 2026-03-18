@@ -8,7 +8,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CardInstance } from '../types';
 import { Position } from '../types/Position';
-import Card from './Card';
+import SimpleCard, { SimpleCardData } from './SimpleCard';
 
 interface CardDragLayerProps {
   card: CardInstance | null;
@@ -145,12 +145,17 @@ export const CardDragLayer: React.FC<CardDragLayerProps> = ({
   
   return (
     <div ref={cardRef} style={style} className="card-drag-layer">
-      <Card 
-        card={card}
-        onClick={() => {}}
-        isPlayable={false}
-        isInHand={true}
-        registerPosition={() => {}}
+      <SimpleCard
+        card={{
+          id: card.card.id, name: card.card.name, manaCost: card.card.manaCost ?? 0,
+          attack: (card.card as unknown as Record<string, unknown>).attack as number | undefined,
+          health: (card.card as unknown as Record<string, unknown>).health as number | undefined,
+          description: card.card.description,
+          type: (card.card.type ?? 'minion') as SimpleCardData['type'],
+          rarity: card.card.rarity as SimpleCardData['rarity'],
+          keywords: card.card.keywords,
+        }}
+        size="small"
       />
     </div>
   );
