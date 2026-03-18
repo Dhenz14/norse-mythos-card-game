@@ -447,7 +447,7 @@ vercel --prod                 # Deploy to Vercel
 - Per-move state hashing (SHA-256 state hash after each action)
 - Loading screen (Norse lore quotes, rune spinner)
 - Tutorial overlay (15-step onboarding walkthrough)
-- Keyword definitions (47 keywords with descriptions)
+- Keyword definitions (48 keywords with descriptions, including Wager)
 
 ### Completed (Norse Mechanics Expansion)
 
@@ -1424,7 +1424,43 @@ vercel --prod                 # Deploy to Vercel
 - **StateAdapter extended**: `getPack/putPack/deletePack/getPacksByOwner`, `getPackSupply/putPackSupply`, `getCompanionTransfer/setTrxSiblings`
 - **HiveSync broadcast**: `mintPack()`, `transferPack()`, `burnPack()`, `replicateCard()`, `mergeCards()`
 - **Hive vs ETH analysis**: Zero-fee continuous mutation, NFT-owns-NFT composability, DNA as decentralized access key
-- 170/170 tests pass, 0 TypeScript errors, backward compatible (v1.0 ops unchanged)
+- 192/192 tests pass, 0 TypeScript errors, backward compatible (v1.0 ops unchanged)
+
+### Completed (v1.1 Protocol Hardening + UI)
+
+- 22 conformance tests for all 7 v1.1 ops (pack_mint, pack_distribute, pack_transfer, pack_burn, card_replicate, card_merge + normalization)
+- IndexedDB v7: `packs` + `pack_supply` stores (persisted, not in-memory)
+- Replay engine: sibling op caching for companion transfer validation during chain replay
+- Normalize.ts: 6 new actions in canonical set + `rp_*` legacy mappings
+- clientStateAdapter: pack ops backed by IndexedDB (was in-memory Maps)
+- INFTBridge: `getPackCollection()`, `addPack()`, `removePack()`, `transferPack()`, `burnPack()`, `replicateCard()`, `mergeCards()`
+- HiveDataLayer: `packCollection[]` in Zustand state (persisted, hydrated, cleared on logout)
+- PacksPage: "Your Sealed Packs" section with Open/Send actions per pack type
+- CollectionPage: "Genetic Heritage" panel (generation, replicas, DNA hashes), Replicate + Merge buttons
+- SendPackModal: inline modal with recipient input + atomic 0.001 HIVE transfer
+
+### Completed (Gameplay Expansion — Heroes, Wager, Stealth, Mechanics)
+
+- **Gefjon, Fortune's Edge**: Reworked from "Goddess of Plowing" → gambling/luck hero
+  - Hero Power: "Roll the Dice" (2 mana) — deal 1-6 random damage to random enemy
+  - Upgraded: "Fortune's Favor" — roll twice, keep higher (player's design)
+  - Passive: roll a 6 → draw a card
+- **Verdandi, Norn of the Present**: Combo archetype hero (Priest/Bishop)
+  - "Fate Strand" hero power: adds free 0-cost damage spell to hand
+  - Passive: draw after playing 3+ cards per turn
+- **Vali, Son of Vengeance**: Escalating archetype hero (Berserker/Knight)
+  - "Blood Debt" hero power: damage increases +1 per use across the game
+  - Passive: hero power costs (1) less after taking minion damage
+- **Rogue stealth expansion**: 8 new cards (IDs 39005-39012) — Mist-Walker, Svartalfheim Shade, Daggers of Niflheim, Ambush Predator, Veil of Hel, Shadow Ambusher, Hel's Unseen, Nótt's Cloak
+- **Wager keyword**: 16 new minion cards (IDs 31924-31939) — poker combat passives while on battlefield
+  - Bridges card game + poker systems (game's USP)
+  - Cards across 8 classes: Bluff Master (hide actions), Fate Reader (peek cards), Loki's Loaded Dice (hand rank +1), Odin's All-Seeing Stake (see hole cards), Surtr's Final Bet (double multipliers)
+- **Submerge expansion**: 6 new cards (IDs 40104-40109) — Diving Serpent, Deep Lurker, Abyssal Guardian, Ginnungagap Diver, Tidal Ambusher, Emerge from Depths
+- **Coil expansion**: 6 new cards (IDs 40112-40118) — Binding Serpent, Jormungandr's Grip, Constrictor Wyrm, Nidhogg's Chains, Serpent Pit, Freedom Strike
+- **Inspire expansion**: 6 new cards (IDs 31414-31419) — Valkyrie Herald, Odin's Chronicler, Runic Amplifier, Einherjar Standard-Bearer, Seidr Resonator, Allfather's Chosen
+- Art mapped for all 8 stealth cards from orphaned art pool
+- Type extensions: `wagerEffect` on MinionCardData, `generate_fate_strand`/`escalating_damage` effectTypes, `on_cards_played_3`/`on_take_minion_damage` triggers
+- 192/192 tests pass, 0 TypeScript errors
 
 ### Completed (Static Page & Production Hardening)
 

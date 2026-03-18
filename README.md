@@ -43,7 +43,7 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 ## Features
 
 ### Core Gameplay
-- **2,400+ collectible cards** with battlecry, deathrattle, combo, discover, and 47 keyword mechanics
+- **2,400+ collectible cards** with battlecry, deathrattle, combo, discover, wager, and 48 keyword mechanics
 - **80 playable heroes** across 12 classes — Mage, Warrior, Priest, Rogue, Paladin, Hunter, Druid, Warlock, Shaman, Berserker, Death Knight, Necromancer
 - **6 unique Norse mechanics** — Blood Price, Einherjar, Prophecy, Realm Shift, Ragnarok Chain, Pet Evolution
 - **Ragnarok Chess** — 7x5 board where god-pieces maneuver and collisions trigger poker combat
