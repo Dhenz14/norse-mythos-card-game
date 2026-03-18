@@ -29,6 +29,7 @@ const SpectatorView = lazy(() => import('./game/components/spectator/SpectatorVi
 const MatchHistoryPage = lazy(() => import('./game/components/replay/MatchHistoryPage'));
 const SettingsPage = lazy(() => import('./game/components/settings/SettingsPage'));
 const TreasuryPage = lazy(() => import('./game/components/treasury/TreasuryPage'));
+const AdminPanel = lazy(() => import('./game/components/admin/AdminPanel'));
 const StarterPackCeremony = lazy(() => import('./game/components/StarterPackCeremony'));
 
 function HomePage() {
@@ -261,6 +262,7 @@ function App() {
               <Route path={routes.ladder} element={<RankedLadderPage />} />
               <Route path={routes.trading} element={<TradingPage />} />
               <Route path={routes.treasury} element={<TreasuryPage />} />
+              <Route path={routes.admin} element={<AdminPanel />} />
               <Route path={routes.tournaments} element={<TournamentListPage />} />
               <Route path={routes.spectate} element={<SpectatorView />} />
               <Route path={routes.history} element={<MatchHistoryPage />} />

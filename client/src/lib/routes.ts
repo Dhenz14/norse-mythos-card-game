@@ -12,4 +12,5 @@ export const routes = {
   history: '/history',
   settings: '/settings',
   spectate: '/spectate/:peerId',
+  admin: '/admin',
 };
