@@ -8,6 +8,7 @@
 
 import type { HiveCardAsset, HivePlayerStats, HiveTokenBalance } from '@/data/schemas/HiveTypes';
 import { DEFAULT_PLAYER_STATS } from '@/data/schemas/HiveTypes';
+import type { PackAsset } from '../../../../shared/protocol-core/types';
 import { hiveSync, buildHiveAuthBody } from '@/data/HiveSync';
 import { hiveEvents } from '@/data/HiveEvents';
 import { useHiveDataStore } from '@/data/HiveDataLayer';
@@ -96,6 +97,20 @@ export class HiveNFTBridge implements INFTBridge {
 		return result as AuthBody;
 	}
 
+	// ── Packs (v1.1) ──
+
+	getPackCollection(): PackAsset[] {
+		return useHiveDataStore.getState().packCollection ?? [];
+	}
+
+	addPack(pack: PackAsset): void {
+		useHiveDataStore.getState().addPack(pack);
+	}
+
+	removePack(packUid: string): void {
+		useHiveDataStore.getState().removePack(packUid);
+	}
+
 	// ── Transactions ──
 
 	async claimReward(rewardId: string): Promise<BroadcastResult> {
@@ -116,6 +131,26 @@ export class HiveNFTBridge implements INFTBridge {
 
 	async signResultHash(hash: string): Promise<string> {
 		return hiveSync.signResultHash(hash);
+	}
+
+	// ── Pack Transactions (v1.1) ──
+
+	async transferPack(packUid: string, toUser: string, memo?: string): Promise<BroadcastResult> {
+		return hiveSync.transferPack(packUid, toUser, memo);
+	}
+
+	async burnPack(packUid: string, salt: string): Promise<BroadcastResult> {
+		return hiveSync.burnPack(packUid, salt);
+	}
+
+	// ── DNA Lineage (v1.1) ──
+
+	async replicateCard(sourceUid: string, foil?: 'standard' | 'gold'): Promise<BroadcastResult> {
+		return hiveSync.replicateCard(sourceUid, foil);
+	}
+
+	async mergeCards(sourceUids: [string, string]): Promise<BroadcastResult> {
+		return hiveSync.mergeCards(sourceUids);
 	}
 
 	// ── Events ──

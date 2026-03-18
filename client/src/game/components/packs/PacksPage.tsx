@@ -120,6 +120,134 @@ function parseNum(v: string | number): number {
 	return typeof v === 'string' ? parseInt(v, 10) || 0 : v || 0;
 }
 
+// ============================================================
+// v1.1: Sealed Packs Inventory
+// ============================================================
+
+function SealedPacksSection() {
+	const packs = getNFTBridge().getPackCollection().filter(p => p.sealed);
+	const [sendingPack, setSendingPack] = useState<string | null>(null);
+	const [recipient, setRecipient] = useState('');
+	const [sending, setSending] = useState(false);
+
+	if (packs.length === 0) return null;
+
+	const handleBurnPack = async (packUid: string) => {
+		const salt = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+			.map(b => b.toString(16).padStart(2, '0')).join('');
+		const result = await getNFTBridge().burnPack(packUid, salt);
+		if (result.success) {
+			getNFTBridge().removePack(packUid);
+			toast.success('Pack opened! Check your collection.');
+		} else {
+			toast.error(result.error || 'Failed to open pack');
+		}
+	};
+
+	const handleSendPack = async () => {
+		if (!sendingPack || !recipient.trim()) return;
+		setSending(true);
+		const result = await getNFTBridge().transferPack(sendingPack, recipient.trim());
+		if (result.success) {
+			getNFTBridge().removePack(sendingPack);
+			toast.success(`Pack sent to @${recipient.trim()}`);
+			setSendingPack(null);
+			setRecipient('');
+		} else {
+			toast.error(result.error || 'Failed to send pack');
+		}
+		setSending(false);
+	};
+
+	// Group by pack type
+	const grouped = new Map<string, typeof packs>();
+	for (const p of packs) {
+		const list = grouped.get(p.packType) ?? [];
+		list.push(p);
+		grouped.set(p.packType, list);
+	}
+
+	return (
+		<motion.div
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			className="mb-12"
+		>
+			<h2 className="text-lg font-bold text-amber-300 mb-4 uppercase tracking-wider text-center">
+				Your Sealed Packs
+			</h2>
+			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+				{[...grouped.entries()].map(([packType, typePacks]) => (
+					<div
+						key={packType}
+						className="bg-gradient-to-b from-amber-900/20 to-gray-900/40 rounded-xl p-4 border border-amber-600/30"
+					>
+						<div className="text-center mb-3">
+							<div className="text-2xl mb-1">
+								{packType === 'mythic' ? '龍' : packType === 'premium' ? '冠' : packType === 'standard' ? '盾' : '石'}
+							</div>
+							<div className="text-amber-300 font-bold capitalize">{packType}</div>
+							<div className="text-gray-400 text-sm">x{typePacks.length}</div>
+						</div>
+						<div className="flex gap-2">
+							<button
+								type="button"
+								onClick={() => handleBurnPack(typePacks[0].uid)}
+								className="flex-1 px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm rounded-lg transition-colors"
+							>
+								Open
+							</button>
+							<button
+								type="button"
+								onClick={() => setSendingPack(typePacks[0].uid)}
+								className="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors"
+							>
+								Send
+							</button>
+						</div>
+					</div>
+				))}
+			</div>
+
+			{/* Send Pack Modal */}
+			{sendingPack && (
+				<div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+					<div className="bg-gray-900 border border-amber-600/40 rounded-xl p-6 w-96 max-w-[90vw]">
+						<h3 className="text-amber-300 font-bold text-lg mb-4">Send Sealed Pack</h3>
+						<p className="text-gray-400 text-sm mb-4">
+							This will transfer the sealed pack to another player via Hive Keychain (0.001 HIVE atomic transfer).
+						</p>
+						<input
+							type="text"
+							placeholder="Recipient username"
+							value={recipient}
+							onChange={e => setRecipient(e.target.value.toLowerCase())}
+							className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white mb-4 focus:border-amber-500 focus:outline-none"
+						/>
+						<div className="flex gap-3">
+							<button
+								type="button"
+								onClick={() => { setSendingPack(null); setRecipient(''); }}
+								className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								onClick={handleSendPack}
+								disabled={sending || !recipient.trim()}
+								className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg transition-colors"
+							>
+								{sending ? 'Sending...' : 'Confirm Send'}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+		</motion.div>
+	);
+}
+
 export default function PacksPage() {
 	const tokenBalance = useNFTTokenBalance();
 	const hiveUsername = useNFTUsername();
@@ -814,6 +942,9 @@ export default function PacksPage() {
 						})}
 					</div>
 				)}
+
+				{/* ========== SEALED PACKS INVENTORY (v1.1) ========== */}
+				<SealedPacksSection />
 
 				{/* ========== COMMUNITY STATS (only when packs opened) ========== */}
 				{supplyStats && supplyStats.totalCardsOpened > 0 && (

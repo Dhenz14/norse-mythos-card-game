@@ -14,6 +14,7 @@ import type {
 	HivePlayerStats,
 	HiveTokenBalance,
 } from '@/data/schemas/HiveTypes';
+import type { PackAsset } from '../../../../shared/protocol-core/types';
 
 export type DataLayerMode = 'local' | 'test' | 'hive';
 
@@ -75,12 +76,25 @@ export interface INFTBridge {
 		fields?: Record<string, unknown>,
 	): Promise<AuthBody>;
 
+	// ── Packs (v1.1) ──
+	getPackCollection(): PackAsset[];
+	addPack(pack: PackAsset): void;
+	removePack(packUid: string): void;
+
 	// ── Transactions ──
 	claimReward(rewardId: string): Promise<BroadcastResult>;
 	transferCard(cardUid: string, toUser: string, memo?: string): Promise<BroadcastResult>;
 	transferCards(cardUids: string[], toUser: string, memo?: string): Promise<BroadcastResult>;
 	openPack(packType: string, quantity?: number): Promise<BroadcastResult>;
 	signResultHash(hash: string): Promise<string>;
+
+	// ── Pack Transactions (v1.1) ──
+	transferPack(packUid: string, toUser: string, memo?: string): Promise<BroadcastResult>;
+	burnPack(packUid: string, salt: string): Promise<BroadcastResult>;
+
+	// ── DNA Lineage (v1.1) ──
+	replicateCard(sourceUid: string, foil?: 'standard' | 'gold'): Promise<BroadcastResult>;
+	mergeCards(sourceUids: [string, string]): Promise<BroadcastResult>;
 
 	// ── Events ──
 	onEvent(type: NFTEventType | '*', callback: NFTEventCallback): () => void;

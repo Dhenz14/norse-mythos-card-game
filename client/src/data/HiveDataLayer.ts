@@ -35,6 +35,8 @@ interface HiveDataStore extends HiveGameState {
   recordMatchResult: (match: HiveMatchResult, opponentElo?: number) => void;
   addCard: (card: HiveCardAsset) => void;
   removeCard: (cardUid: string) => void;
+  addPack: (pack: HiveGameState['packCollection'][0]) => void;
+  removePack: (packUid: string) => void;
   updateTokenBalance: (balance: Partial<HiveTokenBalance>) => void;
   addTransaction: (tx: HiveTransaction) => void;
   updateTransaction: (trxId: string, updates: Partial<HiveTransaction>) => void;
@@ -50,6 +52,7 @@ export const useHiveDataStore = create<HiveDataStore>()(
       user: null,
       stats: null,
       cardCollection: [],
+      packCollection: [],
       tokenBalance: null,
       recentMatches: [],
       pendingTransactions: [],
@@ -104,6 +107,14 @@ export const useHiveDataStore = create<HiveDataStore>()(
         cardCollection: state.cardCollection.filter((c) => c.uid !== cardUid),
       })),
 
+      addPack: (pack) => set((state) => ({
+        packCollection: [...(state.packCollection ?? []), pack],
+      })),
+
+      removePack: (packUid) => set((state) => ({
+        packCollection: (state.packCollection ?? []).filter((p) => p.uid !== packUid),
+      })),
+
       updateTokenBalance: (balanceUpdate) => set((state) => ({
         tokenBalance: state.tokenBalance
           ? { ...state.tokenBalance, ...balanceUpdate }
@@ -126,6 +137,7 @@ export const useHiveDataStore = create<HiveDataStore>()(
           user: state.user,
           stats: state.stats,
           cardCollection: state.cardCollection,
+          packCollection: state.packCollection ?? [],
           tokenBalance: state.tokenBalance,
           recentMatches: state.recentMatches,
           pendingTransactions: state.pendingTransactions,
@@ -136,6 +148,7 @@ export const useHiveDataStore = create<HiveDataStore>()(
         user: hiveState.user ?? state.user,
         stats: hiveState.stats ?? state.stats,
         cardCollection: hiveState.cardCollection ?? state.cardCollection,
+        packCollection: hiveState.packCollection ?? state.packCollection ?? [],
         tokenBalance: hiveState.tokenBalance ?? state.tokenBalance,
         recentMatches: hiveState.recentMatches ?? state.recentMatches,
         pendingTransactions: [],
@@ -145,6 +158,7 @@ export const useHiveDataStore = create<HiveDataStore>()(
         user: null,
         stats: null,
         cardCollection: [],
+        packCollection: [],
         tokenBalance: null,
         recentMatches: [],
         pendingTransactions: [],
@@ -156,6 +170,7 @@ export const useHiveDataStore = create<HiveDataStore>()(
         user: state.user,
         stats: state.stats,
         cardCollection: state.cardCollection,
+        packCollection: state.packCollection ?? [],
         tokenBalance: state.tokenBalance,
         recentMatches: state.recentMatches.slice(0, 20),
       }),

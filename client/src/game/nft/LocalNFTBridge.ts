@@ -10,6 +10,7 @@
 import type { HiveCardAsset, HivePlayerStats, HiveTokenBalance } from '@/data/schemas/HiveTypes';
 import { useHiveDataStore } from '@/data/HiveDataLayer';
 import { DEFAULT_PLAYER_STATS } from '@/data/schemas/HiveTypes';
+import type { PackAsset } from '../../../../shared/protocol-core/types';
 import type {
 	INFTBridge,
 	DataLayerMode,
@@ -94,6 +95,20 @@ export class LocalNFTBridge implements INFTBridge {
 		return { ...fields, username, timestamp: Date.now() };
 	}
 
+	// ── Packs (v1.1 — local mode: empty collection) ──
+
+	getPackCollection(): PackAsset[] {
+		return useHiveDataStore.getState().packCollection ?? [];
+	}
+
+	addPack(pack: PackAsset): void {
+		useHiveDataStore.getState().addPack(pack);
+	}
+
+	removePack(packUid: string): void {
+		useHiveDataStore.getState().removePack(packUid);
+	}
+
 	// ── Transactions (no-ops) ──
 
 	async claimReward(_rewardId: string): Promise<BroadcastResult> {
@@ -114,6 +129,26 @@ export class LocalNFTBridge implements INFTBridge {
 
 	async signResultHash(_hash: string): Promise<string> {
 		return 'local-mode-no-signature';
+	}
+
+	// ── Pack Transactions (v1.1 no-ops) ──
+
+	async transferPack(_packUid: string, _toUser: string, _memo?: string): Promise<BroadcastResult> {
+		return SUCCESS;
+	}
+
+	async burnPack(_packUid: string, _salt: string): Promise<BroadcastResult> {
+		return SUCCESS;
+	}
+
+	// ── DNA Lineage (v1.1 no-ops) ──
+
+	async replicateCard(_sourceUid: string, _foil?: 'standard' | 'gold'): Promise<BroadcastResult> {
+		return SUCCESS;
+	}
+
+	async mergeCards(_sourceUids: [string, string]): Promise<BroadcastResult> {
+		return SUCCESS;
 	}
 
 	// ── Events (no-ops) ──

@@ -181,6 +181,7 @@ export interface HiveGameState {
   user: HiveUserRecord | null;
   stats: HivePlayerStats | null;
   cardCollection: HiveCardAsset[];
+  packCollection: import('../../../../shared/protocol-core/types').PackAsset[];
   tokenBalance: HiveTokenBalance | null;
   recentMatches: HiveMatchResult[];
   pendingTransactions: HiveTransaction[];

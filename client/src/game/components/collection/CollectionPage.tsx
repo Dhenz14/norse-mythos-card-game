@@ -862,6 +862,81 @@ export default function CollectionPage() {
 								);
 							})()}
 
+							{/* v1.1: DNA Heritage + Replicate/Merge */}
+							{(() => {
+								const nft = hiveCardMap.get(selectedCard.id);
+								if (!nft) return null;
+								const hiveCard = nft as unknown as Record<string, unknown>;
+								const originDna = hiveCard.originDna as string | undefined;
+								const instanceDna = hiveCard.instanceDna as string | undefined;
+								const generation = (hiveCard.generation as number) ?? 0;
+								const replicaCount = (hiveCard.replicaCount as number) ?? 0;
+								const parentDna = hiveCard.parentInstanceDna as string | undefined;
+								const hasDna = !!(originDna || instanceDna);
+								const canMerge = (selectedCard.quantity ?? 0) >= 2;
+
+								return (
+									<>
+										{hasDna && (
+											<div className="mb-3 p-3 bg-indigo-900/20 rounded-lg border border-indigo-600/30">
+												<div className="text-indigo-300 text-xs font-bold uppercase tracking-wider mb-2">Genetic Heritage</div>
+												<div className="grid grid-cols-2 gap-2 text-xs">
+													<div>
+														<span className="text-gray-500">Generation:</span>
+														<span className="text-indigo-200 ml-1">{generation}</span>
+													</div>
+													<div>
+														<span className="text-gray-500">Replicas:</span>
+														<span className="text-indigo-200 ml-1">{replicaCount}/3</span>
+													</div>
+													{originDna && (
+														<div className="col-span-2">
+															<span className="text-gray-500">Origin DNA:</span>
+															<span className="text-indigo-300 ml-1 font-mono">{originDna.slice(0, 16)}...</span>
+														</div>
+													)}
+													{parentDna && (
+														<div className="col-span-2">
+															<span className="text-gray-500">Parent:</span>
+															<span className="text-purple-300 ml-1 font-mono">{parentDna.slice(0, 16)}...</span>
+														</div>
+													)}
+												</div>
+											</div>
+										)}
+										<div className="flex gap-2 mb-3">
+											<button
+												type="button"
+												onClick={async () => {
+													const result = await getNFTBridge().replicateCard(nft.uid);
+													if (result.success) showStatus(`Replicated ${selectedCard.name}!`, 'success');
+													else showStatus(result.error || 'Replicate failed', 'error');
+												}}
+												disabled={replicaCount >= 3 || generation >= 3}
+												className="flex-1 px-3 py-2 bg-indigo-900/50 hover:bg-indigo-800/60 disabled:opacity-30 text-indigo-300 rounded-lg text-xs font-medium border border-indigo-700/40 transition-colors"
+											>
+												Replicate
+											</button>
+											{canMerge && (
+												<button
+													type="button"
+													onClick={async () => {
+														const sameCards = getNFTBridge().getCardCollection().filter(c => c.cardId === selectedCard.id);
+														if (sameCards.length < 2) { showStatus('Need 2 copies to merge', 'error'); return; }
+														const result = await getNFTBridge().mergeCards([sameCards[0].uid, sameCards[1].uid]);
+														if (result.success) showStatus(`Merged into Ascended ${selectedCard.name}!`, 'success');
+														else showStatus(result.error || 'Merge failed', 'error');
+													}}
+													className="flex-1 px-3 py-2 bg-purple-900/50 hover:bg-purple-800/60 text-purple-300 rounded-lg text-xs font-medium border border-purple-700/40 transition-colors"
+												>
+													Merge (2 → 1)
+												</button>
+											)}
+										</div>
+									</>
+								);
+							})()}
+
 							{/* Close Button */}
 								<motion.button
 									whileHover={{ scale: 1.02 }}
