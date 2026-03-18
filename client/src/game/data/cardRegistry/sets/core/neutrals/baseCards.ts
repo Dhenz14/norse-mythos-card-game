@@ -10,13 +10,15 @@
  * IDs: 100-234 (reserved base range, below all collectible card ranges)
  */
 
-import { CardData } from '../../../../../types';
+// NOTE: Do NOT import CardData from types.ts here — causes TDZ crash in production
+// (card-data chunk initializes before game-types chunk). Plain objects, typed as any[].
+// The index.ts spreads these into CardData[] with an implicit cast.
 
 // ═══════════════════════════════════════════════════════════
 // MAGE CLASS (Erik Flameheart) — 10 cards: 7 minions, 3 spells
 // ═══════════════════════════════════════════════════════════
 
-const mageBaseCards: CardData[] = [
+const mageBaseCards: any[] = [
 	{ id: 100, name: 'Runic Apprentice', manaCost: 1, attack: 1, health: 2, description: 'Spell Damage +1.', type: 'minion', rarity: 'basic', class: 'Mage', keywords: ['spellDamage'], spellDamage: 1, collectible: true, set: 'base', flavorText: 'She reads runes faster than most read words.' },
 	{ id: 101, name: 'Seidr Acolyte', manaCost: 2, attack: 2, health: 3, description: 'Battlecry: Deal 1 damage to a random enemy.', type: 'minion', rarity: 'basic', class: 'Mage', keywords: ['battlecry'], battlecry: { type: 'damage_random', value: 1 }, collectible: true, set: 'base', flavorText: 'The old magic comes naturally to her.' },
 	{ id: 102, name: 'Flame Channeler', manaCost: 2, attack: 3, health: 2, description: 'Battlecry: If you cast a spell this turn, gain +1/+1.', type: 'minion', rarity: 'basic', class: 'Mage', keywords: ['battlecry'], battlecry: { type: 'conditional_buff_self', condition: 'spell_cast_this_turn', buffAttack: 1, buffHealth: 1 }, collectible: true, set: 'base', flavorText: 'Fire answers those who have already spoken to it.' },
@@ -33,7 +35,7 @@ const mageBaseCards: CardData[] = [
 // WARRIOR CLASS (Ragnar Ironside) — 10 cards: 7 minions, 3 spells
 // ═══════════════════════════════════════════════════════════
 
-const warriorBaseCards: CardData[] = [
+const warriorBaseCards: any[] = [
 	{ id: 110, name: 'Shield Recruit', manaCost: 1, attack: 1, health: 3, description: 'Taunt.', type: 'minion', rarity: 'basic', class: 'Warrior', keywords: ['taunt'], collectible: true, set: 'base', flavorText: 'The shield is heavier than the sword. He chose the shield.' },
 	{ id: 111, name: 'Berserker Thrall', manaCost: 2, attack: 3, health: 2, description: 'Rush.', type: 'minion', rarity: 'basic', class: 'Warrior', keywords: ['rush'], collectible: true, set: 'base', flavorText: 'No chains can hold rage.' },
 	{ id: 112, name: 'Valhalla Shieldmaiden', manaCost: 2, attack: 2, health: 3, description: 'Battlecry: Gain 2 Armor.', type: 'minion', rarity: 'basic', class: 'Warrior', keywords: ['battlecry'], battlecry: { type: 'gain_armor', value: 2 }, collectible: true, set: 'base', flavorText: 'She earned her place in the hall of heroes.' },
@@ -50,7 +52,7 @@ const warriorBaseCards: CardData[] = [
 // PRIEST CLASS (Brynhild) — 10 cards: 7 minions, 3 spells
 // ═══════════════════════════════════════════════════════════
 
-const priestBaseCards: CardData[] = [
+const priestBaseCards: any[] = [
 	{ id: 120, name: 'Temple Healer', manaCost: 1, attack: 1, health: 3, description: 'Battlecry: Restore 2 Health to your hero.', type: 'minion', rarity: 'basic', class: 'Priest', keywords: ['battlecry'], battlecry: { type: 'heal', value: 2, targetType: 'friendly_hero' }, collectible: true, set: 'base', flavorText: 'Every wound is a prayer waiting to be answered.' },
 	{ id: 121, name: 'Asgard Cleric', manaCost: 2, attack: 2, health: 3, description: 'Whenever a minion is healed, draw a card.', type: 'minion', rarity: 'basic', class: 'Priest', collectible: true, set: 'base', flavorText: 'VALUE GEM — She writes down every miracle.' },
 	{ id: 122, name: 'Radiant Priestess', manaCost: 2, attack: 2, health: 2, description: 'Divine Shield.', type: 'minion', rarity: 'basic', class: 'Priest', keywords: ['divine_shield'], collectible: true, set: 'base', flavorText: 'Light protects those who serve it.' },
@@ -67,7 +69,7 @@ const priestBaseCards: CardData[] = [
 // ROGUE CLASS (Sigurd) — 10 cards: 7 minions, 3 spells
 // ═══════════════════════════════════════════════════════════
 
-const rogueBaseCards: CardData[] = [
+const rogueBaseCards: any[] = [
 	{ id: 130, name: 'Svartalfheim Lookout', manaCost: 1, attack: 2, health: 1, description: 'Stealth.', type: 'minion', rarity: 'basic', class: 'Rogue', keywords: ['stealth'], collectible: true, set: 'base', flavorText: 'You can\'t hit what you can\'t see.' },
 	{ id: 131, name: 'Poison Brewer', manaCost: 2, attack: 2, health: 2, description: 'Combo: Gain Poisonous.', type: 'minion', rarity: 'basic', class: 'Rogue', keywords: ['combo'], comboEffect: { type: 'gain_keyword', keyword: 'poisonous' }, collectible: true, set: 'base', flavorText: 'One drop. That\'s all it takes.' },
 	{ id: 132, name: 'Loki\'s Disciple', manaCost: 2, attack: 3, health: 2, description: 'Battlecry: Return a friendly minion to your hand.', type: 'minion', rarity: 'basic', class: 'Rogue', keywords: ['battlecry'], battlecry: { type: 'return_to_hand', targetType: 'friendly_minion' }, collectible: true, set: 'base', flavorText: 'VALUE GEM — Loki teaches that nothing is truly gone.' },
@@ -84,7 +86,7 @@ const rogueBaseCards: CardData[] = [
 // KING NEUTRAL SET (Leif the Wayfinder) — 5 cards: 3 minions, 2 spells
 // ═══════════════════════════════════════════════════════════
 
-const kingBaseCards: CardData[] = [
+const kingBaseCards: any[] = [
 	{ id: 140, name: 'Yggdrasil Sapling', manaCost: 1, attack: 1, health: 2, description: 'Deathrattle: Draw a card.', type: 'minion', rarity: 'basic', class: 'Neutral', keywords: ['deathrattle'], deathrattle: { type: 'draw', value: 1 }, collectible: true, set: 'base', flavorText: 'From the smallest seed, the World Tree grew.' },
 	{ id: 141, name: 'Midgard Defender', manaCost: 3, attack: 2, health: 4, description: 'Taunt.', type: 'minion', rarity: 'basic', class: 'Neutral', keywords: ['taunt'], collectible: true, set: 'base', flavorText: 'He stands where others would flee.' },
 	{ id: 142, name: 'Wanderer of the Realms', manaCost: 4, attack: 4, health: 4, description: 'Battlecry: Discover a base card.', type: 'minion', rarity: 'basic', class: 'Neutral', keywords: ['battlecry'], battlecry: { type: 'discover', pool: 'base' }, collectible: true, set: 'base', flavorText: 'VALUE GEM — Nine realms, nine lifetimes of stories.' },
@@ -97,7 +99,7 @@ const kingBaseCards: CardData[] = [
 // Mana curve: 1-cost ×15, 2-cost ×20, 3-cost ×20, 4-cost ×15, 5-cost ×12, 6+ cost ×8
 // ═══════════════════════════════════════════════════════════
 
-const neutralBaseCards: CardData[] = [
+const neutralBaseCards: any[] = [
 	// ── 1-MANA (15 cards: 11 minions, 4 spells) ──
 	{ id: 145, name: 'Raven Hatchling', manaCost: 1, attack: 1, health: 1, description: 'Battlecry: Draw a card.', type: 'minion', rarity: 'basic', class: 'Neutral', race: 'Beast', keywords: ['battlecry'], battlecry: { type: 'draw', value: 1 }, collectible: true, set: 'base', flavorText: 'VALUE GEM — Huginn and Muninn started small too.' },
 	{ id: 146, name: 'Draugr Footsoldier', manaCost: 1, attack: 2, health: 1, description: '', type: 'minion', rarity: 'basic', class: 'Neutral', race: 'Undead', collectible: true, set: 'base', flavorText: 'Dead, but still marching.' },
@@ -205,7 +207,7 @@ const neutralBaseCards: CardData[] = [
 // EXPORTS
 // ═══════════════════════════════════════════════════════════
 
-export const allBaseCards: CardData[] = [
+export const allBaseCards: any[] = [
 	...mageBaseCards,
 	...warriorBaseCards,
 	...priestBaseCards,

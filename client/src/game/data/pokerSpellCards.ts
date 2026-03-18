@@ -268,7 +268,7 @@ export const pokerSpellCards: PokerSpellCard[] = [
   {
     id: 9140,
     name: 'All-In Aura',
-    description: 'Your next all-in this combat gains +0.1× hand damage multiplier.',
+    description: 'Your next all-in deals +5 bonus damage if you win the showdown.',
     manaCost: 5,
     type: 'poker_spell',
     rarity: 'epic',
@@ -279,10 +279,10 @@ export const pokerSpellCards: PokerSpellCard[] = [
     pokerSpellEffect: {
       effectType: 'all_in_aura',
       timing: 'on_all_in',
-      duration: 'next_action',
+      duration: 'this_combat',
       targetSelf: true,
       targetOpponent: false,
-      value: 0.1
+      value: 5
     }
   },
   {

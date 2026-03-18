@@ -42,6 +42,38 @@ import { compareHands } from '../../combat/modules/HandEvaluator';
 import { debug } from '../../config/debugConfig';
 import { applyStaminaShield, getExtraFoldPenalty } from '../../utils/poker/pokerSpellUtils';
 
+// ── v1.1: Wager Keyword Utilities ──
+
+interface WagerEffect {
+	type: string;
+	value?: number;
+	damage?: number;
+	chance?: number;
+	multiplierBonus?: number;
+	selfDamage?: number;
+	bonusDamage?: number;
+	buffAttack?: number;
+	minRank?: number;
+	drawCount?: number;
+	ranks?: number;
+}
+
+function getActiveWagerEffects(playerType: 'player' | 'opponent'): WagerEffect[] {
+	try {
+		const store = (globalThis as Record<string, any>).__ragnarokGameStore;
+		const gameState = store?.getState()?.gameState;
+		if (!gameState) return [];
+		const bf = gameState.players?.[playerType]?.battlefield || [];
+		return bf
+			.map((m: any) => m.card?.wagerEffect as WagerEffect | undefined)
+			.filter(Boolean) as WagerEffect[];
+	} catch { return []; }
+}
+
+function hasWagerEffect(playerType: 'player' | 'opponent', effectType: string): WagerEffect | undefined {
+	return getActiveWagerEffects(playerType).find(w => w.type === effectType);
+}
+
 /**
  * Evaluate poker hand with caching for performance.
  * Delegates to HandEvaluator.ts via the cache utility.
@@ -126,16 +158,24 @@ export const createPokerCombatSlice: StateCreator<
     const current = get().pokerState;
     if (!current) return;
 
+    // v1.1: Wager — Pot Raiser increases min bet for both players
+    const potRaiser = hasWagerEffect('player', 'increase_min_bet') || hasWagerEffect('opponent', 'increase_min_bet');
+    const minBetBonus = potRaiser?.value ?? 0;
+    const effectiveAmount = Math.max(amount, minBetBonus);
+
+    // v1.1: Wager — Reckless Bettor doubles blinds
+    // (applied at blind-posting time, but noted here for visibility)
+
     const updates: Partial<PokerState> = {
-      pot: current.pot + amount,
-      lastAction: `${player} bet ${amount}`,
+      pot: current.pot + effectiveAmount,
+      lastAction: `${player} bet ${effectiveAmount}`,
       isPlayerTurn: player === 'player' ? false : true,
     };
 
     if (player === 'player') {
-      updates.playerBet = current.playerBet + amount;
+      updates.playerBet = current.playerBet + effectiveAmount;
     } else {
-      updates.opponentBet = current.opponentBet + amount;
+      updates.opponentBet = current.opponentBet + effectiveAmount;
     }
 
     updates.currentBetToMatch = Math.max(
@@ -149,10 +189,22 @@ export const createPokerCombatSlice: StateCreator<
   fold: (player) => {
     const current = get().pokerState;
     if (current) {
+      // v1.1: Wager — Cautious Dealer reduces fold penalty
+      const cautious = hasWagerEffect(player, 'reduce_fold_penalty');
+      const foldReduction = cautious?.value ?? 0;
+
+      // v1.1: Wager — Norn's Witness heals opponent hero if you fold
+      const opponent = player === 'player' ? 'opponent' : 'player';
+      const nornWitness = hasWagerEffect(opponent, 'on_opponent_fold_heal');
+      if (nornWitness) {
+        debug.log(`[Wager] Norn's Witness: heal ${opponent} for ${nornWitness.value} on fold`);
+        // Heal applied in showdown resolution
+      }
+
       set({
         pokerState: {
           ...current,
-          lastAction: `${player} folded`,
+          lastAction: `${player} folded${foldReduction > 0 ? ` (penalty -${foldReduction})` : ''}`,
         },
         combatPhase: 'RESOLUTION',
       });

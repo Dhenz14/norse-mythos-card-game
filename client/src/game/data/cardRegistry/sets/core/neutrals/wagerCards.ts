@@ -7,9 +7,10 @@
  * IDs: 31924-31939
  */
 
-import { CardData } from '../../../../../types';
+// NOTE: Do NOT import CardData from types.ts — causes TDZ crash in production builds
+type CardData = Record<string, unknown>;
 
-export const wagerCards: CardData[] = [
+export const wagerCards: any[] = [
 	{
 		id: 31924,
 		name: 'Reckless Bettor',
