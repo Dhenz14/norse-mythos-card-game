@@ -1,55 +1,104 @@
+/**
+ * starterSet.ts — New Player Starter Card Distribution
+ *
+ * Each player receives 45 base cards matched to their default heroes:
+ * - 10 Mage cards (for Erik Flameheart)
+ * - 10 Warrior cards (for Ragnar Ironside)
+ * - 10 Priest cards (for Brynhild)
+ * - 10 Rogue cards (for Sigurd)
+ * - 5 King neutral cards (for Leif)
+ *
+ * Base cards are infinite supply — they don't count toward the 3.3M NFT cap.
+ * Power level: slightly below common, with "value gems" to keep decks competitive.
+ */
+
 import { getCardById } from './cardManagement/cardRegistry';
 import type { CardData } from '../types';
+import { BASE_CARD_IDS_BY_CLASS } from './cardRegistry/sets/core/neutrals/baseCards';
 
-export const STARTER_CARD_IDS: number[] = [
-	// === Basic Vanillas (3) — free tutorial cards ===
-	1900, // Niflheim Hatchling (1 mana 1/2)
-	1901, // Midgard Footman (2 mana 2/3)
-	1902, // Asgard Recruit (2 mana 3/2)
+// Hero class → card IDs mapping (matches getDefaultArmySelection heroes)
+const CLASS_CARD_SETS: Record<string, number[]> = {
+	Mage: BASE_CARD_IDS_BY_CLASS.Mage,       // Erik Flameheart (Queen)
+	Warrior: BASE_CARD_IDS_BY_CLASS.Warrior,  // Ragnar Ironside (Rook)
+	Priest: BASE_CARD_IDS_BY_CLASS.Priest,    // Brynhild (Bishop)
+	Rogue: BASE_CARD_IDS_BY_CLASS.Rogue,      // Sigurd (Knight)
+};
 
-	// === 1-Mana Commons (3) ===
-	1001, // Sea Sprite Raider (2/1 Naga)
-	5107, // Young Hippogriff (1/2 Windfury Beast)
-	5051, // Sea Sprite Oracle (1/1 Naga aura)
+// King neutral cards (Leif the Wayfinder)
+const KING_CARD_IDS = BASE_CARD_IDS_BY_CLASS.Neutral.slice(0, 5); // IDs 140-144
 
-	// === 2-Mana Commons (5) ===
-	1002, // Fenris Cub (3/2 Beast)
-	1003, // Midgard Serpent Spawn (2/3 Beast)
-	5044, // Sentinel of Helheim (2/2 Taunt)
-	5052, // Sea Sprite Hunter (2/1 Battlecry Naga)
-	31901, // Eir's Disciple (1/3 Lifesteal)
-
-	// === 3-Mana Commons (5) ===
-	1029, // Shadow Panther of Hades (4/2 Stealth Beast)
-	1030, // Crusader of Baldur (3/1 Divine Shield)
-	1031, // Seer of the Norns (2/3 Windfury)
-	5046, // Armored Bear of Thor (3/3 Taunt Beast)
-	29970, // Volva of the Realms (3/3 Battlecry Heal)
-
-	// === 4-Mana Commons (4) ===
-	1008, // Einherjar Guardian (3/5 Taunt)
-	5032, // Guardian of Alfheim (3/3 Divine Shield)
-	5040, // Cyclops Guardian (1/7 Taunt)
-	5047, // Swamp Turtle of Midgard (2/7 Beast)
-
-	// === 5-Mana Commons (3) ===
-	5048, // Mercenary of Sparta (5/4 Taunt)
-	5049, // Marsh Stalker (3/6 Taunt)
-	5050, // Spiteful Smith of Svartalfheim (4/6 Enrage)
-
-	// === 6-Mana Commons (2) ===
-	5035, // Harpy of the Storm (4/5 Windfury)
-	5062, // Glacial Jotunn (5/5 Freeze Elemental)
-];
-
+/**
+ * Get the 45 starter cards for a new player.
+ * 10 per class (Mage, Warrior, Priest, Rogue) + 5 king neutrals.
+ */
 export function getStarterCards(): CardData[] {
 	const cards: CardData[] = [];
-	for (const id of STARTER_CARD_IDS) {
+
+	// Add all 4 class sets (10 each)
+	for (const classIds of Object.values(CLASS_CARD_SETS)) {
+		for (const id of classIds) {
+			const card = getCardById(id);
+			if (card) cards.push(card);
+		}
+	}
+
+	// Add king neutral cards (5)
+	for (const id of KING_CARD_IDS) {
 		const card = getCardById(id);
 		if (card) cards.push(card);
 	}
+
+	return cards;
+}
+
+/**
+ * Get class-specific base cards for a given hero class.
+ * Used when giving bonus cards for a specific hero.
+ */
+export function getBaseCardsByClass(heroClass: string): CardData[] {
+	const ids = CLASS_CARD_SETS[heroClass] ?? [];
+	return ids.map(id => getCardById(id)).filter(Boolean) as CardData[];
+}
+
+/**
+ * Get random neutral base cards from the shared pool.
+ * Guarantees at least 20% minions.
+ */
+export function getRandomNeutralBaseCards(count: number): CardData[] {
+	const allNeutralIds = BASE_CARD_IDS_BY_CLASS.Neutral.slice(5); // Skip king cards (140-144)
+	const shuffled = [...allNeutralIds].sort(() => Math.random() - 0.5);
+	const cards: CardData[] = [];
+
+	for (const id of shuffled) {
+		if (cards.length >= count) break;
+		const card = getCardById(id);
+		if (card) cards.push(card);
+	}
+
+	// Ensure 20% minion floor
+	const minions = cards.filter(c => c.type === 'minion');
+	const minMinionCount = Math.ceil(count * 0.2);
+	if (minions.length < minMinionCount) {
+		const minionIds = allNeutralIds.filter(id => {
+			const c = getCardById(id);
+			return c?.type === 'minion' && !cards.some(existing => existing.id === id);
+		});
+		const shuffledMinions = minionIds.sort(() => Math.random() - 0.5);
+		let needed = minMinionCount - minions.length;
+		for (const id of shuffledMinions) {
+			if (needed <= 0) break;
+			const card = getCardById(id);
+			if (card) {
+				// Replace a spell with this minion
+				const spellIdx = cards.findIndex(c => c.type === 'spell');
+				if (spellIdx >= 0) cards[spellIdx] = card;
+				needed--;
+			}
+		}
+	}
+
 	return cards;
 }
 
 export const STARTER_PACK_NAME = 'Birthright of the Norns';
-export const STARTER_CARD_COUNT = STARTER_CARD_IDS.length;
+export const STARTER_CARD_COUNT = 45;

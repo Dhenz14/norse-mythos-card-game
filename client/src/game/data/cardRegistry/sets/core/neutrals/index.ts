@@ -20,6 +20,7 @@ import { greekMythicMinions } from './greekMythicMinions';
 import { norseMechanicPayoffCards } from './norseMechanicPayoffCards';
 import { primordialExpansionCards } from './primordialExpansionCards';
 import { wagerCards } from './wagerCards';
+import { allBaseCards } from './baseCards';
 
 // Core Set - Neutral Cards
 // Organized by rarity following standard CCG conventions
@@ -10348,7 +10349,8 @@ export const coreNeutralCards: CardData[] = [
   ...greekMythicMinions,
   ...norseMechanicPayoffCards,
   ...primordialExpansionCards,
-  ...wagerCards
+  ...wagerCards,
+  ...allBaseCards
 ];
 
 export { allYggdrasilGolemCards, elderTitanCards, allAdaptCards, allMechanicCards, allLegendaryCards, allSpellCards };
