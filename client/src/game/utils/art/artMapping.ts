@@ -1125,6 +1125,68 @@ const VERCEL_CARD_ART: Record<string, string> = {
  */
 // Single source of truth for card art — all card art lookups go through this map
 const CARD_ID_TO_ART: Record<number, string> = {
+	// ── Base Edition Cards (IDs 100-234) — mapped from orphan 95xxx art pool ──
+	// Mage class (100-109)
+	100: '/art/241b-6a6b3650.webp', 101: '/art/cdc5-7b887f7c.webp', 102: '/art/be34-4b90fdba.webp',
+	103: '/art/e02e-d762e49f.webp', 104: '/art/79d6-428fda33.webp', 105: '/art/e3c9-c36eb4fc.webp',
+	106: '/art/4cfe-07f02d56.webp', 107: '/art/937d-ce551fe9.webp', 108: '/art/d347-08c025f8.webp',
+	109: '/art/8e75-f04e6373.webp',
+	// Warrior class (110-119)
+	110: '/art/647d-890bd83b.webp', 111: '/art/3676-6ccb4f95.webp', 112: '/art/0f42-9b504a4a.webp',
+	113: '/art/d03e-250daf92.webp', 114: '/art/49a8-a7ababce.webp', 115: '/art/e71e-f4d9ab88.webp',
+	116: '/art/96cd-feecad85.webp', 117: '/art/1b3b-90db0ecf.webp', 118: '/art/1ee0-c5e91144.webp',
+	119: '/art/ddd2-719cfa1c.webp',
+	// Priest class (120-129)
+	120: '/art/60ee-93747180.webp', 121: '/art/5da2-f09b7b58.webp', 122: '/art/5727-f7bb4061.webp',
+	123: '/art/afbc-61c5ff4c.webp', 124: '/art/11c2-b04b497e.webp', 125: '/art/1acf-a8e33b4e.webp',
+	126: '/art/3bfc-9257e0b5.webp', 127: '/art/4b51-b68d1edf.webp', 128: '/art/628c-d6b2f421.webp',
+	129: '/art/cf54-ae1c0b9d.webp',
+	// Rogue class (130-139)
+	130: '/art/4732-c764a56d.webp', 131: '/art/61b9-80348285.webp', 132: '/art/9fe0-aba85bd6.webp',
+	133: '/art/4050-74d2786d.webp', 134: '/art/2d95-fab9b203.webp', 135: '/art/3e4f-6015feda.webp',
+	136: '/art/7a7c-c59d0982.webp', 137: '/art/5903-6e3d1de7.webp', 138: '/art/8037-8c7b3dc1.webp',
+	139: '/art/76b5-f568a855.webp',
+	// King neutrals (140-144)
+	140: '/art/5cdc-10bab677.webp', 141: '/art/ccf8-58c160b3.webp', 142: '/art/c157-96539206.webp',
+	143: '/art/9908-6cd11797.webp', 144: '/art/9c65-063198fb.webp',
+	// Shared neutrals 1-mana (145-159)
+	145: '/art/31f0-25d7e8df.webp', 146: '/art/3dec-220eb280.webp', 147: '/art/2647-b65b4157.webp',
+	148: '/art/1c37-a61b71ea.webp', 149: '/art/c518-198562ac.webp', 150: '/art/0223-b64388c7.webp',
+	151: '/art/d7c4-4b8e0e9b.webp', 152: '/art/70a8-76c8b669.webp', 153: '/art/b0e4-762d4e7f.webp',
+	154: '/art/b92d-720a6185.webp', 155: '/art/3c9c-fd6a115a.webp', 156: '/art/f3c9-7a98e8ee.webp',
+	157: '/art/8596-7b77ab9c.webp', 158: '/art/dd34-d2139022.webp', 159: '/art/a546-37e570bb.webp',
+	// Shared neutrals 2-mana (160-179)
+	160: '/art/b37b-bb3633d9.webp', 161: '/art/01bc-311c044f.webp', 162: '/art/9575-1fc23371.webp',
+	163: '/art/2823-1d836fc1.webp', 164: '/art/ab4a-b5690d02.webp', 165: '/art/d2a5-cffbfad7.webp',
+	166: '/art/6b98-ca7b0860.webp', 167: '/art/2c3b-9d405593.webp', 168: '/art/cb3e-7007e002.webp',
+	169: '/art/2b9f-32bbd9f6.webp', 170: '/art/f91d-c739deba.webp', 171: '/art/0b8a-29e18c04.webp',
+	172: '/art/0776-9e2bce21.webp', 173: '/art/f68a-e3ea5364.webp', 174: '/art/5a7a-a9c79a55.webp',
+	175: '/art/017c-2b479749.webp', 176: '/art/2eef-da401359.webp', 177: '/art/2b9e-cab6a07a.webp',
+	178: '/art/3e0b-5f427308.webp', 179: '/art/a0f8-xxspmfv1.webp',
+	// Shared neutrals 3-mana (180-199)
+	180: '/art/e08f-4965df25.webp', 181: '/art/fd0c-f846fc3f.webp', 182: '/art/4544-1797796e.webp',
+	183: '/art/b03f-9cfca965.webp', 184: '/art/ba6b-ccf908a8.webp', 185: '/art/a7aa-9e98b2fd.webp',
+	186: '/art/27a9-52a2f9e4.webp', 187: '/art/c425-b3b1c198.webp', 188: '/art/daab-eb5b0a07.webp',
+	189: '/art/089f-34e1ce25.webp', 190: '/art/d593-81d864b7.webp', 191: '/art/19c0-223adb21.webp',
+	192: '/art/b5c2-171fad19.webp', 193: '/art/6e10-f99da69a.webp', 194: '/art/3863-5517b6d5.webp',
+	195: '/art/e636-9c44082a.webp', 196: '/art/8ae7-b47b3cd4.webp', 197: '/art/a83a-b5da8de6.webp',
+	198: '/art/f3f9-7e4ad351.webp', 199: '/art/4244-4be44d1c.webp',
+	// Shared neutrals 4-mana (200-214)
+	200: '/art/ec8b-da6626c0.webp', 201: '/art/5325-4e9a963d.webp', 202: '/art/13d6-21np1mu9.webp',
+	203: '/art/e855-fe9c6e55.webp', 204: '/art/b8ee-bde8dd3c.webp', 205: '/art/5b0f-07111762.webp',
+	206: '/art/8f0e-0f4946fd.webp', 207: '/art/7124-9e4a4b39.webp', 208: '/art/232a-b2d8a447.webp',
+	209: '/art/cf54-a555f2c3.webp', 210: '/art/0964-27aa27c1.webp', 211: '/art/758b-200763be.webp',
+	212: '/art/55f9-a5829853.webp', 213: '/art/ce26-d7aff9aa.webp', 214: '/art/1106-a63dda82.webp',
+	// Shared neutrals 5-mana (215-226)
+	215: '/art/8a47-zgnv1dad.webp', 216: '/art/7e08-73d3e29f.webp', 217: '/art/ce8d-9dce928e.webp',
+	218: '/art/5412-2a23362c.webp', 219: '/art/3677-f5d8e8a9.webp', 220: '/art/ddc4-e76c965a.webp',
+	221: '/art/e5c1-e1352bd4.webp', 222: '/art/5e39-2bee39b1.webp', 223: '/art/a344-6wwdom1r.webp',
+	224: '/art/087b-02553bwr.webp', 225: '/art/760e-58e0cac2.webp', 226: '/art/6699-ab3ea57f.webp',
+	// Shared neutrals 6+ mana (227-234)
+	227: '/art/ebfb-62965d65.webp', 228: '/art/3a90-7b790440.webp', 229: '/art/a584-b312b674.webp',
+	230: '/art/a115-db098b90.webp', 231: '/art/774b-e6d20779.webp', 232: '/art/a915-4076e226.webp',
+	233: '/art/fb8b-1ece3434.webp', 234: '/art/db4e-ff02d321.webp',
+
 	// 2202: hero-chronos art removed
 	1001: '/art/a8a4-5835d804.webp',
 	1002: '/art/75a8-d8f032d0.webp',
