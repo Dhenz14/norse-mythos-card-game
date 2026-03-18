@@ -5,6 +5,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force emoji to render as monochrome text glyphs (not colorful platform-specific emoji).
+   This makes ⚔️🛡️⚡ etc. look like professional UI icons instead of chat emoji. */
+#root {
+  font-variant-emoji: text;
+}
+
 :root {
   /* =============================================
      SHADCN/UI THEME VARIABLES (Required by Tailwind)

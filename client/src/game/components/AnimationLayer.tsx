@@ -19,6 +19,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAnimation, Animation, useAnimationStore } from '../animations/AnimationManager';
 import { motion, AnimatePresence } from 'framer-motion';
+import './animation-layer.css';
 import EnhancedDeathAnimation from '../animations/EnhancedDeathAnimation';
 import ElementalAttackTrail from '../animations/ElementalAttackTrail';
 import TurnTransition from '../animations/TurnTransition';
@@ -612,52 +613,11 @@ const CardBurnPopup: React.FC<{ animation: Animation }> = ({ animation }) => {
         ease: "easeOut"
       }}
     >
-      <div style={{
-        background: 'linear-gradient(180deg, rgba(180, 100, 40, 0.95) 0%, rgba(120, 60, 20, 0.95) 100%)',
-        border: '3px solid #ff6600',
-        borderRadius: '12px',
-        padding: '16px 32px',
-        boxShadow: '0 0 30px rgba(255, 150, 50, 0.6), 0 8px 32px rgba(0, 0, 0, 0.5)',
-        textAlign: 'center',
-        minWidth: '280px'
-      }}>
-        <div style={{
-          fontSize: '32px',
-          marginBottom: '8px'
-        }}>
-          🔥
-        </div>
-        
-        <div style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#ff6600',
-          textTransform: 'uppercase',
-          letterSpacing: '2px'
-        }}>
-          HAND FULL
-        </div>
-        
-        <div style={{
-          fontSize: '18px',
-          fontWeight: 700,
-          color: '#ffffff',
-          marginTop: '8px',
-          textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)'
-        }}>
-          {cardName}
-        </div>
-        
-        <div style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#fbbf24',
-          textTransform: 'uppercase',
-          letterSpacing: '2px',
-          marginTop: '4px'
-        }}>
-          BURNED!
-        </div>
+      <div className="anim-burn-card">
+        <div className="anim-burn-icon">♨</div>
+        <div className="anim-burn-label">HAND FULL</div>
+        <div className="anim-burn-name">{cardName}</div>
+        <div className="anim-burn-status">BURNED!</div>
       </div>
     </motion.div>
   );

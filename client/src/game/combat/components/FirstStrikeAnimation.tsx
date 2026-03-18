@@ -47,7 +47,6 @@ export const FirstStrikeAnimation: React.FC<FirstStrikeAnimationProps> = ({ onCo
       clearTimeout(doneTimer);
     };
   // Include target and damage to restart animation on new combat, but not onComplete
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firstStrike?.completed, firstStrike?.target, firstStrike?.damage]);
 
   if (!firstStrike || firstStrike.completed) {
@@ -94,7 +93,7 @@ export const FirstStrikeAnimation: React.FC<FirstStrikeAnimationProps> = ({ onCo
                 letterSpacing: '4px'
               }}
             >
-              ⚔️ First Strike!
+              ⚔ First Strike!
             </motion.div>
             <div style={{
               fontSize: '1.2rem',
@@ -118,7 +117,7 @@ export const FirstStrikeAnimation: React.FC<FirstStrikeAnimationProps> = ({ onCo
               filter: 'drop-shadow(0 0 20px rgba(255, 100, 100, 0.8))'
             }}
           >
-            ⚔️
+            ⚔
           </motion.div>
         )}
 

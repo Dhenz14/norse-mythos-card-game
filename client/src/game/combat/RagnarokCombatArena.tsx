@@ -124,13 +124,13 @@ interface UnifiedCombatArenaProps {
   opponentMana: number;
   opponentMaxMana: number;
   // Hero props
-  playerPet?: any;
-  opponentPet?: any;
+  playerPet?: any; // eslint-disable-line @typescript-eslint/no-explicit-any -- PetData | CardInstance union
+  opponentPet?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   playerHpCommitted?: number;
   opponentHpCommitted?: number;
   playerLevel?: number;
   opponentLevel?: number;
-  playerSecrets?: any[];
+  playerSecrets?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
   playerHeroClass?: string;
   // Hero power
   onHeroPowerClick?: () => void;
@@ -147,13 +147,13 @@ interface UnifiedCombatArenaProps {
     heroName: string;
     manaCost: number;
   } | null;
-  executeHeroPowerEffect?: (norseHero: any, heroPower: any, target: any) => void;
+  executeHeroPowerEffect?: (norseHero: any, heroPower: any, target: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
   // Hand props
-  handCards?: any[];
+  handCards?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
   handCurrentMana?: number;
   handIsPlayerTurn?: boolean;
-  onCardPlay?: (card: any, target?: any) => void;
-  registerCardPosition?: (card: any, position: any) => void;
+  onCardPlay?: (card: any, target?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+  registerCardPosition?: (card: any, position: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
   battlefieldRef?: React.RefObject<HTMLDivElement | null>;
 }
 
