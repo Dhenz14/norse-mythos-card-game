@@ -85,17 +85,19 @@ export function getCombinedHandName(rank: PokerHandRank): string {
 /**
  * Damage multipliers for each hand rank
  */
+// All multipliers are 1.0 — pure NLH rules. Best hand wins the pot, no bonus damage.
+// Skill is in the betting, reading, and folding — not lucky hand bonuses.
 export const HAND_DAMAGE_MULTIPLIERS: Record<PokerHandRank, number> = {
-  [PokerHandRank.HIGH_CARD]: 1.0,       // No made hand
-  [PokerHandRank.RUNE_MARK]: 1.15,      // Pair (was 1.05 — too flat, poker skill unrewarded)
-  [PokerHandRank.DUAL_RUNES]: 1.25,     // Two Pair (was 1.1)
-  [PokerHandRank.THORS_HAMMER]: 1.4,    // Three of a Kind (was 1.15)
-  [PokerHandRank.FATES_PATH]: 1.5,      // Straight (was 1.2)
-  [PokerHandRank.ODINS_EYE]: 1.6,       // Flush (was 1.3)
-  [PokerHandRank.VALHALLAS_BLESSING]: 1.75, // Full House (was 1.4)
-  [PokerHandRank.GODLY_POWER]: 2.0,     // Four of a Kind (was 1.6)
-  [PokerHandRank.DIVINE_ALIGNMENT]: 2.5, // Straight Flush (was 1.8)
-  [PokerHandRank.RAGNAROK]: 3.0         // Royal Flush (was 2.0) — Ragnarok should FEEL like Ragnarok
+  [PokerHandRank.HIGH_CARD]: 1.0,
+  [PokerHandRank.RUNE_MARK]: 1.0,
+  [PokerHandRank.DUAL_RUNES]: 1.0,
+  [PokerHandRank.THORS_HAMMER]: 1.0,
+  [PokerHandRank.FATES_PATH]: 1.0,
+  [PokerHandRank.ODINS_EYE]: 1.0,
+  [PokerHandRank.VALHALLAS_BLESSING]: 1.0,
+  [PokerHandRank.GODLY_POWER]: 1.0,
+  [PokerHandRank.DIVINE_ALIGNMENT]: 1.0,
+  [PokerHandRank.RAGNAROK]: 1.0
 };
 
 /**
