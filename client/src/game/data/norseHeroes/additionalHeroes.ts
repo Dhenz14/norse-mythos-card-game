@@ -66,55 +66,54 @@ export const ADDITIONAL_HEROES: Record<string, NorseHero> = {
     }
   },
 
-  // ==================== 24. GEFJON ====================
+  // ==================== 24. GEFJON — Fortune's Edge ====================
   'hero-gefjon': {
     id: 'hero-gefjon',
     name: 'Gefjon',
-    title: 'Goddess of Plowing',
-    element: 'grass',
-    weakness: 'fire',
+    title: "Fortune's Edge",
+    element: 'light',
+    weakness: 'dark',
     startingHealth: 100,
-    description: 'The goddess who plowed Zealand from Sweden.',
-    lore: 'The tireless goddess who carved the island of Zealand from Swedish soil in a single night. Her divine oxen—her transformed sons—still guard the fertile lands she created.',
+    description: 'The Norse goddess of fortune and gambling. She ploughed Zealand from Sweden with four disguised oxen sons — a gambler who bets everything on one bold move.',
+    lore: 'Gefjon laughed when Gylfi offered her as much land as four oxen could plough in a day and night. She transformed her four sons into oxen and carved Zealand from the earth. The gods learned: never wager against Gefjon.',
     gender: 'female',
     hasSpells: true,
-    fixedCardIds: [6222], // Elven Hart - earth/grass legendary
+    fixedCardIds: [],
     heroPower: {
       id: 'gefjon-power',
-      name: "Furrow's Gift",
-      description: 'Summon a 0/3 Totem with Taunt and Deathrattle: Give a random friendly +2/+2.',
+      name: 'Roll the Dice',
+      description: 'Deal 1-6 damage to a random enemy (like a dice roll).',
       cost: 2,
       targetType: 'none',
-      effectType: 'summon',
-      summonData: { name: 'Harvest Totem', attack: 0, health: 3, keywords: ['taunt'] }
+      effectType: 'roll_the_dice',
+      value: 6,
     },
     weaponUpgrade: {
       id: 90024,
-      name: 'Plow of Ages',
+      name: "Gefjon's Golden Plough",
       heroId: 'hero-gefjon',
       manaCost: 5,
-      description: 'Summon two 0/4 Totems with Taunt. Permanently upgrade your hero power.',
-      immediateEffect: { type: 'summon_multiple', value: 2, description: 'Summon two 0/4 Totems with Taunt.' },
+      description: 'Roll the Dice twice, keep the highest. Permanently upgrade your hero power.',
+      immediateEffect: { type: 'roll_the_dice_double', value: 6, description: 'Roll the Dice twice, keep the highest damage.' },
       upgradedPowerId: 'gefjon-power-upgraded'
     },
     upgradedHeroPower: {
       id: 'gefjon-power-upgraded',
-      name: "Furrow's Gift+",
-      description: 'Summon a 0/4 Totem with Taunt and Deathrattle: Give a random friendly +3/+3.',
+      name: "Fortune's Favor",
+      description: 'Roll 1-6 twice, deal the higher result as damage to a random enemy.',
       cost: 2,
       targetType: 'none',
-      effectType: 'summon',
-      summonData: { name: 'Harvest Totem', attack: 0, health: 4, keywords: ['taunt'] },
+      effectType: 'roll_the_dice_double',
+      value: 6,
       isUpgraded: true,
       baseHeroPowerId: 'gefjon-power'
     },
     passive: {
       id: 'gefjon-passive',
-      name: 'Fertile Ground',
-      description: 'Grass minions have +1 Health.',
-      trigger: 'always',
-      condition: { minionElement: 'grass' },
-      effectType: 'buff_health',
+      name: 'Fortune Favors the Bold',
+      description: 'Whenever you roll a 6, draw a card.',
+      trigger: 'on_roll_six',
+      effectType: 'draw',
       value: 1
     }
   },

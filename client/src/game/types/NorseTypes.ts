@@ -169,7 +169,10 @@ export type HeroPowerEffectType =
   | 'sacrifice_summon'        // Destroy friendly and summon (Izanami)
   | 'mana_ramp'               // Gain mana crystals (Inari)
   | 'transform_card'          // Transform a card (Kitsune)
-  | 'resurrect_to_hand';      // Return dead minion to hand (Hermod)
+  | 'resurrect_to_hand'       // Return dead minion to hand (Hermod)
+  // Gambling/luck effects (Gefjon)
+  | 'roll_the_dice'           // Deal 1-6 random damage to a random enemy
+  | 'roll_the_dice_double';   // Roll twice, keep higher result
 
 /**
  * Hero power definition
@@ -297,6 +300,7 @@ export type HeroPassiveTrigger =
   | 'on_shield_break'       // When a Divine Shield is broken (Frigg)
   | 'on_freeze'             // When an enemy is frozen (Bestla)
   | 'on_card_play'          // When a card is played (Hermod)
+  | 'on_roll_six'           // When Gefjon rolls a 6 (draw a card)
   | 'passive';              // Always active aura effect
 
 /**

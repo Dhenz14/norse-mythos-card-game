@@ -210,6 +210,12 @@ export function executeNorseHeroPower(
     case 'buff_hero':
       newState = executeBuffHero(newState, playerType, power);
       break;
+    case 'roll_the_dice':
+      newState = executeRollTheDice(newState, playerType, power, false);
+      break;
+    case 'roll_the_dice_double':
+      newState = executeRollTheDice(newState, playerType, power, true);
+      break;
     default:
       debug.warn(`[HERO POWER] Unknown effect type: ${power.effectType}`);
   }
@@ -296,6 +302,53 @@ function executeDamageRandom(
     target.currentHealth = (target.currentHealth || getCardHealth(target.card)) - (power.value || 0);
 
     opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
+  }
+
+  return state;
+}
+
+// ── v1.1: Gefjon's "Roll the Dice" ──
+// Rolls 1d6 (or 2d6-keep-highest for upgraded), deals that damage to a random enemy.
+
+function executeRollTheDice(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower,
+  rollTwice: boolean
+): GameState {
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+
+  // Roll the dice
+  const roll1 = Math.floor(Math.random() * 6) + 1;
+  const roll2 = rollTwice ? Math.floor(Math.random() * 6) + 1 : 0;
+  const damage = rollTwice ? Math.max(roll1, roll2) : roll1;
+
+  debug.log(`[Gefjon] Roll: ${roll1}${rollTwice ? ` / ${roll2} → keep ${damage}` : ` → ${damage} damage`}`);
+
+  // Pick a random enemy target (minion or hero)
+  const targets: Array<{ type: 'minion'; index: number } | { type: 'hero' }> = [];
+  opponent.battlefield.forEach((_, i) => targets.push({ type: 'minion', index: i }));
+  targets.push({ type: 'hero' });
+
+  if (targets.length === 0) return state;
+
+  const chosen = targets[Math.floor(Math.random() * targets.length)];
+
+  if (chosen.type === 'hero') {
+    opponent.heroHealth = (opponent.heroHealth ?? opponent.health) - damage;
+  } else {
+    const minion = opponent.battlefield[chosen.index];
+    if (minion) {
+      minion.currentHealth = (minion.currentHealth || getCardHealth(minion.card)) - damage;
+      opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
+    }
+  }
+
+  // Passive: rolling a 6 draws a card
+  if (damage === 6) {
+    state = executeDraw(state, playerType, { value: 1 } as NorseHeroPower);
+    debug.log('[Gefjon] Rolled a 6! Drew a card.');
   }
 
   return state;

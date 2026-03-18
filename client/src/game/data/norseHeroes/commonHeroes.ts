@@ -651,6 +651,7 @@ export const COMMON_HEROES: Record<string, NorseHero> = {
 			value: 1
 		}
 	}
+
 };
 
 export function getCommonHeroById(id: string): NorseHero | undefined {
