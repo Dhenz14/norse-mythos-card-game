@@ -2373,7 +2373,7 @@ export const GameBoard: React.FC<{}> = () => {
       
       {/* Discovery Modal for card discovery */}
       {gameState.discovery && gameState.discovery.active && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999 }}>
+        <div className="fixed inset-0 z-cinematic">
           <DiscoveryModal 
             discoveryState={gameState.discovery}
             onCardSelect={handleDiscoverySelect}

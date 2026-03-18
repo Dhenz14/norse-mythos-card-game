@@ -17,7 +17,7 @@ export const P2PStatusBadge: React.FC<P2PStatusBadgeProps> = ({ className = '' }
 				position: 'fixed',
 				top: '8px',
 				right: '8px',
-				zIndex: 9999,
+				zIndex: 900, /* --z-hud */
 				display: 'flex',
 				alignItems: 'center',
 				gap: '5px',

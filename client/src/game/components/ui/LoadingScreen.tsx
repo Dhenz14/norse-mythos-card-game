@@ -45,7 +45,7 @@ export default class LoadingScreen extends Component<LoadingScreenProps, Loading
 		const { quote } = this.state;
 
 		return (
-			<div className="fixed inset-0 z-[9999] bg-gray-950 flex flex-col items-center justify-center">
+			<div className="fixed inset-0 z-topmost bg-gray-950 flex flex-col items-center justify-center">
 				{/* Rune spinner */}
 				<div className="relative w-24 h-24 mb-8">
 					<div className="absolute inset-0 rounded-full border-2 border-amber-500/30 animate-spin"

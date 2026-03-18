@@ -77,7 +77,7 @@ const SummonEffectRenderer: React.FC<{ effect: AnimationEffect }> = React.memo((
         top: position.y,
         transform: 'translate(-50%, -50%)',
         pointerEvents: 'none',
-        zIndex: 9999,
+        zIndex: 9500, /* --z-cinematic */
       }}
     >
       <motion.div

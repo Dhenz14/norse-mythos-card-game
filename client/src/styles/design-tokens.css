@@ -155,7 +155,7 @@
   --z-notifications: 9000;
   --z-cinematic: 9500;
   --z-topmost: 10000;
-  
+
   /* =============================================
      7. LAYOUT GRID
      Container widths, gaps, and responsive helpers
@@ -261,3 +261,17 @@
     --panel-md: 320px;
   }
 }
+
+/* =============================================
+   Z-INDEX UTILITY CLASSES
+   Use these instead of inline zIndex values.
+   Maps to the token tiers defined in :root above.
+   ============================================= */
+.z-notifications { z-index: var(--z-notifications) !important; }
+.z-cinematic { z-index: var(--z-cinematic) !important; }
+.z-topmost { z-index: var(--z-topmost) !important; }
+.z-overlays { z-index: var(--z-overlays) !important; }
+.z-targeting { z-index: var(--z-targeting) !important; }
+.z-popup { z-index: var(--z-popup) !important; }
+.z-hud { z-index: var(--z-hud) !important; }
+.z-drag { z-index: var(--z-drag) !important; }

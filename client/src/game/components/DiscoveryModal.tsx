@@ -85,9 +85,8 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 flex items-center justify-center"
-      style={{ 
-        zIndex: 9999, 
+      className="fixed inset-0 flex items-center justify-center z-cinematic"
+      style={{
         backgroundColor: 'rgba(0, 0, 0, 0.85)',
         backdropFilter: 'blur(4px)'
       }}

@@ -308,7 +308,7 @@ const ChessPhaseContent: React.FC<ChessPhaseContentProps> = ({
             e.stopPropagation();
             handleBattleMode();
           }}
-          className="fixed bottom-2 left-2 z-[9999] opacity-20 hover:opacity-80 transition-opacity text-[10px] px-2 py-1 bg-gray-800/80 border border-gray-600/50 rounded text-gray-500 cursor-pointer"
+          className="fixed bottom-2 left-2 z-hud opacity-20 hover:opacity-80 transition-opacity text-[10px] px-2 py-1 bg-gray-800/80 border border-gray-600/50 rounded text-gray-500 cursor-pointer"
           title="[DEV] Quick test PvP combat"
         >
           ⚔️ Test Battle

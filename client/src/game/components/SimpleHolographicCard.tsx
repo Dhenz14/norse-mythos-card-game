@@ -411,7 +411,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
           justifyContent: 'space-between',
           marginBottom: '10px',
           position: 'relative',
-          zIndex: 9999, /* Even higher z-index for the mana container */
+          zIndex: 50, /* Above card art but within card stacking context */
           isolation: 'isolate' /* Create a new stacking context */
         }}>
           <div style={{
@@ -808,7 +808,7 @@ const SimpleHolographicCard: React.FC<SimpleHolographicCardProps> = ({
             justifyContent: 'space-between',
             marginTop: '10px',
             position: 'relative',
-            zIndex: 9999, /* Even higher z-index for the stat container */
+            zIndex: 50, /* Above card art but within card stacking context */
             isolation: 'isolate' /* Create a new stacking context */
           }}>
             {/* Attack */}

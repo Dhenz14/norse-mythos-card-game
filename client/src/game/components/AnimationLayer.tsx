@@ -513,7 +513,7 @@ const SpellDamagePopup: React.FC<{ animation: Animation }> = ({ animation }) => 
         top: '35%',
         left: '50%',
         transform: 'translateX(-50%)',
-        zIndex: 9999,
+        zIndex: 9500 /* --z-cinematic */,
         pointerEvents: 'none'
       }}
       initial={{ opacity: 0, scale: 0.5, y: 20 }}
@@ -598,7 +598,7 @@ const CardBurnPopup: React.FC<{ animation: Animation }> = ({ animation }) => {
         top: '40%',
         left: '50%',
         transform: 'translateX(-50%)',
-        zIndex: 9999,
+        zIndex: 9500 /* --z-cinematic */,
         pointerEvents: 'none'
       }}
       initial={{ opacity: 0, scale: 0.5, y: 30 }}
@@ -636,7 +636,7 @@ const CardDrawNotification: React.FC<{ animation: Animation }> = ({ animation })
         top: isPlayer ? '65%' : '15%',
         left: '50%',
         transform: 'translateX(-50%)',
-        zIndex: 9999,
+        zIndex: 9500 /* --z-cinematic */,
         pointerEvents: 'none'
       }}
       initial={{ opacity: 0, scale: 0.3, y: isPlayer ? 40 : -40 }}
@@ -1170,7 +1170,7 @@ const GameStartEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
 					fontFamily: 'Cinzel, "Times New Roman", serif',
 					textShadow: '0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,165,0,0.5), 0 4px 8px rgba(0,0,0,0.9)',
 					letterSpacing: '10px', textTransform: 'uppercase',
-					whiteSpace: 'nowrap', zIndex: 9999, pointerEvents: 'none'
+					whiteSpace: 'nowrap', zIndex: 9500 /* --z-cinematic */, pointerEvents: 'none'
 				}}
 				initial={{ scale: 3, opacity: 0 }}
 				animate={{ scale: [3, 0.9, 1], opacity: [0, 1, 1, 0] }}
@@ -1198,7 +1198,7 @@ const TurnStartEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
 				height: '60px',
 				background: bgColor,
 				display: 'flex', alignItems: 'center', justifyContent: 'center',
-				zIndex: 9999, pointerEvents: 'none',
+				zIndex: 9500 /* --z-cinematic */, pointerEvents: 'none',
 				borderTop: `2px solid ${color}`,
 				borderBottom: `2px solid ${color}`,
 				boxShadow: `0 0 30px ${color}40`
@@ -1248,7 +1248,7 @@ const VictoryEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
           position: 'fixed', top: '30%', left: '50%', transform: 'translateX(-50%)',
           fontSize: '72px', fontWeight: 900, color: '#ffd700',
           textShadow: '0 0 30px rgba(255,215,0,0.8), 0 4px 8px rgba(0,0,0,0.8), 0 0 60px rgba(255,215,0,0.4)',
-          letterSpacing: '8px', textTransform: 'uppercase', zIndex: 9999, pointerEvents: 'none'
+          letterSpacing: '8px', textTransform: 'uppercase', zIndex: 9500 /* --z-cinematic */, pointerEvents: 'none'
         }}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: [0, 1.2, 1], opacity: [0, 1, 1] }}
@@ -1260,7 +1260,7 @@ const VictoryEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
         style={{
           position: 'fixed', top: '42%', left: '50%', transform: 'translateX(-50%)',
           fontSize: '20px', fontWeight: 600, color: '#fff',
-          textShadow: '0 0 10px rgba(255,215,0,0.5)', letterSpacing: '4px', zIndex: 9999, pointerEvents: 'none'
+          textShadow: '0 0 10px rgba(255,215,0,0.5)', letterSpacing: '4px', zIndex: 9500 /* --z-cinematic */, pointerEvents: 'none'
         }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -1294,7 +1294,7 @@ const DefeatEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
           position: 'fixed', top: '30%', left: '50%', transform: 'translateX(-50%)',
           fontSize: '72px', fontWeight: 900, color: '#dc2626',
           textShadow: '0 0 30px rgba(220,38,38,0.8), 0 4px 8px rgba(0,0,0,0.8)',
-          letterSpacing: '8px', textTransform: 'uppercase', zIndex: 9999, pointerEvents: 'none'
+          letterSpacing: '8px', textTransform: 'uppercase', zIndex: 9500 /* --z-cinematic */, pointerEvents: 'none'
         }}
         initial={{ scale: 2, opacity: 0 }}
         animate={{ scale: [2, 0.9, 1], opacity: [0, 1, 1] }}
@@ -1306,7 +1306,7 @@ const DefeatEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
         style={{
           position: 'fixed', top: '42%', left: '50%', transform: 'translateX(-50%)',
           fontSize: '20px', fontWeight: 600, color: '#fca5a5',
-          letterSpacing: '4px', zIndex: 9999, pointerEvents: 'none'
+          letterSpacing: '4px', zIndex: 9500 /* --z-cinematic */, pointerEvents: 'none'
         }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

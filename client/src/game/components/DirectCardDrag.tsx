@@ -87,7 +87,7 @@ export const DirectCardDrag: React.FC<DirectCardDragProps> = ({
     // Immediate drag visual feedback
     cardRef.current.style.cursor = 'grabbing';
     cardRef.current.style.transform = `scale(${scale * 1.1}) rotate(3deg)`;
-    cardRef.current.style.zIndex = '9999';
+    cardRef.current.style.zIndex = '600'; /* --z-drag */
     cardRef.current.style.transition = 'transform 0.1s ease-out';
     
     debug.drag('Started dragging card', cardInstance.card.name);
