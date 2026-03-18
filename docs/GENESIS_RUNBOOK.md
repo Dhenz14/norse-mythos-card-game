@@ -396,7 +396,7 @@ Mint in batches of ~50 cards per `custom_json` (4KB Hive op limit). Plan mint or
 
 | Batch | Cards | Recipient | Purpose |
 | ----- | ----- | --------- | ------- |
-| 1-N | Starter set (25 cards × M copies) | `@ragnarok` | Initial distribution pool |
+| 1-N | Collectible NFT cards (all rarities) | `@ragnarok` | Initial distribution pool (base cards are free/local, NOT minted on-chain) |
 | N+1-P | Pack supply allocation | `@ragnarok` | Pack opening pool |
 | P+1-Q | Reward supply allocation | `@ragnarok` | Milestone reward pool |
 

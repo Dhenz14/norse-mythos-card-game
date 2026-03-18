@@ -482,20 +482,24 @@ StarterPackCeremony.tsx
   │
   ▼ Click
   ├── Phase 2: Pack Opening Animation
-  │   25 starter cards revealed (PackOpeningAnimation reuse)
+  │   45 class-matched base cards revealed (PackOpeningAnimation reuse)
   │   Cards added to HiveDataStore
+  │   4 starter card pools saved to localStorage
   │   starterStore.markClaimed()
   │
   ▼ Animation complete
-HomePage (starterStore.claimed === true)
-  "Play Game" button shown
+  "Play Your First Game" → /game (heroes pre-selected, cards optional)
+  "Close Pack" → HomePage
 ```
 
 ### Starter Set
 
-- 25 cards: 3 basic vanillas + 22 common neutrals
-- Mana curve 1-6, includes Taunt, Divine Shield, Windfury, Stealth, Lifesteal
-- Stored in `starterSet.ts`, tracked via `starterStore.ts` (localStorage persist)
+- 45 base cards: 10 Mage + 10 Warrior + 10 Priest + 10 Rogue + 5 neutral
+- Each class set matched to default hero (Erik, Ragnar, Brynhild, Sigurd, Leif)
+- Base cards are infinite supply (NOT NFTs, don't count toward 3.3M cap)
+- Slightly below common power level with "value gem" cards for competitiveness
+- Stored in `starterSet.ts` + `baseCards.ts`, tracked via `starterStore.ts`
+- To play: only 1 King + 4 Heroes required. Cards are optional bonus firepower.
 
 ---
 

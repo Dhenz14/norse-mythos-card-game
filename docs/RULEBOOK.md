@@ -64,7 +64,7 @@ Classic 1v1 card battles without the chess layer.
 
 **Flow:**
 ```
-Main Menu → Mode Selection → Standard Match → Hero Selection → Deck Building → Combat Arena → Mulligan Phase → Turn Loop → Victory/Defeat
+Main Menu → Mode Selection → Standard Match → Hero Selection → Deck Building (optional) → Combat Arena → Mulligan Phase → Turn Loop → Victory/Defeat
 ```
 
 ---
@@ -476,7 +476,7 @@ Poker Spells are cast during the **Spell/Pet Phase** (before the Faith phase). E
 
 - Maximum 4 minions per side
 - Hand limit: 6 cards (excess draws are skipped)
-- Deck limit: 30 cards
+- Deck limit: 30 cards (optional — you can play with heroes only, cards are bonus firepower)
 
 ---
 
@@ -828,9 +828,25 @@ When attacking with elemental advantage:
 
 ## Deck Building
 
-### Basic Rules
+### Minimum Requirements
+
+To play Ragnarok, you only need **1 King + 4 Heroes** — that's it. Cards (minions, spells, weapons) are optional but give you a significant tactical advantage. A player with a well-built deck will have more options each turn than one playing heroes only.
+
+### Base Edition Cards
+
+All new players receive **45 free base cards** when they first start:
+- 10 Mage cards (matched to Erik Flameheart)
+- 10 Warrior cards (matched to Ragnar Ironside)
+- 10 Priest cards (matched to Brynhild)
+- 10 Rogue cards (matched to Sigurd)
+- 5 neutral cards (universal)
+
+Base cards are infinite supply — they are NOT NFTs and don't count toward the 3.3M collectible cap. They're slightly weaker than common-rarity cards but include a few "value gems" that keep starter decks competitive.
+
+### Deck Rules
 
 - **6 cards** per hand (max)
+- Deck size: **up to 30 cards** (can be fewer — even 0)
 - Maximum **2 copies** of any card (except Mythics)
 - Maximum **1 copy** of Mythic cards
 - Can include **class cards** and **neutral cards**
@@ -855,7 +871,7 @@ Special deck archetype with no duplicate cards:
 
 ### Army Selection (Ragnarok Chess)
 
-For Ragnarok Chess mode, select heroes for each piece slot:
+For Ragnarok Chess mode, select heroes for each piece slot. You need **1 King + 4 Heroes** minimum to play. Building decks for each hero is optional but recommended:
 
 | Slot | Options |
 |------|---------|
