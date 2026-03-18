@@ -2752,6 +2752,15 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	39002: '/art/4f6e-58430219.webp',
 	39003: '/art/7895-c6872fdb.webp',
 	39004: '/art/00d7-f34bf0ba.webp',
+	// v1.1: Rogue stealth expansion
+	39005: '/art/e526-5b7e9b17.webp',   // Mist-Walker — ghostly pale female in dark armor
+	39006: '/art/df37-c092d66b.webp',   // Svartalfheim Shade — hooded assassin with poison dagger
+	39007: '/art/684b-e052658e.webp',   // Daggers of Niflheim — frost crystal weapon
+	39008: '/art/5452-84dae3ca.webp',   // Ambush Predator — armored beast prowling in mist
+	39009: '/art/bda7-1152c17c.webp',   // Veil of Hel — spectral green sigil in ruined hall
+	39010: '/art/5739-adc292a7.webp',   // Shadow Ambusher — dark warrior emerging from shadow
+	39011: '/art/b0fe-c8fb6bf8.webp',   // Hel's Unseen — undead warden in ornate armor
+	39012: '/art/cf91-58b33284.webp',   // Nótt's Cloak — dark spiky star with shadow energy
 	39101: '/art/4114-7d04d565.webp',
 	39102: '/art/953e-swf1tvb2.webp',
 	39103: '/art/f0f3-2fbfd176.webp',
@@ -3382,7 +3391,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	95055: '/art/70a8-76c8b669.webp',
 	95056: '/art/b0e4-762d4e7f.webp',
 	95057: '/art/b92d-720a6185.webp',
-	95058: '/art/5739-adc292a7.webp',
+	// 95058: reassigned to 39010 (Shadow Ambusher)
 	95059: '/art/3c9c-fd6a115a.webp',
 	95060: '/art/f3c9-7a98e8ee.webp',
 	95061: '/art/8596-7b77ab9c.webp',
@@ -3406,7 +3415,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	95080: '/art/017c-2b479749.webp',
 	95081: '/art/2eef-da401359.webp',
 	95082: '/art/2b9e-cab6a07a.webp',
-	95083: '/art/e526-5b7e9b17.webp',
+	// 95083: reassigned to 39005 (Mist-Walker)
 	95084: '/art/3e0b-5f427308.webp',
 	95101: '/art/a0f8-xxspmfv1.webp',
 	95102: '/art/e08f-4965df25.webp',
@@ -3415,7 +3424,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	95105: '/art/b03f-9cfca965.webp',
 	95106: '/art/ba6b-ccf908a8.webp',
 	95107: '/art/a7aa-9e98b2fd.webp',
-	95108: '/art/b0fe-c8fb6bf8.webp',
+	// 95108: reassigned to 39011 (Hel's Unseen)
 	95109: '/art/27a9-52a2f9e4.webp',
 	95110: '/art/c425-b3b1c198.webp',
 	95111: '/art/daab-eb5b0a07.webp',
