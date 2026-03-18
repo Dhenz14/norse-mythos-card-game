@@ -35,6 +35,13 @@ const LEGACY_MAP: Record<string, ProtocolAction> = {
 	// rp_pack_open is NOT here — it maps to legacy_pack_open (special case)
 	'rp_pack_open': 'legacy_pack_open',
 	// rp_team_submit is informational-only, ignored
+	// v1.1 legacy prefixes
+	'rp_pack_mint': 'pack_mint',
+	'rp_pack_distribute': 'pack_distribute',
+	'rp_pack_transfer': 'pack_transfer',
+	'rp_pack_burn': 'pack_burn',
+	'rp_card_replicate': 'card_replicate',
+	'rp_card_merge': 'card_merge',
 };
 
 // ============================================================
@@ -68,6 +75,9 @@ export function normalizeRawOp(raw: RawHiveOp): NormalizeResult {
 			'reward_claim', 'card_transfer', 'burn', 'level_up',
 			'queue_join', 'queue_leave', 'match_anchor', 'match_result',
 			'slash_evidence',
+			// v1.1
+			'pack_mint', 'pack_distribute', 'pack_transfer', 'pack_burn',
+			'card_replicate', 'card_merge',
 		]);
 		if (known.has(bodyAction)) {
 			action = bodyAction as CanonicalAction;

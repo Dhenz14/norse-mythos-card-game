@@ -133,16 +133,28 @@ async function _doSync(username: string): Promise<void> {
 
 	let pageStart = -1; // -1 = fetch from latest entry
 	let done = false;
+	// v1.1: Collect transfer ops per trx_id across pages for companion validation
+	const trxSiblingMap = new Map<string, unknown[]>();
 
 	while (!done) {
 		const page = await fetchHistoryPage(username, pageStart, HISTORY_PAGE_SIZE);
 		if (!page || page.length === 0) break;
+
+		// v1.1: Also collect transfer ops per trx_id for companion validation
+		const transfersByTrx = new Map<string, unknown[]>();
 
 		for (const [idx, entry] of page) {
 			// Stop once we hit already-processed entries
 			if (idx <= lastIndex) {
 				done = true;
 				break;
+			}
+
+			// Collect transfer ops for companion validation (v1.1 atomic transfers)
+			if (entry.op[0] === 'transfer') {
+				if (!transfersByTrx.has(entry.trx_id)) transfersByTrx.set(entry.trx_id, []);
+				transfersByTrx.get(entry.trx_id)!.push(entry.op);
+				continue;
 			}
 
 			// We only care about our app's custom_json ops
@@ -156,6 +168,16 @@ async function _doSync(username: string): Promise<void> {
 				username;
 
 			opsToApply.push({ idx, entry, broadcaster });
+
+			// Also store this custom_json as a sibling (for self-reference)
+			if (!transfersByTrx.has(entry.trx_id)) transfersByTrx.set(entry.trx_id, []);
+			transfersByTrx.get(entry.trx_id)!.push(entry.op);
+		}
+
+		// Merge transfer siblings into the global map
+		for (const [trxId, ops] of transfersByTrx) {
+			if (!trxSiblingMap.has(trxId)) trxSiblingMap.set(trxId, []);
+			trxSiblingMap.get(trxId)!.push(...ops);
 		}
 
 		// If we got a full page AND haven't hit the overlap yet, fetch older entries
@@ -187,6 +209,13 @@ async function _doSync(username: string): Promise<void> {
 	let highestIdx = lastIndex;
 	for (const { idx, entry, broadcaster } of opsToApply) {
 		const opData = entry.op[1] as CustomJsonOpData;
+
+		// Pass sibling ops (transfers) to state adapter for companion validation
+		const siblings = trxSiblingMap.get(entry.trx_id);
+		if (siblings) {
+			const { clientStateAdapter } = await import('./clientStateAdapter');
+			clientStateAdapter.setTrxSiblings(entry.trx_id, siblings);
+		}
 
 		// Normalize op id: canonical "ragnarok-cards" format extracts action from JSON,
 		// legacy "rp_*" format uses the id directly.

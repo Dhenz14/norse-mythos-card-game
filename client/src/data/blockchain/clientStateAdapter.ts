@@ -22,6 +22,9 @@ import {
 	advancePlayerNonce,
 	getEloRating, putEloRating,
 	getRewardClaim, putRewardClaim,
+	getPack as idbGetPack, putPack as idbPutPack, deletePack as idbDeletePack,
+	getPacksByOwner as idbGetPacksByOwner,
+	getPackSupply as idbGetPackSupply, putPackSupply as idbPutPackSupply,
 } from './replayDB';
 import type { HiveCardAsset } from '../schemas/HiveTypes';
 
@@ -49,11 +52,9 @@ function assetToHiveCard(a: CardAsset): HiveCardAsset {
 }
 
 // ============================================================
-// v1.1: In-memory stores for pack NFTs + companion transfers
+// v1.1: Companion transfer sibling cache (per-replay, in-memory)
 // ============================================================
 
-const _packStore = new Map<string, PackAsset>();
-const _packSupplyStore = new Map<string, PackSupplyRecord>();
 const _trxSiblings = new Map<string, unknown[]>();
 
 // ============================================================
@@ -177,19 +178,22 @@ export const clientStateAdapter: StateAdapter = {
 	},
 	async deleteQueueEntry(account) { await deleteQueueEntry(account); },
 
-	// v1.1: Pack NFTs + companion transfers
-	async getPack(uid) { return _packStore.get(uid) ?? null; },
-	async putPack(pack) { _packStore.set(pack.uid, pack); },
-	async deletePack(uid) { _packStore.delete(uid); },
-	async getPacksByOwner(owner) {
-		const result: PackAsset[] = [];
-		for (const p of _packStore.values()) {
-			if (p.owner === owner) result.push(p);
-		}
-		return result;
+	// v1.1: Pack NFTs (IndexedDB-backed)
+	async getPack(uid) {
+		const p = await idbGetPack(uid);
+		return p ? { ...p } as PackAsset : null;
 	},
-	async getPackSupply(packType) { return _packSupplyStore.get(packType) ?? null; },
-	async putPackSupply(record) { _packSupplyStore.set(record.packType, record); },
+	async putPack(pack) { await idbPutPack(pack); },
+	async deletePack(uid) { await idbDeletePack(uid); },
+	async getPacksByOwner(owner) {
+		const packs = await idbGetPacksByOwner(owner);
+		return packs as PackAsset[];
+	},
+	async getPackSupply(packType) {
+		const s = await idbGetPackSupply(packType);
+		return s ? { ...s } as PackSupplyRecord : null;
+	},
+	async putPackSupply(record) { await idbPutPackSupply(record); },
 
 	async getCompanionTransfer(trxId) {
 		const siblings = _trxSiblings.get(trxId);

@@ -30,7 +30,7 @@ import { DEFAULT_TOKEN_BALANCE } from '../schemas/HiveTypes';
 import { DEFAULT_ELO_RATING } from './hiveConfig';
 
 const DB_NAME = 'ragnarok-chain-v1';
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 
 let _db: IDBDatabase | null = null;
 
@@ -114,6 +114,16 @@ function openDB(): Promise<IDBDatabase> {
 
 			if (!db.objectStoreNames.contains('reward_claims')) {
 				db.createObjectStore('reward_claims', { keyPath: 'claimKey' });
+			}
+
+			// v1.1: Pack NFTs
+			if (!db.objectStoreNames.contains('packs')) {
+				const packs = db.createObjectStore('packs', { keyPath: 'uid' });
+				packs.createIndex('by_owner', 'owner', { unique: false });
+				packs.createIndex('by_sealed', 'sealed', { unique: false });
+			}
+			if (!db.objectStoreNames.contains('pack_supply')) {
+				db.createObjectStore('pack_supply', { keyPath: 'packType' });
 			}
 		};
 
@@ -518,3 +528,56 @@ export const getRewardClaim = (account: string, rewardId: string): Promise<Rewar
 
 export const putRewardClaim = (claim: RewardClaim): Promise<void> =>
 	idbPut('reward_claims', claim);
+
+// ---------------------------------------------------------------------------
+// v1.1: Pack NFTs
+// ---------------------------------------------------------------------------
+
+export interface StoredPack {
+	uid: string;
+	packType: string;
+	dna: string;
+	owner: string;
+	sealed: boolean;
+	mintTrxId: string;
+	mintBlockNum: number;
+	lastTransferBlock: number;
+	cardCount: number;
+	edition: string;
+}
+
+export interface StoredPackSupply {
+	packType: string;
+	minted: number;
+	burned: number;
+	cap: number;
+}
+
+export const getPack = (uid: string): Promise<StoredPack | undefined> =>
+	idbGet<StoredPack>('packs', uid);
+
+export const putPack = (pack: StoredPack): Promise<void> =>
+	idbPut('packs', pack);
+
+export const deletePack = async (uid: string): Promise<void> => {
+	const db = await openDB();
+	const tx = db.transaction('packs', 'readwrite');
+	tx.objectStore('packs').delete(uid);
+};
+
+export async function getPacksByOwner(owner: string): Promise<StoredPack[]> {
+	const db = await openDB();
+	const tx = db.transaction('packs', 'readonly');
+	const idx = tx.objectStore('packs').index('by_owner');
+	const req = idx.getAll(owner);
+	return new Promise((resolve) => {
+		req.onsuccess = () => resolve(req.result || []);
+		req.onerror = () => resolve([]);
+	});
+}
+
+export const getPackSupply = (packType: string): Promise<StoredPackSupply | undefined> =>
+	idbGet<StoredPackSupply>('pack_supply', packType);
+
+export const putPackSupply = (supply: StoredPackSupply): Promise<void> =>
+	idbPut('pack_supply', supply);

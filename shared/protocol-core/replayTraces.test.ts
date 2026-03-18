@@ -15,6 +15,7 @@ import type {
 	StateAdapter, CardAsset, GenesisRecord, EloRecord,
 	TokenBalance, MatchAnchorRecord, PackCommitRecord, SupplyRecord,
 	ReplayContext, ProtocolOp, CardDataProvider, RewardProvider, SignatureVerifier, RawHiveOp,
+	PackAsset, PackSupplyRecord, CompanionTransfer,
 } from './types';
 
 // ============================================================
@@ -74,6 +75,30 @@ class MemoryState implements StateAdapter {
 		this.queue.set(account, { timestamp: data.timestamp });
 	}
 	async deleteQueueEntry(account: string) { this.queue.delete(account); }
+
+	// v1.1: Pack NFTs + companion transfers
+	packs = new Map<string, PackAsset>();
+	packSupply = new Map<string, PackSupplyRecord>();
+	trxSiblings = new Map<string, unknown[]>();
+
+	async getPack(uid: string) { return this.packs.get(uid) ?? null; }
+	async putPack(p: PackAsset) { this.packs.set(p.uid, p); }
+	async deletePack(uid: string) { this.packs.delete(uid); }
+	async getPacksByOwner(owner: string) { return [...this.packs.values()].filter(p => p.owner === owner); }
+	async getPackSupply(packType: string) { return this.packSupply.get(packType) ?? null; }
+	async putPackSupply(r: PackSupplyRecord) { this.packSupply.set(r.packType, r); }
+	async getCompanionTransfer(trxId: string): Promise<CompanionTransfer | null> {
+		const siblings = this.trxSiblings.get(trxId);
+		if (!siblings) return null;
+		for (const op of siblings) {
+			const arr = op as [string, Record<string, string>];
+			if (arr[0] === 'transfer') {
+				return { from: arr[1].from, to: arr[1].to, amount: arr[1].amount, memo: arr[1].memo || '' };
+			}
+		}
+		return null;
+	}
+	setTrxSiblings(trxId: string, ops: unknown[]) { this.trxSiblings.set(trxId, ops); }
 }
 
 // ============================================================
@@ -852,5 +877,404 @@ describe('Protocol Core: Replay Traces', () => {
 		// the EXISTENCE of the current-key fallback path, not about PoW.)
 		expect(state.genesis).not.toBeNull();
 		expect(state.genesis!.sealed).toBe(false);
+	});
+
+	// ==========================================================
+	// v1.1: Pack NFTs
+	// ==========================================================
+
+	async function seedSealedGenesis(state: MemoryState, deps: ProtocolCoreDeps) {
+		await seedGenesis(state, deps);
+		await applyOp(makeOp('seal', {}, { broadcaster: 'ragnarok', usedActiveAuth: true }), defaultCtx, deps);
+	}
+
+	function withCompanion(state: MemoryState, trxId: string, to: string) {
+		state.setTrxSiblings(trxId, [
+			['transfer', { from: 'ragnarok', to, amount: '0.001 HIVE', memo: `ragnarok:test` }],
+		]);
+	}
+
+	describe('v1.1: pack_mint', () => {
+		it('admin can mint packs into admin inventory', async () => {
+			await seedSealedGenesis(state, deps);
+			const result = await applyOp(makeOp('pack_mint', {
+				pack_type: 'standard', quantity: 3,
+			}, { broadcaster: 'ragnarok', trxId: 'mint-packs-1', usedActiveAuth: true }), defaultCtx, deps);
+
+			expect(result.status).toBe('applied');
+			expect(state.packs.size).toBe(3);
+			for (const [, pack] of state.packs) {
+				expect(pack.owner).toBe('ragnarok');
+				expect(pack.sealed).toBe(true);
+				expect(pack.packType).toBe('standard');
+				expect(pack.cardCount).toBe(5);
+				expect(pack.dna).toBeTruthy();
+			}
+		});
+
+		it('rejects non-admin mint', async () => {
+			await seedSealedGenesis(state, deps);
+			const result = await applyOp(makeOp('pack_mint', {
+				pack_type: 'standard', quantity: 1,
+			}, { broadcaster: 'alice', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+
+		it('rejects mint before seal', async () => {
+			await seedGenesis(state, deps);
+			const result = await applyOp(makeOp('pack_mint', {
+				pack_type: 'standard', quantity: 1,
+			}, { broadcaster: 'ragnarok', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+	});
+
+	describe('v1.1: pack_distribute', () => {
+		it('admin distributes packs to player with atomic transfer', async () => {
+			await seedSealedGenesis(state, deps);
+			// Mint first
+			await applyOp(makeOp('pack_mint', {
+				pack_type: 'standard', quantity: 2,
+			}, { broadcaster: 'ragnarok', trxId: 'mint-1', usedActiveAuth: true }), defaultCtx, deps);
+
+			const packUids = [...state.packs.keys()];
+
+			// Distribute with companion transfer
+			withCompanion(state, 'dist-1', 'alice');
+			const result = await applyOp(makeOp('pack_distribute', {
+				pack_uids: packUids, to: 'alice',
+			}, { broadcaster: 'ragnarok', trxId: 'dist-1', usedActiveAuth: true }), defaultCtx, deps);
+
+			expect(result.status).toBe('applied');
+			for (const [, pack] of state.packs) {
+				expect(pack.owner).toBe('alice');
+			}
+		});
+
+		it('rejects distribute without companion transfer', async () => {
+			await seedSealedGenesis(state, deps);
+			await applyOp(makeOp('pack_mint', {
+				pack_type: 'standard', quantity: 1,
+			}, { broadcaster: 'ragnarok', trxId: 'mint-2', usedActiveAuth: true }), defaultCtx, deps);
+
+			const packUids = [...state.packs.keys()];
+			const result = await applyOp(makeOp('pack_distribute', {
+				pack_uids: packUids, to: 'alice',
+			}, { broadcaster: 'ragnarok', trxId: 'dist-2', usedActiveAuth: true }), defaultCtx, deps);
+
+			expect(result.status).toBe('rejected');
+		});
+
+		it('rejects non-admin distribute', async () => {
+			await seedSealedGenesis(state, deps);
+			withCompanion(state, 'dist-3', 'bob');
+			const result = await applyOp(makeOp('pack_distribute', {
+				pack_uids: ['fake'], to: 'bob',
+			}, { broadcaster: 'alice', trxId: 'dist-3', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+	});
+
+	describe('v1.1: pack_transfer', () => {
+		it('player transfers sealed pack with atomic transfer', async () => {
+			await seedSealedGenesis(state, deps);
+			// Mint and distribute to alice
+			await applyOp(makeOp('pack_mint', { pack_type: 'premium', quantity: 1 },
+				{ broadcaster: 'ragnarok', trxId: 'mint-t1', usedActiveAuth: true }), defaultCtx, deps);
+			const uid = [...state.packs.keys()][0];
+			withCompanion(state, 'dist-t1', 'alice');
+			await applyOp(makeOp('pack_distribute', { pack_uids: [uid], to: 'alice' },
+				{ broadcaster: 'ragnarok', trxId: 'dist-t1', usedActiveAuth: true }), defaultCtx, deps);
+
+			// Alice transfers to bob
+			withCompanion(state, 'xfer-1', 'bob');
+			const result = await applyOp(makeOp('pack_transfer', { pack_uid: uid, to: 'bob' },
+				{ broadcaster: 'alice', trxId: 'xfer-1', blockNum: 2000, usedActiveAuth: true }), defaultCtx, deps);
+
+			expect(result.status).toBe('applied');
+			expect(state.packs.get(uid)!.owner).toBe('bob');
+		});
+
+		it('rejects transfer of non-owned pack', async () => {
+			await seedSealedGenesis(state, deps);
+			await applyOp(makeOp('pack_mint', { pack_type: 'standard', quantity: 1 },
+				{ broadcaster: 'ragnarok', trxId: 'mint-t2', usedActiveAuth: true }), defaultCtx, deps);
+			const uid = [...state.packs.keys()][0];
+
+			withCompanion(state, 'xfer-2', 'bob');
+			const result = await applyOp(makeOp('pack_transfer', { pack_uid: uid, to: 'bob' },
+				{ broadcaster: 'alice', trxId: 'xfer-2', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+
+		it('rejects transfer without companion', async () => {
+			await seedSealedGenesis(state, deps);
+			await applyOp(makeOp('pack_mint', { pack_type: 'standard', quantity: 1 },
+				{ broadcaster: 'ragnarok', trxId: 'mint-t3', usedActiveAuth: true }), defaultCtx, deps);
+			const uid = [...state.packs.keys()][0];
+			withCompanion(state, 'dist-t3', 'alice');
+			await applyOp(makeOp('pack_distribute', { pack_uids: [uid], to: 'alice' },
+				{ broadcaster: 'ragnarok', trxId: 'dist-t3', usedActiveAuth: true }), defaultCtx, deps);
+
+			// No companion set for xfer-3
+			const result = await applyOp(makeOp('pack_transfer', { pack_uid: uid, to: 'bob' },
+				{ broadcaster: 'alice', trxId: 'xfer-3', blockNum: 2000, usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+	});
+
+	describe('v1.1: pack_burn', () => {
+		it('burns pack and derives cards from DNA + entropy', async () => {
+			await seedSealedGenesis(state, deps);
+			await applyOp(makeOp('pack_mint', { pack_type: 'standard', quantity: 1 },
+				{ broadcaster: 'ragnarok', trxId: 'mint-b1', usedActiveAuth: true }), defaultCtx, deps);
+			const uid = [...state.packs.keys()][0];
+			withCompanion(state, 'dist-b1', 'alice');
+			await applyOp(makeOp('pack_distribute', { pack_uids: [uid], to: 'alice' },
+				{ broadcaster: 'ragnarok', trxId: 'dist-b1', usedActiveAuth: true }), defaultCtx, deps);
+
+			const cardsBefore = state.cards.size;
+			const result = await applyOp(makeOp('pack_burn', { pack_uid: uid, salt: 'a'.repeat(64) },
+				{ broadcaster: 'alice', trxId: 'burn-1', blockNum: 500, usedActiveAuth: true }), defaultCtx, deps);
+
+			expect(result.status).toBe('applied');
+			expect(state.packs.has(uid)).toBe(false); // pack deleted
+			expect(state.cards.size).toBe(cardsBefore + 5); // 5 cards from standard pack
+
+			// Verify cards have DNA
+			for (const [, card] of state.cards) {
+				expect(card.originDna).toBeTruthy();
+				expect(card.instanceDna).toBeTruthy();
+				expect(card.owner).toBe('alice');
+				expect(card.mintSource).toBe('pack');
+			}
+		});
+
+		it('rejects burn of non-owned pack', async () => {
+			await seedSealedGenesis(state, deps);
+			await applyOp(makeOp('pack_mint', { pack_type: 'standard', quantity: 1 },
+				{ broadcaster: 'ragnarok', trxId: 'mint-b2', usedActiveAuth: true }), defaultCtx, deps);
+			const uid = [...state.packs.keys()][0];
+
+			const result = await applyOp(makeOp('pack_burn', { pack_uid: uid, salt: 'b'.repeat(64) },
+				{ broadcaster: 'alice', trxId: 'burn-2', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+	});
+
+	// ==========================================================
+	// v1.1: DNA Lineage
+	// ==========================================================
+
+	describe('v1.1: card_replicate', () => {
+		it('clones card with same origin DNA but unique instance DNA', async () => {
+			await seedGenesis(state, deps);
+			// Create a card
+			state.cards.set('card-1', {
+				uid: 'card-1', cardId: 20001, owner: 'alice', rarity: 'epic',
+				level: 2, xp: 100, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'orig-mint', mintBlockNum: 100, lastTransferBlock: 0,
+				originDna: 'origin-hash-123', instanceDna: 'instance-hash-456',
+				generation: 0, replicaCount: 0,
+			});
+
+			const result = await applyOp(makeOp('card_replicate', { source_uid: 'card-1' },
+				{ broadcaster: 'alice', trxId: 'rep-1', usedActiveAuth: true }), defaultCtx, deps);
+
+			expect(result.status).toBe('applied');
+			expect(state.cards.size).toBe(2);
+
+			const replica = state.cards.get('rep-1:replica:0')!;
+			expect(replica.originDna).toBe('origin-hash-123'); // same genotype
+			expect(replica.instanceDna).not.toBe('instance-hash-456'); // different phenotype
+			expect(replica.parentInstanceDna).toBe('instance-hash-456');
+			expect(replica.generation).toBe(1);
+			expect(replica.replicaCount).toBe(0);
+			expect(replica.level).toBe(1); // starts fresh
+			expect(replica.xp).toBe(0);
+			expect(replica.cardId).toBe(20001);
+			expect(replica.owner).toBe('alice');
+			expect(replica.mintSource).toBe('replica');
+
+			// Source card replicaCount incremented
+			expect(state.cards.get('card-1')!.replicaCount).toBe(1);
+		});
+
+		it('rejects replicate beyond max generation', async () => {
+			state.cards.set('card-gen3', {
+				uid: 'card-gen3', cardId: 20001, owner: 'alice', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'replica',
+				mintTrxId: 'x', mintBlockNum: 100, lastTransferBlock: 0,
+				generation: 3, replicaCount: 0,
+			});
+			const result = await applyOp(makeOp('card_replicate', { source_uid: 'card-gen3' },
+				{ broadcaster: 'alice', trxId: 'rep-fail-1', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+
+		it('rejects replicate beyond max replicas', async () => {
+			state.cards.set('card-maxrep', {
+				uid: 'card-maxrep', cardId: 20001, owner: 'alice', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'x', mintBlockNum: 100, lastTransferBlock: 0,
+				generation: 0, replicaCount: 3,
+			});
+			const result = await applyOp(makeOp('card_replicate', { source_uid: 'card-maxrep' },
+				{ broadcaster: 'alice', trxId: 'rep-fail-2', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+
+		it('rejects replicate by non-owner', async () => {
+			state.cards.set('card-bob', {
+				uid: 'card-bob', cardId: 20001, owner: 'bob', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'x', mintBlockNum: 100, lastTransferBlock: 0,
+				generation: 0, replicaCount: 0,
+			});
+			const result = await applyOp(makeOp('card_replicate', { source_uid: 'card-bob' },
+				{ broadcaster: 'alice', trxId: 'rep-fail-3', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+	});
+
+	describe('v1.1: card_merge', () => {
+		it('merges two same-origin cards into ascended card', async () => {
+			const sharedOrigin = 'shared-origin-dna';
+			state.cards.set('merge-a', {
+				uid: 'merge-a', cardId: 20001, owner: 'alice', rarity: 'epic',
+				level: 2, xp: 80, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'ma', mintBlockNum: 100, lastTransferBlock: 0,
+				originDna: sharedOrigin, instanceDna: 'inst-a', generation: 0, replicaCount: 0,
+			});
+			state.cards.set('merge-b', {
+				uid: 'merge-b', cardId: 20001, owner: 'alice', rarity: 'epic',
+				level: 1, xp: 50, edition: 'alpha', mintSource: 'pack',
+				mintTrxId: 'mb', mintBlockNum: 200, lastTransferBlock: 0,
+				originDna: sharedOrigin, instanceDna: 'inst-b', generation: 0, replicaCount: 0,
+			});
+
+			const result = await applyOp(makeOp('card_merge', {
+				source_uids: ['merge-a', 'merge-b'],
+			}, { broadcaster: 'alice', trxId: 'mrg-1', usedActiveAuth: true }), defaultCtx, deps);
+
+			expect(result.status).toBe('applied');
+			expect(state.cards.has('merge-a')).toBe(false); // burned
+			expect(state.cards.has('merge-b')).toBe(false); // burned
+
+			const merged = state.cards.get('mrg-1:merge:0')!;
+			expect(merged).toBeTruthy();
+			expect(merged.cardId).toBe(20001);
+			expect(merged.originDna).toBe(sharedOrigin);
+			expect(merged.foil).toBe('ascended');
+			expect(merged.level).toBe(3); // max(2,1)+1
+			expect(merged.xp).toBe(130); // 80+50
+			expect(merged.mergedFrom).toEqual(['merge-a', 'merge-b']);
+			expect(merged.generation).toBe(0); // reset
+			expect(merged.mintSource).toBe('merge');
+		});
+
+		it('rejects merge of different card templates', async () => {
+			state.cards.set('diff-a', {
+				uid: 'diff-a', cardId: 20001, owner: 'alice', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'x', mintBlockNum: 100, lastTransferBlock: 0,
+			});
+			state.cards.set('diff-b', {
+				uid: 'diff-b', cardId: 20002, owner: 'alice', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'y', mintBlockNum: 100, lastTransferBlock: 0,
+			});
+
+			const result = await applyOp(makeOp('card_merge', {
+				source_uids: ['diff-a', 'diff-b'],
+			}, { broadcaster: 'alice', trxId: 'mrg-fail-1', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+
+		it('rejects merge when source has active replicas', async () => {
+			state.cards.set('rep-src', {
+				uid: 'rep-src', cardId: 20001, owner: 'alice', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'x', mintBlockNum: 100, lastTransferBlock: 0,
+				replicaCount: 1,
+			});
+			state.cards.set('rep-partner', {
+				uid: 'rep-partner', cardId: 20001, owner: 'alice', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'y', mintBlockNum: 100, lastTransferBlock: 0,
+				replicaCount: 0,
+			});
+
+			const result = await applyOp(makeOp('card_merge', {
+				source_uids: ['rep-src', 'rep-partner'],
+			}, { broadcaster: 'alice', trxId: 'mrg-fail-2', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+
+		it('rejects merge of cards owned by different players', async () => {
+			state.cards.set('own-a', {
+				uid: 'own-a', cardId: 20001, owner: 'alice', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'x', mintBlockNum: 100, lastTransferBlock: 0,
+			});
+			state.cards.set('own-b', {
+				uid: 'own-b', cardId: 20001, owner: 'bob', rarity: 'common',
+				level: 1, xp: 0, edition: 'alpha', mintSource: 'genesis',
+				mintTrxId: 'y', mintBlockNum: 100, lastTransferBlock: 0,
+			});
+
+			const result = await applyOp(makeOp('card_merge', {
+				source_uids: ['own-a', 'own-b'],
+			}, { broadcaster: 'alice', trxId: 'mrg-fail-3', usedActiveAuth: true }), defaultCtx, deps);
+			expect(result.status).toBe('rejected');
+		});
+	});
+
+	// ==========================================================
+	// v1.1: Normalization
+	// ==========================================================
+
+	describe('v1.1: normalize', () => {
+		it('normalizes rp_pack_mint to pack_mint', () => {
+			const result = normalizeRawOp({
+				customJsonId: 'rp_pack_mint',
+				json: '{"pack_type":"standard","quantity":1}',
+				broadcaster: 'ragnarok', trxId: 'n1', blockNum: 100, timestamp: 0,
+				requiredPostingAuths: [], requiredAuths: ['ragnarok'],
+			});
+			expect(result.status).toBe('ok');
+			if (result.status === 'ok') expect(result.op.action).toBe('pack_mint');
+		});
+
+		it('normalizes canonical ragnarok-cards pack_distribute', () => {
+			const result = normalizeRawOp({
+				customJsonId: 'ragnarok-cards',
+				json: '{"action":"pack_distribute","pack_uids":["p1"],"to":"alice"}',
+				broadcaster: 'ragnarok', trxId: 'n2', blockNum: 100, timestamp: 0,
+				requiredPostingAuths: [], requiredAuths: ['ragnarok'],
+			});
+			expect(result.status).toBe('ok');
+			if (result.status === 'ok') expect(result.op.action).toBe('pack_distribute');
+		});
+
+		it('normalizes rp_card_replicate and rp_card_merge', () => {
+			const rep = normalizeRawOp({
+				customJsonId: 'rp_card_replicate',
+				json: '{"source_uid":"x"}',
+				broadcaster: 'alice', trxId: 'n3', blockNum: 100, timestamp: 0,
+				requiredPostingAuths: [], requiredAuths: ['alice'],
+			});
+			expect(rep.status).toBe('ok');
+			if (rep.status === 'ok') expect(rep.op.action).toBe('card_replicate');
+
+			const mrg = normalizeRawOp({
+				customJsonId: 'rp_card_merge',
+				json: '{"source_uids":["a","b"]}',
+				broadcaster: 'alice', trxId: 'n4', blockNum: 100, timestamp: 0,
+				requiredPostingAuths: [], requiredAuths: ['alice'],
+			});
+			expect(mrg.status).toBe('ok');
+			if (mrg.status === 'ok') expect(mrg.op.action).toBe('card_merge');
+		});
 	});
 });
