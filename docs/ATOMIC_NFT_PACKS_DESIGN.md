@@ -13,29 +13,31 @@
 2. [Current Architecture Recap](#2-current-architecture-recap)
 3. [Upgrade 1: Atomic Transfers](#3-upgrade-1-atomic-transfers)
 4. [Upgrade 2: Packs as NFTs (Functional DNA)](#4-upgrade-2-packs-as-nfts-functional-dna)
-5. [New Op Types](#5-new-op-types)
-6. [IndexedDB Schema Changes](#6-indexeddb-schema-changes)
-7. [Replay Engine Changes](#7-replay-engine-changes)
-8. [HiveSync Broadcast Changes](#8-hivesync-broadcast-changes)
-9. [UI Flow Changes](#9-ui-flow-changes)
-10. [Security Analysis](#10-security-analysis)
-11. [Migration & Backward Compatibility](#11-migration--backward-compatibility)
-12. [Vector Micro-Indexer (Future)](#12-vector-micro-indexer-future)
-13. [Implementation Phases](#13-implementation-phases)
-14. [Open Questions](#14-open-questions)
+5. [Upgrade 3: Seed/Instance/Replica Model (Cryptographic DNA Lineage)](#5-upgrade-3-seedinstancereplica-model-cryptographic-dna-lineage)
+6. [New Op Types](#6-new-op-types)
+7. [IndexedDB Schema Changes](#7-indexeddb-schema-changes)
+8. [Replay Engine Changes](#8-replay-engine-changes)
+9. [HiveSync Broadcast Changes](#9-hivesync-broadcast-changes)
+10. [UI Flow Changes](#10-ui-flow-changes)
+11. [Security Analysis](#11-security-analysis)
+12. [Migration & Backward Compatibility](#12-migration--backward-compatibility)
+13. [Vector Micro-Indexer (Future)](#13-vector-micro-indexer-future)
+14. [Implementation Phases](#14-implementation-phases)
+15. [Open Questions](#15-open-questions)
 
 ---
 
 ## 1. Executive Summary
 
-Two protocol-level upgrades inspired by the NFTLox comparison audit:
+Three protocol-level upgrades inspired by the NFTLox comparison audit:
 
 | Upgrade | Impact | Risk | Effort |
 |---------|--------|------|--------|
 | **Atomic Transfers** | L1 visibility, anti-spam, explorer-native provenance | Low | ~3-5 files |
 | **Packs as NFTs** | Tradeable sealed packs, functional DNA, richer secondary economy | Medium | ~8-12 files |
+| **Seed/Instance/Replica** | Cryptographic DNA lineage, card cloning, merging, family trees | Medium | ~8-10 files |
 
-**Design philosophy**: An NFT should not be a static receipt of ownership — it should be a **functional component** whose DNA can alter game mechanics, be traded, and serve multiple purposes (card source, tournament key, collectible).
+**Design philosophy**: An NFT should not be a static receipt of ownership — it should be a **functional component** whose DNA can alter game mechanics, be traded, and serve multiple purposes (card source, tournament key, collectible). Every card carries its genotype (what it is) and phenotype (who it is), enabling biological replication with full provenance.
 
 ---
 
@@ -375,7 +377,309 @@ function derivePackCards(
 
 ---
 
-## 5. New Op Types
+## 5. Upgrade 3: Seed/Instance/Replica Model (Cryptographic DNA Lineage)
+
+### The Problem with Flat Card Minting
+
+Currently, every card in our system is a flat record:
+
+```typescript
+// Current: each card is independent, no lineage
+{
+  uid: "trx123:0",     // unique instance
+  cardId: 20001,        // template ID (Odin, Allfather)
+  ownerId: "alice",
+  level: 2, xp: 120,
+  // ... no relationship to other copies of card 20001
+}
+```
+
+If Alice and Bob both own card #20001 (Odin), their instances share a `cardId` but have **zero cryptographic relationship**. You can't prove they came from the same mint run, you can't trace a card's family tree, and you can't create a foil variant that's provably linked to its original.
+
+### The NFTLox Insight: Genotype vs Phenotype
+
+NFTLox separates every NFT into three layers:
+
+| Layer | Analogy | Purpose | Immutable? |
+|-------|---------|---------|------------|
+| **Seed** | Species DNA | Defines what the card IS (stats, art, rarity, max supply) | Yes |
+| **Instance** | Individual organism | A specific copy with its own ownership, XP, history | No (mutable owner, XP) |
+| **Replica** | Clone | A new individual with identical genotype but unique phenotype | N/A (creates new instance) |
+
+The key innovation is **two DNA hashes per card**:
+
+```
+originDna  = sha256(cardId + edition + rarity + mintSalt)
+             → The card's GENOTYPE. What it is. Shared by all copies of this card.
+
+instanceDna = sha256(originDna + parentInstanceDna + mintTrxId + index)
+              → The card's PHENOTYPE. Who it is. Unique to this specific copy.
+              → If replicated, the child's instanceDna includes the parent's,
+                creating a cryptographic family tree.
+```
+
+### How This Maps to Ragnarok
+
+#### Layer 1: Card Seeds (Already Exist — `allCards.ts`)
+
+Our card registry (`allCards.ts`, 2,242 entries) already serves as the seed layer. Each card template defines the genotype: name, stats, rarity, art, keywords, effects.
+
+What we're missing: a **cryptographic seed hash** that binds each template to the chain.
+
+```typescript
+// New: CardSeed — the on-chain genotype anchor
+interface CardSeed {
+  cardId: number;              // Template ID (e.g., 20001)
+  originDna: string;           // sha256(cardId + edition + rarity + genesisTrxId)
+  name: string;                // "Odin, Allfather"
+  rarity: CardRarity;
+  maxSupply: number;           // Per-card supply cap (500 mythic, 1800 common, etc.)
+  mintedCount: number;         // How many instances exist
+  edition: string;             // 'alpha'
+  registeredBlock: number;     // Block where seed was registered on-chain
+  registeredTrxId: string;     // Transaction of registration
+}
+```
+
+The `originDna` is computed once at genesis and never changes. It cryptographically binds the card template to its on-chain registration. Every instance of card #20001 shares this same `originDna`.
+
+#### Layer 2: Card Instances (Upgrade Existing `HiveCardAsset`)
+
+Each minted copy gets a unique `instanceDna` derived from its origin + mint context:
+
+```typescript
+// Extended HiveCardAsset with DNA lineage
+interface HiveCardAsset {
+  // Existing fields (unchanged)
+  uid: string;
+  cardId: number;
+  ownerId: string;
+  rarity: string;
+  edition: string;
+  foil: string;
+  level: number;
+  xp: number;
+  mintTrxId: string;
+  mintBlockNum: number;
+  provenanceChain: ProvenanceStamp[];
+  officialMint?: OfficialMint;
+
+  // NEW: DNA lineage fields
+  originDna: string;           // Genotype — same for all copies of this card
+  instanceDna: string;         // Phenotype — unique to THIS copy
+  parentInstanceDna?: string;  // If this is a replica, points to parent
+  generation: number;          // 0 = original mint, 1 = first replica, 2 = replica of replica
+  replicaCount: number;        // How many replicas have been made FROM this instance
+}
+```
+
+#### Layer 3: Replicas (New `card_replicate` Op)
+
+A replica is a new instance with:
+- **Same `originDna`** as its parent (same card, same stats, same art)
+- **New `instanceDna`** derived from the parent (cryptographic family tree)
+- **Own provenance chain** (independent ownership history)
+- **Own XP/level** (starts fresh at level 1, xp 0)
+- **Generation counter** incremented from parent
+
+```typescript
+function computeInstanceDna(
+  originDna: string,
+  parentInstanceDna: string | null,
+  mintTrxId: string,
+  index: number,
+): string {
+  const parent = parentInstanceDna || 'genesis';
+  return sha256(`${originDna}|${parent}|${mintTrxId}|${index}`);
+}
+```
+
+### Use Cases Unlocked
+
+#### 1. Golden/Foil Card Forging
+
+A player can replicate their card #20001 to create a golden variant. The replica inherits the same `originDna` (proving it's a real Odin card) but gets a new `instanceDna` and `foil: 'gold'` property.
+
+```
+Original: inst_abc (Odin, standard foil, gen 0)
+    └──→ Replica: inst_xyz (Odin, gold foil, gen 1, parent=inst_abc)
+```
+
+The golden version is provably derived from a legitimate original — not conjured from thin air.
+
+#### 2. Tournament Card Lending
+
+Both Alice and Bob need an Odin card for a tournament. Alice owns the original. She replicates it, creating a time-limited tournament copy for Bob:
+
+```
+Alice's original: inst_abc (gen 0)
+    └──→ Tournament replica: inst_tour (gen 1, parent=inst_abc, utility: tournament_loan)
+```
+
+After the tournament, the replica can be burned. The original's `replicaCount` decrements.
+
+#### 3. Card Merging / Ascension
+
+Two instances of the same card (same `originDna`) can be merged into a stronger version:
+
+```
+inst_abc (Odin, level 1, gen 0)  ──┐
+                                    ├──→ inst_merged (Odin, level 2, gen 0, foil: 'ascended')
+inst_def (Odin, level 1, gen 0)  ──┘
+     (burned)                          (inherits combined XP)
+```
+
+The merged card's `instanceDna` references both parents, proving it was forged from two legitimate copies.
+
+#### 4. Provenance Family Tree
+
+Every replica traces its lineage back to the original mint:
+
+```
+Genesis Mint (gen 0): inst_001
+    ├── Replica (gen 1): inst_002
+    │       └── Replica (gen 2): inst_003
+    └── Replica (gen 1): inst_004
+            ├── Replica (gen 2): inst_005
+            └── Replica (gen 2): inst_006
+```
+
+The `NFTProvenanceViewer` can show the full family tree — not just a linear chain of transfers but a branching genealogy. First-generation originals become more valuable because they're the root of the tree.
+
+### New Op: `card_replicate`
+
+```typescript
+interface CardReplicatePayload {
+  action: 'card_replicate';
+  source_uid: string;          // Instance to replicate from
+  foil?: 'standard' | 'gold';  // Replica foil type
+  memo?: string;
+}
+
+// Validation
+- Source card must exist
+- Broadcaster must be owner of source card
+- Source card's replicaCount must be < MAX_REPLICAS_PER_CARD (e.g., 3)
+- Per-card supply cap must not be exceeded (total instances < maxSupply)
+- Generation must be < MAX_GENERATION (e.g., 3 — prevents infinite replica chains)
+
+// State mutations
+const parent = await state.getCard(payload.source_uid);
+parent.replicaCount += 1;
+await state.putCard(parent);
+
+const replica: CardAsset = {
+  uid: `${trxId}:replica:0`,
+  cardId: parent.cardId,
+  ownerId: op.broadcaster,
+  rarity: parent.rarity,
+  edition: parent.edition,
+  foil: payload.foil || 'standard',
+  level: 1,
+  xp: 0,
+  originDna: parent.originDna,
+  instanceDna: computeInstanceDna(parent.originDna, parent.instanceDna, trxId, 0),
+  parentInstanceDna: parent.instanceDna,
+  generation: parent.generation + 1,
+  replicaCount: 0,
+  mintTrxId: trxId,
+  mintBlockNum: blockNum,
+  mintSource: 'replica',
+  provenanceChain: [buildStampWithUrls(...)],
+};
+await state.putCard(replica);
+```
+
+### New Op: `card_merge`
+
+```typescript
+interface CardMergePayload {
+  action: 'card_merge';
+  source_uids: [string, string];  // Exactly two cards to merge
+}
+
+// Validation
+- Both cards must exist
+- Both must be owned by broadcaster
+- Both must share the same originDna (same card template)
+- Neither can be a replica with active children (replicaCount must be 0)
+
+// State mutations
+const [cardA, cardB] = await Promise.all(sources.map(uid => state.getCard(uid)));
+
+// Create merged card
+const merged: CardAsset = {
+  uid: `${trxId}:merge:0`,
+  cardId: cardA.cardId,
+  ownerId: op.broadcaster,
+  rarity: cardA.rarity,
+  edition: cardA.edition,
+  foil: 'ascended',  // Merged cards get special foil
+  level: Math.min(MAX_LEVEL, Math.max(cardA.level, cardB.level) + 1),
+  xp: cardA.xp + cardB.xp,  // Combined XP
+  originDna: cardA.originDna,
+  instanceDna: sha256(`${cardA.instanceDna}|${cardB.instanceDna}|merge|${trxId}`),
+  parentInstanceDna: cardA.instanceDna,  // Primary parent
+  generation: 0,  // Merged cards reset to gen 0 (they ARE the new original)
+  replicaCount: 0,
+  mintTrxId: trxId,
+  mintBlockNum: blockNum,
+  mintSource: 'merge',
+  mergedFrom: [cardA.uid, cardB.uid],  // Provenance link to both parents
+  provenanceChain: [buildStampWithUrls(...)],
+};
+await state.putCard(merged);
+
+// Burn both source cards
+await state.deleteCard(cardA.uid);
+await state.deleteCard(cardB.uid);
+```
+
+### Limits & Anti-Abuse
+
+| Limit | Value | Rationale |
+|-------|-------|-----------|
+| `MAX_REPLICAS_PER_CARD` | 3 | Prevents infinite supply inflation |
+| `MAX_GENERATION` | 3 | Replicas of replicas of replicas cap out |
+| Replica cooldown | 100 blocks (~5 min) | Rate limit per source card |
+| Merge requires same `originDna` | — | Can't merge different cards |
+| Merge burns both sources | — | Net supply neutral (2 in, 1 out) |
+| Replicate checks supply cap | — | Total instances can't exceed `maxSupply` |
+
+### Impact on Existing Systems
+
+| System | Change Required |
+|--------|----------------|
+| `allCards.ts` | None — already serves as seed registry |
+| `replayDB.ts` | Add `originDna`, `instanceDna`, `parentInstanceDna`, `generation`, `replicaCount` to cards store |
+| `apply.ts` | Add `card_replicate` + `card_merge` handlers |
+| `opSchemas.ts` | Add Zod schemas for new ops |
+| `HiveSync.ts` | Add `replicateCard()` + `mergeCards()` methods |
+| `nftMetadataGenerator.ts` | Include DNA fields in ERC-1155 metadata |
+| `NFTProvenanceViewer.tsx` | Show family tree visualization |
+| `CollectionPage.tsx` | Add Replicate + Merge buttons |
+| `INFTBridge.ts` | Add `replicateCard()` + `mergeCards()` to interface |
+
+### Migration from Current Cards
+
+Existing cards (minted before this upgrade) get DNA fields computed retroactively during replay:
+
+```typescript
+// During applyMintBatch / applyPackReveal / applyRewardClaim:
+// If card has no originDna (pre-upgrade), compute it
+if (!card.originDna) {
+  card.originDna = sha256(`${card.cardId}|${card.edition}|${card.rarity}|${genesisTrxId}`);
+  card.instanceDna = sha256(`${card.originDna}|genesis|${card.mintTrxId}|${mintIndex}`);
+  card.generation = 0;
+  card.replicaCount = 0;
+}
+```
+
+This is non-destructive — existing UIDs, owners, and provenance chains are untouched. The DNA fields are additive.
+
+---
+
+## 6. New Op Types
 
 ### 5.1 `pack_mint` — Create Sealed Pack NFTs
 
@@ -532,7 +836,7 @@ await deletePack(pack.uid);
 
 ---
 
-## 6. IndexedDB Schema Changes
+## 7. IndexedDB Schema Changes
 
 ### New Store: `packs`
 
@@ -607,7 +911,7 @@ interface StateAdapter {
 
 ---
 
-## 7. Replay Engine Changes
+## 8. Replay Engine Changes
 
 ### Transaction Sibling Caching
 
@@ -666,7 +970,7 @@ export const PackBurnPayload = z.object({
 
 ---
 
-## 8. HiveSync Broadcast Changes
+## 9. HiveSync Broadcast Changes
 
 ### Multi-Operation Transaction Builder
 
@@ -777,7 +1081,7 @@ async burnPack(packUid: string, salt: string, saltCommit?: string) {
 
 ---
 
-## 9. UI Flow Changes
+## 10. UI Flow Changes
 
 ### Pack Store Page (PacksPage.tsx)
 
@@ -824,7 +1128,7 @@ Identical to `SendCardModal.tsx` but for packs:
 
 ---
 
-## 10. Security Analysis
+## 11. Security Analysis
 
 ### Attack: Front-Running Pack Burns
 
@@ -864,7 +1168,7 @@ Identical to `SendCardModal.tsx` but for packs:
 
 ---
 
-## 11. Migration & Backward Compatibility
+## 12. Migration & Backward Compatibility
 
 ### Protocol Version
 
@@ -902,7 +1206,7 @@ if (oldVersion < 7) {
 
 ---
 
-## 12. Vector Micro-Indexer (Future)
+## 13. Vector Micro-Indexer (Future)
 
 Not part of this implementation but designed to be compatible:
 
@@ -946,7 +1250,7 @@ The micro-indexer runs the SAME `apply.ts` handlers as the browser replay engine
 
 ---
 
-## 13. Implementation Phases
+## 14. Implementation Phases
 
 ### Phase 1: Atomic Transfers (Low Risk, High Value)
 
@@ -979,13 +1283,31 @@ The micro-indexer runs the SAME `apply.ts` handlers as the browser replay engine
 11. Add pack provenance viewer
 12. Update `replayEngine.ts` hydration to include packs
 
-### Phase 3: Micro-Indexer (Future, Separate Repo)
+### Phase 3: Seed/Instance/Replica DNA (Medium Risk, High Value)
+
+**Files changed**: ~8-10
+**Estimated effort**: 2 sessions
+
+1. Add `originDna`, `instanceDna`, `parentInstanceDna`, `generation`, `replicaCount` to `HiveCardAsset` in `HiveTypes.ts`
+2. Add `CardSeed` type for on-chain seed registry
+3. Update `replayDB.ts` cards store with new fields (IDB schema unchanged — fields are additive)
+4. Add `computeInstanceDna()` and `computeOriginDna()` to `shared/protocol-core/hash.ts`
+5. Implement `applyCardReplicate` and `applyCardMerge` in `apply.ts`
+6. Add Zod schemas for `card_replicate` and `card_merge` to `opSchemas.ts`
+7. Add `replicateCard()` and `mergeCards()` to `HiveSync.ts`
+8. Add methods to `INFTBridge.ts` + both implementations
+9. Retroactive DNA computation in existing mint/pack/reward handlers
+10. Update `NFTProvenanceViewer.tsx` with family tree visualization
+11. Add Replicate + Merge buttons to `CollectionPage.tsx`
+12. Update `nftMetadataGenerator.ts` with DNA fields in ERC-1155 metadata
+
+### Phase 4: Micro-Indexer (Future, Separate Repo)
 
 Not in scope for this sprint. Designed for compatibility — `StateAdapter` abstraction ensures drop-in Redis backend.
 
 ---
 
-## 14. Open Questions
+## 15. Open Questions
 
 ### Q1: Who Can Mint Packs?
 
