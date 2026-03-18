@@ -1,6 +1,7 @@
 {
-  "name": "rest-express",
-  "version": "1.0.0",
+  "name": "norse-mythos-card-game",
+  "version": "1.1.0",
+  "description": "Ragnarok: Norse Mythos Card Game — 2,400+ cards, 80 heroes, poker combat, Hive NFT blockchain",
   "type": "module",
   "license": "MIT",
   "scripts": {

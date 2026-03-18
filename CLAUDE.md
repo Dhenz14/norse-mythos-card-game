@@ -69,7 +69,7 @@ client/src/
 │   │   ├── explorerLinks.ts    # Hive explorer URL builders (tx + block)
 │   │   ├── tournamentRewards.ts # 11 milestone rewards (wins/ELO/matches → cards + RUNE)
 │   │   ├── nftMetadataGenerator.ts # ERC-1155 metadata with attributes
-│   │   ├── opSchemas.ts        # Zod runtime validation for all 15 chain op types
+│   │   ├── opSchemas.ts        # Zod runtime validation for all 21 chain op types
 │   │   ├── ICardDataProvider.ts # Interface breaking reverse coupling (blockchain → game)
 │   │   └── index.ts            # Barrel exports
 │   ├── HiveSync.ts             # Keychain: login, broadcast, transferCard, claimReward
@@ -1267,7 +1267,7 @@ vercel --prod                 # Deploy to Vercel
 - Factory with dynamic imports: `initializeNFTBridge()` code-splits HiveNFTBridge vs LocalNFTBridge based on mode
 - React hooks: `useNFTUsername`, `useNFTCollection`, `useNFTStats`, `useNFTTokenBalance`, `useIsHiveMode`, `useNFTElo`
 - Migrated 18 game files from direct blockchain imports to bridge: heroDeckStore, dailyQuestStore, campaignStore, tournamentStore, tradeStore, gameStoreIntegration, useMatchmaking, FriendsPanel, TradingPage, TournamentListPage, StarterPackCeremony, SendCardModal, CollectionPage, PacksPage, RankedLadderPage, useP2PSync
-- Created Zod schemas for all 15 chain op types in `opSchemas.ts`, wired into `replayRules.ts` `applyOp()` dispatch
+- Created Zod schemas for all 21 chain op types in `opSchemas.ts`, wired into `replayRules.ts` `applyOp()` dispatch
 - Created `ICardDataProvider` interface to break reverse coupling (blockchain → game card data)
 - Migrated `replayRules.ts`, `packDerivation.ts`, `nftMetadataGenerator.ts` to use `ICardDataProvider` instead of direct `allCards` imports
 - Created shared `config/featureFlags.ts` re-export so `data/` doesn't import from `game/`

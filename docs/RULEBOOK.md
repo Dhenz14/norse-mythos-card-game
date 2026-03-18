@@ -35,7 +35,7 @@
 
 Ragnarok Combat Arena is a multi-mythology digital collectible card game featuring:
 
-- **2,000+ collectible cards** across 5 mythological factions (Norse, Greek, Egyptian, Celtic, Eastern)
+- **2,400+ collectible cards** across 5 mythological factions (Norse, Greek, Egyptian, Celtic, Eastern)
 - **80+ playable heroes** across 12 classes
 - **Two distinct game modes**: Ragnarok Chess and Standard Match
 - **Poker-inspired combat** with Texas Hold'em mechanics

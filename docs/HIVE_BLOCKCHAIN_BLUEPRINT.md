@@ -76,23 +76,33 @@ This namespaces all operations. Any Hive node can filter for this app ID and rec
 ### Operation Types
 
 ```json
+// v1.0 Base Protocol (14 canonical ops)
 { "app": "ragnarok-cards", "action": "genesis",        ... }  // Admin: set supply caps (one-time)
 { "app": "ragnarok-cards", "action": "mint",           ... }  // Admin: batch mint (pre-seal only)
 { "app": "ragnarok-cards", "action": "seal",           ... }  // Admin: permanently lock minting (one-time)
 { "app": "ragnarok-cards", "action": "transfer",       ... }  // Player: move card to another account
 { "app": "ragnarok-cards", "action": "burn",           ... }  // Player: permanently remove card
-{ "app": "ragnarok-cards", "action": "pack_open",      ... }  // Player: open pack → deterministic LCG mint
+{ "app": "ragnarok-cards", "action": "pack_commit",    ... }  // Player: commit to pack open (salt hash)
+{ "app": "ragnarok-cards", "action": "pack_reveal",    ... }  // Player: reveal salt → derive cards
 { "app": "ragnarok-cards", "action": "reward_claim",   ... }  // Player: claim milestone reward (self-serve)
-{ "app": "ragnarok-cards", "action": "match_start",    ... }  // Player: dual-sig match anchor
+{ "app": "ragnarok-cards", "action": "match_anchor",   ... }  // Player: dual-sig match anchor
 { "app": "ragnarok-cards", "action": "match_result",   ... }  // Player: record match + derive ELO/RUNE/XP
 { "app": "ragnarok-cards", "action": "level_up",       ... }  // Player: stamp card level-up (XP-gated)
 { "app": "ragnarok-cards", "action": "queue_join",     ... }  // Player: enter matchmaking queue
 { "app": "ragnarok-cards", "action": "queue_leave",    ... }  // Player: leave matchmaking queue
 { "app": "ragnarok-cards", "action": "slash_evidence", ... }  // Anyone: permissionless cheat report
-{ "app": "ragnarok-cards", "action": "team_submit",    ... }  // Player: informational deck commitment
+
+// v1.1 Extensions (7 new ops — see ATOMIC_NFT_PACKS_DESIGN.md)
+{ "app": "ragnarok-cards", "action": "pack_mint",       ... }  // Admin: create sealed pack NFTs
+{ "app": "ragnarok-cards", "action": "pack_distribute",  ... }  // Admin: distribute packs to player (atomic 0.001 HIVE)
+{ "app": "ragnarok-cards", "action": "pack_transfer",    ... }  // Player: trade/gift sealed pack (atomic 0.001 HIVE)
+{ "app": "ragnarok-cards", "action": "pack_burn",        ... }  // Player: open pack (burn NFT → derive cards from DNA)
+{ "app": "ragnarok-cards", "action": "card_replicate",   ... }  // Player: clone card (same genotype, new phenotype)
+{ "app": "ragnarok-cards", "action": "card_merge",       ... }  // Player: merge 2 same-origin cards → ascended card
+{ "app": "ragnarok-cards", "action": "card_transfer",    ... }  // Player: transfer card (atomic 0.001 HIVE, v1.1)
 ```
 
-15 operation types total. The reader processes these in block order. State is fully reproducible by replaying from block 0.
+21 operation types total (14 base + 7 extensions). The reader processes these in block order. State is fully reproducible by replaying from block 0. See [RAGNAROK_PROTOCOL_V1.md](RAGNAROK_PROTOCOL_V1.md) for the frozen v1.0 spec and [ATOMIC_NFT_PACKS_DESIGN.md](ATOMIC_NFT_PACKS_DESIGN.md) for the v1.1 design.
 
 ---
 

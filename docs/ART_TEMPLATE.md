@@ -21,8 +21,8 @@
 |---|---|---|
 | `Card ID` | Unique numeric ID | Must not overlap with existing IDs |
 | `Type` | `hero`, `minion`, `spell`, `weapon`, `secret` | Determines which prompt template applies |
-| `Class` | `Warrior`, `Mage`, `Priest`, `Rogue`, `Hunter`, `Warlock`, `Shaman`, `Paladin`, `Druid`, `Demonhunter`, `Deathknight`, `Necromancer`, `Neutral` | Drives color palette, enchantment, lighting pools |
-| `Rarity` | `legendary`, `epic`, `rare`, `common` | Controls intensity, material quality, atmosphere |
+| `Class` | `Warrior`, `Mage`, `Priest`, `Rogue`, `Hunter`, `Warlock`, `Shaman`, `Paladin`, `Druid`, `Berserker`, `DeathKnight`, `Necromancer`, `Neutral` | Drives color palette, enchantment, lighting pools |
+| `Rarity` | `mythic`, `epic`, `rare`, `common` | Controls intensity, material quality, atmosphere |
 
 ### Optional Metadata Fields
 
@@ -141,7 +141,7 @@ Simple round Norse spangenhelm, dark iron with nose guard. Battle-dented surface
 ```markdown
 ## 1. Thor — God of Thunder
 
-**Card ID:** 30100 | **Type:** hero | **Class:** Warrior | **Rarity:** legendary | **Gender:** male
+**Card ID:** 30100 | **Type:** hero | **Class:** Warrior | **Rarity:** mythic | **Gender:** male
 
 > "Only the worthy may wield the hammer of the Thunder God."
 

@@ -531,7 +531,8 @@ server/
 
 | Document | Description |
 |----------|-------------|
-| [RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md) | **Frozen protocol spec** — 14 ops, authority matrix, finality rules, launch gates |
+| [RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md) | **Frozen protocol spec** — 14 base ops, authority matrix, finality rules, launch gates |
+| [ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md) | **Protocol v1.1** — atomic transfers, pack NFTs, DNA lineage (7 new ops, 21 total) |
 | [RULEBOOK.md](docs/RULEBOOK.md) | Complete game rules with examples |
 | [GAME_FLOW.md](docs/GAME_FLOW.md) | Game flow diagrams and state management |
 | [RAGNAROK_GAME_RULES.md](docs/RAGNAROK_GAME_RULES.md) | Detailed P2E rules and status effects |

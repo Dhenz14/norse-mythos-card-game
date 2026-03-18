@@ -37,7 +37,7 @@ Browser:
 - **All chain ops** use `custom_json` with `id = "ragnarok-cards"`
 - **Replay engine** is client-side: browser fetches ops, applies deterministic rules, builds IndexedDB
 - **No HAF / no backend indexer required** — the browser IS the indexer
-- **15 op types**: genesis, seal, mint, transfer, burn, pack_commit, pack_reveal, reward_claim, match_anchor, match_result, level_up, queue_join, queue_leave, slash_evidence, card_transfer
+- **21 op types**: genesis, seal, mint, transfer, burn, pack_commit, pack_reveal, reward_claim, match_anchor, match_result, level_up, queue_join, queue_leave, slash_evidence, card_transfer, pack_mint, pack_distribute, pack_transfer, pack_burn, card_replicate, card_merge
 - **Supply caps**: 1,800/common, 1,250/rare, 750/epic, 500/mythic per card ID
 
 ## Test Flow
@@ -153,7 +153,7 @@ The transfer appends a `ProvenanceStamp` to the card's history. Both sender and 
 | `client/src/data/blockchain/replayEngine.ts` | Chain replay: fetches ops → applies rules → IndexedDB |
 | `client/src/data/blockchain/replayRules.ts` | Deterministic rule engine (the "smart contract") |
 | `client/src/data/blockchain/replayDB.ts` | IndexedDB v6 schema (13 stores) |
-| `client/src/data/blockchain/opSchemas.ts` | Zod validation for all 15 op types |
+| `client/src/data/blockchain/opSchemas.ts` | Zod validation for all 21 op types |
 | `client/src/data/blockchain/genesisAdmin.ts` | Genesis/seal/brick authority functions |
 | `client/src/data/blockchain/packDerivation.ts` | Deterministic pack card derivation from block entropy |
 | `client/src/data/HiveSync.ts` | Keychain integration: login, broadcast, transfer |
