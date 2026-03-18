@@ -91,6 +91,14 @@ function recordToCommit(r: PackCommitStateRecord): PackCommitRecord {
 }
 
 // ============================================================
+// v1.1: In-memory stores for pack NFTs + companion transfers
+// ============================================================
+
+const _packStore = new Map<string, import('../../shared/protocol-core/types').PackAsset>();
+const _packSupplyStore = new Map<string, import('../../shared/protocol-core/types').PackSupplyRecord>();
+const _trxSiblings = new Map<string, unknown[]>();
+
+// ============================================================
 // StateAdapter — all delegates to chainState (durable)
 // ============================================================
 
@@ -163,4 +171,31 @@ export const serverStateAdapter: StateAdapter = {
 	async getQueueEntry(account) { return csGetQueueEntry(account) ?? null; },
 	async putQueueEntry(account, data) { csSetQueueEntry(account, { timestamp: data.timestamp }); },
 	async deleteQueueEntry(account) { csDeleteQueueEntry(account); },
+
+	// v1.1: Pack NFTs + companion transfers
+	async getPack(uid) { return _packStore.get(uid) ?? null; },
+	async putPack(pack) { _packStore.set(pack.uid, pack); },
+	async deletePack(uid) { _packStore.delete(uid); },
+	async getPacksByOwner(owner) {
+		const result: import('../../shared/protocol-core/types').PackAsset[] = [];
+		for (const p of _packStore.values()) {
+			if (p.owner === owner) result.push(p);
+		}
+		return result;
+	},
+	async getPackSupply(packType) { return _packSupplyStore.get(packType) ?? null; },
+	async putPackSupply(record) { _packSupplyStore.set(record.packType, record); },
+
+	async getCompanionTransfer(trxId) {
+		const siblings = _trxSiblings.get(trxId);
+		if (!siblings) return null;
+		for (const op of siblings) {
+			const arr = op as [string, Record<string, string>];
+			if (arr[0] === 'transfer') {
+				return { from: arr[1].from, to: arr[1].to, amount: arr[1].amount, memo: arr[1].memo || '' };
+			}
+		}
+		return null;
+	},
+	setTrxSiblings(trxId, ops) { _trxSiblings.set(trxId, ops); },
 };

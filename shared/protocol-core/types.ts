@@ -24,8 +24,17 @@ export const RUNE_WIN_RANKED = 10;
 export const RUNE_LOSS_RANKED = 3;
 export const HIVE_USERNAME_RE = /^[a-z][a-z0-9.-]{2,15}$/;
 
+// v1.1: Pack NFT + DNA Lineage constants
+export const ATOMIC_TRANSFER_AMOUNT = '0.001 HIVE';
+export const MAX_REPLICAS_PER_CARD = 3;
+export const MAX_GENERATION = 3;
+export const REPLICA_COOLDOWN_BLOCKS = 100;
+export const PACK_SIZES: Record<string, number> = {
+	starter: 5, booster: 5, standard: 5, premium: 7, mythic: 7, mega: 15,
+};
+
 // ============================================================
-// Canonical Op Actions (14 total)
+// Canonical Op Actions (19 total — v1.0 base + v1.1 extensions)
 // ============================================================
 
 export type CanonicalAction =
@@ -42,7 +51,14 @@ export type CanonicalAction =
 	| 'queue_leave'
 	| 'match_anchor'
 	| 'match_result'
-	| 'slash_evidence';
+	| 'slash_evidence'
+	// v1.1: Pack NFTs
+	| 'pack_mint'
+	| 'pack_transfer'
+	| 'pack_burn'
+	// v1.1: DNA Lineage
+	| 'card_replicate'
+	| 'card_merge';
 
 // Legacy op that is NOT a canonical alias (valid only pre-seal)
 export type LegacyAction = 'legacy_pack_open';
@@ -55,6 +71,8 @@ export type ProtocolAction = CanonicalAction | LegacyAction;
 
 export const ACTIVE_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
 	'card_transfer', 'burn', 'seal', 'mint_batch',
+	'pack_mint', 'pack_transfer', 'pack_burn',
+	'card_replicate', 'card_merge',
 ]);
 
 export const POSTING_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
@@ -124,10 +142,48 @@ export interface CardAsset {
 	level: number;
 	xp: number;
 	edition: string;
-	mintSource: 'genesis' | 'pack' | 'reward';
+	foil?: string;
+	mintSource: 'genesis' | 'pack' | 'reward' | 'replica' | 'merge';
 	mintTrxId: string;
 	mintBlockNum: number;
 	lastTransferBlock: number;
+	// v1.1: DNA Lineage
+	originDna?: string;          // Genotype — same for all copies of this card template
+	instanceDna?: string;        // Phenotype — unique to THIS specific copy
+	parentInstanceDna?: string;  // If replica, points to parent
+	generation?: number;         // 0 = original, 1+ = replica depth
+	replicaCount?: number;       // How many replicas minted FROM this instance
+	mergedFrom?: string[];       // If merged, UIDs of the two source cards
+}
+
+// v1.1: Pack NFT — a sealed, tradeable pack with deterministic DNA
+export interface PackAsset {
+	uid: string;                 // "pack_{trxId}:{index}"
+	packType: string;            // 'starter' | 'standard' | 'premium' | 'mythic' | 'mega'
+	dna: string;                 // sha256(mintTrxId + ":" + index + ":" + packType)
+	owner: string;               // Current Hive account
+	sealed: boolean;             // true = unopened
+	mintTrxId: string;
+	mintBlockNum: number;
+	lastTransferBlock: number;
+	cardCount: number;           // Cards inside (5, 7, or 15)
+	edition: string;
+}
+
+// v1.1: Companion transfer in same Hive transaction (atomic anchoring)
+export interface CompanionTransfer {
+	from: string;
+	to: string;
+	amount: string;              // e.g. "0.001 HIVE"
+	memo: string;
+}
+
+// v1.1: Pack supply tracking
+export interface PackSupplyRecord {
+	packType: string;
+	minted: number;
+	burned: number;
+	cap: number;                 // 0 = unlimited
 }
 
 export interface GenesisRecord {
@@ -234,6 +290,18 @@ export interface StateAdapter {
 	getQueueEntry(account: string): Promise<{ timestamp: number } | null>;
 	putQueueEntry(account: string, data: { mode: string; elo: number; timestamp: number; blockNum: number }): Promise<void>;
 	deleteQueueEntry(account: string): Promise<void>;
+
+	// v1.1: Pack NFTs
+	getPack(uid: string): Promise<PackAsset | null>;
+	putPack(pack: PackAsset): Promise<void>;
+	deletePack(uid: string): Promise<void>;
+	getPacksByOwner(owner: string): Promise<PackAsset[]>;
+	getPackSupply(packType: string): Promise<PackSupplyRecord | null>;
+	putPackSupply(record: PackSupplyRecord): Promise<void>;
+
+	// v1.1: Companion transfer lookup (atomic anchoring)
+	getCompanionTransfer(trxId: string): Promise<CompanionTransfer | null>;
+	setTrxSiblings(trxId: string, ops: unknown[]): void;
 }
 
 // ============================================================

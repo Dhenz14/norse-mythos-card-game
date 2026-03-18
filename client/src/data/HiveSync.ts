@@ -159,6 +159,47 @@ export class HiveSync {
     });
   }
 
+  // ── v1.1: Pack NFT operations ──
+
+  async mintPack(packType: string, quantity: number, toUser: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('rp_pack_mint', {
+      pack_type: packType,
+      quantity,
+      to: toUser,
+    }, true);
+  }
+
+  async transferPack(packUid: string, toUser: string, memo?: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('rp_pack_transfer', {
+      pack_uid: packUid,
+      to: toUser,
+      memo,
+    }, true);
+  }
+
+  async burnPack(packUid: string, salt: string, saltCommit?: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('rp_pack_burn', {
+      pack_uid: packUid,
+      salt,
+      salt_commit: saltCommit,
+    }, true);
+  }
+
+  // ── v1.1: DNA Lineage operations ──
+
+  async replicateCard(sourceUid: string, foil?: 'standard' | 'gold'): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('rp_card_replicate', {
+      source_uid: sourceUid,
+      foil,
+    }, true);
+  }
+
+  async mergeCards(sourceUids: [string, string]): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('rp_card_merge', {
+      source_uids: sourceUids,
+    }, true);
+  }
+
   /**
    * Verify account ownership via Keychain requestSignBuffer.
    * Signs a timestamped message with the user's Posting key — no transaction posted.

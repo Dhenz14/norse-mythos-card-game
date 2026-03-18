@@ -9,6 +9,7 @@
 import type {
 	StateAdapter, CardAsset, GenesisRecord, EloRecord,
 	TokenBalance, MatchAnchorRecord, PackCommitRecord, SupplyRecord,
+	PackAsset, PackSupplyRecord, CompanionTransfer,
 } from '../../../../shared/protocol-core/types';
 import {
 	getCard, putCard, deleteCard, getCardsByOwner,
@@ -46,6 +47,14 @@ function assetToHiveCard(a: CardAsset): HiveCardAsset {
 		name: '', type: 'minion',
 	};
 }
+
+// ============================================================
+// v1.1: In-memory stores for pack NFTs + companion transfers
+// ============================================================
+
+const _packStore = new Map<string, PackAsset>();
+const _packSupplyStore = new Map<string, PackSupplyRecord>();
+const _trxSiblings = new Map<string, unknown[]>();
 
 // ============================================================
 // StateAdapter implementation over IndexedDB
@@ -167,4 +176,34 @@ export const clientStateAdapter: StateAdapter = {
 		});
 	},
 	async deleteQueueEntry(account) { await deleteQueueEntry(account); },
+
+	// v1.1: Pack NFTs + companion transfers
+	async getPack(uid) { return _packStore.get(uid) ?? null; },
+	async putPack(pack) { _packStore.set(pack.uid, pack); },
+	async deletePack(uid) { _packStore.delete(uid); },
+	async getPacksByOwner(owner) {
+		const result: PackAsset[] = [];
+		for (const p of _packStore.values()) {
+			if (p.owner === owner) result.push(p);
+		}
+		return result;
+	},
+	async getPackSupply(packType) { return _packSupplyStore.get(packType) ?? null; },
+	async putPackSupply(record) { _packSupplyStore.set(record.packType, record); },
+
+	async getCompanionTransfer(trxId) {
+		const siblings = _trxSiblings.get(trxId);
+		if (!siblings) return null;
+		for (const op of siblings) {
+			const arr = op as [string, Record<string, string>];
+			if (arr[0] === 'transfer') {
+				return {
+					from: arr[1].from, to: arr[1].to,
+					amount: arr[1].amount, memo: arr[1].memo || '',
+				};
+			}
+		}
+		return null;
+	},
+	setTrxSiblings(trxId, ops) { _trxSiblings.set(trxId, ops); },
 };

@@ -45,7 +45,13 @@ export type RagnarokTransactionType =
   | 'rp_queue_join'
   | 'rp_queue_leave'
   | 'rp_reward_claim'
-  | 'rp_slash_evidence';
+  | 'rp_slash_evidence'
+  // v1.1
+  | 'rp_pack_mint'
+  | 'rp_pack_transfer'
+  | 'rp_pack_burn'
+  | 'rp_card_replicate'
+  | 'rp_card_merge';
 
 export interface HiveUserRecord {
   hiveUsername: string;

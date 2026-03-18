@@ -10,12 +10,14 @@
 import type {
 	ProtocolOp, OpResult, ReplayContext, StateAdapter,
 	CardDataProvider, RewardProvider, SignatureVerifier,
-	CardAsset, GenesisRecord, EloRecord,
+	CardAsset, GenesisRecord, EloRecord, PackAsset,
 } from './types';
 import {
 	RAGNAROK_ADMIN_ACCOUNT, TRANSFER_COOLDOWN_BLOCKS, MAX_CARD_LEVEL,
 	ELO_K_FACTOR, ELO_FLOOR, RUNE_WIN_RANKED, RUNE_LOSS_RANKED,
-	HIVE_USERNAME_RE,
+	HIVE_USERNAME_RE, ATOMIC_TRANSFER_AMOUNT, PACK_SIZES,
+	MAX_REPLICAS_PER_CARD, MAX_GENERATION, REPLICA_COOLDOWN_BLOCKS,
+	PACK_ENTROPY_DELAY_BLOCKS,
 } from './types';
 import { verifyPoW, POW_CONFIG } from './pow';
 import { canonicalStringify, sha256Hash } from './hash';
@@ -67,6 +69,13 @@ export async function applyOp(
 		case 'pack_commit': return applyPackCommit(op, deps);
 		case 'pack_reveal': return applyPackReveal(op, ctx, deps);
 		case 'legacy_pack_open': return applyLegacyPackOpen(op, deps);
+		// v1.1: Pack NFTs
+		case 'pack_mint': return applyPackMint(op, ctx, deps);
+		case 'pack_transfer': return applyPackTransfer(op, deps);
+		case 'pack_burn': return applyPackBurn(op, ctx, deps);
+		// v1.1: DNA Lineage
+		case 'card_replicate': return applyCardReplicate(op, deps);
+		case 'card_merge': return applyCardMerge(op, deps);
 		default: return { status: 'ignored' };
 	}
 }
@@ -731,7 +740,7 @@ async function applyPackReveal(
 // Shared pack card draw (used by reveal + auto-finalize)
 // ============================================================
 
-const PACK_SIZES: Record<string, number> = { starter: 5, booster: 5, standard: 5, premium: 7, mythic: 7, mega: 15 };
+// PACK_SIZES imported from ./types
 
 const PACK_ID_RANGES: Record<string, [number, number][]> = {
 	starter:  [[1000, 3999], [20000, 29999]],
@@ -928,6 +937,256 @@ async function applyLegacyPackOpen(op: ProtocolOp, deps: ProtocolCoreDeps): Prom
 
 function lcgNext(seed: number): number {
 	return (seed * 16807) % 2147483647;
+}
+
+// ============================================================
+// v1.1: pack_mint — Create sealed pack NFTs (atomic)
+// ============================================================
+
+async function applyPackMint(op: ProtocolOp, ctx: ReplayContext, deps: ProtocolCoreDeps): Promise<OpResult> {
+	if (op.broadcaster !== RAGNAROK_ADMIN_ACCOUNT) return reject('not admin account');
+
+	const genesis = await deps.state.getGenesis();
+	if (!genesis?.sealed) return reject('pack_mint requires sealed genesis');
+
+	const packType = op.payload.pack_type as string;
+	const quantity = Number(op.payload.quantity ?? 1);
+	const to = op.payload.to as string;
+
+	if (!PACK_SIZES[packType]) return reject(`invalid pack_type: ${packType}`);
+	if (quantity < 1 || quantity > 10) return reject('quantity must be 1-10');
+	if (!HIVE_USERNAME_RE.test(to)) return reject(`invalid recipient: ${to}`);
+
+	// Atomic transfer validation
+	const companion = await deps.state.getCompanionTransfer(op.trxId);
+	if (!companion) return reject('missing atomic HIVE transfer');
+	if (companion.amount !== ATOMIC_TRANSFER_AMOUNT) return reject('wrong atomic transfer amount');
+	if (companion.to !== to) return reject('atomic transfer recipient mismatch');
+
+	for (let i = 0; i < quantity; i++) {
+		const uid = `pack_${op.trxId}:${i}`;
+		const dna = await sha256Hash(`${op.trxId}:${i}:${packType}`);
+
+		const pack: PackAsset = {
+			uid, packType, dna, owner: to, sealed: true,
+			mintTrxId: op.trxId, mintBlockNum: op.blockNum,
+			lastTransferBlock: op.blockNum,
+			cardCount: PACK_SIZES[packType], edition: 'alpha',
+		};
+		await deps.state.putPack(pack);
+
+		const supply = await deps.state.getPackSupply(packType);
+		if (supply) {
+			if (supply.cap > 0 && supply.minted >= supply.cap) return reject('pack supply cap reached');
+			await deps.state.putPackSupply({ ...supply, minted: supply.minted + 1 });
+		} else {
+			await deps.state.putPackSupply({ packType, minted: 1, burned: 0, cap: 0 });
+		}
+	}
+
+	return { status: 'applied' };
+}
+
+// ============================================================
+// v1.1: pack_transfer — Transfer sealed pack (atomic)
+// ============================================================
+
+async function applyPackTransfer(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const packUid = op.payload.pack_uid as string;
+	const to = op.payload.to as string;
+	if (!packUid || !to) return reject('missing pack_uid or to');
+	if (!HIVE_USERNAME_RE.test(to)) return reject(`invalid recipient: ${to}`);
+	if (to === op.broadcaster) return reject('cannot transfer to self');
+
+	const pack = await deps.state.getPack(packUid);
+	if (!pack) return reject(`pack ${packUid} not found`);
+	if (!pack.sealed) return reject('cannot transfer opened pack');
+	if (pack.owner !== op.broadcaster) return reject('not pack owner');
+
+	if (pack.lastTransferBlock && (op.blockNum - pack.lastTransferBlock) < TRANSFER_COOLDOWN_BLOCKS) {
+		return reject('pack transfer cooldown');
+	}
+
+	// Atomic transfer validation
+	const companion = await deps.state.getCompanionTransfer(op.trxId);
+	if (!companion) return reject('missing atomic HIVE transfer');
+	if (companion.amount !== ATOMIC_TRANSFER_AMOUNT) return reject('wrong atomic transfer amount');
+	if (companion.to !== to) return reject('atomic transfer recipient mismatch');
+
+	await deps.state.putPack({ ...pack, owner: to, lastTransferBlock: op.blockNum });
+	return { status: 'applied' };
+}
+
+// ============================================================
+// v1.1: pack_burn — Open pack (burn NFT, derive cards)
+// ============================================================
+
+async function applyPackBurn(op: ProtocolOp, ctx: ReplayContext, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const packUid = op.payload.pack_uid as string;
+	const salt = op.payload.salt as string;
+	if (!packUid || !salt) return reject('missing pack_uid or salt');
+
+	const pack = await deps.state.getPack(packUid);
+	if (!pack) return reject(`pack ${packUid} not found`);
+	if (!pack.sealed) return reject('pack already opened');
+	if (pack.owner !== op.broadcaster) return reject('not pack owner');
+
+	// Entropy block must be irreversible
+	const entropyBlock = op.blockNum + PACK_ENTROPY_DELAY_BLOCKS;
+	if (entropyBlock > ctx.lastIrreversibleBlock) return { status: 'ignored' };
+
+	const entropyBlockId = await ctx.getBlockId(entropyBlock);
+	if (!entropyBlockId) return { status: 'ignored' };
+
+	// Derive cards from pack DNA + burn entropy
+	const seed = await sha256Hash(`${pack.dna}|${op.trxId}|${entropyBlockId}`);
+	const cardCount = pack.cardCount;
+	const idRanges = PACK_ID_RANGES[pack.packType] ?? PACK_ID_RANGES['standard'];
+	const collectibleIds = deps.cards.getCollectibleIdsInRanges(idRanges);
+
+	if (collectibleIds.length === 0) return reject('no collectible cards in range');
+
+	let rng = Math.max(parseInt(seed.slice(0, 8), 16) || 1, 1);
+	for (let i = 0; i < cardCount; i++) {
+		rng = lcgNext(rng);
+		const cardId = collectibleIds[rng % collectibleIds.length];
+		const cardData = deps.cards.getCardById(cardId);
+		const rarity = cardData?.rarity ?? 'common';
+
+		const originDna = await sha256Hash(`${cardId}|${pack.edition}|${rarity}|${pack.mintTrxId}`);
+		const instanceDna = await sha256Hash(`${originDna}|genesis|${op.trxId}|${i}`);
+
+		const asset: CardAsset = {
+			uid: `${op.trxId}:${i}`, cardId, owner: op.broadcaster, rarity,
+			level: 1, xp: 0, edition: pack.edition, foil: 'standard',
+			mintSource: 'pack', mintTrxId: op.trxId, mintBlockNum: op.blockNum,
+			lastTransferBlock: 0,
+			originDna, instanceDna, generation: 0, replicaCount: 0,
+		};
+		await deps.state.putCard(asset);
+		rng = lcgNext(rng);
+	}
+
+	// Delete pack and update supply
+	await deps.state.deletePack(packUid);
+	const supply = await deps.state.getPackSupply(pack.packType);
+	if (supply) {
+		await deps.state.putPackSupply({ ...supply, burned: supply.burned + 1 });
+	}
+
+	return { status: 'applied' };
+}
+
+// ============================================================
+// v1.1: card_replicate — Clone a card with DNA lineage
+// ============================================================
+
+async function applyCardReplicate(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const sourceUid = op.payload.source_uid as string;
+	if (!sourceUid) return reject('missing source_uid');
+
+	const source = await deps.state.getCard(sourceUid);
+	if (!source) return reject(`source card ${sourceUid} not found`);
+	if (source.owner !== op.broadcaster) return reject('not owner of source card');
+
+	const gen = source.generation ?? 0;
+	if (gen >= MAX_GENERATION) return reject(`max generation reached: ${gen}`);
+
+	const replicas = source.replicaCount ?? 0;
+	if (replicas >= MAX_REPLICAS_PER_CARD) return reject(`max replicas reached: ${replicas}`);
+
+	if (source.lastTransferBlock && (op.blockNum - source.lastTransferBlock) < REPLICA_COOLDOWN_BLOCKS) {
+		return reject('replica cooldown');
+	}
+
+	const originDna = source.originDna ?? await sha256Hash(`${source.cardId}|${source.edition}|${source.rarity}|genesis`);
+	const parentDna = source.instanceDna ?? await sha256Hash(`${originDna}|genesis|${source.mintTrxId}|0`);
+	const instanceDna = await sha256Hash(`${originDna}|${parentDna}|${op.trxId}|0`);
+
+	const foil = (op.payload.foil as string) || source.foil || 'standard';
+
+	const replica: CardAsset = {
+		uid: `${op.trxId}:replica:0`,
+		cardId: source.cardId,
+		owner: op.broadcaster,
+		rarity: source.rarity,
+		edition: source.edition,
+		foil,
+		level: 1, xp: 0,
+		mintSource: 'replica',
+		mintTrxId: op.trxId,
+		mintBlockNum: op.blockNum,
+		lastTransferBlock: 0,
+		originDna,
+		instanceDna,
+		parentInstanceDna: parentDna,
+		generation: gen + 1,
+		replicaCount: 0,
+	};
+
+	// Update source replicaCount
+	await deps.state.putCard({ ...source, replicaCount: replicas + 1 });
+	await deps.state.putCard(replica);
+
+	return { status: 'applied' };
+}
+
+// ============================================================
+// v1.1: card_merge — Combine two same-origin cards
+// ============================================================
+
+async function applyCardMerge(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const sourceUids = op.payload.source_uids as [string, string];
+	if (!Array.isArray(sourceUids) || sourceUids.length !== 2) return reject('source_uids must be array of exactly 2');
+
+	const [cardA, cardB] = await Promise.all([
+		deps.state.getCard(sourceUids[0]),
+		deps.state.getCard(sourceUids[1]),
+	]);
+
+	if (!cardA) return reject(`card ${sourceUids[0]} not found`);
+	if (!cardB) return reject(`card ${sourceUids[1]} not found`);
+	if (cardA.owner !== op.broadcaster) return reject(`card ${sourceUids[0]} not owned by broadcaster`);
+	if (cardB.owner !== op.broadcaster) return reject(`card ${sourceUids[1]} not owned by broadcaster`);
+	if (cardA.cardId !== cardB.cardId) return reject('cards must be same template (cardId)');
+
+	if ((cardA.replicaCount ?? 0) > 0) return reject(`card ${sourceUids[0]} has active replicas`);
+	if ((cardB.replicaCount ?? 0) > 0) return reject(`card ${sourceUids[1]} has active replicas`);
+
+	const originDna = cardA.originDna ?? await sha256Hash(`${cardA.cardId}|${cardA.edition}|${cardA.rarity}|genesis`);
+	const dnaA = cardA.instanceDna ?? await sha256Hash(`${originDna}|genesis|${cardA.mintTrxId}|0`);
+	const dnaB = cardB.instanceDna ?? await sha256Hash(`${originDna}|genesis|${cardB.mintTrxId}|0`);
+	const mergedDna = await sha256Hash(`${dnaA}|${dnaB}|merge|${op.trxId}`);
+
+	const mergedLevel = Math.min(MAX_CARD_LEVEL, Math.max(cardA.level, cardB.level) + 1);
+
+	const merged: CardAsset = {
+		uid: `${op.trxId}:merge:0`,
+		cardId: cardA.cardId,
+		owner: op.broadcaster,
+		rarity: cardA.rarity,
+		edition: cardA.edition,
+		foil: 'ascended',
+		level: mergedLevel,
+		xp: (cardA.xp || 0) + (cardB.xp || 0),
+		mintSource: 'merge',
+		mintTrxId: op.trxId,
+		mintBlockNum: op.blockNum,
+		lastTransferBlock: 0,
+		originDna,
+		instanceDna: mergedDna,
+		parentInstanceDna: dnaA,
+		generation: 0,
+		replicaCount: 0,
+		mergedFrom: [cardA.uid, cardB.uid],
+	};
+
+	// Burn both sources, create merged
+	await deps.state.deleteCard(cardA.uid);
+	await deps.state.deleteCard(cardB.uid);
+	await deps.state.putCard(merged);
+
+	return { status: 'applied' };
 }
 
 // ============================================================

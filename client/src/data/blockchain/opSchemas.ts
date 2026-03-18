@@ -186,6 +186,45 @@ export const RewardClaimPayload = z.object({
 
 export const TeamSubmitPayload = z.object({}).passthrough();
 
+// ── v1.1: pack_mint ──
+
+export const PackMintPayload = z.object({
+	pack_type: z.enum(['starter', 'standard', 'premium', 'mythic', 'mega']),
+	quantity: z.number().int().min(1).max(10).default(1),
+	to: HiveUsername,
+});
+
+// ── v1.1: pack_transfer ──
+
+export const PackTransferPayload = z.object({
+	pack_uid: z.string().min(1),
+	to: HiveUsername,
+	nonce: NonNegativeInt.optional(),
+	memo: z.string().max(256).optional(),
+});
+
+// ── v1.1: pack_burn ──
+
+export const PackBurnPayload = z.object({
+	pack_uid: z.string().min(1),
+	salt: z.string().min(32),
+	salt_commit: z.string().optional(),
+});
+
+// ── v1.1: card_replicate ──
+
+export const CardReplicatePayload = z.object({
+	source_uid: z.string().min(1),
+	foil: z.enum(['standard', 'gold']).optional(),
+	memo: z.string().max(256).optional(),
+});
+
+// ── v1.1: card_merge ──
+
+export const CardMergePayload = z.object({
+	source_uids: z.tuple([z.string().min(1), z.string().min(1)]),
+});
+
 // ── Schema lookup by op id ──
 
 export const OP_SCHEMAS: Record<string, z.ZodType> = {
@@ -204,6 +243,12 @@ export const OP_SCHEMAS: Record<string, z.ZodType> = {
 	rp_pack_open: PackOpenPayload,
 	rp_reward_claim: RewardClaimPayload,
 	rp_team_submit: TeamSubmitPayload,
+	// v1.1
+	rp_pack_mint: PackMintPayload,
+	rp_pack_transfer: PackTransferPayload,
+	rp_pack_burn: PackBurnPayload,
+	rp_card_replicate: CardReplicatePayload,
+	rp_card_merge: CardMergePayload,
 };
 
 /**
