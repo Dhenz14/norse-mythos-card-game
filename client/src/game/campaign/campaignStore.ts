@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { Difficulty } from './campaignTypes';
 import { getNFTBridge } from '../nft';
 import { debug } from '../config/debugConfig';
+import { triggerAutoSave } from '../stores/saveStateManager';
 
 interface MissionCompletion {
 	difficulty: Difficulty;
@@ -59,6 +60,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 					},
 					currentMission: null,
 				}));
+				triggerAutoSave();
 			},
 
 			claimReward: (missionId) => {

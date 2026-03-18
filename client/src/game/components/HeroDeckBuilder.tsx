@@ -9,7 +9,7 @@
  * - Tokens: ./deckbuilder/tokens.css
  */
 
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PieceType } from '../stores/heroDeckStore';
 import { useDeckBuilder, DECK_SIZE, isClassCard, getMaxCopies } from './deckbuilder';
@@ -76,6 +76,16 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 	const tooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const classColor = getClassColor(heroClass);
 	const holo = useHoloTracking();
+
+	const [showTutorial, setShowTutorial] = useState(() => {
+		try { return !localStorage.getItem('ragnarok-deckbuilder-tutorial-seen'); }
+		catch { return false; }
+	});
+	const dismissTutorial = useCallback(() => {
+		setShowTutorial(false);
+		try { localStorage.setItem('ragnarok-deckbuilder-tutorial-seen', '1'); }
+		catch { /* private browsing */ }
+	}, []);
 
 	const filteredGroupedCards = useMemo(() => {
 		if (rarityFilter === 'all') return db.groupedCards;
@@ -153,6 +163,19 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 						</div>
 					</div>
 				</div>
+
+				{showTutorial && (
+					<div className="db-tutorial-banner">
+						<div className="db-tutorial-steps">
+							<span className="db-tutorial-step"><kbd>Left-click</kbd> a card to add it to your deck</span>
+							<span className="db-tutorial-divider">|</span>
+							<span className="db-tutorial-step"><kbd>Right-click</kbd> a card for full details</span>
+							<span className="db-tutorial-divider">|</span>
+							<span className="db-tutorial-step">Use <strong>filters</strong> above the grid to find cards fast</span>
+						</div>
+						<button type="button" className="db-tutorial-dismiss" onClick={dismissTutorial}>Got it</button>
+					</div>
+				)}
 
 				{/* Main Content */}
 				<div className="db-main-split">

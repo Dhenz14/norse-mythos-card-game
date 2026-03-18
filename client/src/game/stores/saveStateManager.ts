@@ -12,6 +12,28 @@
 
 import { debug } from '../config/debugConfig';
 
+// ── Auto-Save on Milestones ──
+
+let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+export function triggerAutoSave(): void {
+	if (autoSaveTimer) clearTimeout(autoSaveTimer);
+	autoSaveTimer = setTimeout(async () => {
+		autoSaveTimer = null;
+		try {
+			const { getNFTBridge } = await import('../nft');
+			const bridge = getNFTBridge();
+			if (bridge.isHiveMode()) {
+				const result = await saveToHive();
+				if (result.success) debug.log('[AutoSave] Saved to Hive:', result.trxId);
+				else debug.warn('[AutoSave] Hive save failed:', result.error);
+			}
+		} catch (err) {
+			debug.warn('[AutoSave] Skipped (bridge not ready):', err);
+		}
+	}, 5000);
+}
+
 // ── State Shape (what gets saved/restored) ──
 
 export interface PortableSaveState {

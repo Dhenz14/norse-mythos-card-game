@@ -10,6 +10,7 @@ import { create } from 'zustand';
 import { cardRegistry } from '../data/cardRegistry';
 import { debug } from '../config/debugConfig';
 import { getNFTBridge } from '../nft';
+import { triggerAutoSave } from './saveStateManager';
 
 export type PieceType = 'queen' | 'rook' | 'bishop' | 'knight';
 
@@ -110,6 +111,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     }));
     
     get().saveToStorage();
+    triggerAutoSave();
     debug.log(`[HeroDeck] Set deck for ${pieceType}: ${deck.heroId} with ${deck.cardIds.length} cards`);
   },
 
