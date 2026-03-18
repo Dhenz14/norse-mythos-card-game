@@ -129,7 +129,7 @@ class CardDatabase {
     // Add sample cards to the database
     for (const card of sampleCards) {
       this.cards.set(card.id, card);
-      console.log(`Registered card: ${card.name} (ID: ${card.id})`);
+      // Card registered (no production logging)
     }
     this.isInitialized = true;
   }

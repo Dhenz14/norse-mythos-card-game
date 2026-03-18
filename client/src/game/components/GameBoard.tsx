@@ -48,7 +48,6 @@ import { QuestTracker } from './quest';
 // Import our new attack system
 import { useAttackStore } from '../combat/attackStore';
 import UnifiedBattlefieldAttackConnector from '../combat/UnifiedBattlefieldAttackConnector';
-import SimpleAttackSystem from '../combat/SimpleAttackSystem';
 import AttackSystem from '../combat/AttackSystem';
 import { canCardAttack, isValidAttackTarget } from '../combat/attackUtils';
 import { createHandlePlayerCardClick, createHandleOpponentCardClick, createHandleOpponentHeroClick } from './GameBoardHandlers';
@@ -1883,8 +1882,8 @@ export const GameBoard: React.FC<{}> = () => {
   return (
     <NorseBackground>
     <div role="main" aria-label="Game Board" className="virtual-canvas-scaler game-container game-board-enhanced h-full overflow-visible relative z-index-base" ref={gameContainerRef}>
-      {/* Debug 3D renderer to validate WebGL rendering */}
-      <DebugRenderCheck />
+      {/* Debug 3D renderer — DEV only */}
+      {import.meta.env.DEV && <DebugRenderCheck />}
       
       {/* Quest Tracker - displays active quests with progress */}
       <QuestTracker owner="player" />
@@ -2382,8 +2381,8 @@ export const GameBoard: React.FC<{}> = () => {
         </div>
       )}
       
-      {/* Debug WebGL Diagnostics Panel */}
-      <DebugRenderCheck />
+      {/* Debug WebGL Diagnostics Panel — DEV only */}
+      {import.meta.env.DEV && <DebugRenderCheck />}
       
       {/* Ultimate CardWithDrag system handles all interactions - no competing systems */}
     </div>

@@ -98,7 +98,9 @@ export async function registerAccount(username: string): Promise<void> {
 	await fetchJSON('/api/chain/register', {
 		method: 'POST',
 		body: JSON.stringify({ username }),
-	}).catch(() => {});
+	}).catch((err) => {
+		if (import.meta.env.DEV) console.warn('[chainAPI] registerAccount failed:', err);
+	});
 }
 
 export async function fetchChainStatus(): Promise<{
