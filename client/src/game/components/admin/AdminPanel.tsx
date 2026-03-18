@@ -302,7 +302,24 @@ export default function AdminPanel() {
 				<h1 className="text-3xl font-bold text-center mb-1 text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-400 to-red-400">
 					Genesis Command Center
 				</h1>
-				<p className="text-gray-500 text-center text-sm mb-6">Ragnarok NFT Protocol Administration</p>
+				<p className="text-gray-500 text-center text-sm mb-4">Ragnarok NFT Protocol Administration</p>
+
+				{/* ── Ceremony Checklist (always visible) ── */}
+				<div className="bg-gray-900/60 rounded-lg p-4 border border-gray-700/50 mb-6">
+					<h3 className="text-amber-300 font-bold text-xs uppercase tracking-wider mb-3">Launch Ceremony — Follow Steps 1 → 5 in Order</h3>
+					<div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs">
+						<CeremonyStep num={1} label="Broadcast Genesis" done={hasGenesis} active={!hasGenesis}
+							help="Click Genesis tab → press button → approve Keychain popup. Sets supply caps." />
+						<CeremonyStep num={2} label="Mint All Cards" done={mintProgress.done > 0 && !mintProgress.running} active={hasGenesis && !isSealed && mintProgress.done === 0}
+							help="Click Batch Mint tab → press button → approve ~39 Keychain popups (one per 50 cards)." />
+						<CeremonyStep num={3} label="Seal Protocol" done={isSealed} active={hasGenesis && !isSealed}
+							help="Click Seal tab → press button → confirm TWICE. This is permanent and cannot be undone!" />
+						<CeremonyStep num={4} label="Mint Packs" done={false} active={isSealed}
+							help="Click Packs tab → choose type/qty → press Mint. Creates sealed packs in your inventory." />
+						<CeremonyStep num={5} label="Distribute" done={false} active={isSealed}
+							help="Enter player @username + pack IDs → press Distribute. Sends packs to players." />
+					</div>
+				</div>
 
 				{/* Tabs */}
 				<div className="flex gap-1 mb-6 bg-gray-900/50 p-1 rounded-lg border border-gray-800">
@@ -539,6 +556,29 @@ function StatCard({ label, value, color }: { label: string; value: string; color
 		<div className={`bg-gray-900/60 rounded-lg p-3 border ${colorMap[color] || colorMap.gray}`}>
 			<div className="text-gray-500 text-xs uppercase">{label}</div>
 			<div className={`font-bold text-sm ${colorMap[color]?.split(' ')[0]}`}>{value}</div>
+		</div>
+	);
+}
+
+// ── Ceremony Step Sub-Component ──
+
+function CeremonyStep({ num, label, done, active, help }: {
+	num: number; label: string; done: boolean; active: boolean; help: string;
+}) {
+	return (
+		<div className={`rounded-lg p-2 border ${done
+			? 'bg-green-900/20 border-green-700/40'
+			: active
+				? 'bg-amber-900/20 border-amber-600/40 ring-1 ring-amber-500/30'
+				: 'bg-gray-900/40 border-gray-700/30 opacity-50'}`}>
+			<div className="flex items-center gap-1.5 mb-1">
+				<span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${done
+					? 'bg-green-600 text-white' : active ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-400'}`}>
+					{done ? '✓' : num}
+				</span>
+				<span className={`font-bold ${done ? 'text-green-400' : active ? 'text-amber-300' : 'text-gray-500'}`}>{label}</span>
+			</div>
+			<p className="text-gray-400 leading-tight">{help}</p>
 		</div>
 	);
 }

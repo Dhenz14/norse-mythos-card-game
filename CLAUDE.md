@@ -413,6 +413,7 @@ vercel --prod                 # Deploy to Vercel
 /spectate/:id  → SpectatorView (read-only P2P)
 /settings      → SettingsPage (audio, visual, gameplay)
 /treasury      → TreasuryPage (multisig governance, WoT vouching)
+/admin         → AdminPanel (genesis ceremony, batch mint, seal, packs — @ragnarok only)
 ```
 
 ## Roadmap
@@ -1476,10 +1477,10 @@ vercel --prod                 # Deploy to Vercel
 
 ### Next (Genesis Launch)
 
+- Admin panel built: `/admin` → Genesis Command Center (step-by-step ceremony UI with checklist)
 - Create @ragnarok Hive account (2-of-3 multisig, no standalone keys)
 - Create @ragnarok-genesis Hive account (2-of-3 multisig, same signers)
 - Create @ragnarok-treasury Hive account (2-of-3 initial, expandable via WoT)
-- Tabletop rehearsal (4 exercises: signing, retry, invariants, hash bundle)
-- Multisig genesis → mint batches → seal → brick genesis authority
+- Ceremony flow: `/admin` → Step 1: Genesis → Step 2: Batch Mint → Step 3: Seal → Step 4: Mint Packs → Step 5: Distribute
 - Treasury remains active for ongoing RUNE payouts
 - Full ceremony procedures: [GENESIS_RUNBOOK.md](docs/GENESIS_RUNBOOK.md)
