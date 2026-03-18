@@ -172,7 +172,11 @@ export type HeroPowerEffectType =
   | 'resurrect_to_hand'       // Return dead minion to hand (Hermod)
   // Gambling/luck effects (Gefjon)
   | 'roll_the_dice'           // Deal 1-6 random damage to a random enemy
-  | 'roll_the_dice_double';   // Roll twice, keep higher result
+  | 'roll_the_dice_double'    // Roll twice, keep higher result
+  // Combo archetype (Verdandi)
+  | 'generate_fate_strand'    // Add a 0-cost damage spell to hand
+  // Escalating archetype (Vali)
+  | 'escalating_damage';      // Deal damage that increases each use
 
 /**
  * Hero power definition
@@ -301,6 +305,8 @@ export type HeroPassiveTrigger =
   | 'on_freeze'             // When an enemy is frozen (Bestla)
   | 'on_card_play'          // When a card is played (Hermod)
   | 'on_roll_six'           // When Gefjon rolls a 6 (draw a card)
+  | 'on_cards_played_3'     // After playing 3+ cards in a turn (Verdandi combo)
+  | 'on_take_minion_damage' // When hero takes damage from enemy minion (Vali)
   | 'passive';              // Always active aura effect
 
 /**

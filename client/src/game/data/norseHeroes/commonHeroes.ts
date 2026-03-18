@@ -650,8 +650,120 @@ export const COMMON_HEROES: Record<string, NorseHero> = {
 			effectType: 'buff_hero_attack',
 			value: 1
 		}
-	}
+	},
 
+	// ==================== BISHOP SLOT — Verdandi (Priest, Combo) ====================
+	'hero-verdandi': {
+		id: 'hero-verdandi',
+		name: 'Verdandi',
+		title: 'Norn of the Present',
+		element: 'light',
+		weakness: 'dark',
+		startingHealth: 100,
+		description: 'The Norn who carves the present into the World Tree. She weaves Fate Strands — threads of destiny that can be spent in rapid succession.',
+		lore: 'Verdandi sits at Urd\'s Well, carving runes into Yggdrasil. Each rune is a moment in time — and she can hand you several at once, if you dare act on them all.',
+		gender: 'female',
+		hasSpells: true,
+		fixedCardIds: [],
+		heroClass: 'priest',
+		heroPower: {
+			id: 'verdandi-power',
+			name: 'Fate Strand',
+			description: 'Add a 0-cost spell to your hand that deals 1 damage to a random enemy.',
+			cost: 2,
+			targetType: 'none',
+			effectType: 'generate_fate_strand',
+			value: 1
+		},
+		weaponUpgrade: {
+			id: 90122,
+			name: 'Loom of Fate',
+			heroId: 'hero-verdandi',
+			manaCost: 5,
+			description: 'Add 3 Fate Strands to your hand. Upgrade your hero power.',
+			immediateEffect: {
+				type: 'generate_fate_strand_multiple',
+				value: 3,
+				description: 'Add 3 Fate Strands to your hand.'
+			},
+			upgradedPowerId: 'verdandi-power-upgraded'
+		},
+		upgradedHeroPower: {
+			id: 'verdandi-power-upgraded',
+			name: 'Fate Strand+',
+			description: 'Add a 0-cost spell to your hand that deals 2 damage to a random enemy.',
+			cost: 2,
+			targetType: 'none',
+			effectType: 'generate_fate_strand',
+			value: 2,
+			isUpgraded: true,
+			baseHeroPowerId: 'verdandi-power'
+		},
+		passive: {
+			id: 'verdandi-passive',
+			name: 'Weaver\'s Rush',
+			description: 'After you play 3+ cards in a single turn, draw a card.',
+			trigger: 'on_cards_played_3',
+			effectType: 'draw',
+			value: 1
+		}
+	},
+
+	// ==================== KNIGHT SLOT — Vali (Berserker, Escalating) ====================
+	'hero-vali': {
+		id: 'hero-vali',
+		name: 'Vali',
+		title: 'Son of Vengeance',
+		element: 'fire',
+		weakness: 'water',
+		startingHealth: 100,
+		description: 'Born to avenge Baldr\'s death. Each blow he strikes grows fiercer — but his weapon can be unleashed for one devastating strike that resets the cycle.',
+		lore: 'Vali was born in the morning and by evening had slain Hodr. The gods marvelled — not at his speed, but at how each subsequent strike landed harder than the last. Vengeance, it seems, compounds.',
+		gender: 'male',
+		hasSpells: true,
+		fixedCardIds: [],
+		heroClass: 'berserker',
+		heroPower: {
+			id: 'vali-power',
+			name: 'Blood Debt',
+			description: 'Deal 1 damage to an enemy minion. Increases by +1 each use this game.',
+			cost: 2,
+			targetType: 'enemy_minion',
+			effectType: 'escalating_damage',
+			value: 1
+		},
+		weaponUpgrade: {
+			id: 90123,
+			name: 'Vali\'s Oath-Spear',
+			heroId: 'hero-vali',
+			manaCost: 5,
+			description: 'Deal damage equal to Blood Debt\'s current level to all enemies. Reset counter. Upgrade hero power.',
+			immediateEffect: {
+				type: 'escalating_aoe_reset',
+				description: 'Deal current Blood Debt damage to all enemies, then reset.'
+			},
+			upgradedPowerId: 'vali-power-upgraded'
+		},
+		upgradedHeroPower: {
+			id: 'vali-power-upgraded',
+			name: 'Blood Debt+',
+			description: 'Deal 2 damage to an enemy minion. Increases by +1 each use this game.',
+			cost: 2,
+			targetType: 'enemy_minion',
+			effectType: 'escalating_damage',
+			value: 2,
+			isUpgraded: true,
+			baseHeroPowerId: 'vali-power'
+		},
+		passive: {
+			id: 'vali-passive',
+			name: 'Undying Grudge',
+			description: 'When you take damage from an enemy minion, your next hero power costs (1) less.',
+			trigger: 'on_take_minion_damage',
+			effectType: 'cost_reduction',
+			value: 1
+		}
+	}
 };
 
 export function getCommonHeroById(id: string): NorseHero | undefined {

@@ -326,6 +326,20 @@ export interface MinionCardData extends BaseCardData {
     deathrattle?: DeathrattleEffect;
     passiveAbility?: { name: string; description: string; trigger: string; effect: BattlecryEffect | TriggeredEffect };
   }[];
+  // v1.1: Wager — poker combat passive effect while on battlefield
+  wagerEffect?: {
+    type: string;
+    value?: number;
+    damage?: number;
+    chance?: number;
+    multiplierBonus?: number;
+    selfDamage?: number;
+    bonusDamage?: number;
+    buffAttack?: number;
+    minRank?: number;
+    drawCount?: number;
+    ranks?: number;
+  };
 }
 
 /**

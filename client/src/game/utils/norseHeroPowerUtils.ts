@@ -216,6 +216,12 @@ export function executeNorseHeroPower(
     case 'roll_the_dice_double':
       newState = executeRollTheDice(newState, playerType, power, true);
       break;
+    case 'generate_fate_strand':
+      newState = executeGenerateFateStrand(newState, playerType, power);
+      break;
+    case 'escalating_damage':
+      newState = executeEscalatingDamage(newState, playerType, targetId, power);
+      break;
     default:
       debug.warn(`[HERO POWER] Unknown effect type: ${power.effectType}`);
   }
@@ -350,6 +356,93 @@ function executeRollTheDice(
     state = executeDraw(state, playerType, { value: 1 } as NorseHeroPower);
     debug.log('[Gefjon] Rolled a 6! Drew a card.');
   }
+
+  return state;
+}
+
+// ── v1.1: Verdandi's "Fate Strand" (combo enabler) ──
+
+function executeGenerateFateStrand(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  power: NorseHeroPower
+): GameState {
+  const player = state.players[playerType];
+  const MAX_HAND = 6;
+
+  if (player.hand.length >= MAX_HAND) {
+    debug.log('[Verdandi] Hand full, cannot add Fate Strand');
+    return state;
+  }
+
+  const dmg = power.value || 1;
+  const fateStrand: CardData = {
+    id: 9070 + dmg,
+    name: dmg > 1 ? 'Greater Fate Strand' : 'Fate Strand',
+    manaCost: 0,
+    description: `Deal ${dmg} damage to a random enemy.`,
+    flavorText: 'A thread of destiny, plucked from the loom.',
+    type: 'spell',
+    rarity: 'basic',
+    class: 'Neutral',
+    spellEffect: { type: 'damage_random', value: dmg, targetType: 'random_enemy' },
+    collectible: false,
+  } as CardData;
+
+  const instance: CardInstance = {
+    instanceId: `fate_strand_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    card: fateStrand,
+    currentHealth: 0,
+    currentAttack: 0,
+    canAttack: false,
+    isSummoningSick: false,
+  };
+
+  player.hand.push(instance);
+  debug.log(`[Verdandi] Added ${fateStrand.name} (${dmg} dmg) to hand`);
+
+  return state;
+}
+
+// ── v1.1: Vali's "Escalating Damage" ──
+// Tracks uses via a hidden counter on game state. Each use deals base + escalation.
+
+const VALI_ESCALATION_KEY = '__vali_escalation';
+
+function executeEscalatingDamage(
+  state: GameState,
+  playerType: 'player' | 'opponent',
+  targetId: string | undefined,
+  power: NorseHeroPower
+): GameState {
+  const opponentType = playerType === 'player' ? 'opponent' : 'player';
+  const opponent = state.players[opponentType];
+
+  // Track escalation counter on game state metadata
+  const meta = (state as unknown as Record<string, unknown>);
+  const counterKey = `${VALI_ESCALATION_KEY}_${playerType}`;
+  const escalation = (meta[counterKey] as number) || 0;
+  const totalDamage = (power.value || 1) + escalation;
+
+  debug.log(`[Vali] Blood Debt: base ${power.value} + ${escalation} escalation = ${totalDamage} damage`);
+
+  // Apply to target minion
+  if (targetId && targetId !== 'hero') {
+    const target = opponent.battlefield.find(m => m.instanceId === targetId);
+    if (target) {
+      target.currentHealth = (target.currentHealth || getCardHealth(target.card)) - totalDamage;
+      opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
+    }
+  } else if (opponent.battlefield.length > 0) {
+    // Fallback: random enemy minion
+    const idx = Math.floor(Math.random() * opponent.battlefield.length);
+    const target = opponent.battlefield[idx];
+    target.currentHealth = (target.currentHealth || getCardHealth(target.card)) - totalDamage;
+    opponent.battlefield = opponent.battlefield.filter(m => (m.currentHealth || 0) > 0);
+  }
+
+  // Increment escalation counter
+  meta[counterKey] = escalation + 1;
 
   return state;
 }

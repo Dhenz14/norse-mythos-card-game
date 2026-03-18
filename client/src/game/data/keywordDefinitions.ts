@@ -240,6 +240,11 @@ export const KEYWORD_DEFINITIONS: Record<string, KeywordDefinition> = {
 		description: 'Can bypass Taunt minions and attack any target.',
 		icon: 'feather',
 	},
+	wager: {
+		name: 'Wager',
+		description: 'While this minion is on the battlefield, its effect activates during poker combat.',
+		icon: 'dice',
+	},
 };
 
 export function getKeywordDefinition(keyword: string): KeywordDefinition | null {

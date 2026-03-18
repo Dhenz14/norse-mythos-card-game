@@ -117,6 +117,9 @@ export const HERO_ID_TO_CONFIG_KEY: Record<string, string> = {
   'hero-freya': 'priest-anduin',
   'hero-eir': 'priest-tyrande',
   'hero-frey': 'priest-voljin',
+  'hero-verdandi': 'priest-anduin',  // Verdandi uses Priest spells (combo)
+  // Berserker heroes
+  'hero-vali': 'berserker-illidan',  // Vali uses Berserker spells (escalating)
   // Rogue heroes
   'hero-loki': 'rogue-valeera',
   'hero-hoder': 'rogue-maiev',
@@ -228,7 +231,8 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-eros': 'priest',
   'hero-hestia': 'priest',
   'hero-rhea': 'priest',
-  
+  'hero-verdandi': 'priest',
+
   // BISHOP - Druid (7 heroes)
   'hero-idunn': 'druid',
   'hero-ve': 'berserker',
@@ -262,9 +266,10 @@ export const HERO_ID_TO_CLASS: Record<string, string> = {
   'hero-artemis': 'hunter',
   'hero-perseus': 'hunter',
   
-  // KNIGHT - Berserker (2 heroes)
+  // KNIGHT - Berserker (3 heroes)
   'hero-myrka': 'berserker',
   'hero-ylva': 'berserker',
+  'hero-vali': 'berserker',
   
   // JAPANESE HEROES (5 heroes)
   'hero-izanami': 'warlock',
