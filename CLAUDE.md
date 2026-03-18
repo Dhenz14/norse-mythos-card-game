@@ -1455,7 +1455,7 @@ vercel --prod                 # Deploy to Vercel
 - **Rogue stealth expansion**: 8 new cards (IDs 39005-39012) — Mist-Walker, Svartalfheim Shade, Daggers of Niflheim, Ambush Predator, Veil of Hel, Shadow Ambusher, Hel's Unseen, Nótt's Cloak
 - **Wager keyword**: 16 new minion cards (IDs 31924-31939) — poker combat passives while on battlefield
   - Bridges card game + poker systems (game's USP)
-  - Cards across 8 classes: Bluff Master (hide actions), Fate Reader (peek cards), Loki's Loaded Dice (hand rank +1), Odin's All-Seeing Stake (see hole cards), Surtr's Final Bet (double multipliers)
+  - Cards across 8 classes: Bluff Master (hide actions), Fate Reader (peek cards), Loki's Loaded Dice (hand rank +1), Odin's All-Seeing Stake (see hole cards), Surtr's Final Bet (double showdown stakes)
 - **Submerge expansion**: 6 new cards (IDs 40104-40109) — Diving Serpent, Deep Lurker, Abyssal Guardian, Ginnungagap Diver, Tidal Ambusher, Emerge from Depths
 - **Coil expansion**: 6 new cards (IDs 40112-40118) — Binding Serpent, Jormungandr's Grip, Constrictor Wyrm, Nidhogg's Chains, Serpent Pit, Freedom Strike
 - **Inspire expansion**: 6 new cards (IDs 31414-31419) — Valkyrie Herald, Odin's Chronicler, Runic Amplifier, Einherjar Standard-Bearer, Seidr Resonator, Allfather's Chosen

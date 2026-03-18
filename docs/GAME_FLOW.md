@@ -187,18 +187,20 @@ interface ChessCollision {
 ### 6. Hand Evaluation
 
 ```typescript
+// Pure NLH — best hand wins the pot, no damage multipliers
 enum PokerHandRank {
-  HIGH_CARD = 1,           // 1.0×
-  RUNE_MARK = 2,           // One Pair - 1.05×
-  DUAL_RUNES = 3,          // Two Pair - 1.1×
-  THORS_HAMMER = 4,        // Three of a Kind - 1.15×
-  FATES_PATH = 5,          // Straight - 1.2×
-  ODINS_EYE = 6,           // Flush - 1.3×
-  VALHALLAS_BLESSING = 7,  // Full House - 1.4×
-  GODLY_POWER = 8,         // Four of a Kind - 1.6×
-  DIVINE_ALIGNMENT = 9,    // Straight Flush - 1.8×
-  RAGNAROK = 10            // Royal Flush - 2.0×
+  HIGH_CARD = 1,           // High Card
+  RUNE_MARK = 2,           // One Pair
+  DUAL_RUNES = 3,          // Two Pair
+  THORS_HAMMER = 4,        // Three of a Kind
+  FATES_PATH = 5,          // Straight
+  ODINS_EYE = 6,           // Flush
+  VALHALLAS_BLESSING = 7,  // Full House
+  GODLY_POWER = 8,         // Four of a Kind
+  DIVINE_ALIGNMENT = 9,    // Straight Flush
+  RAGNAROK = 10            // Royal Flush
 }
+// All HAND_DAMAGE_MULTIPLIERS are 1.0 — you lose only what you bet
 ```
 
 ### 7. Combat Resolution

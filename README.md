@@ -207,18 +207,20 @@ When major pieces collide, combat is resolved through Texas Hold'em — but **HP
 
 ### Norse Hand Rankings
 
-| Rank | Name | Poker Equivalent | Multiplier |
-|------|------|------------------|------------|
-| 10 | **RAGNAROK** | Royal Flush | 2.0x |
-| 9 | **Divine Alignment** | Straight Flush | 1.8x |
-| 8 | **Godly Power** | Four of a Kind | 1.6x |
-| 7 | **Valhalla's Blessing** | Full House | 1.4x |
-| 6 | **Odin's Eye** | Flush | 1.3x |
-| 5 | **Fate's Path** | Straight | 1.2x |
-| 4 | **Thor's Hammer** | Three of a Kind | 1.15x |
-| 3 | **Dual Runes** | Two Pair | 1.1x |
-| 2 | **Rune Mark** | One Pair | 1.05x |
-| 1 | **High Card** | High Card | 1.0x |
+Pure No-Limit Hold'em — best hand wins the pot. No damage multipliers. You lose only what you bet.
+
+| Rank | Name | Poker Equivalent |
+|------|------|------------------|
+| 10 | **RAGNAROK** | Royal Flush |
+| 9 | **Divine Alignment** | Straight Flush |
+| 8 | **Godly Power** | Four of a Kind |
+| 7 | **Valhalla's Blessing** | Full House |
+| 6 | **Odin's Eye** | Flush |
+| 5 | **Fate's Path** | Straight |
+| 4 | **Thor's Hammer** | Three of a Kind |
+| 3 | **Dual Runes** | Two Pair |
+| 2 | **Rune Mark** | One Pair |
+| 1 | **High Card** | High Card |
 
 ### Betting Actions
 

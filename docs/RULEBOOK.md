@@ -298,18 +298,20 @@ The attacking piece deals **15 damage** before poker betting begins:
 
 ### Hand Rankings (Norse Theme)
 
-| Rank | Norse Name | Poker Name | Damage Multiplier |
-|------|------------|------------|-------------------|
-| 1 | High Card | High Card | 1.0× |
-| 2 | Rune Mark | One Pair | 1.05× |
-| 3 | Dual Runes | Two Pair | 1.1× |
-| 4 | Thor's Hammer | Three of a Kind | 1.15× |
-| 5 | Fate's Path | Straight | 1.2× |
-| 6 | Odin's Eye | Flush | 1.3× |
-| 7 | Valhalla's Blessing | Full House | 1.4× |
-| 8 | Godly Power | Four of a Kind | 1.6× |
-| 9 | Divine Alignment | Straight Flush | 1.8× |
-| 10 | **RAGNAROK** | Royal Flush | 2.0× |
+Pure No-Limit Hold'em rules. The best hand wins the pot — no damage multipliers, no lucky bonuses. You lose only what you bet. Skill is in the betting, reading, and folding.
+
+| Rank | Norse Name | Poker Name |
+|------|------------|------------|
+| 1 | High Card | High Card |
+| 2 | Rune Mark | One Pair |
+| 3 | Dual Runes | Two Pair |
+| 4 | Thor's Hammer | Three of a Kind |
+| 5 | Fate's Path | Straight |
+| 6 | Odin's Eye | Flush |
+| 7 | Valhalla's Blessing | Full House |
+| 8 | Godly Power | Four of a Kind |
+| 9 | Divine Alignment | Straight Flush |
+| 10 | **RAGNAROK** | Royal Flush |
 
 ### Betting Actions
 
@@ -424,7 +426,7 @@ Poker Spells are cast during the **Spell/Pet Phase** (before the Faith phase). E
 
 | Card | Mana | Effect |
 |------|------|--------|
-| **All-In Aura** | 5 | Your next all-in gains +0.1× damage multiplier |
+| **All-In Aura** | 5 | Your next all-in deals +5 bonus damage if you win the showdown |
 | **Ragnarok Gambit** | 4 | Reveal all hole cards for both players. Skip remaining betting, go to showdown |
 | **Destiny Override** | 5 | Choose the River card from 3 random options |
 
