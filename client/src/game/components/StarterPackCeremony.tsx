@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
-import { getStarterCards, STARTER_PACK_NAME } from '../data/starterSet';
+import { getStarterCards, STARTER_PACK_NAME, buildStarterDecks } from '../data/starterSet';
 import { useStarterStore } from '../stores/starterStore';
 import { getNFTBridge } from '../nft';
 import type { HiveCardAsset } from '../../data/schemas/HiveTypes';
@@ -44,6 +44,8 @@ export default function StarterPackCeremony({ onComplete }: StarterPackCeremonyP
 			};
 			addCard(asset);
 		}
+		// Auto-build 4 starter decks (one per hero) so player can immediately play
+		buildStarterDecks();
 		markClaimed();
 		setPhase('opening');
 	}, [starterCards, addCard, markClaimed]);
@@ -52,19 +54,21 @@ export default function StarterPackCeremony({ onComplete }: StarterPackCeremonyP
 		onComplete();
 	}, [onComplete]);
 
-	const handleViewCollection = useCallback(() => {
+	const handlePlayFirstGame = useCallback(() => {
 		onComplete();
-		navigate(routes.collection);
+		navigate(routes.game);
 	}, [onComplete, navigate]);
 
 	if (phase === 'opening') {
 		return (
-			<PackOpeningAnimation
-				packName={STARTER_PACK_NAME}
-				cards={revealCards}
-				onClose={handlePackClose}
-				onOpenAnother={handleViewCollection}
-			/>
+			<div>
+				<PackOpeningAnimation
+					packName={STARTER_PACK_NAME}
+					cards={revealCards}
+					onClose={handlePackClose}
+					onOpenAnother={handlePlayFirstGame}
+				/>
+			</div>
 		);
 	}
 

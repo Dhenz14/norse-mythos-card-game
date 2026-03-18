@@ -1024,7 +1024,7 @@ vercel --prod                 # Deploy to Vercel
 
 ### Completed (New Player Starter Experience & Combat Polish)
 
-- New player first-login ceremony: welcome screen → "Claim Your Birthright" → pack-opening animation → 25 starter cards added to collection
+- New player first-login ceremony: welcome screen → "Claim Your Birthright" → pack-opening animation → 45 class-matched base cards + 4 auto-built starter decks → "Play Your First Game" button
 - `starterSet.ts`: 25 cards (3 basic vanillas + 22 common neutrals) across 1-6 mana curve with Taunt, Divine Shield, Windfury, Stealth, Lifesteal, Enrage, Battlecry
 - `starterStore.ts`: Zustand + persist tracks whether starter pack claimed (`ragnarok-starter-claimed` localStorage key)
 - `StarterPackCeremony.tsx`: two-phase flow (welcome → pack opening), reuses `PackOpeningAnimation`, adds cards to HiveDataStore
