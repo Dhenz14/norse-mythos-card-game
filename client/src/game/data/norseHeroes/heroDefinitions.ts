@@ -85,11 +85,11 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     heroPower: {
       id: 'thor-power',
       name: "Mjolnir's Wrath",
-      description: 'Deal 2 damage to all enemy minions.',
+      description: 'Deal 1 damage to all enemy minions.',
       cost: 2,
       targetType: 'none',
       effectType: 'damage_aoe',
-      value: 2
+      value: 1
     },
     weaponUpgrade: {
       id: 90002,
@@ -107,11 +107,11 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     upgradedHeroPower: {
       id: 'thor-power-upgraded',
       name: "Mjolnir's Wrath+",
-      description: 'Deal 3 damage to all enemy minions.',
+      description: 'Deal 2 damage to all enemy minions.',
       cost: 2,
       targetType: 'none',
       effectType: 'damage_aoe',
-      value: 3,
+      value: 2,
       isUpgraded: true,
       baseHeroPowerId: 'thor-power'
     },

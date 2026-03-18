@@ -86,16 +86,16 @@ export function getCombinedHandName(rank: PokerHandRank): string {
  * Damage multipliers for each hand rank
  */
 export const HAND_DAMAGE_MULTIPLIERS: Record<PokerHandRank, number> = {
-  [PokerHandRank.HIGH_CARD]: 1.0,
-  [PokerHandRank.RUNE_MARK]: 1.05,
-  [PokerHandRank.DUAL_RUNES]: 1.1,
-  [PokerHandRank.THORS_HAMMER]: 1.15,
-  [PokerHandRank.FATES_PATH]: 1.2,
-  [PokerHandRank.ODINS_EYE]: 1.3,
-  [PokerHandRank.VALHALLAS_BLESSING]: 1.4,
-  [PokerHandRank.GODLY_POWER]: 1.6,
-  [PokerHandRank.DIVINE_ALIGNMENT]: 1.8,
-  [PokerHandRank.RAGNAROK]: 2.0
+  [PokerHandRank.HIGH_CARD]: 1.0,       // No made hand
+  [PokerHandRank.RUNE_MARK]: 1.15,      // Pair (was 1.05 — too flat, poker skill unrewarded)
+  [PokerHandRank.DUAL_RUNES]: 1.25,     // Two Pair (was 1.1)
+  [PokerHandRank.THORS_HAMMER]: 1.4,    // Three of a Kind (was 1.15)
+  [PokerHandRank.FATES_PATH]: 1.5,      // Straight (was 1.2)
+  [PokerHandRank.ODINS_EYE]: 1.6,       // Flush (was 1.3)
+  [PokerHandRank.VALHALLAS_BLESSING]: 1.75, // Full House (was 1.4)
+  [PokerHandRank.GODLY_POWER]: 2.0,     // Four of a Kind (was 1.6)
+  [PokerHandRank.DIVINE_ALIGNMENT]: 2.5, // Straight Flush (was 1.8)
+  [PokerHandRank.RAGNAROK]: 3.0         // Royal Flush (was 2.0) — Ragnarok should FEEL like Ragnarok
 };
 
 /**

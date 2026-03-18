@@ -945,11 +945,68 @@ export const createPokerCombatSlice: StateCreator<
       }
     }
     
-    const playerDamage = playerCommitted;
-    const opponentDamage = opponentCommitted;
-    
-    let playerFinalHealth = playerCurrentHP;
-    let opponentFinalHealth = opponentCurrentHP;
+    // ── v1.1: Apply Wager effects from battlefield minions ──
+    let wagerBonusDamagePlayer = 0;
+    let wagerBonusDamageOpponent = 0;
+    let wagerHealPlayer = 0;
+    let wagerHealOpponent = 0;
+    try {
+      const useGameStore = (globalThis as Record<string, any>).__ragnarokGameStore;
+      const gameState = useGameStore?.getState()?.gameState;
+      if (gameState) {
+        const playerBf = gameState.players?.player?.battlefield || [];
+        const opponentBf = gameState.players?.opponent?.battlefield || [];
+
+        for (const m of playerBf) {
+          const wager = (m.card as any)?.wagerEffect;
+          if (!wager) continue;
+          switch (wager.type) {
+            case 'showdown_aoe_damage':
+              // Storm Caller: deal damage to all enemy minions (handled post-combat by game engine)
+              break;
+            case 'showdown_win_armor':
+              if (winner === 'player') wagerHealPlayer += (wager.value || 0);
+              break;
+            case 'showdown_hand_rank_draw':
+              // Draw cards if hand rank meets minimum — handled by game engine post-combat
+              break;
+            case 'showdown_coin_flip':
+              if (Math.random() < (wager.chance || 0.5)) wagerBonusDamagePlayer += (wager.damage || 0);
+              break;
+            case 'on_opponent_fold_heal':
+              // Only on fold — handled separately
+              break;
+            case 'showdown_win_rank_damage':
+              if (winner === 'player') wagerBonusDamagePlayer += playerHand.rank;
+              break;
+            case 'double_showdown_multiplier':
+              // Already applied at evaluation time if we wire it there
+              break;
+          }
+        }
+        for (const m of opponentBf) {
+          const wager = (m.card as any)?.wagerEffect;
+          if (!wager) continue;
+          switch (wager.type) {
+            case 'showdown_win_armor':
+              if (winner === 'opponent') wagerHealOpponent += (wager.value || 0);
+              break;
+            case 'showdown_coin_flip':
+              if (Math.random() < (wager.chance || 0.5)) wagerBonusDamageOpponent += (wager.damage || 0);
+              break;
+            case 'showdown_win_rank_damage':
+              if (winner === 'opponent') wagerBonusDamageOpponent += opponentHand.rank;
+              break;
+          }
+        }
+      }
+    } catch { /* game state unavailable during pure poker — safe to skip */ }
+
+    const playerDamage = playerCommitted + wagerBonusDamageOpponent;
+    const opponentDamage = opponentCommitted + wagerBonusDamagePlayer;
+
+    let playerFinalHealth = playerCurrentHP + wagerHealPlayer;
+    let opponentFinalHealth = opponentCurrentHP + wagerHealOpponent;
     
     const isCheckThrough = playerCommitted === 0 && opponentCommitted === 0;
     

@@ -99,73 +99,79 @@ function HomePage() {
             </Link>
           )}
 
+          {/* ── Core Gameplay (large buttons) ── */}
+          <div className="grid grid-cols-2 gap-3 w-full">
+            <Link to={routes.campaign}>
+              <Button className="homepage-btn-secondary w-full py-4 text-base font-semibold tracking-wide uppercase border">
+                Campaign
+              </Button>
+            </Link>
+            <Link to={routes.multiplayer}>
+              <Button className="homepage-btn-secondary w-full py-4 text-base font-semibold tracking-wide uppercase border">
+                Ranked
+              </Button>
+            </Link>
+          </div>
+
+          {/* ── Collection & Economy (medium buttons) ── */}
+          <div className="grid grid-cols-3 gap-2 w-full">
+            <Link to={routes.packs}>
+              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
+                Packs
+              </Button>
+            </Link>
+            <Link to={routes.collection}>
+              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
+                Collection
+              </Button>
+            </Link>
+            <Link to={routes.trading}>
+              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
+                Trading
+              </Button>
+            </Link>
+          </div>
+
+          {/* ── Competitive (medium buttons) ── */}
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <Link to={routes.tournaments}>
+              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
+                Tournaments
+              </Button>
+            </Link>
+            <Link to={routes.ladder}>
+              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
+                Ladder
+              </Button>
+            </Link>
+          </div>
+
+          {/* ── Utility (small buttons) ── */}
+          <div className="grid grid-cols-3 gap-2 w-full">
+            <Link to={routes.history}>
+              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
+                History
+              </Button>
+            </Link>
+            <Link to={routes.settings}>
+              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
+                Settings
+              </Button>
+            </Link>
+            <Link to={routes.treasury}>
+              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
+                Treasury
+              </Button>
+            </Link>
+          </div>
+
           {import.meta.env.DEV && (
             <Link to={routes.game}>
-              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border opacity-60 hover:opacity-100 transition-opacity">
+              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-30 hover:opacity-60 transition-opacity">
                 Dev Test
               </Button>
             </Link>
           )}
-
-          <Link to={routes.campaign}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Campaign
-            </Button>
-          </Link>
-
-          <Link to={routes.multiplayer}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Ranked
-            </Button>
-          </Link>
-
-          <Link to={routes.packs}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Card Packs
-            </Button>
-          </Link>
-
-          <Link to={routes.collection}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              My Collection
-            </Button>
-          </Link>
-
-          <Link to={routes.trading}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Trading
-            </Button>
-          </Link>
-
-          <Link to={routes.treasury}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Treasury
-            </Button>
-          </Link>
-
-          <Link to={routes.tournaments}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Tournaments
-            </Button>
-          </Link>
-
-          <Link to={routes.ladder}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Ranked Ladder
-            </Button>
-          </Link>
-
-          <Link to={routes.history}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Match History
-            </Button>
-          </Link>
-
-          <Link to={routes.settings}>
-            <Button className="homepage-btn-secondary w-full py-5 text-lg font-semibold tracking-wide uppercase border">
-              Settings
-            </Button>
-          </Link>
         </div>
       </div>
       
