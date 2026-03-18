@@ -104,13 +104,12 @@ export const STARTER_PACK_NAME = 'Birthright of the Norns';
 export const STARTER_CARD_COUNT = 45;
 
 /**
- * Build 4 pre-seeded starter decks (one per default hero).
- * Each deck = 10 class cards + 20 neutrals = 30 cards.
- * Saves to localStorage so player can immediately start playing.
+ * Build 4 starter card pools (one per default hero).
+ * NOT full 30-card decks — just the 10 class cards per hero.
+ * Players can play with 0 cards (just heroes), these are bonus firepower.
+ * Saves to localStorage so cards are available in deck builder when they choose to customize.
  */
 export function buildStarterDecks(): Array<{ name: string; heroId: string; cardIds: number[] }> {
-	const allNeutralIds = BASE_CARD_IDS_BY_CLASS.Neutral;
-
 	const heroDecks: Array<{ name: string; heroId: string; heroClass: string }> = [
 		{ name: "Erik's Fire Deck", heroId: 'hero-erik-flameheart', heroClass: 'Mage' },
 		{ name: "Ragnar's Iron Deck", heroId: 'hero-ragnar-ironside', heroClass: 'Warrior' },
@@ -122,28 +121,9 @@ export function buildStarterDecks(): Array<{ name: string; heroId: string; cardI
 
 	for (const hero of heroDecks) {
 		const classIds = CLASS_CARD_SETS[hero.heroClass] || [];
-		// Take all 10 class cards
-		const deckCardIds = [...classIds];
-
-		// Fill remaining 20 slots with neutrals (shuffled for variety between decks)
-		const shuffledNeutrals = [...allNeutralIds].sort(() => Math.random() - 0.5);
-		for (const nid of shuffledNeutrals) {
-			if (deckCardIds.length >= 30) break;
-			// Don't duplicate a card already in the deck
-			if (!deckCardIds.includes(nid)) deckCardIds.push(nid);
-		}
-
-		// If we still don't have 30 (unlikely with 95 neutrals), allow duplicates
-		const allPool = [...allNeutralIds].sort(() => Math.random() - 0.5);
-		for (const nid of allPool) {
-			if (deckCardIds.length >= 30) break;
-			deckCardIds.push(nid);
-		}
-
-		decks.push({ name: hero.name, heroId: hero.heroId, cardIds: deckCardIds.slice(0, 30) });
+		decks.push({ name: hero.name, heroId: hero.heroId, cardIds: [...classIds] });
 	}
 
-	// Persist to localStorage
 	localStorage.setItem('ragnarok-decks', JSON.stringify(decks));
 	return decks;
 }
