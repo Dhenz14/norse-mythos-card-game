@@ -48,6 +48,7 @@ export type RagnarokTransactionType =
   | 'rp_slash_evidence'
   // v1.1
   | 'rp_pack_mint'
+  | 'rp_pack_distribute'
   | 'rp_pack_transfer'
   | 'rp_pack_burn'
   | 'rp_card_replicate'

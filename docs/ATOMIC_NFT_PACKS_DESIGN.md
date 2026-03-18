@@ -1546,3 +1546,77 @@ No smart contract. No gas. No chain query. The NFT's mathematical existence prov
 **Our thesis**: The concept of composable/utilitarian NFTs has been tried for years on ETH. What makes it disruptive NOW is Hive's zero-fee `custom_json` + deterministic off-chain indexing. We don't need Turing-complete smart contracts or Layer 2 rollups — we have something better: a purpose-built protocol where every game action is an immutable L1 record that costs nothing to write and 3 seconds to confirm.
 
 Ragnarok is the proof that this works. These three upgrades extend it from "functional" to "disruptive."
+
+---
+
+## Appendix D: Three-Layer Protocol Taxonomy (NFTLox Model)
+
+*Mapping the NFTLox layered architecture to Ragnarok's 21 ops.*
+
+The NFTLox protocol organizes all operations into three semantic layers based on security level, economic impact, and functional purpose. Our protocol maps cleanly to this taxonomy:
+
+### Layer 1: Origin (Birth of the Asset)
+
+These ops create the foundation — collection rules, seed templates, and initial distribution.
+
+| NFTLox Op | Ragnarok Op | Auth | Atomic? | Purpose |
+|-----------|-------------|------|---------|---------|
+| `create_collection` | `genesis` | Active | No | Define master rules (supply caps, version) |
+| `mint` | `mint_batch` | Active | No | Create card seeds/templates (admin pre-seal) |
+| — | `seal` | Active | No | Freeze admin authority permanently |
+| `distribute` | `pack_distribute` | Active | 0.001 HIVE | Admin distributes packs to players |
+| — | `pack_mint` | Active | No | Admin creates sealed packs into admin inventory |
+| — | `reward_claim` | Posting | No | Self-serve milestone reward (no admin action) |
+
+**Key principle**: Posting key for defining rules/data. Active key when real value is assigned to another user.
+
+### Layer 2: Utility (The Living Gear)
+
+These ops give NFTs functional behavior — they mutate, clone, evolve, and die.
+
+| NFTLox Op | Ragnarok Op | Auth | Atomic? | Purpose |
+|-----------|-------------|------|---------|---------|
+| `replicate` | `card_replicate` | Active | No | Clone card — same genotype, new phenotype |
+| — | `card_merge` | Active | No | Sacrifice 2 cards → 1 ascended card |
+| `transfer` | `card_transfer` | Active | 0.001 HIVE | Send card to another player |
+| `transfer` | `pack_transfer` | Active | 0.001 HIVE | Send sealed pack to another player |
+| `burn` | `burn` | Active | No | Destroy card NFT |
+| `burn` | `pack_burn` | Active | No | Open pack (burn = consume) |
+| — | `level_up` | Posting | No | Acknowledge XP-derived level progression |
+| — | `match_result` | Posting | No | Record game outcome + XP/ELO/RUNE rewards |
+| — | `match_anchor` | Posting | No | Dual-sig session initialization |
+| — | `queue_join` | Posting | No | Enter ranked matchmaking |
+| — | `queue_leave` | Posting | No | Leave ranked queue |
+| — | `slash_evidence` | Posting | No | Anti-cheat evidence submission |
+
+**Key principle**: `burn` is polymorphic — it can mean "destroy," "open a pack," "forge a weapon," or "consume a potion." The game layer decides the semantic meaning; the protocol just deletes the NFT and emits the event.
+
+### Layer 3: Economic (Integrated Marketplace) — FUTURE
+
+Unlike Ethereum (where OpenSea is an external contract), NFTLox embeds the marketplace at the protocol level. This is our next frontier.
+
+| NFTLox Op | Ragnarok Op | Auth | Atomic? | Purpose |
+|-----------|-------------|------|---------|---------|
+| `list` | *(future)* | Posting | No | Set price, offer asset on global network |
+| `unlist` | *(future)* | Posting | No | Remove listing |
+| `buy` | *(future)* | Active | HIVE amount | Accept price, atomic transfer of funds + ownership |
+| `offer` | *(future)* | Posting | No | Bid/ask counteroffers |
+
+**Current state**: Our trading system (`tradeStore.ts`) uses server-mediated P2P offers. To reach full NFTLox parity, we would move `list/unlist/buy/offer` into the protocol core as chain ops — making the marketplace fully decentralized, no server needed.
+
+**Why Posting vs Active matters**:
+
+```
+Posting Key (low security, daily use):
+  → Intentions: list, unlist, offer, queue_join, level_up
+  → Data: match_result, match_anchor, slash_evidence
+  → Destruction: burn (no counterparty affected)
+
+Active Key (high security, real value):
+  → Money moves: buy, distribute, transfer
+  → Custody changes: card_transfer, pack_transfer
+  → Asset creation affecting others: pack_distribute
+  → Permanent mutations: card_replicate, card_merge
+```
+
+This separation means a compromised Posting key can never steal assets or transfer value — the worst an attacker can do is burn your cards (which is logged immutably on L1 for dispute resolution).

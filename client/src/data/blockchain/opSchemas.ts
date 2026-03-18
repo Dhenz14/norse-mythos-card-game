@@ -194,6 +194,13 @@ export const PackMintPayload = z.object({
 	to: HiveUsername,
 });
 
+// ── v1.1: pack_distribute (admin → player) ──
+
+export const PackDistributePayload = z.object({
+	pack_uids: z.array(z.string().min(1)).min(1).max(50),
+	to: HiveUsername,
+});
+
 // ── v1.1: pack_transfer ──
 
 export const PackTransferPayload = z.object({
@@ -245,6 +252,7 @@ export const OP_SCHEMAS: Record<string, z.ZodType> = {
 	rp_team_submit: TeamSubmitPayload,
 	// v1.1
 	rp_pack_mint: PackMintPayload,
+	rp_pack_distribute: PackDistributePayload,
 	rp_pack_transfer: PackTransferPayload,
 	rp_pack_burn: PackBurnPayload,
 	rp_card_replicate: CardReplicatePayload,

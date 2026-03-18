@@ -54,6 +54,7 @@ export type CanonicalAction =
 	| 'slash_evidence'
 	// v1.1: Pack NFTs
 	| 'pack_mint'
+	| 'pack_distribute'
 	| 'pack_transfer'
 	| 'pack_burn'
 	// v1.1: DNA Lineage
@@ -71,7 +72,7 @@ export type ProtocolAction = CanonicalAction | LegacyAction;
 
 export const ACTIVE_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
 	'card_transfer', 'burn', 'seal', 'mint_batch',
-	'pack_mint', 'pack_transfer', 'pack_burn',
+	'pack_mint', 'pack_distribute', 'pack_transfer', 'pack_burn',
 	'card_replicate', 'card_merge',
 ]);
 

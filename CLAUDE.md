@@ -18,6 +18,8 @@ npm run lint:fix  # ESLint with auto-fix
 - **[RULEBOOK.md](docs/RULEBOOK.md)** - Complete game rules, mechanics, and keywords
 - **[GAME_FLOW.md](docs/GAME_FLOW.md)** - Game flow diagrams and state management
 - **[HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md)** - Hive NFT architecture, chain replay, anti-cheat
+- **[ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md)** - Protocol v1.1: atomic transfers, pack NFTs, DNA lineage
+- **[RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md)** - Protocol v1.0 spec (14 canonical ops, authority matrix, finality)
 
 ## Architecture Overview
 
@@ -58,7 +60,7 @@ client/src/
 ├── core/                       # Pure game logic (migration in progress)
 │   └── index.ts                # Re-exports from game/ for future separation
 ├── data/
-│   ├── blockchain/             # Hive NFT system (15 op types, 13 IDB stores)
+│   ├── blockchain/             # Hive NFT system (21 op types, 13 IDB stores)
 │   │   ├── replayEngine.ts     # Chain replay: fetch ops → apply rules → IndexedDB
 │   │   ├── replayRules.ts      # Deterministic rules (hash-pinned at genesis)
 │   │   ├── replayDB.ts         # IndexedDB v6: cards, matches, rewards, ELO, etc.
@@ -234,7 +236,7 @@ Game logic for these mechanics lives in:
 ### Blockchain/NFT System (`data/blockchain/`)
 
 - **Chain Replay**: `replayEngine.ts` fetches ops from Hive → `replayRules.ts` applies deterministic rules → IndexedDB stores state
-- **15 op types**: genesis, mint, seal, transfer, burn, pack_open, reward_claim, match_start, match_result, level_up, queue_join, queue_leave, slash_evidence, team_submit, card_transfer
+- **21 op types**: genesis, mint, seal, transfer, burn, pack_open, reward_claim, match_start, match_result, level_up, queue_join, queue_leave, slash_evidence, team_submit, card_transfer, pack_mint, pack_distribute, pack_transfer, pack_burn, card_replicate, card_merge
 - **13 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes
 - **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
 - **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
@@ -362,11 +364,15 @@ client/src/data/blockchain/opSchemas.ts
 - Direct gifting via `SendCardModal` + bridge `transferCard()` — no trade negotiation needed
 - Deck builder enforces NFT ownership via bridge `getOwnedCopies()` (local mode = unlimited)
 - NFT Bridge (`game/nft/`) is the single access point — game code imports `getNFTBridge()` instead of `data/` directly
-- Zod validates all 15 chain op payloads at the `applyOp()` boundary (runtime protection for raw JSON from chain)
+- Zod validates all 20 chain op payloads at the `applyOp()` boundary (runtime protection for raw JSON from chain)
 - `ICardDataProvider` breaks reverse coupling — blockchain code never imports `game/data/allCards` directly
 - `HiveEvents` bus drives real-time toast notifications for transfers, token changes, tx status (wired through bridge)
 - `BlockchainSubscriber` refreshes HiveDataStore from IndexedDB after each match (XP, RUNE, levels)
 - Campaign + daily quest rewards broadcast `reward_claim` on chain via bridge
+- **v1.1: Atomic transfers** — card/pack transfers bundle 0.001 HIVE native transfer for L1 explorer visibility
+- **v1.1: Pack NFTs** — sealed packs as tradeable NFTs with deterministic DNA; `pack_mint`/`pack_transfer`/`pack_burn` ops
+- **v1.1: DNA lineage** — every card has `originDna` (genotype) + `instanceDna` (phenotype); `card_replicate`/`card_merge` ops
+- Design document: [ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md)
 
 ## Known Issues & Fixes
 
@@ -1396,6 +1402,41 @@ vercel --prod                 # Deploy to Vercel
 - 17 empty card descriptions filled (vanilla + token cards)
 - Deleted browse-available/ duplicate art folder (112MB savings)
 - All documentation updated to reflect 2,400+ cards, 5 factions, 100% art
+
+### Completed (Protocol v1.1 — Atomic Transfers, Pack NFTs, DNA Lineage)
+
+- **Design document**: [ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md) — 1,500+ line protocol upgrade spec
+- **External audit**: NFTLox protocol comparison validated our replay engine, commit-reveal, PoW, dual-sig as "extremely robust"
+- **Atomic transfers**: `card_transfer`, `pack_transfer`, `pack_mint` validate companion 0.001 HIVE native transfer in same Hive tx
+- **L1 visibility**: Transfers now show on any Hive explorer (PeakD, HiveScan) — no custom indexer needed for provenance
+- **Pack NFTs**: Sealed packs are first-class NFTs with deterministic DNA (`sha256(trxId:index:packType)`)
+  - `pack_mint`: Admin creates sealed pack NFTs (atomic, 0.001 HIVE to recipient)
+  - `pack_transfer`: Trade/gift sealed packs (atomic, 10-block cooldown)
+  - `pack_burn`: Burns pack → derives cards from `sha256(dna|burnTrxId|entropyBlockId)` — unpredictable until burn
+  - Pack supply tracking (minted/burned/cap per type)
+- **DNA lineage (Seed/Instance/Replica)**: Every card carries `originDna` (genotype) + `instanceDna` (phenotype)
+  - `card_replicate`: Clone a card — same genotype, new phenotype, generation+1 (max 3 replicas, max 3 generations, 100-block cooldown)
+  - `card_merge`: Sacrifice 2 same-origin cards → 1 ascended card (foil:'ascended', level+1, combined XP, generation reset)
+  - Replicas inherit `originDna`, get unique `instanceDna` via `sha256(origin|parent|trxId)`
+  - Merged cards store `mergedFrom: [uidA, uidB]` for provenance
+- **Zod schemas**: All 5 new ops validated at `applyOp()` boundary
+- **Protocol constants**: `ATOMIC_TRANSFER_AMOUNT`, `MAX_REPLICAS_PER_CARD`, `MAX_GENERATION`, `REPLICA_COOLDOWN_BLOCKS`, `PACK_SIZES`
+- **StateAdapter extended**: `getPack/putPack/deletePack/getPacksByOwner`, `getPackSupply/putPackSupply`, `getCompanionTransfer/setTrxSiblings`
+- **HiveSync broadcast**: `mintPack()`, `transferPack()`, `burnPack()`, `replicateCard()`, `mergeCards()`
+- **Hive vs ETH analysis**: Zero-fee continuous mutation, NFT-owns-NFT composability, DNA as decentralized access key
+- 170/170 tests pass, 0 TypeScript errors, backward compatible (v1.0 ops unchanged)
+
+### Completed (Static Page & Production Hardening)
+
+- Fixed TDZ crash on GitHub Pages: `PACK_ENTROPY_DELAY_BLOCKS` constant moved from chunk-split file to `protocol-core/types.ts`
+- Global `unhandledrejection` handler catches async crashes outside React error boundaries
+- Service worker auto-update: checks every 30 min, auto-reloads on new version (prevents stale cached builds)
+- Full production audit: 0 `console.log` in client, 0 `alert()`, 0 hardcoded `localhost`, 0 TODO/FIXME
+- Collection/Packs pages have proper fallbacks for static hosting (no backend): `loadLocalCollection()`, `FALLBACK_PACKS`, `openPackLocally()`
+- All 12 routes lazy-loaded with Suspense, heavy libs (GSAP, Pixi, Framer Motion) in separate chunks
+- Card data deferred to `useEffect` (not on critical render path)
+- Error boundary wraps entire app, all lazy routes have Suspense fallbacks
+- PWA manifest with icons verified on disk (192x192, 512x512)
 
 ### Next (Genesis Launch)
 

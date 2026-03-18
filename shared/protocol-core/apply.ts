@@ -71,6 +71,7 @@ export async function applyOp(
 		case 'legacy_pack_open': return applyLegacyPackOpen(op, deps);
 		// v1.1: Pack NFTs
 		case 'pack_mint': return applyPackMint(op, ctx, deps);
+		case 'pack_distribute': return applyPackDistribute(op, deps);
 		case 'pack_transfer': return applyPackTransfer(op, deps);
 		case 'pack_burn': return applyPackBurn(op, ctx, deps);
 		// v1.1: DNA Lineage
@@ -940,10 +941,10 @@ function lcgNext(seed: number): number {
 }
 
 // ============================================================
-// v1.1: pack_mint — Create sealed pack NFTs (atomic)
+// v1.1: pack_mint — Create sealed pack NFTs into admin inventory
 // ============================================================
 
-async function applyPackMint(op: ProtocolOp, ctx: ReplayContext, deps: ProtocolCoreDeps): Promise<OpResult> {
+async function applyPackMint(op: ProtocolOp, _ctx: ReplayContext, deps: ProtocolCoreDeps): Promise<OpResult> {
 	if (op.broadcaster !== RAGNAROK_ADMIN_ACCOUNT) return reject('not admin account');
 
 	const genesis = await deps.state.getGenesis();
@@ -951,24 +952,16 @@ async function applyPackMint(op: ProtocolOp, ctx: ReplayContext, deps: ProtocolC
 
 	const packType = op.payload.pack_type as string;
 	const quantity = Number(op.payload.quantity ?? 1);
-	const to = op.payload.to as string;
 
 	if (!PACK_SIZES[packType]) return reject(`invalid pack_type: ${packType}`);
 	if (quantity < 1 || quantity > 10) return reject('quantity must be 1-10');
-	if (!HIVE_USERNAME_RE.test(to)) return reject(`invalid recipient: ${to}`);
-
-	// Atomic transfer validation
-	const companion = await deps.state.getCompanionTransfer(op.trxId);
-	if (!companion) return reject('missing atomic HIVE transfer');
-	if (companion.amount !== ATOMIC_TRANSFER_AMOUNT) return reject('wrong atomic transfer amount');
-	if (companion.to !== to) return reject('atomic transfer recipient mismatch');
 
 	for (let i = 0; i < quantity; i++) {
 		const uid = `pack_${op.trxId}:${i}`;
 		const dna = await sha256Hash(`${op.trxId}:${i}:${packType}`);
 
 		const pack: PackAsset = {
-			uid, packType, dna, owner: to, sealed: true,
+			uid, packType, dna, owner: RAGNAROK_ADMIN_ACCOUNT, sealed: true,
 			mintTrxId: op.trxId, mintBlockNum: op.blockNum,
 			lastTransferBlock: op.blockNum,
 			cardCount: PACK_SIZES[packType], edition: 'alpha',
@@ -988,7 +981,37 @@ async function applyPackMint(op: ProtocolOp, ctx: ReplayContext, deps: ProtocolC
 }
 
 // ============================================================
-// v1.1: pack_transfer — Transfer sealed pack (atomic)
+// v1.1: pack_distribute — Admin distributes packs to players (atomic)
+// ============================================================
+
+async function applyPackDistribute(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	if (op.broadcaster !== RAGNAROK_ADMIN_ACCOUNT) return reject('not admin account');
+
+	const packUids = op.payload.pack_uids as string[];
+	const to = op.payload.to as string;
+	if (!Array.isArray(packUids) || packUids.length === 0) return reject('missing pack_uids');
+	if (!HIVE_USERNAME_RE.test(to)) return reject(`invalid recipient: ${to}`);
+
+	// Atomic transfer validation
+	const companion = await deps.state.getCompanionTransfer(op.trxId);
+	if (!companion) return reject('missing atomic HIVE transfer');
+	if (companion.amount !== ATOMIC_TRANSFER_AMOUNT) return reject('wrong atomic transfer amount');
+	if (companion.to !== to) return reject('atomic transfer recipient mismatch');
+
+	for (const uid of packUids) {
+		const pack = await deps.state.getPack(uid);
+		if (!pack) return reject(`pack ${uid} not found`);
+		if (!pack.sealed) return reject(`pack ${uid} already opened`);
+		if (pack.owner !== RAGNAROK_ADMIN_ACCOUNT) return reject(`pack ${uid} not in admin inventory`);
+
+		await deps.state.putPack({ ...pack, owner: to, lastTransferBlock: op.blockNum });
+	}
+
+	return { status: 'applied' };
+}
+
+// ============================================================
+// v1.1: pack_transfer — Transfer sealed pack between players (atomic)
 // ============================================================
 
 async function applyPackTransfer(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {

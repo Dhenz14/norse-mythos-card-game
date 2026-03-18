@@ -169,6 +169,13 @@ export class HiveSync {
     }, true);
   }
 
+  async distributePacks(packUids: string[], toUser: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('rp_pack_distribute', {
+      pack_uids: packUids,
+      to: toUser,
+    }, true);
+  }
+
   async transferPack(packUid: string, toUser: string, memo?: string): Promise<HiveBroadcastResult> {
     return this.broadcastCustomJson('rp_pack_transfer', {
       pack_uid: packUid,
