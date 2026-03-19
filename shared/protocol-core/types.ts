@@ -426,7 +426,8 @@ export const DUAT_CLAIM_WINDOW_BLOCKS = 2_592_000; // ~90 days at 3s blocks
 export function calculateDuatPacks(duatRaw: number): number {
 	const display = duatRaw / DUAT_PRECISION;
 	if (display <= 0) return 0;
-	return Math.floor(Math.min(DUAT_MAX_PACKS, DUAT_BASE_PACKS + Math.log2(display) * DUAT_SCALE));
+	const packs = Math.floor(Math.min(DUAT_MAX_PACKS, DUAT_BASE_PACKS + Math.log2(display) * DUAT_SCALE));
+	return Math.max(0, packs);
 }
 
 // Marketplace state adapter extension
