@@ -494,6 +494,17 @@ export default function CampaignPage() {
 				<div className="constellation-map-area">
 					<StarField />
 					<NorseConstellationLines completedMissions={completedMissions} />
+					{!selectedNorseRealm && (
+						<div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+							<div className="text-center max-w-md px-6 opacity-70">
+								<p className="text-cyan-400 text-xl font-bold mb-2 tracking-wide">{norseChapter.name}</p>
+								<p className="text-gray-400 text-sm leading-relaxed italic">
+									{norseChapter.missions[0]?.narrativeBefore?.slice(0, 150) || 'Journey through the Nine Realms of Norse mythology...'}...
+								</p>
+								<p className="text-gray-600 text-xs mt-3">Select a realm to begin</p>
+							</div>
+						</div>
+					)}
 					{NINE_REALMS.map(realm => (
 						<NorseRealmNode
 							key={realm.id}
@@ -520,6 +531,17 @@ export default function CampaignPage() {
 				<div className="constellation-map-area" style={{ background: 'radial-gradient(ellipse at 50% 30%, #0f1225 0%, #0a0d1a 40%, #050710 100%)' }}>
 					<StarField />
 					<GreekConstellationLines completedMissions={completedMissions} />
+					{!selectedGreekRealm && (
+						<div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+							<div className="text-center max-w-md px-6 opacity-70">
+								<p className="text-amber-400 text-xl font-bold mb-2 tracking-wide">{greekChapter.name}</p>
+								<p className="text-gray-400 text-sm leading-relaxed italic">
+									{greekChapter.missions[0]?.narrativeBefore?.slice(0, 150) || 'Echoes of Chaos rise from the depths of Tartarus...'}...
+								</p>
+								<p className="text-gray-600 text-xs mt-3">Select a realm to begin</p>
+							</div>
+						</div>
+					)}
 					{GREEK_REALMS.map(realm => (
 						<GreekRealmNode
 							key={realm.id}

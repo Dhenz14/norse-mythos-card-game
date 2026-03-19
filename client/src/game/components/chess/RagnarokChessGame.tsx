@@ -26,7 +26,7 @@ import { assetPath } from '../../utils/assetPath';
 import CinematicCrawl from '../campaign/CinematicCrawl';
 import './HeroPortraitEnhanced.css';
 
-type GamePhase = 'army_selection' | 'cinematic' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
+type GamePhase = 'army_selection' | 'cinematic' | 'mission_intro' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
 
 interface HeroPortraitPanelProps {
   army: ArmySelectionType;
@@ -446,8 +446,11 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
       initializeBoard(defaultArmy, opponentArmy);
       setBossRulesApplied(false);
       if (!hasCinematic) {
-        setPhase('chess');
-        playSoundEffect('game_start');
+        // Show mission intro narrative before chess phase
+        setPhase(campaignData?.mission?.narrativeBefore ? 'mission_intro' : 'chess');
+        if (!campaignData?.mission?.narrativeBefore) {
+          playSoundEffect('game_start');
+        }
       }
     }
   }, [isCampaign]);
@@ -456,9 +459,19 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     if (campaignData) {
       markCinematicSeen(campaignData.chapter.id);
     }
+    // After chapter cinematic, show mission intro
+    if (campaignData?.mission?.narrativeBefore) {
+      setPhase('mission_intro');
+    } else {
+      setPhase('chess');
+      playSoundEffect('game_start');
+    }
+  }, [playSoundEffect, campaignData, markCinematicSeen]);
+
+  const handleMissionIntroComplete = useCallback(() => {
     setPhase('chess');
     playSoundEffect('game_start');
-  }, [playSoundEffect, campaignData, markCinematicSeen]);
+  }, [playSoundEffect]);
 
   // Apply boss rules + difficulty scaling after board initialization (one-time)
   const bossRulesInitRef = useRef(false);
@@ -942,8 +955,79 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
         />
       )}
 
+      {phase === 'mission_intro' && campaignData && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90" onClick={handleMissionIntroComplete}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2 }}
+            className="max-w-xl text-center px-8"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.4, scale: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-4xl mb-6"
+            >
+              {campaignData.mission.realm === 'asgard' ? '\u2728' :
+               campaignData.mission.realm === 'niflheim' ? '\u2744\uFE0F' :
+               campaignData.mission.realm === 'muspelheim' ? '\uD83D\uDD25' :
+               campaignData.mission.realm === 'helheim' ? '\uD83D\uDC80' :
+               campaignData.mission.realm === 'jotunheim' ? '\u26F0\uFE0F' :
+               '\u2694\uFE0F'}
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="text-2xl font-bold text-amber-400 mb-2 tracking-wide"
+            >
+              {campaignData.mission.name}
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              transition={{ delay: 0.8 }}
+              className="text-xs text-gray-500 uppercase tracking-widest mb-6"
+            >
+              {campaignData.chapter.name} — Mission {campaignData.mission.missionNumber}
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 1 }}
+              className="text-gray-300 text-base leading-relaxed italic"
+            >
+              "{campaignData.mission.narrativeBefore}"
+            </motion.p>
+            {campaignData.mission.bossRules.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2 }}
+                className="mt-6 space-y-1"
+              >
+                {campaignData.mission.bossRules.map((rule, i) => (
+                  <p key={i} className="text-xs text-red-400">
+                    {rule.description}
+                  </p>
+                ))}
+              </motion.div>
+            )}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              transition={{ delay: 2.5 }}
+              className="mt-8 text-xs text-gray-600"
+            >
+              Click anywhere to begin battle
+            </motion.p>
+          </motion.div>
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
-        {phase !== 'army_selection' && phase !== 'cinematic' && null}
+        {phase !== 'army_selection' && phase !== 'cinematic' && phase !== 'mission_intro' && null}
 
         {phase === 'chess' && (
           <ChessPhaseContent
