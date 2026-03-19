@@ -22,6 +22,7 @@ npm run lint:fix  # ESLint with auto-fix
 - **[RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md)** - Protocol v1.0 spec (14 canonical ops, authority matrix, finality)
 - **[DECENTRALIZED_INDEXER_DESIGN.md](docs/DECENTRALIZED_INDEXER_DESIGN.md)** - "Light HAF": IPFS op-log index, WoT operators, zero servers
 - **[PROTOCOL_V1_2_DESIGN.md](docs/PROTOCOL_V1_2_DESIGN.md)** - Protocol v1.2: marketplace, broadcast hardening, NFTLox integration, card visual overhaul
+- **[DUAT_AIRDROP_DESIGN.md](docs/DUAT_AIRDROP_DESIGN.md)** - DUAT holder airdrop: 30% supply to 3,511 holders, claim window, treasury absorption
 
 ## Architecture Overview
 
@@ -62,10 +63,10 @@ client/src/
 ├── core/                       # Pure game logic (migration in progress)
 │   └── index.ts                # Re-exports from game/ for future separation
 ├── data/
-│   ├── blockchain/             # Hive NFT system (27 op types, 15 IDB stores)
+│   ├── blockchain/             # Hive NFT system (29 op types, 16 IDB stores)
 │   │   ├── replayEngine.ts     # Chain replay: fetch ops → apply rules → IndexedDB
 │   │   ├── replayRules.ts      # Deterministic rules (hash-pinned at genesis)
-│   │   ├── replayDB.ts         # IndexedDB v8: cards, matches, rewards, ELO, marketplace listings/offers, etc.
+│   │   ├── replayDB.ts         # IndexedDB v9: cards, matches, rewards, ELO, marketplace, duat_claims, etc.
 │   │   ├── genesisAdmin.ts     # Admin: broadcastGenesis, broadcastSeal (one-time)
 │   │   ├── hiveConfig.ts       # Config: HIVE_NODES, RAGNAROK_ACCOUNT, explorer URLs
 │   │   ├── explorerLinks.ts    # Hive explorer URL builders (tx + block)
@@ -183,9 +184,9 @@ operator/
 
 shared/
 ├── protocol-core/          # Canonical protocol: normalize, apply, types, broadcast-utils
-│   ├── apply.ts            # 26 canonical op handlers (v1.0 + v1.1 + v1.2 marketplace)
-│   ├── normalize.ts        # Legacy rp_* → canonical mapping (27 actions)
-│   ├── types.ts            # StateAdapter, CardAsset, MarketListing, MarketOffer
+│   ├── apply.ts            # 28 canonical op handlers (v1.0 + v1.1 + v1.2 marketplace + DUAT)
+│   ├── normalize.ts        # Legacy rp_* → canonical mapping (29 actions)
+│   ├── types.ts            # StateAdapter, CardAsset, MarketListing, MarketOffer, DuatClaimRecord
 │   ├── broadcast-utils.ts  # BuildResult<T>, batching, sanitization, deterministic UIDs, memos
 │   ├── hash.ts             # SHA-256, canonical stringify
 │   └── pow.ts              # PoW verification
@@ -271,8 +272,8 @@ Game logic for these mechanics lives in:
 ### Blockchain/NFT System (`data/blockchain/`)
 
 - **Chain Replay**: `replayEngine.ts` fetches ops from Hive → `replayRules.ts` applies deterministic rules → IndexedDB stores state
-- **27 op types**: genesis, mint, seal, transfer, burn, pack_open, reward_claim, match_start, match_result, level_up, queue_join, queue_leave, slash_evidence, team_submit, card_transfer, pack_mint, pack_distribute, pack_transfer, pack_burn, card_replicate, card_merge, market_list, market_unlist, market_buy, market_offer, market_accept, market_reject
-- **15 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes, market_listings, market_offers
+- **29 op types**: genesis, mint, seal, transfer, burn, pack_open, reward_claim, match_start, match_result, level_up, queue_join, queue_leave, slash_evidence, team_submit, card_transfer, pack_mint, pack_distribute, pack_transfer, pack_burn, card_replicate, card_merge, market_list, market_unlist, market_buy, market_offer, market_accept, market_reject, duat_airdrop_claim, duat_airdrop_finalize
+- **16 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes, market_listings, market_offers, duat_claims
 - **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
 - **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
 - **Supply caps**: ~2.7M total NFTs (2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
@@ -1560,6 +1561,32 @@ vercel --prod                 # Deploy to Vercel
 - Race/tribe line visible on card face
 - Design document: [PROTOCOL_V1_2_DESIGN.md](docs/PROTOCOL_V1_2_DESIGN.md)
 - 192/192 conformance tests passing, 0 TypeScript errors
+
+### Completed (DUAT Airdrop System)
+
+- Frozen DUAT snapshot: 3,511 eligible holders from live API (SHA-256 verified, bundled at `client/public/data/duat-snapshot.json`)
+- Log-linear distribution formula: `packs = floor(min(500, 1 + log2(balance) × 5.347))` — calibrated via binary search
+- 164,460 standard packs (822,300 cards = exactly 30.00% of 2,741,000 supply)
+- Every holder gets 1-125 packs (avg 47, median 47, no zero-pack holders)
+- 2 new protocol ops: `duat_airdrop_claim` (posting key, validates formula + window) and `duat_airdrop_finalize` (admin, sweeps unclaimed to treasury)
+- IndexedDB v9: `duat_claims` store for tracking claimed accounts
+- `DuatClaimPopup.tsx`: gold-themed overlay on login, shows DUAT balance + pack count, one-click Keychain claim
+- `duatClaimStore.ts`: Zustand + persist, loads snapshot, checks account, manages claim flow
+- `HiveSync.claimDuatAirdrop()` broadcast method
+- 90-day claim window — unclaimed packs absorbed by treasury for pack sales (~50-70% expected unclaimed)
+- `scripts/freezeDuatSnapshot.mjs`: fetch → filter → sort → hash → save
+- `scripts/calibrateDuatAirdrop.mjs`: binary search calibration against live data
+- `scripts/testDuatClaim.mjs`: 26-test validation suite (all passing)
+- Design document: [DUAT_AIRDROP_DESIGN.md](docs/DUAT_AIRDROP_DESIGN.md)
+
+### Completed (Campaign Story Mode)
+
+- Per-mission narrative intro phase: immersive fullscreen overlay before chess (realm icon, title, narrative, boss rules)
+- Chapter cinematic upgrade: "In the age before ages..." prelude, letterbox bars, ambient particles, scene counter
+- Realm-colored mission intros (15 realm palettes with matching text + glow colors)
+- Campaign page lore blurbs (chapter name + opening narrative when no realm selected)
+- Fixed 5 infinite re-render loops in boss rule effects (React #185: merged per-turn effects with turn-tracking ref)
+- 49 missions across 5 chapters audited: all hero IDs, card IDs, king IDs, AI profiles verified
 
 ### Next (Genesis Launch)
 
