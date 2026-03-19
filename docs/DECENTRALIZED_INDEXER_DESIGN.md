@@ -409,8 +409,9 @@ When two players connect for a match, the player with fresher index data streams
 1. @ragnarok-index on-chain CID (freshest, 1 API call)
 2. IPFS gateway fetch (content-addressed, verifiable)
 3. Hive account fallback (index_update ops as mini-index)
-4. Bundled snapshot (shipped with game, always available)
-5. P2P peer exchange (WebRTC relay from connected players)
+4. HafSQL public API (zero infrastructure, queries hafsql-api.mahdiyari.info) [v1.2]
+5. Bundled snapshot (shipped with game, always available)
+6. P2P peer exchange (WebRTC relay from connected players)
 ```
 
 ## Client Integration
@@ -634,7 +635,7 @@ Once the decentralized indexer is live, these server components become unnecessa
 | Sybil operators | WoT vouching requires existing operator endorsement; genesis signers bootstrap trust. |
 | Client trusts corrupt index | Background spot-check: randomly verify 1% of entries against chain. |
 | Split brain (operators at different blocks) | Designated publisher rotation; attestation-only for non-publishers; 30-min failover timeout. |
-| IPFS unreachable | 5-tier resolution: on-chain CID → IPFS gateway → Hive account fallback → bundled snapshot → P2P relay. |
+| IPFS unreachable | 6-tier resolution: on-chain CID → IPFS gateway → Hive fallback → HafSQL → bundled snapshot → P2P relay. |
 | Operator attrition (<3 active) | Degraded mode: personal scan + bundled snapshot; increasing revenue share incentivizes new operators. |
 | Race condition (play match, check leaderboard) | Optimistic local ELO update; reconcile on next index sync. |
 

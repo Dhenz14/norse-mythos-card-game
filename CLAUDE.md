@@ -62,10 +62,10 @@ client/src/
 ├── core/                       # Pure game logic (migration in progress)
 │   └── index.ts                # Re-exports from game/ for future separation
 ├── data/
-│   ├── blockchain/             # Hive NFT system (21 op types, 13 IDB stores)
+│   ├── blockchain/             # Hive NFT system (27 op types, 15 IDB stores)
 │   │   ├── replayEngine.ts     # Chain replay: fetch ops → apply rules → IndexedDB
 │   │   ├── replayRules.ts      # Deterministic rules (hash-pinned at genesis)
-│   │   ├── replayDB.ts         # IndexedDB v6: cards, matches, rewards, ELO, etc.
+│   │   ├── replayDB.ts         # IndexedDB v8: cards, matches, rewards, ELO, marketplace listings/offers, etc.
 │   │   ├── genesisAdmin.ts     # Admin: broadcastGenesis, broadcastSeal (one-time)
 │   │   ├── hiveConfig.ts       # Config: HIVE_NODES, RAGNAROK_ACCOUNT, explorer URLs
 │   │   ├── explorerLinks.ts    # Hive explorer URL builders (tx + block)
@@ -76,7 +76,7 @@ client/src/
 │   │   └── index.ts            # Barrel exports
 │   ├── indexer/                # Decentralized index (Light HAF) — zero servers in production
 │   │   ├── indexDB.ts          # IndexedDB v1: 4 stores (global_ops, leaderboard, supply, sync)
-│   │   ├── indexSync.ts        # IPFS sync: 5-tier CID resolution, manifest validation, chunk download
+│   │   ├── indexSync.ts        # IPFS sync: 6-tier CID resolution, manifest validation, chunk download
 │   │   ├── indexQueries.ts     # Local query API: leaderboard, match history, player profile, supply
 │   │   └── index.ts            # Barrel exports
 │   ├── HiveSync.ts             # Keychain: login, broadcast, transferCard, claimReward
@@ -94,9 +94,10 @@ client/src/
 │   │   ├── spectator/      # SpectatorView (read-only P2P)
 │   │   ├── tournament/     # TournamentListPage (brackets + standings)
 │   │   ├── trading/        # TradingPage (card/Eitr trade offers)
+│   │   ├── marketplace/   # MarketplacePage (on-chain NFT buy/sell/offer)
 │   │   ├── tutorial/       # TutorialOverlay (step-by-step onboarding)
 │   │   ├── quests/         # DailyQuestPanel (3 daily quests)
-│   │   └── ui/             # LoadingScreen + shared UI
+│   │   └── ui/             # LoadingScreen, CardIconsSVG (50+ SVG keyword icons), shared UI
 │   ├── nft/                # NFT Bridge — clean contract boundary for blockchain access
 │   │   ├── INFTBridge.ts   # Contract interface (26 methods)
 │   │   ├── HiveNFTBridge.ts # Hive blockchain implementation (delegates to HiveSync/Events/DataLayer)
@@ -181,7 +182,13 @@ operator/
 └── indexer.ts              # Standalone WoT operator binary (block scanner → NDJSON → IPFS)
 
 shared/
-├── protocol-core/          # Canonical protocol: normalize, apply, types
+├── protocol-core/          # Canonical protocol: normalize, apply, types, broadcast-utils
+│   ├── apply.ts            # 26 canonical op handlers (v1.0 + v1.1 + v1.2 marketplace)
+│   ├── normalize.ts        # Legacy rp_* → canonical mapping (27 actions)
+│   ├── types.ts            # StateAdapter, CardAsset, MarketListing, MarketOffer
+│   ├── broadcast-utils.ts  # BuildResult<T>, batching, sanitization, deterministic UIDs, memos
+│   ├── hash.ts             # SHA-256, canonical stringify
+│   └── pow.ts              # PoW verification
 ├── indexer-types.ts        # Shared types for operator + client indexer
 ├── treasuryTypes.ts        # Treasury multisig types
 └── schema.ts               # Drizzle DB schema
@@ -200,7 +207,7 @@ Card art lives in `client/public/art/` (2,700+ webp files). Art lookup uses 3-ti
 
 - **"Light HAF"**: IPFS op-log index replaces centralized server for leaderboard, match history, card ownership, supply queries
 - **Operator binary**: `operator/indexer.ts` — standalone Node.js block scanner, outputs NDJSON chunks + manifest for IPFS
-- **Client sync**: `indexSync.ts` — 5-tier resolution (on-chain CID → IPFS gateway → Hive fallback → bundled snapshot → P2P relay)
+- **Client sync**: `indexSync.ts` — 5-tier resolution (on-chain CID → IPFS gateway → Hive fallback → HafSQL → bundled snapshot → P2P relay)
 - **Client storage**: `indexDB.ts` — separate IndexedDB `ragnarok-index-v1` with 4 stores (global_ops, global_leaderboard, global_supply, index_sync)
 - **Query API**: `indexQueries.ts` — all queries run against local IndexedDB, zero API calls
 - **WoT operators**: Community members incentivized via 5% pack sale revenue share
@@ -264,8 +271,8 @@ Game logic for these mechanics lives in:
 ### Blockchain/NFT System (`data/blockchain/`)
 
 - **Chain Replay**: `replayEngine.ts` fetches ops from Hive → `replayRules.ts` applies deterministic rules → IndexedDB stores state
-- **21 op types**: genesis, mint, seal, transfer, burn, pack_open, reward_claim, match_start, match_result, level_up, queue_join, queue_leave, slash_evidence, team_submit, card_transfer, pack_mint, pack_distribute, pack_transfer, pack_burn, card_replicate, card_merge
-- **13 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes
+- **27 op types**: genesis, mint, seal, transfer, burn, pack_open, reward_claim, match_start, match_result, level_up, queue_join, queue_leave, slash_evidence, team_submit, card_transfer, pack_mint, pack_distribute, pack_transfer, pack_burn, card_replicate, card_merge, market_list, market_unlist, market_buy, market_offer, market_accept, market_reject
+- **15 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes, market_listings, market_offers
 - **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
 - **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
 - **Supply caps**: ~2.7M total NFTs (2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
@@ -436,6 +443,7 @@ vercel --prod                 # Deploy to Vercel
 /packs         → PacksPage (open card packs)
 /collection    → CollectionPage (with crafting)
 /trading       → TradingPage (card/Eitr trade offers)
+/marketplace   → MarketplacePage (on-chain NFT listings, buy/sell/offer)
 /ladder        → RankedLadderPage (ELO leaderboard)
 /history       → MatchHistoryPage (replay viewer)
 /spectate/:id  → SpectatorView (read-only P2P)
@@ -1530,6 +1538,28 @@ vercel --prod                 # Deploy to Vercel
 - Fixed `import type` TDZ crash in `neutrals/index.ts` (production build circular dependency)
 - Updated supply caps in: `heroRarity.ts`, `apply.ts`, `genesisAdmin.ts`, 2 test files, 7 doc files, CLAUDE.md
 - 794 rarity changes across 90 card data files, 0 duplicate IDs, production build clean
+
+### Completed (Protocol v1.2 — NFTLox Integration & Marketplace)
+
+- Extracted 8 production patterns from NFTLox SDK/Playground protocol audit
+- BuildResult<T> structured broadcast errors (all validation errors at once, typed codes)
+- Operation size estimation + auto-batch splitting (8KB limit enforcement, wired into broadcastCustomJson)
+- Input sanitization (HTML entity + control char stripping) wired into every broadcast
+- Deterministic UID generation (FNV-1a) with fallback in applyMintBatch for anti-duplication
+- Structured transfer memos (`ragnarok:action:uid:cardId:edition:dna`) wired into transferCard
+- Mint session crash recovery (localStorage persistence, AdminPanel resume flow)
+- HafSQL as tier-6 fallback indexer in indexSync.ts (zero infrastructure, queries public API)
+- On-chain marketplace: 6 new ops (market_list, market_unlist, market_buy, market_offer, market_accept, market_reject)
+- Marketplace IndexedDB v8: market_listings + market_offers stores with seller/nft/buyer indexes
+- 6 applyOp handlers with ownership verification, payment cross-reference, auto-reject pending offers
+- MarketplacePage.tsx: 3-tab UI (Browse/My Listings/My Offers) with list/offer modals at `/marketplace`
+- HiveSync: 6 new marketplace broadcast methods
+- Card visual overhaul: 50+ SVG keyword icons (CardIconsSVG.tsx), SVG stat emblems (hexagonal ATK, shield HP, crystal mana)
+- Rarity gem indicator (rare=blue, epic=purple, mythic=gold with pulse animation)
+- Name banner upgraded to dimensional ribbon with scroll ornaments
+- Race/tribe line visible on card face
+- Design document: [PROTOCOL_V1_2_DESIGN.md](docs/PROTOCOL_V1_2_DESIGN.md)
+- 192/192 conformance tests passing, 0 TypeScript errors
 
 ### Next (Genesis Launch)
 
