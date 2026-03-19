@@ -73,6 +73,11 @@ client/src/
 │   │   ├── opSchemas.ts        # Zod runtime validation for all 21 chain op types
 │   │   ├── ICardDataProvider.ts # Interface breaking reverse coupling (blockchain → game)
 │   │   └── index.ts            # Barrel exports
+│   ├── indexer/                # Decentralized index (Light HAF) — zero servers in production
+│   │   ├── indexDB.ts          # IndexedDB v1: 4 stores (global_ops, leaderboard, supply, sync)
+│   │   ├── indexSync.ts        # IPFS sync: 5-tier CID resolution, manifest validation, chunk download
+│   │   ├── indexQueries.ts     # Local query API: leaderboard, match history, player profile, supply
+│   │   └── index.ts            # Barrel exports
 │   ├── HiveSync.ts             # Keychain: login, broadcast, transferCard, claimReward
 │   ├── HiveDataLayer.ts        # Zustand store: collection, stats, tokens
 │   ├── HiveEvents.ts           # Event emitter: card transfers, token updates, tx status
@@ -170,6 +175,15 @@ server/
 │   ├── treasuryHive.ts     # Hive L1 treasury utilities (authority, balance, broadcast)
 │   └── treasuryAnomalyDetector.ts # Anomaly detection (burst, spike, auto-freeze)
 └── storage.ts              # Database interface
+
+operator/
+└── indexer.ts              # Standalone WoT operator binary (block scanner → NDJSON → IPFS)
+
+shared/
+├── protocol-core/          # Canonical protocol: normalize, apply, types
+├── indexer-types.ts        # Shared types for operator + client indexer
+├── treasuryTypes.ts        # Treasury multisig types
+└── schema.ts               # Drizzle DB schema
 ```
 
 Card art lives in `client/public/art/` (2,700+ webp files). Art lookup uses 3-tier system: `CARD_ID_TO_ART` (2,459 ID-based entries) > `VERCEL_CARD_ART` (330 name matches) > `MINION_CARD_TO_ART` (85 creature maps). Effective coverage: 100% of cards — every card has art.
@@ -180,6 +194,18 @@ Card art lives in `client/public/art/` (2,700+ webp files). Art lookup uses 3-ti
 - **Single source**: `allCards.ts` contains all 2,242 cards (2,082 collectible NFTs + 160 tokens)
 - Card registry with ID ranges in `cardRegistry/ID_RANGES.md`
 - Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 31001-31922 expansion gap-fill, 35001-40999 class expansions, 50000-50376 pets (38 families), 85001-86999 rogue/golems
+
+### Decentralized Indexer (`data/indexer/` + `operator/`)
+
+- **"Light HAF"**: IPFS op-log index replaces centralized server for leaderboard, match history, card ownership, supply queries
+- **Operator binary**: `operator/indexer.ts` — standalone Node.js block scanner, outputs NDJSON chunks + manifest for IPFS
+- **Client sync**: `indexSync.ts` — 5-tier resolution (on-chain CID → IPFS gateway → Hive fallback → bundled snapshot → P2P relay)
+- **Client storage**: `indexDB.ts` — separate IndexedDB `ragnarok-index-v1` with 4 stores (global_ops, global_leaderboard, global_supply, index_sync)
+- **Query API**: `indexQueries.ts` — all queries run against local IndexedDB, zero API calls
+- **WoT operators**: Community members incentivized via 5% pack sale revenue share
+- **Health status**: healthy (quorum) → degraded (partial) → snapshot-only (bundled) → offline
+- **Optimistic updates**: Client applies ELO delta locally after match, before operator confirms
+- **Design doc**: [DECENTRALIZED_INDEXER_DESIGN.md](docs/DECENTRALIZED_INDEXER_DESIGN.md)
 
 ### Combat System (`game/combat/`)
 - `RagnarokCombatArena.tsx` - Main arena component with poker integration

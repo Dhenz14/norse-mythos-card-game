@@ -39,6 +39,8 @@ const HIVE_NODES = [
 ];
 
 const NODE_TIMEOUT_MS = 8000;
+const MAX_BACKOFF_MS = 30_000;
+let consecutiveFailures = 0;
 
 interface IndexerConfig {
 	outputDir: string;
@@ -62,7 +64,7 @@ function parseArgs(): IndexerConfig {
 }
 
 // ============================================================
-// Hive RPC
+// Hive RPC (with exponential backoff)
 // ============================================================
 
 let currentNodeIndex = 0;
@@ -72,9 +74,9 @@ async function callHive<T>(method: string, params: unknown[]): Promise<T> {
 	for (let attempt = 0; attempt < HIVE_NODES.length; attempt++) {
 		const nodeIdx = (startIdx + attempt) % HIVE_NODES.length;
 		const node = HIVE_NODES[nodeIdx];
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), NODE_TIMEOUT_MS);
 		try {
-			const controller = new AbortController();
-			const timeout = setTimeout(() => controller.abort(), NODE_TIMEOUT_MS);
 			const resp = await fetch(node, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -84,11 +86,15 @@ async function callHive<T>(method: string, params: unknown[]): Promise<T> {
 			clearTimeout(timeout);
 			const data = await resp.json() as { result?: T; error?: { message: string } };
 			if (data.error) throw new Error(data.error.message);
+			if (data.result == null) throw new Error(`Null result from ${method}`);
 			currentNodeIndex = nodeIdx;
-			return data.result as T;
-		} catch {
+			consecutiveFailures = 0;
+			return data.result;
+		} catch (err) {
+			clearTimeout(timeout);
 			if (attempt === HIVE_NODES.length - 1) {
-				throw new Error(`All Hive nodes failed for ${method}`);
+				consecutiveFailures++;
+				throw new Error(`All Hive nodes failed for ${method}: ${err}`);
 			}
 		}
 	}
@@ -120,6 +126,7 @@ async function getOpsInBlock(blockNum: number): Promise<HiveBlockOp[]> {
 
 const eloState = new Map<string, EloRecord>();
 const supplyState = new Map<string, { pool: string; cap: number; minted: number }>();
+const seenTrxIds = new Set<string>();
 
 function getElo(account: string): EloRecord {
 	return eloState.get(account) || { account, elo: 1000, wins: 0, losses: 0 };
@@ -194,8 +201,21 @@ function createChunkWriter(blockStart: number): ChunkWriter {
 	};
 }
 
-function appendEntry(writer: ChunkWriter, entry: IndexEntry): void {
-	writer.entries.push(entry);
+function loadPartialChunk(outputDir: string, blockStart: number, blockEnd: number): IndexEntry[] {
+	const chunksDir = path.join(outputDir, 'chunks');
+	const fileName = `chunk-${String(blockStart).padStart(9, '0')}-${String(blockEnd).padStart(9, '0')}.ndjson`;
+	const filePath = path.join(chunksDir, fileName);
+	if (!fs.existsSync(filePath)) return [];
+
+	const entries: IndexEntry[] = [];
+	const text = fs.readFileSync(filePath, 'utf-8');
+	for (const line of text.split('\n')) {
+		if (!line.trim()) continue;
+		try {
+			entries.push(JSON.parse(line) as IndexEntry);
+		} catch { /* skip malformed */ }
+	}
+	return entries;
 }
 
 function finalizeChunk(writer: ChunkWriter, outputDir: string): ChunkDescriptor {
@@ -206,7 +226,9 @@ function finalizeChunk(writer: ChunkWriter, outputDir: string): ChunkDescriptor 
 	const filePath = path.join(chunksDir, fileName);
 
 	const ndjson = writer.entries.map(e => JSON.stringify(e)).join('\n');
-	fs.writeFileSync(filePath, ndjson, 'utf-8');
+	const tmpPath = filePath + '.tmp';
+	fs.writeFileSync(tmpPath, ndjson, 'utf-8');
+	fs.renameSync(tmpPath, filePath);
 
 	const hash = crypto.createHash('sha256').update(ndjson).digest('hex');
 
@@ -243,7 +265,10 @@ function writeLeaderboardSnapshot(outputDir: string, lastBlock: number): void {
 		entries,
 	};
 
-	fs.writeFileSync(path.join(snapshotsDir, 'leaderboard.json'), JSON.stringify(snapshot, null, 2));
+	const filePath = path.join(snapshotsDir, 'leaderboard.json');
+	const tmpPath = filePath + '.tmp';
+	fs.writeFileSync(tmpPath, JSON.stringify(snapshot, null, 2));
+	fs.renameSync(tmpPath, filePath);
 }
 
 function writeSupplySnapshot(outputDir: string, lastBlock: number): void {
@@ -256,7 +281,10 @@ function writeSupplySnapshot(outputDir: string, lastBlock: number): void {
 		counters: Object.fromEntries(supplyState),
 	};
 
-	fs.writeFileSync(path.join(snapshotsDir, 'supply.json'), JSON.stringify(snapshot, null, 2));
+	const filePath = path.join(snapshotsDir, 'supply.json');
+	const tmpPath = filePath + '.tmp';
+	fs.writeFileSync(tmpPath, JSON.stringify(snapshot, null, 2));
+	fs.renameSync(tmpPath, filePath);
 }
 
 // ============================================================
@@ -286,7 +314,7 @@ function writeManifest(
 		attestations: [{
 			operator: operatorAccount,
 			stateHash,
-			signature: '', // Hive signing happens externally
+			signature: '',
 			block: lastBlock,
 			timestamp: Date.now(),
 		}],
@@ -294,23 +322,24 @@ function writeManifest(
 		publisherRotation: [operatorAccount],
 	};
 
-	fs.writeFileSync(
-		path.join(outputDir, 'manifest.json'),
-		JSON.stringify(manifest, null, 2),
-	);
+	const filePath = path.join(outputDir, 'manifest.json');
+	const tmpPath = filePath + '.tmp';
+	fs.writeFileSync(tmpPath, JSON.stringify(manifest, null, 2));
+	fs.renameSync(tmpPath, filePath);
 }
 
 function computeStateHash(chunks: ChunkDescriptor[], lastBlock: number): string {
+	const sortedHashes = chunks.map(c => c.sha256).sort();
 	const data = JSON.stringify({
 		lastBlock,
-		chunkHashes: chunks.map(c => c.sha256).sort(),
+		chunkHashes: sortedHashes,
 		eloCount: eloState.size,
 	});
 	return crypto.createHash('sha256').update(data).digest('hex').slice(0, 32);
 }
 
 // ============================================================
-// Cursor Persistence
+// Cursor Persistence (atomic write)
 // ============================================================
 
 interface CursorState {
@@ -322,16 +351,21 @@ interface CursorState {
 function loadCursor(outputDir: string): CursorState {
 	const cursorPath = path.join(outputDir, '.cursor.json');
 	if (fs.existsSync(cursorPath)) {
-		return JSON.parse(fs.readFileSync(cursorPath, 'utf-8'));
+		try {
+			return JSON.parse(fs.readFileSync(cursorPath, 'utf-8'));
+		} catch (err) {
+			console.error('[Indexer] Corrupt cursor file, resetting:', err);
+			return { lastBlock: 0, totalOps: 0, chunks: [] };
+		}
 	}
 	return { lastBlock: 0, totalOps: 0, chunks: [] };
 }
 
 function saveCursor(outputDir: string, state: CursorState): void {
-	fs.writeFileSync(
-		path.join(outputDir, '.cursor.json'),
-		JSON.stringify(state, null, 2),
-	);
+	const cursorPath = path.join(outputDir, '.cursor.json');
+	const tmpPath = cursorPath + '.tmp';
+	fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2));
+	fs.renameSync(tmpPath, cursorPath);
 }
 
 // ============================================================
@@ -369,7 +403,8 @@ async function scanBlocks(config: IndexerConfig): Promise<void> {
 	fs.mkdirSync(outputDir, { recursive: true });
 
 	const cursor = loadCursor(outputDir);
-	let { lastBlock, totalOps, chunks } = cursor;
+	let { lastBlock, totalOps } = cursor;
+	const chunks = [...cursor.chunks];
 
 	if (config.startBlock > 0 && lastBlock === 0) {
 		lastBlock = config.startBlock - 1;
@@ -386,9 +421,11 @@ async function scanBlocks(config: IndexerConfig): Promise<void> {
 	const endBlock = Math.min(startBlock + BLOCKS_PER_BATCH - 1, lib);
 	console.log(`[Indexer] Scanning blocks ${startBlock} → ${endBlock} (LIB: ${lib})`);
 
-	// Determine chunk writer for current range
 	const chunkStart = Math.floor(startBlock / CHUNK_SIZE_BLOCKS) * CHUNK_SIZE_BLOCKS;
 	const writer = createChunkWriter(chunkStart);
+
+	const existingEntries = loadPartialChunk(outputDir, chunkStart, writer.blockEnd);
+	writer.entries.push(...existingEntries);
 
 	for (let blockNum = startBlock; blockNum <= endBlock; blockNum++) {
 		let ops: HiveBlockOp[];
@@ -399,10 +436,13 @@ async function scanBlocks(config: IndexerConfig): Promise<void> {
 			break;
 		}
 
-		const ragnarokOps = ops.filter(isRagnarokOp);
+		for (let opIdx = 0; opIdx < ops.length; opIdx++) {
+			const rawOp = ops[opIdx];
+			if (!isRagnarokOp(rawOp)) continue;
 
-		for (let i = 0; i < ragnarokOps.length; i++) {
-			const rawOp = ragnarokOps[i];
+			if (seenTrxIds.has(rawOp.trx_id)) continue;
+			seenTrxIds.add(rawOp.trx_id);
+
 			const hiveOp = hiveOpToRawHiveOp(rawOp, blockNum);
 			const normalized = normalizeRawOp(hiveOp);
 
@@ -413,9 +453,10 @@ async function scanBlocks(config: IndexerConfig): Promise<void> {
 
 			const derived = derivedStateFor(op.action, payload);
 
-			const counterparty = (payload.recipient as string)
-				|| (payload.loser as string)
-				|| (payload.to as string)
+			const counterparty =
+				(typeof payload.recipient === 'string' ? payload.recipient : undefined)
+				|| (typeof payload.loser === 'string' ? payload.loser : undefined)
+				|| (typeof payload.to === 'string' ? payload.to : undefined)
 				|| undefined;
 
 			const entry: IndexEntry = {
@@ -424,31 +465,37 @@ async function scanBlocks(config: IndexerConfig): Promise<void> {
 				action: op.action as IndexEntry['action'],
 				trxId: op.trxId,
 				blockNum: op.blockNum,
-				opIndexInBlock: i,
+				opIndexInBlock: opIdx,
 				timestamp: op.timestamp,
 				derived,
 			};
 
-			appendEntry(writer, entry);
+			writer.entries.push(entry);
 			totalOps++;
 		}
 
 		lastBlock = blockNum;
 
-		// Check if we crossed a chunk boundary
 		if (blockNum >= writer.blockEnd) {
 			if (writer.entries.length > 0) {
 				const descriptor = finalizeChunk(writer, outputDir);
-				chunks.push(descriptor);
+				const existingIdx = chunks.findIndex(c =>
+					c.blockRange[0] === descriptor.blockRange[0]
+				);
+				if (existingIdx >= 0) {
+					chunks[existingIdx] = descriptor;
+				} else {
+					chunks.push(descriptor);
+				}
 				console.log(`[Indexer] Finalized chunk: ${descriptor.file} (${descriptor.opCount} ops)`);
 			}
 		}
+
+		saveCursor(outputDir, { lastBlock, totalOps, chunks });
 	}
 
-	// Finalize partial chunk (entries that haven't crossed boundary yet)
 	if (writer.entries.length > 0 && lastBlock < writer.blockEnd) {
 		const descriptor = finalizeChunk(writer, outputDir);
-		// Replace existing chunk for this range if it exists
 		const existingIdx = chunks.findIndex(c =>
 			c.blockRange[0] === descriptor.blockRange[0]
 		);
@@ -459,13 +506,15 @@ async function scanBlocks(config: IndexerConfig): Promise<void> {
 		}
 	}
 
-	// Write snapshots + manifest
 	writeLeaderboardSnapshot(outputDir, lastBlock);
 	writeSupplySnapshot(outputDir, lastBlock);
 	writeManifest(outputDir, chunks, lastBlock, totalOps, operatorAccount);
 
-	// Save cursor
 	saveCursor(outputDir, { lastBlock, totalOps, chunks });
+
+	if (seenTrxIds.size > 100_000) {
+		seenTrxIds.clear();
+	}
 
 	console.log(`[Indexer] Processed to block ${lastBlock}. Total ops: ${totalOps}. Chunks: ${chunks.length}`);
 }
@@ -475,6 +524,7 @@ async function scanBlocks(config: IndexerConfig): Promise<void> {
 // ============================================================
 
 let running = true;
+let currentScan: Promise<void> | null = null;
 
 async function main(): Promise<void> {
 	const config = parseArgs();
@@ -484,24 +534,35 @@ async function main(): Promise<void> {
 
 	while (running) {
 		try {
-			await scanBlocks(config);
+			currentScan = scanBlocks(config);
+			await currentScan;
+			currentScan = null;
 		} catch (err) {
+			currentScan = null;
 			console.error('[Indexer] Scan error:', err);
 		}
 
-		await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS));
+		const backoffMs = Math.min(
+			POLL_INTERVAL_MS * Math.pow(2, consecutiveFailures),
+			MAX_BACKOFF_MS,
+		);
+		await new Promise(resolve => setTimeout(resolve, backoffMs));
 	}
 }
 
-process.on('SIGINT', () => {
+async function shutdown(): Promise<void> {
 	console.log('\n[Indexer] Shutting down...');
 	running = false;
-});
+	if (currentScan) {
+		console.log('[Indexer] Waiting for current scan to finish...');
+		try { await currentScan; } catch { /* already logged */ }
+	}
+	console.log('[Indexer] Goodbye.');
+	process.exit(0);
+}
 
-process.on('SIGTERM', () => {
-	console.log('\n[Indexer] Shutting down...');
-	running = false;
-});
+process.on('SIGINT', () => { shutdown(); });
+process.on('SIGTERM', () => { shutdown(); });
 
 main().catch(err => {
 	console.error('[Indexer] Fatal error:', err);

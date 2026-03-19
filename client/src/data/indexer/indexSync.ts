@@ -44,9 +44,9 @@ export function getIndexHealthStatus(): IndexHealthStatus {
 
 async function callHive<T>(method: string, params: unknown[]): Promise<T> {
 	for (const node of HIVE_NODES) {
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 8000);
 		try {
-			const controller = new AbortController();
-			const timeout = setTimeout(() => controller.abort(), 8000);
 			const resp = await fetch(node, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -55,8 +55,13 @@ async function callHive<T>(method: string, params: unknown[]): Promise<T> {
 			});
 			clearTimeout(timeout);
 			const data = await resp.json() as { result?: T };
-			return data.result as T;
-		} catch {
+			if (data.result == null) {
+				throw new Error(`Hive RPC returned null result for ${method}`);
+			}
+			return data.result;
+		} catch (err) {
+			clearTimeout(timeout);
+			if (node === HIVE_NODES[HIVE_NODES.length - 1]) throw err;
 			continue;
 		}
 	}
@@ -78,6 +83,8 @@ async function resolveLatestCID(): Promise<string | null> {
 			[RAGNAROK_INDEX_ACCOUNT, -1, 50],
 		);
 
+		if (!Array.isArray(history)) return null;
+
 		for (let i = history.length - 1; i >= 0; i--) {
 			const [, entry] = history[i];
 			if (entry.op[0] !== 'custom_json') continue;
@@ -85,8 +92,8 @@ async function resolveLatestCID(): Promise<string | null> {
 			if (opData.id !== 'ragnarok-cards') continue;
 			try {
 				const payload = JSON.parse(opData.json as string) as Record<string, unknown>;
-				if (payload.action === 'index_update' && payload.cid) {
-					return payload.cid as string;
+				if (payload.action === 'index_update' && typeof payload.cid === 'string') {
+					return payload.cid;
 				}
 			} catch { continue; }
 		}
@@ -102,15 +109,16 @@ async function resolveLatestCID(): Promise<string | null> {
 
 async function fetchFromIPFS<T>(cid: string, filePath: string): Promise<T | null> {
 	for (const gateway of IPFS_GATEWAYS) {
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 15000);
 		try {
 			const url = `${gateway}${cid}/${filePath}`;
-			const controller = new AbortController();
-			const timeout = setTimeout(() => controller.abort(), 15000);
 			const resp = await fetch(url, { signal: controller.signal });
 			clearTimeout(timeout);
 			if (!resp.ok) continue;
 			return await resp.json() as T;
 		} catch {
+			clearTimeout(timeout);
 			continue;
 		}
 	}
@@ -119,10 +127,10 @@ async function fetchFromIPFS<T>(cid: string, filePath: string): Promise<T | null
 
 async function fetchChunkFromIPFS(cid: string, chunkPath: string): Promise<IndexEntry[]> {
 	for (const gateway of IPFS_GATEWAYS) {
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 30000);
 		try {
 			const url = `${gateway}${cid}/${chunkPath}`;
-			const controller = new AbortController();
-			const timeout = setTimeout(() => controller.abort(), 30000);
 			const resp = await fetch(url, { signal: controller.signal });
 			clearTimeout(timeout);
 			if (!resp.ok) continue;
@@ -137,6 +145,7 @@ async function fetchChunkFromIPFS(cid: string, chunkPath: string): Promise<Index
 			}
 			return entries;
 		} catch {
+			clearTimeout(timeout);
 			continue;
 		}
 	}
@@ -148,19 +157,24 @@ async function fetchChunkFromIPFS(cid: string, chunkPath: string): Promise<Index
 // ============================================================
 
 function validateManifest(manifest: IndexManifest): IndexHealthStatus {
+	if (!Array.isArray(manifest.attestations) || manifest.attestations.length === 0) {
+		return 'snapshot-only';
+	}
+
 	const activeAttestations = manifest.attestations.filter(a => {
 		const ageMs = Date.now() - a.timestamp;
-		return ageMs < 24 * 60 * 60 * 1000; // 24h
+		return ageMs < 24 * 60 * 60 * 1000;
 	});
 
 	const uniqueOperators = new Set(activeAttestations.map(a => a.operator));
 
 	if (uniqueOperators.size >= MIN_OPERATORS_FOR_CONSENSUS) {
-		// Check quorum on stateHash
 		const hashCounts = new Map<string, number>();
 		for (const a of activeAttestations) {
 			hashCounts.set(a.stateHash, (hashCounts.get(a.stateHash) || 0) + 1);
 		}
+
+		if (hashCounts.size === 0) return 'degraded';
 
 		const maxCount = Math.max(...hashCounts.values());
 		const quorum = maxCount / uniqueOperators.size;
@@ -190,7 +204,6 @@ export async function syncIndex(): Promise<void> {
 		const localLastBlock = await getSyncMeta('lastBlock') as number | undefined;
 		const localCid = await getSyncMeta('lastCid') as string | undefined;
 
-		// Step 1: Resolve latest CID
 		const latestCid = await resolveLatestCID();
 
 		if (!latestCid) {
@@ -199,53 +212,46 @@ export async function syncIndex(): Promise<void> {
 			return;
 		}
 
-		// Skip if already at latest
 		if (latestCid === localCid) {
 			debug.log('[IndexSync] Already at latest CID.');
 			return;
 		}
 
-		// Step 2: Fetch manifest
 		const manifest = await fetchFromIPFS<IndexManifest>(latestCid, 'manifest.json');
-		if (!manifest) {
-			debug.warn('[IndexSync] Failed to fetch manifest from IPFS.');
+		if (!manifest || !Array.isArray(manifest.chunks)) {
+			debug.warn('[IndexSync] Failed to fetch manifest from IPFS or invalid shape.');
 			healthStatus = 'degraded';
 			return;
 		}
 
-		// Step 3: Validate attestations
 		healthStatus = validateManifest(manifest);
 		debug.log(`[IndexSync] Health: ${healthStatus}, Block: ${manifest.lastBlock}, Ops: ${manifest.totalOps}`);
 
-		// Step 4: Fetch snapshots FIRST (instant usability)
 		const [leaderboard, supply] = await Promise.all([
 			fetchFromIPFS<LeaderboardSnapshot>(latestCid, manifest.snapshots.leaderboard),
 			fetchFromIPFS<SupplySnapshot>(latestCid, manifest.snapshots.supply),
 		]);
 
-		if (leaderboard) {
+		if (leaderboard?.entries) {
 			await putLeaderboard(leaderboard.entries);
 			debug.log(`[IndexSync] Leaderboard loaded: ${leaderboard.entries.length} entries`);
 		}
 
-		if (supply) {
+		if (supply?.counters) {
 			await putSupplyCounters(supply.counters);
 			debug.log(`[IndexSync] Supply counters loaded`);
 		}
 
-		// Step 5: Fetch new chunks (only those after local lastBlock)
 		const chunksToFetch = manifest.chunks.filter(c =>
 			!localLastBlock || c.blockRange[0] > localLastBlock
 		);
 
-		// Also check compacted archives for first-time sync
 		const compactedToFetch = !localLastBlock && manifest.compacted
 			? manifest.compacted
 			: [];
 
 		debug.log(`[IndexSync] Fetching ${compactedToFetch.length} compacted + ${chunksToFetch.length} chunks`);
 
-		// Fetch compacted first, then granular chunks
 		for (const chunk of [...compactedToFetch, ...chunksToFetch]) {
 			const entries = await fetchChunkFromIPFS(latestCid, chunk.file);
 			if (entries.length > 0) {
@@ -254,7 +260,6 @@ export async function syncIndex(): Promise<void> {
 			}
 		}
 
-		// Step 6: Update sync metadata
 		await putSyncMeta('lastBlock', manifest.lastBlock);
 		await putSyncMeta('lastCid', latestCid);
 		await putSyncMeta('lastSyncAt', Date.now());
@@ -275,12 +280,10 @@ export async function syncIndex(): Promise<void> {
 // ============================================================
 
 export function startIndexSync(intervalMs = 60_000): void {
-	if (syncTimer) return;
+	stopIndexSync();
 
-	// Initial sync
 	syncIndex().catch(err => debug.warn('[IndexSync] Initial sync failed:', err));
 
-	// Periodic sync
 	syncTimer = setInterval(() => {
 		syncIndex().catch(err => debug.warn('[IndexSync] Periodic sync failed:', err));
 	}, intervalMs);

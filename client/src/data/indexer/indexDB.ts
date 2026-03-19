@@ -15,17 +15,18 @@ const DB_NAME = 'ragnarok-index-v1';
 const DB_VERSION = 1;
 
 let dbInstance: IDBDatabase | null = null;
+let dbPending: Promise<IDBDatabase> | null = null;
 
 export function getIndexDB(): Promise<IDBDatabase> {
 	if (dbInstance) return Promise.resolve(dbInstance);
+	if (dbPending) return dbPending;
 
-	return new Promise((resolve, reject) => {
+	dbPending = new Promise<IDBDatabase>((resolve, reject) => {
 		const request = indexedDB.open(DB_NAME, DB_VERSION);
 
 		request.onupgradeneeded = () => {
 			const db = request.result;
 
-			// All indexed ops (the phone book)
 			if (!db.objectStoreNames.contains('global_ops')) {
 				const opsStore = db.createObjectStore('global_ops', {
 					keyPath: ['trxId', 'opIndexInBlock'],
@@ -37,17 +38,14 @@ export function getIndexDB(): Promise<IDBDatabase> {
 				opsStore.createIndex('by_counterparty', 'counterparty', { unique: false });
 			}
 
-			// Pre-computed leaderboard
 			if (!db.objectStoreNames.contains('global_leaderboard')) {
 				db.createObjectStore('global_leaderboard', { keyPath: 'username' });
 			}
 
-			// Supply counters
 			if (!db.objectStoreNames.contains('global_supply')) {
 				db.createObjectStore('global_supply', { keyPath: 'key' });
 			}
 
-			// Index sync metadata
 			if (!db.objectStoreNames.contains('index_sync')) {
 				db.createObjectStore('index_sync', { keyPath: 'key' });
 			}
@@ -58,8 +56,13 @@ export function getIndexDB(): Promise<IDBDatabase> {
 			resolve(dbInstance);
 		};
 
-		request.onerror = () => reject(request.error);
+		request.onerror = () => {
+			dbPending = null;
+			reject(request.error);
+		};
 	});
+
+	return dbPending;
 }
 
 // ============================================================

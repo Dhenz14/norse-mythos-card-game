@@ -44,14 +44,15 @@ export interface MatchRecord {
 export async function getMatchHistory(username: string): Promise<MatchRecord[]> {
 	const ops = await getOpsByPlayerAction(username, 'match_result');
 
-	// Also check as counterparty (opponent)
 	const asCounterparty = await getOpsByPlayer(username).then(all =>
 		all.filter(op => op.action === 'match_result' && op.counterparty === username)
 	);
 
+	const seen = new Set<string>();
 	const matches: MatchRecord[] = [];
 
 	for (const op of ops) {
+		seen.add(op.trxId);
 		matches.push({
 			trxId: op.trxId,
 			blockNum: op.blockNum,
@@ -62,9 +63,9 @@ export async function getMatchHistory(username: string): Promise<MatchRecord[]> 
 		});
 	}
 
-	// Add matches where user was the counterparty (opponent field in the entry)
 	for (const op of asCounterparty) {
-		if (matches.some(m => m.trxId === op.trxId)) continue;
+		if (seen.has(op.trxId)) continue;
+		seen.add(op.trxId);
 		matches.push({
 			trxId: op.trxId,
 			blockNum: op.blockNum,
@@ -99,7 +100,6 @@ export async function getPlayerCards(username: string): Promise<CardOwnership[]>
 		.filter(op => op.derived?.cardUid)
 		.sort((a, b) => b.blockNum - a.blockNum);
 
-	// Deduplicate by cardUid — latest op wins
 	const seen = new Set<string>();
 	const cards: CardOwnership[] = [];
 	for (const op of allOps) {
@@ -200,7 +200,6 @@ export async function applyOptimisticMatchResult(
 		won ? 0 : 1,
 	);
 
-	// Also update opponent
 	const oppNewElo = Math.max(ELO_FLOOR, oppElo - delta);
 	await applyOptimisticElo(
 		opponent,
