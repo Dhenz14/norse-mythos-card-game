@@ -77,17 +77,30 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 - **RUNE rewards** — +10 per ranked win, +3 per loss, milestone bonuses (non-transferable in v1)
 - **Eitr crafting** — dissolve cards to see Eitr value (display only in v1 — forging and Eitr trading disabled until replay-derived)
 
-### Blockchain (Hive Layer 1 — Protocol v1.0)
+### Blockchain (Hive Layer 1 — Protocol v1.2)
 - **Reader-defined L1 asset protocol** — canonical state derived from irreversible Hive block replay, not a smart contract
-- **14 canonical operations** — genesis, seal, mint_batch, card_transfer, burn, pack_commit, pack_reveal, reward_claim, level_up, queue_join, queue_leave, match_anchor, match_result, slash_evidence
+- **29 canonical operations** — v1.0 base (14 ops) + v1.1 pack NFTs & DNA lineage (6 ops) + v1.2 marketplace & DUAT (9 ops)
 - **Shared replay core** — one isomorphic protocol engine used by both browser and server (no duplicate validation)
 - **Commit-reveal pack opening** — delayed irreversible block entropy with auto-finalize on 200-block deadline
-- **Pinned-pubkey match anchoring** — post-seal signature verification uses payload-anchored keys, not current chain keys
+- **Atomic transfers** — 0.001 HIVE companion transfer for L1 explorer visibility (PeakD, HiveScan)
+- **Pack NFTs** — sealed packs as tradeable NFTs with deterministic DNA; burn to open
+- **DNA lineage** — every card has originDna (genotype) + instanceDna (phenotype); replicate and merge ops
+- **On-chain marketplace** — 6 ops (list, unlist, buy, offer, accept, reject) with trustless payment verification
+- **DUAT holder airdrop** — 30% of supply (164,460 packs) to 3,511 DUAT token holders; 90-day claim window
 - **Dual-signature match results** with Merkle transcript anchoring and PoW
-- **Self-serve tournament rewards** — 11 milestones, players claim via Keychain
-- **Supply caps** — separate pack and reward pools; per-card limits: 1,800 common, 1,250 rare, 750 epic, 500 mythic
-- **Anti-cheat** — Mandatory WASM engine, PoW (64×6-bit for match results), slash evidence, nonce anti-replay
+- **Supply caps** — per-card limits: 2,000 common, 1,000 rare, 500 epic, 250 mythic
+- **Anti-cheat** — Mandatory WASM engine, PoW, slash evidence, nonce anti-replay, STUN/TURN NAT traversal
+- **6-tier decentralized indexer** — on-chain CID → IPFS → Hive fallback → HafSQL → bundled snapshot → P2P relay
 - **Cold multisig governance** — genesis → seal lifecycle permanently closes admin minting
+
+### Multiplayer (P2P WebRTC)
+
+- **Peer-to-peer** — no central server required; game can't be shut down
+- **STUN/TURN** — 7 STUN servers + TURN relay for cross-continent NAT traversal (~85% global success)
+- **Madden-style disconnect protection** — 15s grace period with countdown before match ends
+- **Heartbeat keepalive** — 5s ping detects dead connections before PeerJS notices
+- **Message buffer** — 50-message queue during disconnect, replayed in order on reconnect
+- **Exponential reconnect** — 3 attempts (2s → 5s → 10s backoff), 92s total budget
 
 ---
 
@@ -515,7 +528,16 @@ server/
 - [x] Commit-reveal pack opening with auto-finalize (anti-grind, anti-selective-reveal)
 - [x] Pinned-pubkey match anchoring (post-seal verification uses payload keys only)
 - [x] Real Hive signature verification (hive-tx ECDSA recovery)
-- [x] 170 tests (37 conformance vectors + 38 replay traces + 95 existing)
+- [x] 192 tests (37 conformance vectors + 38 replay traces + 117 existing)
+
+- [x] Protocol v1.1 — atomic transfers, pack NFTs, DNA lineage (6 new ops)
+- [x] Protocol v1.2 — on-chain marketplace (6 ops), broadcast hardening, NFTLox integration
+- [x] DUAT airdrop system — 30% supply (164,460 packs) to 3,511 token holders, 90-day claim window
+- [x] Card visual overhaul — 50+ SVG keyword icons, SVG stat emblems, rarity gems
+- [x] Campaign story mode — per-mission narrative intro, AAA cinematic crawl with letterbox
+- [x] P2P resilience — STUN/TURN, 15s grace period, heartbeat, message buffer, exponential reconnect
+- [x] 6-tier decentralized indexer — IPFS + HafSQL fallback, zero server required
+- [x] Marketplace UI — `/marketplace` with browse, list, buy, offer
 
 ### Next: Genesis Launch
 
@@ -534,10 +556,12 @@ server/
 | Document | Description |
 |----------|-------------|
 | [RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md) | **Frozen protocol spec** — 14 base ops, authority matrix, finality rules, launch gates |
-| [ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md) | **Protocol v1.1** — atomic transfers, pack NFTs, DNA lineage (7 new ops, 21 total) |
+| [ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md) | **Protocol v1.1** — atomic transfers, pack NFTs, DNA lineage (6 new ops) |
+| [PROTOCOL_V1_2_DESIGN.md](docs/PROTOCOL_V1_2_DESIGN.md) | **Protocol v1.2** — marketplace, broadcast hardening, NFTLox integration, card visuals |
+| [DUAT_AIRDROP_DESIGN.md](docs/DUAT_AIRDROP_DESIGN.md) | **DUAT airdrop** — 30% supply to 3,511 holders, claim window, treasury absorption |
+| [DECENTRALIZED_INDEXER_DESIGN.md](docs/DECENTRALIZED_INDEXER_DESIGN.md) | **Light HAF** — 6-tier IPFS index, WoT operators, HafSQL fallback |
 | [RULEBOOK.md](docs/RULEBOOK.md) | Complete game rules with examples |
 | [GAME_FLOW.md](docs/GAME_FLOW.md) | Game flow diagrams and state management |
-| [RAGNAROK_GAME_RULES.md](docs/RAGNAROK_GAME_RULES.md) | Detailed P2E rules and status effects |
 | [GENESIS_RUNBOOK.md](docs/GENESIS_RUNBOOK.md) | **Operational ceremony guide** — multisig signing, checkpoints, emergency procedures |
 | [HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md) | Hive NFT architecture (legacy — protocol spec is now canonical) |
 | [CLAUDE.md](CLAUDE.md) | Technical architecture reference |

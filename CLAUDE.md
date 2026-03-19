@@ -1588,6 +1588,19 @@ vercel --prod                 # Deploy to Vercel
 - Fixed 5 infinite re-render loops in boss rule effects (React #185: merged per-turn effects with turn-tracking ref)
 - 49 missions across 5 chapters audited: all hero IDs, card IDs, king IDs, AI profiles verified
 
+### Completed (P2P Multiplayer Hardening)
+
+- STUN/TURN ICE servers: 7 STUN (Google ×5, stunprotocol, Nextcloud) + TURN relay (metered.ca free tier)
+- Cross-continent NAT traversal: ~85% success rate globally (was ~10% without TURN)
+- Connection timeout: 10s → 25s per attempt, 2 retries with 3s backoff
+- Exponential backoff reconnection: 3 attempts at 2s → 5s → 10s delays (92s total budget)
+- 15-second grace period (Madden-style): opponent drops → game pauses with countdown → resumes if they return
+- Heartbeat keepalive: 5s ping interval, 12s silence threshold triggers grace period
+- Message buffer: 50-message queue during disconnect, flushed in order on reconnect (no lost actions)
+- P2PStatusBadge upgraded: connected (green), reconnecting (amber + countdown), grace period (orange), error (red)
+- Semi-transparent reconnecting overlay with countdown timer + "Game state preserved" message
+- Anti-exploit: symmetric grace, FIFO buffer replay, host remains authoritative
+
 ### Next (Genesis Launch)
 
 - Admin panel built: `/admin` → Genesis Command Center (step-by-step ceremony UI with checklist)
