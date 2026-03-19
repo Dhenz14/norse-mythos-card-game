@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArmySelection as ArmySelectionType, ChessPiece } from '../../types/ChessTypes';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
@@ -370,9 +370,10 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
 
   const { initializeCombat, endCombat, combatState } = usePokerCombatAdapter();
 
-  const opponentArmy = isCampaign
+  const opponentArmy = useMemo(() => isCampaign
     ? buildCampaignArmy(campaignData!.mission)
-    : getDefaultArmySelection();
+    : getDefaultArmySelection(),
+    [isCampaign, campaignData]);
 
   const createPetFromChessPiece = useCallback((
     piece: typeof boardState.pieces[0],
