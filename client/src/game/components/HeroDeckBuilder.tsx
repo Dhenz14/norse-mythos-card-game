@@ -77,12 +77,23 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 	const classColor = getClassColor(heroClass);
 	const holo = useHoloTracking();
 
-	const [showTutorial, setShowTutorial] = useState(() => {
-		try { return !localStorage.getItem('ragnarok-deckbuilder-tutorial-seen'); }
-		catch { return false; }
+	const [tutorialStep, setTutorialStep] = useState(() => {
+		try { return localStorage.getItem('ragnarok-deckbuilder-tutorial-seen') ? -1 : 0; }
+		catch { return -1; }
 	});
+	const showTutorial = tutorialStep >= 0;
+	const advanceTutorial = useCallback(() => {
+		setTutorialStep(prev => {
+			if (prev >= 2) {
+				try { localStorage.setItem('ragnarok-deckbuilder-tutorial-seen', '1'); }
+				catch { /* private browsing */ }
+				return -1;
+			}
+			return prev + 1;
+		});
+	}, []);
 	const dismissTutorial = useCallback(() => {
-		setShowTutorial(false);
+		setTutorialStep(-1);
 		try { localStorage.setItem('ragnarok-deckbuilder-tutorial-seen', '1'); }
 		catch { /* private browsing */ }
 	}, []);
@@ -164,18 +175,86 @@ export const HeroDeckBuilder: React.FC<HeroDeckBuilderProps> = ({
 					</div>
 				</div>
 
+				<AnimatePresence>
 				{showTutorial && (
-					<div className="db-tutorial-banner">
-						<div className="db-tutorial-steps">
-							<span className="db-tutorial-step"><kbd>Left-click</kbd> a card to add it to your deck</span>
-							<span className="db-tutorial-divider">|</span>
-							<span className="db-tutorial-step"><kbd>Right-click</kbd> a card for full details</span>
-							<span className="db-tutorial-divider">|</span>
-							<span className="db-tutorial-step">Use <strong>filters</strong> above the grid to find cards fast</span>
+					<motion.div
+						className="db-tutorial-overlay"
+						initial={{ opacity: 0, height: 0 }}
+						animate={{ opacity: 1, height: 'auto' }}
+						exit={{ opacity: 0, height: 0 }}
+						transition={{ duration: 0.35, ease: 'easeOut' }}
+					>
+						<div className="db-tutorial-inner">
+							<div className="db-tutorial-progress">
+								{[0, 1, 2].map(i => (
+									<div key={i} className={`db-tutorial-pip ${i === tutorialStep ? 'active' : ''} ${i < tutorialStep ? 'done' : ''}`} />
+								))}
+							</div>
+							<AnimatePresence mode="wait">
+								<motion.div
+									key={tutorialStep}
+									className="db-tutorial-card"
+									initial={{ opacity: 0, x: 30 }}
+									animate={{ opacity: 1, x: 0 }}
+									exit={{ opacity: 0, x: -30 }}
+									transition={{ duration: 0.2 }}
+								>
+									{tutorialStep === 0 && (
+										<>
+											<div className="db-tutorial-icon">
+												<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+													<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+												</svg>
+											</div>
+											<div className="db-tutorial-text">
+												<div className="db-tutorial-title">Add Cards</div>
+												<div className="db-tutorial-desc"><kbd>Left-click</kbd> any card in the grid to add it to your deck</div>
+											</div>
+										</>
+									)}
+									{tutorialStep === 1 && (
+										<>
+											<div className="db-tutorial-icon">
+												<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+													<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+												</svg>
+											</div>
+											<div className="db-tutorial-text">
+												<div className="db-tutorial-title">Inspect Cards</div>
+												<div className="db-tutorial-desc"><kbd>Right-click</kbd> a card to flip it and read full details</div>
+											</div>
+										</>
+									)}
+									{tutorialStep === 2 && (
+										<>
+											<div className="db-tutorial-icon">
+												<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+													<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+												</svg>
+											</div>
+											<div className="db-tutorial-text">
+												<div className="db-tutorial-title">Find Cards</div>
+												<div className="db-tutorial-desc">Use the <strong>search</strong> and <strong>filters</strong> to narrow by type, rarity, or mana cost</div>
+											</div>
+										</>
+									)}
+								</motion.div>
+							</AnimatePresence>
+							<div className="db-tutorial-actions">
+								<button type="button" className="db-tutorial-skip" onClick={dismissTutorial}>Skip</button>
+								<button type="button" className="db-tutorial-next" onClick={advanceTutorial}>
+									{tutorialStep >= 2 ? 'Ready' : 'Next'}
+									{tutorialStep < 2 && (
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+											<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+										</svg>
+									)}
+								</button>
+							</div>
 						</div>
-						<button type="button" className="db-tutorial-dismiss" onClick={dismissTutorial}>Got it</button>
-					</div>
+					</motion.div>
 				)}
+				</AnimatePresence>
 
 				{/* Main Content */}
 				<div className="db-main-split">
