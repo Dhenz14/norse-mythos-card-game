@@ -116,7 +116,7 @@ export const greekMythicMinions: CardData[] = [
 		rarity: 'mythic',
 		race: 'Beast',
 		description: 'Whenever this takes damage and survives, gain +2 Attack.',
-		flavorText: 'Cut one head, two more shall grow. The Lernaean horror that even Heracles could not simply slay.',
+		flavorText: 'Heracles discovered that each severed head spawned two more. Only when his nephew Iolaus cauterized each stump with a burning brand did the horror finally stay dead — all but the immortal head, which Heracles buried under a boulder. (Apollodorus, Library 2.5.2)',
 		keywords: [],
 		class: 'Neutral',
 		set: 'core',

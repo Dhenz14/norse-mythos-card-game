@@ -1553,20 +1553,20 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     element: 'dark',
     weakness: 'light',
     startingHealth: 100,
-    description: 'The silent god destined to avenge Odin by slaying Fenrir.',
-    lore: 'The silent god destined to avenge Odin by slaying Fenrir.',
+    description: 'The silent god who avenges his father Odin by tearing Fenrir\'s jaw apart with his bare hands and his iron shoe.',
+    lore: 'Víðarr speaks no word until the moment he drives his thick-soled shoe into Fenrir\'s lower jaw and rips the wolf apart. His silence is not weakness — it is patience forged across an age of waiting. (Völuspá 54, Gylfaginning 51)',
     gender: 'male',
     hasSpells: true,
     heroClass: 'rogue',
     fixedCardIds: [12101, 12102, 12103, 12104, 12105, 12106, 12107, 12108, 12109, 12110],
     heroPower: {
       id: 'vidar-power',
-      name: 'Dagger Mastery',
+      name: 'Silent Strike',
       description: 'Equip a 1/2 Dagger.',
       cost: 2,
       targetType: 'none',
       effectType: 'equip_weapon',
-      weaponData: { name: 'Wicked Dagger', attack: 1, durability: 2 }
+      weaponData: { name: 'Víðarr\'s Blade', attack: 1, durability: 2 }
     },
     weaponUpgrade: {
       id: 90027,
@@ -1583,18 +1583,18 @@ export const NORSE_HEROES: Record<string, NorseHero> = {
     },
     upgradedHeroPower: {
       id: 'vidar-power-upgraded',
-      name: 'Dagger Mastery+',
+      name: 'Avenger\'s Strike',
       description: 'Equip a 2/2 Dagger.',
       cost: 2,
       targetType: 'none',
       effectType: 'equip_weapon',
-      weaponData: { name: 'Wicked Dagger', attack: 2, durability: 2 },
+      weaponData: { name: 'Víðarr\'s Blade', attack: 2, durability: 2 },
       isUpgraded: true,
       baseHeroPowerId: 'vidar-power'
     },
     passive: {
       id: 'vidar-passive',
-      name: 'Silent Stalker',
+      name: 'Patient Vengeance',
       description: 'Your weapon has +1 Attack while you have a minion with Stealth.',
       trigger: 'always',
       condition: { hasStealth: true },

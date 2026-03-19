@@ -345,7 +345,7 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       id: 'hero-vidar',
       name: 'Vidar',
       heroClass: 'paladin',
-      description: 'God of Vengeance: Gain power when allies fall.',
+      description: 'God of Vengeance: Patient silence, then devastating strikes.',
       fixedCardIds: [],
       element: 'light',
       norseHeroId: 'hero-vidar',

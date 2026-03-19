@@ -5737,8 +5737,8 @@ function executeSummonHorsemanBattlecry(
 
   const tokenCard: CardData = {
     id: 99800,
-    name: 'Horseman',
-    description: 'A 2/2 Horseman.',
+    name: 'Herald of Ragnarök',
+    description: 'A 2/2 Herald of Ragnarök.',
     manaCost: 2,
     type: 'minion',
     rarity: 'token' as any,

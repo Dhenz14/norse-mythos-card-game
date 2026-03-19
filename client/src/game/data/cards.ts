@@ -1154,10 +1154,10 @@ export const fullCardDatabase: CardData[] = [
     
     },
       heroPower: {
-    name: 'The Four Horsemen of Ragnarök',
+    name: 'The Four Heralds of Ragnarök',
     cost: 2,
     used: false,
-    description: 'Hero Power: Summon a 2/2 Horseman. If you have all 4, destroy the enemy hero.',
+    description: 'Hero Power: Summon a 2/2 Herald. If you have all 4, destroy the enemy hero.',
     effect: {
       type: 'summon_horseman',
       summonCardIds: [8027, 8028, 8029, 8030],
@@ -1168,10 +1168,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 8027,
-    name: 'Horseman of Famine',
-  description: 'One of the Four Horsemen of Ragnarök.',
-  
-  flavorText: 'Starvation follows in this rider\'s wake.',
+    name: 'Herald of Fimbulvetr',
+  description: 'One of the Four Heralds of Ragnarök.',
+
+  flavorText: 'Three winters with no summer between. The world starves, and brother slays brother for a crust of bread. (Vafþrúðnismál 44)',
   type: 'minion',
   
   rarity: 'epic',
@@ -1185,10 +1185,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 8028,
-    name: 'Horseman of Pestilence',
-  description: 'One of the Four Horsemen of Ragnarök.',
-  
-  flavorText: 'Disease spreads wherever this horseman rides.',
+    name: 'Herald of Naglfar',
+  description: 'One of the Four Heralds of Ragnarök.',
+
+  flavorText: 'Naglfar, the ship made from dead men\'s fingernails, carries Hel\'s legions across the black sea to the final battle. (Gylfaginning 51)',
   type: 'minion',
   
   rarity: 'epic',
@@ -1202,10 +1202,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 8029,
-    name: 'Horseman of War',
-  description: 'One of the Four Horsemen of Ragnarök.',
-  
-  flavorText: 'Battle and bloodshed ride in his shadow.',
+    name: 'Herald of Fenrir',
+  description: 'One of the Four Heralds of Ragnarök.',
+
+  flavorText: 'When Fenrir breaks free from Gleipnir, his jaws stretch from earth to sky. Even the Allfather cannot escape them. (Völuspá 53)',
   type: 'minion',
   
   rarity: 'epic',
@@ -1219,10 +1219,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 8030,
-    name: 'Horseman of Death',
-  description: 'One of the Four Horsemen of Ragnarök.',
-  
-  flavorText: 'Hel herself empowered this final rider.',
+    name: 'Herald of Hel',
+  description: 'One of the Four Heralds of Ragnarök.',
+
+  flavorText: 'Half her face is living, half is dead. When Hel rides out at Ragnarök, even the gods feel the cold of Niflheim. (Gylfaginning 34)',
   type: 'minion',
   
   rarity: 'epic',
@@ -2003,10 +2003,10 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 13006,
-    name: 'Hex of Circe',
+    name: 'Seiðr Hex',
   description: 'Transform a minion into a 0/1 Frog with Taunt.',
-  
-  flavorText: 'The sorceress Circe transforms heroes into beasts.',
+
+  flavorText: 'The völva traces a stave in the air and speaks the galdr. What was once a warrior is now something much smaller. (Völuspá 22)',
   type: 'spell',
   
   rarity: 'rare',
@@ -2601,9 +2601,9 @@ export const fullCardDatabase: CardData[] = [
   },
   {
     id: 13047,
-    name: 'Curse Lord of Circe',
+    name: 'Seiðr Shapeshifter',
     description: 'Whenever you cast a spell, transform a random enemy minion into a 0/1 Frog with Taunt.',
-    flavorText: 'The sorceress\'s heir transforms all.',
+    flavorText: 'Odin himself practiced seiðr, though the Æsir deemed it unmanly. Those who master it reshape flesh like clay. (Ynglinga Saga 7)',
     
     type: 'minion',
     rarity: 'epic',
@@ -2820,10 +2820,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 9110,
-    name: 'Skull of Prometheus',
+    name: 'Skull of Mímir',
       description: 'Draw 3 cards. Outcast: Reduce their cost by (3).',
 
-      flavorText: 'The Titan who stole fire now shares forbidden knowledge.',
+      flavorText: 'Odin carries Mímir\'s head to every gathering of consequence. It never lies — but it never comforts, either. (Völuspá 46)',
       type: 'spell',
 
       rarity: 'rare',
@@ -3098,10 +3098,10 @@ export const fullCardDatabase: CardData[] = [
     },
   {
     id: 14009,
-    name: 'Curse of Circe',
+    name: 'Loki\'s Shapecraft',
       description: 'Transform a minion into a 1/1 Sheep.',
 
-      flavorText: 'The sorceress Circe transforms heroes into beasts.',
+      flavorText: 'Loki once became a mare to distract Svaðilfari — and bore Sleipnir, the eight-legged horse. A sheep is mercy by comparison. (Gylfaginning 42)',
       type: 'spell',
 
       rarity: 'common',

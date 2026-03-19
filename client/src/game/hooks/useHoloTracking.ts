@@ -174,13 +174,33 @@ export function useHoloTracking(cardRef?: RefObject<HTMLDivElement | null>): Hol
 
 export type HoloTier = 'holo-rare' | 'holo-epic' | 'holo-mythic';
 
-export function getHoloTier(rarity?: string): HoloTier | null {
+/**
+ * Returns the holo tier for a card's rarity, respecting the cardQuality setting.
+ * - 'low': no holographic effects
+ * - 'medium': cap at rare tier (no epic/mythic holo)
+ * - 'high': full holo tiers
+ */
+export function getHoloTier(rarity?: string, quality?: 'low' | 'medium' | 'high'): HoloTier | null {
 	if (!rarity) return null;
+	// Lazy-read quality from settingsStore if not passed explicitly
+	const q = quality ?? _getCardQuality();
+	if (q === 'low') return null;
 	switch (rarity.toLowerCase()) {
-		case 'mythic': return 'holo-mythic';
-		case 'epic': return 'holo-epic';
+		case 'mythic': return q === 'medium' ? 'holo-rare' : 'holo-mythic';
+		case 'epic': return q === 'medium' ? 'holo-rare' : 'holo-epic';
 		case 'rare': return 'holo-rare';
 		default: return null;
+	}
+}
+
+/** Lazy accessor so we don't import settingsStore at module top level */
+function _getCardQuality(): 'low' | 'medium' | 'high' {
+	try {
+		// Dynamic import avoidance — use getState() directly
+		const { useSettingsStore } = require('../stores/settingsStore');
+		return useSettingsStore.getState().cardQuality ?? 'high';
+	} catch {
+		return 'high';
 	}
 }
 

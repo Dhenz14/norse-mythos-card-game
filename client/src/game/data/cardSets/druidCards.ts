@@ -35,7 +35,7 @@ export function registerDruidCards(): void {
     .type("spell")
     .rarity("common")
     .description("Gain 1 Mana Crystal this turn only.")
-    .flavorText("Some druids still have flashbacks from strangers yelling \"Innervate me!!\" at them.")
+    .flavorText("Idunn channels the life-force of Yggdrasil itself — raw creation energy older than the Nine Realms.")
     .heroClass("druid")
     .class("Druid")
     .spellEffect({

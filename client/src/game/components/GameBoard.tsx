@@ -63,6 +63,8 @@ import { useTargetingArrows } from '../hooks/useTargetingArrows';
 import { useCardDetailModal } from '../hooks/useCardDetailModal';
 import { useAttackVisualization } from '../hooks/useAttackVisualization';
 import { useGameAnimationEffects } from '../hooks/useGameAnimationEffects';
+import { useCardGameKeyboard } from '../hooks/useCardGameKeyboard';
+import { useSettingsStore } from '../stores/settingsStore';
 
 // Stable action references — grabbed once, never trigger rerenders
 const gameActions = useGameStore.getState();
@@ -124,6 +126,14 @@ export const GameBoard: React.FC<{}> = () => {
     activeEnvironmentalEffect,
     setActiveEnvironmentalEffect
   } = useGameAnimationEffects();
+
+  // Card game keyboard shortcuts (Space=end turn, h=hero power, f=fullscreen, etc.)
+  useCardGameKeyboard({ enabled: gameState?.gamePhase === 'playing' });
+
+  // Settings subscriptions
+  const showDamageNumbers = useSettingsStore(s => s.showDamageNumbers);
+  const confirmAttacks = useSettingsStore(s => s.confirmAttacks);
+  const cardQuality = useSettingsStore(s => s.cardQuality);
 
   // Reference to track turn changes for turn transition
   const lastTurnRef = useRef<string | null>(null);
@@ -187,12 +197,12 @@ export const GameBoard: React.FC<{}> = () => {
   }, []);
   
   // Animation system
-  const { 
-    animations, 
-    removeAnimation, 
-    addAttackAnimation, 
-    addDamageEffect, 
-    addHealEffect, 
+  const {
+    animations,
+    removeAnimation,
+    addAttackAnimation,
+    addDamageEffect: _rawAddDamageEffect,
+    addHealEffect,
     addBuffEffect, 
     addShieldBreakEffect, 
     addHeroPowerEffect,
@@ -200,6 +210,13 @@ export const GameBoard: React.FC<{}> = () => {
     addManaUseAnimation,
     addOverloadAnimation
   } = useAnimations();
+
+  // Gate damage popups behind showDamageNumbers setting
+  const addDamageEffect = useCallback((...args: Parameters<typeof _rawAddDamageEffect>) => {
+    if (useSettingsStore.getState().showDamageNumbers) {
+      _rawAddDamageEffect(...args);
+    }
+  }, [_rawAddDamageEffect]);
 
   useEventAnimationBridge();
 
@@ -1152,6 +1169,13 @@ export const GameBoard: React.FC<{}> = () => {
   
   // Handle attacking an opponent's card
   const handleAttackOpponentCard = (targetCard: CardInstance | CardInstanceWithCardData) => {
+    // Confirm attacks setting — ask before executing
+    if (confirmAttacks && attackingCard) {
+      const atkName = attackingCard.card?.name || 'Minion';
+      const defName = 'card' in targetCard ? targetCard.card?.name : 'target';
+      if (!window.confirm(`Attack ${defName} with ${atkName}?`)) return;
+    }
+
     // Convert the card to ensure it has the right format (CardInstance)
     const adaptedTargetCard = reverseAdaptCardInstance(adaptCardInstance(targetCard));
     
@@ -1265,6 +1289,12 @@ export const GameBoard: React.FC<{}> = () => {
   
   // Handle attacking the opponent's hero directly, using hero power, or targeting with battlecry or spell
   const handleAttackOpponentHero = () => {
+    // Confirm attacks setting — ask before going face
+    if (confirmAttacks && attackingCard) {
+      const atkName = attackingCard.card?.name || 'Minion';
+      if (!window.confirm(`Attack opponent hero with ${atkName}?`)) return;
+    }
+
     // CASE 1: If there's a spell card that needs a target
     if (selectedCard && 
         isSpell(selectedCard.card) && 

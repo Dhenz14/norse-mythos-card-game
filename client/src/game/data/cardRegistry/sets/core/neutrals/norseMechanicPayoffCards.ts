@@ -342,7 +342,7 @@ export const sacrificeCards: CardData[] = [
 		attack: 9,
 		health: 14,
 		description: 'Sacrifice 2 active friendly minions to play. Battlecry: Destroy all other minions. For each destroyed, gain +2/+2. Your opponent discards their highest cost card.',
-		flavorText: 'God may have created it, but even the heavens fear its steps.',
+		flavorText: 'In the Ginnungagap before creation, formless things stirred in the void between fire and ice. Some say Ymir was the first to wake. Some say there was something before even Ymir — something that never stopped growing.',
 		type: 'minion',
 		rarity: 'mythic',
 		class: 'Neutral',

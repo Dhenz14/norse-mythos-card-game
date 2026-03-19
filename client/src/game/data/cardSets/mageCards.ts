@@ -105,14 +105,14 @@ export function registerMageCards(): void {
     .collectible(true)
     .build();
 
-  // Prometheus the Firebringer
+  // Flame-Bearer of Surtr
   createCard()
     .id(14005)
-    .name("Prometheus the Firebringer")
+    .name("Flame-Bearer of Surtr")
     .manaCost(7)
     .attack(5)
     .health(7)
-    .description("Whenever you cast a spell, add a 'Surtr's Wrath' spell to your hand.")
+    .description("Whenever you cast a spell, add a 'Muspel Flame' spell to your hand.")
     .rarity("mythic")
     .type("minion")
     .class("Mage")
@@ -146,10 +146,10 @@ export function registerMageCards(): void {
   // Polymorph
   createCard()
     .id(14009)
-    .name("Circe's Curse")
+    .name("Loki's Shapecraft")
     .manaCost(4)
     .description("Transform a minion into a 1/1 Sheep.")
-    .flavorText("There was going to be a pun in this flavor text, but it just came out baa-d.")
+    .flavorText("Loki became a mare, a salmon, a fly, and an old woman. Turning you into a sheep is barely an inconvenience. (Gylfaginning 33-51)")
     .rarity("common")
     .type("spell")
     .class("Mage")
@@ -378,7 +378,7 @@ export function registerMageCards(): void {
   // Polymorph
   createCard()
     .id(32007)
-    .name("Circe's Curse")
+    .name("Loki's Shapecraft")
     .manaCost(4)
     .description("Transform a minion into a 1/1 Sheep.")
     .rarity("common")

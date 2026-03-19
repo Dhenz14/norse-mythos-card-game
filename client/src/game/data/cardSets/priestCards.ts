@@ -239,13 +239,13 @@ export function registerPriestCards(): void {
     .addCategory("classic")
     .build();
 
-  // Thanatos' Decree
+  // Hel's Decree
   createCard()
     .id(9026)
-    .name("Thanatos' Decree")
+    .name("Hel's Decree")
     .manaCost(3)
     .description("Destroy a minion with 5 or more Attack.")
-    .flavorText("If you miss lethal, you're doing it wrong.")
+    .flavorText("Hel judges the dead with one living eye and one dead. Those she decrees must fall — fall. (Gylfaginning 34)")
     .type("spell")
     .rarity("common")
     .heroClass("priest")

@@ -247,12 +247,12 @@ export const paladinSpells: CardData[] = [
 export const mageSpells: CardData[] = [
   {
     id: 32007,
-    name: "Circe's Curse",
+    name: "Loki's Shapecraft",
     manaCost: 4,
     type: "spell",
     rarity: "common",
     description: "Transform a minion into a 1/1 Sheep.",
-    flavorText: 'She turned Odysseus\'s men to swine. He was not amused.',
+    flavorText: 'Loki once became a mare to distract Svaðilfari — and bore Sleipnir. A sheep is mercy by comparison. (Gylfaginning 42)',
     keywords: ["transform"],
     heroClass: "mage",
     class: "Mage",

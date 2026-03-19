@@ -245,6 +245,16 @@ export const KEYWORD_DEFINITIONS: Record<string, KeywordDefinition> = {
 		description: 'While this minion is on the battlefield, its effect activates during poker combat.',
 		icon: 'dice',
 	},
+	submerge: {
+		name: 'Submerge',
+		description: 'Enters play face-down and untargetable for a number of turns. Surfaces with a powerful effect.',
+		icon: 'anchor',
+	},
+	coil: {
+		name: 'Coil',
+		description: 'Locks an enemy minion\'s attack to 0 while this minion lives. Deathrattle frees the target.',
+		icon: 'lock',
+	},
 };
 
 export function getKeywordDefinition(keyword: string): KeywordDefinition | null {

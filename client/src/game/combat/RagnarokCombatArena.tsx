@@ -44,10 +44,12 @@ import { ElementMatchupBanner } from './components/ElementMatchupBanner';
 import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
 import { PhaseBanner } from './components/PhaseBanner';
 import { RiskDisplay } from './components/PotDisplay';
+import { WagerEffectsHUD } from './components/WagerEffectsHUD';
 import { useElementalBuff } from './hooks/useElementalBuff';
 import { canCardAttack as canCardAttackCheck } from './attackUtils';
 import { GameViewport } from './GameViewport';
 import { useCombatLayout } from '../hooks/useCombatLayout';
+import { useSettingsStore } from '../stores/settingsStore';
 import CardRenderer from '../components/CardRendering/CardRenderer';
 import { useRagnarokCombatController } from './hooks/useRagnarokCombatController';
 import { HeroBattlePopup } from './components/HeroBattlePopup';
@@ -553,6 +555,9 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       
       {/* Risk Display - total HP at stake */}
       <RiskDisplay risk={combatState.pot} hidden={isMulligan} />
+
+      {/* Wager Effects HUD — shows active wager keyword effects from battlefield */}
+      <WagerEffectsHUD />
       
       {/* Opponent Field */}
       <div className="unified-opponent-field">
@@ -780,8 +785,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       )}
       
-      {/* Damage Animations */}
-      {damageAnimations.map(anim => (
+      {/* Damage Animations — gated by showDamageNumbers setting */}
+      {useSettingsStore.getState().showDamageNumbers && damageAnimations.map(anim => (
         <DamageIndicator
           key={anim.id}
           damage={anim.damage}

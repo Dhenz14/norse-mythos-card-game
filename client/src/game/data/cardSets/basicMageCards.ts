@@ -92,7 +92,7 @@ export function registerBasicMageCards(): void {
   // Polymorph
   createCard()
     .id(10005)
-    .name("Circe's Curse")
+    .name("Loki's Shapecraft")
     .manaCost(4)
     .description("Transform a minion into a 1/1 Sheep.")
     .rarity("common")

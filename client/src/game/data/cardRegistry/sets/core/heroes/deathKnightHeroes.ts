@@ -34,8 +34,8 @@ const helheimWarlordHeroPower: HeroPower = {
 };
 
 const lightforgedHeroPower: HeroPower = {
-  name: "The Four Horsemen",
-  description: "Summon a 2/2 Horseman. If you have all 4, destroy the enemy hero.",
+  name: "The Four Heralds",
+  description: "Summon a 2/2 Herald. If you have all 4, destroy the enemy hero.",
   cost: 2,
   used: false,
   class: "Paladin"
@@ -129,12 +129,12 @@ export const deathKnightHeroTokens: CardData[] = [
   },
   {
     id: 10603,
-    name: "Horseman",
+    name: "Herald of Ragnarök",
     manaCost: 2,
     attack: 2,
     health: 2,
     description: "Summoned by Baldr, Fallen Radiance's hero power.",
-    flavorText: "One of the Four Horsemen of the Apocalypse.",
+    flavorText: "Four signs herald the end: Fimbulvetr's frost, Naglfar's sail, Fenrir's howl, and Hel's march. (Völuspá 44-53)",
     rarity: 'epic',
     type: "minion",
     keywords: [],

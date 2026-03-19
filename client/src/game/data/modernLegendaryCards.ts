@@ -226,7 +226,7 @@ export const modernLegendaryCards: CardData[] = [
   {
   id: 95212,
   
-  name: "Circe, Echo Sorceress",
+  name: "Gullveig, Thrice-Born",
   manaCost: 6,
   
   attack: 3,
@@ -236,7 +236,7 @@ export const modernLegendaryCards: CardData[] = [
   rarity: "rare",
   
   description: "Minions in your hand have Echo.",
-  flavorText: "Echo... echo... echo...",
+  flavorText: "They stabbed her with spears. They burned her in the hall. Three times born, three times scorned — and she outlived them all. (Völuspá 21)",
   
   keywords: [],
   heroClass: "warlock", // Special handling for echo granting

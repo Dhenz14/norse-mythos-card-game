@@ -870,12 +870,21 @@ export function initGameStoreSubscriptions() {
 		const canUseHeroPower = heroPower && !heroPower.used && currentMana >= heroPower.cost;
 
 		if (!hasPlayableCard && !hasAvailableAttacker && !canUseHeroPower) {
-			autoEndTurnTimer = setTimeout(() => {
-				const currentGs = useGameStore.getState().gameState;
-				if (currentGs?.currentTurn === 'player' && currentGs?.gamePhase === 'playing') {
-					useGameStore.getState().endTurn();
-				}
-			}, 3000);
+			// Only auto-end if the user has opted in via Settings → Gameplay → Auto End Turn
+			let autoEndEnabled = false;
+			try {
+				const { useSettingsStore } = require('./settingsStore');
+				autoEndEnabled = useSettingsStore.getState().autoEndTurn;
+			} catch { /* settings not available — skip */ }
+
+			if (autoEndEnabled) {
+				autoEndTurnTimer = setTimeout(() => {
+					const currentGs = useGameStore.getState().gameState;
+					if (currentGs?.currentTurn === 'player' && currentGs?.gamePhase === 'playing') {
+						useGameStore.getState().endTurn();
+					}
+				}, 3000);
+			}
 		}
 	}));
 }

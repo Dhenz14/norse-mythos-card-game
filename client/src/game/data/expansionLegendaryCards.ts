@@ -70,7 +70,7 @@ export const expansionLegendaryCards: CardData[] = [{
   rarity: "rare",
   
   description: "Whenever another minion is Frozen, add a copy of it to your hand.",
-  flavorText: "Any moram can freeze minions. He prefers to call it 'going into the cooler.'",
+  flavorText: "Boreas, the north wind, once carried off Oreithyia from the banks of the Ilissus. His breath turns rivers to stone. (Apollodorus 3.15.2)",
   
   keywords: [],
   heroClass: "shaman",
@@ -91,7 +91,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Deathrattle: Summon your Taunt minions that died this game.",
-      flavorText: "Hadronox's favorite delicacy? Gnome and garden salad.",
+      flavorText: "In Mirkwood's deepest hollow, the web-weavers remember when Ungoliant drank the light of the Two Trees and hungered still.",
 
       keywords: ["deathrattle"],
       heroClass: "druid",
@@ -121,7 +121,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "rare",
 
       description: "Battlecry: If your deck has no 3-Cost cards, transform into a 3/3 copy of a minion.",
-    flavorText: "Okay guys, I admit it... I am not actually a prince. But this blood super works!",
+    flavorText: "The shadow princes of Svartalfheim take the shapes of those they study. By the time you see their true face, you have already forgotten your own.",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -150,7 +150,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "rare",
 
       description: "Battlecry: If your deck has no 2-Cost cards, give all minions in your deck +1/+1.",
-      flavorText: "There's a prince for every mana cost! Collect all 10!* *There are only 3 princes.",
+      flavorText: "Hel bore three sons, each more terrible than the last. The eldest could strengthen an army with a whisper.",
 
       keywords: ["battlecry"],
       heroClass: "neutral",
@@ -183,7 +183,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "rare",
 
       description: "Battlecry: If your deck has no 4-Cost cards, gain Lifesteal and Taunt.",
-      flavorText: "Do NOT call him by his full name: Prince Valanar Dreadskull Grimsorrow. It takes him hours to finish introducing himself.",
+      flavorText: "The blood-prince learned that true power lies not in the sword but in the vein — whoever controls the blood controls the battle.",
 
       keywords: ["battlecry"],
       heroClass: "neutral",
@@ -245,7 +245,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "rare",
 
       description: "Battlecry: Replace spells in your hand with random spells (from your opponent's class).",
-    flavorText: "Lilian was the Headmaster's star pupil. Then, one day, she just... flipped.",
+    flavorText: "Eris tossed a golden apple marked 'For the Fairest' among the goddesses and watched the Trojan War ignite from a single act of spite. (Apollodorus, Epitome 3.2)",
       keywords: ["battlecry"],
 
       heroClass: "rogue",
@@ -274,7 +274,7 @@ export const expansionLegendaryCards: CardData[] = [{
   rarity: "rare",
   
   description: "At the end of your turn, summon a random minion with Cost equal to your Armor (up to 10).",
-  flavorText: "He once built a lovely rock garden, but it was full of rock lobsters that wouldn't stop singing.",
+  flavorText: "Gaia shaped mountains from her own body and rivers from her tears. The armor she wears is the earth itself — strike her, and the land bleeds.",
   keywords: [],
   
   heroClass: "warrior",
@@ -316,7 +316,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Battlecry and   Deathrattle: Add a Spare Part card to your hand.",
-    flavorText: "He's a mechanical engineer with a heart of gold. And gears. Lots and lots of gears.",
+    flavorText: "Daedalus built the Labyrinth, crafted wings from wax and feathers, and watched his son Icarus fall. Invention without wisdom is ruin. (Apollodorus, Epitome 1.12)",
     keywords: ["battlecry", "deathrattle"],
       heroClass: "neutral",
       class: "Neutral",
@@ -354,7 +354,7 @@ export const expansionLegendaryCards: CardData[] = [{
   rarity: "rare",
   
   description: "Whenever your opponent casts a spell, summon a Burly Rockjaw Trogg.",
-  flavorText: "He keeps earthinating the countryside despite attempts to stop him.",
+  flavorText: "Antaeus drew strength from his mother Gaia each time he touched the earth. Heracles held him aloft and crushed him in the air. (Apollodorus 2.5.11)",
   
   keywords: [],
   heroClass: "neutral",
@@ -375,7 +375,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Battlecry: Equip a random weapon for each player.",
-      flavorText: "WARNING: Sindri's Gift-Forge 3000 is not responsible for customer dismemberment.",
+      flavorText: "Hephaestus forged the aegis of Zeus, the armor of Achilles, and the chains of Prometheus. Even the gods depend on his craft. (Iliad XVIII)",
 
       keywords: ["battlecry"],
       heroClass: "neutral",
@@ -406,7 +406,7 @@ export const expansionLegendaryCards: CardData[] = [{
   rarity: "rare",
   
   description: "Whenever you cast a 1-cost spell, add a random Automaton to your hand.",
-  flavorText: "Gazlowe was voted 'Most Likely to Explode During a Rocketbike Festival.'",
+  flavorText: "Daedalus never built the same thing twice. Each invention solved one problem and created two more — the mark of true genius.",
   
   keywords: [],
   heroClass: "neutral", 
@@ -427,7 +427,7 @@ export const expansionLegendaryCards: CardData[] = [{
   rarity: "rare",
   
   description: "At the start of your turn, if you have at least 3 Automatons, destroy them all and form V-07-TR-0N.",
-  flavorText: "Do not push the big red button!",
+  flavorText: "Talos, the bronze giant of Crete, circled the island three times daily. His single vein of ichor ran from neck to ankle, sealed by a bronze nail. (Apollodorus 1.9.26)",
   
   keywords: [],
   heroClass: "neutral",
@@ -450,7 +450,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Battlecry: Destroy a Beast.",
-    flavorText: "He only accepts the most rare and exotic pets. Also, cockroaches.",
+    flavorText: "Orion, the great hunter, boasted he could slay every creature on earth. Gaia sent the scorpion to humble him. Both were placed among the stars. (Apollodorus 1.4.3)",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -478,7 +478,7 @@ export const expansionLegendaryCards: CardData[] = [{
   rarity: "rare",
   
   description: "Whenever an enemy minion dies, summon a 1/1 Leper Gnome.",
-  flavorText: "He's on the cutting edge of technology! Which is why he's still working on cybernetic leper gnomes.",
+  flavorText: "When Medea removed Talos's bronze nail, the ichor drained and the guardian fell — proving that even the mightiest construct has a single fatal flaw.",
   
   keywords: [],
   heroClass: "neutral",
@@ -501,7 +501,7 @@ export const expansionLegendaryCards: CardData[] = [{
   rarity: "rare",
   
   description: "Also damages the minions next to whomever this attacks.",
-  flavorText: "Despite the name, it doesn't actually reap any foes. That's false advertising.",
+  flavorText: "The third incarnation of Talos was built to reap, not to guard — fitted with scythe-arms that could harvest a phalanx in a single pass.",
   keywords: [],
   
   heroClass: "neutral",
@@ -524,7 +524,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Deathrattle: Summon a random mythic minion.",
-    flavorText: "When the Forgemaster says 'Shred', ya shred. Even if you're a mythic minion.",
+    flavorText: "Hephaestus built automatons to serve in his forge — golden maidens with intelligence, voice, and strength. Even his tools had souls. (Iliad XVIII.417)",
       keywords: ["deathrattle"],
 
       heroClass: "neutral",
@@ -554,7 +554,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Battlecry: Replace your starting Hero Power with a better one.",
-    flavorText: "Long ago in a meadow by the forest, she was chosen by the Light. She's been trying to get people to call her 'Justice Girl' ever since.",
+    flavorText: "To judge among the Æsir is to weigh one oath against another. Forseti, son of Baldr, sits in Glitnir and settles every dispute. (Grímnismál 15)",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -583,7 +583,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Battlecry: If you're holding a Dragon, destroy a Mythic minion.",
-    flavorText: "Rend believes he is the True Champion of Muspelheim and keeps challenging Magni Stormcaller to holmgang, the ancient Norse custom where two warriors duel upon a cloak.",
+    flavorText: "Sigurd tasted Fáfnir's blood and understood the speech of birds. They told him Regin planned to betray him. He struck first. (Völsunga Saga 19)",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -641,7 +641,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Battlecry: Add 2 Bananas to your hand.",
-    flavorText: "When he's not menacing the Vale, he likes to unwind with his friends in the jungles of Muspelheim.",
+    flavorText: "Hanuman leapt across the ocean to Lanka in a single bound, carrying a mountain of healing herbs. Devotion grants strength the gods themselves envy. (Ramayana, Sundara Kanda)",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -673,7 +673,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "rare",
 
       description: "Battlecry and   Deathrattle: Add a random Toxin card to your hand.",
-    flavorText: "Everything's coming up Xaril!",
+    flavorText: "The Gorgon's venom has two natures: drawn from the left vein it kills, drawn from the right it heals. Athena gave both to Asclepius. (Apollodorus 3.10.3)",
     keywords: ["battlecry", "deathrattle"],
       heroClass: "rogue",
       class: "Rogue",
@@ -712,7 +712,7 @@ export const expansionLegendaryCards: CardData[] = [{
   rarity: "common",
   
   description: "Stealth. At the end of your turn, summon a 1/1 Steward.",
-  flavorText: "Charon the Steward runs the halls when Óðinn's Prophet is out of town, which is a lot these days.",
+  flavorText: "Charon ferries the dead across the Styx for a single obol. Those who cannot pay wander the shore for a hundred years. (Virgil, Aeneid VI.326)",
   keywords: ["stealth"],
   
   heroClass: "neutral",
@@ -734,7 +734,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Battlecry: Choose a friendly minion. Swap it with a minion in your deck.",
-    flavorText: "She'll swap any card, no questions asked. Except for 'Where am I?' and 'Are you Hecate the Merchant?'",
+    flavorText: "Hecate stands at the crossroads with three faces — one sees the past, one the present, one the future. She trades in all three. (Hesiod, Theogony 411-452)",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -762,7 +762,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "rare",
 
       description: "Deathrattle: Deal damage equal to this minion's Attack to all enemy minions.",
-      flavorText: "Safety is her middle name. Her full name is Sally Safety Dangerzone.",
+      flavorText: "The valkyries do not choose the strongest — they choose the most worthy. Sometimes the worthiest warrior dies last.",
 
       keywords: ["deathrattle"],
       heroClass: "neutral",
@@ -813,7 +813,7 @@ export const expansionLegendaryCards: CardData[] = [{
       rarity: "epic",
 
       description: "Battlecry: Give a random minion in your hand +5/+5.",
-    flavorText: "The brilliant mastermind of the Svartalfheim Syndicate, Han sometimes thinks about switching sides and joining the Vanir Circle. That Freya is so much prettier than Mímir.",
+    flavorText: "In Svartalfheim's deepest markets, the crime-lords trade in secrets heavier than gold. A name whispered here can topple a king in Asgard.",
       keywords: ["battlecry"],
 
       heroClass: "neutral",

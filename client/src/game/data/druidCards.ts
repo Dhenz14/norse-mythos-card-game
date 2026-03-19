@@ -20,7 +20,7 @@ export const druidCards: CardData[] = [
     id: 11003,
     name: 'Gaia\'s Gift',
     description: 'Gain 1 Mana Crystal this turn only.',
-    flavorText: 'Some druids still have flashbacks from strangers yelling "Innervate me!!" at them.',
+    flavorText: 'Idunn channels the life-force of Yggdrasil itself — raw creation energy older than the Nine Realms.',
     type: 'spell',
     rarity: 'common',
     manaCost: 0,

@@ -21,7 +21,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'rare',
 
       description: "Your Battlecries trigger twice.",
-      flavorText: "Contains 75% more fiber than his brother Magni!",
+      flavorText: "Brokkr and Sindri forged Mjölnir, Draupnir, and Gullinbursti in a single wager with Loki — and won. (Skáldskaparmál 35)",
 
       keywords: [],
       heroClass: "neutral",
@@ -42,7 +42,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "mythic",
 
       description: "Battlecry: Repeat all other Battlecries from cards you played this game (targets chosen randomly).",
-    flavorText: "My jaws that bite, my claws that catch!",
+    flavorText: "Jörmungandr encircles all Midgard, tail in teeth. When he releases his grip, the world ends. (Gylfaginning 34)",
       keywords: ["battlecry"],
 
       heroClass: "shaman",
@@ -71,7 +71,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'rare',
   
   description: "After you play a Pirate, summon this minion from your deck.",
-  flavorText: "I'm in charge now!",
+  flavorText: "Ægir's nine daughters are the waves themselves. His raiders ride them fearlessly into battle.",
   
   keywords: [],
   heroClass: "neutral",
@@ -94,7 +94,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'epic',
 
       description: "Battlecry: Summon a 1/1 copy of a random minion in your deck.",
-    flavorText: "He used to play every part, until Charon the Steward convinced him to focus on his true talent: being super-dramatic.",
+    flavorText: "At Ægir's feasts, the mead flowed from Eldhrímnir and the tales grew wilder with each horn. Some revelers never left.",
     keywords: ["battlecry"],
       heroClass: "neutral",
       class: "Neutral",
@@ -129,7 +129,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'rare',
   
   description: "When the game starts, add 5 random Mythic minions to your deck.",
-  flavorText: "He was super excited to acquire Gungnir's Fury at a garage sale! Then super disappointed when he realized he couldn't wield it.",
+  flavorText: "Erebus, the primordial darkness born of Chaos, dwells where no light has ever reached — not even the light of memory.",
   
   keywords: [],
   heroClass: "neutral",
@@ -152,7 +152,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'rare',
   
   description: "Stealth. After this attacks and kills a minion, summon 2 Nagas from your deck.",
-  flavorText: "The last true master of Finjitsu.",
+  flavorText: "Triton, son of Poseidon, carries the conch whose blast calms or rouses the sea. Even monsters pause when it sounds. (Apollodorus 1.4.6)",
   
   keywords: ["stealth"],
   heroClass: "neutral",
@@ -176,7 +176,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'rare',
   
   description: "At the end of your turn, reduce the Cost of cards in your hand by (1).",
-  flavorText: "His second greatest regret is summoning an evil Firelord who enslaved his entire people.",
+  flavorText: "King Midas begged Dionysus to take back the golden touch — but by then, even his daughter was cold metal. (Ovid, Metamorphoses XI)",
   
   keywords: [],
   heroClass: "neutral", // Special handling in game logic for cost reduction
@@ -196,7 +196,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'rare',
   
   description: "Your minions trigger their Deathrattles twice.",
-  flavorText: "There used to be five Horsemen but one of them left because a job opened up in Gadgetzan.",
+  flavorText: "In Hel's domain, the dead do not rest — they serve. Those who displease her die a second death, slower than the first.",
   
   keywords: [],
   heroClass: "neutral", // Special handling in game logic for deathrattle repetition
@@ -216,7 +216,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "mythic",
 
       description: "Deathrattle: If Magni (Dwarf god) also died this game, summon Surtr's Creation.",
-      flavorText: "Móði is sad because everyone likes Magni better.",
+      flavorText: "After Ragnarök, Móði and Magni inherit Mjölnir from their fallen father — the only sons strong enough to lift it. (Vafþrúðnismál 51)",
 
       keywords: ["deathrattle"],
       heroClass: "neutral",
@@ -244,7 +244,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'epic',
 
       description: "Deathrattle: If Móði (Thor's son) also died this game, summon Surtr's Creation.",
-    flavorText: "Magni want to smash! Móði think smash waste of time, send ravens instead.",
+    flavorText: "At three nights old, Magni lifted Hrungnir's leg from Thor's throat — the only being in all the realms strong enough. (Skáldskaparmál 17)",
       keywords: ["deathrattle"],
 
       heroClass: "neutral",
@@ -273,7 +273,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: "mythic",
   
   description: "A powerful amalgamation of stolen souls.",
-  flavorText: "He's the amalgamation of the souls of women and children who were killed in experiments. But he's still kinda cuddly.",
+  flavorText: "When the sons of Múspell ride forth, the sky itself splits and the earth burns. What they create from ruin is neither living nor dead.",
   
   keywords: [],
   heroClass: "neutral",
@@ -293,7 +293,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'rare',
   
   description: "At the end of each turn, summon all friendly minions that died this turn.",
-  flavorText: "The archlich could not resist the call of Niflheim. Unfortunately, his bones made clunking sounds all the way up the frozen steps.",
+  flavorText: "Niflheim's cold does not destroy — it preserves. The dead there do not decay. They accumulate.",
   keywords: [],
   
   heroClass: "neutral", // Special handling in game logic for end-of-turn resurrection
@@ -313,7 +313,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'rare',
 
   description: "Whenever you draw a card, add a copy of it to your hand. (Once per turn)",
-  flavorText: "The hundred-headed dragon guards the golden apples. Each head has its own opinion on lunch.",
+  flavorText: "Ladon, the hundred-headed serpent-dragon, coils around the tree of the Hesperides. He never sleeps — each head watches a different star. (Apollodorus 2.5.11)",
   keywords: [],
   
   heroClass: "neutral",
@@ -429,7 +429,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'epic',
 
       description: "Battlecry: The next spell you cast this turn costs Health instead of Mana.",
-    flavorText: "The two-headed hound guards the gates with eternal vigilance. Each head argues about who's in charge.",
+    flavorText: "Orthrus guarded the cattle of Geryon until Heracles struck him down with a single blow of his olive-wood club. (Apollodorus 2.5.10)",
       keywords: ["battlecry"],
 
       heroClass: "warlock",
@@ -463,7 +463,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'rare',
   
   description: "Whenever your spells deal damage, restore that much Health to your hero.",
-  flavorText: "It's like his mom always said: \"Play with fire and you'll heal for 3 to 5 damage.\"",
+  flavorText: "The Æsir discovered that fire could mend as well as destroy when Sigyn caught Loki's venom in a bowl and turned agony into mercy.",
   
   keywords: [],
   heroClass: "shaman",
@@ -515,7 +515,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'epic',
 
       description: "Taunt. Battlecry: Draw a Beast, Dragon, and Naga from your deck.",
-    flavorText: "Mímir the Keeper is a guardian of ancient wisdom who curates relics from all realms. Also, he can fly.",
+    flavorText: "Odin sacrificed his eye at Mímir's Well to drink of its wisdom. Mímir's severed head still counsels the Allfather in times of need. (Völuspá 28)",
     keywords: ["taunt", "battlecry"],
       heroClass: "neutral",
       class: "Neutral",
@@ -545,7 +545,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'epic',
 
       description: "Battlecry: Equip Atiesh, Greatstaff of the Guardian.",
-    flavorText: "He is a Guardian, and a Guardian watches... other Guardians... guard things.",
+    flavorText: "Odin's chosen guardian carries Gungnir's twin — a staff that never misses and summons warriors from the spaces between worlds.",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -574,7 +574,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: 'epic',
   
   description: "After you cast a spell, summon a random minion of the same Cost. Lose 1 Durability.",
-  flavorText: "Óðinn's staff is ancient and powerful... and also was the inspiration for his most famous recipe: Mead with honey.",
+  flavorText: "Carved from the first branch to fall from Yggdrasil. Each spell it channels leaves behind the echo of a warrior yet unborn.",
   
   keywords: [],
   heroClass: "neutral",
@@ -615,7 +615,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "mythic",
 
       description: "Battlecry and   Deathrattle: Summon a Yggdrasil Golem.",
-    flavorText: "Though young, clever and deadly, Aya still has a soft spot for stuffed animals. And for using them to smuggle contraband.",
+    flavorText: "Artemis walks between the moonlit groves, and where her shadow falls, new life takes root from old death. (Homeric Hymn 27)",
     keywords: ["battlecry", "deathrattle"],
       heroClass: "neutral",
       class: "Neutral",
@@ -650,7 +650,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'epic',
 
       description: "Taunt.   Deathrattle: Shuffle 'The Storm Guardian' into your deck.",
-    flavorText: "He sees the future, and in it he sees... DESTRUCTION... and then more destruction... and then dancing bananas for some reason.",
+    flavorText: "Argus Panoptes had a hundred eyes, and even in sleep, fifty remained open. Hera trusted him above all others. (Apollodorus 2.1.3)",
     keywords: ["taunt", "deathrattle"],
       heroClass: "shaman",
       class: "Shaman",
@@ -696,7 +696,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'epic',
 
       description: "Battlecry: Fill your board with 1/1 Whelps.",
-      flavorText: "They say that many whelps handle her with care and respect. But that's because they don't want to get VOLED BY FIFTY DKP MINUS!",
+      flavorText: "When Heracles stole the golden apples, Ladon's hundred heads wept as one. The Hesperides placed his image among the stars. (Apollodorus 2.5.11)",
 
       keywords: ["battlecry"],
       heroClass: "neutral",
@@ -844,7 +844,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   rarity: "common",
   
   description: "A famed apprentice of the dwarven smith.",
-  flavorText: "Pierce and Einhorn. Einhorn and Pierce.",
+  flavorText: "Sindri's apprentices learn the sacred art of svartalfar smithing: fold the metal seven times, quench it in starlight, and never blink.",
   
   keywords: [],
   heroClass: "neutral",
@@ -895,7 +895,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "common",
 
       description: "Give a minion +1/+1.",
-    flavorText: "Mukla's favorite food, and a great source of potassium!",
+    flavorText: "Hanuman offered fruit to Rama as a gesture of devotion. Even the gods accept humble gifts graciously. (Ramayana)",
       keywords: [],
 
       heroClass: "neutral",
@@ -926,7 +926,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: 'epic',
 
       description: "Battlecry: Give your weapon +1/+1.",
-    flavorText: "He was suppose to be a captain of a pirate ship. Instead, he's a mech, which makes NO SENSE. He doesn't even have a parrot.",
+    flavorText: "Ægir's hall beneath the waves gleams with gold brighter than firelight. Those he invites to feast rarely wish to leave. (Lokasenna, prose intro)",
       keywords: ["battlecry"],
 
       heroClass: "neutral",
@@ -958,7 +958,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       rarity: "mythic",
 
       description: "Battlecry: Give both players the power to ROCK! (with a Power Chord card)",
-      flavorText: "He's looking for a drumset.",
+      flavorText: "The mountain-queen Skaði chose her husband by his feet alone — and mistook Njörðr's sea-washed soles for Baldr's. (Gylfaginning 23)",
 
       keywords: ["battlecry"],
       heroClass: "neutral",

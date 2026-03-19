@@ -152,7 +152,7 @@ export const additionalSpellCards: CardData[] = [
   },
   {
       id: 32007,
-      name: 'Circe\'s Curse',
+      name: 'Loki\'s Shapecraft',
       manaCost: 4,
       type: "spell",
       rarity: "common",

@@ -96,6 +96,11 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
         const allCards = side === 'player' ? playerCards : opponentCards;
         return allCards.some(c => c.card?.id === partnerId);
       })();
+      const isSubmerged = !!(card as any)?.isSubmerged;
+      const submergeTurnsLeft = (card as any)?.submergeTurnsLeft as number | undefined;
+      const isCoiled = !!(card as any)?.isCoiled;
+      const hasWager = !!(card?.card as any)?.wagerEffect;
+      const hasFlying = !!(card && hasKeyword(card, 'flying'));
 
       const statusPoisoned = !!(card as any)?.isPoisonedDoT;
       const statusBleeding = !!(card as any)?.isBleeding;
@@ -137,6 +142,10 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   ${statusBurning ? 'status-burning' : ''}
                   ${readyToEvolve ? 'ready-to-evolve' : ''}
                   ${isDormantCard ? 'is-dormant' : ''}
+                  ${isSubmerged ? 'is-submerged' : ''}
+                  ${isCoiled ? 'is-coiled' : ''}
+                  ${hasWager ? 'has-wager' : ''}
+                  ${hasFlying ? 'has-flying' : ''}
                 `}
                 initial={{ opacity: 0, scale: 0.15, y: side === 'player' ? 80 : -80 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -213,6 +222,27 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   <div className="bf-dormant-overlay" title={`Dormant: Awakens in ${dormantTurnsLeft ?? '?'} turn${dormantTurnsLeft === 1 ? '' : 's'}`}>
                     <span className="dormant-icon">💤</span>
                     <span className="dormant-turns">{dormantTurnsLeft ?? '?'}</span>
+                  </div>
+                )}
+                {isSubmerged && (
+                  <div className="bf-submerge-overlay" title={`Submerged: Surfaces in ${submergeTurnsLeft ?? '?'} turn${submergeTurnsLeft === 1 ? '' : 's'}`}>
+                    <span className="submerge-icon">🌊</span>
+                    <span className="submerge-turns">{submergeTurnsLeft ?? '?'}</span>
+                  </div>
+                )}
+                {isCoiled && (
+                  <div className="bf-coil-badge" title="Coiled: Attack locked to 0">
+                    <span className="coil-icon">🐍</span>
+                  </div>
+                )}
+                {hasWager && (
+                  <div className="bf-wager-badge" title="Wager: Active during poker combat">
+                    <span className="wager-icon">🎲</span>
+                  </div>
+                )}
+                {hasFlying && (
+                  <div className="bf-flying-badge" title="Flying: Bypasses Taunt">
+                    <span className="flying-icon">🪶</span>
                   </div>
                 )}
               </motion.div>
