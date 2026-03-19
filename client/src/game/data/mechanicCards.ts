@@ -245,7 +245,7 @@ export const   mechanicCards: CardData[] = [{
       health: 5,
 
       type: "minion",
-      rarity: "common",
+      rarity: "rare",
 
       description: "Battlecry: Deal 3 damage.",
       flavorText: "Forged in the heart of Muspelheim, it carries the fire giant's wrath.",
@@ -486,7 +486,7 @@ export const   mechanicCards: CardData[] = [{
       health: 6,
 
       type: "minion",
-      rarity: "rare",
+      rarity: "common",
 
       description: "Deathrattle: Restore 8 Health to the enemy hero.",
       keywords: ["deathrattle"],
@@ -567,7 +567,7 @@ export const   mechanicCards: CardData[] = [{
       health: 3,
 
       type: "minion",
-      rarity: "common",
+      rarity: "rare",
 
       description: "Deathrattle: Summon a random 2-Cost minion.",
       keywords: ["deathrattle"],
@@ -724,7 +724,7 @@ export const tokenCards: CardData[] = [
     collectible: false
   },
   {
-    id: 40112,
+    id: 40200,
     name: "Damaged Golem",
     manaCost: 1,
     attack: 2,
@@ -739,7 +739,7 @@ export const tokenCards: CardData[] = [
     collectible: false
   },
   {
-    id: 40114,
+    id: 40201,
     name: "Baine Bloodhoof",
     manaCost: 4,
     attack: 4,
@@ -767,7 +767,7 @@ export const tokenCards: CardData[] = [
     collectible: false
   },
   {
-    id: 40116,
+    id: 40202,
     name: "Mechanical Dragon",
     manaCost: 7,
     attack: 7,

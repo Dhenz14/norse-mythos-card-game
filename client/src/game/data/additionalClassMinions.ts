@@ -109,7 +109,7 @@ export const additionalClassMinions: CardData[] = [
   health: 4,
   
   type: "minion",
-  rarity: "rare",
+  rarity: "common",
   
   description: "Whenever this minion takes damage, deal 2 damage to a random enemy.",
   keywords: ["enrage"],
@@ -172,7 +172,7 @@ export const additionalClassMinions: CardData[] = [
     attack: 3,
     health: 5,
     type: "minion",
-    rarity: "epic",
+    rarity: "rare",
     description: "Whenever you equip a weapon, gain +2 Attack.",
     keywords: [],
     heroClass: "warrior",
@@ -307,7 +307,7 @@ export const additionalClassMinions: CardData[] = [
   health: 5,
   
   type: "minion",
-  rarity: "rare",
+  rarity: "common",
   
   description: "Taunt, Divine Shield",
   keywords: ["taunt", "divine_shield"],
@@ -426,7 +426,7 @@ export const additionalClassMinions: CardData[] = [
       health: 5,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Choose One - Draw 2 cards; or Restore 5 Health.",
       keywords: ["choose_one"],
@@ -439,7 +439,7 @@ export const additionalClassMinions: CardData[] = [
           name: "Ancient of Wisdom: Draw",
           manaCost: 7,
           type: "spell",
-          rarity: "epic",
+          rarity: "rare",
           description: "Draw 2 cards.",
           keywords: [],
           heroClass: "druid",
@@ -457,7 +457,7 @@ export const additionalClassMinions: CardData[] = [
           name: "Ancient of Wisdom: Heal",
           manaCost: 7,
           type: "spell",
-          rarity: "epic",
+          rarity: "rare",
           description: "Restore 5 Health.",
           keywords: [],
           heroClass: "druid",

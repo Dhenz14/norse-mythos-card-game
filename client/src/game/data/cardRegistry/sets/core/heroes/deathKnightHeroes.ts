@@ -14,7 +14,7 @@ const deathstalkerHeroPower: HeroPower = {
   description: "Craft a custom Zombeast.",
   cost: 2,
   used: false,
-  class: "hunter"
+  class: "Hunter"
 };
 
 const frostLichHeroPower: HeroPower = {
@@ -22,7 +22,7 @@ const frostLichHeroPower: HeroPower = {
   description: "Deal 1 damage. If this kills a minion, summon a Water Elemental.",
   cost: 2,
   used: false,
-  class: "mage"
+  class: "Mage"
 };
 
 const helheimWarlordHeroPower: HeroPower = {
@@ -30,7 +30,7 @@ const helheimWarlordHeroPower: HeroPower = {
   description: "Deal 1 damage to all minions.",
   cost: 2,
   used: false,
-  class: "warrior"
+  class: "Warrior"
 };
 
 const lightforgedHeroPower: HeroPower = {
@@ -38,7 +38,7 @@ const lightforgedHeroPower: HeroPower = {
   description: "Summon a 2/2 Horseman. If you have all 4, destroy the enemy hero.",
   cost: 2,
   used: false,
-  class: "paladin"
+  class: "Paladin"
 };
 
 export const deathKnightHeroCards: CardData[] = [
@@ -48,7 +48,7 @@ export const deathKnightHeroCards: CardData[] = [
     manaCost: 6,
     description: "Battlecry: Deal 2 damage to all enemy minions.",
     flavorText: "The eternal hunter becomes one with death itself — tracking prey across all Nine Realms.",
-    rarity: 'epic',
+    rarity: 'rare',
     type: "hero",
     class: "Hunter",
     set: "core",

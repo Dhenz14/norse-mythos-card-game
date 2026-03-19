@@ -18,7 +18,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: 'epic',
+      rarity: 'rare',
 
       description: "Your Battlecries trigger twice.",
       flavorText: "Contains 75% more fiber than his brother Magni!",
@@ -68,7 +68,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 1,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "After you play a Pirate, summon this minion from your deck.",
   flavorText: "I'm in charge now!",
@@ -126,7 +126,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 6,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "When the game starts, add 5 random Mythic minions to your deck.",
   flavorText: "He was super excited to acquire Gungnir's Fury at a garage sale! Then super disappointed when he realized he couldn't wield it.",
@@ -149,7 +149,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 4,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "Stealth. After this attacks and kills a minion, summon 2 Nagas from your deck.",
   flavorText: "The last true master of Finjitsu.",
@@ -173,7 +173,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 5,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "At the end of your turn, reduce the Cost of cards in your hand by (1).",
   flavorText: "His second greatest regret is summoning an evil Firelord who enslaved his entire people.",
@@ -193,7 +193,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "Your minions trigger their Deathrattles twice.",
   flavorText: "There used to be five Horsemen but one of them left because a job opened up in Gadgetzan.",
@@ -290,7 +290,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 8,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "At the end of each turn, summon all friendly minions that died this turn.",
   flavorText: "The archlich could not resist the call of Niflheim. Unfortunately, his bones made clunking sounds all the way up the frozen steps.",
@@ -310,7 +310,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 8,
 
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
 
   description: "Whenever you draw a card, add a copy of it to your hand. (Once per turn)",
   flavorText: "The hundred-headed dragon guards the golden apples. Each head has its own opinion on lunch.",
@@ -460,7 +460,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 6,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "Whenever your spells deal damage, restore that much Health to your hero.",
   flavorText: "It's like his mom always said: \"Play with fire and you'll heal for 3 to 5 damage.\"",
@@ -745,7 +745,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "At the end of each turn, gain +1/+1.",
   flavorText: "The titan who bears the weight of worlds grows ever stronger.",
@@ -785,7 +785,7 @@ export const   iconicLegendaryCards: CardData[] = [{
   health: 5,
   
   type: "minion",
-  rarity: 'epic',
+  rarity: 'rare',
   
   description: "After you play a card, summon a 2/1 Storm Spawn.",
   flavorText: "Father of all monsters, his very presence spawns chaos.",

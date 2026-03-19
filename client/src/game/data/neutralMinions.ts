@@ -109,7 +109,7 @@ export const   neutralMinions: CardData[] = [{
       health: 3,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Battlecry: Choose a minion and become a copy of it.",
       keywords: ["battlecry"],
@@ -136,7 +136,7 @@ export const   neutralMinions: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "At the start of your turn, destroy ALL minions.",
   heroClass: "neutral",
@@ -249,7 +249,7 @@ export const   neutralMinions: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "common",
 
       description: "Battlecry: Adapt your Nagas.",
       keywords: ["battlecry"],
@@ -305,7 +305,7 @@ export const   neutralMinions: CardData[] = [{
   health: 5,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "common",
   
   description: "Costs (1) less for each minion that died this turn.",
   keywords: [],
@@ -409,7 +409,7 @@ export const   neutralMinions: CardData[] = [{
       health: 8,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "common",
 
       description: "Taunt.   Battlecry: Deal 2 damage to all other minions.",
     keywords: ["taunt", "battlecry"],
@@ -797,7 +797,7 @@ export const   neutralMinions: CardData[] = [{
   health: 12,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Rush. After this attacks and kills a minion, it may attack again.",
   keywords: ["rush"],
@@ -977,7 +977,7 @@ export const   neutralMinions: CardData[] = [{
   durability: 3,
   
   type: "weapon",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "After your hero attacks, give a random minion in your hand +1/+1.",
   keywords: [],
@@ -995,7 +995,7 @@ export const   neutralMinions: CardData[] = [{
   manaCost: 2,
   
   type: "spell",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Deal 3 damage to all damaged minions.",
   keywords: [],
@@ -1129,7 +1129,7 @@ export const   neutralMinions: CardData[] = [{
   manaCost: 3,
   
   type: "spell",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Spend all your Armor. Deal that much damage to all minions.",
   keywords: [],
@@ -1154,7 +1154,7 @@ export const   neutralMinions: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Frozen. When this minion is Frozen, it has +2/+2.",
   keywords: ["frozen"],
@@ -1175,7 +1175,7 @@ export const   neutralMinions: CardData[] = [{
   health: 8,
   
   type: "minion",
-  rarity: "rare",
+  rarity: "common",
   
   description: "Taunt. Costs (1) less for each spell you've cast this game.",
   keywords: ["taunt"],
@@ -1365,7 +1365,7 @@ export const   neutralMinions: CardData[] = [{
   health: 5,
   
   type: "minion",
-  rarity: "rare",
+  rarity: "common",
   
   description: "Can't attack.",
   keywords: ["cant_attack"],

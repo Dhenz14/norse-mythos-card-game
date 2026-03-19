@@ -90,7 +90,7 @@ export const recruitCards: CardData[] = [
 		name: "Call of Valhalla",
 		manaCost: 5,
 		description: "Recruit 3 minions that cost (2) or less.",
-		rarity: "epic",
+		rarity: "rare",
 		type: "spell",
 		keywords: ["recruit"],
 		spellEffect: {
@@ -107,7 +107,7 @@ export const recruitCards: CardData[] = [
 		name: "Rally the Einherjar!",
 		manaCost: 6,
 		description: "Recruit a Beast.",
-		rarity: "epic",
+		rarity: "rare",
 		type: "spell",
 		keywords: ["recruit"],
 		spellEffect: {

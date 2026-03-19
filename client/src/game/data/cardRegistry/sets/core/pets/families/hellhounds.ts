@@ -169,7 +169,7 @@ export const hellhoundsPets: CardData[] = [
 		attack: 6,
 		health: 6,
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		description: 'Garmr\'s bloodline — it howls at the gates of Hel.',
 		flavorText: 'The hound of Hel has broken free. Ragnarok has begun.',
 		keywords: ['stealth'],

@@ -183,7 +183,7 @@ const neutralTokens: CardData[] = [
     collectible: false
   },
   {
-    id: 40112,
+    id: 40200,
     name: 'Damaged Golem',
     description: 'A crumbling stone golem with one arm missing and cracks across its chest.',
     flavorText: 'Broken, but still swinging.',
@@ -197,7 +197,7 @@ const neutralTokens: CardData[] = [
     collectible: false
   },
   {
-    id: 40114,
+    id: 40201,
     name: 'Fallen Champion',
     description: 'A ghostly warrior in dented armor, eyes hollow but stance unbroken.',
     flavorText: 'A warrior whose name is lost, but whose valor endures.',
@@ -224,12 +224,12 @@ const neutralTokens: CardData[] = [
     collectible: false
   },
   {
-    id: 40116,
+    id: 40202,
     name: 'Mechanical Dragon',
     description: 'A towering clockwork dragon belching sparks from iron jaws.',
     flavorText: 'Brass scales, iron breath. Close enough.',
     type: 'minion',
-    rarity: 'common',
+    rarity: 'rare',
     manaCost: 1,
     attack: 2,
     health: 2,

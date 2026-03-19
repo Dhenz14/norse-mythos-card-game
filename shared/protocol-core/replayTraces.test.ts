@@ -165,7 +165,7 @@ async function seedGenesis(state: MemoryState, deps: ProtocolCoreDeps) {
 	await applyOp(makeOp('genesis', {
 		version: 1,
 		supply: {
-			pack_supply: { common: 1800, rare: 1250, epic: 750, mythic: 500 },
+			pack_supply: { common: 2000, rare: 1000, epic: 500, mythic: 250 },
 			reward_supply: { common: 0, rare: 0, epic: 150, mythic: 50 },
 		},
 	}, { broadcaster: 'ragnarok', usedActiveAuth: true }), defaultCtx, deps);
@@ -190,7 +190,7 @@ describe('Protocol Core: Replay Traces', () => {
 		const result = await applyOp(makeOp('genesis', {
 			version: 1,
 			supply: {
-				pack_supply: { common: 1800, rare: 1250, epic: 750, mythic: 500 },
+				pack_supply: { common: 2000, rare: 1000, epic: 500, mythic: 250 },
 				reward_supply: { epic: 150, mythic: 50 },
 			},
 		}, { broadcaster: 'ragnarok', usedActiveAuth: true }), defaultCtx, deps);
@@ -198,7 +198,7 @@ describe('Protocol Core: Replay Traces', () => {
 		expect(result.status).toBe('applied');
 		expect(state.genesis).not.toBeNull();
 		expect(state.genesis!.sealed).toBe(false);
-		expect(state.genesis!.packSupply.common).toBe(1800);
+		expect(state.genesis!.packSupply.common).toBe(2000);
 		expect(state.genesis!.rewardSupply.epic).toBe(150);
 	});
 

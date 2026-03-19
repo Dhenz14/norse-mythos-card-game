@@ -72,7 +72,7 @@ export const necromancerCards: CardData[] = [
     description: "Whenever a friendly minion dies, gain +1/+1.",
     flavorText: "Death fuels his power. It's a sustainable resource.",
     type: "minion",
-    rarity: "rare",
+    rarity: "common",
     class: "Necromancer",
     collectible: true,
     set: "core"
@@ -147,7 +147,7 @@ export const necromancerCards: CardData[] = [
     description: "At the end of your turn, resurrect a friendly minion that died this game.",
     flavorText: "Her reign is eternal, her servants undying.",
     type: "minion",
-    rarity: 'epic',
+    rarity: 'rare',
     class: "Necromancer",
     race: "Undead",
     collectible: true,
@@ -273,7 +273,7 @@ export const necromancerCards: CardData[] = [
     description: "Sacrifice a minion to draw two cards.",
     flavorText: "Power demands sacrifice.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "Necromancer",
     spellEffect: {
       type: "sacrifice",
@@ -307,7 +307,7 @@ export const necromancerCards: CardData[] = [
     description: "Summon three random friendly minions that died this game.",
     flavorText: "The battlefield trembles as the dead return en masse.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "Necromancer",
     spellEffect: {
       type: "resurrect_multiple",
@@ -325,7 +325,7 @@ export const necromancerCards: CardData[] = [
     description: "Destroy a friendly minion. Deal damage equal to its Attack to all enemies.",
     flavorText: "In death, they serve one final, explosive purpose.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "Necromancer",
     spellEffect: {
       type: "sacrifice_and_aoe_damage",
@@ -395,7 +395,7 @@ export const necromancerCards: CardData[] = [
     description: "Give all enemy minions 'Deathrattle: Summon a 2/1 Skeleton for your opponent.'",
     flavorText: "Every death feeds the necromancer's army.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "Necromancer",
     spellEffect: {
       type: "grant_deathrattle_to_enemies",
@@ -415,7 +415,7 @@ export const necromancerCards: CardData[] = [
     description: "Return an enemy minion to its owner's hand. It costs (2) more.",
     flavorText: "The terror of death made manifest sends even the bravest fleeing.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "Necromancer",
     spellEffect: {
       type: "bounce_and_cost_increase",
@@ -453,7 +453,7 @@ export const necromancerCards: CardData[] = [
     description: "Fill your board with 2/1 Skeletons with Rush.",
     flavorText: "The earth itself vomits forth an endless legion.",
     type: "spell",
-    rarity: 'epic',
+    rarity: 'rare',
     class: "Necromancer",
     spellEffect: {
       type: "fill_board",
@@ -472,7 +472,7 @@ export const necromancerCards: CardData[] = [
     description: "After your hero attacks, add a random minion from your graveyard to your hand.",
     flavorText: "Bound to the souls it has claimed.",
     type: "weapon",
-    rarity: "rare",
+    rarity: "common",
     class: "Necromancer",
     collectible: true,
     set: "core"
@@ -537,7 +537,7 @@ export const necromancerCards: CardData[] = [
     description: "Choose a friendly minion. When it dies, resummon it with full stats.",
     flavorText: "The soul is stored elsewhere. Destroying the body is merely inconvenient.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "Necromancer",
     spellEffect: {
       type: "grant_resummon",
@@ -554,7 +554,7 @@ export const necromancerCards: CardData[] = [
     description: "Summon 3 random friendly minions that died this game. They have Rush.",
     flavorText: "The graveyard empties. The battlefield fills. The living feel outnumbered.",
     type: "spell",
-    rarity: 'epic',
+    rarity: 'rare',
     class: "Necromancer",
     spellEffect: {
       type: "mass_resurrect",
@@ -630,7 +630,7 @@ export const necromancerCards: CardData[] = [
     description: "Transform all enemy minions into 2/2 Zombies.",
     flavorText: "The living become the dead. The dead become the army.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "Necromancer",
     spellEffect: {
       type: "transform_all_enemy",
@@ -666,7 +666,7 @@ export const necromancerCards: CardData[] = [
     description: "Lifesteal. Whenever a minion dies, gain +2 Attack.",
     flavorText: "Each soul it harvests feeds the next swing.",
     type: "minion",
-    rarity: "rare",
+    rarity: "common",
     class: "Necromancer",
     race: "Undead",
     keywords: ["lifesteal"],
@@ -778,7 +778,7 @@ export const necromancerCards: CardData[] = [
     description: "Summon 3 random friendly minions that died this game.",
     flavorText: "They rise not as they were, but as they are needed.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "Necromancer",
     spellEffect: {
       type: "mass_resurrect",
@@ -814,7 +814,7 @@ export const necromancerCards: CardData[] = [
     description: "Your Undead minions have +2 Attack.",
     flavorText: "It barks orders in a language the dead understand. The living hear only wind.",
     type: "minion",
-    rarity: "rare",
+    rarity: "common",
     class: "Necromancer",
     race: "Undead",
     aura: {
@@ -832,7 +832,7 @@ export const necromancerCards: CardData[] = [
     description: "Destroy all minions. Summon a 1/1 Skeleton for each enemy minion destroyed.",
     flavorText: "When Helheim overflows, the surplus walks among the living.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "Necromancer",
     spellEffect: {
       type: "destroy_all_and_summon",
@@ -918,7 +918,7 @@ export const necromancerCards: CardData[] = [
     description: "Your Deathrattle minions cost (1) less.",
     flavorText: "She studies the art of dying — and what comes after.",
     type: "minion",
-    rarity: "rare",
+    rarity: "common",
     class: "Necromancer",
     race: "Undead",
     collectible: true,

@@ -10,7 +10,7 @@ export const petSynergyCards: CardData[] = [
 		description: 'Whenever a friendly pet evolves, draw a card.',
 		flavorText: 'She whispers to the creatures of the Nine Realms and they answer with loyalty.',
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Neutral',
 		set: 'core',
 		collectible: true
@@ -22,7 +22,7 @@ export const petSynergyCards: CardData[] = [
 		description: 'Give all friendly pets +1/+1. If you control 3+ pets, give +2/+2 instead.',
 		flavorText: 'When the elements align, even the smallest creatures become mighty.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Neutral',
 		spellEffect: {
 			type: 'buff',
@@ -41,7 +41,7 @@ export const petSynergyCards: CardData[] = [
 		description: 'Foresee a pet from your deck. Reduce its evolution requirement by 1.',
 		flavorText: 'The rune glows brighter in the presence of untamed spirits.',
 		type: 'spell',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Neutral',
 		spellEffect: {
 			type: 'discover_from_deck',

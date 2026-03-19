@@ -137,7 +137,7 @@ export const draugrPets: CardData[] = [
 		attack: 3,
 		health: 4,
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		description: 'Reborn. Divine Shield.',
 		flavorText: 'The light of the afterlife clings to its form.',
 		keywords: ['reborn', 'divine_shield'],

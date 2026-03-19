@@ -433,7 +433,7 @@ interface CardSeed {
   originDna: string;           // sha256(cardId + edition + rarity + genesisTrxId)
   name: string;                // "Odin, Allfather"
   rarity: CardRarity;
-  maxSupply: number;           // Per-card supply cap (500 mythic, 1800 common, etc.)
+  maxSupply: number;           // Per-card supply cap (250 mythic, 2000 common, etc.)
   mintedCount: number;         // How many instances exist
   edition: string;             // 'alpha'
   registeredBlock: number;     // Block where seed was registered on-chain

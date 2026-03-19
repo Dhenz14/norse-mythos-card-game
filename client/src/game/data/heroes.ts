@@ -42,7 +42,7 @@ const heroes: HeroData[] = [
       id: 1,
 
       name: "Freya Frostweaver",
-      class: "mage",
+      class: "Mage",
 
       description: "The Archmage of the Rune Council and former leader of the Mystical Order.",
       heroPowers: [{
@@ -108,7 +108,7 @@ const heroes: HeroData[] = [
       id: 2,
 
       name: "Kratos Battleborn",
-      class: "warrior",
+      class: "Warrior",
 
       description: "Famed warrior known for his battle fury and unyielding rage.",
       heroPowers: [{
@@ -158,7 +158,7 @@ const heroes: HeroData[] = [
       id: 3,
 
       name: "Heimdallr the Vigilant",
-      class: "paladin",
+      class: "Paladin",
 
       description: "Guardian of the Bifrost and watchman of the Aesir, mentor to the Draugr King.",
       heroPowers: [{
@@ -217,7 +217,7 @@ const heroes: HeroData[] = [
       id: 4,
 
       name: "Orion",
-      class: "hunter",
+      class: "Hunter",
 
       description: "The great hunter of Greek mythology, placed among the stars.",
       heroPowers: [{
@@ -275,7 +275,7 @@ const heroes: HeroData[] = [
       id: 5,
 
       name: "Idunn Lifebringer",
-      class: "druid",
+      class: "Druid",
 
       description: "Archdruid of the Ljósálfar and keeper of the golden apples of immortality.",
       heroPowers: [{
@@ -334,7 +334,7 @@ const heroes: HeroData[] = [
       id: 6,
 
       name: "Eir the Merciful",
-      class: "priest",
+      class: "Priest",
 
       description: "High Priestess of Asgard and keeper of the healing arts among the Aesir.",
       heroPowers: [{
@@ -393,7 +393,7 @@ const heroes: HeroData[] = [
       id: 7,
 
       name: "Angrboda",
-      class: "warlock",
+      class: "Warlock",
 
       description: "Mother of monsters and the first shadow-weaver.",
       heroPowers: [{
@@ -450,7 +450,7 @@ const heroes: HeroData[] = [
       id: 8,
 
       name: "Magni Stormcaller",
-      class: "shaman",
+      class: "Shaman",
 
       description: "A powerful shaman who commands the fury of the elements.",
       heroPowers: [{
@@ -509,7 +509,7 @@ const heroes: HeroData[] = [
       id: 9,
 
       name: "Nótt the Shadow",
-      class: "rogue",
+      class: "Rogue",
 
       description: "Master assassin and goddess of the night who moves unseen through the Nine Realms.",
       heroPowers: [{
@@ -568,7 +568,7 @@ const heroes: HeroData[] = [
       id: 10,
 
       name: "Typhon, Storm Titan",
-      class: "berserker",
+      class: "Berserker",
 
       description: "The first Berserker, twin sibling of the great druids of the Ljósálfar.",
       heroPowers: [{
@@ -662,7 +662,7 @@ const heroes: HeroData[] = [
       id: 12,
 
       name: "Hyndla the Bone-Singer",
-      class: "necromancer",
+      class: "Necromancer",
 
       description: "Master of dark magic and the art of raising the dead from Helheim.",
       heroPowers: [{

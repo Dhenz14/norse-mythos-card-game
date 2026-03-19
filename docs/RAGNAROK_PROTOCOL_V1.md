@@ -171,7 +171,7 @@ Genesis MUST define distinct supply buckets:
 ```json
 {
   "pack_supply": {
-    "common": 1800, "rare": 1250, "epic": 750, "mythic": 500
+    "common": 2000, "rare": 1000, "epic": 500, "mythic": 250
   },
   "reward_supply": {
     "common": 0, "rare": 0, "epic": 150, "mythic": 50

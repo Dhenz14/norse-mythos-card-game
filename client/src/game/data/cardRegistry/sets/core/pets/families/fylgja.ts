@@ -164,7 +164,7 @@ export const fylgjaPets: CardData[] = [
 		attack: 7,
 		health: 5,
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		description: 'The spirit animal transcends its mortal bond, fully awakened.',
 		flavorText: 'The spirit animal transcends its mortal bond.',
 		keywords: ['rush', 'battlecry'],

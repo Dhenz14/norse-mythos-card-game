@@ -286,15 +286,15 @@ describe('Protocol Conformance: Legacy Op Name Mapping', () => {
 describe('Protocol Conformance: Supply Model', () => {
 	it('pack and reward supply are separate buckets', () => {
 		const genesis = {
-			pack_supply: { common: 1800, rare: 1250, epic: 750, mythic: 500 },
+			pack_supply: { common: 2000, rare: 1000, epic: 500, mythic: 250 },
 			reward_supply: { common: 0, rare: 0, epic: 150, mythic: 50 },
 		};
 
 		// Reward supply must not draw from pack supply
-		expect(genesis.pack_supply.mythic).toBe(500);
+		expect(genesis.pack_supply.mythic).toBe(250);
 		expect(genesis.reward_supply.mythic).toBe(50);
-		// Total mythic = 550, not 500
-		expect(genesis.pack_supply.mythic + genesis.reward_supply.mythic).toBe(550);
+		// Total mythic = 300, not 250
+		expect(genesis.pack_supply.mythic + genesis.reward_supply.mythic).toBe(300);
 	});
 });
 

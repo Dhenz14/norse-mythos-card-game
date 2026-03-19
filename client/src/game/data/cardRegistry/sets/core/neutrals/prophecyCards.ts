@@ -16,7 +16,7 @@ export const prophecyCards: CardData[] = [
 		description: 'Prophecy (3): Destroy all minions with 3 or less Attack.',
 		flavorText: 'The Norns have spoken. In three turns, the weak shall perish.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Neutral',
 		keywords: ['prophecy'],
 		spellEffect: {
@@ -56,7 +56,7 @@ export const prophecyCards: CardData[] = [
 		description: 'Prophecy (3): Freeze ALL minions for 2 turns.',
 		flavorText: 'Three winters with no summer between them. The prelude to Ragnarok.',
 		type: 'spell',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Shaman',
 		keywords: ['prophecy'],
 		spellEffect: {
@@ -76,7 +76,7 @@ export const prophecyCards: CardData[] = [
 		description: 'Prophecy (4): Destroy ALL minions and weapons.',
 		flavorText: 'When the stars fall and the sun is swallowed, nothing remains.',
 		type: 'spell',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Neutral',
 		keywords: ['prophecy'],
 		spellEffect: {
@@ -116,7 +116,7 @@ export const prophecyCards: CardData[] = [
 		description: 'Prophecy (3): Summon an 8/8 Fenrir with Rush.',
 		flavorText: 'The chains weaken. Gleipnir frays. When the wolf breaks free, Asgard trembles.',
 		type: 'spell',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Warlock',
 		keywords: ['prophecy'],
 		spellEffect: {

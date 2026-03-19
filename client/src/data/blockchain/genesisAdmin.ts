@@ -18,10 +18,10 @@ import { RAGNAROK_ACCOUNT, RAGNAROK_GENESIS_ACCOUNT } from './hiveConfig';
 
 /** Per-card supply caps — each unique card_id can have at most this many NFTs */
 const SUPPLY_CAPS: Record<string, number> = {
-	common:    1_800,
-	rare:      1_250,
-	epic:        750,
-	mythic:      500,
+	common:    2_000,
+	rare:      1_000,
+	epic:        500,
+	mythic:      250,
 };
 
 const GENESIS_SIGNERS = [RAGNAROK_ACCOUNT, RAGNAROK_GENESIS_ACCOUNT];

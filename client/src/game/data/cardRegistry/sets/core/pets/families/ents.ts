@@ -162,7 +162,7 @@ export const entsPets: CardData[] = [
 		attack: 2,
 		health: 11,
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		description: 'A living remnant of Yggdrasil, roots deep in all Nine Realms.',
 		flavorText: 'Guardian of the World Tree, ancient beyond memory.',
 		keywords: ['taunt', 'battlecry'],

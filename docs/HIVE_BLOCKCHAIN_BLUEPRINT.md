@@ -118,10 +118,10 @@ The Ragnarok account broadcasts a single genesis transaction before any minting 
   "action": "genesis",
   "version": "1.0",
   "supply_per_card": {
-    "common":      1800,
-    "rare":        1250,
-    "epic":         750,
-    "mythic":       500
+    "common":      2000,
+    "rare":        1000,
+    "epic":         500,
+    "mythic":       250
   },
   "reader_hash": "sha256:<hash_of_reader_source>"
 }
@@ -129,7 +129,7 @@ The Ragnarok account broadcasts a single genesis transaction before any minting 
 
 **What this commits to:**
 
-- Supply is hard-capped per card: 1,800 common, 1,250 rare, 750 epic, 500 mythic (~3.3M total NFTs)
+- Supply is hard-capped per card: 2,000 common, 1,000 rare, 500 epic, 250 mythic (~2.7M total NFTs)
 - The reader version that interprets ownership is pinned by hash
 - Supply counters enforce caps per rarity — even from the Ragnarok account
 

@@ -97,7 +97,7 @@ export const vanillaMinions: CardData[] = [
 		description: 'No abilities. Pure stat baseline.',
 		flavorText: 'The dwarves of Svartalfheim build, not in flesh, but in stone and rune-forged iron. This one remembers its makers\' commands.',
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		manaCost: 7,
 		attack: 7,
 		health: 8,

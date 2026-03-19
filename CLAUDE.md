@@ -267,7 +267,7 @@ Game logic for these mechanics lives in:
 - **13 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes
 - **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
 - **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
-- **Supply caps**: ~3.3M total NFTs (1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
+- **Supply caps**: ~2.7M total NFTs (2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
 - **NFT provenance**: `HiveCardAsset` stores `mintTrxId`, `mintBlockNum`, `lastTransferTrxId`, `lastTransferBlock` — full on-chain history per card
 - **Explorer links**: `explorerLinks.ts` generates clickable URLs (hivehub.dev) for any trxId or block
 - **Provenance viewer**: `NFTProvenanceViewer.tsx` shows full metadata + explorer links in collection
@@ -386,7 +386,7 @@ client/src/data/blockchain/opSchemas.ts
 - Admin authority ends at seal — no ongoing admin key needed
 - Reward claims are self-serve (players verify own stats, no admin distribution)
 - ELO is chain-derived (K=32, computed from match_result history)
-- Supply caps hard-enforced by every reader (~3.3M: 1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
+- Supply caps hard-enforced by every reader (~2.7M: 2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
 - Every NFT stores mint + transfer trxIds — provenance viewer links directly to Hive explorer
 - Direct gifting via `SendCardModal` + bridge `transferCard()` — no trade negotiation needed
 - Deck builder enforces NFT ownership via bridge `getOwnedCopies()` (local mode = unlimited)
@@ -599,7 +599,7 @@ vercel --prod                 # Deploy to Vercel
 - `CollectionPage.tsx`: Full forge/dissolve implementation with inventory state updates
   - Dissolve: decrements card quantity, removes from HiveDataStore, adds Eitr
   - Forge: spends Eitr, picks random non-hero card of matching rarity from `cardRegistry`, adds to local state + HiveDataStore
-  - Random output prevents NFT supply hoarding (500 copies per mythic card, 750 epic, 1,250 rare, 1,800 common)
+  - Random output prevents NFT supply hoarding (250 copies per mythic card, 500 epic, 1,000 rare, 2,000 common)
 - `CampaignPage.tsx`, `TradingPage.tsx`: Eitr display labels
 - `campaignTypes.ts`: `CampaignReward.type` includes `'eitr'`
 - All 5 campaign chapters: reward type `'dust'` → `'eitr'`
@@ -910,8 +910,8 @@ vercel --prod                 # Deploy to Vercel
 - Demoted 371 over-classified mythics (362→epic, 9→rare) via `scripts/demoteMythics.mjs` across 32 card data files
 - Kept ~312 mythic cards: iconic gods (Odin, Thor, Zeus, Hades), primordial entities, Elder Titans, flagship minions
 - Demoted generic creatures, excess deity variants (3+ Fenrir, 5+ Nidhogg, 5+ Surtr), companion animals, tokens
-- Updated `PIECE_SUPPLY` in `heroRarity.ts`: mythic 500, epic 750, rare 1,250, common 1,800 (per card)
-- Final NFT supply: ~3.29M total (300×500 + 750×750 + 745×1,250 + 912×1,800)
+- Updated `PIECE_SUPPLY` in `heroRarity.ts`: mythic 250, epic 500, rare 1,000, common 2,000 (per card)
+- Final NFT supply: ~2.7M total (300×250 + 750×500 + 745×1,000 + 912×2,000)
 - Base/basic rarity cards (3) excluded from NFT supply — free for all players
 - Mythic artifacts and pets match their hero's rarity separately (~900 total mythic cards across all categories)
 
@@ -1506,7 +1506,7 @@ vercel --prod                 # Deploy to Vercel
 
 - **Winner injection blocked**: `applyMatchResult` rejects winner not in {p1, p2} — prevents third-party account injection
 - **Card merge DNA validation**: `applyCardMerge` requires both cards share same `originDna` — prevents cross-lineage exploit
-- **Per-card supply cap fixed**: `applyMintBatch` was using rarity-level cap for per-card check; now uses correct caps (1800/1250/750/500)
+- **Per-card supply cap fixed**: `applyMintBatch` was using rarity-level cap for per-card check; now uses correct caps (2000/1000/500/250)
 - **Full SHA-256 compact hash**: Was `.slice(0,16)` (64-bit, birthday attack at ~4B); now full 64 hex chars in both `apply.ts` and `matchResultPackager.ts`
 - **Pack entropy delay 3→20 blocks**: `PACK_ENTROPY_DELAY_BLOCKS` increased from 3 (~9s) to 20 (~60s) to prevent block producer manipulation
 - **Magic numbers replaced**: Hardcoded `+3` and `+200` in apply.ts now use `PACK_ENTROPY_DELAY_BLOCKS` and `PACK_REVEAL_DEADLINE_BLOCKS` constants
@@ -1514,6 +1514,21 @@ vercel --prod                 # Deploy to Vercel
 - **Dual-sig enforcement**: Ranked matches without counterparty signature are NOT broadcast (was sending with empty sig that protocol rejects, wasting transactions)
 - **P2P cross-verification wired**: `deck_verify` auto-sent on P2P connection open — both clients exchange NFT collection IDs for on-chain cross-verification via IndexedDB + server fallback
 - **Server deck verify multi-copy fix**: `/verify-deck` endpoint now counts copies (was boolean existence check via `Set.has`)
+
+### Completed (TCG Rarity Rebalance & Supply Recalibration)
+
+- **Rarity pyramid fixed** to match Pokemon/MTG industry standards (was flat, now proper cascade)
+- **Mythic**: 290 → 160 cards (12.7% → 7.0%) — demoted 68 artifacts, 28 pets, 34 generic minions to epic
+- **Epic**: 630 → 410 cards (27.7% → 18.0%) — demoted 350 generic/simple cards to rare
+- **Rare**: 604 → 640 cards (26.5% → 28.1%) — gained from epic demotions, demoted 314 simple cards to common
+- **Common**: 614 → 928 cards (27.0% → 40.8%) — now properly the largest tier for new player accessibility
+- **Supply caps recalibrated**: mythic 500→250, epic 750→500, rare 1,250→1,000, common 1,800→2,000
+- **Total NFT supply**: ~2.74M (was incorrectly reported as ~3.3M due to inflated rarity counts)
+- Fixed 48 class casing inconsistencies (`priest` → `Priest`, etc.) across card data files
+- Fixed 3 duplicate card IDs (40112/40114/40116 → 40200-40202, tokens vs Coil expansion)
+- Fixed `import type` TDZ crash in `neutrals/index.ts` (production build circular dependency)
+- Updated supply caps in: `heroRarity.ts`, `apply.ts`, `genesisAdmin.ts`, 2 test files, 7 doc files, CLAUDE.md
+- 794 rarity changes across 90 card data files, 0 duplicate IDs, production build clean
 
 ### Next (Genesis Launch)
 

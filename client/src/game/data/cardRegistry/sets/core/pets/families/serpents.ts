@@ -137,7 +137,7 @@ export const serpentsPets: CardData[] = [
 		attack: 3,
 		health: 3,
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		description: 'Windfury.',
 		flavorText: 'Twin strikes of lightning in one heartbeat.',
 		keywords: ['windfury'],

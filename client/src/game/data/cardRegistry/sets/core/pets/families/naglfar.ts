@@ -162,7 +162,7 @@ export const naglfarPets: CardData[] = [
 		attack: 6,
 		health: 5,
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		description: 'Crew of the death-ship — they sail for the final war.',
 		flavorText: 'Admiral of the ship of the dead, herald of Ragnarok.',
 		keywords: ['stealth'],

@@ -109,7 +109,7 @@ export const drakesPets: CardData[] = [
 		attack: 4,
 		health: 4,
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		description: 'Windfury. Rush.',
 		flavorText: 'Its wingbeats summon storms.',
 		keywords: ['windfury', 'rush'],

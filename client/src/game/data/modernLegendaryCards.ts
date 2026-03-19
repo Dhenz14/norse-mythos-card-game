@@ -56,7 +56,7 @@ export const modernLegendaryCards: CardData[] = [
       attack: 2,
       health: 7,
       type: "minion",
-      rarity: "rare",
+      rarity: "common",
       description: "Whenever you summon a minion, set its Health equal to this minion's.",
       keywords: [],
       heroClass: "priest",
@@ -74,7 +74,7 @@ export const modernLegendaryCards: CardData[] = [
       attack: 3,
       health: 6,
       type: "minion",
-      rarity: "rare",
+      rarity: "common",
       description: "After you play a minion, destroy it and summon a 4/4 Failed Student.",
       keywords: [],
       heroClass: "priest",
@@ -195,7 +195,7 @@ export const modernLegendaryCards: CardData[] = [
     attack: 3,
     health: 8,
     type: "minion",
-    rarity: "epic",
+    rarity: "rare",
     description: "Can't attack. Whenever this minion takes damage, deal 3 damage to a random enemy.",
     flavorText: "During construction, balloons kept getting caught on the tower, which the engineers insist was NOT part of the design.",
     keywords: [],
@@ -213,7 +213,7 @@ export const modernLegendaryCards: CardData[] = [
   health: 6,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Whenever you draw a minion, summon a 1/1 copy of it.",
   flavorText: "It's like having imaginary friends, but way more fun!",
@@ -233,7 +233,7 @@ export const modernLegendaryCards: CardData[] = [
   health: 7,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Minions in your hand have Echo.",
   flavorText: "Echo... echo... echo...",
@@ -280,7 +280,7 @@ export const modernLegendaryCards: CardData[] = [
   health: 4,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Rush. After this attacks and kills a minion, gain +2/+2.",
   flavorText: "During the Battle for Midgard, he led a group of rebels called the 'Einherjar Boys.'",
@@ -357,7 +357,7 @@ export const modernLegendaryCards: CardData[] = [
       health: 4,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Inspire: Summon a random Mythic minion.",
       flavorText: "She sees into your past and makes you face your fears. Most common fear: Getting Surtr's Herald out of the Forgemaster's Shredder.",
@@ -414,7 +414,7 @@ export const modernLegendaryCards: CardData[] = [
   health: 4,
   
   type: "minion",
-  rarity: "rare",
+  rarity: "common",
   
   description: "After you cast a spell, refresh your Hero Power.",
   flavorText: "The messenger god knows the value of a quick exchange.",
@@ -785,7 +785,7 @@ export const modernLegendaryCards: CardData[] = [
   health: 5,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "At the start and end of each player's turn, draw a card.",
   flavorText: "Keep a light on when you read, and don't forget to clean your quill!",

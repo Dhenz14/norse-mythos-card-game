@@ -128,7 +128,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Before the gods, the Titans ruled from Mount Othrys.',
   type: 'minion',
   
-  rarity: 'epic',
+  rarity: 'rare',
   manaCost: 12,
   
   attack: 8,
@@ -145,7 +145,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'The Valkyries choose who lives and who dies on the battlefield.',
   type: 'minion',
   
-  rarity: 'epic',
+  rarity: 'rare',
   manaCost: 3,
   
   attack: 3,
@@ -163,7 +163,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'They weave fate with every inscription, seeing beyond the mortal realm.',
   type: 'minion',
   
-  rarity: 'epic',
+  rarity: 'rare',
   manaCost: 2,
   
   attack: 2,
@@ -181,7 +181,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'An undead Norse warrior whose eerie glow attracts sea spirits.',
   type: 'spell',
   
-  rarity: 'rare',
+  rarity: 'common',
   manaCost: 3,
       class: "Neutral",
       collectible: true
@@ -193,7 +193,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'The Norns weave fate at the roots of Yggdrasil.',
   
   type: 'spell',
-  rarity: 'epic',
+  rarity: 'rare',
   
   manaCost: 3,
   class: 'Neutral',
@@ -322,7 +322,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'When the call echoes across the battlefield, none may fall.',
       type: 'spell',
 
-      rarity: 'rare',
+      rarity: 'common',
       manaCost: 2,
 
       class: "Warrior",
@@ -630,7 +630,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Young wolves of Fenrir\'s bloodline inspire their pack.',
       type: 'minion',
 
-      rarity: 'common',
+      rarity: 'rare',
       manaCost: 1,
 
       attack: 1,
@@ -1266,7 +1266,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The dead of Helheim rise to serve.',
       type: 'spell',
 
-      rarity: 'epic',
+      rarity: 'rare',
       manaCost: 6,
 
       class: "DeathKnight",
@@ -1312,7 +1312,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The legendary sword that slew the dragon Fafnir.',
       type: 'weapon',
 
-      rarity: 'epic',
+      rarity: 'rare',
       manaCost: 7,
 
       attack: 5,
@@ -1332,7 +1332,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The blood of warriors feeds the goddess Hel.',
 
       type: 'spell',
-      rarity: 'rare',
+      rarity: 'common',
 
       manaCost: 2,
       class: "DeathKnight",
@@ -1354,7 +1354,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Inscribed with runes that fate itself has woven.',
       type: 'weapon',
 
-      rarity: 'epic',
+      rarity: 'rare',
       manaCost: 3,
 
       attack: 2,
@@ -1376,7 +1376,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The primordial realm of ice and mist shields the worthy.',
       type: 'spell',
 
-      rarity: 'epic',
+      rarity: 'rare',
       manaCost: 4,
 
       class: "DeathKnight",
@@ -1401,7 +1401,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The queen of the dead commands all who enter her realm.',
       type: 'spell',
 
-      rarity: 'rare',
+      rarity: 'common',
       manaCost: 3,
 
       class: "DeathKnight",
@@ -1426,7 +1426,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Half living, half dead, she rules over Helheim.',
       type: 'hero',
 
-      rarity: 'epic',
+      rarity: 'rare',
       manaCost: 9,
 
       armor: 5,
@@ -1530,7 +1530,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Blood magic forges an impenetrable shield.',
       type: 'spell',
 
-      rarity: 'rare',
+      rarity: 'common',
       manaCost: 3,
 
       class: "DeathKnight",
@@ -1555,7 +1555,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The frozen breath of the primordial ice realm.',
       type: 'spell',
 
-      rarity: 'rare',
+      rarity: 'common',
       manaCost: 3,
 
       class: "DeathKnight",
@@ -1806,7 +1806,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Hel\'s priestesses channel death through healing.',
   type: 'minion',
   
-  rarity: 'rare',
+  rarity: 'common',
   manaCost: 4,
   
   attack: 3,
@@ -1871,7 +1871,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The god of wine and madness bends weak minds.',
       type: 'spell',
 
-      rarity: 'rare',
+      rarity: 'common',
       manaCost: 4,
 
       class: "Priest",
@@ -1893,7 +1893,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Wisdom and healing flow from Mimir\'s sacred well.',
   type: 'minion',
   
-  rarity: 'rare',
+  rarity: 'common',
   manaCost: 2,
   
   attack: 0,
@@ -1911,7 +1911,7 @@ export const fullCardDatabase: CardData[] = [
     flavorText: 'Hephaestus\'s forge fire purifies and heals.',
     type: 'spell',
     
-    rarity: 'rare',
+    rarity: 'common',
     manaCost: 6,
     
     class: "Priest",
@@ -1962,7 +1962,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'The sea god\'s fury strikes unpredictably.',
   type: 'spell',
   
-  rarity: 'common',
+  rarity: 'rare',
   manaCost: 2,
   
   class: "Shaman",
@@ -1976,7 +1976,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Geri and Freki, the wolves of Odin.',
   type: 'spell',
   
-  rarity: 'rare',
+  rarity: 'common',
   manaCost: 3,
   
   class: 'Shaman',
@@ -1991,7 +1991,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'A spectral wolf bound to serve.',
   type: 'minion',
   
-  rarity: 'common',
+  rarity: 'rare',
   manaCost: 2,
   
   attack: 2,
@@ -2780,7 +2780,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Forged by the Furies for endless vengeance.',
 
       type: 'weapon',
-      rarity: 'epic',
+      rarity: 'common',
 
       manaCost: 5,
       attack: 4,
@@ -2826,7 +2826,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'The Titan who stole fire now shares forbidden knowledge.',
       type: 'spell',
 
-      rarity: 'epic',
+      rarity: 'rare',
       manaCost: 6,
 
       class: 'Berserker',
@@ -2883,7 +2883,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'A blur of wings and malice striking from unexpected angles.',
 
       type: 'minion',
-      rarity: 'epic',
+      rarity: 'rare',
 
       manaCost: 4,
       attack: 4,
@@ -2898,7 +2898,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Channel the primordial power of the Titans.',
 
       type: 'spell',
-      rarity: 'epic',
+      rarity: 'rare',
 
       manaCost: 5,
       class: "Berserker",
@@ -2986,7 +2986,7 @@ export const fullCardDatabase: CardData[] = [
     flavorText: 'She serves the Furies with zealous devotion.',
       type: 'minion',
 
-      rarity: 'epic',
+      rarity: 'rare',
       manaCost: 7,
 
       attack: 6,
@@ -3010,7 +3010,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'From the depths of Erebus.',
       type: 'weapon',
 
-      rarity: 'common',
+      rarity: 'rare',
       manaCost: 2,
 
       attack: 1,
@@ -3143,7 +3143,7 @@ export const fullCardDatabase: CardData[] = [
     flavorText: 'The mists of Niflheim consume the unwary.',
       type: 'spell',
 
-      rarity: 'rare',
+      rarity: 'common',
       manaCost: 3,
 
       class: 'Mage',
@@ -3619,7 +3619,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Forged by the divine smith, it moves of its own accord.',
   
   type: 'minion',
-  rarity: 'rare',
+  rarity: 'common',
   
   manaCost: 3,
   attack: 0,
@@ -3638,7 +3638,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Built for the siege of the great city.',
   
   type: 'minion',
-  rarity: 'rare',
+  rarity: 'common',
   
   manaCost: 3,
   attack: 1,
@@ -3758,7 +3758,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Glimpsing the threads of fate grants swiftness.',
   type: 'minion',
   
-  rarity: 'common',
+  rarity: 'rare',
   manaCost: 3,
   
   attack: 2,
@@ -3926,7 +3926,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'The cold mists drain magical energy.',
   type: 'minion',
   
-  rarity: 'rare',
+  rarity: 'common',
   manaCost: 2,
   
   attack: 2,
@@ -4198,7 +4198,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'For Valhalla! Everyone, get in here!',
   
   type: 'minion',
-  rarity: 'rare',
+  rarity: 'common',
   
   manaCost: 5,
   attack: 3,
@@ -4214,7 +4214,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Calling forth spirits from the underworld.',
   
   type: 'minion',
-  rarity: 'rare',
+  rarity: 'common',
   
   manaCost: 3,
   attack: 1,
@@ -4230,7 +4230,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'Teaching the arts of magic at the Academy of Athens.',
   type: 'minion',
   
-  rarity: 'rare',
+  rarity: 'common',
   manaCost: 4,
   
   attack: 3,
@@ -4261,7 +4261,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'The elite assassins strike from the shadows of the void.',
   type: 'minion',
   
-  rarity: 'rare',
+  rarity: 'common',
   manaCost: 7,
   
   attack: 7,
@@ -4306,7 +4306,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'One of Daedalus\'s more... creative inventions.',
 
       type: 'minion',
-      rarity: 'epic',
+      rarity: 'common',
 
       manaCost: 1,
       attack: 0,

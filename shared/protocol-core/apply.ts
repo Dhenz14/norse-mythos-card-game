@@ -177,14 +177,14 @@ async function applyMintBatch(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 		if (supplyRecord && supplyRecord.minted >= supplyRecord.cap) continue;
 
 		// Per-card cap: each card has its own supply limit based on rarity
-		// Common: 1800, Rare: 1250, Epic: 750, Mythic: 500
+		// Common: 2000, Rare: 1000, Epic: 500, Mythic: 250
 		const RARITY_CARD_CAPS: Record<string, number> = {
-			common: 1800, rare: 1250, epic: 750, mythic: 500,
+			common: 2000, rare: 1000, epic: 500, mythic: 250,
 		};
 		const cardKey = `card:${cardId}`;
 		const cardSupply = await deps.state.getSupply(cardKey, 'pack');
 		const cardMinted = cardSupply?.minted ?? 0;
-		const perCardCap = RARITY_CARD_CAPS[rarity.toLowerCase()] ?? 1800;
+		const perCardCap = RARITY_CARD_CAPS[rarity.toLowerCase()] ?? 2000;
 		if (cardMinted >= perCardCap) continue;
 
 		const asset: CardAsset = {

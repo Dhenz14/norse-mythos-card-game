@@ -229,7 +229,7 @@ Under the Hood:
 | **Irreversible Blocks** | After ~60 seconds, Hive blocks are irreversible. Stamps are permanent. |
 | **Deterministic Replay** | Every client derives identical state from the same chain data. No ambiguity. |
 | **WASM Hash Check** | P2P opponents verify state hashes match. Tampered local state is detected. |
-| **Supply Caps** | Replay rules enforce per-card mint limits (500 mythic, 750 epic, 1,250 rare, 1,800 common). Can't mint past cap. |
+| **Supply Caps** | Replay rules enforce per-card mint limits (250 mythic, 500 epic, 1,000 rare, 2,000 common). Can't mint past cap. |
 
 ---
 

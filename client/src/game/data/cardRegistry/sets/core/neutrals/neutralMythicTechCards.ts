@@ -51,7 +51,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'Battlecry: Both players draw 3 cards. Your cards cost (1) less.',
 		flavorText: 'The golden scales of Glitnir weigh all things fairly — but favor the worthy.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {
@@ -92,7 +92,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'At the end of your turn, give a random friendly minion +2/+2.',
 		flavorText: 'The ember still burns with the warmth the god gave to the first mortals.',
 		type: 'minion',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Neutral',
 		set: 'core',
 		collectible: true
@@ -127,7 +127,7 @@ export const neutralMythicTechCards: CardData[] = [
 		description: 'Your spells cost (1) less. Battlecry: Add a random spell from each class to your hand.',
 		flavorText: 'The song endures long after the skald has fallen silent.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {

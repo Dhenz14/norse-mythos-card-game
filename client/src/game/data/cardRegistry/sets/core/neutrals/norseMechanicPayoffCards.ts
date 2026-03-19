@@ -25,7 +25,7 @@ export const bloodPricePayoffCards: CardData[] = [
 		description: 'Whenever you pay Blood Price, gain +1 Attack permanently.',
 		flavorText: 'Named in the Völuspá among the Valkyries who ride to claim the battle-slain. Each wound fed to her sharpens her spear.',
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Warlock',
 		set: 'core',
 		collectible: true
@@ -39,7 +39,7 @@ export const bloodPricePayoffCards: CardData[] = [
 		description: 'Battlecry: For each Blood Price card you played this game, deal 1 damage to all enemies.',
 		flavorText: 'Odin took many names. This one he wore when demanding blood.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: {
@@ -57,7 +57,7 @@ export const bloodPricePayoffCards: CardData[] = [
 		description: 'Your next Blood Price card costs 0 mana. Draw a card.',
 		flavorText: 'The blood-rune — blóðrún in the old tongue. Odin learned it hanging from Yggdrasil, and it has demanded blood ever since.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Mage',
 		spellEffect: {
 			type: 'blood_price_discount',
@@ -80,7 +80,7 @@ export const bloodPricePayoffCards: CardData[] = [
 		description: 'Whenever you pay Blood Price, restore that much Health to your hero.',
 		flavorText: 'He speaks no word, but his silence heals what sacrifice has torn.',
 		type: 'minion',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Priest',
 		set: 'core',
 		collectible: true
@@ -102,7 +102,7 @@ export const prophecyPayoffCards: CardData[] = [
 		description: 'Your Prophecies tick down 1 extra turn at end of turn.',
 		flavorText: 'What Urd remembers and Verdandi witnesses, Skuld hastens into being.',
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		class: 'Neutral',
 		set: 'core',
 		collectible: true
@@ -116,7 +116,7 @@ export const prophecyPayoffCards: CardData[] = [
 		description: 'Whenever a Prophecy resolves, draw 2 cards.',
 		flavorText: 'The seeress Gróa chanted galdrar over her son Svipdag, granting him foresight. Her visions echo still when prophecy comes to pass.',
 		type: 'minion',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Warlock',
 		set: 'core',
 		collectible: true
@@ -130,7 +130,7 @@ export const prophecyPayoffCards: CardData[] = [
 		description: 'Taunt. Gains +1/+1 each time a Prophecy countdown ticks.',
 		flavorText: 'The present moment solidifies around her, unyielding as stone.',
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Warrior',
 		keywords: ['taunt'],
 		set: 'core',
@@ -143,7 +143,7 @@ export const prophecyPayoffCards: CardData[] = [
 		description: 'Copy a friendly Prophecy and create it with the same remaining countdown.',
 		flavorText: 'What has been fated once can be fated again.',
 		type: 'spell',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Shaman',
 		spellEffect: {
 			type: 'copy_prophecy',
@@ -170,7 +170,7 @@ export const realmShiftPayoffCards: CardData[] = [
 		description: 'Gains +2/+1 whenever the active realm changes. Cannot be frozen.',
 		flavorText: 'The hawk Veðrfölnir perches atop the eagle atop Yggdrasil, surveying all Nine Realms. No realm-shift escapes his gaze.',
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Shaman',
 		set: 'core',
 		collectible: true
@@ -204,7 +204,7 @@ export const realmShiftPayoffCards: CardData[] = [
 		description: 'Deal 3 damage. If a realm is active, deal 5 instead.',
 		flavorText: 'Where the realms overlap, reality frays — and frayed reality cuts.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Mage',
 		spellEffect: {
 			type: 'conditional_damage',
@@ -256,7 +256,7 @@ export const einherjarPayoffCards: CardData[] = [
 		description: 'Whenever an Einherjar returns to your deck, summon a 1/1 Valkyrie with Rush.',
 		flavorText: 'Each fallen warrior she claims feeds the endless cycle of war.',
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Warrior',
 		set: 'core',
 		collectible: true
@@ -268,7 +268,7 @@ export const einherjarPayoffCards: CardData[] = [
 		description: 'Give an Einherjar +2/+2 and "Deathrattle: Draw a card."',
 		flavorText: 'Its blast carries across all Nine Realms, heralding glory.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Paladin',
 		spellEffect: {
 			type: 'buff',
@@ -313,7 +313,7 @@ export const einherjarPayoffCards: CardData[] = [
 		description: 'Restore 3 Health for each Einherjar that died this game. Draw a card.',
 		flavorText: 'In Valhalla, the slain feast each night and rise again at dawn.',
 		type: 'spell',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Priest',
 		spellEffect: {
 			type: 'einherjar_count_heal',

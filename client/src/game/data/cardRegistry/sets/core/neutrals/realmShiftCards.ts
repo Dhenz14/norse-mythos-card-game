@@ -17,7 +17,7 @@ export const realmShiftCards: CardData[] = [
 		description: 'Realm Shift: All minions have -2 Attack. Freeze effects last an extra turn.',
 		flavorText: 'The realm of ice and mist. Even the bravest warriors slow to a crawl.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Shaman',
 		keywords: [],
 		spellEffect: {
@@ -39,7 +39,7 @@ export const realmShiftCards: CardData[] = [
 		description: 'Realm Shift: All minions take 1 damage at end of each turn.',
 		flavorText: 'The realm of fire. Nothing survives the heat for long.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Mage',
 		keywords: [],
 		spellEffect: {
@@ -61,7 +61,7 @@ export const realmShiftCards: CardData[] = [
 		description: 'Realm Shift: Your minions have +1 Attack. Enemy spells cost (1) more.',
 		flavorText: 'The golden realm of the gods shines its favor upon you.',
 		type: 'spell',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Paladin',
 		keywords: [],
 		spellEffect: {
@@ -84,7 +84,7 @@ export const realmShiftCards: CardData[] = [
 		description: 'Realm Shift: Deathrattles don\'t trigger. Dead minions are banished.',
 		flavorText: 'Baldur could not return from Helheim. Nothing can. The dead stay dead in Hel\'s domain.',
 		type: 'spell',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Necromancer',
 		keywords: [],
 		spellEffect: {
@@ -106,7 +106,7 @@ export const realmShiftCards: CardData[] = [
 		description: 'Realm Shift: All minions restore 2 Health at start of each turn.',
 		flavorText: 'The realm of the Vanir, where nature heals all wounds.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Druid',
 		keywords: [],
 		spellEffect: {
@@ -173,7 +173,7 @@ export const realmShiftCards: CardData[] = [
 		description: 'Realm Shift: Newly played minions have Stealth until they attack.',
 		flavorText: 'In the realm of dark elves, shadows cling to everything.',
 		type: 'spell',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Rogue',
 		keywords: [],
 		spellEffect: {

@@ -843,7 +843,7 @@ All new players receive **45 free base cards** when they first start:
 - 10 Rogue cards (matched to Sigurd)
 - 5 neutral cards (universal)
 
-Base cards are infinite supply — they are NOT NFTs and don't count toward the 3.3M collectible cap. They're slightly weaker than common-rarity cards but include a few "value gems" that keep starter decks competitive.
+Base cards are infinite supply — they are NOT NFTs and don't count toward the 2.7M collectible cap. They're slightly weaker than common-rarity cards but include a few "value gems" that keep starter decks competitive.
 
 ### Deck Rules
 
@@ -900,7 +900,7 @@ The game's economy is managed by two on-chain accounts:
 
 ### Genesis Ceremony (One-Time)
 
-1. **Genesis broadcast**: Initialize card supply caps (1,800/common, 1,250/rare, 750/epic, 500/mythic per card)
+1. **Genesis broadcast**: Initialize card supply caps (2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
 2. **Mint batches**: Create all collectible NFT cards (~2,082 unique cards)
 3. **Seal broadcast**: Permanently lock minting — no new NFTs can ever be created
 4. **Authority brick**: Set all authority thresholds to 255 (unreachable) — the genesis account becomes cryptographically inert forever

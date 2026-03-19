@@ -70,7 +70,7 @@ export const classLegendaryMinions: CardData[] = [
     attack: 2,
     health: 2,
     type: "minion",
-    rarity: "epic",
+    rarity: "rare",
     description: "Combo: Gain +2/+2 for each other card you've played this turn.",
     flavorText: 'He strikes from darkness, and darkness strikes with him.',
     keywords: ["combo"],

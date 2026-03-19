@@ -110,7 +110,7 @@ export const ravensPets: CardData[] = [
 		attack: 3,
 		health: 3,
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		description: 'Rush. Spell Damage +1.',
 		flavorText: "Odin's memory strikes like lightning.",
 		keywords: ['rush'],

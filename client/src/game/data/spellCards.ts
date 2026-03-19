@@ -10,7 +10,7 @@ export const spellCards: CardData[] = [
     name: "Spirit Echo",
     manaCost: 7,
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     description: "Summon copies of enemy minions. They have 1 Health remaining.",
     keywords: [],
     heroClass: "priest",
@@ -127,7 +127,7 @@ export const spellCards: CardData[] = [
     name: "Apotheosis",
     manaCost: 3,
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     description: "Give a minion +2/+3 and Lifesteal.",
     keywords: [
       "lifesteal"
@@ -151,7 +151,7 @@ export const spellCards: CardData[] = [
     name: "Blessing of Baldur",
     manaCost: 3,
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     description: "Give a minion Divine Shield, then summon a 1/1 copy of it.",
     keywords: [
       "divine_shield"
@@ -197,7 +197,7 @@ export const spellCards: CardData[] = [
     name: "Tome of Wisdom",
     manaCost: 2,
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     description: "Give a minion +1/+1 and 'Deathrattle: Add a Libram of Wisdom to your hand.'",
     keywords: [
       "deathrattle"

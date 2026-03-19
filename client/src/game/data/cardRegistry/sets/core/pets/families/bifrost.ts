@@ -112,7 +112,7 @@ export const bifrostPets: CardData[] = [
 		attack: 4,
 		health: 3,
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		description: 'Rush. Windfury.',
 		flavorText: 'Arvakr blazes across the sky, pulling the sun in its wake.',
 		keywords: ['rush', 'windfury'],

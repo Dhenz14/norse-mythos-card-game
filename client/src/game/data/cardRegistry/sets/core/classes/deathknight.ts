@@ -26,7 +26,7 @@ export const deathknightCards: CardData[] = [
     description: "Summon three 2/2 Ghouls with Taunt.",
     flavorText: "Like a good neighbor, the undead are there!",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "DeathKnight",
     spellEffect: {
       type: "summon",
@@ -63,7 +63,7 @@ export const deathknightCards: CardData[] = [
     description: "After your hero attacks and kills a minion, summon that minion to your side.",
     flavorText: "Whomsoever takes up this blade shall wield power eternal.",
     type: "weapon",
-    rarity: 'epic',
+    rarity: 'rare',
     class: "DeathKnight",
     collectible: true,
     set: "core"
@@ -75,7 +75,7 @@ export const deathknightCards: CardData[] = [
     description: "Deal 1 damage to all minions. If any die, restore 3 Health to your hero.",
     flavorText: "Boiling blood is a staple in the death knight diet.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     spellEffect: {
       type: "aoe_with_on_kill",
@@ -94,7 +94,7 @@ export const deathknightCards: CardData[] = [
     description: "Your weapon has +1 Attack for each Rune you have active.",
     flavorText: "Enchanted with runes of power.",
     type: "weapon",
-    rarity: "epic",
+    rarity: "rare",
     class: "DeathKnight",
     collectible: true,
     set: "core"
@@ -106,7 +106,7 @@ export const deathknightCards: CardData[] = [
     description: "Give your hero +5 Armor and Immunity this turn.",
     flavorText: "Death knights can encase themselves in an icy fortress of invulnerability.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "DeathKnight",
     spellEffect: {
       type: "gain_armor_and_immunity",
@@ -123,7 +123,7 @@ export const deathknightCards: CardData[] = [
     description: "Take control of an enemy minion with 3 or less Attack until end of turn.",
     flavorText: "Death knights are masters of manipulation.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     spellEffect: {
       type: "mind_control_temporary",
@@ -140,7 +140,7 @@ export const deathknightCards: CardData[] = [
     description: "Battlecry: Equip Hel's Edge and gain 5 Armor.",
     flavorText: "When a prince becomes a death knight, it's a royal pain.",
     type: "hero",
-    rarity: 'epic',
+    rarity: 'rare',
     class: "DeathKnight",
     keywords: ["battlecry"],
     collectible: true,
@@ -188,7 +188,7 @@ export const deathknightCards: CardData[] = [
     description: "Give your hero +4 Armor and Lifesteal this turn.",
     flavorText: "Blood death knights are vampiric fighters.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     spellEffect: {
       type: "gain_armor_and_lifesteal",
@@ -205,7 +205,7 @@ export const deathknightCards: CardData[] = [
     description: "Freeze an enemy and all adjacent minions.",
     flavorText: "Frost death knights bring the bitter cold of Niflheim with them.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     spellEffect: {
       type: "freeze_adjacent",
@@ -351,7 +351,7 @@ export const deathknightCards: CardData[] = [
     description: "Gains +1/+1 when an enemy minion dies.",
     flavorText: "Carved with runes of binding, it feeds on the passing of the slain.",
     type: "minion",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     race: "Undead",
     keywords: [],
@@ -372,7 +372,7 @@ export const deathknightCards: CardData[] = [
     description: "Your frozen enemies take +1 damage.",
     flavorText: "Born in the howling winds of Niflheim, where even the dead shiver.",
     type: "minion",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     keywords: [],
     aura: {
@@ -529,7 +529,7 @@ export const deathknightCards: CardData[] = [
     description: "Destroy a friendly minion. Deal its Health as damage to all enemy minions.",
     flavorText: "In death, even the weakest become devastating.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "DeathKnight",
     spellEffect: {
       type: "sacrifice_aoe",
@@ -563,7 +563,7 @@ export const deathknightCards: CardData[] = [
     description: "Destroy a minion. Your hero takes damage equal to its Health.",
     flavorText: "Destruction so complete that even the spirit has nowhere to go.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "DeathKnight",
     spellEffect: {
       type: "destroy_take_damage",
@@ -601,7 +601,7 @@ export const deathknightCards: CardData[] = [
     description: "Steal a minion from your opponent's deck. It costs (2) less.",
     flavorText: "The hand reaches from beyond the grave and drags the living down.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     spellEffect: {
       type: "steal_from_deck",
@@ -618,7 +618,7 @@ export const deathknightCards: CardData[] = [
     description: "Deal 8 damage randomly split among all enemies. Freeze any that survive.",
     flavorText: "The ice wyrm's breath freezes the soul before it reaches the body.",
     type: "spell",
-    rarity: 'epic',
+    rarity: 'rare',
     class: "DeathKnight",
     spellEffect: {
       type: "random_damage_freeze",
@@ -635,7 +635,7 @@ export const deathknightCards: CardData[] = [
     description: "Summon a random minion from your opponent's graveyard. Give it Rush and Lifesteal.",
     flavorText: "The gate swings open. Something walks through. It is not what was expected.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "DeathKnight",
     spellEffect: {
       type: "steal_from_graveyard",
@@ -748,7 +748,7 @@ export const deathknightCards: CardData[] = [
     description: "Freeze all enemy minions. Draw a card.",
     flavorText: "Niflheim's wind carries the screams of the frozen dead.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     spellEffect: {
       type: "freeze_and_draw",
@@ -764,7 +764,7 @@ export const deathknightCards: CardData[] = [
     description: "Return two random friendly minions that died this game to your hand. They cost (1) less.",
     flavorText: "The rune glows sickly green. The earth stirs. The dead remember.",
     type: "spell",
-    rarity: "rare",
+    rarity: "common",
     class: "DeathKnight",
     spellEffect: {
       type: "resurrect_to_hand",
@@ -864,7 +864,7 @@ export const deathknightCards: CardData[] = [
     description: "Destroy an enemy minion. Summon a 3/3 Ghoul with Taunt.",
     flavorText: "The cold reaches out and takes what it wants. What it wants is everything.",
     type: "spell",
-    rarity: "epic",
+    rarity: "rare",
     class: "DeathKnight",
     spellEffect: {
       type: "destroy_and_summon",

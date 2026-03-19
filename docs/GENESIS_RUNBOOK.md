@@ -306,10 +306,10 @@ Broadcaster constructs the genesis payload locally:
   "card_registry_hash": "<sha256 of card registry>",
   "supply": {
     "pack_supply": {
-      "common": 1800,
-      "rare": 1250,
-      "epic": 750,
-      "mythic": 500
+      "common": 2000,
+      "rare": 1000,
+      "epic": 500,
+      "mythic": 250
     },
     "reward_supply": {
       "common": 0,
@@ -378,7 +378,7 @@ Each signer independently runs the replay engine (pointed at a different API nod
 - `genesis_state.genesisBlock === <BLOCK_NUM>`
 - `genesis_state.readerHash === <ENGINE_HASH>` (matches hash bundle from Checkpoint H1)
 - `supply_counters` initialized to 0 for all rarities
-- Supply caps match: common 1800, rare 1250, epic 750, mythic 500
+- Supply caps match: common 2000, rare 1000, epic 500, mythic 250
 
 **Checkpoint B2**: All signers confirm identical genesis state from independent nodes. Reader hash in genesis state matches the engine hash from the pre-ceremony hash bundle.
 
@@ -788,7 +788,7 @@ This ledger is the audit trail. It proves that no semantic intent was broadcast 
   "id": "ragnarok-cards",
   "required_auths": ["ragnarok"],
   "required_posting_auths": [],
-  "json": "{\"p\":\"ragnarok-cards\",\"action\":\"genesis\",\"version\":1,\"collection\":\"ragnarok-alpha\",\"protocol_hash\":\"...\",\"engine_hash\":\"...\",\"card_registry_hash\":\"...\",\"supply\":{\"pack_supply\":{\"common\":1800,\"rare\":1250,\"epic\":750,\"mythic\":500},\"reward_supply\":{\"common\":0,\"rare\":0,\"epic\":150,\"mythic\":50}}}"
+  "json": "{\"p\":\"ragnarok-cards\",\"action\":\"genesis\",\"version\":1,\"collection\":\"ragnarok-alpha\",\"protocol_hash\":\"...\",\"engine_hash\":\"...\",\"card_registry_hash\":\"...\",\"supply\":{\"pack_supply\":{\"common\":2000,\"rare\":1000,\"epic\":500,\"mythic\":250},\"reward_supply\":{\"common\":0,\"rare\":0,\"epic\":150,\"mythic\":50}}}"
 }
 ```
 

@@ -67,7 +67,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 4,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Whenever another minion is Frozen, add a copy of it to your hand.",
   flavorText: "Any moram can freeze minions. He prefers to call it 'going into the cooler.'",
@@ -271,7 +271,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 8,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "At the end of your turn, summon a random minion with Cost equal to your Armor (up to 10).",
   flavorText: "He once built a lovely rock garden, but it was full of rock lobsters that wouldn't stop singing.",
@@ -351,7 +351,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 6,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Whenever your opponent casts a spell, summon a Burly Rockjaw Trogg.",
   flavorText: "He keeps earthinating the countryside despite attempts to stop him.",
@@ -403,7 +403,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 6,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Whenever you cast a 1-cost spell, add a random Automaton to your hand.",
   flavorText: "Gazlowe was voted 'Most Likely to Explode During a Rocketbike Festival.'",
@@ -424,7 +424,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 5,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "At the start of your turn, if you have at least 3 Automatons, destroy them all and form V-07-TR-0N.",
   flavorText: "Do not push the big red button!",
@@ -475,7 +475,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Whenever an enemy minion dies, summon a 1/1 Leper Gnome.",
   flavorText: "He's on the cutting edge of technology! Which is why he's still working on cybernetic leper gnomes.",
@@ -498,7 +498,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 9,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Also damages the minions next to whomever this attacks.",
   flavorText: "Despite the name, it doesn't actually reap any foes. That's false advertising.",
@@ -709,7 +709,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 1,
   
   type: "minion",
-  rarity: "rare",
+  rarity: "common",
   
   description: "Stealth. At the end of your turn, summon a 1/1 Steward.",
   flavorText: "Charon the Steward runs the halls when Óðinn's Prophet is out of town, which is a lot these days.",
@@ -787,7 +787,7 @@ export const expansionLegendaryCards: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "After this attacks a minion, it also hits the enemy hero.",
   flavorText: "The great wolf's fury knows no bounds. When Fenrir strikes, all feel his wrath.",

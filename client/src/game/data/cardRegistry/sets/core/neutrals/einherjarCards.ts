@@ -69,7 +69,7 @@ export const einherjarCards: CardData[] = [
 		description: 'Divine Shield. Einherjar',
 		flavorText: 'Odin himself blessed this warrior with light that persists beyond death.',
 		type: 'minion',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Paladin',
 		keywords: ['einherjar', 'divine_shield'],
 		set: 'core',

@@ -10,7 +10,7 @@ export const norseMechanicSynergyCards: CardData[] = [
 		description: 'Whenever a Prophecy countdown ticks, gain +1/+1.',
 		flavorText: 'She reads each thread of fate and grows stronger with every turn of the wheel.',
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Neutral',
 		set: 'core',
 		collectible: true
@@ -24,7 +24,7 @@ export const norseMechanicSynergyCards: CardData[] = [
 		description: 'Whenever you pay Blood Price, deal 2 damage to a random enemy.',
 		flavorText: 'Norse sorcery demands blood — and repays it with destruction.',
 		type: 'minion',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Neutral',
 		set: 'core',
 		collectible: true
@@ -38,7 +38,7 @@ export const norseMechanicSynergyCards: CardData[] = [
 		description: 'Whenever a Realm Shift occurs, gain +2/+2 and Taunt.',
 		flavorText: 'The Rainbow Bridge hums with power when the realms realign.',
 		type: 'minion',
-		rarity: 'epic',
+		rarity: 'rare',
 		class: 'Neutral',
 		set: 'core',
 		collectible: true
@@ -52,7 +52,7 @@ export const norseMechanicSynergyCards: CardData[] = [
 		description: 'Einherjar. Whenever another Einherjar returns to your deck, gain +1/+1.',
 		flavorText: 'He keeps count of every warrior who returns to Valhalla — and fights harder each time.',
 		type: 'minion',
-		rarity: 'rare',
+		rarity: 'common',
 		class: 'Neutral',
 		keywords: ['einherjar'],
 		set: 'core',

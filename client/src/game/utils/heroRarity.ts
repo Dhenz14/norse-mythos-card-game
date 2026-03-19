@@ -9,10 +9,10 @@ export type HeroRarity = 'common' | 'rare' | 'epic' | 'mythic';
 
 /** NFT supply cap per rarity tier — same for heroes, kings, and cards */
 export const PIECE_SUPPLY: Record<HeroRarity, number> = {
-	mythic: 500,
-	epic: 750,
-	rare: 1_250,
-	common: 1_800,
+	mythic: 250,
+	epic: 500,
+	rare: 1_000,
+	common: 2_000,
 };
 
 /** Rarity-specific accent colors */

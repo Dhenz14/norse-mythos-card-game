@@ -96,7 +96,7 @@ export const colossalPartCards: CardData[] = [
       
       health: 2,
       description: "Part of Neptulon the Tidehunter. After this attacks, add a random Elemental to your hand.",
-      rarity: 'epic',
+      rarity: 'rare',
       
       type: "minion",
       keywords: [],
@@ -138,7 +138,7 @@ export const colossalPartCards: CardData[] = [
       health: 4,
       description: "Part of Giga-Fin. Taunt. Battlecry: Give adjacent minions +1/+1.",
       
-      rarity: 'epic',
+      rarity: 'rare',
       type: "minion",
       
       keywords: ['taunt', 'battlecry'],

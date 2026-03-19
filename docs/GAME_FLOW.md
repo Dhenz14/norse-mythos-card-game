@@ -498,7 +498,7 @@ StarterPackCeremony.tsx
 
 - 45 base cards: 10 Mage + 10 Warrior + 10 Priest + 10 Rogue + 5 neutral
 - Each class set matched to default hero (Erik, Ragnar, Brynhild, Sigurd, Leif)
-- Base cards are infinite supply (NOT NFTs, don't count toward 3.3M cap)
+- Base cards are infinite supply (NOT NFTs, don't count toward 2.7M cap)
 - Slightly below common power level with "value gem" cards for competitiveness
 - Stored in `starterSet.ts` + `baseCards.ts`, tracked via `starterStore.ts`
 - To play: only 1 King + 4 Heroes required. Cards are optional bonus firepower.

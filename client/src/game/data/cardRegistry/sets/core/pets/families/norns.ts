@@ -164,7 +164,7 @@ export const nornsPets: CardData[] = [
 		attack: 5,
 		health: 8,
 		type: 'minion',
-		rarity: 'mythic',
+		rarity: 'epic',
 		description: 'Past, present, and future converge in a single weaving.',
 		flavorText: 'Past, present, and future converge into one.',
 		keywords: ['taunt', 'battlecry'],
