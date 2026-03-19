@@ -42,6 +42,13 @@ const LEGACY_MAP: Record<string, ProtocolAction> = {
 	'rp_pack_burn': 'pack_burn',
 	'rp_card_replicate': 'card_replicate',
 	'rp_card_merge': 'card_merge',
+	// v1.2 marketplace legacy prefixes
+	'rp_market_list': 'market_list',
+	'rp_market_unlist': 'market_unlist',
+	'rp_market_buy': 'market_buy',
+	'rp_market_offer': 'market_offer',
+	'rp_market_accept': 'market_accept',
+	'rp_market_reject': 'market_reject',
 };
 
 // ============================================================
@@ -78,6 +85,9 @@ export function normalizeRawOp(raw: RawHiveOp): NormalizeResult {
 			// v1.1
 			'pack_mint', 'pack_distribute', 'pack_transfer', 'pack_burn',
 			'card_replicate', 'card_merge',
+			// v1.2: Marketplace
+			'market_list', 'market_unlist', 'market_buy',
+			'market_offer', 'market_accept', 'market_reject',
 		]);
 		if (known.has(bodyAction)) {
 			action = bodyAction as CanonicalAction;

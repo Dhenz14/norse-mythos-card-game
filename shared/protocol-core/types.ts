@@ -59,7 +59,14 @@ export type CanonicalAction =
 	| 'pack_burn'
 	// v1.1: DNA Lineage
 	| 'card_replicate'
-	| 'card_merge';
+	| 'card_merge'
+	// v1.2: Marketplace (NFTLox-inspired)
+	| 'market_list'
+	| 'market_unlist'
+	| 'market_buy'
+	| 'market_offer'
+	| 'market_accept'
+	| 'market_reject';
 
 // Legacy op that is NOT a canonical alias (valid only pre-seal)
 export type LegacyAction = 'legacy_pack_open';
@@ -74,11 +81,15 @@ export const ACTIVE_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
 	'card_transfer', 'burn', 'seal', 'mint_batch',
 	'pack_mint', 'pack_distribute', 'pack_transfer', 'pack_burn',
 	'card_replicate', 'card_merge',
+	// Marketplace: buy requires active (bundles HIVE transfer)
+	'market_buy', 'market_accept',
 ]);
 
 export const POSTING_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
 	'queue_join', 'queue_leave', 'match_anchor', 'match_result',
 	'pack_commit', 'pack_reveal', 'reward_claim', 'level_up',
+	// Marketplace: listing/offers use posting key
+	'market_list', 'market_unlist', 'market_offer', 'market_reject',
 ]);
 
 // ============================================================
@@ -303,6 +314,15 @@ export interface StateAdapter {
 	// v1.1: Companion transfer lookup (atomic anchoring)
 	getCompanionTransfer(trxId: string): Promise<CompanionTransfer | null>;
 	setTrxSiblings(trxId: string, ops: unknown[]): void;
+
+	// v1.2: Marketplace
+	getListing(listingId: string): Promise<MarketListing | null>;
+	getListingByNft(nftUid: string): Promise<MarketListing | null>;
+	putListing(listing: MarketListing): Promise<void>;
+	deleteListing(listingId: string): Promise<void>;
+	getOffer(offerId: string): Promise<MarketOffer | null>;
+	getOffersByNft(nftUid: string): Promise<MarketOffer[]>;
+	putOffer(offer: MarketOffer): Promise<void>;
 }
 
 // ============================================================
@@ -344,4 +364,46 @@ export interface RewardDefinition {
 
 export interface RewardProvider {
 	getRewardById(id: string): RewardDefinition | null;
+}
+
+// ============================================================
+// v1.2: Marketplace Types (NFTLox-inspired)
+// ============================================================
+
+export type MarketCurrency = 'HIVE' | 'HBD';
+
+export interface MarketListing {
+	listingId: string;          // Deterministic: fnv1a("ragnarok:list:{nftUid}:{blockNum}")
+	nftUid: string;             // Card or pack UID
+	nftType: 'card' | 'pack';
+	seller: string;             // Hive account
+	price: number;              // Amount in currency units
+	currency: MarketCurrency;
+	listedBlock: number;
+	listedTrxId: string;
+	active: boolean;
+}
+
+export interface MarketOffer {
+	offerId: string;            // Deterministic: fnv1a("ragnarok:offer:{nftUid}:{buyer}:{blockNum}")
+	nftUid: string;
+	buyer: string;
+	price: number;
+	currency: MarketCurrency;
+	offeredBlock: number;
+	offeredTrxId: string;
+	status: 'pending' | 'accepted' | 'rejected' | 'expired';
+	paymentTrxId?: string;      // Cross-referenced HIVE transfer for verification
+}
+
+// Marketplace state adapter extension
+export interface MarketStateAdapter {
+	getListing(listingId: string): Promise<MarketListing | null>;
+	getListingByNft(nftUid: string): Promise<MarketListing | null>;
+	putListing(listing: MarketListing): Promise<void>;
+	deleteListing(listingId: string): Promise<void>;
+	getOffer(offerId: string): Promise<MarketOffer | null>;
+	getOffersByNft(nftUid: string): Promise<MarketOffer[]>;
+	putOffer(offer: MarketOffer): Promise<void>;
+	deleteOffer(offerId: string): Promise<void>;
 }

@@ -247,44 +247,53 @@
 }
 
 /* ==========================================================================
-   MANA GEM - Deep crystal with bevel
+   STAT EMBLEM SYSTEM — SVG-shaped stat containers (mana/atk/hp)
    ========================================================================== */
 
-.card-mana {
+.stat-emblem {
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #60A5FA 0%, #2563EB 40%, #1D4ED8 70%, #1E3A8A 100%);
-  border: 2px solid #93C5FD;
-  border-radius: 4px;
-  transform: rotate(45deg);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: var(--z-cards, 20);
-  box-shadow:
-    0 3px 10px rgba(0,0,0,0.7),
-    0 0 12px rgba(37,99,235,0.4),
-    inset 0 2px 3px rgba(255,255,255,0.35),
-    inset 0 -2px 4px rgba(0,0,0,0.5),
-    inset 0 0 8px rgba(96,165,250,0.3);
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+.stat-emblem-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7)) drop-shadow(0 0 8px rgba(0,0,0,0.4));
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   MANA GEM — Runic diamond crystal
+   ========================================================================== */
+
+.card-mana {
+  top: 2px;
+  left: 2px;
+  width: 36px;
+  height: 36px;
 }
 
 .simple-card.small .card-mana {
-  width: 24px;
-  height: 24px;
-  top: 2px;
-  left: 2px;
+  width: 26px;
+  height: 26px;
+  top: 1px;
+  left: 1px;
 }
 
 .simple-card.large .card-mana,
 .simple-card.preview .card-mana {
-  width: 40px;
-  height: 40px;
-  top: 6px;
-  left: 6px;
+  width: 46px;
+  height: 46px;
+  top: 4px;
+  left: 4px;
 }
 
 .mana-value {
@@ -292,18 +301,12 @@
   font-size: 16px;
   font-weight: 800;
   text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 6px rgba(96,165,250,0.5);
-  transform: rotate(-45deg);
+  position: relative;
+  z-index: 1;
 }
 
 .card-mana.blood-price-mana {
-  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 40%, #991b1b 70%, #7f1d1d 100%);
-  border-color: #fca5a5;
-  box-shadow:
-    0 3px 10px rgba(0,0,0,0.7),
-    0 0 12px rgba(220,38,38,0.4),
-    inset 0 2px 3px rgba(255,255,255,0.35),
-    inset 0 -2px 4px rgba(0,0,0,0.5),
-    inset 0 0 8px rgba(239,68,68,0.3);
+  /* SVG handles the blood color via url(#mana-blood) gradient */
 }
 
 .blood-price-badge {
@@ -465,39 +468,74 @@
 .simple-card.preview .card-art-locked .lock-text { font-size: 11px; }
 
 /* ==========================================================================
-   NAME BANNER - Richer gradient with gold trim feel
+   NAME BANNER — Shaped ribbon with dimensional depth
    ========================================================================== */
 
 .card-name-banner {
   position: absolute;
-  top: 64%;
-  left: 4%;
-  right: 4%;
-  min-height: 11%;
+  top: 63%;
+  left: 3%;
+  right: 3%;
+  min-height: 12%;
   max-height: 18%;
-  background: rgba(10,12,24,0.85);
-  border-radius: 4px;
+  background:
+    linear-gradient(180deg, rgba(20,18,35,0.92) 0%, rgba(10,10,20,0.95) 100%);
+  border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px 6px;
-  border: 1px solid rgba(255,215,100,0.12);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,215,100,0.18);
+  border-top: 1px solid rgba(255,215,100,0.25);
+  border-bottom: 1px solid rgba(0,0,0,0.6);
+  box-shadow:
+    0 3px 10px rgba(0,0,0,0.5),
+    0 -1px 0 rgba(255,215,100,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.06);
   z-index: 18;
-  overflow: hidden;
+  overflow: visible;
+}
+
+/* Decorative scroll ends */
+.card-name-banner::before,
+.card-name-banner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 14px;
+  background: linear-gradient(180deg, rgba(255,215,100,0.2) 0%, rgba(255,215,100,0.05) 100%);
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+.card-name-banner::before {
+  left: -3px;
+  border-left: 1px solid rgba(255,215,100,0.2);
+}
+
+.card-name-banner::after {
+  right: -3px;
+  border-right: 1px solid rgba(255,215,100,0.2);
+}
+
+.simple-card.small .card-name-banner::before,
+.simple-card.small .card-name-banner::after {
+  display: none;
 }
 
 .simple-card.medium .card-name-banner {
-  padding: 2px 4px;
+  padding: 2px 6px;
 }
 
 .simple-card.large .card-name-banner {
-  top: 64%;
-  border-top: none;
+  top: 63%;
+  padding: 5px 10px;
 }
 
 .simple-card.preview .card-name-banner {
-  top: 64%;
+  top: 63%;
+  padding: 6px 12px;
 }
 
 /* Card name text - High contrast, slightly larger */
@@ -590,6 +628,98 @@
   text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(147,197,253,0.3);
 }
 
+/* ==========================================================================
+   RARITY GEM — Faceted diamond indicator (rare/epic/mythic only)
+   ========================================================================== */
+
+.rarity-gem {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  z-index: 20;
+}
+
+.rarity-gem-rare {
+  background: linear-gradient(135deg, #60A5FA 0%, #2563EB 50%, #1E3A8A 100%);
+  border: 1px solid #93C5FD;
+  box-shadow: 0 0 6px rgba(59,130,246,0.6), 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.rarity-gem-epic {
+  background: linear-gradient(135deg, #C084FC 0%, #7C3AED 50%, #581C87 100%);
+  border: 1px solid #DDD6FE;
+  box-shadow: 0 0 8px rgba(168,85,247,0.6), 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.rarity-gem-mythic {
+  background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 40%, #D97706 100%);
+  border: 1px solid #FEF3C7;
+  box-shadow: 0 0 10px rgba(245,158,11,0.7), 0 0 20px rgba(245,158,11,0.3), 0 2px 4px rgba(0,0,0,0.5);
+  animation: mythic-gem-pulse 3s ease-in-out infinite;
+}
+
+@keyframes mythic-gem-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(245,158,11,0.7), 0 0 20px rgba(245,158,11,0.3), 0 2px 4px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 14px rgba(245,158,11,0.9), 0 0 28px rgba(245,158,11,0.5), 0 2px 4px rgba(0,0,0,0.5); }
+}
+
+.simple-card.small .rarity-gem {
+  width: 7px;
+  height: 7px;
+  bottom: -4px;
+}
+
+.simple-card.large .rarity-gem,
+.simple-card.preview .rarity-gem {
+  width: 13px;
+  height: 13px;
+  bottom: -7px;
+  border-radius: 3px;
+}
+
+/* ==========================================================================
+   TRIBE LINE — Race/type indicator below name banner
+   ========================================================================== */
+
+.card-tribe-line {
+  position: absolute;
+  top: 75.5%;
+  left: 15%;
+  right: 15%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 17;
+  pointer-events: none;
+}
+
+.tribe-text {
+  color: rgba(255,255,255,0.55);
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+.simple-card.small .card-tribe-line {
+  display: none;
+}
+
+.simple-card.small .tribe-text {
+  font-size: 6px;
+}
+
+.simple-card.large .tribe-text,
+.simple-card.preview .tribe-text {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.6);
+}
 
 /* Card description - Clear and readable */
 .card-description {
@@ -815,83 +945,57 @@
 }
 
 /* ==========================================================================
-   ATTACK STAT - Bold gold with bevel
+   ATTACK STAT — Hexagonal gold emblem
    ========================================================================== */
 
 .card-attack {
-  position: absolute;
-  bottom: -10px;
-  left: 2px;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #FBBF24 0%, #D97706 40%, #B45309 70%, #92400E 100%);
-  border: 2px solid #FDE68A;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  bottom: -12px;
+  left: 0px;
+  width: 36px;
+  height: 40px;
   z-index: 30;
-  box-shadow:
-    0 3px 10px rgba(0,0,0,0.7),
-    0 0 10px rgba(217,119,6,0.35),
-    inset 0 2px 3px rgba(255,255,255,0.45),
-    inset 0 -2px 4px rgba(0,0,0,0.5),
-    inset 0 0 6px rgba(251,191,36,0.3);
 }
 
 .simple-card.small .card-attack {
-  width: 24px;
-  height: 24px;
-  bottom: -6px;
-  left: 1px;
+  width: 26px;
+  height: 28px;
+  bottom: -8px;
+  left: 0px;
 }
 
 .simple-card.large .card-attack,
 .simple-card.preview .card-attack {
-  width: 42px;
-  height: 42px;
-  bottom: -14px;
-  left: 4px;
+  width: 46px;
+  height: 50px;
+  bottom: -16px;
+  left: 2px;
 }
 
 /* ==========================================================================
-   HEALTH STAT - Vivid deep red with bevel
+   HEALTH STAT — Shield-shaped red emblem
    ========================================================================== */
 
 .card-health {
-  position: absolute;
-  bottom: -10px;
-  right: 2px;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 40%, #B91C1C 70%, #7F1D1D 100%);
-  border: 2px solid #FCA5A5;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  bottom: -12px;
+  right: 0px;
+  width: 36px;
+  height: 40px;
   z-index: 30;
-  box-shadow:
-    0 3px 10px rgba(0,0,0,0.7),
-    0 0 10px rgba(220,38,38,0.35),
-    inset 0 2px 3px rgba(255,255,255,0.4),
-    inset 0 -2px 4px rgba(0,0,0,0.5),
-    inset 0 0 6px rgba(239,68,68,0.3);
 }
 
 .simple-card.small .card-health {
-  width: 24px;
-  height: 24px;
-  bottom: -6px;
-  right: 1px;
+  width: 26px;
+  height: 28px;
+  bottom: -8px;
+  right: 0px;
 }
 
 .simple-card.large .card-health,
 .simple-card.preview .card-health {
-  width: 42px;
-  height: 42px;
-  bottom: -14px;
-  right: 4px;
+  width: 46px;
+  height: 50px;
+  bottom: -16px;
+  right: 2px;
 }
 
 .stat-value {
@@ -899,10 +1003,12 @@
   font-size: 16px;
   font-weight: 800;
   text-shadow: 0 1px 0 rgba(0,0,0,1), 0 2px 4px rgba(0,0,0,0.9);
+  position: relative;
+  z-index: 1;
 }
 
 .simple-card.small .stat-value {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .simple-card.large .stat-value,

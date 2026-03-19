@@ -11,6 +11,7 @@ import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useInView } from 'react-intersection-observer';
 import { KEYWORD_DEFINITIONS } from './ui/UnifiedCardTooltip';
+import { KEYWORD_ICON_MAP } from './ui/CardIconsSVG';
 import { getCardArtPath } from '../utils/art/artMapping';
 import { useHoloTracking, getHoloTier } from '../hooks/useHoloTracking';
 import './SimpleCard.css';
@@ -132,8 +133,8 @@ const getClassColor = (cardClass?: string): string => {
  * Extract keyword icons from card - uses centralized KEYWORD_DEFINITIONS
  * Checks both explicit keywords array and description text
  */
-const getCardKeywordIcons = (description?: string, keywords?: string[]): { icon: string; color: string; keyword: string }[] => {
-  const icons: { icon: string; color: string; keyword: string }[] = [];
+const getCardKeywordIcons = (description?: string, keywords?: string[]): { icon: string; color: string; keyword: string; SvgIcon?: React.FC<React.SVGProps<SVGSVGElement>> }[] => {
+  const icons: { icon: string; color: string; keyword: string; SvgIcon?: React.FC<React.SVGProps<SVGSVGElement>> }[] = [];
   const addedKeywords = new Set<string>();
 
   if (keywords && keywords.length > 0) {
@@ -141,7 +142,7 @@ const getCardKeywordIcons = (description?: string, keywords?: string[]): { icon:
       const key = keyword.toLowerCase();
       const def = KEYWORD_DEFINITIONS[key];
       if (def && !addedKeywords.has(key)) {
-        icons.push({ icon: def.icon, color: def.color, keyword: key });
+        icons.push({ icon: def.icon, color: def.color, keyword: key, SvgIcon: KEYWORD_ICON_MAP[key] || def.SvgIcon });
         addedKeywords.add(key);
       }
     }
@@ -151,7 +152,7 @@ const getCardKeywordIcons = (description?: string, keywords?: string[]): { icon:
     const desc = description.toLowerCase();
     for (const [keyword, def] of Object.entries(KEYWORD_DEFINITIONS)) {
       if (desc.includes(keyword) && !addedKeywords.has(keyword)) {
-        icons.push({ icon: def.icon, color: def.color, keyword });
+        icons.push({ icon: def.icon, color: def.color, keyword, SvgIcon: KEYWORD_ICON_MAP[keyword] || def.SvgIcon });
         addedKeywords.add(keyword);
       }
     }
@@ -318,7 +319,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
                   onMouseEnter={(e) => handleBadgeEnter(e, effect)}
                   onMouseLeave={handleBadgeLeave}
                 >
-                  {effect.icon}
+                  {effect.SvgIcon ? <effect.SvgIcon style={{ color: effect.color }} /> : effect.icon}
                 </div>
               ))}
             </div>
@@ -362,7 +363,23 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
       data-card-type={card.type}
       data-evolution-level={card.evolutionLevel}
     >
-      <div className={`card-mana ${card.bloodPrice ? 'blood-price-mana' : ''}`}>
+      <div className={`card-mana stat-emblem ${card.bloodPrice ? 'blood-price-mana' : ''}`}>
+        <svg className="stat-emblem-bg mana-emblem-bg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="20,2 38,20 20,38 2,20" fill={card.bloodPrice ? 'url(#mana-blood)' : 'url(#mana-emblem)'} stroke={card.bloodPrice ? '#fca5a5' : '#93C5FD'} strokeWidth="1.5" />
+          <polygon points="20,9 31,20 20,31 9,20" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="0.7" />
+          <defs>
+            <linearGradient id="mana-emblem" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#60A5FA" />
+              <stop offset="40%" stopColor="#2563EB" />
+              <stop offset="100%" stopColor="#1E3A8A" />
+            </linearGradient>
+            <linearGradient id="mana-blood" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#ef4444" />
+              <stop offset="40%" stopColor="#b91c1c" />
+              <stop offset="100%" stopColor="#7f1d1d" />
+            </linearGradient>
+          </defs>
+        </svg>
         <span className="mana-value">{card.manaCost}</span>
       </div>
 
@@ -409,18 +426,49 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
       <div className="card-name-banner">
         <span className={`card-name ${nameClass}`}>{card.name}</span>
+        {card.rarity && card.rarity !== 'basic' && card.rarity !== 'common' && (
+          <span className={`rarity-gem rarity-gem-${card.rarity}`} />
+        )}
       </div>
+
+      {card.tribe && (
+        <div className="card-tribe-line">
+          <span className="tribe-text">{card.tribe}</span>
+        </div>
+      )}
 
       {descriptionContent}
 
       {(isMinion || isWeapon || isArtifact) && (
         <>
-          <div className="card-attack">
+          <div className="card-attack stat-emblem">
+            <svg className="stat-emblem-bg" viewBox="0 0 40 44" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 0L36 10V30L20 44L4 30V10L20 0Z" fill="url(#atk-emblem)" stroke="#FDE68A" strokeWidth="1.5" />
+              <path d="M20 6L30 12V28L20 38L10 28V12L20 6Z" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.7" />
+              <defs>
+                <linearGradient id="atk-emblem" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#FBBF24" />
+                  <stop offset="40%" stopColor="#D97706" />
+                  <stop offset="100%" stopColor="#78350F" />
+                </linearGradient>
+              </defs>
+            </svg>
             <span className={`stat-value ${card.petStage === 'master' && card.hasStage3Variants ? 'stat-unknown' : ''} ${attackBuff > 0 ? 'stat-buffed' : ''}`}>
               {card.petStage === 'master' && card.hasStage3Variants ? '?' : (card.attack ?? 0) + attackBuff}
             </span>
           </div>
-          <div className="card-health">
+          <div className="card-health stat-emblem">
+            <svg className="stat-emblem-bg" viewBox="0 0 40 44" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 2C14 2 4 7 4 7V26C4 34 11 40 20 44C29 40 36 34 36 26V7S26 2 20 2Z" fill="url(#hp-emblem)" stroke="#FCA5A5" strokeWidth="1.5" />
+              <path d="M20 8C16 8 8 11.5 8 11.5V25C8 31 13 35.5 20 38.5C27 35.5 32 31 32 25V11.5S24 8 20 8Z" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.7" />
+              <defs>
+                <linearGradient id="hp-emblem" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#EF4444" />
+                  <stop offset="40%" stopColor="#DC2626" />
+                  <stop offset="100%" stopColor="#7F1D1D" />
+                </linearGradient>
+              </defs>
+            </svg>
             <span className={`stat-value ${card.petStage === 'master' && card.hasStage3Variants ? 'stat-unknown' : ''} ${healthBuff > 0 ? 'stat-buffed' : ''}`}>
               {card.petStage === 'master' && card.hasStage3Variants ? '?' : (card.health ?? 0) + healthBuff}
             </span>
@@ -441,7 +489,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
       {badgeTooltip && createPortal(
         <div className={`keyword-badge-tooltip ${badgeTooltip.isEvolveInfo ? 'evolve-tooltip' : ''}`} style={tooltipStyle}>
           <div className="kbt-header">
-            <span className="kbt-icon">{badgeTooltip.icon}</span>
+            <span className="kbt-icon">{KEYWORD_ICON_MAP[badgeTooltip.keyword] ? React.createElement(KEYWORD_ICON_MAP[badgeTooltip.keyword], { style: { color: badgeTooltip.color, width: '1.2em', height: '1.2em' } }) : badgeTooltip.icon}</span>
             <span className="kbt-name" style={{ color: badgeTooltip.color }}>
               {badgeTooltip.keyword.charAt(0).toUpperCase() + badgeTooltip.keyword.slice(1)}
             </span>

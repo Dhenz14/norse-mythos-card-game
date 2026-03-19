@@ -24,6 +24,10 @@ async function getAdminFns() {
 	const mod = await import('../../../data/blockchain/genesisAdmin');
 	return mod;
 }
+async function getMintSession() {
+	const mod = await import('../../../../../shared/protocol-core/broadcast-utils');
+	return mod as typeof import('../../../../../shared/protocol-core/broadcast-utils');
+}
 async function getReplayDB() {
 	return import('../../../data/blockchain/replayDB');
 }
@@ -144,16 +148,47 @@ export default function AdminPanel() {
 			batches.push(collectible.slice(i, i + BATCH_SIZE));
 		}
 
-		if (!confirm(`Mint ${collectible.length} cards in ${batches.length} batches of ${BATCH_SIZE}? Each batch requires a Keychain signature.`)) return;
+		// Check for recoverable session from a previous crash
+		const session = await getMintSession();
+		const savedSession = session.loadMintSession();
+		let startBatch = 0;
+		if (savedSession && savedSession.status === 'minting') {
+			const progress = session.getSessionProgress(savedSession);
+			if (confirm(`Resume previous mint session? ${progress.completed}/${progress.total} batches complete (${progress.percentage}%). Click Cancel to start fresh.`)) {
+				startBatch = progress.completed;
+			} else {
+				session.clearMintSession();
+			}
+		} else if (!confirm(`Mint ${collectible.length} cards in ${batches.length} batches of ${BATCH_SIZE}? Each batch requires a Keychain signature.`)) {
+			return;
+		}
 
-		setMintProgress({ done: 0, total: batches.length, running: true });
+		// Initialize or recover session
+		const mintSession = (savedSession && startBatch > 0 ? savedSession : {
+			sessionId: `mint_${Date.now()}`,
+			status: 'minting' as const,
+			createdAt: Date.now(),
+			updatedAt: Date.now(),
+			collectionId: 'ragnarok-alpha',
+			totalCards: collectible.length,
+			batches: batches.map((b, idx) => ({
+				batchNumber: idx,
+				status: 'pending' as const,
+				cardCount: b.length,
+				trxId: undefined as string | undefined,
+				error: undefined as string | undefined,
+				timestamp: undefined as number | undefined,
+			})),
+		}) as NonNullable<ReturnType<typeof session.loadMintSession>>;
+
+		setMintProgress({ done: startBatch, total: batches.length, running: true });
 		setResult(null);
 
 		const admin = await getAdminFns();
-		let succeeded = 0;
+		let succeeded = startBatch;
 		let lastError = '';
 
-		for (let i = 0; i < batches.length; i++) {
+		for (let i = startBatch; i < batches.length; i++) {
 			const batch = batches[i];
 			const cards = batch.map((c, idx) => ({
 				nft_id: `alpha-${c.id}-${idx}`,
@@ -165,28 +200,54 @@ export default function AdminPanel() {
 				foil: 'standard',
 			}));
 
+			// Mark batch as broadcasting and save session for crash recovery
+			mintSession.batches[i].status = 'broadcasting';
+			mintSession.updatedAt = Date.now();
+			session.saveMintSession(mintSession);
+
 			try {
 				const res = await admin.broadcastMint({ to: RAGNAROK_ACCOUNT, cards });
 				if (res.success) {
 					succeeded++;
+					mintSession.batches[i].status = 'confirmed';
+					mintSession.batches[i].trxId = res.trxId;
+					mintSession.batches[i].timestamp = Date.now();
 				} else {
 					lastError = res.error || 'Unknown error';
+					mintSession.batches[i].status = 'failed';
+					mintSession.batches[i].error = lastError;
 					debug.warn(`[AdminPanel] Batch ${i + 1} failed:`, res.error);
 				}
 			} catch (err) {
 				lastError = String(err);
+				mintSession.batches[i].status = 'failed';
+				mintSession.batches[i].error = lastError;
 				debug.warn(`[AdminPanel] Batch ${i + 1} exception:`, err);
 			}
+
+			// Persist progress after every batch
+			mintSession.updatedAt = Date.now();
+			session.saveMintSession(mintSession);
 
 			setMintProgress({ done: i + 1, total: batches.length, running: i + 1 < batches.length });
 		}
 
 		setMintProgress(p => ({ ...p, running: false }));
+
+		// Clear session on full success, keep on partial failure for recovery
+		if (succeeded === batches.length) {
+			mintSession.status = 'complete';
+			session.clearMintSession();
+		} else {
+			mintSession.status = 'failed';
+			session.saveMintSession(mintSession);
+		}
+
 		setResult({
 			success: succeeded === batches.length,
 			message: succeeded === batches.length
 				? `All ${batches.length} batches minted successfully (${collectible.length} cards)`
-				: `${succeeded}/${batches.length} batches succeeded. Last error: ${lastError}`,
+				: `${succeeded}/${batches.length} batches succeeded. Last error: ${lastError}. Session saved — resume on next visit.`,
 		});
 		await refreshState();
 	};

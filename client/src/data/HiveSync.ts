@@ -13,6 +13,9 @@ import {
   RAGNAROK_CUSTOM_JSON_PREFIX,
   RAGNAROK_APP_ID,
 } from './schemas/HiveTypes';
+import {
+  sanitizePayload, validatePayloadSize, buildTransferMemo,
+} from '../../../shared/protocol-core/broadcast-utils';
 
 export interface HiveBroadcastResult {
   success: boolean;
@@ -92,11 +95,26 @@ export class HiveSync {
     }
 
     const action = type.replace(RAGNAROK_CUSTOM_JSON_PREFIX, '');
-    const jsonStr = JSON.stringify({
-      ...payload,
+
+    // Sanitize string fields before broadcast (defense-in-depth)
+    const cleanPayload = sanitizePayload(payload);
+
+    const fullPayload = {
+      ...cleanPayload,
       app: RAGNAROK_APP_ID,
       action,
-    });
+    };
+
+    // Validate payload fits within Hive's 8KB custom_json limit
+    const sizeCheck = validatePayloadSize(fullPayload);
+    if (!sizeCheck.valid) {
+      return {
+        success: false,
+        error: `Payload too large: ${sizeCheck.bytes} bytes (max ${sizeCheck.maxBytes}). Split into smaller batches.`,
+      };
+    }
+
+    const jsonStr = JSON.stringify(fullPayload);
 
     const keychainPromise = new Promise<HiveBroadcastResult>((resolve) => {
       window.hive_keychain!.requestCustomJson(
@@ -136,11 +154,17 @@ export class HiveSync {
     return this.broadcastCustomJson('rp_match_result', match as unknown as Record<string, unknown>);
   }
 
-  async transferCard(cardUid: string, toUser: string, memo?: string): Promise<HiveBroadcastResult> {
+  async transferCard(cardUid: string, toUser: string, memo?: string, cardId?: number, edition?: string): Promise<HiveBroadcastResult> {
+    const structuredMemo = memo || buildTransferMemo({
+      action: 'transfer',
+      uid: cardUid,
+      cardId,
+      edition,
+    });
     return this.broadcastCustomJson('rp_card_transfer', {
       card_uid: cardUid,
       to: toUser,
-      memo,
+      memo: structuredMemo,
     }, true);
   }
 
@@ -205,6 +229,63 @@ export class HiveSync {
     return this.broadcastCustomJson('rp_card_merge', {
       source_uids: sourceUids,
     }, true);
+  }
+
+  // ── v1.2: Marketplace operations (NFTLox-inspired) ──
+
+  async marketList(nftUid: string, nftType: 'card' | 'pack', price: number, currency: 'HIVE' | 'HBD' = 'HIVE'): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('ragnarok-cards', {
+      p: 'ragnarok-cards',
+      action: 'market_list',
+      nft_uid: nftUid,
+      nft_type: nftType,
+      price,
+      currency,
+    });
+  }
+
+  async marketUnlist(listingId: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('ragnarok-cards', {
+      p: 'ragnarok-cards',
+      action: 'market_unlist',
+      listing_id: listingId,
+    });
+  }
+
+  async marketBuy(listingId: string, paymentTrxId: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('ragnarok-cards', {
+      p: 'ragnarok-cards',
+      action: 'market_buy',
+      listing_id: listingId,
+      payment_trx_id: paymentTrxId,
+    }, true);
+  }
+
+  async marketOffer(nftUid: string, price: number, currency: 'HIVE' | 'HBD' = 'HIVE'): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('ragnarok-cards', {
+      p: 'ragnarok-cards',
+      action: 'market_offer',
+      nft_uid: nftUid,
+      price,
+      currency,
+    });
+  }
+
+  async marketAcceptOffer(offerId: string, paymentTrxId: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('ragnarok-cards', {
+      p: 'ragnarok-cards',
+      action: 'market_accept',
+      offer_id: offerId,
+      payment_trx_id: paymentTrxId,
+    }, true);
+  }
+
+  async marketRejectOffer(offerId: string): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('ragnarok-cards', {
+      p: 'ragnarok-cards',
+      action: 'market_reject',
+      offer_id: offerId,
+    });
   }
 
   /**

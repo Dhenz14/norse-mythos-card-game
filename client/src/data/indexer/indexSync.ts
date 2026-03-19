@@ -153,6 +153,62 @@ async function fetchChunkFromIPFS(cid: string, chunkPath: string): Promise<Index
 }
 
 // ============================================================
+// Step 2b: HafSQL Fallback (zero-infrastructure public indexer)
+// When IPFS is unreachable, query HafSQL for raw ops directly.
+// See: https://hafsql-api.mahdiyari.info
+// ============================================================
+
+const HAFSQL_ENDPOINTS = [
+	'https://hafsql-api.mahdiyari.info',
+];
+
+interface HafSQLOp {
+	block_num: number;
+	trx_id: string;
+	timestamp: string;
+	body: {
+		id: string;
+		json: string;
+		required_auths: string[];
+		required_posting_auths: string[];
+	};
+}
+
+async function fetchFromHafSQL(fromBlock: number, limit: number = 1000): Promise<IndexEntry[]> {
+	for (const endpoint of HAFSQL_ENDPOINTS) {
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 15000);
+		try {
+			const url = `${endpoint}/operations/custom_json/ragnarok-cards?from_block=${fromBlock}&limit=${limit}`;
+			const resp = await fetch(url, { signal: controller.signal });
+			clearTimeout(timeout);
+			if (!resp.ok) continue;
+
+			const ops = await resp.json() as HafSQLOp[];
+			if (!Array.isArray(ops)) continue;
+
+			return ops.map((op, idx) => {
+				let parsed: Record<string, unknown> = {};
+				try { parsed = JSON.parse(op.body.json); } catch { /* skip */ }
+				const broadcaster = op.body.required_auths[0] || op.body.required_posting_auths[0] || '';
+				return {
+					trxId: op.trx_id,
+					blockNum: op.block_num,
+					timestamp: new Date(op.timestamp).getTime(),
+					action: (parsed.action as string) || 'unknown',
+					player: broadcaster,
+					opIndexInBlock: idx,
+				} as IndexEntry;
+			});
+		} catch {
+			clearTimeout(timeout);
+			continue;
+		}
+	}
+	return [];
+}
+
+// ============================================================
 // Step 3: Validate Manifest Attestations
 // ============================================================
 
@@ -207,7 +263,17 @@ export async function syncIndex(): Promise<void> {
 		const latestCid = await resolveLatestCID();
 
 		if (!latestCid) {
-			debug.warn('[IndexSync] No CID found. Using local cache or bundled snapshot.');
+			debug.warn('[IndexSync] No CID found. Trying HafSQL fallback...');
+			const hafEntries = await fetchFromHafSQL(localLastBlock || 0, 5000);
+			if (hafEntries.length > 0) {
+				await putIndexEntries(hafEntries);
+				const maxBlock = Math.max(...hafEntries.map(e => e.blockNum));
+				await putSyncMeta('lastBlock', maxBlock);
+				await putSyncMeta('lastSyncAt', Date.now());
+				healthStatus = 'degraded';
+				debug.log(`[IndexSync] HafSQL fallback: loaded ${hafEntries.length} ops up to block ${maxBlock}`);
+				return;
+			}
 			healthStatus = localLastBlock ? 'snapshot-only' : 'offline';
 			return;
 		}

@@ -30,7 +30,7 @@ import { DEFAULT_TOKEN_BALANCE } from '../schemas/HiveTypes';
 import { DEFAULT_ELO_RATING } from './hiveConfig';
 
 const DB_NAME = 'ragnarok-chain-v1';
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 
 let _db: IDBDatabase | null = null;
 
@@ -124,6 +124,18 @@ function openDB(): Promise<IDBDatabase> {
 			}
 			if (!db.objectStoreNames.contains('pack_supply')) {
 				db.createObjectStore('pack_supply', { keyPath: 'packType' });
+			}
+
+			// v1.2: Marketplace
+			if (!db.objectStoreNames.contains('market_listings')) {
+				const listings = db.createObjectStore('market_listings', { keyPath: 'listingId' });
+				listings.createIndex('by_seller', 'seller', { unique: false });
+				listings.createIndex('by_nft_uid', 'nftUid', { unique: false });
+			}
+			if (!db.objectStoreNames.contains('market_offers')) {
+				const offers = db.createObjectStore('market_offers', { keyPath: 'offerId' });
+				offers.createIndex('by_nft_uid', 'nftUid', { unique: false });
+				offers.createIndex('by_buyer', 'buyer', { unique: false });
 			}
 		};
 
@@ -581,3 +593,80 @@ export const getPackSupply = (packType: string): Promise<StoredPackSupply | unde
 
 export const putPackSupply = (supply: StoredPackSupply): Promise<void> =>
 	idbPut('pack_supply', supply);
+
+// ---------------------------------------------------------------------------
+// v1.2: Marketplace — listings & offers
+// ---------------------------------------------------------------------------
+
+export interface StoredListing {
+	listingId: string;
+	nftUid: string;
+	nftType: 'card' | 'pack';
+	seller: string;
+	price: number;
+	currency: 'HIVE' | 'HBD';
+	listedBlock: number;
+	listedTrxId: string;
+	active: boolean;
+}
+
+export interface StoredOffer {
+	offerId: string;
+	nftUid: string;
+	buyer: string;
+	price: number;
+	currency: 'HIVE' | 'HBD';
+	offeredBlock: number;
+	offeredTrxId: string;
+	status: 'pending' | 'accepted' | 'rejected' | 'expired';
+	paymentTrxId?: string;
+}
+
+export const getListing = (listingId: string): Promise<StoredListing | undefined> =>
+	idbGet<StoredListing>('market_listings', listingId);
+
+export const putListing = (listing: StoredListing): Promise<void> =>
+	idbPut('market_listings', listing);
+
+export const deleteListing = async (listingId: string): Promise<void> => {
+	const db = await openDB();
+	const tx = db.transaction('market_listings', 'readwrite');
+	tx.objectStore('market_listings').delete(listingId);
+};
+
+export async function getListingByNftUid(nftUid: string): Promise<StoredListing | undefined> {
+	const db = await openDB();
+	const tx = db.transaction('market_listings', 'readonly');
+	const idx = tx.objectStore('market_listings').index('by_nft_uid');
+	const req = idx.getAll(nftUid);
+	return new Promise((resolve) => {
+		req.onsuccess = () => {
+			const active = (req.result || []).find((l: StoredListing) => l.active);
+			resolve(active);
+		};
+		req.onerror = () => resolve(undefined);
+	});
+}
+
+export const getOffer = (offerId: string): Promise<StoredOffer | undefined> =>
+	idbGet<StoredOffer>('market_offers', offerId);
+
+export const putOffer = (offer: StoredOffer): Promise<void> =>
+	idbPut('market_offers', offer);
+
+export const deleteOffer = async (offerId: string): Promise<void> => {
+	const db = await openDB();
+	const tx = db.transaction('market_offers', 'readwrite');
+	tx.objectStore('market_offers').delete(offerId);
+};
+
+export async function getOffersByNftUid(nftUid: string): Promise<StoredOffer[]> {
+	const db = await openDB();
+	const tx = db.transaction('market_offers', 'readonly');
+	const idx = tx.objectStore('market_offers').index('by_nft_uid');
+	const req = idx.getAll(nftUid);
+	return new Promise((resolve) => {
+		req.onsuccess = () => resolve(req.result || []);
+		req.onerror = () => resolve([]);
+	});
+}

@@ -11,6 +11,7 @@ import type {
 	ProtocolOp, OpResult, ReplayContext, StateAdapter,
 	CardDataProvider, RewardProvider, SignatureVerifier,
 	CardAsset, GenesisRecord, EloRecord, PackAsset,
+	MarketListing, MarketOffer,
 } from './types';
 import {
 	RAGNAROK_ADMIN_ACCOUNT, TRANSFER_COOLDOWN_BLOCKS, MAX_CARD_LEVEL,
@@ -21,6 +22,7 @@ import {
 } from './types';
 import { verifyPoW, POW_CONFIG } from './pow';
 import { canonicalStringify, sha256Hash } from './hash';
+import { fnv1a } from './broadcast-utils';
 
 // ============================================================
 // Dependencies injected at init, not imported
@@ -77,6 +79,13 @@ export async function applyOp(
 		// v1.1: DNA Lineage
 		case 'card_replicate': return applyCardReplicate(op, deps);
 		case 'card_merge': return applyCardMerge(op, deps);
+		// v1.2: Marketplace
+		case 'market_list': return applyMarketList(op, deps);
+		case 'market_unlist': return applyMarketUnlist(op, deps);
+		case 'market_buy': return applyMarketBuy(op, deps);
+		case 'market_offer': return applyMarketOffer(op, deps);
+		case 'market_accept': return applyMarketAccept(op, deps);
+		case 'market_reject': return applyMarketReject(op, deps);
 		default: return { status: 'ignored' };
 	}
 }
@@ -158,10 +167,13 @@ async function applyMintBatch(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	if (!to || !Array.isArray(cards)) return reject('missing to or cards');
 
 	let applied = false;
-	for (const card of cards) {
-		const uid = (card.uid ?? card.nft_id) as string;
+	for (let i = 0; i < cards.length; i++) {
+		const card = cards[i];
 		const cardId = typeof card.card_id === 'number' ? card.card_id : parseInt(String(card.card_id), 10) || 0;
-		if (!uid || !cardId) continue;
+		if (!cardId) continue;
+		// Deterministic UID fallback: if payload omits uid, derive from trxId + index
+		const uid = (card.uid ?? card.nft_id ?? `card_${fnv1a(`ragnarok:card:${op.trxId}:${cardId}:${i}`)}`) as string;
+		if (!uid) continue;
 
 		// Card definition must exist
 		const cardDef = deps.cards.getCardById(cardId);
@@ -1221,6 +1233,231 @@ async function applyCardMerge(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	await deps.state.deleteCard(cardB.uid);
 	await deps.state.putCard(merged);
 
+	return { status: 'applied' };
+}
+
+// ============================================================
+// v1.2: Marketplace handlers
+// ============================================================
+
+async function applyMarketList(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const nftUid = op.payload.nft_uid as string;
+	const nftType = op.payload.nft_type as 'card' | 'pack';
+	const price = Number(op.payload.price ?? 0);
+	const currency = (op.payload.currency as string || 'HIVE').toUpperCase() as 'HIVE' | 'HBD';
+
+	if (!nftUid || !nftType) return reject('missing nft_uid or nft_type');
+	if (price <= 0) return reject('price must be positive');
+	if (currency !== 'HIVE' && currency !== 'HBD') return reject('currency must be HIVE or HBD');
+
+	// Verify ownership
+	if (nftType === 'card') {
+		const card = await deps.state.getCard(nftUid);
+		if (!card) return reject(`card ${nftUid} not found`);
+		if (card.owner !== op.broadcaster) return reject('not card owner');
+	} else {
+		const pack = await deps.state.getPack(nftUid);
+		if (!pack) return reject(`pack ${nftUid} not found`);
+		if (pack.owner !== op.broadcaster) return reject('not pack owner');
+	}
+
+	// Check no active listing already exists for this NFT
+	const existing = await deps.state.getListingByNft(nftUid);
+	if (existing && existing.active) return reject('NFT already listed');
+
+	const listing: MarketListing = {
+		listingId: `list_${op.trxId}`,
+		nftUid,
+		nftType,
+		seller: op.broadcaster,
+		price,
+		currency,
+		listedBlock: op.blockNum,
+		listedTrxId: op.trxId,
+		active: true,
+	};
+
+	await deps.state.putListing(listing);
+	return { status: 'applied' };
+}
+
+async function applyMarketUnlist(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const listingId = op.payload.listing_id as string;
+	if (!listingId) return reject('missing listing_id');
+
+	const listing = await deps.state.getListing(listingId);
+	if (!listing) return reject('listing not found');
+	if (!listing.active) return reject('listing already inactive');
+	if (listing.seller !== op.broadcaster) return reject('not listing owner');
+
+	listing.active = false;
+	await deps.state.putListing(listing);
+	return { status: 'applied' };
+}
+
+async function applyMarketBuy(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const listingId = op.payload.listing_id as string;
+	const paymentTrxId = op.payload.payment_trx_id as string;
+	if (!listingId) return reject('missing listing_id');
+
+	const listing = await deps.state.getListing(listingId);
+	if (!listing) return reject('listing not found');
+	if (!listing.active) return reject('listing not active');
+	if (listing.seller === op.broadcaster) return reject('cannot buy own listing');
+
+	// Verify companion HIVE transfer (payment proof)
+	if (paymentTrxId) {
+		const companion = await deps.state.getCompanionTransfer(op.trxId);
+		if (companion) {
+			if (companion.to !== listing.seller) return reject('payment recipient mismatch');
+			const amount = parseFloat(companion.amount);
+			if (amount < listing.price) return reject(`payment insufficient: ${amount} < ${listing.price}`);
+		}
+	}
+
+	// Transfer NFT ownership
+	if (listing.nftType === 'card') {
+		const card = await deps.state.getCard(listing.nftUid);
+		if (!card) return reject('listed card no longer exists');
+		if (card.owner !== listing.seller) return reject('seller no longer owns card');
+		card.owner = op.broadcaster;
+		card.lastTransferBlock = op.blockNum;
+		await deps.state.putCard(card);
+	} else {
+		const pack = await deps.state.getPack(listing.nftUid);
+		if (!pack) return reject('listed pack no longer exists');
+		if (pack.owner !== listing.seller) return reject('seller no longer owns pack');
+		pack.owner = op.broadcaster;
+		pack.lastTransferBlock = op.blockNum;
+		await deps.state.putPack(pack);
+	}
+
+	// Deactivate listing
+	listing.active = false;
+	await deps.state.putListing(listing);
+
+	// Auto-reject all pending offers on this NFT
+	const pendingOffers = await deps.state.getOffersByNft(listing.nftUid);
+	for (const offer of pendingOffers) {
+		if (offer.status === 'pending') {
+			offer.status = 'rejected';
+			await deps.state.putOffer(offer);
+		}
+	}
+
+	return { status: 'applied' };
+}
+
+async function applyMarketOffer(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const nftUid = op.payload.nft_uid as string;
+	const price = Number(op.payload.price ?? 0);
+	const currency = (op.payload.currency as string || 'HIVE').toUpperCase() as 'HIVE' | 'HBD';
+
+	if (!nftUid) return reject('missing nft_uid');
+	if (price <= 0) return reject('offer price must be positive');
+	if (currency !== 'HIVE' && currency !== 'HBD') return reject('currency must be HIVE or HBD');
+
+	// Verify NFT exists
+	const card = await deps.state.getCard(nftUid);
+	const pack = card ? null : await deps.state.getPack(nftUid);
+	if (!card && !pack) return reject('NFT not found');
+
+	const owner = card ? card.owner : pack!.owner;
+	if (owner === op.broadcaster) return reject('cannot offer on own NFT');
+
+	const offer: MarketOffer = {
+		offerId: `offer_${op.trxId}`,
+		nftUid,
+		buyer: op.broadcaster,
+		price,
+		currency,
+		offeredBlock: op.blockNum,
+		offeredTrxId: op.trxId,
+		status: 'pending',
+	};
+
+	await deps.state.putOffer(offer);
+	return { status: 'applied' };
+}
+
+async function applyMarketAccept(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const offerId = op.payload.offer_id as string;
+	const paymentTrxId = op.payload.payment_trx_id as string;
+	if (!offerId) return reject('missing offer_id');
+
+	const offer = await deps.state.getOffer(offerId);
+	if (!offer) return reject('offer not found');
+	if (offer.status !== 'pending') return reject('offer not pending');
+
+	// Verify the accepter owns the NFT
+	const card = await deps.state.getCard(offer.nftUid);
+	const pack = card ? null : await deps.state.getPack(offer.nftUid);
+	if (!card && !pack) return reject('NFT no longer exists');
+
+	const owner = card ? card.owner : pack!.owner;
+	if (owner !== op.broadcaster) return reject('not NFT owner');
+
+	// Verify companion HIVE transfer (payment proof from buyer)
+	if (paymentTrxId) {
+		const companion = await deps.state.getCompanionTransfer(op.trxId);
+		if (companion) {
+			if (companion.to !== op.broadcaster) return reject('payment recipient mismatch');
+			const amount = parseFloat(companion.amount);
+			if (amount < offer.price) return reject(`payment insufficient: ${amount} < ${offer.price}`);
+		}
+	}
+
+	// Transfer ownership
+	if (card) {
+		card.owner = offer.buyer;
+		card.lastTransferBlock = op.blockNum;
+		await deps.state.putCard(card);
+	} else {
+		pack!.owner = offer.buyer;
+		pack!.lastTransferBlock = op.blockNum;
+		await deps.state.putPack(pack!);
+	}
+
+	// Mark offer accepted
+	offer.status = 'accepted';
+	offer.paymentTrxId = paymentTrxId;
+	await deps.state.putOffer(offer);
+
+	// Deactivate any active listing for this NFT
+	const listing = await deps.state.getListingByNft(offer.nftUid);
+	if (listing && listing.active) {
+		listing.active = false;
+		await deps.state.putListing(listing);
+	}
+
+	// Auto-reject other pending offers
+	const otherOffers = await deps.state.getOffersByNft(offer.nftUid);
+	for (const other of otherOffers) {
+		if (other.offerId !== offerId && other.status === 'pending') {
+			other.status = 'rejected';
+			await deps.state.putOffer(other);
+		}
+	}
+
+	return { status: 'applied' };
+}
+
+async function applyMarketReject(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const offerId = op.payload.offer_id as string;
+	if (!offerId) return reject('missing offer_id');
+
+	const offer = await deps.state.getOffer(offerId);
+	if (!offer) return reject('offer not found');
+	if (offer.status !== 'pending') return reject('offer not pending');
+
+	// Only NFT owner can reject
+	const card = await deps.state.getCard(offer.nftUid);
+	const pack = card ? null : await deps.state.getPack(offer.nftUid);
+	const owner = card ? card.owner : pack?.owner;
+	if (owner !== op.broadcaster) return reject('not NFT owner');
+
+	offer.status = 'rejected';
+	await deps.state.putOffer(offer);
 	return { status: 'applied' };
 }
 

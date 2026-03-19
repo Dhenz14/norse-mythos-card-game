@@ -10,6 +10,7 @@ import type {
 	StateAdapter, CardAsset, GenesisRecord, EloRecord,
 	TokenBalance, MatchAnchorRecord, PackCommitRecord, SupplyRecord,
 	PackAsset, PackSupplyRecord, CompanionTransfer,
+	MarketListing, MarketOffer,
 } from '../../../../shared/protocol-core/types';
 import {
 	getCard, putCard, deleteCard, getCardsByOwner,
@@ -25,6 +26,10 @@ import {
 	getPack as idbGetPack, putPack as idbPutPack, deletePack as idbDeletePack,
 	getPacksByOwner as idbGetPacksByOwner,
 	getPackSupply as idbGetPackSupply, putPackSupply as idbPutPackSupply,
+	getListing as idbGetListing, putListing as idbPutListing,
+	deleteListing as idbDeleteListing, getListingByNftUid as idbGetListingByNft,
+	getOffer as idbGetOffer, putOffer as idbPutOffer,
+	getOffersByNftUid as idbGetOffersByNft,
 } from './replayDB';
 import type { HiveCardAsset } from '../schemas/HiveTypes';
 
@@ -210,4 +215,25 @@ export const clientStateAdapter: StateAdapter = {
 		return null;
 	},
 	setTrxSiblings(trxId, ops) { _trxSiblings.set(trxId, ops); },
+
+	// v1.2: Marketplace
+	async getListing(listingId) {
+		const l = await idbGetListing(listingId);
+		return l ? { ...l } as MarketListing : null;
+	},
+	async getListingByNft(nftUid) {
+		const l = await idbGetListingByNft(nftUid);
+		return l ? { ...l } as MarketListing : null;
+	},
+	async putListing(listing) { await idbPutListing(listing as Parameters<typeof idbPutListing>[0]); },
+	async deleteListing(listingId) { await idbDeleteListing(listingId); },
+	async getOffer(offerId) {
+		const o = await idbGetOffer(offerId);
+		return o ? { ...o } as MarketOffer : null;
+	},
+	async getOffersByNft(nftUid) {
+		const offers = await idbGetOffersByNft(nftUid);
+		return offers as MarketOffer[];
+	},
+	async putOffer(offer) { await idbPutOffer(offer as Parameters<typeof idbPutOffer>[0]); },
 };

@@ -21,6 +21,7 @@ npm run lint:fix  # ESLint with auto-fix
 - **[ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md)** - Protocol v1.1: atomic transfers, pack NFTs, DNA lineage
 - **[RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md)** - Protocol v1.0 spec (14 canonical ops, authority matrix, finality)
 - **[DECENTRALIZED_INDEXER_DESIGN.md](docs/DECENTRALIZED_INDEXER_DESIGN.md)** - "Light HAF": IPFS op-log index, WoT operators, zero servers
+- **[PROTOCOL_V1_2_DESIGN.md](docs/PROTOCOL_V1_2_DESIGN.md)** - Protocol v1.2: marketplace, broadcast hardening, NFTLox integration, card visual overhaul
 
 ## Architecture Overview
 
