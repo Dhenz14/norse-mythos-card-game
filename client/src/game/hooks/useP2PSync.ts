@@ -252,9 +252,15 @@ export function useP2PSync() {
 	}, [connection]);
 
 	useEffect(() => {
-		if (!connection || connectionState !== 'connected') return;
+		if (!connection || (connectionState !== 'connected' && connectionState !== 'grace_period')) return;
 
 		const processMessage = async (data: P2PMessage) => {
+			// Heartbeat keepalive — handle before switch (not a game message)
+			if ((data as { type: string }).type === 'heartbeat') {
+				usePeerStore.getState().handleHeartbeat();
+				return;
+			}
+
 			switch (data.type) {
 				case 'version_check': {
 					const myHash = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev';
