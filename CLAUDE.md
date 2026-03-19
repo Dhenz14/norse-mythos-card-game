@@ -20,6 +20,7 @@ npm run lint:fix  # ESLint with auto-fix
 - **[HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md)** - Hive NFT architecture, chain replay, anti-cheat
 - **[ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md)** - Protocol v1.1: atomic transfers, pack NFTs, DNA lineage
 - **[RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md)** - Protocol v1.0 spec (14 canonical ops, authority matrix, finality)
+- **[DECENTRALIZED_INDEXER_DESIGN.md](docs/DECENTRALIZED_INDEXER_DESIGN.md)** - "Light HAF": IPFS op-log index, WoT operators, zero servers
 
 ## Architecture Overview
 
