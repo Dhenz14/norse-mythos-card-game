@@ -33,3 +33,24 @@ if ('serviceWorker' in navigator) {
       .catch(() => {});
   });
 }
+
+// Offline detection: show/hide banner when network status changes
+function updateOfflineBanner(offline: boolean) {
+  let banner = document.getElementById('offline-banner');
+  if (offline) {
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'offline-banner';
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#92400e;color:#fef3c7;text-align:center;padding:6px 16px;font-size:13px;font-weight:600;letter-spacing:0.03em;pointer-events:none;';
+      banner.textContent = 'You are offline — playing from cached data';
+      document.body.appendChild(banner);
+    }
+    banner.style.display = '';
+  } else if (banner) {
+    banner.style.display = 'none';
+  }
+}
+
+window.addEventListener('online', () => updateOfflineBanner(false));
+window.addEventListener('offline', () => updateOfflineBanner(true));
+if (!navigator.onLine) updateOfflineBanner(true);

@@ -34,15 +34,52 @@ const AdminPanel = lazy(() => import('./game/components/admin/AdminPanel'));
 const StarterPackCeremony = lazy(() => import('./game/components/StarterPackCeremony'));
 const DuatClaimPopup = lazy(() => import('./game/components/DuatClaimPopup'));
 
+// PWA install prompt
+let deferredInstallPrompt: Event | null = null;
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+  });
+}
+
+// Offline wrapper for routes that need a server
+function OnlineOnly({ children, label }: { children: React.ReactNode; label: string }) {
+  const [online, setOnline] = useState(navigator.onLine);
+  useEffect(() => {
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener('online', on);
+    window.addEventListener('offline', off);
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
+  }, []);
+  if (!online) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-950 text-center px-8">
+        <div>
+          <p className="text-amber-400 text-xl font-bold mb-2">Offline Mode</p>
+          <p className="text-gray-400 text-sm">{label} requires an internet connection.</p>
+          <p className="text-gray-600 text-xs mt-4">Campaign, Collection, Deck Builder, and Settings work offline.</p>
+        </div>
+      </div>
+    );
+  }
+  return <>{children}</>;
+}
+
 function HomePage() {
   const bgOverlayRef = useRef<HTMLDivElement>(null);
   const starterClaimed = useStarterStore(s => s.claimed);
   const [showCeremony, setShowCeremony] = useState(false);
+  const [canInstall, setCanInstall] = useState(!!deferredInstallPrompt);
 
   useEffect(() => {
     if (bgOverlayRef.current) {
       bgOverlayRef.current.style.backgroundImage = `url(${ragnarokLogo})`;
     }
+    const handler = () => setCanInstall(true);
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   return (
@@ -85,6 +122,19 @@ function HomePage() {
 
         <div className="flex flex-col gap-4 w-full max-w-md px-4">
           <AssetDownloadButton />
+          {canInstall && (
+            <button
+              onClick={() => {
+                if (deferredInstallPrompt && 'prompt' in deferredInstallPrompt) {
+                  (deferredInstallPrompt as any).prompt();
+                  setCanInstall(false);
+                }
+              }}
+              className="w-full py-2 text-sm font-semibold text-amber-400 border border-amber-700/40 bg-amber-900/20 rounded-lg hover:bg-amber-900/40 transition-colors"
+            >
+              Install as Desktop App
+            </button>
+          )}
 
           {!starterClaimed ? (
             <Button
@@ -268,11 +318,11 @@ function App() {
               <Route path={routes.packs} element={<PacksPage />} />
               <Route path={routes.collection} element={<CollectionPage />} />
               <Route path={routes.ladder} element={<RankedLadderPage />} />
-              <Route path={routes.trading} element={<TradingPage />} />
-              <Route path={routes.marketplace} element={<MarketplacePage />} />
-              <Route path={routes.treasury} element={<TreasuryPage />} />
+              <Route path={routes.trading} element={<OnlineOnly label="Trading"><TradingPage /></OnlineOnly>} />
+              <Route path={routes.marketplace} element={<OnlineOnly label="Marketplace"><MarketplacePage /></OnlineOnly>} />
+              <Route path={routes.treasury} element={<OnlineOnly label="Treasury"><TreasuryPage /></OnlineOnly>} />
               <Route path={routes.admin} element={<AdminPanel />} />
-              <Route path={routes.tournaments} element={<TournamentListPage />} />
+              <Route path={routes.tournaments} element={<OnlineOnly label="Tournaments"><TournamentListPage /></OnlineOnly>} />
               <Route path={routes.spectate} element={<SpectatorView />} />
               <Route path={routes.history} element={<MatchHistoryPage />} />
               <Route path={routes.settings} element={<SettingsPage />} />

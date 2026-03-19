@@ -253,7 +253,7 @@ export default function PacksPage() {
 	const hiveUsername = useNFTUsername();
 	const runeBalance = tokenBalance?.RUNE ?? 0;
 
-	const [packTypes, setPackTypes] = useState<PackType[]>([]);
+	const [packTypes, setPackTypes] = useState<PackType[]>(FALLBACK_PACKS);
 	const [supplyStats, setSupplyStats] = useState<SupplyStats | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

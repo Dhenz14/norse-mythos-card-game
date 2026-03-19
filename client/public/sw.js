@@ -37,9 +37,22 @@ function isImmutableChunk(url) {
 	return IMMUTABLE_RE.test(url);
 }
 
-// Install: activate immediately
-self.addEventListener('install', function() {
-	self.skipWaiting();
+// Install: pre-cache index.html for offline navigation, then activate immediately
+self.addEventListener('install', function(event) {
+	event.waitUntil(
+		caches.open(CACHE_NAME).then(function(cache) {
+			// Cache the shell so offline users can always load the app
+			var base = getBase();
+			return cache.addAll([
+				base,
+				base + 'index.html',
+			]).catch(function() {
+				// Non-fatal: first install might fail if offline (impossible, but safe)
+			});
+		}).then(function() {
+			return self.skipWaiting();
+		})
+	);
 });
 
 // Activate: clean old caches + purge stale JS/CSS chunks, claim clients
