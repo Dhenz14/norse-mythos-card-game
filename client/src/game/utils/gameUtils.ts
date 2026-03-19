@@ -1779,6 +1779,9 @@ function simulateOpponentTurn(state: GameState): GameState {
 			if (!currentState.players.opponent.hand.find(c => c.instanceId === card.instanceId)) continue;
 			if ((card.card.manaCost || 0) > currentState.players.opponent.mana.current) continue;
 
+			// Board full guard: skip minions if battlefield is at capacity
+			if (card.card.type === 'minion' && currentState.players.opponent.battlefield.length >= maxBoard) continue;
+
 			const needsTarget = (card.card.type === 'spell' && card.card.spellEffect?.requiresTarget) ||
 				(card.card.type === 'minion' && card.card.battlecry?.requiresTarget);
 
@@ -1787,20 +1790,29 @@ function simulateOpponentTurn(state: GameState): GameState {
 
 				if (card.card.type === 'spell') {
 					const isAoe = aiIsAoeSpell(card);
+					// Only skip AoE if enemy has fewer than 2 minions (don't waste board clears on 1 target)
 					if (isAoe && currentState.players.player.battlefield.length < 2) continue;
 					targetId = aiResolveSpellTarget(card, currentState);
 				} else if (card.card.type === 'minion' && card.card.battlecry) {
 					targetId = aiResolveBattlecryTarget(card, currentState);
 				}
 
-				if (targetId) {
-					try {
-						debug.ai(`[AI Turn] Playing targeted card: ${card.card.name} (cost: ${card.card.manaCost}) → target: ${targetId}`);
+				// If targeting failed but card doesn't strictly require a target, play without target
+				if (!targetId && needsTarget) {
+					// Skip cards that truly need a target (damage spells, targeted battlecries)
+					continue;
+				}
+
+				try {
+					debug.ai(`[AI Turn] Playing targeted card: ${card.card.name} (cost: ${card.card.manaCost}) → target: ${targetId || 'none'}`);
+					if (targetId) {
 						const tType = targetId === 'player-hero' || targetId === 'opponent-hero' ? 'hero' : 'minion';
 						currentState = playCard(currentState, card.instanceId, targetId, tType);
-					} catch (error) {
-						debug.error(`Error playing targeted card ${card.card.name}:`, error);
+					} else {
+						currentState = playCard(currentState, card.instanceId);
 					}
+				} catch (error) {
+					debug.error(`Error playing targeted card ${card.card.name}:`, error);
 				}
 			} else {
 				const isAoe = card.card.type === 'spell' && aiIsAoeSpell(card);

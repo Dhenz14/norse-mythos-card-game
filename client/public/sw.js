@@ -42,7 +42,7 @@ self.addEventListener('install', function() {
 	self.skipWaiting();
 });
 
-// Activate: clean old caches, claim clients
+// Activate: clean old caches + purge stale JS/CSS chunks, claim clients
 self.addEventListener('activate', function(event) {
 	event.waitUntil(
 		caches.keys().then(function(names) {
@@ -51,6 +51,18 @@ self.addEventListener('activate', function(event) {
 					.filter(function(name) { return name !== CACHE_NAME; })
 					.map(function(name) { return caches.delete(name); })
 			);
+		}).then(function() {
+			// Purge stale immutable JS/CSS chunks from current cache
+			// New build generates new hashes — old chunks cause 404s
+			return caches.open(CACHE_NAME).then(function(cache) {
+				return cache.keys().then(function(requests) {
+					return Promise.all(
+						requests
+							.filter(function(req) { return IMMUTABLE_RE.test(req.url); })
+							.map(function(req) { return cache.delete(req); })
+					);
+				});
+			});
 		}).then(function() {
 			return self.clients.claim();
 		})

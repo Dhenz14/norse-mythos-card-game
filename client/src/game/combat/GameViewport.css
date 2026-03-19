@@ -31,6 +31,7 @@
   transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1));
   transform-origin: top left;
   overflow: hidden;
+  touch-action: none; /* Prevent pinch-zoom/pan during gameplay on mobile */
   background:
     /* Stone texture: repeating noise pattern via layered gradients */
     repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
