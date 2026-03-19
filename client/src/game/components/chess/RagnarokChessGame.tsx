@@ -460,18 +460,22 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     playSoundEffect('game_start');
   }, [playSoundEffect, campaignData, markCinematicSeen]);
 
-  // Apply boss rules + difficulty scaling after board initialization
+  // Apply boss rules + difficulty scaling after board initialization (one-time)
+  const bossRulesInitRef = useRef(false);
   useEffect(() => {
     if (!isCampaign || !campaignData) return;
-    if (bossRulesApplied) return;
-    if (boardState.pieces.length === 0) return;
+    if (bossRulesApplied || bossRulesInitRef.current) return;
+
+    const store = useUnifiedCombatStore.getState();
+    if (store.boardState.pieces.length === 0) return;
+
+    bossRulesInitRef.current = true;
 
     const rules = campaignData.mission.bossRules;
     const difficultyBonus = campaignDifficulty === 'mythic' ? 40 : campaignDifficulty === 'heroic' ? 20 : 0;
     const bossExtraHealth = rules.find(r => r.type === 'extra_health')?.value ?? 0;
     const totalExtraHealth = bossExtraHealth + difficultyBonus;
 
-    const store = useUnifiedCombatStore.getState();
     let boostedPieces = [...store.boardState.pieces];
 
     if (totalExtraHealth > 0) {
@@ -529,63 +533,77 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     });
 
     setBossRulesApplied(true);
-  }, [isCampaign, campaignData, bossRulesApplied, boardState.pieces.length]);
+  }, [isCampaign, campaignData, bossRulesApplied, campaignDifficulty]);
 
-  // Boss rule: passive_damage — deal damage to player king each turn
+  // Per-turn boss rules: passive_damage, bonus_draw, extra_mana
+  // Combined into a single effect with a turn-tracking ref to prevent re-entry loops
+  const lastBossRuleTurnRef = useRef<string>('');
   useEffect(() => {
-    if (!isCampaign || !campaignData) return;
-    if (phase !== 'chess' || boardState.currentTurn !== 'player') return;
+    if (!isCampaign || !campaignData || phase !== 'chess') return;
 
-    const bossPassive = campaignData.mission.bossRules.find(r => r.type === 'passive_damage')?.value ?? 0;
-    const difficultyPassive = campaignDifficulty === 'mythic' ? 1 : 0;
-    const passiveDmg = bossPassive + difficultyPassive;
-    if (passiveDmg <= 0) return;
+    // Create a unique key for this turn to prevent re-firing
+    const turnKey = `${boardState.currentTurn}-${turnCount}`;
+    if (lastBossRuleTurnRef.current === turnKey) return;
+    lastBossRuleTurnRef.current = turnKey;
 
-    const playerKing = boardState.pieces.find(p => p.owner === 'player' && p.type === 'king');
-    if (!playerKing) return;
+    const rules = campaignData.mission.bossRules;
 
-    const newHp = Math.max(1, playerKing.health - passiveDmg);
-    updatePieceHealth(playerKing.id, newHp);
-    debug.chess(`[Boss Rules] Passive damage: player king takes ${passiveDmg} (HP: ${playerKing.health} → ${newHp})`);
-  }, [phase, boardState.currentTurn, isCampaign]);
+    // Passive damage: player king takes damage at start of player turn
+    if (boardState.currentTurn === 'player') {
+      const bossPassive = rules.find(r => r.type === 'passive_damage')?.value ?? 0;
+      const difficultyPassive = campaignDifficulty === 'mythic' ? 1 : 0;
+      const passiveDmg = bossPassive + difficultyPassive;
+      if (passiveDmg > 0) {
+        const store = useUnifiedCombatStore.getState();
+        const playerKing = store.boardState.pieces.find(p => p.owner === 'player' && p.type === 'king');
+        if (playerKing) {
+          const newHp = Math.max(1, playerKing.health - passiveDmg);
+          updatePieceHealth(playerKing.id, newHp);
+          debug.chess(`[Boss Rules] Passive damage: player king takes ${passiveDmg} (HP: ${playerKing.health} → ${newHp})`);
+        }
+      }
+    }
 
-  // Boss rule: bonus_draw — heal opponent's most-damaged piece each turn
-  useEffect(() => {
-    if (!isCampaign || !campaignData) return;
-    if (phase !== 'chess' || boardState.currentTurn !== 'opponent') return;
+    // Bonus heal + extra mana: opponent pieces at start of opponent turn
+    if (boardState.currentTurn === 'opponent') {
+      const store = useUnifiedCombatStore.getState();
+      let pieces = [...store.boardState.pieces];
+      let storeChanged = false;
 
-    const bonusDraw = campaignData.mission.bossRules.find(r => r.type === 'bonus_draw')?.value ?? 0;
-    if (bonusDraw <= 0) return;
+      // Bonus draw (heal most damaged opponent piece)
+      const bonusDraw = rules.find(r => r.type === 'bonus_draw')?.value ?? 0;
+      if (bonusDraw > 0) {
+        const healAmount = bonusDraw * 15;
+        const opponentPieces = pieces.filter(p => p.owner === 'opponent' && p.health < p.maxHealth);
+        if (opponentPieces.length > 0) {
+          const mostDamaged = opponentPieces.reduce((a, b) => (a.maxHealth - a.health) > (b.maxHealth - b.health) ? a : b);
+          const healed = Math.min(mostDamaged.maxHealth, mostDamaged.health + healAmount);
+          pieces = pieces.map(p => p.id === mostDamaged.id ? { ...p, health: healed } : p);
+          storeChanged = true;
+          debug.chess(`[Boss Rules] Bonus heal: ${mostDamaged.heroName} heals ${healAmount}`);
+        }
+      }
 
-    const healAmount = bonusDraw * 15;
-    const opponentPieces = boardState.pieces.filter(p => p.owner === 'opponent' && p.health < p.maxHealth);
-    if (opponentPieces.length === 0) return;
+      // Extra mana (bonus stamina for opponent)
+      const extraMana = rules.find(r => r.type === 'extra_mana')?.value ?? 0;
+      if (extraMana > 0) {
+        pieces = pieces.map(p => {
+          if (p.owner !== 'opponent') return p;
+          const maxStamina = Math.floor(p.maxHealth / 10) + extraMana;
+          return { ...p, stamina: Math.min(p.stamina + extraMana, maxStamina) };
+        });
+        storeChanged = true;
+        debug.chess(`[Boss Rules] Extra stamina: opponent +${extraMana}`);
+      }
 
-    const mostDamaged = opponentPieces.reduce((a, b) => (a.maxHealth - a.health) > (b.maxHealth - b.health) ? a : b);
-    const healed = Math.min(mostDamaged.maxHealth, mostDamaged.health + healAmount);
-    updatePieceHealth(mostDamaged.id, healed);
-    debug.chess(`[Boss Rules] Bonus heal: ${mostDamaged.heroName} heals ${healAmount} (HP: ${mostDamaged.health} → ${healed})`);
-  }, [phase, boardState.currentTurn, isCampaign]);
-
-  // Boss rule: extra_mana — grant opponent bonus stamina each turn
-  useEffect(() => {
-    if (!isCampaign || !campaignData) return;
-    if (phase !== 'chess' || boardState.currentTurn !== 'opponent') return;
-
-    const extraMana = campaignData.mission.bossRules.find(r => r.type === 'extra_mana')?.value ?? 0;
-    if (extraMana <= 0) return;
-
-    const store = useUnifiedCombatStore.getState();
-    const boosted = store.boardState.pieces.map(p => {
-      if (p.owner !== 'opponent') return p;
-      const maxStamina = Math.floor(p.maxHealth / 10) + extraMana;
-      return { ...p, stamina: Math.min(p.stamina + extraMana, maxStamina) };
-    });
-    useUnifiedCombatStore.setState({
-      boardState: { ...store.boardState, pieces: boosted },
-    });
-    debug.chess(`[Boss Rules] Extra stamina: opponent pieces get +${extraMana} stamina this turn`);
-  }, [phase, boardState.currentTurn, isCampaign]);
+      // Single store update for all opponent-turn boss rules
+      if (storeChanged) {
+        useUnifiedCombatStore.setState({
+          boardState: { ...store.boardState, pieces },
+        });
+      }
+    }
+  }, [phase, boardState.currentTurn, turnCount, isCampaign]);
 
   const handleQuickStart = useCallback((army: ArmySelectionType, deckCardIds: number[]) => {
     setPlayerArmy(army);
