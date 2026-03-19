@@ -12,5 +12,6 @@ export const routes = {
   history: '/history',
   settings: '/settings',
   spectate: '/spectate/:peerId',
+  marketplace: '/marketplace',
   admin: '/admin',
 };
