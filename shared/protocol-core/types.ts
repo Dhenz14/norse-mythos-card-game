@@ -66,7 +66,10 @@ export type CanonicalAction =
 	| 'market_buy'
 	| 'market_offer'
 	| 'market_accept'
-	| 'market_reject';
+	| 'market_reject'
+	// v1.2: DUAT Airdrop
+	| 'duat_airdrop_claim'
+	| 'duat_airdrop_finalize';
 
 // Legacy op that is NOT a canonical alias (valid only pre-seal)
 export type LegacyAction = 'legacy_pack_open';
@@ -83,6 +86,8 @@ export const ACTIVE_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
 	'card_replicate', 'card_merge',
 	// Marketplace: buy requires active (bundles HIVE transfer)
 	'market_buy', 'market_accept',
+	// DUAT: finalize is admin-only active auth
+	'duat_airdrop_finalize',
 ]);
 
 export const POSTING_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
@@ -90,6 +95,8 @@ export const POSTING_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
 	'pack_commit', 'pack_reveal', 'reward_claim', 'level_up',
 	// Marketplace: listing/offers use posting key
 	'market_list', 'market_unlist', 'market_offer', 'market_reject',
+	// DUAT: claim uses posting key (user claims own packs)
+	'duat_airdrop_claim',
 ]);
 
 // ============================================================
@@ -315,6 +322,10 @@ export interface StateAdapter {
 	getCompanionTransfer(trxId: string): Promise<CompanionTransfer | null>;
 	setTrxSiblings(trxId: string, ops: unknown[]): void;
 
+	// v1.2: DUAT Airdrop
+	getDuatClaim(account: string): Promise<DuatClaimRecord | null>;
+	putDuatClaim(claim: DuatClaimRecord): Promise<void>;
+
 	// v1.2: Marketplace
 	getListing(listingId: string): Promise<MarketListing | null>;
 	getListingByNft(nftUid: string): Promise<MarketListing | null>;
@@ -394,6 +405,28 @@ export interface MarketOffer {
 	offeredTrxId: string;
 	status: 'pending' | 'accepted' | 'rejected' | 'expired';
 	paymentTrxId?: string;      // Cross-referenced HIVE transfer for verification
+}
+
+// v1.2: DUAT Airdrop claim record
+export interface DuatClaimRecord {
+	account: string;
+	duatRaw: number;
+	packsEarned: number;
+	blockNum: number;
+	trxId: string;
+}
+
+// DUAT airdrop formula constants (calibrated)
+export const DUAT_SCALE = 5.346668;
+export const DUAT_BASE_PACKS = 1;
+export const DUAT_MAX_PACKS = 500;
+export const DUAT_PRECISION = 1000;
+export const DUAT_CLAIM_WINDOW_BLOCKS = 2_592_000; // ~90 days at 3s blocks
+
+export function calculateDuatPacks(duatRaw: number): number {
+	const display = duatRaw / DUAT_PRECISION;
+	if (display <= 0) return 0;
+	return Math.floor(Math.min(DUAT_MAX_PACKS, DUAT_BASE_PACKS + Math.log2(display) * DUAT_SCALE));
 }
 
 // Marketplace state adapter extension

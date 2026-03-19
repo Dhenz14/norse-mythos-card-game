@@ -30,7 +30,7 @@ import { DEFAULT_TOKEN_BALANCE } from '../schemas/HiveTypes';
 import { DEFAULT_ELO_RATING } from './hiveConfig';
 
 const DB_NAME = 'ragnarok-chain-v1';
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 
 let _db: IDBDatabase | null = null;
 
@@ -124,6 +124,11 @@ function openDB(): Promise<IDBDatabase> {
 			}
 			if (!db.objectStoreNames.contains('pack_supply')) {
 				db.createObjectStore('pack_supply', { keyPath: 'packType' });
+			}
+
+			// v1.2: DUAT Airdrop claims
+			if (!db.objectStoreNames.contains('duat_claims')) {
+				db.createObjectStore('duat_claims', { keyPath: 'account' });
 			}
 
 			// v1.2: Marketplace
@@ -593,6 +598,24 @@ export const getPackSupply = (packType: string): Promise<StoredPackSupply | unde
 
 export const putPackSupply = (supply: StoredPackSupply): Promise<void> =>
 	idbPut('pack_supply', supply);
+
+// ---------------------------------------------------------------------------
+// v1.2: DUAT Airdrop claims
+// ---------------------------------------------------------------------------
+
+export interface StoredDuatClaim {
+	account: string;
+	duatRaw: number;
+	packsEarned: number;
+	blockNum: number;
+	trxId: string;
+}
+
+export const getDuatClaim = (account: string): Promise<StoredDuatClaim | undefined> =>
+	idbGet<StoredDuatClaim>('duat_claims', account);
+
+export const putDuatClaim = (claim: StoredDuatClaim): Promise<void> =>
+	idbPut('duat_claims', claim);
 
 // ---------------------------------------------------------------------------
 // v1.2: Marketplace — listings & offers

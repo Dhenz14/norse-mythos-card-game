@@ -10,7 +10,7 @@ import type {
 	StateAdapter, CardAsset, GenesisRecord, EloRecord,
 	TokenBalance, MatchAnchorRecord, PackCommitRecord, SupplyRecord,
 	PackAsset, PackSupplyRecord, CompanionTransfer,
-	MarketListing, MarketOffer,
+	MarketListing, MarketOffer, DuatClaimRecord,
 } from '../../../../shared/protocol-core/types';
 import {
 	getCard, putCard, deleteCard, getCardsByOwner,
@@ -26,6 +26,7 @@ import {
 	getPack as idbGetPack, putPack as idbPutPack, deletePack as idbDeletePack,
 	getPacksByOwner as idbGetPacksByOwner,
 	getPackSupply as idbGetPackSupply, putPackSupply as idbPutPackSupply,
+	getDuatClaim as idbGetDuatClaim, putDuatClaim as idbPutDuatClaim,
 	getListing as idbGetListing, putListing as idbPutListing,
 	deleteListing as idbDeleteListing, getListingByNftUid as idbGetListingByNft,
 	getOffer as idbGetOffer, putOffer as idbPutOffer,
@@ -215,6 +216,13 @@ export const clientStateAdapter: StateAdapter = {
 		return null;
 	},
 	setTrxSiblings(trxId, ops) { _trxSiblings.set(trxId, ops); },
+
+	// v1.2: DUAT Airdrop
+	async getDuatClaim(account) {
+		const c = await idbGetDuatClaim(account);
+		return c ? { ...c } as DuatClaimRecord : null;
+	},
+	async putDuatClaim(claim) { await idbPutDuatClaim(claim as Parameters<typeof idbPutDuatClaim>[0]); },
 
 	// v1.2: Marketplace
 	async getListing(listingId) {

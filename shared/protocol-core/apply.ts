@@ -19,6 +19,7 @@ import {
 	HIVE_USERNAME_RE, ATOMIC_TRANSFER_AMOUNT, PACK_SIZES,
 	MAX_REPLICAS_PER_CARD, MAX_GENERATION, REPLICA_COOLDOWN_BLOCKS,
 	PACK_ENTROPY_DELAY_BLOCKS, PACK_REVEAL_DEADLINE_BLOCKS,
+	DUAT_CLAIM_WINDOW_BLOCKS, calculateDuatPacks,
 } from './types';
 import { verifyPoW, POW_CONFIG } from './pow';
 import { canonicalStringify, sha256Hash } from './hash';
@@ -79,6 +80,9 @@ export async function applyOp(
 		// v1.1: DNA Lineage
 		case 'card_replicate': return applyCardReplicate(op, deps);
 		case 'card_merge': return applyCardMerge(op, deps);
+		// v1.2: DUAT Airdrop
+		case 'duat_airdrop_claim': return applyDuatAirdropClaim(op, deps);
+		case 'duat_airdrop_finalize': return applyDuatAirdropFinalize(op, deps);
 		// v1.2: Marketplace
 		case 'market_list': return applyMarketList(op, deps);
 		case 'market_unlist': return applyMarketUnlist(op, deps);
@@ -1233,6 +1237,80 @@ async function applyCardMerge(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	await deps.state.deleteCard(cardB.uid);
 	await deps.state.putCard(merged);
 
+	return { status: 'applied' };
+}
+
+// ============================================================
+// v1.2: DUAT Airdrop handlers
+// ============================================================
+
+async function applyDuatAirdropClaim(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	const account = op.broadcaster;
+	const duatRaw = Number(op.payload.duat_balance ?? 0);
+	const packsEarned = Number(op.payload.packs_earned ?? 0);
+
+	if (duatRaw <= 0 || packsEarned <= 0) return reject('invalid duat_balance or packs_earned');
+
+	// Genesis must exist
+	const genesis = await deps.state.getGenesis();
+	if (!genesis) return reject('no genesis');
+
+	// Within claim window (90 days from seal)
+	if (genesis.sealBlock > 0 && op.blockNum > genesis.sealBlock + DUAT_CLAIM_WINDOW_BLOCKS) {
+		return reject('duat claim window expired');
+	}
+
+	// Not already claimed
+	const existing = await deps.state.getDuatClaim(account);
+	if (existing) return reject('duat already claimed');
+
+	// Verify pack count matches formula
+	const expected = calculateDuatPacks(duatRaw);
+	if (packsEarned !== expected) return reject(`pack count mismatch: expected ${expected}, got ${packsEarned}`);
+
+	// Mint sealed packs
+	for (let i = 0; i < packsEarned; i++) {
+		const packUid = `duat_${op.trxId}:${i}`;
+		const dna = await sha256Hash(`${packUid}:${account}:${duatRaw}`);
+		await deps.state.putPack({
+			uid: packUid,
+			packType: 'standard',
+			dna,
+			owner: account,
+			sealed: true,
+			mintTrxId: op.trxId,
+			mintBlockNum: op.blockNum,
+			lastTransferBlock: op.blockNum,
+			cardCount: 5,
+			edition: 'alpha',
+		});
+	}
+
+	// Record claim
+	await deps.state.putDuatClaim({
+		account,
+		duatRaw,
+		packsEarned,
+		blockNum: op.blockNum,
+		trxId: op.trxId,
+	});
+
+	return { status: 'applied' };
+}
+
+async function applyDuatAirdropFinalize(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
+	if (op.broadcaster !== RAGNAROK_ADMIN_ACCOUNT) return reject('not admin');
+
+	const genesis = await deps.state.getGenesis();
+	if (!genesis) return reject('no genesis');
+
+	// Must be past claim window
+	if (genesis.sealBlock > 0 && op.blockNum <= genesis.sealBlock + DUAT_CLAIM_WINDOW_BLOCKS) {
+		return reject('claim window not yet expired');
+	}
+
+	// Finalization is recorded but unclaimed packs are handled off-chain
+	// (admin mints treasury packs in a separate batch)
 	return { status: 'applied' };
 }
 

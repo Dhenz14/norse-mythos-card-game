@@ -231,6 +231,17 @@ export class HiveSync {
     }, true);
   }
 
+  // ── v1.2: DUAT Airdrop ──
+
+  async claimDuatAirdrop(duatBalance: number, packsEarned: number): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson('ragnarok-cards', {
+      p: 'ragnarok-cards',
+      action: 'duat_airdrop_claim',
+      duat_balance: duatBalance,
+      packs_earned: packsEarned,
+    });
+  }
+
   // ── v1.2: Marketplace operations (NFTLox-inspired) ──
 
   async marketList(nftUid: string, nftType: 'card' | 'pack', price: number, currency: 'HIVE' | 'HBD' = 'HIVE'): Promise<HiveBroadcastResult> {

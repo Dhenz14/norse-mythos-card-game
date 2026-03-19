@@ -32,6 +32,7 @@ const TreasuryPage = lazy(() => import('./game/components/treasury/TreasuryPage'
 const MarketplacePage = lazy(() => import('./game/components/marketplace/MarketplacePage'));
 const AdminPanel = lazy(() => import('./game/components/admin/AdminPanel'));
 const StarterPackCeremony = lazy(() => import('./game/components/StarterPackCeremony'));
+const DuatClaimPopup = lazy(() => import('./game/components/DuatClaimPopup'));
 
 function HomePage() {
   const bgOverlayRef = useRef<HTMLDivElement>(null);
@@ -287,6 +288,7 @@ function App() {
             </Routes>
           </Suspense>
         </HashRouter>
+        <Suspense fallback={null}><DuatClaimPopup /></Suspense>
       </CardTransformProvider>
     </ErrorBoundary>
   );

@@ -42,6 +42,9 @@ const LEGACY_MAP: Record<string, ProtocolAction> = {
 	'rp_pack_burn': 'pack_burn',
 	'rp_card_replicate': 'card_replicate',
 	'rp_card_merge': 'card_merge',
+	// v1.2 DUAT airdrop legacy prefixes
+	'rp_duat_airdrop_claim': 'duat_airdrop_claim',
+	'rp_duat_airdrop_finalize': 'duat_airdrop_finalize',
 	// v1.2 marketplace legacy prefixes
 	'rp_market_list': 'market_list',
 	'rp_market_unlist': 'market_unlist',
@@ -88,6 +91,8 @@ export function normalizeRawOp(raw: RawHiveOp): NormalizeResult {
 			// v1.2: Marketplace
 			'market_list', 'market_unlist', 'market_buy',
 			'market_offer', 'market_accept', 'market_reject',
+			// v1.2: DUAT Airdrop
+			'duat_airdrop_claim', 'duat_airdrop_finalize',
 		]);
 		if (known.has(bodyAction)) {
 			action = bodyAction as CanonicalAction;
