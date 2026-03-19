@@ -58,7 +58,11 @@ import { emitBattlecryTriggered, emitDeathrattleTriggered } from '../actions/gam
 import { debug } from '../config/debugConfig';
 import { GameStatusBanner } from './ui/GameStatusBanner';
 import TutorialOverlay from './tutorial/TutorialOverlay';
+import { initTutorialSubscriber } from '../subscribers/TutorialSubscriber';
 import { useCardPositioning } from '../hooks/useCardPositioning';
+
+// Wire tutorial to game events (once)
+initTutorialSubscriber();
 import { useTargetingArrows } from '../hooks/useTargetingArrows';
 import { useCardDetailModal } from '../hooks/useCardDetailModal';
 import { useAttackVisualization } from '../hooks/useAttackVisualization';

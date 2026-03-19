@@ -147,6 +147,10 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                   ${hasWager ? 'has-wager' : ''}
                   ${hasFlying ? 'has-flying' : ''}
                 `}
+                role="button"
+                aria-label={`${card.card?.name || 'Minion'}, ${(card.card as any)?.attack ?? 0} attack, ${card.health ?? (card.card as any)?.health ?? 0} health${cardHasTaunt ? ', taunt' : ''}${canAttack ? ', ready to attack' : ''}`}
+                tabIndex={0}
+                onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (e.currentTarget as HTMLElement).click(); } }}
                 initial={{ opacity: 0, scale: 0.15, y: side === 'player' ? 80 : -80 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{

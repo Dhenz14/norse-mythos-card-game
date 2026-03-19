@@ -241,6 +241,24 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
   const [badgeTooltip, setBadgeTooltip] = useState<BadgeTooltipState | null>(null);
 
+  // Touch long-press: show card details after 500ms hold (mobile support)
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    longPressTimerRef.current = setTimeout(() => {
+      // Trigger the same hover event for tooltip display
+      const touch = e.touches[0];
+      if (touch && onMouseEnter) {
+        onMouseEnter({ clientX: touch.clientX, clientY: touch.clientY } as unknown as React.MouseEvent);
+      }
+    }, 500);
+  }, [onMouseEnter]);
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  }, []);
+
   const handleBadgeEnter = useCallback((e: React.MouseEvent, effect: { icon: string; color: string; keyword: string }) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setBadgeTooltip({
@@ -357,6 +375,9 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
       onMouseMove={holo.onMouseMove}
       onMouseEnter={onMouseEnter}
       onMouseLeave={handleHoloLeave}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       style={style}
       data-card-id={card.id}
       data-rarity={card.rarity}
