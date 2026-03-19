@@ -1502,6 +1502,19 @@ vercel --prod                 # Deploy to Vercel
 - Error boundary wraps entire app, all lazy routes have Suspense fallbacks
 - PWA manifest with icons verified on disk (192x192, 512x512)
 
+### Completed (Protocol Security Hardening)
+
+- **Winner injection blocked**: `applyMatchResult` rejects winner not in {p1, p2} — prevents third-party account injection
+- **Card merge DNA validation**: `applyCardMerge` requires both cards share same `originDna` — prevents cross-lineage exploit
+- **Per-card supply cap fixed**: `applyMintBatch` was using rarity-level cap for per-card check; now uses correct caps (1800/1250/750/500)
+- **Full SHA-256 compact hash**: Was `.slice(0,16)` (64-bit, birthday attack at ~4B); now full 64 hex chars in both `apply.ts` and `matchResultPackager.ts`
+- **Pack entropy delay 3→20 blocks**: `PACK_ENTROPY_DELAY_BLOCKS` increased from 3 (~9s) to 20 (~60s) to prevent block producer manipulation
+- **Magic numbers replaced**: Hardcoded `+3` and `+200` in apply.ts now use `PACK_ENTROPY_DELAY_BLOCKS` and `PACK_REVEAL_DEADLINE_BLOCKS` constants
+- **Match type detection**: `BlockchainSubscriber.ts` derives matchType from P2P state + Hive username check (was hardcoded `'ranked'`)
+- **Dual-sig enforcement**: Ranked matches without counterparty signature are NOT broadcast (was sending with empty sig that protocol rejects, wasting transactions)
+- **P2P cross-verification wired**: `deck_verify` auto-sent on P2P connection open — both clients exchange NFT collection IDs for on-chain cross-verification via IndexedDB + server fallback
+- **Server deck verify multi-copy fix**: `/verify-deck` endpoint now counts copies (was boolean existence check via `Set.has`)
+
 ### Next (Genesis Launch)
 
 - Admin panel built: `/admin` → Genesis Command Center (step-by-step ceremony UI with checklist)

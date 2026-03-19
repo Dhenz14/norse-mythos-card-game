@@ -17,7 +17,7 @@ import {
 	ELO_K_FACTOR, ELO_FLOOR, RUNE_WIN_RANKED, RUNE_LOSS_RANKED,
 	HIVE_USERNAME_RE, ATOMIC_TRANSFER_AMOUNT, PACK_SIZES,
 	MAX_REPLICAS_PER_CARD, MAX_GENERATION, REPLICA_COOLDOWN_BLOCKS,
-	PACK_ENTROPY_DELAY_BLOCKS,
+	PACK_ENTROPY_DELAY_BLOCKS, PACK_REVEAL_DEADLINE_BLOCKS,
 } from './types';
 import { verifyPoW, POW_CONFIG } from './pow';
 import { canonicalStringify, sha256Hash } from './hash';
@@ -176,12 +176,16 @@ async function applyMintBatch(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 		const supplyRecord = await deps.state.getSupply(rarity, 'pack');
 		if (supplyRecord && supplyRecord.minted >= supplyRecord.cap) continue;
 
-		// Per-card cap
+		// Per-card cap: each card has its own supply limit based on rarity
+		// Common: 1800, Rare: 1250, Epic: 750, Mythic: 500
+		const RARITY_CARD_CAPS: Record<string, number> = {
+			common: 1800, rare: 1250, epic: 750, mythic: 500,
+		};
 		const cardKey = `card:${cardId}`;
 		const cardSupply = await deps.state.getSupply(cardKey, 'pack');
 		const cardMinted = cardSupply?.minted ?? 0;
-		const rarityCap = supplyRecord?.cap ?? Infinity;
-		if (cardMinted >= rarityCap) continue;
+		const perCardCap = RARITY_CARD_CAPS[rarity.toLowerCase()] ?? 1800;
+		if (cardMinted >= perCardCap) continue;
 
 		const asset: CardAsset = {
 			uid,
@@ -203,7 +207,7 @@ async function applyMintBatch(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 		if (supplyRecord) {
 			await deps.state.putSupply({ ...supplyRecord, minted: supplyRecord.minted + 1 });
 		}
-		await deps.state.putSupply({ key: cardKey, pool: 'pack', cap: rarityCap, minted: cardMinted + 1 });
+		await deps.state.putSupply({ key: cardKey, pool: 'pack', cap: perCardCap, minted: cardMinted + 1 });
 		applied = true;
 	}
 
@@ -412,6 +416,9 @@ async function applyMatchResult(
 	if (!p1 || !p2 || p1 === p2) return reject('self-play or empty username');
 	if (op.broadcaster !== p1 && op.broadcaster !== p2) return reject('broadcaster not a participant');
 
+	// Winner must be one of the two participants — prevent third-party injection
+	if (winner !== p1 && winner !== p2) return reject('winner must be a match participant');
+
 	// Nonce
 	const nonceOk = await deps.state.advanceNonce(op.broadcaster, nonce);
 	if (!nonceOk) return reject(`nonce ${nonce} not higher than last seen`);
@@ -428,7 +435,7 @@ async function applyMatchResult(
 
 	if (isCompact && compactHash && cardHex) {
 		const chInput = { m: op.payload.m, w: winner, l: loser ?? '', n: nonce, s: seed, v: version, c: cardHex };
-		const expectedCh = (await sha256Hash(canonicalStringify(chInput))).slice(0, 16);
+		const expectedCh = await sha256Hash(canonicalStringify(chInput));
 		if (expectedCh !== compactHash) {
 			return reject(`compact hash mismatch: expected=${expectedCh}, got=${compactHash}`);
 		}
@@ -712,13 +719,13 @@ async function applyPackReveal(
 	}
 
 	// Entropy block must be irreversible
-	const entropyBlock = commit.commitBlock + 3;
+	const entropyBlock = commit.commitBlock + PACK_ENTROPY_DELAY_BLOCKS;
 	if (entropyBlock > ctx.lastIrreversibleBlock) {
 		return reject('entropy block not yet irreversible');
 	}
 
 	// Deadline check
-	const deadline = commit.commitBlock + 200;
+	const deadline = commit.commitBlock + PACK_REVEAL_DEADLINE_BLOCKS;
 	if (op.blockNum > deadline) {
 		return reject('reveal past deadline — auto-finalize should have occurred');
 	}
@@ -834,10 +841,10 @@ export async function autoFinalizeExpiredCommits(
 	let finalized = 0;
 
 	for (const commit of expired) {
-		const deadline = commit.commitBlock + 200;
+		const deadline = commit.commitBlock + PACK_REVEAL_DEADLINE_BLOCKS;
 		if (currentBlock < deadline) continue; // not yet expired
 
-		const entropyBlock = commit.commitBlock + 3;
+		const entropyBlock = commit.commitBlock + PACK_ENTROPY_DELAY_BLOCKS;
 		if (entropyBlock > ctx.lastIrreversibleBlock) continue; // entropy not yet irreversible
 
 		const entropyBlockId = await ctx.getBlockId(entropyBlock);
@@ -1176,7 +1183,12 @@ async function applyCardMerge(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	if ((cardA.replicaCount ?? 0) > 0) return reject(`card ${sourceUids[0]} has active replicas`);
 	if ((cardB.replicaCount ?? 0) > 0) return reject(`card ${sourceUids[1]} has active replicas`);
 
-	const originDna = cardA.originDna ?? await sha256Hash(`${cardA.cardId}|${cardA.edition}|${cardA.rarity}|genesis`);
+	// Both cards must share the same genetic origin (same originDna lineage)
+	const originA = cardA.originDna ?? await sha256Hash(`${cardA.cardId}|${cardA.edition}|${cardA.rarity}|genesis`);
+	const originB = cardB.originDna ?? await sha256Hash(`${cardB.cardId}|${cardB.edition}|${cardB.rarity}|genesis`);
+	if (originA !== originB) return reject('cards must share the same originDna to merge');
+
+	const originDna = originA;
 	const dnaA = cardA.instanceDna ?? await sha256Hash(`${originDna}|genesis|${cardA.mintTrxId}|0`);
 	const dnaB = cardB.instanceDna ?? await sha256Hash(`${originDna}|genesis|${cardB.mintTrxId}|0`);
 	const mergedDna = await sha256Hash(`${dnaA}|${dnaB}|merge|${op.trxId}`);

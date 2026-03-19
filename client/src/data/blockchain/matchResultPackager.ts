@@ -180,7 +180,7 @@ export async function packMatchResultForChain(result: PackagedMatchResult): Prom
 	// Tampering with `c` without updating `ch` → caught immediately.
 	// Tampering with both → caught once dual-sig verification on `ch` is added.
 	const chInput = { m: packed.m, w: packed.w, l: packed.l, n: packed.n, s: packed.s, v: packed.v, c: packed.c ?? '' };
-	packed.ch = (await sha256Hash(canonicalStringify(chInput))).slice(0, 16);
+	packed.ch = await sha256Hash(canonicalStringify(chInput));
 	if (result.signatures) {
 		packed.sig = { b: result.signatures.broadcaster, c: result.signatures.counterparty };
 	}

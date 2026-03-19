@@ -16,7 +16,7 @@
 export const RAGNAROK_ADMIN_ACCOUNT = 'ragnarok';
 export const TRANSFER_COOLDOWN_BLOCKS = 10;
 export const PACK_REVEAL_DEADLINE_BLOCKS = 200;
-export const PACK_ENTROPY_DELAY_BLOCKS = 3;
+export const PACK_ENTROPY_DELAY_BLOCKS = 20;
 export const MAX_CARD_LEVEL = 3;
 export const ELO_K_FACTOR = 32;
 export const ELO_FLOOR = 100;

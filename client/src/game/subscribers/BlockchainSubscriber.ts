@@ -18,6 +18,7 @@ import { sha256Hash, canonicalStringify } from '@/data/blockchain/hashUtils';
 import { useSeasonStore } from '../stores/seasonStore';
 import { getCardsByOwner, getTokenBalance, getEloRating } from '@/data/blockchain/replayDB';
 import { hiveEvents } from '@/data/HiveEvents';
+import { HIVE_USERNAME_RE } from '../../../../shared/protocol-core/types';
 
 type UnsubscribeFn = () => void;
 
@@ -167,7 +168,6 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 		return;
 	}
 
-	const matchType = 'ranked' as const;
 	const playerEloBefore = hiveData.stats?.odinsEloRating ?? 1000;
 
 	// Use real start time captured at game start; fall back to 1 minute ago
@@ -178,6 +178,12 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 		gameState.players.opponent.hiveUsername ??
 		gameState.players.opponent.heroId ??
 		'ai-opponent';
+
+	// Determine match type from game context — only P2P games against real Hive users are ranked
+	const peer = usePeerStore.getState();
+	const isP2PMatch = peer.connectionState === 'connected';
+	const hasRealOpponent = opponentUsername !== 'ai-opponent' && HIVE_USERNAME_RE.test(opponentUsername);
+	const matchType = (isP2PMatch && hasRealOpponent) ? 'ranked' as const : 'casual' as const;
 
 	// Extract card UIDs and rarities from live game state
 	const playerCardUids = extractCardUidsFromGameState('player');
@@ -230,7 +236,14 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 			clearTranscript();
 
 			const finalResult = await attemptDualSig(enrichedResult);
-			enqueueResult(finalResult, playerCardUids.length, startTime);
+
+			// Ranked matches require dual signatures — skip broadcast if counterparty didn't sign
+			if (finalResult.matchType === 'ranked' &&
+				(!finalResult.signatures?.counterparty)) {
+				debug.warn('[BlockchainSubscriber] Skipping ranked match broadcast — dual-sig incomplete');
+			} else {
+				enqueueResult(finalResult, playerCardUids.length, startTime);
+			}
 		})
 		.catch((err) => {
 			debug.error('[BlockchainSubscriber] Failed to package match result:', err);
@@ -257,10 +270,11 @@ async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatc
 			return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: counterpartySig } };
 		}
 
-		debug.warn('[BlockchainSubscriber] Dual-sig timeout/rejected — single-sig fallback');
+		// Ranked matches MUST have dual signatures — protocol rejects single-sig
+		debug.warn('[BlockchainSubscriber] Dual-sig timeout/rejected — match result will not be broadcast (ranked requires dual-sig)');
 		return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: '' } };
 	} catch (err) {
-		debug.warn('[BlockchainSubscriber] Dual-sig signing failed — broadcasting unsigned:', err);
+		debug.warn('[BlockchainSubscriber] Dual-sig signing failed — match result will not be broadcast:', err);
 		return result;
 	}
 }

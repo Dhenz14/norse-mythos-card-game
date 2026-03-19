@@ -282,7 +282,7 @@ seed = sha256( utf8_bytes(commit_trx_id) || utf8_bytes(entropy_block_id) || utf8
 // This seed feeds the same deterministic pack draw algorithm as a normal reveal
 ```
 
-This formula uses only immutable chain data (commit txid + entropy block id) and a fixed literal. No user salt is available (the user never revealed it), so `"forfeit"` replaces the salt. The entropy block id is not known at commit time (3 blocks in the future), so the outcome is not predictable at commit time. The result is identical regardless of which reader computes it.
+This formula uses only immutable chain data (commit txid + entropy block id) and a fixed literal. No user salt is available (the user never revealed it), so `"forfeit"` replaces the salt. The entropy block id is not known at commit time (20 blocks / ~60s in the future), so the outcome is not predictable at commit time. The result is identical regardless of which reader computes it.
 
 ## 10.5 `pack_reveal`
 
@@ -300,7 +300,7 @@ Finalizes a prior pack commit using delayed irreversible entropy.
 
 - Matching `pack_commit` MUST exist
 - `sha256(user_salt) == salt_commit`
-- Define `entropy_block = commit_block + K` (K = 3 blocks minimum)
+- Define `entropy_block = commit_block + K` (K = 20 blocks / ~60s minimum)
 - Reveal is valid only when `entropy_block <= LIB`
 - `seed = sha256(user_salt || commit_trx_id || entropy_block_id || version)`
 - Cards drawn deterministically from remaining `pack_supply` using that seed

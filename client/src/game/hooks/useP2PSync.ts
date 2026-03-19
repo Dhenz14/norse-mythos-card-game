@@ -156,6 +156,24 @@ export function useP2PSync() {
 		const hash = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev';
 		send({ type: 'version_check', buildHash: hash });
 
+		// Cross-verify deck NFT ownership: send our deck's NFT IDs so opponent can verify on-chain
+		if (isHiveMode()) {
+			try {
+				const bridge = getNFTBridge();
+				const username = bridge.getUsername();
+				if (username) {
+					const collection = bridge.getCardCollection();
+					const nftIds = collection.map(c => c.uid ?? '').filter(Boolean);
+					if (nftIds.length > 0) {
+						send({ type: 'deck_verify', hiveAccount: username, nftIds });
+						debug.combat(`[useP2PSync] Sent deck_verify: ${nftIds.length} NFTs for @${username}`);
+					}
+				}
+			} catch (err) {
+				debug.warn('[useP2PSync] Failed to send deck verification:', err);
+			}
+		}
+
 		startNewTranscript();
 	}, [connection, connectionState, send]);
 

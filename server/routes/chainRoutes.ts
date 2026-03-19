@@ -175,12 +175,24 @@ router.post('/verify-deck', async (req: Request, res: Response) => {
 		}
 
 		const ownedCards = getCardsByOwner(username);
-		const ownedCardIds = new Set(ownedCards.map(c => c.cardId));
+
+		// Build a count map: cardId → number of owned copies
+		const ownedCounts = new Map<number, number>();
+		for (const c of ownedCards) {
+			ownedCounts.set(c.cardId, (ownedCounts.get(c.cardId) ?? 0) + 1);
+		}
+
+		// Track requested counts to detect multi-copy violations
+		const requestedCounts = new Map<number, number>();
+		for (const id of cardIds) {
+			requestedCounts.set(id, (requestedCounts.get(id) ?? 0) + 1);
+		}
 
 		const owned: number[] = [];
 		const missing: number[] = [];
-		for (const id of cardIds) {
-			if (ownedCardIds.has(id)) {
+		for (const [id, requested] of requestedCounts) {
+			const available = ownedCounts.get(id) ?? 0;
+			if (available >= requested) {
 				owned.push(id);
 			} else {
 				missing.push(id);

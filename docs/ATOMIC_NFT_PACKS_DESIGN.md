@@ -370,7 +370,7 @@ function derivePackCards(
 | Tradeable while sealed | No | Yes — atomic transfer like cards |
 | Visible on Hive explorers | No | Yes — with 0.001 HIVE anchor |
 | Deterministic contents | Yes (commit-reveal seed) | Yes (DNA + burn entropy) |
-| Unpredictable before open | Yes (3-block delay) | Yes (burn trxId unknowable) |
+| Unpredictable before open | Yes (20-block delay) | Yes (burn trxId unknowable) |
 | Secondary market | Impossible | Native — sell sealed packs |
 | Polymorphic utility | N/A | Tournament tickets, access tokens |
 | Collector value | N/A | Factory-sealed packs as collectibles |
@@ -1134,9 +1134,9 @@ Identical to `SendCardModal.tsx` but for packs:
 
 **Threat**: A node operator sees a `pack_burn` in the mempool and tries to front-run it to predict cards.
 
-**Mitigation**: Cards derive from `sha256(packDna || burnTrxId || entropyBlockId)`. The `burnTrxId` is unique to the specific burn transaction and the `entropyBlockId` is 3 blocks in the future. Even if a front-runner sees the burn intent, they can't derive the cards because:
+**Mitigation**: Cards derive from `sha256(packDna || burnTrxId || entropyBlockId)`. The `burnTrxId` is unique to the specific burn transaction and the `entropyBlockId` is 20 blocks (~60s) in the future. Even if a front-runner sees the burn intent, they can't derive the cards because:
 1. They don't know the burn's final `trxId` (assigned by the block producer)
-2. They don't know the entropy block ID (3 blocks away)
+2. They don't know the entropy block ID (20 blocks away)
 
 ### Attack: Pack DNA Rainbow Table
 
