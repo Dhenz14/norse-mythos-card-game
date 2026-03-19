@@ -14,8 +14,15 @@ const PUBLIC = 'client/public';
 const PACKS_DIR = join(PUBLIC, 'packs');
 const MAX_PACK_SIZE = 80 * 1024 * 1024; // 80MB per zip
 
-const ASSET_DIRS = ['art', 'portraits', 'textures', 'icons', 'ui', 'sounds'];
+const ASSET_DIRS = ['art', 'portraits', 'textures', 'icons', 'ui', 'sounds', 'elements'];
 const ASSET_EXTS = new Set(['.webp', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.mp3', '.ogg', '.wav']);
+
+// Individual files to include (WASM, data, textures not in asset dirs)
+const EXTRA_FILES = [
+	'engine.wasm',
+	'data/duat-snapshot.json',
+	'glitter-256.png',
+];
 
 function collectFiles(baseDir) {
 	const files = [];
@@ -36,6 +43,16 @@ function collectFiles(baseDir) {
 		const fullDir = join(baseDir, dir);
 		if (existsSync(fullDir)) walk(fullDir);
 	}
+	// Add individual extra files (WASM, data, textures)
+	for (const extra of EXTRA_FILES) {
+		const fullPath = join(baseDir, extra);
+		if (existsSync(fullPath)) {
+			const size = statSync(fullPath).size;
+			const relativePath = '/' + extra.replace(/\\/g, '/');
+			files.push({ fullPath, relativePath, size });
+		}
+	}
+
 	return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 }
 
