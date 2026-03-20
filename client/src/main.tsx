@@ -15,7 +15,7 @@ window.addEventListener('unhandledrejection', (e) => {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     const swPath = `${import.meta.env.BASE_URL}sw.js`;
-    navigator.serviceWorker.register(swPath, { scope: import.meta.env.BASE_URL })
+    navigator.serviceWorker.register(swPath, { scope: import.meta.env.BASE_URL, updateViaCache: 'none' })
       .then((reg) => {
         // Check for updates every 30 minutes
         setInterval(() => reg.update().catch(() => {}), 30 * 60 * 1000);

@@ -237,6 +237,27 @@ export const useAssetCacheStore = create<AssetCacheState & AssetCacheActions>()(
 					await Promise.all(workers);
 
 					if (!controller.signal.aborted) {
+						// Also cache JS/CSS chunks so the game works fully offline
+						try {
+							const jsCache = await caches.open(CACHE_NAME);
+							const scripts = Array.from(document.querySelectorAll('script[src]'))
+								.map(s => (s as HTMLScriptElement).src)
+								.filter(s => s.includes('/assets/'));
+							const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+								.map(l => (l as HTMLLinkElement).href)
+								.filter(s => s.includes('/assets/'));
+							const chunks = [...scripts, ...styles];
+							await Promise.all(chunks.map(async url => {
+								const cached = await jsCache.match(url);
+								if (!cached) {
+									try {
+										const resp = await fetch(url);
+										if (resp.ok) await jsCache.put(url, resp);
+									} catch { /* non-critical */ }
+								}
+							}));
+						} catch { /* JS/CSS caching is best-effort */ }
+
 						set({
 							isDownloading: false,
 							isFullyDownloaded: true,
