@@ -588,7 +588,6 @@
   letter-spacing: 1.5px;
   text-transform: uppercase;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
 }
 
 .norse-army-selection .norse-rarity-badge.rarity-mythic {

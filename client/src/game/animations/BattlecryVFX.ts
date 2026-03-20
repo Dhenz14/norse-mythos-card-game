@@ -29,6 +29,7 @@ function getOrCreateContainer(): HTMLDivElement {
 		});
 		document.body.appendChild(el);
 	}
+	startOrphanSweep(); // Lazy start — auto-stops when container is empty
 	return el;
 }
 
@@ -54,7 +55,11 @@ function startOrphanSweep() {
 	if (orphanSweepInterval) return;
 	orphanSweepInterval = setInterval(() => {
 		const container = document.getElementById(VFX_CONTAINER_ID);
-		if (!container || container.children.length === 0) return;
+		if (!container || container.children.length === 0) {
+			// Auto-stop sweep when no VFX are active (prevents memory leak)
+			stopOrphanSweep();
+			return;
+		}
 		const now = Date.now();
 		Array.from(container.children).forEach(child => {
 			const born = Number((child as HTMLElement).dataset.vfxBorn || '0');
@@ -65,7 +70,7 @@ function startOrphanSweep() {
 	}, 2000);
 }
 
-startOrphanSweep();
+// Orphan sweep starts lazily when VFX play, auto-stops when container is empty
 
 export function stopOrphanSweep() {
 	if (orphanSweepInterval) {

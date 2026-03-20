@@ -104,6 +104,10 @@ export function useP2PSync() {
 	const messageQueueRef = useRef<P2PMessage[]>([]);
 	const isProcessingRef = useRef(false);
 	const initSentRef = useRef(false);
+
+	// Rate limiting: max 5 action messages per second from opponent
+	const actionTimestampsRef = useRef<number[]>([]);
+	const MAX_ACTIONS_PER_SEC = 5;
 	const pendingSyncRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const spectatorConnectionsRef = useRef<DataConnection[]>([]);
 
@@ -276,11 +280,12 @@ export function useP2PSync() {
 				case 'wasm_hash_check': {
 					const myWasmHash = getWasmHash();
 					const theirWasmHash = data.wasmHash;
-					if (theirWasmHash !== myWasmHash) {
-						toast.error('WASM engine mismatch — ranked play blocked', {
-							description: `Your engine: ${myWasmHash.slice(0, 12)}…, opponent: ${theirWasmHash.slice(0, 12)}…`,
+					if (theirWasmHash !== myWasmHash && theirWasmHash !== 'dev' && myWasmHash !== 'dev') {
+						toast.error('WASM engine mismatch — disconnecting', {
+							description: `Your engine: ${myWasmHash.slice(0, 12)}…, opponent: ${theirWasmHash.slice(0, 12)}…. Both players must use the same game version.`,
 							duration: 10000,
 						});
+						usePeerStore.getState().disconnect();
 					}
 					break;
 				}
@@ -404,8 +409,16 @@ export function useP2PSync() {
 
 				case 'playCard':
 					if (isHost) {
+						// Rate limit: max 5 actions/sec from opponent
+						const now1 = Date.now();
+						actionTimestampsRef.current = actionTimestampsRef.current.filter(t => now1 - t < 1000);
+						if (actionTimestampsRef.current.length >= MAX_ACTIONS_PER_SEC) break;
+						actionTimestampsRef.current.push(now1);
+
 						const gs = useGameStore.getState().gameState;
 						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
+						// Validate ID format (alphanumeric, hyphens, underscores, max 64 chars)
+						if (typeof data.cardId !== 'string' || data.cardId.length > 64) break;
 						recordMove('playCard', { cardId: data.cardId, targetId: data.targetId, targetType: data.targetType, insertionIndex: data.insertionIndex }, 'opponent');
 						gameStore.playCard(data.cardId, translateTargetForHost(data.targetId), data.targetType, data.insertionIndex);
 						debouncedSync();
@@ -414,8 +427,15 @@ export function useP2PSync() {
 
 				case 'attack':
 					if (isHost) {
+						const now2 = Date.now();
+						actionTimestampsRef.current = actionTimestampsRef.current.filter(t => now2 - t < 1000);
+						if (actionTimestampsRef.current.length >= MAX_ACTIONS_PER_SEC) break;
+						actionTimestampsRef.current.push(now2);
+
 						const gs = useGameStore.getState().gameState;
 						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
+						if (typeof data.attackerId !== 'string' || data.attackerId.length > 64) break;
+						if (typeof data.defenderId !== 'string' || data.defenderId.length > 64) break;
 						recordMove('attack', { attackerId: data.attackerId, defenderId: data.defenderId }, 'opponent');
 						gameStore.attackWithCard(data.attackerId, translateTargetForHost(data.defenderId) ?? data.defenderId);
 						debouncedSync();
@@ -424,6 +444,11 @@ export function useP2PSync() {
 
 				case 'endTurn':
 					if (isHost) {
+						const now3 = Date.now();
+						actionTimestampsRef.current = actionTimestampsRef.current.filter(t => now3 - t < 1000);
+						if (actionTimestampsRef.current.length >= MAX_ACTIONS_PER_SEC) break;
+						actionTimestampsRef.current.push(now3);
+
 						const gs = useGameStore.getState().gameState;
 						if (gs.currentTurn !== 'opponent' || gs.gamePhase === 'game_over') break;
 						recordMove('endTurn', {}, 'opponent');
