@@ -16,6 +16,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import * as zlib from 'zlib';
 import { normalizeRawOp } from '../shared/protocol-core/normalize';
 import type { RawHiveOp, EloRecord } from '../shared/protocol-core/types';
 import { ELO_K_FACTOR, ELO_FLOOR } from '../shared/protocol-core/types';
@@ -234,9 +235,17 @@ function finalizeChunk(writer: ChunkWriter, outputDir: string): ChunkDescriptor 
 	const filePath = path.join(chunksDir, fileName);
 
 	const ndjson = writer.entries.map(e => JSON.stringify(e)).join('\n');
+
+	// Write raw NDJSON (canonical for SHA-256 hash)
 	const tmpPath = filePath + '.tmp';
 	fs.writeFileSync(tmpPath, ndjson, 'utf-8');
 	fs.renameSync(tmpPath, filePath);
+
+	// Write gzipped version (~75% smaller, clients prefer this)
+	const gzPath = filePath + '.gz';
+	const gzTmpPath = gzPath + '.tmp';
+	fs.writeFileSync(gzTmpPath, zlib.gzipSync(Buffer.from(ndjson, 'utf-8'), { level: 9 }));
+	fs.renameSync(gzTmpPath, gzPath);
 
 	const hash = crypto.createHash('sha256').update(ndjson).digest('hex');
 

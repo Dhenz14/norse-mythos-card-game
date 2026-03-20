@@ -12,6 +12,7 @@
  */
 
 import { debug } from '../../game/config/debugConfig';
+import { gunzipSync } from 'fflate';
 import { HIVE_NODES } from '../blockchain/hiveConfig';
 import type {
 	IndexManifest, IndexEntry, LeaderboardSnapshot,
@@ -126,27 +127,40 @@ async function fetchFromIPFS<T>(cid: string, filePath: string): Promise<T | null
 }
 
 async function fetchChunkFromIPFS(cid: string, chunkPath: string): Promise<IndexEntry[]> {
-	for (const gateway of IPFS_GATEWAYS) {
-		const controller = new AbortController();
-		const timeout = setTimeout(() => controller.abort(), 30000);
-		try {
-			const url = `${gateway}${cid}/${chunkPath}`;
-			const resp = await fetch(url, { signal: controller.signal });
-			clearTimeout(timeout);
-			if (!resp.ok) continue;
+	// Try gzipped version first (75% smaller), fall back to raw NDJSON
+	const paths = chunkPath.endsWith('.gz') ? [chunkPath] : [`${chunkPath}.gz`, chunkPath];
 
-			const text = await resp.text();
-			const entries: IndexEntry[] = [];
-			for (const line of text.split('\n')) {
-				if (!line.trim()) continue;
-				try {
-					entries.push(JSON.parse(line) as IndexEntry);
-				} catch { /* skip malformed lines */ }
+	for (const tryPath of paths) {
+		const isGz = tryPath.endsWith('.gz');
+		for (const gateway of IPFS_GATEWAYS) {
+			const controller = new AbortController();
+			const timeout = setTimeout(() => controller.abort(), 30000);
+			try {
+				const url = `${gateway}${cid}/${tryPath}`;
+				const resp = await fetch(url, { signal: controller.signal });
+				clearTimeout(timeout);
+				if (!resp.ok) continue;
+
+				let text: string;
+				if (isGz) {
+					const buf = await resp.arrayBuffer();
+					text = new TextDecoder().decode(gunzipSync(new Uint8Array(buf)));
+				} else {
+					text = await resp.text();
+				}
+
+				const entries: IndexEntry[] = [];
+				for (const line of text.split('\n')) {
+					if (!line.trim()) continue;
+					try {
+						entries.push(JSON.parse(line) as IndexEntry);
+					} catch { /* skip malformed lines */ }
+				}
+				return entries;
+			} catch {
+				clearTimeout(timeout);
+				continue;
 			}
-			return entries;
-		} catch {
-			clearTimeout(timeout);
-			continue;
 		}
 	}
 	return [];
@@ -316,13 +330,24 @@ export async function syncIndex(): Promise<void> {
 			? manifest.compacted
 			: [];
 
-		debug.log(`[IndexSync] Fetching ${compactedToFetch.length} compacted + ${chunksToFetch.length} chunks`);
+		const allChunks = [...compactedToFetch, ...chunksToFetch];
+		debug.log(`[IndexSync] Fetching ${compactedToFetch.length} compacted + ${chunksToFetch.length} chunks (parallel)`);
 
-		for (const chunk of [...compactedToFetch, ...chunksToFetch]) {
-			const entries = await fetchChunkFromIPFS(latestCid, chunk.file);
-			if (entries.length > 0) {
-				await putIndexEntries(entries);
-				debug.log(`[IndexSync] Loaded ${chunk.file}: ${entries.length} entries`);
+		// Fetch all chunks in parallel (was sequential — 10 chunks × 30s = 5 min worst case)
+		const MAX_CONCURRENT = 5;
+		for (let i = 0; i < allChunks.length; i += MAX_CONCURRENT) {
+			const batch = allChunks.slice(i, i + MAX_CONCURRENT);
+			const results = await Promise.all(
+				batch.map(chunk => fetchChunkFromIPFS(latestCid, chunk.file)
+					.then(entries => ({ chunk, entries }))
+					.catch(() => ({ chunk, entries: [] as IndexEntry[] }))
+				)
+			);
+			for (const { chunk, entries } of results) {
+				if (entries.length > 0) {
+					await putIndexEntries(entries);
+					debug.log(`[IndexSync] Loaded ${chunk.file}: ${entries.length} entries`);
+				}
 			}
 		}
 
