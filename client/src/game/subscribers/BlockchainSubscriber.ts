@@ -263,16 +263,17 @@ async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatc
 
 	try {
 		const broadcasterSig = await hiveSync.signResultHash(result.hash);
-		peer.send({ type: 'result_propose', result, hash: result.hash, broadcasterSig });
+		const proposalId = crypto.randomUUID();
+		peer.send({ type: 'result_propose', result, hash: result.hash, broadcasterSig, proposalId });
 
 		const counterpartySig = await waitForCountersign(DUAL_SIG_TIMEOUT_MS);
 		if (counterpartySig) {
 			return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: counterpartySig } };
 		}
 
-		// Ranked matches MUST have dual signatures — protocol rejects single-sig
-		debug.warn('[BlockchainSubscriber] Dual-sig timeout/rejected — match result will not be broadcast (ranked requires dual-sig)');
-		return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: '' } };
+		// Ranked matches MUST have dual signatures — do NOT broadcast with empty counterparty
+		debug.warn('[BlockchainSubscriber] Dual-sig timeout/rejected — ranked match result blocked (requires both signatures)');
+		return result; // No signatures attached = downstream won't broadcast
 	} catch (err) {
 		debug.warn('[BlockchainSubscriber] Dual-sig signing failed — match result will not be broadcast:', err);
 		return result;

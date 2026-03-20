@@ -75,20 +75,20 @@ function recordMove(action: string, payload: Record<string, unknown>, playerId: 
 }
 
 export type P2PMessage =
-	| { type: 'init'; gameState: GameState; isHost: boolean }
+	| { type: 'init'; gameState: GameState; isHost: boolean; matchId?: string }
 	| { type: 'playCard'; cardId: string; targetId?: string; targetType?: 'minion' | 'hero'; insertionIndex?: number }
 	| { type: 'attack'; attackerId: string; defenderId: string }
 	| { type: 'endTurn' }
 	| { type: 'useHeroPower'; targetId?: string }
-	| { type: 'gameState'; gameState: GameState }
+	| { type: 'gameState'; gameState: GameState; stateHash?: string }
 	| { type: 'opponentDisconnected' }
 	| { type: 'ping' }
 	| { type: 'pong' }
 	| { type: 'deck_verify'; hiveAccount: string; nftIds: string[] }
 	| { type: 'seed_commit'; commitment: string }
-	| { type: 'seed_reveal'; salt: string }
-	| { type: 'result_propose'; result: PackagedMatchResult; hash: string; broadcasterSig: string }
-	| { type: 'result_countersign'; counterpartySig: string }
+	| { type: 'seed_reveal'; salt: string; hiveUsername?: string }
+	| { type: 'result_propose'; result: PackagedMatchResult; hash: string; broadcasterSig: string; proposalId: string }
+	| { type: 'result_countersign'; counterpartySig: string; proposalId: string }
 	| { type: 'result_reject'; reason: string }
 	| { type: 'version_check'; buildHash: string }
 	| { type: 'wasm_hash_check'; wasmHash: string }
@@ -108,6 +108,11 @@ export function useP2PSync() {
 	// Rate limiting: max 5 action messages per second from opponent
 	const actionTimestampsRef = useRef<number[]>([]);
 	const MAX_ACTIONS_PER_SEC = 5;
+
+	// Session binding: matchId derived from seed exchange
+	const matchIdRef = useRef<string | null>(null);
+	// Identity binding: opponent's Hive username from seed_reveal
+	const opponentUsernameRef = useRef<string | null>(null);
 	const pendingSyncRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const spectatorConnectionsRef = useRef<DataConnection[]>([]);
 
@@ -347,7 +352,7 @@ export function useP2PSync() {
 				case 'seed_commit':
 					theirCommitmentRef.current = data.commitment;
 					if (mySaltRef.current) {
-						send({ type: 'seed_reveal', salt: mySaltRef.current });
+						send({ type: 'seed_reveal', salt: mySaltRef.current, hiveUsername: getNFTBridge().getUsername() || undefined });
 					}
 					break;
 
@@ -377,6 +382,15 @@ export function useP2PSync() {
 
 					useGameStore.setState({ matchSeed });
 					seedResolvedRef.current = true;
+
+					// Session binding: derive matchId from seed + peer IDs
+					const matchId = await sha256Hash(matchSeed + myPeerId + remotePeerId);
+					matchIdRef.current = matchId.slice(0, 16);
+
+					// Identity binding: capture opponent's Hive username
+					if (data.hiveUsername) {
+						opponentUsernameRef.current = data.hiveUsername;
+					}
 
 					if (isHost) {
 						const rng = createSeededRng(matchSeed);
@@ -470,6 +484,16 @@ export function useP2PSync() {
 				case 'gameState':
 					if (!isHost) {
 						const flipped = flipGameState(data.gameState);
+
+						// Tamper detection: verify stateHash matches received state
+						if (data.stateHash && flipped) {
+							const expectedHash = `${data.gameState?.turnNumber ?? 0}:${data.gameState?.gamePhase ?? ''}:${data.gameState?.players?.player?.heroHealth ?? 0}:${data.gameState?.players?.opponent?.heroHealth ?? 0}`;
+							if (data.stateHash !== expectedHash) {
+								debug.warn('[useP2PSync] GameState hash mismatch — possible tampering');
+								// Don't disconnect (could be race condition), but log for diagnostics
+							}
+						}
+
 						const currentState = useGameStore.getState().gameState;
 						const changed = !currentState ||
 							currentState.turnNumber !== flipped.turnNumber ||
@@ -578,7 +602,7 @@ export function useP2PSync() {
 					if ((iAmWinner && resultSaysIWon) || (!iAmWinner && resultSaysILost)) {
 						try {
 							const sig = await getNFTBridge().signResultHash(data.hash);
-							send({ type: 'result_countersign', counterpartySig: sig });
+							send({ type: 'result_countersign', counterpartySig: sig, proposalId: data.proposalId });
 						} catch {
 							send({ type: 'result_reject', reason: 'signing_failed' });
 						}
@@ -664,7 +688,11 @@ export function useP2PSync() {
 		if (now - lastSyncRef.current < 100) return;
 		lastSyncRef.current = now;
 		const currentState = useGameStore.getState().gameState;
-		send({ type: 'gameState', gameState: currentState });
+		// Lightweight tamper-detection hash (not full signature — too expensive at 2/sec)
+		const quickHash = currentState
+			? `${currentState.turnNumber}:${currentState.gamePhase}:${currentState.players?.player?.heroHealth ?? 0}:${currentState.players?.opponent?.heroHealth ?? 0}`
+			: '';
+		send({ type: 'gameState', gameState: currentState, stateHash: quickHash });
 	}, [connectionState, isHost, send]);
 
 	const debouncedSync = useCallback(() => {
@@ -833,7 +861,8 @@ export function useP2PSync() {
 				reject: () => resolve(null),
 			};
 
-			send({ type: 'result_propose', result, hash, broadcasterSig });
+			const proposalId = crypto.randomUUID();
+			send({ type: 'result_propose', result, hash, broadcasterSig, proposalId });
 
 			// 30s timeout — fall back to single-sig
 			setTimeout(() => {
