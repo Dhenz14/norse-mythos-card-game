@@ -238,7 +238,7 @@ export function processArtifactOnHeroAttack(
 	// Gain armor on hero attack (Thorgrim)
 	if (effect.onHeroAttack?.gainArmor) {
 		const armorGain = effect.onHeroAttack.gainArmor;
-		state.players[attackerType].heroArmor = (state.players[attackerType].heroArmor || 0) + armorGain;
+		state.players[attackerType].heroArmor = Math.min(30, (state.players[attackerType].heroArmor || 0) + armorGain);
 		logArtifactTrigger(state, attackerType, `${name} grants +${armorGain} Armor`);
 	}
 
@@ -826,7 +826,7 @@ export function processArtifactStartOfTurn(
 
 	// Gain armor at start of turn (Khepri)
 	if (effect.startOfTurn?.gainArmor) {
-		state.players[playerType].heroArmor = (state.players[playerType].heroArmor || 0) + effect.startOfTurn.gainArmor;
+		state.players[playerType].heroArmor = Math.min(30, (state.players[playerType].heroArmor || 0) + effect.startOfTurn.gainArmor);
 		logArtifactTrigger(state, playerType, `${name} grants +${effect.startOfTurn.gainArmor} Armor`);
 	}
 
@@ -923,7 +923,7 @@ export function processArtifactEndOfTurn(
 	// Armor if damaged this turn (Oathblade)
 	if (effect.onDamagedEndOfTurn && artifactState?.heroWasDamagedThisTurn) {
 		const armorGain = effect.onDamagedEndOfTurn.gainArmor || 2;
-		player.heroArmor = (player.heroArmor || 0) + armorGain;
+		player.heroArmor = Math.min(30, (player.heroArmor || 0) + armorGain);
 		logArtifactTrigger(state, playerType, `${name} grants +${armorGain} Armor (hero was damaged)`);
 	}
 
@@ -1007,7 +1007,7 @@ export function processArtifactEndOfTurn(
 			if (mana.max > 10) mana.max = 10;
 			logArtifactTrigger(state, playerType, `${name} grants +${eot.gainManaCrystal} Mana Crystal`);
 			if (effect.onGainManaCrystal?.gainArmor) {
-				player.heroArmor = (player.heroArmor || 0) + effect.onGainManaCrystal.gainArmor;
+				player.heroArmor = Math.min(30, (player.heroArmor || 0) + effect.onGainManaCrystal.gainArmor);
 			}
 		}
 	}
@@ -1132,7 +1132,7 @@ export function processArtifactEndOfTurn(
 		const myHp = player.heroHealth ?? 0;
 		const theirHp = state.players[opponentType].heroHealth ?? 0;
 		if (Math.abs(myHp - theirHp) <= conf.healthDifference) {
-			player.heroArmor = (player.heroArmor || 0) + conf.gainArmor;
+			player.heroArmor = Math.min(30, (player.heroArmor || 0) + conf.gainArmor);
 			logArtifactTrigger(state, playerType, `${name}: balanced — draw ${conf.drawCards} and gain +${conf.gainArmor} Armor`);
 		}
 	}
@@ -1151,7 +1151,7 @@ export function processArtifactEndOfTurn(
 		const count = player.battlefield.filter(m => (m.currentHealth ?? 0) > 0).length;
 		if (count > 0) {
 			const armorGain = effect.armorPerFriendlyMinion * count;
-			player.heroArmor = (player.heroArmor || 0) + armorGain;
+			player.heroArmor = Math.min(30, (player.heroArmor || 0) + armorGain);
 			logArtifactTrigger(state, playerType, `${name} grants +${armorGain} Armor (${count} minions)`);
 		}
 	}
@@ -1160,7 +1160,7 @@ export function processArtifactEndOfTurn(
 	if (effect.fullHealthArmor) {
 		const maxHp = player.maxHealth;
 		if ((player.heroHealth ?? 0) >= maxHp) {
-			player.heroArmor = (player.heroArmor || 0) + effect.fullHealthArmor;
+			player.heroArmor = Math.min(30, (player.heroArmor || 0) + effect.fullHealthArmor);
 			logArtifactTrigger(state, playerType, `${name}: full Health — +${effect.fullHealthArmor} Armor`);
 		}
 	}

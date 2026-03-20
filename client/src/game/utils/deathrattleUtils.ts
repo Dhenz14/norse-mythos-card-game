@@ -213,7 +213,7 @@ function executeDeathrattleInner(
     }
     case 'gain_armor': {
       const armorVal = deathrattle.value || 0;
-      newState.players[playerId].heroArmor = (newState.players[playerId].heroArmor || 0) + armorVal;
+      newState.players[playerId].heroArmor = Math.min(30, (newState.players[playerId].heroArmor || 0) + armorVal);
       return newState;
     }
     case 'resummon': {

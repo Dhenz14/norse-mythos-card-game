@@ -1629,7 +1629,7 @@ function executeGainArmor(
   const player = state.players[playerType];
   const armorAmount = power.armorValue || power.value || 0;
 
-  player.heroArmor = (player.heroArmor || 0) + armorAmount;
+  player.heroArmor = Math.min(30, (player.heroArmor || 0) + armorAmount);
 
   return state;
 }
@@ -1727,7 +1727,7 @@ function executeBuffHero(
   player.tempStats.attack = (player.tempStats.attack || 0) + attackBuff;
 
   if (armorBuff > 0) {
-    player.heroArmor = (player.heroArmor || 0) + armorBuff;
+    player.heroArmor = Math.min(30, (player.heroArmor || 0) + armorBuff);
   }
 
   return state;

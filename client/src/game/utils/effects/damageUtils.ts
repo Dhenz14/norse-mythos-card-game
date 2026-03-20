@@ -472,8 +472,8 @@ export function addArmor(
   const targetPlayer = { ...newState.players[targetPlayerId] };
   newState.players[targetPlayerId] = targetPlayer;
 
-  // Add armor
-  targetPlayer.heroArmor = (targetPlayer.heroArmor || 0) + amount;
+  // Add armor (capped at 30)
+  targetPlayer.heroArmor = Math.min(30, (targetPlayer.heroArmor || 0) + amount);
 
   newState.gameLog.push({
     id: uuidv4(),

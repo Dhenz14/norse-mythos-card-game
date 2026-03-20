@@ -5768,7 +5768,7 @@ function executeGainArmorSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   const armorAmount = effect.value || 0;
-  playerState.heroArmor = (playerState.heroArmor || 0) + armorAmount;
+  playerState.heroArmor = Math.min(30, (playerState.heroArmor || 0) + armorAmount);
 
   return newState;
 }
@@ -5785,7 +5785,7 @@ function executeArmorBasedOnMissingHealthSpell(
   const currentHealth = playerState.heroHealth ?? playerState.health ?? maxHp;
   const missingHealth = Math.max(0, maxHp - currentHealth);
 
-  playerState.heroArmor = (playerState.heroArmor || 0) + missingHealth;
+  playerState.heroArmor = Math.min(30, (playerState.heroArmor || 0) + missingHealth);
 
   const drawPerArmor = (effect as any).drawPerArmorGained || 0;
   if (drawPerArmor > 0 && missingHealth > 0) {
@@ -7187,7 +7187,7 @@ function executeGainArmorReduceCostSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
 
   const armorAmount = effect.value || 5;
-  playerState.heroArmor = (playerState.heroArmor || 0) + armorAmount;
+  playerState.heroArmor = Math.min(30, (playerState.heroArmor || 0) + armorAmount);
 
   const costReduction = (effect as any).costReduction || 1;
   const targetCardType = (effect as any).targetCardType || 'all';
@@ -7408,7 +7408,7 @@ function executeHeroAttackBuffSpell(
   };
   (updatedPlayer as any).heroAttack = ((newState.players[side] as any).heroAttack || 0) + attackValue;
   if (armorValue > 0) {
-    updatedPlayer.heroArmor = (updatedPlayer.heroArmor || 0) + armorValue;
+    updatedPlayer.heroArmor = Math.min(30, (updatedPlayer.heroArmor || 0) + armorValue);
   }
   newState.players = { ...newState.players, [side]: updatedPlayer };
 
@@ -7673,7 +7673,7 @@ function executeGainArmorAndRecruitSpell(state: GameState, effect: SpellEffect):
   const currentPlayer = state.currentTurn || 'player';
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   const armorAmount = (effect as any).armorValue || effect.value || 0;
-  playerState.heroArmor = (playerState.heroArmor || 0) + armorAmount;
+  playerState.heroArmor = Math.min(30, (playerState.heroArmor || 0) + armorAmount);
   return executeRecruitSpell(newState, effect);
 }
 

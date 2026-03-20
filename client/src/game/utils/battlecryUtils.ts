@@ -750,7 +750,7 @@ export function executeBattlecry(
 
       case 'gain_armor': {
         const armorVal = battlecry.value || 0;
-        newState.players.player.heroArmor = (newState.players.player.heroArmor || 0) + armorVal;
+        newState.players.player.heroArmor = Math.min(30, (newState.players.player.heroArmor || 0) + armorVal);
         return newState;
       }
 
@@ -1721,7 +1721,7 @@ export function executeBattlecry(
         }
         newState = dealDamage(newState, 'opponent', 'hero', daeaVal);
         newState.players.opponent.battlefield = newState.players.opponent.battlefield.filter(m => (m.currentHealth ?? 1) > 0);
-        newState.players.player.heroArmor = (newState.players.player.heroArmor || 0) + daeaVal;
+        newState.players.player.heroArmor = Math.min(30, (newState.players.player.heroArmor || 0) + daeaVal);
         return newState;
       }
 
@@ -2092,7 +2092,7 @@ export function executeBattlecry(
         const dgaTarget = newState.players.opponent.battlefield.find(m => m.instanceId === targetId);
         const dgaAtk = dgaTarget ? (dgaTarget.currentAttack ?? (dgaTarget.card as MinionCardData).attack ?? 0) : 0;
         newState = destroyCard(newState, targetId, 'opponent');
-        newState.players.player.heroArmor = (newState.players.player.heroArmor || 0) + dgaAtk;
+        newState.players.player.heroArmor = Math.min(30, (newState.players.player.heroArmor || 0) + dgaAtk);
         return newState;
       }
 
@@ -2600,7 +2600,7 @@ export function executeBattlecry(
           (inst.card as any).manaCost = Math.max(0, ((inst.card as any).manaCost || 0) - fhdaDiscount);
           newState.players.player.hand.push(inst);
         }
-        newState.players.player.heroArmor = (newState.players.player.heroArmor || 0) + 5;
+        newState.players.player.heroArmor = Math.min(30, (newState.players.player.heroArmor || 0) + 5);
         return newState;
       }
 
@@ -3706,7 +3706,7 @@ function executeDrawBattlecry(
   // Apply armor gain if specified on the draw battlecry
   const armorGain = (battlecry as any).armor as number | undefined;
   if (armorGain && armorGain > 0) {
-    state.players.player.heroArmor = (state.players.player.heroArmor || 0) + armorGain;
+    state.players.player.heroArmor = Math.min(30, (state.players.player.heroArmor || 0) + armorGain);
   }
 
   if (typeof window !== 'undefined' && drawnCount > 0) {
@@ -4662,7 +4662,7 @@ function executeBuffAdjacentBattlecry(
 
   const armorGain = (battlecry as any).armor as number | undefined;
   if (armorGain && armorGain > 0) {
-    state.players.player.heroArmor = (state.players.player.heroArmor || 0) + armorGain;
+    state.players.player.heroArmor = Math.min(30, (state.players.player.heroArmor || 0) + armorGain);
   }
 
   return state;
@@ -5052,7 +5052,7 @@ function executeConditionalArmorBattlecry(
     if (onOpponentField) ownerKey = 'opponent';
   }
   const armorGain = (battlecry as any).armorGain || battlecry.value || 5;
-  state.players[ownerKey].heroArmor = (state.players[ownerKey].heroArmor || 0) + armorGain;
+  state.players[ownerKey].heroArmor = Math.min(30, (state.players[ownerKey].heroArmor || 0) + armorGain);
   return state;
 }
 
@@ -5543,7 +5543,7 @@ function executeBuffHeroBattlecry(
   battlecry: BattlecryEffect
 ): GameState {
   const amount = battlecry.value || 0;
-  state.players.player.heroArmor = (state.players.player.heroArmor || 0) + amount;
+  state.players.player.heroArmor = Math.min(30, (state.players.player.heroArmor || 0) + amount);
   return state;
 }
 

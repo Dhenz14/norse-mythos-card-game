@@ -9,7 +9,6 @@ import {
   PokerCard,
   EvaluatedHand,
   PokerHandRank,
-  HAND_DAMAGE_MULTIPLIERS,
   HAND_RANK_NAMES
 } from '../../types/PokerCombatTypes';
 import { debug } from '../../config/debugConfig';
@@ -128,7 +127,7 @@ export function evaluateFiveCardHand(cards: PokerCard[]): EvaluatedHand {
     rank,
     cards: tiebreakSorted,
     highCard: effectiveHighCard,
-    multiplier: HAND_DAMAGE_MULTIPLIERS[rank],
+    multiplier: 1,
     displayName: HAND_RANK_NAMES[rank],
     tieBreakers
   };

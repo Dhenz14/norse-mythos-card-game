@@ -20,7 +20,7 @@ export function equipArmorPiece(
 	}
 
 	player.armorGear[slot] = piece;
-	player.heroArmor = (player.heroArmor || 0) + piece.armorValue;
+	player.heroArmor = Math.min(30, (player.heroArmor || 0) + piece.armorValue);
 
 	const logEvent: GameLogEvent = {
 		id: uuidv4(),

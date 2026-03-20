@@ -82,23 +82,8 @@ export function getCombinedHandName(rank: PokerHandRank): string {
   return `${norse} (${traditional})`;
 }
 
-/**
- * Damage multipliers for each hand rank
- */
-// All multipliers are 1.0 — pure NLH rules. Best hand wins the pot, no bonus damage.
-// Skill is in the betting, reading, and folding — not lucky hand bonuses.
-export const HAND_DAMAGE_MULTIPLIERS: Record<PokerHandRank, number> = {
-  [PokerHandRank.HIGH_CARD]: 1.0,
-  [PokerHandRank.RUNE_MARK]: 1.0,
-  [PokerHandRank.DUAL_RUNES]: 1.0,
-  [PokerHandRank.THORS_HAMMER]: 1.0,
-  [PokerHandRank.FATES_PATH]: 1.0,
-  [PokerHandRank.ODINS_EYE]: 1.0,
-  [PokerHandRank.VALHALLAS_BLESSING]: 1.0,
-  [PokerHandRank.GODLY_POWER]: 1.0,
-  [PokerHandRank.DIVINE_ALIGNMENT]: 1.0,
-  [PokerHandRank.RAGNAROK]: 1.0
-};
+// Poker combat uses pure NLH rules — no hand-rank damage multipliers.
+// Best hand wins the pot. Skill is in betting, reading, and folding.
 
 /**
  * Evaluated poker hand

@@ -19,7 +19,6 @@ import {
   DEFAULT_BLIND_CONFIG,
   PokerPosition,
   PokerHandRank,
-  HAND_DAMAGE_MULTIPLIERS,
   HAND_RANK_NAMES,
   ElementBuff
 } from '../../types/PokerCombatTypes';
@@ -905,7 +904,7 @@ export const createPokerCombatSlice: StateCreator<
         rank: PokerHandRank.HIGH_CARD,
         cards: [],
         highCard: { suit: 'spades', value: 'A', numericValue: 14 },
-        multiplier: HAND_DAMAGE_MULTIPLIERS[PokerHandRank.HIGH_CARD],
+        multiplier: 1,
         displayName: 'Fold',
         tieBreakers: []
       };
