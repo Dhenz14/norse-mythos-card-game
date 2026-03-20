@@ -125,6 +125,7 @@ async function getOpsInBlock(blockNum: number): Promise<HiveBlockOp[]> {
 // ============================================================
 
 const eloState = new Map<string, EloRecord>();
+const transcriptCIDs: string[] = []; // Collected during indexing for operator pinning
 const supplyState = new Map<string, { pool: string; cap: number; minted: number }>();
 const seenTrxIds = new Set<string>();
 
@@ -154,11 +155,18 @@ function applyMatchResult(payload: Record<string, unknown>): DerivedState | unde
 	eloState.set(winner, winnerRec);
 	eloState.set(loser, loserRec);
 
+	// Extract transcript CID for operator pinning (if present in on-chain payload)
+	const transcriptCID = payload.tc as string | undefined;
+	if (transcriptCID) {
+		transcriptCIDs.push(transcriptCID);
+	}
+
 	return {
 		winner,
 		loser,
 		eloAfter: winnerRec.elo,
 		runeChange: 10,
+		transcriptCID,
 	};
 }
 
@@ -320,6 +328,7 @@ function writeManifest(
 		}],
 		publisher: operatorAccount,
 		publisherRotation: [operatorAccount],
+		transcriptCIDs: transcriptCIDs.length > 0 ? [...transcriptCIDs] : undefined,
 	};
 
 	const filePath = path.join(outputDir, 'manifest.json');

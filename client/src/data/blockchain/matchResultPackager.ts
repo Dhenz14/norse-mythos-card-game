@@ -184,5 +184,11 @@ export async function packMatchResultForChain(result: PackagedMatchResult): Prom
 	if (result.signatures) {
 		packed.sig = { b: result.signatures.broadcaster, c: result.signatures.counterparty };
 	}
+	if (result.transcriptRoot) {
+		packed.tr = result.transcriptRoot;
+	}
+	if (result.transcriptCID) {
+		packed.tc = result.transcriptCID;
+	}
 	return packed;
 }

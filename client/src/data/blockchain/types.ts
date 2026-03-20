@@ -66,6 +66,7 @@ export interface PackagedMatchResult {
 	result_nonce: number; // monotonic per-account nonce — prevents re-broadcasting old results
 	signatures?: { broadcaster: string; counterparty: string };
 	transcriptRoot?: string;
+	transcriptCID?: string;
 }
 
 export interface PackagedMatchResultOnChain {
@@ -77,8 +78,10 @@ export interface PackagedMatchResultOnChain {
 	s: string;
 	v: number;
 	c?: string;  // hex-encoded winner card IDs (4 hex chars each, sorted)
-	ch?: string; // sha256(canonical({m,w,l,n,s,v,c})) truncated to 16 hex chars — verifiable by replay engine
+	ch?: string; // sha256(canonical({m,w,l,n,s,v,c})) — verifiable by replay engine
 	sig?: { b: string; c: string };
+	tr?: string; // transcript Merkle root (SHA-256, 64 hex)
+	tc?: string; // transcript IPFS CID (content-addressed, retrievable)
 }
 
 export interface CardXPReward {

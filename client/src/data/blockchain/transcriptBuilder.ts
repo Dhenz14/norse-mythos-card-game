@@ -15,6 +15,16 @@
 import type { GameMove, MoveRecord, MerkleProof } from './signedMove';
 import { sha256Hash, canonicalStringify } from './hashUtils';
 
+export interface TranscriptBundle {
+	version: number;
+	matchId: string;
+	seed: string;
+	merkleRoot: string;
+	moveCount: number;
+	createdAt: number;
+	moves: string; // NDJSON
+}
+
 let activeTranscript: TranscriptBuilder | null = null;
 
 export function getActiveTranscript(): TranscriptBuilder | null {
@@ -125,6 +135,35 @@ export class TranscriptBuilder {
 
 	getBuiltRecords(): MoveRecord[] | null {
 		return this.builtRecords;
+	}
+
+	/**
+	 * Serialize transcript as NDJSON (newline-delimited JSON).
+	 * Each line is a MoveRecord with its hash chain.
+	 * Compact, streamable, deterministic — ideal for IPFS storage.
+	 */
+	async toNDJSON(): Promise<string> {
+		if (!this.builtRecords) await this.buildMerkleTree();
+		if (!this.builtRecords || this.builtRecords.length === 0) return '';
+		return this.builtRecords.map(r => JSON.stringify(r)).join('\n') + '\n';
+	}
+
+	/**
+	 * Serialize transcript with metadata envelope for IPFS pinning.
+	 * Includes merkle root, move count, version, and the full NDJSON log.
+	 */
+	async toTranscriptBundle(matchId: string, seed: string): Promise<TranscriptBundle> {
+		const root = await this.buildMerkleTree();
+		const ndjson = await this.toNDJSON();
+		return {
+			version: 1,
+			matchId,
+			seed,
+			merkleRoot: root,
+			moveCount: this.moves.length,
+			createdAt: Date.now(),
+			moves: ndjson,
+		};
 	}
 
 	static async verifyProof(proof: MerkleProof): Promise<boolean> {

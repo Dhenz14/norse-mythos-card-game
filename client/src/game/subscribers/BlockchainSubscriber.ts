@@ -12,6 +12,7 @@ import { getLevelForXP } from '@/data/blockchain/cardXPSystem';
 import { usePeerStore } from '../stores/peerStore';
 import { hiveSync } from '@/data/HiveSync';
 import { getActiveTranscript, clearTranscript } from '@/data/blockchain/transcriptBuilder';
+import { pinTranscript } from '@/data/blockchain/transcriptIPFS';
 import { registerAccount, fetchPlayerElo } from '@/data/chainAPI';
 import { computePoW, POW_CONFIG } from '@/data/blockchain/proofOfWork';
 import { sha256Hash, canonicalStringify } from '@/data/blockchain/hashUtils';
@@ -221,7 +222,7 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 
 	packageMatchResult(gameState, input, collection ?? undefined, cardRarities)
 		.then(async (result) => {
-			// Compute Merkle transcript root and embed in result
+			// Compute Merkle transcript root, pin to IPFS, and embed in result
 			const transcript = getActiveTranscript();
 			let enrichedResult = result;
 			if (transcript && transcript.getMoveCount() > 0) {
@@ -229,8 +230,16 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 					const transcriptRoot = await transcript.buildMerkleTree();
 					enrichedResult = { ...result, transcriptRoot };
 					debug.combat('[BlockchainSubscriber] Transcript root:', transcriptRoot.slice(0, 16) + '...', 'moves:', transcript.getMoveCount());
+
+					// Pin transcript to IPFS (non-blocking — CID attached if available before broadcast)
+					const bundle = await transcript.toTranscriptBundle(result.matchId, result.seed);
+					const cid = await pinTranscript(bundle);
+					if (cid) {
+						enrichedResult = { ...enrichedResult, transcriptCID: cid };
+						debug.combat('[BlockchainSubscriber] Transcript pinned:', cid);
+					}
 				} catch (err) {
-					debug.warn('[BlockchainSubscriber] Failed to build transcript Merkle tree:', err);
+					debug.warn('[BlockchainSubscriber] Failed to build/pin transcript:', err);
 				}
 			}
 			clearTranscript();

@@ -78,6 +78,7 @@ export interface IndexManifest {
 	attestations: OperatorAttestation[];
 	publisher: string;
 	publisherRotation: string[];
+	transcriptCIDs?: string[];
 }
 
 export interface ChunkDescriptor {
