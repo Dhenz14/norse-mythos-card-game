@@ -93,7 +93,8 @@ export type P2PMessage =
 	| { type: 'version_check'; buildHash: string }
 	| { type: 'wasm_hash_check'; wasmHash: string }
 	| { type: 'hash_check'; stateHash: string; turnNumber: number }
-	| { type: 'hash_mismatch'; turnNumber: number; myHash: string };
+	| { type: 'hash_mismatch'; turnNumber: number; myHash: string }
+	| { type: 'poker_action'; playerId: string; action: string; hpCommitment?: number };
 
 const RESULT_SIGN_TIMEOUT_MS = 30_000;
 
@@ -481,6 +482,39 @@ export function useP2PSync() {
 					}
 					break;
 
+				case 'poker_action':
+					if (isHost) {
+						// Rate limit
+						const nowP = Date.now();
+						actionTimestampsRef.current = actionTimestampsRef.current.filter(t => nowP - t < 1000);
+						if (actionTimestampsRef.current.length >= MAX_ACTIONS_PER_SEC) break;
+						actionTimestampsRef.current.push(nowP);
+
+						// Validate action is a known CombatAction value
+						const validActions = ['attack', 'counter', 'engage', 'brace', 'defend'];
+						if (!validActions.includes(data.action)) break;
+						if (data.hpCommitment !== undefined && (typeof data.hpCommitment !== 'number' || data.hpCommitment < 0 || data.hpCommitment > 500)) break;
+
+						// Access combat store via globalThis (set by unifiedCombatStore.ts)
+						const combatStore = (globalThis as Record<string, unknown>).__ragnarokCombatStore as
+							{ getState: () => { pokerState?: { activePlayerId?: string | null; foldWinner?: string; phase?: string }; performAction?: (playerId: string, action: string, hp?: number) => void } } | undefined;
+						if (!combatStore) break;
+						const cState = combatStore.getState();
+						if (!cState.pokerState || cState.pokerState.foldWinner) break;
+						if (cState.pokerState.phase === 'RESOLUTION' || cState.pokerState.phase === 'SHOWDOWN') break;
+
+						// Validate it's this player's turn in poker
+						if (typeof data.playerId !== 'string' || data.playerId.length > 64) break;
+						if (cState.pokerState.activePlayerId !== data.playerId) break;
+
+						recordMove('poker_action', { action: data.action, hpCommitment: data.hpCommitment }, 'opponent');
+						if (cState.performAction) {
+							cState.performAction(data.playerId, data.action, data.hpCommitment);
+						}
+						debouncedSync();
+					}
+					break;
+
 				case 'gameState':
 					if (!isHost) {
 						const flipped = flipGameState(data.gameState);
@@ -753,11 +787,20 @@ export function useP2PSync() {
 		if (!peer || !isHost) return;
 
 		const handleConnection = (conn: DataConnection) => {
-			const meta = conn.metadata as { type?: string } | undefined;
+			const meta = conn.metadata as { type?: string; hiveAccount?: string; spectateToken?: string } | undefined;
 			if (meta?.type !== 'spectator') return;
+
+			// Spectator authentication: require a Hive account name
+			// In tournament mode, could further verify against participant list
+			if (!meta.hiveAccount || typeof meta.hiveAccount !== 'string' || meta.hiveAccount.length < 3) {
+				debug.warn('[useP2PSync] Spectator rejected — no Hive account provided');
+				conn.close();
+				return;
+			}
 
 			conn.on('open', () => {
 				spectatorConnectionsRef.current.push(conn);
+				debug.log(`[useP2PSync] Spectator connected: ${meta.hiveAccount}`);
 			});
 
 			conn.on('close', () => {

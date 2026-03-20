@@ -830,7 +830,15 @@ export function useRagnarokCombatController(
       addHeroBattlePopup({ action: 'brace', target: 'player', text: 'Brace' });
     }
 
-    performAction(freshState.player.playerId, action, hp);
+    // In P2P multiplayer (non-host), send poker action via P2P instead of executing locally
+    const peer = (globalThis as Record<string, unknown>).__ragnarokPeerStore as
+      { getState: () => { isHost: boolean; connectionState: string; send: (data: unknown) => void } } | undefined;
+    const peerState = peer?.getState();
+    if (peerState && peerState.connectionState === 'connected' && !peerState.isHost) {
+      peerState.send({ type: 'poker_action', playerId: freshState.player.playerId, action: action as string, hpCommitment: hp });
+    } else {
+      performAction(freshState.player.playerId, action, hp);
+    }
 
     // Trigger poker drama VFX for the betting action
     try {

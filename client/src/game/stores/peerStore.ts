@@ -31,7 +31,7 @@ const HEARTBEAT_INTERVAL_MS = 5_000;
 const HEARTBEAT_TIMEOUT_MS = 12_000;
 
 // Message buffer: max messages queued during disconnect
-const MAX_BUFFERED_MESSAGES = 50;
+const MAX_BUFFERED_MESSAGES = 200;
 
 // ── ICE Servers ──
 
@@ -431,3 +431,6 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 		debug.warn('[PeerStore] Cannot send — not connected');
 	},
 }));
+
+// Expose on globalThis so combat controller can access P2P state without circular imports
+(globalThis as Record<string, unknown>).__ragnarokPeerStore = usePeerStore;
