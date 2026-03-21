@@ -118,8 +118,16 @@ export default function MarketplacePage() {
 	}, [username]);
 
 	useEffect(() => {
-		loadListings();
-		loadOffers();
+		let mounted = true;
+
+		async function load() {
+			await loadListings();
+			if (!mounted) return;
+			await loadOffers();
+		}
+		load();
+
+		return () => { mounted = false; };
 	}, [loadListings, loadOffers]);
 
 	const handleListCard = async () => {

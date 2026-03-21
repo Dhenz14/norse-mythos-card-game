@@ -59,32 +59,39 @@ export function useArtManager(options: UseArtManagerOptions = {}): UseArtManager
   const [filters, setFilters] = useState<ArtFilters>(defaultFilters);
 
   useEffect(() => {
+    let mounted = true;
+
     async function loadMetadata() {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const response = await fetch(assetPath('/art/metadata.json'));
+        if (!mounted) return;
         if (!response.ok) {
           throw new Error(`Failed to load art metadata: ${response.status}`);
         }
-        
+
         const json = await response.json();
+        if (!mounted) return;
         const parsed = parseMetadata(json);
-        
+
         if (!parsed) {
           throw new Error('Invalid metadata format');
         }
-        
+
         setMetadata(parsed);
       } catch (err) {
+        if (!mounted) return;
         setError(err instanceof Error ? err.message : 'Failed to load art');
       } finally {
-        setIsLoading(false);
+        if (mounted) setIsLoading(false);
       }
     }
-    
+
     loadMetadata();
+
+    return () => { mounted = false; };
   }, []);
 
   const cards = useMemo(() => metadata?.cards ?? [], [metadata]);

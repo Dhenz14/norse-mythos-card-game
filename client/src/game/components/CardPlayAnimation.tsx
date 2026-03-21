@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import './CardPlayAnimation.css';
@@ -27,6 +27,7 @@ const RARITY_COLORS: Record<string, string> = {
 
 export const CardPlayAnimation: React.FC<CardPlayAnimationProps> = ({ playedCard, playCount }) => {
 	const [flyingCards, setFlyingCards] = useState<FlyingCard[]>([]);
+	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	useEffect(() => {
 		if (!playedCard || playCount <= 0) return;
@@ -41,9 +42,13 @@ export const CardPlayAnimation: React.FC<CardPlayAnimationProps> = ({ playedCard
 		};
 
 		setFlyingCards(prev => [...prev, card]);
-		setTimeout(() => {
+		timerRef.current = setTimeout(() => {
 			setFlyingCards(prev => prev.filter(c => c.id !== card.id));
 		}, 600);
+
+		return () => {
+			if (timerRef.current) clearTimeout(timerRef.current);
+		};
 	}, [playCount]);
 
 	if (flyingCards.length === 0) return null;

@@ -21,13 +21,14 @@ const EVENT_TO_STEP: Record<string, string> = {
 };
 
 let initialized = false;
+const unsubscribes: Array<() => void> = [];
 
 export function initTutorialSubscriber(): void {
 	if (initialized) return;
 	initialized = true;
 
 	for (const [event, stepId] of Object.entries(EVENT_TO_STEP)) {
-		GameEventBus.subscribe(event as Parameters<typeof GameEventBus.subscribe>[0], () => {
+		const unsub = GameEventBus.subscribe(event as Parameters<typeof GameEventBus.subscribe>[0], () => {
 			const { tutorialDismissed, completeStep, completedSteps, currentStepIndex } = useTutorialStore.getState();
 			if (tutorialDismissed) return;
 			if (completedSteps.includes(stepId)) return;
@@ -40,5 +41,12 @@ export function initTutorialSubscriber(): void {
 				useTutorialStore.getState().nextStep();
 			}
 		});
+		unsubscribes.push(unsub);
 	}
+}
+
+export function disposeTutorialSubscriber(): void {
+	unsubscribes.forEach(unsub => unsub());
+	unsubscribes.length = 0;
+	initialized = false;
 }

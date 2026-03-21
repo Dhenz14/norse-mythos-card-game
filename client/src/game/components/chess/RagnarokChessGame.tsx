@@ -377,6 +377,7 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   const [turnCount, setTurnCount] = useState(0);
   const [bossRulesApplied, setBossRulesApplied] = useState(false);
   const gameEndProcessedRef = useRef(false);
+  const gameOverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     boardState,
@@ -847,7 +848,8 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
 
     const winner = boardState.gameStatus === 'player_wins' ? 'player' : 'opponent';
     playSoundEffect(winner === 'player' ? 'victory' : 'defeat');
-    setTimeout(() => {
+    gameOverTimerRef.current = setTimeout(() => {
+      gameOverTimerRef.current = null;
       if (isCampaign && winner === 'player' && campaignMissionId && campaignData) {
         completeMission(campaignMissionId, campaignDifficulty, turnCount);
         const alreadyClaimed = useCampaignStore.getState().rewardsClaimed.includes(campaignMissionId);
@@ -866,6 +868,13 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
         onGameEnd(winner);
       }
     }, 1500);
+
+    return () => {
+      if (gameOverTimerRef.current) {
+        clearTimeout(gameOverTimerRef.current);
+        gameOverTimerRef.current = null;
+      }
+    };
   }, [boardState.gameStatus, onGameEnd, playSoundEffect]);
 
   useEffect(() => {

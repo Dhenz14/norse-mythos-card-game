@@ -148,9 +148,12 @@ const DynamicAudioLayer: React.FC = () => {
     
     // Cleanup on unmount
     return () => {
-      // Stop all ambient tracks
+      // Stop and unload all ambient tracks to release audio buffers
       Object.values(ambientTracksRef.current).forEach(track => {
-        if (track) track.stop();
+        if (track) {
+          track.stop();
+          track.unload();
+        }
       });
       setCurrentAmbient(null);
     };

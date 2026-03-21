@@ -211,24 +211,26 @@ const EnvironmentalEffect: React.FC<EnvironmentalEffectProps> = ({
   // Effect initialization
   useEffect(() => {
     if (!containerRef.current) return;
-    
+
+    const timelines: gsap.core.Timeline[] = [];
+
     // Play the corresponding class sound effect
     playSoundEffect('spell_cast');
-    
+
     // Create particles
     if (particlesRef.current) {
       const particles = particlesRef.current;
       particles.innerHTML = '';
-      
+
       // Number of particles scaled by intensity
       const particleCount = Math.floor(20 * effectIntensity);
       const shapes = getParticleShapes();
-      
+
       // Create particles
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.classList.add('environmental-particle');
-        
+
         // Randomize particle properties
         const size = Math.random() * 30 + 10;
         const posX = Math.random() * 100;
@@ -236,18 +238,18 @@ const EnvironmentalEffect: React.FC<EnvironmentalEffectProps> = ({
         const opacity = Math.random() * 0.7 + 0.3;
         const rotation = Math.random() * 360;
         const delay = Math.random() * 0.8;
-        
+
         // Select random shape for the particle
         const shapeIndex = Math.floor(Math.random() * shapes.length);
-        
+
         // Create SVG with the shape
         particle.innerHTML = `
           <svg width="${size}" height="${size}" viewBox="0 0 20 20">
-            <path d="${shapes[shapeIndex]}" fill="${Math.random() > 0.5 ? colorScheme.primary : colorScheme.secondary}" 
+            <path d="${shapes[shapeIndex]}" fill="${Math.random() > 0.5 ? colorScheme.primary : colorScheme.secondary}"
                   opacity="${opacity}" />
           </svg>
         `;
-        
+
         // Set particle style
         particle.style.position = 'absolute';
         particle.style.left = `${posX}%`;
@@ -256,27 +258,28 @@ const EnvironmentalEffect: React.FC<EnvironmentalEffectProps> = ({
         particle.style.transform = `rotate(${rotation}deg)`;
         particle.style.filter = `blur(${Math.random() * 2}px) drop-shadow(0 0 ${Math.random() * 10 + 5}px ${colorScheme.primary})`;
         particles.appendChild(particle);
-        
+
         // Animate the particle
-        gsap.timeline()
-          .fromTo(particle, 
+        const particleTl = gsap.timeline()
+          .fromTo(particle,
             { opacity: 0, scale: 0 },
             { opacity, scale: 1, duration: 0.4, delay }
           )
-          .to(particle, { 
-            x: (Math.random() - 0.5) * 400 * effectIntensity, 
+          .to(particle, {
+            x: (Math.random() - 0.5) * 400 * effectIntensity,
             y: (Math.random() - 0.5) * 400 * effectIntensity,
             rotation: rotation + (Math.random() * 180 - 90),
-            opacity: 0, 
+            opacity: 0,
             duration: duration * 0.8,
-            ease: 'power1.out' 
+            ease: 'power1.out'
           });
+        timelines.push(particleTl);
       }
     }
-    
+
     // Animate the main container
-    gsap.timeline()
-      .fromTo(containerRef.current, 
+    const containerTl = gsap.timeline()
+      .fromTo(containerRef.current,
         { opacity: 0 },
         { opacity: 1, duration: 0.3 }
       )
@@ -285,7 +288,12 @@ const EnvironmentalEffect: React.FC<EnvironmentalEffectProps> = ({
         setVisible(false);
         if (onComplete) onComplete();
       });
-      
+    timelines.push(containerTl);
+
+    return () => {
+      timelines.forEach(tl => tl.kill());
+    };
+
   }, [card, duration, intensity, effectIntensity, colorScheme, onComplete, playSoundEffect]);
 
   if (!visible) return null;

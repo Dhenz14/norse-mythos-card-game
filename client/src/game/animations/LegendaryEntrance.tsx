@@ -110,38 +110,42 @@ const LegendaryEntrance: React.FC<LegendaryEntranceProps> = ({
   
   useEffect(() => {
     if (!containerRef.current) return;
-    
+
+    const timelines: gsap.core.Timeline[] = [];
+    const tweens: gsap.core.Tween[] = [];
+    const timeouts: number[] = [];
+
     // Play legendary entrance sound
     playSoundEffect('legendary_entrance');
-    
+
     // Create camera movement effect
     if (containerRef.current) {
       // First zoom out
-      gsap.fromTo(containerRef.current,
-        { 
+      tweens.push(gsap.fromTo(containerRef.current,
+        {
           background: 'rgba(0,0,0,0)',
           backdropFilter: 'blur(0px)'
         },
-        { 
+        {
           background: 'rgba(0,0,0,0.7)',
           backdropFilter: 'blur(5px)',
           duration: 0.8
         }
-      );
+      ));
     }
-    
+
     // Animate the card
     if (cardRef.current) {
-      gsap.timeline()
+      const cardTl = gsap.timeline()
         .fromTo(cardRef.current,
-          { 
+          {
             opacity: 0,
             scale: 0.7,
             x: position.x - window.innerWidth / 2,
             y: position.y - window.innerHeight / 2,
             rotation: -15
           },
-          { 
+          {
             opacity: 1,
             scale: 1.8,
             x: 0,
@@ -159,17 +163,18 @@ const LegendaryEntrance: React.FC<LegendaryEntranceProps> = ({
           delay: 1.5,
           ease: 'back.in'
         });
+      timelines.push(cardTl);
     }
-    
+
     // Animate the light flare
     if (flareRef.current) {
-      gsap.timeline()
+      const flareTl = gsap.timeline()
         .fromTo(flareRef.current,
-          { 
+          {
             opacity: 0,
             scale: 0.1
           },
-          { 
+          {
             opacity: 0.8,
             scale: 1.5,
             duration: 0.7,
@@ -183,26 +188,27 @@ const LegendaryEntrance: React.FC<LegendaryEntranceProps> = ({
           duration: 1,
           delay: 0.2
         });
+      timelines.push(flareTl);
     }
-    
+
     // GPU particle bursts via Pixi canvas
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight / 2;
     const palette = { primary: cardEffects.glowColor, secondary: cardEffects.particleColor, glow: `${cardEffects.glowColor}99` };
     spawnParticleBurst(cx, cy, 60, palette);
     spawnImpactRing(cx, cy, palette);
-    setTimeout(() => {
+    timeouts.push(window.setTimeout(() => {
       spawnParticleBurst(cx, cy, 40, palette);
       spawnEmbers(cx, cy, 25, palette);
-    }, 500);
-    setTimeout(() => {
+    }, 500));
+    timeouts.push(window.setTimeout(() => {
       spawnParticleBurst(cx, cy, 30, palette);
-    }, 1000);
-    
+    }, 1000));
+
     // Close the effect after animation completes
-    gsap.delayedCall(4, () => {
+    const delayedCall = gsap.delayedCall(4, () => {
       if (containerRef.current) {
-        gsap.to(containerRef.current, {
+        const closeTween = gsap.to(containerRef.current, {
           background: 'rgba(0,0,0,0)',
           backdropFilter: 'blur(0px)',
           duration: 0.5,
@@ -211,8 +217,16 @@ const LegendaryEntrance: React.FC<LegendaryEntranceProps> = ({
             if (onComplete) onComplete();
           }
         });
+        tweens.push(closeTween);
       }
     });
+
+    return () => {
+      timelines.forEach(tl => tl.kill());
+      tweens.forEach(tw => tw.kill());
+      timeouts.forEach(t => clearTimeout(t));
+      delayedCall.kill();
+    };
   }, [card, position, playSoundEffect, onComplete, cardEffects]);
   
   if (!visible) return null;

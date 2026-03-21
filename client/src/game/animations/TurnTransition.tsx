@@ -38,20 +38,23 @@ const TurnTransition: React.FC<TurnTransitionProps> = ({
 
   useEffect(() => {
     if (!containerRef.current) return;
-    
+
+    const timelines: gsap.core.Timeline[] = [];
+    const tweens: gsap.core.Tween[] = [];
+
     // Play the transition sound effect
     playSoundEffect(isPlayerTurn ? 'turn_start' : 'turn_end');
-    
+
     // Create particles
     if (particlesRef.current) {
       const particles = particlesRef.current;
       particles.innerHTML = '';
-      
+
       // Create 25 particles
       for (let i = 0; i < 25; i++) {
         const particle = document.createElement('div');
         particle.classList.add('transition-particle');
-        
+
         // Randomize particle properties
         const size = Math.random() * 16 + 4;
         const posX = Math.random() * 100;
@@ -59,7 +62,7 @@ const TurnTransition: React.FC<TurnTransitionProps> = ({
         const opacity = Math.random() * 0.7 + 0.3;
         const rotation = Math.random() * 360;
         const delay = Math.random() * 0.5;
-        
+
         // Create a random rune SVG
         const runeShape = runeShapes[Math.floor(Math.random() * runeShapes.length)];
         particle.innerHTML = `
@@ -67,7 +70,7 @@ const TurnTransition: React.FC<TurnTransitionProps> = ({
             <path d="${runeShape}" fill="${isPlayerTurn ? '#3b82f6' : '#f59e0b'}" />
           </svg>
         `;
-        
+
         // Set particle style
         particle.style.position = 'absolute';
         particle.style.left = `${posX}%`;
@@ -75,27 +78,28 @@ const TurnTransition: React.FC<TurnTransitionProps> = ({
         particle.style.opacity = '0';
         particle.style.transform = `rotate(${rotation}deg)`;
         particles.appendChild(particle);
-        
+
         // Animate the particle
-        gsap.timeline()
-          .fromTo(particle, 
+        const particleTl = gsap.timeline()
+          .fromTo(particle,
             { opacity: 0, scale: 0 },
             { opacity, scale: 1, duration: 0.4, delay }
           )
-          .to(particle, { 
-            x: (Math.random() - 0.5) * 300, 
+          .to(particle, {
+            x: (Math.random() - 0.5) * 300,
             y: (Math.random() - 0.5) * 300,
             rotation: rotation + (Math.random() * 180 - 90),
-            opacity: 0, 
+            opacity: 0,
             duration: 1.2,
-            ease: 'power2.out' 
+            ease: 'power2.out'
           });
+        timelines.push(particleTl);
       }
     }
-    
+
     // Animate the main container
-    gsap.timeline()
-      .fromTo(containerRef.current, 
+    const containerTl = gsap.timeline()
+      .fromTo(containerRef.current,
         { opacity: 0 },
         { opacity: 1, duration: 0.3 }
       )
@@ -104,22 +108,28 @@ const TurnTransition: React.FC<TurnTransitionProps> = ({
         setVisible(false);
         if (onComplete) onComplete();
       });
-      
+    timelines.push(containerTl);
+
     // Animate the runes container
     if (runesRef.current) {
-      gsap.fromTo(runesRef.current,
+      tweens.push(gsap.fromTo(runesRef.current,
         { scale: 0.2, rotation: isPlayerTurn ? -90 : 90 },
         { scale: 1.2, rotation: 0, duration: 0.6, ease: 'back.out' }
-      );
+      ));
     }
-    
+
     // Animate the text
     if (textRef.current) {
-      gsap.fromTo(textRef.current,
+      tweens.push(gsap.fromTo(textRef.current,
         { opacity: 0, y: 50 },
         { opacity: 1, y: 0, duration: 0.4, delay: 0.3 }
-      );
+      ));
     }
+
+    return () => {
+      timelines.forEach(tl => tl.kill());
+      tweens.forEach(tw => tw.kill());
+    };
   }, [isPlayerTurn, playSoundEffect, onComplete]);
 
   if (!visible) return null;

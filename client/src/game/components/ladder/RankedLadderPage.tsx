@@ -98,17 +98,24 @@ export default function RankedLadderPage() {
 	const myUsername = useNFTUsername() ?? '';
 
 	useEffect(() => {
+		let mounted = true;
+
 		if (!myUsername) {
 			setLoading(false);
-			return;
+			return () => { mounted = false; };
 		}
 
 		getMatchesByAccount(myUsername)
 			.then(matches => {
+				if (!mounted) return;
 				setAllMatches(matches);
 				setLoading(false);
 			})
-			.catch(() => setLoading(false));
+			.catch(() => {
+				if (mounted) setLoading(false);
+			});
+
+		return () => { mounted = false; };
 	}, [myUsername]);
 
 	const ladder = useMemo(() => buildLadder(allMatches), [allMatches]);

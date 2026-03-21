@@ -36,9 +36,18 @@ export function fixCardRenderingIssues(): void {
 function applyGlobalStyleFixes(): void {
 }
 
+let singletonObserver: MutationObserver | null = null;
+
+export function cleanupCardRenderingFix(): void {
+  if (singletonObserver) {
+    singletonObserver.disconnect();
+    singletonObserver = null;
+  }
+}
+
 /**
  * Disable competing card renderers to prevent conflicts
- * 
+ *
  * This function takes a more aggressive approach to ensure only one renderer
  * is active by creating a MutationObserver to detect and disable any
  * competing renderers immediately when they appear in the DOM.
@@ -76,43 +85,45 @@ function disableCompetingRenderers(): void {
   
   // Run immediately to catch any existing elements
   disableCompetingCanvases();
-  
-  // Create a MutationObserver to watch for new canvas elements
-  const observer = new MutationObserver((mutations) => {
-    let shouldDisable = false;
-    
-    // Check if any new canvas elements were added
-    mutations.forEach(mutation => {
-      if (mutation.type === 'childList') {
-        mutation.addedNodes.forEach(node => {
-          if (node.nodeName === 'CANVAS') {
-            shouldDisable = true;
-          } else if (node instanceof Element) {
-            // Check for canvas elements inside added DOM nodes
-            if (node.querySelectorAll('canvas').length > 0) {
+
+  // Create a singleton MutationObserver to watch for new canvas elements
+  if (!singletonObserver) {
+    singletonObserver = new MutationObserver((mutations) => {
+      let shouldDisable = false;
+
+      // Check if any new canvas elements were added
+      mutations.forEach(mutation => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeName === 'CANVAS') {
               shouldDisable = true;
+            } else if (node instanceof Element) {
+              // Check for canvas elements inside added DOM nodes
+              if (node.querySelectorAll('canvas').length > 0) {
+                shouldDisable = true;
+              }
             }
-          }
-        });
+          });
+        }
+      });
+
+      // If we found new canvas elements, disable competing renderers
+      if (shouldDisable) {
+        disableCompetingCanvases();
       }
     });
-    
-    // If we found new canvas elements, disable competing renderers
-    if (shouldDisable) {
-      disableCompetingCanvases();
-    }
-  });
-  
-  // Start observing the document with configured parameters
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-  
+
+    // Start observing the document with configured parameters
+    singletonObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
   // Also run on a short interval for the first few seconds to catch any that slip through
   const cleanupInterval = setInterval(disableCompetingCanvases, 200);
   setTimeout(() => clearInterval(cleanupInterval), 5000);
-  
+
 }
 
 /**

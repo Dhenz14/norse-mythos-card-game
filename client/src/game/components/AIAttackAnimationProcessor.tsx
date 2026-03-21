@@ -121,6 +121,8 @@ const AIAttackAnimationProcessor: React.FC = () => {
 
   const fxTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
+  const fallbackTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
   useEffect(() => {
     debug.animation(`[AI-ATTACK-ANIM-PROC] useEffect triggered: pendingAttacks=${pendingAttacks.length}, isAnimating=${isAnimating}`);
     if (pendingAttacks.length > 0 && !isAnimating) {
@@ -191,17 +193,26 @@ const AIAttackAnimationProcessor: React.FC = () => {
             });
           fxTimelineRef.current = tl;
         } else {
-          setTimeout(() => {
+          const t1 = setTimeout(() => {
             applyDamageFromEvent(event);
           }, 300);
-
-          setTimeout(() => {
+          const t2 = setTimeout(() => {
             setDisplayEvent(null);
             completeAnimation();
           }, 1500);
+          fallbackTimersRef.current.push(t1, t2);
         }
       }
     }
+
+    return () => {
+      fallbackTimersRef.current.forEach(clearTimeout);
+      fallbackTimersRef.current = [];
+      if (fxTimelineRef.current) {
+        fxTimelineRef.current.kill();
+        fxTimelineRef.current = null;
+      }
+    };
   }, [pendingAttacks.length, isAnimating, startAnimation, completeAnimation, getCardElement, applyDamageFromEvent]);
 
   // GSAP handles all animations via direct DOM manipulation — no visual overlay needed

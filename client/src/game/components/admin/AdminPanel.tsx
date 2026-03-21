@@ -95,7 +95,14 @@ export default function AdminPanel() {
 		}
 	}, []);
 
-	useEffect(() => { refreshState(); }, [refreshState]);
+	useEffect(() => {
+		let mounted = true;
+		async function load() {
+			await refreshState();
+		}
+		load();
+		return () => { mounted = false; };
+	}, [refreshState]);
 
 	// ── Handlers ──
 
