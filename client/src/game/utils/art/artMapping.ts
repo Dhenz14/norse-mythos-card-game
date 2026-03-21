@@ -487,12 +487,13 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-bjorn-ironside': '5388-g9bbr777',
 	'hero-hervor': '8e3b-ublpaurd',
 	'hero-bestla': '84b2-r6m51iu5',
-	// hero-brynhild needs god art (d4b7 is pet card "Brynhildr Awakened")
+	'hero-brynhild': '6f02-yerac949',
 	'hero-nanna': '23d6-nesirs51',
 	'hero-volva': 'c7cd-wbifyi1w',
 	'hero-sigurd': 'b972-ast4s29y',
 	'hero-gudrun': '1d97-35odajjd',
 	'hero-starkad': '145a-ra98jlmw',
+	'hero-verdandi': 'verdandi-norn',
 	'hero-hermod': '82c3-dmd7qmn8',
 	'hero-solvi': '8585-51vtraoh',
 	'hero-ylva': '660e-4jck4nlz',
@@ -509,9 +510,10 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-myrka': 'c7cd-wbifyi1w',
 	'hero-logi': 'dbeb-b0mibte9',
 
-	// ── Eastern mythology (closest Norse proxy) ──
+	// ── Eastern mythology ──
 	'hero-izanami': '6ea4-mrar7o70',
-	// hero-tsukuyomi needs god art (d638 is Mani's female-presenting art)
+	'hero-tsukuyomi': 'fe97-717e1b38',
+	'hero-fujin': 'fujin-windgod',
 	'hero-sarutahiko': '9a82-xjclj2bn',
 	'hero-kamimusubi': '7458-t0n1oqgs',
 
@@ -521,7 +523,16 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-serqet': '5579-rtdz78q8',
 	'hero-khepri': '9370-t2s89bww',
 
-	// ── Greek misc (eros, hera need god art — export only has their weapons) ──
+	// ── Greek heroes (matched from orphaned + unused art pools) ──
+	'hero-helios': '0dc0-t8g7ugzd',
+	'hero-heracles': 'hercules',
+	'hero-selene': '86f7-8cb16c88',
+	'hero-perseus': '8159-7d41a656',
+	'hero-prometheus': '5dcd-o15t632m',
+	'hero-hecate': 'hecate-witch',
+	'hero-hera': 'hera-queen',
+	'hero-rhea': 'rhea-titan',
+	'hero-eros': '83b5-7c499c3c',
 	'hero-hestia': 'd638-pfkjzzuo',
 	'hero-blainn': '23a5-lrnxovtk',
 	'hero-ran': '4434-4nu5rrrf',
@@ -714,12 +725,15 @@ export function getKingArtId(kingId: string): string | null {
 }
 
 /**
- * Get art path for a hero (returns /art/{id}.webp)
+ * Get art path for a hero. Checks both .webp and .png extensions.
  */
+const PNG_HERO_ART = new Set(['hera-queen', 'verdandi-norn', 'rhea-titan', 'fujin-windgod', 'hecate-witch']);
+
 export function getHeroArtPath(heroId: string): string | null {
   const artId = getHeroArtId(heroId);
   if (!artId) return null;
-  return assetPath(`/art/${artId}.webp`);
+  const ext = PNG_HERO_ART.has(artId) ? 'png' : 'webp';
+  return assetPath(`/art/${artId}.${ext}`);
 }
 
 /**
