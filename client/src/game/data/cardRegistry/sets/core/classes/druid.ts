@@ -338,7 +338,7 @@ export const druidCards: CardData[] = [
   },
   {
     id: 9010,
-    name: "Toad of the Wilds",
+    name: "Bear of the Wilds",
     manaCost: 2,
     attack: 2,
     health: 2,
@@ -346,7 +346,7 @@ export const druidCards: CardData[] = [
     rarity: "common",
     race: "Beast",
     description: "Taunt. Frenzy: Gain +2/+2.",
-    flavorText: "It sits. It waits. It endures. Eventually, it grows.",
+    flavorText: "It guards the ancient groves with claws and fury. Wounds only make it angrier.",
     keywords: ["frenzy", "taunt"],
     class: "Druid",
     collectible: true,

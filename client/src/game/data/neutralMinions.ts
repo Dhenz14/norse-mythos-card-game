@@ -154,7 +154,7 @@ export const   neutralMinions: CardData[] = [{
   health: 8,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Costs (1) less for each minion on the battlefield.",
   heroClass: "neutral",
@@ -435,7 +435,7 @@ export const   neutralMinions: CardData[] = [{
   health: 8,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "Whenever this minion takes damage, deal 3 damage to your hero.",
   keywords: [],
@@ -551,7 +551,7 @@ export const   neutralMinions: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Battlecry: Shuffle an 'Ancient Curse' into your deck that deals 7 damage to you when drawn.",
       keywords: ["battlecry"],
@@ -578,7 +578,7 @@ export const   neutralMinions: CardData[] = [{
   health: 7,
   
   type: "minion",
-  rarity: "epic",
+  rarity: "rare",
   
   description: "At the start of your turn, deal 2 damage to this minion.",
   keywords: [],
@@ -597,7 +597,7 @@ export const   neutralMinions: CardData[] = [{
       health: 6,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Battlecry: If you played an Elemental last turn, deal 5 damage.",
       keywords: ["battlecry"],
@@ -912,7 +912,7 @@ export const   neutralMinions: CardData[] = [{
       health: 3,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Battlecry: Summon two 1/1 Amalgams with all minion types.",
       keywords: ["battlecry"],
@@ -1021,7 +1021,7 @@ export const   neutralMinions: CardData[] = [{
       health: 3,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Deathrattle: Summon a random 2-Cost minion.",
       keywords: ["deathrattle"],
@@ -1078,7 +1078,7 @@ export const   neutralMinions: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Deathrattle: Deal this minion's Attack damage randomly split among all enemies.",
       keywords: ["deathrattle"],

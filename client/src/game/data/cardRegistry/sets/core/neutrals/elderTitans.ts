@@ -110,7 +110,7 @@ export const elderTitanCards: CardData[] = [
     attack: 4,
     health: 6,
     type: "minion",
-    rarity: 'epic',
+    rarity: 'rare',
     description: "Taunt",
     flavorText: "Not Gullveig herself, but something shaped in the flames of her rebirth — fire given form and purpose.",
     keywords: ["taunt"],

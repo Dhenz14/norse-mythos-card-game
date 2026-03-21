@@ -40,7 +40,7 @@ export const selfDamageCards: CardData[] = [
     health: 6,
     type: "minion",
     race: "titan",
-    rarity: "epic",
+    rarity: "rare",
     description: "Battlecry: Deal 5 damage to your hero.",
     keywords: ["battlecry"],
     heroClass: "warlock",

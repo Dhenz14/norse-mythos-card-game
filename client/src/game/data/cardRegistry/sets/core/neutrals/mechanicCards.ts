@@ -91,7 +91,7 @@ export const deathrattleMinions: CardData[] = [
     attack: 4,
     health: 5,
     type: "minion",
-    rarity: "epic",
+    rarity: "rare",
     description: "Deathrattle: Summon a 4/5 Primordial Calf.",
     flavorText: 'The primordial cow who licked the first god from salt-ice. Creation begins with patience.',
     keywords: ["deathrattle"],

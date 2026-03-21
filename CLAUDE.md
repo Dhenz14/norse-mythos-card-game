@@ -38,7 +38,7 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - **Blockchain**: Hive Layer 1 NFTs (custom_json ops, deterministic reader, Keychain auth)
 
 ### Game Features
-- 2,400+ collectible cards across 5 mythological factions
+- 2,600+ cards (2,314 collectible NFTs + tokens/base cards) across 5 mythological factions
 - 80+ playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
@@ -115,7 +115,7 @@ client/src/
 │   │   ├── tradeStore.ts   # Trade offers + bridge transfers on accept
 │   │   └── replayStore.ts  # Match history + replay playback
 │   ├── data/               # Card definitions, heroes
-│   │   ├── allCards.ts     # Single source of truth (2,400+ cards)
+│   │   ├── allCards.ts     # Single source of truth (2,600+ cards)
 │   │   ├── cardRegistry/   # Card sets by ID ranges
 │   │   ├── dailyQuestPool.ts # 19 quest templates
 │   │   ├── keywordDefinitions.ts # All keyword names + descriptions
@@ -200,7 +200,7 @@ Card art lives in `client/public/art/` (2,700+ webp files). Art lookup uses 3-ti
 ## Key Subsystems
 
 ### Card System (`game/data/`)
-- **Single source**: `allCards.ts` contains all 2,242 cards (2,082 collectible NFTs + 160 tokens)
+- **Single source**: `allCards.ts` contains all 2,679 cards (2,314 collectible NFTs + 323 non-collectible base/tokens)
 - Card registry with ID ranges in `cardRegistry/ID_RANGES.md`
 - Ranges: 1000-3999 neutrals, 4000-8999 classes, 9000-9249 tokens, 20000-29967 Norse set, 30001-30410 Norse mechanics, 31001-31922 expansion gap-fill, 35001-40999 class expansions, 50000-50376 pets (38 families), 85001-86999 rogue/golems
 
@@ -276,7 +276,7 @@ Game logic for these mechanics lives in:
 - **16 IndexedDB stores**: cards, matches, reward_claims, elo_ratings, token_balances, sync_cursors, genesis_state, supply_counters, match_anchors, queue_entries, slashed_accounts, player_nonces, pending_slashes, market_listings, market_offers, duat_claims
 - **Admin lifecycle**: genesis (one-time) → seal (permanent) → admin key irrelevant forever
 - **Self-serve rewards**: 11 milestones in `tournamentRewards.ts`; players claim via Keychain
-- **Supply caps**: ~2.7M total NFTs (2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
+- **Supply caps**: ~2.99M total NFTs (2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
 - **NFT provenance**: `HiveCardAsset` stores `mintTrxId`, `mintBlockNum`, `lastTransferTrxId`, `lastTransferBlock` — full on-chain history per card
 - **Explorer links**: `explorerLinks.ts` generates clickable URLs (hivehub.dev) for any trxId or block
 - **Provenance viewer**: `NFTProvenanceViewer.tsx` shows full metadata + explorer links in collection
@@ -395,7 +395,7 @@ client/src/data/blockchain/opSchemas.ts
 - Admin authority ends at seal — no ongoing admin key needed
 - Reward claims are self-serve (players verify own stats, no admin distribution)
 - ELO is chain-derived (K=32, computed from match_result history)
-- Supply caps hard-enforced by every reader (~2.7M: 2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
+- Supply caps hard-enforced by every reader (~2.99M: 2,000/common, 1,000/rare, 500/epic, 250/mythic per card)
 - Every NFT stores mint + transfer trxIds — provenance viewer links directly to Hive explorer
 - Direct gifting via `SendCardModal` + bridge `transferCard()` — no trade negotiation needed
 - Deck builder enforces NFT ownership via bridge `getOwnedCopies()` (local mode = unlimited)
@@ -921,19 +921,19 @@ vercel --prod                 # Deploy to Vercel
 - Kept ~312 mythic cards: iconic gods (Odin, Thor, Zeus, Hades), primordial entities, Elder Titans, flagship minions
 - Demoted generic creatures, excess deity variants (3+ Fenrir, 5+ Nidhogg, 5+ Surtr), companion animals, tokens
 - Updated `PIECE_SUPPLY` in `heroRarity.ts`: mythic 250, epic 500, rare 1,000, common 2,000 (per card)
-- Final NFT supply: ~2.7M total (300×250 + 750×500 + 745×1,000 + 912×2,000)
-- Base/basic rarity cards (3) excluded from NFT supply — free for all players
-- Mythic artifacts and pets match their hero's rarity separately (~900 total mythic cards across all categories)
+- Final NFT supply: ~2.99M total (166×250 + 403×500 + 746×1,000 + 999×2,000)
+- Base/basic rarity cards (138) are `collectible: false` — account-bound, non-NFT, non-transferable
+- Rarity pyramid: common 43.2%, rare 32.2%, epic 17.4%, mythic 7.2% (matches TCG industry norms)
 
 ### Completed (NFT Compliance Audit)
 
 - Fixed broken Yggdrasil Golem IDs: 85001001→85011, 85001002→85012 (typos that would have been rejected by mint)
-- Expanded `VALID_CARD_RANGES` in `replayRules.ts` from 11 narrow ranges to 13 broad ranges covering all 2,242 cards
+- Expanded `VALID_CARD_RANGES` in `replayRules.ts` from 11 narrow ranges to 13 broad ranges covering all 2,679 cards
 - 962 cards were outside valid mint ranges (would have been rejected by chain replay) — now all covered
 - Added explicit `collectible: true` to 47 cards with undefined collectible across 4 files
-- Final audit: 2,242/2,242 cards have `id`, `name`, `type`, `rarity`, `collectible` (100% coverage)
-- `getCardById()` resolves all 2,242 cards (0 lookup failures)
-- 2,082 collectible (mintable NFTs), 160 non-collectible (tokens/generated)
+- Final audit: 2,679 cards have `id`, `name`, `type`, `rarity`, `collectible` (100% coverage)
+- `getCardById()` resolves all 2,679 cards (0 lookup failures)
+- 2,314 collectible (mintable NFTs), 323 non-collectible (base/tokens/generated)
 - Full NFT pipeline verified: cardRegistry → getCardById → nftMetadataGenerator → broadcastMint → replayRules → IndexedDB → HiveDataLayer → Game UI
 
 ### Completed (NFT End-to-End Wiring)
@@ -1439,7 +1439,7 @@ vercel --prod                 # Deploy to Vercel
 - God-name rename: 104 minion cards renamed to not pose as gods (heroes locked)
 - 17 empty card descriptions filled (vanilla + token cards)
 - Deleted browse-available/ duplicate art folder (112MB savings)
-- All documentation updated to reflect 2,400+ cards, 5 factions, 100% art
+- All documentation updated to reflect 2,600+ cards, 5 factions, 100% art
 
 ### Completed (Protocol v1.1 — Atomic Transfers, Pack NFTs, DNA Lineage)
 
@@ -1528,12 +1528,13 @@ vercel --prod                 # Deploy to Vercel
 ### Completed (TCG Rarity Rebalance & Supply Recalibration)
 
 - **Rarity pyramid fixed** to match Pokemon/MTG industry standards (was flat, now proper cascade)
-- **Mythic**: 290 → 160 cards (12.7% → 7.0%) — demoted 68 artifacts, 28 pets, 34 generic minions to epic
-- **Epic**: 630 → 410 cards (27.7% → 18.0%) — demoted 350 generic/simple cards to rare
-- **Rare**: 604 → 640 cards (26.5% → 28.1%) — gained from epic demotions, demoted 314 simple cards to common
-- **Common**: 614 → 928 cards (27.0% → 40.8%) — now properly the largest tier for new player accessibility
-- **Supply caps recalibrated**: mythic 500→250, epic 750→500, rare 1,250→1,000, common 1,800→2,000
-- **Total NFT supply**: ~2.74M (was incorrectly reported as ~3.3M due to inflated rarity counts)
+- **Mythic**: 166 cards (7.2%) — iconic gods, Elder Titans, flagship minions
+- **Epic**: 403 cards (17.4%) — complex multi-effect, build-around, unique mechanics
+- **Rare**: 746 cards (32.2%) — solid single-effect cards, tech cards, simple battlecries
+- **Common**: 999 cards (43.2%) — keyword bodies, stat sticks, new player accessible
+- **Supply caps**: mythic 250, epic 500, rare 1,000, common 2,000 (per card)
+- **Total NFT supply**: ~2.99M across 2,314 collectible cards
+- **Base cards**: 138 cards (IDs 100-234) are `collectible: false` — account-bound, non-NFT starter cards
 - Fixed 48 class casing inconsistencies (`priest` → `Priest`, etc.) across card data files
 - Fixed 3 duplicate card IDs (40112/40114/40116 → 40200-40202, tokens vs Coil expansion)
 - Fixed `import type` TDZ crash in `neutrals/index.ts` (production build circular dependency)
@@ -1566,7 +1567,7 @@ vercel --prod                 # Deploy to Vercel
 
 - Frozen DUAT snapshot: 3,511 eligible holders from live API (SHA-256 verified, bundled at `client/public/data/duat-snapshot.json`)
 - Log-linear distribution formula: `packs = floor(min(500, 1 + log2(balance) × 5.347))` — calibrated via binary search
-- 164,460 standard packs (822,300 cards = exactly 30.00% of 2,741,000 supply)
+- 164,460 standard packs (822,300 cards = ~27.5% of 2,987,000 supply)
 - Every holder gets 1-125 packs (avg 47, median 47, no zero-pack holders)
 - 2 new protocol ops: `duat_airdrop_claim` (posting key, validates formula + window) and `duat_airdrop_finalize` (admin, sweeps unclaimed to treasury)
 - IndexedDB v9: `duat_claims` store for tracking claimed accounts
@@ -1600,6 +1601,22 @@ vercel --prod                 # Deploy to Vercel
 - P2PStatusBadge upgraded: connected (green), reconnecting (amber + countdown), grace period (orange), error (red)
 - Semi-transparent reconnecting overlay with countdown timer + "Game state preserved" message
 - Anti-exploit: symmetric grace, FIFO buffer replay, host remains authoritative
+
+### Completed (Art Lore Audit & NFT Rarity Sync)
+
+- Audited all 97 hero art assignments for lore accuracy (gender, mythology, species)
+- Fixed 3 hero art swaps: Magni (female→male), Solvi (female→male), Njord (female→male)
+- Removed 14 hero art assignments (wrong mythology/gender) — placeholder until new art generated
+  - Needs art: Eros, Eldrin, Myrka, Hestia, Fjorgyn, Volva, Lirien, Tsukuyomi, Fujin, Sarutahiko, Kamimusubi, Ammit, Ma'at, Serqet
+- Audited all 2,590 minion card-to-art mappings (cross-referenced 234 with metadata, spot-checked 2,356)
+- Fixed 14 critical creature art mismatches (beast cards with humanoid god art → proper creature art)
+  - Fenrir's Packleader→wolf, Ember Whelp→fire drake, Web-Mother→spider, Alpha Wolf→Fenrir wolf, etc.
+- Renamed "Toad of the Wilds" → "Bear of the Wilds" (no toad art exists, matched to bear art)
+- Set 138 basic/starter cards to `collectible: false` (account-bound, non-NFT, non-transferable)
+- Demoted 58 simple epic minions → rare (keyword-only bodies, basic battlecries, duplicate designs)
+- NFT rarity pyramid synced to TCG industry norms: common 43.2%, rare 32.2%, epic 17.4%, mythic 7.2%
+- Total NFT supply: ~2.99M across 2,314 collectible cards (166 mythic, 403 epic, 746 rare, 999 common)
+- TypeScript: 0 errors
 
 ### Next (Genesis Launch)
 

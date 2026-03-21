@@ -399,7 +399,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 6,
 
       type: "minion",
-      rarity: 'epic',
+      rarity: 'rare',
 
       description: "Deathrattle: Deal 8 damage to all minions.",
     flavorText: "Born from the primordial chaos, its death brings destruction to all around it.",
@@ -426,7 +426,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 7,
 
       type: "minion",
-      rarity: 'epic',
+      rarity: 'rare',
 
       description: "Battlecry: The next spell you cast this turn costs Health instead of Mana.",
     flavorText: "Orthrus guarded the cattle of Geryon until Heracles struck him down with a single blow of his olive-wood club. (Apollodorus 2.5.10)",
@@ -809,7 +809,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 7,
 
       type: "minion",
-      rarity: 'epic',
+      rarity: 'rare',
 
       description: "Deathrattle: Summon a 3/3 Sindri's Apprentice for your opponent.",
       flavorText: "Descended from the legendary Nemean Lion, its hide is impervious but its appetite knows no bounds.",
@@ -861,7 +861,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 5,
 
       type: "minion",
-      rarity: 'epic',
+      rarity: 'rare',
 
       description: "Battlecry: Give your opponent 2 Bananas.",
     flavorText: "The divine monkey god shares his bounty, for better or worse.",
@@ -923,7 +923,7 @@ export const   iconicLegendaryCards: CardData[] = [{
       health: 4,
 
       type: "minion",
-      rarity: 'epic',
+      rarity: 'rare',
 
       description: "Battlecry: Give your weapon +1/+1.",
     flavorText: "Ægir's hall beneath the waves gleams with gold brighter than firelight. Those he invites to feast rarely wish to leave. (Lokasenna, prose intro)",

@@ -2059,7 +2059,7 @@ export const fullCardDatabase: CardData[] = [
   flavorText: 'The Windlord commands all four winds.',
   type: 'minion',
   
-  rarity: 'epic',
+  rarity: 'rare',
   manaCost: 8,
   
   attack: 3,
@@ -2540,7 +2540,7 @@ export const fullCardDatabase: CardData[] = [
     flavorText: 'The elements bow to his command.',
     
     type: 'minion',
-    rarity: 'epic',
+    rarity: 'rare',
     race: "Elemental",
     
     manaCost: 6,
@@ -2622,7 +2622,7 @@ export const fullCardDatabase: CardData[] = [
     flavorText: 'Powered by totemic energy.',
     
     type: 'minion',
-    rarity: 'epic',
+    rarity: 'rare',
     
     manaCost: 5,
     attack: 3,
@@ -3551,7 +3551,7 @@ export const fullCardDatabase: CardData[] = [
       flavorText: 'Creator of the Labyrinth and wings of wax.',
       type: 'minion',
 
-      rarity: 'epic',
+      rarity: 'rare',
       manaCost: 6,
 
       attack: 6,

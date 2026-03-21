@@ -18,7 +18,7 @@ export const vanillaMinions: CardData[] = [
 		health: 2,
 		class: 'Neutral',
 		set: 'core',
-		collectible: true
+		collectible: false
 	},
 	{
 		id: 1901,
@@ -32,7 +32,7 @@ export const vanillaMinions: CardData[] = [
 		health: 3,
 		class: 'Neutral',
 		set: 'core',
-		collectible: true
+		collectible: false
 	},
 	{
 		id: 1902,
@@ -46,7 +46,7 @@ export const vanillaMinions: CardData[] = [
 		health: 2,
 		class: 'Neutral',
 		set: 'core',
-		collectible: true
+		collectible: false
 	},
 	{
 		id: 1903,
@@ -60,7 +60,7 @@ export const vanillaMinions: CardData[] = [
 		health: 4,
 		class: 'Neutral',
 		set: 'core',
-		collectible: true
+		collectible: false
 	},
 	{
 		id: 1904,
@@ -75,7 +75,7 @@ export const vanillaMinions: CardData[] = [
 		race: 'Giant',
 		class: 'Neutral',
 		set: 'core',
-		collectible: true
+		collectible: false
 	},
 	{
 		id: 1905,
@@ -89,7 +89,7 @@ export const vanillaMinions: CardData[] = [
 		health: 6,
 		class: 'Neutral',
 		set: 'core',
-		collectible: true
+		collectible: false
 	},
 	{
 		id: 1906,
@@ -104,6 +104,6 @@ export const vanillaMinions: CardData[] = [
 		race: 'Automaton',
 		class: 'Neutral',
 		set: 'core',
-		collectible: true
+		collectible: false
 	}
 ];

@@ -876,7 +876,7 @@ export const warlockCards: CardData[] = [
     health: 6,
     type: "minion",
     race: "Titan",
-    rarity: "epic",
+    rarity: "rare",
     description: "Battlecry: Deal 5 damage to your hero.",
     flavorText: "Mannoroth's lesser kin, still quite formidable.",
     keywords: ["battlecry"],

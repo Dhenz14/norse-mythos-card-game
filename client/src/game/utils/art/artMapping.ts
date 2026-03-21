@@ -476,8 +476,8 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-gerd': 'efdf-cwyuxjfl',
 	'hero-sigyn': '03d8-lf9wcao3',
 	'hero-ullr': 'cef7-2dqqiy45',
-	'hero-njord': '23d6-nesirs51',
-	'hero-fjorgyn': '6333-p1fmzcky',
+	'hero-njord': '0429-y5arol11', // was female Nerthus art; now stoic male Norse god (Vidarr art)
+	// 'hero-fjorgyn' — NEEDS ART (was duplicate of Frigg art)
 	'hero-gormr': 'e1e3-gg3jq3u0',
 	'hero-ve': 'd25c-fa7g75kn',
 
@@ -489,38 +489,42 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-bestla': '84b2-r6m51iu5',
 	'hero-brynhild': '6f02-yerac949',
 	'hero-nanna': '23d6-nesirs51',
-	'hero-volva': 'c7cd-wbifyi1w',
+	// 'hero-volva' — NEEDS ART (was duplicate of Groa art)
 	'hero-sigurd': 'b972-ast4s29y',
 	'hero-gudrun': '1d97-35odajjd',
 	'hero-starkad': '145a-ra98jlmw',
 	'hero-verdandi': 'verdandi-norn',
 	'hero-hermod': '82c3-dmd7qmn8',
-	'hero-solvi': '8585-51vtraoh',
+	'hero-solvi': '6c5f-q5se4d7c', // was female Sol art; now male Viking king (Sigurd Ring art)
 	'hero-ylva': '660e-4jck4nlz',
 	'hero-fjora': 'fdfd-7p1e2ch9',
-	'hero-lirien': 'efdf-cwyuxjfl',
+	// 'hero-lirien' — NEEDS ART (was duplicate of Gerd art)
 
 	// ── Vikings / fictional heroes ──
 	'hero-thorgrim': '46c2-sy7byy2d',
 	'hero-valthrud': '9aae-tccijmav',
 	'hero-thryma': '984f-0o06zvr0',
-	'hero-eldrin': 'c500-5pv67lfk',
-	'hero-magni': '89f2-bsi72zws',
+	// 'hero-eldrin' — NEEDS ART (was female Eisa art on male elf sorcerer)
+	'hero-magni': 'a55b-gwo99sp4', // was female Thrud art; now male Thor-like fiery warrior (Thor's son)
 	'hero-brakki': '92f4-85792li4',
-	'hero-myrka': 'c7cd-wbifyi1w',
+	// 'hero-myrka' — NEEDS ART (was duplicate of Groa art)
 	'hero-logi': 'dbeb-b0mibte9',
 
 	// ── Eastern mythology ──
+	// NOTE: All Eastern heroes currently use Norse proxy art (wrong mythology).
+	// Keeping Izanami (female goddess art is acceptable) but removing the rest.
 	'hero-izanami': '6ea4-mrar7o70',
-	'hero-tsukuyomi': 'fe97-717e1b38',
-	'hero-fujin': 'fujin-windgod',
-	'hero-sarutahiko': '9a82-xjclj2bn',
-	'hero-kamimusubi': '7458-t0n1oqgs',
+	// 'hero-tsukuyomi' — NEEDS ART (Norse brute on Japanese moon god)
+	// 'hero-fujin' — NEEDS ART (Norse fire warrior on Japanese wind god)
+	// 'hero-sarutahiko' — NEEDS ART (Norse warrior on Japanese kami)
+	// 'hero-kamimusubi' — NEEDS ART (shared Frey art on Eastern creation kami)
 
-	// ── Egyptian mythology (closest Norse proxy) ──
-	'hero-ammit': '71c1-s6o2do75',
-	'hero-maat': '3e44-araj8dlb',
-	'hero-serqet': '5579-rtdz78q8',
+	// ── Egyptian mythology ──
+	// NOTE: Egyptian heroes currently use Norse proxy art (wrong mythology).
+	// Keeping Khepri (scarab beetle is lore-accurate) but removing the rest.
+	// 'hero-ammit' — NEEDS ART (regal goddess art for crocodile-monster deity)
+	// 'hero-maat' — NEEDS ART (Norse rune art on Egyptian truth goddess)
+	// 'hero-serqet' — NEEDS ART (Norse horned warrior on Egyptian scorpion goddess)
 	'hero-khepri': '9370-t2s89bww',
 
 	// ── Greek heroes (matched from orphaned + unused art pools) ──
@@ -532,8 +536,8 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-hecate': 'hecate-witch',
 	'hero-hera': 'hera-queen',
 	'hero-rhea': 'rhea-titan',
-	'hero-eros': '83b5-7c499c3c',
-	'hero-hestia': 'd638-pfkjzzuo',
+	// 'hero-eros' — NEEDS ART (had dragon art, completely wrong)
+	// 'hero-hestia' — NEEDS ART (Norse viking art on Greek hearth goddess)
 	'hero-blainn': '23a5-lrnxovtk',
 	'hero-ran': '4434-4nu5rrrf',
 };
@@ -727,7 +731,7 @@ export function getKingArtId(kingId: string): string | null {
 /**
  * Get art path for a hero. Checks both .webp and .png extensions.
  */
-const PNG_HERO_ART = new Set(['hera-queen', 'verdandi-norn', 'rhea-titan', 'fujin-windgod', 'hecate-witch']);
+const PNG_HERO_ART = new Set(['hera-queen', 'verdandi-norn', 'rhea-titan', 'hecate-witch']);
 
 export function getHeroArtPath(heroId: string): string | null {
   const artId = getHeroArtId(heroId);
@@ -1301,7 +1305,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	4311: '/art/95d0-m51nszio.webp',
 	4312: '/art/95d0-m51nszio.webp',
 	4313: '/art/4e70-eb907e8c.webp',
-	4320: '/art/801c-e9u5oyne.webp',
+	4320: '/art/e4e8-js5gns2x.webp', // Hafgufa, the Sea-Mist — was Aegir god art, now kraken sea monster
 	4321: '/art/5183-o1b3xh13.webp',
 	4322: '/art/d65b-d0b4cb86.webp',
 	4323: '/art/a8e2-ea7daa72.webp',
@@ -1329,7 +1333,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	4378: '/art/8e02-a7e6fa9a.webp',
 	4379: '/art/ad90-6aba8d9a.webp',
 	4380: '/art/59b0-ec8d4f4c.webp',
-	4381: '/art/d0b0-nv2dx1yn.webp',
+	4381: '/art/6017-p53522dp.webp', // Ísormr, the Frost Serpent — was giantess art, now cave serpent
 	4382: '/art/6718-159765ee.webp',
 	4383: '/art/cc1f-5ha7i6v8.webp',
 	4384: '/art/7076-201ce228.webp',
@@ -1368,7 +1372,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	4517: '/art/9187-36fae0c7.webp',
 	4900: '/art/1d05-1hgo14ai.webp',
 	4901: '/art/7062-xwoh2ewg.webp',
-	5000: '/art/5940-n3snb3ua.webp',
+	5000: '/art/6654-mfeyt8se.webp', // Ember Whelp — was goddess art, now fire serpent/drake
 	5001: '/art/ddbb-b37e34cd.webp',
 	5002: '/art/5415-ghtr7fjn.webp',
 	5003: '/art/e3e1-5254f412.webp',
@@ -1389,7 +1393,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	5018: '/art/e1dd-6229f746.webp',
 	5019: '/art/3474-191eb4a4.webp',
 	5020: '/art/b62c-ac1dc6a1.webp',
-	5021: '/art/9def-nnlmtyvd.webp',
+	5021: '/art/dc05-8c0icj7w.webp', // Logi, Wildfire Incarnate — was moon goddess art, now fire bear
 	5022: '/art/5b05-b706a815.webp',
 	5023: '/art/128f-ca15dd84.webp',
 	5024: '/art/7c7b-10nz846g.webp',
@@ -1470,7 +1474,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	5308: '/art/fef0-0f15bf87.webp',
 	5309: '/art/3291-9c9148e1.webp',
 	5400: '/art/8328-uu8iihq1.webp',
-	5401: '/art/386d-ig168es7.webp',
+	5401: '/art/6653-y9djk14f.webp', // Myrkrkló (shadow beast) — was god art, now shadow wolf
 	5402: '/art/1c63-83e84c31.webp',
 	5403: '/art/a9d5-bbc786a7.webp',
 	5404: '/art/4b0d-4fd4c62d.webp',
@@ -1508,7 +1512,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	7009: '/art/b6a2-6bcfa6b3.webp',
 	7010: '/art/6e64-l30c5tei.webp',
 	7011: '/art/9c49-7e438361.webp',
-	7012: '/art/9126-gqnsbj5d.webp',
+	7012: '/art/102f-ome3s4ua.webp', // Fenrir's Packleader — was goddess art, now wolf
 	7013: '/art/9b16-1fmfzodt.webp',
 	7015: '/art/1992-3358a05e.webp',
 	7017: '/art/507f-9fec73d0.webp',
@@ -1581,7 +1585,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	9007: '/art/e2e8-7558eb39.webp',
 	9008: '/art/9c23-3df1d660.webp',
 	9009: '/art/66a2-c7960dce.webp',
-	9010: '/art/067b-uw4uaq9s.webp',
+	9010: '/art/b604-to8ru8m1.webp', // Bear of the Wilds — was goddess art, now spirit bear
 	9011: '/art/2a9d-50e8776f.webp',
 	9013: '/art/ce30-dbajbor3.webp',
 	9014: '/art/b43f-fdcb3771.webp',
@@ -1678,13 +1682,13 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	11046: '/art/2874-0kzcb8hn.webp',
 	11047: '/art/79bd-szc13qxf.webp',
 	11048: '/art/25ec-sh4r71a9.webp',
-	11049: '/art/e949-r3yc9gw8.webp',
+	11049: '/art/treant.webp', // Guardian of the Woods — was goddess art, now tree guardian
 	11050: '/art/7533-538178ab.webp',
 	11051: '/art/e0c8-pwdgii2c.webp',
 	11052: '/art/255a-04d36bb7.webp',
 	11053: '/art/ccfb-379d417f.webp',
 	11054: '/art/71b7-198c1324.webp',
-	11055: '/art/652d-3fruptt2.webp',
+	11055: '/art/523f-0ovd1djs.webp', // Beast Tracker — was goddess art, now eagle
 	11056: '/art/621f-x6pjrh99.webp',
 	11057: '/art/53e9-accff392.webp',
 	11058: '/art/4b18-04d61506.webp',
@@ -1981,11 +1985,11 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	20620: '/art/b0bc-910eda75.webp',
 	20621: '/art/e15c-99e61d9f.webp',
 	20702: '/art/75b9-8165babe.webp',
-	20703: '/art/3c0d-k7hegp81.webp',
+	20703: '/art/72ed-pyfzvxwm.webp', // Web-Mother of Arachne — was goddess art, now spider
 	20708: '/art/fb18-qx4m1ksv.webp',
 	20709: '/art/292a-d14b1e8b.webp',
 	20710: '/art/347d-295fa15f.webp',
-	20801: '/art/41ce-m0jd0ymi.webp',
+	20801: '/art/f973-5zs03o10.webp', // Loom of Chronos (Dragon) — was sorceress art, now sea dragon
 	20802: '/art/2bbb-oxl7d7ni.webp',
 	20804: '/art/65de-h9kigxwq.webp',
 	20806: '/art/b5a1-4a365d21.webp',
@@ -2199,7 +2203,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	30047: '/art/4c35-676ab8a0.webp',
 	30048: '/art/0f49-1d5021ac.webp',
 	30049: '/art/382b-b651c590.webp',
-	30050: '/art/3a95-a09cvqxa.webp',
+	30050: '/art/6c5f-enclx79l.webp', // Spine Beast of Hel — was shieldmaiden art, now spiny hellbeast
 	30051: '/art/585f-8358852e.webp',
 	30052: '/art/8046-ecae6a4a.webp',
 	30053: '/art/d329-4ff2fa25.webp',
@@ -2211,7 +2215,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	30059: '/art/45eb-090f1fdb.webp',
 	30060: '/art/5bc9-617b9b6b.webp',
 	30061: '/art/draugr flesh.webp',
-	30062: '/art/7b6c-r5dyl06h.webp',
+	30062: '/art/2477-jzfm669g.webp', // Alpha Wolf of Fenrir — was winged demon art, now Fenrir wolf
 	30063: '/art/292a-d14b1e8b.webp',
 	30064: '/art/f31c-128c125b.webp',
 	30065: '/art/293c-du2ktesl.webp',
@@ -2862,7 +2866,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	40004: '/art/1ca8-wgo85bl3.webp',
 	40005: '/art/46c1-e6b682bf.webp',
 	40006: '/art/4b38-e1ff907c.webp',
-	40007: '/art/0433-1465k5g4.webp',
+	40007: '/art/cb76-puxvnjh7.webp', // Beast King of Freya — was goddess art, now panther (Freya's cats)
 	40008: '/art/b3c0-abb9990a.webp',
 	40009: '/art/cd77-b63c2d2d.webp',
 	40010: '/art/d1d5-ed57b8d5.webp',

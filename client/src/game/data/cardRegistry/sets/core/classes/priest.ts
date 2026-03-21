@@ -453,7 +453,7 @@ export const priestCards: CardData[] = [
     attack: 6,
     health: 6,
     type: "minion",
-    rarity: "epic",
+    rarity: "rare",
     description: "Battlecry: Your opponent takes two turns. Then you take two turns.",
     flavorText: "The primordial god of time bends reality at will.",
     keywords: ["battlecry"],

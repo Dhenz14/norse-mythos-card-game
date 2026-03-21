@@ -171,7 +171,7 @@ export const modernLegendaryCards: CardData[] = [
       health: 6,
 
       type: "minion",
-      rarity: 'epic',
+      rarity: 'rare',
 
       description: "Battlecry: Your opponent takes two turns. Then you take two turns.",
     flavorText: "He understands that time is money, but hasn't figured out the exchange rate.",
@@ -330,7 +330,7 @@ export const modernLegendaryCards: CardData[] = [
       health: 7,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Deathrattle: Add 3 copies of Arcane Missiles to your hand.",
       flavorText: "He was the Archmage of the Rune Council... but he's very humble. And he loves it when you call him 'Big Red'.",

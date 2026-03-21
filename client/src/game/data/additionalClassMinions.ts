@@ -188,7 +188,7 @@ export const additionalClassMinions: CardData[] = [
       health: 5,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Battlecry: Gain 5 Armor. If you already have Armor, draw a card.",
       keywords: ["battlecry"],

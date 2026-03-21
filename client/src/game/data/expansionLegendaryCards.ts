@@ -15,7 +15,7 @@ export const expansionLegendaryCards: CardData[] = [{
       attack: 8,
       health: 8,
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
       description: "Summons Frozen Champions on deathrattle.",
       keywords: ["deathrattle"],
       heroClass: "neutral",
@@ -447,7 +447,7 @@ export const expansionLegendaryCards: CardData[] = [{
       health: 3,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Battlecry: Destroy a Beast.",
     flavorText: "Orion, the great hunter, boasted he could slay every creature on earth. Gaia sent the scorpion to humble him. Both were placed among the stars. (Apollodorus 1.4.3)",
@@ -638,7 +638,7 @@ export const expansionLegendaryCards: CardData[] = [{
       health: 5,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Battlecry: Add 2 Bananas to your hand.",
     flavorText: "Hanuman leapt across the ocean to Lanka in a single bound, carrying a mountain of healing herbs. Devotion grants strength the gods themselves envy. (Ramayana, Sundara Kanda)",
@@ -810,7 +810,7 @@ export const expansionLegendaryCards: CardData[] = [{
       health: 6,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Battlecry: Give a random minion in your hand +5/+5.",
     flavorText: "In Svartalfheim's deepest markets, the crime-lords trade in secrets heavier than gold. A name whispered here can topple a king in Asgard.",

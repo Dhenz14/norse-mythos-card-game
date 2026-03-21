@@ -328,7 +328,7 @@ export const   mechanicCards: CardData[] = [{
       health: 5,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Deathrattle: Summon a 4/5 Primordial Calf.",
       keywords: ["deathrattle"],
@@ -461,7 +461,7 @@ export const   mechanicCards: CardData[] = [{
       health: 1,
 
       type: "minion",
-      rarity: "epic",
+      rarity: "rare",
 
       description: "Deathrattle: Summon a 5/5 Faceless Destroyer.",
       keywords: ["deathrattle"],

@@ -618,7 +618,7 @@ export const paladinCards: CardData[] = [
     attack: 4,
     health: 4,
     type: "minion",
-    rarity: "epic",
+    rarity: "rare",
     description: "Battlecry: Restore 4 Health to your hero. Draw a card.",
     flavorText: "Sworn to Baldur's eternal radiance, his presence mends wounds and reveals forgotten truths.",
     keywords: ["battlecry"],

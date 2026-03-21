@@ -162,7 +162,7 @@ export const additionalLegendaryCards: CardData[] = [
     attack: 4,
     health: 5,
     type: "minion",
-    rarity: "epic",
+    rarity: "rare",
     description: "Battlecry: Destroy an enemy minion with Taunt.",
     keywords: [
       "battlecry"

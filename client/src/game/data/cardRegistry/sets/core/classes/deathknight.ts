@@ -454,7 +454,7 @@ export const deathknightCards: CardData[] = [
     description: "Battlecry: Freeze all enemy minions.",
     flavorText: "Nidhogg's lesser kin, reborn in ice atop the peaks of Jotunheim.",
     type: "minion",
-    rarity: 'epic',
+    rarity: 'rare',
     class: "DeathKnight",
     race: "Dragon",
     keywords: ["battlecry"],

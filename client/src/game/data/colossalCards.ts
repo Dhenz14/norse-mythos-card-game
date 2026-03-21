@@ -165,7 +165,7 @@ export const colossalPartCards: CardData[] = [
       health: 5,
       description: "Part of Colossus of the Moon. Taunt. Divine Shield. Can't attack.",
       
-      rarity: 'epic',
+      rarity: 'rare',
       type: "minion",
       
       keywords: ['taunt', 'divine_shield'],
