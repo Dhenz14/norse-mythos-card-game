@@ -32,6 +32,7 @@ interface HandProps {
   evolveReadyIds?: Set<string>;
   battlefieldCount?: number;
   activeMinionCount?: number;
+  playerBattlefield?: any[];
 }
 
 const NOOP_REGISTER = () => {};
@@ -49,7 +50,8 @@ export const Hand: React.FC<HandProps> = React.memo(({
   battlefieldRef,
   evolveReadyIds,
   battlefieldCount = 0,
-  activeMinionCount = 0
+  activeMinionCount = 0,
+  playerBattlefield
 }) => {
   const [hoveredCard, setHoveredCard] = useState<CardData | null>(null);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -141,12 +143,32 @@ export const Hand: React.FC<HandProps> = React.memo(({
             );
             const trioPactBoardOk = trioPact ? true : !boardFull;
 
+            const petStage = (card.card as any)?.petStage;
+            const isEvolvePet = petStage === 'adept' || petStage === 'master';
+            let meetsPetEvolution = true;
+            if (isEvolvePet && playerBattlefield) {
+              const evolvesFromId = (card.card as any)?.evolvesFrom;
+              const petFamily = (card.card as any)?.petFamily;
+              if (petStage === 'master' && petFamily) {
+                meetsPetEvolution = playerBattlefield.some(
+                  (m: any) => m.card?.petFamily === petFamily && m.card?.petStage === 'adept' && m.petEvolutionMet
+                );
+              } else if (evolvesFromId) {
+                meetsPetEvolution = playerBattlefield.some(
+                  (m: any) => m.card?.id === evolvesFromId && m.petEvolutionMet
+                );
+              } else {
+                meetsPetEvolution = false;
+              }
+            }
+
             const canPlay = isPlayerTurn &&
                            !isInteractionDisabled &&
                            trioPactBoardOk &&
                            manaCost <= currentMana &&
                            meetsSacrifice &&
-                           meetsTrioPact;
+                           meetsTrioPact &&
+                           meetsPetEvolution;
             
             // Use the professional hand arc transform system
             const transform = handArcTransforms[index];

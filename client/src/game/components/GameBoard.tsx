@@ -2368,6 +2368,7 @@ export const GameBoard: React.FC<{}> = () => {
                   evolveReadyIds={evolveReadyIds}
                   battlefieldCount={player.battlefield?.length || 0}
                   activeMinionCount={player.battlefield?.filter((m: any) => !m.isSummoningSick && m.canAttack !== false).length || 0}
+                  playerBattlefield={player.battlefield}
                 />
               </div>
             )}
