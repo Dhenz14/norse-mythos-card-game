@@ -3674,6 +3674,42 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	96014: '/art/48bc-a4ab5163.webp',
 	96015: '/art/1913-79012baf.webp',
 	96016: '/art/31df-83834d65.webp',
+	// ── Inspire Expansion — conflict-free only (4 of 6 have hero conflicts) ──
+	// 31414 Valkyrie Herald — NO ART (all humanoid art reserved for heroes)
+	// 31415 Odin's Chronicler — NO ART
+	31416: '/art/82ae-8fd7158e.webp',   // Runic Amplifier — runic diamond energy
+	// 31417 Einherjar Standard-Bearer — NO ART
+	31418: '/art/8198-24f0cced.webp',   // Seidr Resonator — fire/lightning rune portal
+	// 31419 Allfather's Chosen — NO ART
+	// ── Wager Cards — conflict-free only (13 of 16 have hero conflicts) ──
+	// 31924-31926 — NO ART (hero-reserved)
+	31927: '/art/5168-f0edf490.webp',   // Pot Raiser — horned beast-man giant
+	// 31928 Bluff Master — NO ART (hero-reserved)
+	31929: '/art/norse warrior woman.webp', // Fate Reader — ice magic woman
+	// 31930-31931 — NO ART (hero-reserved)
+	31932: '/art/norse war male 3.webp', // Einherjar High-Roller — blonde fire warrior
+	// 31933-31934 — NO ART (hero-reserved)
+	31935: '/art/male archer.webp',      // Fenrir's Gambit — Norse archer with wolf
+	// 31936 — NO ART (hero-reserved)
+	31937: '/art/norse war male.webp',   // Ragnarok's Wager — red-haired axe warrior
+	// 31938-31939 — NO ART (hero-reserved)
+	// ── Submerge Expansion — reassigned from truly unused pool ──
+	40104: '/art/dragon11.webp',         // Diving Serpent — armored frost dragon
+	40105: '/art/fe97-717e1b38.webp',   // Deep Lurker — glowing rune beast in ruins
+	40106: '/art/f41b-6f737e75.webp',   // Abyssal Guardian — armored beast at gate
+	40107: '/art/8edf-5637ed02.webp',   // Ginnungagap Diver — winged griffin creature
+	40108: '/art/83b5-7c499c3c.webp',   // Tidal Ambusher — sea dragon on coast
+	40109: '/art/649b-b7101782.webp',   // Emerge from Depths — runic spiral emergence
+	// ── Coil Expansion — all conflict-free ──
+	40113: '/art/jormungandr-dream-serpent.webp', // Jormungandr's Grip — giant sea serpent
+	40117: '/art/jut.webp',              // Serpent Pit — serpent vs warrior in storm
+	40118: '/art/eb59-e8c1abc1.webp',   // Freedom Strike — rock serpent breaking free
+	// ── Hero weapon (promoted from VERCEL_CARD_ART) ──
+	90020: '/art/e808-9qy2tzqo.webp',   // Baldur the Radiant
+	// ── Orphan Super Minions — conflict-free only ──
+	// 95058 Primordial Shadow of Night — NO ART (hero-persephone reserved)
+	// 95083 Empusa, Queen of Crossroads — NO ART (hero-hel reserved)
+	95108: '/art/808c-ac01154a.webp',   // Hel's Warden — armored demon with rune magic
 };
 
 
