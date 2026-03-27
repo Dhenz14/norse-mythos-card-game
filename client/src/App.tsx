@@ -30,6 +30,7 @@ const MatchHistoryPage = lazy(() => import('./game/components/replay/MatchHistor
 const SettingsPage = lazy(() => import('./game/components/settings/SettingsPage'));
 const TreasuryPage = lazy(() => import('./game/components/treasury/TreasuryPage'));
 const MarketplacePage = lazy(() => import('./game/components/marketplace/MarketplacePage'));
+const ExplorerPage = lazy(() => import('./game/components/explorer/ExplorerPage'));
 const AdminPanel = lazy(() => import('./game/components/admin/AdminPanel'));
 const StarterPackCeremony = lazy(() => import('./game/components/StarterPackCeremony'));
 const DuatClaimPopup = lazy(() => import('./game/components/DuatClaimPopup'));
@@ -199,7 +200,7 @@ function HomePage() {
           </div>
 
           {/* ── Utility (small buttons) ── */}
-          <div className="grid grid-cols-3 gap-2 w-full">
+          <div className="grid grid-cols-4 gap-2 w-full">
             <Link to={routes.history}>
               <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
                 History
@@ -213,6 +214,11 @@ function HomePage() {
             <Link to={routes.treasury}>
               <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
                 Treasury
+              </Button>
+            </Link>
+            <Link to={routes.explorer}>
+              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
+                Explorer
               </Button>
             </Link>
           </div>
@@ -321,6 +327,7 @@ function App() {
               <Route path={routes.trading} element={<OnlineOnly label="Trading"><TradingPage /></OnlineOnly>} />
               <Route path={routes.marketplace} element={<OnlineOnly label="Marketplace"><MarketplacePage /></OnlineOnly>} />
               <Route path={routes.treasury} element={<OnlineOnly label="Treasury"><TreasuryPage /></OnlineOnly>} />
+              <Route path={routes.explorer} element={<ExplorerPage />} />
               <Route path={routes.admin} element={<AdminPanel />} />
               <Route path={routes.tournaments} element={<OnlineOnly label="Tournaments"><TournamentListPage /></OnlineOnly>} />
               <Route path={routes.spectate} element={<SpectatorView />} />

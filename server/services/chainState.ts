@@ -138,6 +138,31 @@ const rewardClaims = new Set<string>();
 const slashedAccounts = new Set<string>();
 const queueEntries = new Map<string, { timestamp: number }>();
 
+// Marketplace state (v1.2)
+export interface ListingRecord {
+	listingId: string;
+	nftUid: string;
+	nftType: 'card' | 'pack';
+	seller: string;
+	price: number;
+	currency: 'HIVE' | 'HBD';
+	listedBlock: number;
+	active: boolean;
+}
+
+export interface OfferRecord {
+	offerId: string;
+	nftUid: string;
+	buyer: string;
+	price: number;
+	currency: 'HIVE' | 'HBD';
+	offeredBlock: number;
+	status: 'pending' | 'accepted' | 'rejected' | 'cancelled';
+}
+
+const marketListings = new Map<string, ListingRecord>();
+const marketOffers = new Map<string, OfferRecord>();
+
 const MAX_MATCHES = 10000;
 const STATE_FILE = path.join(process.cwd(), 'data', 'chain-state.json');
 const SAVE_INTERVAL_MS = 30_000;
@@ -491,3 +516,100 @@ export function addSlashed(account: string): void { slashedAccounts.add(account)
 export function getQueueEntry(account: string): { timestamp: number } | undefined { return queueEntries.get(account); }
 export function setQueueEntry(account: string, data: { timestamp: number }): void { queueEntries.set(account, data); markDirty(); }
 export function deleteQueueEntryFn(account: string): void { queueEntries.delete(account); markDirty(); }
+
+// ---------------------------------------------------------------------------
+// Marketplace (v1.2)
+// ---------------------------------------------------------------------------
+
+export function getMarketListing(listingId: string): ListingRecord | undefined { return marketListings.get(listingId); }
+export function putMarketListing(listing: ListingRecord): void { marketListings.set(listing.listingId, listing); markDirty(); }
+export function deleteMarketListing(listingId: string): void { marketListings.delete(listingId); markDirty(); }
+
+export function getActiveListings(
+	sort: 'price_asc' | 'price_desc' | 'recent' = 'recent',
+	currency?: 'HIVE' | 'HBD',
+	limit = 50,
+	offset = 0,
+): { listings: ListingRecord[]; total: number } {
+	let active = [...marketListings.values()].filter(l => l.active);
+	if (currency) active = active.filter(l => l.currency === currency);
+	if (sort === 'price_asc') active.sort((a, b) => a.price - b.price);
+	else if (sort === 'price_desc') active.sort((a, b) => b.price - a.price);
+	else active.sort((a, b) => b.listedBlock - a.listedBlock);
+	return { listings: active.slice(offset, offset + limit), total: active.length };
+}
+
+export function getListingsByNft(nftUid: string): ListingRecord[] {
+	return [...marketListings.values()].filter(l => l.nftUid === nftUid && l.active);
+}
+
+export function getMarketOffer(offerId: string): OfferRecord | undefined { return marketOffers.get(offerId); }
+export function putMarketOffer(offer: OfferRecord): void { marketOffers.set(offer.offerId, offer); markDirty(); }
+export function deleteMarketOffer(offerId: string): void { marketOffers.delete(offerId); markDirty(); }
+
+export function getOffersByNft(nftUid: string): OfferRecord[] {
+	return [...marketOffers.values()].filter(o => o.nftUid === nftUid && o.status === 'pending');
+}
+
+export function getOffersByBuyer(buyer: string): OfferRecord[] {
+	return [...marketOffers.values()].filter(o => o.buyer === buyer);
+}
+
+export function getListingsBySeller(seller: string): ListingRecord[] {
+	return [...marketListings.values()].filter(l => l.seller === seller && l.active);
+}
+
+// ---------------------------------------------------------------------------
+// Explorer-specific aggregated queries
+// ---------------------------------------------------------------------------
+
+export function getExplorerStats(): {
+	totalPlayers: number;
+	totalNfts: number;
+	totalMatches: number;
+	totalListings: number;
+	totalOffers: number;
+	uniqueOwners: number;
+	lastBlock: number;
+} {
+	const owners = new Set<string>();
+	for (const card of cards.values()) owners.add(card.owner);
+	return {
+		totalPlayers: players.size,
+		totalNfts: cards.size,
+		totalMatches: matches.length,
+		totalListings: [...marketListings.values()].filter(l => l.active).length,
+		totalOffers: [...marketOffers.values()].filter(o => o.status === 'pending').length,
+		uniqueOwners: owners.size,
+		lastBlock: lastIrreversibleBlockProcessed,
+	};
+}
+
+export function getNftsByRarity(rarity: string, limit: number, offset: number): { nfts: CardRecord[]; total: number } {
+	const filtered = rarity
+		? [...cards.values()].filter(c => c.rarity === rarity)
+		: [...cards.values()];
+	return { nfts: filtered.slice(offset, offset + limit), total: filtered.length };
+}
+
+export function getNftByUid(uid: string): CardRecord | undefined {
+	return cards.get(uid);
+}
+
+export function getUserNftCounts(username: string): { total: number; byRarity: Record<string, number> } {
+	const userCards = getCardsByOwner(username);
+	const byRarity: Record<string, number> = {};
+	for (const c of userCards) {
+		byRarity[c.rarity] = (byRarity[c.rarity] ?? 0) + 1;
+	}
+	return { total: userCards.length, byRarity };
+}
+
+export function getAllSupplyCounters(): SupplyCounterRecord[] {
+	return [...supplyCounters.values()];
+}
+
+export function getAllTokenBalances(limit: number, offset: number): { balances: TokenBalanceRecord[]; total: number } {
+	const all = [...tokenBalances.values()].sort((a, b) => b.RUNE - a.RUNE);
+	return { balances: all.slice(offset, offset + limit), total: all.length };
+}

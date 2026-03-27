@@ -54,6 +54,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const treasuryRoutes = (await import("./routes/treasuryRoutes")).default;
   app.use('/api/treasury', treasuryRoutes);
 
+  // NFT Explorer public API (NFTLox-compatible structure)
+  const explorerRoutes = (await import("./routes/explorerRoutes")).default;
+  app.use('/api/explorer', explorerRoutes);
+
   // Start the server-side chain indexer (polls Hive RPC for ragnarok-cards ops)
   if (process.env.ENABLE_CHAIN_INDEXER !== 'false') {
     const { startIndexer } = await import("./services/chainIndexer");
