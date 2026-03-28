@@ -130,6 +130,7 @@
 .bf-card-wrapper .simple-card {
   width: 100% !important;
   height: 100% !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 /* Hide SimpleCard's built-in stat gems on battlefield — we use bf-card-stats instead */
@@ -559,22 +560,37 @@
     inset 0 0 16px 4px rgba(239, 68, 68, 0.2);
 }
 
-/* Currently attacking — gold glow only, GSAP handles the lunge animation */
+/* Selected attacker — persistent pulsing glow + lift so player KNOWS it's selected */
 .bf-card-wrapper.attacking {
-  box-shadow: 0 0 20px 5px rgba(251, 191, 36, 0.8);
+  transform: translateY(-14px) scale(1.08);
   z-index: var(--z-modal, 50);
-  animation: attack-lunge 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow:
+    0 0 20px 6px rgba(251, 191, 36, 0.85),
+    0 0 40px 12px rgba(251, 191, 36, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.6);
+  animation: attacker-selected-pulse 1.2s ease-in-out infinite;
+  outline: 2px solid rgba(251, 191, 36, 0.9);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@keyframes attacker-selected-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px 6px rgba(251, 191, 36, 0.85),
+      0 0 40px 12px rgba(251, 191, 36, 0.4),
+      0 8px 24px rgba(0, 0, 0, 0.6);
+  }
+  50% {
+    box-shadow:
+      0 0 28px 10px rgba(251, 191, 36, 1),
+      0 0 55px 18px rgba(251, 191, 36, 0.55),
+      0 8px 24px rgba(0, 0, 0, 0.6);
+  }
 }
 
 .player-row .bf-card-wrapper.attacking { --lunge-y: -40px; --lunge-x: 0; }
 .opponent-row .bf-card-wrapper.attacking { --lunge-y: 40px; --lunge-x: 0; }
-
-@keyframes attack-lunge {
-	0% { transform: translateY(0) scale(1); }
-	30% { transform: translateY(var(--lunge-y, -40px)) translateX(var(--lunge-x, 0)) scale(1.15); }
-	50% { transform: translateY(var(--lunge-y, -40px)) translateX(var(--lunge-x, 0)) scale(1.1); }
-	100% { transform: translateY(0) scale(1); }
-}
 
 /* Super Minion Hero Bonus - Golden legendary glow */
 .bf-card-wrapper.super-minion-bonus {
