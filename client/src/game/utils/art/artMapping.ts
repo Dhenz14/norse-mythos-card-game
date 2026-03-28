@@ -3701,6 +3701,25 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	31937: '/art/be13-9e1fa63d.webp',   // Ragnarok's Wager — golden card fan, stone altar
 	31938: '/art/poseidon-elder.webp',   // Odin's All-Seeing Stake — frost elder with staff
 	31939: '/art/surtr-final-bet.webp', // Surtr's Final Bet — Surtr fire giant with flaming sword
+	// ── New Mechanics Expansion (Blood Echo, Ragnarok Threshold, Fateweave, Yggdrasil's Gift, Valhalla's Call, Active Wager) ──
+	31940: '/art/demon_lord_helheim.webp', // Bloodhowl Berserker — dark warrior from Helheim
+	31941: '/art/f5d6-01ff0c12.webp',   // Crimson Valkyrie — divine shielded warrior
+	31942: '/art/ginnungagap-void.webp', // Sanguine Pact — primordial void ritual
+	31943: '/art/3652-pb7dlata.webp',    // Twilight Sentinel — dusk guardian
+	31944: '/art/3a09-gm3gx5tq.webp',   // Ragnarok Herald — apocalyptic herald
+	31945: '/art/76af-1b01258a.webp',    // Surtr's Ember — fire giant ember
+	31946: '/art/dfe6-c8f1baeb.webp',    // Norn's Loom — fate weaver
+	31947: '/art/3776-b3f02430.webp',    // Thread of Skuld — mystical thread
+	31948: '/art/7855-a8bdfa04.webp',    // Wyrd Unraveling — chaotic spell
+	31949: '/art/golden-warrior-coast.webp', // Realm-Walker Scout — golden explorer
+	31950: '/art/cf43-3ab9fce1.webp',    // Bifrost Wanderer — rainbow bridge wanderer
+	31951: '/art/yggdrasil-new.webp',    // Yggdrasil's Blessing — world tree blessing
+	31952: '/art/hercules.webp',         // Oathsworn of Valhalla — legendary warrior
+	31953: '/art/3f60-7nyftfcn.webp',    // Eternal Shieldbearer — eternal shield warrior
+	31954: '/art/652d-3fruptt2.webp',    // Horn of Valhalla — golden horn spell
+	31955: '/art/b1f2-3e7dd08d.webp',    // Burning Stakes — fiery gambler
+	31956: '/art/7458-t0n1oqgs.webp',    // Mimir's Gambit — wisdom strategist
+	31957: '/art/c34e-1db07574.webp',    // Nidhogg's Ante — dark serpent gambler
 	// ── Submerge Expansion — reassigned from truly unused pool ──
 	40104: '/art/dragon11.webp',         // Diving Serpent — armored frost dragon
 	40105: '/art/fe97-717e1b38.webp',   // Deep Lurker — glowing rune beast in ruins
