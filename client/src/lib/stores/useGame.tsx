@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { HeroClass, DeckInfo } from "../../game/types";
 import { getDefaultHeroPower } from "../../game/data/heroes";
+import { debug } from "../../game/config/debugConfig";
 
 export type GamePhase = "setup" | "ready" | "playing" | "ended";
 export type SetupStage = "hero_selection" | "deck_building";
@@ -58,7 +59,7 @@ const useGame = create<GameState>()(
       
       // Validate we have everything needed to start
       if (!selectedHero) {
-        console.error("Cannot start game: No hero selected");
+        debug.error("Cannot start game: No hero selected");
         return;
       }
       
@@ -105,7 +106,7 @@ const useGame = create<GameState>()(
       try {
         localStorage.setItem('ragnarok_decks', JSON.stringify(decks));
       } catch (e) {
-        console.error("Failed to save decks to localStorage", e);
+        debug.error("Failed to save decks to localStorage", e);
       }
     },
     
@@ -134,7 +135,7 @@ const useGame = create<GameState>()(
       try {
         localStorage.setItem('ragnarok_decks', JSON.stringify(updatedDecks));
       } catch (e) {
-        console.error("Failed to save decks to localStorage", e);
+        debug.error("Failed to save decks to localStorage", e);
       }
     }
   }))
@@ -154,30 +155,30 @@ try {
         // Validate each deck has the required properties
         decks = parsedDecks.filter(deck => {
           if (!deck || typeof deck !== 'object') {
-            console.warn('Invalid deck found, removing:', deck);
+            debug.warn('Invalid deck found, removing:', deck);
             return false;
           }
           
           // Validate required fields
           if (!deck.id || !deck.name || !deck.class || !deck.cards || typeof deck.cards !== 'object') {
-            console.warn('Deck missing required fields, removing:', deck);
+            debug.warn('Deck missing required fields, removing:', deck);
             return false;
           }
           
           return true;
         });
       } else {
-        console.warn('Saved decks is not an array, resetting');
+        debug.warn('Saved decks is not an array, resetting');
       }
     } catch (parseError) {
-      console.error("Failed to parse saved decks:", parseError);
+      debug.error("Failed to parse saved decks:", parseError);
     }
     
     // Save the validated decks
     useGame.getState().saveDecks(decks);
   }
 } catch (e) {
-  console.error("Failed to load decks from localStorage", e);
+  debug.error("Failed to load decks from localStorage", e);
   // Clear potentially corrupted data
   localStorage.removeItem('ragnarok_decks');
 }

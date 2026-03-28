@@ -1,5 +1,5 @@
 import { GameState, CardInstance, Player, HeroClass, CardData } from '../types';
-import { debug } from '../config/debugConfig';
+import { debug, isAISimulationMode } from '../config/debugConfig';
 import { createStartingDeck, createClassDeck, drawCards, findCardInstance } from './cards/cardUtils';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { getDefaultHeroPower, resetHeroPower, executeHeroPower } from './heroPowerUtils';
@@ -2777,11 +2777,7 @@ export function processAttack(
   let newState = structuredClone(state) as GameState;
   
   // Only allow attacks during player's turn, except for AI simulation
-  // FIX #2: Use original state for turn check, not the cloned newState
-  const isAISimulation = typeof window !== 'undefined' && 
-    (window.location.pathname.includes('ai') || window.location.href.includes('ai-game'));
-  
-  if (state.currentTurn !== 'player' && !isAISimulation) {
+  if (state.currentTurn !== 'player' && !isAISimulationMode()) {
     debug.error('[ATTACK ERROR] Cannot attack during opponent\'s turn');
     return state;
   }
@@ -3083,10 +3079,7 @@ export function findOptimalAttackTargets(
   attackerInstanceId: string
 ): { defenderId: string, type: 'minion' | 'hero' }[] {
   // Only allow attacks during player's turn, except for AI simulation
-  const isAISimulation = typeof window !== 'undefined' && 
-    (window.location.pathname.includes('ai') || window.location.href.includes('ai-game'));
-  
-  if (state.currentTurn !== 'player' && !isAISimulation) {
+  if (state.currentTurn !== 'player' && !isAISimulationMode()) {
     return [];
   }
   

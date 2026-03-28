@@ -3,6 +3,7 @@ import { useMatchmakingStore } from '../stores/matchmakingStore';
 import { usePeerStore } from '../stores/peerStore';
 import { getNFTBridge } from '../nft';
 import { useNFTUsername } from '../nft/hooks';
+import { debug } from '../config/debugConfig';
 import {
 	broadcastQueueJoin,
 	broadcastQueueLeave,
@@ -143,7 +144,7 @@ export function useMatchmaking() {
 			try {
 				await chainLeaveFnRef.current();
 			} catch (err) {
-				console.error('[useMatchmaking] Failed to leave on-chain queue:', err);
+				debug.error('[useMatchmaking] Failed to leave on-chain queue:', err);
 			}
 			chainLeaveFnRef.current = null;
 		}
@@ -166,7 +167,7 @@ export function useMatchmaking() {
 					body: JSON.stringify({ peerId: myPeerId }),
 				});
 			} catch (err) {
-				console.error('[useMatchmaking] Failed to leave queue:', err);
+				debug.error('[useMatchmaking] Failed to leave queue:', err);
 			}
 		}
 
