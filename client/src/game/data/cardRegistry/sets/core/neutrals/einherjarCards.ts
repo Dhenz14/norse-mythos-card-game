@@ -15,7 +15,7 @@ export const einherjarCards: CardData[] = [
 		name: 'Hadding the Twice-Born',
 		manaCost: 1,
 		attack: 1,
-		health: 1,
+		health: 2,
 		description: 'Einherjar',
 		flavorText: 'Raised by Odin himself after his father fell. Saxo Grammaticus records how Hadding died and returned — twice.',
 		type: 'minion',

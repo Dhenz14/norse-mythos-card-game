@@ -38,7 +38,7 @@ Norse Mythos Card Game is a multi-mythology digital collectible card game combin
 - **Blockchain**: Hive Layer 1 NFTs (custom_json ops, deterministic reader, Keychain auth)
 
 ### Game Features
-- 2,600+ cards (2,314 collectible NFTs + tokens/base cards) across 5 mythological factions
+- 2,700+ cards (2,332 collectible NFTs + tokens/base cards) across 5 mythological factions
 - 80+ playable heroes across 12 classes
 - Poker combat system with Texas Hold'em mechanics
 - Ragnarok Chess (7x5 strategic board)
@@ -115,7 +115,7 @@ client/src/
 │   │   ├── tradeStore.ts   # Trade offers + bridge transfers on accept
 │   │   └── replayStore.ts  # Match history + replay playback
 │   ├── data/               # Card definitions, heroes
-│   │   ├── allCards.ts     # Single source of truth (2,600+ cards)
+│   │   ├── allCards.ts     # Single source of truth (2,700+ cards)
 │   │   ├── cardRegistry/   # Card sets by ID ranges
 │   │   ├── dailyQuestPool.ts # 19 quest templates
 │   │   ├── keywordDefinitions.ts # All keyword names + descriptions
@@ -1706,6 +1706,34 @@ vercel --prod                 # Deploy to Vercel
 - replayEngine: now watches nftlox_testnet ops alongside ragnarok-cards
 - HiveSync: broadcastNFTLoxJson() + 5 NFTLox broadcast methods
 - NFTLox spec updated with 2026-03-27 protocol audit (tags removed, maxReplicas→maxSupply, 427 txs)
+
+### Completed (Card Balance Pass & New Mechanics)
+
+- **Tier 3 buffs**: 13 understatted cards buffed to competitive baseline
+  - Chain pairs (Ravens, Ask/Embla, Skoll/Hati): base stats buffed, added Battlecry payoffs (draw/buff if partner in hand)
+  - Hadding 1/1→1/2, Eir's Disciple 1/3→2/3, all 5 lifesteal minions buffed to vanilla stat line
+  - Gaze of Gorgon opponent statue 3/3→1/1, Ember of Lodur 2/6→3/6 + targets highest-attack minion
+  - Well of Vitality 0/5→1/5 + Deathrattle: heal hero 3
+- **0-cost spell purge**: 7 free spells bumped to 1 mana (Healing Ring, Blur, Shadow of Loki, Odinn's Foresight, Hel's Path, Totemic Surge, Summon Yggdrasil Golem)
+  - Kept at 0: Gaia's Gift/Sap (druid ramp identity), Combo-gated (Fade Shadow, Loki's Sleight), health-cost (Call of Helheim), Titan-only (Hel's Covenant)
+- **Submerge diversity**: 3 cards changed from generic buff/damage to unique surface effects (Taunt wall, Draw 2, Rush+removal)
+- **5 new mechanics** (18 cards, IDs 31940-31957):
+  - Blood Echo (31940-31942): Die → 0-cost blood-price copy returns to hand
+  - Ragnarok Threshold (31943-31945): "If hero ≤30 HP, gain X" comeback mechanic
+  - Fateweave (31946-31948): Active Prophecy = spell discount / attack boost / AoE upgrade
+  - Yggdrasil's Gift (31949-31951): +1/+1 per unique realm visited (realm shift payoff)
+  - Valhalla's Call (31952-31954): Einherjar die 3x → summon 5/5 Valkyrie cinematic payoff
+  - Active Wager (31955-31957): Face damage per betting round, fold-to-heal, showdown-win draw+damage
+- **Pet family differentiation** (8 families, 7 files, ~30 cards):
+  - Bifrost: Divine Shield → **Speed/Transport** (Rush, Windfury, grant Rush)
+  - Ljosalfar: Unchanged (Divine Shield/blessing, now unique)
+  - Ents: Healing → **Immovable Walls** (Taunt + Deathrattle: summon Treants)
+  - Rootkin: Healing → **Life Drain** (Lifesteal, steal Health/Attack, siphon)
+  - Trolls: Lifesteal → **Regeneration/Armor** (self-heal, gain Armor, stone skin)
+  - Primordial Beasts: Generic healing → **Mythological Origin** (Audhumla buffs, Fafnir hoards cards, Heidrun generates mana)
+  - Draugr: Stealth+damage → **Undying** (Reborn, Deathrattle: copy to hand, resummon)
+  - Hellhounds: Stealth+damage → **Pure Burn** (Rush + face damage battlecries/deathrattles)
+- TypeScript: 0 errors
 
 ### Next (Genesis Launch)
 

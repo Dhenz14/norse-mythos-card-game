@@ -13,7 +13,7 @@ export const yggdrasilGolemCards: CardData[] = [
   {
     id: 85011,
     name: "Summon Yggdrasil Golem",
-    manaCost: 0,
+    manaCost: 1,
     description: "Summon a Yggdrasil Golem.",
     flavorText: "From the roots of the World Tree, a guardian emerges.",
     type: "spell",

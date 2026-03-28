@@ -37,7 +37,7 @@ export const berserkerCards: CardData[] = [
   {
     id: 9103,
     name: "Blur",
-    manaCost: 0,
+    manaCost: 1,
     description: "Your hero can't take damage this turn.",
     flavorText: "The first rule of Berserker fight club is: you can't hit what you can't see.",
     type: "spell",

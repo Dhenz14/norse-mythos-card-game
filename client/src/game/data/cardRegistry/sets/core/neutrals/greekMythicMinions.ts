@@ -99,11 +99,11 @@ export const greekMythicMinions: CardData[] = [
 		rarity: 'epic',
 		class: 'Neutral',
 		race: 'Spirit',
-		description: 'Battlecry: Destroy an enemy minion. Deathrattle: Add a 3/3 Stone Statue to your opponent\'s board.',
+		description: 'Battlecry: Destroy an enemy minion. Deathrattle: Add a 1/1 Stone Statue to your opponent\'s board.',
 		keywords: ['battlecry', 'deathrattle'],
 		collectible: true,
 		battlecry: { type: 'destroy_target', targetType: 'enemy_minion' },
-		deathrattle: { type: 'summon_for_opponent', summonName: 'Stone Statue', summonAttack: 3, summonHealth: 3 },
+		deathrattle: { type: 'summon_for_opponent', summonName: 'Stone Statue', summonAttack: 1, summonHealth: 1 },
 		flavorText: 'Once mortal, cursed by Athena. Her gaze turns flesh to stone. Perseus took her head — Athena mounted it on her aegis forever. (Library 2.4.2)',
 	},
 	{

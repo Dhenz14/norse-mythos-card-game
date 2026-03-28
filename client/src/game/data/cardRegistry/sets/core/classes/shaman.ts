@@ -991,7 +991,7 @@ export const shamanCards: CardData[] = [
   {
     id: 38203,
     name: "Totemic Surge",
-    manaCost: 0,
+    manaCost: 1,
     type: "spell",
     rarity: "common",
     description: "Summon two 1/1 Spirit Totems.",

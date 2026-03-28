@@ -4,7 +4,7 @@ export const rogueCards: CardData[] = [
   {
     id: 12101,
     name: "Shadow of Loki",
-    manaCost: 0,
+    manaCost: 1,
     description: "Deal 2 damage to an undamaged minion.",
     flavorText: "Loki's shadow moves independently. It has its own agenda.",
     type: "spell",
@@ -22,7 +22,7 @@ export const rogueCards: CardData[] = [
   {
     id: 12102,
     name: "Óðinn's Foresight",
-    manaCost: 0,
+    manaCost: 1,
     description: "The next spell you cast this turn costs (3) less.",
     flavorText: "The Allfather plans nine moves ahead. This is move one.",
     type: "spell",
@@ -39,7 +39,7 @@ export const rogueCards: CardData[] = [
   {
     id: 12103,
     name: "Hel's Path",
-    manaCost: 0,
+    manaCost: 1,
     description: "Return a friendly minion to your hand. It costs (2) less.",
     flavorText: "One step into shadow, one step out. The distance between is irrelevant.",
     type: "spell",
