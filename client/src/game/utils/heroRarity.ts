@@ -48,7 +48,7 @@ const MYTHIC_PIECES = new Set([
 	'king-ginnungagap',
 ]);
 
-// ==================== EPIC — 750 supply ====================
+// ==================== EPIC — 500 supply ====================
 // Named deities with strong thematic significance.
 const EPIC_PIECES = new Set([
 	// Norse deities
@@ -65,6 +65,8 @@ const EPIC_PIECES = new Set([
 	'hero-sigyn',
 	'hero-magni',
 	'hero-sinmara',
+	'hero-frigg',
+	'hero-gullveig',
 	// Greek deities
 	'hero-apollo',
 	'hero-ares',
@@ -77,6 +79,11 @@ const EPIC_PIECES = new Set([
 	'hero-hephaestus',
 	'hero-dionysus',
 	'hero-hyperion',
+	'hero-hecate',
+	'hero-helios',
+	'hero-prometheus',
+	'hero-rhea',
+	'hero-selene',
 	// Egyptian
 	'hero-ammit',
 	// Kings — major primordial figures
@@ -118,6 +125,22 @@ const RARE_PIECES = new Set([
 	'hero-maat',
 	'hero-serqet',
 	'hero-khepri',
+	// Norse saga figures / lesser known
+	'hero-groa',
+	'hero-bestla',
+	'hero-blainn',
+	'hero-logi',
+	'hero-gormr',
+	'hero-fjorgyn',
+	'hero-verdandi',
+	'hero-hermod',
+	'hero-vali',
+	'hero-nanna',
+	'hero-volva',
+	// Vikings
+	'hero-thorgrim',
+	'hero-valthrud',
+	'hero-thryma',
 	// Kings — supporting primordial figures
 	'king-borr',
 	'king-brimir',
@@ -153,7 +176,7 @@ export function getEditionInfo(heroId: string, _isKing: boolean): EditionInfo {
 		rarity,
 		maxSupply,
 		mintNumber: (hash % maxSupply) + 1,
-		editionLabel: rarity === 'common' ? 'STANDARD' : RARITY_COLORS[rarity].label,
+		editionLabel: RARITY_COLORS[rarity].label,
 		rarityLabel: RARITY_COLORS[rarity].label,
 		colors: RARITY_COLORS[rarity],
 	};
