@@ -115,9 +115,16 @@
 .card-with-drag.not-playable {
   cursor: default;
   filter: brightness(0.6) grayscale(0.3);
+  transition: filter 0.3s ease;
 }
 
 .card-with-drag.is-hovering {
   transform: translateY(-12px);
   z-index: 100;
+}
+
+.card-with-drag.playable:active {
+  transform: translateY(-6px) scale(0.96);
+  transition: transform 0.08s ease-out;
+  filter: brightness(1.2);
 }

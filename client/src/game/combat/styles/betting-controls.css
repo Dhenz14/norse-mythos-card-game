@@ -571,10 +571,16 @@
     0 6px 12px rgba(40,50,70,0.5);
 }
 
+.poker-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  transition: transform 0.06s ease-out;
+}
+
 .poker-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none !important;
+  transition: opacity 0.2s ease;
 }
 
 /* ========================================

@@ -45,7 +45,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: 'Impact', 'Arial Black', sans-serif;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #fff;
   text-shadow: 
@@ -86,8 +86,8 @@
 }
 
 .stat-badge .stat-label {
-  font-size: 0.6rem;
-  color: #94a3b8;
+  font-size: 0.7rem;
+  color: #b0bec5;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
