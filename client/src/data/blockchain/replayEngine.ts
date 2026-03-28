@@ -160,7 +160,7 @@ async function _doSync(username: string): Promise<void> {
 			// We only care about our app's custom_json ops
 			if (entry.op[0] !== 'custom_json') continue;
 			const opData = entry.op[1] as CustomJsonOpData;
-			if (!opData.id?.startsWith('rp_') && opData.id !== 'ragnarok-cards' && opData.id !== 'ragnarok_level_up') continue;
+			if (!opData.id?.startsWith('rp_') && opData.id !== 'ragnarok-cards' && opData.id !== 'ragnarok_level_up' && opData.id !== 'nftlox_testnet') continue;
 
 			const broadcaster =
 				opData.required_posting_auths?.[0] ??

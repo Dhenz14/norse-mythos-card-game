@@ -9,6 +9,12 @@ export const RAGNAROK_GENESIS_ACCOUNT = 'ragnarok-genesis';
 export const RAGNAROK_TREASURY_ACCOUNT = 'ragnarok-treasury';
 export const RAGNAROK_INDEX_ACCOUNT = 'ragnarok-index';
 
+// NFTLox integration — NFT birth layer for card minting/packs
+export const NFTLOX_PROTOCOL_ID = 'nftlox_testnet'; // switch to 'nftlox' for production
+export const NFTLOX_PROTOCOL_VERSION = '0.3.0';
+export const NFTLOX_COLLECTION_SYMBOL = 'RGNRK';
+export const NFTLOX_MAX_OPS_PER_TX = 5;
+
 // On-chain NFT metadata URLs (ERC-1155 standard for blockchain explorers/marketplaces).
 // NOT used for in-game art rendering — all runtime art loads via assetPath() from local files.
 // Players download all art; each player is their own CDN. No centralized servers.

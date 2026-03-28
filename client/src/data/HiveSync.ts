@@ -16,6 +16,7 @@ import {
 import {
   sanitizePayload, validatePayloadSize, buildTransferMemo,
 } from '../../../shared/protocol-core/broadcast-utils';
+import { NFTLOX_PROTOCOL_ID, NFTLOX_PROTOCOL_VERSION, NFTLOX_COLLECTION_SYMBOL } from './blockchain/hiveConfig';
 
 export interface HiveBroadcastResult {
   success: boolean;
@@ -297,6 +298,109 @@ export class HiveSync {
       action: 'market_reject',
       offer_id: offerId,
     });
+  }
+
+  // ══════════════════════════════════════════════
+  // NFTLox Operations — NFT birth layer
+  // ══════════════════════════════════════════════
+
+  async broadcastNFTLoxJson(
+    action: string,
+    data: Record<string, unknown>,
+    useActiveKey: boolean = false
+  ): Promise<HiveBroadcastResult> {
+    if (!this.username) return { success: false, error: 'No username set' };
+    if (!this.isKeychainAvailable()) return { success: false, error: 'Hive Keychain not available' };
+
+    const payload = {
+      protocol: NFTLOX_PROTOCOL_ID,
+      version: NFTLOX_PROTOCOL_VERSION,
+      action,
+      data: sanitizePayload(data),
+    };
+
+    const sizeCheck = validatePayloadSize(payload);
+    if (!sizeCheck.valid) {
+      return { success: false, error: `Payload too large: ${sizeCheck.bytes} bytes (max ${sizeCheck.maxBytes})` };
+    }
+
+    const jsonStr = JSON.stringify(payload);
+    const keychainPromise = new Promise<HiveBroadcastResult>((resolve) => {
+      window.hive_keychain!.requestCustomJson(
+        this.username!,
+        NFTLOX_PROTOCOL_ID,
+        useActiveKey ? 'Active' : 'Posting',
+        jsonStr,
+        `NFTLox: ${action.replace(/_/g, ' ')}`,
+        (response) => {
+          resolve({
+            success: response.success,
+            trxId: response.result?.id,
+            blockNum: response.result?.block_num,
+            error: response.error || response.message,
+          });
+        }
+      );
+    });
+
+    const timeout = new Promise<HiveBroadcastResult>((resolve) =>
+      setTimeout(() => resolve({ success: false, error: 'Keychain timeout (60s)' }), 60_000)
+    );
+    return Promise.race([keychainPromise, timeout]);
+  }
+
+  async nftloxCreateCollection(collectionName: string, totalPotential: number, schema: Record<string, unknown>): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('create_collection', {
+      name: collectionName,
+      symbol: NFTLOX_COLLECTION_SYMBOL,
+      creator: this.username,
+      totalPotential,
+      metadata: {
+        description: 'Norse Mythos Card Game — collectible cards across 5 mythological factions',
+        image: 'https://dhenz14.github.io/norse-mythos-card-game/icons/icon-512.webp',
+        externalUrl: 'https://dhenz14.github.io/norse-mythos-card-game',
+      },
+      rules: { transferable: true, burnable: true, replicable: false, royaltyPct: 0, royaltyRecipient: this.username },
+      schema,
+    });
+  }
+
+  async nftloxMintSeed(collectionId: string, seed: {
+    artId: string; name: string; description: string; imageUrl: string;
+    maxSupply: number; immutableData: Record<string, unknown>;
+  }): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('mint', {
+      collectionId,
+      edition: 1,
+      owner: this.username,
+      metadata: { name: seed.name, description: seed.description, imageUrl: seed.imageUrl },
+      maxSupply: seed.maxSupply,
+      immutableData: seed.immutableData,
+    });
+  }
+
+  async nftloxCreatePack(collectionId: string, pack: {
+    name: string; description: string; imageUrl: string;
+    dropTable: Array<{ seedId: string; weight: number }>;
+    itemsPerPack: number; maxSupply: number;
+  }): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('pack_create', {
+      collectionId,
+      name: pack.name,
+      description: pack.description,
+      imageUrl: pack.imageUrl,
+      dropTable: pack.dropTable,
+      itemsPerPack: pack.itemsPerPack,
+      maxSupply: pack.maxSupply,
+    });
+  }
+
+  async nftloxOpenPack(packId: string, quantity: number = 1): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('pack_open', { packId, quantity });
+  }
+
+  async nftloxBulkDistribute(collectionId: string, seedId: string, recipients: string[], quantity: number = 1): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('bulk_distribute', { collectionId, seedId, recipients, quantity });
   }
 
   /**
