@@ -195,7 +195,7 @@ shared/
 └── schema.ts               # Drizzle DB schema
 ```
 
-Card art lives in `client/public/art/` (2,700+ webp files). Art lookup uses 3-tier system: `CARD_ID_TO_ART` (2,459 ID-based entries) > `VERCEL_CARD_ART` (330 name matches) > `MINION_CARD_TO_ART` (85 creature maps). Effective coverage: 100% of cards — every card has art.
+Card art lives in `client/public/art/` (2,700+ webp files). Art lookup uses 3-tier system: `CARD_ID_TO_ART` (2,548 ID-based entries) > `VERCEL_CARD_ART` (330 name matches) > `MINION_CARD_TO_ART` (85 creature maps). Coverage: 2,115/2,134 collectible cards (99.1%). 19 cards need new humanoid art (Wager/Inspire expansion). 14 heroes need art (wrong mythology removed). Zero card/hero art conflicts.
 
 ## Key Subsystems
 
@@ -1616,6 +1616,37 @@ vercel --prod                 # Deploy to Vercel
 - Demoted 58 simple epic minions → rare (keyword-only bodies, basic battlecries, duplicate designs)
 - NFT rarity pyramid synced to TCG industry norms: common 43.2%, rare 32.2%, epic 17.4%, mythic 7.2%
 - Total NFT supply: ~2.99M across 2,314 collectible cards (166 mythic, 403 epic, 746 rare, 999 common)
+- TypeScript: 0 errors
+
+### Completed (Card Art Consolidation & Conflict Resolution)
+
+- Deep art audit: cross-referenced all 2,134 collectible cards against 3-tier art system (CARD_ID_TO_ART, VERCEL_CARD_ART, MINION_CARD_TO_ART)
+- Added 17 conflict-free art mappings from unused pool: 6 Submerge, 3 Coil, 2 Inspire, 5 Wager, 1 hero card
+- Removed 17 pre-existing card/hero art conflicts (HERO_ART_OVERRIDE + CHARACTER_ART_IDS chain)
+- Zero card/hero art conflicts remaining (verified by automated audit)
+- 19 cards still need new humanoid art (Wager/Inspire expansion + 2 orphan mythics)
+- 14 heroes still need art (wrong mythology/gender removed: 5 Norse, 4 Eastern, 3 Egyptian, 2 Greek)
+- All CARD_ID_TO_ART file references verified on disk (0 broken)
+- TypeScript: 0 errors, production build clean
+
+### Completed (Combat UX & UI Polish Pass)
+
+- Pet evolution gating in HandFan: Stage 2/3 pets now check prerequisites (was completely missing)
+- Locked evolution pets appear dark/dimmed in hand (`evolution-locked` CSS class)
+- Battlecry VFX now fires in poker combat (`emitBattlecryTriggered` was only in GameBoard, not poker)
+- Persistent turn indicator badge at top center (gold=your turn, red=enemy turn, always visible)
+- AI delay increased from 800-1500ms to 1800-2800ms (readable pace)
+- Mana crystals 14→20px, counter 22→32px with brighter text
+- HP bar: 22→28px height, 1.05rem text, 0.6s damage transition
+- End-turn button: 0.9rem text, 11px hint, :active press feedback
+- Hand strength: 15px label, 0.85rem compact name
+- Game-over: 110px hero portraits, 12px stat labels
+- Status banner: 18px font
+- Card press feedback: :active scale(0.96) on playable cards
+- Poker buttons: :active press state + smooth disabled transition
+- Tribe text: 75% opacity (was 55%), stronger text shadow
+- Stat labels: 0.7rem (was 0.6rem), brighter color
+- HUD matchup arrows: 14px (was 10px)
 - TypeScript: 0 errors
 
 ### Next (Genesis Launch)
