@@ -144,6 +144,23 @@
   }
 }
 
+/* Locked evolution — Stage 2/3 pets that can't evolve yet */
+.hand-fan-card.evolution-locked {
+  filter: brightness(0.45) saturate(0.3);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.hand-fan-card.evolution-locked::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
+  border-radius: inherit;
+  z-index: 15;
+  pointer-events: none;
+}
+
 /* Shake — unaffordable card click feedback */
 .hand-fan-card.shake {
   animation: handCardShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;

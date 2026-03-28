@@ -29,6 +29,7 @@ interface HandFanProps {
   battlefieldRef: React.RefObject<HTMLDivElement>;
   evolveReadyIds?: Set<string>;
   battlefieldCount?: number;
+  playerBattlefield?: CardInstance[];
 }
 
 const MAX_ROTATION = 4;
@@ -47,7 +48,8 @@ export const HandFan = React.memo<HandFanProps>(({
   registerCardPosition,
   battlefieldRef,
   evolveReadyIds,
-  battlefieldCount = 0
+  battlefieldCount = 0,
+  playerBattlefield
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [shakingCardId, setShakingCardId] = useState<string | null>(null);
@@ -195,7 +197,32 @@ export const HandFan = React.memo<HandFanProps>(({
         const canAffordBlood = !!bloodCost && heroHealth > bloodCost;
         const isMinion = card.card?.type === 'minion';
         const boardFull = isMinion && battlefieldCount >= MAX_BATTLEFIELD_SIZE;
-        const canPlay = isPlayerTurn && !isInteractionDisabled && !boardFull && (isBloodMode ? canAffordBlood : (canAffordMana || canAffordBlood));
+
+        // Pet evolution prerequisite check — Stage 2/3 pets require preconditions
+        const petStage = (card.card as any)?.petStage;
+        const isEvolvePet = petStage === 'adept' || petStage === 'master';
+        let meetsPetEvolution = true;
+        if (isEvolvePet) {
+          if (!playerBattlefield || playerBattlefield.length === 0) {
+            meetsPetEvolution = false;
+          } else {
+            const evolvesFromId = (card.card as any)?.evolvesFrom;
+            const petFamily = (card.card as any)?.petFamily;
+            if (petStage === 'master' && petFamily) {
+              meetsPetEvolution = playerBattlefield.some(
+                (m: any) => m.card?.petFamily === petFamily && m.card?.petStage === 'adept' && m.petEvolutionMet
+              );
+            } else if (evolvesFromId) {
+              meetsPetEvolution = playerBattlefield.some(
+                (m: any) => m.card?.id === evolvesFromId && m.petEvolutionMet
+              );
+            } else {
+              meetsPetEvolution = false;
+            }
+          }
+        }
+
+        const canPlay = isPlayerTurn && !isInteractionDisabled && !boardFull && meetsPetEvolution && (isBloodMode ? canAffordBlood : (canAffordMana || canAffordBlood));
         const isHovered = hoveredIndex === index;
         
         const isShaking = shakingCardId === card.instanceId;
@@ -204,7 +231,7 @@ export const HandFan = React.memo<HandFanProps>(({
         return (
           <div
             key={card.instanceId || card.card.id}
-            className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''} ${isBloodMode ? 'blood-mode' : ''} ${isEvolveReady ? 'evolve-ready' : ''}`}
+            className={`hand-fan-card ${canPlay ? 'playable' : ''} ${isHovered ? 'is-hovered' : ''} ${isShaking ? 'shake' : ''} ${isBloodMode ? 'blood-mode' : ''} ${isEvolveReady ? 'evolve-ready' : ''} ${isEvolvePet && !meetsPetEvolution ? 'evolution-locked' : ''}`}
             style={getCardStyle(index)}
             tabIndex={0}
             role="button"

@@ -3,6 +3,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { useUnifiedUIStore } from '../../stores/unifiedUIStore';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
 import { canCardAttack as canCardAttackCheck } from '../attackUtils';
+import { emitBattlecryTriggered } from '../../actions/gameActions';
 import { debug } from '../../config/debugConfig';
 import type { GameState } from '../../types';
 
@@ -221,6 +222,21 @@ export function usePokerCardClickHandlers({
 			debug.combat('[Battlecry Debug] Battlecry details:', battlecry);
 			selectCard(card);
 			return;
+		}
+
+		// Emit battlecry VFX for minions with battlecries (freeze, damage, buff, etc.)
+		if (cardType === 'minion' && battlecry) {
+			const effectType = battlecry.type || 'default';
+			const isAoEBattlecry = effectType === 'aoe_damage' || (effectType === 'damage' && battlecry.affectsAllEnemies);
+			setTimeout(() => {
+				emitBattlecryTriggered({
+					sourceId: cardId,
+					sourceName: card.card?.name || card.name || '',
+					effectType: isAoEBattlecry ? 'aoe_damage' : effectType,
+					player: 'player',
+					value: battlecry.value ?? battlecry.buffAttack ?? 0
+				});
+			}, 150);
 		}
 
 		const useBlood = !!(card as any).payWithBlood;

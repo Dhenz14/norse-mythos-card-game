@@ -677,12 +677,13 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   cards={handCards}
                   currentMana={handCurrentMana}
                   heroHealth={gameState?.players?.player ? (gameState.players.player.heroHealth ?? gameState.players.player.health) : 0}
-                  isPlayerTurn={handIsPlayerTurn}
+                  isPlayerTurn={combatState ? combatState.phase === CombatPhase.SPELL_PET : handIsPlayerTurn}
                   onCardPlay={handleCardPlay}
                   registerCardPosition={registerCardPosition || noopRegisterCardPosition}
                   battlefieldRef={battlefieldRef as React.RefObject<HTMLDivElement>}
                   evolveReadyIds={evolveReadyIds}
                   battlefieldCount={playerBattlefield.length}
+                  playerBattlefield={playerBattlefield}
                 />
               </div>
             )}
