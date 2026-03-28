@@ -504,27 +504,27 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-thorgrim': '46c2-sy7byy2d',
 	'hero-valthrud': '9aae-tccijmav',
 	'hero-thryma': '984f-0o06zvr0',
-	// 'hero-eldrin' — NEEDS ART (was female Eisa art on male elf sorcerer)
+	'hero-eldrin': 'hero-eldrin',
 	'hero-magni': 'a55b-gwo99sp4', // was female Thrud art; now male Thor-like fiery warrior (Thor's son)
 	'hero-brakki': '92f4-85792li4',
-	// 'hero-myrka' — NEEDS ART (was duplicate of Groa art)
+	// 'hero-myrka' — NEEDS ART (no art provided yet)
 	'hero-logi': 'dbeb-b0mibte9',
 
 	// ── Eastern mythology ──
 	// NOTE: All Eastern heroes currently use Norse proxy art (wrong mythology).
 	// Keeping Izanami (female goddess art is acceptable) but removing the rest.
 	'hero-izanami': '6ea4-mrar7o70',
-	// 'hero-tsukuyomi' — NEEDS ART (Norse brute on Japanese moon god)
-	// 'hero-fujin' — NEEDS ART (Norse fire warrior on Japanese wind god)
-	// 'hero-sarutahiko' — NEEDS ART (Norse warrior on Japanese kami)
-	// 'hero-kamimusubi' — NEEDS ART (shared Frey art on Eastern creation kami)
+	'hero-tsukuyomi': 'hero-tsukuyomi',
+	'hero-fujin': 'hero-fujin',
+	'hero-sarutahiko': 'hero-sarutahiko',
+	'hero-kamimusubi': 'hero-kamimusubi',
 
 	// ── Egyptian mythology ──
 	// NOTE: Egyptian heroes currently use Norse proxy art (wrong mythology).
 	// Keeping Khepri (scarab beetle is lore-accurate) but removing the rest.
-	// 'hero-ammit' — NEEDS ART (regal goddess art for crocodile-monster deity)
-	// 'hero-maat' — NEEDS ART (Norse rune art on Egyptian truth goddess)
-	// 'hero-serqet' — NEEDS ART (Norse horned warrior on Egyptian scorpion goddess)
+	// 'hero-ammit' — NEEDS ART (no art provided yet)
+	'hero-maat': 'hero-maat',
+	'hero-serqet': 'hero-serqet',
 	'hero-khepri': '9370-t2s89bww',
 
 	// ── Greek heroes (matched from orphaned + unused art pools) ──
@@ -536,8 +536,8 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-hecate': 'hecate-witch',
 	'hero-hera': 'hera-queen',
 	'hero-rhea': 'rhea-titan',
-	// 'hero-eros' — NEEDS ART (had dragon art, completely wrong)
-	// 'hero-hestia' — NEEDS ART (Norse viking art on Greek hearth goddess)
+	'hero-eros': 'hero-eros',
+	'hero-hestia': 'hero-hestia',
 	'hero-blainn': '23a5-lrnxovtk',
 	'hero-ran': '4434-4nu5rrrf',
 };
