@@ -104,6 +104,14 @@ Reserved ID ranges for card organization:
 | 39001-39004 | Rogue Expansion II | Burgle/thief, card draw (4 cards) |
 | 39101-39104 | Warrior Expansion | Whirlwind effects, Enrage enablers (4 cards) |
 | 31906-31921 | Norse Mechanic Payoffs | Blood Price, Prophecy, Realm Shift, Einherjar synergy payoffs |
+| 31923 | Sacrifice Cards | Behemoth (0-cost mythic, requires 2 minion sacrifice) |
+| 31924-31939 | Wager Cards | 16 poker-combat passives (Bluff Master, Fate Reader, Loaded Dice, etc.) |
+| 31940-31942 | Blood Echo | Die → 0-cost blood-price copy returns to hand (3 cards) |
+| 31943-31945 | Ragnarok Threshold | "If hero ≤30 HP, gain X" comeback mechanic (3 cards) |
+| 31946-31948 | Fateweave | Active Prophecy = spell discount / attack boost / AoE upgrade (3 cards) |
+| 31949-31951 | Yggdrasil's Gift | +1/+1 per unique realm visited this game (3 cards) |
+| 31952-31954 | Valhalla's Call | Einherjar die 3x → summon 5/5 Valkyrie payoff (3 cards) |
+| 31955-31957 | Active Wager | Face damage per round, fold-to-heal, showdown draw+damage (3 cards) |
 | 32100-32105 | Norse Naga/Einherjar Neutrals | Skidbladnir's Stowaway, Deckhand of Njord, etc. |
 | 32201-32206 | Greek Mythic Minions | Cerberus, Typhon, Porphyrion, Atlas, Campe, Medusa |
 | 40001 | Primordial Expansion | Bestla, Primordial Frost-Mother (mythic neutral Titan) |
