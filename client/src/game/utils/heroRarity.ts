@@ -5,14 +5,15 @@
  * Supply limits per rarity tier match the blockchain supply caps.
  */
 
-export type HeroRarity = 'common' | 'rare' | 'epic' | 'mythic';
+export type HeroRarity = 'base' | 'common' | 'rare' | 'epic' | 'mythic';
 
-/** NFT supply cap per rarity tier — same for heroes, kings, and cards */
+/** NFT supply cap per rarity tier — base heroes are non-NFT (free starter) */
 export const PIECE_SUPPLY: Record<HeroRarity, number> = {
 	mythic: 250,
 	epic: 500,
 	rare: 1_000,
 	common: 2_000,
+	base: 0, // non-NFT, everyone gets these free
 };
 
 /** Rarity-specific accent colors */
@@ -21,9 +22,20 @@ export const RARITY_COLORS: Record<HeroRarity, { primary: string; glow: string; 
 	epic:   { primary: '#a855f7', glow: 'rgba(168, 85, 247, 0.5)', label: 'EPIC' },
 	rare:   { primary: '#3b82f6', glow: 'rgba(59, 130, 246, 0.5)', label: 'RARE' },
 	common: { primary: '#9ca3af', glow: 'rgba(156, 163, 175, 0.3)', label: 'COMMON' },
+	base:   { primary: '#6b7280', glow: 'rgba(107, 114, 128, 0.2)', label: 'BASE' },
 };
 
-// ==================== MYTHIC — 500 supply ====================
+// ==================== BASE — free starter, non-NFT ====================
+// One per chess piece slot. Everyone gets these. Not tradeable.
+const BASE_PIECES = new Set([
+	'hero-erik-flameheart',   // Queen — starter mage
+	'hero-ragnar-ironside',  // Rook — starter warrior
+	'hero-brynhild',         // Bishop — starter priest
+	'hero-sigurd',           // Knight — starter rogue
+	'king-leif',             // King — starter king
+]);
+
+// ==================== MYTHIC — 250 supply ====================
 // The most iconic gods/titans/cosmic entities across all mythologies.
 const MYTHIC_PIECES = new Set([
 	// Norse major gods
@@ -152,6 +164,7 @@ const RARE_PIECES = new Set([
 // Any piece not listed above defaults to common.
 
 export function getHeroRarity(heroId: string): HeroRarity {
+	if (BASE_PIECES.has(heroId)) return 'base';
 	if (MYTHIC_PIECES.has(heroId)) return 'mythic';
 	if (EPIC_PIECES.has(heroId)) return 'epic';
 	if (RARE_PIECES.has(heroId)) return 'rare';
