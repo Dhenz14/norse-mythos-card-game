@@ -354,7 +354,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
 
       // Phase 2: After AI thinking delay, process AI turn and switch back to player
       // Skip AI processing if opponent is a real human (P2P connected)
-      const aiDelay = 800 + Math.random() * 700; // 800-1500ms
+      const aiDelay = 1800 + Math.random() * 1000; // 1800-2800ms — slow enough to read
       const scheduledTurnNumber = intermediateState.turnNumber;
       isAITurnProcessing = true;
       setTimeout(() => {

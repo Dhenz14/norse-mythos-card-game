@@ -1,4 +1,64 @@
-/* Turn Banner - CCG-style "YOUR TURN" / "ENEMY TURN" announcement */
+/* ═══ Persistent Turn Badge — always visible top-center ═══ */
+
+.persistent-turn-badge {
+	position: fixed;
+	top: 12px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 9500;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 24px;
+	border-radius: 24px;
+	font-family: 'Cinzel', Georgia, serif;
+	font-weight: 800;
+	font-size: 15px;
+	letter-spacing: 3px;
+	text-transform: uppercase;
+	pointer-events: none;
+	transition: all 0.4s ease;
+}
+
+.persistent-turn-badge.your-turn {
+	background: linear-gradient(135deg, rgba(251,191,36,0.25) 0%, rgba(180,130,20,0.35) 100%);
+	border: 2px solid rgba(251,191,36,0.7);
+	color: #fbbf24;
+	box-shadow: 0 0 20px rgba(251,191,36,0.3), 0 4px 12px rgba(0,0,0,0.5);
+	text-shadow: 0 0 10px rgba(251,191,36,0.6);
+}
+
+.persistent-turn-badge.enemy-turn {
+	background: linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(180,30,30,0.3) 100%);
+	border: 2px solid rgba(239,68,68,0.6);
+	color: #ef4444;
+	box-shadow: 0 0 20px rgba(239,68,68,0.25), 0 4px 12px rgba(0,0,0,0.5);
+	text-shadow: 0 0 10px rgba(239,68,68,0.5);
+}
+
+.persistent-turn-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	animation: turnDotPulse 1.5s ease-in-out infinite;
+}
+
+.your-turn .persistent-turn-dot {
+	background: #fbbf24;
+	box-shadow: 0 0 8px rgba(251,191,36,0.8);
+}
+
+.enemy-turn .persistent-turn-dot {
+	background: #ef4444;
+	box-shadow: 0 0 8px rgba(239,68,68,0.8);
+}
+
+@keyframes turnDotPulse {
+	0%, 100% { opacity: 1; transform: scale(1); }
+	50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* ═══ Turn Banner - CCG-style "YOUR TURN" / "ENEMY TURN" announcement ═══ */
 
 .turn-banner-overlay {
 	position: fixed;

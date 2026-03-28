@@ -4,7 +4,7 @@ import { playSound } from '../utils/soundUtils';
 import './ManaBar.css';
 
 const MAX_MANA_SLOTS = 9;
-const CRYSTAL_SIZE = 14; // Compact size for player hero zone
+const CRYSTAL_SIZE = 20; // Larger crystals for better visibility
 
 interface ManaBarProps {
   currentMana: number;
@@ -60,20 +60,20 @@ const ManaBar: React.FC<ManaBarProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        minWidth: '28px',
-        height: '22px',
-        padding: '0 6px',
+        minWidth: '44px',
+        height: '32px',
+        padding: '0 10px',
         background: 'linear-gradient(180deg, #1e3a5f 0%, #0f2847 100%)',
-        borderRadius: '11px',
-        border: '2px solid rgba(59, 130, 246, 0.6)',
-        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+        borderRadius: '16px',
+        border: '2px solid rgba(59, 130, 246, 0.7)',
+        boxShadow: '0 0 12px rgba(59, 130, 246, 0.4), 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
       }}>
         <span style={{
           fontFamily: "'Cinzel', Georgia, serif",
-          fontWeight: 700,
-          fontSize: '0.65rem',
-          color: '#60a5fa',
-          textShadow: '0 0 8px rgba(59, 130, 246, 0.6)'
+          fontWeight: 800,
+          fontSize: '0.95rem',
+          color: '#93c5fd',
+          textShadow: '0 0 12px rgba(59, 130, 246, 0.8), 0 1px 2px rgba(0,0,0,0.8)'
         }}>
           {currentMana}/{maxMana}
         </span>
