@@ -3685,11 +3685,11 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	// 31930-31931 — NO ART (hero-reserved)
 	31932: '/art/norse war male 3.webp', // Einherjar High-Roller — blonde fire warrior
 	// 31933-31934 — NO ART (hero-reserved)
-	31935: '/art/male archer.webp',      // Fenrir's Gambit — Norse archer with wolf
+	31935: '/art/fenrir-gambit-huntress.webp', // Fenrir's Gambit — ice huntress with wolves
 	// 31936 — NO ART (hero-reserved)
 	31937: '/art/norse war male.webp',   // Ragnarok's Wager — red-haired axe warrior
-	31938: '/art/poseidon-elder.webp',   // Odin's All-Seeing Stake — frost elder with staff (from Ragnarok Minions)
-	31939: '/art/golden-warrior-coast.webp', // Surtr's Final Bet — golden warrior at coast (from Ragnarok Minions)
+	31938: '/art/poseidon-elder.webp',   // Odin's All-Seeing Stake — frost elder with staff
+	31939: '/art/surtr-final-bet.webp', // Surtr's Final Bet — Surtr fire giant with flaming sword
 	// ── Submerge Expansion — reassigned from truly unused pool ──
 	40104: '/art/dragon11.webp',         // Diving Serpent — armored frost dragon
 	40105: '/art/fe97-717e1b38.webp',   // Deep Lurker — glowing rune beast in ruins
@@ -3703,9 +3703,9 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	40118: '/art/eb59-e8c1abc1.webp',   // Freedom Strike — rock serpent breaking free
 	// ── Hero weapon (promoted from VERCEL_CARD_ART) ──
 	90020: '/art/e808-9qy2tzqo.webp',   // Baldur the Radiant
-	// ── Orphan Super Minions — conflict-free only ──
-	// 95058 Primordial Shadow of Night — NO ART (hero-persephone reserved)
-	// 95083 Empusa, Queen of Crossroads — NO ART (hero-hel reserved)
+	// ── Orphan Super Minions ──
+	95058: '/art/primordial-shadow.webp', // Primordial Shadow of Night — purple void shadow entity
+	95083: '/art/empusa-crossroads.webp', // Empusa, Queen of Crossroads — vampire queen with undead army
 	95108: '/art/808c-ac01154a.webp',   // Hel's Warden — armored demon with rune magic
 };
 
