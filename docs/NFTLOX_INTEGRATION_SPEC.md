@@ -83,7 +83,7 @@ Each of the 2,134 collectible cards becomes one NFTLox seed. Seeds are templates
 | `card.name` | `metadata.name` | Card display name |
 | `card.description` | `metadata.description` | Card text (truncated to 1000 chars) |
 | Art URL | `metadata.imageUrl` | `https://dhenz14.github.io/norse-mythos-card-game/art/{artId}.webp` |
-| Supply cap | `maxReplicas` | Per-rarity: mythic=250, epic=500, rare=1000, common=2000 |
+| Supply cap | `maxSupply` | Per-rarity: mythic=250, epic=500, rare=1000, common=2000 |
 
 ### Seed Mint Payload (per card)
 
@@ -101,8 +101,7 @@ Each of the 2,134 collectible cards becomes one NFTLox seed. Seeds are templates
       "description": "Battlecry: Draw 2 cards. Your hero power costs (0) this turn.",
       "imageUrl": "https://dhenz14.github.io/norse-mythos-card-game/art/20001.webp"
     },
-    "maxReplicas": 250,
-    "tags": ["mythic", "minion", "neutral"],
+    "maxSupply": 250,
     "immutableData": {
       "card_id": 20001,
       "name": "Echo of the Allfather",
@@ -121,15 +120,15 @@ Each of the 2,134 collectible cards becomes one NFTLox seed. Seeds are templates
 
 ### Batch Seed Minting Plan
 
-| Rarity | Seeds | maxReplicas | Total Instances | Batches (50/batch) |
+| Rarity | Seeds | maxSupply | Total Instances | Batches (50/batch) |
 |--------|-------|-------------|-----------------|---------------------|
 | Mythic | 160 | 250 | 40,000 | 4 |
 | Epic | 363 | 500 | 181,500 | 8 |
 | Rare | 687 | 1,000 | 687,000 | 14 |
 | Common | 924 | 2,000 | 1,848,000 | 19 |
-| **Total** | **2,134** | — | **2,756,500** | **43 batches** |
+| **Total** | **2,134** | — | **2,756,500** | **427 transactions** |
 
-Each batch requires one Hive Keychain signature. At ~4s per signature, full mint takes ~3 minutes.
+NFTLox limits 5 operations per Hive transaction. 2,134 seeds / 5 = 427 Keychain signatures. At ~4s per signature, full mint takes ~28 minutes.
 
 **artId format:** Card ID as string, zero-padded to 5 digits (e.g., `"20001"`, `"01000"`, `"50376"`). Max 14 chars, alphanumeric + hyphens per NFTLox validation.
 
@@ -374,7 +373,7 @@ Or vendor the SDK builders directly (they're pure functions with zero dependenci
 >
 > What we need:
 > 1. One collection: "Ragnarok Cards" / RGNRK, 2,134 seeds, typed schema, 0% royalty
-> 2. 43 batch seed mints (50 cards per batch) with per-seed maxReplicas (250/500/1000/2000 by rarity)
+> 2. 427 seed mint transactions (5 ops per tx) with per-seed maxSupply (250/500/1000/2000 by rarity)
 > 3. 6 pack types with weighted drop tables (4 rarity-pool entries each)
 > 4. Our indexer replays your `nftlox_testnet` ops alongside our own — no API dependency
 > 5. No fee on our collection (we'll run our own marketplace)
@@ -383,3 +382,73 @@ Or vendor the SDK builders directly (they're pure functions with zero dependenci
 > Art hosted on GitHub Pages. Schema: card_id, name, type, rarity, class, mana_cost, attack, health, race, set (immutable) + level, xp, foil (mutable).
 >
 > Are there any constraints we should know about? Can we do a test mint on the current testnet protocol?
+
+---
+
+## 11. NFTLox Protocol Updates (2026-03-27 Audit)
+
+Changes discovered since this spec was first written. NFTLox is actively developing with Ragnarok as a first-class use case.
+
+### Breaking Changes
+
+1. **`tags` field removed** — Seed mint payloads no longer accept `tags`. Removed from our payloads above.
+2. **`maxReplicas` renamed to `maxSupply`** — All field references updated throughout this spec.
+3. **Batch count corrected** — NFTLox limits 5 ops per Hive transaction (not 50). 2,134 seeds = 427 transactions (~28 min), not 43 batches (~3 min).
+
+### New: Typed Schema System
+
+NFTLox now supports typed collection schemas with immutable + mutable fields:
+- 22 scalar types: `string`, `bool`, `int8`-`int64`, `uint8`-`uint64`, `float`, `double`, plus array variants
+- Max 64 fields total per collection
+- Field names: `^[a-z][a-z0-9_]*$` (max 64 chars)
+- Immutable data set at mint, **never changeable**
+- Mutable data updatable by creator/data operators only (not NFT owner)
+- Owner-private data via `set_owner_data` (owner-only, free-form)
+- SHA-256 canonical hash computed for all data fields automatically
+
+**Ragnarok schema templates ship in the SDK:** `RAGNAROK_MINION_SCHEMA`, `RAGNAROK_SPELL_SCHEMA`, `RAGNAROK_WEAPON_SCHEMA`, `RAGNAROK_PET_SCHEMA`, `RAGNAROK_ARMOR_SCHEMA`, `RAGNAROK_HERO_SCHEMA`. The NFTLox team is explicitly designing with our game in mind.
+
+### New Operations (25 total, was 23)
+
+| New Op | Description | Authority |
+|--------|-------------|-----------|
+| `extend_schema` | Append fields to collection schema (creator-only) | posting |
+| `set_owner_data` | Owner writes free-form data to their NFT | posting |
+
+### Permission Model Change
+
+For schema-based collections, `set_data` is now **creator-only** (not owner). Players who want to store personal data use `set_owner_data` instead. Ragnarok admin would broadcast `set_data` for level/XP updates after match results.
+
+### SPV Verification System ("Boleto Suizo")
+
+NFTLox ships trustless verification for pack openings:
+- Pure verifiers: replay deterministic RNG locally, verify DNA derivation
+- Network verifiers: fetch tx from Hive L1, compare against indexer data
+- Audit coordinator: randomly samples recent pack_open events, verifies each
+
+We can wire this into a "Verify on Chain" button in our collection UI.
+
+### Other Updates
+
+- **Weight range expanded:** Drop table weights now 1-1,000,000 (was 1-10,000) — finer rarity granularity
+- **Lending system:** `nft_lend` / `nft_return` — future card lending for tournaments
+- **Data operators:** Cross-game composability via `data_operator_approve` + `set_data_from`
+- **Orphaned buy tracking:** Failed marketplace buys with paired HIVE transfers are audited
+- **Genesis auto-reset:** Changing `GENESIS_BLOCK` in indexer config triggers full re-sync
+- **Listing expiration:** Marketplace listings expire based on block timestamps (deterministic)
+
+### Decision Needed: Schema Strategy
+
+NFTLox ships 6 per-card-type schemas for Ragnarok. Two approaches:
+
+**Option A: Single collection, generic schema** (our current plan)
+- One `create_collection` with unified immutable fields (card_id, name, type, rarity, etc.)
+- Simpler: 1 collection, 1 seed batch, 1 pack system
+- Less type-safe: spells have attack/health fields set to 0
+
+**Option B: Multiple collections, typed schemas**
+- 6 collections using NFTLox's Ragnarok templates
+- Each card type gets only its relevant fields
+- More complex: 6 collection creates, 6 sets of seeds, pack system spans collections
+
+**Recommendation:** Stay with Option A (single collection) for launch simplicity. The generic schema with unused fields set to 0 is standard practice in TCG NFTs. Migrate to per-type collections in a future protocol version if needed.
