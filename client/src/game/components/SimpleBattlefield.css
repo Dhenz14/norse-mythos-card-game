@@ -112,13 +112,14 @@
   width: 100%;
   height: 100%;
   cursor: pointer;
-  transition: transform 0.15s ease, z-index 0s;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), z-index 0s;
   transform-origin: bottom center;
 }
 
 .bf-card-wrapper:hover {
-  transform: translateY(-12px) scale(1.08);
+  transform: translateY(-14px) scale(1.08);
   z-index: var(--z-hover, 500);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), z-index 0s;
 }
 
 /* Card inside wrapper */
