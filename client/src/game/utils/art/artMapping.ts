@@ -1333,7 +1333,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	4378: '/art/8e02-a7e6fa9a.webp',
 	4379: '/art/ad90-6aba8d9a.webp',
 	4380: '/art/59b0-ec8d4f4c.webp',
-	4381: '/art/6017-p53522dp.webp', // Ísormr, the Frost Serpent — was giantess art, now cave serpent
+	// 4381: REMOVED — conflicts with hero-jormungandr (via CHARACTER_ART_IDS)
 	4382: '/art/6718-159765ee.webp',
 	4383: '/art/cc1f-5ha7i6v8.webp',
 	4384: '/art/7076-201ce228.webp',
@@ -1374,7 +1374,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	4901: '/art/7062-xwoh2ewg.webp',
 	5000: '/art/6654-mfeyt8se.webp', // Ember Whelp — was goddess art, now fire serpent/drake
 	5001: '/art/ddbb-b37e34cd.webp',
-	5002: '/art/5415-ghtr7fjn.webp',
+	// 5002: REMOVED — conflicts with hero-managarm (via CHARACTER_ART_IDS)
 	5003: '/art/e3e1-5254f412.webp',
 	5004: '/art/1417-f3fd79f7.webp',
 	5005: '/art/fa09-72933d10.webp',
@@ -1474,7 +1474,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	5308: '/art/fef0-0f15bf87.webp',
 	5309: '/art/3291-9c9148e1.webp',
 	5400: '/art/8328-uu8iihq1.webp',
-	5401: '/art/6653-y9djk14f.webp', // Myrkrkló (shadow beast) — was god art, now shadow wolf
+	// 5401: REMOVED — conflicts with hero-hati (via CHARACTER_ART_IDS)
 	5402: '/art/1c63-83e84c31.webp',
 	5403: '/art/a9d5-bbc786a7.webp',
 	5404: '/art/4b0d-4fd4c62d.webp',
@@ -1929,7 +1929,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	20107: '/art/4565-71509821.webp',
 	20108: '/art/b9bb-42b2e934.webp',
 	20109: '/art/8f62-377c89db.webp',
-	20110: '/art/150b-2gudiaxw.webp',
+	// 20110: REMOVED — conflicts with hero-aegir (via CHARACTER_ART_IDS)
 	20111: '/art/1185-8c79d7aa.webp',
 	20112: '/art/cc0c-f6ced216.webp',
 	20113: '/art/b1ae-jn7f8i5b.webp',
@@ -1972,7 +1972,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	20403: '/art/306c-e2f06c7d.webp',
 	20404: '/art/6be9-3140e0b7.webp',
 	20405: '/art/ee59-5348f3b4.webp',
-	20406: '/art/6c5f-q5se4d7c.webp',
+	// 20406: REMOVED — conflicts with hero-solvi
 	20407: '/art/8516-b0c46cb4.webp',
 	20408: '/art/b89a-b4bdd601.webp',
 	20501: '/art/e220-f8d979c3.webp',
@@ -2166,7 +2166,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	30009: '/art/6668-10457f1d.webp',
 	30010: '/art/3024-dca114a7.webp',
 	30011: '/art/c44c-f7cf2251.webp',
-	30013: '/art/2a21-f54a507f.webp',
+	// 30013: REMOVED — conflicts with hero-kvasir
 	30014: '/art/ca8a-f5f69947.webp',
 	30015: '/art/8f84-85e6d2f3.webp',
 	30016: '/art/9ed9-361858a2.webp',
@@ -2185,16 +2185,12 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	30029: '/art/df73-a5864d02.webp',
 	30030: '/art/9a0d-aa1e753f.webp',
 	30031: '/art/88a1-9d6a7ad4.webp',
-	30032: '/art/f2e8-0b20f068.webp',
-	30033: '/art/b17a-ec608a43.webp',
-	30034: '/art/9576-e4d01974.webp',
+	// 30032-30034: REMOVED — conflicts with hero-apollo, hero-ares, hero-hermes
 	30035: '/art/831d-83b80924.webp',
-	30036: '/art/b082-88cee63a.webp',
+	// 30036: REMOVED — conflicts with hero-aphrodite
 	30037: '/art/46e1-40d43780.webp',
 	30038: '/art/42a9-a4a07995.webp',
-	30039: '/art/c380-df49fbd2.webp',
-	30040: '/art/6ddf-0f8740b6.webp',
-	30041: '/art/378a-1bff480f.webp',
+	// 30039-30041: REMOVED — conflicts with hero-artemis, hero-demeter, hero-hyperion
 	30042: '/art/b89a-b4bdd601.webp',
 	30043: '/art/f0fa-95215f4d.webp',
 	30044: '/art/33ff-e6d51c3c.webp',
@@ -2215,7 +2211,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	30059: '/art/45eb-090f1fdb.webp',
 	30060: '/art/5bc9-617b9b6b.webp',
 	30061: '/art/draugr flesh.webp',
-	30062: '/art/2477-jzfm669g.webp', // Alpha Wolf of Fenrir — was winged demon art, now Fenrir wolf
+	// 30062: REMOVED — conflicts with hero-fenrir (via CHARACTER_ART_IDS)
 	30063: '/art/292a-d14b1e8b.webp',
 	30064: '/art/f31c-128c125b.webp',
 	30065: '/art/293c-du2ktesl.webp',
@@ -2682,7 +2678,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	35007: '/art/b562-821711d7.webp',
 	35008: '/art/6cb2-d2552c68.webp',
 	35009: '/art/ff11-b430043f.webp',
-	35010: '/art/a55b-gwo99sp4.webp',
+	// 35010: REMOVED — conflicts with hero-magni
 	35011: '/art/21d2-ee5a5bb2.webp',
 	35012: '/art/3836-ca436173.webp',
 	35013: '/art/7e79-wuvfl370.webp',
@@ -3580,7 +3576,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	95306: '/art/7f16-8990d70d.webp',
 	95307: '/art/f9bf-a102acc4.webp',
 	95308: '/art/0805-zofc19rh.webp',
-	95309: '/art/4a86-873y8lih.webp',
+	// 95309: REMOVED — conflicts with hero-leif (via CHARACTER_ART_IDS)
 	95310: '/art/0a23-b08dbb07.webp',
 	95311: '/art/c956-344d18c1.webp',
 	95312: '/art/6ca8-722af180.webp',
@@ -3661,7 +3657,7 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	96001: '/art/06e2-8pdilvrr.webp',
 	96002: '/art/1f7f-ec7ed4be.webp',
 	96003: '/art/5244-6gvqezbj.webp',
-	96004: '/art/21e2-rigfxmta.webp',
+	// 96004: REMOVED — conflicts with hero-hyrrokkin (via CHARACTER_ART_IDS)
 	96005: '/art/a73d-71b4abf8.webp',
 	96006: '/art/9783-a29f0b94.webp',
 	96007: '/art/d5cf-a9579ba3.webp',
