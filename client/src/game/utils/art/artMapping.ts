@@ -3670,11 +3670,11 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	96014: '/art/48bc-a4ab5163.webp',
 	96015: '/art/1913-79012baf.webp',
 	96016: '/art/31df-83834d65.webp',
-	// ── Inspire Expansion — conflict-free only (4 of 6 have hero conflicts) ──
-	// 31414 Valkyrie Herald — NO ART (all humanoid art reserved for heroes)
-	// 31415 Odin's Chronicler — NO ART
+	// ── Inspire Expansion ──
+	31414: '/art/valkyrie-herald.webp',  // Valkyrie Herald — golden valkyrie with winged helm
+	31415: '/art/odins-chronicler.webp', // Odin's Chronicler — hooded scholar with ravens
 	31416: '/art/82ae-8fd7158e.webp',   // Runic Amplifier — runic diamond energy
-	// 31417 Einherjar Standard-Bearer — NO ART
+	31417: '/art/einherjar-standard-bearer.webp', // Einherjar Standard-Bearer — undead warrior with rune banner
 	31418: '/art/8198-24f0cced.webp',   // Seidr Resonator — fire/lightning rune portal
 	// 31419 Allfather's Chosen — NO ART
 	// ── Wager Cards — conflict-free only (13 of 16 have hero conflicts) ──
