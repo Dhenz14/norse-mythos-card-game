@@ -534,6 +534,16 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
 
     let spellResult = executeSpell(newState, card, targetId, targetType);
     spellResult = processSpellburst(spellResult, card.card);
+
+    // Emit spell cast event for animations
+    GameEventBus.emitSpellCast({
+      cardId: String(card.card.id),
+      cardName: card.card.name,
+      player: currentPlayer,
+      targetId,
+      effectType: (card.card as any).spellEffect?.type || 'default',
+    });
+
     return spellResult;
   }
   
@@ -1366,6 +1376,9 @@ export function endTurn(state: GameState, skipAISimulation = false): GameState {
 
   // Apply standard turn-start pipeline for the next player
   newState = applyTurnStartPipeline(newState, typedNextPlayer);
+
+  // Emit turn started event for animations
+  GameEventBus.emitTurnStarted(typedNextPlayer, newState.turnNumber);
   
   // If next player is AI (opponent), simulate their turn
   if (typedNextPlayer === 'opponent' && !skipAISimulation) {

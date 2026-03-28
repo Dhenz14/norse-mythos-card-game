@@ -12,6 +12,7 @@ import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants'
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 import { removeKeyword } from './cards/keywordUtils';
 import { recalculateAuras } from './mechanics/auraUtils';
+import { GameEventBus } from '@/core/events/GameEventBus';
 
 /**
  * Moves a card from one zone to another
@@ -182,6 +183,14 @@ export function drawCardFromDeck(
     cardInstance.instanceId
   );
 
+  // Emit card drawn event for animations
+  GameEventBus.emitCardDrawn({
+    cardId: String(cardData.id),
+    cardName: cardData.name || 'Unknown',
+    player: playerId,
+    fromFatigue: false,
+  });
+
   return updatedState;
 }
 
@@ -205,6 +214,15 @@ export function destroyCard(
   let newState = result.newState;
   
   if (result.movedCard) {
+
+    // Emit minion destroyed event for death animations
+    GameEventBus.emitMinionDestroyed({
+      instanceId: result.movedCard.instanceId,
+      cardId: String(result.movedCard.card?.id || 0),
+      cardName: result.movedCard.card?.name || 'Unknown',
+      player: playerId,
+      hasDeathrattle: shouldTriggerDeathrattle(result.movedCard),
+    });
 
     // Add to game log
     newState = logCardDeath(newState, playerId, result.movedCard);

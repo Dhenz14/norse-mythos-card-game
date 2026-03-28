@@ -11,6 +11,7 @@ import executeSetHealthHandler from '../../effects/handlers/spellEffect/set_heal
 import allCards, { getCardById } from '../../data/allCards';
 import { useAnimationStore } from '../../animations/AnimationManager';
 import { logActivity } from '../../stores/activityLogStore';
+import { GameEventBus } from '@/core/events/GameEventBus';
 import { scheduleSpellEffect, SpellEffectType } from '../../animations/UnifiedAnimationOrchestrator';
 // Lazy access to break game-engine <-> game-store circular dependency
 const useGameStore = {
@@ -1557,6 +1558,18 @@ function executeBuffSpell(
 
   newState = checkPetEvolutionTrigger(newState, 'on_buff');
   newState = checkPetEvolutionTrigger(newState, 'on_gain_health');
+
+  // Emit buff applied event for animations
+  if (targetFound && targetId) {
+    GameEventBus.emitBuffApplied({
+      targetId,
+      targetName: 'minion',
+      attackChange: effect.buffAttack,
+      healthChange: effect.buffHealth,
+      keywords: effect.grantKeywords,
+    });
+  }
+
   return newState;
 }
 
@@ -1738,6 +1751,18 @@ function executeFreezeSpell(
   newState.players.player.battlefield = playerBattlefield;
 
   newState = checkPetEvolutionTrigger(newState, 'on_freeze');
+
+  // Emit battlecry-style event for freeze VFX
+  if (targetFound && targetId) {
+    GameEventBus.emitBattlecryTriggered({
+      sourceId: 'spell',
+      sourceName: 'Freeze Spell',
+      effectType: 'freeze',
+      player: state.currentTurn,
+      targetId,
+    });
+  }
+
   return newState;
 }
 
