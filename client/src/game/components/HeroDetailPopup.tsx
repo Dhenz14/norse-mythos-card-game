@@ -552,50 +552,45 @@ const styles = `
     .popup-theme-particles { display: none; }
   }
 
-  /* ========== SCARCITY BADGE ========== */
+  /* ========== SCARCITY BADGE — top-right, engraved gold Rolex feel ========== */
   .scarcity-badge {
     position: absolute;
-    bottom: 16px;
-    left: 16px;
+    top: 14px;
+    right: 14px;
     z-index: 22;
     display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    background: linear-gradient(180deg, #2a2520 0%, #1a1815 100%);
-    border: 3px solid;
-    border-color: #5a4a3a #3a302a #3a302a #5a4a3a;
-    border-radius: 4px;
-    box-shadow:
-      0 3px 10px rgba(0, 0, 0, 0.7),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-      0 0 12px var(--accent-glow, rgba(200, 184, 160, 0.15));
-    font-family: 'Courier New', monospace;
+    align-items: baseline;
+    gap: 3px;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-family: 'Cinzel', Georgia, serif;
     font-variant-numeric: tabular-nums;
   }
 
   .scarcity-number {
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--accent-color, #f0c868);
+    font-size: 13px;
+    font-weight: 700;
+    color: #c9a84c;
     text-shadow:
-      0 0 10px var(--accent-glow, rgba(200, 184, 160, 0.5)),
-      0 1px 2px rgba(0, 0, 0, 0.8);
-    letter-spacing: 1px;
+      0 1px 0 rgba(0, 0, 0, 0.9),
+      0 0 6px rgba(201, 168, 76, 0.3);
+    letter-spacing: 0.5px;
+    -webkit-text-stroke: 0.3px rgba(0, 0, 0, 0.4);
   }
 
   .scarcity-separator {
-    font-size: 14px;
-    color: #6a5a4a;
+    font-size: 11px;
+    color: rgba(201, 168, 76, 0.5);
     font-weight: 400;
   }
 
   .scarcity-max {
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 600;
-    color: #8a7a6a;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    color: rgba(201, 168, 76, 0.6);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   }
 
   /* ========== EDITION STAMP ========== */
@@ -674,15 +669,19 @@ const styles = `
   }
 
   .card-name-plate-name {
-    font-size: 22px;
+    font-size: clamp(14px, 3.5vw, 22px);
     font-weight: 800;
     color: #f0e8d8;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-shadow:
       0 0 12px var(--accent-glow, rgba(200, 184, 160, 0.5)),
       0 2px 4px rgba(0, 0, 0, 0.8);
     margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
   }
 
   .card-name-plate-title {
