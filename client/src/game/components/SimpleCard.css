@@ -566,6 +566,8 @@
   letter-spacing: 0.8px;
 }
 
+/* Long names auto-shrink via container query units where supported,
+   falling back to stepped classes for older browsers */
 .simple-card.medium .card-name.name-long {
   font-size: 10px;
   letter-spacing: 0.3px;
@@ -574,11 +576,21 @@
 .simple-card.medium .card-name.name-very-long {
   font-size: 9px;
   letter-spacing: 0.1px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .simple-card.medium .card-name.name-extreme {
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .simple-card.small .card-name.name-long,
@@ -665,6 +677,48 @@
 @keyframes mythic-gem-pulse {
   0%, 100% { box-shadow: 0 0 10px rgba(245,158,11,0.7), 0 0 20px rgba(245,158,11,0.3), 0 2px 4px rgba(0,0,0,0.5); }
   50% { box-shadow: 0 0 14px rgba(245,158,11,0.9), 0 0 28px rgba(245,158,11,0.5), 0 2px 4px rgba(0,0,0,0.5); }
+}
+
+/* ==========================================================================
+   EXTENDED ART — Mythic cards art bleeds past frame for premium feel
+   ========================================================================== */
+
+.simple-card.rarity-mythic .card-art-container {
+  top: -6px;
+  left: -4px;
+  right: -4px;
+  height: calc(100% + 6px);
+  border-radius: 12px;
+  z-index: -1;
+}
+
+.simple-card.rarity-mythic .card-art-image {
+  transform: scale(1.06);
+}
+
+/* Mythic vignette — darkens edges of extended art so it fades into the frame */
+.simple-card.rarity-mythic .card-art-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 20px 8px rgba(0, 0, 0, 0.7),
+    inset 0 0 40px 15px rgba(0, 0, 0, 0.3);
+  border-radius: inherit;
+}
+
+/* Epic cards get a subtle bleed too */
+.simple-card.rarity-epic .card-art-container {
+  top: -3px;
+  left: -2px;
+  right: -2px;
+  height: calc(100% + 3px);
+}
+
+.simple-card.rarity-epic .card-art-image {
+  transform: scale(1.03);
 }
 
 .simple-card.small .rarity-gem {

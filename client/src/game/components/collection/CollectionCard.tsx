@@ -74,7 +74,7 @@ const CollectionCard: React.FC<CollectionCardProps> = React.memo(({
   
   return (
     <motion.div
-      className="collection-card relative min-h-[240px] min-w-[180px] h-full block bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg shadow-lg"
+      className="collection-card collection-grid-item relative min-h-[240px] min-w-[180px] h-full block bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg shadow-lg"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
