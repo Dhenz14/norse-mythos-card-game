@@ -3688,7 +3688,8 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	31935: '/art/male archer.webp',      // Fenrir's Gambit — Norse archer with wolf
 	// 31936 — NO ART (hero-reserved)
 	31937: '/art/norse war male.webp',   // Ragnarok's Wager — red-haired axe warrior
-	// 31938-31939 — NO ART (hero-reserved)
+	31938: '/art/poseidon-elder.webp',   // Odin's All-Seeing Stake — frost elder with staff (from Ragnarok Minions)
+	31939: '/art/golden-warrior-coast.webp', // Surtr's Final Bet — golden warrior at coast (from Ragnarok Minions)
 	// ── Submerge Expansion — reassigned from truly unused pool ──
 	40104: '/art/dragon11.webp',         // Diving Serpent — armored frost dragon
 	40105: '/art/fe97-717e1b38.webp',   // Deep Lurker — glowing rune beast in ruins
