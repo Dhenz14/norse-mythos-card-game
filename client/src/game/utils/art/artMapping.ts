@@ -3676,18 +3676,22 @@ const CARD_ID_TO_ART: Record<number, string> = {
 	31416: '/art/82ae-8fd7158e.webp',   // Runic Amplifier — runic diamond energy
 	31417: '/art/einherjar-standard-bearer.webp', // Einherjar Standard-Bearer — undead warrior with rune banner
 	31418: '/art/8198-24f0cced.webp',   // Seidr Resonator — fire/lightning rune portal
-	// 31419 Allfather's Chosen — NO ART
-	// ── Wager Cards — conflict-free only (13 of 16 have hero conflicts) ──
-	// 31924-31926 — NO ART (hero-reserved)
-	31927: '/art/5168-f0edf490.webp',   // Pot Raiser — horned beast-man giant
-	// 31928 Bluff Master — NO ART (hero-reserved)
-	31929: '/art/norse warrior woman.webp', // Fate Reader — ice magic woman
-	// 31930-31931 — NO ART (hero-reserved)
-	31932: '/art/norse war male 3.webp', // Einherjar High-Roller — blonde fire warrior
-	// 31933-31934 — NO ART (hero-reserved)
+	31419: '/art/eee0-c6779c57.webp',   // Allfather's Chosen — spirit hands at poker table
+	// ── Wager Cards — poker/gambling themed art (shared with poker spell pool) ──
+	31924: '/art/1787-80078cbd.webp',   // Reckless Bettor — 3 cards floating over rune altar
+	31925: '/art/5c75-4259668c.webp',   // Cautious Dealer — ice cards fanned in dark temple
+	31926: '/art/3990-01b1749a.webp',   // Coin-Flipper — rune stones + card suits circle
+	31927: '/art/2860-2a898776.webp',   // Pot Raiser — poker hand + green chips
+	31928: '/art/398a-ba8a6c31.webp',   // Bluff Master — green card fan, rogue cloak
+	31929: '/art/f79f-c2cdeb5f.webp',   // Fate Reader — crystal dice with cards, purple
+	31930: '/art/ddb5-ff16d00e.webp',   // Blood Gambler — corrupted cards + blood chips
+	31931: '/art/4f3a-ea4d9055.webp',   // Shield Bettor — bloody card + poker chips
+	31932: '/art/7d06-52a9ad1c.webp',   // Einherjar High-Roller — green rune card fan + smoke
+	31933: '/art/825f-ce966087.webp',   // Storm Caller — chained card deck, dark magic
+	31934: '/art/1f87-a3411a68.webp',   // Norn's Witness — frozen poker hand, ice crystals
 	31935: '/art/fenrir-gambit-huntress.webp', // Fenrir's Gambit — ice huntress with wolves
-	// 31936 — NO ART (hero-reserved)
-	31937: '/art/norse war male.webp',   // Ragnarok's Wager — red-haired axe warrior
+	31936: '/art/1a69-a2d33fc7.webp',   // Loki's Loaded Dice — bound cards + gold coins
+	31937: '/art/be13-9e1fa63d.webp',   // Ragnarok's Wager — golden card fan, stone altar
 	31938: '/art/poseidon-elder.webp',   // Odin's All-Seeing Stake — frost elder with staff
 	31939: '/art/surtr-final-bet.webp', // Surtr's Final Bet — Surtr fire giant with flaming sword
 	// ── Submerge Expansion — reassigned from truly unused pool ──
