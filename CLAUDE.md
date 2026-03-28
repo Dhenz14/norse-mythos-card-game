@@ -1649,6 +1649,64 @@ vercel --prod                 # Deploy to Vercel
 - HUD matchup arrows: 14px (was 10px)
 - TypeScript: 0 errors
 
+### Completed (Animation Wiring & Event System)
+
+- Wired 6 broken animation events that were architecturally complete but never emitted:
+  - SPELL_CAST: emitted after executeSpell() in gameUtils.ts
+  - MINION_DESTROYED: emitted in destroyCard() in zoneUtils.ts
+  - CARD_DRAWN: emitted in drawCardFromDeck() in zoneUtils.ts
+  - TURN_STARTED: emitted after applyTurnStartPipeline() in endTurn()
+  - BUFF_APPLIED: emitted after executeBuffSpell() in spellUtils.ts
+  - FREEZE VFX: emitted as battlecry 'freeze' type in executeFreezeSpell()
+- Pre-launch QA: URL-sniffing attack bypass patched (gameUtils.ts used window.location for AI check)
+- Deleted 1,118 lines dead code (Smithery, Replit scripts, AnimationDemo)
+- Console.log cleanup: useGame.tsx + useMatchmaking.ts → debug system
+
+### Completed (Cutting-Edge UI Features)
+
+- Extended art for mythic cards: art bleeds 6px past card frame with vignette edge fade
+- Epic cards get subtle 3px art bleed
+- View Transitions API: GPU-accelerated route transitions (fade+scale) between pages
+- Scroll-driven animations: collection cards fade+scale into view on scroll (CSS-only)
+- Card name overflow: extreme-length names use 2-line clamp with ellipsis
+- All CSS-only, zero bundle impact, prefers-reduced-motion respected
+
+### Completed (Art Coverage Finalization)
+
+- All Wager cards remapped to poker-themed art from poker spell pool (playing cards, chips, dice)
+- 9 hero art from newart folder: Eldrin, Tsukuyomi, Fujin, Sarutahiko, Kamimusubi, Ma'at, Serqet, Eros, Hestia
+- Final 5 heroes: Fjorgyn, Volva, Lirien, Myrka, Ammit — 0 artless heroes remaining
+- Kings wired: Leif Wayfinder, Askr, Embla via KING_TO_CHARACTER chain
+- 0 artless cards, 0 artless heroes — 100% art coverage
+
+### Completed (Hero Rarity System + Base Tier)
+
+- Separated BASE tier from COMMON — base heroes are non-NFT free starters
+- BASE (5 heroes): Erik Flameheart, Ragnar Ironside, Brynhild, Sigurd, King Leif
+- Each base hero has 10 cards (7 minions + 3 spells), non-NFT, non-tradeable
+- 21 heroes promoted to proper rarity tiers (Frigg/Gullveig→epic, Greek gods→epic, saga figures→rare)
+- "STANDARD" label removed — all commons show "COMMON"
+- 82 of 97 heroes have explicit rarity, 15 base/starter heroes correctly common
+
+### Completed (Combat UX Final Polish)
+
+- Attack selection: persistent pulsing gold glow + lift + outline (was one-shot 0.4s animation)
+- Card shadow on battlefield: reduced heavy 3-layer shadow (removes phantom dark border on 0-cost)
+- Turn badge: moved to top-right corner
+- Card hover: luxury cubic-bezier easing (0.35s slow lift in, 0.18s snap out)
+- Community poker cards: gap 4→8px (no overlap)
+- Opponent hand cards: 32-48px → 38-56px (no more tiny)
+- Deck builder card detail: mint number moved top-right with engraved gold Cinzel font
+- Long card names: clamp + ellipsis overflow (no more running into rarity)
+- Flip hint: 35%→55% opacity, 9→10px font (was invisible)
+
+### Completed (NFTLox Adapter Layer)
+
+- hiveConfig: NFTLOX_PROTOCOL_ID, VERSION, COLLECTION_SYMBOL constants
+- replayEngine: now watches nftlox_testnet ops alongside ragnarok-cards
+- HiveSync: broadcastNFTLoxJson() + 5 NFTLox broadcast methods
+- NFTLox spec updated with 2026-03-27 protocol audit (tags removed, maxReplicas→maxSupply, 427 txs)
+
 ### Next (Genesis Launch)
 
 - Admin panel built: `/admin` → Genesis Command Center (step-by-step ceremony UI with checklist)
