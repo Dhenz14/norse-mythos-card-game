@@ -484,7 +484,7 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-sigyn': '03d8-lf9wcao3',
 	'hero-ullr': 'cef7-2dqqiy45',
 	'hero-njord': '0429-y5arol11', // was female Nerthus art; now stoic male Norse god (Vidarr art)
-	// 'hero-fjorgyn' — NEEDS ART (was duplicate of Frigg art)
+	'hero-fjorgyn': 'hero-fjorgyn',
 	'hero-gormr': 'e1e3-gg3jq3u0',
 	'hero-ve': 'd25c-fa7g75kn',
 
@@ -496,7 +496,7 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-bestla': '84b2-r6m51iu5',
 	'hero-brynhild': '6f02-yerac949',
 	'hero-nanna': '23d6-nesirs51',
-	// 'hero-volva' — NEEDS ART (was duplicate of Groa art)
+	'hero-volva': 'hero-volva',
 	'hero-sigurd': 'b972-ast4s29y',
 	'hero-gudrun': '1d97-35odajjd',
 	'hero-starkad': '145a-ra98jlmw',
@@ -505,7 +505,7 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-solvi': '6c5f-q5se4d7c', // was female Sol art; now male Viking king (Sigurd Ring art)
 	'hero-ylva': '660e-4jck4nlz',
 	'hero-fjora': 'fdfd-7p1e2ch9',
-	// 'hero-lirien' — NEEDS ART (was duplicate of Gerd art)
+	'hero-lirien': 'hero-lirien',
 
 	// ── Vikings / fictional heroes ──
 	'hero-thorgrim': '46c2-sy7byy2d',
@@ -514,7 +514,7 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	'hero-eldrin': 'hero-eldrin',
 	'hero-magni': 'a55b-gwo99sp4', // was female Thrud art; now male Thor-like fiery warrior (Thor's son)
 	'hero-brakki': '92f4-85792li4',
-	// 'hero-myrka' — NEEDS ART (no art provided yet)
+	'hero-myrka': 'hero-myrka',
 	'hero-logi': 'dbeb-b0mibte9',
 
 	// ── Eastern mythology ──
@@ -529,7 +529,7 @@ const HERO_ART_OVERRIDE: Record<string, string> = {
 	// ── Egyptian mythology ──
 	// NOTE: Egyptian heroes currently use Norse proxy art (wrong mythology).
 	// Keeping Khepri (scarab beetle is lore-accurate) but removing the rest.
-	// 'hero-ammit' — NEEDS ART (no art provided yet)
+	'hero-ammit': 'hero-ammit',
 	'hero-maat': 'hero-maat',
 	'hero-serqet': 'hero-serqet',
 	'hero-khepri': '9370-t2s89bww',
