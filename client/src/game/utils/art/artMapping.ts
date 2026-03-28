@@ -115,6 +115,8 @@ const CREATURE_ART_CHARACTERS = new Set([
  * Character name → local art file ID mapping (all files in client/public/art/)
  */
 const CHARACTER_ART_IDS: Record<string, string> = {
+  'hero-askr': 'hero-askr',
+  'hero-embla': 'hero-embla',
   'aegir': '150b-2gudiaxw',
   'alsvin': '85e7-wljmvqe7',
   'alvaldi': '9aae-tccijmav',
@@ -409,7 +411,7 @@ const HERO_TO_CHARACTER: Record<string, string> = {
   'hero-lagertha': 'lagertha',
   'hero-ivar': 'ivar-the-boneless',
   'hero-rollo': 'rollo',
-  'hero-leif': 'leif-erikson',
+  'hero-leif': 'hero-leif-wayfinder',
   'hero-erik': 'erik-the-red',
 };
 
@@ -417,7 +419,10 @@ const HERO_TO_CHARACTER: Record<string, string> = {
  * King ID to character name mapping
  * Kings use their own portrait PNGs from /portraits/kings/ — not the AI art override system
  */
-const KING_TO_CHARACTER: Record<string, string> = {};
+const KING_TO_CHARACTER: Record<string, string> = {
+	'king-askr': 'hero-askr',
+	'king-embla': 'hero-embla',
+};
 
 /**
  * Direct hero art overrides — highest priority
