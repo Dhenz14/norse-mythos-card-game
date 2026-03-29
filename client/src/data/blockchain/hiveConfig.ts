@@ -14,6 +14,10 @@ export const NFTLOX_PROTOCOL_ID = 'nftlox_testnet'; // switch to 'nftlox' for pr
 export const NFTLOX_PROTOCOL_VERSION = '0.3.0';
 export const NFTLOX_COLLECTION_SYMBOL = 'RGNRK';
 export const NFTLOX_MAX_OPS_PER_TX = 5;
+export const NFTLOX_MAX_JSON_SIZE = 8000; // bytes per custom_json
+export const NFTLOX_SAFE_PAYLOAD_MAX = 7372; // 90% of 8192 (safety margin)
+export const NFTLOX_MAX_BULK_ITEMS = 50; // max distinct seeds per bulk_distribute
+export const NFTLOX_MAX_DROP_TABLE = 50; // max entries in pack drop table
 
 // On-chain NFT metadata URLs (ERC-1155 standard for blockchain explorers/marketplaces).
 // NOT used for in-game art rendering — all runtime art loads via assetPath() from local files.

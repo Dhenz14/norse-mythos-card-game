@@ -1707,6 +1707,23 @@ vercel --prod                 # Deploy to Vercel
 - HiveSync: broadcastNFTLoxJson() + 5 NFTLox broadcast methods
 - NFTLox spec updated with 2026-03-27 protocol audit (tags removed, maxReplicas→maxSupply, 427 txs)
 
+### Completed (NFTLox v0.3.0 Adapter Upgrade — 2026-03-29)
+
+- **Audit**: 20 commits in 48h — monorepo (sdk/indexer/playground), Bun workspaces, PostgreSQL backend
+- **Protocol now 25 actions**: +`set_owner_data` (player writes to own NFTs), +`extend_schema` (append fields post-launch)
+- **Auth simplified**: Only `buy` requires active key, all else uses posting key (confirmed in our adapter)
+- **Typed schema system**: 26 data types, immutable/mutable separation, `computeDataHash()` for on-chain proof
+- **6 Ragnarok schema templates** built by NFTLox: minion, spell, weapon, pet, armor, hero (use `uint16` for atk/hp)
+- **bulk_distribute reworked**: Now takes `{ to, items: [{seedId, quantity, originBlock}] }` — our method updated
+- **Option C+ pack pattern**: Server-side `resolveDropTable()` + `bulk_distribute` bypasses 50-entry drop table limit
+- **SPV verification module**: Trustless L1 verification for ownership/pack opens via HAFAH REST API
+- **Indexer client**: 17-endpoint HTTP client (pure fetch, browser-compatible)
+- **NFT lending**: `nft_lend` / `nft_return` — card loans without ownership transfer
+- **Multisig buy flow**: Atomic HIVE payment + NFT transfer, co-signed by indexer node
+- **New HiveSync methods**: `nftloxSetOwnerData()`, `nftloxExtendSchema()`, `nftloxLendCard()`, `nftloxReturnCard()`, `nftloxListCard()`, `nftloxBuyCard()`
+- **New constants**: `NFTLOX_MAX_JSON_SIZE` (8000), `NFTLOX_SAFE_PAYLOAD_MAX` (7372), `NFTLOX_MAX_BULK_ITEMS` (50), `NFTLOX_MAX_DROP_TABLE` (50)
+- **Deterministic IDs**: FNV-1a hashing for collection/seed/instance/pack/replica IDs — pre-computable before minting
+
 ### Completed (Card Balance Pass & New Mechanics)
 
 - **Tier 3 buffs**: 13 understatted cards buffed to competitive baseline

@@ -452,3 +452,110 @@ NFTLox ships 6 per-card-type schemas for Ragnarok. Two approaches:
 - More complex: 6 collection creates, 6 sets of seeds, pack system spans collections
 
 **Recommendation:** Stay with Option A (single collection) for launch simplicity. The generic schema with unused fields set to 0 is standard practice in TCG NFTs. Migrate to per-type collections in a future protocol version if needed.
+
+---
+
+## 12. NFTLox Protocol Updates (2026-03-29 Audit)
+
+20 commits in 48 hours. Monorepo migration (sdk/indexer/playground), Bun workspaces, PostgreSQL.
+
+### Critical: Option C+ Pack Opening (Recommended by NFTLox)
+
+NFTLox drop tables cap at 50 entries. With 2,134 cards, `pack_create` + `pack_open` cannot represent our full catalog. NFTLox recommends "Option C+":
+
+1. Accept player HIVE payment (any method)
+2. Read payment `txId` + `blockNum` from chain
+3. Run `resolveDropTable()` locally with full card catalog (no size limit)
+4. Call `bulk_distribute` with resolved seed IDs
+
+```json
+{
+  "protocol": "nftlox_testnet",
+  "version": "0.3.0",
+  "action": "bulk_distribute",
+  "data": {
+    "to": "player-alice",
+    "items": [
+      { "seedId": "seed_20001", "quantity": 1, "originBlock": 12345678 },
+      { "seedId": "seed_31005", "quantity": 1, "originBlock": 12345678 },
+      { "seedId": "seed_50136", "quantity": 1, "originBlock": 12345678 }
+    ]
+  }
+}
+```
+
+**This supersedes our Section 7 (Drop Table Strategy) and Section 3 (Pack System).** We keep our 6 pack types but resolve them server-side, then distribute via `bulk_distribute`.
+
+### `bulk_distribute` Signature Change (Breaking)
+
+Old: `(collectionId, seedId, recipients, quantity)`
+New: `{ to, items: [{seedId, quantity, originBlock}] }`
+
+- Max 50 distinct seeds per operation
+- Payload size validated (8KB limit, 90% safety margin → 7,372 bytes effective)
+- Optional `imageOverrides` for per-seed art customization
+- Optional `data`/`mutableData` for schema-based initial data
+
+### Auth Key Simplification
+
+Only `buy` requires active key. Everything else (mint, transfer, burn, list, lend, etc.) uses posting key. Our adapter was already correct (`useActiveKey: false` default).
+
+### New HiveSync Adapter Methods
+
+| Method | NFTLox Action | Key |
+|--------|--------------|-----|
+| `nftloxSetOwnerData(nftId, data)` | `set_owner_data` | Posting |
+| `nftloxExtendSchema(collectionId, fields)` | `extend_schema` | Posting |
+| `nftloxLendCard(nftId, borrower)` | `nft_lend` | Posting |
+| `nftloxReturnCard(nftId)` | `nft_return` | Posting |
+| `nftloxListCard(nftId, price, currency)` | `list` | Posting |
+| `nftloxBuyCard(listingId, nftId, seller, amount)` | `buy` | Active |
+
+### New Constants
+
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `NFTLOX_MAX_JSON_SIZE` | 8,000 | Max bytes per custom_json |
+| `NFTLOX_SAFE_PAYLOAD_MAX` | 7,372 | 90% safety margin |
+| `NFTLOX_MAX_BULK_ITEMS` | 50 | Max seeds per bulk_distribute |
+| `NFTLOX_MAX_DROP_TABLE` | 50 | Max entries in pack drop table |
+
+### Deterministic ID Generation
+
+All IDs are FNV-1a hash-based (no random, no timestamps):
+- Collection: `col_xxxxxxxxxxxx` from `(creator, name, symbol)`
+- Seed: `seed_xxxxxxxx` from `(collectionId, artId)`
+- Instance: `nft_xxxxxxxx_N_xxxx` from `(seedId, instanceNumber)`
+- Pack: `pack_xxxxxxxxxxxx` from `(collectionId, packName)`
+
+Pre-computable before minting. Admin panel can preview all IDs.
+
+### SPV Verification Expanded
+
+Full "Boleto Suizo" module:
+- `fetchTransaction()` — Hive L1 via HAFAH REST API
+- `verifyPackOpen()` — End-to-end pack open verification
+- `verifyNftOwnership()` — Current owner via L1 + indexer cross-check
+- `runAudit()` — Batch audit of recent pack opens
+
+### Multisig Marketplace Buy
+
+Atomic buy flow: buyer fetches payment splits → builds unsigned tx → indexer co-signs → buyer broadcasts. 1% protocol fee hardcoded. Ragnarok's own marketplace is simpler (no multisig needed).
+
+### Schema Field Type Update
+
+NFTLox Ragnarok templates use `uint16` for attack/health (our spec had `uint8` capping at 255). Update our schema to match:
+
+```
+"attack": "uint16",  // was uint8
+"health": "uint16",  // was uint8
+```
+
+### What NFTLox Still Doesn't Handle (Ragnarok Protocol)
+
+- Card merge (sacrifice 2 → 1 ascended)
+- Match results / ELO / ranked ladder
+- Reward claims
+- Genesis/seal ceremony
+- Poker combat state
+- Tournament brackets

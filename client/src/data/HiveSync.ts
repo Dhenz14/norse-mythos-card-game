@@ -399,8 +399,40 @@ export class HiveSync {
     return this.broadcastNFTLoxJson('pack_open', { packId, quantity });
   }
 
-  async nftloxBulkDistribute(collectionId: string, seedId: string, recipients: string[], quantity: number = 1): Promise<HiveBroadcastResult> {
-    return this.broadcastNFTLoxJson('bulk_distribute', { collectionId, seedId, recipients, quantity });
+  async nftloxBulkDistribute(
+    items: Array<{ seedId: string; quantity: number; originBlock?: number }>,
+    to?: string,
+    imageOverrides?: Record<string, string>
+  ): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('bulk_distribute', {
+      to: to || this.username,
+      items,
+      ...(imageOverrides ? { imageOverrides } : {}),
+    });
+  }
+
+  async nftloxSetOwnerData(nftId: string, mutableData: Record<string, unknown>): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('set_owner_data', { nftId, mutableData });
+  }
+
+  async nftloxExtendSchema(collectionId: string, newFields: Record<string, { type: string; mutable?: boolean }>): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('extend_schema', { collectionId, newFields });
+  }
+
+  async nftloxLendCard(nftId: string, borrower: string): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('nft_lend', { nftId, to: borrower });
+  }
+
+  async nftloxReturnCard(nftId: string): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('nft_return', { nftId });
+  }
+
+  async nftloxListCard(nftId: string, price: string, currency: string = 'HIVE', expiresInBlocks?: number): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('list', { nftId, price, currency, ...(expiresInBlocks ? { expiresInBlocks } : {}) });
+  }
+
+  async nftloxBuyCard(listingId: string, nftId: string, seller: string, amount: string): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('buy', { listingId, nftId, seller, amount }, true); // buy requires active key
   }
 
   /**
