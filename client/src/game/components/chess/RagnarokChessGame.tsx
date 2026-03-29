@@ -20,6 +20,7 @@ import { useUnifiedCombatStore } from '../../stores/unifiedCombatStore';
 import { getKingAbilityConfig, getAbilityDescription, requiresDirectionSelection, getAvailableDirections, MineDirection } from '../../utils/chess/kingAbilityUtils';
 import { Tooltip } from '../ui/Tooltip';
 import { debug } from '../../config/debugConfig';
+import { useGameStore } from '../../stores/gameStore';
 import { useCraftingStore } from '../../crafting/craftingStore';
 import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../utils/art/artMapping';
 import { assetPath } from '../../utils/assetPath';
@@ -710,6 +711,48 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     const attackerKingId = attackerArmy.king?.id;
     const defenderKingId = defenderArmy.king?.id;
     
+    // Set realm background from campaign mission (cosmetic only, no gameplay effects)
+    if (campaignData?.mission?.realm) {
+      const missionRealm = campaignData.mission.realm;
+      // Norse realms have dedicated art; non-Norse map to closest visual match
+      const REALM_VISUAL_MAP: Record<string, string> = {
+        // Norse (direct art)
+        ginnungagap: 'ginnungagap', midgard: 'midgard', asgard: 'asgard',
+        niflheim: 'niflheim', muspelheim: 'muspelheim', helheim: 'helheim',
+        jotunheim: 'jotunheim', alfheim: 'alfheim', vanaheim: 'vanaheim',
+        svartalfheim: 'svartalfheim',
+        // Greek → Norse visual proxies
+        chaos: 'ginnungagap', gaia_earth: 'vanaheim', mount_othrys: 'jotunheim',
+        tartarus: 'helheim', olympus: 'asgard', cilicia: 'muspelheim',
+        phlegra: 'muspelheim', athens: 'midgard',
+        // Egyptian → Norse visual proxies
+        heliopolis: 'asgard', thebes: 'midgard', duat: 'helheim',
+        memphis: 'svartalfheim', abydos: 'midgard',
+        // Celtic → Norse visual proxies
+        tara: 'vanaheim', emain_macha: 'midgard', cruachan: 'jotunheim',
+        tir_na_nog: 'alfheim', mag_mell: 'alfheim',
+        // Eastern → Norse visual proxies
+        celestial_court: 'asgard', takamagahara: 'asgard',
+        yomi: 'helheim', mount_meru: 'jotunheim', diyu: 'muspelheim',
+      };
+      const REALM_NAMES: Record<string, string> = {
+        ginnungagap: 'Ginnungagap', midgard: 'Midgard', asgard: 'Asgard',
+        niflheim: 'Niflheim', muspelheim: 'Muspelheim', helheim: 'Helheim',
+        jotunheim: 'Jotunheim', alfheim: 'Alfheim', vanaheim: 'Vanaheim',
+        svartalfheim: 'Svartalfheim',
+      };
+      const visualRealm = REALM_VISUAL_MAP[missionRealm] || 'midgard';
+      useGameStore.getState().setGameState({
+        activeRealm: {
+          id: visualRealm,
+          name: REALM_NAMES[visualRealm] || visualRealm,
+          description: '',
+          owner: 'player',
+          effects: [],
+        }
+      });
+    }
+
     // FIX: Human player should ALWAYS be in the "player" slot for combat UI
     // When AI attacks human, swap parameters so human remains as "player"
     const humanIsAttacker = attacker.owner === 'player';
