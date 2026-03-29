@@ -38,7 +38,7 @@
   padding-top: 4px;
 }
 
-/* Slot container */
+/* Slot container — sized exactly to card, no extra hitbox */
 .bf-slot {
   width: var(--bf-card-width);
   height: var(--bf-card-height);
@@ -48,6 +48,8 @@
   border-radius: 6px;
   transition: transform 0.2s ease;
   position: relative;
+  padding: 0;
+  margin: 0;
 }
 
 .bf-slot.empty {
@@ -106,7 +108,9 @@
   opacity: 1;
 }
 
-/* Card wrapper - handles hover and states */
+/* Card wrapper - hover/click only triggers on the visible card, not gap dead space.
+   pointer-events:none on wrapper, re-enabled on card children.
+   CSS :hover still activates on parent when a child is hovered (spec behavior). */
 .bf-card-wrapper {
   position: relative;
   width: 100%;
@@ -114,6 +118,13 @@
   cursor: pointer;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), z-index 0s;
   transform-origin: bottom center;
+  box-sizing: border-box;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.bf-card-wrapper > * {
+  pointer-events: auto;
 }
 
 .bf-card-wrapper:hover {
