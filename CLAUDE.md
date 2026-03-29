@@ -1752,6 +1752,26 @@ vercel --prod                 # Deploy to Vercel
   - Hellhounds: Stealth+damage → **Pure Burn** (Rush + face damage battlecries/deathrattles)
 - TypeScript: 0 errors
 
+### Completed (Mana Cap & UI Fixes)
+
+- Capped 22 super minions from 11-12 mana to 10 (max mana cap, no cost reduction mechanic)
+- Surtr's Creation Reborn token 11→10, Worldbreaker Wolf deathrattle token 12→10
+- 9 legitimate cost-reduction giants (12-20 base) left as-is — "Costs (1) less for each X" in description
+- Removed card flip hint icon (↻ Flip) that overlapped rarity number in deck builder detail popup
+- Precise card hover: `pointer-events: none` on `.bf-card-wrapper`, `auto` on card children — hover only triggers on visible card, not dead space between cards
+
+### Completed (Campaign Realm Backgrounds)
+
+- **Root fix**: `activeRealm` was never set during campaign combat — all 50 missions showed Midgard default
+- Now sets `gameState.activeRealm` from `mission.realm` before combat starts in RagnarokChessGame.tsx
+- Norse missions use dedicated realm art: Ginnungagap (procedural), Asgard, Niflheim, Muspelheim, Helheim, Jotunheim, Alfheim, Vanaheim (7 image files), Svartalfheim (procedural), Midgard (default)
+- 41 non-Norse missions map to closest Norse visual proxy:
+  - Greek: chaos→ginnungagap, olympus→asgard, tartarus→helheim, mount_othrys→jotunheim, athens→midgard, cilicia/phlegra→muspelheim
+  - Egyptian: duat→helheim, heliopolis→asgard, thebes/abydos→midgard, memphis→svartalfheim
+  - Celtic: tir_na_nog/mag_mell→alfheim, tara→vanaheim, cruachan→jotunheim, emain_macha→midgard
+  - Eastern: celestial_court/takamagahara→asgard, yomi→helheim, mount_meru→jotunheim, diyu→muspelheim
+- Future: add dedicated art + CSS classes for non-Norse realms, remove proxy mapping
+
 ### Next (Genesis Launch)
 
 - Admin panel built: `/admin` → Genesis Command Center (step-by-step ceremony UI with checklist)
