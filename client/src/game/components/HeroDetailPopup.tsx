@@ -1367,11 +1367,6 @@ export function HeroDetailPopup({ hero, isOpen, onClose, onSelect }: HeroDetailP
 										<div className="card-name-plate-name">{hero.name}</div>
 										{title && <div className="card-name-plate-title">{title}</div>}
 									</div>
-
-									<div className="card-flip-hint">
-										<span className="card-flip-hint-icon">&#x21BB;</span>
-										<span>Flip</span>
-									</div>
 								</div>
 							</div>
 
