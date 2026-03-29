@@ -6919,7 +6919,7 @@ const mythologyNorseCards: CardData[] = [
   {
     id: 32090,
     name: "Surtr's Creation Reborn",
-    manaCost: 11,
+    manaCost: 10,
     attack: 11,
     health: 11,
     type: 'minion',

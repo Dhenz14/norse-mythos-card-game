@@ -40,7 +40,7 @@ export const finalLegendaryCards: CardData[] = [
   {
     id: 95302,
     name: "Worldbreaker Wolf",
-    manaCost: 12,
+    manaCost: 10,
     attack: 12,
     health: 12,
     type: "minion",

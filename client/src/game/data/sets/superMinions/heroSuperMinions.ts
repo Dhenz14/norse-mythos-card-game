@@ -294,7 +294,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95004,
     name: "Phoenix of Alfheim",
-    manaCost: 11,
+    manaCost: 10,
     attack: 8,
     health: 8,
     type: "minion",
@@ -398,7 +398,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95008,
     name: "Titan of the Blazing Sun",
-    manaCost: 12,
+    manaCost: 10,
     attack: 10,
     health: 8,
     type: "minion",
@@ -526,7 +526,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95014,
     name: "Guardian of the Dead Gate",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 9,
     type: "minion",
@@ -578,7 +578,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95016,
     name: "Abyss of Eternal Night",
-    manaCost: 11,
+    manaCost: 10,
     attack: 8,
     health: 10,
     type: "minion",
@@ -684,7 +684,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95020,
     name: "Garmr, Hound of Helheim",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 9,
     type: "minion",
@@ -717,7 +717,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95021,
     name: "Tanngrisnir & Tanngnjóstr",
-    manaCost: 12,
+    manaCost: 10,
     attack: 10,
     health: 10,
     type: "minion",
@@ -748,7 +748,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95022,
     name: "Hrungnir's Heart",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 10,
     type: "minion",
@@ -772,7 +772,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95023,
     name: "Jörmungandr, World Serpent",
-    manaCost: 12,
+    manaCost: 10,
     attack: 8,
     health: 12,
     type: "minion",
@@ -871,7 +871,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95027,
     name: "Hammer of the Forge-Father",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 9,
     type: "minion",
@@ -951,7 +951,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95030,
     name: "Iron Boot of Ragnarok",
-    manaCost: 11,
+    manaCost: 10,
     attack: 10,
     health: 8,
     type: "minion",
@@ -1180,7 +1180,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95039,
     name: "Hera's Jealous Claim",
-    manaCost: 11,
+    manaCost: 10,
     attack: 8,
     health: 10,
     type: "minion",
@@ -1372,7 +1372,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95047,
     name: "Blainn's Masterwork",
-    manaCost: 12,
+    manaCost: 10,
     attack: 10,
     health: 12,
     type: "minion",
@@ -1497,7 +1497,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95052,
     name: "Trident of the Deep",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 9,
     type: "minion",
@@ -1526,7 +1526,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95053,
     name: "Unbound Wolf of Ragnarok",
-    manaCost: 12,
+    manaCost: 10,
     attack: 10,
     health: 10,
     type: "minion",
@@ -1576,7 +1576,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95055,
     name: "Níðhöggr, Corpse-Gnawer",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 8,
     type: "minion",
@@ -1675,7 +1675,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95059,
     name: "Fenrisúlfr, Winter's Maw",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 9,
     type: "minion",
@@ -1821,7 +1821,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95065,
     name: "Void-Bound Behemoth",
-    manaCost: 11,
+    manaCost: 10,
     attack: 10,
     health: 8,
     type: "minion",
@@ -1950,7 +1950,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95070,
     name: "Sarutahiko's Guidance",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 10,
     type: "minion",
@@ -2000,7 +2000,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95072,
     name: "Scales of Ma'at",
-    manaCost: 11,
+    manaCost: 10,
     attack: 9,
     health: 9,
     type: "minion",
@@ -2099,7 +2099,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95077,
     name: "Jörmungandr, the World Serpent",
-    manaCost: 11,
+    manaCost: 10,
     attack: 8,
     health: 10,
     type: "minion",
@@ -2207,7 +2207,7 @@ export const heroSuperMinions: CardData[] = [
   {
     id: 95081,
     name: "Hippocampus, Steed of the Depths",
-    manaCost: 11,
+    manaCost: 10,
     attack: 8,
     health: 8,
     type: "minion",
