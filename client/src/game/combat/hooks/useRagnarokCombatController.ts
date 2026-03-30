@@ -270,6 +270,7 @@ export function useRagnarokCombatController(
   useEffect(() => {
     if (combatState?.combatId) {
       setHeroPowerUsedThisTurn(false);
+      setWeaponUpgraded(false);
     }
   }, [combatState?.combatId]);
   
@@ -1014,7 +1015,8 @@ export function useRagnarokCombatController(
         showdownBackupTimerRef.current = null;
       }
     };
-  }, [showdownCelebration, heroDeathState?.isAnimating, handleCombatEnd, resolution]);
+  // handleCombatEnd excluded: stable ref-based callback; including it re-fires the 6s backup timer on every render
+  }, [showdownCelebration, heroDeathState?.isAnimating, resolution]);
 
   // RESOLUTION phase escape timer — safety net for rare freezes where showdown never triggers
   const resolutionEscapeRef = useRef<NodeJS.Timeout | null>(null);

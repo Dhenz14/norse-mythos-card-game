@@ -1056,8 +1056,8 @@ export const createPokerCombatSlice: StateCreator<
     const playerDamage = playerCommitted + wagerBonusDamageOpponent;
     const opponentDamage = opponentCommitted + wagerBonusDamagePlayer;
 
-    let playerFinalHealth = playerCurrentHP + wagerHealPlayer;
-    let opponentFinalHealth = opponentCurrentHP + wagerHealOpponent;
+    let playerFinalHealth = playerCurrentHP;
+    let opponentFinalHealth = opponentCurrentHP;
     
     const isCheckThrough = playerCommitted === 0 && opponentCommitted === 0;
     
@@ -1076,38 +1076,41 @@ export const createPokerCombatSlice: StateCreator<
     });
     
     if (winner === 'player') {
-      playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
-      
+      // Winner recovers committed HP + wager heals
+      playerFinalHealth = Math.min(playerCurrentHP + playerCommitted + wagerHealPlayer, playerMaxHP);
+
       if (isCheckThrough) {
         const checkPenalty = 2;
         if (opponentFinalArmor > 0) {
           const armorAbsorb = Math.min(opponentFinalArmor, checkPenalty);
           opponentFinalArmor -= armorAbsorb;
-          opponentFinalHealth = Math.max(0, opponentCurrentHP - (checkPenalty - armorAbsorb));
+          opponentFinalHealth = Math.max(0, opponentCurrentHP + wagerHealOpponent - (checkPenalty - armorAbsorb));
         } else {
-          opponentFinalHealth = Math.max(0, opponentCurrentHP - checkPenalty);
+          opponentFinalHealth = Math.max(0, opponentCurrentHP + wagerHealOpponent - checkPenalty);
         }
       } else {
-        opponentFinalHealth = opponentCurrentHP;
+        opponentFinalHealth = opponentCurrentHP + wagerHealOpponent;
       }
     } else if (winner === 'opponent') {
-      opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
-      
+      // Winner recovers committed HP + wager heals
+      opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted + wagerHealOpponent, opponentMaxHP);
+
       if (isCheckThrough) {
         const checkPenalty = 2;
         if (playerFinalArmor > 0) {
           const armorAbsorb = Math.min(playerFinalArmor, checkPenalty);
           playerFinalArmor -= armorAbsorb;
-          playerFinalHealth = Math.max(0, playerCurrentHP - (checkPenalty - armorAbsorb));
+          playerFinalHealth = Math.max(0, playerCurrentHP + wagerHealPlayer - (checkPenalty - armorAbsorb));
         } else {
-          playerFinalHealth = Math.max(0, playerCurrentHP - checkPenalty);
+          playerFinalHealth = Math.max(0, playerCurrentHP + wagerHealPlayer - checkPenalty);
         }
       } else {
-        playerFinalHealth = playerCurrentHP;
+        playerFinalHealth = playerCurrentHP + wagerHealPlayer;
       }
     } else {
-      playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
-      opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
+      // Draw: both recover committed HP + keep wager heals
+      playerFinalHealth = Math.min(playerCurrentHP + playerCommitted + wagerHealPlayer, playerMaxHP);
+      opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted + wagerHealOpponent, opponentMaxHP);
     }
     
     debug.combat('[UNIFIED HP RESOLUTION] After calculation:', {

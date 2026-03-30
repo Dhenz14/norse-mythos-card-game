@@ -53,7 +53,7 @@ export function killAllPokerVFX() {
 let pokerOrphanInterval: ReturnType<typeof setInterval> | null = null;
 
 export function startPokerOrphanSweep() {
-	if (pokerOrphanInterval) return;
+	if (pokerOrphanInterval) clearInterval(pokerOrphanInterval);
 	pokerOrphanInterval = setInterval(() => {
 		const container = document.getElementById(DRAMA_CONTAINER_ID);
 		if (!container || container.children.length === 0) return;

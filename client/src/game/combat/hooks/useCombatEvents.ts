@@ -69,9 +69,10 @@ export function useCombatEvents(options: UseCombatEventsOptions): void {
       return;
     }
 
-    hasResolvedRef.current = true;
     const result = resolveCombat();
-    if (result) {
+    if (!result) return; // Don't lock ref if resolution failed — allow retry
+    hasResolvedRef.current = true;
+    {
       const matchOver = result.playerFinalHealth <= 0 || result.opponentFinalHealth <= 0;
 
       if (matchOver) {
