@@ -2726,6 +2726,63 @@ export function executeBattlecry(
         return newState;
       }
 
+      case 'conditional_buff_self': {
+        const cbsCondition = battlecry.condition;
+        let cbsConditionMet = false;
+        if (cbsCondition === 'hero_hp_30_or_below') {
+          const heroHP = player.heroHealth ?? player.health ?? 100;
+          cbsConditionMet = heroHP <= 30;
+        }
+        if (cbsConditionMet) {
+          const sourceMinion = newState.players.player.battlefield.find((m: CardInstance) => m.instanceId === cardInstanceId);
+          if (sourceMinion) {
+            sourceMinion.currentAttack = (sourceMinion.currentAttack || 0) + (battlecry.buffAttack || 0);
+            sourceMinion.currentHealth = (sourceMinion.currentHealth || 0) + (battlecry.buffHealth || 0);
+            sourceMinion.card = { ...sourceMinion.card, attack: ((sourceMinion.card as any).attack ?? 0) + (battlecry.buffAttack || 0), health: ((sourceMinion.card as any).health ?? 0) + (battlecry.buffHealth || 0) } as any;
+            if (battlecry.grantKeywords) {
+              for (const kw of battlecry.grantKeywords) {
+                if (kw === 'rush') { sourceMinion.canAttack = true; sourceMinion.isSummoningSick = false; }
+                if (kw === 'divine_shield') { sourceMinion.hasDivineShield = true; }
+                if (kw === 'taunt') { sourceMinion.isTaunt = true; }
+              }
+            }
+          }
+        }
+        break;
+      }
+      case 'conditional_aoe': {
+        const caoCondition = battlecry.condition;
+        let caoConditionMet = false;
+        if (caoCondition === 'hero_hp_30_or_below') {
+          const heroHP = player.heroHealth ?? player.health ?? 100;
+          caoConditionMet = heroHP <= 30;
+        }
+        if (caoConditionMet && battlecry.damage) {
+          const deadMinions: string[] = [];
+          for (const m of newState.players.opponent.battlefield) {
+            m.currentHealth = (m.currentHealth || 0) - battlecry.damage;
+            if (m.currentHealth <= 0) deadMinions.push(m.instanceId);
+          }
+          for (const id of deadMinions) {
+            newState = destroyCard(newState, id, 'opponent');
+          }
+        }
+        break;
+      }
+      case 'buff_per_realm': {
+        const realmsCount = (newState.realmsVisited?.length || 0);
+        const bprMinion = newState.players.player.battlefield.find((m: CardInstance) => m.instanceId === cardInstanceId);
+        if (bprMinion && realmsCount > 0) {
+          bprMinion.currentAttack = (bprMinion.currentAttack || 0) + (battlecry.buffAttack || 0) * realmsCount;
+          bprMinion.currentHealth = (bprMinion.currentHealth || 0) + (battlecry.buffHealth || 0) * realmsCount;
+          bprMinion.card = { ...bprMinion.card, attack: ((bprMinion.card as any).attack ?? 0) + (battlecry.buffAttack || 0) * realmsCount, health: ((bprMinion.card as any).health ?? 0) + (battlecry.buffHealth || 0) * realmsCount } as any;
+          if (battlecry.bonusThreshold && realmsCount >= battlecry.bonusThreshold && battlecry.bonusKeyword === 'divine_shield') {
+            bprMinion.hasDivineShield = true;
+          }
+        }
+        break;
+      }
+
       default:
         debug.error('Unknown battlecry type: ' + battlecry.type);
         return newState;
@@ -2734,6 +2791,7 @@ export function executeBattlecry(
     debug.error('Error executing battlecry:', error);
     return state;
   }
+  return newState;
 }
 
 /**

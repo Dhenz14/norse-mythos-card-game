@@ -1,6 +1,6 @@
 import { GameState, CardInstance, Player, HeroClass, CardData } from '../types';
 import { debug, isAISimulationMode } from '../config/debugConfig';
-import { createStartingDeck, createClassDeck, drawCards, findCardInstance } from './cards/cardUtils';
+import { createStartingDeck, createClassDeck, drawCards, findCardInstance, createCardInstance } from './cards/cardUtils';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { getDefaultHeroPower, resetHeroPower, executeHeroPower } from './heroPowerUtils';
 import { requiresBattlecryTarget, executeBattlecry } from './battlecryUtils';
@@ -368,6 +368,16 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     }
   }
 
+  // Fateweave: if player has active Prophecy and a fateweave minion on board, spells cost (1) less
+  if (card.card.type === 'spell' && newState.prophecies && newState.prophecies.length > 0) {
+    const hasFateweave = newState.players[currentPlayer].battlefield.some(
+      m => m.card?.keywords?.includes('fateweave')
+    );
+    if (hasFateweave) {
+      effectiveManaCost = Math.max(0, effectiveManaCost - 1);
+    }
+  }
+
   if (isBloodPayment) {
     // Blood Price: check hero has enough health (must survive)
     const heroHealth = player.heroHealth ?? player.health ?? 100;
@@ -719,6 +729,11 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   // Alfheim realm: newly played minions get elusive
   if (newState.activeRealm?.id === 'alfheim') {
     (playedCard as any).hasElusive = true;
+  }
+
+  // Fateweave: +3 Attack if player has active Prophecy
+  if (hasKeyword(playedCard, 'fateweave') && newState.prophecies && newState.prophecies.length > 0) {
+    playedCard.currentAttack = (playedCard.currentAttack || 0) + 3;
   }
 
   // Pet element synergy: +1 Health when pet element matches hero element
@@ -2262,20 +2277,57 @@ function processAttackForOpponent(
     // Store the original attacker and defender IDs before manipulating the state
     const attackerId = attacker.instanceId;
     const defenderId = defender.instanceId;
-    
+
+    // Overkill: if attacker has overkill keyword and kills defender with excess damage, trigger effect
+    const opDefenderHP = newState.players.player.battlefield[defenderIndex]?.currentHealth || 0;
+    if (opDefenderHP <= 0 && hasKeyword(attacker, 'overkill')) {
+      const excessDamage = Math.abs(opDefenderHP);
+      if (excessDamage > 0) {
+        const desc = (attacker.card as any)?.description?.toLowerCase() || '';
+        if (desc.includes('excess damage to the enemy hero')) {
+          newState.players.player.heroHealth = Math.max(0, (newState.players.player.heroHealth ?? 0) - excessDamage);
+        } else if (desc.includes('gain +2/+2')) {
+          const atkIdx = newState.players.opponent.battlefield.findIndex(c => c.instanceId === attackerId);
+          if (atkIdx !== -1) {
+            newState.players.opponent.battlefield[atkIdx].currentAttack = (newState.players.opponent.battlefield[atkIdx].currentAttack || 0) + 2;
+            newState.players.opponent.battlefield[atkIdx].currentHealth = (newState.players.opponent.battlefield[atkIdx].currentHealth || 0) + 2;
+          }
+        } else if (desc.includes('summon a 5/5')) {
+          if (newState.players.opponent.battlefield.length < MAX_BATTLEFIELD_SIZE) {
+            const tokenCard = { id: 9071, name: 'Fire Elemental', type: 'minion', manaCost: 5, attack: 5, health: 5, rarity: 'common', race: 'Elemental', keywords: [], collectible: false };
+            const token = createCardInstance(tokenCard as any);
+            token.isSummoningSick = true;
+            token.canAttack = false;
+            newState.players.opponent.battlefield.push(token);
+          }
+        } else if (desc.includes('draw a card')) {
+          newState = drawCardFromDeck(newState, 'opponent');
+        } else if (desc.includes('gain 3 armor')) {
+          newState.players.opponent.heroArmor = (newState.players.opponent.heroArmor || 0) + 3;
+        } else if (desc.includes('summon a copy')) {
+          if (newState.players.opponent.battlefield.length < MAX_BATTLEFIELD_SIZE) {
+            const copyInstance = createCardInstance(attacker.card);
+            copyInstance.isSummoningSick = true;
+            copyInstance.canAttack = false;
+            newState.players.opponent.battlefield.push(copyInstance);
+          }
+        }
+      }
+    }
+
     // Check for defeated defender minion (0 or less health)
     if ((newState.players.player.battlefield[defenderIndex].currentHealth || 0) <= 0) {
       // Move the defender from the battlefield to the graveyard
       newState = destroyCard(newState, defenderId, 'player');
     }
-    
+
     // We need to find the attacker again as the indexes might have changed after destroying a minion
     const updatedAttackerIndex = newState.players.opponent.battlefield.findIndex(
       card => card.instanceId === attackerId
     );
-    
+
     // Only check attacker health if it's still on the battlefield
-    if (updatedAttackerIndex !== -1 && 
+    if (updatedAttackerIndex !== -1 &&
         (newState.players.opponent.battlefield[updatedAttackerIndex].currentHealth || 0) <= 0) {
       // Move the attacker from the battlefield to the graveyard
       newState = destroyCard(newState, attackerId, 'opponent');
@@ -2974,6 +3026,43 @@ export function processAttack(
   // Store the original attacker and defender IDs before manipulating the state
   const attackerId = attacker.instanceId;
   const defenderId = defender.instanceId;
+
+  // Overkill: if attacker has overkill keyword and kills defender with excess damage, trigger effect
+  const defenderHP = newState.players.opponent.battlefield[defenderIndex]?.currentHealth || 0;
+  if (defenderHP <= 0 && hasKeyword(attacker, 'overkill')) {
+    const excessDamage = Math.abs(defenderHP);
+    if (excessDamage > 0) {
+      const desc = (attacker.card as any)?.description?.toLowerCase() || '';
+      if (desc.includes('excess damage to the enemy hero')) {
+        newState.players.opponent.heroHealth = Math.max(0, (newState.players.opponent.heroHealth ?? 0) - excessDamage);
+      } else if (desc.includes('gain +2/+2')) {
+        const atkIdx = newState.players.player.battlefield.findIndex(c => c.instanceId === attackerId);
+        if (atkIdx !== -1) {
+          newState.players.player.battlefield[atkIdx].currentAttack = (newState.players.player.battlefield[atkIdx].currentAttack || 0) + 2;
+          newState.players.player.battlefield[atkIdx].currentHealth = (newState.players.player.battlefield[atkIdx].currentHealth || 0) + 2;
+        }
+      } else if (desc.includes('summon a 5/5')) {
+        if (newState.players.player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
+          const tokenCard = { id: 9071, name: 'Fire Elemental', type: 'minion', manaCost: 5, attack: 5, health: 5, rarity: 'common', race: 'Elemental', keywords: [], collectible: false };
+          const token = createCardInstance(tokenCard as any);
+          token.isSummoningSick = true;
+          token.canAttack = false;
+          newState.players.player.battlefield.push(token);
+        }
+      } else if (desc.includes('draw a card')) {
+        newState = drawCardFromDeck(newState, 'player');
+      } else if (desc.includes('gain 3 armor')) {
+        newState.players.player.heroArmor = (newState.players.player.heroArmor || 0) + 3;
+      } else if (desc.includes('summon a copy')) {
+        if (newState.players.player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
+          const copyInstance = createCardInstance(attacker.card);
+          copyInstance.isSummoningSick = true;
+          copyInstance.canAttack = false;
+          newState.players.player.battlefield.push(copyInstance);
+        }
+      }
+    }
+  }
 
   // Check for defeated defender minion (0 or less health)
   if ((newState.players.opponent.battlefield[defenderIndex]?.currentHealth || 0) <= 0) {

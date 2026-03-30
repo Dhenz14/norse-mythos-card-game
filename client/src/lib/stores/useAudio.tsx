@@ -38,7 +38,19 @@ export type SoundEffectType =
 	| 'mana_fill'
 	| 'mana_spend'
 	| 'fatigue'
-	| 'emote';
+	| 'emote'
+	| 'weapon_equip'
+	| 'weapon_break'
+	| 'secret_play'
+	| 'silence'
+	| 'buff'
+	| 'summon'
+	| 'death'
+	| 'mythic_entrance'
+	| 'pet_evolve'
+	| 'card_burn'
+	| 'card_attack'
+	| 'card_place';
 
 function createMusicTrack(src: string, loop: boolean, volume: number): Howl | null {
 	try {

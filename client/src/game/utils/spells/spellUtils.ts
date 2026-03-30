@@ -782,6 +782,13 @@ export function executeSpell(
           owner: caster as 'player' | 'opponent',
           effects: eff.realmEffects || [],
         };
+        // Yggdrasil's Gift: track unique realms visited
+        if (eff.realmId) {
+          if (!newState.realmsVisited) newState.realmsVisited = [];
+          if (!newState.realmsVisited.includes(eff.realmId)) {
+            newState.realmsVisited.push(eff.realmId);
+          }
+        }
         for (const realmEff of newState.activeRealm.effects) {
           if (realmEff.type === 'buff_all_attack') {
             for (const side of ['player', 'opponent'] as const) {
@@ -966,11 +973,69 @@ export function executeSpell(
       resultState = revealState;
       break;
     }
+    case 'buff_per_realm_aoe': {
+      const bpraState = structuredClone(state) as GameState;
+      const realmsCount = (state.realmsVisited?.length || 0);
+      if (realmsCount > 0) {
+        const bf = bpraState.players[bpraState.currentTurn].battlefield;
+        for (const m of bf) {
+          m.currentAttack = (m.currentAttack || 0) + ((effect as any).buffAttack || 0) * realmsCount;
+          m.currentHealth = (m.currentHealth || 0) + ((effect as any).buffHealth || 0) * realmsCount;
+        }
+      }
+      resultState = bpraState;
+      break;
+    }
+    case 'grant_blood_echo': {
+      const gbeState = structuredClone(state) as GameState;
+      const gbeTarget = gbeState.players[gbeState.currentTurn].battlefield.find(
+        (m: CardInstance) => m.instanceId === targetId
+      );
+      if (gbeTarget) {
+        const kws = gbeTarget.card.keywords || [];
+        if (!kws.includes('blood_echo')) (gbeTarget.card as any).keywords = [...kws, 'blood_echo'];
+        gbeTarget.currentAttack = (gbeTarget.currentAttack || 0) + ((effect as any).buffAttack || 0);
+        gbeTarget.currentHealth = (gbeTarget.currentHealth || 0) + ((effect as any).buffHealth || 0);
+        (gbeTarget.card as any).bloodPrice = gbeTarget.card.manaCost || 3;
+      }
+      resultState = gbeState;
+      break;
+    }
+    case 'grant_valhalla_call': {
+      const gvcState = structuredClone(state) as GameState;
+      const gvcTarget = gvcState.players[gvcState.currentTurn].battlefield.find(
+        (m: CardInstance) => m.instanceId === targetId && m.card?.keywords?.includes('einherjar')
+      );
+      if (gvcTarget) {
+        debug.state(`[Valhalla's Call] Granted to ${gvcTarget.card.name}`);
+      }
+      resultState = gvcState;
+      break;
+    }
+    case 'conditional_aoe': {
+      let caoState = structuredClone(state) as GameState;
+      const hasProphecy = (state.prophecies?.length || 0) > 0;
+      const caoDmg = hasProphecy ? ((effect as any).fateweaveValue || (effect as any).baseValue || 2) : ((effect as any).baseValue || 2);
+      const caoEnemySide: 'player' | 'opponent' = caoState.currentTurn === 'player' ? 'opponent' : 'player';
+      const caoDeadMinions: string[] = [];
+      for (const m of caoState.players[caoEnemySide].battlefield) {
+        m.currentHealth = (m.currentHealth || 0) - caoDmg;
+        if (m.currentHealth <= 0) caoDeadMinions.push(m.instanceId);
+      }
+      if (effect.targetType === 'all_enemies') {
+        caoState.players[caoEnemySide].heroHealth = Math.max(0, (caoState.players[caoEnemySide].heroHealth ?? 0) - caoDmg);
+      }
+      for (const id of caoDeadMinions) {
+        caoState = destroyCardFromZone(caoState, id, caoEnemySide);
+      }
+      resultState = caoState;
+      break;
+    }
     default:
       debug.error(`Unknown spell effect type: ${effect.type}`);
       return state;
   }
-  
+
   // Process secondary effects (e.g., heal + discover like Renew)
   if (effect.secondaryEffect) {
     

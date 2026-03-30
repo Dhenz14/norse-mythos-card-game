@@ -52,16 +52,32 @@ export interface DeckInfo {
 /**
  * Sound effect type for game audio
  */
-export type SoundEffectType = 
-  | 'card_draw' 
-  | 'card_play' 
-  | 'card_attack' 
+export type SoundEffectType =
+  | 'card_draw'
+  | 'card_play'
+  | 'card_attack'
   | 'card_place'
   | 'button_click'
   | 'game_start'
   | 'turn_end'
   | 'victory'
-  | 'defeat';
+  | 'defeat'
+  | 'weapon_equip'
+  | 'weapon_break'
+  | 'secret_play'
+  | 'silence'
+  | 'buff'
+  | 'damage'
+  | 'heal'
+  | 'summon'
+  | 'death'
+  | 'attack'
+  | 'hero_power'
+  | 'secret_trigger'
+  | 'turn_start'
+  | 'mythic_entrance'
+  | 'pet_evolve'
+  | 'card_burn';
 
 /**
  * Valid card types
@@ -949,6 +965,7 @@ export interface GameState {
   animations?: AnimationParams[];
   prophecies?: Prophecy[];
   activeRealm?: RealmState;
+  realmsVisited?: string[];
 }
 
 export interface Prophecy {

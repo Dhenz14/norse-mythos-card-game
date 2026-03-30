@@ -369,6 +369,80 @@ class AnimationSubscriberImpl {
       })
     );
 
+    // Weapon Equipped Animation
+    this.unsubscribes.push(
+      GameEventBus.subscribe<any>('WEAPON_EQUIPPED', (event) => {
+        this.queueAnimation({
+          type: 'weapon_equip',
+          sourceId: event.instanceId,
+          duration: 600,
+          priority: 7,
+          params: { cardName: event.cardName, player: event.player, attack: event.attack, durability: event.durability }
+        });
+      })
+    );
+
+    // Weapon Destroyed Animation
+    this.unsubscribes.push(
+      GameEventBus.subscribe<any>('WEAPON_DESTROYED', (event) => {
+        this.queueAnimation({
+          type: 'weapon_destroy',
+          duration: 500,
+          priority: 6,
+          params: { cardName: event.cardName, player: event.player }
+        });
+      })
+    );
+
+    // Secret (Rune) Played Animation
+    this.unsubscribes.push(
+      GameEventBus.subscribe<any>('SECRET_PLAYED', (event) => {
+        this.queueAnimation({
+          type: 'secret_played',
+          duration: 800,
+          priority: 7,
+          params: { player: event.player }
+        });
+      })
+    );
+
+    // Secret (Rune) Revealed Animation
+    this.unsubscribes.push(
+      GameEventBus.subscribe<any>('SECRET_REVEALED', (event) => {
+        this.queueAnimation({
+          type: 'secret_revealed',
+          duration: 1000,
+          priority: 9,
+          params: { secretName: event.secretName, player: event.player, triggerCard: event.triggerCard }
+        });
+      })
+    );
+
+    // Hero Power Used Animation
+    this.unsubscribes.push(
+      GameEventBus.subscribe<any>('HERO_POWER_USED', (event) => {
+        this.queueAnimation({
+          type: 'hero_power',
+          duration: 700,
+          priority: 7,
+          params: { player: event.player, heroPowerName: event.heroPowerName, manaCost: event.manaCost }
+        });
+      })
+    );
+
+    // Silence Applied Animation
+    this.unsubscribes.push(
+      GameEventBus.subscribe<any>('SILENCE_APPLIED', (event) => {
+        this.queueAnimation({
+          type: 'silence',
+          targetId: event.targetInstanceId,
+          duration: 500,
+          priority: 6,
+          params: { targetName: event.targetName }
+        });
+      })
+    );
+
     // Direct Animation Requests
     this.unsubscribes.push(
       GameEventBus.subscribe<AnimationRequestEvent>('ANIMATION_REQUEST', (event) => {

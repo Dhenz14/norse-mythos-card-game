@@ -157,6 +157,46 @@ export function initializeAudioSubscriber(): UnsubscribeFn {
     })
   );
 
+  // Weapon Equipped
+  unsubscribes.push(
+    GameEventBus.subscribe<any>('WEAPON_EQUIPPED', () => {
+      const audioStore = useAudio.getState();
+      audioStore.playSoundEffect('weapon_equip');
+    })
+  );
+
+  // Weapon Destroyed
+  unsubscribes.push(
+    GameEventBus.subscribe<any>('WEAPON_DESTROYED', () => {
+      const audioStore = useAudio.getState();
+      audioStore.playSoundEffect('weapon_break');
+    })
+  );
+
+  // Secret Played
+  unsubscribes.push(
+    GameEventBus.subscribe<any>('SECRET_PLAYED', () => {
+      const audioStore = useAudio.getState();
+      audioStore.playSoundEffect('secret_play');
+    })
+  );
+
+  // Silence Applied
+  unsubscribes.push(
+    GameEventBus.subscribe<any>('SILENCE_APPLIED', () => {
+      const audioStore = useAudio.getState();
+      audioStore.playSoundEffect('silence');
+    })
+  );
+
+  // Buff Applied
+  unsubscribes.push(
+    GameEventBus.subscribe<any>('BUFF_APPLIED', () => {
+      const audioStore = useAudio.getState();
+      audioStore.playSoundEffect('buff');
+    })
+  );
+
   // Turn Started
   unsubscribes.push(
     GameEventBus.subscribe<TurnStartedEvent>('TURN_STARTED', () => {

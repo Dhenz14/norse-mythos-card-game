@@ -286,6 +286,52 @@ export function destroyCard(
       debug.state(`[Einherjar] ${cardToDestroy!.card.name} shuffled back as ${risenCard.name} (gen ${einherjarGen + 1}) for ${playerId}`);
     }
 
+    // Blood Echo: add a 0-cost copy to owner's hand (costs bloodPrice HP to play)
+    const hadBloodEcho = cardToDestroy?.card?.keywords?.includes('blood_echo');
+    if (hadBloodEcho) {
+      const hand = newState.players[playerId].hand;
+      if (hand.length < MAX_HAND_SIZE) {
+        const echoCopy = createCardInstance({ ...cardToDestroy!.card } as any);
+        (echoCopy.card as any).manaCost = 0;
+        echoCopy.isSummoningSick = false;
+        hand.push(echoCopy);
+        debug.state(`[Blood Echo] ${cardToDestroy!.card.name} added 0-cost copy to ${playerId}'s hand (blood price: ${(cardToDestroy!.card as any).bloodPrice} HP)`);
+      }
+    }
+
+    // Valhalla's Call: track einherjar deaths, summon 5/5 Valkyrie after 3 returns
+    if (hadEinherjar && einherjarGen >= 2) {
+      if (newState.players[playerId].battlefield.length < MAX_BATTLEFIELD_SIZE) {
+        const valkyrieCard = {
+          id: 9070,
+          name: 'Valkyrie of Valhalla',
+          type: 'minion',
+          manaCost: 0,
+          attack: 5,
+          health: 5,
+          rarity: 'common',
+          keywords: ['taunt'],
+          description: 'Summoned by Valhalla\'s Call.',
+          collectible: false,
+        };
+        const valkyrieInstance = createCardInstance(valkyrieCard as any);
+        valkyrieInstance.isTaunt = true;
+        valkyrieInstance.isSummoningSick = true;
+        valkyrieInstance.canAttack = false;
+        newState.players[playerId].battlefield.push(valkyrieInstance);
+        debug.state(`[Valhalla's Call] Einherjar ${cardToDestroy!.card.name} died 3 times — summoning 5/5 Valkyrie for ${playerId}`);
+
+        const cardDesc = (cardToDestroy!.card as any).description || '';
+        if (cardDesc.includes('+2/+2')) {
+          for (const m of newState.players[playerId].battlefield) {
+            m.currentAttack = (m.currentAttack || 0) + 2;
+            m.currentHealth = (m.currentHealth || 0) + 2;
+          }
+          debug.state(`[Valhalla's Call] Eternal Shieldbearer: all friendlies gain +2/+2 for ${playerId}`);
+        }
+      }
+    }
+
     // Ragnarok Chain: process onPartnerDeath for chain partners
     const deadCardData = cardToDestroy?.card as any;
     if (deadCardData?.chainPartner) {
