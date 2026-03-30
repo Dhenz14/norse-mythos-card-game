@@ -7,6 +7,7 @@ import { useStarterStore } from '../stores/starterStore';
 import { getNFTBridge } from '../nft';
 import type { HiveCardAsset } from '../../data/schemas/HiveTypes';
 import PackOpeningAnimation from './packs/PackOpeningAnimation';
+import TreasureChestSVG from './packs/TreasureChestSVG';
 
 interface StarterPackCeremonyProps {
 	onComplete: () => void;
@@ -90,9 +91,9 @@ export default function StarterPackCeremony({ onComplete }: StarterPackCeremonyP
 						<motion.div
 							animate={{ y: [0, -10, 0] }}
 							transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-							className="text-7xl mb-6"
+							className="mb-6 flex justify-center"
 						>
-							⚔️
+							<TreasureChestSVG state="closed" size={200} />
 						</motion.div>
 
 						<h1

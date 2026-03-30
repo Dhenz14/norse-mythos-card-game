@@ -9,7 +9,7 @@ const GLOW_COLORS = {
   common: 'rgba(255, 255, 255, 0.7)',
   rare: 'rgba(0, 112, 221, 0.7)',
   epic: 'rgba(163, 53, 238, 0.7)',
-  legendary: 'rgba(255, 128, 0, 0.7)'
+  mythic: 'rgba(255, 128, 0, 0.7)'
 };
 const NOOP_ADD = () => {};
 const NOOP_DETAILS = () => {};

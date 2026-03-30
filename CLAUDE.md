@@ -1772,6 +1772,23 @@ vercel --prod                 # Deploy to Vercel
   - Eastern: celestial_court/takamagahara→asgard, yomi→helheim, mount_meru→jotunheim, diyu→muspelheim
 - Future: add dedicated art + CSS classes for non-Norse realms, remove proxy mapping
 
+### Completed (New Player Experience & Collection Overhaul)
+
+- **Treasure Chest SVG**: Replaced emoji icons (⚔️/📦) with premium inline SVG treasure chest in StarterPackCeremony + PackOpeningAnimation
+  - Closed state: wood grain pattern, 3 iron bands, gold trim, Norse knotwork, Algiz rune with pulsing glow, Valknut medallion, gold corner brackets, keyhole
+  - Open state: tilted lid, 7 golden light rays with staggered breathing, 9 sparkle particles, interior glow, golden mist
+  - New file: `client/src/game/components/packs/TreasureChestSVG.tsx`
+- **Collection Page art overhaul**: Grid cards and detail modal were rendering emojis (🌟/👑/⚔️) instead of card art
+  - Grid cards now show real card art via `getCardArtPath()` with class-colored gradient fallback
+  - Holographic foil effects (`.holo-foil` + `.holo-glitter` + `.holo-glare`) on rare/epic/mythic with mouse tracking
+  - Mana cost badge (blue circle), ATK/HP stats, dark gradient overlay for readability
+  - Proper `3:4` card aspect ratio, mint number shown only when available
+  - Detail modal: full card art at `4:3` aspect with vignette, mana cost badge, card description text
+- **Data completeness**: `loadLocalCollection()` now populates `description`, `attack`, `health`, `manaCost`, `class` field
+- **CollectionCard.tsx**: Fixed `GLOW_COLORS.legendary` → `GLOW_COLORS.mythic`
+- **holoEffect.css**: Added import to CollectionPage (was missing — holo layers rendered but had no styles)
+- TypeScript: 0 errors, production build clean
+
 ### Next (Genesis Launch)
 
 - Admin panel built: `/admin` → Genesis Command Center (step-by-step ceremony UI with checklist)

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
 import { getRarityColor, getRarityBorder, getRarityGlow, getRarityBackground, getTypeIcon } from '../../utils/rarityUtils';
 import { getCardArtPath } from '../../utils/art/artMapping';
+import TreasureChestSVG from './TreasureChestSVG';
 
 interface RevealedCard {
   id: number;
@@ -88,11 +89,11 @@ export default function PackOpeningAnimation({
             className="text-center"
           >
             <motion.div
-              animate={{ y: [0, -20, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="text-8xl mb-4"
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="mb-4 flex justify-center"
             >
-              📦
+              <TreasureChestSVG state="closed" size={240} />
             </motion.div>
             <h2 className="text-3xl font-bold text-white">{packName}</h2>
           </motion.div>
@@ -101,30 +102,17 @@ export default function PackOpeningAnimation({
         {phase === 'opening' && (
           <motion.div
             key="opening"
-            className="relative"
+            className="relative flex items-center justify-center"
           >
             <motion.div
               initial={{ scale: 1 }}
               animate={{
-                scale: [1, 1.2, 1.1, 1.3, 0],
-                rotate: [0, -5, 5, -10, 10, 0],
+                scale: [1, 1.05, 1.1, 1.15, 0],
               }}
               transition={{ duration: 1.5 }}
-              className="text-9xl relative"
+              className="relative"
             >
-              <motion.div
-                animate={{
-                  boxShadow: [
-                    '0 0 20px rgba(251,191,36,0.3)',
-                    '0 0 60px rgba(251,191,36,0.6)',
-                    '0 0 100px rgba(251,191,36,0.9)',
-                    '0 0 150px rgba(251,191,36,1)',
-                  ]
-                }}
-                transition={{ duration: 1.5 }}
-                className="absolute inset-0 rounded-full"
-              />
-              📦
+              <TreasureChestSVG state="open" size={280} />
             </motion.div>
 
             <motion.div

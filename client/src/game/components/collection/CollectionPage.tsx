@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { routes } from '../../../lib/routes';
 import { getRarityColor, getRarityBackground, getTypeIcon } from '../../utils/rarityUtils';
+import { getCardArtPath } from '../../utils/art/artMapping';
+import { getHoloTier, applyHoloVars, resetHoloVars } from '../../hooks/useHoloTracking';
 import type { OwnedCard, InventoryResponse, InventoryCard } from '../packs/types';
 import { getMasteryTier } from '../../../data/blockchain/cardXPSystem';
 import { useCraftingStore } from '../../crafting/craftingStore';
@@ -16,6 +18,7 @@ import { useNFTCollection } from '../../nft/hooks';
 import NFTProvenanceViewer from './NFTProvenanceViewer';
 import SendCardModal from './SendCardModal';
 import './collection.css';
+import '../styles/holoEffect.css';
 
 type FilterRarity = 'all' | 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
 type FilterType = 'all' | 'hero' | 'minion' | 'spell' | 'weapon';
@@ -121,8 +124,12 @@ export default function CollectionPage() {
 			name: c.name,
 			rarity: c.rarity || 'common',
 			type: c.type,
-			heroClass: (c as any).heroClass || (c as any).cardClass || 'neutral',
+			heroClass: (c as any).class || (c as any).heroClass || (c as any).cardClass || 'neutral',
 			quantity: 1,
+			description: (c as any).description,
+			attack: 'attack' in c ? (c as any).attack : undefined,
+			health: 'health' in c ? (c as any).health : undefined,
+			manaCost: (c as any).manaCost,
 		}));
 		setCards(localCards);
 		setTotalCards(localCards.length);
@@ -487,7 +494,7 @@ export default function CollectionPage() {
 														animate={{ opacity: 1, scale: 1 }}
 														onClick={() => setSelectedCard(card)}
 														className={`relative cursor-pointer rounded-xl overflow-hidden ${getFrameClass(card.rarity)}`}
-														style={{ background: 'linear-gradient(180deg, #1a1a2e 0%, #16162a 100%)' }}
+														style={{ background: 'linear-gradient(180deg, #1a1a2e 0%, #16162a 100%)', aspectRatio: '3 / 4' }}
 													>
 														{card.rarity !== 'common' && (
 															<div className={getShimmerClass(card.rarity)} />
@@ -499,44 +506,93 @@ export default function CollectionPage() {
 															</div>
 														)}
 
-														<div className="relative p-3">
-															<div className="flex justify-between items-start mb-1">
-																<span className="text-lg" title={card.type}>{getTypeIcon(card.type)}</span>
-																{card.quantity > 1 && (
-																	<div className="w-6 h-6 bg-amber-600 rounded-full flex items-center justify-center text-white font-bold text-[10px] border border-amber-400">
-																		x{card.quantity}
+														{/* Card art area with holo */}
+														{(() => {
+															const artPath = getCardArtPath(card.name, card.id);
+															const holoTier = getHoloTier(card.rarity);
+															return (
+																<div
+																	className={`relative h-full ${holoTier ?? ''}`}
+																	onMouseMove={holoTier ? (e) => { applyHoloVars(e.currentTarget as HTMLElement, e); } : undefined}
+																	onMouseLeave={holoTier ? (e) => { resetHoloVars(e.currentTarget as HTMLElement); } : undefined}
+																>
+																	{/* Art image */}
+																	<div className="relative w-full h-full overflow-hidden rounded-xl">
+																		{artPath ? (
+																			<img
+																				src={artPath}
+																				alt={card.name}
+																				className="w-full h-full object-cover"
+																				loading="lazy"
+																				draggable={false}
+																			/>
+																		) : (
+																			<div
+																				className="w-full h-full flex items-center justify-center"
+																				style={{ background: getClassGradient(card.heroClass) }}
+																			>
+																				<span className="text-4xl opacity-80">{getTypeIcon(card.type)}</span>
+																			</div>
+																		)}
+
+																		{/* Dark gradient overlay for text readability */}
+																		<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+																		{/* Holo layers */}
+																		{holoTier && (
+																			<>
+																				<div className="holo-foil" />
+																				<div className="holo-glitter" />
+																				<div className="holo-glare" />
+																			</>
+																		)}
 																	</div>
-																)}
-															</div>
 
-															<div
-																className="w-full aspect-square rounded-lg mb-2 flex items-center justify-center border border-white/10"
-																style={{ background: getClassGradient(card.heroClass) }}
-															>
-																<span className="text-4xl opacity-80">
-																	{card.rarity === 'mythic' ? '🌟' :
-																	 card.type === 'hero' ? '👑' :
-																	 card.type === 'spell' ? '✨' :
-																	 card.type === 'weapon' ? '🗡️' : '⚔️'}
-																</span>
-															</div>
+																	{/* Overlaid card info */}
+																	<div className="absolute inset-0 p-2.5 flex flex-col pointer-events-none">
+																		{/* Top row: mana cost + quantity */}
+																		<div className="flex justify-between items-start">
+																			{card.manaCost != null ? (
+																				<div className="w-6 h-6 rounded-full bg-blue-600/90 border border-blue-300/60 flex items-center justify-center text-white font-bold text-[11px] shadow-lg">
+																					{card.manaCost}
+																				</div>
+																			) : (
+																				<span className="text-base drop-shadow-lg" title={card.type}>{getTypeIcon(card.type)}</span>
+																			)}
+																			{card.quantity > 1 && (
+																				<div className="w-6 h-6 bg-amber-600 rounded-full flex items-center justify-center text-white font-bold text-[10px] border border-amber-400 shadow-lg">
+																					x{card.quantity}
+																				</div>
+																			)}
+																		</div>
 
-															<h3 className="text-xs font-bold text-white text-center truncate mb-0.5">{card.name}</h3>
-
-															<div className="text-center mb-1.5">
-																<span className={`text-[10px] font-semibold uppercase ${getRarityColor(card.rarity)}`}>
-																	{card.rarity}
-																</span>
-															</div>
-
-															<div className="text-center">
-																<span className="mint-badge">
-																	{card.mintNumber ? `#${card.mintNumber}` : '—'}
-																	<span className="text-gray-500 mx-0.5">/</span>
-																	{card.maxSupply?.toLocaleString() ?? '???'}
-																</span>
-															</div>
-														</div>
+																		{/* Bottom: name + rarity + stats */}
+																		<div className="mt-auto">
+																			<h3 className="text-xs font-bold text-white truncate drop-shadow-lg mb-0.5">{card.name}</h3>
+																			<div className="flex items-center justify-between">
+																				<span className={`text-[10px] font-semibold uppercase ${getRarityColor(card.rarity)}`} style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+																					{card.rarity}
+																				</span>
+																				{card.attack != null && card.health != null && (
+																					<span className="text-[10px] font-bold text-gray-200" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+																						{card.attack}/{card.health}
+																					</span>
+																				)}
+																			</div>
+																			{card.mintNumber != null && (
+																				<div className="text-center mt-1">
+																					<span className="mint-badge text-[9px]">
+																						#{card.mintNumber}
+																						<span className="text-gray-500 mx-0.5">/</span>
+																						{card.maxSupply?.toLocaleString() ?? '???'}
+																					</span>
+																				</div>
+																			)}
+																		</div>
+																	</div>
+																</div>
+															);
+														})()}
 													</motion.div>
 												);
 											})}
@@ -633,21 +689,47 @@ export default function CollectionPage() {
 								</div>
 
 								{/* Art Area */}
-								<div
-									className="w-full aspect-square rounded-xl mb-4 flex items-center justify-center border border-white/15"
-									style={{ background: getClassGradient(selectedCard.heroClass) }}
-								>
-									<span className="text-7xl opacity-80">
-										{selectedCard.rarity === 'mythic' ? '🌟' :
-										 										 selectedCard.type === 'hero' ? '👑' :
-										 selectedCard.type === 'spell' ? '✨' :
-										 selectedCard.type === 'weapon' ? '🗡️' : '⚔️'}
-									</span>
-								</div>
+								{(() => {
+									const modalArt = getCardArtPath(selectedCard.name, selectedCard.id);
+									return (
+										<div className="w-full aspect-[4/3] rounded-xl mb-4 overflow-hidden border border-white/15 relative group">
+											{modalArt ? (
+												<img
+													src={modalArt}
+													alt={selectedCard.name}
+													className="w-full h-full object-cover"
+													draggable={false}
+												/>
+											) : (
+												<div
+													className="w-full h-full flex items-center justify-center"
+													style={{ background: getClassGradient(selectedCard.heroClass) }}
+												>
+													<span className="text-7xl opacity-80">{getTypeIcon(selectedCard.type)}</span>
+												</div>
+											)}
+											{/* Subtle vignette overlay */}
+											<div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.5)]" />
+											{/* Mana cost badge */}
+											{selectedCard.manaCost != null && (
+												<div className="absolute top-2 left-2 w-8 h-8 rounded-full bg-blue-600 border-2 border-blue-300 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+													{selectedCard.manaCost}
+												</div>
+											)}
+										</div>
+									);
+								})()}
 
 								{/* Card Name */}
 								<h2 className="text-2xl font-bold text-white text-center mb-1">{selectedCard.name}</h2>
-								<p className="text-gray-400 text-sm text-center capitalize mb-4">{selectedCard.heroClass}</p>
+								<p className="text-gray-400 text-sm text-center capitalize mb-1">{selectedCard.heroClass}</p>
+
+								{/* Card Description */}
+								{selectedCard.description && (
+									<p className="text-gray-300 text-xs text-center leading-relaxed mb-3 px-2 italic">
+										{selectedCard.description}
+									</p>
+								)}
 
 								{/* Mint Number Plate */}
 								<div className="text-center mb-4">
