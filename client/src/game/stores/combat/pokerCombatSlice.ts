@@ -73,6 +73,17 @@ function hasWagerEffect(playerType: 'player' | 'opponent', effectType: string): 
 	return getActiveWagerEffects(playerType).find(w => w.type === effectType);
 }
 
+/** UI wager queries — components call these to check visual effects */
+export function shouldRevealOpponentCards(): boolean {
+	return !!hasWagerEffect('player', 'reveal_opponent_hole_cards');
+}
+export function shouldPeekNextCard(): boolean {
+	return !!hasWagerEffect('player', 'peek_next_community_card');
+}
+export function shouldHideOpponentActions(): boolean {
+	return !!hasWagerEffect('opponent', 'hide_bet_actions');
+}
+
 /**
  * Evaluate poker hand with caching for performance.
  * Delegates to HandEvaluator.ts via the cache utility.
@@ -786,6 +797,23 @@ export const createPokerCombatSlice: StateCreator<
       currentAction: undefined 
     };
     
+    // Wager: betting_round_damage — deal damage to enemy hero at start of each betting round
+    if (newPhase !== PokerCombatPhase.RESOLUTION && newPhase !== PokerCombatPhase.SPELL_PET && newPhase !== PokerCombatPhase.MULLIGAN) {
+      try {
+        const gs = (globalThis as Record<string, any>).__ragnarokGameStore?.getState()?.gameState;
+        if (gs) {
+          for (const m of (gs.players?.player?.battlefield || [])) {
+            const w = (m.card as any)?.wagerEffect;
+            if (w?.type === 'betting_round_damage') newOpponent.pet.stats.currentHealth = Math.max(0, newOpponent.pet.stats.currentHealth - (w.value || 0));
+          }
+          for (const m of (gs.players?.opponent?.battlefield || [])) {
+            const w = (m.card as any)?.wagerEffect;
+            if (w?.type === 'betting_round_damage') newPlayer.pet.stats.currentHealth = Math.max(0, newPlayer.pet.stats.currentHealth - (w.value || 0));
+          }
+        }
+      } catch { /* safe to skip */ }
+    }
+
     // Auto-post blinds when entering FAITH phase (NLH rules: SB=5, BB=10)
     let newPot = 0;
     let newCurrentBet = 0;
@@ -793,8 +821,12 @@ export const createPokerCombatSlice: StateCreator<
     let blindAllIn = false;
     
     if (newPhase === PokerCombatPhase.PRE_FLOP && !combatState.blindsPosted) {
-      const sbAmount = combatState.blindConfig?.smallBlind || BLINDS.SB;
-      const bbAmount = combatState.blindConfig?.bigBlind || BLINDS.BB;
+      // Wager: double_blinds_bonus_multiplier (Reckless Bettor) — doubles blinds for the wager owner
+      const recklessPlayer = hasWagerEffect('player', 'double_blinds_bonus_multiplier');
+      const recklessOpponent = hasWagerEffect('opponent', 'double_blinds_bonus_multiplier');
+      const blindMultiplier = (recklessPlayer || recklessOpponent) ? 2 : 1;
+      const sbAmount = (combatState.blindConfig?.smallBlind || BLINDS.SB) * blindMultiplier;
+      const bbAmount = (combatState.blindConfig?.bigBlind || BLINDS.BB) * blindMultiplier;
       
       const playerIsSB = combatState.playerPosition === 'small_blind';
       const sbPlayer = playerIsSB ? newPlayer : newOpponent;
@@ -890,14 +922,41 @@ export const createPokerCombatSlice: StateCreator<
       let playerFinalHealth = playerCurrentHP;
       let opponentFinalHealth = opponentCurrentHP;
       
-      // Winner recovers ONLY their own committed HP (back to pre-bet level)
-      // Loser's committed HP stays deducted (permanently lost)
+      // Winner recovers their own committed HP. Loser's stays deducted.
       if (winner === 'player') {
         playerFinalHealth = Math.min(playerCurrentHP + playerCommitted, playerMaxHP);
       } else {
         opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted, opponentMaxHP);
       }
-      
+
+      // Fold-specific wager effects
+      try {
+        const useGameStore = (globalThis as Record<string, any>).__ragnarokGameStore;
+        const gameState = useGameStore?.getState()?.gameState;
+        if (gameState) {
+          const winnerBf = gameState.players?.[winner]?.battlefield || [];
+          const loserSide = winner === 'player' ? 'opponent' : 'player';
+          const loserBf = gameState.players?.[loserSide]?.battlefield || [];
+          // on_opponent_fold_heal: winner's minion heals winner when opponent folds
+          for (const m of winnerBf) {
+            const w = (m.card as any)?.wagerEffect;
+            if (w?.type === 'on_opponent_fold_heal') {
+              if (winner === 'player') playerFinalHealth = Math.min(playerFinalHealth + (w.value || 0), playerMaxHP);
+              else opponentFinalHealth = Math.min(opponentFinalHealth + (w.value || 0), opponentMaxHP);
+            }
+          }
+          // fold_penalty_to_healing: loser's minion converts fold HP loss into healing
+          for (const m of loserBf) {
+            const w = (m.card as any)?.wagerEffect;
+            if (w?.type === 'fold_penalty_to_healing') {
+              const loserCommittedHP = winner === 'player' ? opponentCommitted : playerCommitted;
+              if (winner === 'player') opponentFinalHealth = Math.min(opponentCurrentHP + loserCommittedHP, opponentMaxHP);
+              else playerFinalHealth = Math.min(playerCurrentHP + loserCommittedHP, playerMaxHP);
+            }
+          }
+        }
+      } catch { /* safe to skip */ }
+
       const loserCommitted = winner === 'player' ? opponentCommitted : playerCommitted;
       
       const emptyHand: EvaluatedHand = {
@@ -979,7 +1038,22 @@ export const createPokerCombatSlice: StateCreator<
     
     const playerHand = evaluatePokerHand(combatState.player.holeCards, communityCards);
     const opponentHand = evaluatePokerHand(combatState.opponent.holeCards, communityCards);
-    
+
+    // Wager: hand_rank_upgrade (Loki's Loaded Dice) — boost rank before winner determination
+    try {
+      const gs = (globalThis as Record<string, any>).__ragnarokGameStore?.getState()?.gameState;
+      if (gs) {
+        for (const m of (gs.players?.player?.battlefield || [])) {
+          const w = (m.card as any)?.wagerEffect;
+          if (w?.type === 'hand_rank_upgrade') playerHand.rank = Math.min(10, playerHand.rank + (w.ranks || 1));
+        }
+        for (const m of (gs.players?.opponent?.battlefield || [])) {
+          const w = (m.card as any)?.wagerEffect;
+          if (w?.type === 'hand_rank_upgrade') opponentHand.rank = Math.min(10, opponentHand.rank + (w.ranks || 1));
+        }
+      }
+    } catch { /* safe to skip */ }
+
     let winner: 'player' | 'opponent' | 'draw';
     if (playerHand.rank > opponentHand.rank) {
       winner = 'player';
@@ -1001,6 +1075,11 @@ export const createPokerCombatSlice: StateCreator<
     let wagerBonusDamageOpponent = 0;
     let wagerHealPlayer = 0;
     let wagerHealOpponent = 0;
+    let wagerDrawPlayer = 0;
+    let wagerDrawOpponent = 0;
+    let wagerAoeDamagePlayer = 0;
+    let wagerAoeDamageOpponent = 0;
+    let showdownMultiplier = 1;
     try {
       const useGameStore = (globalThis as Record<string, any>).__ragnarokGameStore;
       const gameState = useGameStore?.getState()?.gameState;
@@ -1008,58 +1087,75 @@ export const createPokerCombatSlice: StateCreator<
         const playerBf = gameState.players?.player?.battlefield || [];
         const opponentBf = gameState.players?.opponent?.battlefield || [];
 
-        for (const m of playerBf) {
-          const wager = (m.card as any)?.wagerEffect;
-          if (!wager) continue;
+        const applyShowdownWager = (wager: any, side: 'player' | 'opponent', hand: EvaluatedHand) => {
+          const isWinner = winner === side;
+          const isAllIn = side === 'player'
+            ? combatState.player.pet.stats.currentHealth === 0
+            : combatState.opponent.pet.stats.currentHealth === 0;
+
           switch (wager.type) {
-            case 'showdown_aoe_damage':
-              // Storm Caller: deal damage to all enemy minions (handled post-combat by game engine)
-              break;
             case 'showdown_win_armor':
-              if (winner === 'player') wagerHealPlayer += (wager.value || 0);
-              break;
-            case 'showdown_hand_rank_draw':
-              // Draw cards if hand rank meets minimum — handled by game engine post-combat
+              if (isWinner) { if (side === 'player') wagerHealPlayer += (wager.value || 0); else wagerHealOpponent += (wager.value || 0); }
               break;
             case 'showdown_coin_flip':
-              if (Math.random() < (wager.chance || 0.5)) wagerBonusDamagePlayer += (wager.damage || 0);
-              break;
-            case 'on_opponent_fold_heal':
-              // Only on fold — handled separately
+              if (Math.random() < (wager.chance || 0.5)) { if (side === 'player') wagerBonusDamagePlayer += (wager.damage || 0); else wagerBonusDamageOpponent += (wager.damage || 0); }
               break;
             case 'showdown_win_rank_damage':
-              if (winner === 'player') wagerBonusDamagePlayer += playerHand.rank;
+              if (isWinner) { if (side === 'player') wagerBonusDamagePlayer += hand.rank; else wagerBonusDamageOpponent += hand.rank; }
+              break;
+            case 'showdown_aoe_damage':
+              if (side === 'player') wagerAoeDamagePlayer += (wager.value || 0); else wagerAoeDamageOpponent += (wager.value || 0);
+              break;
+            case 'showdown_hand_rank_draw':
+              if (isWinner && hand.rank >= (wager.minRank || 0)) { if (side === 'player') wagerDrawPlayer += (wager.drawCount || 0); else wagerDrawOpponent += (wager.drawCount || 0); }
+              break;
+            case 'showdown_win_draw_and_damage':
+              if (isWinner) {
+                if (side === 'player') { wagerDrawPlayer += (wager.drawCount || 0); wagerBonusDamagePlayer += (wager.damage || 0); }
+                else { wagerDrawOpponent += (wager.drawCount || 0); wagerBonusDamageOpponent += (wager.damage || 0); }
+              }
               break;
             case 'double_showdown_multiplier':
-              // Already applied at evaluation time if we wire it there
+              showdownMultiplier *= 2;
+              break;
+            case 'all_in_bonus_with_cost':
+              if (isAllIn) {
+                if (side === 'player') { wagerBonusDamagePlayer += (wager.bonusDamage || 0); wagerHealPlayer -= (wager.selfDamage || 0); }
+                else { wagerBonusDamageOpponent += (wager.bonusDamage || 0); wagerHealOpponent -= (wager.selfDamage || 0); }
+              }
+              break;
+            // Betting-phase/UI effects — not resolved at showdown
+            case 'on_opponent_fold_heal':
+            case 'fold_penalty_to_healing':
+            case 'all_in_buff_minions':
+            case 'reveal_opponent_hole_cards':
+            case 'peek_next_community_card':
+            case 'hide_bet_actions':
+            case 'increase_min_bet':
+            case 'reduce_fold_penalty':
+            case 'double_blinds_bonus_multiplier':
+            case 'betting_round_damage':
+            case 'hand_rank_upgrade':
               break;
           }
+        };
+
+        for (const m of playerBf) {
+          const wager = (m.card as any)?.wagerEffect;
+          if (wager) applyShowdownWager(wager, 'player', playerHand);
         }
         for (const m of opponentBf) {
           const wager = (m.card as any)?.wagerEffect;
-          if (!wager) continue;
-          switch (wager.type) {
-            case 'showdown_win_armor':
-              if (winner === 'opponent') wagerHealOpponent += (wager.value || 0);
-              break;
-            case 'showdown_coin_flip':
-              if (Math.random() < (wager.chance || 0.5)) wagerBonusDamageOpponent += (wager.damage || 0);
-              break;
-            case 'showdown_win_rank_damage':
-              if (winner === 'opponent') wagerBonusDamageOpponent += opponentHand.rank;
-              break;
-          }
+          if (wager) applyShowdownWager(wager, 'opponent', opponentHand);
         }
       }
     } catch { /* game state unavailable during pure poker — safe to skip */ }
 
-    const playerDamage = playerCommitted + wagerBonusDamageOpponent;
-    const opponentDamage = opponentCommitted + wagerBonusDamagePlayer;
+    const playerDamage = (playerCommitted + wagerBonusDamagePlayer) * showdownMultiplier;
+    const opponentDamage = (opponentCommitted + wagerBonusDamageOpponent) * showdownMultiplier;
 
     let playerFinalHealth = playerCurrentHP;
     let opponentFinalHealth = opponentCurrentHP;
-    
-    const isCheckThrough = playerCommitted === 0 && opponentCommitted === 0;
     
     debug.combat('[UNIFIED HP RESOLUTION] Before calculation:', {
       winner,
@@ -1070,7 +1166,6 @@ export const createPokerCombatSlice: StateCreator<
       playerArmor: playerFinalArmor,
       opponentArmor: opponentFinalArmor,
       pot: combatState.pot,
-      isCheckThrough,
       playerHandRank: playerHand.displayName,
       opponentHandRank: opponentHand.displayName
     });
@@ -1078,35 +1173,11 @@ export const createPokerCombatSlice: StateCreator<
     if (winner === 'player') {
       // Winner recovers committed HP + wager heals
       playerFinalHealth = Math.min(playerCurrentHP + playerCommitted + wagerHealPlayer, playerMaxHP);
-
-      if (isCheckThrough) {
-        const checkPenalty = 2;
-        if (opponentFinalArmor > 0) {
-          const armorAbsorb = Math.min(opponentFinalArmor, checkPenalty);
-          opponentFinalArmor -= armorAbsorb;
-          opponentFinalHealth = Math.max(0, opponentCurrentHP + wagerHealOpponent - (checkPenalty - armorAbsorb));
-        } else {
-          opponentFinalHealth = Math.max(0, opponentCurrentHP + wagerHealOpponent - checkPenalty);
-        }
-      } else {
-        opponentFinalHealth = opponentCurrentHP + wagerHealOpponent;
-      }
+      opponentFinalHealth = opponentCurrentHP + wagerHealOpponent;
     } else if (winner === 'opponent') {
       // Winner recovers committed HP + wager heals
       opponentFinalHealth = Math.min(opponentCurrentHP + opponentCommitted + wagerHealOpponent, opponentMaxHP);
-
-      if (isCheckThrough) {
-        const checkPenalty = 2;
-        if (playerFinalArmor > 0) {
-          const armorAbsorb = Math.min(playerFinalArmor, checkPenalty);
-          playerFinalArmor -= armorAbsorb;
-          playerFinalHealth = Math.max(0, playerCurrentHP + wagerHealPlayer - (checkPenalty - armorAbsorb));
-        } else {
-          playerFinalHealth = Math.max(0, playerCurrentHP + wagerHealPlayer - checkPenalty);
-        }
-      } else {
-        playerFinalHealth = playerCurrentHP + wagerHealPlayer;
-      }
+      playerFinalHealth = playerCurrentHP + wagerHealPlayer;
     } else {
       // Draw: both recover committed HP + keep wager heals
       playerFinalHealth = Math.min(playerCurrentHP + playerCommitted + wagerHealPlayer, playerMaxHP);
@@ -1122,8 +1193,7 @@ export const createPokerCombatSlice: StateCreator<
       playerFinalArmor,
       opponentFinalArmor,
       winnerRecovered: winner === 'player' ? playerCommitted : winner === 'opponent' ? opponentCommitted : 0,
-      loserLostPermanently: winner === 'player' ? opponentCommitted : winner === 'opponent' ? playerCommitted : 0,
-      isCheckThrough
+      loserLostPermanently: winner === 'player' ? opponentCommitted : winner === 'opponent' ? playerCommitted : 0
     });
     
     const resolution: CombatResolution = {
@@ -1134,7 +1204,11 @@ export const createPokerCombatSlice: StateCreator<
       playerDamage: winner === 'player' ? 0 : playerDamage,
       opponentDamage: winner === 'opponent' ? 0 : opponentDamage,
       playerFinalHealth: Math.max(0, playerFinalHealth),
-      opponentFinalHealth: Math.max(0, opponentFinalHealth)
+      opponentFinalHealth: Math.max(0, opponentFinalHealth),
+      wagerDrawPlayer: wagerDrawPlayer || undefined,
+      wagerDrawOpponent: wagerDrawOpponent || undefined,
+      wagerAoeDamagePlayer: wagerAoeDamagePlayer || undefined,
+      wagerAoeDamageOpponent: wagerAoeDamageOpponent || undefined,
     };
     
     const stateForUpdate = get();

@@ -389,6 +389,11 @@ export interface CombatResolution {
   opponentFinalHealth: number;
   foldPenalty?: number; // Damage taken by folder (SB + ANTE + committed HP = ~6+ HP)
   whoFolded?: 'player' | 'opponent'; // Who folded (also loses 1 STA)
+  // Wager effect metadata for post-combat card game layer
+  wagerDrawPlayer?: number;          // Cards to draw for player
+  wagerDrawOpponent?: number;        // Cards to draw for opponent
+  wagerAoeDamagePlayer?: number;     // AOE to enemy minions (player's wager)
+  wagerAoeDamageOpponent?: number;   // AOE to enemy minions (opponent's wager)
 }
 
 /**
