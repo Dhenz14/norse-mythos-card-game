@@ -42,7 +42,7 @@ export function getActionPermissions(
   
   const actor = isPlayer ? combatState.player : combatState.opponent;
   const opponent = isPlayer ? combatState.opponent : combatState.player;
-  const minBet = combatState.minBet || 5;
+  const minBet = combatState.minBet || 10;
   
   const toCall = Math.max(0, combatState.currentBet - actor.hpCommitted);
   const hasBetToCall = toCall > 0;
@@ -291,7 +291,7 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
     completeFirstStrike: () => {
       completeFirstStrikeFn();
     },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Deps intentionally limited — adapter identity should only change on these 4 values
   }), [combatState, deck, isActive, mulliganComplete]);
 }
 

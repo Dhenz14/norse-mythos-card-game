@@ -1789,6 +1789,35 @@ vercel --prod                 # Deploy to Vercel
 - **holoEffect.css**: Added import to CollectionPage (was missing — holo layers rendered but had no styles)
 - TypeScript: 0 errors, production build clean
 
+### Completed (Pre-Launch Poker Combat Audit)
+
+- **7 poker bugs fixed**: wager heal overwrite in draw/showdown, weapon upgrade stuck per-combat, backup timer re-fire, hasResolvedRef lock, damage animation timeout leak, orphan interval accumulation
+- **Check-through penalty removed**: fake 2 HP penalty when both check — not real poker, winner simply recovers committed HP
+- **All 19 wager effects implemented** across 3 layers:
+  - Showdown: armor, coin flip, rank damage, AOE, hand rank draw, draw+damage, double multiplier, all-in bonus+cost
+  - Betting: betting_round_damage (per-phase tick), doubled blinds, increased min bet
+  - Fold: opponent fold heal, fold penalty to healing, reduce fold penalty
+  - Evaluation: hand_rank_upgrade (boost rank before winner calc)
+  - UI queries: `shouldRevealOpponentCards()`, `shouldPeekNextCard()`, `shouldHideOpponentActions()`
+  - Post-combat: all-in buff minions, AOE to enemy minions
+- **CombatResolution** extended with `wagerDrawPlayer`, `wagerDrawOpponent`, `wagerAoeDamagePlayer`, `wagerAoeDamageOpponent`
+- P2P disconnect: 15s grace period confirmed correct (no AI takeover, message buffering, reconnect countdown)
+
+### Completed (Pre-Launch Effects & Animation Audit)
+
+- **6 keyword mechanics implemented** (were card-data-only stubs with no game logic):
+  - Blood Echo (`zoneUtils.ts`): die → 0-cost copy to hand with original bloodPrice HP cost
+  - Ragnarok Threshold (`battlecryUtils.ts`): `conditional_buff_self` + `conditional_aoe` when hero ≤30 HP
+  - Fateweave (`gameUtils.ts`): spells cost (1) less with active Prophecy + fateweave minion; minions +3 ATK on play
+  - Yggdrasil's Gift (`battlecryUtils.ts` + `spellUtils.ts`): `buff_per_realm` + `buff_per_realm_aoe`; tracks `GameState.realmsVisited[]`
+  - Valhalla's Call (`zoneUtils.ts`): einherjar 3rd death summons 5/5 Valkyrie with Taunt
+  - Overkill (`gameUtils.ts` both attack paths): excess damage triggers card-specific effects
+- **4 new spell cases**: `grant_blood_echo`, `grant_valhalla_call`, `buff_per_realm_aoe`, `conditional_aoe` (fateweave-aware)
+- **6 animation events wired** (were silent): WEAPON_EQUIPPED, WEAPON_DESTROYED, SECRET_PLAYED, SECRET_REVEALED, HERO_POWER_USED, SILENCE_APPLIED
+- **5 audio events added**: weapon_equip, weapon_break, secret_play, silence, buff
+- **SoundEffectType** expanded with 14 new types across both type definitions
+- **Audit verified**: 95 battlecry handlers (0 stubs), 16+15 deathrattle handlers (0 missing), 71+208 spell handlers (0 stubs)
+
 ### Next (Genesis Launch)
 
 - Admin panel built: `/admin` → Genesis Command Center (step-by-step ceremony UI with checklist)

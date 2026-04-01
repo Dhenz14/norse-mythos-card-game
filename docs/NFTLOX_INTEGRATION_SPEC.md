@@ -559,3 +559,108 @@ NFTLox Ragnarok templates use `uint16` for attack/health (our spec had `uint8` c
 - Genesis/seal ceremony
 - Poker combat state
 - Tournament brackets
+
+---
+
+## 13. NFTLox Protocol Updates (2026-03-29 Audit — v0.4.0)
+
+Protocol version bumped from **0.3.0 to 0.4.0**. Same 25 actions, but significant key type and structural changes.
+
+### Key Type Reclassification (Security Tightening)
+
+The biggest change — asset-moving operations now require active key:
+
+| Action | v0.3.0 Key | v0.4.0 Key | Rationale |
+|--------|-----------|-----------|-----------|
+| `transfer` | Posting | **Active** | Asset transfer is high-risk |
+| `burn` | Posting | **Active** | Permanent destruction is high-risk |
+| `list` | Posting | **Active** | Marketplace listing is high-risk |
+| `data_operator_approve` | Posting | **Active** | Delegation is high-risk |
+| `unlist` | Active | **Posting** | Delisting is low-risk (reduces friction) |
+
+**Impact on our adapter:** `nftloxListCard`, `nftloxTransferCard`, `nftloxBurnCard`, `nftloxDataOperatorApprove` now pass `useActiveKey: true`. `nftloxUnlistCard` uses posting (default).
+
+This contradicts our Section 12 note that "Only `buy` requires active key" — that was correct for v0.3.0 but is now outdated. **Active key actions (v0.4.0): transfer, burn, list, buy, pack_buy, pack_transfer, nft_approve, nft_approve_all, pack_approve, data_operator_approve (10 total).**
+
+### 3-Tier Data Model (ownerData)
+
+NFTs now have THREE data layers:
+
+| Layer | Writer | Mutability | Use Case |
+|-------|--------|-----------|----------|
+| `immutableData` | Creator (at mint) | Never changes | card_id, name, type, rarity, class, mana_cost, attack, health, race, set |
+| `mutableData` | Creator / data operators | `set_data` / `set_data_from` | level, xp, foil (admin-controlled progression) |
+| `ownerData` | NFT owner only | `set_owner_data` | Player-controlled data (custom name, notes, display preferences) |
+
+Our `nftloxSetOwnerData(nftId, ownerData)` sends the `ownerData` field (not `mutableData`).
+
+### Build API Improvements
+
+- **`keyType` field in response** — response now tells the caller which Hive key to sign with
+- **`warnings[]` array** — advisory messages (high royalty, large supply, etc.)
+- Our adapter doesn't use the Build API (we construct payloads locally), but these are useful for the Admin Panel
+
+### Protocol Fee Formalization
+
+- **1.0% fee on every marketplace sale**, paid to the co-signing indexer node
+- `calculatePaymentSplit(price, royaltyPct)` → `{ seller, royalty, fee }` amounts
+- Fee is taken from the buyer's payment before seller/royalty split
+- Min price: 0.001 HIVE/HBD (exactly 3 decimal places)
+
+### Hash Version Header
+
+- `hashVersion: "v1"` field now appears in API responses
+- Signals the hash algorithm used for data hashes (currently SHA-256)
+- Forward-compatible: when hash algorithm changes, field increments
+
+### Listing Expiration
+
+- `expiresAt` field on marketplace listings (block-based, deterministic)
+- Our `nftloxListCard` already accepts `expiresInBlocks` parameter — compatible
+
+### Rate Limiting
+
+- 1,000 requests/min per IP with standard `X-RateLimit-*` headers
+- 2s cache for data endpoints, 10s for stats
+- Our client-side replay engine doesn't hit their API directly (reads from Hive L1), so no impact
+
+### New Adapter Methods (v0.4.0)
+
+| Method | NFTLox Action | Key | Purpose |
+|--------|--------------|-----|---------|
+| `nftloxTransferCard(nftId, to, memo?)` | `transfer` | Active | Transfer NFT to another account |
+| `nftloxBurnCard(nftId)` | `burn` | Active | Permanently destroy NFT |
+| `nftloxUnlistCard(nftId)` | `unlist` | Posting | Remove marketplace listing |
+| `nftloxReplicate(seedId, to?)` | `replicate` | Posting | Create replica of seed |
+| `nftloxDataOperatorApprove(collectionId, operator, approved)` | `data_operator_approve` | Active | Approve/revoke data operator |
+
+### Complete Key Assignment Table (v0.4.0)
+
+**Active Key (10):** transfer, burn, list, buy, pack_buy, pack_transfer, nft_approve, nft_approve_all, pack_approve, data_operator_approve
+
+**Posting Key (15):** create_collection, mint, replicate, bulk_distribute, set_data, set_owner_data, extend_schema, unlist, pack_create, pack_open, nft_transfer_from, pack_transfer_from, set_data_from, nft_lend, nft_return
+
+### Indexer Client Library
+
+17-method portable API client using only `fetch()` (browser-compatible):
+
+```
+getStatus(), getHealth(), getStats(), getCollections(), getCollection(),
+getCollectionNfts(), getCollectionStats(), getNft(), getNftInstances(),
+getUserNfts(), getUserNftCounts(), getUserCollections(), getUserPacks(),
+getListings(), getPaymentInfo(), multisig(), getPacks(), getPack()
+```
+
+We may wire this into a future "NFTLox Explorer" panel, but our primary indexing runs client-side via Hive L1 chain replay.
+
+### SPV Verification Expanded
+
+Full "Boleto Suizo" module with 8 functions:
+
+```
+runAudit(), runSingleVerification(), verifyNftOwnership(),
+verifyOperationOnChain(), fetchTransaction(), parseNftloxOperation(),
+replayDropTableResolution(), verifyDeterministicDerivation()
+```
+
+Can be wired into a "Verify on Chain" button in our collection UI for trustless ownership proof.

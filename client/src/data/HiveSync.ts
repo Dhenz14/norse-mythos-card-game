@@ -411,8 +411,8 @@ export class HiveSync {
     });
   }
 
-  async nftloxSetOwnerData(nftId: string, mutableData: Record<string, unknown>): Promise<HiveBroadcastResult> {
-    return this.broadcastNFTLoxJson('set_owner_data', { nftId, mutableData });
+  async nftloxSetOwnerData(nftId: string, ownerData: Record<string, unknown>): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('set_owner_data', { nftId, ownerData });
   }
 
   async nftloxExtendSchema(collectionId: string, newFields: Record<string, { type: string; mutable?: boolean }>): Promise<HiveBroadcastResult> {
@@ -428,7 +428,27 @@ export class HiveSync {
   }
 
   async nftloxListCard(nftId: string, price: string, currency: string = 'HIVE', expiresInBlocks?: number): Promise<HiveBroadcastResult> {
-    return this.broadcastNFTLoxJson('list', { nftId, price, currency, ...(expiresInBlocks ? { expiresInBlocks } : {}) });
+    return this.broadcastNFTLoxJson('list', { nftId, price, currency, ...(expiresInBlocks ? { expiresInBlocks } : {}) }, true);
+  }
+
+  async nftloxUnlistCard(nftId: string): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('unlist', { nftId });
+  }
+
+  async nftloxTransferCard(nftId: string, to: string, memo?: string): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('transfer', { nftId, to, ...(memo ? { memo } : {}) }, true);
+  }
+
+  async nftloxBurnCard(nftId: string): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('burn', { nftId }, true);
+  }
+
+  async nftloxReplicate(seedId: string, to?: string): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('replicate', { seedId, to: to || this.username });
+  }
+
+  async nftloxDataOperatorApprove(collectionId: string, operator: string, approved: boolean): Promise<HiveBroadcastResult> {
+    return this.broadcastNFTLoxJson('data_operator_approve', { collectionId, operator, approved }, true);
   }
 
   async nftloxBuyCard(listingId: string, nftId: string, seller: string, amount: string): Promise<HiveBroadcastResult> {

@@ -20,13 +20,17 @@ export function getActivePlayerForPhase(
   ctx: ActivePlayerContext
 ): string | null {
   switch (phase) {
+    // Pre-flop: SB (dealer) acts first in heads-up poker
     case CombatPhase.SPELL_PET:
     case CombatPhase.PRE_FLOP:
+      return getSmallBlindPlayerId(ctx);
+
+    // Post-flop: BB acts first in heads-up poker (SB/dealer is last to act)
     case CombatPhase.FAITH:
     case CombatPhase.FORESIGHT:
     case CombatPhase.DESTINY:
-      return getSmallBlindPlayerId(ctx);
-      
+      return getBigBlindPlayerId(ctx);
+
     case CombatPhase.MULLIGAN:
     case CombatPhase.FIRST_STRIKE:
     case CombatPhase.RESOLUTION:

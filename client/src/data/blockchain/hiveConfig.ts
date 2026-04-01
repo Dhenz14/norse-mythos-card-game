@@ -11,7 +11,7 @@ export const RAGNAROK_INDEX_ACCOUNT = 'ragnarok-index';
 
 // NFTLox integration — NFT birth layer for card minting/packs
 export const NFTLOX_PROTOCOL_ID = 'nftlox_testnet'; // switch to 'nftlox' for production
-export const NFTLOX_PROTOCOL_VERSION = '0.3.0';
+export const NFTLOX_PROTOCOL_VERSION = '0.4.0';
 export const NFTLOX_COLLECTION_SYMBOL = 'RGNRK';
 export const NFTLOX_MAX_OPS_PER_TX = 5;
 export const NFTLOX_MAX_JSON_SIZE = 8000; // bytes per custom_json

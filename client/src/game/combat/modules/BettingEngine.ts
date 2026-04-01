@@ -164,14 +164,16 @@ export function processBettingAction(
         }
 }
 
-export function initializeBettingState(): BettingState {
+export function initializeBettingState(playerIsSB: boolean = false): BettingState {
+        const playerBlind = playerIsSB ? BLINDS.SB : BLINDS.BB;
+        const opponentBlind = playerIsSB ? BLINDS.BB : BLINDS.SB;
         return {
                 pot: BLINDS.SB + BLINDS.BB + (BLINDS.ANTE * 2),
                 currentBet: BLINDS.BB,
-                playerBet: BLINDS.BB,
-                opponentBet: BLINDS.SB,
-                playerHpCommitted: BLINDS.BB + BLINDS.ANTE,
-                opponentHpCommitted: BLINDS.SB + BLINDS.ANTE,
+                playerBet: playerBlind,
+                opponentBet: opponentBlind,
+                playerHpCommitted: playerBlind + BLINDS.ANTE,
+                opponentHpCommitted: opponentBlind + BLINDS.ANTE,
                 bettingRound: 'preflop',
                 lastAggressor: null
         };
