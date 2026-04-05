@@ -151,15 +151,16 @@ export const SimpleBattlefield: React.FC<SimpleBattlefieldProps> = React.memo(({
                 aria-label={`${card.card?.name || 'Minion'}, ${(card.card as any)?.attack ?? 0} attack, ${card.health ?? (card.card as any)?.health ?? 0} health${cardHasTaunt ? ', taunt' : ''}${canAttack ? ', ready to attack' : ''}`}
                 tabIndex={0}
                 onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (e.currentTarget as HTMLElement).click(); } }}
-                initial={{ opacity: 0, y: side === 'player' ? 40 : -40 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.15, y: side === 'player' ? 80 : -80 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{
                   opacity: 0,
+                  scale: 0.05,
                   y: side === 'opponent' ? 25 : -25,
                   filter: 'brightness(5) saturate(0)',
                   transition: { duration: 0.35, ease: [0.55, 0, 1, 0.45] }
                 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+                transition={{ type: 'spring', stiffness: 420, damping: 24 }}
                 onClick={() => {
                   debug.combat('[SimpleBattlefield Click]', {
                     cardName: card.card?.name,

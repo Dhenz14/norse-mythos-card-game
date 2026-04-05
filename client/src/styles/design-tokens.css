@@ -202,16 +202,16 @@
   --card-height: 185px;
   --card-tile-min-height: 140px;
   
-  /* Battlefield Cards — fixed px inside virtual canvas (scaling handled by GameViewport) */
-  --battlefield-card-width: 120px;
-  --battlefield-card-height: 168px;
-
-  /* Hand Cards — fixed px inside virtual canvas */
-  --hand-card-width: 140px;
-  --hand-card-height: 196px;
-
-  /* Hero Cards — fixed px inside virtual canvas */
-  --hero-card-width: 150px;
+  /* Battlefield Cards (responsive) */
+  --battlefield-card-width: clamp(100px, 12vw, 180px);
+  --battlefield-card-height: clamp(140px, 16.8vw, 252px);
+  
+  /* Hand Cards (responsive) */
+  --hand-card-width: clamp(120px, 14vw, 220px);
+  --hand-card-height: clamp(168px, 19.6vw, 308px);
+  
+  /* Hero Cards (responsive) */
+  --hero-card-width: clamp(120px, 15vw, 192px);
   
   /* Stat Badges */
   --stat-badge-size: 1.5rem;
