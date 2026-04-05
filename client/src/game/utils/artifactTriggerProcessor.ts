@@ -1237,7 +1237,7 @@ export function processArtifactOnEnemyMinionPlayed(
 		if (minion && (minion.card.manaCost ?? 0) >= threshold) {
 			const hand = state.players[defenderType].hand;
 			if (hand.length < MAX_HAND_SIZE) {
-				const copy = structuredClone(minion) as CardInstance;
+				const copy = JSON.parse(JSON.stringify(minion)) as CardInstance;
 				copy.instanceId = uuidv4();
 				const reduction = effect.onOpponentPlayCard.copyReduction || 0;
 				(copy.card as any).manaCost = Math.max(0, (copy.card.manaCost ?? 0) - reduction);

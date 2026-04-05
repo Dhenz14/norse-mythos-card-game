@@ -21,7 +21,7 @@ export function equipArtifact(
 	playerType: 'player' | 'opponent',
 	artifactCard: CardInstance
 ): GameState {
-	const newState = structuredClone(state) as GameState;
+	const newState = JSON.parse(JSON.stringify(state)) as GameState;
 	const player = newState.players[playerType];
 
 	if (player.artifact) {
@@ -59,7 +59,7 @@ export function destroyArtifact(
 	state: GameState,
 	playerType: 'player' | 'opponent'
 ): GameState {
-	const newState = structuredClone(state) as GameState;
+	const newState = JSON.parse(JSON.stringify(state)) as GameState;
 	const player = newState.players[playerType];
 
 	if (!player.artifact) return state;

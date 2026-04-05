@@ -61,7 +61,7 @@ export function usePokerCardClickHandlers({
 			if (targetType === 'friendly_minion' || targetType === 'friendly_mech' || targetType === 'any_minion' || targetType === 'any' || targetType === 'minion' || targetType === 'any_character' || targetType === 'character') {
 				const cardId = selectedCard.instanceId || (selectedCard as any).id;
 				debug.combat('[Battlecry Debug] Playing card with target:', { cardId, targetId: card.instanceId });
-				playCard(cardId, card.instanceId);
+				playCard(cardId, card.instanceId, 'minion');
 				return;
 			}
 		}
@@ -146,7 +146,7 @@ export function usePokerCardClickHandlers({
 			if (targetType === 'enemy_minion' || targetType === 'any_minion' || targetType === 'any' || targetType === 'enemy' || targetType === 'minion' || targetType === 'any_character' || targetType === 'character') {
 				const cardId = selectedCard.instanceId || (selectedCard as any).id;
 				debug.combat('[Battlecry Debug] Playing card with enemy target:', { cardId, targetId: card.instanceId });
-				playCard(cardId, card.instanceId);
+				playCard(cardId, card.instanceId, 'minion');
 				return;
 			}
 		}

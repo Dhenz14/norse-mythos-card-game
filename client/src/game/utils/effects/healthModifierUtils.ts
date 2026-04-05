@@ -31,7 +31,7 @@ export function applyHealthAndDeckSizeModifier(
   cardId: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Apply health modifier - add to base health
   const additionalHealth = effect.healthValue || 0;
@@ -84,7 +84,7 @@ export function setHeroHealth(
   cardId: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Set max health to the specified value
   newState.players[playerType].maxHealth = healthValue;
@@ -122,7 +122,7 @@ export function replaceHero(
   heroId: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // When implementing the full functionality, this would:
   // 1. Store information about the new hero (health, hero power, etc.)
@@ -157,7 +157,7 @@ export function replaceHero(
  */
 export function applyAllStartOfGameEffects(state: GameState): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Process for both players
   (['player', 'opponent'] as const).forEach((playerType) => {

@@ -86,7 +86,7 @@ export function completeMulligan(state: GameState): GameState {
   );
 
   // Create a deep copy of the state to safely modify it
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Replace player's selected cards
   if (playerSelectedCards.length > 0) {

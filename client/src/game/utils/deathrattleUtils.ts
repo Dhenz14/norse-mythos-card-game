@@ -67,7 +67,7 @@ function executeDeathrattleInner(
 
 
   // Create a deep copy of the state to safely modify
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Process the deathrattle based on its type
   const deathrattle = minionCard.deathrattle!;
@@ -506,7 +506,7 @@ function executeDeathrattleInner(
       }
       const count = deathrattle.value || 1;
       for (let i = 0; i < count; i++) {
-        const copy = structuredClone(shuffleCardData) as CardData;
+        const copy = JSON.parse(JSON.stringify(shuffleCardData)) as CardData;
         const insertIdx = Math.floor(Math.random() * (player.deck.length + 1));
         player.deck.splice(insertIdx, 0, copy);
       }
@@ -534,7 +534,7 @@ function executeDeathrattleInner(
         if (player.hand.length >= MAX_HAND_SIZE) break;
         if (opponent.deck.length === 0) break;
         const randomIdx = Math.floor(Math.random() * opponent.deck.length);
-        const copiedCardData = structuredClone(opponent.deck[randomIdx]) as CardData;
+        const copiedCardData = JSON.parse(JSON.stringify(opponent.deck[randomIdx])) as CardData;
         const inst = createCardInstance(copiedCardData);
         player.hand.push(inst);
       }
@@ -583,9 +583,9 @@ function executeDeathrattleInner(
       let cardToShuffle: CardData;
       if (shuffCardId) {
         const found = getCardById(typeof shuffCardId === 'number' ? shuffCardId : parseInt(shuffCardId, 10));
-        cardToShuffle = found ? structuredClone(found) as CardData : structuredClone(card.card) as CardData;
+        cardToShuffle = found ? JSON.parse(JSON.stringify(found)) as CardData : JSON.parse(JSON.stringify(card.card)) as CardData;
       } else {
-        cardToShuffle = structuredClone(card.card) as CardData;
+        cardToShuffle = JSON.parse(JSON.stringify(card.card)) as CardData;
       }
       const insertIdx = Math.floor(Math.random() * (player.deck.length + 1));
       player.deck.splice(insertIdx, 0, cardToShuffle);
@@ -801,7 +801,7 @@ function executeDeathrattleEffect(
   card: CardInstance,
   playerId: 'player' | 'opponent'
 ): GameState {
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   switch (deathrattle.type) {
     case 'damage': {
       const dmg = deathrattle.value || 1;
@@ -905,7 +905,7 @@ function executeSummonDeathrattle(
   playerId: 'player' | 'opponent'
 ): GameState {
   // Deep copy the state to avoid mutation
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Find the card to summon — support summonCardId, cardId, and summonId
   const summonId = deathrattle.summonCardId || (deathrattle as any).cardId || (deathrattle as any).summonId;
@@ -959,7 +959,7 @@ function executeDrawDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Default to 1 card if no value is specified
   const cardsToDraw = deathrattle.value || 1;
@@ -992,7 +992,7 @@ function executeDamageDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   const damageAmount = deathrattle.value || 1;
   const targets = deathrattle.targetType;
@@ -1121,7 +1121,7 @@ function executeReturnToHandDeathrattle(
   card: CardInstance,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
   if ((player.hand || []).length >= MAX_HAND_SIZE) {
     return newState;
@@ -1140,7 +1140,7 @@ function executeHealDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   const healAmount = deathrattle.value || 1;
   const targets = deathrattle.targetType;
@@ -1187,7 +1187,7 @@ function executeBuffDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Buff values with fallbacks to 0
   const attackBuff = deathrattle.buffAttack || 0;
@@ -1228,7 +1228,7 @@ function executeGiveDivineShieldDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   const targetType = deathrattle.targetType || 'friendly_minions';
   
@@ -1276,7 +1276,7 @@ function executeMindControlDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // The opponent of the current player
   const opponentId = playerId === 'player' ? 'opponent' : 'player';
@@ -1432,7 +1432,7 @@ function executeRecruitDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
   const maxCost = (deathrattle as any).maxCost;
   const recruitRace = (deathrattle as any).recruitRace;
@@ -1468,7 +1468,7 @@ function executeSummonSplittingDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
 
   if (!deathrattle.summonCardId) return newState;
@@ -1491,7 +1491,7 @@ function executeSummonMultipleDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
 
   const summonCardIds: string[] = (deathrattle as any).summonCardIds || [];
@@ -1525,7 +1525,7 @@ function executeSummonIfOtherDiedDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
 
   if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
@@ -1550,7 +1550,7 @@ function executeSummonForOpponentDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const opponentId = playerId === 'player' ? 'opponent' : 'player';
   const opponent = newState.players[opponentId];
 
@@ -1575,7 +1575,7 @@ function executeAddRandomToHandDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
   const count = deathrattle.value || 1;
 
@@ -1595,7 +1595,7 @@ function executeSummonRandomMythicDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
 
   if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
@@ -1616,7 +1616,7 @@ function executeSummonFromHandDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
 
   if (player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
@@ -1641,7 +1641,7 @@ function executeShuffleCopiesBuffedDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
   const buffAmount = deathrattle.value || 1;
   const copyCount = deathrattle.value || 1;
@@ -1652,7 +1652,7 @@ function executeShuffleCopiesBuffedDeathrattle(
   if (!cardData) return newState;
 
   for (let i = 0; i < copyCount; i++) {
-    const copy = structuredClone(cardData) as CardData;
+    const copy = JSON.parse(JSON.stringify(cardData)) as CardData;
     if (copy.type === 'minion') {
       const minionCopy = copy as MinionCardData;
       minionCopy.attack = (minionCopy.attack ?? 0) + buffAmount;
@@ -1670,7 +1670,7 @@ function executeRandomDamageDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const enemyId = playerId === 'player' ? 'opponent' : 'player';
   const enemy = newState.players[enemyId];
   const totalDamage = deathrattle.value || 1;
@@ -1710,7 +1710,7 @@ function executeGrantKeywordDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
   const keyword = (deathrattle as any).keyword as string;
 
@@ -1730,7 +1730,7 @@ function executeGiveSparePartDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
   const count = deathrattle.value || 1;
 
@@ -1750,7 +1750,7 @@ function executeFreezeRandomDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const enemyId = playerId === 'player' ? 'opponent' : 'player';
   const enemy = newState.players[enemyId];
 
@@ -1767,7 +1767,7 @@ function executeEquipWeaponDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
 
   const attack = deathrattle.value || 1;
@@ -1782,7 +1782,7 @@ function executeConditionalAoeDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const enemyId = playerId === 'player' ? 'opponent' : 'player';
   const enemy = newState.players[enemyId];
   const damageAmount = deathrattle.value || 1;
@@ -1805,7 +1805,7 @@ function executeBuffFriendlyBeastsDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
   const attackBuff = deathrattle.buffAttack || deathrattle.value || 1;
   const healthBuff = deathrattle.buffHealth || deathrattle.value || 1;
@@ -1827,7 +1827,7 @@ function executeBuffAndEnchantDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
   const attackBuff = deathrattle.buffAttack || 0;
   const healthBuff = deathrattle.buffHealth || 0;
@@ -1853,7 +1853,7 @@ function executeDestroyDeathrattle(
   deathrattle: DeathrattleEffect,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const enemyId = playerId === 'player' ? 'opponent' : 'player';
   const enemy = newState.players[enemyId];
 
@@ -1871,7 +1871,7 @@ function executeUncoilDeathrattle(
   card: CardInstance,
   playerId: 'player' | 'opponent'
 ): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const coilSourceId = card.instanceId;
 
   for (const side of ['player', 'opponent'] as const) {

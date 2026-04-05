@@ -24,7 +24,7 @@ export function executeComboSpellEffect(
   targetType?: 'minion' | 'hero'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Get the current player
   const currentPlayer = newState.currentTurn;

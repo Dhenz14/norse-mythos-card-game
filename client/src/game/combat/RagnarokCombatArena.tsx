@@ -641,11 +641,12 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   } : undefined}
                 />
                 <div className="player-mana-display">
-                  <ManaBar 
-                    currentMana={playerMana} 
-                    maxMana={playerMaxMana} 
-                    overloadedMana={0} 
+                  <ManaBar
+                    currentMana={playerMana}
+                    maxMana={playerMaxMana}
+                    overloadedMana={0}
                     pendingOverload={0}
+                    vertical={true}
                   />
                 </div>
                 {/* Player hole cards - always visible (your own cards) */}

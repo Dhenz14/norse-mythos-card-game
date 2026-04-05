@@ -40,7 +40,7 @@ export function initializeDormantEffect(card: CardInstance): CardInstance {
  */
 export function processDormantEffects(state: GameState): GameState {
   // Process dormant effects for both players
-  let updatedState = structuredClone(state) as GameState;
+  let updatedState = JSON.parse(JSON.stringify(state)) as GameState;
   
   updatedState = processDormantForPlayer(updatedState, 'player');
   updatedState = processDormantForPlayer(updatedState, 'opponent');
@@ -100,7 +100,7 @@ export function awakeDormantMinion(
   minionId: string,
   playerType: 'player' | 'opponent'
 ): GameState {
-  const updatedState = structuredClone(state) as GameState;
+  const updatedState = JSON.parse(JSON.stringify(state)) as GameState;
   const battlefield = updatedState.players[playerType].battlefield;
   
   // Find the minion

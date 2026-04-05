@@ -228,7 +228,7 @@ export function executeBattlecry(
   targetType?: 'minion' | 'hero'
 ): GameState {
   // Deep clone the state to avoid mutation
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   try {
     // Find the card on the battlefield - the card should already be on the battlefield
@@ -736,7 +736,7 @@ export function executeBattlecry(
         for (const dead of deadEinherjar) {
           if (bf.length >= MAX_BATTLEFIELD_SIZE) break;
           const resummoned: CardInstance = {
-            ...structuredClone(dead),
+            ...JSON.parse(JSON.stringify(dead)),
             instanceId: uuidv4(),
             canAttack: false,
             isSummoningSick: true,
@@ -1064,7 +1064,7 @@ export function executeBattlecry(
         if (cdTarget && cdSelf) {
           const cdData = cdTarget.card as MinionCardData;
           if (cdData.deathrattle) {
-            (cdSelf.card as any).deathrattle = structuredClone(cdData.deathrattle);
+            (cdSelf.card as any).deathrattle = JSON.parse(JSON.stringify(cdData.deathrattle));
             const kw = cdSelf.card.keywords || [];
             if (!kw.includes('deathrattle')) {
               cdSelf.card.keywords = [...kw, 'deathrattle'];
@@ -1619,7 +1619,7 @@ export function executeBattlecry(
         for (const dead of raToRes) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
           const raResurrected: CardInstance = {
-            ...structuredClone(dead),
+            ...JSON.parse(JSON.stringify(dead)),
             instanceId: uuidv4(),
             canAttack: false,
             isSummoningSick: true,
@@ -2498,7 +2498,7 @@ export function executeBattlecry(
         const csbStrongest = [...csbOppBf].sort((a, b) => (b.currentAttack ?? (b.card as MinionCardData).attack ?? 0) - (a.currentAttack ?? (a.card as MinionCardData).attack ?? 0))[0];
         const csbSelf = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
         if (csbSelf) {
-          csbSelf.card = structuredClone(csbStrongest.card);
+          csbSelf.card = JSON.parse(JSON.stringify(csbStrongest.card));
           csbSelf.currentAttack = (csbStrongest.currentAttack ?? (csbStrongest.card as MinionCardData).attack ?? 0) + csbVal;
           csbSelf.currentHealth = (csbStrongest.currentHealth ?? (csbStrongest.card as MinionCardData).health ?? 0) + csbVal;
           addKeyword(csbSelf, 'elusive');
@@ -2512,7 +2512,7 @@ export function executeBattlecry(
         if (clfOppHand.length === 0) return newState;
         const clfLowest = [...clfOppHand].sort((a, b) => ((a.card as any).manaCost || 0) - ((b.card as any).manaCost || 0))[0];
         for (let i = 0; i < clfCount && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
-          const copy = createCardInstance(structuredClone(clfLowest.card));
+          const copy = createCardInstance(JSON.parse(JSON.stringify(clfLowest.card)));
           (copy.card as any).manaCost = 0;
           newState.players.player.hand.push(copy);
         }
@@ -2596,7 +2596,7 @@ export function executeBattlecry(
         const fhdaSpells = allCards.filter(c => c.type === 'spell' && ((c as any).class === 'Druid' || (c as any).heroClass === 'druid'));
         while (newState.players.player.hand.length < MAX_HAND_SIZE && fhdaSpells.length > 0) {
           const pick = fhdaSpells[Math.floor(Math.random() * fhdaSpells.length)];
-          const inst = createCardInstance(structuredClone(pick));
+          const inst = createCardInstance(JSON.parse(JSON.stringify(pick)));
           (inst.card as any).manaCost = Math.max(0, ((inst.card as any).manaCost || 0) - fhdaDiscount);
           newState.players.player.hand.push(inst);
         }
@@ -2613,7 +2613,7 @@ export function executeBattlecry(
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
           const dead = rbShuffled[i];
           const res: CardInstance = {
-            ...structuredClone(dead),
+            ...JSON.parse(JSON.stringify(dead)),
             instanceId: uuidv4(),
             canAttack: true,
             isSummoningSick: false,
@@ -3170,7 +3170,7 @@ function executeBuffTribeBattlecry(
   battlecry: BattlecryEffect
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   try {
     // Get the source card (the one with the buff tribe battlecry)
@@ -4057,7 +4057,7 @@ function executeSetHealthBattlecry(
  * Replays random spells equal to spellsCastThisGame count.
  */
 function executeCastAllSpellsBattlecry(state: GameState): GameState {
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const spellsCast = (newState.players.player as any).spellsCastThisGame || 0;
   if (spellsCast === 0) return newState;
 
@@ -4090,7 +4090,7 @@ function executeCastAllSpellsBattlecry(state: GameState): GameState {
  * Cast a random spell from the opponent's hand with random targets.
  */
 function executeCastOpponentSpellBattlecry(state: GameState): GameState {
-	const newState = structuredClone(state) as GameState;
+	const newState = JSON.parse(JSON.stringify(state)) as GameState;
 	const opponentHand = newState.players.opponent.hand || [];
 	const spellIndices: number[] = [];
 	opponentHand.forEach((c, i) => {

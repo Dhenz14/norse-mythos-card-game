@@ -7,7 +7,7 @@ export function equipArmorPiece(
 	piece: ArmorPiece,
 	slot: ArmorSlot
 ): GameState {
-	const newState = structuredClone(state) as GameState;
+	const newState = JSON.parse(JSON.stringify(state)) as GameState;
 	const player = newState.players[playerType];
 
 	if (!player.armorGear) {
@@ -40,7 +40,7 @@ export function unequipArmorPiece(
 	playerType: 'player' | 'opponent',
 	slot: ArmorSlot
 ): GameState {
-	const newState = structuredClone(state) as GameState;
+	const newState = JSON.parse(JSON.stringify(state)) as GameState;
 	const player = newState.players[playerType];
 
 	if (!player.armorGear || !player.armorGear[slot]) return state;

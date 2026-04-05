@@ -896,7 +896,7 @@ export function executeSpell(
       }
       const source = friendly[Math.floor(Math.random() * friendly.length)];
       const copy = {
-        ...structuredClone(source),
+        ...JSON.parse(JSON.stringify(source)),
         id: `prophecy-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       };
       resultState = { ...state, prophecies: [...prophecies, copy] };
@@ -930,7 +930,7 @@ export function executeSpell(
       const eff = effect as any;
       const discountValue = eff.value || 99;
       const ownerSide = state.currentTurn;
-      let discountState = structuredClone(state) as GameState;
+      let discountState = JSON.parse(JSON.stringify(state)) as GameState;
       const hand = discountState.players[ownerSide].hand;
       let applied = false;
       for (const inst of hand) {
@@ -951,7 +951,7 @@ export function executeSpell(
     }
     case 'reveal_hand': {
       const eff = effect as any;
-      let revealState = structuredClone(state) as GameState;
+      let revealState = JSON.parse(JSON.stringify(state)) as GameState;
       const casterSide = state.currentTurn;
       const oppSide = casterSide === 'player' ? 'opponent' : 'player';
       (revealState.players[oppSide] as any).handRevealed = true;
@@ -974,7 +974,7 @@ export function executeSpell(
       break;
     }
     case 'buff_per_realm_aoe': {
-      const bpraState = structuredClone(state) as GameState;
+      const bpraState = JSON.parse(JSON.stringify(state)) as GameState;
       const realmsCount = (state.realmsVisited?.length || 0);
       if (realmsCount > 0) {
         const bf = bpraState.players[bpraState.currentTurn].battlefield;
@@ -987,7 +987,7 @@ export function executeSpell(
       break;
     }
     case 'grant_blood_echo': {
-      const gbeState = structuredClone(state) as GameState;
+      const gbeState = JSON.parse(JSON.stringify(state)) as GameState;
       const gbeTarget = gbeState.players[gbeState.currentTurn].battlefield.find(
         (m: CardInstance) => m.instanceId === targetId
       );
@@ -1002,7 +1002,7 @@ export function executeSpell(
       break;
     }
     case 'grant_valhalla_call': {
-      const gvcState = structuredClone(state) as GameState;
+      const gvcState = JSON.parse(JSON.stringify(state)) as GameState;
       const gvcTarget = gvcState.players[gvcState.currentTurn].battlefield.find(
         (m: CardInstance) => m.instanceId === targetId && m.card?.keywords?.includes('einherjar')
       );
@@ -1013,7 +1013,7 @@ export function executeSpell(
       break;
     }
     case 'conditional_aoe': {
-      let caoState = structuredClone(state) as GameState;
+      let caoState = JSON.parse(JSON.stringify(state)) as GameState;
       const hasProphecy = (state.prophecies?.length || 0) > 0;
       const caoDmg = hasProphecy ? ((effect as any).fateweaveValue || (effect as any).baseValue || 2) : ((effect as any).baseValue || 2);
       const caoEnemySide: 'player' | 'opponent' = caoState.currentTurn === 'player' ? 'opponent' : 'player';
@@ -1991,7 +1991,7 @@ function executeDiscoverSpell(
       callback: (selectedCard: CardData | null) => {
         // Get the CURRENT game state from the store, not the stale captured state
         const { gameState: currentState } = useGameStore.getState();
-        const updatedState = structuredClone(currentState);
+        const updatedState = JSON.parse(JSON.stringify(currentState));
         
         if (selectedCard) {
           
@@ -2214,7 +2214,7 @@ function executeQuestSpell(
   const questData = spellCard.card.spellEffect.questData;
   
   // Create a new state with deep copies to avoid mutation
-  const newState = structuredClone(state);
+  const newState = JSON.parse(JSON.stringify(state));
   
   // Set the quest as active for the player
   (newState.players[state.currentTurn] as any).activeQuest = {
@@ -2248,7 +2248,7 @@ function executeExtraTurnSpell(
   state: GameState,
   effect: SpellEffect
 ): GameState {
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   const currentPlayer = state.currentTurn;
   
   // Set the flag for an extra turn
@@ -2269,7 +2269,7 @@ function executeCrystalCoreSpell(
   state: GameState,
   effect: SpellEffect
 ): GameState {
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   const currentPlayer = state.currentTurn;
   
   // Apply the Crystal Core effect

@@ -93,15 +93,16 @@ export const HandFan = React.memo<HandFanProps>(({
     prevCardCount.current = adaptedCards.length;
   }, [adaptedCards.length]);
 
+  const playingRef = useRef(false);
   const handleCardPlay = useCallback((card: CardInstanceWithCardData, position?: Position) => {
-    if (!onCardPlay) return;
+    if (!onCardPlay || playingRef.current) return;
 
     const originalCard = originalCards.find(c =>
-      (card.instanceId === (c as any).instanceId) ||
-      (card.card.id === (c as any).card?.id)
+      card.instanceId === (c as any).instanceId
     );
 
     if (originalCard) {
+      playingRef.current = true;
       const useBlood = bloodModeCardId === card.instanceId && !!(card.card as any)?.bloodPrice;
       if (useBlood) {
         (originalCard as any).payWithBlood = true;
@@ -111,6 +112,7 @@ export const HandFan = React.memo<HandFanProps>(({
       setBloodModeCardId(null);
       playSound('card_play');
       onCardPlay(originalCard, position);
+      setTimeout(() => { playingRef.current = false; }, 300);
     }
   }, [onCardPlay, originalCards, bloodModeCardId]);
 
@@ -236,7 +238,6 @@ export const HandFan = React.memo<HandFanProps>(({
             tabIndex={0}
             role="button"
             aria-label={`${card.card.name}, ${manaCost} mana`}
-            onDoubleClick={() => { if (canPlay) handleCardPlay(card); }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();

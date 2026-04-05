@@ -26,7 +26,7 @@ export function moveCard(
   playerId: 'player' | 'opponent'
 ): { newState: GameState; movedCard: CardInstance | null } {
   // Create a deep copy of the state to avoid mutation
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   let movedCard: CardInstance | null = null;
   
   // Get the player object
@@ -149,7 +149,7 @@ export function drawCardFromDeck(
   state: GameState,
   playerId: 'player' | 'opponent'
 ): GameState {
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerId];
 
   // Check if there are cards left in the deck
@@ -396,7 +396,7 @@ export function destroyCard(
  * causing inconsistent game state and visual glitches.
  */
 export function removeDeadMinions(state: GameState): GameState {
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Process both players
   for (const playerId of ['player', 'opponent'] as const) {

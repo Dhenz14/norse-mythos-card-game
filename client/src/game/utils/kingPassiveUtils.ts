@@ -104,7 +104,7 @@ export function executeKingPassive(
   const king = getKingById(kingId);
   if (!king) return state;
 
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const owner = newState.players[ownerType];
   const opponentType = ownerType === 'player' ? 'opponent' : 'player';
   const opponent = newState.players[opponentType];
@@ -388,7 +388,7 @@ export function applyKingAuraToMinion(
   const king = getKingById(kingId);
   if (!king) return state;
 
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   const minionOwner = newState.players[minionOwnerType];
   const minion = minionOwner.battlefield.find(m => m.instanceId === minionInstanceId);
   if (!minion) return state;
@@ -437,7 +437,7 @@ export function applyAllKingAurasToBoard(
   playerKingId: string | null,
   opponentKingId: string | null
 ): GameState {
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
 
   for (const kingId of [playerKingId, opponentKingId]) {
     if (!kingId) continue;

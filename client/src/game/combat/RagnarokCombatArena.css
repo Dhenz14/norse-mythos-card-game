@@ -5603,10 +5603,9 @@
 
 
 /* NOTE: .unified-player-area grid-area is set above in GRID AREA ASSIGNMENTS section */
-/* This section adds visual styling - the grid-area assignment handles positioning */
+/* IMPORTANT: No z-index — prevents stacking context that traps community cards behind it */
 .unified-player-area {
   position: relative;
-  z-index: 5;
   overflow: visible;
   background: 
     repeating-linear-gradient(

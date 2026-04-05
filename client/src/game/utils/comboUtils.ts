@@ -54,7 +54,7 @@ export function executeComboEffect(
   targetInstanceId?: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Check if combo is active
   const comboActive = isComboActive(newState, playerType);
@@ -167,7 +167,7 @@ function handleComboDamage(
   targetInstanceId?: string
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Check if target is required and provided
   if (comboEffect.requiresTarget && !targetInstanceId) {
@@ -261,7 +261,7 @@ function handleComboSummon(
   comboEffect: ComboEffect
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Check if the battlefield is full
   const battlefield = newState.players[playerType].battlefield;
@@ -341,7 +341,7 @@ function handleComboBuffPerCard(
   comboEffect: ComboEffect
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Find the minion on the battlefield (should be already played)
   const battlefield = newState.players[playerType].battlefield;

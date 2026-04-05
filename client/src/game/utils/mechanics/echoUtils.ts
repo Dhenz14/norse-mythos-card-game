@@ -58,11 +58,11 @@ export function createEchoCopy(
   }
 
   // Create a deep copy of the current state
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Create a new instance of the card that was played
   // Important: Reset certain attributes for the Echo copy
-  const originalCard = { ...structuredClone(playedCard) };
+  const originalCard = { ...JSON.parse(JSON.stringify(playedCard)) };
   
   // By design, Echo copies use the base card's original cost
   // but retain other modified properties
@@ -129,7 +129,7 @@ export function createEchoCopy(
  */
 export function expireEchoCardsAtEndOfTurn(state: GameState): GameState {
   // Create a deep copy of the state
-  const newState = structuredClone(state) as GameState;
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
   
   // Process each player's hand
   const playerTypes: Array<'player' | 'opponent'> = ['player', 'opponent'];

@@ -206,14 +206,14 @@
 /* NOTE: Position controlled by --zone-community-* vars in styles/zones.css */
 .zone-community {
   position: absolute;
-  left: var(--zone-community-left, 60px);
-  top: var(--zone-community-top, 48%);
-  transform: translateY(-50%);
+  left: var(--zone-community-left, 16px);
+  top: var(--zone-community-top, 200px);
   z-index: var(--zone-community-z, 25);
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 /* Pot Display Zone */
@@ -437,15 +437,14 @@
    3. Absolute is used for fanning/stacking WITHIN the lane */
 .viewport-mode .unified-community {
   position: absolute;
-  left: var(--zone-community-left, 60px);
-  top: var(--zone-community-top, 48%);
-  transform: translateY(-50%);
+  left: var(--zone-community-left, 16px);
+  top: var(--zone-community-top, 200px);
   z-index: var(--zone-community-z, 25);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 8px;
   padding: 0;
   background: none;
   border: none;
@@ -529,11 +528,7 @@
   gap: 8px;
 }
 
-/* Player Mana - visible below hero */
-.viewport-mode .player-mana-display {
-  width: 180px;
-  margin-top: 8px;
-}
+/* Player Mana - consolidated rule below (line ~651) */
 
 /* NOTE: Hand section and betting actions moved to CCG-style layout section below */
 
@@ -586,13 +581,14 @@
 }
 
 /* Player Zone Container — pinned to bottom of 1920×1080 canvas */
+/* IMPORTANT: z-index must be LOWER than community cards (300) to prevent stacking context trap */
 .viewport-mode .unified-player-area {
   position: absolute;
   left: 0;
   bottom: 0;
   right: 0;
-  height: 280px; /* Fixed height within virtual canvas — no jumping */
-  z-index: var(--z-heroes, 30);
+  height: 280px;
+  z-index: 10;
   pointer-events: none;
   background: transparent !important;
   border: none !important;
@@ -629,30 +625,39 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  margin-left: 22px; /* Leave gap on left for vertical mana strip */
 }
 
-/* Hero card itself - lower z-index so poker cards can fan over it */
+/* Hero card itself */
 .viewport-mode .poker-hero-container .battlefield-hero-square {
   position: relative;
   z-index: var(--hero-z-index);
-  width: var(--token-size-hero-width, 160px);
+  width: var(--token-size-hero-width, 120px);
   aspect-ratio: 3/4;
   transform: none !important;
 }
 
-/* ========================================
-   POKER HOLE CARDS - VIEWPORT MODE
-   DEPRECATED: Replaced by HoleCardsOverlay component (2026-02-04)
-   See: client/src/game/combat/components/HoleCardsOverlay.tsx
-   ======================================== */
-
-/* Mana bar below hero */
+/* Mana — vertical strip in gap between left edge and hero */
 .viewport-mode .player-mana-display {
-  position: relative;
-  z-index: 25;
-  width: var(--token-size-hero-width, 160px);
-  margin-top: 4px;
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 35;
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  padding: 4px 2px;
+}
+
+/* Hide the ornate slider HP bar — hero's built-in HP is sufficient */
+.viewport-mode .poker-hp-slider-container {
+  display: none !important;
 }
 
 /* ========================================
@@ -740,26 +745,27 @@
    BETTING BUTTONS - BELOW HAND CARDS
    ======================================== */
 
-/* BETTING AREA - Next to hero, under hand cards. HP slider on top, buttons below */
+/* BETTING AREA — under the hero portrait */
 .viewport-mode .unified-betting-actions-container {
   position: absolute;
-  left: var(--zone-betting-left, 220px);
-  bottom: var(--zone-betting-bottom, 8px);
-  z-index: var(--zone-betting-z, 200);
+  left: 24px;
+  bottom: 8px;
+  z-index: 200;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   gap: 4px;
   background: transparent;
   border: none;
   padding: 0;
+  width: var(--token-size-hero-width, 120px);
+  justify-content: center;
 }
 
 .viewport-mode .unified-betting-actions {
   display: flex;
   flex-direction: row;
-  gap: 8px;
-  /* NO background box - removed to keep mana crystals visible */
+  gap: 4px;
   background: transparent;
   padding: 0;
   border-radius: 0;

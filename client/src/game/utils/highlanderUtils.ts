@@ -57,7 +57,7 @@ export function executeRazaBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Check if the player's deck has no duplicates
   const noDuplicates = deckHasNoDuplicates(newState, playerType);

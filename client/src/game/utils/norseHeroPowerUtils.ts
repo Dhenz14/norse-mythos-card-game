@@ -72,7 +72,7 @@ export function executeNorseHeroPower(
 
   const power = isUpgraded ? hero.upgradedHeroPower : hero.heroPower;
   
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerType];
   const opponentType = playerType === 'player' ? 'opponent' : 'player';
   const opponent = newState.players[opponentType];
@@ -1746,7 +1746,7 @@ export function applyWeaponUpgrade(
   const hero = getNorseHeroById(heroId);
   if (!hero) return state;
 
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const player = newState.players[playerType];
 
   // Check mana
@@ -1808,7 +1808,7 @@ export function executeHeroPassive(
     }
   }
 
-  let newState = structuredClone(state) as GameState;
+  let newState = JSON.parse(JSON.stringify(state)) as GameState;
   const owner = newState.players[ownerType];
   const opponent = newState.players[ownerType === 'player' ? 'opponent' : 'player'];
 

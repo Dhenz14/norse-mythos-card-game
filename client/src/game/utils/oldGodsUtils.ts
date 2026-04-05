@@ -50,7 +50,7 @@ export function initializeCThun(
   playerType: 'player' | 'opponent'
 ): GameStateWithCThun {
   // Create a deep copy of the state to avoid mutation
-  const newState: GameStateWithCThun = structuredClone(state);
+  const newState: GameStateWithCThun = JSON.parse(JSON.stringify(state));
   
   // Initialize Gullveig data if it doesn't exist
   if (!newState.players[playerType].cthunData) {
@@ -81,7 +81,7 @@ export function buffCThun(
   healthBuff: number
 ): GameStateWithCThun {
   // Create a deep copy of the state to avoid mutation
-  let newState: GameStateWithCThun = structuredClone(state);
+  let newState: GameStateWithCThun = JSON.parse(JSON.stringify(state));
   
   // Initialize Gullveig data if it doesn't exist
   if (!newState.players[playerType].cthunData) {
@@ -171,7 +171,7 @@ export function executeCThunBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Get the enemy player type
   const enemyType = playerType === 'player' ? 'opponent' : 'player';
@@ -251,7 +251,7 @@ export function executeNZothBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Get the player's graveyard
   const graveyard = newState.players[playerType].graveyard || [];
@@ -290,7 +290,7 @@ export function executeNZothBattlecry(
   for (const minion of minionsToResurrect) {
     // Create a fresh copy of the minion
     const newMinion: CardInstance = {
-      ...structuredClone(minion),
+      ...JSON.parse(JSON.stringify(minion)),
       instanceId: `${playerType}_nzoth_${minion.card.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
       isPlayed: false,
       isSummoningSick: true,
@@ -329,7 +329,7 @@ export function executeYoggSaronBattlecry(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Get number of spells cast this game
   const spellsCast = (newState.players[playerType] as any).spellsCastThisGame || 0;
@@ -411,7 +411,7 @@ export function executeYShaarjEffect(
   playerType: 'player' | 'opponent'
 ): GameState {
   // Create a deep copy of the state to avoid mutation
-  let newState = structuredClone(state);
+  let newState = JSON.parse(JSON.stringify(state));
   
   // Get the player's deck
   const deck = newState.players[playerType].deck;

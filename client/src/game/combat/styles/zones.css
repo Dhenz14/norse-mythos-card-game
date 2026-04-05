@@ -28,145 +28,86 @@
 
 :root {
   /* ========================================
-     VIRTUAL CANVAS ZONE SYSTEM
-     All values in px — the 1920×1080 virtual canvas handles scaling.
-     DO NOT use vw, vh, or % for positions inside the canvas.
+     VIRTUAL CANVAS ZONE SYSTEM — PRO POKER TABLE LAYOUT
+     1920×1080 virtual canvas. All values FIXED px.
+     GameViewport scales everything uniformly.
+
+     VERTICAL ZONES (strict bands, zero overlap):
+     ┌─────────────────────────────────────────────┐
+     │ OPPONENT ZONE          0 – 160px            │
+     │ OPPONENT MINIONS     170 – 370px            │
+     │ ═══ COMMUNITY ═══   400 – 560px  (DIVIDER) │
+     │ PLAYER MINIONS       590 – 760px            │
+     │ PLAYER ZONE          780 – 1080px           │
+     └─────────────────────────────────────────────┘
      ======================================== */
 
-  /* ========================================
-     GRID COLUMN WIDTHS (used by grid mode only)
-     ======================================== */
-  --zone-poker-col-width: 480px;
-  --zone-info-col-width: 220px;
-  --zone-battle-col-width: 1fr;
+  /* ── OPPONENT ZONE (0–160px) ── */
+  --zone-opponent-hero-left: 24px;
+  --zone-opponent-hero-top: 12px;
+  --zone-opponent-hero-z: 30;
+  --zone-opponent-mana-left: 24px;
+  --zone-opponent-mana-top: 130px;
+  --zone-opponent-mana-width: 120px;
+  --zone-opponent-mana-z: 30;
+  --zone-opponent-hand-left: 240px;
+  --zone-opponent-hand-top: 10px;
+  --zone-opponent-hand-z: 40;
 
-  /* ========================================
-     GRID ROW HEIGHTS
-     ======================================== */
-  --zone-row-opponent-hero: auto;
-  --zone-row-opponent-field: minmax(120px, 1fr);
-  --zone-row-player-field: minmax(120px, 1fr);
-  --zone-row-player-area: auto;
-  --zone-row-betting: auto;
+  /* ── OPPONENT MINIONS (170–370px) ── */
+  --zone-opponent-field-left: 55%;
+  --zone-opponent-field-top: 220px;
+  --zone-opponent-field-z: 20;
 
-  /* ========================================
-     GRID TEMPLATE AREAS
-     ======================================== */
-  --zone-grid-areas:
-    "opp-hero       opp-hand       logs"
-    "community      opp-field      logs"
-    "pot            player-field   logs"
-    "player-hero    player-area    logs"
-    "betting        betting        betting";
+  /* ── COMMUNITY CARDS — left column, between heroes ── */
+  --zone-community-left: 16px;
+  --zone-community-top: 200px;
+  --zone-community-z: 25;
 
-  /* ========================================
-     PLAYER HERO ZONE — bottom-left
-     ======================================== */
+  /* ── RISK BADGE ── */
+  --zone-risk-left: 50%;
+  --zone-risk-bottom: 560px;
+  --z-risk: 50;
+
+  /* ── PLAYER MINIONS (590–760px) ── */
+  --zone-player-field-left: 55%;
+  --zone-player-field-bottom: 340px;
+  --zone-player-field-z: 20;
+
+  /* ── PLAYER ZONE (780–1080px) ── */
   --zone-player-hero-left: 24px;
-  --zone-player-hero-bottom: 16px;
+  --zone-player-hero-bottom: 60px;
   --zone-player-hero-z: 30;
-
-  /* ========================================
-     PLAYER MANA BAR — below hero
-     ======================================== */
   --zone-player-mana-left: 24px;
   --zone-player-mana-bottom: 8px;
-  --zone-player-mana-width: 140px;
+  --zone-player-mana-width: 120px;
   --zone-player-mana-z: 30;
-
-  /* ========================================
-     PLAYER HAND — bottom-center
-     ======================================== */
   --zone-player-hand-left: 50%;
   --zone-player-hand-bottom: 0px;
   --zone-player-hand-z: 40;
 
-  /* ========================================
-     PLAYER MINION FIELD
-     Center-right, above player area (280px from bottom)
-     ======================================== */
-  --zone-player-field-left: 60%;
-  --zone-player-field-bottom: 420px;
-  --zone-player-field-z: 20;
+  /* ── BETTING — bottom, right of hero ── */
+  --zone-betting-left: 240px;
+  --zone-betting-bottom: 12px;
+  --zone-betting-z: 200;
 
-  /* ========================================
-     OPPONENT HERO ZONE — top-left
-     ======================================== */
-  --zone-opponent-hero-left: 24px;
-  --zone-opponent-hero-top: 12px;
-  --zone-opponent-hero-z: 30;
-
-  /* ========================================
-     OPPONENT MANA BAR — below opponent hero
-     ======================================== */
-  --zone-opponent-mana-left: 24px;
-  --zone-opponent-mana-top: 233px;
-  --zone-opponent-mana-width: 140px;
-  --zone-opponent-mana-z: 30;
-
-  /* ========================================
-     OPPONENT HAND — top-center
-     ======================================== */
-  --zone-opponent-hand-left: 18%;
-  --zone-opponent-hand-top: 0px;
-  --zone-opponent-hand-z: 40;
-
-  /* ========================================
-     OPPONENT MINION FIELD
-     Center-right, below opponent area (260px from top)
-     ======================================== */
-  --zone-opponent-field-left: 60%;
-  --zone-opponent-field-top: 200px;
-  --zone-opponent-field-z: 20;
-
-  /* ========================================
-     POT INFO - SPLIT LAYOUT
-     Relative to hero positions (fixed px)
-     ======================================== */
-  --hero-card-height: calc(var(--hero-card-width, 130px) * 1.4);
-
-  --zone-risk-left: 15%;
-  --zone-risk-bottom: 340px;
-  --z-risk: 50;
-
-  /* ========================================
-     COMMUNITY CARDS (Flop/Turn/River) — left side
-     ======================================== */
-  --zone-community-left: 16px;
-  --zone-community-top: 48%;
-  --zone-community-z: var(--token-z-community, 25);
-
-  /* ========================================
-     BETTING ACTIONS — bottom, right of hero
-     ======================================== */
-  --zone-betting-left: 260px;
-  --zone-betting-bottom: 8px;
-  --zone-betting-z: var(--token-z-betting, 200);
-
-  /* ========================================
-     TIMER — top-center
-     ======================================== */
+  /* ── TIMER — top-center ── */
   --zone-timer-left: 50%;
   --zone-timer-top: 10px;
-  --zone-timer-z: var(--token-z-timer, 500);
+  --zone-timer-z: 500;
 
-  /* ========================================
-     ACTIVITY LOGS — top-right
-     ======================================== */
+  /* ── ACTIVITY LOGS — top-right ── */
   --zone-activity-right: 20px;
   --zone-activity-top: 20px;
-  --zone-activity-z: var(--token-z-timer, 500);
+  --zone-activity-z: 500;
 
-  /* ========================================
-     HOLE CARDS offset from hero
-     ======================================== */
-  --zone-hole-cards-player-offset: -20px;
-  --zone-hole-cards-opponent-offset: -80px;
+  /* ── HOLE CARDS — compact, tucked beside hero ── */
+  --zone-hole-cards-player-offset: -10px;
+  --zone-hole-cards-opponent-offset: -60px;
 
-  /* ========================================
-     POKER CARD SIZING
-     ======================================== */
-  --zone-poker-card-scale: 1;
+  /* ── HERO & POKER CARD SIZING — compact ── */
+  --zone-poker-card-scale: 0.75;
+  --token-size-hero-width: 120px;
 }
 
 /* ========================================

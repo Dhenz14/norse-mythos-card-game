@@ -162,7 +162,7 @@ export function createDiscoveryFromSpell(
       try {
         // Get the CURRENT game state from the store, not the stale captured state
         const { gameState: currentState } = useGameStore.getState();
-        const updatedState = structuredClone(currentState);
+        const updatedState = JSON.parse(JSON.stringify(currentState));
         
         if (selectedCard) {
           // Create a unique instance ID for the discovered card
@@ -204,7 +204,7 @@ export function createDiscoveryFromSpell(
         
         // Get fresh state and clear discovery
         const { gameState: errorCurrentState } = useGameStore.getState();
-        const errorState = structuredClone(errorCurrentState);
+        const errorState = JSON.parse(JSON.stringify(errorCurrentState));
         errorState.discovery = undefined;
         return errorState;
       }

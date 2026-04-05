@@ -174,7 +174,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       const cardResult = findCardInstance(player.hand, cardId);
 
       if (!cardResult) {
-        throw new Error('Card not found');
+        debug.warn('Card not found in hand (may have been played already):', cardId);
+        return;
       }
 
       // Extract the card instance from the result
@@ -210,7 +211,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       }
       
       // Save the card data for reference after it's played
-      const cardData = structuredClone(cardInstance.card);
+      const cardData = JSON.parse(JSON.stringify(cardInstance.card));
       
       try {
         // Play the card with the target if provided
