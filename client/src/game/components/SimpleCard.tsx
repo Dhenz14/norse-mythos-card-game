@@ -312,9 +312,11 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
     const effectIcons = getCardKeywordIcons(card.description, card.keywords);
     const hasContent = card.description || effectIcons.length > 0 || isEvolvePet;
     if (!hasContent) return null;
+    const isSpellOrWeapon = card.type === 'spell' || card.type === 'weapon';
+    const noIcons = effectIcons.length === 0 && !isEvolvePet;
     return (
       <div className="card-description">
-        {showDescription ? (
+        {showDescription || (isSpellOrWeapon && noIcons) ? (
           <span>{card.description}</span>
         ) : (
           (effectIcons.length > 0 || isEvolvePet) ? (
@@ -345,7 +347,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
         )}
       </div>
     );
-  }, [card.description, card.keywords, card.petStage, showDescription, isEvolvePet, handleBadgeEnter, handleBadgeLeave, handleEvolveEnter]);
+  }, [card.description, card.keywords, card.type, card.petStage, showDescription, isEvolvePet, handleBadgeEnter, handleBadgeLeave, handleEvolveEnter]);
 
   const tooltipStyle = useMemo<React.CSSProperties>(() => {
     if (!badgeTooltip) return {};
