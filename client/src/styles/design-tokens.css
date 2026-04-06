@@ -197,36 +197,36 @@
      8. COMPONENT SIZES
      ============================================= */
   
-  /* Card Dimensions */
+  /* Card Dimensions — fixed px for virtual 1920×1080 canvas */
   --card-width: 130px;
   --card-height: 185px;
   --card-tile-min-height: 140px;
-  
-  /* Battlefield Cards (responsive) */
-  --battlefield-card-width: clamp(100px, 12vw, 180px);
-  --battlefield-card-height: clamp(140px, 16.8vw, 252px);
-  
-  /* Hand Cards (responsive) */
-  --hand-card-width: clamp(120px, 14vw, 220px);
-  --hand-card-height: clamp(168px, 19.6vw, 308px);
-  
-  /* Hero Cards (responsive) */
-  --hero-card-width: clamp(120px, 15vw, 192px);
+
+  /* Battlefield Cards */
+  --battlefield-card-width: 120px;
+  --battlefield-card-height: 168px;
+
+  /* Hand Cards */
+  --hand-card-width: 150px;
+  --hand-card-height: 210px;
+
+  /* Hero Cards */
+  --hero-card-width: 160px;
   
   /* Stat Badges */
   --stat-badge-size: 1.5rem;
   --stat-badge-size-lg: 1.75rem;
   
-  /* Poker Panel (responsive) */
-  --poker-panel-width: clamp(280px, 35vw, 480px);
+  /* Poker Panel */
+  --poker-panel-width: 400px;
   --poker-panel-scale: 1;
   --poker-panel-gap: 8px;
-  
-  /* Zone Heights (viewport-aware) */
-  --opponent-zone-height: clamp(140px, 18vh, 200px);
-  --player-zone-height: clamp(120px, 16vh, 180px);
-  --hand-zone-height: clamp(140px, 18vh, 200px);
-  --field-zone-height: clamp(120px, 18vh, 200px);
+
+  /* Zone Heights — fixed px for virtual canvas */
+  --opponent-zone-height: 180px;
+  --player-zone-height: 160px;
+  --hand-zone-height: 180px;
+  --field-zone-height: 180px;
   
   /* =============================================
      9. TRANSITIONS

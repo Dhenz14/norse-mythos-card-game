@@ -113,41 +113,7 @@
    ======================================== */
 
 /* Small screens: layout adjustments */
-@media (max-width: 768px) {
-  .arena-content {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-    height: 100vh;
-    overflow: hidden;
-  }
-  
-  .poker-panel {
-    max-height: 35vh;
-    overflow: hidden;
-    border-right: none;
-    border-bottom: 1px solid rgba(100, 116, 139, 0.3);
-  }
-  
-  .battle-arena {
-    grid-template-columns: clamp(100px, 20vw, 160px) 1fr;
-  }
-}
-
-/* Very small/mobile screens */
-@media (max-width: 480px) {
-  .poker-panel {
-    max-height: 30vh;
-    padding: 4px 6px;
-  }
-  
-  .battle-arena {
-    grid-template-columns: clamp(80px, 22vw, 120px) 1fr;
-  }
-  
-  .battlefield-hero-square {
-    max-width: 120px;
-  }
-}
+/* Dead grid responsive removed — virtual canvas handles scaling */
 
 /* Global scrollbar removal for all combat arena elements */
 .ragnarok-combat-arena,
@@ -602,26 +568,26 @@
 }
 
 .community-slot .arena-poker-card.norse {
-  width: clamp(100px, 8.3vw, 126px);
-  height: clamp(142px, 11.8vw, 178px);
+  width: 112px;
+  height: 158px;
 }
 
 .community-slot .arena-poker-card .card-value {
-  font-size: clamp(1.6rem, 1.8vw, 2rem);
+  font-size: 1.8rem;
 }
 
 .community-slot .arena-poker-card .norse-symbol-large {
-  font-size: clamp(2.6rem, 2.8vw, 3.4rem);
+  font-size: 3rem;
 }
 
 .community-slot .arena-poker-card .card-rune {
-  font-size: clamp(0.85rem, 0.9vw, 1.1rem);
+  font-size: 0.95rem;
 }
 
 /* SCOPED: Community slot card placeholder - only within poker panel */
 .poker-panel .community-slot .card-placeholder {
-  width: clamp(90px, 7.5vw, 112px);
-  height: clamp(128px, 10.6vw, 158px);
+  width: 100px;
+  height: 140px;
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
   border: 2px dashed rgba(139, 92, 246, 0.3);
   border-radius: 8px;
@@ -697,10 +663,10 @@
   margin-bottom: -30px;
 }
 
-/* CONSOLIDATED: Enlarged poker cards for better readability - 30% larger */
+/* Poker card base size */
 .arena-poker-card.norse {
-  width: clamp(90px, 7.5vw, 112px);
-  height: clamp(128px, 10.6vw, 158px);
+  width: 100px;
+  height: 140px;
   background: linear-gradient(145deg, #e8dcc4 0%, #d4c4a8 50%, #c4b494 100%);
   border-radius: 8px;
   position: relative;
@@ -731,10 +697,10 @@
     inset 0 0 25px rgba(139, 90, 43, 0.2);
 }
 
-/* Large variant - approximately 1.6x base sizing for hole cards */
+/* Large variant - hole cards */
 .arena-poker-card.norse.large {
-  width: clamp(130px, 10.8vw, 164px);
-  height: clamp(184px, 15.3vw, 232px);
+  width: 144px;
+  height: 202px;
 }
 
 .arena-poker-card.norse.face-down {
@@ -889,15 +855,15 @@
 }
 
 .arena-poker-card.norse.large .card-value {
-  font-size: clamp(2rem, 2.4vw, 2.6rem);
+  font-size: 2.2rem;
 }
 
 .arena-poker-card.norse.large .card-rune {
-  font-size: clamp(1.1rem, 1.3vw, 1.5rem);
+  font-size: 1.2rem;
 }
 
 .arena-poker-card.norse.large .norse-symbol-large {
-  font-size: clamp(3.6rem, 4.5vw, 4.6rem);
+  font-size: 4rem;
 }
 
 .arena-poker-card.norse.spades { --suit-accent: #2d4a3d; }
@@ -1414,8 +1380,8 @@
 
 /* SCOPED: Poker panel card placeholder sizing - prevents leakage to battlefield */
 .poker-panel .card-placeholder {
-  width: clamp(69px, 5.7vw, 86px);
-  height: clamp(98px, 8.1vw, 122px);
+  width: 78px;
+  height: 110px;
   background: rgba(0, 0, 0, 0.3);
   border: 1px dashed rgba(100, 116, 139, 0.3);
   border-radius: 6px;
@@ -1741,64 +1707,9 @@
 }
 
 /* NOTE: .battle-arena is legacy - use .unified-combat-arena instead */
-.battle-arena {
-  display: grid;
-  grid-template-areas: var(--zone-grid-areas);
-  grid-template-columns: 
-    var(--zone-poker-col-width)
-    var(--zone-battle-col-width)
-    var(--zone-info-col-width);
-  grid-template-rows: 
-    var(--zone-row-opponent-hero)
-    var(--zone-row-opponent-field)
-    var(--zone-row-player-field)
-    var(--zone-row-player-area)
-    var(--zone-row-betting);
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
-  position: relative;
-  z-index: 10;
-  background: transparent;
-}
+/* Dead .battle-arena grid removed — viewport-mode handles layout */
 
-/* Note: .unified-betting-actions-container handles the grid-area assignment */
-/* This class handles the inner button layout */
-.unified-betting-actions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  padding: 8px 0;
-  z-index: 100;
-}
-
-.betting-inner-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
-.poker-action-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.poker-slider-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 8px 20px;
-  border-radius: 24px;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
+/* Betting inner layout — canonical definitions are later in the file */
 
 .poker-slider {
   width: 280px;
@@ -1845,7 +1756,7 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  width: clamp(180px, 18vw, 240px);
+  width: 210px;
   max-height: 260px;
   display: flex;
   flex-direction: column;
@@ -2038,13 +1949,13 @@
 }
 
 .opponent-card-back {
-  width: clamp(32px, 4vw, 48px);
-  height: clamp(48px, 6vw, 72px);
+  width: 40px;
+  height: 58px;
   background: linear-gradient(145deg, #2a3a2a 0%, #1a2a1a 50%, #0f1a0f 100%);
   border: 2px solid #4d6a4d;
   border-radius: 6px;
   position: relative;
-  margin-left: clamp(-18px, -2vw, -12px);
+  margin-left: -14px;
   transition: transform 0.2s ease, margin 0.2s ease;
   box-shadow: 
     0 2px 8px rgba(0, 0, 0, 0.4),
@@ -2086,14 +1997,14 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: clamp(12px, 1.5vw, 18px);
+  font-size: 15px;
   color: rgba(107, 139, 107, 0.6);
   text-shadow: 0 0 8px rgba(107, 139, 107, 0.4);
 }
 
 /* Fan effect on hover */
 .opponent-hand-display:hover .opponent-card-back {
-  margin-left: clamp(-12px, -1.5vw, -8px);
+  margin-left: -10px;
 }
 
 .opponent-hand-display:hover .opponent-card-back:first-child {
@@ -2238,16 +2149,15 @@
 .player-mana-display {
   width: 100%;
   max-width: 120px;
-  margin: 0 !important;
-  padding: 0 !important;
-  margin-top: -2px !important;
+  margin: 0;
+  padding: 0;
+  margin-top: -2px;
 }
 
 .player-mana-display .mana-bar-container {
-  /* No transform - use actual sizing to prevent layout box mismatch */
   font-size: 0.75rem;
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
 }
 
 .mana-crystal,
@@ -5016,70 +4926,7 @@
   overflow: hidden;
 }
 
-/* ========================================
-   GRID AREA ASSIGNMENTS
-   Each zone maps to a named grid area
-   ======================================== */
-
-/* Opponent Hero Zone - top-left of poker column */
-.unified-opponent-hero {
-  grid-area: opp-hero;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 8px;
-}
-
-/* Opponent Hand Zone - top of battlefield column */
-.unified-opponent-hand {
-  grid-area: opp-hand;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 8px;
-}
-
-/* Community Cards Zone - left column, vertically centered */
-.unified-community {
-  grid-area: community;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-}
-
-/* Risk Display Zone - left column, below community */
-.risk-container {
-  grid-area: pot;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-}
-
-/* Opponent Field Zone - battlefield column, top half */
-.unified-opponent-field {
-  grid-area: opp-field;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding: 8px 8px 14px 8px;
-}
-
-/* Player Field Zone - battlefield column, bottom half */
-.unified-player-field {
-  grid-area: player-field;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 14px 8px 8px 8px;
-  position: relative;
-}
-
-/* Auto-attack button inherits .poker-btn styles, no extra rules needed */
+/* Dead grid-area assignments removed — viewport-mode positions everything absolutely */
 
 /* ============================================================
    RISK CHIP — Committed HP badge on hero portraits
@@ -5167,20 +5014,10 @@
   padding: 8px;
 }
 
-/* Player Area (Hand + Hero row) - battlefield column, bottom */
-.unified-player-area {
-  grid-area: player-area;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 16px;
-  padding: 8px;
-}
+/* Dead grid-area player-area removed */
 
-/* Activity Logs Zone - right column */
+/* Activity Logs Zone */
 .activity-logs-dock {
-  grid-area: logs;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -5551,7 +5388,6 @@
 }
 
 .unified-info-row {
-  grid-area: info-row;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -5563,13 +5399,11 @@
 }
 
 .unified-opponent-hero {
-  grid-area: opponent-hero;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 8px;
-  padding-top: 60px;
   position: relative;
 }
 
@@ -5590,45 +5424,17 @@
    See: client/src/game/combat/components/HoleCardsOverlay.tsx
    ======================================== */
 
-/* NOTE: .unified-opponent-hand grid-area is set above in GRID AREA ASSIGNMENTS section */
-
-/* NOTE: .unified-opponent-field grid-area is set above in GRID AREA ASSIGNMENTS section */
-
-/* NOTE: .unified-player-field duplicate removed - single rule at line ~4924 */
-/* Keeping z-index rule for proper stacking */
+/* Player field stacking */
 .unified-player-field > * {
   position: relative;
   z-index: 1;
 }
 
 
-/* NOTE: .unified-player-area grid-area is set above in GRID AREA ASSIGNMENTS section */
-/* IMPORTANT: No z-index here — prevents stacking context that traps community cards behind it */
+/* No z-index here — prevents stacking context that traps community cards */
 .unified-player-area {
   position: relative;
   overflow: visible;
-  background: 
-    repeating-linear-gradient(
-      45deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(139, 92, 246, 0.05) 2px,
-      rgba(139, 92, 246, 0.05) 4px
-    ),
-    linear-gradient(180deg,
-      rgba(30, 27, 75, 0.95) 0%,
-      rgba(45, 37, 90, 0.95) 15%,
-      rgba(55, 45, 100, 0.95) 50%,
-      rgba(45, 37, 90, 0.95) 85%,
-      rgba(30, 27, 75, 0.95) 100%
-    );
-  border-radius: 8px;
-  border: 2px solid rgba(139, 92, 246, 0.4);
-  box-shadow: 
-    inset 0 2px 4px rgba(139, 92, 246, 0.2),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.5),
-    0 4px 12px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(139, 92, 246, 0.15);
 }
 
 /* Player area runic decoration */
@@ -5989,131 +5795,7 @@
   z-index: var(--z-overlay);
 }
 
-/* ========================================
-   RESPONSIVE GRID ADJUSTMENTS
-   Uses variables from zones.css for column widths
-   ======================================== */
-
-/* Large screens (1280px-1600px): Use standard column widths from zones.css */
-@media (max-width: 1280px) {
-  .unified-combat-arena {
-    gap: 3px 6px;
-  }
-}
-
-/* Tablet screens (768px-1024px): Compact layout */
-@media (max-width: 1024px) {
-  .unified-combat-arena {
-    gap: 2px 4px;
-    padding: 4px;
-  }
-  
-  .unified-player-area {
-    gap: 12px;
-    padding: 8px 12px;
-  }
-}
-
-/* Mobile screens (<768px): Single column stacked layout
-   Uses zones.css mobile grid template as single source of truth */
-@media (max-width: 768px) {
-  .unified-combat-arena {
-    grid-template-columns: 1fr;
-    /* Row heights from zones.css mobile override (7 named rows) */
-    grid-template-rows: 
-      var(--zone-row-1-opp-hero)
-      var(--zone-row-2-opp-hand)
-      var(--zone-row-3-community)
-      var(--zone-row-4-opp-field)
-      var(--zone-row-5-player-field)
-      var(--zone-row-6-player-area)
-      var(--zone-row-7-betting);
-    /* Grid areas from zones.css mobile override */
-    grid-template-areas: var(--zone-grid-areas);
-  }
-  
-  .unified-player-area {
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .unified-hero-hand-row {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  /* Community cards center on mobile (stacked layout) */
-  .unified-community {
-    justify-self: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  /* Hide elements not in mobile grid template */
-  .activity-logs-dock,
-  .risk-container,
-  .unified-hero-section {
-    display: none;
-  }
-}
-
-/* ========================================
-   COMMUNITY CARDS RESPONSIVE STYLING
-   Positioning via --community-left from layoutConfig.ts
-   This file only handles spacing/sizing adjustments
-   ======================================== */
-
-/* Medium screens (1024px-1280px): Compact spacing */
-@media (min-width: 1024px) and (max-width: 1279px) {
-  .unified-community .zone-community {
-    gap: 10px;
-  }
-}
-
-/* Tablet screens (768px-1024px): Compact layout */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .unified-community {
-    padding: 8px 12px;
-    gap: 12px;
-  }
-  
-  .unified-community .zone-community {
-    gap: 8px;
-  }
-}
-
-/* Small screens (<768px): Center community cards in stacked layout */
-@media (max-width: 767px) {
-  .unified-community {
-    justify-content: center;
-    justify-self: center;
-    width: 100%;
-    padding: 8px;
-    gap: 8px;
-  }
-  
-  .unified-community .zone-community {
-    justify-content: center;
-    gap: 6px;
-  }
-}
-
-/* Very small screens (<480px): Compact community cards */
-@media (max-width: 480px) {
-  .unified-community {
-    padding: 6px;
-    gap: 4px;
-  }
-  
-  .unified-community .zone-community {
-    gap: 4px;
-  }
-  
-  .unified-community .community-slot {
-    transform: scale(0.85);
-  }
-}
+/* Dead responsive grid removed — virtual canvas handles all scaling */
 
 /* ========================================
    WEAPON/SECRET SLOTS

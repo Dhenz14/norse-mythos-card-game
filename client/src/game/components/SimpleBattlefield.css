@@ -1,10 +1,10 @@
 /* SimpleBattlefield.css - Clean, minimal battlefield styling */
 
 .simple-battlefield {
-  --bf-card-width: clamp(90px, 11vw, 140px);
-  --bf-card-height: clamp(126px, 15.4vw, 196px);
-  --bf-slot-gap: clamp(6px, 0.8vw, 12px);
-  --bf-row-height: clamp(140px, 17vh, 220px);
+  --bf-card-width: 120px;
+  --bf-card-height: 168px;
+  --bf-slot-gap: 8px;
+  --bf-row-height: 180px;
   
   display: flex;
   flex-direction: column;
@@ -199,12 +199,12 @@
 }
 
 .bf-attack, .bf-health {
-  width: clamp(26px, 3vw, 34px);
-  height: clamp(26px, 3vw, 34px);
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(13px, 1.5vw, 17px);
+  font-size: 15px;
   font-weight: 800;
   color: #ffffff;
   border-radius: 6px;
@@ -1152,31 +1152,7 @@
   transform: none;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1280px) {
-  .simple-battlefield {
-    --bf-card-width: clamp(80px, 10vw, 120px);
-    --bf-card-height: clamp(112px, 14vw, 168px);
-    --bf-row-height: clamp(120px, 15vh, 180px);
-  }
-}
-
-@media (max-width: 768px) {
-  .simple-battlefield {
-    --bf-card-width: clamp(65px, 12vw, 100px);
-    --bf-card-height: clamp(91px, 16.8vw, 140px);
-    --bf-row-height: clamp(100px, 14vh, 150px);
-  }
-  
-  .bf-row {
-    gap: 4px;
-    padding: 4px 8px;
-  }
-  
-  .bf-card-wrapper:hover {
-    transform: translateY(-8px) scale(1.05);
-  }
-}
+/* Responsive: not needed — virtual canvas handles scaling uniformly */
 
 /* ==========================================================================
    FOCUS-VISIBLE - Keyboard navigation support

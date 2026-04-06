@@ -325,45 +325,7 @@
    ======================================== */
 /* All responsive zone overrides moved to styles/zones.css for single source of truth */
 
-/* ========================================
-   CSS CONTAINER QUERIES (AAA-quality)
-   Cards size relative to game-viewport container
-   instead of viewport units for better consistency
-   ======================================== */
-
-/* Container query for cards within the game viewport */
-@container game-viewport (max-width: 1200px) {
-  .viewport-hero-card {
-    width: clamp(100px, 14cqw, 160px);
-  }
-
-  .unified-player-field .battlefield-card,
-  .unified-opponent-field .battlefield-card {
-    width: clamp(80px, 10cqw, 140px);
-  }
-}
-
-@container game-viewport (max-width: 900px) {
-  .viewport-hero-card {
-    width: clamp(80px, 16cqw, 140px);
-  }
-
-  .unified-player-field .battlefield-card,
-  .unified-opponent-field .battlefield-card {
-    width: clamp(60px, 12cqw, 120px);
-  }
-}
-
-@container game-viewport (min-width: 1600px) {
-  .viewport-hero-card {
-    width: clamp(120px, 10cqw, 180px);
-  }
-
-  .unified-player-field .battlefield-card,
-  .unified-opponent-field .battlefield-card {
-    width: clamp(100px, 8cqw, 160px);
-  }
-}
+/* Container queries removed — virtual canvas is always 1920px, uniform scaling handles sizing */
 
 /* ========================================
    VIEWPORT MODE OVERRIDES
@@ -493,69 +455,7 @@
   z-index: var(--z-betting, 200);
 }
 
-/* Player Area - bottom left */
-.viewport-mode .unified-player-area {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  z-index: var(--z-heroes, 30);
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  width: 100%;
-}
-
-.viewport-mode .unified-hero-hand-row {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 24px;
-  width: 100%;
-  padding: 16px 24px;
-}
-
-/* Player Hero Section */
-.viewport-mode .unified-hero-section {
-  position: relative;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.viewport-mode .poker-hero-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Player Mana - visible below hero */
-.viewport-mode .player-mana-display {
-  width: 180px;
-  margin-top: 8px;
-}
-
-/* NOTE: Hand section and betting actions moved to CCG-style layout section below */
-
-/* Hero card constraints - ensure visibility */
-.viewport-mode .battlefield-hero-square {
-  width: 180px;
-  aspect-ratio: 3/4;
-  max-width: none;
-  max-height: none;
-  transform: none !important;
-}
-
-/* Remove transform hacks from hero card */
-.viewport-mode .battlefield-hero-square:hover {
-  transform: scale(1.02) !important;
-}
-
-/* Ensure mana bar is always visible */
-.viewport-mode .mana-bar-container {
-  transform: none !important;
-}
+/* Player Area, Hero, Hand, Mana — canonical definitions in HEARTHSTONE-STYLE section below */
 
 /* ========================================
    HEARTHSTONE-STYLE PLAYER ZONE LAYOUT
@@ -595,10 +495,9 @@
   height: 250px; /* Compact player zone */
   z-index: var(--z-heroes, 30);
   pointer-events: none;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  transform: none !important;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .viewport-mode .unified-player-area > * {
@@ -793,62 +692,13 @@
   left: var(--zone-opponent-hero-left, 24px);
   top: var(--zone-opponent-hero-top, 0);
   z-index: var(--z-heroes, 30);
-  /* Override RagnarokCombatArena.css padding */
-  padding: 0 !important;
-  padding-top: 0 !important;
+  padding: 0;
 }
 
 /* REMOVED DUPLICATE: opponent-field is now defined in the zone layout section above */
 
-/* ========================================
-   VIEWPORT MODE RESPONSIVE COMMUNITY CARDS
-   
-   NOTE: Community card positioning now uses CSS variables from:
-   - styles/zones.css: --zone-community-left, --zone-community-top
-   
-   To move community cards:
-   1. Edit the variables in styles/zones.css
-   2. No other files need to be changed
-   
-   Responsive adjustments are handled via media queries in zones.css
-   ======================================== */
-
-/* Community cards positioning handled via --zone-community-* variables in zones.css */
-/* Spacing adjustments only below */
-
-@media (min-width: 1024px) and (max-width: 1279px) {
-  .zone-community,
-  .viewport-mode .unified-community {
-    gap: 5px;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .zone-community,
-  .viewport-mode .unified-community {
-    gap: 4px;
-    padding: 6px 10px;
-  }
-}
-
-@media (max-width: 767px) {
-  .zone-community,
-  .viewport-mode .unified-community {
-    gap: 4px;
-    padding: 6px 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .zone-community,
-  .viewport-mode .unified-community {
-    gap: 3px;
-    padding: 4px 6px;
-  }
-
-  .viewport-mode .unified-community .community-slot {
-    transform: scale(0.8);
-  }
+/* Community cards — positioned via zones.css variables, no responsive needed
+   (virtual canvas handles all scaling) */
 }
 
 /* ========================================

@@ -134,28 +134,28 @@
      ======================================== */
   --zone-community-left: 16px;
   --zone-community-top: 48%;
-  --zone-community-z: var(--token-z-community, 25);
+  --zone-community-z: var(--z-community, 25);
 
   /* ========================================
      BETTING ACTIONS — bottom, right of hero
      ======================================== */
   --zone-betting-left: 260px;
   --zone-betting-bottom: 8px;
-  --zone-betting-z: var(--token-z-betting, 200);
+  --zone-betting-z: var(--z-betting, 200);
 
   /* ========================================
      TIMER — top-center
      ======================================== */
   --zone-timer-left: 50%;
   --zone-timer-top: 10px;
-  --zone-timer-z: var(--token-z-timer, 500);
+  --zone-timer-z: var(--z-timer, 500);
 
   /* ========================================
      ACTIVITY LOGS — top-right
      ======================================== */
   --zone-activity-right: 20px;
   --zone-activity-top: 20px;
-  --zone-activity-z: var(--token-z-timer, 500);
+  --zone-activity-z: var(--z-timer, 500);
 
   /* ========================================
      HOLE CARDS offset from hero
