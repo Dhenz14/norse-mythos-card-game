@@ -33,31 +33,7 @@
      DO NOT use vw, vh, or % for positions inside the canvas.
      ======================================== */
 
-  /* ========================================
-     GRID COLUMN WIDTHS (used by grid mode only)
-     ======================================== */
-  --zone-poker-col-width: 480px;
-  --zone-info-col-width: 220px;
-  --zone-battle-col-width: 1fr;
-
-  /* ========================================
-     GRID ROW HEIGHTS
-     ======================================== */
-  --zone-row-opponent-hero: auto;
-  --zone-row-opponent-field: minmax(120px, 1fr);
-  --zone-row-player-field: minmax(120px, 1fr);
-  --zone-row-player-area: auto;
-  --zone-row-betting: auto;
-
-  /* ========================================
-     GRID TEMPLATE AREAS
-     ======================================== */
-  --zone-grid-areas:
-    "opp-hero       opp-hand       logs"
-    "community      opp-field      logs"
-    "pot            player-field   logs"
-    "player-hero    player-area    logs"
-    "betting        betting        betting";
+  /* Dead grid variables removed — viewport-mode uses absolute positioning */
 
   /* ========================================
      PLAYER HERO ZONE — bottom-left
@@ -77,7 +53,7 @@
   /* ========================================
      PLAYER HAND — bottom-center
      ======================================== */
-  --zone-player-hand-left: 50%;
+  --zone-player-hand-left: 960px;
   --zone-player-hand-bottom: 0px;
   --zone-player-hand-z: 40;
 
@@ -85,7 +61,7 @@
      PLAYER MINION FIELD
      Center-right, above player area
      ======================================== */
-  --zone-player-field-left: 60%;
+  --zone-player-field-left: 1152px;
   --zone-player-field-bottom: 320px;
   --zone-player-field-z: 20;
 
@@ -107,7 +83,7 @@
   /* ========================================
      OPPONENT HAND — top-center
      ======================================== */
-  --zone-opponent-hand-left: 18%;
+  --zone-opponent-hand-left: 346px;
   --zone-opponent-hand-top: 0px;
   --zone-opponent-hand-z: 40;
 
@@ -115,7 +91,7 @@
      OPPONENT MINION FIELD
      Center-right, below opponent area
      ======================================== */
-  --zone-opponent-field-left: 60%;
+  --zone-opponent-field-left: 1152px;
   --zone-opponent-field-top: 260px;
   --zone-opponent-field-z: 20;
 
@@ -125,7 +101,7 @@
      ======================================== */
   --hero-card-height: calc(var(--hero-card-width, 130px) * 1.4);
 
-  --zone-risk-left: 15%;
+  --zone-risk-left: 288px;
   --zone-risk-bottom: 280px;
   --z-risk: 50;
 
@@ -133,7 +109,7 @@
      COMMUNITY CARDS (Flop/Turn/River) — left side
      ======================================== */
   --zone-community-left: 16px;
-  --zone-community-top: 48%;
+  --zone-community-top: 518px;
   --zone-community-z: var(--z-community, 25);
 
   /* ========================================
@@ -146,7 +122,7 @@
   /* ========================================
      TIMER — top-center
      ======================================== */
-  --zone-timer-left: 50%;
+  --zone-timer-left: 960px;
   --zone-timer-top: 10px;
   --zone-timer-z: var(--z-timer, 500);
 
@@ -175,33 +151,8 @@
    with uniform scaling. No breakpoints needed.
    ======================================== */
 
-/* Mobile screens (<768px): Single column stacked layout */
-@media (max-width: 767px) {
-  :root {
-    --zone-poker-col-width: 1fr;
-    --zone-info-col-width: 0px;
-    --zone-battle-col-width: 1fr;
+/* Dead mobile grid override removed — virtual canvas handles scaling */
 
-    --zone-grid-areas:
-      "opp-hero"
-      "opp-hand"
-      "community"
-      "opp-field"
-      "player-field"
-      "player-area"
-      "betting";
-  }
-}
-
-/* ========================================
-   NOTE: SELECTORS REMOVED FROM THIS FILE
-   
-   This file contains ONLY CSS variables.
-   All zone selectors (.zone-*) are defined in GameViewport.css
-   which consumes these variables.
-   
-   This separation ensures:
-   1. Single source of truth for position VALUES (this file)
-   2. Single source of truth for SELECTORS (GameViewport.css)
-   3. No cascade conflicts from duplicate selector definitions
-   ======================================== */
+/* This file contains ONLY CSS variables for zone positioning.
+   All zone selectors are in GameViewport.css.
+   To move any element: change the --zone-* value here. */
