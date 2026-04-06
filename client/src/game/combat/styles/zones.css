@@ -1,109 +1,30 @@
 /**
- * ZONE POSITIONING - CSS Grid Layout System
+ * ZONE POSITIONING — Single Source of Truth
  * ==========================================
- * Uses CSS Grid with named template areas for easy visualization.
- * Open browser DevTools → Layout tab to see grid overlay.
- * 
- * GRID STRUCTURE (3-column layout):
- * ┌─────────────────┬─────────────────────────┬────────────┐
- * │   poker-col     │      battle-col         │  info-col  │
- * ├─────────────────┼─────────────────────────┼────────────┤
- * │ opponent-hero   │ opponent-hand           │  logs      │
- * │ community       │ opponent-field          │  .         │
- * │ pot             │ player-field            │  .         │
- * │ player-hero     │ player-hand             │  .         │
- * │ betting         │ betting                 │  .         │
- * └─────────────────┴─────────────────────────┴────────────┘
- * 
- * HOW TO MOVE ELEMENTS:
- * 1. Change --zone-grid-areas template to reposition zones
- * 2. Adjust column/row sizes via --zone-*-width variables
- * 3. Use browser DevTools to visualize changes in real-time
- * 
- * COLUMN WIDTH VARIABLES:
- * --zone-poker-col-width: Width of poker/community column
- * --zone-info-col-width: Width of activity logs column
- * --zone-battle-col-width: Auto-fills remaining space
+ * All values in fixed px for the 1920×1080 virtual canvas.
+ * GameViewport.tsx scales the canvas uniformly.
+ *
+ * TO MOVE ANY ELEMENT: change its --zone-* value here.
+ * No other files need editing.
  */
 
 :root {
   /* ========================================
-     VIRTUAL CANVAS ZONE SYSTEM
-     All values in px — the 1920×1080 virtual canvas handles scaling.
-     DO NOT use vw, vh, or % for positions inside the canvas.
-     ======================================== */
-
-  /* Dead grid variables removed — viewport-mode uses absolute positioning */
-
-  /* ========================================
-     PLAYER HERO ZONE — bottom-left
-     ======================================== */
-  --zone-player-hero-left: 24px;
-  --zone-player-hero-bottom: 16px;
-  --zone-player-hero-z: 30;
-
-  /* ========================================
-     PLAYER MANA BAR — below hero
-     ======================================== */
-  --zone-player-mana-left: 24px;
-  --zone-player-mana-bottom: 8px;
-  --zone-player-mana-width: 140px;
-  --zone-player-mana-z: 30;
-
-  /* ========================================
-     PLAYER HAND — bottom-center
-     ======================================== */
-  --zone-player-hand-left: 960px;
-  --zone-player-hand-bottom: 0px;
-  --zone-player-hand-z: 40;
-
-  /* ========================================
-     PLAYER MINION FIELD
-     Center-right, above player area
-     ======================================== */
-  --zone-player-field-left: 1152px;
-  --zone-player-field-bottom: 320px;
-  --zone-player-field-z: 20;
-
-  /* ========================================
-     OPPONENT HERO ZONE — top-left
+     OPPONENT HERO — top-left
      ======================================== */
   --zone-opponent-hero-left: 24px;
   --zone-opponent-hero-top: 12px;
-  --zone-opponent-hero-z: 30;
-
-  /* ========================================
-     OPPONENT MANA BAR — below opponent hero
-     ======================================== */
-  --zone-opponent-mana-left: 24px;
-  --zone-opponent-mana-top: 233px;
-  --zone-opponent-mana-width: 140px;
-  --zone-opponent-mana-z: 30;
 
   /* ========================================
      OPPONENT HAND — top-center
      ======================================== */
   --zone-opponent-hand-left: 346px;
-  --zone-opponent-hand-top: 0px;
-  --zone-opponent-hand-z: 40;
 
   /* ========================================
-     OPPONENT MINION FIELD
-     Center-right, below opponent area
+     OPPONENT MINION FIELD — center-right
      ======================================== */
   --zone-opponent-field-left: 1152px;
   --zone-opponent-field-top: 260px;
-  --zone-opponent-field-z: 20;
-
-  /* ========================================
-     POT INFO - SPLIT LAYOUT
-     Relative to hero positions (fixed px)
-     ======================================== */
-  --hero-card-height: calc(var(--hero-card-width, 130px) * 1.4);
-
-  --zone-risk-left: 288px;
-  --zone-risk-bottom: 280px;
-  --z-risk: 50;
 
   /* ========================================
      COMMUNITY CARDS (Flop/Turn/River) — left side
@@ -113,6 +34,18 @@
   --zone-community-z: var(--z-community, 25);
 
   /* ========================================
+     RISK DISPLAY — left of center
+     ======================================== */
+  --zone-risk-left: 288px;
+  --zone-risk-bottom: 280px;
+
+  /* ========================================
+     PLAYER MINION FIELD — center-right, above player area
+     ======================================== */
+  --zone-player-field-left: 1152px;
+  --zone-player-field-bottom: 320px;
+
+  /* ========================================
      BETTING ACTIONS — bottom, right of hero
      ======================================== */
   --zone-betting-left: 260px;
@@ -120,21 +53,7 @@
   --zone-betting-z: var(--z-betting, 200);
 
   /* ========================================
-     TIMER — top-center
-     ======================================== */
-  --zone-timer-left: 960px;
-  --zone-timer-top: 10px;
-  --zone-timer-z: var(--z-timer, 500);
-
-  /* ========================================
-     ACTIVITY LOGS — top-right
-     ======================================== */
-  --zone-activity-right: 20px;
-  --zone-activity-top: 20px;
-  --zone-activity-z: var(--z-timer, 500);
-
-  /* ========================================
-     HOLE CARDS offset from hero
+     HOLE CARDS — offset from hero portraits
      ======================================== */
   --zone-hole-cards-player-offset: -20px;
   --zone-hole-cards-opponent-offset: -80px;
@@ -144,15 +63,3 @@
      ======================================== */
   --zone-poker-card-scale: 1;
 }
-
-/* ========================================
-   RESPONSIVE — Only for mobile stacked layout.
-   Desktop/laptop uses virtual 1920×1080 canvas
-   with uniform scaling. No breakpoints needed.
-   ======================================== */
-
-/* Dead mobile grid override removed — virtual canvas handles scaling */
-
-/* This file contains ONLY CSS variables for zone positioning.
-   All zone selectors are in GameViewport.css.
-   To move any element: change the --zone-* value here. */

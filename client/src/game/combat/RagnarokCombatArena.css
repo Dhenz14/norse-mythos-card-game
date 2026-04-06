@@ -175,208 +175,7 @@
   50% { opacity: 0.5; }
 }
 
-.arena-header {
-  height: 8px;
-  background: linear-gradient(90deg, 
-    #1a1a2e 0%, 
-    #2d3748 20%, 
-    #4a5568 50%, 
-    #2d3748 80%, 
-    #1a1a2e 100%
-  );
-  position: relative;
-  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.fire-border {
-  position: absolute;
-  width: 60px;
-  height: 100%;
-  background: linear-gradient(180deg, 
-    rgba(245, 158, 11, 0.6) 0%, 
-    rgba(234, 88, 12, 0.4) 50%,
-    transparent 100%
-  );
-  animation: emberGlow 2s ease-in-out infinite;
-}
-
-.fire-border.left { left: 0; }
-.fire-border.right { right: 0; }
-
-@keyframes emberGlow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.7;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.02);
-  }
-}
-
-.arena-content {
-  flex: 1;
-  display: flex;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  gap: 0;
-}
-
-/* NOTE: .player-field-zone removed - using .unified-player-field (single source of truth) */
-
-.poker-panel {
-  background: linear-gradient(180deg, 
-    rgba(15, 23, 42, 0.95) 0%, 
-    rgba(20, 30, 48, 0.92) 100%
-  );
-  border-right: none;
-  display: flex;
-  flex-direction: column;
-  padding: calc(10px * var(--poker-panel-scale)) calc(12px * var(--poker-panel-scale));
-  gap: var(--poker-panel-gap);
-  position: relative;
-  min-height: 0;
-  overflow: hidden;
-  height: 100%;
-}
-
-.poker-top-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--poker-panel-gap);
-  flex: 0 1 auto;
-  min-height: 0;
-  overflow: visible;
-}
-
-.poker-bottom-section {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--poker-panel-gap);
-  flex: 0 0 auto;
-  overflow: visible;
-}
-
-.poker-saga-feed {
-  margin-top: auto;
-  padding-top: 8px;
-  flex-shrink: 0;
-}
-
-.dual-saga-feeds {
-  display: flex;
-  flex-direction: column;
-  gap: var(--poker-panel-gap);
-  margin-top: auto;
-  padding-top: var(--poker-panel-gap);
-  flex: 0 1 auto;
-  min-height: 0;
-  max-height: calc(180px * var(--poker-panel-scale));
-  overflow: hidden;
-}
-
-.dual-saga-feeds .activity-log {
-  flex: 1;
-  min-height: 0;
-  max-height: calc(80px * var(--poker-panel-scale));
-  font-size: calc(0.75rem * var(--poker-panel-scale) + 0.1rem);
-}
-
-.dual-saga-feeds .activity-log-content {
-  max-height: calc(55px * var(--poker-panel-scale));
-  overflow: hidden;
-}
-
-.dual-saga-feeds .activity-log-header {
-  padding: 4px 8px;
-  font-size: 0.75rem;
-}
-
-.dual-saga-feeds .activity-log-poker {
-  border-color: rgba(251, 191, 36, 0.4);
-}
-
-.dual-saga-feeds .activity-log-minion {
-  border-color: rgba(96, 165, 250, 0.4);
-}
-
-.poker-panel-footer {
-  padding: 10px 0 0 0;
-  background: transparent;
-  border-top: 1px solid rgba(251, 191, 36, 0.3);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.poker-footer-mana {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.end-turn-btn-large {
-  width: 100%;
-  padding: 10px 16px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  background: linear-gradient(145deg, #22c55e, #16a34a);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 
-    0 4px 16px rgba(34, 197, 94, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.end-turn-btn-large:hover:not(:disabled) {
-  transform: translateY(-2px);
-  background: linear-gradient(145deg, #4ade80, #22c55e);
-  box-shadow: 
-    0 6px 20px rgba(34, 197, 94, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.end-turn-btn-large:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: linear-gradient(145deg, #6b7280, #4b5563);
-  box-shadow: none;
-}
-
-.poker-panel::after {
-  content: '';
-  position: absolute;
-  right: -1px;
-  top: 10%;
-  bottom: 10%;
-  width: 2px;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    rgba(245, 158, 11, 0.6) 20%,
-    rgba(245, 158, 11, 0.8) 50%,
-    rgba(245, 158, 11, 0.6) 80%,
-    transparent 100%
-  );
-  filter: blur(2px);
-  pointer-events: none;
-}
+/* Dead .arena-header, .fire-border, .poker-panel and all children removed — never rendered in JSX */
 
 .opponent-poker-area,
 .player-poker-area {
@@ -646,7 +445,7 @@
 .opponent-hole-cards,
 .player-hole-cards {
   display: flex;
-  gap: -8px; /* Slight overlap like real poker */
+  gap: 0; /* Overlap handled by negative margins below */
   overflow: visible;
   padding: 0;
   position: relative;
@@ -964,10 +763,7 @@
   100% { opacity: 0; transform: translateY(8px); }
 }
 
-@keyframes hp-shimmer {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
-}
+/* Dead @keyframes hp-shimmer removed — unused */
 
 .fighting-hp-damage {
   position: absolute;
@@ -1325,29 +1121,7 @@
   margin-top: 2px;
 }
 
-.damage-modifiers {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.mod-box {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  padding: 4px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 0.6rem;
-  color: #94a3b8;
-}
-
-.mod-box span:last-child {
-  font-weight: bold;
-  color: #fff;
-}
+/* Dead .damage-modifiers, .mod-box removed — not in JSX */
 
 .community-cards-section {
   /* Styling handled by .zone-community inside */
@@ -4541,26 +4315,8 @@
    3. Decorative overlays: pointer-events: none (effects, particles)
    ======================================== */
 
-/* Battlefield zones - disable pointer-events on empty space */
-.player-battlefield-zone,
-.opponent-battlefield-zone {
-  pointer-events: none;
-}
-
-/* Re-enable pointer-events on interactive elements within battlefield */
-.player-battlefield-zone .card-with-drag,
-.player-battlefield-zone .battlefield-card,
-.opponent-battlefield-zone .card-with-drag,
-.opponent-battlefield-zone .battlefield-card {
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-/* Hero zones - must be clickable */
-.player-hero-zone,
-.opponent-hero-zone {
-  pointer-events: auto;
-}
+/* Dead .player-battlefield-zone, .opponent-battlefield-zone, .player-hero-zone, .opponent-hero-zone
+   pointer-events removed — these classes are not in JSX */
 
 /* Hero squares - fully clickable with explicit z-index above overlays */
 .battlefield-hero-square {
@@ -4664,37 +4420,7 @@
   padding: 8px;
 }
 
-/* ========================================
-   UNIFIED COMBAT ARENA - Single Grid Layout
-   Merges poker + battlefield into one cohesive grid
-   Community cards CENTERED between heroes (proper poker table)
-   ======================================== */
-.unified-combat-arena {
-  /* 3-Column Grid Layout - Poker | Battlefield | Info
-     Grid template areas defined in zones.css as single source of truth */
-  display: grid;
-  grid-template-columns: 
-    var(--zone-poker-col-width)    /* Poker/Community column - fixed width */
-    var(--zone-battle-col-width)   /* Battlefield - flexible */
-    var(--zone-info-col-width);    /* Activity logs - fixed width */
-  grid-template-rows: 
-    var(--zone-row-opponent-hero)                 /* Row 1: opponent-hero / opponent-hand */
-    var(--zone-row-opponent-field)                /* Row 2: community / opponent-field */
-    var(--zone-row-player-field)                  /* Row 3: pot / player-field */
-    var(--zone-row-player-area)                   /* Row 4: player-hero / player-area */
-    var(--zone-row-betting);                      /* Row 5: betting */
-  grid-template-areas: var(--zone-grid-areas);
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  gap: 0 8px;
-  padding: 8px;
-  background: linear-gradient(180deg, 
-    rgba(15, 23, 42, 0.98) 0%, 
-    rgba(20, 30, 48, 0.95) 100%
-  );
-  overflow: hidden;
-}
+/* Dead grid layout removed — viewport-mode uses display:block (set in GameViewport.css) */
 
 /* Dead grid-area assignments removed — viewport-mode positions everything absolutely */
 

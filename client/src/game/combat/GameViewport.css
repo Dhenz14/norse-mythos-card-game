@@ -193,7 +193,7 @@
 /* Opponent Hand - near opponent hero */
 .viewport-mode .unified-opponent-hand {
   position: absolute;
-  left: var(--zone-opponent-hand-left, 18%);
+  left: var(--zone-opponent-hand-left, 346px);
   top: 8px;
   transform: translateX(-50%);
   z-index: var(--z-hand, 40);
@@ -218,7 +218,7 @@
 .viewport-mode .unified-community {
   position: absolute;
   left: var(--zone-community-left, 60px);
-  top: var(--zone-community-top, 48%);
+  top: var(--zone-community-top, 518px);
   transform: translateY(-50%);
   z-index: var(--zone-community-z, 25);
   display: flex;
@@ -237,7 +237,7 @@
    Shifted right from center (was 50%, now 60%) */
 .viewport-mode .unified-opponent-field {
   position: absolute;
-  left: var(--zone-opponent-field-left, 60%);
+  left: var(--zone-opponent-field-left, 1152px);
   top: var(--zone-opponent-field-top, 260px);
   transform: translateX(-50%);
   z-index: var(--z-battlefield, 10);
@@ -288,19 +288,8 @@
    Zone positions are in styles/zones.css.
    ======================================== */
 :root {
-  /* Poker hole cards layout */
-  --poker-offset-top: -30%;
-  --poker-fan-spread: 24px;
-  --poker-card-tilt: 4deg;
-  --poker-z-index: var(--z-betting, 200);
   --hero-z-index: var(--z-heroes, 30);
-
-  /* Hand zone gap */
-  --hand-zone-gap: 12px;
   --hand-minion-card-spacing: -24px;
-
-  /* Betting zone bottom (not a position - just a local modifier) */
-  --betting-zone-bottom: 8px;
 }
 
 /* Player Zone Container — pinned to bottom of 1920×1080 canvas */
@@ -386,7 +375,7 @@
    Shifted right from center (was 50%, now 60%) */
 .viewport-mode .unified-player-field {
   position: absolute;
-  left: var(--zone-player-field-left, 60%);
+  left: var(--zone-player-field-left, 1152px);
   bottom: var(--zone-player-field-bottom, 360px);
   transform: translateX(-50%);
   z-index: var(--z-battlefield, 10);
