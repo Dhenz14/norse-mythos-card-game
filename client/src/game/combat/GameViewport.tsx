@@ -17,18 +17,21 @@ export const GameViewport: React.FC<GameViewportProps> = ({
   extraClassName = '',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scaleX, setScaleX] = useState(1);
-  const [scaleY, setScaleY] = useState(1);
+  const [scale, setScale] = useState(1);
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
 
   useEffect(() => {
     const calculateScale = () => {
       if (!containerRef.current) return;
 
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
 
-      setScaleX(viewportWidth / referenceWidth);
-      setScaleY(viewportHeight / referenceHeight);
+      const uniformScale = Math.min(vw / referenceWidth, vh / referenceHeight);
+      setScale(uniformScale);
+      setOffsetX((vw - referenceWidth * uniformScale) / 2);
+      setOffsetY((vh - referenceHeight * uniformScale) / 2);
     };
 
     calculateScale();
@@ -54,10 +57,12 @@ export const GameViewport: React.FC<GameViewportProps> = ({
         ref={containerRef}
         className={`game-viewport ${extraClassName}`.trim()}
         style={{
-          '--vp-scale-x': scaleX,
-          '--vp-scale-y': scaleY,
+          '--vp-scale-x': scale,
+          '--vp-scale-y': scale,
           '--vp-width': `${referenceWidth}px`,
           '--vp-height': `${referenceHeight}px`,
+          left: `${offsetX}px`,
+          top: `${offsetY}px`,
         } as React.CSSProperties}
       >
         {children}

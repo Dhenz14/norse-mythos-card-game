@@ -20,6 +20,7 @@
   height: 100vh;
   overflow: hidden;
   z-index: 1;
+  background: #000;
 }
 
 .game-viewport {
