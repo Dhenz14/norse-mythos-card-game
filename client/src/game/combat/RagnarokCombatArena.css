@@ -5662,7 +5662,7 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-  transform: translateY(48px);
+  transform: translateY(10px);
 }
 
 .unified-hand-section {
@@ -5673,7 +5673,7 @@
   min-width: 0;
   overflow: visible;
   padding-bottom: 8px;
-  transform: translateY(70px);
+  transform: translateY(10px);
 }
 
 /* ========================================

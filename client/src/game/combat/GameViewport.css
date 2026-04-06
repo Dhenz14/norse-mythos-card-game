@@ -591,7 +591,7 @@
   left: 0;
   bottom: 0;
   right: 0;
-  height: 280px; /* Fixed height within virtual canvas — no jumping */
+  height: 250px; /* Compact player zone */
   z-index: var(--z-heroes, 30);
   pointer-events: none;
   background: transparent !important;
@@ -609,7 +609,7 @@
   display: flex;
   flex-direction: row;
   align-items: flex-end; /* Cards align to bottom — no dead space */
-  padding: 0 24px 16px;
+  padding: 0 24px 4px;
   position: absolute;
   bottom: 0;
   left: 0;

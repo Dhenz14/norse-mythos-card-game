@@ -83,10 +83,10 @@
 
   /* ========================================
      PLAYER MINION FIELD
-     Center-right, above player area (280px from bottom)
+     Center-right, above player area
      ======================================== */
   --zone-player-field-left: 60%;
-  --zone-player-field-bottom: 420px;
+  --zone-player-field-bottom: 320px;
   --zone-player-field-z: 20;
 
   /* ========================================
@@ -113,10 +113,10 @@
 
   /* ========================================
      OPPONENT MINION FIELD
-     Center-right, below opponent area (260px from top)
+     Center-right, below opponent area
      ======================================== */
   --zone-opponent-field-left: 60%;
-  --zone-opponent-field-top: 200px;
+  --zone-opponent-field-top: 260px;
   --zone-opponent-field-z: 20;
 
   /* ========================================
@@ -126,7 +126,7 @@
   --hero-card-height: calc(var(--hero-card-width, 130px) * 1.4);
 
   --zone-risk-left: 15%;
-  --zone-risk-bottom: 340px;
+  --zone-risk-bottom: 280px;
   --z-risk: 50;
 
   /* ========================================
