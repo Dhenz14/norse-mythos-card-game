@@ -1827,17 +1827,13 @@
 }
 
 .battlefield-hero-square {
-  width: var(--hero-card-width);
+  width: var(--hero-card-width, 160px);
   aspect-ratio: 3/4;
   max-width: 192px;
-  /* Ensure hero card fits within zone height with some padding */
-  max-height: calc(var(--hero-zone-height) - 24px);
-  /* Raise hero card up so stats are fully visible (~4 inches = 96px) */
-  transform: translateY(-96px);
   cursor: pointer;
   transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
   position: relative;
 }
 
@@ -1855,9 +1851,9 @@
   cursor: pointer;
 }
 
-/* Magical hover effect - glowing aura and lift (adds to base -96px transform) */
+/* Hover lift */
 .battlefield-hero-square:hover {
-  transform: translateY(-100px) scale(1.02);
+  transform: translateY(-4px) scale(1.02);
 }
 
 .battlefield-hero-square:hover .hero-card-frame {
@@ -4369,9 +4365,9 @@
   margin: 0 !important;
 }
 
-.poker-hero-container .battlefield-hero-square {
-  /* Restored larger symmetrical size */
-  width: 220px !important;
+.poker-hero-container .battlefield-hero-square,
+.opponent-hero-container .battlefield-hero-square {
+  width: 220px;
   max-width: none;
   max-height: none;
 }
