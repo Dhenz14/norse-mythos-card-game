@@ -1,7 +1,7 @@
 /* King Passive Popup — laughing king portrait that fades in and out */
 
 .kpp-anchor {
-	position: fixed;
+	position: absolute;
 	z-index: var(--z-cinematic);
 	pointer-events: none;
 }

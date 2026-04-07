@@ -4,9 +4,9 @@
    Hero Death Animation
    ======================================== */
 .hero-death-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: var(--z-overlay);
+  z-index: var(--z-overlays);
   display: flex;
   align-items: center;
   justify-content: center;

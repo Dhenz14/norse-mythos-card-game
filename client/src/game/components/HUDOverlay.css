@@ -1,9 +1,6 @@
 .hud-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: absolute;
+  inset: 0;
   pointer-events: none;
   z-index: var(--z-hud-controls, 100);
 }
@@ -13,7 +10,7 @@
 }
 
 .hud-end-turn-button {
-  position: fixed;
+  position: absolute;
   right: 30px;
   top: 50%;
   transform: translateY(-50%);

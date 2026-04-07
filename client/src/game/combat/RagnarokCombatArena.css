@@ -134,7 +134,7 @@
    Minimal Timer
    ======================================== */
 .minimal-timer {
-  position: fixed;
+  position: absolute;
   top: 8px;
   left: 50%;
   transform: translateX(-50%);
@@ -3326,7 +3326,7 @@
    Hero Death Animation
    ======================================== */
 .hero-death-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: var(--z-overlays);
   display: flex;
@@ -3440,7 +3440,7 @@
 }
 
 .hero-death-flash {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: radial-gradient(ellipse at center, rgba(220, 38, 38, 0.8) 0%, transparent 70%);
   pointer-events: none;
@@ -4110,7 +4110,7 @@
    ======================================== */
 
 .showdown-celebration-container {
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: var(--z-popup);

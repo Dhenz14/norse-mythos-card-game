@@ -6,7 +6,7 @@
 
 /* 1. Container */
 .poker-combat-animation {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: 9100;
 	pointer-events: none;
@@ -221,7 +221,7 @@
 
 /* 9. Super Move Flash (30+ damage) */
 .super-move-flash {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	background: white;
 	z-index: 9200;

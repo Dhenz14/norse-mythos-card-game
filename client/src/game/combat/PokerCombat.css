@@ -1,9 +1,7 @@
 .poker-combat-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  /* Fills the GameViewport's virtual canvas, NOT the real window */
+  position: absolute;
+  inset: 0;
   background: linear-gradient(180deg, #0f1729 0%, #1a2744 50%, #0d1321 100%);
   z-index: 1000;
   display: flex;

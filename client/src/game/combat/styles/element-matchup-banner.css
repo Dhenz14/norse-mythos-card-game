@@ -1,7 +1,7 @@
 /* Element Matchup Banner - Shown at poker combat start */
 
 .element-matchup-overlay {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	display: flex;
 	align-items: center;

@@ -1,7 +1,7 @@
 /* ═══ Persistent Turn Badge — always visible top-center ═══ */
 
 .persistent-turn-badge {
-	position: fixed;
+	position: absolute;
 	top: 12px;
 	right: 16px;
 	z-index: 9500;
@@ -60,7 +60,7 @@
 /* ═══ Turn Banner - CCG-style "YOUR TURN" / "ENEMY TURN" announcement ═══ */
 
 .turn-banner-overlay {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	display: flex;
 	align-items: center;
@@ -71,7 +71,7 @@
 
 .turn-banner {
 	position: relative;
-	width: 100vw;
+	width: 100%;
 	padding: 18px 0;
 	text-align: center;
 	overflow: hidden;

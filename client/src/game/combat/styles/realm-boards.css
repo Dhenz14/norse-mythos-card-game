@@ -467,7 +467,7 @@
    Full-screen overlay when realm shifts
    ============================================================ */
 .realm-announcement {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: var(--z-cinematic);
 	pointer-events: none;

@@ -1,5 +1,5 @@
 .targeting-prompt {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -8,7 +8,7 @@
   border: 3px solid var(--color-primary, #f59e0b);
   border-radius: var(--radius-lg, 12px);
   padding: 20px 40px;
-  max-width: calc(100vw - 32px);
+  max-width: calc(100% - 32px);
   box-shadow: 0 0 60px rgba(245,158,11,0.8), inset 0 0 30px rgba(245,158,11,0.3);
   text-align: center;
   pointer-events: auto;

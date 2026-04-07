@@ -3,7 +3,7 @@
    ============================================================ */
 
 .hourglass-timer {
-  position: fixed;
+  position: absolute;
   top: 4px;
   left: 50%;
   transform: translateX(-50%);

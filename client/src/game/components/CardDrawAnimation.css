@@ -1,5 +1,5 @@
 .card-draw-flying {
-	position: fixed;
+	position: absolute;
 	width: 80px;
 	height: 112px;
 	z-index: var(--z-cinematic);

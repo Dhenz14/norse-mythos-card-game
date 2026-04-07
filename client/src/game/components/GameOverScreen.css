@@ -1,5 +1,5 @@
 .game-over-overlay {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: var(--z-topmost);
 	display: flex;

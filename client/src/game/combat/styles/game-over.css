@@ -1,7 +1,7 @@
 /* Game Over Screen - Victory/Defeat overlay */
 
 .game-over-overlay {
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: 9600;
 	display: flex;

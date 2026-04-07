@@ -405,7 +405,7 @@ canvas {
   height: 100%;
   position: relative;
   grid-row: 1;
-  min-height: 15vh; /* Updated to match new CSS variable */
+  min-height: 160px; /* Fixed px for virtual canvas */
   overflow: visible;
   /* No horizontal padding to maximize width */
   padding: 0.5rem 0;
@@ -421,7 +421,7 @@ canvas {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 75vh; /* Updated to match new CSS variable */
+  min-height: 800px; /* Fixed px for virtual canvas */
   overflow: visible;
   box-sizing: border-box;
   padding: 0; /* Remove padding completely to maximize width */
@@ -432,7 +432,7 @@ canvas {
   height: 100%;
   position: relative;
   grid-row: 3;
-  min-height: 10vh; /* Updated to match new CSS variable */
+  min-height: 120px; /* Fixed px for virtual canvas */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
