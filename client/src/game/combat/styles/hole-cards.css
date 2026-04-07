@@ -7,7 +7,7 @@
 .opponent-hole-cards,
 .player-hole-cards {
   display: flex;
-  gap: -8px; /* Slight overlap like real poker */
+  gap: 0; /* Overlap handled by negative margins below */
   overflow: visible;
   padding: 0;
   position: relative;
@@ -29,8 +29,8 @@
    ======================================== */
 
 .arena-poker-card.norse {
-  width: clamp(90px, 7.5vw, 112px);
-  height: clamp(128px, 10.6vw, 158px);
+  width: 100px;
+  height: 140px;
   background: linear-gradient(145deg, #e8dcc4 0%, #d4c4a8 50%, #c4b494 100%);
   border-radius: 8px;
   position: relative;
@@ -61,10 +61,10 @@
     inset 0 0 25px rgba(139, 90, 43, 0.2);
 }
 
-/* Large variant - approximately 1.6x base sizing for hole cards */
+/* Large variant - hole cards */
 .arena-poker-card.norse.large {
-  width: clamp(130px, 10.8vw, 164px);
-  height: clamp(184px, 15.3vw, 232px);
+  width: 144px;
+  height: 202px;
 }
 
 .arena-poker-card.norse.face-down {
@@ -239,15 +239,15 @@
    ======================================== */
 
 .arena-poker-card.norse.large .card-value {
-  font-size: clamp(2rem, 2.4vw, 2.6rem);
+  font-size: 2.2rem;
 }
 
 .arena-poker-card.norse.large .card-rune {
-  font-size: clamp(1.1rem, 1.3vw, 1.5rem);
+  font-size: 1.2rem;
 }
 
 .arena-poker-card.norse.large .norse-symbol-large {
-  font-size: clamp(3.6rem, 4.5vw, 4.6rem);
+  font-size: 4rem;
 }
 
 /* ========================================

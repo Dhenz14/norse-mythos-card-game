@@ -1,8 +1,5 @@
-/* Community Cards - Shared poker cards display */
-
-/* ========================================
-   COMMUNITY CARDS - ROW AND SLOT STYLES
-   ======================================== */
+/* Community Cards - Shared poker cards display
+   All sizes fixed px (virtual canvas handles scaling) */
 
 .community-row {
   display: flex;
@@ -21,42 +18,20 @@
 }
 
 .community-slot .arena-poker-card.norse {
-  width: clamp(100px, 8.3vw, 126px);
-  height: clamp(142px, 11.8vw, 178px);
+  width: 112px;
+  height: 158px;
 }
 
 .community-slot .arena-poker-card .card-value {
-  font-size: clamp(1.6rem, 1.8vw, 2rem);
+  font-size: 1.8rem;
 }
 
 .community-slot .arena-poker-card .norse-symbol-large {
-  font-size: clamp(2.6rem, 2.8vw, 3.4rem);
+  font-size: 3rem;
 }
 
 .community-slot .arena-poker-card .card-rune {
-  font-size: clamp(0.85rem, 0.9vw, 1.1rem);
-}
-
-/* SCOPED: Community slot card placeholder - only within poker panel */
-.poker-panel .community-slot .card-placeholder {
-  width: clamp(90px, 7.5vw, 112px);
-  height: clamp(128px, 10.6vw, 158px);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
-  border: 2px dashed rgba(139, 92, 246, 0.3);
-  border-radius: 8px;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.poker-panel .community-slot .card-placeholder::before {
-  content: '+';
-  color: rgba(139, 92, 246, 0.4);
-  font-size: 24px;
-  font-weight: bold;
-  position: absolute;
+  font-size: 0.95rem;
 }
 
 .slot-label {
@@ -71,17 +46,13 @@
   color: rgba(148, 163, 184, 0.5);
 }
 
-/* ========================================
-   COMMUNITY CARDS SECTION STYLES
-   ======================================== */
-
 .community-cards-section {
   display: flex;
   justify-content: center;
   gap: 16px;
   padding: 12px 8px;
-  background: linear-gradient(180deg, 
-    rgba(0, 0, 0, 0.4) 0%, 
+  background: linear-gradient(180deg,
+    rgba(0, 0, 0, 0.4) 0%,
     rgba(15, 23, 42, 0.3) 100%
   );
   border-radius: 10px;
@@ -96,74 +67,7 @@
   gap: 4px;
 }
 
-.phase-label {
-  font-size: 0.65rem;
-  color: rgba(148, 163, 184, 0.7);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: color 0.3s ease;
-}
-
-.phase-label.active {
-  color: #fbbf24;
-  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
-}
-
 .community-cards-row {
   display: flex;
   gap: 3px;
-}
-
-/* ========================================
-   COMMUNITY CARDS RESPONSIVE STYLING
-   Positioning via --community-left from layoutConfig.ts
-   This file only handles spacing/sizing adjustments
-   ======================================== */
-
-/* Medium screens (1024px-1280px): Compact spacing */
-@media (min-width: 1024px) and (max-width: 1279px) {
-  .unified-community .zone-community {
-    gap: 10px;
-  }
-}
-
-/* Tablet screens (768px-1024px): Compact layout */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .unified-community {
-    padding: 8px 12px;
-    gap: 12px;
-  }
-  
-  .unified-community .zone-community {
-    gap: 8px;
-  }
-}
-
-/* Small screens (<768px): Center community cards in stacked layout */
-@media (max-width: 767px) {
-  .unified-community {
-    justify-content: center;
-    justify-self: center;
-    width: 100%;
-    padding: 8px;
-    gap: 8px;
-  }
-  
-  .unified-community .zone-community {
-    justify-content: center;
-    gap: 6px;
-  }
-}
-
-/* Very small screens (<480px): Compact community cards */
-@media (max-width: 480px) {
-  .unified-community {
-    padding: 6px;
-    gap: 4px;
-  }
-  
-  .unified-community .zone-community {
-    gap: 4px;
-  }
 }

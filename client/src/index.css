@@ -45,7 +45,6 @@
      ============================================= */
   
   /* Card dimensions - aliased to design-tokens */
-  --battlefield-card-scale: 1.5;
   --card-margin: 4px;
   --grid-gap: var(--gap-sm, 6px);
   
@@ -181,10 +180,7 @@ canvas {
   will-change: transform;
 }
 
-/* Apply optimal scale to battlefield cards */
-.battlefield-card .card-with-drag {
-  transform: scale(var(--battlefield-card-scale)) !important;
-}
+/* Dead .battlefield-card .card-with-drag rule removed — class never rendered in JSX */
 
 /* Subtle card hover effects */
 @keyframes card-hover-glow {

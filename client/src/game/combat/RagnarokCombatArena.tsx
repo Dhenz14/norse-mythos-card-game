@@ -445,12 +445,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           <span className="mulligan-subtext">Complete your card selection first</span>
         </div>
       )}
-      
-      {/* Opponent Poker Area - Hidden empty placeholder for grid stability */}
-      <div className="unified-opponent-poker opponent-poker-area" style={{ display: 'none' }}>
-        {/* Hole cards moved to opponent hero section */}
-      </div>
-      
+
       {/* Opponent Hero - with hole cards overlay below (true mirror - opponent faces you across the table) */}
       <div className={`unified-opponent-hero ${shakingTargets.has('opponent-hero') ? 'damage-shake damage-flash' : ''} ${!isPlayerTurn ? 'turn-active' : ''}`}>
         {opponentPet && (

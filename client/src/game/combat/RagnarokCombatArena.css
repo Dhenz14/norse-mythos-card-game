@@ -163,176 +163,11 @@
 
 /* Dead .arena-header, .fire-border, .poker-panel and all children removed — never rendered in JSX */
 
-.opponent-poker-area,
-.player-poker-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0; /* No gap - bars overlay cards */
-  padding: 8px 20px;
-  position: relative;
-  overflow: visible; /* Ensure cards aren't clipped */
-  margin-top: var(--card-poker-offset-y, 0px);
-  
-  /* Stone tablet background - layered gradients for depth */
-  background: 
-    /* Surface texture - subtle noise effect */
-    repeating-linear-gradient(
-      45deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(0, 0, 0, 0.03) 2px,
-      rgba(0, 0, 0, 0.03) 4px
-    ),
-    /* Stone color gradient */
-    linear-gradient(180deg,
-      #5a5a5a 0%,
-      #4a4a4a 15%,
-      #3d3d3d 50%,
-      #4a4a4a 85%,
-      #5a5a5a 100%
-    );
-  
-  /* Chiseled stone edge effect */
-  border-radius: 8px;
-  border: 3px solid #6b6b6b;
-  box-shadow: 
-    /* Inner highlight - top edge catch light */
-    inset 0 2px 4px rgba(255, 255, 255, 0.15),
-    /* Inner shadow - bottom depth */
-    inset 0 -3px 6px rgba(0, 0, 0, 0.4),
-    /* Carved inset look */
-    inset 2px 2px 4px rgba(0, 0, 0, 0.3),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.05),
-    /* Outer drop shadow */
-    0 4px 12px rgba(0, 0, 0, 0.5),
-    /* Subtle golden glow for godly effect */
-    0 0 20px rgba(218, 165, 32, 0.15);
-}
+/* Dead .opponent-poker-area, .player-poker-area + ::before runic borders removed
+   — opponent-poker-area placeholder div was deleted from JSX */
 
-/* Stone tablet runic border decorations */
-.player-poker-area::before {
-  content: 'ᚱ ᚨ ᚷ ᚾ ᚨ ᚱ ᛟ ᚲ';
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Noto Sans Runic', 'Segoe UI Symbol', sans-serif;
-  font-size: 0.6rem;
-  letter-spacing: 4px;
-  color: rgba(218, 165, 32, 0.4);
-  text-shadow: 0 0 4px rgba(218, 165, 32, 0.3);
-  pointer-events: none;
-}
-
-.opponent-poker-area::before {
-  content: 'ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ';
-  position: absolute;
-  top: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Noto Sans Runic', 'Segoe UI Symbol', sans-serif;
-  font-size: 0.5rem;
-  letter-spacing: 3px;
-  color: rgba(239, 68, 68, 0.3);
-  text-shadow: 0 0 4px rgba(239, 68, 68, 0.2);
-  pointer-events: none;
-}
-
-/* Extra top padding for opponent area to prevent card clipping */
-.opponent-poker-area {
-  padding-top: 30px;
-  margin-top: 10px; /* Extra margin above the stone tablet */
-}
-
-/* Community cards section - duplicate rule removed, see line ~1526 for main styling */
-
-/* ========================================
-   Position Toggle & Blind Info
-   ======================================== */
-.poker-position-toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 12px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 8px;
-  margin: 4px 0;
-}
-
-.blind-info {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.blind-label {
-  color: #888;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.blind-values {
-  color: #ffd700;
-  font-size: 0.8rem;
-  font-weight: 700;
-  font-family: 'Cinzel', serif;
-}
-
-.position-switch {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.position-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #666;
-  text-transform: uppercase;
-  transition: color 0.2s ease;
-}
-
-.position-label.active {
-  color: #ffd700;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
-}
-
-.toggle-switch {
-  width: 40px;
-  height: 22px;
-  background: #333;
-  border: 2px solid #555;
-  border-radius: 11px;
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
-  padding: 0;
-}
-
-.toggle-switch:hover {
-  border-color: #888;
-}
-
-.toggle-knob {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  background: #ffd700;
-  border-radius: 50%;
-  top: 2px;
-  transition: left 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.toggle-knob.left {
-  left: 2px;
-}
-
-.toggle-knob.right {
-  left: 20px;
-}
+/* Dead .poker-position-toggle, .blind-info, .position-switch, .toggle-switch, .toggle-knob
+   removed — never rendered in JSX */
 
 /* Old poker pot display styles removed - see styles/pot-display.css */
 
@@ -693,6 +528,7 @@
   top: 1px;
   left: 1px;
   bottom: 1px;
+  z-index: 1;
   background: linear-gradient(180deg, 
     #ff3333 0%,
     #cc0000 25%,
@@ -765,9 +601,7 @@
   z-index: 0;
 }
 
-.fighting-hp-fill {
-  z-index: 1;
-}
+/* Dead duplicate .fighting-hp-fill removed (z-index merged into main rule) */
 
 .fighting-hp-text {
   position: absolute;
@@ -3084,73 +2918,8 @@
   transform-origin: left;
 }
 
-/* ========================================
-   Phase Progress Bar
-   ======================================== */
-.phase-progress-bar {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, rgba(30, 30, 40, 0.85), rgba(20, 20, 30, 0.9));
-  border: 1px solid rgba(100, 100, 120, 0.3);
-  border-radius: 20px;
-}
-
-.phase-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.phase-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(100, 100, 120, 0.5);
-  border: 2px solid rgba(100, 100, 120, 0.6);
-  transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
-}
-
-.phase-node.active .phase-dot {
-  background: #fbbf24;
-  border-color: #f59e0b;
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
-}
-
-.phase-node.complete .phase-dot {
-  background: #22c55e;
-  border-color: #16a34a;
-}
-
-.phase-label {
-  font-size: 10px;
-  color: rgba(148, 163, 184, 0.7);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.phase-node.active .phase-label {
-  color: #fbbf24;
-  font-weight: 600;
-}
-
-.phase-node.complete .phase-label {
-  color: #22c55e;
-}
-
-.phase-connector {
-  width: 24px;
-  height: 2px;
-  background: rgba(100, 100, 120, 0.4);
-  margin: 0 4px;
-  margin-bottom: 14px;
-}
-
-.phase-connector.complete {
-  background: #22c55e;
-}
+/* Dead .phase-progress-bar, .phase-node, .phase-dot, .phase-label, .phase-connector
+   removed — none rendered in JSX */
 
 /* ========================================
    Last Action Log
@@ -4482,15 +4251,7 @@
   height: 100%;
 }
 
-/* Player Hero Zone - bottom-left of poker column */
-.unified-hero-section {
-  grid-area: player-hero;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 8px;
-}
+/* Dead duplicate of .unified-hero-section removed (canonical definition is later) */
 
 /* Dead grid-area player-area removed */
 
@@ -4504,18 +4265,7 @@
   overflow: hidden;
 }
 
-/* Betting Actions Zone - spans all columns at bottom */
-.unified-betting-actions-container {
-  grid-area: betting;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 8px;
-  background: transparent;
-  border: none;
-}
+/* Dead duplicate .unified-betting-actions-container removed (canonical is later in file) */
 
 /* .zone-community is the inner container for community card slots */
 .zone-community {
