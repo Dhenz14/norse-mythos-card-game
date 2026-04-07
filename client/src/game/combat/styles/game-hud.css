@@ -7,63 +7,72 @@
 	z-index: 80;
 }
 
-/* Deck count badges — enlarged for visibility */
+/* Deck count badges — premium obsidian + gold material */
 .hud-deck-badge {
 	position: absolute;
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	padding: 6px 12px;
-	background: rgba(15, 23, 42, 0.85);
-	border: 1px solid rgba(100, 116, 139, 0.4);
-	border-radius: 8px;
-	font-size: 16px;
-	font-weight: 700;
-	color: rgba(203, 213, 225, 0.85);
+	gap: 8px;
+	padding: 8px 14px;
+	background: var(--ui-panel-bg);
+	border: 1px solid var(--ui-gold-shadow);
+	border-radius: 10px;
+	font-family: var(--font-display);
+	font-size: 17px;
+	font-weight: 800;
+	color: var(--ui-gold-bright);
+	box-shadow:
+		0 4px 14px rgba(0, 0, 0, 0.7),
+		inset 0 1px 0 rgba(255, 215, 100, 0.10);
+	letter-spacing: 1px;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 .hud-deck-badge .hud-icon {
-	font-size: 20px;
-	opacity: 0.8;
+	font-size: 22px;
+	opacity: 0.92;
+	color: var(--ui-gold-bright);
 }
 
 .hud-deck-badge .hud-count {
-	min-width: 20px;
+	min-width: 22px;
 	text-align: center;
 }
 
-/* Player deck - bottom right, near player hero */
+/* Player deck — bottom right, anchored to player hero zone */
 .hud-player-deck {
-	right: 16px;
-	bottom: 24px;
-	border-color: rgba(96, 165, 250, 0.5);
-	color: #bfdbfe;
+	right: 18px;
+	bottom: 26px;
+	border-color: rgba(91, 140, 184, 0.55);
 }
 
 .hud-player-deck::before {
 	content: 'YOU';
-	font-size: 9px;
-	font-weight: 800;
-	letter-spacing: 1px;
-	opacity: 0.7;
+	font-family: var(--font-display);
+	font-size: 10px;
+	font-weight: 900;
+	letter-spacing: 1.5px;
+	opacity: 0.85;
 	margin-right: 4px;
+	color: var(--ui-rune-pale);
 }
 
-/* Opponent deck - top right, near opponent hero */
+/* Opponent deck — top right, anchored to opponent hero zone */
 .hud-opponent-deck {
-	right: 16px;
-	top: 16px;
-	border-color: rgba(248, 113, 113, 0.5);
-	color: #fecaca;
+	right: 18px;
+	top: 18px;
+	border-color: rgba(200, 49, 42, 0.55);
 }
 
 .hud-opponent-deck::before {
 	content: 'OPP';
-	font-size: 9px;
-	font-weight: 800;
-	letter-spacing: 1px;
-	opacity: 0.7;
+	font-family: var(--font-display);
+	font-size: 10px;
+	font-weight: 900;
+	letter-spacing: 1.5px;
+	opacity: 0.85;
 	margin-right: 4px;
+	color: #ffd5d2;
 }
 
 /* Opponent hand count badge — hidden; shown via .opponent-hand-count on the hand display */
