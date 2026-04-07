@@ -3,7 +3,7 @@
 .mulligan-card-wrapper {
   position: relative;
   cursor: pointer;
-  width: clamp(140px, min(22vw, 32vh), 240px);
+  width: 200px;
 }
 
 .mulligan-card-placeholder {

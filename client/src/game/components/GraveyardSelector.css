@@ -1,9 +1,6 @@
 .graveyard-selector-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 1000;
   display: flex;
@@ -18,7 +15,7 @@
   padding: 20px;
   width: 80%;
   max-width: 800px;
-  max-height: 80vh;
+  max-height: 800px;
   overflow-y: auto;
   color: #e0e0e0;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
