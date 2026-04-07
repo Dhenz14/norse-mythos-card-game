@@ -1,27 +1,5 @@
-/* Hand Strength - Poker hand ranking display */
-
-/* ========================================
-   Hand Strength Indicator
-   ======================================== */
-.hand-strength-indicator {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 120px;
-  padding: 8px 12px;
-  background: linear-gradient(135deg, rgba(30, 30, 40, 0.9), rgba(20, 20, 30, 0.95));
-  border: 1px solid rgba(100, 100, 120, 0.4);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.hand-strength-label {
-  font-size: 15px;
-  font-weight: 700;
-  color: #e2e8f0;
-  text-align: center;
-  letter-spacing: 0.3px;
-}
+/* Hand Strength - Poker hand ranking display
+   Dead .hand-strength-indicator/label/text removed (not in JSX) */
 
 .hand-strength-bar {
   height: 6px;
@@ -37,9 +15,6 @@
   transform-origin: left;
 }
 
-/* ========================================
-   Hand Strength Color Variants
-   ======================================== */
 .hand-strength-fill.weak {
   background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
 }
@@ -68,25 +43,7 @@
   50% { opacity: 1; }
 }
 
-/* ========================================
-   Hand Strength Text Display
-   ======================================== */
-.hand-strength-text {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: rgba(148, 163, 184, 0.9);
-  text-align: center;
-  margin-top: 2px;
-}
-
-.hand-strength-text.highlighted {
-  color: #fbbf24;
-  text-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
-}
-
-/* ========================================
-   Compact Hand Strength (for poker panel)
-   ======================================== */
+/* Compact Hand Strength */
 .hand-strength-compact {
   display: flex;
   align-items: center;
@@ -100,16 +57,11 @@
   font-size: 1rem;
 }
 
-.hand-strength-compact .strength-name {
+.hand-strength-compact .strength-name,
+.hand-strength-name {
   font-size: 0.85rem;
   font-weight: 700;
   color: #e2e8f0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.hand-strength-compact .strength-rank {
-  font-size: 0.75rem;
-  color: rgba(148, 163, 184, 0.8);
-  margin-left: auto;
 }

@@ -161,8 +161,8 @@
   top: -8px;
   left: 50%;
   transform: translateX(-50%);
-  width: clamp(20px, 3vh, 24px);
-  height: clamp(20px, 3vh, 24px);
+  width: 22px;
+  height: 22px;
   background: 
     radial-gradient(ellipse at 30% 20%, rgba(150, 200, 255, 0.6) 0%, transparent 60%),
     linear-gradient(180deg, #4a7eb8 0%, #2563eb 50%, #1e40af 100%);
@@ -179,7 +179,7 @@
 }
 
 .hero-power-btn-cost .cost-value {
-  font-size: clamp(0.6rem, 1vh, 0.8rem);
+  font-size: 0.7rem;
   font-weight: 800;
   color: white;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
@@ -191,15 +191,15 @@
   justify-content: center;
   position: relative;
   z-index: 1;
-  width: clamp(28px, 5vh, 36px);
-  height: clamp(28px, 5vh, 36px);
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 30%, rgba(255, 200, 100, 0.3) 0%, transparent 70%);
   pointer-events: none;
 }
 
 .hero-power-btn-icon .icon-symbol {
-  font-size: clamp(1rem, 2vh, 1.4rem);
+  font-size: 1.2rem;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
@@ -215,15 +215,15 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  width: clamp(12px, 2vh, 16px);
-  height: clamp(12px, 2vh, 16px);
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: linear-gradient(135deg, #22c55e, #16a34a);
   border: 2px solid white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(8px, 1vh, 10px);
+  font-size: 9px;
   color: white;
   z-index: 1010;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

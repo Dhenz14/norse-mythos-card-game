@@ -149,36 +149,4 @@
   line-height: 1.2;
 }
 
-.hero-initial {
-  font-size: 2rem;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* ========================================
-   Damage Modifiers
-   ======================================== */
-.damage-modifiers {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.mod-box {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  padding: 4px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 0.6rem;
-  color: #94a3b8;
-}
-
-.mod-box span:last-child {
-  font-weight: bold;
-  color: #fff;
-}
+/* Dead .hero-initial, .damage-modifiers, .mod-box removed (not in JSX) */

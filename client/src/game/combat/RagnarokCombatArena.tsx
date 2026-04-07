@@ -48,7 +48,6 @@ import { WagerEffectsHUD } from './components/WagerEffectsHUD';
 import { useElementalBuff } from './hooks/useElementalBuff';
 import { canCardAttack as canCardAttackCheck } from './attackUtils';
 import { GameViewport } from './GameViewport';
-import { useCombatLayout } from '../hooks/useCombatLayout';
 import { useSettingsStore } from '../stores/settingsStore';
 import CardRenderer from '../components/CardRendering/CardRenderer';
 import { useRagnarokCombatController } from './hooks/useRagnarokCombatController';
@@ -807,7 +806,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 };
 
 export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onCombatEnd }) => {
-  useCombatLayout();
   useGameLogIntegration();
   useEventAnimationBridge();
   const resetKingEvents = useKingPassiveEventStore(s => s.reset);

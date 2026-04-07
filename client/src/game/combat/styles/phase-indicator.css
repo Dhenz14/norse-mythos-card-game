@@ -1,4 +1,0 @@
-/* phase-indicator.css — entirely dead.
-   .phase-label, .phase-node, .phase-progress-bar, .phase-dot, .phase-connector
-   were never rendered in JSX. Combat phase is shown by PhaseBanner component
-   which uses different class names. */

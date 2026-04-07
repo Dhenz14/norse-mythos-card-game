@@ -33,28 +33,5 @@
   --poker-card-scale: 1;
 }
 
-/* ========================================
-   MOBILE STACKED LAYOUT (<768px)
-   Only breakpoint needed — canvas scaling
-   handles everything else.
-   ======================================== */
-
-@media (max-width: 768px) {
-  .arena-content {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-    height: 100dvh;
-    overflow: hidden;
-  }
-
-  .poker-panel {
-    max-height: 35vh;
-    overflow: hidden;
-    border-right: none;
-    border-bottom: 1px solid rgba(100, 116, 139, 0.3);
-  }
-
-  .battle-arena {
-    grid-template-columns: 120px 1fr;
-  }
-}
+/* Dead mobile media query removed — canvas scaling handles all sizes,
+   and .poker-panel + .battle-arena are dead JSX */

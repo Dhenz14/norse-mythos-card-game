@@ -1,8 +1,6 @@
 /**
  * Combat Styles Aggregator
- * 
- * Following "Feature-First / Modularize Without Overkill"
- * Flattened structure for robustness and simpler pathing.
+ * Only files actively used by combat are imported.
  */
 
 @import './reset.css';
@@ -12,16 +10,10 @@
 @import './arena-grid.css';
 @import './battlefield.css';
 @import './zones.css';
-@import './poker-panel.css';
 
 /* Components */
-@import './hero-portrait.css';
 @import './hp-bar.css';
-@import './sta-bar.css';
-@import './weapon-slots.css';
 @import './timer.css';
-@import './phase-indicator.css';
-@import './activity-log.css';
 @import './targeting-prompts.css';
 
 /* Card Elements */
@@ -34,9 +26,7 @@
 
 /* Combat Specific */
 @import './betting-controls.css';
-@import './blind-toggle.css';
 @import './pot-display.css';
-@import './end-turn-button.css';
 
 /* Effects */
 @import './glow-effects.css';

@@ -125,7 +125,7 @@ export const EnhancedCard = React.forwardRef<HTMLDivElement, EnhancedCardProps>(
       drag={isDraggable}
       dragConstraints={dragConstraints}
       style={{
-        width: isInHand ? 'clamp(80px, 10vw, 120px)' : 'clamp(90px, 12vw, 140px)',
+        width: isInHand ? '100px' : '120px',
         aspectRatio: '230 / 342',
         height: 'auto',
         maxHeight: isInHand ? '140px' : '200px',

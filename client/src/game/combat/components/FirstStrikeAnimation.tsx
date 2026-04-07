@@ -55,7 +55,7 @@ export const FirstStrikeAnimation: React.FC<FirstStrikeAnimationProps> = ({ onCo
 
   return (
     <div className="first-strike-overlay" style={{
-      position: 'fixed',
+      position: 'absolute',
       inset: 0,
       zIndex: 1000,
       display: 'flex',

@@ -1,4 +1,0 @@
-/* activity-log.css — entirely dead.
-   The arena uses GameLog component (see GameLog.tsx + GameLog.css), not these classes.
-   .dual-saga-feeds, .activity-logs-dock, .unified-activity-logs, .activity-log,
-   .log-entry, .poker-saga-feed — none rendered in JSX. */

@@ -200,7 +200,7 @@ export const PokerCombatAnimation: React.FC<PokerCombatAnimationProps> = ({
 							['--start-x' as string]: '0px',
 							['--start-y' as string]: '0px',
 							['--end-x' as string]: '0px',
-							['--end-y' as string]: winner === 'opponent' ? '60vh' : '-60vh',
+							['--end-y' as string]: winner === 'opponent' ? '650px' : '-650px',
 						}}
 					>
 						{attackerProfile.particleEmoji}
