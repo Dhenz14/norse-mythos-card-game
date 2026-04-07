@@ -128,21 +128,7 @@
   height: 0;
 }
 
-.ragnarok-combat-arena {
-  /* Fluid layout - fills entire viewport without scrollbars or letterboxing */
-  width: 100vw;
-  height: 100vh;
-  min-width: 0;
-  min-height: 0;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: var(--z-base);
-}
+/* Duplicate .ragnarok-combat-arena removed — canonical definition is in styles/reset.css */
 
 /* ========================================
    Minimal Timer

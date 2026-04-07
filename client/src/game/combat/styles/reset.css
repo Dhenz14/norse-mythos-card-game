@@ -14,10 +14,10 @@
 }
 
 .ragnarok-combat-arena {
-  /* Fluid layout - fills entire viewport without scrollbars or letterboxing */
-  /* Using inset: 0 to fill all available space, works with Replit preview header */
-  position: fixed;
-  inset: 0;
+  /* Fills the GameViewport's 1920×1080 virtual canvas (not the real window) */
+  position: relative;
+  width: 100%;
+  height: 100%;
   min-width: 0;
   min-height: 0;
   background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
