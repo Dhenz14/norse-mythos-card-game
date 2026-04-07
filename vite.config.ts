@@ -32,7 +32,24 @@ export default defineConfig(({ command }) => ({
     dedupe: ['react', 'react-dom'],
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+    // Pre-bundle heavy / hot-path deps so cold page loads don't stall
+    // re-reading them through the slow /mnt/c WSL filesystem mount.
+    // Each entry here gets bundled once at server startup instead of
+    // resolved on every request.
+    // Only includes deps actually present in package.json — Vite errors
+    // out if you list a missing one.
+    include: [
+      'react',
+      'react-dom',
+      'react/jsx-runtime',
+      'react/jsx-dev-runtime',
+      'framer-motion',
+      'react-spring',
+      'zustand',
+      'gsap',
+      'peerjs',
+      'uuid',
+    ],
   },
   root: path.resolve(__dirname, "client"),
   build: {
