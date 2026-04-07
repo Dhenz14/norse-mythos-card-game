@@ -802,22 +802,6 @@
     "client/src/game/components/SimpleCard.css",
     "client/src/game/components/styles/CardTextStyles.css"
   ],
-  ".opponent-card-back": [
-    "client/src/game/combat/RagnarokCombatArena.css",
-    "client/src/game/combat/styles/face-down.css"
-  ],
-  ".opponent-card-back::after": [
-    "client/src/game/combat/RagnarokCombatArena.css",
-    "client/src/game/combat/styles/face-down.css"
-  ],
-  ".opponent-card-back::before": [
-    "client/src/game/combat/RagnarokCombatArena.css",
-    "client/src/game/combat/styles/face-down.css"
-  ],
-  ".opponent-card-back:first-child": [
-    "client/src/game/combat/RagnarokCombatArena.css",
-    "client/src/game/combat/styles/face-down.css"
-  ],
   ".opponent-hand-count": [
     "client/src/game/combat/RagnarokCombatArena.css",
     "client/src/game/combat/styles/face-down.css"
@@ -825,14 +809,6 @@
   ".opponent-hand-display": [
     "client/src/game/combat/RagnarokCombatArena.css",
     "client/src/game/combat/styles/battlefield.css",
-    "client/src/game/combat/styles/face-down.css"
-  ],
-  ".opponent-hand-display:hover .opponent-card-back": [
-    "client/src/game/combat/RagnarokCombatArena.css",
-    "client/src/game/combat/styles/face-down.css"
-  ],
-  ".opponent-hand-display:hover .opponent-card-back:first-child": [
-    "client/src/game/combat/RagnarokCombatArena.css",
     "client/src/game/combat/styles/face-down.css"
   ],
   ".opponent-hero-container": [
