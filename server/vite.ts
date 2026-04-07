@@ -23,10 +23,20 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
+  // WSL/Windows file-watcher fix:
+  // When the dev server runs inside WSL with the project on /mnt/c, native
+  // inotify does NOT receive events for files written from the Windows side.
+  // This caused every CSS/TSX edit to silently fail to hot-reload — Vite
+  // would keep serving the in-memory bundle from boot until restart.
+  // Polling works correctly across the WSL/Windows boundary.
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
     allowedHosts: true,
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
   } as const;
 
   const resolvedConfig = typeof viteConfig === 'function'

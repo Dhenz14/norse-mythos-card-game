@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx server/index.ts",
+    "dev": "CHOKIDAR_USEPOLLING=1 tsx server/index.ts",
     "dev:game": "npm run dev",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "build:static": "vite build",
@@ -16,6 +16,11 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:css": "stylelint 'client/src/**/*.css' --max-warnings=0",
+    "lint:css:dupes": "node scripts/check-css-cross-file-dupes.mjs",
+    "lint:css:dupes:baseline": "node scripts/check-css-cross-file-dupes.mjs --baseline",
+    "lint:css:dupes:infile": "node scripts/check-css-infile-dupes.mjs",
+    "lint:css:dupes:infile:baseline": "node scripts/check-css-infile-dupes.mjs --baseline",
     "db:push": "drizzle-kit push",
     "db:setup": "tsx server/setupDatabase.ts",
     "db:seed": "tsx server/seedCardSupply.ts",
@@ -146,6 +151,8 @@
     "postcss": "^8.4.47",
     "rollup-plugin-visualizer": "^7.0.1",
     "sharp": "^0.34.5",
+    "stylelint": "^17.6.0",
+    "stylelint-config-standard": "^40.0.0",
     "tailwindcss": "^3.4.14",
     "tsx": "^4.19.1",
     "typescript": "^5.6.3",
@@ -158,6 +165,10 @@
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix --max-warnings=-1"
+    ],
+    "*.css": [
+      "node scripts/check-css-infile-dupes.mjs",
+      "node scripts/check-css-cross-file-dupes.mjs --files"
     ]
   }
 }

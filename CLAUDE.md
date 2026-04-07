@@ -11,7 +11,55 @@ npm run build     # Production build
 npm run check     # TypeScript type checking
 npm run lint      # ESLint
 npm run lint:fix  # ESLint with auto-fix
+npm run lint:css  # Stylelint (duplicate-selector guard, runs in pre-commit)
 ```
+
+## Dev Environment Quirks (READ THIS BEFORE TOUCHING dev/watcher CONFIG)
+
+This project lives at `/mnt/c/...` but the dev server runs **inside WSL**. WSL2's
+`/mnt/c` mount **does not propagate inotify events** for files written from the
+Windows side. Without polling, every CSS/TSX edit silently fails to hot-reload —
+Vite keeps serving the in-memory bundle from boot until restart, and "simple
+fixes are very hard to do" because nothing reaches the browser.
+
+**Two layers of defense are in place — do not remove either without reading this.**
+
+1. `server/vite.ts` sets `serverOptions.watch = { usePolling: true, interval: 300 }`.
+   This is the primary fix. It must be inside `serverOptions` (not `vite.config.ts`)
+   because line 46 spreads `server: serverOptions` *after* `...resolvedConfig` and
+   would overwrite anything defined in vite.config.ts.
+
+2. `package.json` `dev` script prefixes `CHOKIDAR_USEPOLLING=1`. This is a
+   belt-and-suspenders that works even if someone removes the config above.
+
+If you ever see "I edited a CSS file and the browser shows no change after a
+hard refresh" — the polling watcher is the first thing to check. Verify with:
+`curl -s http://localhost:5000/src/path/to/file.css | grep <your-edit>`. If your
+edit isn't in the served output, the watcher is broken.
+
+The proper long-term fix is to move the project to `~/projects/` inside the WSL
+native filesystem (per the global `~/.claude/CLAUDE.md` rule), where native
+inotify works and polling is unnecessary. Until then, both layers above are
+mandatory.
+
+## CSS Architecture Rules (enforced by stylelint, runs in pre-commit)
+
+The combat CSS used to scatter the same selector across 8 files. Editing a
+rule and seeing nothing change was almost always because a different file's
+rule won the cascade. **Two rules are now enforced by `stylelint` in the
+pre-commit hook:**
+
+1. **`no-duplicate-selectors`** — every selector must be defined exactly once
+   across all CSS files. If you need to add styles to an existing selector,
+   edit the existing rule. Do not create a second one.
+
+2. **One file per concern** — sizing/positioning of combat zones lives in
+   `client/src/game/combat/styles/zones.css` and is consumed via CSS variables.
+   Visual styling lives in `RagnarokCombatArena.css`. Do not put position
+   values in the visual file or vice versa.
+
+If your stylelint run fails with `no-duplicate-selectors`, **do not** silence
+the rule. Find the existing selector definition and merge your changes into it.
 
 ## Documentation
 

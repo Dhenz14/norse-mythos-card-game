@@ -42,8 +42,11 @@
     radial-gradient(ellipse 600% 100% at 50% 100%, rgba(10,14,26,0.85) 0%, transparent 60%),
     /* Dim overlay so art doesn't overpower cards */
     linear-gradient(180deg, rgba(10,14,26,0.55) 0%, rgba(10,14,26,0.3) 40%, rgba(10,14,26,0.3) 60%, rgba(10,14,26,0.55) 100%),
-    /* PvP background art */
-    url('/ui/pvp-background.png') center center / cover no-repeat;
+    /* Primary combat background — for ranked / play (non-campaign) only.
+       Campaign missions set .game-viewport.realm-* which overrides this via
+       client/src/game/combat/styles/realm-boards.css with !important.
+       The ?v= query is a cache-bust so browsers re-fetch when this changes. */
+    url('/ui/backgrounrag.png?v=2') center center / cover no-repeat;
   container-type: inline-size;
   container-name: game-viewport;
 }
@@ -338,12 +341,15 @@
   gap: 8px;
 }
 
-/* Hero card itself - lower z-index so poker cards can fan over it */
-.viewport-mode .poker-hero-container .battlefield-hero-square {
+/* Hero card itself - lower z-index so poker cards can fan over it.
+   Both player (.poker-hero-container) and opponent (.opponent-hero-container)
+   share the same dimensions for visual symmetry. */
+.viewport-mode .poker-hero-container .battlefield-hero-square,
+.viewport-mode .opponent-hero-container .battlefield-hero-square {
   position: relative;
   z-index: var(--hero-z-index);
-  width: var(--token-size-hero-width, 160px);
-  aspect-ratio: 3/4;
+  width: 220px;
+  aspect-ratio: 3 / 4;
   transform: none;
 }
 
@@ -357,11 +363,12 @@
    See: client/src/game/combat/components/HoleCardsOverlay.tsx
    ======================================== */
 
-/* Mana bar below hero */
-.viewport-mode .player-mana-display {
+/* Mana bar below hero — matches hero width */
+.viewport-mode .player-mana-display,
+.viewport-mode .opponent-hero-mana {
   position: relative;
   z-index: 25;
-  width: var(--token-size-hero-width, 160px);
+  width: 220px;
   margin-top: 4px;
 }
 

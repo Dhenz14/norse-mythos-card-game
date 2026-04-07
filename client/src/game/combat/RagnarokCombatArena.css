@@ -1082,10 +1082,11 @@
 /* Dead .arena-zone, .opponent-hero-zone, .player-hero-zone removed — use unified-* classes */
 
 .opponent-hero-mana {
-  width: 100%;
-  max-width: 140px;
-  transform: scale(0.85);
-  transform-origin: left center;
+  width: 220px;
+  max-width: none;
+  margin: 4px 0 0;
+  display: flex;
+  justify-content: center;
 }
 
 /* ========================================
@@ -1302,11 +1303,12 @@
 /* Dead .player-hand-zone, .player-hero-zone removed — use unified-* classes */
 
 .player-mana-display {
-  width: 100%;
-  max-width: 120px;
-  margin: 0;
+  width: 220px;
+  max-width: none;
+  margin: 4px 0 0;
   padding: 0;
-  margin-top: -2px;
+  display: flex;
+  justify-content: center;
 }
 
 .player-mana-display .mana-bar-container {
@@ -3806,6 +3808,7 @@
 .poker-hero-container .battlefield-hero-square,
 .opponent-hero-container .battlefield-hero-square {
   width: 220px;
+  aspect-ratio: 3 / 4;
   max-width: none;
   max-height: none;
 }
@@ -3995,40 +3998,52 @@
 }
 
 /* ========================================
-   Mortal Kombat Style Blood HP Betting Slider
+   Bet HP Slider — distinct poker control (NOT a health bar)
+   Wood + gold styling so it doesn't get mistaken for HP
    ======================================== */
 .poker-hp-slider-container {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  background: 
-    url('/ui/health-bar-blood.png') center/cover no-repeat,
-    linear-gradient(180deg, rgba(10, 5, 5, 0.9) 0%, rgba(26, 10, 10, 0.95) 50%, rgba(10, 5, 5, 0.9) 100%);
-  border: 2px solid;
-  border-image: linear-gradient(135deg, #d4a517 0%, #8b6914 50%, #d4a517 100%) 1;
-  border-radius: 4px;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.8),
-    inset 0 0 8px rgba(0, 0, 0, 0.9),
-    0 0 12px rgba(180, 0, 0, 0.4),
-    0 0 2px rgba(212, 165, 23, 0.3);
-  min-width: 200px;
+  gap: 10px;
+  padding: 6px 14px;
+  background: linear-gradient(180deg,
+    rgba(48, 32, 14, 0.95) 0%,
+    rgba(28, 18, 6, 0.98) 50%,
+    rgba(48, 32, 14, 0.95) 100%
+  );
+  border: 2px solid rgba(212, 165, 23, 0.7);
+  border-radius: 18px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 215, 100, 0.15),
+    0 0 10px rgba(212, 165, 23, 0.25);
+  min-width: 220px;
+}
+
+.poker-hp-slider-container::before {
+  content: 'BET';
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: rgba(251, 191, 36, 0.85);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  flex-shrink: 0;
 }
 
 .poker-hp-slider {
   flex: 1;
-  height: 10px;
+  height: 8px;
   appearance: none;
-  background: linear-gradient(180deg, 
-    rgba(50, 0, 0, 0.8) 0%, 
-    rgba(80, 10, 10, 0.9) 50%, 
-    rgba(50, 0, 0, 0.8) 100%
+  background: linear-gradient(180deg,
+    rgba(20, 14, 4, 0.95) 0%,
+    rgba(36, 24, 8, 0.95) 50%,
+    rgba(20, 14, 4, 0.95) 100%
   );
-  border-radius: 2px;
+  border-radius: 4px;
   cursor: pointer;
-  border: 1px solid rgba(212, 165, 23, 0.4);
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(212, 165, 23, 0.5);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 .poker-hp-slider::-webkit-slider-thumb {
@@ -4068,17 +4083,16 @@
 }
 
 .poker-hp-slider-container .slider-value {
-  font-family: 'Impact', 'Arial Black', sans-serif;
+  font-family: 'Cinzel', 'Georgia', serif;
   font-size: 0.85rem;
-  font-weight: 700;
-  color: #ff4444;
-  min-width: 50px;
+  font-weight: 800;
+  color: #fbbf24;
+  min-width: 52px;
   text-align: center;
-  text-shadow: 
-    0 0 4px rgba(200, 0, 0, 0.8),
-    0 0 8px rgba(0, 0, 0, 0.9),
-    1px 1px 0 #000;
-  letter-spacing: 1px;
+  text-shadow:
+    0 0 6px rgba(251, 191, 36, 0.6),
+    0 1px 2px rgba(0, 0, 0, 0.9);
+  letter-spacing: 0.5px;
 }
 
 /* Risk display styles in styles/pot-display.css */

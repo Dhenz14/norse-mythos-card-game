@@ -1,2 +1,8 @@
+#!/usr/bin/env sh
+# Defensive: unset any inherited NODE_OPTIONS first. tsx and similar dev
+# tooling can leave experimental flags in the environment that newer node
+# versions reject (e.g. --harmony-import-attributes). Forcing a clean
+# slate before re-setting our own option avoids "bad option" failures.
+unset NODE_OPTIONS
 export NODE_OPTIONS="--max-old-space-size=4096"
 npx lint-staged

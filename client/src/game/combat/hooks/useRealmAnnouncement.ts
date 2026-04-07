@@ -22,7 +22,13 @@ export function useRealmAnnouncement() {
 		return undefined;
 	}, [activeRealmId, activeRealmName]);
 
-	const realmClass = activeRealmId ? `realm-${activeRealmId}` : 'realm-midgard';
+	// IMPORTANT: do NOT default to 'realm-midgard' when no campaign realm is set.
+	// PvP / play / dev test have no activeRealm, and the realm-midgard CSS uses
+	// !important on its background, which would clobber the default arena
+	// background defined in GameViewport.css. Returning '' lets the base
+	// .game-viewport rule win in non-campaign matches. Campaign missions that
+	// want Midgard still get it via gameState.activeRealm.id === 'midgard'.
+	const realmClass = activeRealmId ? `realm-${activeRealmId}` : '';
 
 	return { realmAnnouncement, realmClass, activeRealmId, activeRealmName };
 }
