@@ -37,23 +37,23 @@
     /* Stone texture: repeating noise pattern via layered gradients */
     repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
     repeating-conic-gradient(rgba(0,0,0,0.02) 0% 25%, transparent 0% 50%) 2px 2px / 4px 4px,
-    /* UI cluster vignettes — push the background away from gameplay zones.
-       These are deliberately oversized ellipses so the UI breathes against
-       darker pockets and the wolf/bifrost stay visible elsewhere. */
-    radial-gradient(ellipse 32% 38% at 12% 92%, rgba(6,8,14,0.82) 0%, transparent 68%),  /* player hero bottom-left */
-    radial-gradient(ellipse 28% 24% at 12% 12%, rgba(6,8,14,0.82) 0%, transparent 65%),  /* opponent hero top-left */
-    radial-gradient(ellipse 56% 24% at 50% 96%, rgba(6,8,14,0.66) 0%, transparent 75%),  /* player hand bottom-center */
-    radial-gradient(ellipse 22% 26% at 16% 50%, rgba(6,8,14,0.58) 0%, transparent 72%),  /* community cards mid-left */
-    radial-gradient(ellipse 26% 14% at 22% 78%, rgba(6,8,14,0.55) 0%, transparent 75%),  /* risk + betting bottom-left */
-    radial-gradient(ellipse 16% 18% at 92% 12%, rgba(6,8,14,0.68) 0%, transparent 70%),  /* turn widget top-right */
-    radial-gradient(ellipse 14% 36% at 96% 50%, rgba(6,8,14,0.58) 0%, transparent 75%),  /* right utility strip */
-    /* Dark frame vignette top + bottom so the canvas reads as a board, not a poster */
-    radial-gradient(ellipse 600% 100% at 50% 0%, rgba(10,14,26,0.90) 0%, transparent 58%),
-    radial-gradient(ellipse 600% 100% at 50% 100%, rgba(10,14,26,0.90) 0%, transparent 58%),
-    /* Subtle left-side dim — most poker UI lives there, push the wolf right */
-    linear-gradient(90deg, rgba(6,8,14,0.42) 0%, rgba(6,8,14,0.18) 32%, transparent 55%),
+    /* UI cluster vignettes — soft pockets behind the gameplay zones.
+       Toned down from earlier (0.78-0.82) because they were stacking
+       with norse-atmosphere.css inset shadows and obliterating the
+       canvas. ~0.50 max keeps the wolf visible while still letting
+       the panels breathe. */
+    radial-gradient(ellipse 30% 34% at 12% 92%, rgba(6,8,14,0.50) 0%, transparent 70%),  /* player hero bottom-left */
+    radial-gradient(ellipse 26% 22% at 12% 12%, rgba(6,8,14,0.50) 0%, transparent 70%),  /* opponent hero top-left */
+    radial-gradient(ellipse 50% 20% at 50% 96%, rgba(6,8,14,0.42) 0%, transparent 78%),  /* player hand bottom-center */
+    radial-gradient(ellipse 18% 22% at 14% 48%, rgba(6,8,14,0.36) 0%, transparent 78%),  /* community cards mid-left */
+    radial-gradient(ellipse 14% 16% at 92% 12%, rgba(6,8,14,0.42) 0%, transparent 75%),  /* turn widget top-right */
+    radial-gradient(ellipse 12% 32% at 96% 50%, rgba(6,8,14,0.36) 0%, transparent 78%),  /* right utility strip */
+    /* Light top + bottom frame — the inset shadow in norse-atmosphere.css
+       handles the heavy edge falloff, this just nudges it. */
+    radial-gradient(ellipse 600% 90% at 50% 0%, rgba(10,14,26,0.55) 0%, transparent 60%),
+    radial-gradient(ellipse 600% 90% at 50% 100%, rgba(10,14,26,0.55) 0%, transparent 60%),
     /* Global dim so art never overpowers cards */
-    linear-gradient(180deg, rgba(10,14,26,0.60) 0%, rgba(10,14,26,0.34) 38%, rgba(10,14,26,0.34) 62%, rgba(10,14,26,0.60) 100%),
+    linear-gradient(180deg, rgba(10,14,26,0.42) 0%, rgba(10,14,26,0.22) 38%, rgba(10,14,26,0.22) 62%, rgba(10,14,26,0.42) 100%),
     /* Primary combat background — for ranked / play (non-campaign) only.
        Campaign missions set .game-viewport.realm-* which overrides this via
        client/src/game/combat/styles/realm-boards.css with !important.
