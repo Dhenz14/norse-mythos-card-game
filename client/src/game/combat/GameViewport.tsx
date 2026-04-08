@@ -1,109 +1,105 @@
-import React, { useLayoutEffect, useState, useRef, useCallback } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import './GameViewport.css';
 
 interface GameViewportProps {
   children: React.ReactNode;
+  /** Kept for API compatibility — not used. Canvas is fixed 1920×1080. */
   aspectRatio?: number;
   referenceWidth?: number;
   referenceHeight?: number;
   extraClassName?: string;
 }
 
+const REF_W = 1920;
+const REF_H = 1080;
+
 /**
- * Compute the canvas scale + center offsets for the current window size.
- * Pure function so we can call it from a useState initializer (synchronous,
- * no flash) AND from resize/observer callbacks.
+ * Compute scale + offset synchronously from window dimensions.
+ * Pure function — used by both useState initializer (no first-paint flash)
+ * and the resize listener.
  */
-function computeViewportTransform(refW: number, refH: number) {
-  // SSR / test environments may not have window — fall back to 1:1.
+function computeFit(refW: number, refH: number) {
   if (typeof window === 'undefined') {
     return { scale: 1, offsetX: 0, offsetY: 0 };
   }
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const scale = Math.min(vw / refW, vh / refH);
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const scale = Math.min(w / refW, h / refH);
   return {
     scale,
-    offsetX: (vw - refW * scale) / 2,
-    offsetY: (vh - refH * scale) / 2,
+    offsetX: (w - refW * scale) / 2,
+    offsetY: (h - refH * scale) / 2,
   };
 }
 
+/**
+ * GameViewport — 1920×1080 virtual canvas with JS-driven responsive scaling.
+ *
+ * History of pain:
+ *   v1: JS scale → CSS variable → CSS rule consumed it. Race condition on
+ *       first paint left scale=1 stuck.
+ *   v2: Pure CSS `transform: scale(min(calc(100vw / 1920px), ...))`.
+ *       Type-altering calc (length/length → number) is CSS Values 4 — only
+ *       supported in Chrome 105+/Firefox 116+/Safari 17+. Older browsers
+ *       silently dropped the entire `transform` declaration, leaving the
+ *       canvas at 1920×1080 native (cut off + black margins).
+ *   v3 (this): JS computes scale + offset, sets `transform` DIRECTLY in
+ *       inline style. Inline always wins over CSS, no calc, no variables,
+ *       no race. useState initializer is synchronous so the first paint
+ *       has the right value. useLayoutEffect re-syncs after mount and on
+ *       every window resize.
+ */
 export const GameViewport: React.FC<GameViewportProps> = ({
   children,
-  aspectRatio = 16 / 9,
-  referenceWidth = 1920,
-  referenceHeight = 1080,
+  referenceWidth = REF_W,
+  referenceHeight = REF_H,
   extraClassName = '',
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  // Sync init — first paint already has the correct scale, no flash.
+  const [fit, setFit] = useState(() => computeFit(referenceWidth, referenceHeight));
 
-  // Initial state computed SYNCHRONOUSLY from window size — no flash period
-  // where scale=1 is rendered before useEffect runs. This was the root of
-  // the "the page does not scale, its not responsive" bug: useState(1)
-  // shipped a stale value to the first render, and on slow page loads or
-  // strict-mode double-mounts the corrected value didn't always land.
-  const [transform, setTransform] = useState(() =>
-    computeViewportTransform(referenceWidth, referenceHeight)
-  );
-
-  const recalculate = useCallback(() => {
-    setTransform(computeViewportTransform(referenceWidth, referenceHeight));
+  useLayoutEffect(() => {
+    const update = () => setFit(computeFit(referenceWidth, referenceHeight));
+    // Recompute once on mount in case window changed between initial state
+    // and effect run (rare but real on slow loads).
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
+    };
   }, [referenceWidth, referenceHeight]);
 
-  // useLayoutEffect runs synchronously after DOM mutations but BEFORE the
-  // browser paints. Combined with the synchronous initial state above, the
-  // canvas is guaranteed to be at the correct scale on the very first paint.
-  useLayoutEffect(() => {
-    // Recompute once on mount to catch any window size that changed between
-    // module evaluation and component mount (rare but real).
-    recalculate();
+  // Inline style — overrides any CSS `transform` rule on .game-viewport.
+  // We use top/left absolute positioning + transform-origin top-left so the
+  // offsets we compute are intuitive (pixel offsets in window space).
+  const style: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: `${referenceWidth}px`,
+    height: `${referenceHeight}px`,
+    transform: `translate(${fit.offsetX}px, ${fit.offsetY}px) scale(${fit.scale})`,
+    transformOrigin: '0 0',
+  };
 
-    // Belt-and-suspenders: requestAnimationFrame fallback for the next frame
-    // in case fonts/images load late and reflow the parent container.
-    const rafId = window.requestAnimationFrame(recalculate);
-
-    window.addEventListener('resize', recalculate);
-    window.addEventListener('orientationchange', recalculate);
-
-    let resizeObserver: ResizeObserver | undefined;
-    if (containerRef.current?.parentElement && typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(recalculate);
-      resizeObserver.observe(containerRef.current.parentElement);
-    }
-
-    return () => {
-      window.cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', recalculate);
-      window.removeEventListener('orientationchange', recalculate);
-      resizeObserver?.disconnect();
-    };
-  }, [recalculate]);
-
-  const { scale, offsetX, offsetY } = transform;
-
-  // CSS custom property values must be strings for React to set them
-  // reliably across browsers — passing a raw number for `--vp-scale-x`
-  // works in Chrome but Firefox/Safari occasionally drop it. Always
-  // String() it. Same applies to width/height vars.
-  const scaleStr = String(scale);
-  const widthStr = `${referenceWidth}px`;
-  const heightStr = `${referenceHeight}px`;
+  // Screen-shake classes from extraClassName must live on the WRAPPER,
+  // not on the inner .game-viewport. The inner element has a JS-set
+  // inline transform; a CSS animation on it would clobber the scale
+  // during the shake. The wrapper has no transform so animating its
+  // translate is safe.
+  const classNames = extraClassName.split(/\s+/).filter(Boolean);
+  const shakeClasses = classNames
+    .filter((c) => c.startsWith('screen-shake-'))
+    .join(' ');
+  const innerClasses = classNames
+    .filter((c) => !c.startsWith('screen-shake-'))
+    .join(' ');
 
   return (
-    <div className="game-viewport-wrapper">
-      <div
-        ref={containerRef}
-        className={`game-viewport ${extraClassName}`.trim()}
-        style={{
-          '--vp-scale-x': scaleStr,
-          '--vp-scale-y': scaleStr,
-          '--vp-width': widthStr,
-          '--vp-height': heightStr,
-          left: `${offsetX}px`,
-          top: `${offsetY}px`,
-        } as React.CSSProperties}
-      >
+    <div className={`game-viewport-wrapper ${shakeClasses}`.trim()}>
+      <div className={`game-viewport ${innerClasses}`.trim()} style={style}>
         {children}
       </div>
     </div>

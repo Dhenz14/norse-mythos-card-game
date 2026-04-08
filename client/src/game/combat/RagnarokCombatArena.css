@@ -1249,9 +1249,16 @@
   width: 220px;
   max-width: none;
   margin: 4px 0 0;
-  padding: 0;
+  padding: 4px 8px;
   display: flex;
   justify-content: center;
+  /* Dark plate so the mana crystals are readable against bright backgrounds
+     (wolf head, lightning art, etc.). Subtle gold border to match the
+     hero card frame above. */
+  background: linear-gradient(180deg, rgba(8, 10, 18, 0.85) 0%, rgba(12, 14, 22, 0.92) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(212, 175, 55, 0.08);
 }
 
 .player-mana-display .mana-bar-container {
