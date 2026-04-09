@@ -7,6 +7,7 @@ import type { HiveMatchResult } from '../../../data/schemas/HiveTypes';
 import { getSeasonInfo, formatTimeRemaining } from '../../utils/seasonUtils';
 import { useSeasonStore } from '../../stores/seasonStore';
 import { getYggdrasilRank } from '../../pvp';
+import { useFactionStore } from '../../pvp/factionStore';
 import './ladder.css';
 
 interface LadderEntry {
@@ -140,6 +141,22 @@ export default function RankedLadderPage() {
 		}
 	}, [myEntry?.elo]);
 
+	// Rank-up celebration — detect when player reaches a new Yggdrasil realm
+	const lastSeenRankId = useFactionStore(s => s.lastSeenRankId);
+	const setLastSeenRank = useFactionStore(s => s.setLastSeenRank);
+	const [rankUpBanner, setRankUpBanner] = useState<{ name: string; flavor: string; color: string } | null>(null);
+	useEffect(() => {
+		if (!myEntry) return undefined;
+		const currentRank = getYggdrasilRank(myEntry.elo);
+		if (currentRank.id > lastSeenRankId) {
+			setLastSeenRank(currentRank.id);
+			setRankUpBanner({ name: currentRank.name, flavor: currentRank.flavor, color: currentRank.color });
+			const timer = setTimeout(() => setRankUpBanner(null), 6000);
+			return () => clearTimeout(timer);
+		}
+		return undefined;
+	}, [myEntry?.elo, lastSeenRankId, setLastSeenRank]);
+
 	if (loading) {
 		return (
 			<div className="ladder-container flex items-center justify-center">
@@ -150,6 +167,23 @@ export default function RankedLadderPage() {
 
 	return (
 		<div className="ladder-container">
+			{/* Rank-up celebration banner */}
+			{rankUpBanner && (
+				<div
+					className="fixed inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
+					style={{ background: 'radial-gradient(ellipse, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.95) 100%)' }}
+				>
+					<div className="text-xs font-bold uppercase tracking-[0.3em] mb-3" style={{ color: rankUpBanner.color, fontFamily: "'Cinzel', Georgia, serif" }}>
+						You Ascend To
+					</div>
+					<div className="text-5xl font-black mb-4" style={{ color: rankUpBanner.color, fontFamily: "'Cinzel', Georgia, serif", textShadow: `0 0 30px ${rankUpBanner.color}60, 0 4px 20px rgba(0,0,0,0.9)` }}>
+						{rankUpBanner.name}
+					</div>
+					<div className="text-base italic max-w-md text-center" style={{ color: 'rgba(245,232,198,0.8)', fontFamily: 'Georgia, serif' }}>
+						{rankUpBanner.flavor}
+					</div>
+				</div>
+			)}
 			{/* Header */}
 			<div className="ladder-header px-6 py-4 flex items-center justify-between">
 				<div className="flex items-center gap-4">

@@ -580,6 +580,7 @@ export const norseChapter: CampaignChapter = {
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20300 }, { type: 'pack', amount: 2 }],
 			realm: 'midgard',
 			campaignArmy: { king: 'king-surtr', queen: 'hero-hel', rook: 'hero-thryma', bishop: 'hero-freya', knight: 'hero-loki' },
+			starThresholds: { threeStar: 16, twoStar: 24 },
 			isChapterFinale: true,
 		},
 	],

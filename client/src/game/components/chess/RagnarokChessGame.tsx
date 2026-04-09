@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArmySelection as ArmySelectionType, ChessPiece } from '../../types/ChessTypes';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection, buildCombatDeck } from '../../data/ChessPieceConfig';
-import { useCampaignStore, getMission } from '../../campaign';
+import { useCampaignStore, getMission, getMissionStars } from '../../campaign';
+import { useRivalryStore } from '../../pvp/rivalryStore';
 import { buildCampaignArmy } from '../../campaign/campaignArmyBuilder';
 import { useNavigate } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
@@ -27,10 +28,36 @@ import { assetPath } from '../../utils/assetPath';
 import CinematicCrawl from '../campaign/CinematicCrawl';
 import './HeroPortraitEnhanced.css';
 import './chess-realm-skins.css';
-import './cgo-result.css';
+import './game-over-result.css';
 import '../campaign/cinematic-crawl.css';
 
 type GamePhase = 'army_selection' | 'cinematic' | 'mission_intro' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
+
+/*
+  RivalryBadge — shows head-to-head PvP record on the game-over screen.
+  Reads from useRivalryStore to find the most recent opponent and display
+  the W/L tally. Only renders if a rivalry record exists.
+*/
+function RivalryBadge() {
+	const rivals = useRivalryStore(s => s.rivals);
+	const latest = rivals.length > 0 ? rivals[0] : null;
+	if (!latest) return null;
+	return (
+		<motion.div
+			className="cgo-rivalry"
+			initial={{ opacity: 0, y: 10 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ delay: 0.8, duration: 0.6 }}
+		>
+			<span className="cgo-rivalry-label">vs {latest.displayName}</span>
+			<span className="cgo-rivalry-record">
+				<span className="cgo-rivalry-wins">{latest.wins}W</span>
+				{' — '}
+				<span className="cgo-rivalry-losses">{latest.losses}L</span>
+			</span>
+		</motion.div>
+	);
+}
 
 const REALM_ICONS: Record<string, string> = {
 	asgard: '\u2728', niflheim: '\u2744\uFE0F', muspelheim: '\uD83D\uDD25',
@@ -945,8 +972,14 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
               useCraftingStore.getState().addEitr(reward.amount);
             }
           }
+          // Difficulty-locked bonus rewards
+          if (campaignDifficulty === 'heroic') {
+            useCraftingStore.getState().addEitr(50);
+          } else if (campaignDifficulty === 'mythic') {
+            useCraftingStore.getState().addEitr(150);
+          }
           useCampaignStore.getState().claimReward(campaignMissionId);
-          debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId}`);
+          debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId} (${campaignDifficulty})`);
         }
       }
       // Decide which sub-phase of game_over to enter:
@@ -1308,14 +1341,17 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
 
               {isCampaign && campaignData ? (
                 <>
-                  {/*
-                    Two-tier narrative: short subtitle line (the "headline")
-                    followed by the longer narrativeAfter epilogue scroll. The
-                    subtitle uses narrativeVictory/narrativeDefeat (one sentence
-                    of impact); the scroll uses narrativeAfter (the full
-                    paragraph of consequence). On missions where only one is
-                    authored, fall back to a sensible split.
-                  */}
+                  {/* Boss victory quip — the boss gloats when the player loses */}
+                  {!isVictory && campaignData.mission.bossQuips?.onVictory && (
+                    <motion.p
+                      className="cgo-boss-quip"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6, duration: 1.0 }}
+                    >
+                      &ldquo;{campaignData.mission.bossQuips.onVictory}&rdquo;
+                    </motion.p>
+                  )}
                   <motion.p
                     className="cgo-subtitle"
                     initial={{ opacity: 0 }}
@@ -1347,6 +1383,38 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
                     </motion.div>
                   )}
 
+                  {/* Star rating — 1-3 stars based on turn count */}
+                  {isVictory && (
+                    <motion.div
+                      className="cgo-stars"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      {[1, 2, 3].map(star => {
+                        const earned = getMissionStars(turnCount, campaignData.mission) >= star;
+                        return (
+                          <span key={star} className={`cgo-star ${earned ? 'earned' : 'empty'}`}>
+                            &#9733;
+                          </span>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+
+                  {/* Chapter completion splash — fires if this was the last mission */}
+                  {isVictory && campaignData.mission.isChapterFinale && (
+                    <motion.div
+                      className="cgo-chapter-splash"
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.8, duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <div className="cgo-chapter-label">Chapter Complete</div>
+                      <div className="cgo-chapter-name">{campaignData.chapter.name}</div>
+                    </motion.div>
+                  )}
+
                   {isVictory && campaignData.mission.rewards.length > 0 && (
                     <motion.div
                       className="cgo-rewards"
@@ -1359,6 +1427,17 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
                           +{r.amount || 1} {r.type}
                         </div>
                       ))}
+                      {/* Difficulty-locked bonus rewards */}
+                      {campaignDifficulty === 'heroic' && (
+                        <div className="cgo-difficulty-bonus heroic">
+                          +50 eitr (heroic)
+                        </div>
+                      )}
+                      {campaignDifficulty === 'mythic' && (
+                        <div className="cgo-difficulty-bonus mythic">
+                          +150 eitr + bonus pack (mythic)
+                        </div>
+                      )}
                     </motion.div>
                   )}
 
@@ -1395,6 +1474,8 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
                       ? 'Checkmate! The enemy King has no escape.'
                       : 'Checkmate... Your King has been cornered.'}
                   </p>
+                  {/* PvP rivalry record — show head-to-head if we have history */}
+                  <RivalryBadge />
                   <button
                     type="button"
                     onClick={handleRestart}

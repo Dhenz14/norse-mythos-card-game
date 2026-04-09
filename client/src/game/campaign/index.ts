@@ -5,7 +5,7 @@ export { egyptianChapter } from './chapters/egyptianChapter';
 export { celticChapter } from './chapters/celticChapter';
 export { easternChapter } from './chapters/easternChapter';
 export type { CampaignChapter, CampaignMission, CampaignArmy, AIBehaviorProfile, BossRule, CampaignReward, Difficulty, CinematicIntro, CinematicScene, BossQuips, BossPhase, BossPhaseEffect, BossPhaseFlash, MusicCueId } from './campaignTypes';
-export { AI_PROFILES } from './campaignTypes';
+export { AI_PROFILES, getMissionStars, DEFAULT_STAR_THRESHOLDS } from './campaignTypes';
 export { useCampaignStore } from './campaignStore';
 export { buildCampaignArmy } from './campaignArmyBuilder';
 export { NINE_REALMS, REALM_MAP, MISSION_REALM_MAP, getMissionsForRealm, getRealmProgress } from './nineRealms';

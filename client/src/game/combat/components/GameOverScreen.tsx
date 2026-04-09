@@ -12,6 +12,8 @@ interface GameOverScreenProps {
 	opponentHeroClass?: string;
 	onPlayAgain?: () => void;
 	onMainMenu?: () => void;
+	onRematch?: () => void;
+	isRanked?: boolean;
 }
 
 const PARTICLE_COLORS = ['#fbbf24', '#f59e0b', '#d97706', '#fcd34d', '#fef08a', '#22c55e'];
@@ -36,6 +38,8 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 	opponentHeroClass,
 	onPlayAgain,
 	onMainMenu,
+	onRematch,
+	isRanked = false,
 }) => {
 	const isVictory = winner === 'player';
 	const isDraw = winner === 'draw';
@@ -188,15 +192,34 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 							</div>
 						</motion.div>
 
+						{/* ELO delta — ranked matches show +/- points */}
+						{isRanked && !isDraw && (
+							<motion.div
+								className="game-over-elo-delta"
+								initial={{ opacity: 0, scale: 0.8 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ delay: 0.9, duration: 0.35, type: 'spring', stiffness: 300 }}
+							>
+								<span className={`elo-delta-value ${isVictory ? 'elo-gain' : 'elo-loss'}`}>
+									{isVictory ? '+16' : '-16'} ELO
+								</span>
+							</motion.div>
+						)}
+
 						<motion.div
 							className="game-over-actions"
 							initial={{ opacity: 0, y: 10 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 1.05, duration: 0.3 }}
 						>
+							{onRematch && (
+								<button type="button" className="game-over-btn primary" onClick={onRematch}>
+									Rematch
+								</button>
+							)}
 							{onPlayAgain && (
 								<button type="button" className="game-over-btn primary" onClick={onPlayAgain}>
-									Play Again
+									{onRematch ? 'New Opponent' : 'Play Again'}
 								</button>
 							)}
 							{onMainMenu && (

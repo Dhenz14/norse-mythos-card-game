@@ -243,6 +243,30 @@ export interface CampaignMission {
 	  (Ragnarok gets `ragnarok`; the Mead of Poetry gets `mead_hall`).
 	*/
 	combatMusicId?: MusicCueId;
+	/*
+	  Per-mission star thresholds. Boss fights with many phases or
+	  extra_health should have higher thresholds (more turns expected).
+	  If not set, DEFAULT_STAR_THRESHOLDS are used (12 / 20).
+	*/
+	starThresholds?: { threeStar: number; twoStar: number };
+}
+
+/*
+  Star rating — computed from turn count vs. mission difficulty.
+  Default thresholds (used if the mission doesn't override):
+    3 stars: ≤ 12 turns  (quick decisive victory)
+    2 stars: ≤ 20 turns  (solid play)
+    1 star:  > 20 turns   (eventual win)
+  Missions with complex boss rules can override via starThresholds.
+*/
+export const DEFAULT_STAR_THRESHOLDS = { threeStar: 12, twoStar: 20 };
+
+export function getMissionStars(turns: number, mission?: CampaignMission): number {
+  const t3 = mission?.starThresholds?.threeStar ?? DEFAULT_STAR_THRESHOLDS.threeStar;
+  const t2 = mission?.starThresholds?.twoStar ?? DEFAULT_STAR_THRESHOLDS.twoStar;
+  if (turns <= t3) return 3;
+  if (turns <= t2) return 2;
+  return 1;
 }
 
 export interface CampaignChapter {

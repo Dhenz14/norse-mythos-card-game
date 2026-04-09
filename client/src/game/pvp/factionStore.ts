@@ -28,9 +28,11 @@ interface FactionState {
 	pledgePopupShown: boolean;       // one-shot popup, never re-prompts
 	factionWins: number;             // local count, future server-merged
 	factionLosses: number;
+	lastSeenRankId: number;          // Yggdrasil rank ID last seen (for rank-up detection)
 	pledge: (faction: FactionId) => void;
 	markPopupShown: () => void;
 	recordPvpResult: (won: boolean) => void;
+	setLastSeenRank: (rankId: number) => void;
 	reset: () => void;
 }
 
@@ -42,6 +44,7 @@ export const useFactionStore = create<FactionState>()(
 			pledgePopupShown: false,
 			factionWins: 0,
 			factionLosses: 0,
+			lastSeenRankId: 1,
 
 			pledge: (faction: FactionId) => set({
 				pledgedFaction: faction,
@@ -56,12 +59,15 @@ export const useFactionStore = create<FactionState>()(
 				factionLosses: state.factionLosses + (won ? 0 : 1),
 			})),
 
+			setLastSeenRank: (rankId: number) => set({ lastSeenRankId: rankId }),
+
 			reset: () => set({
 				pledgedFaction: null,
 				pledgedAt: null,
 				pledgePopupShown: false,
 				factionWins: 0,
 				factionLosses: 0,
+				lastSeenRankId: 1,
 			}),
 		}),
 		{ name: 'ragnarok-faction-pledge' }

@@ -172,10 +172,28 @@ export function usePokerAI(options: UsePokerAIOptions): void {
           return;
         }
 
-        if (COMBAT_DEBUG.AI) {
-          debug.ai('[AI Effect] AI making decision now', { aiConfig: aiConfigRef.current });
+        // Boss escalation — ramp aggression/bluff as poker phases advance.
+        // PRE_FLOP/FAITH = early (baseline), FORESIGHT = mid (+15%),
+        // DESTINY = late (+30%). Creates the cinematic feel of a boss
+        // becoming more desperate as the hand plays out.
+        let escalatedConfig = aiConfigRef.current;
+        if (escalatedConfig) {
+          const phaseEsc =
+            freshState.phase === CombatPhase.DESTINY ? 0.30 :
+            freshState.phase === CombatPhase.FORESIGHT ? 0.15 : 0;
+          if (phaseEsc > 0) {
+            escalatedConfig = {
+              aggressiveness: Math.min(1, escalatedConfig.aggressiveness + phaseEsc),
+              bluffFrequency: Math.min(1, escalatedConfig.bluffFrequency + phaseEsc * 0.5),
+              tightness: Math.max(0, escalatedConfig.tightness - phaseEsc * 0.4),
+            };
+          }
         }
-        const aiDecision = getSmartAIAction(freshState, false, aiConfigRef.current);
+
+        if (COMBAT_DEBUG.AI) {
+          debug.ai('[AI Effect] AI making decision now', { aiConfig: escalatedConfig });
+        }
+        const aiDecision = getSmartAIAction(freshState, false, escalatedConfig);
         if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] AI decision:', aiDecision);
 
         adapter.performAction(aiPlayerId, aiDecision.action, aiDecision.betAmount);

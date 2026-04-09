@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useFriendStore, type Friend, type FriendPresence } from '../../stores/friendStore';
 import { useNFTUsername } from '../../nft/hooks';
+import { routes } from '../../../lib/routes';
 
 function AddFriendDialog({ onAdd, onClose }: { onAdd: (name: string) => void; onClose: () => void }) {
 	const [name, setName] = useState('');
@@ -33,7 +35,7 @@ function AddFriendDialog({ onAdd, onClose }: { onAdd: (name: string) => void; on
 	);
 }
 
-function FriendCard({ friend, presence }: { friend: Friend; presence?: FriendPresence }) {
+function FriendCard({ friend, presence, onChallenge }: { friend: Friend; presence?: FriendPresence; onChallenge: (username: string) => void }) {
 	const removeFriend = useFriendStore(s => s.removeFriend);
 	const isOnline = presence?.online ?? false;
 
@@ -45,12 +47,24 @@ function FriendCard({ friend, presence }: { friend: Friend; presence?: FriendPre
 					{friend.nickname || `@${friend.hiveUsername}`}
 				</span>
 			</div>
-			<button
-				onClick={() => removeFriend(friend.hiveUsername)}
-				className="text-gray-600 hover:text-red-400 text-xs opacity-0 group-hover:opacity-100 transition-all"
-			>
-				Remove
-			</button>
+			<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+				{isOnline && (
+					<button
+						type="button"
+						onClick={() => onChallenge(friend.hiveUsername)}
+						className="text-amber-500 hover:text-amber-300 text-xs font-semibold"
+					>
+						Challenge
+					</button>
+				)}
+				<button
+					type="button"
+					onClick={() => removeFriend(friend.hiveUsername)}
+					className="text-gray-600 hover:text-red-400 text-xs"
+				>
+					Remove
+				</button>
+			</div>
 		</div>
 	);
 }
@@ -61,8 +75,13 @@ export default function FriendsPanel() {
 	const onlineStatus = useFriendStore(s => s.onlineStatus);
 	const addFriend = useFriendStore(s => s.addFriend);
 	const updatePresence = useFriendStore(s => s.updatePresence);
+	const navigate = useNavigate();
 	const [showAdd, setShowAdd] = useState(false);
 	const [expanded, setExpanded] = useState(true);
+
+	const handleChallenge = useCallback((username: string) => {
+		navigate(`${routes.multiplayer}?challenge=${encodeURIComponent(username)}`);
+	}, [navigate]);
 
 	const pollPresence = useCallback(async (signal?: AbortSignal) => {
 		if (!hiveUsername || friends.length === 0) return;
@@ -116,7 +135,7 @@ export default function FriendsPanel() {
 						<>
 							<p className="text-[10px] text-green-500/70 uppercase tracking-wider px-2 pt-1">Online</p>
 							{onlineFriends.map(f => (
-								<FriendCard key={f.hiveUsername} friend={f} presence={onlineStatus[f.hiveUsername]} />
+								<FriendCard key={f.hiveUsername} friend={f} presence={onlineStatus[f.hiveUsername]} onChallenge={handleChallenge} />
 							))}
 						</>
 					)}
@@ -124,7 +143,7 @@ export default function FriendsPanel() {
 						<>
 							<p className="text-[10px] text-gray-600 uppercase tracking-wider px-2 pt-1">Offline</p>
 							{offlineFriends.map(f => (
-								<FriendCard key={f.hiveUsername} friend={f} presence={onlineStatus[f.hiveUsername]} />
+								<FriendCard key={f.hiveUsername} friend={f} presence={onlineStatus[f.hiveUsername]} onChallenge={handleChallenge} />
 							))}
 						</>
 					)}

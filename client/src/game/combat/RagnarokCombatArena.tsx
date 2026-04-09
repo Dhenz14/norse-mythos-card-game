@@ -78,6 +78,7 @@ import type { BossPhaseFlash as BossPhaseFlashKind } from '../campaign/campaignT
 import { useBossPhases } from './hooks/useBossPhases';
 import { useCampaignStore, getMission } from '../campaign';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
+import { getHeroFeud } from '../pvp/pvpData';
 
 const SwordIcon = () => (
 	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -582,7 +583,12 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       </div>
       
       {/* Risk Display - total HP at stake */}
-      <RiskDisplay risk={combatState.pot} hidden={isMulligan} />
+      <RiskDisplay
+        risk={combatState.pot}
+        hidden={isMulligan}
+        playerCommitted={combatState.player.hpCommitted}
+        opponentCommitted={combatState.opponent.hpCommitted}
+      />
 
       {/* Wager Effects HUD — shows active wager keyword effects from battlefield */}
       <WagerEffectsHUD />
@@ -723,10 +729,30 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Always render during active betting phases (not mulligan/resolution) */}
       {!isMulligan && combatState.phase !== CombatPhase.RESOLUTION && !combatState.isAllInShowdown && (
         <div className="unified-betting-actions-container">
-          {/* HP Slider for Raise - On top, above buttons */}
+          {/* HP Slider + Quick-bet presets */}
           <div className="poker-hp-slider-container">
-
-            <input 
+            <div className="poker-quick-bets">
+              {[
+                { label: '25%', pct: 0.25 },
+                { label: '50%', pct: 0.50 },
+                { label: 'ALL', pct: 1.0 },
+              ].map(({ label, pct }) => {
+                const maxBet = basePermissions?.maxBetAmount || 100;
+                const qb = Math.max(basePermissions?.minBet || 1, Math.floor(maxBet * pct));
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    className={`quick-bet-btn ${label === 'ALL' ? 'all-in' : ''}`}
+                    onClick={() => setBetAmount(Math.min(qb, maxBet))}
+                    disabled={!basePermissions?.isMyTurnToAct}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <input
               type="range"
               min={basePermissions?.minBet || 1}
               max={basePermissions?.maxBetAmount || 100}
@@ -765,9 +791,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                        effectiveBet
                      )}
                      disabled={isDisabled || (hasBetToCall ? !actualCanRaise : !canBet)}
-                     title="Attack"
+                     title={hasBetToCall ? 'Raise — increase the stakes' : 'Bet — commit HP to the pot'}
                    >
                      <SwordIcon />
+                     <span className="btn-label">{hasBetToCall ? 'RAISE' : 'BET'}</span>
                      <span className="btn-text">{attackHP} HP</span>
                    </button>
 
@@ -775,15 +802,19 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      className="poker-btn call-btn"
                      onClick={() => wrappedOnAction(canCall ? CombatAction.ENGAGE : CombatAction.DEFEND)}
                      disabled={isDisabled || (!canCall && !canCheck)}
-                     title={canCall ? 'Engage' : 'Defend'}
+                     title={canCall ? 'Call — match the bet' : 'Check — pass without betting'}
                    >
                      {canCall ? (
                        <>
                          <CrossedSwordsIcon />
+                         <span className="btn-label">CALL</span>
                          <span className="btn-text">{isAllIn ? `ALL-IN ${callHP}` : `${callHP} HP`}</span>
                        </>
                      ) : (
-                       <HelmIcon />
+                       <>
+                         <HelmIcon />
+                         <span className="btn-label">CHECK</span>
+                       </>
                      )}
                    </button>
 
@@ -791,9 +822,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      className="poker-btn fold-btn"
                      onClick={() => wrappedOnAction(CombatAction.BRACE)}
                      disabled={isDisabled || !canFold}
-                     title="Brace"
+                     title="Fold — surrender this hand and lose committed HP"
                    >
                      <ShieldIcon />
+                     <span className="btn-label">FOLD</span>
                    </button>
 
                    {!isMulligan && isPlayerTurn && playerBattlefield.length > 0 && (
@@ -853,12 +885,18 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   */
   const playBackgroundMusic = useAudio(s => s.playBackgroundMusic);
   const stopBackgroundMusic = useAudio(s => s.stopBackgroundMusic);
+  const combatMusicMissionId = useCampaignStore(s => s.currentMission);
+  const combatMusicTrack = useMemo(() => {
+    if (!combatMusicMissionId) return 'battle_theme' as const;
+    const found = getMission(combatMusicMissionId);
+    return (found?.mission?.combatMusicId ?? 'battle_theme') as any;
+  }, [combatMusicMissionId]);
   useEffect(() => {
-    playBackgroundMusic('battle_theme');
+    playBackgroundMusic(combatMusicTrack);
     return () => {
       stopBackgroundMusic();
     };
-  }, [playBackgroundMusic, stopBackgroundMusic]);
+  }, [playBackgroundMusic, stopBackgroundMusic, combatMusicTrack]);
 
   /*
     Boss quips — read the active campaign mission's optional bossQuips
@@ -889,6 +927,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   const [quipText, setQuipText] = useState<string | null>(null);
   const [quipKey, setQuipKey] = useState(0);
   const lowHPQuipFiredRef = useRef(false);
+  const lethalQuipFiredRef = useRef(false);
   const combatStartQuipFiredRef = useRef(false);
 
   // Combat-start quip — fires once when the arena mounts with quips data.
@@ -922,6 +961,20 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     setQuipKey(k => k + 1);
   }, [bossQuips, quipOpponentHP, quipOpponentMaxHP]);
 
+  // Lethal quip — fires once when opponent crosses 15% HP (boss's last
+  // defiant words before death). Only fires if the low-HP quip already
+  // fired (prevents both hitting in the same frame on a spike).
+  useEffect(() => {
+    if (lethalQuipFiredRef.current) return;
+    if (!lowHPQuipFiredRef.current) return;
+    if (!bossQuips?.onLethal) return;
+    if (quipOpponentMaxHP <= 0) return;
+    if (quipOpponentHP / quipOpponentMaxHP > 0.15) return;
+    lethalQuipFiredRef.current = true;
+    setQuipText(bossQuips.onLethal);
+    setQuipKey(k => k + 1);
+  }, [bossQuips, quipOpponentHP, quipOpponentMaxHP]);
+
   /*
     Boss phases — mid-combat escalation. Watches opponent HP and fires
     each phase exactly once when its hpPercent threshold is crossed.
@@ -938,6 +991,16 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     setQuipKey,
     setFlash: setPhaseFlash,
   });
+
+  /*
+    Hero feud taunt — in PvP, when two heroes with a canonical rivalry
+    meet (Loki vs Thor, Odin vs Fenrir, etc.), fire a one-time taunt
+    quip 2s after combat start. Only in non-campaign mode (campaign has
+    its own boss quip system). Reads hero IDs from combatState once
+    available.
+  */
+  const feudFiredRef = useRef(false);
+  const feudTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     combatState,
@@ -992,6 +1055,27 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       setShowMatchupBanner(true);
     }
   }, [combatState]);
+
+  // Hero feud taunt — fires 2.5s after combat start in PvP if heroes
+  // have a canonical rivalry. Delayed so it doesn't collide with boss quips.
+  useEffect(() => {
+    if (feudFiredRef.current) return;
+    if (!combatState) return;
+    if (bossQuipMissionId) return; // campaign has its own quip system
+    const playerHero = combatState.player?.pet?.norseHeroId;
+    const opponentHero = combatState.opponent?.pet?.norseHeroId;
+    if (!playerHero || !opponentHero) return;
+    const feud = getHeroFeud(playerHero, opponentHero);
+    if (!feud) return;
+    feudFiredRef.current = true;
+    // Show tagline first, then the opponent's quip directed at the player
+    feudTimerRef.current = setTimeout(() => {
+      const opponentQuip = playerHero < opponentHero ? feud.bQuip : feud.aQuip;
+      setQuipText(opponentQuip);
+      setQuipKey(k => k + 1);
+    }, 2500);
+    return () => { if (feudTimerRef.current) clearTimeout(feudTimerRef.current); };
+  }, [combatState, bossQuipMissionId]);
 
   useEffect(() => {
     return () => { resetKingEvents(); };

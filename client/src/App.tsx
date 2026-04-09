@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { HashRouter, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { routes } from './lib/routes';
 import { Button } from './components/ui/button';
 import UnifiedCardSystem from "./game/components/UnifiedCardSystem";
@@ -247,6 +247,27 @@ function HomePage() {
   );
 }
 
+/*
+  ViewTransitionBridge — triggers the View Transitions API on route changes.
+  This pairs with the ::view-transition-old/new CSS in index.css to create
+  a subtle fade+scale between pages. Falls back silently on browsers that
+  don't support the API (Safari, older Firefox).
+*/
+function ViewTransitionBridge() {
+  const location = useLocation();
+  const prevPath = useRef(location.pathname);
+
+  useEffect(() => {
+    if (prevPath.current === location.pathname) return;
+    prevPath.current = location.pathname;
+    if (typeof document.startViewTransition === 'function') {
+      document.startViewTransition(() => {});
+    }
+  }, [location.pathname]);
+
+  return null;
+}
+
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
   static getDerivedStateFromError(error: Error) { return { error }; }
@@ -318,6 +339,7 @@ function App() {
         <GoldenCardFilter />
 
         <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ViewTransitionBridge />
           <Suspense fallback={<LoadingScreen />}>
             <Routes>
               <Route path={routes.home} element={<HomePage />} />

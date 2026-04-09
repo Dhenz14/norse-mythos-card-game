@@ -17,6 +17,7 @@ import { getNFTBridge } from '../../nft';
 import { useNFTCollection } from '../../nft/hooks';
 import NFTProvenanceViewer from './NFTProvenanceViewer';
 import SendCardModal from './SendCardModal';
+import { useCollectionMilestoneStore } from '../../stores/collectionMilestoneStore';
 import './collection.css';
 import '../styles/holoEffect.css';
 
@@ -116,6 +117,18 @@ export default function CollectionPage() {
 	useEffect(() => {
 		setPage(1);
 	}, [filterRarity, filterType, searchQuery]);
+
+	// Collection milestone check — runs when cards change
+	const checkMilestones = useCollectionMilestoneStore(s => s.checkMilestones);
+	useEffect(() => {
+		if (cards.length === 0) return;
+		const mythicCount = cards.filter(c => c.rarity === 'mythic').length;
+		const epicCount = cards.filter(c => c.rarity === 'epic').length;
+		const newlyEarned = checkMilestones(cards.length, mythicCount, epicCount);
+		for (const m of newlyEarned) {
+			showStatus(`${m.icon} ${m.name} — ${m.description}`, 'success', 5000);
+		}
+	}, [cards.length, checkMilestones]);
 
 	const loadLocalCollection = () => {
 		const allCards = cardRegistry.filter(c => c.collectible !== false);

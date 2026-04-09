@@ -269,6 +269,29 @@
 	letter-spacing: 1px;
 }
 
+/* ELO delta badge — ranked matches */
+.game-over-elo-delta {
+	text-align: center;
+	margin: 4px 0 8px;
+}
+
+.elo-delta-value {
+	font-family: 'Cinzel', Georgia, serif;
+	font-size: 22px;
+	font-weight: 900;
+	letter-spacing: 0.12em;
+}
+
+.elo-gain {
+	color: #22c55e;
+	text-shadow: 0 0 14px rgba(34, 197, 94, 0.5);
+}
+
+.elo-loss {
+	color: #ef4444;
+	text-shadow: 0 0 14px rgba(239, 68, 68, 0.5);
+}
+
 /* Action buttons */
 .game-over-actions {
 	display: flex;

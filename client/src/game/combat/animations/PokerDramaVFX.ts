@@ -641,10 +641,23 @@ export function playRagnarokVFX() {
 /**
  * Showdown damage delivery — damage number flies from winner to loser
  */
+/**
+ * Lethal slow-motion — when the showdown damage is a killing blow,
+ * the entire GSAP global timeline slows to 0.35x for 1.2s, then
+ * ramps back to 1x. Creates a cinematic "last hit" feeling.
+ */
+function lethalSlowMotion() {
+	gsap.globalTimeline.timeScale(0.35);
+	gsap.delayedCall(1.2, () => {
+		gsap.to(gsap.globalTimeline, { timeScale: 1, duration: 0.4, ease: 'power2.out' });
+	});
+}
+
 export function playShowdownDamageVFX(
 	damage: number,
 	isPlayerWinner: boolean,
-	handRankDiff: number
+	handRankDiff: number,
+	isLethal: boolean = false
 ) {
 	const container = getOrCreateContainer();
 
@@ -722,6 +735,11 @@ export function playShowdownDamageVFX(
 		delay: 0.5,
 		onComplete: () => { gsap.set(loser, { x: 0 }); }
 	});
+
+	// Lethal slow-motion — cinematic killing blow
+	if (isLethal) {
+		lethalSlowMotion();
+	}
 
 	// Crushing win — screen flash
 	if (isCrushing) {
