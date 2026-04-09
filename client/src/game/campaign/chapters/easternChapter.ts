@@ -221,6 +221,7 @@ export const easternChapter: CampaignChapter = {
 			prerequisiteIds: ['eastern-9'],
 			rewards: [{ type: 'rune', amount: 200 }, { type: 'card', cardId: 20001 }, { type: 'pack', amount: 5 }],
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-zeus', rook: 'hero-thor', bishop: 'hero-poseidon', knight: 'hero-loki' },
+			isChapterFinale: true,
 		},
 	],
 };

@@ -207,6 +207,7 @@ export const celticChapter: CampaignChapter = {
 			prerequisiteIds: ['celtic-9'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20111 }, { type: 'pack', amount: 2 }],
 			campaignArmy: { king: 'king-borr', queen: 'hero-odin', rook: 'hero-thor', bishop: 'hero-freya', knight: 'hero-loki' },
+			isChapterFinale: true,
 		},
 	],
 };

@@ -72,6 +72,9 @@ import { useRealmAnnouncement } from './hooks/useRealmAnnouncement';
 import { useHeroHealthEffects } from './hooks/useHeroHealthEffects';
 import { useAudio } from '../../lib/stores/useAudio';
 import { BossQuipBubble } from './components/BossQuipBubble';
+import { BossPhaseFlash } from './components/BossPhaseFlash';
+import type { BossPhaseFlash as BossPhaseFlashKind } from '../campaign/campaignTypes';
+import { useBossPhases } from './hooks/useBossPhases';
 import { useCampaignStore, getMission } from '../campaign';
 
 const SwordIcon = () => (
@@ -899,6 +902,23 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     setQuipKey(k => k + 1);
   }, [bossQuips, quipOpponentHP, quipOpponentMaxHP]);
 
+  /*
+    Boss phases — mid-combat escalation. Watches opponent HP and fires
+    each phase exactly once when its hpPercent threshold is crossed.
+    Phases drive THREE things: a quip (story), a screen flash (visual),
+    and a mechanical effect (gameplay). Defined per-mission via
+    mission.bossPhases. See campaignTypes.ts BossPhase for the schema
+    and useBossPhases.ts for the runner.
+  */
+  const [phaseFlash, setPhaseFlash] = useState<BossPhaseFlashKind | null>(null);
+  useBossPhases({
+    opponentCurrentHP: quipOpponentHP,
+    opponentMaxHP: quipOpponentMaxHP,
+    setQuipText,
+    setQuipKey,
+    setFlash: setPhaseFlash,
+  });
+
   const {
     combatState,
     isActive,
@@ -1282,6 +1302,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       <TargetingOverlay />
       <CardBurnOverlay />
       <ActionAnnouncement />
+      {/* Boss phase screen-flash overlay — fires from useBossPhases */}
+      <BossPhaseFlash flash={phaseFlash} />
       {heroBattlePopups.map(popup => (
         <HeroBattlePopup key={popup.id} popup={popup} onComplete={removeHeroBattlePopup} />
       ))}

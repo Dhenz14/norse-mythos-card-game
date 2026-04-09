@@ -167,3 +167,43 @@
 		transition: none;
 	}
 }
+
+/* ============================================================
+   CHAPTER FINALE TREATMENT
+   ============================================================
+   Applied via .mission-finale class on the chess root when
+   campaignMission.isChapterFinale === true. Adds:
+     - Pulsing crimson edge glow (inset box-shadow on the dim layer)
+     - Slightly stronger overall vignette so the eye focuses harder
+   The pulse uses opacity-only animation so the GPU can composite it
+   without paint cost.
+   ============================================================ */
+.ragnarok-chess-game.mission-finale::before {
+	background: linear-gradient(
+		180deg,
+		rgba(40, 4, 4, 0.62) 0%,
+		rgba(20, 2, 2, 0.40) 40%,
+		rgba(40, 4, 4, 0.55) 100%
+	);
+}
+
+.ragnarok-chess-game.mission-finale::after {
+	background: radial-gradient(
+		ellipse 75% 65% at 50% 50%,
+		transparent 38%,
+		rgba(80, 4, 4, 0.55) 78%,
+		rgba(120, 8, 8, 0.78) 100%
+	);
+	animation: finaleChessAuraPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes finaleChessAuraPulse {
+	0%, 100% { opacity: 0.85; }
+	50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ragnarok-chess-game.mission-finale::after {
+		animation: none;
+	}
+}

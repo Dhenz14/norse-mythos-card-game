@@ -97,6 +97,48 @@ export interface BossQuips {
 	onVictory?: string;
 }
 
+/*
+  BossPhase — a mid-combat escalation that fires when the opponent hero
+  drops below `hpPercent`. Each phase can do three things at once:
+    - say a quip (in-character story injection)
+    - flash the screen a tinted color (spectacle)
+    - apply a mechanical effect (gameplay escalation)
+
+  Phases fire ONCE per combat in HP-descending order. A boss with phases
+  at 75% / 50% / 25% triggers each as the opponent loses HP, in order.
+  This is the unified mechanism for both "Tier 2 mid-mission story
+  injection" and "Tier 2 mythic boss mechanics" — they're really the
+  same feature with three optional layers (story / visual / gameplay).
+
+  effects:
+    - 'heal_self N': opponent heroes restore N HP
+    - 'damage_player N': player hero takes N damage immediately
+    - 'buff_attack N': all opponent minions gain +N attack (rest of combat)
+    - 'summon_minion cardId': spawn the named card on the opponent side
+    - 'add_armor N': opponent gains N armor
+    - 'enrage': opponent's mana production speeds up (+1 max mana)
+
+  All effects optional. A phase with only `quip` is a pure story beat.
+  A phase with only `effect` is a pure mechanic. The combo is the win.
+*/
+export type BossPhaseEffect =
+	| { type: 'heal_self'; value: number }
+	| { type: 'damage_player'; value: number }
+	| { type: 'buff_attack'; value: number }
+	| { type: 'summon_minion'; cardId: number }
+	| { type: 'add_armor'; value: number }
+	| { type: 'enrage'; value: number };
+
+export type BossPhaseFlash = 'red' | 'gold' | 'blue' | 'green' | 'purple';
+
+export interface BossPhase {
+	hpPercent: number;          // 0-100. Phase fires when opponent HP <= this
+	quip?: string;              // Optional in-character line
+	flash?: BossPhaseFlash;     // Optional screen tint
+	effect?: BossPhaseEffect;   // Optional mechanical effect
+	description: string;        // Saga feed entry / debug log
+}
+
 export interface CampaignMission {
 	id: string;
 	chapterId: string;
@@ -117,6 +159,16 @@ export interface CampaignMission {
 	realm?: string;
 	campaignArmy?: CampaignArmy;
 	bossQuips?: BossQuips;
+	bossPhases?: BossPhase[];
+	/*
+	  When true, this mission gets the finale visual treatment:
+	    - "FINAL CONFRONTATION" badge on mission_intro
+	    - Pulsing crimson border on the chess phase
+	    - Pulsing crimson aura on the combat arena
+	    - Future: dedicated finale music track
+	  Set on the LAST mission of every chapter.
+	*/
+	isChapterFinale?: boolean;
 }
 
 export interface CampaignChapter {

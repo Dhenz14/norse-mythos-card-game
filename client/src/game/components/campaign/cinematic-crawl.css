@@ -275,6 +275,43 @@
 	margin-bottom: 8px;
 }
 
+/*
+  Chapter finale badge — only shows when mission.isChapterFinale === true.
+  Pulsing crimson, slightly elevated above the title. Drumbeat-style
+  pulse animation so it feels heavy and important.
+*/
+.mission-intro-finale-badge {
+	display: inline-block;
+	margin: 0 auto 14px;
+	padding: 6px 18px;
+	font-family: 'Cinzel', Georgia, serif;
+	font-size: 14px;
+	font-weight: 900;
+	letter-spacing: 0.32em;
+	text-transform: uppercase;
+	color: #ffe6e6;
+	background: linear-gradient(180deg, rgba(120, 8, 8, 0.85) 0%, rgba(80, 4, 4, 0.92) 100%);
+	border: 1px solid rgba(255, 60, 60, 0.7);
+	border-radius: 4px;
+	box-shadow:
+		0 0 24px rgba(255, 30, 30, 0.45),
+		0 0 0 1px rgba(0, 0, 0, 0.5),
+		inset 0 1px 0 rgba(255, 120, 120, 0.25);
+	text-shadow: 0 0 12px rgba(255, 60, 60, 0.8), 0 1px 2px rgba(0, 0, 0, 0.9);
+	animation: missionFinaleBadgePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes missionFinaleBadgePulse {
+	0%, 100% { box-shadow: 0 0 24px rgba(255, 30, 30, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 120, 120, 0.25); }
+	50% { box-shadow: 0 0 36px rgba(255, 50, 50, 0.65), 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 140, 140, 0.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mission-intro-finale-badge {
+		animation: none;
+	}
+}
+
 .mission-intro-title {
 	font-size: clamp(24px, 4vw, 36px);
 	font-weight: 700;

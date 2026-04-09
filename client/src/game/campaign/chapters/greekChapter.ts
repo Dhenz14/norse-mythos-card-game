@@ -219,6 +219,7 @@ export const greekChapter: CampaignChapter = {
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20002 }, { type: 'pack', amount: 2 }],
 			realm: 'tartarus',
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-demeter', rook: 'hero-poseidon', bishop: 'hero-hades', knight: 'hero-apollo' },
+			isChapterFinale: true,
 		},
 	],
 };

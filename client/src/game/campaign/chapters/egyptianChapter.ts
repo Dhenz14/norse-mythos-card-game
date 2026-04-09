@@ -207,6 +207,7 @@ export const egyptianChapter: CampaignChapter = {
 			prerequisiteIds: ['egyptian-9'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20116 }, { type: 'pack', amount: 2 }],
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-hel', rook: 'hero-tyr', bishop: 'hero-maat', knight: 'hero-khepri' },
+			isChapterFinale: true,
 		},
 	],
 };

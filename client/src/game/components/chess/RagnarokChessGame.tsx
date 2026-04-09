@@ -1054,11 +1054,15 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
 
   // Chess root carries the realm-{id} class so the chess phase board can
   // get its own thematic background per mission. CSS rules live in
-  // chess-realm-skins.css.
+  // chess-realm-skins.css. Chapter finale missions also get the
+  // .mission-finale class which adds a pulsing crimson border + slower
+  // music. CSS for finale lives in chess-realm-skins.css.
   const chessRealmClass = isCampaign && missionRealm ? `realm-${visualRealm}` : '';
+  const isFinale = isCampaign && campaignData?.mission?.isChapterFinale;
+  const finaleClass = isFinale ? 'mission-finale' : '';
 
   return (
-    <div className={`ragnarok-chess-game w-full h-full overflow-hidden ${chessRealmClass}`.trim()}>
+    <div className={`ragnarok-chess-game w-full h-full overflow-hidden ${chessRealmClass} ${finaleClass}`.trim()}>
       {/* Army Selection renders OUTSIDE AnimatePresence to avoid transform breaking fixed positioning */}
       {phase === 'army_selection' && (
         <ArmySelectionComponent onComplete={handleArmyComplete} onQuickStart={handleQuickStart} />
@@ -1101,6 +1105,20 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
             >
               {campaignData.chapter.name}
             </motion.p>
+            {/* Chapter finale missions get a special pulsing crimson badge
+                above the title. This is the only "this is THE last mission"
+                signal in the UI today; future spectacle work (special music,
+                multi-phase boss UI) will hang off the same isChapterFinale flag. */}
+            {campaignData.mission.isChapterFinale && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="mission-intro-finale-badge"
+              >
+                FINAL CONFRONTATION
+              </motion.div>
+            )}
             <motion.h2
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
