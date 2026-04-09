@@ -7,6 +7,8 @@ import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
 import type { BattlePopupAction, BattlePopupTarget } from '../components/HeroBattlePopup';
+import { useCampaignStore, getMission } from '../../campaign';
+import { profileToSmartAIConfig } from '../../campaign/campaignTypes';
 
 interface UsePokerAIOptions {
   combatState: PokerCombatState | null;
@@ -32,6 +34,38 @@ export function usePokerAI(options: UsePokerAIOptions): void {
   const watchdogTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cardGameMulliganActive = useGameStore(state => state.gameState?.mulligan?.active);
+
+  /*
+    Look up the active campaign mission to derive the AI config used in
+    combat. Outside of campaign mode (PvP, dev test, etc.) `currentMission`
+    is null and we fall back to SmartAI's DEFAULT_AI_CONFIG. Inside a
+    campaign mission, the mission's hand-tuned AIBehaviorProfile is run
+    through profileToSmartAIConfig() with the active difficulty so the
+    AI actually plays differently per boss AND per difficulty tier.
+
+    Before this fix, all 41 mission AI profiles were dead data —
+    getSmartAIAction was called with no config arg so DEFAULT_AI_CONFIG
+    won every time, regardless of mission or difficulty.
+
+    A ref captures the latest value so the 600ms-deferred AI decision
+    timer reads the current config when it fires, not the stale value
+    from when the effect was scheduled.
+  */
+  const currentMissionId = useCampaignStore(s => s.currentMission);
+  const currentDifficulty = useCampaignStore(s => s.currentDifficulty);
+  const aiConfigRef = useRef<{ aggressiveness: number; bluffFrequency: number; tightness: number } | undefined>(undefined);
+  useEffect(() => {
+    if (currentMissionId) {
+      const found = getMission(currentMissionId);
+      if (found?.mission?.aiProfile) {
+        aiConfigRef.current = profileToSmartAIConfig(found.mission.aiProfile, currentDifficulty);
+      } else {
+        aiConfigRef.current = undefined;
+      }
+    } else {
+      aiConfigRef.current = undefined;
+    }
+  }, [currentMissionId, currentDifficulty]);
 
   useEffect(() => {
     let lastSetTime = 0;
@@ -138,8 +172,10 @@ export function usePokerAI(options: UsePokerAIOptions): void {
           return;
         }
 
-        if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] AI making decision now');
-        const aiDecision = getSmartAIAction(freshState, false);
+        if (COMBAT_DEBUG.AI) {
+          debug.ai('[AI Effect] AI making decision now', { aiConfig: aiConfigRef.current });
+        }
+        const aiDecision = getSmartAIAction(freshState, false, aiConfigRef.current);
         if (COMBAT_DEBUG.AI) debug.ai('[AI Effect] AI decision:', aiDecision);
 
         adapter.performAction(aiPlayerId, aiDecision.action, aiDecision.betAmount);

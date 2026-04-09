@@ -102,6 +102,10 @@ export const norseChapter: CampaignChapter = {
 			aiHeroId: 'hero-thor', aiHeroClass: 'warrior',
 			aiDeckCardIds: [20001,20001,20002,20002,20003,20003,20004,20004,20005,20005,20010,20010,20011,20011,20012,20012,20013,20013,20014,20014,20015,20015,20020,20020,20021,20021,20022,20022,20023,20023],
 			aiProfile: AI_PROFILES.easy, bossRules: [], prerequisiteIds: [],
+			bossQuips: {
+				onCombatStart: 'You should not exist. The void has no place for warmth.',
+				onLowHP: 'Even ice... can be broken.',
+			},
 			rewards: [{ type: 'rune', amount: 20 }],
 			realm: 'ginnungagap',
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-sinmara', rook: 'hero-thryma', bishop: 'hero-ran', knight: 'hero-gormr' },
@@ -121,6 +125,10 @@ export const norseChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 30, description: 'Ymir has 130 health — primordial giant' },
 				{ type: 'start_with_minion', cardId: 20003, description: 'Ymir spawns frost-giant offspring at start' },
 			],
+			bossQuips: {
+				onCombatStart: 'I AM the cold. I AM the hunger. You are an echo that has not yet learned to fall silent.',
+				onLowHP: 'My blood will drown your world. EVEN MY DEATH... shapes the cosmos.',
+			},
 			prerequisiteIds: ['norse-1'],
 			rewards: [{ type: 'rune', amount: 40 }, { type: 'card', cardId: 20200 }],
 			realm: 'ginnungagap',
@@ -213,6 +221,10 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'bonus_draw', value: 1, description: 'Dark-elf lord draws an extra card each turn' },
 			],
+			bossQuips: {
+				onCombatStart: 'The light fades. The dokkalfar have whispered, and we have listened. Alfheim will know shadow.',
+				onLowHP: 'You strike at me — but the roots have already drunk deep.',
+			},
 			prerequisiteIds: ['norse-5'],
 			rewards: [{ type: 'rune', amount: 45 }, { type: 'eitr', amount: 50 }],
 			realm: 'alfheim',
@@ -287,6 +299,10 @@ export const norseChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Chaos starts with +2 mana crystals' },
 				{ type: 'bonus_draw', value: 1, description: 'The twilight draws an extra omen each turn' },
 			],
+			bossQuips: {
+				onCombatStart: 'I have foreseen the twilight of the gods. But you... you were never in my visions. Perhaps that is why you are here.',
+				onLowHP: 'My ravens have already carried word of this. Whatever you do here, the twilight still comes.',
+			},
 			prerequisiteIds: ['norse-8'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20300 }, { type: 'pack', amount: 2 }],
 			realm: 'midgard',

@@ -26,6 +26,7 @@ import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../utils/art/artMappin
 import { assetPath } from '../../utils/assetPath';
 import CinematicCrawl from '../campaign/CinematicCrawl';
 import './HeroPortraitEnhanced.css';
+import './chess-realm-skins.css';
 import '../campaign/cinematic-crawl.css';
 
 type GamePhase = 'army_selection' | 'cinematic' | 'mission_intro' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
@@ -55,6 +56,48 @@ const REALM_TEXT_COLORS: Record<string, string> = {
 	midgard: '#d4a574', chaos: '#ef4444', tartarus: '#dc2626',
 	mount_othrys: '#f59e0b', olympus: '#fcd34d',
 };
+
+/*
+  Maps every campaign mission realm to its closest visual realm. Norse
+  realms map to themselves; non-Norse mythologies use the closest Norse
+  proxy until we author dedicated art for each. The visual realm is what
+  drives both the chess board background and the combat arena board skin.
+  Used by RagnarokChessGame.tsx (this file) and consumed by realm-boards.css
+  + .ragnarok-chess-game.realm-{id} CSS rules below.
+*/
+const REALM_VISUAL_MAP: Record<string, string> = {
+	// Norse (direct art)
+	ginnungagap: 'ginnungagap', midgard: 'midgard', asgard: 'asgard',
+	niflheim: 'niflheim', muspelheim: 'muspelheim', helheim: 'helheim',
+	jotunheim: 'jotunheim', alfheim: 'alfheim', vanaheim: 'vanaheim',
+	svartalfheim: 'svartalfheim',
+	// Greek → Norse visual proxies
+	chaos: 'ginnungagap', gaia_earth: 'vanaheim', mount_othrys: 'jotunheim',
+	tartarus: 'helheim', olympus: 'asgard', cilicia: 'muspelheim',
+	phlegra: 'muspelheim', athens: 'midgard',
+	// Egyptian → Norse visual proxies
+	heliopolis: 'asgard', thebes: 'midgard', duat: 'helheim',
+	memphis: 'svartalfheim', abydos: 'midgard',
+	// Celtic → Norse visual proxies
+	tara: 'vanaheim', emain_macha: 'midgard', cruachan: 'jotunheim',
+	tir_na_nog: 'alfheim', mag_mell: 'alfheim',
+	// Eastern → Norse visual proxies
+	celestial_court: 'asgard', takamagahara: 'asgard',
+	yomi: 'helheim', mount_meru: 'jotunheim', diyu: 'muspelheim',
+};
+
+const REALM_DISPLAY_NAMES: Record<string, string> = {
+	ginnungagap: 'Ginnungagap', midgard: 'Midgard', asgard: 'Asgard',
+	niflheim: 'Niflheim', muspelheim: 'Muspelheim', helheim: 'Helheim',
+	jotunheim: 'Jotunheim', alfheim: 'Alfheim', vanaheim: 'Vanaheim',
+	svartalfheim: 'Svartalfheim',
+};
+
+/** Resolve a campaign mission realm to its visual realm id. Falls back to midgard. */
+function resolveVisualRealm(missionRealm: string | undefined | null): string {
+	if (!missionRealm) return 'midgard';
+	return REALM_VISUAL_MAP[missionRealm] || 'midgard';
+}
 
 interface HeroPortraitPanelProps {
   army: ArmySelectionType;
@@ -404,6 +447,29 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     : getDefaultArmySelection(),
     [isCampaign, campaignData]);
 
+  /*
+    Set the active realm in the global game store as soon as we know the
+    campaign mission. This drives both the chess board background skin
+    (.ragnarok-chess-game.realm-{id} CSS rules) and the combat arena skin
+    (.game-viewport.realm-{id} from realm-boards.css). Previously this
+    only fired inside handleCombatTriggered, which meant the chess board
+    rendered with no realm theming until pieces collided.
+  */
+  const missionRealm = isCampaign ? campaignData?.mission?.realm : undefined;
+  const visualRealm = useMemo(() => resolveVisualRealm(missionRealm), [missionRealm]);
+  useEffect(() => {
+    if (!isCampaign || !missionRealm) return;
+    useGameStore.getState().setGameState({
+      activeRealm: {
+        id: visualRealm,
+        name: REALM_DISPLAY_NAMES[visualRealm] || visualRealm,
+        description: '',
+        owner: 'player',
+        effects: [],
+      }
+    });
+  }, [isCampaign, missionRealm, visualRealm]);
+
   const createPetFromChessPiece = useCallback((
     piece: typeof boardState.pieces[0],
     army: ArmySelectionType
@@ -514,7 +580,11 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     bossRulesInitRef.current = true;
 
     const rules = campaignData.mission.bossRules;
-    const difficultyBonus = campaignDifficulty === 'mythic' ? 40 : campaignDifficulty === 'heroic' ? 20 : 0;
+    // Mythic doubles its HP bonus and Heroic gets a 50% bump on top of the
+    // baseline. Combined with profileToSmartAIConfig() which dials up the
+    // AI's aggression on higher difficulties, mythic should now feel like
+    // a real boss fight, not just "more HP." See campaignTypes.ts.
+    const difficultyBonus = campaignDifficulty === 'mythic' ? 60 : campaignDifficulty === 'heroic' ? 30 : 0;
     const bossExtraHealth = rules.find(r => r.type === 'extra_health')?.value ?? 0;
     const totalExtraHealth = bossExtraHealth + difficultyBonus;
 
@@ -711,47 +781,9 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     const attackerKingId = attackerArmy.king?.id;
     const defenderKingId = defenderArmy.king?.id;
     
-    // Set realm background from campaign mission (cosmetic only, no gameplay effects)
-    if (campaignData?.mission?.realm) {
-      const missionRealm = campaignData.mission.realm;
-      // Norse realms have dedicated art; non-Norse map to closest visual match
-      const REALM_VISUAL_MAP: Record<string, string> = {
-        // Norse (direct art)
-        ginnungagap: 'ginnungagap', midgard: 'midgard', asgard: 'asgard',
-        niflheim: 'niflheim', muspelheim: 'muspelheim', helheim: 'helheim',
-        jotunheim: 'jotunheim', alfheim: 'alfheim', vanaheim: 'vanaheim',
-        svartalfheim: 'svartalfheim',
-        // Greek → Norse visual proxies
-        chaos: 'ginnungagap', gaia_earth: 'vanaheim', mount_othrys: 'jotunheim',
-        tartarus: 'helheim', olympus: 'asgard', cilicia: 'muspelheim',
-        phlegra: 'muspelheim', athens: 'midgard',
-        // Egyptian → Norse visual proxies
-        heliopolis: 'asgard', thebes: 'midgard', duat: 'helheim',
-        memphis: 'svartalfheim', abydos: 'midgard',
-        // Celtic → Norse visual proxies
-        tara: 'vanaheim', emain_macha: 'midgard', cruachan: 'jotunheim',
-        tir_na_nog: 'alfheim', mag_mell: 'alfheim',
-        // Eastern → Norse visual proxies
-        celestial_court: 'asgard', takamagahara: 'asgard',
-        yomi: 'helheim', mount_meru: 'jotunheim', diyu: 'muspelheim',
-      };
-      const REALM_NAMES: Record<string, string> = {
-        ginnungagap: 'Ginnungagap', midgard: 'Midgard', asgard: 'Asgard',
-        niflheim: 'Niflheim', muspelheim: 'Muspelheim', helheim: 'Helheim',
-        jotunheim: 'Jotunheim', alfheim: 'Alfheim', vanaheim: 'Vanaheim',
-        svartalfheim: 'Svartalfheim',
-      };
-      const visualRealm = REALM_VISUAL_MAP[missionRealm] || 'midgard';
-      useGameStore.getState().setGameState({
-        activeRealm: {
-          id: visualRealm,
-          name: REALM_NAMES[visualRealm] || visualRealm,
-          description: '',
-          owner: 'player',
-          effects: [],
-        }
-      });
-    }
+    // (Realm background is now set earlier — see useEffect that watches
+    //  campaignData.mission.realm. The chess phase needs the realm class
+    //  applied before combat starts, not just at piece collision.)
 
     // FIX: Human player should ALWAYS be in the "player" slot for combat UI
     // When AI attacks human, swap parameters so human remains as "player"
@@ -1020,8 +1052,13 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     playSoundEffect('card_draw');
   }, [boardState.pieces, playSoundEffect]);
 
+  // Chess root carries the realm-{id} class so the chess phase board can
+  // get its own thematic background per mission. CSS rules live in
+  // chess-realm-skins.css.
+  const chessRealmClass = isCampaign && missionRealm ? `realm-${visualRealm}` : '';
+
   return (
-    <div className="ragnarok-chess-game w-full h-full overflow-hidden">
+    <div className={`ragnarok-chess-game w-full h-full overflow-hidden ${chessRealmClass}`.trim()}>
       {/* Army Selection renders OUTSIDE AnimatePresence to avoid transform breaking fixed positioning */}
       {phase === 'army_selection' && (
         <ArmySelectionComponent onComplete={handleArmyComplete} onQuickStart={handleQuickStart} />

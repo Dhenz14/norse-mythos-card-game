@@ -70,6 +70,9 @@ import { usePokerCardClickHandlers } from './hooks/usePokerCardClickHandlers';
 import { usePokerKeyboardShortcuts } from './hooks/usePokerKeyboardShortcuts';
 import { useRealmAnnouncement } from './hooks/useRealmAnnouncement';
 import { useHeroHealthEffects } from './hooks/useHeroHealthEffects';
+import { useAudio } from '../../lib/stores/useAudio';
+import { BossQuipBubble } from './components/BossQuipBubble';
+import { useCampaignStore, getMission } from '../campaign';
 
 const SwordIcon = () => (
 	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -156,6 +159,9 @@ interface UnifiedCombatArenaProps {
   onCardPlay?: (card: any, target?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
   registerCardPosition?: (card: any, position: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
   battlefieldRef?: React.RefObject<HTMLDivElement | null>;
+  // Boss dialogue (campaign mode only) — owned by parent RagnarokCombatArena
+  bossQuipText?: string | null;
+  bossQuipKey?: number;
 }
 
 const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
@@ -167,7 +173,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   onHeroPowerClick, onWeaponUpgradeClick, isWeaponUpgraded = false,
   heroPowerTargeting, executeHeroPowerEffect,
   handCards = [], handCurrentMana = 0, handIsPlayerTurn = false,
-  onCardPlay, registerCardPosition, battlefieldRef: externalBattlefieldRef
+  onCardPlay, registerCardPosition, battlefieldRef: externalBattlefieldRef,
+  bossQuipText = null, bossQuipKey = 0,
 }) => {
   const noopRegisterCardPosition = useCallback(() => {}, []);
 
@@ -449,6 +456,18 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       <div className={`unified-opponent-hero ${shakingTargets.has('opponent-hero') ? 'damage-shake damage-flash' : ''} ${!isPlayerTurn ? 'turn-active' : ''}`}>
         {opponentPet && (
           <div data-hero-role="opponent" className="opponent-hero-container">
+            {/* Boss dialogue bubble — campaign mode only, fires on combat
+                start and when opponent HP drops below 50%. Anchored left
+                of the hero portrait so it doesn't cover the face.
+                Text + key are owned by parent RagnarokCombatArena and
+                threaded through props because the campaign store + low-HP
+                effects can't be hooked from inside this presentational
+                subcomponent (it doesn't see useCampaignStore directly). */}
+            <BossQuipBubble
+              text={bossQuipText}
+              speakerName={opponentPet?.name}
+              triggerKey={bossQuipKey}
+            />
             <BattlefieldHero
               pet={enrichedOpponentPet}
               hpCommitted={opponentHpCommitted}
@@ -809,6 +828,76 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   useGameLogIntegration();
   useEventAnimationBridge();
   const resetKingEvents = useKingPassiveEventStore(s => s.reset);
+
+  /*
+    Combat music — start `battle_theme` for the duration of the combat
+    arena, swap to `victory`/`defeat` on game over, stop on unmount.
+    The Howler tracks are loaded with preload:false and wrapped in
+    try/catch in useAudio.tsx, so this is a safe no-op if the mp3 file
+    doesn't exist on disk yet.
+  */
+  const playBackgroundMusic = useAudio(s => s.playBackgroundMusic);
+  const stopBackgroundMusic = useAudio(s => s.stopBackgroundMusic);
+  useEffect(() => {
+    playBackgroundMusic('battle_theme');
+    return () => {
+      stopBackgroundMusic();
+    };
+  }, [playBackgroundMusic, stopBackgroundMusic]);
+
+  /*
+    Boss quips — read the active campaign mission's optional bossQuips
+    field, then fire a transient bubble over the opponent hero portrait
+    on key combat events:
+      - Combat start (mount): onCombatStart
+      - Opponent HP crosses 50%: onLowHP (one-shot per combat)
+    Outside campaign mode (PvP, dev test), currentMissionId is null and
+    no bubble ever shows.
+
+    quipText drives BossQuipBubble; quipKey makes consecutive identical
+    quips re-trigger the animation.
+  */
+  const bossQuipMissionId = useCampaignStore(s => s.currentMission);
+  const bossQuips = useMemo(() => {
+    if (!bossQuipMissionId) return undefined;
+    const found = getMission(bossQuipMissionId);
+    return found?.mission?.bossQuips;
+  }, [bossQuipMissionId]);
+  const [quipText, setQuipText] = useState<string | null>(null);
+  const [quipKey, setQuipKey] = useState(0);
+  const lowHPQuipFiredRef = useRef(false);
+  const combatStartQuipFiredRef = useRef(false);
+
+  // Combat-start quip — fires once when the arena mounts with quips data.
+  useEffect(() => {
+    if (combatStartQuipFiredRef.current) return;
+    if (!bossQuips?.onCombatStart) return;
+    combatStartQuipFiredRef.current = true;
+    setQuipText(bossQuips.onCombatStart);
+    setQuipKey(k => k + 1);
+  }, [bossQuips]);
+
+  // Low-HP quip — fires once when opponent crosses 50% HP.
+  // Reads opponent HP directly from gameStore here (the canonical
+  // destructure happens later in the file but we need it earlier so the
+  // quip can fire as soon as the threshold is crossed).
+  const quipOpponentHP = useGameStore(state => {
+    const p = state.gameState?.players?.opponent;
+    return p ? (p.heroHealth ?? p.health) : 100;
+  });
+  const quipOpponentMaxHP = useGameStore(state => {
+    const p = state.gameState?.players?.opponent;
+    return p?.maxHealth ?? 100;
+  });
+  useEffect(() => {
+    if (lowHPQuipFiredRef.current) return;
+    if (!bossQuips?.onLowHP) return;
+    if (quipOpponentMaxHP <= 0) return;
+    if (quipOpponentHP / quipOpponentMaxHP > 0.5) return;
+    lowHPQuipFiredRef.current = true;
+    setQuipText(bossQuips.onLowHP);
+    setQuipKey(k => k + 1);
+  }, [bossQuips, quipOpponentHP, quipOpponentMaxHP]);
 
   const {
     combatState,
@@ -1185,6 +1274,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             onCardPlay={sharedHandleCardPlay}
             registerCardPosition={sharedRegisterCardPosition}
             battlefieldRef={sharedBattlefieldRef}
+            bossQuipText={quipText}
+            bossQuipKey={quipKey}
           />
         </div>
 

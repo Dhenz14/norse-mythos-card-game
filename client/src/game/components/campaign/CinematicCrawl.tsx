@@ -9,6 +9,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CinematicIntro } from '../../campaign/campaignTypes';
+import { useAudio } from '../../../lib/stores/useAudio';
 import './cinematic-crawl.css';
 
 interface CinematicCrawlProps {
@@ -19,6 +20,25 @@ interface CinematicCrawlProps {
 const CinematicCrawl: React.FC<CinematicCrawlProps> = ({ intro, onComplete }) => {
 	const [phase, setPhase] = useState<'prelude' | 'title' | 'scenes' | 'done'>('prelude');
 	const [sceneIndex, setSceneIndex] = useState(0);
+	const playBackgroundMusic = useAudio(s => s.playBackgroundMusic);
+	const stopBackgroundMusic = useAudio(s => s.stopBackgroundMusic);
+
+	/*
+	  Cinematic music — play `battle_theme` for the duration of the chapter
+	  intro and stop when the cinematic ends. The CinematicScene.musicCue
+	  field stores prose descriptions ("Low ominous strings, distant horns")
+	  not enum values, so we don't try to map per-scene yet — that requires
+	  authoring a new field. The Howler tracks are loaded with preload:false
+	  and wrapped in try/catch, so this is a no-op if the mp3 file doesn't
+	  exist on disk (currently true — only background.mp3 ships with the
+	  build, the named mp3s are placeholders).
+	*/
+	useEffect(() => {
+		playBackgroundMusic('battle_theme');
+		return () => {
+			stopBackgroundMusic();
+		};
+	}, [playBackgroundMusic, stopBackgroundMusic]);
 
 	const advanceScene = useCallback(() => {
 		setSceneIndex(prev => {

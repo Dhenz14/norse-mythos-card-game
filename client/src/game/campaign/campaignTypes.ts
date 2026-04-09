@@ -9,6 +9,45 @@ export interface AIBehaviorProfile {
 	heroPowerPriority?: number;
 }
 
+/*
+  Adapt a per-mission AIBehaviorProfile to the AIConfig shape that
+  SmartAI.getSmartAIAction() consumes. SmartAI's AIConfig is intentionally
+  small (3 fields) and gets all 41 hand-tuned mission profiles to act
+  through a uniform interface.
+
+  Difficulty multiplier:
+    normal  → x1.00 (profile as authored)
+    heroic  → x1.10 (slightly more aggressive)
+    mythic  → x1.20 (full aggression / less tightness)
+
+  Mythic also reduces tightness by 10% so the AI plays more hands and
+  punishes the player who tries to fold-out a tough boss. Aggression is
+  clamped to [0, 1] so we never overflow the SmartAI math.
+*/
+export type SmartAIConfigShape = {
+	aggressiveness: number;
+	bluffFrequency: number;
+	tightness: number;
+};
+
+const clamp01 = (n: number): number => Math.max(0, Math.min(1, n));
+
+export function profileToSmartAIConfig(
+	profile: AIBehaviorProfile,
+	difficulty: Difficulty,
+): SmartAIConfigShape {
+	const aggressionMult =
+		difficulty === 'mythic' ? 1.20 : difficulty === 'heroic' ? 1.10 : 1.00;
+	const tightnessMult =
+		difficulty === 'mythic' ? 0.90 : difficulty === 'heroic' ? 0.95 : 1.00;
+
+	return {
+		aggressiveness: clamp01(profile.aggression * aggressionMult),
+		bluffFrequency: clamp01(profile.bluffFrequency),
+		tightness: clamp01(profile.tightness * tightnessMult),
+	};
+}
+
 export interface CinematicScene {
 	narration: string;
 	visualCue?: string;
@@ -43,6 +82,21 @@ export interface CampaignArmy {
 	knight?: string;
 }
 
+/*
+  Boss quips — short in-character lines the boss says during combat.
+  Optional. When set, BossQuipBubble pops over the opponent hero portrait
+  on key events: combat start, low HP threshold (50%), lethal incoming.
+  All fields optional so existing missions continue to work without
+  any quips authored. Order of preference for content: boss-specific
+  (Ymir roars, Loki taunts, Odin is laconic) > generic mission lines.
+*/
+export interface BossQuips {
+	onCombatStart?: string;
+	onLowHP?: string;
+	onLethal?: string;
+	onVictory?: string;
+}
+
 export interface CampaignMission {
 	id: string;
 	chapterId: string;
@@ -62,6 +116,7 @@ export interface CampaignMission {
 	rewards: CampaignReward[];
 	realm?: string;
 	campaignArmy?: CampaignArmy;
+	bossQuips?: BossQuips;
 }
 
 export interface CampaignChapter {
