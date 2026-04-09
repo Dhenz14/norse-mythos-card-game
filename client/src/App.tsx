@@ -34,6 +34,9 @@ const ExplorerPage = lazy(() => import('./game/components/explorer/ExplorerPage'
 const AdminPanel = lazy(() => import('./game/components/admin/AdminPanel'));
 const StarterPackCeremony = lazy(() => import('./game/components/StarterPackCeremony'));
 const DuatClaimPopup = lazy(() => import('./game/components/DuatClaimPopup'));
+const FactionPledgePopup = lazy(() =>
+	import('./game/pvp').then(m => ({ default: m.FactionPledgePopup }))
+);
 
 // PWA install prompt
 let deferredInstallPrompt: Event | null = null;
@@ -346,6 +349,7 @@ function App() {
           </Suspense>
         </HashRouter>
         <Suspense fallback={null}><DuatClaimPopup /></Suspense>
+        <Suspense fallback={null}><FactionPledgePopup /></Suspense>
       </CardTransformProvider>
     </ErrorBoundary>
   );

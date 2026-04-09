@@ -6,6 +6,7 @@ import { getMatchesByAccount } from '../../../data/blockchain/replayDB';
 import type { HiveMatchResult } from '../../../data/schemas/HiveTypes';
 import { getSeasonInfo, formatTimeRemaining } from '../../utils/seasonUtils';
 import { useSeasonStore } from '../../stores/seasonStore';
+import { getYggdrasilRank } from '../../pvp';
 import './ladder.css';
 
 interface LadderEntry {
@@ -165,6 +166,16 @@ export default function RankedLadderPage() {
 						<div>
 							<span className="ladder-stat-label">Your Rank</span>
 							<div className="ladder-stat-value text-white text-lg">#{myRank}</div>
+						</div>
+						<div>
+							<span className="ladder-stat-label">Realm</span>
+							<div
+								className="ladder-stat-value text-lg"
+								style={{ color: getYggdrasilRank(myEntry.elo).color }}
+								title={getYggdrasilRank(myEntry.elo).flavor}
+							>
+								{getYggdrasilRank(myEntry.elo).name}
+							</div>
 						</div>
 						<div>
 							<span className="ladder-stat-label">ELO</span>

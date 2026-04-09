@@ -186,6 +186,30 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 	const hasRealOpponent = opponentUsername !== 'ai-opponent' && HIVE_USERNAME_RE.test(opponentUsername);
 	const matchType = (isP2PMatch && hasRealOpponent) ? 'ranked' as const : 'casual' as const;
 
+	/*
+	  PvP narrative wrapper — record this match in the local rivalry
+	  store and (for ranked) the faction win/loss tally. Lets the
+	  matchmaking lobby display "Rematch! 3-2" against returning
+	  opponents and the faction page show personal contribution.
+
+	  Only fires for matches with a real opponent (not AI). Wrapped in
+	  a dynamic import so the BlockchainSubscriber doesn't carry a hard
+	  dependency on the pvp module — if it fails to load, packaging
+	  continues unaffected.
+	*/
+	if (hasRealOpponent && gameState.winner) {
+		const playerWon = gameState.winner === 'player';
+		const opponentDisplayName = gameState.players.opponent.heroId ?? opponentUsername;
+		import('../pvp')
+			.then(mod => {
+				mod.useRivalryStore.getState().recordResult(opponentUsername, opponentDisplayName, playerWon);
+				if (matchType === 'ranked') {
+					mod.useFactionStore.getState().recordPvpResult(playerWon);
+				}
+			})
+			.catch(err => debug.warn('[BlockchainSubscriber] PvP narrative tracking failed:', err));
+	}
+
 	// Extract card UIDs and rarities from live game state
 	const playerCardUids = extractCardUidsFromGameState('player');
 	const opponentCardUids = extractCardUidsFromGameState('opponent');
