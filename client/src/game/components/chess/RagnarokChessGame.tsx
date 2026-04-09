@@ -27,6 +27,7 @@ import { assetPath } from '../../utils/assetPath';
 import CinematicCrawl from '../campaign/CinematicCrawl';
 import './HeroPortraitEnhanced.css';
 import './chess-realm-skins.css';
+import './cgo-result.css';
 import '../campaign/cinematic-crawl.css';
 
 type GamePhase = 'army_selection' | 'cinematic' | 'mission_intro' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
@@ -422,6 +423,16 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   const [bossRulesApplied, setBossRulesApplied] = useState(false);
   const gameEndProcessedRef = useRef(false);
   const gameOverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /*
+    game_over has three internal sub-phases for campaign missions:
+      'cinematic' — playing victoryCinematic / defeatCinematic if authored
+      'result'    — the standard result card (VICTORY / DEFEAT + narrative + rewards)
+      'bridge'    — playing storyBridge scenes before returning to the map
+    Non-campaign matches always sit in 'result' immediately.
+  */
+  type GameOverSubPhase = 'cinematic' | 'result' | 'bridge';
+  const [gameOverSubPhase, setGameOverSubPhase] = useState<GameOverSubPhase>('result');
 
   const {
     boardState,
@@ -938,6 +949,15 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
           debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId}`);
         }
       }
+      // Decide which sub-phase of game_over to enter:
+      //   - victory + has victoryCinematic → 'cinematic' (play it first)
+      //   - defeat + has defeatCinematic   → 'cinematic'
+      //   - else → 'result' immediately
+      const wonCampaign = winner === 'player' && isCampaign && campaignData;
+      const lostCampaign = winner !== 'player' && isCampaign && campaignData;
+      const hasVictoryCinematic = wonCampaign && (campaignData?.mission?.victoryCinematic?.length ?? 0) > 0;
+      const hasDefeatCinematic = lostCampaign && (campaignData?.mission?.defeatCinematic?.length ?? 0) > 0;
+      setGameOverSubPhase(hasVictoryCinematic || hasDefeatCinematic ? 'cinematic' : 'result');
       setPhase('game_over');
       if (onGameEnd) {
         onGameEnd(winner);
@@ -1015,10 +1035,27 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     setPhase('army_selection');
   }, [resetBoard, isCampaign, clearCurrent]);
 
+  /*
+    "Back to Campaign" — if the player won AND the mission has an authored
+    storyBridge, play those scenes before navigating to the map. The bridge
+    is the connective tissue between mission N and N+1: "Years pass.
+    Yggdrasil drinks deep from the well of Urd..." Falls through directly
+    on missions without a bridge or on defeat.
+  */
   const handleBackToCampaign = useCallback(() => {
+    if (
+      isCampaign &&
+      campaignData &&
+      boardState.gameStatus === 'player_wins' &&
+      gameOverSubPhase === 'result' &&
+      (campaignData.mission.storyBridge?.length ?? 0) > 0
+    ) {
+      setGameOverSubPhase('bridge');
+      return;
+    }
     clearCurrent();
     navigate(routes.campaign);
-  }, [clearCurrent, navigate]);
+  }, [clearCurrent, navigate, isCampaign, campaignData, boardState.gameStatus, gameOverSubPhase]);
 
   const handleRetryMission = useCallback(() => {
     resetBoard();
@@ -1203,69 +1240,173 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
           </motion.div>
         )}
 
-        {phase === 'game_over' && (
-          <motion.div
-            key="gameover"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full h-full flex flex-col items-center justify-center"
-          >
-            <div className={`text-6xl font-bold mb-4 ${
-              boardState.gameStatus === 'player_wins' ? 'text-green-400' : 'text-red-400'
-            }`}>
-              {boardState.gameStatus === 'player_wins' ? 'VICTORY!' : 'DEFEAT'}
-            </div>
+        {phase === 'game_over' && (() => {
+          const isVictory = boardState.gameStatus === 'player_wins';
+          // Sub-phase 1: cinematic — fires only if the mission authored one.
+          // Skip handler advances to result card.
+          if (gameOverSubPhase === 'cinematic' && isCampaign && campaignData) {
+            const cinematicScenes = isVictory
+              ? campaignData.mission.victoryCinematic
+              : campaignData.mission.defeatCinematic;
+            if (cinematicScenes && cinematicScenes.length > 0) {
+              const syntheticIntro = {
+                title: isVictory ? 'Victory' : 'Twilight',
+                style: campaignData.chapter.cinematicIntro?.style ?? 'A Norse Saga',
+                scenes: cinematicScenes,
+              };
+              return (
+                <CinematicCrawl
+                  key="gameover-cinematic"
+                  intro={syntheticIntro}
+                  onComplete={() => setGameOverSubPhase('result')}
+                  openingMusic={isVictory ? 'aesir_triumph' : 'twilight_horn'}
+                />
+              );
+            }
+            // Defensive: no scenes after all → drop into result.
+            setGameOverSubPhase('result');
+            return null;
+          }
 
-            {isCampaign && campaignData ? (
-              <>
-                <p className="text-lg text-gray-300 mb-2 max-w-lg text-center italic">
-                  {boardState.gameStatus === 'player_wins'
-                    ? (campaignData.mission.narrativeVictory || campaignData.mission.narrativeAfter)
-                    : (campaignData.mission.narrativeDefeat || 'The enemy stands triumphant. But your story is not yet over...')}
-                </p>
-                {boardState.gameStatus === 'player_wins' && campaignData.mission.rewards.length > 0 && (
-                  <div className="flex gap-3 mb-6 mt-2">
-                    {campaignData.mission.rewards.map((r, i) => (
-                      <div key={i} className="px-3 py-1 bg-yellow-900/40 border border-yellow-700/50 rounded-lg text-yellow-300 text-sm">
-                        +{r.amount || 1} {r.type}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div className="flex gap-4 mt-4">
-                  <button
-                    onClick={handleBackToCampaign}
-                    className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg text-lg"
+          // Sub-phase 3: story bridge — between mission N and N+1.
+          if (gameOverSubPhase === 'bridge' && isCampaign && campaignData?.mission?.storyBridge?.length) {
+            const syntheticBridge = {
+              title: campaignData.chapter.name,
+              style: campaignData.chapter.cinematicIntro?.style ?? 'A Norse Saga',
+              scenes: campaignData.mission.storyBridge,
+            };
+            return (
+              <CinematicCrawl
+                key="gameover-bridge"
+                intro={syntheticBridge}
+                onComplete={() => {
+                  clearCurrent();
+                  navigate(routes.campaign);
+                }}
+                openingMusic="forge_anvil"
+              />
+            );
+          }
+
+          // Sub-phase 2 (default): the result card.
+          return (
+            <motion.div
+              key="gameover-result"
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="cgo-result"
+            >
+              <motion.div
+                className={`cgo-title ${isVictory ? 'victory' : 'defeat'}`}
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {isVictory ? 'VICTORY' : 'DEFEAT'}
+              </motion.div>
+
+              {isCampaign && campaignData ? (
+                <>
+                  {/*
+                    Two-tier narrative: short subtitle line (the "headline")
+                    followed by the longer narrativeAfter epilogue scroll. The
+                    subtitle uses narrativeVictory/narrativeDefeat (one sentence
+                    of impact); the scroll uses narrativeAfter (the full
+                    paragraph of consequence). On missions where only one is
+                    authored, fall back to a sensible split.
+                  */}
+                  <motion.p
+                    className="cgo-subtitle"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.0, duration: 0.8 }}
                   >
-                    Back to Campaign
-                  </button>
-                  {boardState.gameStatus !== 'player_wins' && (
-                    <button
-                      onClick={handleRetryMission}
-                      className="px-6 py-3 bg-red-700 hover:bg-red-600 text-white font-bold rounded-lg text-lg"
+                    {isVictory
+                      ? (campaignData.mission.narrativeVictory ?? '')
+                      : (campaignData.mission.narrativeDefeat ?? 'The enemy stands triumphant. But your story is not yet over...')}
+                  </motion.p>
+
+                  {/*
+                    The full epilogue paragraph — narrativeAfter. Authored on
+                    every campaign mission. This is the connective tissue
+                    between "you won the fight" and "what it meant for the
+                    world." Renders below the subtitle in a scrollable box.
+                  */}
+                  {isVictory && campaignData.mission.narrativeAfter && (
+                    <motion.div
+                      className="cgo-narrative-scroll"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      Retry Mission
-                    </button>
+                      <div className="cgo-narrative-divider">
+                        <span>&#x16A0;</span>
+                      </div>
+                      <p>{campaignData.mission.narrativeAfter}</p>
+                    </motion.div>
                   )}
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="text-xl text-gray-300 mb-8">
-                  {boardState.gameStatus === 'player_wins'
-                    ? 'Checkmate! The enemy King has no escape!'
-                    : 'Checkmate... Your King has been cornered.'}
-                </p>
-                <button
-                  onClick={handleRestart}
-                  className="px-8 py-4 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg text-xl"
-                >
-                  Play Again
-                </button>
-              </>
-            )}
-          </motion.div>
-        )}
+
+                  {isVictory && campaignData.mission.rewards.length > 0 && (
+                    <motion.div
+                      className="cgo-rewards"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 2.2, duration: 0.8 }}
+                    >
+                      {campaignData.mission.rewards.map((r, i) => (
+                        <div key={i} className="cgo-reward-pill">
+                          +{r.amount || 1} {r.type}
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+
+                  <motion.div
+                    className="cgo-buttons"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 2.6, duration: 0.6 }}
+                  >
+                    <button
+                      type="button"
+                      onClick={handleBackToCampaign}
+                      className="cgo-btn-primary"
+                    >
+                      {isVictory && (campaignData.mission.storyBridge?.length ?? 0) > 0
+                        ? 'Continue the Saga'
+                        : 'Back to Campaign'}
+                    </button>
+                    {!isVictory && (
+                      <button
+                        type="button"
+                        onClick={handleRetryMission}
+                        className="cgo-btn-retry"
+                      >
+                        Retry Mission
+                      </button>
+                    )}
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  <p className="cgo-subtitle">
+                    {isVictory
+                      ? 'Checkmate! The enemy King has no escape.'
+                      : 'Checkmate... Your King has been cornered.'}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleRestart}
+                    className="cgo-btn-primary"
+                  >
+                    Play Again
+                  </button>
+                </>
+              )}
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </div>
   );

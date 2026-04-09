@@ -1413,9 +1413,9 @@ export const createPokerCombatSlice: StateCreator<
   addPlayerArmor: (amount: number) => {
     const state = get();
     if (!state.pokerCombatState) return;
-    
+
     const currentArmor = state.pokerCombatState.player.heroArmor || 0;
-    
+
     set({
       pokerCombatState: {
         ...state.pokerCombatState,
@@ -1424,6 +1424,28 @@ export const createPokerCombatSlice: StateCreator<
           heroArmor: currentArmor + amount
         }
       }
+    });
+  },
+
+  /*
+    Mirror of addPlayerArmor for the opponent side. Wired specifically
+    for boss-phase `add_armor` effects — bosses harden mid-fight as a
+    desperation move or signature mechanic. Negative values clamp at
+    zero so callers can also use this to strip armor (Ragnarok-tier
+    spells, divine intervention, etc.).
+  */
+  addOpponentArmor: (amount: number) => {
+    const state = get();
+    if (!state.pokerCombatState) return;
+    const currentArmor = state.pokerCombatState.opponent.heroArmor || 0;
+    set({
+      pokerCombatState: {
+        ...state.pokerCombatState,
+        opponent: {
+          ...state.pokerCombatState.opponent,
+          heroArmor: Math.max(0, currentArmor + amount),
+        },
+      },
     });
   },
 

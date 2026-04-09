@@ -21,6 +21,14 @@ interface BossQuipBubbleProps {
 	text: string | null | undefined;
 	/** Speaker's display name (rendered above the line, smaller). */
 	speakerName?: string;
+	/**
+	 * Optional speaker portrait URL. When set, a small circular portrait
+	 * renders to the left of the bubble, anchoring the dialogue to a
+	 * face. Falls back to no portrait if absent. Use the boss hero art —
+	 * we already resolve hero portraits via resolveHeroPortrait() at
+	 * call sites, so this is just a path in the props.
+	 */
+	speakerPortrait?: string;
 	/** Auto-dismiss duration in ms. Default 4500. */
 	duration?: number;
 	/**
@@ -35,6 +43,7 @@ interface BossQuipBubbleProps {
 export const BossQuipBubble: React.FC<BossQuipBubbleProps> = ({
 	text,
 	speakerName,
+	speakerPortrait,
 	duration = 4500,
 	triggerKey = 0,
 }) => {
@@ -59,12 +68,21 @@ export const BossQuipBubble: React.FC<BossQuipBubbleProps> = ({
 					animate={{ opacity: 1, y: 0, scale: 1 }}
 					exit={{ opacity: 0, y: -6, scale: 0.96 }}
 					transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-					className="boss-quip-bubble"
+					className={`boss-quip-bubble ${speakerPortrait ? 'with-portrait' : ''}`}
 				>
-					{speakerName && (
-						<div className="boss-quip-speaker">{speakerName}</div>
+					{speakerPortrait && (
+						<img
+							src={speakerPortrait}
+							alt={speakerName ?? ''}
+							className="boss-quip-portrait"
+						/>
 					)}
-					<div className="boss-quip-text">{text}</div>
+					<div className="boss-quip-content">
+						{speakerName && (
+							<div className="boss-quip-speaker">{speakerName}</div>
+						)}
+						<div className="boss-quip-text">{text}</div>
+					</div>
 					<div className="boss-quip-tail" />
 				</motion.div>
 			)}

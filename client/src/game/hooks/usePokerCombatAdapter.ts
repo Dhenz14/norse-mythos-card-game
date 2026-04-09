@@ -133,6 +133,7 @@ export interface PokerCombatAdapter {
   healOpponentHero: (amount: number) => void;
   setPlayerHeroBuffs: (attack: number, armor: number) => void;
   addPlayerArmor: (amount: number) => void;
+  addOpponentArmor: (amount: number) => void;
   markBothPlayersReady: () => void;
   completeFirstStrike: () => void;
 }
@@ -167,6 +168,7 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
   const healOpponentHeroFn = useUnifiedCombatStore(s => s.healOpponentHero);
   const setPlayerHeroBuffsFn = useUnifiedCombatStore(s => s.setPlayerHeroBuffs);
   const addPlayerArmorFn = useUnifiedCombatStore(s => s.addPlayerArmor);
+  const addOpponentArmorFn = useUnifiedCombatStore(s => s.addOpponentArmor);
   const markBothPlayersReadyFn = useUnifiedCombatStore(s => s.markBothPlayersReady);
   const completeFirstStrikeFn = useUnifiedCombatStore(s => s.completeFirstStrike);
 
@@ -282,6 +284,10 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
 
     addPlayerArmor: (amount: number) => {
       addPlayerArmorFn(amount);
+    },
+
+    addOpponentArmor: (amount: number) => {
+      addOpponentArmorFn(amount);
     },
 
     markBothPlayersReady: () => {
@@ -408,6 +414,10 @@ export function getPokerCombatAdapterState(): PokerCombatAdapter {
 
     addPlayerArmor: (amount: number) => {
       getStore().addPlayerArmor(amount);
+    },
+
+    addOpponentArmor: (amount: number) => {
+      getStore().addOpponentArmor(amount);
     },
 
     markBothPlayersReady: () => {

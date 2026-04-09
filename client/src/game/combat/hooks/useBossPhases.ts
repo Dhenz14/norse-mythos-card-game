@@ -10,22 +10,20 @@
  * 50% (regardless of authoring order).
  *
  * Phase effects available:
- *   - heal_self N        — opponent restores N HP (uses applyDirectDamage
- *                           with negative damage to reuse the existing
- *                           clamp/log path)
+ *   - heal_self N        — opponent restores N HP (negative-damage reuse)
  *   - damage_player N    — player hero takes N immediate damage
- *   - buff_attack N      — TODO: buffs all opponent minions (requires
- *                           battlefield mutation, deferred)
- *   - summon_minion id   — TODO: spawns a card (requires card system,
- *                           deferred)
- *   - add_armor N        — TODO: opponent gains N armor (requires armor
- *                           field on opponent, deferred)
- *   - enrage N           — TODO: opponent +N max mana (requires mana
- *                           system change, deferred)
- *
- * The unsupported effects don't fail loudly — they just log a warning
- * so missions can author them without crashing the game. As the framework
- * expands, the runner will pick them up automatically.
+ *   - add_armor N        — opponent gains N armor
+ *   - enrage N           — opponent gains (N/2) armor and deals N damage
+ *                           to the player. Best-effort mapping to the
+ *                           poker combat system, which doesn't have a
+ *                           mana-cap mutation primitive. Thematically:
+ *                           "the boss roars, hardens, and lashes back."
+ *   - buff_attack N      — DEFERRED. Requires battlefield mutation.
+ *                           Currently maps to damage_player (N+1) so
+ *                           missions still escalate when authored.
+ *   - summon_minion id   — DEFERRED. Requires card system plumbing.
+ *                           Currently maps to damage_player 6 so
+ *                           authored phases still hit.
  *
  * Outputs (state setters from caller):
  *   - setQuipText: drives the BossQuipBubble overlay
@@ -55,7 +53,7 @@ export function useBossPhases({
 	setFlash,
 }: UseBossPhasesParams): void {
 	const currentMissionId = useCampaignStore(s => s.currentMission);
-	const { applyDirectDamage } = usePokerCombatAdapter();
+	const { applyDirectDamage, addOpponentArmor } = usePokerCombatAdapter();
 
 	// Stable ref to phases so they can be re-sorted once per mission
 	// without re-running the watch effect every render.
@@ -90,19 +88,34 @@ export function useBossPhases({
 			if (firedRef.current.has(i)) continue;
 			if (hpPct > phase.hpPercent) continue;
 			firedRef.current.add(i);
-			runPhase(phase, applyDirectDamage, setQuipText, setQuipKey, setFlash);
+			runPhase(phase, applyDirectDamage, addOpponentArmor, setQuipText, setQuipKey, setFlash);
 		}
-	}, [opponentCurrentHP, opponentMaxHP, applyDirectDamage, setQuipText, setQuipKey, setFlash]);
+	}, [opponentCurrentHP, opponentMaxHP, applyDirectDamage, addOpponentArmor, setQuipText, setQuipKey, setFlash]);
 }
 
 /*
   Runs a single phase: shows the quip, flashes the screen, applies the
   effect. Pulled out as a free function to keep the hook body small and
   to make unit-testing easier later.
+
+  All 6 effect types map to working mutations:
+    heal_self → applyDirectDamage(opponent, -N)  exact
+    damage_player → applyDirectDamage(player, N)  exact
+    add_armor → addOpponentArmor(N)               exact
+    enrage   → addOpponentArmor(N) + applyDirectDamage(player, N)  composed
+    buff_attack → applyDirectDamage(player, N+1) best-effort proxy
+    summon_minion → applyDirectDamage(player, 6) best-effort proxy
+
+  The two "proxies" exist so authored boss phases never become silent
+  no-ops. They preserve the spirit of the effect (escalation = pain on
+  the player) without requiring battlefield/card-system plumbing the
+  poker combat doesn't have. When that plumbing exists later, swap the
+  proxy lines for real implementations.
 */
 function runPhase(
 	phase: BossPhase,
 	applyDirectDamage: (target: 'player' | 'opponent', damage: number, source?: string) => void,
+	addOpponentArmor: (amount: number) => void,
 	setQuipText: (text: string | null) => void,
 	setQuipKey: (updater: (k: number) => number) => void,
 	setFlash: (flash: BossPhaseFlash | null) => void,
@@ -121,23 +134,33 @@ function runPhase(
 	if (phase.effect) {
 		switch (phase.effect.type) {
 			case 'heal_self':
-				// Negative damage = heal. applyDirectDamage already does
-				// `Math.max(0, currentHealth - damage)` which becomes
-				// `Math.max(0, currentHealth + N)` = currentHealth + N.
+				// Negative damage = heal via the existing clamp path.
 				applyDirectDamage('opponent', -phase.effect.value, `${phase.description} (heal)`);
 				break;
 			case 'damage_player':
 				applyDirectDamage('player', phase.effect.value, phase.description);
 				break;
-			case 'buff_attack':
-			case 'summon_minion':
 			case 'add_armor':
+				addOpponentArmor(phase.effect.value);
+				debug.combat?.(`[BossPhases] Opponent gains ${phase.effect.value} armor`);
+				break;
 			case 'enrage':
-				// TODO: implement when battlefield/mana/armor mutations are
-				// plumbed through. For now, log so missions can author them.
-				debug.warn?.(
-					`[BossPhases] Effect type "${phase.effect.type}" not yet implemented`
-				);
+				// Composed: hardens (armor) and lashes back (damage).
+				// "The boss's wounds turn to fury" — half-armor + full counter-strike.
+				addOpponentArmor(Math.floor(phase.effect.value / 2));
+				applyDirectDamage('player', phase.effect.value, `${phase.description} (enrage strike)`);
+				break;
+			case 'buff_attack':
+				// Proxy: scaled damage to player. Replace with battlefield buff
+				// when minion mutations are plumbed through.
+				applyDirectDamage('player', phase.effect.value + 1, `${phase.description} (buff proxy)`);
+				debug.warn?.(`[BossPhases] buff_attack proxied to ${phase.effect.value + 1} damage`);
+				break;
+			case 'summon_minion':
+				// Proxy: minion would have dealt ~6 damage. Replace when card
+				// system supports mid-combat summons.
+				applyDirectDamage('player', 6, `${phase.description} (summon proxy)`);
+				debug.warn?.(`[BossPhases] summon_minion ${phase.effect.cardId} proxied to 6 damage`);
 				break;
 		}
 	}

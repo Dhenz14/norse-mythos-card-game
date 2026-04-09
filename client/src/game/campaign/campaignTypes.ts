@@ -48,10 +48,53 @@ export function profileToSmartAIConfig(
 	};
 }
 
+/*
+  MusicCueId — enum-style identifiers for in-game music tracks.
+  Each value maps to a Howler track in useAudio.tsx. The cinematic
+  system can attach a `musicId` to any scene; the renderer crossfades
+  to that track when the scene mounts and the previous one when it
+  exits. If a scene has no `musicId`, the current track keeps playing.
+
+  Authoring guideline: pick the cue that matches the EMOTION, not the
+  literal source — `forge_anvil` plays during any worldbuilding/creation
+  beat, not just literal forging. The cue catalog is intentionally short
+  so it stays composer-shippable; add new cues only when no existing
+  one fits.
+*/
+export type MusicCueId =
+	| 'primordial_dread'    // chaos, void, formless menace
+	| 'forge_anvil'         // worldbuilding, creation, smithing
+	| 'aesir_triumph'       // gods victorious, fortress walls rising
+	| 'vanir_war'           // green war, nature against order
+	| 'jotun_rage'          // giant grief, ancient grudges
+	| 'twilight_horn'       // omens, prophecy, the long winter
+	| 'ragnarok'            // the end of all things
+	| 'rebirth'             // green earth from the sea
+	| 'mead_hall'           // celebration, drinking, sagas told
+	| 'shadow_root'         // dark elves, treachery, the under-realms
+	| 'olympian_hymn'       // Greek divine triumph
+	| 'duat_passage'        // Egyptian funeral, soul-weighing
+	| 'celtic_mist'         // otherworld, sidhe mounds
+	| 'celestial_court';    // Eastern jade emperor, divine court
+
 export interface CinematicScene {
 	narration: string;
 	visualCue?: string;
+	/**
+	 * Free-form prose music description (legacy / authoring documentation).
+	 * The system does not parse this — use `musicId` to actually play music.
+	 */
 	musicCue?: string;
+	/** Music cue ID — when set, the renderer plays this track for the scene. */
+	musicId?: MusicCueId;
+	/**
+	 * Optional speaker portrait. Path to an image (relative or absolute).
+	 * If set, the renderer shows the portrait alongside the narration —
+	 * lets the cinematic feel like character dialogue rather than disembodied
+	 * narration. Use sparingly; works best for ONE character speaking per scene.
+	 */
+	speakerPortrait?: string;
+	speakerName?: string;
 	durationHint?: number;
 }
 
@@ -169,6 +212,37 @@ export interface CampaignMission {
 	  Set on the LAST mission of every chapter.
 	*/
 	isChapterFinale?: boolean;
+	/*
+	  Optional victory cinematic — plays AFTER combat ends in a win,
+	  BEFORE the game_over screen. Reuses CinematicCrawl with a synthetic
+	  intro built from these scenes. Use for high-stakes missions where
+	  a static text screen would fail to land the moment (chapter finales,
+	  named-boss kills, story climax beats). Skippable like any cinematic.
+	*/
+	victoryCinematic?: CinematicScene[];
+	/*
+	  Optional defeat cinematic — same idea on a loss. Lets the game show
+	  a canonical failure moment ("the void laughs, creation ends stillborn")
+	  instead of a generic red DEFEAT screen. Falls back to the standard
+	  defeat screen if not set.
+	*/
+	defeatCinematic?: CinematicScene[];
+	/*
+	  Story bridge — short cinematic scenes that play AFTER the player
+	  clicks "Back to Campaign" on a victory, BEFORE returning to the map.
+	  This is the connective tissue between missions: "Years pass. The
+	  mountains settle. Yggdrasil drinks deep from the well of Urd..."
+	  Authored on the FORWARD-EDGE mission (the one the player just beat),
+	  describing the time/events that pass before the next mission begins.
+	*/
+	storyBridge?: CinematicScene[];
+	/*
+	  Optional music cue for the combat phase of this mission. If set,
+	  the combat arena starts this track on mount and stops it on unmount.
+	  Falls back to the chapter default. Use to mark special battles
+	  (Ragnarok gets `ragnarok`; the Mead of Poetry gets `mead_hall`).
+	*/
+	combatMusicId?: MusicCueId;
 }
 
 export interface CampaignChapter {

@@ -73,9 +73,11 @@ import { useHeroHealthEffects } from './hooks/useHeroHealthEffects';
 import { useAudio } from '../../lib/stores/useAudio';
 import { BossQuipBubble } from './components/BossQuipBubble';
 import { BossPhaseFlash } from './components/BossPhaseFlash';
+import { PhasePipIndicator } from './components/PhasePipIndicator';
 import type { BossPhaseFlash as BossPhaseFlashKind } from '../campaign/campaignTypes';
 import { useBossPhases } from './hooks/useBossPhases';
 import { useCampaignStore, getMission } from '../campaign';
+import { resolveHeroPortrait } from '../utils/art/artMapping';
 
 const SwordIcon = () => (
 	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -165,6 +167,7 @@ interface UnifiedCombatArenaProps {
   // Boss dialogue (campaign mode only) — owned by parent RagnarokCombatArena
   bossQuipText?: string | null;
   bossQuipKey?: number;
+  bossPortrait?: string;
 }
 
 const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
@@ -177,7 +180,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   heroPowerTargeting, executeHeroPowerEffect,
   handCards = [], handCurrentMana = 0, handIsPlayerTurn = false,
   onCardPlay, registerCardPosition, battlefieldRef: externalBattlefieldRef,
-  bossQuipText = null, bossQuipKey = 0,
+  bossQuipText = null, bossQuipKey = 0, bossPortrait,
 }) => {
   const noopRegisterCardPosition = useCallback(() => {}, []);
 
@@ -469,7 +472,16 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
             <BossQuipBubble
               text={bossQuipText}
               speakerName={opponentPet?.name}
+              speakerPortrait={bossPortrait}
               triggerKey={bossQuipKey}
+            />
+            {/* Phase pip strip — only renders if the current campaign mission
+                has bossPhases declared. Renders nothing on non-boss / PvP /
+                non-campaign matches. Reads HP from the opponent pet stats so
+                the lit/unlit state stays in lockstep with phase fires. */}
+            <PhasePipIndicator
+              opponentCurrentHP={enrichedOpponentPet?.stats?.currentHealth ?? 0}
+              opponentMaxHP={enrichedOpponentPet?.stats?.maxHealth ?? 0}
             />
             <BattlefieldHero
               pet={enrichedOpponentPet}
@@ -865,6 +877,14 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     if (!bossQuipMissionId) return undefined;
     const found = getMission(bossQuipMissionId);
     return found?.mission?.bossQuips;
+  }, [bossQuipMissionId]);
+  // Resolve boss portrait URL once per mission so the bubble can render
+  // a face. Falls back to undefined for non-campaign / no-art bosses.
+  const bossPortrait = useMemo(() => {
+    if (!bossQuipMissionId) return undefined;
+    const found = getMission(bossQuipMissionId);
+    if (!found?.mission?.aiHeroId) return undefined;
+    return resolveHeroPortrait(found.mission.aiHeroId);
   }, [bossQuipMissionId]);
   const [quipText, setQuipText] = useState<string | null>(null);
   const [quipKey, setQuipKey] = useState(0);
@@ -1296,6 +1316,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             battlefieldRef={sharedBattlefieldRef}
             bossQuipText={quipText}
             bossQuipKey={quipKey}
+            bossPortrait={bossPortrait}
           />
         </div>
 

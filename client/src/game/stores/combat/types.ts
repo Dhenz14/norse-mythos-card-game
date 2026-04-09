@@ -160,6 +160,7 @@ export interface PokerCombatSliceActions {
   healOpponentHero: (amount: number) => void;
   setPlayerHeroBuffs: (buffs: { attack?: number; health?: number; armor?: number }) => void;
   addPlayerArmor: (amount: number) => void;
+  addOpponentArmor: (amount: number) => void;
   markBothPlayersReady: () => void;
   startNextHand: (resolution?: CombatResolution) => void;
   startNextHandDelayed: (resolution: CombatResolution) => void;

@@ -26,6 +26,36 @@
 	color: #f3e9c8;
 }
 
+/* When a portrait is supplied, lay out as portrait | content row */
+.boss-quip-bubble.with-portrait {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	min-width: 280px;
+	max-width: 380px;
+}
+
+.boss-quip-portrait {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	object-fit: cover;
+	flex-shrink: 0;
+	border: 2px solid rgba(212, 175, 55, 0.7);
+	box-shadow:
+		0 0 12px rgba(212, 175, 55, 0.35),
+		0 2px 8px rgba(0, 0, 0, 0.7),
+		inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+	background: #0a0610;
+}
+
+.boss-quip-content {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	flex: 1;
+}
+
 .boss-quip-speaker {
 	font-family: var(--font-display, 'Cinzel', Georgia, serif);
 	font-size: 11px;
