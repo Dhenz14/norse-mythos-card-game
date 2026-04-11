@@ -196,29 +196,10 @@ export const createPokerCombatSlice: StateCreator<
     set({ pokerState: { ...current, ...updates } });
   },
 
-  fold: (player) => {
-    const current = get().pokerState;
-    if (current) {
-      // v1.1: Wager — Cautious Dealer reduces fold penalty
-      const cautious = hasWagerEffect(player, 'reduce_fold_penalty');
-      const foldReduction = cautious?.value ?? 0;
-
-      // v1.1: Wager — Norn's Witness heals opponent hero if you fold
-      const opponent = player === 'player' ? 'opponent' : 'player';
-      const nornWitness = hasWagerEffect(opponent, 'on_opponent_fold_heal');
-      if (nornWitness) {
-        debug.log(`[Wager] Norn's Witness: heal ${opponent} for ${nornWitness.value} on fold`);
-        // Heal applied in showdown resolution
-      }
-
-      set({
-        pokerState: {
-          ...current,
-          lastAction: `${player} folded${foldReduction > 0 ? ` (penalty -${foldReduction})` : ''}`,
-        },
-        combatPhase: 'RESOLUTION',
-      });
-    }
+  fold: (_player) => {
+    // C5: Removed orphan fold() method — fold flow lives in performPokerAction(BRACE).
+    // Calling this is a no-op to preserve the interface for any legacy callers.
+    debug.combat('[fold] Called legacy fold() — use performPokerAction(BRACE) instead');
   },
 
   endPokerRound: (winnerId, damage) => {
@@ -540,7 +521,12 @@ export const createPokerCombatSlice: StateCreator<
     
     switch (action) {
       case CombatAction.ATTACK:
-        if (hpCommitment && hpCommitment > 0) {
+        // H10: Reject ATTACK with no HP commitment (player can't bet 0)
+        if (!hpCommitment || hpCommitment <= 0) {
+          debug.combat('[performPokerAction] REJECTED: ATTACK with hpCommitment <= 0', { playerId, hpCommitment });
+          return;
+        }
+        {
           const availableHP = playerState.pet.stats.currentHealth;
           const actualBet = Math.min(hpCommitment, availableHP);
           playerState.hpCommitted += actualBet;
@@ -590,24 +576,30 @@ export const createPokerCombatSlice: StateCreator<
         }
         break;
         
-      case CombatAction.ENGAGE:
+      case CombatAction.ENGAGE: {
         const toMatch = Math.min(newState.currentBet - playerState.hpCommitted, playerState.pet.stats.currentHealth);
         if (toMatch > 0) {
           playerState.hpCommitted += toMatch;
           playerState.pet.stats.currentHealth = Math.max(0, playerState.pet.stats.currentHealth - toMatch);
           newState.pot += toMatch;
         }
+        // H8: Refund uncalled portion to the over-committed player when caller is all-in
         if (playerState.pet.stats.currentHealth === 0 && playerState.hpCommitted < newState.currentBet) {
           const otherPlayer = isPlayer ? newState.opponent : newState.player;
-          const excess = otherPlayer.hpCommitted - playerState.hpCommitted;
+          const excess = Math.max(0, otherPlayer.hpCommitted - playerState.hpCommitted);
           if (excess > 0) {
-            otherPlayer.hpCommitted -= excess;
-            otherPlayer.pet.stats.currentHealth += excess;
-            newState.pot -= excess;
+            otherPlayer.hpCommitted = Math.max(0, otherPlayer.hpCommitted - excess);
+            // Clamp refund to maxHealth (prevents over-max HP if maxHealth changed mid-hand)
+            otherPlayer.pet.stats.currentHealth = Math.min(
+              otherPlayer.pet.stats.maxHealth,
+              otherPlayer.pet.stats.currentHealth + excess
+            );
+            newState.pot = Math.max(0, newState.pot - excess);
             newState.currentBet = playerState.hpCommitted;
+            debug.combat(`[ENGAGE] Refunded ${excess} HP uncalled to ${otherPlayer === newState.player ? 'player' : 'opponent'}`);
           }
         }
-        if (playerState.pet.stats.currentHealth === 0 || 
+        if (playerState.pet.stats.currentHealth === 0 ||
             (isPlayer ? newState.opponent : newState.player).pet.stats.currentHealth === 0) {
           newState.isAllInShowdown = true;
         }
@@ -615,6 +607,7 @@ export const createPokerCombatSlice: StateCreator<
           newState.blindsPosted = true;
         }
         break;
+      }
         
       case CombatAction.BRACE:
         const folderIsPlayer = playerId === newState.player.playerId;
@@ -665,7 +658,22 @@ export const createPokerCombatSlice: StateCreator<
           playerState.pet.stats.currentStamina = Math.max(0, playerState.pet.stats.currentStamina - foldStaPenalty);
           debug.combat(`[STA] ${folderSide} folded: -${foldStaPenalty} STA (now ${playerState.pet.stats.currentStamina}/${playerState.pet.stats.maxStamina})`);
         }
-        
+
+        // C3: Apply reduce_fold_penalty wager — refund a portion of committed HP
+        {
+          const cautious = hasWagerEffect(folderSide, 'reduce_fold_penalty');
+          if (cautious && cautious.value && cautious.value > 0 && playerState.hpCommitted > 0) {
+            const refund = Math.min(cautious.value, playerState.hpCommitted);
+            playerState.hpCommitted -= refund;
+            playerState.pet.stats.currentHealth = Math.min(
+              playerState.pet.stats.maxHealth,
+              playerState.pet.stats.currentHealth + refund
+            );
+            newState.pot = Math.max(0, newState.pot - refund);
+            debug.combat(`[WAGER] ${folderSide} fold penalty reduced by ${refund} HP (reduce_fold_penalty)`);
+          }
+        }
+
         newState.foldWinner = folderIsPlayer ? 'opponent' : 'player';
         newState.phase = PokerCombatPhase.RESOLUTION;
         newState.player.isReady = true;
@@ -888,7 +896,9 @@ export const createPokerCombatSlice: StateCreator<
         preflopBetMade: blindsJustPosted || combatState.preflopBetMade,
         isAllInShowdown: blindAllIn || combatState.isAllInShowdown,
         activePlayerId: newActivePlayerId,
-        actionsThisRound: 0
+        actionsThisRound: 0,
+        // H2: Reset turn timer on every phase change so players get a fresh clock
+        turnTimer: combatState.maxTurnTime || 60,
       }
     });
     
@@ -987,6 +997,8 @@ export const createPokerCombatSlice: StateCreator<
       set({
         pokerCombatState: {
           ...currentState.pokerCombatState,
+          // L11: Set winner so resolution display is correct (cleared on next hand by startNextHand)
+          winner,
           pot: 0,
           currentBet: 0,
           player: {
@@ -1124,18 +1136,41 @@ export const createPokerCombatSlice: StateCreator<
                 else { wagerBonusDamageOpponent += (wager.bonusDamage || 0); wagerHealOpponent -= (wager.selfDamage || 0); }
               }
               break;
+            // C4: Apply +Attack buff to friendly minions if all-in this hand
+            case 'all_in_buff_minions':
+              if (isAllIn && wager.buffAttack) {
+                try {
+                  const gs = useGameStore.getState().gameState;
+                  if (gs) {
+                    const targetBf = side === 'player' ? gs.player1.battlefield : gs.player2.battlefield;
+                    for (const m of targetBf) {
+                      (m as any).currentAttack = ((m as any).currentAttack || 0) + wager.buffAttack;
+                      (m as any).baseAttack = ((m as any).baseAttack || 0) + wager.buffAttack;
+                    }
+                    debug.combat(`[WAGER] all_in_buff_minions: +${wager.buffAttack} ATK to ${side} minions (${targetBf.length})`);
+                  }
+                } catch { /* game state unavailable */ }
+              }
+              break;
             // Betting-phase/UI effects — not resolved at showdown
             case 'on_opponent_fold_heal':
             case 'fold_penalty_to_healing':
-            case 'all_in_buff_minions':
             case 'reveal_opponent_hole_cards':
             case 'peek_next_community_card':
             case 'hide_bet_actions':
             case 'increase_min_bet':
             case 'reduce_fold_penalty':
-            case 'double_blinds_bonus_multiplier':
             case 'betting_round_damage':
+              break;
+            // H7: Reckless Bettor multiplier bonus
+            case 'double_blinds_bonus_multiplier':
+              if (wager.multiplierBonus) {
+                showdownMultiplier += wager.multiplierBonus;
+              }
+              break;
+            // Hand rank upgrade — boost the rank before winner determination
             case 'hand_rank_upgrade':
+              // Hand rank upgrades apply pre-evaluation, handled elsewhere
               break;
           }
         };
@@ -1253,13 +1288,66 @@ export const createPokerCombatSlice: StateCreator<
       });
     }
     
+    // M7/M8: Apply wager AoE damage to opposing battlefield and draw cards from wager effects
+    try {
+      if (wagerAoeDamagePlayer > 0 || wagerAoeDamageOpponent > 0 || wagerDrawPlayer > 0 || wagerDrawOpponent > 0) {
+        const gameStoreRef = (globalThis as Record<string, any>).__ragnarokGameStore;
+        const gs = gameStoreRef?.getState()?.gameState;
+        if (gs && gameStoreRef) {
+          const newGs = { ...gs };
+          // Apply AoE damage from player wager → enemy minions
+          if (wagerAoeDamagePlayer > 0 && newGs.player2?.battlefield) {
+            newGs.player2 = {
+              ...newGs.player2,
+              battlefield: newGs.player2.battlefield
+                .map((m: any) => ({ ...m, currentHealth: Math.max(0, (m.currentHealth || 0) - wagerAoeDamagePlayer) }))
+                .filter((m: any) => m.currentHealth > 0),
+            };
+            debug.combat(`[WAGER] Applied ${wagerAoeDamagePlayer} AoE damage to enemy minions`);
+          }
+          // Apply AoE damage from opponent wager → player minions
+          if (wagerAoeDamageOpponent > 0 && newGs.player1?.battlefield) {
+            newGs.player1 = {
+              ...newGs.player1,
+              battlefield: newGs.player1.battlefield
+                .map((m: any) => ({ ...m, currentHealth: Math.max(0, (m.currentHealth || 0) - wagerAoeDamageOpponent) }))
+                .filter((m: any) => m.currentHealth > 0),
+            };
+            debug.combat(`[WAGER] Applied ${wagerAoeDamageOpponent} AoE damage to player minions`);
+          }
+          // Draw cards from wager effects
+          if (wagerDrawPlayer > 0 && newGs.player1?.deck && newGs.player1?.hand) {
+            const drawn = newGs.player1.deck.slice(0, wagerDrawPlayer);
+            newGs.player1 = {
+              ...newGs.player1,
+              hand: [...newGs.player1.hand, ...drawn],
+              deck: newGs.player1.deck.slice(wagerDrawPlayer),
+            };
+            debug.combat(`[WAGER] Player drew ${drawn.length} cards from wager effect`);
+          }
+          if (wagerDrawOpponent > 0 && newGs.player2?.deck && newGs.player2?.hand) {
+            const drawn = newGs.player2.deck.slice(0, wagerDrawOpponent);
+            newGs.player2 = {
+              ...newGs.player2,
+              hand: [...newGs.player2.hand, ...drawn],
+              deck: newGs.player2.deck.slice(wagerDrawOpponent),
+            };
+            debug.combat(`[WAGER] Opponent drew ${drawn.length} cards from wager effect`);
+          }
+          gameStoreRef.setState({ gameState: newGs });
+        }
+      }
+    } catch (err) {
+      debug.warn('[WAGER] Failed to apply wager AoE/draw effects:', err);
+    }
+
     get().addLogEntry({
       id: `poker_showdown_${Date.now()}`,
       timestamp: Date.now(),
       type: 'poker',
       message: `Showdown: ${winner === 'draw' ? 'Draw' : winner + ' wins'} - Player: ${playerHand.displayName}, Opponent: ${opponentHand.displayName}`
     });
-    
+
     return resolution;
   },
 

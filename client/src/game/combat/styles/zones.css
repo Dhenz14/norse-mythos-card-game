@@ -49,7 +49,7 @@
      BETTING ACTIONS — bottom, right of hero
      ======================================== */
   --zone-betting-left: 260px;
-  --zone-betting-bottom: 8px;
+  --zone-betting-bottom: 60px;
   --zone-betting-z: var(--z-betting, 200);
 
   /* ========================================

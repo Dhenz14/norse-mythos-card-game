@@ -384,21 +384,20 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     gameState,
   });
   
+  // M1: Subscribe reactively so toggling the setting mid-combat updates the UI
+  const showDamageNumbers = useSettingsStore(s => s.showDamageNumbers);
+
   const basePermissions = useMemo(
     () => getActionPermissions(combatState, true),
     [combatState]
   );
 
-  // Early return if no combat state
-  if (!combatState) {
-    return <div className="unified-combat-arena">Loading...</div>;
-  }
-
-  const isMulligan = combatState.phase === CombatPhase.MULLIGAN;
-  const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
+  // Compute phase derivations safely (handle null combatState)
+  const isMulligan = combatState?.phase === CombatPhase.MULLIGAN;
+  const phaseAllowsFaith = !!combatState && !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
   const showFaith = phaseAllowsFaith && communityCardsRevealed;
-  const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
-  const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
+  const showForesight = !!combatState && communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
+  const showDestiny = !!combatState && communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
 
   const disabled = isMulligan || !basePermissions?.isMyTurnToAct;
 
@@ -413,7 +412,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     ];
     if (community.length === 0 && holeCards.length < 5) return null;
     return evaluatePokerHand(holeCards, community);
-  }, [combatState?.player?.holeCards, combatState?.communityCards, showFaith, showForesight, showDestiny, isMulligan]);
+  }, [combatState, showFaith, showForesight, showDestiny, isMulligan]);
 
   const handStrengthClass = useMemo(() => {
     if (!playerHandEval) return 'weak';
@@ -429,6 +428,11 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     if (!playerHandEval) return 0;
     return Math.min(100, (playerHandEval.rank / PokerHandRank.RAGNAROK) * 100);
   }, [playerHandEval]);
+
+  // Early return AFTER all hooks have been called
+  if (!combatState) {
+    return <div className="unified-combat-arena">Loading...</div>;
+  }
 
   return (
     <div className="unified-combat-arena" ref={battlefieldRef as React.RefObject<HTMLDivElement>}>
@@ -781,7 +785,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       )}
       
       {/* Damage Animations — gated by showDamageNumbers setting */}
-      {useSettingsStore.getState().showDamageNumbers && damageAnimations.map(anim => (
+      {showDamageNumbers && damageAnimations.map(anim => (
         <DamageIndicator
           key={anim.id}
           damage={anim.damage}
@@ -945,7 +949,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         {/* Hourglass Timer at Top Center */}
         {(() => {
           const t = combatState.turnTimer;
-          const maxT = 30;
+          const maxT = combatState.maxTurnTime || 60;
           const pct = Math.max(0, Math.min(1, t / maxT));
           const topH = pct * 30;
           const botH = (1 - pct) * 30;

@@ -66,10 +66,9 @@ export function getSmartAIAction(
   const hasBetToCall = toCall > 0;
   const minBet = combatState.minBet; // 5 HP minimum in Ragnarok
   
-  // Ragnarok "preflop" = first betting round (SPELL_PET or FAITH phase)
-  // NO checking allowed - must bet or fold (opener) or call/raise/fold (after bet)
-  const isFirstBettingRound = combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.PRE_FLOP || combatState.phase === CombatPhase.FAITH;
-  const mustBetOrFold = isFirstBettingRound && !hasBetToCall; // Must bet if no current bet in first round
+  // M12: Preflop = SPELL_PET / PRE_FLOP only. FAITH is the flop and AI may check.
+  const isFirstBettingRound = combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.PRE_FLOP;
+  const mustBetOrFold = isFirstBettingRound && !hasBetToCall;
   
   const communityCards = getCommunityCards(combatState);
   const handStrength = calculateHandStrength(actor.holeCards, communityCards);

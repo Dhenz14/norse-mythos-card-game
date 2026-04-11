@@ -131,7 +131,7 @@ export interface PokerCombatAdapter {
   applyDirectDamage: (targetPlayerId: 'player' | 'opponent', damage: number, sourceDescription?: string) => void;
   healPlayerHero: (amount: number) => void;
   healOpponentHero: (amount: number) => void;
-  setPlayerHeroBuffs: (attack: number, armor: number) => void;
+  setPlayerHeroBuffs: (buffs: { attack?: number; health?: number; armor?: number }) => void;
   addPlayerArmor: (amount: number) => void;
   markBothPlayersReady: () => void;
   completeFirstStrike: () => void;
@@ -276,8 +276,8 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
       healOpponentHeroFn(amount);
     },
 
-    setPlayerHeroBuffs: (attack: number, armor: number) => {
-      setPlayerHeroBuffsFn({ attack, armor });
+    setPlayerHeroBuffs: (buffs: { attack?: number; health?: number; armor?: number }) => {
+      setPlayerHeroBuffsFn(buffs);
     },
 
     addPlayerArmor: (amount: number) => {
@@ -402,8 +402,8 @@ export function getPokerCombatAdapterState(): PokerCombatAdapter {
       getStore().healOpponentHero(amount);
     },
 
-    setPlayerHeroBuffs: (attack: number, armor: number) => {
-      getStore().setPlayerHeroBuffs({ attack, armor });
+    setPlayerHeroBuffs: (buffs: { attack?: number; health?: number; armor?: number }) => {
+      getStore().setPlayerHeroBuffs(buffs);
     },
 
     addPlayerArmor: (amount: number) => {

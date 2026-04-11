@@ -202,25 +202,23 @@ export const HandFan = React.memo<HandFanProps>(({
 
         // Pet evolution prerequisite check — Stage 2/3 pets require preconditions
         const petStage = (card.card as any)?.petStage;
-        const isEvolvePet = petStage === 'adept' || petStage === 'master';
+        const evolvesFromId = (card.card as any)?.evolvesFrom;
+        const petFamily = (card.card as any)?.petFamily;
+        const isEvolvePet = petStage === 'adept' || petStage === 'master' || !!evolvesFromId;
         let meetsPetEvolution = true;
         if (isEvolvePet) {
           if (!playerBattlefield || playerBattlefield.length === 0) {
             meetsPetEvolution = false;
+          } else if (petStage === 'master' && petFamily) {
+            meetsPetEvolution = playerBattlefield.some(
+              (m: any) => m.card?.petFamily === petFamily && m.card?.petStage === 'adept' && m.petEvolutionMet === true
+            );
+          } else if (evolvesFromId) {
+            meetsPetEvolution = playerBattlefield.some(
+              (m: any) => m.card?.id === evolvesFromId && m.petEvolutionMet === true
+            );
           } else {
-            const evolvesFromId = (card.card as any)?.evolvesFrom;
-            const petFamily = (card.card as any)?.petFamily;
-            if (petStage === 'master' && petFamily) {
-              meetsPetEvolution = playerBattlefield.some(
-                (m: any) => m.card?.petFamily === petFamily && m.card?.petStage === 'adept' && m.petEvolutionMet
-              );
-            } else if (evolvesFromId) {
-              meetsPetEvolution = playerBattlefield.some(
-                (m: any) => m.card?.id === evolvesFromId && m.petEvolutionMet
-              );
-            } else {
-              meetsPetEvolution = false;
-            }
+            meetsPetEvolution = false;
           }
         }
 

@@ -440,9 +440,9 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     // Remove card from hand
     player.hand.splice(index, 1);
 
-    // Update player state
+    // Update player state — L3: use effectiveManaCost so discounts/surcharges apply
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-    if (!isBloodPayment) player.mana.current -= (card.card.manaCost || 0);
+    if (!isBloodPayment) player.mana.current -= effectiveManaCost;
     player.mana.pendingOverload = pendingOverload;
 
     // Create weapon card instance
@@ -453,7 +453,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
   if (card.card.type === 'artifact') {
     player.hand.splice(index, 1);
     player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-    if (!isBloodPayment) player.mana.current -= (card.card.manaCost || 0);
+    if (!isBloodPayment) player.mana.current -= effectiveManaCost;
     player.mana.pendingOverload = pendingOverload;
     return equipArtifact(newState, currentPlayer, card);
   }
@@ -465,7 +465,7 @@ export function playCard(state: GameState, cardInstanceId: string, targetId?: st
     if (slot) {
       player.hand.splice(index, 1);
       player.cardsPlayedThisTurn = updatedCardsPlayedThisTurn;
-      if (!isBloodPayment) player.mana.current -= (card.card.manaCost || 0);
+      if (!isBloodPayment) player.mana.current -= effectiveManaCost;
       player.mana.pendingOverload = pendingOverload;
       const piece = armorPieceFromCard(armorData);
       if (piece) {
