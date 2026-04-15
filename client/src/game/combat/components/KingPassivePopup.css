@@ -50,6 +50,7 @@
 	box-shadow: 0 0 12px rgba(212, 168, 67, 0.5);
 	overflow: hidden;
 	background: #1a1a2e;
+	animation: kpp-portrait-entrance 0.5s ease-out;
 }
 
 .kpp-portrait-img {
@@ -120,11 +121,6 @@
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
-}
-
-/* Portrait entrance shake (simulates "laugh") */
-.kpp-portrait-ring {
-	animation: kpp-portrait-entrance 0.5s ease-out;
 }
 
 @keyframes kpp-portrait-entrance {

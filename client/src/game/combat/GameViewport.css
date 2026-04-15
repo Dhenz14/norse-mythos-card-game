@@ -12,74 +12,138 @@
    Letterboxes content to maintain proportions
    ======================================== */
 
+/*
+  Wrapper carries the full-window background. Putting it here (instead of
+  on the inner .game-viewport) means the background fills the actual
+  viewport even when the canvas is letterboxed by aspect ratio — no more
+  black bars at top/bottom on ultrawide windows. The inner canvas keeps
+  its own dim overlay + vignettes which scale with the gameplay.
+*/
 .game-viewport-wrapper {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   overflow: hidden;
   z-index: 1;
-  background: #000;
+  background:
+    /* Soft fade so the canvas edges blend into the background */
+    radial-gradient(ellipse 100% 100% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.7) 100%),
+    /* Primary combat background — for ranked / play (non-campaign) only.
+       Campaign missions set .game-viewport.realm-* which overrides this
+       via realm-boards.css. The ?v= query is a cache-bust. */
+    url('/ui/backgrounrag.png?v=2') center center / cover no-repeat #000;
 }
 
+/*
+  RESPONSIVE SCALING
+  ------------------
+  The canvas is 1920×1080. Scaling and centering are handled by JavaScript
+  in GameViewport.tsx, which sets `transform`, `top`, `left`, `width`, and
+  `height` as INLINE styles. Inline always wins over CSS in the cascade,
+  so this rule deliberately does NOT set any positioning or transform —
+  doing so would create dead rules that show up red in DevTools and
+  confuse anyone debugging.
+
+  Why JS and not CSS calc(100vw / 1920px)? That uses CSS Values 4 type-
+  altering calc which is only supported in Chrome 105+/Firefox 116+/
+  Safari 17+. Older browsers silently dropped the entire transform
+  declaration, leaving the canvas at 1920×1080 native and producing the
+  "static, no scaling, buttons cut off" bug.
+
+  This rule only carries the visual styling (background, overflow, etc).
+*/
 .game-viewport {
-  width: var(--vp-width, 1920px);
-  height: var(--vp-height, 1080px);
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1));
-  transform-origin: top left;
   overflow: hidden;
   touch-action: none; /* Prevent pinch-zoom/pan during gameplay on mobile */
+  /* Background image now lives on .game-viewport-wrapper so it fills the
+     full window even when the 16:9 canvas is letterboxed. The canvas
+     itself only carries the dim overlays and cluster vignettes, which
+     should scale with the gameplay area. */
   background:
-    /* Stone texture: repeating noise pattern via layered gradients */
-    repeating-conic-gradient(rgba(255,255,255,0.015) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
-    repeating-conic-gradient(rgba(0,0,0,0.02) 0% 25%, transparent 0% 50%) 2px 2px / 4px 4px,
-    /* Dark vignette overlay for UI readability */
-    radial-gradient(ellipse 600% 100% at 50% 0%, rgba(10,14,26,0.85) 0%, transparent 60%),
-    radial-gradient(ellipse 600% 100% at 50% 100%, rgba(10,14,26,0.85) 0%, transparent 60%),
-    /* Dim overlay so art doesn't overpower cards */
-    linear-gradient(180deg, rgba(10,14,26,0.55) 0%, rgba(10,14,26,0.3) 40%, rgba(10,14,26,0.3) 60%, rgba(10,14,26,0.55) 100%),
-    /* Primary combat background — for ranked / play (non-campaign) only.
-       Campaign missions set .game-viewport.realm-* which overrides this via
-       client/src/game/combat/styles/realm-boards.css with !important.
-       The ?v= query is a cache-bust so browsers re-fetch when this changes. */
-    url('/ui/backgrounrag.png?v=2') center center / cover no-repeat;
+    /* UI cluster vignettes — soft pockets behind the gameplay zones */
+    radial-gradient(ellipse 30% 34% at 12% 92%, rgba(6,8,14,0.50) 0%, transparent 70%),
+    radial-gradient(ellipse 26% 22% at 12% 12%, rgba(6,8,14,0.50) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 20% at 50% 96%, rgba(6,8,14,0.42) 0%, transparent 78%),
+    radial-gradient(ellipse 18% 22% at 14% 48%, rgba(6,8,14,0.36) 0%, transparent 78%),
+    /* Global dim so art never overpowers cards */
+    linear-gradient(180deg, rgba(10,14,26,0.32) 0%, rgba(10,14,26,0.18) 38%, rgba(10,14,26,0.18) 62%, rgba(10,14,26,0.32) 100%);
   container-type: inline-size;
   container-name: game-viewport;
 }
 
-/* Screen shake on big damage hits */
-.game-viewport.screen-shake-mild {
+/* =============================================
+   .ui-panel — base material for every premium panel
+   in the combat arena. Obsidian + tarnished gold +
+   restrained shadow. Apply this to ANY new panel and
+   override only what's specific (size, position).
+   Phase 1 — UI overhaul.
+   ============================================= */
+.ui-panel {
+  background: var(--ui-panel-bg);
+  border: var(--ui-panel-border);
+  border-radius: 6px;
+  box-shadow: var(--ui-panel-shadow);
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+}
+
+.ui-panel.ui-panel-strong {
+  border: var(--ui-panel-border-strong);
+  box-shadow: var(--ui-panel-shadow-lift);
+}
+
+.ui-panel.ui-panel-rune {
+  border: var(--ui-panel-border-rune);
+}
+
+/* Reusable engraved hairline accent — apply via ::before on any panel */
+.ui-panel-accent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(212, 175, 55, 0.10) 0%,
+    transparent 35%,
+    transparent 65%,
+    rgba(212, 175, 55, 0.06) 100%);
+}
+
+/* Screen-shake animations.
+
+   IMPORTANT: these animations target the .game-viewport-wrapper, NOT the
+   inner .game-viewport. The inner element has a JS-set inline transform
+   for scaling, and CSS animations on it would clobber the scale. The
+   wrapper has no transform of its own, so animating its `translate` only
+   shakes the screen without affecting scale. */
+.game-viewport-wrapper.screen-shake-mild {
   animation: screenShakeMild 0.3s ease-out;
 }
 
-.game-viewport.screen-shake-strong {
+.game-viewport-wrapper.screen-shake-strong {
   animation: screenShakeStrong 0.3s ease-out;
 }
 
 @keyframes screenShakeMild {
-  0%, 100% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(0, 0); }
-  15% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-2px, 1px); }
-  30% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(2px, -1px); }
-  50% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-1px, 2px); }
-  70% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(1px, -1px); }
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(-2px, 1px); }
+  30% { transform: translate(2px, -1px); }
+  50% { transform: translate(-1px, 2px); }
+  70% { transform: translate(1px, -1px); }
 }
 
 @keyframes screenShakeStrong {
-  0%, 100% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(0, 0); }
-  10% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-4px, 2px); }
-  25% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(4px, -3px); }
-  40% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-3px, 4px); }
-  55% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(3px, -2px); }
-  70% { transform: scaleX(var(--vp-scale-x, 1)) scaleY(var(--vp-scale-y, 1)) translate(-2px, 1px); }
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-4px, 2px); }
+  25% { transform: translate(4px, -3px); }
+  40% { transform: translate(-3px, 4px); }
+  55% { transform: translate(3px, -2px); }
+  70% { transform: translate(-2px, 1px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .game-viewport.screen-shake-mild,
-  .game-viewport.screen-shake-strong {
+  .game-viewport-wrapper.screen-shake-mild,
+  .game-viewport-wrapper.screen-shake-strong {
     animation: none !important;
   }
 }
@@ -444,7 +508,7 @@
 /* Hand cards have slight overlap and tilt for natural fan */
 .viewport-mode .poker-hand-container .hand-card-wrapper {
   transition:
-    transform 0.2s ease,
+    transform 0.18s ease,
     z-index 0.1s;
 }
 
@@ -491,7 +555,7 @@
 
 /* Betting button glow effects */
 .viewport-mode .poker-btn {
-  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -560,21 +624,6 @@
   .viewport-mode .unified-player-field .battlefield-card:hover {
     transform: none;
   }
-}
-
-/* ========================================
-   TRANSITION HIERARCHY
-   Larger elements use slower transitions
-   ======================================== */
-
-.viewport-mode .poker-hand-container .hand-card-wrapper {
-  transition:
-    transform 0.18s ease,
-    z-index 0.1s;
-}
-
-.viewport-mode .poker-btn {
-  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
 }
 
 /* ========================================

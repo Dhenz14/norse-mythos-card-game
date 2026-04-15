@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArmySelection as ArmySelectionType, ChessPiece } from '../../types/ChessTypes';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection, buildCombatDeck } from '../../data/ChessPieceConfig';
-import { useCampaignStore, getMission } from '../../campaign';
+import { useCampaignStore, getMission, getMissionStars } from '../../campaign';
+import { useRivalryStore } from '../../pvp/rivalryStore';
 import { buildCampaignArmy } from '../../campaign/campaignArmyBuilder';
 import { useNavigate } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
@@ -26,9 +27,37 @@ import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../utils/art/artMappin
 import { assetPath } from '../../utils/assetPath';
 import CinematicCrawl from '../campaign/CinematicCrawl';
 import './HeroPortraitEnhanced.css';
+import './chess-realm-skins.css';
+import './game-over-result.css';
 import '../campaign/cinematic-crawl.css';
 
 type GamePhase = 'army_selection' | 'cinematic' | 'mission_intro' | 'chess' | 'vs_screen' | 'poker_combat' | 'game_over';
+
+/*
+  RivalryBadge — shows head-to-head PvP record on the game-over screen.
+  Reads from useRivalryStore to find the most recent opponent and display
+  the W/L tally. Only renders if a rivalry record exists.
+*/
+function RivalryBadge() {
+	const rivals = useRivalryStore(s => s.rivals);
+	const latest = rivals.length > 0 ? rivals[0] : null;
+	if (!latest) return null;
+	return (
+		<motion.div
+			className="cgo-rivalry"
+			initial={{ opacity: 0, y: 10 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ delay: 0.8, duration: 0.6 }}
+		>
+			<span className="cgo-rivalry-label">vs {latest.displayName}</span>
+			<span className="cgo-rivalry-record">
+				<span className="cgo-rivalry-wins">{latest.wins}W</span>
+				{' — '}
+				<span className="cgo-rivalry-losses">{latest.losses}L</span>
+			</span>
+		</motion.div>
+	);
+}
 
 const REALM_ICONS: Record<string, string> = {
 	asgard: '\u2728', niflheim: '\u2744\uFE0F', muspelheim: '\uD83D\uDD25',
@@ -55,6 +84,48 @@ const REALM_TEXT_COLORS: Record<string, string> = {
 	midgard: '#d4a574', chaos: '#ef4444', tartarus: '#dc2626',
 	mount_othrys: '#f59e0b', olympus: '#fcd34d',
 };
+
+/*
+  Maps every campaign mission realm to its closest visual realm. Norse
+  realms map to themselves; non-Norse mythologies use the closest Norse
+  proxy until we author dedicated art for each. The visual realm is what
+  drives both the chess board background and the combat arena board skin.
+  Used by RagnarokChessGame.tsx (this file) and consumed by realm-boards.css
+  + .ragnarok-chess-game.realm-{id} CSS rules below.
+*/
+const REALM_VISUAL_MAP: Record<string, string> = {
+	// Norse (direct art)
+	ginnungagap: 'ginnungagap', midgard: 'midgard', asgard: 'asgard',
+	niflheim: 'niflheim', muspelheim: 'muspelheim', helheim: 'helheim',
+	jotunheim: 'jotunheim', alfheim: 'alfheim', vanaheim: 'vanaheim',
+	svartalfheim: 'svartalfheim',
+	// Greek → Norse visual proxies
+	chaos: 'ginnungagap', gaia_earth: 'vanaheim', mount_othrys: 'jotunheim',
+	tartarus: 'helheim', olympus: 'asgard', cilicia: 'muspelheim',
+	phlegra: 'muspelheim', athens: 'midgard',
+	// Egyptian → Norse visual proxies
+	heliopolis: 'asgard', thebes: 'midgard', duat: 'helheim',
+	memphis: 'svartalfheim', abydos: 'midgard',
+	// Celtic → Norse visual proxies
+	tara: 'vanaheim', emain_macha: 'midgard', cruachan: 'jotunheim',
+	tir_na_nog: 'alfheim', mag_mell: 'alfheim',
+	// Eastern → Norse visual proxies
+	celestial_court: 'asgard', takamagahara: 'asgard',
+	yomi: 'helheim', mount_meru: 'jotunheim', diyu: 'muspelheim',
+};
+
+const REALM_DISPLAY_NAMES: Record<string, string> = {
+	ginnungagap: 'Ginnungagap', midgard: 'Midgard', asgard: 'Asgard',
+	niflheim: 'Niflheim', muspelheim: 'Muspelheim', helheim: 'Helheim',
+	jotunheim: 'Jotunheim', alfheim: 'Alfheim', vanaheim: 'Vanaheim',
+	svartalfheim: 'Svartalfheim',
+};
+
+/** Resolve a campaign mission realm to its visual realm id. Falls back to midgard. */
+function resolveVisualRealm(missionRealm: string | undefined | null): string {
+	if (!missionRealm) return 'midgard';
+	return REALM_VISUAL_MAP[missionRealm] || 'midgard';
+}
 
 interface HeroPortraitPanelProps {
   army: ArmySelectionType;
@@ -380,6 +451,16 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
   const gameEndProcessedRef = useRef(false);
   const gameOverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  /*
+    game_over has three internal sub-phases for campaign missions:
+      'cinematic' — playing victoryCinematic / defeatCinematic if authored
+      'result'    — the standard result card (VICTORY / DEFEAT + narrative + rewards)
+      'bridge'    — playing storyBridge scenes before returning to the map
+    Non-campaign matches always sit in 'result' immediately.
+  */
+  type GameOverSubPhase = 'cinematic' | 'result' | 'bridge';
+  const [gameOverSubPhase, setGameOverSubPhase] = useState<GameOverSubPhase>('result');
+
   const {
     boardState,
     initializeBoard,
@@ -403,6 +484,29 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     ? buildCampaignArmy(campaignData!.mission)
     : getDefaultArmySelection(),
     [isCampaign, campaignData]);
+
+  /*
+    Set the active realm in the global game store as soon as we know the
+    campaign mission. This drives both the chess board background skin
+    (.ragnarok-chess-game.realm-{id} CSS rules) and the combat arena skin
+    (.game-viewport.realm-{id} from realm-boards.css). Previously this
+    only fired inside handleCombatTriggered, which meant the chess board
+    rendered with no realm theming until pieces collided.
+  */
+  const missionRealm = isCampaign ? campaignData?.mission?.realm : undefined;
+  const visualRealm = useMemo(() => resolveVisualRealm(missionRealm), [missionRealm]);
+  useEffect(() => {
+    if (!isCampaign || !missionRealm) return;
+    useGameStore.getState().setGameState({
+      activeRealm: {
+        id: visualRealm,
+        name: REALM_DISPLAY_NAMES[visualRealm] || visualRealm,
+        description: '',
+        owner: 'player',
+        effects: [],
+      }
+    });
+  }, [isCampaign, missionRealm, visualRealm]);
 
   const createPetFromChessPiece = useCallback((
     piece: typeof boardState.pieces[0],
@@ -514,7 +618,11 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     bossRulesInitRef.current = true;
 
     const rules = campaignData.mission.bossRules;
-    const difficultyBonus = campaignDifficulty === 'mythic' ? 40 : campaignDifficulty === 'heroic' ? 20 : 0;
+    // Mythic doubles its HP bonus and Heroic gets a 50% bump on top of the
+    // baseline. Combined with profileToSmartAIConfig() which dials up the
+    // AI's aggression on higher difficulties, mythic should now feel like
+    // a real boss fight, not just "more HP." See campaignTypes.ts.
+    const difficultyBonus = campaignDifficulty === 'mythic' ? 60 : campaignDifficulty === 'heroic' ? 30 : 0;
     const bossExtraHealth = rules.find(r => r.type === 'extra_health')?.value ?? 0;
     const totalExtraHealth = bossExtraHealth + difficultyBonus;
 
@@ -711,47 +819,9 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     const attackerKingId = attackerArmy.king?.id;
     const defenderKingId = defenderArmy.king?.id;
     
-    // Set realm background from campaign mission (cosmetic only, no gameplay effects)
-    if (campaignData?.mission?.realm) {
-      const missionRealm = campaignData.mission.realm;
-      // Norse realms have dedicated art; non-Norse map to closest visual match
-      const REALM_VISUAL_MAP: Record<string, string> = {
-        // Norse (direct art)
-        ginnungagap: 'ginnungagap', midgard: 'midgard', asgard: 'asgard',
-        niflheim: 'niflheim', muspelheim: 'muspelheim', helheim: 'helheim',
-        jotunheim: 'jotunheim', alfheim: 'alfheim', vanaheim: 'vanaheim',
-        svartalfheim: 'svartalfheim',
-        // Greek → Norse visual proxies
-        chaos: 'ginnungagap', gaia_earth: 'vanaheim', mount_othrys: 'jotunheim',
-        tartarus: 'helheim', olympus: 'asgard', cilicia: 'muspelheim',
-        phlegra: 'muspelheim', athens: 'midgard',
-        // Egyptian → Norse visual proxies
-        heliopolis: 'asgard', thebes: 'midgard', duat: 'helheim',
-        memphis: 'svartalfheim', abydos: 'midgard',
-        // Celtic → Norse visual proxies
-        tara: 'vanaheim', emain_macha: 'midgard', cruachan: 'jotunheim',
-        tir_na_nog: 'alfheim', mag_mell: 'alfheim',
-        // Eastern → Norse visual proxies
-        celestial_court: 'asgard', takamagahara: 'asgard',
-        yomi: 'helheim', mount_meru: 'jotunheim', diyu: 'muspelheim',
-      };
-      const REALM_NAMES: Record<string, string> = {
-        ginnungagap: 'Ginnungagap', midgard: 'Midgard', asgard: 'Asgard',
-        niflheim: 'Niflheim', muspelheim: 'Muspelheim', helheim: 'Helheim',
-        jotunheim: 'Jotunheim', alfheim: 'Alfheim', vanaheim: 'Vanaheim',
-        svartalfheim: 'Svartalfheim',
-      };
-      const visualRealm = REALM_VISUAL_MAP[missionRealm] || 'midgard';
-      useGameStore.getState().setGameState({
-        activeRealm: {
-          id: visualRealm,
-          name: REALM_NAMES[visualRealm] || visualRealm,
-          description: '',
-          owner: 'player',
-          effects: [],
-        }
-      });
-    }
+    // (Realm background is now set earlier — see useEffect that watches
+    //  campaignData.mission.realm. The chess phase needs the realm class
+    //  applied before combat starts, not just at piece collision.)
 
     // FIX: Human player should ALWAYS be in the "player" slot for combat UI
     // When AI attacks human, swap parameters so human remains as "player"
@@ -902,10 +972,25 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
               useCraftingStore.getState().addEitr(reward.amount);
             }
           }
+          // Difficulty-locked bonus rewards
+          if (campaignDifficulty === 'heroic') {
+            useCraftingStore.getState().addEitr(50);
+          } else if (campaignDifficulty === 'mythic') {
+            useCraftingStore.getState().addEitr(150);
+          }
           useCampaignStore.getState().claimReward(campaignMissionId);
-          debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId}`);
+          debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId} (${campaignDifficulty})`);
         }
       }
+      // Decide which sub-phase of game_over to enter:
+      //   - victory + has victoryCinematic → 'cinematic' (play it first)
+      //   - defeat + has defeatCinematic   → 'cinematic'
+      //   - else → 'result' immediately
+      const wonCampaign = winner === 'player' && isCampaign && campaignData;
+      const lostCampaign = winner !== 'player' && isCampaign && campaignData;
+      const hasVictoryCinematic = wonCampaign && (campaignData?.mission?.victoryCinematic?.length ?? 0) > 0;
+      const hasDefeatCinematic = lostCampaign && (campaignData?.mission?.defeatCinematic?.length ?? 0) > 0;
+      setGameOverSubPhase(hasVictoryCinematic || hasDefeatCinematic ? 'cinematic' : 'result');
       setPhase('game_over');
       if (onGameEnd) {
         onGameEnd(winner);
@@ -983,10 +1068,27 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     setPhase('army_selection');
   }, [resetBoard, isCampaign, clearCurrent]);
 
+  /*
+    "Back to Campaign" — if the player won AND the mission has an authored
+    storyBridge, play those scenes before navigating to the map. The bridge
+    is the connective tissue between mission N and N+1: "Years pass.
+    Yggdrasil drinks deep from the well of Urd..." Falls through directly
+    on missions without a bridge or on defeat.
+  */
   const handleBackToCampaign = useCallback(() => {
+    if (
+      isCampaign &&
+      campaignData &&
+      boardState.gameStatus === 'player_wins' &&
+      gameOverSubPhase === 'result' &&
+      (campaignData.mission.storyBridge?.length ?? 0) > 0
+    ) {
+      setGameOverSubPhase('bridge');
+      return;
+    }
     clearCurrent();
     navigate(routes.campaign);
-  }, [clearCurrent, navigate]);
+  }, [clearCurrent, navigate, isCampaign, campaignData, boardState.gameStatus, gameOverSubPhase]);
 
   const handleRetryMission = useCallback(() => {
     resetBoard();
@@ -1020,8 +1122,17 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
     playSoundEffect('card_draw');
   }, [boardState.pieces, playSoundEffect]);
 
+  // Chess root carries the realm-{id} class so the chess phase board can
+  // get its own thematic background per mission. CSS rules live in
+  // chess-realm-skins.css. Chapter finale missions also get the
+  // .mission-finale class which adds a pulsing crimson border + slower
+  // music. CSS for finale lives in chess-realm-skins.css.
+  const chessRealmClass = isCampaign && missionRealm ? `realm-${visualRealm}` : '';
+  const isFinale = isCampaign && campaignData?.mission?.isChapterFinale;
+  const finaleClass = isFinale ? 'mission-finale' : '';
+
   return (
-    <div className="ragnarok-chess-game w-full h-full overflow-hidden">
+    <div className={`ragnarok-chess-game w-full h-full overflow-hidden ${chessRealmClass} ${finaleClass}`.trim()}>
       {/* Army Selection renders OUTSIDE AnimatePresence to avoid transform breaking fixed positioning */}
       {phase === 'army_selection' && (
         <ArmySelectionComponent onComplete={handleArmyComplete} onQuickStart={handleQuickStart} />
@@ -1064,6 +1175,20 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
             >
               {campaignData.chapter.name}
             </motion.p>
+            {/* Chapter finale missions get a special pulsing crimson badge
+                above the title. This is the only "this is THE last mission"
+                signal in the UI today; future spectacle work (special music,
+                multi-phase boss UI) will hang off the same isChapterFinale flag. */}
+            {campaignData.mission.isChapterFinale && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="mission-intro-finale-badge"
+              >
+                FINAL CONFRONTATION
+              </motion.div>
+            )}
             <motion.h2
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1148,69 +1273,221 @@ const RagnarokChessGame: React.FC<RagnarokChessGameProps> = ({ onGameEnd, initia
           </motion.div>
         )}
 
-        {phase === 'game_over' && (
-          <motion.div
-            key="gameover"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full h-full flex flex-col items-center justify-center"
-          >
-            <div className={`text-6xl font-bold mb-4 ${
-              boardState.gameStatus === 'player_wins' ? 'text-green-400' : 'text-red-400'
-            }`}>
-              {boardState.gameStatus === 'player_wins' ? 'VICTORY!' : 'DEFEAT'}
-            </div>
+        {phase === 'game_over' && (() => {
+          const isVictory = boardState.gameStatus === 'player_wins';
+          // Sub-phase 1: cinematic — fires only if the mission authored one.
+          // Skip handler advances to result card.
+          if (gameOverSubPhase === 'cinematic' && isCampaign && campaignData) {
+            const cinematicScenes = isVictory
+              ? campaignData.mission.victoryCinematic
+              : campaignData.mission.defeatCinematic;
+            if (cinematicScenes && cinematicScenes.length > 0) {
+              const syntheticIntro = {
+                title: isVictory ? 'Victory' : 'Twilight',
+                style: campaignData.chapter.cinematicIntro?.style ?? 'A Norse Saga',
+                scenes: cinematicScenes,
+              };
+              return (
+                <CinematicCrawl
+                  key="gameover-cinematic"
+                  intro={syntheticIntro}
+                  onComplete={() => setGameOverSubPhase('result')}
+                  openingMusic={isVictory ? 'aesir_triumph' : 'twilight_horn'}
+                />
+              );
+            }
+            // Defensive: no scenes after all → drop into result.
+            setGameOverSubPhase('result');
+            return null;
+          }
 
-            {isCampaign && campaignData ? (
-              <>
-                <p className="text-lg text-gray-300 mb-2 max-w-lg text-center italic">
-                  {boardState.gameStatus === 'player_wins'
-                    ? (campaignData.mission.narrativeVictory || campaignData.mission.narrativeAfter)
-                    : (campaignData.mission.narrativeDefeat || 'The enemy stands triumphant. But your story is not yet over...')}
-                </p>
-                {boardState.gameStatus === 'player_wins' && campaignData.mission.rewards.length > 0 && (
-                  <div className="flex gap-3 mb-6 mt-2">
-                    {campaignData.mission.rewards.map((r, i) => (
-                      <div key={i} className="px-3 py-1 bg-yellow-900/40 border border-yellow-700/50 rounded-lg text-yellow-300 text-sm">
-                        +{r.amount || 1} {r.type}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div className="flex gap-4 mt-4">
-                  <button
-                    onClick={handleBackToCampaign}
-                    className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg text-lg"
-                  >
-                    Back to Campaign
-                  </button>
-                  {boardState.gameStatus !== 'player_wins' && (
-                    <button
-                      onClick={handleRetryMission}
-                      className="px-6 py-3 bg-red-700 hover:bg-red-600 text-white font-bold rounded-lg text-lg"
+          // Sub-phase 3: story bridge — between mission N and N+1.
+          if (gameOverSubPhase === 'bridge' && isCampaign && campaignData?.mission?.storyBridge?.length) {
+            const syntheticBridge = {
+              title: campaignData.chapter.name,
+              style: campaignData.chapter.cinematicIntro?.style ?? 'A Norse Saga',
+              scenes: campaignData.mission.storyBridge,
+            };
+            return (
+              <CinematicCrawl
+                key="gameover-bridge"
+                intro={syntheticBridge}
+                onComplete={() => {
+                  clearCurrent();
+                  navigate(routes.campaign);
+                }}
+                openingMusic="forge_anvil"
+              />
+            );
+          }
+
+          // Sub-phase 2 (default): the result card.
+          return (
+            <motion.div
+              key="gameover-result"
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="cgo-result"
+            >
+              <motion.div
+                className={`cgo-title ${isVictory ? 'victory' : 'defeat'}`}
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {isVictory ? 'VICTORY' : 'DEFEAT'}
+              </motion.div>
+
+              {isCampaign && campaignData ? (
+                <>
+                  {/* Boss victory quip — the boss gloats when the player loses */}
+                  {!isVictory && campaignData.mission.bossQuips?.onVictory && (
+                    <motion.p
+                      className="cgo-boss-quip"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6, duration: 1.0 }}
                     >
-                      Retry Mission
-                    </button>
+                      &ldquo;{campaignData.mission.bossQuips.onVictory}&rdquo;
+                    </motion.p>
                   )}
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="text-xl text-gray-300 mb-8">
-                  {boardState.gameStatus === 'player_wins'
-                    ? 'Checkmate! The enemy King has no escape!'
-                    : 'Checkmate... Your King has been cornered.'}
-                </p>
-                <button
-                  onClick={handleRestart}
-                  className="px-8 py-4 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg text-xl"
-                >
-                  Play Again
-                </button>
-              </>
-            )}
-          </motion.div>
-        )}
+                  <motion.p
+                    className="cgo-subtitle"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.0, duration: 0.8 }}
+                  >
+                    {isVictory
+                      ? (campaignData.mission.narrativeVictory ?? '')
+                      : (campaignData.mission.narrativeDefeat ?? 'The enemy stands triumphant. But your story is not yet over...')}
+                  </motion.p>
+
+                  {/*
+                    The full epilogue paragraph — narrativeAfter. Authored on
+                    every campaign mission. This is the connective tissue
+                    between "you won the fight" and "what it meant for the
+                    world." Renders below the subtitle in a scrollable box.
+                  */}
+                  {isVictory && campaignData.mission.narrativeAfter && (
+                    <motion.div
+                      className="cgo-narrative-scroll"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <div className="cgo-narrative-divider">
+                        <span>&#x16A0;</span>
+                      </div>
+                      <p>{campaignData.mission.narrativeAfter}</p>
+                    </motion.div>
+                  )}
+
+                  {/* Star rating — 1-3 stars based on turn count */}
+                  {isVictory && (
+                    <motion.div
+                      className="cgo-stars"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      {[1, 2, 3].map(star => {
+                        const earned = getMissionStars(turnCount, campaignData.mission) >= star;
+                        return (
+                          <span key={star} className={`cgo-star ${earned ? 'earned' : 'empty'}`}>
+                            &#9733;
+                          </span>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+
+                  {/* Chapter completion splash — fires if this was the last mission */}
+                  {isVictory && campaignData.mission.isChapterFinale && (
+                    <motion.div
+                      className="cgo-chapter-splash"
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.8, duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <div className="cgo-chapter-label">Chapter Complete</div>
+                      <div className="cgo-chapter-name">{campaignData.chapter.name}</div>
+                    </motion.div>
+                  )}
+
+                  {isVictory && campaignData.mission.rewards.length > 0 && (
+                    <motion.div
+                      className="cgo-rewards"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 2.2, duration: 0.8 }}
+                    >
+                      {campaignData.mission.rewards.map((r, i) => (
+                        <div key={i} className="cgo-reward-pill">
+                          +{r.amount || 1} {r.type}
+                        </div>
+                      ))}
+                      {/* Difficulty-locked bonus rewards */}
+                      {campaignDifficulty === 'heroic' && (
+                        <div className="cgo-difficulty-bonus heroic">
+                          +50 eitr (heroic)
+                        </div>
+                      )}
+                      {campaignDifficulty === 'mythic' && (
+                        <div className="cgo-difficulty-bonus mythic">
+                          +150 eitr + bonus pack (mythic)
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
+                  <motion.div
+                    className="cgo-buttons"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 2.6, duration: 0.6 }}
+                  >
+                    <button
+                      type="button"
+                      onClick={handleBackToCampaign}
+                      className="cgo-btn-primary"
+                    >
+                      {isVictory && (campaignData.mission.storyBridge?.length ?? 0) > 0
+                        ? 'Continue the Saga'
+                        : 'Back to Campaign'}
+                    </button>
+                    {!isVictory && (
+                      <button
+                        type="button"
+                        onClick={handleRetryMission}
+                        className="cgo-btn-retry"
+                      >
+                        Retry Mission
+                      </button>
+                    )}
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  <p className="cgo-subtitle">
+                    {isVictory
+                      ? 'Checkmate! The enemy King has no escape.'
+                      : 'Checkmate... Your King has been cornered.'}
+                  </p>
+                  {/* PvP rivalry record — show head-to-head if we have history */}
+                  <RivalryBadge />
+                  <button
+                    type="button"
+                    onClick={handleRestart}
+                    className="cgo-btn-primary"
+                  >
+                    Play Again
+                  </button>
+                </>
+              )}
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </div>
   );

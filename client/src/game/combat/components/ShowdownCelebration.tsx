@@ -158,14 +158,33 @@ export const ShowdownCelebration: React.FC<ShowdownCelebrationProps> = ({
 					>
 						<div className="winner-badge-text">{getWinnerText()}</div>
 						{isShowdown && (
-							<motion.div
-								className="winner-hand-name"
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.3 }}
-							>
-								{getHandName()}
-							</motion.div>
+							<>
+								<motion.div
+									className="winner-hand-name"
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: 0.3 }}
+								>
+									{getHandName()}
+								</motion.div>
+								{/* Show both hands so player understands why they won/lost */}
+								{resolution.winner !== 'draw' && (
+									<motion.div
+										className="showdown-hand-comparison"
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 0.7 }}
+										transition={{ delay: 0.5 }}
+									>
+										<span className={resolution.winner === 'player' ? 'hand-winner' : 'hand-loser'}>
+											You: {getCombinedHandName(resolution.playerHand.rank)}
+										</span>
+										<span className="hand-vs">vs</span>
+										<span className={resolution.winner === 'opponent' ? 'hand-winner' : 'hand-loser'}>
+											Foe: {getCombinedHandName(resolution.opponentHand.rank)}
+										</span>
+									</motion.div>
+								)}
+							</>
 						)}
 						{!isShowdown && (
 							<motion.div

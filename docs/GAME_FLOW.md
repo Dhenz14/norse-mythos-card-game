@@ -78,6 +78,14 @@ Hero Death            ▼             │
 | **settingsStore** | `settingsStore.ts` | Audio, visual, gameplay preferences |
 | **starterStore** | `starterStore.ts` | New player starter pack claim tracking |
 
+### Current Implementation Notes
+	
+- **Home shell**: `App.tsx` is the current funnel entry. Daily quests, friends, wallet, primary mode cards, and utility links all mount there, so browser QA should validate that the primary "continue playing" action stays dominant on both desktop and mobile.
+- **Starter handoff**: `StarterPackCeremony.tsx` now returns first-time players to `routes.campaign` after the reveal instead of dropping them back on the home shell. The intended first-run path is home → starter ceremony → campaign briefing → battle.
+- **Campaign navigation**: `CampaignPage.tsx` now exposes a persistent "Next Battle / Active Mission" lead card plus a stronger mission briefing card. The mobile spacing pass added top clearance and moved realm nodes down so the copy no longer collides with the constellation path.
+- **Combat feel**: `RagnarokCombatArena.tsx` now deliberately swaps the lower command zone by phase. `SPELL_PET`/setup phases show authored guidance only, while true wagering controls render only during betting rounds (`PRE_FLOP`, `FAITH`, `FORESIGHT`, `DESTINY`). Final polish still depends on live browser QA for spacing, timing, and motion during real matches.
+- **Protocol-backed sync**: `shared/protocol-core/apply.ts` remains the deterministic replay path for both browser and server. Gameplay/UI changes that depend on rewards, packs, match results, or marketplace state should be validated against shared replay behavior rather than client-only assumptions.
+
 ---
 
 ## Mode 1: Ragnarok Chess Flow
@@ -160,7 +168,12 @@ interface ChessCollision {
 └─────┬──────┘
       ▼
 ┌────────────┐
-│ Spell/Pet  │ ← Cast spells, use abilities
+│ Spell/Pet  │ ← Cast spells, use abilities, stage board state
+└─────┬──────┘
+      ▼
+┌────────────┐
+│ First Blood│ ← Pre-flop wager opens
+│ (Pre-Flop) │   Betting round
 └─────┬──────┘
       ▼
 ┌────────────┐
@@ -473,7 +486,7 @@ TreasuryPage.tsx
 First Visit → HomePage
   │
   ▼ (starterStore.claimed === false)
-"Start Game" button shown
+"Claim Starter Deck" button shown
   │
   ▼ Click
 StarterPackCeremony.tsx
@@ -490,8 +503,8 @@ StarterPackCeremony.tsx
   │   starterStore.markClaimed()
   │
   ▼ Animation complete
-  "Play Your First Game" → /game (heroes pre-selected, cards optional)
-  "Close Pack" → HomePage
+  ceremony closes → /campaign
+  player lands on the campaign lead card / mission briefing path
 ```
 
 ### Starter Set

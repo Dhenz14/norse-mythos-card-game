@@ -40,8 +40,7 @@
 }
 
 /* ── Letterbox bars ── */
-.cinematic-letterbox-top,
-.cinematic-letterbox-bottom {
+:is(.cinematic-letterbox-top, .cinematic-letterbox-bottom) {
 	position: fixed;
 	left: 0;
 	right: 0;
@@ -153,6 +152,37 @@
 	font-style: italic;
 	text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
 	font-weight: 300;
+}
+
+/* ── Speaker portrait + name (per-scene character dialogue) ── */
+.cinematic-speaker {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 8px;
+}
+
+.cinematic-speaker-portrait {
+	width: clamp(96px, 12vw, 152px);
+	height: clamp(96px, 12vw, 152px);
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid rgba(201, 164, 76, 0.6);
+	box-shadow:
+		0 0 24px rgba(201, 164, 76, 0.35),
+		0 6px 24px rgba(0, 0, 0, 0.7),
+		inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+	background: #0a0610;
+}
+
+.cinematic-speaker-name {
+	font-family: 'Cinzel', Georgia, serif;
+	font-size: clamp(11px, 1.2vw, 14px);
+	letter-spacing: 0.25em;
+	text-transform: uppercase;
+	color: #c9a44c;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 .cinematic-visual-cue {
@@ -273,6 +303,43 @@
 	text-transform: uppercase;
 	letter-spacing: 0.3em;
 	margin-bottom: 8px;
+}
+
+/*
+  Chapter finale badge — only shows when mission.isChapterFinale === true.
+  Pulsing crimson, slightly elevated above the title. Drumbeat-style
+  pulse animation so it feels heavy and important.
+*/
+.mission-intro-finale-badge {
+	display: inline-block;
+	margin: 0 auto 14px;
+	padding: 6px 18px;
+	font-family: 'Cinzel', Georgia, serif;
+	font-size: 14px;
+	font-weight: 900;
+	letter-spacing: 0.32em;
+	text-transform: uppercase;
+	color: #ffe6e6;
+	background: linear-gradient(180deg, rgba(120, 8, 8, 0.85) 0%, rgba(80, 4, 4, 0.92) 100%);
+	border: 1px solid rgba(255, 60, 60, 0.7);
+	border-radius: 4px;
+	box-shadow:
+		0 0 24px rgba(255, 30, 30, 0.45),
+		0 0 0 1px rgba(0, 0, 0, 0.5),
+		inset 0 1px 0 rgba(255, 120, 120, 0.25);
+	text-shadow: 0 0 12px rgba(255, 60, 60, 0.8), 0 1px 2px rgba(0, 0, 0, 0.9);
+	animation: missionFinaleBadgePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes missionFinaleBadgePulse {
+	0%, 100% { box-shadow: 0 0 24px rgba(255, 30, 30, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 120, 120, 0.25); }
+	50% { box-shadow: 0 0 36px rgba(255, 50, 50, 0.65), 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 140, 140, 0.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mission-intro-finale-badge {
+		animation: none;
+	}
 }
 
 .mission-intro-title {

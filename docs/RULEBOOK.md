@@ -290,7 +290,8 @@ The attacking piece deals **15 damage** before poker betting begins:
 |-------|------------------|-------------|
 | **First Strike** | - | Attacker deals 15 damage to defender |
 | **Mulligan** | - | Replace cards from hand (optional) |
-| **Spell/Pet** | Pre-deal | Cast spells, activate abilities |
+| **Spell/Pet** | Pre-deal | Cast spells, activate abilities, stage the board |
+| **First Blood** | Pre-Flop | Opening betting round before community cards reveal |
 | **Faith** | Flop | 3 community cards revealed |
 | **Foresight** | Turn | 4th community card revealed |
 | **Destiny** | River | 5th community card revealed |
@@ -378,7 +379,7 @@ Poker Spells are a special card type that affects the psychological and informat
 
 #### Casting Timing
 
-Poker Spells are cast during the **Spell/Pet Phase** (before the Faith phase). Each spell has a timing property:
+Poker Spells are cast during the **Spell/Pet Phase**. The dedicated wager rounds begin afterward, starting with **First Blood** (the pre-flop betting round) and then moving into Faith / Foresight / Destiny. Each spell has a timing property:
 
 | Timing | When Effect Applies |
 |--------|---------------------|

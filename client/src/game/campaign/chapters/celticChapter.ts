@@ -52,6 +52,31 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'hero-fjorgyn', aiHeroClass: 'druid',
 			aiDeckCardIds: deck(0), aiProfile: AI_PROFILES.easy,
 			bossRules: [], prerequisiteIds: [],
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'The roots remember EVERY footstep. The forest is not finished with you.',
+					flash: 'green',
+					effect: { type: 'heal_self', value: 8 },
+					description: 'The druid draws on the forest\'s life force',
+				},
+			],
+			bossQuips: {
+				onCombatStart: 'The forest does not let just anyone walk to the Otherworld. Show us your roots.',
+				onLowHP: 'The trees lean toward you. Curiosity, not surrender.',
+				onLethal: 'Walk on, then. The Otherworld is colder than you think.',
+				onVictory: 'Sleep among the roots. We will mark the place.',
+			},
+			combatMusicId: 'celtic_mist',
+			victoryCinematic: [
+				{ narration: 'The trees part like guests at a wake. The druids bow. \u201cThe forest accepts you. Walk the path mortals fear.\u201d', visualCue: 'A living archway of moss and oak parting in slow motion. Druids in green hoods stepping aside.', musicId: 'celtic_mist', durationHint: 9 },
+			],
+			defeatCinematic: [
+				{ narration: 'Roots coil around your ankles. The forest takes you back into itself, very gently, very thoroughly.', musicId: 'celtic_mist', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Crows begin to gather on every branch behind you. Thousands of them, in a pattern that spells a name in the old script.', visualCue: 'A black sky full of crows turning together to spell a single word.', musicId: 'shadow_root', durationHint: 8 },
+			],
 			rewards: [{ type: 'rune', amount: 20 }],
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-kvasir', rook: 'hero-baldur', bishop: 'hero-idunn', knight: 'hero-fjora' },
 		},
@@ -66,6 +91,31 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'hero-persephone', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.morrigan,
 			bossRules: [], prerequisiteIds: ['celtic-1'],
+			bossQuips: {
+				onCombatStart: 'I am the chooser of the slain. I am the maiden, the mother, and the crone. And I have already chosen YOU.',
+				onLowHP: 'You were not supposed to survive that omen. The Morrigan is rarely wrong.',
+				onLethal: 'Then take the omen instead. We will meet again at someone else\u2019s funeral.',
+				onVictory: 'My crows feast tonight. Sleep with them.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'Maiden. Mother. Crone. THREE Morrigans, ONE quarry.',
+					flash: 'purple',
+					effect: { type: 'enrage', value: 8 },
+					description: 'The Morrigan triples herself',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The Morrigan\u2019s crows scatter into the dawn. She watches you from the shadows with three pairs of eyes. \u201cInteresting,\u201d she says. \u201cYou were not supposed to survive that.\u201d', visualCue: 'A triple-faced goddess fading into a shadow with three slow blinks.', musicId: 'celtic_mist', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'The crows descend. The Morrigan always collects what she is owed.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk on. A single warrior is waiting on a ford ahead, alone, body twisted in something that might be rage and might be magic. The Hound of Ulster has been holding the line for a hundred names.', visualCue: 'A man-shape on a river crossing, twisted in unnatural ways, spear in hand.', musicId: 'jotun_rage', durationHint: 8 },
+			],
 			rewards: [{ type: 'rune', amount: 25 }],
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-hel', rook: 'hero-vidar', bishop: 'hero-sigyn', knight: 'hero-nyx' },
 		},
@@ -73,13 +123,38 @@ export const celticChapter: CampaignChapter = {
 			id: 'celtic-3', chapterId: 'celtic', missionNumber: 3, realm: 'emain_macha',
 			name: 'Cu Chulainn\'s Rage',
 			description: 'The Hound of Ulster enters his legendary warp spasm.',
-			narrativeBefore: 'He stands alone on the ford, one man against the world. Cu Chulainn, the Hound of Ulster, whose warp spasm twists his body into something barely human. His muscles ripple, his eye sinks into his skull, and blood-heat radiates from his skin. "I held the ford alone against an army," he growls. "You are just one."',
+			narrativeBefore: 'He stands alone on the ford, one man against the world. Cu Chulainn, the Hound of Ulster, son of the god Lugh by a mortal woman \u2014 half-divine blood burning in every vein. His warp spasm twists his body into something barely human: his muscles reverse beneath his skin, one eye sinks deep into his skull while the other bulges to the size of a cauldron, blood-heat radiates so fiercely that snow melts in a circle around his feet. At seventeen he held the ford of the Táin alone against the entire army of Connacht while the men of Ulster lay in their curse-sleep. He killed his best friend Ferdiad here, in this same water, and wept over the body. "I held the ford alone against an army," he growls, the Gáe Bolga barbed spear already in his hand. "You are just one."',
 			narrativeAfter: 'Cu Chulainn\'s form untwists. He drives his spear into the ground and nods once. "Well fought. There is Ulster in your blood."',
 			narrativeVictory: 'The greatest warrior of Celtic myth acknowledges your prowess.',
 			narrativeDefeat: 'Cu Chulainn\'s gae bolga finds its mark. The Hound is unmatched.',
 			aiHeroId: 'hero-vili', aiHeroClass: 'warrior',
 			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.cuChulainn,
 			bossRules: [{ type: 'extra_health', value: 5, description: 'Cu Chulainn\'s warp spasm grants extra vitality' }],
+			bossQuips: {
+				onCombatStart: 'I held this ford alone against an army. You think you\u2019re harder than an army?',
+				onLowHP: 'My WARP SPASM is just getting started. Stay alive long enough to see the rest.',
+				onLethal: 'A clean kill. The hound finally rests.',
+				onVictory: 'Crawl home, traveler. Tell them the Hound was here.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'My eye sinks. My muscles re-arrange. The WARP SPASM is on me.',
+					flash: 'red',
+					effect: { type: 'enrage', value: 9 },
+					description: 'Cu Chulainn enters his warp spasm',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Cu Chulainn\u2019s form untwists. He drives his spear into the ground and nods once. \u201cWell fought,\u201d he says, in a voice that has not given that compliment in a century. \u201cThere is Ulster in your blood.\u201d', visualCue: 'A warrior\u2019s body slowly relaxing out of impossible angles. A spear sinking into the dirt of a ford.', musicId: 'celtic_mist', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'The gae bolga finds its mark. The Hound of Ulster is unmatched and remains unmatched.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Beyond the ford, a quiet pool waits beneath nine hazel trees. A salmon as wide as a man circles slowly in it, scales bright as foreknowledge.', visualCue: 'A still pool. A great pale fish circling under hazel branches.', musicId: 'celtic_mist', durationHint: 8 },
+			],
 			prerequisiteIds: ['celtic-2'],
 			rewards: [{ type: 'rune', amount: 30 }],
 			campaignArmy: { king: 'king-surtr', queen: 'hero-sinmara', rook: 'hero-thor', bishop: 'hero-gerd', knight: 'hero-skadi' },
@@ -95,6 +170,31 @@ export const celticChapter: CampaignChapter = {
 			aiHeroId: 'hero-kvasir', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.medium,
 			bossRules: [{ type: 'bonus_draw', value: 1, description: 'The Salmon grants extra wisdom (bonus draw)' }],
+			bossQuips: {
+				onCombatStart: 'I have eaten every secret ever whispered into a stream. I know every weakness you have, in the order you discovered them.',
+				onLowHP: 'You learn faster than Fionn did. Almost.',
+				onLethal: 'Take the wisdom, then. It is heavy.',
+				onVictory: 'Sleep beneath the hazels. Maybe wisdom comes for you in dreams.',
+			},
+			combatMusicId: 'celtic_mist',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'I know what you will do BEFORE you do it.',
+					flash: 'gold',
+					effect: { type: 'add_armor', value: 8 },
+					description: 'The Salmon reads your future moves',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The Salmon leaps from the pool and brushes your lips with its tail. A flood of knowledge rushes in \u2014 every battle tactic, every weakness, every hidden truth in the Otherworld.', visualCue: 'A great silver fish leaping in slow motion. Light pouring into the player\u2019s eyes.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The Salmon slips away. Some knowledge must be earned with greater effort.', musicId: 'celtic_mist', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk on. The ground begins to shake. Fomorians are gathering on the next ridge \u2014 and at their head, a king with a single eye that takes four men to lift.', visualCue: 'A vast one-eyed shape on a horizon, with handles set into his eyelid.', musicId: 'jotun_rage', durationHint: 8 },
+			],
 			prerequisiteIds: ['celtic-3'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-odin', rook: 'hero-heimdall', bishop: 'hero-idunn', knight: 'hero-loki' },
@@ -103,7 +203,7 @@ export const celticChapter: CampaignChapter = {
 			id: 'celtic-5', chapterId: 'celtic', missionNumber: 5, realm: 'cruachan',
 			name: 'Balor of the Evil Eye',
 			description: 'One glance from the Fomorian king\'s eye can destroy an army.',
-			narrativeBefore: 'The ground trembles as Balor of the Evil Eye approaches, his cyclopean lid requiring four men to lift. When it opens, everything in its gaze withers and dies. Forests turn to ash. Mountains crack. He is the Fomorian king, and his eye has destroyed more than you can imagine. "Do not look," they whisper. But you must.',
+			narrativeBefore: 'The ground trembles as Balor of the Evil Eye approaches, his cyclopean lid requiring four men to lift. When it opens, everything in its gaze withers and dies. Forests turn to ash. Mountains crack. He is the Fomorian king \u2014 and he is terrified. A druid\u2019s prophecy told him his own grandson would kill him, so Balor locked his daughter Ethniu in a crystal tower on Tory Island where no man could reach her. But Cian of the Tuatha Dé Danann reached her anyway, and from that union came Lugh \u2014 the grandson the prophecy promised. Balor knows. He has always known. Every enemy who stands before him might be the one the prophecy sent. His eye has destroyed more than you can imagine, and every kill is an attempt to prove the druid wrong. "Do not look," they whisper. But you must.',
 			narrativeAfter: 'Balor\'s eye dims. The Fomorian king stumbles back, clutching his face. "The prophecy..." he mutters. "The light returns." His destructive gaze, for once, has met its match.',
 			narrativeVictory: 'You withstand the gaze that destroyed armies. Balor\'s prophecy is fulfilled.',
 			narrativeDefeat: 'The eye opens. Everything you are turns to nothing.',
@@ -112,6 +212,31 @@ export const celticChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 5, description: 'Balor has 105 health' },
 				{ type: 'passive_damage', value: 1, description: 'Balor\'s Evil Eye deals 1 damage each turn' },
+			],
+			bossQuips: {
+				onCombatStart: 'Lift my eyelid. Look into my eye. Be the last thing you see.',
+				onLowHP: 'The PROPHECY. Lugh\u2019s grandson will end me. Are you Lugh\u2019s grandson?',
+				onLethal: 'A sling-stone? A SLING-STONE? Lugh, you BASTARD\u2014',
+				onVictory: 'Forests. Mountains. YOU. All ash before me.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'OPEN. THE. EYE.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 9 },
+					description: 'Balor\u2019s evil eye opens',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Balor\u2019s eye dims. The Fomorian king stumbles back, clutching his face. \u201cThe prophecy,\u201d he mutters. \u201cThe light returns.\u201d His destructive gaze, for once, has met its match.', visualCue: 'A vast one-eyed king reeling backward, his eyelid sealing shut.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The eye opens fully. Everything you are turns to ash and falls into the wind.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'The Tuatha De Danann gather in their high hall. The Dagda himself, club in one hand, cauldron in the other, is laughing about something. He hears your footsteps and looks up.', visualCue: 'A massive booming god in a fur cloak with an enormous club and an enormous bowl of stew.', musicId: 'celtic_mist', durationHint: 8 },
 			],
 			prerequisiteIds: ['celtic-4'],
 			rewards: [{ type: 'rune', amount: 40 }],
@@ -131,6 +256,31 @@ export const celticChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 10, description: 'The Dagda has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'The cauldron grants +1 mana' },
 			],
+			bossQuips: {
+				onCombatStart: 'Sit. Eat. The Undry never empties. AND THEN we fight.',
+				onLowHP: 'My club kills with one end and resurrects with the other. Pick a side.',
+				onLethal: 'A good fight. A GOOD fight. Now sit. Eat.',
+				onVictory: 'Have a bowl. The cauldron forgets nobody.',
+			},
+			combatMusicId: 'celtic_mist',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'My club has TWO ENDS, friend. The OTHER one heals me.',
+					flash: 'green',
+					effect: { type: 'heal_self', value: 14 },
+					description: 'The Dagda taps the resurrection end of his club',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The Dagda laughs, a sound like boulders rolling. \u201cHaven\u2019t been bested since Lugh himself challenged me!\u201d He ladles out a bowl from the cauldron. \u201cEat. You\u2019ve earned it.\u201d', visualCue: 'A booming father-god ladling stew into a bowl as big as a shield. He hands it across with a grin.', musicId: 'celtic_mist', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The Dagda\u2019s club swings once. That is enough.', musicId: 'jotun_rage', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk on. Golden light spills across fields of impossible flowers. The air smells like honey and forgetting. Tir na nOg has opened.', visualCue: 'A field of golden grass under a too-bright sun. A figure with golden hair smiling at you from a horse.', musicId: 'celestial_court', durationHint: 9 },
+			],
 			prerequisiteIds: ['celtic-5'],
 			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 20106 }],
 			campaignArmy: { king: 'king-buri', queen: 'hero-odin', rook: 'hero-thor', bishop: 'hero-freya', knight: 'hero-ullr' },
@@ -148,6 +298,31 @@ export const celticChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Tir na nOg\'s guardians have 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Time flows strangely here (bonus draw)' },
+			],
+			bossQuips: {
+				onCombatStart: 'Stay with me. Time has no power here. The world you came from has already forgotten your name.',
+				onLowHP: 'Oisin stayed for what he thought was three years. Three HUNDRED had passed. Will you?',
+				onLethal: 'You walk away from paradise itself. That is rare.',
+				onVictory: 'Sleep in the gold. We have all the time in any world.',
+			},
+			combatMusicId: 'celestial_court',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'Look at the FIELDS. Look at the LIGHT. Why would you want to leave?',
+					flash: 'gold',
+					effect: { type: 'heal_self', value: 12 },
+					description: 'Tir na nOg restores its guardians',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'You resist the pull of eternal paradise. The golden light fades, replaced by the honest grey of the Otherworld. Niamh weeps once, beautifully, briefly. Some journeys must continue.', visualCue: 'A golden-haired goddess raising a single tear, then turning her horse and riding into the field.', musicId: 'celtic_mist', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The fields are so beautiful. Just a moment longer. Three hundred years pass.', musicId: 'celestial_court', durationHint: 8 },
+			],
+			storyBridge: [
+				{ narration: 'Horns sound in the high sky. The Wild Hunt is riding tonight, and tonight\u2019s quarry is YOU.', visualCue: 'Spectral riders pouring across a midnight sky, hounds the size of horses baying in front of them.', musicId: 'jotun_rage', durationHint: 9 },
 			],
 			prerequisiteIds: ['celtic-6'],
 			rewards: [{ type: 'rune', amount: 55 }],
@@ -167,6 +342,31 @@ export const celticChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 10, description: 'Cernunnos has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'The Wild Hunt grants +1 mana' },
 			],
+			bossQuips: {
+				onCombatStart: 'I am the Horned God. The Hunt has chosen its quarry. The Hunt has never failed.',
+				onLowHP: 'You run faster than a stag. Faster than I have seen in ages.',
+				onLethal: 'Then run forever, hero. The Hunt remembers.',
+				onVictory: 'The hounds will tell stories about you. None of them flattering.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'HOUNDS! Tighten the circle! Drive them to me!',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'The Wild Hunt closes in',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Cernunnos reins in his spectral stag. The Hunt wheels around you but does not close. \u201cYou have outrun the Wild Hunt,\u201d the Horned God rumbles. \u201cNo mortal has done so in a thousand years.\u201d', visualCue: 'A horned god on a great stag stopping mid-charge. Hounds turning aside in mid-air.', musicId: 'celtic_mist', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The Wild Hunt always catches its quarry. Always.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk into a forge that burns with three different fires. Brigid is waiting, in three faces at once \u2014 the Smith, the Healer, the Poet.', visualCue: 'A goddess in three superimposed forms holding a hammer, a salve, and a harp.', musicId: 'forge_anvil', durationHint: 9 },
+			],
 			prerequisiteIds: ['celtic-7'],
 			rewards: [{ type: 'rune', amount: 60 }, { type: 'eitr', amount: 100 }],
 			campaignArmy: { king: 'king-ymir', queen: 'hero-sinmara', rook: 'hero-magni', bishop: 'hero-gerd', knight: 'hero-skadi' },
@@ -184,6 +384,38 @@ export const celticChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Brigid has 115 health' },
 				{ type: 'extra_mana', value: 2, description: 'Brigid channels triple power (+2 mana)' },
+			],
+			bossQuips: {
+				onCombatStart: 'Smith. Healer. Poet. To pass me you must survive ALL THREE.',
+				onLowHP: 'You bend like good iron. The forge will be honest with you.',
+				onLethal: 'Then take the blade I made from your trial. Carry the mark.',
+				onVictory: 'The fire takes those who are not ready to be remade.',
+			},
+			combatMusicId: 'forge_anvil',
+			bossPhases: [
+				{
+					hpPercent: 65,
+					quip: 'I am the SMITH. The hammer falls.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 7 },
+					description: 'Brigid the Smith strikes',
+				},
+				{
+					hpPercent: 35,
+					quip: 'I am the HEALER. I undo the work of the smith.',
+					flash: 'green',
+					effect: { type: 'heal_self', value: 12 },
+					description: 'Brigid the Healer mends herself',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Brigid quenches her latest creation \u2014 a blade forged from your trial. \u201cCarry this mark,\u201d she says, in three voices at once. \u201cYou have been tested by fire, word, and mercy. Few survive all three.\u201d', visualCue: 'A blade in a quenching trough, steam rising. Three superimposed faces of a goddess inclining together.', musicId: 'celestial_court', durationHint: 14 },
+			],
+			defeatCinematic: [
+				{ narration: 'Brigid\u2019s forge consumes those who are not ready to be remade.', musicId: 'forge_anvil', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'And in the highest hall of the Tuatha De Danann, a young god with a long-armed spear is waiting for you. Lugh of the Long Arm. The master of every art. The slayer of Balor. Your final test.', visualCue: 'A bright young god in golden armor, spear in hand, smiling.', musicId: 'celestial_court', durationHint: 9 },
 			],
 			prerequisiteIds: ['celtic-8'],
 			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 20204 }],
@@ -204,9 +436,48 @@ export const celticChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Lugh wields all arts (+2 mana)' },
 				{ type: 'bonus_draw', value: 1, description: 'Lugh draws from mastery of all crafts' },
 			],
+			bossQuips: {
+				onCombatStart: 'I am Lugh of the Long Arm. Master of every craft. I slew Balor with a sling-stone. Show me your one art.',
+				onLowHP: 'You are doing very well. The Tuatha do not say that often.',
+				onLethal: 'Strike. The master of every art is also the master of knowing when he has met his equal.',
+				onVictory: 'Sleep, traveler. The mists of Tir na nOg are kind.',
+			},
+			combatMusicId: 'celestial_court',
+			bossPhases: [
+				{
+					hpPercent: 75,
+					quip: 'I am the WARRIOR. Areadbhar is hungry.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'Lugh the warrior strikes',
+				},
+				{
+					hpPercent: 50,
+					quip: 'I am the SMITH. I have forged a thousand things you will never see.',
+					flash: 'gold',
+					effect: { type: 'add_armor', value: 12 },
+					description: 'Lugh the smith hardens his armor',
+				},
+				{
+					hpPercent: 25,
+					quip: 'I am the SORCERER. I have read every page of every book ever written in the Otherworld.',
+					flash: 'gold',
+					effect: { type: 'enrage', value: 13 },
+					description: 'Lugh the sorcerer unfolds his last art',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Lugh plants his spear and kneels \u2014 not in defeat, but in respect. \u201cYou have earned something no one has earned in my memory: my acknowledgment that you are my equal.\u201d', visualCue: 'A bright young god in golden armor going to one knee, spear point in the dirt at your feet.', musicId: 'celestial_court', durationHint: 12 },
+				{ narration: 'The Otherworld shimmers and the mists of Tir na nOg lift around you. The Celtic chapter is complete. The Tuatha sing your name into the harp-strings of every saga to follow.', visualCue: 'Mists peeling back from a green plain. A circle of harpers playing without lifting their heads.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Lugh is the master of everything \u2014 including the art of victory.', musicId: 'twilight_horn', durationHint: 7 },
+			],
 			prerequisiteIds: ['celtic-9'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20111 }, { type: 'pack', amount: 2 }],
 			campaignArmy: { king: 'king-borr', queen: 'hero-odin', rook: 'hero-thor', bishop: 'hero-freya', knight: 'hero-loki' },
+			starThresholds: { threeStar: 16, twoStar: 24 },
+			isChapterFinale: true,
 		},
 	],
 };

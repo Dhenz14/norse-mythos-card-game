@@ -80,7 +80,6 @@
 	transition: width 0.8s ease;
 }
 
-.rarity-meter-fill-mythic { background: linear-gradient(90deg, #ec4899, #8b5cf6, #22d3ee); }
 .rarity-meter-fill-mythic { background: linear-gradient(90deg, #d97706, #fbbf24); }
 .rarity-meter-fill-epic { background: linear-gradient(90deg, #7c3aed, #a855f7); }
 .rarity-meter-fill-rare { background: linear-gradient(90deg, #2563eb, #3b82f6); }
@@ -254,7 +253,6 @@
 .odds-bar-fill-common { background: #6b7280; }
 .odds-bar-fill-rare { background: #3b82f6; }
 .odds-bar-fill-epic { background: #a855f7; }
-.odds-bar-fill-mythic { background: #fbbf24; }
 .odds-bar-fill-mythic { background: linear-gradient(90deg, #ec4899, #8b5cf6); }
 
 /* ========== Open Pack Button Themes ========== */

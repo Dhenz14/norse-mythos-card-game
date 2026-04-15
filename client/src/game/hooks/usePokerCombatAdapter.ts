@@ -131,8 +131,9 @@ export interface PokerCombatAdapter {
   applyDirectDamage: (targetPlayerId: 'player' | 'opponent', damage: number, sourceDescription?: string) => void;
   healPlayerHero: (amount: number) => void;
   healOpponentHero: (amount: number) => void;
-  setPlayerHeroBuffs: (buffs: { attack?: number; health?: number; armor?: number }) => void;
+  setPlayerHeroBuffs: (attack: number, armor: number) => void;
   addPlayerArmor: (amount: number) => void;
+  addOpponentArmor: (amount: number) => void;
   markBothPlayersReady: () => void;
   completeFirstStrike: () => void;
 }
@@ -167,6 +168,7 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
   const healOpponentHeroFn = useUnifiedCombatStore(s => s.healOpponentHero);
   const setPlayerHeroBuffsFn = useUnifiedCombatStore(s => s.setPlayerHeroBuffs);
   const addPlayerArmorFn = useUnifiedCombatStore(s => s.addPlayerArmor);
+  const addOpponentArmorFn = useUnifiedCombatStore(s => s.addOpponentArmor);
   const markBothPlayersReadyFn = useUnifiedCombatStore(s => s.markBothPlayersReady);
   const completeFirstStrikeFn = useUnifiedCombatStore(s => s.completeFirstStrike);
 
@@ -276,12 +278,16 @@ export function usePokerCombatAdapter(): PokerCombatAdapter {
       healOpponentHeroFn(amount);
     },
 
-    setPlayerHeroBuffs: (buffs: { attack?: number; health?: number; armor?: number }) => {
-      setPlayerHeroBuffsFn(buffs);
+    setPlayerHeroBuffs: (attack: number, armor: number) => {
+      setPlayerHeroBuffsFn({ attack, armor });
     },
 
     addPlayerArmor: (amount: number) => {
       addPlayerArmorFn(amount);
+    },
+
+    addOpponentArmor: (amount: number) => {
+      addOpponentArmorFn(amount);
     },
 
     markBothPlayersReady: () => {
@@ -402,12 +408,16 @@ export function getPokerCombatAdapterState(): PokerCombatAdapter {
       getStore().healOpponentHero(amount);
     },
 
-    setPlayerHeroBuffs: (buffs: { attack?: number; health?: number; armor?: number }) => {
-      getStore().setPlayerHeroBuffs(buffs);
+    setPlayerHeroBuffs: (attack: number, armor: number) => {
+      getStore().setPlayerHeroBuffs({ attack, armor });
     },
 
     addPlayerArmor: (amount: number) => {
       getStore().addPlayerArmor(amount);
+    },
+
+    addOpponentArmor: (amount: number) => {
+      getStore().addOpponentArmor(amount);
     },
 
     markBothPlayersReady: () => {

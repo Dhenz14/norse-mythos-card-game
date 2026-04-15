@@ -1,7 +1,8 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { HashRouter, Routes, Route, Link } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { HashRouter, Routes, Route, Link, Outlet, useLocation } from 'react-router-dom';
 import { routes } from './lib/routes';
 import { Button } from './components/ui/button';
+import { ArrowRight, Castle, ScrollText, Shield, Swords, Trophy } from 'lucide-react';
 import UnifiedCardSystem from "./game/components/UnifiedCardSystem";
 import "./index.css";
 import "./styles/homepage.css";
@@ -11,7 +12,13 @@ import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
 import LoadingScreen from "./game/components/ui/LoadingScreen";
 import AssetDownloadButton from "./game/components/ui/AssetDownloadButton";
 import GoldenCardFilter from "./game/animations/GoldenCardFilter";
+import { ALL_CHAPTERS, getMission, useCampaignStore } from "./game/campaign";
 import { useStarterStore } from "./game/stores/starterStore";
+import {
+  BridgeRuntimeBoundary,
+  CardDataRuntimeBoundary,
+  GameplayRuntimeBoundary,
+} from "./game/runtime/RuntimeBoundary";
 
 const HiveKeychainLogin = lazy(() => import("./game/components/HiveKeychainLogin").then(m => ({ default: m.HiveKeychainLogin })));
 const DailyQuestPanel = lazy(() => import("./game/components/quests/DailyQuestPanel"));
@@ -34,13 +41,20 @@ const ExplorerPage = lazy(() => import('./game/components/explorer/ExplorerPage'
 const AdminPanel = lazy(() => import('./game/components/admin/AdminPanel'));
 const StarterPackCeremony = lazy(() => import('./game/components/StarterPackCeremony'));
 const DuatClaimPopup = lazy(() => import('./game/components/DuatClaimPopup'));
+const FactionPledgePopup = lazy(() =>
+	import('./game/pvp').then(m => ({ default: m.FactionPledgePopup }))
+);
+
+type DeferredInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+};
 
 // PWA install prompt
-let deferredInstallPrompt: Event | null = null;
+let deferredInstallPrompt: DeferredInstallPromptEvent | null = null;
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
-    deferredInstallPrompt = e;
+    deferredInstallPrompt = e as DeferredInstallPromptEvent;
   });
 }
 
@@ -71,8 +85,107 @@ function OnlineOnly({ children, label }: { children: React.ReactNode; label: str
 function HomePage() {
   const bgOverlayRef = useRef<HTMLDivElement>(null);
   const starterClaimed = useStarterStore(s => s.claimed);
+  const completedMissions = useCampaignStore(s => s.completedMissions);
+  const currentMissionId = useCampaignStore(s => s.currentMission);
   const [showCeremony, setShowCeremony] = useState(false);
   const [canInstall, setCanInstall] = useState(!!deferredInstallPrompt);
+  const completedMissionCount = Object.keys(completedMissions).length;
+  const totalMissionCount = useMemo(
+    () => ALL_CHAPTERS.reduce((sum, chapter) => sum + chapter.missions.length, 0),
+    [],
+  );
+  const activeMission = useMemo(
+    () => (currentMissionId ? getMission(currentMissionId) : null),
+    [currentMissionId],
+  );
+  const nextMission = useMemo(() => {
+    if (activeMission) {
+      return activeMission;
+    }
+
+    for (const chapter of ALL_CHAPTERS) {
+      const mission = chapter.missions.find(candidate =>
+        !completedMissions[candidate.id] &&
+        (candidate.prerequisiteIds.length === 0 ||
+          candidate.prerequisiteIds.every(id => Boolean(completedMissions[id]))),
+      );
+      if (mission) {
+        return { chapter, mission };
+      }
+    }
+
+    return null;
+  }, [activeMission, completedMissions]);
+  const primaryLabel = !starterClaimed
+    ? 'Claim Starter Deck'
+    : activeMission
+      ? 'Return to Active Mission'
+      : completedMissionCount > 0
+        ? 'Continue Campaign'
+        : 'Start Campaign';
+  const primarySummary = !starterClaimed
+    ? 'Secure the starter line, then move straight into the campaign map for your first authored battle.'
+    : activeMission
+      ? `${activeMission.chapter.name} is already staged. Re-enter ${activeMission.mission.name} from the campaign map.`
+      : nextMission
+        ? `Open ${nextMission.chapter.name} and stage ${nextMission.mission.name} for the cleanest path into live play.`
+        : 'Open the campaign map and step into the next battle.';
+  const warPathTitle = !starterClaimed
+    ? 'Starter Ceremony'
+    : activeMission
+      ? activeMission.mission.name
+      : nextMission?.mission.name ?? 'Campaign Ready';
+  const warPathSubtitle = !starterClaimed
+    ? 'Starter line pending'
+    : activeMission
+      ? `${activeMission.chapter.name} · Mission ${activeMission.mission.missionNumber}`
+      : nextMission
+        ? `${nextMission.chapter.name} · Mission ${nextMission.mission.missionNumber}`
+        : `${completedMissionCount}/${totalMissionCount} missions cleared`;
+  const journeySteps = !starterClaimed
+    ? [
+        { icon: Shield, label: 'Claim', detail: 'Starter deck and default line', complete: false },
+        { icon: ScrollText, label: 'Stage', detail: 'Open the campaign map', complete: false },
+        { icon: Swords, label: 'Battle', detail: 'Enter the first authored run', complete: false },
+      ]
+    : [
+        { icon: Castle, label: 'Campaign', detail: 'Choose the next mission', complete: true },
+        { icon: ScrollText, label: 'Briefing', detail: 'Lock difficulty and pacing', complete: Boolean(activeMission || nextMission) },
+        { icon: Swords, label: 'Battle', detail: 'Move from staging into live play', complete: Boolean(activeMission) || completedMissionCount > 0 },
+      ];
+  const modeCards = [
+    {
+      title: 'Ranked PvP',
+      eyebrow: 'Competitive',
+      description: 'Queue into live opponents, hold your nerve, and climb with the full combat ruleset.',
+      to: routes.multiplayer,
+      tone: 'crimson',
+    },
+    {
+      title: 'Campaign',
+      eyebrow: 'Adventure',
+      description: 'Push through faction storylines, boss phases, and realm-driven encounters.',
+      to: routes.campaign,
+      tone: 'emerald',
+    },
+    {
+      title: 'Collection',
+      eyebrow: 'Deckbuilding',
+      description: 'Review your cards, inspect rarity treatments, and tune the pieces behind your army.',
+      to: routes.collection,
+      tone: 'azure',
+    },
+  ];
+  const utilityLinks = [
+    { label: 'Packs', to: routes.packs },
+    { label: 'Trading', to: routes.trading },
+    { label: 'Tournaments', to: routes.tournaments },
+    { label: 'Ladder', to: routes.ladder },
+    { label: 'History', to: routes.history },
+    { label: 'Settings', to: routes.settings },
+    { label: 'Treasury', to: routes.treasury },
+    { label: 'Explorer', to: routes.explorer },
+  ];
 
   useEffect(() => {
     if (bgOverlayRef.current) {
@@ -84,152 +197,175 @@ function HomePage() {
   }, []);
 
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden homepage-container">
+    <div className="h-screen w-screen relative overflow-hidden homepage-container">
       <div
         ref={bgOverlayRef}
         className="absolute inset-0 opacity-20 homepage-bg-overlay"
       />
 
-      {/* Hive Wallet — top-right corner */}
-      <div className="absolute top-4 right-4 z-20">
-        <Suspense fallback={<div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />}>
-          <HiveKeychainLogin />
-        </Suspense>
-      </div>
-
-      {/* Daily Quests — top-left corner */}
-      <div className="absolute top-4 left-4 z-20">
-        <Suspense fallback={<div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />}>
-          <DailyQuestPanel />
-        </Suspense>
-      </div>
-
-      {/* Friends — bottom-right corner */}
-      <div className="absolute bottom-8 right-4 z-20">
-        <Suspense fallback={<div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />}>
-          <FriendsPanel />
-        </Suspense>
-      </div>
-      
-      <div className="relative z-10 flex flex-col items-center">
-        <div className="relative mb-12 group">
-          <div className="absolute inset-0 blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-700 homepage-logo-glow" />
-          <img 
-            src={ragnarokLogo} 
-            alt="Ragnarok" 
-            className="w-[600px] max-w-[90vw] relative z-10 drop-shadow-2xl homepage-logo-image"
-          />
+      <div className="homepage-scaffold">
+        <div className="homepage-top-rail">
+          <div className="homepage-top-widget homepage-top-widget-wide">
+            <Suspense fallback={<div className="animate-pulse h-8 w-40 bg-gray-700 rounded" />}>
+              <DailyQuestPanel />
+            </Suspense>
+          </div>
+          <div className="homepage-top-widget-group">
+            <div className="homepage-top-widget">
+              <Suspense fallback={<div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />}>
+                <FriendsPanel />
+              </Suspense>
+            </div>
+            <div className="homepage-top-widget">
+              <Suspense fallback={<div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />}>
+                <HiveKeychainLogin />
+              </Suspense>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-4 w-full max-w-md px-4">
-          <AssetDownloadButton />
-          {canInstall && (
-            <button
-              onClick={() => {
-                if (deferredInstallPrompt && 'prompt' in deferredInstallPrompt) {
-                  (deferredInstallPrompt as any).prompt();
-                  setCanInstall(false);
-                }
-              }}
-              className="w-full py-2 text-sm font-semibold text-amber-400 border border-amber-700/40 bg-amber-900/20 rounded-lg hover:bg-amber-900/40 transition-colors"
-            >
-              Install as Desktop App
-            </button>
-          )}
+        <div className="homepage-shell">
+          <section className="homepage-hero-panel">
+            <div className="relative group homepage-logo-block">
+              <div className="absolute inset-0 blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-700 homepage-logo-glow" />
+              <img
+                src={ragnarokLogo}
+                alt="Ragnarok"
+                className="homepage-logo-image"
+              />
+            </div>
 
-          {!starterClaimed ? (
-            <Button
-              className="homepage-btn-primary w-full py-8 text-2xl font-bold tracking-wider uppercase border-2"
-              onClick={() => setShowCeremony(true)}
-            >
-              Start Game
-            </Button>
-          ) : (
-            <Link to={routes.game}>
-              <Button className="homepage-btn-primary w-full py-8 text-2xl font-bold tracking-wider uppercase border-2">
-                Play Game
-              </Button>
-            </Link>
-          )}
+            <div className="homepage-kicker">Norse Mythos Card Game</div>
+            <h1 className="homepage-title">Choose the lane. Enter with intent.</h1>
+            <p className="homepage-copy">
+              The shell now needs to feel like one authored war table, not a cluster of systems.
+              Start on the campaign route, then peel into skirmish, ranked, and collection from a cleaner hierarchy.
+            </p>
 
-          {/* ── Core Gameplay (large buttons) ── */}
-          <div className="grid grid-cols-2 gap-3 w-full">
-            <Link to={routes.campaign}>
-              <Button className="homepage-btn-secondary w-full py-4 text-base font-semibold tracking-wide uppercase border">
-                Campaign
+            {!starterClaimed ? (
+              <Button
+                className="homepage-hero-cta"
+                onClick={() => setShowCeremony(true)}
+              >
+                Claim Starter Deck
               </Button>
-            </Link>
-            <Link to={routes.multiplayer}>
-              <Button className="homepage-btn-secondary w-full py-4 text-base font-semibold tracking-wide uppercase border">
-                Ranked
-              </Button>
-            </Link>
-          </div>
+            ) : (
+              <Link to={routes.campaign} className="homepage-cta-link">
+                <Button className="homepage-hero-cta">
+                  {primaryLabel}
+                </Button>
+              </Link>
+            )}
+            <p className="homepage-cta-note">{primarySummary}</p>
 
-          {/* ── Collection & Economy (medium buttons) ── */}
-          <div className="grid grid-cols-3 gap-2 w-full">
-            <Link to={routes.packs}>
-              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
-                Packs
-              </Button>
-            </Link>
-            <Link to={routes.collection}>
-              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
-                Collection
-              </Button>
-            </Link>
-            <Link to={routes.trading}>
-              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
-                Trading
-              </Button>
-            </Link>
-          </div>
+            <div className="homepage-hero-meta">
+              <span>Campaign-first funnel</span>
+              <span>Army staging</span>
+              <span>Poker combat</span>
+            </div>
 
-          {/* ── Competitive (medium buttons) ── */}
-          <div className="grid grid-cols-2 gap-2 w-full">
-            <Link to={routes.tournaments}>
-              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
-                Tournaments
-              </Button>
-            </Link>
-            <Link to={routes.ladder}>
-              <Button className="homepage-btn-secondary w-full py-3 text-sm font-semibold tracking-wide uppercase border">
-                Ladder
-              </Button>
-            </Link>
-          </div>
+            <div className="homepage-journey-card">
+              <div className="homepage-journey-header">
+                <span className="homepage-journey-kicker">War Path</span>
+                <span className="homepage-journey-progress">{completedMissionCount}/{totalMissionCount} cleared</span>
+              </div>
+              <div className="homepage-journey-title">{warPathTitle}</div>
+              <p className="homepage-journey-copy">{warPathSubtitle}</p>
+              <div className="homepage-journey-steps">
+                {journeySteps.map(({ icon: Icon, label, detail, complete }) => (
+                  <div key={label} className={`homepage-journey-step ${complete ? 'is-complete' : ''}`}>
+                    <span className="homepage-journey-step-icon">
+                      <Icon size={15} strokeWidth={2} />
+                    </span>
+                    <span className="homepage-journey-step-copy">
+                      <strong>{label}</strong>
+                      <span>{detail}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-          {/* ── Utility (small buttons) ── */}
-          <div className="grid grid-cols-4 gap-2 w-full">
-            <Link to={routes.history}>
-              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
-                History
-              </Button>
-            </Link>
-            <Link to={routes.settings}>
-              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
-                Settings
-              </Button>
-            </Link>
-            <Link to={routes.treasury}>
-              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
-                Treasury
-              </Button>
-            </Link>
-            <Link to={routes.explorer}>
-              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-70 hover:opacity-100">
-                Explorer
-              </Button>
-            </Link>
-          </div>
+            {starterClaimed && (
+              <div className="homepage-secondary-actions">
+                <Link to={routes.game} className="homepage-secondary-link">
+                  <Swords size={16} strokeWidth={2} />
+                  <span>Solo Skirmish</span>
+                  <ArrowRight size={15} strokeWidth={2} />
+                </Link>
+                <Link to={routes.multiplayer} className="homepage-secondary-link">
+                  <Trophy size={16} strokeWidth={2} />
+                  <span>Ranked Queue</span>
+                  <ArrowRight size={15} strokeWidth={2} />
+                </Link>
+                <Link to={routes.collection} className="homepage-secondary-link">
+                  <ScrollText size={16} strokeWidth={2} />
+                  <span>Tune Collection</span>
+                  <ArrowRight size={15} strokeWidth={2} />
+                </Link>
+              </div>
+            )}
 
-          {import.meta.env.DEV && (
-            <Link to={routes.game}>
-              <Button className="homepage-btn-secondary w-full py-2 text-xs font-medium tracking-wide uppercase border opacity-30 hover:opacity-60 transition-opacity">
-                Dev Test
-              </Button>
-            </Link>
-          )}
+            <div className="homepage-support-actions">
+              <AssetDownloadButton />
+              {canInstall && (
+                <button
+                  onClick={() => {
+                    if (deferredInstallPrompt) {
+                      deferredInstallPrompt.prompt();
+                      setCanInstall(false);
+                    }
+                  }}
+                  className="homepage-install-btn"
+                >
+                  Install Desktop App
+                </button>
+              )}
+            </div>
+          </section>
+
+          <section className="homepage-destination-panel">
+            <div className="homepage-section-header">
+              <span className="homepage-section-kicker">Core Modes</span>
+              <span className="homepage-section-note">The fastest way into a clean play flow.</span>
+            </div>
+            <div className="homepage-mode-grid">
+              {modeCards.map((mode) => (
+                <Link
+                  key={mode.title}
+                  to={mode.to}
+                  className={`homepage-mode-card homepage-mode-card-${mode.tone}`}
+                >
+                  <span className="homepage-mode-eyebrow">{mode.eyebrow}</span>
+                  <span className="homepage-mode-title">{mode.title}</span>
+                  <span className="homepage-mode-copy">{mode.description}</span>
+                  <span className="homepage-mode-arrow">Enter</span>
+                </Link>
+              ))}
+            </div>
+
+            <div className="homepage-section-header homepage-section-header-utility">
+              <span className="homepage-section-kicker">Utility Dock</span>
+              <span className="homepage-section-note">Collection, progression, and system surfaces.</span>
+            </div>
+            <div className="homepage-utility-grid">
+              {utilityLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  className="homepage-utility-link"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {import.meta.env.DEV && (
+              <Link to={routes.game} className="homepage-dev-link">
+                Dev Test Route
+              </Link>
+            )}
+          </section>
         </div>
       </div>
       
@@ -242,6 +378,27 @@ function HomePage() {
       )}
     </div>
   );
+}
+
+/*
+  ViewTransitionBridge — triggers the View Transitions API on route changes.
+  This pairs with the ::view-transition-old/new CSS in index.css to create
+  a subtle fade+scale between pages. Falls back silently on browsers that
+  don't support the API (Safari, older Firefox).
+*/
+function ViewTransitionBridge() {
+  const location = useLocation();
+  const prevPath = useRef(location.pathname);
+
+  useEffect(() => {
+    if (prevPath.current === location.pathname) return;
+    prevPath.current = location.pathname;
+    if (typeof document.startViewTransition === 'function') {
+      document.startViewTransition(() => {});
+    }
+  }, [location.pathname]);
+
+  return null;
 }
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: Error | null }> {
@@ -262,51 +419,17 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
   }
 }
 
-function App() {
-  useEffect(() => {
-    let cleanup: (() => void) | undefined;
-    (async () => {
-      const [
-        { default: initEffectSystem },
-        { initializeGameStoreIntegration },
-        { loadWasmEngine },
-        { initGameStoreSubscriptions },
-        { initGameFlowSubscription },
-        { initializeNFTBridge },
-        { setCardDataProvider },
-        allCardsModule,
-        artMappingModule,
-      ] = await Promise.all([
-        import("./game/effects/initEffectSystem"),
-        import("./game/stores/gameStoreIntegration"),
-        import("./game/engine/wasmLoader"),
-        import("./game/stores/gameStore"),
-        import("./game/stores/gameFlowStore"),
-        import("./game/nft"),
-        import("./data/blockchain/ICardDataProvider"),
-        import("./game/data/allCards"),
-        import("./game/utils/art/artMapping"),
-      ]);
-      setCardDataProvider({
-        getCardById: (id: number) => allCardsModule.getCardById(id) as any,
-        getAllCards: () => allCardsModule.default as any,
-        getCardArtPath: (name: string, cardId?: number) => artMappingModule.getRawCardArtPath(name, cardId),
-      });
-      await initializeNFTBridge();
-      initEffectSystem();
-      initGameStoreSubscriptions();
-      initGameFlowSubscription();
-      cleanup = initializeGameStoreIntegration();
-      loadWasmEngine().catch(err => console.warn('WASM engine load deferred:', err.message));
-    })();
-    return () => {
-      cleanup?.();
-      import("./game/stores/gameStore").then(m => m.disposeGameStoreSubscriptions());
-      import("./game/stores/gameFlowStore").then(m => m.disposeGameFlowSubscription());
-      import("./game/animations/BattlecryVFX").then(m => m.stopOrphanSweep());
-    };
-  }, []);
+function GlobalOverlaysLayout() {
+  return (
+    <>
+      <Outlet />
+      <Suspense fallback={null}><DuatClaimPopup /></Suspense>
+      <Suspense fallback={null}><FactionPledgePopup /></Suspense>
+    </>
+  );
+}
 
+function App() {
   return (
     <ErrorBoundary>
       <CardTransformProvider>
@@ -315,24 +438,36 @@ function App() {
         <GoldenCardFilter />
 
         <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ViewTransitionBridge />
           <Suspense fallback={<LoadingScreen />}>
             <Routes>
-              <Route path={routes.home} element={<HomePage />} />
-              <Route path={routes.game} element={<RagnarokChessGame />} />
-              <Route path={routes.campaign} element={<CampaignPage />} />
-              <Route path={routes.multiplayer} element={<MultiplayerGame />} />
-              <Route path={routes.packs} element={<PacksPage />} />
-              <Route path={routes.collection} element={<CollectionPage />} />
-              <Route path={routes.ladder} element={<RankedLadderPage />} />
-              <Route path={routes.trading} element={<OnlineOnly label="Trading"><TradingPage /></OnlineOnly>} />
-              <Route path={routes.marketplace} element={<OnlineOnly label="Marketplace"><MarketplacePage /></OnlineOnly>} />
-              <Route path={routes.treasury} element={<OnlineOnly label="Treasury"><TreasuryPage /></OnlineOnly>} />
-              <Route path={routes.explorer} element={<ExplorerPage />} />
-              <Route path={routes.admin} element={<AdminPanel />} />
-              <Route path={routes.tournaments} element={<OnlineOnly label="Tournaments"><TournamentListPage /></OnlineOnly>} />
-              <Route path={routes.spectate} element={<SpectatorView />} />
-              <Route path={routes.history} element={<MatchHistoryPage />} />
-              <Route path={routes.settings} element={<SettingsPage />} />
+              <Route element={<BridgeRuntimeBoundary />}>
+                <Route element={<GlobalOverlaysLayout />}>
+                  <Route path={routes.home} element={<HomePage />} />
+                  <Route path={routes.campaign} element={<CampaignPage />} />
+                  <Route path={routes.collection} element={<CollectionPage />} />
+                  <Route path={routes.ladder} element={<RankedLadderPage />} />
+                  <Route path={routes.trading} element={<OnlineOnly label="Trading"><TradingPage /></OnlineOnly>} />
+                  <Route path={routes.marketplace} element={<OnlineOnly label="Marketplace"><MarketplacePage /></OnlineOnly>} />
+                  <Route path={routes.treasury} element={<OnlineOnly label="Treasury"><TreasuryPage /></OnlineOnly>} />
+                  <Route path={routes.explorer} element={<ExplorerPage />} />
+                  <Route path={routes.admin} element={<AdminPanel />} />
+                  <Route path={routes.tournaments} element={<OnlineOnly label="Tournaments"><TournamentListPage /></OnlineOnly>} />
+                  <Route path={routes.history} element={<MatchHistoryPage />} />
+                  <Route path={routes.settings} element={<SettingsPage />} />
+
+                  <Route element={<CardDataRuntimeBoundary />}>
+                    <Route path={routes.packs} element={<PacksPage />} />
+                  </Route>
+
+                  <Route element={<GameplayRuntimeBoundary />}>
+                    <Route path={routes.game} element={<RagnarokChessGame />} />
+                    <Route path={routes.multiplayer} element={<MultiplayerGame />} />
+                    <Route path={routes.spectate} element={<SpectatorView />} />
+                  </Route>
+                </Route>
+              </Route>
+
               <Route path="*" element={
                 <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center text-white">
                   <h1 className="text-5xl font-bold text-amber-400 mb-4">404</h1>
@@ -345,7 +480,6 @@ function App() {
             </Routes>
           </Suspense>
         </HashRouter>
-        <Suspense fallback={null}><DuatClaimPopup /></Suspense>
       </CardTransformProvider>
     </ErrorBoundary>
   );

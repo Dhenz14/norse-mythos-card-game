@@ -24,6 +24,7 @@ import {
 } from './replayDB';
 import { useHiveDataStore } from '../HiveDataLayer';
 import { HIVE_NODES } from './hiveConfig';
+import { clientStateAdapter } from './clientStateAdapter';
 
 const HISTORY_PAGE_SIZE = 1000;
 const NODE_TIMEOUT_MS = 8000;
@@ -213,7 +214,6 @@ async function _doSync(username: string): Promise<void> {
 		// Pass sibling ops (transfers) to state adapter for companion validation
 		const siblings = trxSiblingMap.get(entry.trx_id);
 		if (siblings) {
-			const { clientStateAdapter } = await import('./clientStateAdapter');
 			clientStateAdapter.setTrxSiblings(entry.trx_id, siblings);
 		}
 

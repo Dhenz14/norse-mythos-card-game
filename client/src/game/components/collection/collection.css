@@ -219,21 +219,16 @@
 
 .card-frame-mythic {
 	border: 2px solid rgba(251, 191, 36, 0.8);
-	box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-}
-.card-frame-mythic:hover {
-	box-shadow: 0 0 40px rgba(251, 191, 36, 0.7);
-}
-
-.card-frame-mythic {
 	box-shadow:
+		0 0 20px rgba(251, 191, 36, 0.4),
 		0 0 25px rgba(236, 72, 153, 0.4),
 		0 0 50px rgba(139, 92, 246, 0.2);
 }
 .card-frame-mythic:hover {
 	box-shadow:
-		0 0 40px rgba(236, 72, 153, 0.6),
-		0 0 80px rgba(139, 92, 246, 0.4);
+		0 0 40px rgba(251, 191, 36, 0.7),
+		0 0 25px rgba(236, 72, 153, 0.4),
+		0 0 50px rgba(139, 92, 246, 0.2);
 }
 
 /* ========== Stat Gems ========== */

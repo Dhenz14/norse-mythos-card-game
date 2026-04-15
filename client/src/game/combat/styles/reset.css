@@ -1,8 +1,7 @@
 /* Arena Reset - Base styles and scrollbar hiding */
 
 /* Global scrollbar removal for all combat arena elements */
-.ragnarok-combat-arena,
-.ragnarok-combat-arena * {
+:where(.ragnarok-combat-arena, .ragnarok-combat-arena *) {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

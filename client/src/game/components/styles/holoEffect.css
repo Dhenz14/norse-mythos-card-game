@@ -36,9 +36,7 @@
    Base Layer Styles (hidden until holo-active or idle shimmer)
    ============================================================ */
 
-.holo-foil,
-.holo-glitter,
-.holo-glare {
+:is(.holo-foil, .holo-glitter, .holo-glare) {
 	position: absolute;
 	inset: 0;
 	border-radius: inherit;
@@ -51,16 +49,45 @@
 .holo-foil {
 	z-index: 5;
 	will-change: opacity;
+	background-image: repeating-linear-gradient(
+		133deg,
+		var(--foil-1), var(--foil-2), var(--foil-3),
+		var(--foil-4), var(--foil-5), var(--foil-6), var(--foil-1)
+	);
+	background-size: 300% 300%;
+	background-position:
+		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
+		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%);
+	mix-blend-mode: color-dodge;
+	filter:
+		brightness(calc((var(--pointer-from-center, 0) * 0.3) + 0.4))
+		contrast(2.8)
+		saturate(0.55);
 }
 
 .holo-glitter {
 	z-index: 5;
 	will-change: opacity;
+	background-image: url('/art/textures/glitter-256.webp');
+	background-size: 256px 256px;
+	background-repeat: repeat;
+	background-position:
+		calc(var(--bg-x, 50%) * 2px)
+		calc(var(--bg-y, 50%) * 2px);
+	mix-blend-mode: soft-light;
 }
 
 .holo-glare {
 	z-index: 7;
 	will-change: opacity;
+	background: radial-gradient(
+		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+		hsla(0, 0%, 100%, 0.35) 0%,
+		hsla(0, 0%, 100%, 0.1) 15%,
+		transparent 40%
+	);
+	mix-blend-mode: overlay;
+	filter: brightness(0.8);
 }
 
 /* ============================================================
@@ -79,8 +106,7 @@
    Art-Window Mask — foil + glitter restricted to art area
    ============================================================ */
 
-.holo-foil,
-.holo-glitter {
+:is(.holo-foil, .holo-glitter) {
 	-webkit-mask-image: linear-gradient(black, black);
 	-webkit-mask-size: 88% 55%;
 	-webkit-mask-position: center 28%;
@@ -95,23 +121,6 @@
    Layer 1: Rainbow Foil (.holo-foil)
    color-dodge only brightens bright art areas
    ============================================================ */
-
-.holo-foil {
-	background-image: repeating-linear-gradient(
-		133deg,
-		var(--foil-1), var(--foil-2), var(--foil-3),
-		var(--foil-4), var(--foil-5), var(--foil-6), var(--foil-1)
-	);
-	background-size: 300% 300%;
-	background-position:
-		calc(((50% - var(--bg-x, 50%)) * 2.6) + 50%)
-		calc(((50% - var(--bg-y, 50%)) * 3.5) + 50%);
-	mix-blend-mode: color-dodge;
-	filter:
-		brightness(calc((var(--pointer-from-center, 0) * 0.3) + 0.4))
-		contrast(2.8)
-		saturate(0.55);
-}
 
 /* Luminosity mask — restricts rainbow to tight cursor area */
 .holo-foil::after {
@@ -159,16 +168,6 @@
    Tiled 256px PNG noise with cursor-tracking shift
    ============================================================ */
 
-.holo-glitter {
-	background-image: url('/art/textures/glitter-256.webp');
-	background-size: 256px 256px;
-	background-repeat: repeat;
-	background-position:
-		calc(var(--bg-x, 50%) * 2px)
-		calc(var(--bg-y, 50%) * 2px);
-	mix-blend-mode: soft-light;
-}
-
 /* Epic: add scanline grooves */
 .holo-epic .holo-glitter {
 	background-image:
@@ -202,17 +201,6 @@
    Layer 3: Specular Glare (.holo-glare)
    Tight white spotlight following cursor
    ============================================================ */
-
-.holo-glare {
-	background: radial-gradient(
-		farthest-corner circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
-		hsla(0, 0%, 100%, 0.35) 0%,
-		hsla(0, 0%, 100%, 0.1) 15%,
-		transparent 40%
-	);
-	mix-blend-mode: overlay;
-	filter: brightness(0.8);
-}
 
 /* Mythic: secondary screen-blend halo for metallic sheen */
 .holo-mythic .holo-glare::after {

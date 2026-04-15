@@ -16,18 +16,14 @@
  * visual feedback for all game actions.
  */
 
-import React, { useEffect, useState } from 'react';
-import { useAnimation, Animation, useAnimationStore } from '../animations/AnimationManager';
+import React, { useEffect } from 'react';
+import { Animation, useAnimationStore } from '../animations/AnimationManager';
 import { motion, AnimatePresence } from 'framer-motion';
 import './animation-layer.css';
 import EnhancedDeathAnimation from '../animations/EnhancedDeathAnimation';
 import ElementalAttackTrail from '../animations/ElementalAttackTrail';
-import TurnTransition from '../animations/TurnTransition';
-import EnvironmentalEffect from '../animations/EnvironmentalEffect';
-import LegendaryEntrance from '../animations/LegendaryEntrance';
-import { useAnimationAdapter } from '../hooks';
 import { spawnParticleBurst, spawnImpactRing, spawnEmbers, ELEMENT_PALETTES } from '../animations/PixiParticleCanvas';
-import { playBattlecryVFX, playDeathrattleVFX, playMinionEntryVFX, playBuffVFX, playSummonVFX, killAllVFX } from '../animations/BattlecryVFX';
+import { playBattlecryVFX, playDeathrattleVFX, playBuffVFX, playSummonVFX, killAllVFX } from '../animations/BattlecryVFX';
 
 // Animation components for different animation types
 const AttackAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
@@ -342,7 +338,6 @@ const DamageAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
 
 // Main AnimationLayer component
 export const AnimationLayer: React.FC = () => {
-  const { animations } = useAnimation();
   const { animations: legacyAnimations, removeAnimation } = useAnimationStore();
   
   // Clean up animations when component unmounts
@@ -589,7 +584,6 @@ const SpellDamagePopup: React.FC<{ animation: Animation }> = ({ animation }) => 
 
 const CardBurnPopup: React.FC<{ animation: Animation }> = ({ animation }) => {
   const cardName = animation.cardName || 'Card';
-  const playerId = animation.playerId || 'player';
 
   return (
     <motion.div
@@ -1069,7 +1063,7 @@ const CardDrawEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
 	);
 };
 
-const MythicEntranceEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+const MythicEntranceEffect: React.FC<{ animation: Animation }> = ({ animation: _animation }) => {
 	useEffect(() => {
 		const cx = window.innerWidth / 2;
 		const cy = window.innerHeight * 0.4;
@@ -1146,7 +1140,7 @@ const SpellCastEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
 	);
 };
 
-const GameStartEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+const GameStartEffect: React.FC<{ animation: Animation }> = ({ animation: _animation }) => {
 	useEffect(() => {
 		const cx = window.innerWidth / 2;
 		const cy = window.innerHeight * 0.4;
@@ -1223,7 +1217,7 @@ const TurnStartEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
 	);
 };
 
-const VictoryEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+const VictoryEffect: React.FC<{ animation: Animation }> = ({ animation: _animation }) => {
   useEffect(() => {
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight * 0.4;
@@ -1272,7 +1266,7 @@ const VictoryEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
   );
 };
 
-const DefeatEffect: React.FC<{ animation: Animation }> = ({ animation }) => {
+const DefeatEffect: React.FC<{ animation: Animation }> = ({ animation: _animation }) => {
   useEffect(() => {
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight * 0.4;

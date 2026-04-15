@@ -1,12 +1,11 @@
-import { GameState, SpellEffect, CardData, CardInstance, Position, MinionCardData, SpellCardData, GameLogEventType } from '../../types';
+import { GameState, SpellEffect, CardData, CardInstance, MinionCardData, GameLogEventType } from '../../types';
 import { v4 as uuidv4 } from 'uuid';
-import { playCard as gamePlayCard } from '../gameUtils';
 import { executeBattlecry } from '../battlecryUtils';
-import { getRandomCards, createCardInstance } from '../cards/cardUtils';
+import { createCardInstance } from '../cards/cardUtils';
 import { updateEnrageEffects } from '../mechanics/enrageUtils';
 import { dealDamage } from '../effects/damageUtils';
 import { removeDeadMinions, destroyCard as destroyCardFromZone } from '../zoneUtils';
-import { drawCard, drawMultipleCards, drawMultipleCardsForCurrentPlayer } from '../drawUtils';
+import { drawCard, drawMultipleCards } from '../drawUtils';
 import executeSetHealthHandler from '../../effects/handlers/spellEffect/set_healthHandler';
 import allCards, { getCardById } from '../../data/allCards';
 import { useAnimationStore } from '../../animations/AnimationManager';
@@ -18,12 +17,12 @@ const useGameStore = {
 	getState: () => ((globalThis as Record<string, unknown>).__ragnarokGameStore as
 		{ getState: () => { gameState: GameState } }).getState()
 };
-import { isMinion, isSpell, isWeapon, getAttack, getHealth, hasAttack, hasHealth } from '../cards/typeGuards';
+import { isMinion, isSpell, isWeapon, getAttack, getHealth } from '../cards/typeGuards';
 import { trackQuestProgress } from '../quests/questProgress';
 import { debug } from '../../config/debugConfig';
 import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../../constants/gameConstants';
 import { checkPetEvolutionTrigger } from '../petEvolutionTriggers';
-import { addKeyword, removeKeyword, clearKeywords, hasKeyword } from '../cards/keywordUtils';
+import { addKeyword, removeKeyword, hasKeyword } from '../cards/keywordUtils';
 import { shuffleInPlace, shuffleArray } from '../seededRng';
 
 function getSpellEffectType(effectType: string): SpellEffectType {
@@ -1073,7 +1072,6 @@ function executeDamageSpell(
   }
   
   let newState = { ...state };
-  const currentPlayer = state.currentTurn;
   const damageAmount = effect.value;
   
   if (targetType === 'minion') {
@@ -1228,7 +1226,6 @@ function executeAoEDamageSpell(
   }
   
   let newState = { ...state };
-  const currentPlayer = state.currentTurn;
   const damageAmount = effect.value;
   
   // Damage depends on the target type
@@ -1405,7 +1402,6 @@ function executeHealSpell(
   }
   
   let newState = { ...state };
-  const currentPlayer = state.currentTurn;
   const healAmount = effect.value;
   
   if (targetType === 'minion') {
@@ -1499,8 +1495,6 @@ function executeBuffSpell(
   }
   
   let newState = { ...state };
-  const currentPlayer = state.currentTurn;
-  
   // Find the target minion
   const player = newState.players.player;
   const opponent = newState.players.opponent;
@@ -2246,7 +2240,7 @@ function executeQuestSpell(
  */
 function executeExtraTurnSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = JSON.parse(JSON.stringify(state));
   const currentPlayer = state.currentTurn;
@@ -2267,7 +2261,7 @@ function executeExtraTurnSpell(
  */
 function executeCrystalCoreSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = JSON.parse(JSON.stringify(state));
   const currentPlayer = state.currentTurn;
@@ -2323,19 +2317,6 @@ function executeCrystalCoreSpell(
 // [Removed duplicate executeSetHealthSpell function as it's already defined earlier in the file]
 
 /**
- * Execute a cast all spells spell effect (like Zul'jin hero card)
- */
-function executeCastAllSpellsSpell(state: GameState, effect: SpellEffect): GameState {
-  
-  // In a real implementation, we'd need to track all spells played in the game
-  // For now, we'll just simulate by logging the effect
-  
-  // This would require access to game history and spell logic
-  // For this implementation, we'll return the unchanged state
-  return state;
-}
-
-/**
  * Execute a debuff spell effect (reducing a minion's stats)
  */
 function executeDebuffSpell(
@@ -2349,8 +2330,6 @@ function executeDebuffSpell(
   }
   
   let newState = { ...state };
-  const currentPlayer = state.currentTurn;
-  
   // Get debuff values
   const attackDebuff = effect.buffAttack || -1;
   const healthDebuff = effect.buffHealth || 0;
@@ -3003,7 +2982,6 @@ function executeDrawBothPlayersSpell(
   let newState = { ...state };
   const drawCount = effect.value;
   const currentPlayer = state.currentTurn || 'player';
-  const opposingPlayer = currentPlayer === 'player' ? 'opponent' : 'player';
   
   // Draw cards for current player using the standardized drawMultipleCards function
   // First, ensure currentPlayer is a valid player type
@@ -3156,7 +3134,7 @@ function executeDestroySpell(
   state: GameState,
   effect: SpellEffect,
   targetId?: string,
-  targetType?: 'minion' | 'hero'
+  _targetType?: 'minion' | 'hero'
 ): GameState {
   if (!targetId) {
     debug.error('Destroy spell requires a target');
@@ -3515,7 +3493,7 @@ function executeRandomDamageSpell(
  */
 function executeDestroyRandomSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
@@ -3815,7 +3793,7 @@ function executeGainManaSpell(
  */
 function executeSummonRandomSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn;
@@ -3968,7 +3946,7 @@ function executeSummonTokenSpell(
  */
 function executeSummonFromGraveyardSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn;
@@ -4009,7 +3987,7 @@ function executeSummonFromGraveyardSpell(
  */
 function executeSummonHighestCostFromGraveyardSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn;
@@ -4115,7 +4093,6 @@ function executeResurrectMultipleSpell(
   }
   
   // Resurrect multiple minions
-  let resurrectedCount = 0;
   for (let i = 0; i < effect.count && graveyard.length > 0; i++) {
     if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
       break;
@@ -4133,7 +4110,6 @@ function executeResurrectMultipleSpell(
     // Add to battlefield
     playerState.battlefield.push(minionToResurrect);
     graveyard.splice(randomIndex, 1);
-    resurrectedCount++;
   }
   
   playerState.graveyard = graveyard;
@@ -4147,7 +4123,7 @@ function executeResurrectMultipleSpell(
  */
 function executeResurrectDeathrattleSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn;
@@ -4187,7 +4163,7 @@ function executeResurrectDeathrattleSpell(
  */
 function executeSilenceAllSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const player = newState.players.player;
@@ -4643,7 +4619,7 @@ function executeReturnToHandNextTurnSpell(
  */
 function executeTransformRandomSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
@@ -4728,7 +4704,6 @@ function executeTransformCopySpell(
     if (playerBattlefield[i].instanceId === targetId) {
       targetFound = true;
       const target = playerBattlefield[i];
-      const originalName = target.card.name;
       
       // Transform into a copy
       target.card = { ...sourceMinion.card };
@@ -5087,7 +5062,7 @@ function executeSplitDamageSpell(
  */
 function executeSwapDecksSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   
@@ -5267,7 +5242,7 @@ function executeReplaceHeroPowerSpell(
  */
 function executeReplayBattlecriesSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
@@ -5548,7 +5523,7 @@ function executeShuffleCardsSpell(
  */
 function executeMindControlRandomSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
@@ -5648,7 +5623,7 @@ function executeBuffAttackSpell(
  */
 function executeSummonFromHandSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
@@ -5775,7 +5750,7 @@ function executeConditionalSelfBuffSpell(
  */
 function executeStealCardSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   let newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
@@ -5953,7 +5928,7 @@ function executeGainArmorAndLifestealSpell(
  */
 function executeResurrectSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   const newState = { ...state };
   const currentPlayer = state.currentTurn || 'player';
@@ -6253,7 +6228,7 @@ function executeDestroyTribeSpell(
  */
 function executeDestroyAllMinionsSpell(
   state: GameState,
-  effect: SpellEffect
+  _effect: SpellEffect
 ): GameState {
   logActivity('damage_dealt' as any, 'player', 'All minions destroyed');
   

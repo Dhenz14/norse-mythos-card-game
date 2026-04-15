@@ -159,7 +159,6 @@ export const PokerCombatAnimation: React.FC<PokerCombatAnimationProps> = ({
 			timersRef.current.forEach(clearTimeout);
 			timersRef.current = [];
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [attackerHeroId, defenderHeroId, damage, resolutionType, winner]);
 
 	useEffect(() => {

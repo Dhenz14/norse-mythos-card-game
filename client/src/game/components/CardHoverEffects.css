@@ -98,8 +98,7 @@
   transform: translateY(0);
 }
 
-.card-with-drag.in-hand,
-.card-with-drag.playable {
+.card-with-drag.in-hand {
   pointer-events: auto;
 }
 
@@ -108,6 +107,7 @@
 }
 
 .card-with-drag.playable {
+  pointer-events: auto;
   cursor: pointer;
   filter: brightness(1.05);
 }

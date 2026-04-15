@@ -102,6 +102,26 @@ export const norseChapter: CampaignChapter = {
 			aiHeroId: 'hero-thor', aiHeroClass: 'warrior',
 			aiDeckCardIds: [20001,20001,20002,20002,20003,20003,20004,20004,20005,20005,20010,20010,20011,20011,20012,20012,20013,20013,20014,20014,20015,20015,20020,20020,20021,20021,20022,20022,20023,20023],
 			aiProfile: AI_PROFILES.easy, bossRules: [], prerequisiteIds: [],
+			bossQuips: {
+				onCombatStart: 'You should not exist. The void has no place for warmth.',
+				onLowHP: 'Even ice... can be broken.',
+				onLethal: 'Audumbla\u2019s tongue did its work too well. So be it.',
+				onVictory: 'The void was patient. The void was wrong.',
+			},
+			combatMusicId: 'primordial_dread',
+			victoryCinematic: [
+				{ narration: 'The frost-thing falls. Its cry echoes once across the void and is gone.', visualCue: 'Slow-motion shatter of an ice giant collapsing. Crystals drift through black space.', musicId: 'primordial_dread', durationHint: 7 },
+				{ narration: 'Audumbla lows from the dark, her tongue still working at the salt-ice. Whatever she carves free will inherit a world.', visualCue: 'A great pale cow in low golden light. Salt-ice cracks. A figure stirs within.', musicId: 'forge_anvil', durationHint: 9 },
+			],
+			defeatCinematic: [
+				{ narration: 'The cold reaches you. You do not even have a name yet — only the memory of warmth, fading.', visualCue: 'Ice closing over a kneeling figure. Black void presses in from every side.', musicId: 'primordial_dread', durationHint: 8 },
+				{ narration: 'Without you, Buri\u2019s line never wakes. The void remains formless, and remains.', durationHint: 6 },
+			],
+			storyBridge: [
+				{ narration: 'You hold the line through one cold age, then another. Audumbla\u2019s tongue works the salt-ice without rest.', musicId: 'forge_anvil', durationHint: 8 },
+				{ narration: 'And then\u2014a head. A shoulder. A man, naked and steaming in the cold. Buri stands.', visualCue: 'Buri emerges from a pillar of ice, breath fogging.', durationHint: 8 },
+				{ narration: 'Buri sires Borr. Borr takes Bestla, daughter of giants. Three sons are born to them: Odin, Vili, Ve. The fight that comes next is the one all the gods are born for.', musicId: 'jotun_rage', durationHint: 10 },
+			],
 			rewards: [{ type: 'rune', amount: 20 }],
 			realm: 'ginnungagap',
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-sinmara', rook: 'hero-thryma', bishop: 'hero-ran', knight: 'hero-gormr' },
@@ -120,6 +140,45 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 30, description: 'Ymir has 130 health — primordial giant' },
 				{ type: 'start_with_minion', cardId: 20003, description: 'Ymir spawns frost-giant offspring at start' },
+			],
+			bossQuips: {
+				onCombatStart: 'I AM the cold. I AM the hunger. You are an echo that has not yet learned to fall silent.',
+				onLowHP: 'My blood will drown your world. EVEN MY DEATH... shapes the cosmos.',
+				onLethal: 'Strike, then. The cosmos was always going to be made from a corpse.',
+				onVictory: 'Your tiny names will not outlast me. Nothing does.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 75,
+					quip: 'You bleed me — and I drink from the void to refill the wound.',
+					flash: 'blue',
+					effect: { type: 'heal_self', value: 15 },
+					description: 'Ymir feeds on the void (Phase I)',
+				},
+				{
+					hpPercent: 40,
+					quip: 'Enough! The first scream of creation answers ME.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'Ymir roars — primordial scream (Phase II)',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Odin\u2019s spear finds Ymir\u2019s throat. The giant goes still as a felled mountain.', visualCue: 'Gungnir punches through a colossal frost-throat. Eyes the size of moons go dark. Silence.', musicId: 'jotun_rage', durationHint: 8 },
+				{ narration: 'And then the wound opens.', visualCue: 'A black slit in the giant\u2019s throat begins to widen. Pressure builds.', musicId: 'primordial_dread', durationHint: 5 },
+				{ narration: 'A red ocean explodes outward. The blood of the first being floods the void.', visualCue: 'A crimson tsunami rolls outward in slow motion. Frost giants drown screaming, dragged under in their thousands.', musicId: 'jotun_rage', durationHint: 12 },
+				{ narration: 'Audumbla, mother of beginnings, lows once on a shrinking ice floe. The flood takes her too. Even the cow of creation perishes in the flood of endings.', visualCue: 'A single golden shape on a vanishing white island. The red wave crashes over her. Her eyes close.', musicId: 'twilight_horn', durationHint: 12 },
+				{ narration: 'On a hollowed log, one giant survives. Bergelmir clutches his wife. He watches everything he loves drown. He remembers your face.', visualCue: 'A silhouette on a blood-soaked log, eyes burning, drifting into darkness.', musicId: 'jotun_rage', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'Ymir\u2019s fist closes around the sons of Borr. Their light goes out together.', visualCue: 'A colossal blue-white hand crushing inward in slow motion.', musicId: 'jotun_rage', durationHint: 8 },
+				{ narration: 'No corpse. No realms. No story. The void keeps everything it ever had.', musicId: 'primordial_dread', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Three brothers, soaked to the elbows in cosmic blood, look at the corpse of the universe and decide: this will be a place worth living in.', visualCue: 'Odin, Vili, and Ve standing on Ymir\u2019s shoulder, mantled in red. They begin to cut.', musicId: 'forge_anvil', durationHint: 10 },
+				{ narration: 'Flesh becomes earth. Blood becomes sea. Bones become mountains. Skull becomes the dome of the sky. From Ymir\u2019s hair the first forests grow, and from those primordial trees Yggdrasil takes root.', visualCue: 'Sweeping montage: rivers carving, mountains rising, the World Tree thrusting up through a new horizon.', musicId: 'aesir_triumph', durationHint: 14 },
+				{ narration: 'Far away, on a log of Ymir\u2019s ribs, Bergelmir washes ashore. He buries his face in his wife\u2019s hair and swears the oldest oath in the cosmos.', musicId: 'jotun_rage', durationHint: 8 },
 			],
 			prerequisiteIds: ['norse-1'],
 			rewards: [{ type: 'rune', amount: 40 }, { type: 'card', cardId: 20200 }],
@@ -145,6 +204,40 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Bergelmir has 115 health — survivor of the blood-flood' },
 			],
+			bossQuips: {
+				onCombatStart: 'You are the children of Audumbla\u2019s killer. I am the child of the drowned. Today the world begins again \u2014 in MY blood, not yours.',
+				onLowHP: 'My grandfather\u2019s body is still warm beneath your feet. Walk carefully.',
+				onLethal: 'Then take me. Let the mountains remember a second drowning.',
+				onVictory: 'There. The story will not say you died easy.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 60,
+					quip: 'Bergelmir\u2019s spear hardens with the rime of his oath \u2014 the cold loves the wronged.',
+					flash: 'blue',
+					effect: { type: 'add_armor', value: 8 },
+					description: 'Bergelmir hardens with the cold of his grief',
+				},
+				{
+					hpPercent: 30,
+					quip: 'Hear me, Ymir-father. Today I bring you sons.',
+					flash: 'red',
+					effect: { type: 'enrage', value: 10 },
+					description: 'Bergelmir invokes his ancestor\u2019s rage',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Bergelmir falls back into the new mountains, dragging his wounded kin. He does not die today \u2014 the cosmos has too long a memory for that.', visualCue: 'A wounded jotun retreating across a ridgeline, leaving frost-blood on the new stone.', musicId: 'jotun_rage', durationHint: 10 },
+				{ narration: 'And the world keeps building. Yggdrasil drinks from three wells \u2014 Urd of fate, Mimir of wisdom, Hvergelmir of all rivers \u2014 and grows.', visualCue: 'The World Tree stretching into a sky still raw with creation. Three wells glow at its roots.', musicId: 'forge_anvil', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Bergelmir reclaims the corpse. The brothers are pried apart. The Nine Realms remain raw meat in the void, and the giants make of them whatever they like.', musicId: 'jotun_rage', durationHint: 10 },
+			],
+			storyBridge: [
+				{ narration: 'Time begins to mean something. Mountains wear themselves smooth a little. The seas sort themselves into shores. Yggdrasil pushes a single golden leaf into the new sky.', visualCue: 'Wide pan over the freshly-made world: forests greening, rivers cutting valleys.', musicId: 'forge_anvil', durationHint: 10 },
+				{ narration: 'And on a beach where the sea has never yet known a human footprint, two driftwood logs wash ashore. An ash. An elm.', visualCue: 'Two long pale logs sliding to rest on dark sand. Three god-shaped silhouettes approach.', musicId: 'aesir_triumph', durationHint: 8 },
+			],
 			prerequisiteIds: ['norse-2'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			realm: 'midgard',
@@ -167,6 +260,24 @@ export const norseChapter: CampaignChapter = {
 			aiDeckCardIds: [20004,20004,20020,20020,20100,20100,20103,20103,20108,20108,20109,20109,20111,20111,20112,20112,20116,20116,20202,20202,20205,20205,20208,20208,20214,20214,20215,20215,20301,20301],
 			aiProfile: AI_PROFILES.medium,
 			bossRules: [],
+			bossQuips: {
+				onCombatStart: 'These two? Soft as the bark on their dead trees. The mountain takes back what it shaped.',
+				onLowHP: 'You guard them well, child of Ask. Pity they\u2019ll outlive you by an afternoon.',
+				onLethal: 'The first hunt was always going to end this way.',
+				onVictory: 'Hmph. Maybe the saplings have teeth after all.',
+			},
+			combatMusicId: 'jotun_rage',
+			victoryCinematic: [
+				{ narration: 'Skadi melts into the tree-line. She has not lost \u2014 a Skadi never loses, only ends a hunt and starts another \u2014 but today she leaves the shore alone.', visualCue: 'A figure in pale fur slipping back into a black forest. Tracks fading in fresh snow.', musicId: 'jotun_rage', durationHint: 10 },
+				{ narration: 'Ask and Embla dare to lift their heads. The first man and the first woman look at each other for the first time. They will name a thousand things between now and the end of the world.', visualCue: 'Two people in driftwood-rough skin, holding hands at the edge of the new sea.', musicId: 'aesir_triumph', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The frost rolls back over the shore. Ask and Embla never speak. The first humans become the first dead, and the line that should have been yours never was.', musicId: 'twilight_horn', durationHint: 9 },
+			],
+			storyBridge: [
+				{ narration: 'Generations crawl by like the slow drift of stars. Villages cluster on the new coasts. Children of Ask and Embla light fires, name gods, lose teeth, dream of giants in the dark of every winter.', musicId: 'forge_anvil', durationHint: 10 },
+				{ narration: 'High above, on a sky that is also a skull, the gods begin to lay foundations. They are building something that has never existed: a place safe from the cold.', visualCue: 'A vast construction site in the clouds, scaffolding and stone, gods walking among workers.', musicId: 'aesir_triumph', durationHint: 8 },
+			],
 			prerequisiteIds: ['norse-3'],
 			rewards: [{ type: 'rune', amount: 30 }],
 			realm: 'midgard',
@@ -189,6 +300,33 @@ export const norseChapter: CampaignChapter = {
 			aiProfile: AI_PROFILES.hard,
 			bossRules: [
 				{ type: 'extra_mana', value: 1, description: 'Giant war-lord starts with +1 mana crystal' },
+			],
+			bossQuips: {
+				onCombatStart: 'They build their walls on Ymir\u2019s skull. We are bringing down the roof.',
+				onLowHP: 'I knew his name before yours was anything. I will say it as I die.',
+				onLethal: 'Tell Odin we waited at his door.',
+				onVictory: 'Down come the towers. Down comes the sky.',
+			},
+			combatMusicId: 'aesir_triumph',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'Hear me, brothers below! The walls are not yet sealed!',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 6 },
+					description: 'Vanguard breaches the unfinished gate',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The last giant falls from the unfinished wall. Bifrost flares to life across the sky in colors no one has ever named.', visualCue: 'Time-lapse: a rainbow bridge igniting from horizon to horizon, spanning Asgard to Midgard.', musicId: 'aesir_triumph', durationHint: 12 },
+				{ narration: 'Odin sits upon Hlidskjalf for the first time and looks across all Nine Realms. He sees everything that is. He sees you. He remembers.', visualCue: 'A cloaked one-eyed king on a high throne. Two ravens settle on his shoulders.', musicId: 'aesir_triumph', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'The walls of Asgard come down before they are finished. The gods scatter \u2014 a fortress ungiven becomes a fortress lost. There will be no Bifrost.', musicId: 'twilight_horn', durationHint: 9 },
+			],
+			storyBridge: [
+				{ narration: 'Asgard rises in earnest. Gladsheim, hall of thirteen thrones. Valaskjalf, silver-roofed. Folkvang, where Freyja receives half the slain. Each hall a promise the gods do not yet know they will be asked to keep.', musicId: 'aesir_triumph', durationHint: 12 },
+				{ narration: 'And from Hlidskjalf, Odin sees a realm he has never visited. A place of perpetual gold. The light-elves are calling for help.', visualCue: 'A ray of golden light reaching up from a forest of impossible trees.', musicId: 'forge_anvil', durationHint: 8 },
 			],
 			prerequisiteIds: ['norse-4'],
 			rewards: [{ type: 'rune', amount: 40 }],
@@ -213,6 +351,40 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'bonus_draw', value: 1, description: 'Dark-elf lord draws an extra card each turn' },
 			],
+			bossQuips: {
+				onCombatStart: 'The light fades. The dokkalfar have whispered, and we have listened. Alfheim will know shadow.',
+				onLowHP: 'You strike at me — but the roots have already drunk deep.',
+				onLethal: 'The shadow does not need me to keep growing.',
+				onVictory: 'Look up. The branches above you are already half black.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 70,
+					quip: 'I show you what we showed Freyr. Look at the LIGHT.',
+					flash: 'gold',
+					effect: { type: 'damage_player', value: 5 },
+					description: 'A blinding pulse from the corrupted shard',
+				},
+				{
+					hpPercent: 35,
+					quip: 'The roots remember all the names that ever fell into them.',
+					flash: 'purple',
+					effect: { type: 'enrage', value: 8 },
+					description: 'Yggdrasil\u2019s roots feed the dark elf',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The dark-elf falls. His shadow doesn\u2019t. It crawls back into the roots of Yggdrasil and waits.', visualCue: 'A pale figure collapsing onto golden earth. A black stain pulls free of him and drains into the soil.', musicId: 'shadow_root', durationHint: 9 },
+				{ narration: 'A light-elf queen presses something into your palm: a shard of crystallized sunlight. \u201cFreyr\u2019s blessing,\u201d she says. \u201cCarry it into the darker realms. You will need it.\u201d', visualCue: 'A radiant elven queen handing a glowing crystal to your character. Her eyes are wet with relief.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Alfheim dims for the first time since its making. The light-elves shrink back into their highest branches and the shadow climbs up after them.', musicId: 'shadow_root', durationHint: 9 },
+			],
+			storyBridge: [
+				{ narration: 'Word of your victory reaches Vanaheim. The Vanir gods, ancient and green, look at the Aesir with old, wary eyes.', musicId: 'vanir_war', durationHint: 8 },
+				{ narration: 'And in Asgard, a strange woman in a green hood walks into Odin\u2019s hall and says her name is Gullveig. She speaks of gold. The Aesir do not like what they hear.', visualCue: 'A cloaked seeress standing in firelit Gladsheim, speaking softly. The gods\u2019 expressions darken.', musicId: 'vanir_war', durationHint: 10 },
+			],
 			prerequisiteIds: ['norse-5'],
 			rewards: [{ type: 'rune', amount: 45 }, { type: 'eitr', amount: 50 }],
 			realm: 'alfheim',
@@ -236,6 +408,40 @@ export const norseChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Vanir war-leader has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Vanir war-leader starts with +1 mana crystal' },
+			],
+			bossQuips: {
+				onCombatStart: 'You burned a seer in your golden hall. Now the green earth burns back.',
+				onLowHP: 'Gullveig rose three times. I will not need to.',
+				onLethal: 'Tell Odin Vanaheim has not forgotten its sister.',
+				onVictory: 'A war between gods. None of us will be the same after this.',
+			},
+			combatMusicId: 'vanir_war',
+			bossPhases: [
+				{
+					hpPercent: 65,
+					quip: 'Yggdrasil drinks. So do I.',
+					flash: 'green',
+					effect: { type: 'heal_self', value: 12 },
+					description: 'The Vanir draw on the green earth',
+				},
+				{
+					hpPercent: 30,
+					quip: 'Idunn\u2019s apples are not given to gods who burn their guests.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 7 },
+					description: 'Vanir vengeance flares',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Both sides stop, gasping. The hostage exchange is offered before another spear flies. Njord and Freyr will go to Asgard. Hoenir and Mimir will go to Vanaheim.', visualCue: 'Two armies of gods, exhausted and bloody, lowering weapons. Hostages step into the gap between them.', musicId: 'vanir_war', durationHint: 12 },
+				{ narration: 'When the Vanir discover Hoenir is useless without Mimir\u2019s counsel, they cut Mimir\u2019s head off and send it back. Odin preserves it with herbs and runes. From now on, the head whispers secrets to him forever.', visualCue: 'A severed head in Odin\u2019s hands, eyes still open, lips still moving.', musicId: 'forge_anvil', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The first divine war becomes the only war. Without unity the giants step out of Jotunheim into rooms the gods left undefended. The cosmos burns young.', musicId: 'jotun_rage', durationHint: 9 },
+			],
+			storyBridge: [
+				{ narration: 'A bitter peace settles over the Nine Realms. Brothers from Vanaheim drink in Aesir halls. Brothers from Asgard learn the green languages of Vanaheim. Nothing is forgiven and everything is endured.', musicId: 'aesir_triumph', durationHint: 12 },
+				{ narration: 'In a frozen pass between Midgard and Jotunheim, an old jotun rises slowly to his feet. He has been waiting for generations. He has been waiting for you.', visualCue: 'A scarred ancient giant, one eye frozen shut, taking up a glacier-sized blade.', musicId: 'jotun_rage', durationHint: 10 },
 			],
 			prerequisiteIds: ['norse-6'],
 			rewards: [{ type: 'rune', amount: 55 }, { type: 'card', cardId: 20210 }],
@@ -262,6 +468,47 @@ export const norseChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Bergelmir starts with +2 mana crystals' },
 				{ type: 'passive_damage', value: 1, description: 'Bergelmir\'s hatred deals 1 damage to your hero each turn' },
 			],
+			bossQuips: {
+				onCombatStart: 'Your grandfathers murdered my grandfather. Today, the debt is paid. In your blood. In every drop. Until I am clean.',
+				onLowHP: 'I should have died on that log of ribs. Do not pretend you are giving me anything.',
+				onLethal: 'Strike, then. The cold I have lived in for an age was already worse than this.',
+				onVictory: 'You will say my name as the world ends. EVERY god will.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 80,
+					quip: 'I have been carrying this storm for an age. NOW it walks.',
+					flash: 'blue',
+					effect: { type: 'add_armor', value: 10 },
+					description: 'Bergelmir\u2019s ancient grief hardens him',
+				},
+				{
+					hpPercent: 50,
+					quip: 'Hear me, Ymir-grandfather. The blood-flood walks again.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 10 },
+					description: 'Bergelmir invokes the drowning',
+				},
+				{
+					hpPercent: 20,
+					quip: 'My wife survived with me on that log. She lived just long enough to bear our sons. Then she went into the cold. THEY are the price you should be paying.',
+					flash: 'purple',
+					effect: { type: 'enrage', value: 12 },
+					description: 'Bergelmir releases the deepest grief',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Bergelmir falls. The oldest grudge in the cosmos lets go of his throat after an age of holding it.', visualCue: 'A vast scarred jotun sinking to one knee, frost-blood steaming on the glacier under him. His face, finally, is calm.', musicId: 'jotun_rage', durationHint: 10 },
+				{ narration: '\u201cTell my wife,\u201d he says, very softly, \u201cthat I held it as long as I could.\u201d And then the long mourning is over.', visualCue: 'The giant\u2019s eyes finally close. A wind that has been blowing for a thousand years finally drops.', musicId: 'twilight_horn', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Bergelmir\u2019s vengeance is complete. The blood-flood\u2019s lone survivor finishes the work the blood-flood started.', musicId: 'jotun_rage', durationHint: 8 },
+			],
+			storyBridge: [
+				{ narration: 'You return to Asgard older than when you left. Odin is waiting on the threshold. He says nothing for a long time.', visualCue: 'A weary cloaked king watching you cross the rainbow bridge.', musicId: 'twilight_horn', durationHint: 10 },
+				{ narration: 'Then: \u201cThe winter that comes next is not like other winters. It is the first sign. Will you stay for it?\u201d You stay.', musicId: 'twilight_horn', durationHint: 10 },
+			],
 			prerequisiteIds: ['norse-7'],
 			rewards: [{ type: 'rune', amount: 65 }, { type: 'eitr', amount: 100 }],
 			realm: 'jotunheim',
@@ -287,10 +534,54 @@ export const norseChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Chaos starts with +2 mana crystals' },
 				{ type: 'bonus_draw', value: 1, description: 'The twilight draws an extra omen each turn' },
 			],
+			bossQuips: {
+				onCombatStart: 'I have foreseen the twilight of the gods. But you... you were never in my visions. Perhaps that is why you are here.',
+				onLowHP: 'My ravens have already carried word of this. Whatever you do here, the twilight still comes.',
+				onLethal: 'Then it begins now. So be it. The cosmos has waited long enough.',
+				onVictory: 'You delayed the twilight. Even gods are allowed a little hope.',
+			},
+			combatMusicId: 'twilight_horn',
+			bossPhases: [
+				{
+					hpPercent: 80,
+					quip: 'Huginn. Muninn. Watch closely. We will need to remember this one.',
+					flash: 'gold',
+					description: 'Odin marks the player (Phase I)',
+				},
+				{
+					hpPercent: 55,
+					quip: 'Even Hlidskjalf has its limits. I draw on the seed of Yggdrasil.',
+					flash: 'green',
+					effect: { type: 'heal_self', value: 12 },
+					description: 'Yggdrasil empowers Odin (Phase II)',
+				},
+				{
+					hpPercent: 30,
+					quip: 'Then I will see you in Valhalla. SKOLL — TAKE THE SUN!',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 12 },
+					description: 'Odin invokes Ragnarok (Phase III)',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Odin lowers Gungnir. He looks at you for a long time. \u201cYou are not in any vision I ever had,\u201d he says. \u201cAnd yet here you stand.\u201d', visualCue: 'A one-eyed king lowering his ancient spear, ravens circling overhead.', musicId: 'twilight_horn', durationHint: 10 },
+				{ narration: '\u201cTwilight is delayed. Not prevented. Three winters will come without summer between them. Nidhogg will gnaw the roots a little slower. The wolf will strain his chain a little less. But it will all come. It always was going to come.\u201d', visualCue: 'Falling snow. Three winters compressed into a single sweep. Yggdrasil shedding leaves.', musicId: 'twilight_horn', durationHint: 14 },
+				{ narration: '\u201cWhen the horn of Heimdall sounds, will you stand with us?\u201d Odin asks. He does not wait for an answer. He already knows.', visualCue: 'A great curved horn lifted to the sky in a moment yet to come. Camera pulls back into stars.', musicId: 'rebirth', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'The roots snap. The wolf breaks. The serpent surges from the sea. Ragnarok arrives ahead of prophecy, and the cosmos has not had time to learn its own name.', visualCue: 'Yggdrasil cracking, the sun being swallowed by a wolf, the sky lit blood-red.', musicId: 'ragnarok', durationHint: 12 },
+			],
+			storyBridge: [
+				{ narration: 'The Echoes of Ymir fall silent. The story of creation is told.', visualCue: 'Camera lifts away from the World Tree.', musicId: 'twilight_horn', durationHint: 6 },
+				{ narration: 'But somewhere in a cave bound by divine chains, a wolf is straining. Somewhere under the earth, a god lies in serpent venom. Somewhere on the road back from Hel, a beautiful god is making his way home, and a trickster god is laughing at the same joke he has been laughing at for an age.', musicId: 'ragnarok', durationHint: 14 },
+				{ narration: 'What comes next is Twilight of the Gods.', visualCue: 'Title card: TWILIGHT OF THE GODS.', musicId: 'ragnarok', durationHint: 6 },
+			],
 			prerequisiteIds: ['norse-8'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20300 }, { type: 'pack', amount: 2 }],
 			realm: 'midgard',
 			campaignArmy: { king: 'king-surtr', queen: 'hero-hel', rook: 'hero-thryma', bishop: 'hero-freya', knight: 'hero-loki' },
+			starThresholds: { threeStar: 16, twoStar: 24 },
+			isChapterFinale: true,
 		},
 	],
 };

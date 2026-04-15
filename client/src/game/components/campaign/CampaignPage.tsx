@@ -1,17 +1,15 @@
-import React, { useState, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { routes } from '../../../lib/routes';
 import {
 	ALL_CHAPTERS, EASTERN_CHAPTER, BASE_CHAPTER_MISSION_IDS, useCampaignStore,
 	NINE_REALMS, REALM_MAP, MISSION_REALM_MAP, getMissionsForRealm, getRealmProgress,
-	GREEK_REALMS, GREEK_REALM_MAP, GREEK_MISSION_REALM_MAP, getGreekMissionsForRealm, getGreekRealmProgress,
+	GREEK_REALMS, GREEK_REALM_MAP, GREEK_MISSION_REALM_MAP, getGreekMissionsForRealm, getGreekRealmProgress, getMission,
 } from '../../campaign';
 import type { CampaignChapter, CampaignMission, Difficulty } from '../../campaign/campaignTypes';
 import type { Realm } from '../../campaign/nineRealms';
 import type { GreekRealm } from '../../campaign/greekRealms';
 import './constellation-map.css';
-
-const CosmicCanvas = lazy(() => import('./CosmicCanvas'));
 
 const FACTION_COLORS: Record<string, string> = {
 	egyptian: 'from-orange-900/80 to-red-900/60 border-orange-600/40',
@@ -81,16 +79,18 @@ function MissionBriefing({ mission, chapter, onStart, onBack }: {
 	return (
 		<div className="max-w-2xl mx-auto">
 			<button onClick={onBack} className="text-gray-500 hover:text-gray-300 text-sm mb-4 transition-colors">
-				&larr; Back
+				&larr; Back to map
 			</button>
 			<h2 className={`text-2xl font-bold mb-2 ${FACTION_ACCENT[chapter.faction]}`}>
 				{mission.name}
 			</h2>
+
 			<div className="bg-gray-900/60 border border-gray-800/60 rounded-xl p-5 mb-4">
 				<p className="text-gray-300 text-sm leading-relaxed italic">
 					"{mission.narrativeBefore}"
 				</p>
 			</div>
+
 			{mission.bossRules.length > 0 && (
 				<div className="bg-red-950/30 border border-red-800/40 rounded-lg p-4 mb-4">
 					<h4 className="text-xs font-bold uppercase tracking-wider text-red-400 mb-2">Boss Rules</h4>
@@ -99,6 +99,33 @@ function MissionBriefing({ mission, chapter, onStart, onBack }: {
 					))}
 				</div>
 			)}
+
+			<div className="grid gap-4 md:grid-cols-[1.35fr,0.85fr] mb-4">
+				<div className="bg-gray-950/60 border border-gray-800/70 rounded-xl p-4">
+					<p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-400/80 mb-2">Battle Route</p>
+					<p className="text-base font-semibold text-gray-100 mb-2">
+						Choose a difficulty, confirm the omen, and move directly into the board.
+					</p>
+					<p className="text-sm text-gray-400 leading-relaxed">
+						This briefing is the final staging step. Once you confirm, the mission launches immediately into the authored chess and poker flow for this realm.
+					</p>
+				</div>
+				<div className="bg-gray-950/45 border border-gray-800/60 rounded-xl p-4">
+					<p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-300/80 mb-2">Campaign Record</p>
+					{completed ? (
+						<>
+							<p className="text-sm text-gray-200">Best clear: {completed.bestTurns} turns</p>
+							<p className="text-sm text-gray-400 mt-1">Highest finish: {completed.bestDifficulty}</p>
+						</>
+					) : (
+						<>
+							<p className="text-sm text-gray-200">First clear pending</p>
+							<p className="text-sm text-gray-400 mt-1">Normal is the recommended first route.</p>
+						</>
+					)}
+				</div>
+			</div>
+
 			<div className="flex items-center gap-3 mb-4">
 				<span className="text-sm text-gray-400">Difficulty:</span>
 				{(['normal', 'heroic', 'mythic'] as Difficulty[]).map(d => (
@@ -113,64 +140,67 @@ function MissionBriefing({ mission, chapter, onStart, onBack }: {
 					>
 						{d.charAt(0).toUpperCase() + d.slice(1)}
 					</button>
-				))}
-			</div>
-			{completed && (
-				<p className="text-xs text-green-400 mb-4">
-					Completed in {completed.bestTurns} turns ({completed.difficulty})
+					))}
+				</div>
+
+				<p className="text-xs text-gray-500 mb-4">
+					Normal is the cleanest first clear. Heroic and Mythic are best when you want a tighter boss pass after learning the board.
 				</p>
-			)}
-			<div className="flex items-center gap-2 mb-4">
-				<span className="text-sm text-gray-400">Rewards:</span>
+
+				<div className="flex items-center gap-2 mb-4">
+					<span className="text-sm text-gray-400">Rewards:</span>
 				{mission.rewards.map((r, i) => (
 					<span key={i} className="text-xs bg-amber-900/40 text-amber-300 px-2 py-1 rounded border border-amber-700/40">
 						{r.type === 'rune' ? `${r.amount} RUNE` : r.type === 'card' ? `Card #${r.cardId}` : r.type === 'pack' ? `${r.amount} Packs` : `${r.amount} Eitr`}
 					</span>
 				))}
 			</div>
-			<button
-				onClick={() => onStart(difficulty)}
-				className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-lg font-bold transition-colors"
-			>
-				Begin Mission
-			</button>
-		</div>
-	);
+
+				<button
+					onClick={() => onStart(difficulty)}
+					className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-lg font-bold transition-colors"
+				>
+					Enter Battle
+				</button>
+			</div>
+		);
 }
 
-/* ── SVG Glow Filters — injected once, referenced by CSS ── */
+const RUNE_CORNERS = ['\u16A0\u16B7\u16C1', '\u16DE\u16D7\u16D2', '\u16C7\u16BA\u16A0', '\u16D2\u16C1\u16DE'];
 
-function BifrostGlowFilters() {
+function StarField() {
+	const stars = useMemo(() =>
+		Array.from({ length: 100 }, (_, i) => ({
+			id: i,
+			x: Math.random() * 100,
+			y: Math.random() * 100,
+			duration: 2 + Math.random() * 4,
+			delay: Math.random() * 3,
+			opacity: 0.3 + Math.random() * 0.5,
+			size: Math.random() > 0.9 ? 3 : Math.random() > 0.7 ? 2 : 1,
+		})),
+	[]);
+
 	return (
-		<svg width="0" height="0" style={{ position: 'absolute' }}>
-			<defs>
-				<filter id="bifrost-glow" x="-50%" y="-50%" width="200%" height="200%">
-					<feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
-					<feColorMatrix in="blur" type="matrix"
-						values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 2.5 0"
-						result="glow" />
-					<feMerge>
-						<feMergeNode in="glow" />
-						<feMergeNode in="SourceGraphic" />
-					</feMerge>
-				</filter>
-				<filter id="node-glow" x="-100%" y="-100%" width="300%" height="300%">
-					<feGaussianBlur in="SourceAlpha" stdDeviation="6" result="blur" />
-					<feColorMatrix in="blur" type="matrix"
-						values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 0"
-						result="glow" />
-					<feMerge>
-						<feMergeNode in="glow" />
-						<feMergeNode in="glow" />
-						<feMergeNode in="SourceGraphic" />
-					</feMerge>
-				</filter>
-			</defs>
-		</svg>
+		<>
+			{stars.map(s => (
+				<div
+					key={s.id}
+					className="constellation-star"
+					style={{
+						left: `${s.x}%`,
+						top: `${s.y}%`,
+						width: s.size,
+						height: s.size,
+						'--twinkle-duration': `${s.duration}s`,
+						'--twinkle-delay': `${s.delay}s`,
+						'--star-opacity': s.opacity,
+					} as React.CSSProperties}
+				/>
+			))}
+		</>
 	);
 }
-
-/* ── Constellation lines with bifrost glow ── */
 
 function NorseConstellationLines({ completedMissions }: { completedMissions: Record<string, unknown> }) {
 	const lines = useMemo(() => {
@@ -249,8 +279,6 @@ function GreekConstellationLines({ completedMissions }: { completedMissions: Rec
 		</svg>
 	);
 }
-
-/* ── Realm nodes ── */
 
 function NorseRealmNode({ realm, selected, onClick, hasUnlockedMission }: {
 	realm: Realm;
@@ -381,42 +409,6 @@ function RealmMissionPanel({ realm, chapter, missions, onSelectMission, onClose 
 	);
 }
 
-/* ── Cosmic connection data for Pixi canvas ── */
-
-function useCosmicConnections(
-	realms: readonly Realm[],
-	realmMap: Map<string, Realm>,
-	completedMissions: Record<string, unknown>,
-	chapter: CampaignChapter | undefined,
-) {
-	return useMemo(() => {
-		const seen = new Set<string>();
-		const result: { x1: number; y1: number; x2: number; y2: number; color1: string; color2: string; active: boolean }[] = [];
-		const missions = chapter?.missions ?? [];
-		for (const realm of realms) {
-			for (const connId of realm.connections) {
-				const key = [realm.id, connId].sort().join('-');
-				if (seen.has(key)) continue;
-				seen.add(key);
-				const other = realmMap.get(connId);
-				if (!other) continue;
-				const r1 = getRealmProgress(realm.id, missions, completedMissions);
-				const r2 = getRealmProgress(connId, missions, completedMissions);
-				const active = r1.completed > 0 && r2.completed > 0;
-				result.push({
-					x1: realm.position.x, y1: realm.position.y,
-					x2: other.position.x, y2: other.position.y,
-					color1: realm.color, color2: other.color,
-					active,
-				});
-			}
-		}
-		return result;
-	}, [realms, realmMap, completedMissions, chapter]);
-}
-
-const RUNE_CORNERS = ['\u16A0\u16B7\u16C1', '\u16DE\u16D7\u16D2', '\u16C7\u16BA\u16A0', '\u16D2\u16C1\u16DE'];
-
 type View = 'norse' | 'greek' | 'beyond';
 
 export default function CampaignPage() {
@@ -426,12 +418,22 @@ export default function CampaignPage() {
 	const [selectedChapter, setSelectedChapter] = useState<CampaignChapter | null>(null);
 	const navigate = useNavigate();
 	const startMission = useCampaignStore(s => s.startMission);
+	const currentMissionId = useCampaignStore(s => s.currentMission);
 	const completedMissions = useCampaignStore(s => s.completedMissions);
 	const isAllComplete = useCampaignStore(s => s.isAllBaseChaptersComplete(BASE_CHAPTER_MISSION_IDS));
 
 	const norseChapter = ALL_CHAPTERS.find(c => c.faction === 'norse')!;
 	const greekChapter = ALL_CHAPTERS.find(c => c.faction === 'greek')!;
 	const beyondChapters = ALL_CHAPTERS.filter(c => c.faction !== 'norse' && c.faction !== 'greek');
+	const totalCampaignMissions = useMemo(
+		() => ALL_CHAPTERS.reduce((sum, chapter) => sum + chapter.missions.length, 0),
+		[],
+	);
+	const totalClearedMissions = Object.keys(completedMissions).length;
+	const currentMissionData = useMemo(
+		() => (currentMissionId ? getMission(currentMissionId) : null),
+		[currentMissionId],
+	);
 
 	const selectedNorseRealm = view === 'norse' && selectedRealm ? REALM_MAP.get(selectedRealm) ?? null : null;
 	const selectedGreekRealm = view === 'greek' && selectedRealm ? GREEK_REALM_MAP.get(selectedRealm) ?? null : null;
@@ -460,8 +462,79 @@ export default function CampaignPage() {
 		return result;
 	}, [greekChapter.missions, completedMissions]);
 
-	// Cosmic canvas connection data
-	const norseConnections = useCosmicConnections(NINE_REALMS, REALM_MAP, completedMissions, norseChapter);
+	const nextNorseMission = useMemo(
+		() => norseChapter.missions.find(m =>
+			!completedMissions[m.id] &&
+			(m.prerequisiteIds.length === 0 || m.prerequisiteIds.every(id => !!completedMissions[id])),
+		) ?? null,
+		[norseChapter.missions, completedMissions],
+	);
+
+	const nextGreekMission = useMemo(
+		() => greekChapter.missions.find(m =>
+			!completedMissions[m.id] &&
+			(m.prerequisiteIds.length === 0 || m.prerequisiteIds.every(id => !!completedMissions[id])),
+		) ?? null,
+		[greekChapter.missions, completedMissions],
+	);
+
+	const campaignLead = useMemo<{
+		view: View;
+		chapter: CampaignChapter;
+		mission: CampaignMission;
+		title: string;
+		copy: string;
+		cta: string;
+	} | null>(() => {
+		if (currentMissionData) {
+			const leadView: View = currentMissionData.chapter.faction === 'norse'
+				? 'norse'
+				: currentMissionData.chapter.faction === 'greek'
+					? 'greek'
+					: 'beyond';
+			return {
+				view: leadView,
+				chapter: currentMissionData.chapter,
+				mission: currentMissionData.mission,
+				title: 'Active Mission',
+				copy: 'This mission is already staged. Resume the briefing, confirm the difficulty, and go straight back into battle.',
+				cta: 'Resume briefing',
+			};
+		}
+
+		if (view === 'norse' && nextNorseMission) {
+			return {
+				view: 'norse' as const,
+				chapter: norseChapter,
+				mission: nextNorseMission,
+				title: 'Next Battle',
+				copy: 'Open the next Norse mission directly from here instead of hunting around the map for the right node.',
+				cta: 'Stage next battle',
+			};
+		}
+
+		if (view === 'greek' && nextGreekMission) {
+			return {
+				view: 'greek' as const,
+				chapter: greekChapter,
+				mission: nextGreekMission,
+				title: 'Next Battle',
+				copy: 'Push forward through the Greek line with one clean move into the next unlocked mission.',
+				cta: 'Stage next battle',
+			};
+		}
+
+		return null;
+	}, [currentMissionData, greekChapter, nextGreekMission, nextNorseMission, norseChapter, view]);
+
+	const stageMission = (mission: CampaignMission, chapter: CampaignChapter, nextView?: View) => {
+		if (nextView) {
+			setView(nextView);
+		}
+		setSelectedRealm(null);
+		setSelectedChapter(chapter);
+		setSelectedMission(mission);
+	};
 
 	const handleStartMission = (difficulty: Difficulty) => {
 		if (!selectedMission) return;
@@ -487,8 +560,6 @@ export default function CampaignPage() {
 
 	return (
 		<div className="constellation-container">
-			<BifrostGlowFilters />
-
 			<div className="rune-border-decoration rune-border-top-left">{RUNE_CORNERS[0]}</div>
 			<div className="rune-border-decoration rune-border-top-right">{RUNE_CORNERS[1]}</div>
 			<div className="rune-border-decoration rune-border-bottom-left">{RUNE_CORNERS[2]}</div>
@@ -503,9 +574,9 @@ export default function CampaignPage() {
 					</Link>
 					<h1 className="constellation-title">Campaign</h1>
 				</div>
-			</div>
+				</div>
 
-			<div className="constellation-tabs">
+				<div className="constellation-tabs">
 				<button
 					className={`constellation-tab ${view === 'norse' ? 'constellation-tab-active' : ''}`}
 					onClick={() => { setView('norse'); setSelectedRealm(null); setSelectedChapter(null); }}
@@ -523,39 +594,60 @@ export default function CampaignPage() {
 					onClick={() => { setView('beyond'); setSelectedRealm(null); }}
 				>
 					Beyond
-				</button>
-			</div>
+					</button>
+				</div>
 
-			{view === 'norse' ? (
-				<div className="constellation-map-area" style={{ pointerEvents: 'auto' }}>
-					{/* GPU cosmic background */}
-					<Suspense fallback={null}>
-						<CosmicCanvas
-							realms={NINE_REALMS as unknown as Realm[]}
-							connections={norseConnections}
-						/>
-					</Suspense>
+				<div className="mx-4 mb-5 rounded-2xl border border-white/10 bg-gray-950/55 px-4 py-4 shadow-[0_22px_70px_rgba(0,0,0,0.24)] backdrop-blur-md">
+					<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+						<div className="min-w-0">
+							<p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-400/80">
+								{campaignLead?.title ?? 'Campaign Status'}
+							</p>
+							<h2 className="mt-1 text-xl font-semibold text-gray-100">
+								{campaignLead ? campaignLead.mission.name : 'Choose a mythology and stage the next battle'}
+							</h2>
+							<p className="mt-1 text-sm text-gray-400 leading-relaxed">
+								{campaignLead
+									? `${campaignLead.chapter.name} · Mission ${campaignLead.mission.missionNumber}. ${campaignLead.copy}`
+									: view === 'beyond'
+										? 'Beyond opens into the later mythologies and the secret gate. Finish the base chapters first, then push into the deeper arcs.'
+										: 'Use the highlighted path when you want the cleanest authored route into the next mission.'}
+							</p>
+						</div>
+						<div className="flex flex-col gap-3 md:items-end">
+							<div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-gray-300">
+								<span>{totalClearedMissions}/{totalCampaignMissions} cleared</span>
+							</div>
+							{campaignLead && (
+								<button
+									type="button"
+									onClick={() => stageMission(campaignLead.mission, campaignLead.chapter, campaignLead.view)}
+									className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-amber-400/30 bg-amber-500/12 px-5 text-sm font-semibold text-amber-100 transition-colors hover:bg-amber-500/20"
+								>
+									{campaignLead.cta}
+								</button>
+							)}
+						</div>
+					</div>
+				</div>
 
-					{/* Yggdrasil trunk */}
-					<div className="yggdrasil-trunk" />
-
-					{/* SVG constellation lines with glow */}
+				{view === 'norse' ? (
+					<div className="constellation-map-area">
+					<StarField />
 					<NorseConstellationLines completedMissions={completedMissions} />
 
 					{/* Center lore — only when no realm selected */}
 					{!selectedNorseRealm && (
-						<div className="campaign-lore-center">
-							<p className="campaign-lore-title" style={{ color: '#67e8f9' }}>
-								{norseChapter.name}
-							</p>
-							<p className="campaign-lore-text">
-								{norseChapter.missions[0]?.narrativeBefore?.slice(0, 120) || 'Journey through the Nine Realms of Norse mythology...'}...
-							</p>
-							<p className="campaign-lore-hint">Select a realm to begin</p>
+						<div className="constellation-intro absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+							<div className="constellation-intro-copy text-center max-w-md px-6 opacity-70">
+								<p className="text-cyan-400 text-xl font-bold mb-2 tracking-wide">{norseChapter.name}</p>
+								<p className="text-gray-400 text-sm leading-relaxed italic">
+									{norseChapter.missions[0]?.narrativeBefore?.slice(0, 150) || 'Journey through the Nine Realms of Norse mythology...'}...
+								</p>
+								<p className="text-gray-600 text-xs mt-3">Select a realm to begin</p>
+							</div>
 						</div>
 					)}
-
-					{/* Realm nodes */}
 					{NINE_REALMS.map(realm => (
 						<NorseRealmNode
 							key={realm.id}
@@ -565,8 +657,6 @@ export default function CampaignPage() {
 							hasUnlockedMission={norseRealmsWithUnlocked.has(realm.id)}
 						/>
 					))}
-
-					{/* Mission panel */}
 					{selectedNorseRealm && (
 						<RealmMissionPanel
 							realm={selectedNorseRealm}
@@ -581,17 +671,18 @@ export default function CampaignPage() {
 					)}
 				</div>
 			) : view === 'greek' ? (
-				<div className="constellation-map-area" style={{ background: 'radial-gradient(ellipse at 50% 30%, #0f1225 0%, #0a0d1a 40%, #050710 100%)', pointerEvents: 'auto' }}>
+				<div className="constellation-map-area" style={{ background: 'radial-gradient(ellipse at 50% 30%, #0f1225 0%, #0a0d1a 40%, #050710 100%)' }}>
+					<StarField />
 					<GreekConstellationLines completedMissions={completedMissions} />
 					{!selectedGreekRealm && (
-						<div className="campaign-lore-center">
-							<p className="campaign-lore-title" style={{ color: '#fbbf24' }}>
-								{greekChapter.name}
-							</p>
-							<p className="campaign-lore-text">
-								{greekChapter.missions[0]?.narrativeBefore?.slice(0, 120) || 'Echoes of Chaos rise from the depths of Tartarus...'}...
-							</p>
-							<p className="campaign-lore-hint">Select a realm to begin</p>
+						<div className="constellation-intro absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+							<div className="constellation-intro-copy text-center max-w-md px-6 opacity-70">
+								<p className="text-amber-400 text-xl font-bold mb-2 tracking-wide">{greekChapter.name}</p>
+								<p className="text-gray-400 text-sm leading-relaxed italic">
+									{greekChapter.missions[0]?.narrativeBefore?.slice(0, 150) || 'Echoes of Chaos rise from the depths of Tartarus...'}...
+								</p>
+								<p className="text-gray-600 text-xs mt-3">Select a realm to begin</p>
+							</div>
 						</div>
 					)}
 					{GREEK_REALMS.map(realm => (

@@ -142,16 +142,14 @@ export function findBestHand(holeCards: PokerCard[], communityCards: PokerCard[]
   if (allCards.length < 5) {
     const sortedCards = allCards.sort((a, b) => b.numericValue - a.numericValue);
     if (sortedCards.length === 0) {
-      // C7: Return a sentinel "lowest possible" hand with numericValue 0 so it
-      // always loses to any real hand. Never fabricate a card with a real value.
-      debug.warn('[HandEvaluator] findBestHand called with 0 cards — returning sentinel');
+      debug.warn('[HandEvaluator] findBestHand called with 0 cards — returning fallback High Card');
       return {
         rank: PokerHandRank.HIGH_CARD,
         cards: [],
-        highCard: { suit: 'hearts', value: '2', numericValue: 0 } as PokerCard,
+        highCard: { suit: 'hearts', value: '2', numericValue: 2 } as PokerCard,
         multiplier: 1.0,
-        displayName: 'High Card (incomplete)',
-        tieBreakers: [0]
+        displayName: 'High Card',
+        tieBreakers: []
       };
     }
     return {

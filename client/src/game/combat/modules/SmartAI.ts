@@ -66,9 +66,10 @@ export function getSmartAIAction(
   const hasBetToCall = toCall > 0;
   const minBet = combatState.minBet; // 5 HP minimum in Ragnarok
   
-  // M12: Preflop = SPELL_PET / PRE_FLOP only. FAITH is the flop and AI may check.
-  const isFirstBettingRound = combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.PRE_FLOP;
-  const mustBetOrFold = isFirstBettingRound && !hasBetToCall;
+  // Ragnarok "preflop" = first betting round (SPELL_PET or FAITH phase)
+  // NO checking allowed - must bet or fold (opener) or call/raise/fold (after bet)
+  const isFirstBettingRound = combatState.phase === CombatPhase.SPELL_PET || combatState.phase === CombatPhase.PRE_FLOP || combatState.phase === CombatPhase.FAITH;
+  const mustBetOrFold = isFirstBettingRound && !hasBetToCall; // Must bet if no current bet in first round
   
   const communityCards = getCommunityCards(combatState);
   const handStrength = calculateHandStrength(actor.holeCards, communityCards);
@@ -101,14 +102,19 @@ export function getSmartAIAction(
   }
   
   const adjustedStrength = handStrength + (position === 'late' ? 0.05 : 0);
-  
+
+  // Apply tightness: tight AI requires stronger hand to stay in.
+  // At tightness=0.9 (Odin), a 0.5 hand feels like 0.43 — borderline.
+  // At tightness=0.2 (Ymir), a 0.5 hand feels like 0.58 — playable.
+  const tightnessAdjusted = adjustedStrength + (1 - config.tightness) * 0.12 - config.tightness * 0.08;
+
   if (hasBetToCall) {
     return decideWithBetToCall(
-      adjustedStrength, potOdds, toCall, availableHP, config, minBet
+      tightnessAdjusted, potOdds, toCall, availableHP, config, minBet
     );
   } else {
     return decideWithoutBet(
-      adjustedStrength, availableHP, config, actor.pet.stats.maxHealth, minBet, mustBetOrFold
+      tightnessAdjusted, availableHP, config, actor.pet.stats.maxHealth, minBet, mustBetOrFold
     );
   }
 }
@@ -124,9 +130,16 @@ function decideWithBetToCall(
   const canCall = availableHP >= toCall;
   const canRaise = availableHP >= toCall + minBet; // Ragnarok: must raise by at least minBet
   
-  if (handStrength >= 0.7 && canRaise) {
+  // Aggressiveness scales the raise threshold DOWN and bet size UP.
+  // At aggressiveness=0.9 (Ymir), raise threshold drops to 0.55 and
+  // bet sizing is 55% of HP. At 0.3 (Maat), threshold stays at 0.68
+  // and sizing is 33%. This creates real personality differences.
+  const raiseThreshold = 0.7 - config.aggressiveness * 0.18;
+  const raiseSizePct = 0.25 + config.aggressiveness * 0.3;
+
+  if (handStrength >= raiseThreshold && canRaise) {
     const raiseAmount = Math.min(
-      Math.floor(availableHP * 0.4),
+      Math.floor(availableHP * raiseSizePct),
       availableHP - toCall
     );
     return {
@@ -259,10 +272,14 @@ function decideWithoutBet(
     };
   }
   
-  // Post-flop with no bet: can check or bet
-  if (handStrength >= 0.6 && availableHP >= minBet) {
+  // Post-flop with no bet: can check or bet.
+  // Aggressiveness lowers the betting threshold and scales bet size.
+  const postFlopBetThreshold = 0.6 - config.aggressiveness * 0.15;
+  const postFlopBetScale = 0.10 + config.aggressiveness * 0.12;
+
+  if (handStrength >= postFlopBetThreshold && availableHP >= minBet) {
     const betSize = Math.min(
-      Math.floor(maxHealth * 0.15 * (handStrength + 0.5)),
+      Math.floor(maxHealth * postFlopBetScale * (handStrength + 0.5)),
       availableHP
     );
     return {

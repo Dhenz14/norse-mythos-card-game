@@ -52,6 +52,24 @@ export const greekChapter: CampaignChapter = {
 			aiHeroId: 'hero-nyx', aiHeroClass: 'warlock',
 			aiDeckCardIds: deck(0), aiProfile: AI_PROFILES.easy,
 			bossRules: [], prerequisiteIds: [],
+			bossQuips: {
+				onCombatStart: 'Light? In MY void? Erebus does not allow it. I do not allow it.',
+				onLowHP: 'Even I bow to my mother Chaos. But not yet. Not to YOU.',
+				onLethal: 'Then dawn comes. And what dawn brings, dusk takes back.',
+				onVictory: 'Sleep, little spark. Sleep deep.',
+			},
+			combatMusicId: 'primordial_dread',
+			victoryCinematic: [
+				{ narration: 'Erebus recoils. Nyx withdraws to her cavern at the edge of the world. The first light of creation is small \u2014 but it does not go out.', visualCue: 'A single point of warm light expanding into a dark sky.', musicId: 'primordial_dread', durationHint: 9 },
+				{ narration: 'Beneath your feet, Gaia stirs for the first time. The earth is waking.', visualCue: 'A great green hand spreading roots through the void.', musicId: 'forge_anvil', durationHint: 8 },
+			],
+			defeatCinematic: [
+				{ narration: 'The void closes. There was never anything here at all.', musicId: 'primordial_dread', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Gaia rises. From her broad back grows the dome of the starry sky \u2014 her son and her husband, Uranus.', visualCue: 'A vast figure rising out of green earth, a bright sky settling over her like a cloak.', musicId: 'olympian_hymn', durationHint: 9 },
+				{ narration: 'But Uranus is afraid of the children Gaia bears him. The Cyclopes, the Hundred-Handers \u2014 he thrusts them back into her body, and Gaia begins to grieve.', musicId: 'shadow_root', durationHint: 8 },
+			],
 			rewards: [{ type: 'rune', amount: 20 }],
 			realm: 'chaos',
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-nyx', rook: 'hero-hades', bishop: 'hero-demeter', knight: 'hero-hermes' },
@@ -67,6 +85,40 @@ export const greekChapter: CampaignChapter = {
 			aiHeroId: 'hero-hyperion', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.uranus,
 			bossRules: [{ type: 'passive_damage', value: 1, description: 'Uranus\'s crushing sky deals 1 damage each turn' }],
+			bossQuips: {
+				onCombatStart: 'I am the sky. I cover the Earth. There is no room beneath me for sons.',
+				onLowHP: 'My own sickle? In my own son\u2019s hand?',
+				onLethal: 'Then I bleed into the sea, and the sea bears Aphrodite. The cycle does not stop.',
+				onVictory: 'Sleep where my children scream. The sky is patient.',
+			},
+			combatMusicId: 'olympian_hymn',
+			bossPhases: [
+				{
+					hpPercent: 60,
+					quip: 'I press down. The Earth itself cannot lift me.',
+					flash: 'blue',
+					effect: { type: 'add_armor', value: 8 },
+					description: 'Uranus presses down with the weight of stars',
+				},
+				{
+					hpPercent: 30,
+					quip: 'GAIA! Hold him still! He is YOUR son!',
+					flash: 'red',
+					effect: { type: 'enrage', value: 8 },
+					description: 'Uranus calls on the sky',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The sickle of grey adamant flashes. Uranus recoils into the heavens forever, blood raining from him in great sheets.', visualCue: 'A bright sickle in slow motion. A vast star-crowned figure pulling away into the sky, bleeding.', musicId: 'olympian_hymn', durationHint: 12 },
+				{ narration: 'From the blood that falls upon the Earth, the Furies rise \u2014 avengers of blood-crime forevermore. From the foam where his severed flesh meets the sea, Aphrodite is born, terrible and beautiful.', visualCue: 'Three black-winged women rising from earth. A pale goddess walking out of sea-foam.', musicId: 'olympian_hymn', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Uranus presses down. The Earth is sealed. The Cyclopes and the Hundred-Handers will scream in the dark forever.', musicId: 'shadow_root', durationHint: 8 },
+			],
+			storyBridge: [
+				{ narration: 'Cronus takes his father\u2019s throne. The age of gold begins. Mortals live without toil, the earth yields freely, death comes only as gentle sleep. It is too good to last.', musicId: 'olympian_hymn', durationHint: 10 },
+				{ narration: 'And Cronus learns the prophecy: his own children will overthrow him. He starts swallowing them whole.', visualCue: 'A wild-eyed Titan king lifting a swaddled infant to his mouth.', musicId: 'shadow_root', durationHint: 8 },
+			],
 			prerequisiteIds: ['greek-1'],
 			rewards: [{ type: 'rune', amount: 25 }],
 			realm: 'gaia_earth',
@@ -76,13 +128,46 @@ export const greekChapter: CampaignChapter = {
 			id: 'greek-3', chapterId: 'greek', missionNumber: 3,
 			name: 'The Golden Devourer',
 			description: 'Cronus rules the golden age — and swallows his own children to cheat the prophecy.',
-			narrativeBefore: 'Cronus sits upon the golden throne of Othrys, lord of all Titans. The age of gold has dawned — mortals live without toil, the earth yields freely, and death comes only as gentle sleep. But Cronus knows the prophecy: his own child shall overthrow him, as he overthrew Uranus. So when Rhea bears him children — Hestia, Demeter, Hera, Hades, Poseidon — he swallows each one whole. His eyes are wild. His hands shake. The golden age rots from within.',
+			narrativeBefore: 'Cronus sits upon the golden throne of Othrys, lord of all Titans. The age of gold has dawned \u2014 mortals live without toil, the earth yields freely, and death comes only as gentle sleep. But Cronus knows the prophecy: his own child shall overthrow him, as he overthrew Uranus. So when Rhea bears him children \u2014 Hestia, Demeter, Hera, Hades, Poseidon \u2014 he swallows each one whole. His eyes are wild. His hands shake. The golden age rots from within. But Rhea, grief-maddened, wraps a stone in swaddling clothes and feeds it to Cronus in place of her sixth child. The real infant \u2014 Zeus \u2014 she smuggles to Crete, to the Dictaean Cave, where the nymph Amalthea nurses him on goat\u2019s milk and the Kouretes clash their shields to drown his crying. The king of Titans does not know that the stone sitting in his belly is the prophecy\u2019s fuse.',
 			narrativeAfter: 'Cronus clutches his belly too late. The emetic takes hold. He vomits forth five immortal gods — full-grown, furious, and free. Zeus stands among them, thunder already gathering in his fists. The golden throne cracks down the middle.',
 			narrativeVictory: 'Even a god who devours fate cannot escape it. The children always rise.',
 			narrativeDefeat: 'Cronus\'s jaws close. Another child, another swallowed future. The prophecy sleeps on.',
 			aiHeroId: 'hero-chronos', aiHeroClass: 'mage',
 			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.kronos,
 			bossRules: [{ type: 'extra_health', value: 5, description: 'Cronus has 105 health from Titan constitution' }],
+			bossQuips: {
+				onCombatStart: 'I have eaten five gods. Five UNNAMED gods, full-grown. You think YOU frighten me?',
+				onLowHP: 'My belly heaves. Something inside me is calling itself Zeus.',
+				onLethal: 'Then it is true. The son always overthrows the father. Eat me, then.',
+				onVictory: 'The golden age continues. Tell my children to wait their turn forever.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 60,
+					quip: 'I have already swallowed everything that could threaten me. Now I will swallow you.',
+					flash: 'gold',
+					effect: { type: 'heal_self', value: 12 },
+					description: 'Cronus consumes his fear',
+				},
+				{
+					hpPercent: 30,
+					quip: 'My BELLY! Something is moving in my BELLY!',
+					flash: 'red',
+					effect: { type: 'enrage', value: 9 },
+					description: 'The swallowed gods stir',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The emetic Rhea slipped into Cronus\u2019s wine takes hold at last. He clutches his belly and vomits forth five immortal gods \u2014 full-grown, furious, free.', visualCue: 'A Titan king on hands and knees, light pouring out of his mouth in five distinct streams.', musicId: 'olympian_hymn', durationHint: 12 },
+				{ narration: 'Zeus stands among them, thunder already gathering in his fists. The golden throne cracks down the middle. The age of the Titans is over.', visualCue: 'A young god rising into a crackling halo of lightning.', musicId: 'aesir_triumph', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'Cronus\u2019s jaws close. Another child swallowed. The prophecy sleeps a little longer.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Zeus descends into Tartarus. The Cyclopes are still there \u2014 still chained, still in the dark, their forge-fires cold. He frees them. They will need their fires very soon.', musicId: 'forge_anvil', durationHint: 10 },
+			],
 			prerequisiteIds: ['greek-2'],
 			rewards: [{ type: 'rune', amount: 30 }],
 			realm: 'mount_othrys',
@@ -99,6 +184,32 @@ export const greekChapter: CampaignChapter = {
 			aiHeroId: 'hero-hephaestus', aiHeroClass: 'warrior',
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.medium,
 			bossRules: [{ type: 'start_with_minion', cardId: 20203, description: 'Campe starts with a guardian serpent on the battlefield' }],
+			bossQuips: {
+				onCombatStart: 'Cronus put me here to keep the smiths sleeping. The smiths SLEEP.',
+				onLowHP: 'They will forge thunderbolts. They will end the Titan age. NOT WHILE I COIL.',
+				onLethal: 'Then take Tartarus from me. The first new sound here in an age will be the anvil.',
+				onVictory: 'Sleep, smiths. Sleep deeper.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'My coils are older than the chains the Cyclopes wear.',
+					flash: 'green',
+					effect: { type: 'damage_player', value: 7 },
+					description: 'Campe constricts',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Campe\u2019s serpentine corpse dissolves into shadow. The chains shatter. Three single-eyed smiths rise from the dark, blinking.', visualCue: 'Three vast figures with single bright eyes standing up out of broken chains, looking at hammers they have not held in an age.', musicId: 'forge_anvil', durationHint: 12 },
+				{ narration: 'Brontes lifts a hammer. The forge-fires of Tartarus blaze white for the first time since the Titan war. They draw thunderbolts for Zeus, a trident for Poseidon, a helm of invisibility for Hades.', visualCue: 'A forge erupting in white-hot light. A bundle of jagged lightning being shaped by giant hands.', musicId: 'forge_anvil', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Campe coils tighter. The Cyclopes never see the sky again.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Zeus, Poseidon, and Hades take up their new weapons. Atlas and the Titans see the storm coming. The Titanomachy begins.', musicId: 'olympian_hymn', durationHint: 8 },
+			],
 			prerequisiteIds: ['greek-3'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			realm: 'tartarus',
@@ -117,6 +228,40 @@ export const greekChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Atlas has 110 health — mightiest of the Titan warriors' },
 				{ type: 'bonus_draw', value: 1, description: 'Atlas rallies Titan reinforcements each turn' },
+			],
+			bossQuips: {
+				onCombatStart: 'Ten years of war I have led. Ten years of standing on the line where Olympians break.',
+				onLowHP: 'I will hold Othrys until my shoulders break under the sky itself.',
+				onLethal: 'A fitting punishment, then. Carry the heavens forever. Tell Zeus.',
+				onVictory: 'The Olympians break against Othrys like waves against a cliff.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 65,
+					quip: 'HUNDRED-HANDERS! THROW! Three hundred boulders apiece!',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'Atlas calls in the giant volley',
+				},
+				{
+					hpPercent: 30,
+					quip: 'I am the wall the Olympians cannot get past.',
+					flash: 'blue',
+					effect: { type: 'add_armor', value: 12 },
+					description: 'Atlas plants his feet',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Atlas staggers. The Titan line breaks. Zeus\u2019s thunderbolts split Mount Othrys in half and the mountain comes down in a single long roar.', visualCue: 'A vast lightning bolt cracking a mountain. The mountain falling. Slow motion. Dust and fire.', musicId: 'olympian_hymn', durationHint: 14 },
+				{ narration: 'The Titans are bound in chains of bronze behind walls of adamant, with the Hundred-Handers standing guard forever. Atlas himself receives a crueler sentence: he holds the sky upon his shoulders for all eternity.', visualCue: 'A bound Titan kneeling forever beneath a vast curved sky.', musicId: 'olympian_hymn', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Atlas holds the line. Olympus falls. The Titans return to the upper world and the cosmos goes back to gold-and-suffering.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Zeus divides the cosmos: sky for himself, sea for Poseidon, the underworld for Hades. The earth is left to mortals \u2014 if any can be made.', musicId: 'olympian_hymn', durationHint: 8 },
+				{ narration: 'Prometheus, the far-seeing Titan who sided with Zeus, kneels in clay by a riverbank and begins shaping mortals from earth and water. Athena breathes life into them. They are frail. They will need fire.', visualCue: 'A pair of huge hands shaping a tiny clay figure. A goddess in grey leaning over to whisper into its mouth.', musicId: 'forge_anvil', durationHint: 10 },
 			],
 			prerequisiteIds: ['greek-4'],
 			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 20209 }],
@@ -137,6 +282,32 @@ export const greekChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 5, description: 'Zeus\'s wrath grants 105 health' },
 				{ type: 'extra_mana', value: 1, description: 'Divine authority grants +1 mana' },
 			],
+			bossQuips: {
+				onCombatStart: 'Fire is mine. I lit it. I keep it. The clay-creatures will SHIVER as I made them to.',
+				onLowHP: 'Prometheus chained to a rock. Pandora opening her jar. The story is already in motion.',
+				onLethal: 'Then take the fire. But take Pandora\u2019s jar with it.',
+				onVictory: 'The Titan goes to a rock. The eagle goes to his liver. EVERY day.',
+			},
+			combatMusicId: 'olympian_hymn',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'My OWN cousin. Stealing from MY hearth.',
+					flash: 'gold',
+					effect: { type: 'enrage', value: 8 },
+					description: 'Zeus draws on the wrath of Olympus',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Fire crackles in mortal hands. They warm themselves. They cook their first meal. They make their first tools. The cost was Prometheus chained to a rock with an eagle eating his liver every day, but the gift will outlast every god.', visualCue: 'A circle of small clay people around a tiny fire, faces lit gold for the first time.', musicId: 'forge_anvil', durationHint: 12 },
+				{ narration: 'And Pandora opens her jar. Disease, despair, old age, death \u2014 every evil flies free. Only Hope remains, trapped beneath the lid. The golden age of innocence is over.', visualCue: 'A young woman lifting the lid of a jar. Dark shapes pouring out. One small bright thing left at the bottom.', musicId: 'twilight_horn', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The fire goes out. Mortals shiver in eternal darkness, forgotten by the gods.', musicId: 'twilight_horn', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Gaia does not forgive. Her Titan children rot in Tartarus. Her fury takes monstrous form: Typhon, born from her union with Tartarus itself.', musicId: 'jotun_rage', durationHint: 8 },
+			],
 			prerequisiteIds: ['greek-5'],
 			rewards: [{ type: 'rune', amount: 45 }],
 			realm: 'olympus',
@@ -155,6 +326,39 @@ export const greekChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Typhon has 115 health — mightiest monster ever born' },
 				{ type: 'passive_damage', value: 2, description: 'Typhon\'s hundred dragon-heads deal 2 damage each turn' },
+			],
+			bossQuips: {
+				onCombatStart: 'A HUNDRED dragon-heads. A HUNDRED voices. ALL of them want to swallow Olympus.',
+				onLowHP: 'My mother weeps. My fire burns. I am the wound the cosmos cannot close.',
+				onLethal: 'Bury me. Bury me under Etna. I will rumble there forever, and you will hear me.',
+				onVictory: 'Olympus FALLS. The age of monsters BEGINS.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 70,
+					quip: 'Ten more heads grow when one is cut. Ten more flames rise from each black eye.',
+					flash: 'red',
+					effect: { type: 'enrage', value: 10 },
+					description: 'Typhon\u2019s hundred heads roar at once',
+				},
+				{
+					hpPercent: 35,
+					quip: 'I will burn HERA. I will burn ARTEMIS. I will burn the SKY.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 12 },
+					description: 'Typhon\u2019s wrath erupts',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Zeus hurls thunderbolt after thunderbolt. The mountains melt under him. Typhon\u2019s serpent-heads char and fall. At last the Father of Monsters crashes down.', visualCue: 'A vast multi-headed shape collapsing under endless white lightning, smoke rising in columns the size of cities.', musicId: 'olympian_hymn', durationHint: 14 },
+				{ narration: 'Zeus buries him beneath Mount Etna, where his fury still rumbles as volcanic fire. But Typhon\u2019s children live on \u2014 Cerberus, the Hydra, the Chimera, the Sphinx. His legacy is written in monster-blood.', visualCue: 'A mountain settling on a still-burning corpse. Smoke from the peak in the shape of a hundred heads.', musicId: 'twilight_horn', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Typhon tears the sinews from Zeus\u2019s limbs. Olympus falls. The age of monsters begins early.', musicId: 'jotun_rage', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Gaia\u2019s rage is inexhaustible. From the blood Uranus spilled upon her long ago, the Giants are born \u2014 enormous, armored in gleaming scales, serpent-tailed, hurling flaming oaks at the heavens.', musicId: 'jotun_rage', durationHint: 8 },
 			],
 			prerequisiteIds: ['greek-6'],
 			rewards: [{ type: 'rune', amount: 55 }, { type: 'eitr', amount: 75 }],
@@ -176,6 +380,39 @@ export const greekChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 1, description: 'Giant fury grants +1 mana' },
 				{ type: 'bonus_draw', value: 1, description: 'The giant horde provides endless reinforcements' },
 			],
+			bossQuips: {
+				onCombatStart: 'Mother Gaia made me from the blood of Uranus. I am Olympus\u2019s reckoning, made personal.',
+				onLowHP: 'A MORTAL? You\u2019ve brought a MORTAL? The prophecy is REAL?',
+				onLethal: 'Then Heracles\u2019 arrow finishes me. Tell my mother I died standing.',
+				onVictory: 'I will sit on Zeus\u2019s throne and Hera will sit on my knee.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 60,
+					quip: 'Throw the FLAMING OAKS! Throw the MOUNTAINS!',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'Porphyrion launches a giant volley',
+				},
+				{
+					hpPercent: 30,
+					quip: 'I am the KING of giants. I cannot fall to a god alone.',
+					flash: 'gold',
+					effect: { type: 'add_armor', value: 14 },
+					description: 'Porphyrion calls on the prophecy that protects him',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Heracles strings his bow. Athena hurls Sicily down on Enceladus. Poseidon breaks Polybotes under a chunk of Kos island. Porphyrion falls last \u2014 struck by Zeus\u2019s thunderbolt and pierced by Heracles\u2019 mortal arrow at the same instant.', visualCue: 'A mortal with a horn-bow at full draw, an Olympian throne behind him, a giant collapsing under combined gods-and-mortal fire.', musicId: 'olympian_hymn', durationHint: 14 },
+				{ narration: 'Gaia weeps. The mountains where giants fell become the islands of the Aegean. The cosmos earns one quiet age.', visualCue: 'A great green woman in tears. Distant mountains becoming small islands in a calming sea.', musicId: 'rebirth', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Porphyrion reaches Zeus\u2019s throne. Olympus crumbles. The age of gods ends in ruin.', musicId: 'twilight_horn', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'The wars of gods are over. Now comes the age of heroes \u2014 mortals with divine blood, cursed to greatness and doomed to tragedy.', musicId: 'olympian_hymn', durationHint: 8 },
+			],
 			prerequisiteIds: ['greek-7'],
 			rewards: [{ type: 'rune', amount: 65 }, { type: 'card', cardId: 20216 }],
 			realm: 'phlegra',
@@ -194,6 +431,32 @@ export const greekChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Athena has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Athena\'s divine wisdom grants +1 mana' },
+			],
+			bossQuips: {
+				onCombatStart: 'I have read every move you will make. I have read your reading of mine. Show me anyway.',
+				onLowHP: 'You surprise me. The grey-eyed goddess is rarely surprised.',
+				onLethal: 'Strike, then. I am proud of you. The aegis goes to whoever earns it.',
+				onVictory: 'You read the strategy and the strategy was older than you. Try again, hero.',
+			},
+			combatMusicId: 'olympian_hymn',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'I am the strategy AND the wisdom. You will need to outthink BOTH.',
+					flash: 'gold',
+					effect: { type: 'add_armor', value: 10 },
+					description: 'Athena raises the aegis',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Athena lowers her aegis. \u201cWisdom and courage together,\u201d she says. \u201cYou have the makings of a hero.\u201d', visualCue: 'A grey-eyed goddess inclining her head a fraction. The shield of the cosmos lowering.', musicId: 'olympian_hymn', durationHint: 10 },
+				{ narration: 'In the distance, a thousand ships are being built. The Trojan War looms \u2014 but that story belongs to another age, another song.', visualCue: 'A horizon full of timber being shaped into ships. A young queen on a balcony in a far city, looking out.', musicId: 'twilight_horn', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'Athena predicted every move. The age of heroes has no room for the unworthy.', musicId: 'twilight_horn', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk back from Athens with the goddess\u2019s grudging respect. But somewhere far below, in the deepest cell of Tartarus, something stirs that the Olympians forgot. Gaia is tired. Gaia is calling her oldest children home.', musicId: 'shadow_root', durationHint: 10 },
 			],
 			prerequisiteIds: ['greek-8'],
 			rewards: [{ type: 'rune', amount: 75 }, { type: 'eitr', amount: 100 }],
@@ -215,10 +478,50 @@ export const greekChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Primordial power grants +2 mana' },
 				{ type: 'bonus_draw', value: 1, description: 'The earth yields endless reinforcements' },
 			],
+			bossQuips: {
+				onCombatStart: 'I am tired, child. I have borne sky and titan and giant and monster. I have buried them all. Let me sleep.',
+				onLowHP: 'You hold the axis of the world. The axis is heavier than you imagine.',
+				onLethal: 'Then let it stand. For now. The cycle is patient.',
+				onVictory: 'There. Hush. Let it all go back to nothing.',
+			},
+			combatMusicId: 'twilight_horn',
+			bossPhases: [
+				{
+					hpPercent: 75,
+					quip: 'I open the rifts of Tartarus. The Titans stir in their chains.',
+					flash: 'purple',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'Gaia opens the lower gates',
+				},
+				{
+					hpPercent: 50,
+					quip: 'Chaos itself comes back through me. I birthed it. It always comes home.',
+					flash: 'green',
+					effect: { type: 'heal_self', value: 14 },
+					description: 'Gaia draws on primordial Chaos',
+				},
+				{
+					hpPercent: 25,
+					quip: 'Zeus will fall. As Cronus did. As Uranus did. The cycle DOES not stop. It only PAUSES.',
+					flash: 'red',
+					effect: { type: 'enrage', value: 14 },
+					description: 'Gaia speaks the prophecy',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The rifts seal. Gaia\u2019s trembling subsides. The earth settles. The Titans remain bound. Chaos recedes to the edges of existence, where it has always waited.', visualCue: 'A great green woman lowering her hands. A horizon stitching itself shut.', musicId: 'olympian_hymn', durationHint: 14 },
+				{ narration: 'Olympus endures \u2014 for now. But the prophecy lingers: Zeus himself shall one day be overthrown, as Uranus was, as Cronus was. The cycle of blood has merely paused.', visualCue: 'Twelve gods on twelve thrones. One of them, Zeus, looks up at the sky as if listening.', musicId: 'olympian_hymn', durationHint: 12 },
+				{ narration: 'Somewhere in the deep places, something is already beginning to stir.', visualCue: 'A black egg in a deeper black cave, faintly pulsing.', musicId: 'shadow_root', durationHint: 8 },
+			],
+			defeatCinematic: [
+				{ narration: 'The rifts widen. Tartarus opens. The world returns to Chaos, as Gaia always intended.', musicId: 'twilight_horn', durationHint: 9 },
+			],
 			prerequisiteIds: ['greek-9'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20002 }, { type: 'pack', amount: 2 }],
 			realm: 'tartarus',
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-demeter', rook: 'hero-poseidon', bishop: 'hero-hades', knight: 'hero-apollo' },
+			starThresholds: { threeStar: 16, twoStar: 24 },
+			isChapterFinale: true,
 		},
 	],
 };

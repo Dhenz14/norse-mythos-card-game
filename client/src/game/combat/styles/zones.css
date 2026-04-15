@@ -47,6 +47,10 @@
 
   /* ========================================
      BETTING ACTIONS — bottom, right of hero
+
+     Lifted from 8px to 60px so the action buttons (Attack/Brace/Camera)
+     don't sit at the absolute edge of the canvas. With the canvas
+     letterboxed on small windows the bottom 8px was visually "cut off".
      ======================================== */
   --zone-betting-left: 260px;
   --zone-betting-bottom: 60px;

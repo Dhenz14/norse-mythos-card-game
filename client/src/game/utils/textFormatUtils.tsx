@@ -80,16 +80,6 @@ const KEYWORD_COLORS: Record<string, string> = {
   'Rune': '#ff4500', // Orangered
 };
 
-// Background gradients for keywords
-const getKeywordGradient = (keyword: string): string => {
-  const baseColor = KEYWORD_COLORS[keyword] || '#fada5e'; // Default golden for most keywords
-  // Create a lighter version of the base color for gradient
-  return `linear-gradient(to bottom, ${baseColor}22, ${baseColor}44)`;
-};
-
-// Regular expression to match keywords with their colons together as one unit (word boundaries, case insensitive)
-const keywordRegex = new RegExp(`(${KEYWORDS.join('|')})(:|\\.)`, 'gi');
-
 /**
  * Format card text with keyword formatting and optimized space usage
  * Ensures keywords and their descriptions stay on the same line, with proper 
@@ -146,7 +136,7 @@ export const formatCardText = (
   const allKeywordMatches: { keyword: string, index: number, isStandalone: boolean }[] = [];
   
   // Apply diagnostic styling if requested
-  const { diagnosticMode = false, showContainers = false, colorizeBoxes = false } = options;
+  const { diagnosticMode = false } = options;
   
   // Determine text color based on card rarity
   // Use Norse-inspired metal colors for each rarity
@@ -175,9 +165,6 @@ export const formatCardText = (
       // Default to bronze for unknown rarities
       textColor = '#a97142';
   }
-  
-  // Add debug class if diagnostic mode is enabled
-  const debugClass = (diagnosticMode || showContainers) ? 'debug-colorized' : '';
   
   // In diagnostic mode, display container information
   if (diagnosticMode) {
@@ -346,69 +333,6 @@ export const formatCardText = (
       dangerouslySetInnerHTML={{ __html: sanitizeHtml(processedText) }}
     />
   );
-};
-
-// Helper function to format parts of text that don't contain keywords
-const formatNonKeywordText = (text: string, key: number = 0): JSX.Element => {
-  // Format numbers with special styling
-  // This handles:
-  // - Damage values: "Deal 3 damage"
-  // - Number values: "Draw 2 cards"
-  // - Parenthetical values: "(3)"
-  
-  const parts = text.split(/(\b\d+\s+damage\b|\(\d+\)|\b\d+\s+cards?\b|\b\d+\s+health\b|\b\d+\/\d+\b)/g);
-  
-  if (parts.length === 1) {
-    return <span key={key}>{text}</span>;
-  }
-  
-  const formattedParts: JSX.Element[] = [];
-  let innerKey = 0;
-  
-  for (let part of parts) {
-    if (!part) continue;
-    
-    // Check if this is a damage value
-    if (/\b(\d+)\s+damage\b/.test(part)) {
-      const [_, number] = part.match(/\b(\d+)\s+damage\b/) || [];
-      formattedParts.push(
-        <span key={innerKey++}>
-          <span className="damage-value">{number}</span> damage
-        </span>
-      );
-    }
-    // Check if this is a parenthetical value
-    else if (/\((\d+)\)/.test(part)) {
-      const [_, number] = part.match(/\((\d+)\)/) || [];
-      formattedParts.push(
-        <span key={innerKey++}>(<span className="number-value">{number}</span>)</span>
-      );
-    }
-    // Check if this mentions cards or health
-    else if (/\b(\d+)\s+(cards?|health)\b/.test(part)) {
-      const [_, number, type] = part.match(/\b(\d+)\s+(cards?|health)\b/) || [];
-      formattedParts.push(
-        <span key={innerKey++}>
-          <span className="number-value">{number}</span> {type}
-        </span>
-      );
-    }
-    // Format minion stats like "1/2"
-    else if (/\b(\d+)\/(\d+)\b/.test(part)) {
-      const [_, attack, health] = part.match(/\b(\d+)\/(\d+)\b/) || [];
-      formattedParts.push(
-        <span key={innerKey++}>
-          <span className="number-value">{attack}</span>/<span className="damage-value">{health}</span>
-        </span>
-      );
-    }
-    // Regular text
-    else {
-      formattedParts.push(<span key={innerKey++}>{part}</span>);
-    }
-  }
-  
-  return <span key={key}>{formattedParts}</span>;
 };
 
 /**

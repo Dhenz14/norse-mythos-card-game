@@ -8,17 +8,56 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { CinematicIntro } from '../../campaign/campaignTypes';
+import type { CinematicIntro, MusicCueId } from '../../campaign/campaignTypes';
+import { useAudio, type BackgroundMusicTrack } from '../../../lib/stores/useAudio';
 import './cinematic-crawl.css';
 
 interface CinematicCrawlProps {
 	intro: CinematicIntro;
 	onComplete: () => void;
+	/**
+	 * Optional opening track played for the prelude/title cards.
+	 * Falls back to `battle_theme` if not set. Per-scene musicId values
+	 * inside intro.scenes will override this once the scenes phase begins.
+	 */
+	openingMusic?: MusicCueId;
 }
 
-const CinematicCrawl: React.FC<CinematicCrawlProps> = ({ intro, onComplete }) => {
+/*
+  CinematicCrawl drives the music for its lifetime:
+    1. On mount, plays openingMusic (or 'battle_theme' fallback)
+    2. As scenes advance, if scene.musicId is set AND differs from
+       the current track, crossfade to it
+    3. On unmount, stops whatever is playing
+  All music ops are wrapped in try/catch via the audio store — missing
+  files fail silently and the cinematic continues without sound.
+*/
+const CinematicCrawl: React.FC<CinematicCrawlProps> = ({ intro, onComplete, openingMusic }) => {
 	const [phase, setPhase] = useState<'prelude' | 'title' | 'scenes' | 'done'>('prelude');
 	const [sceneIndex, setSceneIndex] = useState(0);
+	const playBackgroundMusic = useAudio(s => s.playBackgroundMusic);
+	const stopBackgroundMusic = useAudio(s => s.stopBackgroundMusic);
+	const currentMusicTrack = useAudio(s => s.currentMusicTrack);
+
+	// Opening music (prelude + title)
+	useEffect(() => {
+		const initial: BackgroundMusicTrack = (openingMusic as BackgroundMusicTrack | undefined) ?? 'battle_theme';
+		playBackgroundMusic(initial);
+		return () => {
+			stopBackgroundMusic();
+		};
+	}, [playBackgroundMusic, stopBackgroundMusic, openingMusic]);
+
+	// Per-scene music — when a scene with a musicId mounts, switch to it
+	useEffect(() => {
+		if (phase !== 'scenes') return;
+		if (sceneIndex >= intro.scenes.length) return;
+		const scene = intro.scenes[sceneIndex];
+		if (!scene.musicId) return;
+		const desired = scene.musicId as BackgroundMusicTrack;
+		if (currentMusicTrack === desired) return;
+		playBackgroundMusic(desired);
+	}, [phase, sceneIndex, intro.scenes, currentMusicTrack, playBackgroundMusic]);
 
 	const advanceScene = useCallback(() => {
 		setSceneIndex(prev => {
@@ -144,6 +183,23 @@ const CinematicCrawl: React.FC<CinematicCrawlProps> = ({ intro, onComplete }) =>
 						transition={{ duration: 1.5 }}
 						className="cinematic-scene"
 					>
+						{currentScene.speakerPortrait && (
+							<motion.div
+								className="cinematic-speaker"
+								initial={{ opacity: 0, x: -20 }}
+								animate={{ opacity: 1, x: 0 }}
+								transition={{ duration: 0.8, delay: 0.2 }}
+							>
+								<img
+									src={currentScene.speakerPortrait}
+									alt={currentScene.speakerName ?? ''}
+									className="cinematic-speaker-portrait"
+								/>
+								{currentScene.speakerName && (
+									<div className="cinematic-speaker-name">{currentScene.speakerName}</div>
+								)}
+							</motion.div>
+						)}
 						<motion.p
 							className="cinematic-narration"
 							initial={{ y: 50, opacity: 0 }}
@@ -175,7 +231,7 @@ const CinematicCrawl: React.FC<CinematicCrawlProps> = ({ intro, onComplete }) =>
 			)}
 
 			{/* Skip button */}
-			<button className="cinematic-skip-btn" onClick={handleSkip}>
+			<button type="button" className="cinematic-skip-btn" onClick={handleSkip}>
 				Skip
 			</button>
 

@@ -117,7 +117,7 @@ export const MulliganScreen: React.FC<MulliganScreenProps> = ({
               onClick={confirmMulliganChoice}
             >
               {selectedCount === 0
-                ? 'Confirm (Keep All)'
+                ? 'Lock Hand'
                 : `Replace ${selectedCount} Card${selectedCount > 1 ? 's' : ''}`}
             </button>
           </motion.div>

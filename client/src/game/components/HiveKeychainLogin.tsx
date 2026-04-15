@@ -16,7 +16,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHiveDataStore } from '../../data/HiveDataLayer';
 import { hiveSync } from '../../data/HiveSync';
-import { startSync, stopSync } from '../../data/blockchain/replayEngine';
+import { getNFTBridge } from '../nft';
+import { ensureBridgeRuntime } from '../runtime/bridgeRuntime';
 
 type ConnectStatus = 'idle' | 'connecting' | 'error';
 
@@ -34,13 +35,22 @@ export function HiveKeychainLogin() {
 
 	// Re-connect on mount if user was previously logged in
 	useEffect(() => {
+		let cancelled = false;
+
 		if (user) {
 			hiveSync.setUsername(user.hiveUsername);
-			startSync(user.hiveUsername);
+			void ensureBridgeRuntime().then(() => {
+				if (!cancelled) {
+					getNFTBridge().startSync(user.hiveUsername);
+				}
+			});
 		}
-		return () => { stopSync(); };
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+
+		return () => {
+			cancelled = true;
+			getNFTBridge().stopSync();
+		};
+	}, [user]);
 
 	const handleConnect = async () => {
 		const trimmed = username.trim().toLowerCase().replace(/^@/, '');
@@ -70,15 +80,13 @@ export function HiveKeychainLogin() {
 			lastLogin: Date.now(),
 			accountTier: 'free',
 		});
-
-		startSync(trimmed);
 		setStatus('idle');
 		setIsExpanded(false);
 		setUsername('');
 	};
 
 	const handleLogout = () => {
-		stopSync();
+		getNFTBridge().stopSync();
 		logout();
 	};
 

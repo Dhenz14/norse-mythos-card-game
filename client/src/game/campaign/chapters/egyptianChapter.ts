@@ -52,6 +52,22 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'hero-ullr', aiHeroClass: 'hunter',
 			aiDeckCardIds: deck(0), aiProfile: AI_PROFILES.easy,
 			bossRules: [], prerequisiteIds: [],
+			bossQuips: {
+				onCombatStart: 'I roll the sun across the sky each dawn. I do not let just anyone follow me into the dark.',
+				onLowHP: 'A scarab knows when it has met its match. Even Khepri.',
+				onLethal: 'Walk into the Duat, then. The dead are watching.',
+				onVictory: 'The dawn rejects you. Try the dusk if you survive it.',
+			},
+			combatMusicId: 'duat_passage',
+			victoryCinematic: [
+				{ narration: 'Khepri folds his wings. The sun rolls forward without him for a moment, and the sky waits politely. \u201cWalk further,\u201d he says. \u201cIf you dare.\u201d', visualCue: 'A great winged scarab inclining its head. The sun-disk pausing in the sky behind him.', musicId: 'duat_passage', durationHint: 9 },
+			],
+			defeatCinematic: [
+				{ narration: 'Khepri clicks disapprovingly. The dawn rejects you, and the dark of the Duat slides shut behind your back.', musicId: 'duat_passage', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk into the desert. The sun is overhead. The horizon is empty. And then a tail uncurls from the sand at your feet.', visualCue: 'A scorpion tail rising from sand, venom glistening on the stinger.', musicId: 'shadow_root', durationHint: 8 },
+			],
 			rewards: [{ type: 'rune', amount: 20 }],
 			campaignArmy: { king: 'king-gaia', queen: 'hero-ammit', rook: 'hero-baldur', bishop: 'hero-maat', knight: 'hero-khepri' },
 		},
@@ -66,6 +82,31 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'hero-serqet', aiHeroClass: 'rogue',
 			aiDeckCardIds: deck(15), aiProfile: AI_PROFILES.easy,
 			bossRules: [], prerequisiteIds: ['egyptian-1'],
+			bossQuips: {
+				onCombatStart: 'My venom finds the cracks in EVERY heart. Even pharaohs. Even gods.',
+				onLowHP: 'Your blood resists me. I am almost flattered.',
+				onLethal: 'Kill the scorpion. The desert remembers.',
+				onVictory: 'Sleep in the sand, traveler. I have eaten more than you.',
+			},
+			combatMusicId: 'duat_passage',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'My tail drips poison faster than your heart can race.',
+					flash: 'green',
+					effect: { type: 'damage_player', value: 6 },
+					description: 'Serqet strikes with venom',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Serqet withdraws her stinger and bows the smallest bow you have ever seen a goddess give. \u201cYour blood is strong enough,\u201d she says, and dissolves back into the sand.', visualCue: 'A scorpion-tailed goddess receding into a heat-haze.', musicId: 'duat_passage', durationHint: 9 },
+			],
+			defeatCinematic: [
+				{ narration: 'Serqet\u2019s venom finds your heart. The desert claims another traveler.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk on. The Hall of Two Truths rises out of the sand, golden scales gleaming in a light with no source. Ma\u2019at is waiting for you with her feather.', visualCue: 'Vast golden scales in a hall with no walls. A woman with a single white feather.', musicId: 'duat_passage', durationHint: 8 },
+			],
 			rewards: [{ type: 'rune', amount: 25 }],
 			campaignArmy: { king: 'king-gaia', queen: 'hero-ammit', rook: 'hero-hephaestus', bishop: 'hero-maat', knight: 'hero-serqet' },
 		},
@@ -80,6 +121,31 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'hero-maat', aiHeroClass: 'priest',
 			aiDeckCardIds: deck(30), aiProfile: AI_PROFILES.maat,
 			bossRules: [{ type: 'bonus_draw', value: 1, description: 'Ma\'at draws wisdom from the scales' }],
+			bossQuips: {
+				onCombatStart: 'I weigh hearts. I always weigh hearts. Place yours upon the scales without lying about it first.',
+				onLowHP: 'Your heart balances. The feather of truth approves.',
+				onLethal: 'Then take the feather. You have earned it.',
+				onVictory: 'The scale tips. Ammit is hungry.',
+			},
+			combatMusicId: 'duat_passage',
+			bossPhases: [
+				{
+					hpPercent: 60,
+					quip: 'The forty-two negative confessions. Recite them. NOW.',
+					flash: 'gold',
+					effect: { type: 'add_armor', value: 8 },
+					description: 'Ma\u2019at calls on the laws of the cosmos',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The scales balance. Ma\u2019at nods. \u201cYour heart is true. But the deeper Duat will test more than your virtue. Walk on \u2014 the Devourer is hungry.\u201d', visualCue: 'A scale tipping into perfect equilibrium. A goddess in white inclining her head.', musicId: 'duat_passage', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'The scales tip. Your heart is heavier than truth. Ammit\u2019s shadow falls across you.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'And then the air thickens with the smell of crocodile, lion, and hippo. Ammit, the Devourer, has been waiting in the corner of the hall for an age, watching every weighing.', visualCue: 'A monstrous chimera goddess unfolding from the dark behind the scales.', musicId: 'shadow_root', durationHint: 8 },
+			],
 			prerequisiteIds: ['egyptian-2'],
 			rewards: [{ type: 'rune', amount: 30 }],
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-ammit', rook: 'hero-heimdall', bishop: 'hero-maat', knight: 'hero-khepri' },
@@ -95,6 +161,31 @@ export const egyptianChapter: CampaignChapter = {
 			aiHeroId: 'hero-logi', aiHeroClass: 'warrior',
 			aiDeckCardIds: deck(45), aiProfile: AI_PROFILES.ammit,
 			bossRules: [{ type: 'extra_health', value: 5, description: 'Ammit has 105 health' }],
+			bossQuips: {
+				onCombatStart: 'Crocodile. Lion. Hippopotamus. Three appetites. None of them satisfied.',
+				onLowHP: 'Even devourers grow tired. But never of new hearts.',
+				onLethal: 'Then unmake me. Or I unmake you. The hunger is the same.',
+				onVictory: 'Down the throat. Quietly, now. Better not to feel it.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'I have eaten more pharaohs than you can name. Add yourself to the list.',
+					flash: 'red',
+					effect: { type: 'enrage', value: 8 },
+					description: 'Ammit lunges with all three jaws',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Ammit snaps her jaws on empty air. \u201cGo then,\u201d she growls. \u201cBut I wait at the end of all things.\u201d', visualCue: 'A chimera-goddess settling back onto her haunches, watching you walk past with hungry patient eyes.', musicId: 'duat_passage', durationHint: 9 },
+			],
+			defeatCinematic: [
+				{ narration: 'Ammit\u2019s jaws close around your heart. Another soul devoured. The Duat keeps the silence very well.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk further. The horizon turns red \u2014 not with sunrise, with the storm-god\u2019s temper. Set is awake.', visualCue: 'A blood-red horizon rising. A figure in the distance with long red ears.', musicId: 'jotun_rage', durationHint: 8 },
+			],
 			prerequisiteIds: ['egyptian-3'],
 			rewards: [{ type: 'rune', amount: 35 }, { type: 'eitr', amount: 50 }],
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-ammit', rook: 'hero-ares', bishop: 'hero-aphrodite', knight: 'hero-serqet' },
@@ -103,7 +194,7 @@ export const egyptianChapter: CampaignChapter = {
 			id: 'egyptian-5', chapterId: 'egyptian', missionNumber: 5, realm: 'thebes',
 			name: 'Storms of Set',
 			description: 'The god of chaos unleashes the desert storm.',
-			narrativeBefore: 'The sky turns crimson as Set, the red god of chaos, rises like a sandstorm given flesh. He murdered Osiris. He fights Apophis each night. "Order is a lie," he roars. "Let me show you the truth."',
+			narrativeBefore: 'The sky turns crimson as Set, the red god of chaos, rises like a sandstorm given flesh. He is the most complicated god in any pantheon. He murdered his brother Osiris \u2014 sealed him in a coffin of lead, cut him into fourteen pieces, and scattered them across Egypt. Isis found thirteen; the fourteenth the Nile fish ate. And yet each night, when Apophis the chaos serpent coils around Ra\u2019s sun barge to devour the dawn, it is Set who stands at the prow and fights the serpent back. The murderer is also the protector. The destroyer is also the only thing standing between the sun and oblivion. He turns his red eyes upon you. \u201cOrder is the lie my brother told,\u201d he roars. \u201cChaos is the truth I keep telling. Which one do you want?\u201d',
 			narrativeAfter: 'Set dissolves into sand and wind. "Chaos cannot be defeated. But you have earned its... respect."',
 			narrativeVictory: 'You stand firm in the eye of chaos. Set\'s storm cannot uproot you.',
 			narrativeDefeat: 'The desert storm swallows you whole.',
@@ -112,6 +203,38 @@ export const egyptianChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 5, description: 'Set has 105 health' },
 				{ type: 'passive_damage', value: 1, description: 'Sandstorm deals 1 damage each turn' },
+			],
+			bossQuips: {
+				onCombatStart: 'Order is the lie my brother told. CHAOS is the truth I keep telling.',
+				onLowHP: 'I murdered Osiris. I fight Apophis every night. Do you really think YOU will end me?',
+				onLethal: 'Then end the storm. The desert remembers all the wrong gods first.',
+				onVictory: 'Sand. Wind. Lies you call order. ALL of it mine.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 60,
+					quip: 'My SANDSTORM scoured kingdoms off the map.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 7 },
+					description: 'Set unleashes the desert storm',
+				},
+				{
+					hpPercent: 30,
+					quip: 'My BROTHER\u2019S BLOOD is on every grain of sand.',
+					flash: 'red',
+					effect: { type: 'enrage', value: 9 },
+					description: 'Set draws on his oldest crime',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Set dissolves into sand and wind. \u201cChaos cannot be defeated,\u201d his voice rasps. \u201cBut you have earned its respect.\u201d', visualCue: 'A red god scattering apart into a desert wind, his laugh still hanging in the air.', musicId: 'duat_passage', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'The storm swallows you. The Duat absorbs another soul into its endless inventory.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'Beyond the storm, the sky brightens \u2014 it is the under-dawn, the hour Ra\u2019s barge sails through the deepest part of the night. The barge is calling for protection.', visualCue: 'A great gold ship sailing across an underworld river, surrounded by serpents.', musicId: 'duat_passage', durationHint: 8 },
 			],
 			prerequisiteIds: ['egyptian-4'],
 			rewards: [{ type: 'rune', amount: 40 }],
@@ -131,6 +254,38 @@ export const egyptianChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 10, description: 'Ra has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Ra channels solar energy (+1 mana)' },
 			],
+			bossQuips: {
+				onCombatStart: 'I am Ra. I sail the sun through the dark of the world every night for an age. I will sail through you too.',
+				onLowHP: 'The barge has held against worse than you. The barge will hold against you.',
+				onLethal: 'Then take the sun for one night. The morning is mine again.',
+				onVictory: 'The dawn is delayed for the first time in an age.',
+			},
+			combatMusicId: 'duat_passage',
+			bossPhases: [
+				{
+					hpPercent: 65,
+					quip: 'My EYE is the sun itself. Look at it. LOOK.',
+					flash: 'gold',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'Ra blinds you with the eye of the sun',
+				},
+				{
+					hpPercent: 30,
+					quip: 'I have sailed twelve hours through serpents. THIS is hour ONE.',
+					flash: 'gold',
+					effect: { type: 'add_armor', value: 12 },
+					description: 'Ra raises the solar barge',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The twelfth hour passes and the eastern horizon glows gold. Ra nods, ancient and pleased. \u201cYou kept the light alive,\u201d he says. \u201cThe dawn owes you one.\u201d', visualCue: 'A sun cresting a horizon for the first time after a long night. A ferryman of the sun nodding once.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The serpents overwhelm the barge. For the first time in any age, dawn is delayed.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk on into a chamber of moonlight reflected on a still river. A goddess in pleated linen waits there with a sad smile and the strongest magic in any pantheon.', visualCue: 'Isis seated by water, two great wings folded, a slight knowing smile.', musicId: 'duat_passage', durationHint: 8 },
+			],
 			prerequisiteIds: ['egyptian-5'],
 			rewards: [{ type: 'rune', amount: 50 }, { type: 'card', cardId: 20108 }],
 			campaignArmy: { king: 'king-audumbla', queen: 'hero-fujin', rook: 'hero-baldur', bishop: 'hero-hestia', knight: 'hero-apollo' },
@@ -148,6 +303,31 @@ export const egyptianChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Isis has 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Isis weaves extra cards from magic' },
+			],
+			bossQuips: {
+				onCombatStart: 'I have wept an ocean of tears for my husband. I have made the cosmos give him back. Imagine what I can do to YOU.',
+				onLowHP: 'Magic is mostly grief that learned a language.',
+				onLethal: 'Take what I have left. I gave most of it to my husband already.',
+				onVictory: 'Walk on, child. Tell Anubis the sorceress sends her regards.',
+			},
+			combatMusicId: 'duat_passage',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'I tricked Ra into giving me his TRUE name. There is no spell I cannot speak.',
+					flash: 'gold',
+					effect: { type: 'heal_self', value: 12 },
+					description: 'Isis weaves a spell of restoration',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Isis lowers her hands. \u201cYou have more strength than I expected,\u201d she says. \u201cUse it wisely. Strength misused becomes my husband\u2019s story.\u201d', visualCue: 'A sad goddess in linen lowering glowing hands. A wide river behind her.', musicId: 'duat_passage', durationHint: 10 },
+			],
+			defeatCinematic: [
+				{ narration: 'Isis\u2019s enchantments weave around you like chains. Even your name belongs to her now.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'A jackal-headed god in linen wraps is waiting in the next chamber. He has personally attended every funeral in the cosmos. He looks up and his ears prick.', visualCue: 'A jackal-headed god seated cross-legged with embalming tools, looking up.', musicId: 'duat_passage', durationHint: 8 },
 			],
 			prerequisiteIds: ['egyptian-6'],
 			rewards: [{ type: 'rune', amount: 55 }],
@@ -167,6 +347,38 @@ export const egyptianChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 10, description: 'Anubis has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Anubis channels death energy (+1 mana)' },
 			],
+			bossQuips: {
+				onCombatStart: 'I have prepared billions for their final journey. You are not dead yet. That makes this... interesting.',
+				onLowHP: 'I have all the time in the world. The dead never hurry.',
+				onLethal: 'Then I cross over for the first time. The bandages will be patient.',
+				onVictory: 'Sleep, traveler. The wraps will be kind.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 60,
+					quip: 'I open the canopic jars. The four sons of Horus are watching you.',
+					flash: 'purple',
+					effect: { type: 'damage_player', value: 7 },
+					description: 'Anubis calls the four sons of Horus',
+				},
+				{
+					hpPercent: 30,
+					quip: 'No god has ever escaped my chamber by being clever. Be unclever, then. Try strength.',
+					flash: 'red',
+					effect: { type: 'enrage', value: 9 },
+					description: 'Anubis turns judge to executioner',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Anubis wraps you in bandages that dissolve into golden light the moment they touch your skin. \u201cYou have been judged worthy,\u201d he says, in a voice that has practiced the line for an age.', visualCue: 'A jackal-god\u2019s hands lifting away. A faint gold light around the player. The chamber lifts a fraction of its weight.', musicId: 'duat_passage', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Anubis wraps you in burial cloth. Your journey ends in the embalming room, perfectly preserved, perfectly forgotten.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'And in the deepest abyss, far below even Anubis\u2019s chamber, something black and serpentine is uncoiling. The chaos serpent Apophis has been here since before the gods. It does not approve of dawns.', visualCue: 'A vast black serpent in a vast black sea, opening a single yellow eye.', musicId: 'shadow_root', durationHint: 8 },
+			],
 			prerequisiteIds: ['egyptian-7'],
 			rewards: [{ type: 'rune', amount: 60 }, { type: 'eitr', amount: 100 }],
 			campaignArmy: { king: 'king-tartarus', queen: 'hero-hel', rook: 'hero-vidar', bishop: 'hero-maat', knight: 'hero-nyx' },
@@ -184,6 +396,38 @@ export const egyptianChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Apophis has 115 health' },
 				{ type: 'passive_damage', value: 2, description: 'Apophis\' darkness deals 2 damage each turn' },
+			],
+			bossQuips: {
+				onCombatStart: 'I am older than the sun. I am older than dawn. I will eat the barge. I will eat YOU.',
+				onLowHP: 'You hold against me as Ra holds against me. Every night. Every night.',
+				onLethal: 'Then strike. There will be another night.',
+				onVictory: 'No more dawns. No more day. The sun goes into my mouth and stays there.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 70,
+					quip: 'My coils stretch from the start of time to the end of it.',
+					flash: 'purple',
+					effect: { type: 'damage_player', value: 9 },
+					description: 'Apophis tightens around the barge',
+				},
+				{
+					hpPercent: 35,
+					quip: 'The sun. Mine. ALWAYS mine.',
+					flash: 'red',
+					effect: { type: 'enrage', value: 12 },
+					description: 'Apophis lunges for the sun',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Apophis shrieks and retreats into the abyss. The sun barge sails on. Dawn will come tomorrow because you stood firm tonight.', visualCue: 'A vast black serpent uncoiling backwards into a deeper black. A small gold ship sailing past, intact.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Apophis swallows the light. The sun goes dark. The age of dawns ends without ceremony.', musicId: 'ragnarok', durationHint: 8 },
+			],
+			storyBridge: [
+				{ narration: 'The barge sails on. At the end of its journey waits Osiris on the Throne of the Dead, green-skinned, wrapped in white, the husband Isis loved enough to remake from pieces.', musicId: 'duat_passage', durationHint: 8 },
 			],
 			prerequisiteIds: ['egyptian-8'],
 			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 20109 }],
@@ -204,9 +448,48 @@ export const egyptianChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Osiris wields death\'s power (+2 mana)' },
 				{ type: 'bonus_draw', value: 1, description: 'Osiris draws from the Book of the Dead' },
 			],
+			bossQuips: {
+				onCombatStart: 'I died and was put back together. Every soul who passed through here told me about you. Now I will see for myself.',
+				onLowHP: 'Set killed me with deceit. You will need more than that.',
+				onLethal: 'Then strike. I have died once. The second time will be educational.',
+				onVictory: 'Sleep on the throne, traveler. There is room.',
+			},
+			combatMusicId: 'duat_passage',
+			bossPhases: [
+				{
+					hpPercent: 75,
+					quip: 'I open the Book of the Dead. Every spell I needed to come back is in here.',
+					flash: 'gold',
+					effect: { type: 'heal_self', value: 14 },
+					description: 'Osiris reads from the Book of the Dead',
+				},
+				{
+					hpPercent: 50,
+					quip: 'My WIFE put me back together. My SON avenged me. I am the LEAST alone god in this hall.',
+					flash: 'green',
+					effect: { type: 'add_armor', value: 12 },
+					description: 'Osiris draws on his family',
+				},
+				{
+					hpPercent: 25,
+					quip: 'I have an eternity. You have a heartbeat. Use it carefully.',
+					flash: 'purple',
+					effect: { type: 'enrage', value: 13 },
+					description: 'Osiris becomes the patient executioner',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Osiris rises from his throne for the first time in millennia. He looks at you with the soft gaze of a king who has been told a thousand stories about you and is finally meeting you in person.', visualCue: 'A green-skinned god in white linen rising slowly from a black stone throne.', musicId: 'duat_passage', durationHint: 12 },
+				{ narration: '\u201cYou walked through the entire Duat and came out unbroken,\u201d he says. \u201cWhen your time truly comes, you will sit at my right hand. Until then \u2014 go back to the world. The sun is waiting for you.\u201d', visualCue: 'A lord of the dead inclining his head once. A great gate behind him opening upward into bright light.', musicId: 'celestial_court', durationHint: 14 },
+			],
+			defeatCinematic: [
+				{ narration: 'Osiris shakes his head slowly. \u201cNot yet,\u201d he says. \u201cBut you will return. You always return.\u201d The Throne of the Dead waits.', musicId: 'duat_passage', durationHint: 9 },
+			],
 			prerequisiteIds: ['egyptian-9'],
 			rewards: [{ type: 'rune', amount: 100 }, { type: 'card', cardId: 20116 }, { type: 'pack', amount: 2 }],
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-hel', rook: 'hero-tyr', bishop: 'hero-maat', knight: 'hero-khepri' },
+			starThresholds: { threeStar: 16, twoStar: 24 },
+			isChapterFinale: true,
 		},
 	],
 };

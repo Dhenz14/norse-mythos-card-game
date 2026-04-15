@@ -56,7 +56,6 @@ canvas[data-renderer="CardRenderer"] {
 
 /* ---------- INTERACTION FIXES ---------- */
 /* Make sure cards can be clicked and dragged */
-.premium-card-container canvas,
 .card-with-drag canvas {
   pointer-events: auto !important;
 }

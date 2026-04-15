@@ -1,24 +1,21 @@
-import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import React, { useEffect, useCallback, useRef, useMemo } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import SimpleBattlefield from './SimpleBattlefield';
 import Hand from './Hand';
 import { Graveyard } from './Graveyard';
 import { DiscoveryModal } from './DiscoveryModal';
 import { MulliganScreen } from './MulliganScreen';
-import { GameLog } from './GameLog';
 import { CardInstance, CardData } from '../types';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { adaptCardInstance, reverseAdaptCardInstance } from '../utils/cards/cardInstanceAdapter';
 import { Position } from '../types/Position';
 import TargetingArrow from './TargetingArrow';
-import TargetHighlight from './TargetHighlight';
 import { useAudio } from '../../lib/stores/useAudio';
 import { useGameNotifications } from '../hooks/useGameNotifications';
 import { useCardPositions } from '../hooks/useCardPositions';
 import { AnimationLayer } from './AnimationLayer';
 import { useAnimations } from './AnimationContainer';
 import { useAIActionManager } from '../animations/AIActionManager';
-import { Button } from '../../components/ui/button';
 import { Toaster } from '../../components/ui/sonner';
 import DebugRenderCheck from './DebugRenderCheck';
 import { preloadImages } from '../utils/assetPreloader';
@@ -46,13 +43,11 @@ import NorseBackground from './NorseBackground';
 import { QuestTracker } from './quest';
 
 // Import our new attack system
-import { useAttackStore } from '../combat/attackStore';
 import UnifiedBattlefieldAttackConnector from '../combat/UnifiedBattlefieldAttackConnector';
 import AttackSystem from '../combat/AttackSystem';
-import { canCardAttack, isValidAttackTarget } from '../combat/attackUtils';
 import { createHandlePlayerCardClick, createHandleOpponentCardClick, createHandleOpponentHeroClick } from './GameBoardHandlers';
-import { isMinion, isSpell, isWeapon, isHero, getAttack, getHealth, getDurability, hasOverload, hasBattlecry, hasSpellEffect } from '../utils/cards/typeGuards';
-import { hasKeyword, getKeywords } from '../utils/cards/keywordUtils';
+import { isMinion, isSpell, isHero, getAttack, getHealth, hasOverload, hasBattlecry } from '../utils/cards/typeGuards';
+import { hasKeyword } from '../utils/cards/keywordUtils';
 import { needsPositionChoice } from '../utils/cards/positionUtils';
 import { emitBattlecryTriggered, emitDeathrattleTriggered } from '../actions/gameActions';
 import { debug } from '../config/debugConfig';
@@ -103,7 +98,6 @@ export const GameBoard: React.FC<{}> = () => {
     setShowTargetingArrow,
     arrowStartPosition,
     setArrowStartPosition,
-    validTargets,
     setValidTargets
   } = useTargetingArrows();
 
@@ -111,17 +105,11 @@ export const GameBoard: React.FC<{}> = () => {
 
   const {
     pendingPositionalCard,
-    setPendingPositionalCard,
-    handlePositionSelect,
-    cancelPositionSelection
+    handlePositionSelect
   } = useCardPositioning(playCard, gameState.currentTurn);
 
   const {
-    attackCardPositions,
-    getBoardCenter,
-    registerAttackCardPosition,
-    getCardPositionsMap,
-    clearPositions
+    getCardPositionsMap
   } = useAttackVisualization(battlefieldRef);
 
   const {
@@ -135,17 +123,13 @@ export const GameBoard: React.FC<{}> = () => {
   useCardGameKeyboard({ enabled: gameState?.gamePhase === 'playing' });
 
   // Settings subscriptions
-  const showDamageNumbers = useSettingsStore(s => s.showDamageNumbers);
   const confirmAttacks = useSettingsStore(s => s.confirmAttacks);
-  const cardQuality = useSettingsStore(s => s.cardQuality);
 
   // Reference to track turn changes for turn transition
   const lastTurnRef = useRef<string | null>(null);
 
   const {
-    players,
     currentTurn,
-    turnNumber,
     gamePhase
   } = gameState;
 
@@ -202,15 +186,12 @@ export const GameBoard: React.FC<{}> = () => {
   
   // Animation system
   const {
-    animations,
-    removeAnimation,
     addAttackAnimation,
     addDamageEffect: _rawAddDamageEffect,
     addHealEffect,
     addBuffEffect, 
     addShieldBreakEffect, 
     addHeroPowerEffect,
-    addManaGainAnimation,
     addManaUseAnimation,
     addOverloadAnimation
   } = useAnimations();
@@ -309,17 +290,17 @@ export const GameBoard: React.FC<{}> = () => {
   const evolveReadyIds = useMemo(() => {
     const ids = new Set<string>();
     if (!player?.hand || !player?.battlefield) return ids;
-    const readyPets = player.battlefield.filter((m: any) => m.petEvolutionMet === true);
+    const readyPets = player.battlefield.filter((minion: CardInstance) => minion.petEvolutionMet === true);
     if (readyPets.length === 0) return ids;
     for (const handCard of player.hand) {
-      const cd = handCard.card as any;
-      if (cd?.petStage === 'adept' && cd.evolvesFrom) {
-        if (readyPets.some((m: any) => m.card?.id === cd.evolvesFrom)) {
-          ids.add((handCard as any).instanceId);
+      const { card, instanceId } = handCard;
+      if (isMinion(card) && card.petStage === 'adept' && card.evolvesFrom) {
+        if (readyPets.some(minion => minion.card?.id === card.evolvesFrom)) {
+          ids.add(instanceId);
         }
-      } else if (cd?.petStage === 'master' && cd.petFamily) {
-        if (readyPets.some((m: any) => (m.card as any)?.petFamily === cd.petFamily && (m.card as any)?.petStage === 'adept')) {
-          ids.add((handCard as any).instanceId);
+      } else if (isMinion(card) && card.petStage === 'master' && card.petFamily) {
+        if (readyPets.some(minion => isMinion(minion.card) && minion.card.petFamily === card.petFamily && minion.card.petStage === 'adept')) {
+          ids.add(instanceId);
         }
       }
     }
@@ -619,7 +600,7 @@ export const GameBoard: React.FC<{}> = () => {
         addManaUseAnimation(manaPositionRef.current, card.card.manaCost ?? 0);
 
         if (hasOverload(card.card)) {
-          const overloadAmount = (card.card as any).overload?.amount || 0;
+          const overloadAmount = card.card.overload?.amount || 0;
           if (overloadAmount > 0) {
             addOverloadAnimation(manaPositionRef.current, overloadAmount);
             showNotification({
@@ -1311,7 +1292,7 @@ export const GameBoard: React.FC<{}> = () => {
         instanceId: 'opponent-hero',
         card: {
           id: -1,
-          name: (opponent.hero as any)?.name || 'Opponent Hero',
+          name: opponent.name || 'Opponent Hero',
           type: 'hero' as const,
           rarity: 'common' as const,
           manaCost: 0,
@@ -1695,22 +1676,6 @@ export const GameBoard: React.FC<{}> = () => {
         debug.error('Player hero is undefined when clicking player hero portrait');
         return;
       }
-      
-      const playerHeroInstance = {
-        instanceId: 'player-hero',
-        card: {
-          id: -2,
-          name: (player.hero as any)?.name || 'Player Hero',
-          type: 'hero' as const,
-          rarity: 'common' as const,
-          manaCost: 0,
-          heroClass: ((player.heroClass as string) || 'neutral').toLowerCase()
-        },
-        attacksPerformed: 0,
-        currentHealth: player.heroHealth || 100,
-        canAttack: false,
-        isSummoningSick: false
-      };
       
       // Check if valid target based on spell's targeting requirements
       const spellEffect = selectedCard.card.spellEffect;
@@ -2366,10 +2331,10 @@ export const GameBoard: React.FC<{}> = () => {
                   registerCardPosition={registerCardPosition}
                   battlefieldRef={battlefieldRef}
                   evolveReadyIds={evolveReadyIds}
-                  battlefieldCount={player.battlefield?.length || 0}
-                  activeMinionCount={player.battlefield?.filter((m: any) => !m.isSummoningSick && m.canAttack !== false).length || 0}
-                  playerBattlefield={player.battlefield}
-                />
+	                battlefieldCount={player.battlefield?.length || 0}
+	                activeMinionCount={player.battlefield?.filter((minion: CardInstance) => !minion.isSummoningSick && minion.canAttack !== false).length || 0}
+	                playerBattlefield={player.battlefield}
+	              />
               </div>
             )}
           </div>

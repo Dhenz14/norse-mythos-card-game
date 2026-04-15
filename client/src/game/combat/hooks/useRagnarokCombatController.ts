@@ -444,7 +444,7 @@ export function useRagnarokCombatController(
         break;
         
       case 'buff_hero':
-        getPokerCombatAdapterState().setPlayerHeroBuffs({ attack: effectValue, armor: heroPower.armorValue || 0 });
+        getPokerCombatAdapterState().setPlayerHeroBuffs(effectValue, heroPower.armorValue || 0);
         break;
         
       case 'buff_single':
@@ -851,9 +851,103 @@ export function useRagnarokCombatController(
       endTurn();
     }
 
-    // C6: AI response is handled exclusively by usePokerAI hook.
-    // Removed duplicate AI invocation that caused double-trigger race conditions
-    // (and uncleared setTimeout that fired after unmount).
+    const phaseBeforeAction = freshState.phase;
+    
+    setTimeout(() => {
+      try {
+        if (aiResponseInProgressRef.current) {
+          if (COMBAT_DEBUG.AI) {
+            debug.combat('[AI Response handleAction] SKIP: AI action already in progress from usePokerAI hook');
+          }
+          return;
+        }
+        
+        const adapterState = getPokerCombatAdapterState();
+        const freshStateAfterAction = adapterState.combatState;
+        
+        if (COMBAT_DEBUG.AI) {
+          debug.combat('[AI Response handleAction] Checking if AI should respond...', {
+            hasFreshState: !!freshStateAfterAction,
+            opponentReady: freshStateAfterAction?.opponent?.isReady,
+            playerReady: freshStateAfterAction?.player?.isReady,
+            phase: freshStateAfterAction?.phase,
+            phaseBeforeAction,
+            foldWinner: freshStateAfterAction?.foldWinner,
+            isAllInShowdown: freshStateAfterAction?.isAllInShowdown,
+            playerHP: freshStateAfterAction?.player?.pet?.stats?.currentHealth,
+            opponentHP: freshStateAfterAction?.opponent?.pet?.stats?.currentHealth
+          });
+        }
+        
+        if (!freshStateAfterAction || freshStateAfterAction.opponent.isReady) {
+          if (COMBAT_DEBUG.AI) {
+            debug.combat('[AI Response handleAction] SKIP: No fresh state or opponent already ready');
+          }
+          return;
+        }
+        
+        if (freshStateAfterAction.phase !== phaseBeforeAction) {
+          if (COMBAT_DEBUG.AI) {
+            debug.combat('[AI Response handleAction] SKIP: Phase has advanced');
+          }
+          return;
+        }
+        
+        if (freshStateAfterAction.phase === CombatPhase.RESOLUTION) {
+          if (COMBAT_DEBUG.AI) {
+            debug.combat('[AI Response handleAction] SKIP: Already in RESOLUTION');
+          }
+          return;
+        }
+        
+        if (freshStateAfterAction.foldWinner) {
+          if (COMBAT_DEBUG.AI) {
+            debug.combat('[AI Response handleAction] SKIP: Fold winner already set');
+          }
+          return;
+        }
+        
+        if (freshStateAfterAction.isAllInShowdown) {
+          if (COMBAT_DEBUG.AI) {
+            debug.combat('[AI Response handleAction] SKIP: All-in showdown - auto-advance useEffect handles phases');
+          }
+          return;
+        }
+        
+        aiResponseInProgressRef.current = true;
+        
+        if (COMBAT_DEBUG.AI) {
+          debug.combat('[AI Response handleAction] AI will respond now');
+        }
+        
+        const aiDecision = getSmartAIAction(freshStateAfterAction, false);
+        if (COMBAT_DEBUG.AI) {
+          debug.combat('[AI Response handleAction] AI decision:', aiDecision);
+        }
+        
+        getPokerCombatAdapterState().performAction(freshStateAfterAction.opponent.playerId, aiDecision.action, aiDecision.betAmount);
+
+        // Trigger poker drama VFX for AI action
+        try {
+          const dramaCallbacks = getPokerDramaCallbacks();
+          dramaCallbacks.onBettingAction(aiDecision.action, false);
+        } catch { /* drama VFX is non-critical */ }
+
+        setTimeout(() => {
+          const adapterAfterAI = getPokerCombatAdapterState();
+          if (adapterAfterAI.combatState && 
+              adapterAfterAI.combatState.player.isReady && 
+              adapterAfterAI.combatState.opponent.isReady &&
+              adapterAfterAI.combatState.phase !== CombatPhase.RESOLUTION) {
+            adapterAfterAI.maybeCloseBettingRound();
+          }
+          aiResponseInProgressRef.current = false;
+        }, 100);
+      } catch (error) {
+        debug.error('[AI Response handleAction] ERROR:', error);
+        aiResponseInProgressRef.current = false;
+      }
+    }, 1000);
   }, [performAction, endTurn, addHeroBattlePopup]);
   
   useEffect(() => {

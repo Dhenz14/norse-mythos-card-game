@@ -35,16 +35,13 @@
 .hg-stream {
   opacity: 0.8;
   animation: hg-stream-flow 0.4s linear infinite;
+  stroke-dasharray: 2 2;
 }
 
 @keyframes hg-stream-flow {
   0% { opacity: 0.5; stroke-dashoffset: 0; }
   50% { opacity: 1; }
   100% { opacity: 0.5; stroke-dashoffset: 4; }
-}
-
-.hg-stream {
-  stroke-dasharray: 2 2;
 }
 
 /* Falling sand particles */

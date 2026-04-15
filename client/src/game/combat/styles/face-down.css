@@ -155,18 +155,21 @@
 }
 
 .opponent-card-back {
-  width: 46px;
-  height: 68px;
-  background: linear-gradient(160deg, #1a1a2e 0%, #111122 40%, #0a0a1a 100%);
-  border: 2px solid #c9a84c;
-  border-radius: 6px;
+  width: 78px;
+  height: 110px;
+  background: linear-gradient(160deg,
+    var(--ui-iron-mid) 0%,
+    var(--ui-iron-dark) 38%,
+    var(--ui-obsidian) 100%);
+  border: 2px solid var(--ui-gold-warm);
+  border-radius: 7px;
   position: relative;
-  margin-left: -14px;
-  transition: transform 0.2s ease, margin 0.2s ease;
+  margin-left: -22px;
+  transition: transform 0.2s ease, margin 0.2s ease, box-shadow 0.2s ease;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.4),
-    0 0 6px rgba(201, 168, 76, 0.2),
-    inset 0 0 15px rgba(201, 168, 76, 0.08);
+    0 4px 14px rgba(0, 0, 0, 0.7),
+    0 0 12px var(--ui-gold-glow-soft),
+    inset 0 0 20px rgba(0, 0, 0, 0.55);
 }
 
 .opponent-card-back:first-child {
@@ -205,16 +208,18 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 15px;
-  color: rgba(201, 168, 76, 0.7);
+  font-size: 28px;
+  color: var(--ui-gold-bright);
   text-shadow:
-    0 0 8px rgba(201, 168, 76, 0.4),
-    0 0 16px rgba(201, 168, 76, 0.2);
+    0 0 10px rgba(212, 175, 55, 0.55),
+    0 0 20px rgba(212, 175, 55, 0.25),
+    0 1px 2px rgba(0, 0, 0, 0.95);
+  font-family: var(--font-display);
 }
 
 /* Fan effect on hover */
 .opponent-hand-display:hover .opponent-card-back {
-  margin-left: -10px;
+  margin-left: -16px;
 }
 
 .opponent-hand-display:hover .opponent-card-back:first-child {

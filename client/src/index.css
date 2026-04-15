@@ -9,6 +9,9 @@
    This makes ⚔️🛡️⚡ etc. look like professional UI icons instead of chat emoji. */
 #root {
   font-variant-emoji: text;
+  width: 100%;
+  height: 100%;
+  position: fixed;
 }
 
 :root {
@@ -88,6 +91,27 @@
   --card-legendary-glow: var(--shadow-glow-gold, 0 0 25px rgba(255, 215, 0, 0.7));
   --card-epic-glow: 0 0 25px rgba(163, 53, 238, 0.7), 0 0 10px rgba(163, 53, 238, 0.4);
   --card-standard-glow: var(--shadow-glow-blue, 0 0 25px rgba(0, 112, 221, 0.7));
+
+  /* Opponent zone styling */
+  --opponent-zone-bg: rgba(139, 0, 0, 0.05);
+  --opponent-zone-border: rgba(139, 0, 0, 0.1);
+  --opponent-zone-shadow: rgba(139, 0, 0, 0.1);
+
+  /* Player zone styling */
+  --player-zone-bg: rgba(0, 100, 0, 0.05);
+  --player-zone-border: rgba(0, 100, 0, 0.1);
+  --player-zone-shadow: rgba(0, 100, 0, 0.1);
+
+  /* Shared battlefield styling */
+  --battlefield-border-radius: var(--radius-md, 8px);
+  --battlefield-shadow-intensity: 10px;
+  --battlefield-border-width: 1px;
+  --battlefield-highlight-color: rgba(255, 215, 0, 0.3);
+  --battlefield-targeting-ring-width: 2px;
+
+  /* Card animation scales */
+  --hand-card-scale: 0.5;
+  --dragging-card-scale: 0.6;
 }
 
 @layer base {
@@ -103,12 +127,6 @@
     width: 100vw;
     height: 100dvh;
   }
-}
-
-#root {
-  width: 100%;
-  height: 100%;
-  position: fixed;
 }
 
 canvas {
@@ -178,6 +196,8 @@ canvas {
   perspective: 1000px;
   z-index: 30;
   will-change: transform;
+  pointer-events: auto; /* Only enable pointer events for actual card elements */
+  cursor: grab !important;
 }
 
 /* Dead .battlefield-card .card-with-drag rule removed — class never rendered in JSX */
@@ -211,11 +231,6 @@ canvas {
   z-index: 1000 !important; /* Apply z-index only to direct children (the actual card) */
 }
 
-/* CRITICAL FIX: Ensure hover effects only apply to the direct card elements */
-.card-with-drag {
-  pointer-events: auto; /* Only enable pointer events for actual card elements */
-}
-
 /* CRITICAL FIX: Prevent empty spaces between cards from triggering hover */
 .hand-container {
   pointer-events: none; /* Disable pointer events on container (will be re-enabled for cards) */
@@ -224,6 +239,11 @@ canvas {
 /* CRITICAL FIX: Card containers and hoverable regions should be precisely sized */
 .hand-card-container {
   pointer-events: none; /* Disable on outer container */
+  transform-origin: center bottom;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  perspective: 1200px;
+  padding: 0; /* No padding for tightest possible arrangement */
 }
 .hand-card-container > * {
   pointer-events: auto; /* Only re-enable on actual card elements */
@@ -232,7 +252,8 @@ canvas {
 /* Special class for cards being dragged */
 .hand-card-dragging {
   z-index: 2000 !important; /* Even higher than hover state */
-  pointer-events: none; /* Prevent hover effects during drag */
+  pointer-events: auto;
+  transition: none; /* No transition while dragging for responsiveness */
 }
 
 /* 
@@ -250,6 +271,8 @@ canvas {
     0 0 60px rgba(30, 100, 255, 0.7) !important;
   pointer-events: none; /* Prevent any interactions during placement animation */
   animation: card-play-pulse 0.6s ease-in-out !important;
+  will-change: transform;
+  transform: scale(var(--dragging-card-scale)) !important; /* Use consistent scale while animating */
 }
 
 /* Special animation for the card placement pulse */
@@ -406,6 +429,7 @@ canvas {
   /* No horizontal padding to maximize width */
   padding: 0.5rem 0;
   box-sizing: border-box;
+  cursor: default !important;
 }
 
 .battlefield-area, .battlefield-container {
@@ -421,6 +445,7 @@ canvas {
   overflow: visible;
   box-sizing: border-box;
   padding: 0; /* Remove padding completely to maximize width */
+  cursor: default !important;
 }
 
 .player-area, .player-section {
@@ -436,6 +461,7 @@ canvas {
   /* No horizontal padding to maximize width */
   padding: 0.5rem 0;
   box-sizing: border-box;
+  cursor: default !important;
 }
 
 /* Game board container with flexbox layout */
@@ -573,39 +599,36 @@ canvas {
 /* NOTE: .opponent-battlefield-zone, .player-battlefield-zone styles moved to UnifiedBattlefield.css */
 /* Per CSS Layer Ownership rules - battlefield zone styles belong in UnifiedBattlefield.css */
 
-/* =============================================
-   BATTLEFIELD STYLING VARIABLES
-   Game-specific battlefield theming (extends design-tokens.css)
-   ============================================= */
-:root {
-  /* Opponent zone styling */
-  --opponent-zone-bg: rgba(139, 0, 0, 0.05);
-  --opponent-zone-border: rgba(139, 0, 0, 0.1);
-  --opponent-zone-shadow: rgba(139, 0, 0, 0.1);
-  
-  /* Player zone styling */
-  --player-zone-bg: rgba(0, 100, 0, 0.05);
-  --player-zone-border: rgba(0, 100, 0, 0.1);
-  --player-zone-shadow: rgba(0, 100, 0, 0.1);
-  
-  /* Shared battlefield styling */
-  --battlefield-border-radius: var(--radius-md, 8px);
-  --battlefield-shadow-intensity: 10px;
-  --battlefield-border-width: 1px;
-  
-  /* Interactive state colors */
-  --battlefield-highlight-color: rgba(255, 215, 0, 0.3);
-  --battlefield-targeting-ring-width: 2px;
-}
-
 /* Adaptive battlefield scaling based on number of minions */
 /* Base styling for all battlefield card configurations */
-.opponent-cards, .player-cards {
+:is(.opponent-cards, .player-cards) {
   --base-gap: 10px;
   --card-scale: 0.8;
-  /* Removed conflict between this gap and the gap in the card container selection below */
-  /* This ensures consistent card spacing on the battlefield */
-  gap: var(--base-gap);
+  display: flex;
+  flex-wrap: nowrap; /* Prevent cards from wrapping to new lines */
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  padding: 0.25rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible; /* No scrolling */
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  position: relative;
+  gap: 0;
+
+  & > div {
+    margin: 0 -15px; /* Pronounced overlap across the battlefield row */
+    transform-origin: center bottom;
+    transition: transform 0.2s ease-out;
+    position: relative;
+
+    &:hover {
+      transform: translateY(-8px) scale(1.1);
+      z-index: 100 !important; /* Ensure hovered card is on top */
+    }
+  }
 }
 
 /* Progressive scaling for different numbers of cards */
@@ -634,6 +657,17 @@ canvas {
   margin: 0 !important;
   padding: 0 !important;
   transform-origin: center center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100px; /* Minimum width to ensure visibility */
+  height: 100%;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-sizing: border-box;
+  position: relative;
+  overflow: visible;
+  flex: 0 0 auto;
+  z-index: 30; /* Ensure individual card containers stack properly */
 }
 
 /* Targeting state styles moved from inline to CSS */
@@ -701,7 +735,6 @@ canvas {
 }
 
 /* Completely disable hover effects on empty battlefield sections and player area */
-.empty-battlefield,
 .empty-battlefield *,
 .battlefield-area:not(.card-with-drag),
 .battlefield-container:not(.card-with-drag),
@@ -746,6 +779,7 @@ canvas {
   overflow: visible;
   position: relative;
   z-index: 20; /* Higher than background, lower than cards */
+  cursor: default !important;
   
   /* Responsive scaling for different screen widths */
   max-width: 95vw; /* Increased from 90% to 95% */
@@ -761,80 +795,20 @@ canvas {
   }
 }
 
-/* Individual card slots within the flex container */
-.card-container > div {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 100px; /* Minimum width to ensure visibility */
-  height: 100%;
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  margin: 0 var(--card-margin);
-  box-sizing: border-box;
-  position: relative;
-  /* Ensure cards don't overlap with each other */
-  overflow: visible;
-  /* Auto-scaling margin based on card count */
-  flex: 0 0 auto;
-  z-index: 30; /* Ensure individual card containers stack properly */
-}
-
-.opponent-cards, .player-cards {
-  display: flex;
-  flex-wrap: nowrap; /* Prevent cards from wrapping to new lines */
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-  padding: 0.25rem;
-  width: 100%;
-  max-width: 100%;
-  overflow: visible; /* No scrolling */
-  
-  /* CCG-style curved card arrangement */
-  transform-style: preserve-3d;
-  perspective: 1200px;
-  position: relative;
-  
-  /* Original gap setting - maintain the gap between minions */
-  gap: 0;
-  
-  /* Each card container receives a negative margin to create overlap ONLY FOR HAND */
-  /* Card containers will have special styling for fan arrangement */
-  & > div {
-    margin: 0 -15px; /* Pronounced overlap overlapping battlefield */
-    transform-origin: center bottom;
-    transition: transform 0.2s ease-out;
-    position: relative;
-    /* Cards elevate on hover - subtle lifting on hover */
-    &:hover {
-      transform: translateY(-8px) scale(1.1);
-      z-index: 100 !important; /* Ensure hovered card is on top */
-    }
-  }
-}
-
 /* Apply curvature to battlefield rows */
 .opponent-cards {
   min-height: 140px; /* Reduced height for opponent cards */
+  background-color: rgba(139, 0, 0, 0.1);
   transform: perspective(1000px) rotateX(2deg); /* Subtle curve for opponent area */
 }
 
 .player-cards {
   min-height: 180px; /* Maintain height for player cards */
+  background-color: rgba(0, 100, 0, 0.1);
   position: relative;
   margin-top: -88px; /* Move cards up by approximately 7/6 inch (increased by another 1/3 inch) */
   /* Removed top: -50px to avoid conflict with hand-container bottom positioning */
   transform: perspective(1000px) rotateX(-2deg); /* Subtle curve for player area */
-}
-
-/* Keep the background colors */
-.opponent-cards {
-  background-color: rgba(139, 0, 0, 0.1);
-}
-
-.player-cards {
-  background-color: rgba(0, 100, 0, 0.1);
-  position: relative;
   z-index: 150;
   pointer-events: none !important;
 }
@@ -915,20 +889,6 @@ canvas {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
-/* Hand card styles */
-.hand-card-container {
-  transform-origin: center bottom;
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  /* Card margin is now managed directly in the component's inline style */
-  /* This ensures the poker-hand overlap is consistent */
-  position: relative;
-  /* Adding perspective for better 3D effects */
-  perspective: 1200px;
-  padding: 0; /* No padding for tightest possible arrangement */
-}
-
-
-
 /* REMOVED: CSS hover state handling
    All hover effects are now managed through the CardTransformationManager
    and React state in the SimpleHolographicCard component.
@@ -971,25 +931,9 @@ canvas {
    to prevent conflicts with the React state management system.
 */
 
-/* Class for cards actively being dragged - separate from hover */
-.hand-card-dragging {
-  z-index: 2000; /* Even higher than hover state */
-  transition: none; /* No transition while dragging for responsiveness */
-  pointer-events: auto;
-}
-
 /* Hand container styling now controlled by RagnarokCombatArena.css via .player-hand-zone */
 
 /* Enhanced Card Drag and Placement Animations */
-
-/* =============================================
-   CARD ANIMATION SCALES
-   Animation-specific scaling (extends design-tokens.css)
-   ============================================= */
-:root {
-  --hand-card-scale: 0.5;
-  --dragging-card-scale: 0.6;
-}
 
 /* Elegant card falling animation when a card is placed on battlefield */
 @keyframes elegant-card-fall {
@@ -1028,21 +972,13 @@ canvas {
 }
 
 /* Explicit cursor style for battlefield area and non-card areas */
-.battlefield-area, 
-.battlefield-container,
 .player-battlefield-zone,
-.opponent-battlefield-zone,
-.card-container,
-.empty-battlefield,
-.opponent-area,
-.player-area {
+.opponent-battlefield-zone {
   cursor: default !important;
 }
 
 /* Allow cards to show proper cursor */
-.card-with-drag,
-.hoverable-card-container,
-.card-renderer {
+.hoverable-card-container {
   pointer-events: auto !important;
   cursor: grab !important;
 }
@@ -1071,6 +1007,8 @@ select {
 
 /* Fix for ghost cards and faint borders - add strict z-indexing */
 .card-renderer {
+  pointer-events: auto !important;
+  cursor: grab !important;
   z-index: 10;
   position: relative !important;
 }
@@ -1088,14 +1026,6 @@ select {
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
-}
-
-/* Handling the card being played state */
-.card-being-played {
-  pointer-events: none;
-  will-change: transform;
-  z-index: 1000; /* Consistent high z-index value */
-  transform: scale(var(--dragging-card-scale)) !important; /* Use consistent scale */
 }
 
 /* Control card hover detection area precisely */

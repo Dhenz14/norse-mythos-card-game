@@ -25,7 +25,17 @@
 	overflow: hidden;
 }
 
-.element-matchup-banner::before,
+.element-matchup-banner::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 120px;
+	pointer-events: none;
+	left: 0;
+	background: linear-gradient(90deg, rgba(255,255,255,0.04), transparent);
+}
+
 .element-matchup-banner::after {
 	content: '';
 	position: absolute;
@@ -33,14 +43,6 @@
 	bottom: 0;
 	width: 120px;
 	pointer-events: none;
-}
-
-.element-matchup-banner::before {
-	left: 0;
-	background: linear-gradient(90deg, rgba(255,255,255,0.04), transparent);
-}
-
-.element-matchup-banner::after {
 	right: 0;
 	background: linear-gradient(-90deg, rgba(255,255,255,0.04), transparent);
 }

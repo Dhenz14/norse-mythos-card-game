@@ -16,7 +16,7 @@ router.get('/status', async (_req: Request, res: Response) => {
 	try {
 		const status = await treasuryCoordinator.getStatus();
 		res.json(status);
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to get treasury status' });
 	}
 });
@@ -25,7 +25,7 @@ router.get('/signers', async (_req: Request, res: Response) => {
 	try {
 		const signers = await treasuryCoordinator.getSignerInfoList();
 		res.json({ signers });
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to get signers' });
 	}
 });
@@ -38,7 +38,7 @@ router.post('/join', requireHiveAuth, async (req: HiveAuthenticatedRequest, res:
 		} else {
 			res.status(400).json({ error: result.error });
 		}
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to join' });
 	}
 });
@@ -51,7 +51,7 @@ router.post('/leave', requireHiveAuth, async (req: HiveAuthenticatedRequest, res
 		} else {
 			res.status(400).json({ error: result.error });
 		}
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to leave' });
 	}
 });
@@ -61,7 +61,7 @@ router.get('/transactions', requireHiveAuth, async (req: HiveAuthenticatedReques
 		const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
 		const transactions = await treasuryCoordinator.getRecentTransactions(limit);
 		res.json({ transactions });
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to get transactions' });
 	}
 });
@@ -74,7 +74,7 @@ router.get('/transactions/:id', requireHiveAuth, async (req: HiveAuthenticatedRe
 			return;
 		}
 		res.json(tx);
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to get transaction' });
 	}
 });
@@ -88,7 +88,7 @@ router.post('/freeze', requireHiveAuth, async (req: HiveAuthenticatedRequest, re
 		} else {
 			res.status(400).json({ error: result.error });
 		}
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to freeze' });
 	}
 });
@@ -97,7 +97,7 @@ router.post('/unfreeze', requireHiveAuth, async (req: HiveAuthenticatedRequest, 
 	try {
 		const result = await treasuryCoordinator.voteUnfreeze(req.hiveUsername!);
 		res.json(result);
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to vote unfreeze' });
 	}
 });
@@ -110,7 +110,7 @@ router.post('/transactions/:id/veto', requireHiveAuth, async (req: HiveAuthentic
 		} else {
 			res.status(400).json({ error: result.error });
 		}
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to veto transaction' });
 	}
 });
@@ -119,7 +119,7 @@ router.get('/pending-signing', requireHiveAuth, async (req: HiveAuthenticatedReq
 	try {
 		const requests = treasuryCoordinator.getPendingSigningRequests(req.hiveUsername!);
 		res.json({ requests });
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to get pending signing requests' });
 	}
 });
@@ -145,7 +145,7 @@ router.post('/submit-signature', requireHiveAuth, async (req: HiveAuthenticatedR
 
 		await treasuryCoordinator.handleSigningResponse(response);
 		res.json({ success: true });
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to submit signature' });
 	}
 });
@@ -163,7 +163,7 @@ router.post('/wot/vouch', requireHiveAuth, async (req: HiveAuthenticatedRequest,
 		} else {
 			res.status(400).json({ error: result.error });
 		}
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to vouch' });
 	}
 });
@@ -181,7 +181,7 @@ router.delete('/wot/vouch', requireHiveAuth, async (req: HiveAuthenticatedReques
 		} else {
 			res.status(400).json({ error: result.error });
 		}
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to revoke vouch' });
 	}
 });
@@ -190,7 +190,7 @@ router.get('/wot/vouches', async (_req: Request, res: Response) => {
 	try {
 		const candidates = await treasuryCoordinator.getVouchCandidates();
 		res.json({ candidates });
-	} catch (err) {
+		} catch {
 		res.status(500).json({ error: 'Failed to get vouches' });
 	}
 });

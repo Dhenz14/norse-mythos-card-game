@@ -497,7 +497,19 @@
 }
 
 /* Decorative scroll ends */
-.card-name-banner::before,
+.card-name-banner::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 14px;
+  background: linear-gradient(180deg, rgba(255,215,100,0.2) 0%, rgba(255,215,100,0.05) 100%);
+  border-radius: 2px;
+  transform: translateY(-50%);
+  left: -3px;
+  border-left: 1px solid rgba(255,215,100,0.2);
+}
+
 .card-name-banner::after {
   content: '';
   position: absolute;
@@ -507,14 +519,6 @@
   background: linear-gradient(180deg, rgba(255,215,100,0.2) 0%, rgba(255,215,100,0.05) 100%);
   border-radius: 2px;
   transform: translateY(-50%);
-}
-
-.card-name-banner::before {
-  left: -3px;
-  border-left: 1px solid rgba(255,215,100,0.2);
-}
-
-.card-name-banner::after {
   right: -3px;
   border-right: 1px solid rgba(255,215,100,0.2);
 }
@@ -690,6 +694,8 @@
   height: calc(100% + 6px);
   border-radius: 12px;
   z-index: -1;
+  position: relative;
+  overflow: hidden;
 }
 
 .simple-card.rarity-mythic .card-art-image {
@@ -715,6 +721,8 @@
   left: -2px;
   right: -2px;
   height: calc(100% + 3px);
+  position: relative;
+  overflow: hidden;
 }
 
 .simple-card.rarity-epic .card-art-image {
@@ -1786,12 +1794,6 @@
 
 /* golden-warp removed — replaced by interactive mouse-tracked 3D tilt */
 
-/* Mythic golden surface — flowing liquid gold over card art */
-.simple-card.rarity-mythic .card-art-container {
-  position: relative;
-  overflow: hidden;
-}
-
 .simple-card.rarity-mythic .card-art-container::after {
   content: '';
   position: absolute;
@@ -1830,12 +1832,6 @@
 }
 
 /* Mythic hover — 3D tilt handled by mouse tracking */
-
-/* Epic purple surface — flowing amethyst over card art */
-.simple-card.rarity-epic .card-art-container {
-  position: relative;
-  overflow: hidden;
-}
 
 .simple-card.rarity-epic .card-art-container::after {
   content: '';

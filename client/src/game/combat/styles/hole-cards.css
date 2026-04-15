@@ -4,8 +4,7 @@
    POKER-SITE STYLE: Half-visible cards with overlapping bars
    ======================================== */
 
-.opponent-hole-cards,
-.player-hole-cards {
+:is(.opponent-hole-cards, .player-hole-cards) {
   display: flex;
   gap: 0; /* Overlap handled by negative margins below */
   overflow: visible;

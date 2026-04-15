@@ -9,6 +9,7 @@ interface MissionCompletion {
 	difficulty: Difficulty;
 	completedAt: number;
 	bestTurns: number;
+	bestDifficulty: Difficulty;
 }
 
 interface CampaignState {
@@ -49,6 +50,9 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 			completeMission: (missionId, difficulty, turns) => {
 				const existing = get().completedMissions[missionId];
 				const better = !existing || turns < existing.bestTurns;
+				const diffOrder: Record<Difficulty, number> = { normal: 0, heroic: 1, mythic: 2 };
+				const existingDiff = existing?.bestDifficulty ?? existing?.difficulty ?? 'normal';
+				const bestDiff = diffOrder[difficulty] > diffOrder[existingDiff] ? difficulty : existingDiff;
 				set(state => ({
 					completedMissions: {
 						...state.completedMissions,
@@ -56,6 +60,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 							difficulty,
 							completedAt: Date.now(),
 							bestTurns: better ? turns : (existing?.bestTurns ?? turns),
+							bestDifficulty: bestDiff,
 						},
 					},
 					currentMission: null,

@@ -61,11 +61,13 @@
 .game-over-victory .game-over-particle {
 	background: #ffd700;
 	box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+	animation-name: particle-burst-up;
 }
 
 .game-over-defeat .game-over-particle {
 	background: #dc2626;
 	box-shadow: 0 0 6px rgba(220, 38, 38, 0.8);
+	animation-name: particle-burst-down;
 }
 
 .game-over-draw .game-over-particle {
@@ -98,10 +100,6 @@
 	}
 }
 
-.game-over-victory .game-over-particle {
-	animation-name: particle-burst-up;
-}
-
 @keyframes particle-burst-up {
 	0% {
 		opacity: 1;
@@ -119,10 +117,6 @@
 			)
 			scale(0.2);
 	}
-}
-
-.game-over-defeat .game-over-particle {
-	animation-name: particle-burst-down;
 }
 
 @keyframes particle-burst-down {

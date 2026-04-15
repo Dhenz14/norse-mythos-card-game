@@ -52,6 +52,22 @@ export const easternChapter: CampaignChapter = {
 			aiHeroId: 'hero-thorgrim', aiHeroClass: 'warrior',
 			aiDeckCardIds: deck(0), aiProfile: AI_PROFILES.hard,
 			bossRules: [{ type: 'extra_health', value: 10, description: 'The Dragon has 110 health' }],
+			bossQuips: {
+				onCombatStart: 'Few from the Western myths have ever swum the waterfall. Show me the muscle that brought you this far.',
+				onLowHP: 'You have the patience of a carp. The patience that becomes dragon.',
+				onLethal: 'Then I become the gate. Pass beneath my coils.',
+				onVictory: 'The waterfall keeps its dragon. Try again next age.',
+			},
+			combatMusicId: 'celestial_court',
+			victoryCinematic: [
+				{ narration: 'The dragon coils around the waterfall and bows its great jade head. \u201cYou have crossed the Dragon Gate,\u201d it rumbles. \u201cFew from the Western myths have ever reached this far.\u201d', visualCue: 'A serpentine green dragon curling around a roaring waterfall, lowering its head a fraction.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The waterfall crashes down. The Dragon Gate remains closed to you.', musicId: 'celestial_court', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'A blinding light rises from the east. The Sun Goddess Amaterasu has heard you are here, and she is curious.', visualCue: 'A figure in white robes stepping out of a cave-mouth, light pouring around her.', musicId: 'celestial_court', durationHint: 8 },
+			],
 			prerequisiteIds: [],
 			rewards: [{ type: 'rune', amount: 50 }],
 			campaignArmy: { king: 'king-brimir', queen: 'hero-fujin', rook: 'hero-sarutahiko', bishop: 'hero-kamimusubi', knight: 'hero-tsukuyomi' },
@@ -69,6 +85,31 @@ export const easternChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Amaterasu has 110 health' },
 				{ type: 'extra_mana', value: 1, description: 'Divine solar energy (+1 mana)' },
+			],
+			bossQuips: {
+				onCombatStart: 'Once I retreated into the cave and the world went dark. I will not retreat from you. The world has had enough darkness.',
+				onLowHP: 'There is light in you that no shadow could hide.',
+				onLethal: 'Then take the dawn. The land of the rising sun is yours.',
+				onVictory: 'Sleep, traveler. The shadows you carried have been burned away.',
+			},
+			combatMusicId: 'celestial_court',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'I am the SUN. There is no shadow you can stand in here.',
+					flash: 'gold',
+					effect: { type: 'damage_player', value: 7 },
+					description: 'Amaterasu floods the field with light',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Amaterasu dims her radiance to something a mortal can stand in. \u201cThere is light in you that no shadow could hide,\u201d she says. \u201cYou may walk my lands.\u201d', visualCue: 'A goddess in white robes lowering her hand. The world becomes liveable again.', musicId: 'celestial_court', durationHint: 11 },
+			],
+			defeatCinematic: [
+				{ narration: 'The full radiance of the sun unmakes every shadow you ever hid behind. Including the ones that were keeping you upright.', musicId: 'twilight_horn', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk on. The Jade Palace rises through the clouds, halls of pure jade stretching beyond mortal sight. The Jade Emperor is waiting with a celestial ledger and a stamp.', visualCue: 'A vast green palace floating among clouds, an emperor checking a scroll at a desk.', musicId: 'celestial_court', durationHint: 8 },
 			],
 			prerequisiteIds: ['eastern-1'],
 			rewards: [{ type: 'rune', amount: 55 }],
@@ -88,6 +129,31 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 10, description: 'The Jade Emperor has 110 health' },
 				{ type: 'bonus_draw', value: 1, description: 'Celestial bureaucracy grants extra resources' },
 			],
+			bossQuips: {
+				onCombatStart: 'You have defeated the gods of four lands. That is irregular. We must rectify this.',
+				onLowHP: 'My ledger has no entry for what you are doing right now.',
+				onLethal: 'Then I file you under \u201cexceptional cases.\u201d Stamp.',
+				onVictory: 'Your case has been DENIED. Please try again in the next aeon.',
+			},
+			combatMusicId: 'celestial_court',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'CELESTIAL bureaucracy will deal with you in EVERY universe.',
+					flash: 'gold',
+					effect: { type: 'add_armor', value: 9 },
+					description: 'The Jade Emperor calls in the entire celestial court',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The Jade Emperor stamps his celestial seal. \u201cIrregular, but acceptable,\u201d he says. \u201cYour file has been updated. You may proceed.\u201d', visualCue: 'A jade-robed emperor stamping a scroll. A clerk filing it into a vast wall of identical scrolls.', musicId: 'celestial_court', durationHint: 11 },
+			],
+			defeatCinematic: [
+				{ narration: 'The celestial bureaucracy finds you wanting. Your paperwork is denied in triplicate.', musicId: 'celestial_court', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'A storm gathers in the clouds outside the jade walls. Susanoo, banished from heaven for his destructiveness, has heard you are inside. He wants to test you.', visualCue: 'A storm-cloud roiling with a face. A long red beard inside the lightning.', musicId: 'jotun_rage', durationHint: 8 },
+			],
 			prerequisiteIds: ['eastern-2'],
 			rewards: [{ type: 'rune', amount: 60 }],
 			campaignArmy: { king: 'king-borr', queen: 'hero-odin', rook: 'hero-heimdall', bishop: 'hero-hera', knight: 'hero-hermes' },
@@ -105,6 +171,31 @@ export const easternChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 10, description: 'Susanoo has 110 health' },
 				{ type: 'passive_damage', value: 1, description: 'Typhoon deals 1 damage each turn' },
+			],
+			bossQuips: {
+				onCombatStart: 'I was BANISHED from heaven. I slew the eight-headed Yamata no Orochi. Do you think I fear ANYTHING?',
+				onLowHP: 'You\u2019re different from the Western gods. They rely on power. You rely on will.',
+				onLethal: 'A storm settles, eventually. Even mine. Strike.',
+				onVictory: 'Sleep in the rain. The world dissolves so easily.',
+			},
+			combatMusicId: 'jotun_rage',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'TYPHOON. Now. ALL of it.',
+					flash: 'blue',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'Susanoo unleashes the typhoon',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Susanoo\u2019s storm breaks. He stands in the rain, breathing heavily, looking at you with new eyes. \u201cWill,\u201d he says. \u201cI had forgotten the word.\u201d', visualCue: 'A storm-god in the eye of his own quieting typhoon, looking at you with respect.', musicId: 'celestial_court', durationHint: 11 },
+			],
+			defeatCinematic: [
+				{ narration: 'No mortal can stand against the fury of heaven\u2019s exile.', musicId: 'jotun_rage', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'A golden-furred figure somersaults down from a cloud. The Monkey King has heard about you. He wants to play.', visualCue: 'A grinning monkey with a gold staff bouncing into frame.', musicId: 'celestial_court', durationHint: 8 },
 			],
 			prerequisiteIds: ['eastern-3'],
 			rewards: [{ type: 'rune', amount: 65 }, { type: 'eitr', amount: 100 }],
@@ -124,6 +215,31 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 15, description: 'Sun Wukong has 115 health' },
 				{ type: 'bonus_draw', value: 1, description: '72 transformations grant extra cards' },
 			],
+			bossQuips: {
+				onCombatStart: 'I can transform 72 ways. I can fly 108,000 li in a single somersault. The Buddha himself put me under a mountain. BEAT THAT.',
+				onLowHP: 'Aw man. AW MAN. You\u2019re actually keeping up.',
+				onLethal: 'Okay okay okay. You win this round. NEXT ONE\u2019s mine.',
+				onVictory: 'Too slow! WAY too slow! Try eating peaches for a thousand years!',
+			},
+			combatMusicId: 'celestial_court',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'I HAVE seventy-two FORMS. I am about to use forty of them.',
+					flash: 'gold',
+					effect: { type: 'enrage', value: 10 },
+					description: 'Sun Wukong cycles through transformations',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Sun Wukong scratches his head. \u201cHuh. Not bad for someone who can\u2019t even somersault on clouds.\u201d He shrinks his Ruyi Jingu Bang to the size of a needle and tucks it behind his ear. \u201cYou\u2019re alright.\u201d', visualCue: 'A cocky monkey-king grinning, his enormous staff vanishing into a tiny needle.', musicId: 'celestial_court', durationHint: 11 },
+			],
+			defeatCinematic: [
+				{ narration: 'Sun Wukong laughs and does a backflip. \u201cTOO SLOW! Way too slow!\u201d', musicId: 'celestial_court', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk on. The next gate opens onto a darkness deeper than any underworld you have visited. Yomi. The mother of Japan is waiting.', visualCue: 'A pale woman in white burial robes, half her face beautiful, half her face the slow ruin of grief.', musicId: 'shadow_root', durationHint: 9 },
+			],
 			prerequisiteIds: ['eastern-4'],
 			rewards: [{ type: 'rune', amount: 70 }],
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-loki', rook: 'hero-sarutahiko', bishop: 'hero-kamimusubi', knight: 'hero-loki' },
@@ -141,6 +257,31 @@ export const easternChapter: CampaignChapter = {
 			bossRules: [
 				{ type: 'extra_health', value: 15, description: 'Izanami has 115 health' },
 				{ type: 'passive_damage', value: 2, description: 'Yomi\'s decay deals 2 damage each turn' },
+			],
+			bossQuips: {
+				onCombatStart: 'I died giving birth to fire. My husband fled when he saw what death had made of me. I have not forgiven any living thing since.',
+				onLowHP: 'I kill a thousand living things each day in my grief. You will be one of them.',
+				onLethal: 'Then leave Yomi. But know that I am still kneeling where you found me, and I am still grieving.',
+				onVictory: 'Sleep beside me. The dead are kinder than the living, sometimes.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'My grief HARDENS me. Look at it. LOOK at what death made of me.',
+					flash: 'purple',
+					effect: { type: 'add_armor', value: 12 },
+					description: 'Izanami\u2019s grief becomes armor',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Izanami retreats into the deepest dark. \u201cGo,\u201d she whispers. \u201cBut remember: I kill a thousand living things each day in revenge. You are merely the one who got away.\u201d', visualCue: 'A pale grieving figure stepping back into a sourceless dark, eyes still on you.', musicId: 'twilight_horn', durationHint: 11 },
+			],
+			defeatCinematic: [
+				{ narration: 'Yomi closes around you. Izanami collects another soul for her endless grief.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'A four-armed god with the head of an elephant is sitting cross-legged in the next chamber, smiling. He has a puzzle for you.', visualCue: 'A round elephant-headed god in saffron robes, four hands resting on his knees, eyes warm.', musicId: 'celestial_court', durationHint: 8 },
 			],
 			prerequisiteIds: ['eastern-5'],
 			rewards: [{ type: 'rune', amount: 75 }, { type: 'card', cardId: 20021 }],
@@ -160,6 +301,31 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 15, description: 'Ganesha has 115 health' },
 				{ type: 'extra_mana', value: 2, description: 'Divine wisdom grants +2 mana' },
 			],
+			bossQuips: {
+				onCombatStart: 'I am the Remover of Obstacles AND the Placer of Obstacles. It depends entirely on whether you are worthy. Show me.',
+				onLowHP: 'You THINK before you strike. That is the rarest thing in any cosmos.',
+				onLethal: 'A wise blow. Take the broken tusk, my friend. You will need it.',
+				onVictory: 'You think like a warrior. Come back when you think like a sage.',
+			},
+			combatMusicId: 'celestial_court',
+			bossPhases: [
+				{
+					hpPercent: 50,
+					quip: 'I have FOUR hands and one of them is holding the puzzle.',
+					flash: 'gold',
+					effect: { type: 'heal_self', value: 12 },
+					description: 'Ganesha solves the puzzle in his head while you fight',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Ganesha trumpets with joy. \u201cBeautiful! You did not try to smash through it!\u201d He hands you a golden tusk. \u201cCarry this. It means you think before you strike.\u201d', visualCue: 'An elephant-headed god grinning, breaking off one tusk and offering it on his palm.', musicId: 'celestial_court', durationHint: 11 },
+			],
+			defeatCinematic: [
+				{ narration: 'Ganesha sighs. \u201cYou think like a warrior. Come back when you think like a sage.\u201d', musicId: 'celestial_court', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'You walk on. The gods and demons are churning the cosmic ocean to make the elixir of immortality. They need a third party in the middle to keep things honest.', visualCue: 'A vast mountain spinning in a foaming sea, a colossal serpent wrapped around it as a churning rope.', musicId: 'celestial_court', durationHint: 9 },
+			],
 			prerequisiteIds: ['eastern-6'],
 			rewards: [{ type: 'rune', amount: 80 }],
 			campaignArmy: { king: 'king-yggdrasil', queen: 'hero-odin', rook: 'hero-sarutahiko', bishop: 'hero-kamimusubi', knight: 'hero-hermes' },
@@ -168,7 +334,7 @@ export const easternChapter: CampaignChapter = {
 			id: 'eastern-8', chapterId: 'eastern', missionNumber: 8, realm: 'mount_meru',
 			name: 'The Churning of the Ocean',
 			description: 'Gods and demons churn the cosmic ocean to create the elixir of immortality.',
-			narrativeBefore: 'Mount Mandara spins in the cosmic ocean, Vasuki the serpent wrapped around it as a churning rope. Gods pull one end, demons the other. From the churning emerge wonders and terrors — the moon, divine weapons, deadly poison, and finally the Amrita: the nectar of immortality. Both sides want it. You stand in the middle of a cosmic tug-of-war.',
+			narrativeBefore: 'Mount Mandara spins in the cosmic ocean, Vasuki the serpent king wrapped around it as a churning rope. The Devas pull one end, the Asuras the other. Vishnu himself takes the form of the turtle Kurma to support the mountain\u2019s weight on his shell. From the churning emerge wonders and terrors \u2014 the goddess Lakshmi rising on a lotus, the white horse Uchchaihshravas, the divine physician Dhanvantari carrying the Amrita vessel, celestial weapons, the sacred elephant Airavata. But before the nectar comes the poison. Halahala \u2014 a venom so deadly it would destroy all creation \u2014 bubbles up from the ocean floor. The gods and demons alike recoil. Only Shiva steps forward. He takes the poison into his mouth and holds it in his throat, which turns blue-black forever. Parvati grips his throat to prevent him from swallowing, saving his life but staining him the color of midnight. The churning continues. The Amrita is close. Both sides want it. You stand in the middle of a cosmic tug-of-war.',
 			narrativeAfter: 'The churning stops. The Amrita glows in its vessel, and you have earned a single sip. Immortality touches your lips — not forever, but long enough to face what comes next.',
 			narrativeVictory: 'You stand between gods and demons and claim the Amrita. Both sides are impressed.',
 			narrativeDefeat: 'The cosmic ocean swallows you. The churning continues without you.',
@@ -179,6 +345,38 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'extra_mana', value: 2, description: 'Cosmic energy grants +2 mana' },
 				{ type: 'bonus_draw', value: 1, description: 'The churning produces extra resources' },
 			],
+			bossQuips: {
+				onCombatStart: 'Pull, gods! Pull, demons! Vasuki holds the line! The Amrita is so close.',
+				onLowHP: 'Even the cosmic ocean has a bottom. We are nearly there.',
+				onLethal: 'Then take the cup. The first sip is yours.',
+				onVictory: 'Both sides drink. Both sides become immortal. Tomorrow they fight again.',
+			},
+			combatMusicId: 'celestial_court',
+			bossPhases: [
+				{
+					hpPercent: 60,
+					quip: 'POISON rises before the elixir. Drink it, Shiva! Save us!',
+					flash: 'green',
+					effect: { type: 'damage_player', value: 8 },
+					description: 'The poison Halahala rises from the churning',
+				},
+				{
+					hpPercent: 30,
+					quip: 'AMRITA. The nectar. NOW.',
+					flash: 'gold',
+					effect: { type: 'enrage', value: 11 },
+					description: 'The Amrita rises from the cosmic ocean',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'The churning stops. The Amrita glows in its vessel, and you have earned a single sip. Immortality touches your lips \u2014 not forever, but long enough to face what comes next.', visualCue: 'A golden cup at the center of a calming sea. A single drop of light meeting your lips.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'The cosmic ocean swallows you. The churning continues without you, indifferent.', musicId: 'shadow_root', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'A figure dances in the next chamber. Each step destroys a universe. Each spin creates a new one. She is black as the void between stars, wearing a garland of skulls. Time itself, with a tongue red with the blood of demons, looking right at you.', visualCue: 'A goddess in mid-dance, multiple arms in motion, a necklace of skulls swinging.', musicId: 'shadow_root', durationHint: 9 },
+			],
 			prerequisiteIds: ['eastern-7'],
 			rewards: [{ type: 'rune', amount: 85 }, { type: 'eitr', amount: 150 }],
 			campaignArmy: { king: 'king-brimir', queen: 'hero-fujin', rook: 'hero-thor', bishop: 'hero-poseidon', knight: 'hero-tsukuyomi' },
@@ -187,7 +385,7 @@ export const easternChapter: CampaignChapter = {
 			id: 'eastern-9', chapterId: 'eastern', missionNumber: 9, realm: 'diyu',
 			name: 'Kali\'s Dance of Destruction',
 			description: 'The Hindu goddess of time and death dances the world toward its end.',
-			narrativeBefore: 'Kali dances. Each step destroys a universe. Each spin creates a new one. She is black as the void between stars, wearing a garland of skulls, her tongue red with the blood of demons. She is Time itself, and Time destroys everything. "Dance with me," she says, her wild eyes burning. "If you can keep up, you live. If not..." She laughs, and galaxies tremble.',
+			narrativeBefore: 'Kali dances the Tandava \u2014 Shiva\u2019s own dance of annihilation, performed by his fiercest aspect. She is Devi in her most terrible form: black as the void between stars, four arms whirling, wearing a garland of fifty-two skulls \u2014 one for each letter of the Sanskrit alphabet, because she is the destruction of language itself. Her tongue lolls red with the blood of the demon Raktabija, whose every drop of spilled blood spawned a new demon until Kali drank it all. Each step destroys a universe. Each spin creates a new one. She is not evil \u2014 she is liberation. In Hindu philosophy, Kali is moksha: the annihilation of the ego, the stripping of illusion, the terrifying freedom of seeing reality without the comfort of lies. The garland is not trophies; it is the alphabet being returned to silence. "Dance with me," she says, her wild eyes burning. "If you can keep up, you will see what lies behind the world. If not..." She laughs, and galaxies tremble.',
 			narrativeAfter: 'Kali stops dancing. The silence is deafening. "You... kept up," she says, genuinely surprised. "No one has ever kept up." She removes one skull from her necklace. "Take this. It belonged to a god who thought he was stronger than Time. You are wiser."',
 			narrativeVictory: 'You dance with destruction itself and survive. Kali keeps time — and you kept pace.',
 			narrativeDefeat: 'Time dances on. You do not.',
@@ -197,6 +395,38 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'extra_health', value: 20, description: 'Kali has 120 health' },
 				{ type: 'extra_mana', value: 2, description: 'Time\'s power grants +2 mana' },
 				{ type: 'passive_damage', value: 2, description: 'Kali\'s dance deals 2 damage each turn' },
+			],
+			bossQuips: {
+				onCombatStart: 'Dance with me. Each step destroys a universe. Each spin creates a new one. KEEP UP or be left behind.',
+				onLowHP: 'You. KEEP. UP. Nobody keeps up with the dance of time.',
+				onLethal: 'Then take this skull. It belonged to a god who thought he was stronger than time. You are wiser.',
+				onVictory: 'Time dances on. You do not.',
+			},
+			combatMusicId: 'shadow_root',
+			bossPhases: [
+				{
+					hpPercent: 65,
+					quip: 'My garland of skulls grows by one head each step. KEEP COUNT.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 9 },
+					description: 'Kali\u2019s dance accelerates',
+				},
+				{
+					hpPercent: 30,
+					quip: 'I am TIME. Time always wins.',
+					flash: 'purple',
+					effect: { type: 'enrage', value: 13 },
+					description: 'Kali enters the destruction phase',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Kali stops dancing. The silence is deafening. \u201cYou kept up,\u201d she says, genuinely surprised. \u201cNo one has ever kept up.\u201d She removes one skull from her necklace and offers it to you.', visualCue: 'A many-armed dancing goddess going still in mid-step. A skull lifted from a long necklace and held out.', musicId: 'celestial_court', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'Time dances on. You do not.', musicId: 'twilight_horn', durationHint: 7 },
+			],
+			storyBridge: [
+				{ narration: 'And then the barriers between mythologies begin to crack. Norse, Greek, Egyptian, Celtic, Eastern \u2014 every pantheon\u2019s apocalypse is converging on a single point at the same instant. The final battle is about to begin.', visualCue: 'A black point in the sky widening into a portal. Every mythology\u2019s end-time symbol pouring out at once.', musicId: 'ragnarok', durationHint: 12 },
 			],
 			prerequisiteIds: ['eastern-8'],
 			rewards: [{ type: 'rune', amount: 90 }, { type: 'card', cardId: 20114 }],
@@ -218,9 +448,66 @@ export const easternChapter: CampaignChapter = {
 				{ type: 'bonus_draw', value: 2, description: 'Draws from every pantheon\'s arsenal' },
 				{ type: 'passive_damage', value: 2, description: 'The unraveling deals 2 damage each turn' },
 			],
+			bossQuips: {
+				onCombatStart: 'You conquered each pantheon SEPARATELY. Now face them ALL AT ONCE. I am every ending. I am Ragnarok. I am Gigantomachy. I am the Devouring of Ra. I am the Final Fomorian War. I am the Celestial Collapse. And I have been waiting for you.',
+				onLowHP: 'You stand against EVERY ending. No mortal has even imagined this.',
+				onLethal: 'Then strike. The endings will simply find another door.',
+				onVictory: 'All endings. All AT ONCE. The story finishes the only way every story finishes.',
+			},
+			combatMusicId: 'ragnarok',
+			bossPhases: [
+				{
+					hpPercent: 85,
+					quip: 'I am NORSE Ragnarok. The wolf. The serpent. The fire-giant. ALL of it.',
+					flash: 'red',
+					effect: { type: 'damage_player', value: 12 },
+					description: 'The Norse end-times manifest',
+				},
+				{
+					hpPercent: 70,
+					quip: 'I am GREEK Gigantomachy. The Giants. Typhon. Gaia\u2019s tired final breath.',
+					flash: 'gold',
+					effect: { type: 'damage_player', value: 12 },
+					description: 'The Greek end-times manifest',
+				},
+				{
+					hpPercent: 55,
+					quip: 'I am EGYPTIAN apocalypse. The Sun barge swallowed by Apophis. The dawn that does not come.',
+					flash: 'red',
+					effect: { type: 'add_armor', value: 16 },
+					description: 'The Egyptian end-times manifest',
+				},
+				{
+					hpPercent: 35,
+					quip: 'I am CELTIC ending. The Otherworld closes its mists for the last time. The Tuatha go into the mounds and never come out.',
+					flash: 'green',
+					effect: { type: 'heal_self', value: 18 },
+					description: 'The Celtic end-times manifest',
+				},
+				{
+					hpPercent: 15,
+					quip: 'And I am EASTERN finality. Kali\u2019s last dance. The dragon swallows its tail. THE COSMOS BREATHES OUT.',
+					flash: 'purple',
+					effect: { type: 'enrage', value: 18 },
+					description: 'All endings simultaneous',
+				},
+			],
+			victoryCinematic: [
+				{ narration: 'Silence. For the first time in the history of any mythology, the End was met \u2014 and turned BACK.', visualCue: 'A cosmic shape unraveling into starlight. Every mythology\u2019s end-time symbol going dim.', musicId: 'rebirth', durationHint: 14 },
+				{ narration: 'From its dissolution, new stories begin. You stand at the nexus of all myths, the one who prevented the final Ragnarok. Every god, from every pantheon, knows your name.', visualCue: 'A great pale circle of gods from every pantheon \u2014 Norse, Greek, Egyptian, Celtic, Hindu, Japanese, Chinese \u2014 all turning to look at you in silence.', musicId: 'rebirth', durationHint: 16 },
+				{ narration: 'Odin nods. Zeus inclines his head. Ra raises a hand in salute. Lugh lowers his spear. The Jade Emperor stamps a single seal on the only ledger that ever mattered. Vidar, in the back, gives the smallest possible smile.', visualCue: 'Each god named in turn, in close-up, acknowledging the player.', musicId: 'rebirth', durationHint: 16 },
+				{ narration: 'You are the champion of all mythologies. The one who stood at the end of everything and said: \u201cNot today.\u201d', visualCue: 'A single figure on a green hill at sunrise, every pantheon\u2019s symbol fading like stars at dawn around them.', musicId: 'rebirth', durationHint: 14 },
+				{ narration: 'Rest now, hero of every world. The next saga is for the children. You wrote the one that ended the endings.', musicId: 'rebirth', durationHint: 12 },
+			],
+			defeatCinematic: [
+				{ narration: 'All endings arrive at once. Ragnarok and Gigantomachy and the devouring of Ra and the closing of the mounds and the last dance of Kali, simultaneous, total. Every mythology finishes itself in a single breath.', visualCue: 'Five different apocalypses superimposed in slow motion. A single quiet note holding them together.', musicId: 'ragnarok', durationHint: 12 },
+				{ narration: 'But even this is just a story. And stories can be retold.', musicId: 'rebirth', durationHint: 8 },
+			],
 			prerequisiteIds: ['eastern-9'],
 			rewards: [{ type: 'rune', amount: 200 }, { type: 'card', cardId: 20001 }, { type: 'pack', amount: 5 }],
 			campaignArmy: { king: 'king-ginnungagap', queen: 'hero-zeus', rook: 'hero-thor', bishop: 'hero-poseidon', knight: 'hero-loki' },
+			starThresholds: { threeStar: 20, twoStar: 30 },
+			isChapterFinale: true,
 		},
 	],
 };

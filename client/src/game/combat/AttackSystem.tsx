@@ -13,18 +13,15 @@
 
 import React, { useEffect } from 'react';
 import { useAttackStore } from './attackStore';
-import { CardInstanceWithCardData } from '../types/interfaceExtensions';
 import { CardInstance } from '../types';
-import { useAudio } from '../../lib/stores/useAudio';
 import AttackIndicator from './AttackIndicator';
 import './AttackStyles.css';
 import { Position } from '../types/Position';
-import { useGameStore } from '../stores/gameStore';
 import { GameState } from '../types';
 import { destroyCard } from '../utils/zoneUtils';
 import { dealDamage } from '../utils/effects/damageUtils';
 // AUTHORITATIVE canCardAttack function - single source of truth
-import { canCardAttack as canCardAttackUtil, getAttackEligibility } from './attackUtils';
+import { getAttackEligibility } from './attackUtils';
 import { debug } from '../config/debugConfig';
 import { hasKeyword } from '../utils/cards/keywordUtils';
 
@@ -39,11 +36,13 @@ export type AttackResult = {
   success: boolean;
   newState?: GameState;
   message?: string;
-  animations?: Array<{
-    type: 'attack' | 'damage' | 'death';
-    sourceId: string;
-    targetId: string;
-  }>;
+  animations?: AttackAnimation[];
+};
+
+type AttackAnimation = {
+  type: 'attack' | 'damage' | 'death';
+  sourceId: string;
+  targetId: string;
 };
 
 /**
@@ -134,203 +133,22 @@ export function executeAttack(
   targetId?: string,
   targetType: 'minion' | 'hero' = 'hero'
 ): AttackResult {
-
-  // Deep clone the state to avoid mutations
-  let newState = JSON.parse(JSON.stringify(state)) as GameState;
-
-  // Find the attacker
+  const newState = cloneGameState(state);
   const attacker = newState.players.player.battlefield.find(
     card => card.instanceId === attackerId
   );
 
   if (!attacker) {
-    return {
-      success: false,
-      message: 'Attacker not found on battlefield'
-    };
+    return createFailureResult('Attacker not found on battlefield');
   }
 
-  // Verify the attacker can attack (use local function with type assertion)
-  if (!canCardAttack(attacker as unknown as CardInstance, true)) {
-    return {
-      success: false,
-      message: 'Card cannot attack'
-    };
+  if (!canCardAttack(attacker as CardInstance, true)) {
+    return createFailureResult('Card cannot attack');
   }
 
-  // Initialize tracking
-  const animations = [];
-  let targetDestroyed = false;
-  let attackerDestroyed = false;
-
-  // If no target specified, attack hero
-  if (!targetId || targetType === 'hero') {
-    // Check if this is a valid hero attack (use local function with type assertion)
-    if (!isValidAttackTarget(newState, attacker as unknown as CardInstance, undefined, 'hero')) {
-      return {
-        success: false,
-        message: 'Invalid hero attack'
-      };
-    }
-
-    const attackValue = attacker.card.type === 'minion' ? (attacker.card.attack ?? 0) : 0;
-    
-    // Record the animation
-    animations.push({
-      type: 'attack',
-      sourceId: attackerId,
-      targetId: 'opponent-hero'
-    });
-
-    // Deal damage to opponent hero — goes through armor, sets gamePhase if lethal
-    const damage = attacker.card.type === 'minion' ? (attacker.card.attack ?? 0) : 0;
-    newState = dealDamage(newState, 'opponent', 'hero', damage, undefined, undefined, 'player');
-
-    animations.push({
-      type: 'damage',
-      sourceId: attackerId,
-      targetId: 'opponent-hero'
-    });
-  } 
-  // Targeting a minion
-  else {
-    // Find the target minion
-    const targetMinion = newState.players.opponent.battlefield.find(
-      card => card.instanceId === targetId
-    );
-
-    if (!targetMinion) {
-      return {
-        success: false,
-        message: 'Target minion not found'
-      };
-    }
-
-    // Check if this is a valid minion attack (use local function with type assertion)
-    if (!isValidAttackTarget(newState, attacker as unknown as CardInstance, targetId, 'minion')) {
-      return {
-        success: false,
-        message: 'Invalid minion attack'
-      };
-    }
-
-    const attackerAttack = attacker.card.type === 'minion' ? (attacker.card.attack ?? 0) : 0;
-    const targetAttack = targetMinion.card.type === 'minion' ? (targetMinion.card.attack ?? 0) : 0;
-    
-    // Record the attack animation
-    animations.push({
-      type: 'attack',
-      sourceId: attackerId,
-      targetId: targetId
-    });
-
-    // Handle Divine Shield
-    let attackerDivineShield = attacker.hasDivineShield || false;
-    let targetDivineShield = targetMinion.hasDivineShield || false;
-
-    // Attacker deals damage to target
-    if (targetDivineShield) {
-      // Divine shield absorbs the damage
-      targetMinion.hasDivineShield = false;
-    } else {
-      // Apply damage
-      const attackerDamage = attacker.card.type === 'minion' ? (attacker.card.attack ?? 0) : 0;
-      if (targetMinion.currentHealth !== undefined) {
-        targetMinion.currentHealth -= attackerDamage;
-      }
-      
-      animations.push({
-        type: 'damage',
-        sourceId: attackerId,
-        targetId: targetId
-      });
-
-    }
-
-    // Target deals damage to attacker
-    if (attackerDivineShield) {
-      // Divine shield absorbs the damage
-      attacker.hasDivineShield = false;
-    } else {
-      // Apply damage
-      const targetDamage = targetMinion.card.type === 'minion' ? (targetMinion.card.attack ?? 0) : 0;
-      if (attacker.currentHealth !== undefined) {
-        attacker.currentHealth -= targetDamage;
-      }
-      
-      animations.push({
-        type: 'damage',
-        sourceId: targetId,
-        targetId: attackerId
-      });
-
-    }
-
-    // Check if minions died from the attack
-    if ((targetMinion.currentHealth ?? 0) <= 0) {
-      targetDestroyed = true;
-      
-      animations.push({
-        type: 'death',
-        sourceId: attackerId,
-        targetId: targetId
-      });
-    }
-
-    if ((attacker.currentHealth ?? 0) <= 0) {
-      attackerDestroyed = true;
-      
-      animations.push({
-        type: 'death',
-        sourceId: targetId,
-        targetId: attackerId
-      });
-    }
-
-    // Handle minion deaths
-    if (targetDestroyed) {
-      newState = destroyCard(newState, targetId, 'opponent');
-    }
-  }
-
-  // Update attacker state (if it survived)
-  const updatedAttackerIndex = newState.players.player.battlefield.findIndex(
-    card => card.instanceId === attackerId
-  );
-
-  if (updatedAttackerIndex !== -1 && !attackerDestroyed) {
-    // Increment attacks performed
-    const updatedAttacker = newState.players.player.battlefield[updatedAttackerIndex];
-    updatedAttacker.attacksPerformed = (updatedAttacker.attacksPerformed || 0) + 1;
-    
-    // Check if it can attack again this turn
-    const hasWindfury = hasKeyword(updatedAttacker, 'windfury');
-    const maxAttacks = hasWindfury ? 2 : 1;
-    
-    if (updatedAttacker.attacksPerformed >= maxAttacks) {
-      updatedAttacker.canAttack = false;
-    }
-  } else if (attackerDestroyed) {
-    // If the attacker died, remove it from battlefield
-    newState = destroyCard(newState, attackerId, 'player');
-  }
-
-  return {
-    success: true,
-    newState,
-    animations: animations as Array<{
-      type: 'attack' | 'damage' | 'death';
-      sourceId: string;
-      targetId: string;
-    }>
-  };
-}
-
-/**
- * Destroy a minion and move it to the graveyard
- */
-function destroyMinion(state: GameState, minionId: string, playerId: 'player' | 'opponent'): GameState {
-  return destroyCard(state, minionId, playerId);
+  return !targetId || targetType === 'hero'
+    ? resolveHeroAttack(newState, attacker, attackerId)
+    : resolveMinionAttack(newState, attacker, attackerId, targetId);
 }
 
 /**
@@ -338,29 +156,13 @@ function destroyMinion(state: GameState, minionId: string, playerId: 'player' | 
  * Called at the beginning of each turn to reset attack counters
  */
 export function resetAttackStateForTurn(state: GameState, playerId: 'player' | 'opponent'): GameState {
-  
-  // Clone state to avoid mutations
   const newState = JSON.parse(JSON.stringify(state)) as GameState;
-  
-  // Get the current player's battlefield
-  const battlefield = newState.players[playerId].battlefield;
-  
-  // Reset attack state for all minions
-  battlefield.forEach(card => {
-    // Reset the number of attacks performed this turn
-    card.attacksPerformed = 0;
-    
-    // Non-summoning sick minions can attack
-    if (!card.isSummoningSick) {
-      card.canAttack = true;
-    }
-    
-    // Remove summoning sickness for minions that were played last turn
-    if (card.isSummoningSick) {
-      card.isSummoningSick = false;
-      card.canAttack = true;
-    }
-  });
+  newState.players[playerId].battlefield = newState.players[playerId].battlefield.map(card => ({
+    ...card,
+    attacksPerformed: 0,
+    isSummoningSick: false,
+    canAttack: true,
+  }));
   
   return newState;
 }
@@ -394,14 +196,10 @@ interface AttackSystemProps {
 }
 
 const AttackSystem: React.FC<AttackSystemProps> = ({
-  isPlayerTurn,
   cardPositions,
   getBoardCenter,
-  onAttackComplete
 }) => {
-  const { attackingCard, isAttackMode, validTargets, selectAttacker, performAttack, cancelAttack } = useAttackStore();
-  const gameState = useGameStore(s => s.gameState);
-  const audioState = useAudio.getState();
+  const { attackingCard, isAttackMode, cancelAttack } = useAttackStore();
   
   // Handle escape key to cancel attack
   useEffect(() => {
@@ -414,126 +212,6 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [isAttackMode, cancelAttack]);
-
-  // Methods exposed to the parent component for attack management
-  
-  /**
-   * Handle clicking on a player's minion (potential attacker)
-   */
-  const handleAttackerClick = (card: CardInstance | CardInstanceWithCardData) => {
-    
-    // We're in attack mode and clicked a different card - cancel current attack
-    if (isAttackMode && attackingCard && attackingCard.instanceId !== card.instanceId) {
-      cancelAttack();
-    }
-    
-    // Select this card as the attacker (or toggle off if already selected)
-    selectAttacker(card as CardInstance);
-  };
-  
-  /**
-   * Handle clicking on an opponent's minion (potential target)
-   */
-  const handleTargetClick = (card: CardInstance | CardInstanceWithCardData) => {
-    
-    // If we're not in attack mode or have no attacker, do nothing
-    if (!isAttackMode || !attackingCard) {
-      return false;
-    }
-    
-    // Check if this is a valid target
-    if (!validTargets.includes(card.instanceId)) {
-      
-      // Play error sound
-      if (audioState.playSoundEffect) audioState.playSoundEffect('error');
-      return false;
-    }
-    
-    // Play attack sound
-    if (audioState.playSoundEffect) audioState.playSoundEffect('attack');
-    
-    // Execute the attack
-    const success = performAttack(card.instanceId, 'minion');
-    
-    // Notify the parent component
-    if (success && onAttackComplete) {
-      onAttackComplete();
-    }
-    
-    return success;
-  };
-  
-  /**
-   * Handle clicking on the opponent's hero
-   */
-  const handleHeroClick = () => {
-    
-    // If we're not in attack mode or have no attacker, do nothing
-    if (!isAttackMode || !attackingCard) {
-      return false;
-    }
-    
-    // Check if hero is a valid target
-    if (!validTargets.includes('opponent-hero')) {
-      
-      // Play error sound
-      if (audioState.playSoundEffect) audioState.playSoundEffect('error');
-      return false;
-    }
-    
-    // Play attack sound
-    if (audioState.playSoundEffect) audioState.playSoundEffect('attack');
-    
-    // Execute the attack against the hero (use 'opponent-hero' as the target ID)
-    const success = performAttack('opponent-hero', 'hero');
-    
-    // Notify the parent component
-    if (success && onAttackComplete) {
-      onAttackComplete();
-    }
-    
-    return success;
-  };
-  
-  /**
-   * Get CSS class names for a card based on attack state
-   */
-  const getCardClasses = (card: CardInstance | CardInstanceWithCardData, isPlayerCard: boolean): string => {
-    const classes: string[] = [];
-    
-    if (isPlayerCard) {
-      // This is a potential attacker
-      if (isPlayerTurn && !card.isSummoningSick && card.canAttack) {
-        classes.push('card-attackable');
-      } else {
-        classes.push('card-non-attackable');
-      }
-      
-      // This is the currently selected attacker
-      if (attackingCard && attackingCard.instanceId === card.instanceId) {
-        classes.push('active-attacker');
-      }
-    } else {
-      // This is a potential target
-      if (isAttackMode && validTargets.includes(card.instanceId)) {
-        classes.push('valid-target');
-      }
-      
-      // This is a taunt minion
-      if (hasKeyword(card, 'taunt')) {
-        classes.push('has-taunt');
-      }
-    }
-    
-    return classes.join(' ');
-  };
-  
-  /**
-   * Check if a card can attack (convenience wrapper)
-   */
-  const canCardAttackWrapper = (card: CardInstance | CardInstanceWithCardData): boolean => {
-    return isPlayerTurn && !card.isSummoningSick && card.canAttack === true;
-  };
 
   return (
     <>
@@ -555,3 +233,167 @@ const AttackSystem: React.FC<AttackSystemProps> = ({
 // Export the component as default and helper methods as named exports
 export { useAttackStore };
 export default AttackSystem;
+
+function cloneGameState(state: GameState): GameState {
+  return JSON.parse(JSON.stringify(state)) as GameState;
+}
+
+function createFailureResult(message: string): AttackResult {
+  return {
+    success: false,
+    message,
+  };
+}
+
+function createSuccessResult(newState: GameState, animations: AttackAnimation[]): AttackResult {
+  return {
+    success: true,
+    newState,
+    animations,
+  };
+}
+
+function getCombatDamage(card: CardInstance): number {
+  return card.card.type === 'minion' ? (card.card.attack ?? 0) : 0;
+}
+
+function resolveHeroAttack(
+  state: GameState,
+  attacker: CardInstance,
+  attackerId: string,
+): AttackResult {
+  if (!isValidAttackTarget(state, attacker, undefined, 'hero')) {
+    return createFailureResult('Invalid hero attack');
+  }
+
+  const animations: AttackAnimation[] = [
+    { type: 'attack', sourceId: attackerId, targetId: 'opponent-hero' },
+    { type: 'damage', sourceId: attackerId, targetId: 'opponent-hero' },
+  ];
+  const damagedState = dealDamage(
+    state,
+    'opponent',
+    'hero',
+    getCombatDamage(attacker),
+    undefined,
+    undefined,
+    'player',
+  );
+
+  return createSuccessResult(
+    finalizeAttackerAfterAttack(damagedState, attackerId, false),
+    animations,
+  );
+}
+
+function resolveMinionAttack(
+  state: GameState,
+  attacker: CardInstance,
+  attackerId: string,
+  targetId: string,
+): AttackResult {
+  const targetMinion = state.players.opponent.battlefield.find(
+    card => card.instanceId === targetId
+  );
+  if (!targetMinion) {
+    return createFailureResult('Target minion not found');
+  }
+
+  if (!isValidAttackTarget(state, attacker, targetId, 'minion')) {
+    return createFailureResult('Invalid minion attack');
+  }
+
+  const animations: AttackAnimation[] = [
+    { type: 'attack', sourceId: attackerId, targetId },
+  ];
+  const combatOutcome = exchangeMinionDamage(attacker, targetMinion, attackerId, targetId, animations);
+  const withDestroyedTarget = combatOutcome.targetDestroyed
+    ? destroyCard(state, targetId, 'opponent')
+    : state;
+
+  return createSuccessResult(
+    finalizeAttackerAfterAttack(withDestroyedTarget, attackerId, combatOutcome.attackerDestroyed),
+    animations,
+  );
+}
+
+function exchangeMinionDamage(
+  attacker: CardInstance,
+  targetMinion: CardInstance,
+  attackerId: string,
+  targetId: string,
+  animations: AttackAnimation[],
+): { attackerDestroyed: boolean; targetDestroyed: boolean } {
+  applyCombatDamage(attacker, targetMinion, attackerId, targetId, animations);
+  applyCombatDamage(targetMinion, attacker, targetId, attackerId, animations);
+
+  const targetDestroyed = (targetMinion.currentHealth ?? 0) <= 0;
+  const attackerDestroyed = (attacker.currentHealth ?? 0) <= 0;
+  if (targetDestroyed) {
+    animations.push({ type: 'death', sourceId: attackerId, targetId });
+  }
+  if (attackerDestroyed) {
+    animations.push({ type: 'death', sourceId: targetId, targetId: attackerId });
+  }
+
+  return { attackerDestroyed, targetDestroyed };
+}
+
+function applyCombatDamage(
+  source: CardInstance,
+  target: CardInstance,
+  sourceId: string,
+  targetId: string,
+  animations: AttackAnimation[],
+): void {
+  const mutableTarget = target;
+  if (mutableTarget.hasDivineShield) {
+    mutableTarget.hasDivineShield = false;
+    return;
+  }
+
+  if (mutableTarget.currentHealth !== undefined) {
+    mutableTarget.currentHealth -= getCombatDamage(source);
+  }
+
+  animations.push({ type: 'damage', sourceId, targetId });
+}
+
+function finalizeAttackerAfterAttack(
+  state: GameState,
+  attackerId: string,
+  attackerDestroyed: boolean,
+): GameState {
+  if (attackerDestroyed) {
+    return destroyCard(state, attackerId, 'player');
+  }
+
+  const updatedAttackerIndex = state.players.player.battlefield.findIndex(
+    card => card.instanceId === attackerId
+  );
+  if (updatedAttackerIndex === -1) {
+    return state;
+  }
+
+  const battlefield = state.players.player.battlefield.slice();
+  const updatedAttacker = battlefield[updatedAttackerIndex];
+  const attacksPerformed = (updatedAttacker.attacksPerformed || 0) + 1;
+  const maxAttacks = hasKeyword(updatedAttacker, 'windfury') ? 2 : 1;
+
+  battlefield[updatedAttackerIndex] = {
+    ...updatedAttacker,
+    attacksPerformed,
+    canAttack: attacksPerformed < maxAttacks,
+  };
+
+  return {
+    ...state,
+    players: {
+      ...state.players,
+      player: {
+        ...state.players.player,
+        battlefield,
+      },
+    },
+  };
+}

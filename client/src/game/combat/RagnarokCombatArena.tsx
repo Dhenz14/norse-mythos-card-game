@@ -7,7 +7,8 @@ import {
   CombatAction,
   PokerCard,
   PokerHandRank,
-  getCombinedHandName
+  type PetData,
+  type ElementType,
 } from '../types/PokerCombatTypes';
 import { evaluatePokerHand } from '../stores/combat/pokerCombatSlice';
 import SimpleBattlefield from '../components/SimpleBattlefield';
@@ -18,7 +19,6 @@ import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
 import { Position } from '../types/Position';
 import { TargetingOverlay } from '../components/TargetingOverlay';
 import { CardBurnOverlay } from '../components/CardBurnOverlay';
-import { useUnifiedUIStore } from '../stores/unifiedUIStore';
 import { ActionAnnouncement } from '../components/ActionAnnouncement';
 import './RagnarokCombatArena.css';
 import './GameViewport.css';
@@ -26,7 +26,6 @@ import AIAttackAnimationProcessor from '../components/AIAttackAnimationProcessor
 import { PixiParticleCanvas } from '../animations/PixiParticleCanvas';
 
 import { AnimationOverlay } from '../components/AnimationOverlay';
-import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { ShowdownCelebration } from './components/ShowdownCelebration';
 import { TargetingPrompt } from './components/TargetingPrompt';
 import { HeroPowerPrompt } from './components/HeroPowerPrompt';
@@ -43,10 +42,7 @@ import { ElementBuffPopup } from './components/ElementBuffPopup';
 import { ElementMatchupBanner } from './components/ElementMatchupBanner';
 import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
 import { PhaseBanner } from './components/PhaseBanner';
-import { RiskDisplay } from './components/PotDisplay';
-import { WagerEffectsHUD } from './components/WagerEffectsHUD';
 import { useElementalBuff } from './hooks/useElementalBuff';
-import { canCardAttack as canCardAttackCheck } from './attackUtils';
 import { GameViewport } from './GameViewport';
 import { useSettingsStore } from '../stores/settingsStore';
 import CardRenderer from '../components/CardRendering/CardRenderer';
@@ -56,7 +52,6 @@ import { KingPassivePopup } from './components/KingPassivePopup';
 import type { ShowdownCelebration as ShowdownCelebrationState } from './hooks/useCombatEvents';
 import { isCardInWinningHand } from './utils/combatArenaUtils';
 import { debug } from '../config/debugConfig';
-import { playSound } from '../utils/soundUtils';
 import { GameLog } from '../components/GameLog';
 import { useGameLogIntegration } from '../hooks/useGameLogIntegration';
 import { usePokerDrama } from './hooks/usePokerDrama';
@@ -70,6 +65,17 @@ import { usePokerCardClickHandlers } from './hooks/usePokerCardClickHandlers';
 import { usePokerKeyboardShortcuts } from './hooks/usePokerKeyboardShortcuts';
 import { useRealmAnnouncement } from './hooks/useRealmAnnouncement';
 import { useHeroHealthEffects } from './hooks/useHeroHealthEffects';
+import { useAudio } from '../../lib/stores/useAudio';
+import { BossQuipBubble } from './components/BossQuipBubble';
+import { BossPhaseFlash } from './components/BossPhaseFlash';
+import { PhasePipIndicator } from './components/PhasePipIndicator';
+import type { BossPhaseFlash as BossPhaseFlashKind } from '../campaign/campaignTypes';
+import { useBossPhases } from './hooks/useBossPhases';
+import { useCampaignStore, getMission } from '../campaign';
+import { isBettingPhase } from './modules/PhaseManager';
+import { resolveHeroPortrait } from '../utils/art/artMapping';
+import { getHeroFeud } from '../pvp/pvpData';
+import type { CardInstance } from '../types';
 
 const SwordIcon = () => (
 	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -98,6 +104,107 @@ const HelmIcon = () => (
 	</svg>
 );
 
+const CardFanIcon = () => (
+	<svg className="btn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+		<path d="M5.2 4.6 10.1 3a1.7 1.7 0 0 1 2.1 1.1l2.2 6.8a1.7 1.7 0 0 1-1.1 2.1l-4.9 1.6a1.7 1.7 0 0 1-2.1-1.1L4 6.7a1.7 1.7 0 0 1 1.2-2.1Z"/>
+		<path d="m8.3 6.5 3.8-1.2"/>
+		<path d="m9.1 9 3.7-1.2"/>
+		<path d="M12.7 6.6 14.2 6a1.7 1.7 0 0 1 2.1 1.1l1.1 3.6a1.7 1.7 0 0 1-1.1 2.1l-1.7.6"/>
+	</svg>
+);
+
+const CloseIcon = () => (
+	<svg className="btn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+		<path d="M5 5l10 10" />
+		<path d="M15 5 5 15" />
+	</svg>
+);
+
+const PHASE_LABELS: Partial<Record<CombatPhase, string>> = {
+	[CombatPhase.MULLIGAN]: 'Mulligan',
+	[CombatPhase.SPELL_PET]: 'Spellcraft',
+	[CombatPhase.PRE_FLOP]: 'First Blood',
+	[CombatPhase.FAITH]: 'Faith',
+	[CombatPhase.FORESIGHT]: 'Foresight',
+	[CombatPhase.DESTINY]: 'Destiny',
+	[CombatPhase.RESOLUTION]: 'Showdown',
+	[CombatPhase.FIRST_STRIKE]: 'First Strike',
+};
+
+const WAGER_DESCRIPTIONS: Record<string, string> = {
+	double_blinds: 'Blinds doubled',
+	reduce_fold_penalty: 'Fold penalty reduced',
+	showdown_coin_flip: 'Bonus showdown coin flip',
+	increase_min_bet: 'Minimum bet increased',
+	hide_actions: 'Betting actions obscured',
+	peek_next_card: 'Peek next community card',
+	all_in_bonus: 'All-in damage bonus',
+	showdown_armor: 'Showdown win grants armor',
+	strong_hand_draw: 'Strong hands draw cards',
+	showdown_aoe: 'Showdown hits the whole board',
+	fold_heal: 'Enemy folds heal you',
+	all_in_buff: 'All-in buffs minions',
+	hand_rank_up: 'Hand rank increased',
+	showdown_rank_damage: 'Showdown damage scales with rank',
+	see_hole_cards: 'See enemy hole cards',
+	double_showdown: 'Showdown stakes doubled',
+};
+
+const BATTLE_INTEL_GLYPHS: Record<string, string> = {
+	buff_all_attack: 'ATK',
+	debuff_all_attack: 'WEAK',
+	buff_all_health: 'VIT',
+	damage_all_end_turn: 'BURN',
+	heal_all_start_turn: 'HEAL',
+	cost_increase: 'COST',
+	keyword_grant: 'KEY',
+	return_to_hand_on_death: 'RETURN',
+	stealth_on_play: 'SHADE',
+};
+
+function getBattleIntelGlyph(effectType: string): string {
+	return BATTLE_INTEL_GLYPHS[effectType] ?? 'AURA';
+}
+
+type WagerEffectCard = {
+	wagerEffect?: {
+		type?: string;
+	};
+};
+
+type CombatZonePosition = {
+	row?: number;
+	col?: number;
+};
+
+type ExtendedCardData = CardInstance['card'] & {
+	health?: number;
+	attack?: number;
+	petStage?: string;
+	evolvesFrom?: number;
+	petFamily?: string;
+};
+
+function asExtendedCardData(card: CardInstance['card']): ExtendedCardData {
+	return card as ExtendedCardData;
+}
+
+function getCombatUnitHealth(card: CardInstance): number {
+	return asExtendedCardData(card.card).health ?? card.currentHealth ?? 0;
+}
+
+function getCombatHeroClass(combatant: unknown): string | undefined {
+	if (!combatant || typeof combatant !== 'object') {
+		return undefined;
+	}
+
+	return (combatant as { heroClass?: string }).heroClass;
+}
+
+function getCombatElement(element?: ElementType | string): ElementType {
+	return (element as ElementType | undefined) ?? 'neutral';
+}
+
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
 }
@@ -125,13 +232,13 @@ interface UnifiedCombatArenaProps {
   opponentMana: number;
   opponentMaxMana: number;
   // Hero props
-  playerPet?: any; // eslint-disable-line @typescript-eslint/no-explicit-any -- PetData | CardInstance union
-  opponentPet?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  playerPet?: PetData;
+  opponentPet?: PetData;
   playerHpCommitted?: number;
   opponentHpCommitted?: number;
   playerLevel?: number;
   opponentLevel?: number;
-  playerSecrets?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  playerSecrets?: CardInstance[];
   playerHeroClass?: string;
   // Hero power
   onHeroPowerClick?: () => void;
@@ -148,18 +255,22 @@ interface UnifiedCombatArenaProps {
     heroName: string;
     manaCost: number;
   } | null;
-  executeHeroPowerEffect?: (norseHero: any, heroPower: any, target: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+  executeHeroPowerEffect?: (norseHero: unknown, heroPower: unknown, target: unknown) => void;
   // Hand props
-  handCards?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  handCards?: CardInstance[];
   handCurrentMana?: number;
   handIsPlayerTurn?: boolean;
-  onCardPlay?: (card: any, target?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
-  registerCardPosition?: (card: any, position: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+  onCardPlay?: (card: CardInstance, position?: CombatZonePosition) => void;
+  registerCardPosition?: (card: CardInstance, position: Position) => void;
   battlefieldRef?: React.RefObject<HTMLDivElement | null>;
+  // Boss dialogue (campaign mode only) — owned by parent RagnarokCombatArena
+  bossQuipText?: string | null;
+  bossQuipKey?: number;
+  bossPortrait?: string;
 }
 
 const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
-  onAction, onEndTurn, betAmount, setBetAmount, showdownCelebration,
+  onAction, betAmount, setBetAmount, showdownCelebration,
   onOpponentHeroClick, onPlayerHeroClick, isOpponentTargetable = false, isPlayerTargetable = false,
   playerMana, playerMaxMana, opponentMana, opponentMaxMana,
   playerPet, opponentPet, playerHpCommitted = 0, opponentHpCommitted = 0,
@@ -167,12 +278,13 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   onHeroPowerClick, onWeaponUpgradeClick, isWeaponUpgraded = false,
   heroPowerTargeting, executeHeroPowerEffect,
   handCards = [], handCurrentMana = 0, handIsPlayerTurn = false,
-  onCardPlay, registerCardPosition, battlefieldRef: externalBattlefieldRef
+  onCardPlay, registerCardPosition, battlefieldRef: externalBattlefieldRef,
+  bossQuipText = null, bossQuipKey = 0, bossPortrait,
 }) => {
   const noopRegisterCardPosition = useCallback(() => {}, []);
 
   // Subscribe directly to adapter for reactive updates
-  const { combatState, applyDirectDamage } = usePokerCombatAdapter();
+  const { combatState } = usePokerCombatAdapter();
   
   // Game state for battlefield — use individual selectors to avoid unnecessary re-renders
   const gameState = useGameStore(s => s.gameState);
@@ -202,16 +314,12 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   // Refs for battlefield
   const internalBattlefieldRef = useRef<HTMLDivElement>(null);
   const battlefieldRef = externalBattlefieldRef || internalBattlefieldRef;
-  const minionPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
-  const prevMinionPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
 
   // Extracted hooks
   const {
     damageAnimations,
     shakingTargets,
-    screenShakeClass,
     prevHealthRef,
-    triggerScreenShake,
     triggerDamageAnimation,
     removeDamageAnimation,
     addShakingTarget,
@@ -221,27 +329,30 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   
   // Battlefield card data
   const playerBattlefield = useMemo(() => {
-    const cards = gameState?.players?.player?.battlefield || [];
-    return cards.map((card: any) => adaptCardInstance(card));
+    const cards = (gameState?.players?.player?.battlefield ?? []) as CardInstance[];
+    return cards.map(card => adaptCardInstance(card));
   }, [gameState?.players?.player?.battlefield]);
   
   const opponentBattlefield = useMemo(() => {
-    const cards = gameState?.players?.opponent?.battlefield || [];
-    return cards.map((card: any) => adaptCardInstance(card));
+    const cards = (gameState?.players?.opponent?.battlefield ?? []) as CardInstance[];
+    return cards.map(card => adaptCardInstance(card));
   }, [gameState?.players?.opponent?.battlefield]);
   
   const evolveReadyIds = useMemo(() => {
     const ids = new Set<string>();
-    const bf = gameState?.players?.player?.battlefield;
-    if (!bf || !handCards) return ids;
-    const readyPets = bf.filter((m: any) => m.petEvolutionMet === true);
+    const bf = (gameState?.players?.player?.battlefield ?? []) as CardInstance[];
+    if (bf.length === 0 || handCards.length === 0) return ids;
+    const readyPets = bf.filter(card => card.petEvolutionMet === true);
     if (readyPets.length === 0) return ids;
     for (const hc of handCards) {
-      const cd = (hc as any).card || hc;
+      const cd = asExtendedCardData(hc.card);
       if (cd?.petStage === 'adept' && cd.evolvesFrom) {
-        if (readyPets.some((m: any) => m.card?.id === cd.evolvesFrom)) ids.add((hc as any).instanceId);
+        if (readyPets.some(card => card.card?.id === cd.evolvesFrom)) ids.add(hc.instanceId);
       } else if (cd?.petStage === 'master' && cd.petFamily) {
-        if (readyPets.some((m: any) => (m.card as any)?.petFamily === cd.petFamily && (m.card as any)?.petStage === 'adept')) ids.add((hc as any).instanceId);
+        if (readyPets.some(card => {
+          const readyCardData = asExtendedCardData(card.card);
+          return readyCardData.petFamily === cd.petFamily && readyCardData.petStage === 'adept';
+        })) ids.add(hc.instanceId);
       }
     }
     return ids;
@@ -274,7 +385,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 
   const rawAttackingCard = useGameStore(s => s.attackingCard);
   const attackingCard = useMemo(() => {
-    return rawAttackingCard ? adaptCardInstance(rawAttackingCard as any) : null;
+    return rawAttackingCard ? adaptCardInstance(rawAttackingCard as CardInstance) : null;
   }, [rawAttackingCard]);
 
   // Turn transition flash
@@ -296,13 +407,13 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     const player = gameState.players.player;
     const opponent = gameState.players.opponent;
 
-    const currentSnapshot: HealthSnapshot = {
+      const currentSnapshot: HealthSnapshot = {
       playerHeroHealth: player.heroHealth ?? player.health,
       playerHeroArmor: player.heroArmor ?? 0,
       opponentHeroHealth: opponent.heroHealth ?? opponent.health,
       opponentHeroArmor: opponent.heroArmor ?? 0,
-      playerMinions: new Map(player.battlefield.map(m => [m.instanceId, (m.card as any)?.health ?? (m as any).currentHealth ?? 0])),
-      opponentMinions: new Map(opponent.battlefield.map(m => [m.instanceId, (m.card as any)?.health ?? (m as any).currentHealth ?? 0]))
+      playerMinions: new Map(player.battlefield.map(m => [m.instanceId, getCombatUnitHealth(m)])),
+      opponentMinions: new Map(opponent.battlefield.map(m => [m.instanceId, getCombatUnitHealth(m)]))
     };
 
     const prev = prevHealthRef.current;
@@ -384,22 +495,38 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     gameState,
   });
   
-  // M1: Subscribe reactively so toggling the setting mid-combat updates the UI
-  const showDamageNumbers = useSettingsStore(s => s.showDamageNumbers);
-
   const basePermissions = useMemo(
     () => getActionPermissions(combatState, true),
     [combatState]
   );
 
-  // Compute phase derivations safely (handle null combatState)
-  const isMulligan = combatState?.phase === CombatPhase.MULLIGAN;
-  const phaseAllowsFaith = !!combatState && !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
-  const showFaith = phaseAllowsFaith && communityCardsRevealed;
-  const showForesight = !!combatState && communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
-  const showDestiny = !!combatState && communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
+  // Early return if no combat state
+  if (!combatState) {
+    return <div className="unified-combat-arena">Loading...</div>;
+  }
 
-  const disabled = isMulligan || !basePermissions?.isMyTurnToAct;
+  const isMulligan = combatState.phase === CombatPhase.MULLIGAN;
+  const isBettingRound = isBettingPhase(combatState.phase);
+  const showBettingControls = !isMulligan && isBettingRound && !combatState.isAllInShowdown;
+  const showSetupCadence = !isMulligan && !isBettingRound && combatState.phase !== CombatPhase.RESOLUTION && !combatState.isAllInShowdown;
+  const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
+  const showFaith = phaseAllowsFaith && communityCardsRevealed;
+  const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
+  const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
+  const currentPhaseLabel = PHASE_LABELS[combatState.phase] || combatState.phase.replace(/_/g, ' ');
+  const setupCadenceTitle = combatState.phase === CombatPhase.SPELL_PET
+    ? 'Shape the board before the wager opens'
+    : 'Opening effects are resolving';
+  const setupCadenceCopy = combatState.phase === CombatPhase.SPELL_PET
+    ? (isPlayerTurn
+        ? 'Play cards, use hero powers, and establish the frontline. Betting will open automatically when the spellcraft window closes.'
+        : 'The opponent is completing their spellcraft window. Watch the board settle before the next wager.')
+    : 'The arena is resolving the opening cadence before regular betting begins.';
+  const bettingCadenceCopy = basePermissions?.waitingForOpponent
+    ? 'The opponent is deciding how much life to commit.'
+    : basePermissions?.hasBetToCall
+      ? 'Answer the current wager or raise the stakes.'
+      : 'Open the hand by choosing how much health to commit.';
 
   const playerHandEval = useMemo(() => {
     if (!combatState || isMulligan) return null;
@@ -412,7 +539,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     ];
     if (community.length === 0 && holeCards.length < 5) return null;
     return evaluatePokerHand(holeCards, community);
-  }, [combatState, showFaith, showForesight, showDestiny, isMulligan]);
+  }, [combatState?.player?.holeCards, combatState?.communityCards, showFaith, showForesight, showDestiny, isMulligan]);
 
   const handStrengthClass = useMemo(() => {
     if (!playerHandEval) return 'weak';
@@ -428,11 +555,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     if (!playerHandEval) return 0;
     return Math.min(100, (playerHandEval.rank / PokerHandRank.RAGNAROK) * 100);
   }, [playerHandEval]);
-
-  // Early return AFTER all hooks have been called
-  if (!combatState) {
-    return <div className="unified-combat-arena">Loading...</div>;
-  }
 
   return (
     <div className="unified-combat-arena" ref={battlefieldRef as React.RefObject<HTMLDivElement>}>
@@ -453,6 +575,27 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       <div className={`unified-opponent-hero ${shakingTargets.has('opponent-hero') ? 'damage-shake damage-flash' : ''} ${!isPlayerTurn ? 'turn-active' : ''}`}>
         {opponentPet && (
           <div data-hero-role="opponent" className="opponent-hero-container">
+            {/* Boss dialogue bubble — campaign mode only, fires on combat
+                start and when opponent HP drops below 50%. Anchored left
+                of the hero portrait so it doesn't cover the face.
+                Text + key are owned by parent RagnarokCombatArena and
+                threaded through props because the campaign store + low-HP
+                effects can't be hooked from inside this presentational
+                subcomponent (it doesn't see useCampaignStore directly). */}
+            <BossQuipBubble
+              text={bossQuipText}
+              speakerName={opponentPet?.name}
+              speakerPortrait={bossPortrait}
+              triggerKey={bossQuipKey}
+            />
+            {/* Phase pip strip — only renders if the current campaign mission
+                has bossPhases declared. Renders nothing on non-boss / PvP /
+                non-campaign matches. Reads HP from the opponent pet stats so
+                the lit/unlit state stays in lockstep with phase fires. */}
+            <PhasePipIndicator
+              opponentCurrentHP={enrichedOpponentPet?.stats?.currentHealth ?? 0}
+              opponentMaxHP={enrichedOpponentPet?.stats?.maxHealth ?? 0}
+            />
             <BattlefieldHero
               pet={enrichedOpponentPet}
               hpCommitted={opponentHpCommitted}
@@ -534,7 +677,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Opponent Hand Display */}
       <div className="unified-opponent-hand">
         <div className="opponent-hand-display">
-          {(gameState?.players?.opponent?.hand || []).slice(0, 10).map((card: any, index: number) => (
+          {((gameState?.players?.opponent?.hand ?? []) as CardInstance[]).slice(0, 10).map((card, index: number) => (
             card.isRevealed ? (
               <div key={card.instanceId || `opp-revealed-${index}`} className="opponent-revealed-card scale-[0.4] -mx-8">
                 <CardRenderer card={card} isInHand={true} size="small" />
@@ -550,12 +693,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           )}
         </div>
       </div>
-      
-      {/* Risk Display - total HP at stake */}
-      <RiskDisplay risk={combatState.pot} hidden={isMulligan} />
-
-      {/* Wager Effects HUD — shows active wager keyword effects from battlefield */}
-      <WagerEffectsHUD />
       
       {/* Opponent Field */}
       <div className="unified-opponent-field">
@@ -593,7 +730,9 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Attack mode banner — shown while a minion is selected as attacker */}
       {attackingCard && (
         <div className="attack-mode-banner">
-          <span className="attack-mode-icon">⚔</span>
+          <span className="attack-mode-icon" aria-hidden="true">
+            <CrossedSwordsIcon />
+          </span>
           <span className="attack-mode-text">
             <strong>{attackingCard.card?.name}</strong> is attacking — click a target
           </span>
@@ -602,7 +741,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
             className="attack-mode-cancel"
             onClick={() => selectAttacker(null)}
           >
-            ✕ Cancel
+            <CloseIcon />
+            <span>Clear Target</span>
           </button>
         </div>
       )}
@@ -635,7 +775,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   isWeaponUpgraded={isWeaponUpgraded}
                   artifact={gameState?.players?.player?.artifact ? {
                     name: gameState.players.player.artifact.card.name,
-                    attack: (gameState.players.player.artifact.card as any).attack || 0
+                    attack: asExtendedCardData(gameState.players.player.artifact.card).attack || 0
                   } : undefined}
                 />
                 <div className="player-mana-display">
@@ -656,7 +796,9 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                 />
                 {playerHandEval && playerHandEval.rank > PokerHandRank.HIGH_CARD && (
                   <div className="hand-strength-compact">
-                    <span className="strength-icon">🃏</span>
+                    <span className="strength-icon" aria-hidden="true">
+                      <CardFanIcon />
+                    </span>
                     <span className={`strength-name ${handStrengthClass}`}>{playerHandEval.displayName}</span>
                     <div className="hand-strength-bar">
                       <div className={`hand-strength-fill ${handStrengthClass}`} style={{ transform: `scaleX(${handStrengthPercent / 100})` }} />
@@ -689,14 +831,52 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       </div>
       
-      {/* Betting Actions Row - BELOW hand cards per user request */}
-      {/* Always render during active betting phases (not mulligan/resolution) */}
-      {!isMulligan && combatState.phase !== CombatPhase.RESOLUTION && !combatState.isAllInShowdown && (
-        <div className="unified-betting-actions-container">
-          {/* HP Slider for Raise - On top, above buttons */}
-          <div className="poker-hp-slider-container">
+      {showSetupCadence && (
+        <div className={`phase-command-card ${isPlayerTurn ? 'player' : 'opponent'}`}>
+          <div className="phase-command-copy">
+            <span className="phase-command-kicker">{currentPhaseLabel}</span>
+            <span className="phase-command-title">{setupCadenceTitle}</span>
+            <span className="phase-command-text">{setupCadenceCopy}</span>
+          </div>
+          <div className="phase-command-pills">
+            <span className="phase-command-pill">{handCards.length} cards ready</span>
+            <span className="phase-command-pill">{playerBattlefield.length} allies deployed</span>
+            <span className="phase-command-pill">{playerMana}/{playerMaxMana} mana</span>
+          </div>
+        </div>
+      )}
 
-            <input 
+      {/* Betting Actions Row - BELOW hand cards per user request */}
+      {showBettingControls && (
+        <div className="unified-betting-actions-container">
+          <div className="betting-phase-brief">
+            <span className="betting-phase-kicker">{currentPhaseLabel}</span>
+            <span className="betting-phase-text">{bettingCadenceCopy}</span>
+          </div>
+          {/* HP Slider + Quick-bet presets */}
+          <div className="poker-hp-slider-container">
+            <div className="poker-quick-bets">
+              {[
+                { label: '25%', pct: 0.25 },
+                { label: '50%', pct: 0.50 },
+                { label: 'ALL', pct: 1.0 },
+              ].map(({ label, pct }) => {
+                const maxBet = basePermissions?.maxBetAmount || 100;
+                const qb = Math.max(basePermissions?.minBet || 1, Math.floor(maxBet * pct));
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    className={`quick-bet-btn ${label === 'ALL' ? 'all-in' : ''}`}
+                    onClick={() => setBetAmount(Math.min(qb, maxBet))}
+                    disabled={!basePermissions?.isMyTurnToAct}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <input
               type="range"
               min={basePermissions?.minBet || 1}
               max={basePermissions?.maxBetAmount || 100}
@@ -735,9 +915,10 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                        effectiveBet
                      )}
                      disabled={isDisabled || (hasBetToCall ? !actualCanRaise : !canBet)}
-                     title="Attack"
+                     title={hasBetToCall ? 'Raise — increase the stakes' : 'Bet — commit HP to the pot'}
                    >
                      <SwordIcon />
+                     <span className="btn-label">{hasBetToCall ? 'RAISE' : 'BET'}</span>
                      <span className="btn-text">{attackHP} HP</span>
                    </button>
 
@@ -745,15 +926,19 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      className="poker-btn call-btn"
                      onClick={() => wrappedOnAction(canCall ? CombatAction.ENGAGE : CombatAction.DEFEND)}
                      disabled={isDisabled || (!canCall && !canCheck)}
-                     title={canCall ? 'Engage' : 'Defend'}
+                     title={canCall ? 'Call — match the bet' : 'Check — pass without betting'}
                    >
                      {canCall ? (
                        <>
                          <CrossedSwordsIcon />
+                         <span className="btn-label">CALL</span>
                          <span className="btn-text">{isAllIn ? `ALL-IN ${callHP}` : `${callHP} HP`}</span>
                        </>
                      ) : (
-                       <HelmIcon />
+                       <>
+                         <HelmIcon />
+                         <span className="btn-label">CHECK</span>
+                       </>
                      )}
                    </button>
 
@@ -761,20 +946,21 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      className="poker-btn fold-btn"
                      onClick={() => wrappedOnAction(CombatAction.BRACE)}
                      disabled={isDisabled || !canFold}
-                     title="Brace"
+                     title="Fold — surrender this hand and lose committed HP"
                    >
                      <ShieldIcon />
+                     <span className="btn-label">FOLD</span>
                    </button>
 
-                   {!isMulligan && isPlayerTurn && playerBattlefield.length > 0 && (
+                   {isPlayerTurn && playerBattlefield.length > 0 && (
                      <button
                        type="button"
                        className="poker-btn auto-attack-btn"
                        onClick={() => autoAttackAll('minion')}
-                       title="Auto-attack all minions into enemy minions"
+                       title="Order the frontline to attack enemy minions automatically"
                      >
                        <CrossedSwordsIcon />
-                       <span className="btn-text">Auto</span>
+                       <span className="btn-text">Frontline</span>
                      </button>
                    )}
                  </div>
@@ -785,7 +971,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       )}
       
       {/* Damage Animations — gated by showDamageNumbers setting */}
-      {showDamageNumbers && damageAnimations.map(anim => (
+      {useSettingsStore.getState().showDamageNumbers && damageAnimations.map(anim => (
         <DamageIndicator
           key={anim.id}
           damage={anim.damage}
@@ -813,6 +999,132 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   useGameLogIntegration();
   useEventAnimationBridge();
   const resetKingEvents = useKingPassiveEventStore(s => s.reset);
+
+  /*
+    Combat music — start `battle_theme` for the duration of the combat
+    arena, swap to `victory`/`defeat` on game over, stop on unmount.
+    The Howler tracks are loaded with preload:false and wrapped in
+    try/catch in useAudio.tsx, so this is a safe no-op if the mp3 file
+    doesn't exist on disk yet.
+  */
+  const playBackgroundMusic = useAudio(s => s.playBackgroundMusic);
+  const stopBackgroundMusic = useAudio(s => s.stopBackgroundMusic);
+  const combatMusicMissionId = useCampaignStore(s => s.currentMission);
+  const combatMusicTrack = useMemo(() => {
+    if (!combatMusicMissionId) return 'battle_theme' as const;
+    const found = getMission(combatMusicMissionId);
+    return found?.mission?.combatMusicId ?? 'battle_theme';
+  }, [combatMusicMissionId]);
+  useEffect(() => {
+    playBackgroundMusic(combatMusicTrack);
+    return () => {
+      stopBackgroundMusic();
+    };
+  }, [playBackgroundMusic, stopBackgroundMusic, combatMusicTrack]);
+
+  /*
+    Boss quips — read the active campaign mission's optional bossQuips
+    field, then fire a transient bubble over the opponent hero portrait
+    on key combat events:
+      - Combat start (mount): onCombatStart
+      - Opponent HP crosses 50%: onLowHP (one-shot per combat)
+    Outside campaign mode (PvP, dev test), currentMissionId is null and
+    no bubble ever shows.
+
+    quipText drives BossQuipBubble; quipKey makes consecutive identical
+    quips re-trigger the animation.
+  */
+  const bossQuipMissionId = useCampaignStore(s => s.currentMission);
+  const bossQuips = useMemo(() => {
+    if (!bossQuipMissionId) return undefined;
+    const found = getMission(bossQuipMissionId);
+    return found?.mission?.bossQuips;
+  }, [bossQuipMissionId]);
+  // Resolve boss portrait URL once per mission so the bubble can render
+  // a face. Falls back to undefined for non-campaign / no-art bosses.
+  const bossPortrait = useMemo(() => {
+    if (!bossQuipMissionId) return undefined;
+    const found = getMission(bossQuipMissionId);
+    if (!found?.mission?.aiHeroId) return undefined;
+    return resolveHeroPortrait(found.mission.aiHeroId);
+  }, [bossQuipMissionId]);
+  const [quipText, setQuipText] = useState<string | null>(null);
+  const [quipKey, setQuipKey] = useState(0);
+  const lowHPQuipFiredRef = useRef(false);
+  const lethalQuipFiredRef = useRef(false);
+  const combatStartQuipFiredRef = useRef(false);
+
+  // Combat-start quip — fires once when the arena mounts with quips data.
+  useEffect(() => {
+    if (combatStartQuipFiredRef.current) return;
+    if (!bossQuips?.onCombatStart) return;
+    combatStartQuipFiredRef.current = true;
+    setQuipText(bossQuips.onCombatStart);
+    setQuipKey(k => k + 1);
+  }, [bossQuips]);
+
+  // Low-HP quip — fires once when opponent crosses 50% HP.
+  // Reads opponent HP directly from gameStore here (the canonical
+  // destructure happens later in the file but we need it earlier so the
+  // quip can fire as soon as the threshold is crossed).
+  const quipOpponentHP = useGameStore(state => {
+    const p = state.gameState?.players?.opponent;
+    return p ? (p.heroHealth ?? p.health) : 100;
+  });
+  const quipOpponentMaxHP = useGameStore(state => {
+    const p = state.gameState?.players?.opponent;
+    return p?.maxHealth ?? 100;
+  });
+  useEffect(() => {
+    if (lowHPQuipFiredRef.current) return;
+    if (!bossQuips?.onLowHP) return;
+    if (quipOpponentMaxHP <= 0) return;
+    if (quipOpponentHP / quipOpponentMaxHP > 0.5) return;
+    lowHPQuipFiredRef.current = true;
+    setQuipText(bossQuips.onLowHP);
+    setQuipKey(k => k + 1);
+  }, [bossQuips, quipOpponentHP, quipOpponentMaxHP]);
+
+  // Lethal quip — fires once when opponent crosses 15% HP (boss's last
+  // defiant words before death). Only fires if the low-HP quip already
+  // fired (prevents both hitting in the same frame on a spike).
+  useEffect(() => {
+    if (lethalQuipFiredRef.current) return;
+    if (!lowHPQuipFiredRef.current) return;
+    if (!bossQuips?.onLethal) return;
+    if (quipOpponentMaxHP <= 0) return;
+    if (quipOpponentHP / quipOpponentMaxHP > 0.15) return;
+    lethalQuipFiredRef.current = true;
+    setQuipText(bossQuips.onLethal);
+    setQuipKey(k => k + 1);
+  }, [bossQuips, quipOpponentHP, quipOpponentMaxHP]);
+
+  /*
+    Boss phases — mid-combat escalation. Watches opponent HP and fires
+    each phase exactly once when its hpPercent threshold is crossed.
+    Phases drive THREE things: a quip (story), a screen flash (visual),
+    and a mechanical effect (gameplay). Defined per-mission via
+    mission.bossPhases. See campaignTypes.ts BossPhase for the schema
+    and useBossPhases.ts for the runner.
+  */
+  const [phaseFlash, setPhaseFlash] = useState<BossPhaseFlashKind | null>(null);
+  useBossPhases({
+    opponentCurrentHP: quipOpponentHP,
+    opponentMaxHP: quipOpponentMaxHP,
+    setQuipText,
+    setQuipKey,
+    setFlash: setPhaseFlash,
+  });
+
+  /*
+    Hero feud taunt — in PvP, when two heroes with a canonical rivalry
+    meet (Loki vs Thor, Odin vs Fenrir, etc.), fire a one-time taunt
+    quip 2s after combat start. Only in non-campaign mode (campaign has
+    its own boss quip system). Reads hero IDs from combatState once
+    available.
+  */
+  const feudFiredRef = useRef(false);
+  const feudTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     combatState,
@@ -868,6 +1180,27 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     }
   }, [combatState]);
 
+  // Hero feud taunt — fires 2.5s after combat start in PvP if heroes
+  // have a canonical rivalry. Delayed so it doesn't collide with boss quips.
+  useEffect(() => {
+    if (feudFiredRef.current) return;
+    if (!combatState) return;
+    if (bossQuipMissionId) return; // campaign has its own quip system
+    const playerHero = combatState.player?.pet?.norseHeroId;
+    const opponentHero = combatState.opponent?.pet?.norseHeroId;
+    if (!playerHero || !opponentHero) return;
+    const feud = getHeroFeud(playerHero, opponentHero);
+    if (!feud) return;
+    feudFiredRef.current = true;
+    // Show tagline first, then the opponent's quip directed at the player
+    feudTimerRef.current = setTimeout(() => {
+      const opponentQuip = playerHero < opponentHero ? feud.bQuip : feud.aQuip;
+      setQuipText(opponentQuip);
+      setQuipKey(k => k + 1);
+    }, 2500);
+    return () => { if (feudTimerRef.current) clearTimeout(feudTimerRef.current); };
+  }, [combatState, bossQuipMissionId]);
+
   useEffect(() => {
     return () => { resetKingEvents(); };
   }, [resetKingEvents]);
@@ -881,6 +1214,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   // Realm effects
   const activeRealmEffects = useGameStore(state => state.gameState?.activeRealm?.effects);
   const activeRealmDescription = useGameStore(state => state.gameState?.activeRealm?.description);
+  const gamePlayers = useGameStore(state => state.gameState?.players);
 
   // HUD selectors
   const gamePhase = useGameStore(state => state.gameState?.gamePhase);
@@ -901,6 +1235,42 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     const p = state.gameState?.players?.opponent;
     return p ? (p.heroHealth ?? p.health) : 0;
   });
+  const [battleIntelOpen, setBattleIntelOpen] = useState(false);
+
+  const wagerIntel = useMemo(() => {
+    const result: { player: Array<{ cardName: string; description: string }>; opponent: Array<{ cardName: string; description: string }> } = {
+      player: [],
+      opponent: [],
+    };
+    if (!gamePlayers) return result;
+
+    for (const side of ['player', 'opponent'] as const) {
+      const battlefield = gamePlayers[side]?.battlefield || [];
+      for (const minion of battlefield) {
+        const wager = (minion.card as WagerEffectCard | undefined)?.wagerEffect;
+        if (!wager?.type) continue;
+        result[side].push({
+          cardName: minion.card?.name || 'Unknown',
+          description: WAGER_DESCRIPTIONS[wager.type] || wager.type.replace(/_/g, ' '),
+        });
+      }
+    }
+    return result;
+  }, [gamePlayers]);
+
+  const activeProphecies = prophecies ?? [];
+  const activeRealmModifiers = activeRealmEffects ?? [];
+  const totalBattleIntelItems = activeRealmModifiers.length + activeProphecies.length + wagerIntel.player.length + wagerIntel.opponent.length;
+  const hasBattleIntel = totalBattleIntelItems > 0;
+  const currentPhaseLabel = combatState?.phase
+    ? PHASE_LABELS[combatState.phase] || combatState.phase.replace(/_/g, ' ')
+    : 'Battle Ready';
+
+  useEffect(() => {
+    if (!hasBattleIntel) {
+      setBattleIntelOpen(false);
+    }
+  }, [hasBattleIntel]);
 
   // Screen shake in the outer component (extracted to hook)
   const { outerShakeClass } = useHeroHealthEffects({ playerHeroHealth, opponentHeroHealth });
@@ -949,7 +1319,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         {/* Hourglass Timer at Top Center */}
         {(() => {
           const t = combatState.turnTimer;
-          const maxT = combatState.maxTurnTime || 60;
+          const maxT = 30;
           const pct = Math.max(0, Math.min(1, t / maxT));
           const topH = pct * 30;
           const botH = (1 - pct) * 30;
@@ -1101,41 +1471,78 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           </div>
         )}
 
-        {/* Realm effects breakdown */}
-        {activeRealmId && activeRealmEffects && activeRealmEffects.length > 0 && (
-          <div className="realm-effects-panel">
-            <div className="realm-effects-title">{activeRealmName || activeRealmId}</div>
-            {activeRealmDescription && <div className="realm-effects-desc">{activeRealmDescription}</div>}
-            {activeRealmEffects.map((eff, i) => (
-              <div key={i} className={`realm-effect-row ${eff.target}`}>
-                <span className="realm-effect-icon">
-                  {eff.type === 'buff_all_attack' ? '⚔️' :
-                   eff.type === 'debuff_all_attack' ? '⬇️' :
-                   eff.type === 'damage_all_end_turn' ? '🔥' :
-                   eff.type === 'heal_all_start_turn' ? '💚' :
-                   eff.type === 'cost_increase' ? '💎' :
-                   eff.type === 'keyword_grant' ? '✨' :
-                   eff.type === 'return_to_hand_on_death' ? '🔄' :
-                   eff.type === 'stealth_on_play' ? '👤' : '⚡'}
-                </span>
-                <span className="realm-effect-text">
-                  {eff.type.replace(/_/g, ' ')} {eff.value > 0 ? `+${eff.value}` : ''} ({eff.target})
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+        {hasBattleIntel && (
+          <div className={`battle-intel ${battleIntelOpen ? 'open' : ''}`}>
+            <button
+              type="button"
+              className="battle-intel-toggle"
+              onClick={() => setBattleIntelOpen((prev) => !prev)}
+            >
+              <span className="battle-intel-toggle-label">Battle Intel</span>
+              <span className="battle-intel-toggle-count">{totalBattleIntelItems}</span>
+            </button>
 
-        {/* Prophecy tracker */}
-        {prophecies && prophecies.length > 0 && (
-          <div className="prophecy-tracker">
-            <div className="prophecy-tracker-title">Active Prophecies</div>
-            {prophecies.map(p => (
-              <div key={p.id} className={`prophecy-entry ${p.turnsRemaining <= 1 ? 'prophecy-imminent' : ''}`}>
-                <span className="prophecy-name">{p.name}</span>
-                <span className="prophecy-countdown">{p.turnsRemaining}</span>
-              </div>
-            ))}
+            <AnimatePresence>
+              {battleIntelOpen && (
+                <motion.div
+                  className="battle-intel-panel"
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                >
+                  {activeRealmId && (
+                    <section className="battle-intel-section">
+                      <div className="battle-intel-section-title">Realm</div>
+                      <div className="battle-intel-emphasis">{activeRealmName || activeRealmId}</div>
+                      {activeRealmDescription && (
+                        <div className="battle-intel-copy">{activeRealmDescription}</div>
+                      )}
+                      {activeRealmModifiers.map((eff, index) => (
+                        <div key={`${eff.type}-${index}`} className={`battle-intel-row with-icon ${eff.target}`}>
+                          <span className="battle-intel-row-icon">{getBattleIntelGlyph(eff.type)}</span>
+                          <span className="battle-intel-row-text">
+                            {eff.type.replace(/_/g, ' ')}{eff.value > 0 ? ` +${eff.value}` : ''} ({eff.target})
+                          </span>
+                        </div>
+                      ))}
+                    </section>
+                  )}
+
+                  {activeProphecies.length > 0 && (
+                    <section className="battle-intel-section">
+                      <div className="battle-intel-section-title">Prophecies</div>
+                      {activeProphecies.map((prophecy) => (
+                        <div key={prophecy.id} className={`battle-intel-row ${prophecy.turnsRemaining <= 1 ? 'imminent' : ''}`}>
+                          <span className="battle-intel-row-text">{prophecy.name}</span>
+                          <span className="battle-intel-timer">{prophecy.turnsRemaining}</span>
+                        </div>
+                      ))}
+                    </section>
+                  )}
+
+                  {(wagerIntel.player.length > 0 || wagerIntel.opponent.length > 0) && (
+                    <section className="battle-intel-section">
+                      <div className="battle-intel-section-title">Wagers</div>
+                      {wagerIntel.player.map((effect) => (
+                        <div key={`player-${effect.cardName}-${effect.description}`} className="battle-intel-row with-icon player">
+                          <span className="battle-intel-row-icon">WGR</span>
+                          <span className="battle-intel-row-text">{effect.description}</span>
+                          <span className="battle-intel-source">{effect.cardName}</span>
+                        </div>
+                      ))}
+                      {wagerIntel.opponent.map((effect) => (
+                        <div key={`opponent-${effect.cardName}-${effect.description}`} className="battle-intel-row with-icon opponent">
+                          <span className="battle-intel-row-icon">WGR</span>
+                          <span className="battle-intel-row-text">{effect.description}</span>
+                          <span className="battle-intel-source">{effect.cardName}</span>
+                        </div>
+                      ))}
+                    </section>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
@@ -1177,7 +1584,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             playerLevel={combatState.player.pet?.stats?.level ?? 1}
             opponentLevel={combatState.opponent.pet?.stats?.level ?? 1}
             playerSecrets={[]}
-            playerHeroClass={(combatState.player as any).heroClass ?? 'neutral'}
+            playerHeroClass={getCombatHeroClass(combatState.player) ?? 'neutral'}
             onHeroPowerClick={handleHeroPower}
             onWeaponUpgradeClick={handleWeaponUpgrade}
             isWeaponUpgraded={weaponUpgraded}
@@ -1189,12 +1596,17 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             onCardPlay={sharedHandleCardPlay}
             registerCardPosition={sharedRegisterCardPosition}
             battlefieldRef={sharedBattlefieldRef}
+            bossQuipText={quipText}
+            bossQuipKey={quipKey}
+            bossPortrait={bossPortrait}
           />
         </div>
 
       <TargetingOverlay />
       <CardBurnOverlay />
       <ActionAnnouncement />
+      {/* Boss phase screen-flash overlay — fires from useBossPhases */}
+      <BossPhaseFlash flash={phaseFlash} />
       {heroBattlePopups.map(popup => (
         <HeroBattlePopup key={popup.id} popup={popup} onComplete={removeHeroBattlePopup} />
       ))}
@@ -1224,7 +1636,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           show={!!elementalBuff.pendingMinionBuff}
           attackBonus={elementalBuff.pendingMinionBuff.attackBonus}
           healthBonus={elementalBuff.pendingMinionBuff.healthBonus}
-          element={elementalBuff.pendingMinionBuff.element as any}
+          element={getCombatElement(elementalBuff.pendingMinionBuff.element)}
           position={elementalBuff.pendingMinionBuff.owner === 'player' ? 'left' : 'right'}
           onComplete={elementalBuff.clearMinionBuffNotification}
         />
@@ -1233,8 +1645,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       {/* Element Matchup Banner - shows at combat start */}
       {showMatchupBanner && combatState && (
         <ElementMatchupBanner
-          playerElement={(combatState.player?.pet?.stats?.element || 'neutral') as any}
-          opponentElement={(combatState.opponent?.pet?.stats?.element || 'neutral') as any}
+          playerElement={getCombatElement(combatState.player?.pet?.stats?.element)}
+          opponentElement={getCombatElement(combatState.opponent?.pet?.stats?.element)}
           playerHasAdvantage={elementalBuff.playerHasAdvantage}
           opponentHasAdvantage={elementalBuff.opponentHasAdvantage}
           attackBonus={elementalBuff.playerBuff?.attackBonus ?? elementalBuff.opponentBuff?.attackBonus ?? 2}
@@ -1307,8 +1719,13 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         playerDeckCount={playerDeckCount}
         opponentDeckCount={opponentDeckCount}
         opponentHandCount={opponentHandCount}
-        playerElement={combatState ? (combatState.player?.pet?.stats?.element as any) : undefined}
-        opponentElement={combatState ? (combatState.opponent?.pet?.stats?.element as any) : undefined}
+        phaseLabel={currentPhaseLabel}
+        pot={combatState?.pot ?? 0}
+        playerCommitted={combatState?.player.hpCommitted ?? 0}
+        opponentCommitted={combatState?.opponent.hpCommitted ?? 0}
+        isPlayerTurn={currentTurnForBanner === 'player'}
+        playerElement={combatState ? getCombatElement(combatState.player?.pet?.stats?.element) : undefined}
+        opponentElement={combatState ? getCombatElement(combatState.opponent?.pet?.stats?.element) : undefined}
         playerHasAdvantage={elementalBuff.playerHasAdvantage}
         opponentHasAdvantage={elementalBuff.opponentHasAdvantage}
       />
@@ -1318,8 +1735,14 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         isVisible={gamePhase === 'game_over'}
         winner={gameWinner === 'player' ? 'player' : gameWinner === 'opponent' ? 'opponent' : 'draw'}
         turnNumber={turnNumber}
+        playerHeroName={combatState?.player?.pet?.name ?? 'You'}
+        opponentHeroName={combatState?.opponent?.pet?.name ?? 'Opponent'}
+        playerHeroClass={getCombatHeroClass(combatState?.player)}
+        opponentHeroClass={getCombatHeroClass(combatState?.opponent)}
+        playerHeroPortrait={combatState?.player?.pet?.norseHeroId ? resolveHeroPortrait(combatState.player.pet.norseHeroId) : undefined}
+        opponentHeroPortrait={combatState?.opponent?.pet?.norseHeroId ? resolveHeroPortrait(combatState.opponent.pet.norseHeroId) : undefined}
         onPlayAgain={onCombatEnd ? () => onCombatEnd(gameWinner === 'player' ? 'player' : 'opponent') : undefined}
-        onMainMenu={() => { window.location.href = '/'; }}
+        onMainMenu={() => { window.location.hash = '/'; }}
       />
 
       <GameLog />

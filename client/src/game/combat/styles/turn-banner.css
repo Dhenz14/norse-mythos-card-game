@@ -2,37 +2,47 @@
 
 .persistent-turn-badge {
 	position: absolute;
-	top: 12px;
-	right: 16px;
+	top: 14px;
+	left: 16px;
 	z-index: 9500;
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	padding: 8px 24px;
+	gap: 10px;
+	padding: 10px 18px;
 	border-radius: 24px;
-	font-family: 'Cinzel', Georgia, serif;
-	font-weight: 800;
-	font-size: 15px;
-	letter-spacing: 3px;
+	font-family: var(--font-display);
+	font-weight: 900;
+	font-size: 13px;
+	letter-spacing: 2px;
 	text-transform: uppercase;
 	pointer-events: none;
 	transition: all 0.4s ease;
+	background: var(--ui-panel-bg);
+	box-shadow: var(--ui-panel-shadow);
 }
 
 .persistent-turn-badge.your-turn {
-	background: linear-gradient(135deg, rgba(251,191,36,0.25) 0%, rgba(180,130,20,0.35) 100%);
-	border: 2px solid rgba(251,191,36,0.7);
-	color: #fbbf24;
-	box-shadow: 0 0 20px rgba(251,191,36,0.3), 0 4px 12px rgba(0,0,0,0.5);
-	text-shadow: 0 0 10px rgba(251,191,36,0.6);
+	border: 2px solid var(--ui-gold-bright);
+	color: var(--ui-selection-pale);
+	box-shadow:
+		0 0 22px var(--ui-gold-glow-soft),
+		0 4px 14px rgba(0, 0, 0, 0.65),
+		inset 0 1px 0 rgba(255, 215, 100, 0.16);
+	text-shadow:
+		0 0 10px var(--ui-gold-glow-hard),
+		0 1px 2px rgba(0, 0, 0, 0.95);
 }
 
 .persistent-turn-badge.enemy-turn {
-	background: linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(180,30,30,0.3) 100%);
-	border: 2px solid rgba(239,68,68,0.6);
-	color: #ef4444;
-	box-shadow: 0 0 20px rgba(239,68,68,0.25), 0 4px 12px rgba(0,0,0,0.5);
-	text-shadow: 0 0 10px rgba(239,68,68,0.5);
+	border: 2px solid var(--ui-hp-crimson);
+	color: #ffd5d2;
+	box-shadow:
+		0 0 22px var(--ui-hp-crimson-glow),
+		0 4px 14px rgba(0, 0, 0, 0.65),
+		inset 0 1px 0 rgba(255, 130, 120, 0.14);
+	text-shadow:
+		0 0 10px var(--ui-hp-crimson-glow),
+		0 1px 2px rgba(0, 0, 0, 0.95);
 }
 
 .persistent-turn-dot {
@@ -43,13 +53,13 @@
 }
 
 .your-turn .persistent-turn-dot {
-	background: #fbbf24;
-	box-shadow: 0 0 8px rgba(251,191,36,0.8);
+	background: var(--ui-gold-bright);
+	box-shadow: 0 0 10px var(--ui-gold-glow-hard);
 }
 
 .enemy-turn .persistent-turn-dot {
-	background: #ef4444;
-	box-shadow: 0 0 8px rgba(239,68,68,0.8);
+	background: var(--ui-hp-crimson);
+	box-shadow: 0 0 10px var(--ui-hp-crimson-glow);
 }
 
 @keyframes turnDotPulse {

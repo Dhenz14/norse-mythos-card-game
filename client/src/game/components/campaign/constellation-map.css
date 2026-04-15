@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════
-   YGGDRASIL COSMIC MAP — Campaign constellation interface
-   ═══════════════════════════════════════════════════════════════ */
+/* Nine Realms Constellation Map */
 
 .constellation-container {
 	position: relative;
@@ -10,10 +8,24 @@
 	color: #e5e7eb;
 }
 
-/* ── SVG glow filter definitions (rendered in CampaignPage) ── */
+/* Twinkling star field */
+.constellation-star {
+	position: absolute;
+	width: 2px;
+	height: 2px;
+	background: #fff;
+	border-radius: 50%;
+	animation: twinkle var(--twinkle-duration, 3s) ease-in-out infinite;
+	animation-delay: var(--twinkle-delay, 0s);
+	opacity: var(--star-opacity, 0.6);
+}
 
-/* ── Constellation lines — animated Bifrost beams ── */
+@keyframes twinkle {
+	0%, 100% { opacity: var(--star-opacity, 0.6); }
+	50% { opacity: 0.1; }
+}
 
+/* SVG constellation lines */
 .constellation-lines {
 	position: absolute;
 	inset: 0;
@@ -22,54 +34,38 @@
 }
 
 .constellation-line {
-	stroke: rgba(255, 255, 255, 0.06);
+	stroke: rgba(255, 255, 255, 0.08);
 	stroke-width: 1;
-	stroke-dasharray: 6 12;
-	stroke-dashoffset: 0;
-	animation: bifrost-flow 4s linear infinite;
-	stroke-linecap: round;
-	filter: url(#bifrost-glow);
+	stroke-dasharray: 4 6;
+	transition: stroke 0.4s, stroke-width 0.4s;
 }
 
 .constellation-line-active {
-	stroke: rgba(255, 255, 255, 0.18);
-	stroke-width: 2;
-	stroke-dasharray: 8 8;
-	stroke-dashoffset: 0;
-	animation: bifrost-flow-active 2s linear infinite;
-	stroke-linecap: round;
-	filter: url(#bifrost-glow);
+	stroke: rgba(255, 255, 255, 0.2);
+	stroke-width: 1.5;
+	stroke-dasharray: none;
 }
 
-@keyframes bifrost-flow {
-	to { stroke-dashoffset: -18; }
-}
-
-@keyframes bifrost-flow-active {
-	to { stroke-dashoffset: -16; }
-}
-
-/* ── Realm node container ── */
-
+/* Realm node container */
 .realm-node {
 	position: absolute;
 	transform: translate(-50%, -50%);
 	cursor: pointer;
 	z-index: 10;
-	transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition: transform 0.3s ease;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 8px;
+	gap: 6px;
 }
 
 .realm-node:hover {
-	transform: translate(-50%, -50%) scale(1.18);
+	transform: translate(-50%, -50%) scale(1.15);
 }
 
 .realm-node-locked {
-	opacity: 0.25;
-	filter: grayscale(0.8) brightness(0.6);
+	opacity: 0.35;
+	filter: grayscale(0.7);
 	cursor: default;
 }
 
@@ -78,289 +74,211 @@
 }
 
 .realm-node-selected {
-	transform: translate(-50%, -50%) scale(1.25);
+	transform: translate(-50%, -50%) scale(1.2);
 }
 
-/* ── Glowing realm orb — larger, multi-ring, neon glow ── */
-
+/* Glowing realm circle */
 .realm-glow {
-	position: relative;
-	width: 72px;
-	height: 72px;
+	width: 56px;
+	height: 56px;
 	border-radius: 50%;
 	border: 2px solid var(--realm-color, #888);
-	background: radial-gradient(circle at 40% 35%,
-		var(--realm-glow, rgba(136, 136, 136, 0.4)) 0%,
-		rgba(0, 0, 0, 0.1) 60%,
-		transparent 80%
-	);
+	background: radial-gradient(circle, var(--realm-glow, rgba(136, 136, 136, 0.3)) 0%, transparent 70%);
 	box-shadow:
-		0 0 20px var(--realm-glow, rgba(136, 136, 136, 0.4)),
-		0 0 40px var(--realm-glow, rgba(136, 136, 136, 0.2)),
-		0 0 60px var(--realm-glow, rgba(136, 136, 136, 0.1)),
-		inset 0 0 12px var(--realm-glow, rgba(136, 136, 136, 0.15));
+		0 0 16px var(--realm-glow, rgba(136, 136, 136, 0.4)),
+		0 0 32px var(--realm-glow, rgba(136, 136, 136, 0.2)),
+		inset 0 0 8px var(--realm-glow, rgba(136, 136, 136, 0.1));
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	animation: realm-breathe 4s ease-in-out infinite;
-	transition: box-shadow 0.4s, border-width 0.3s;
-}
-
-/* Outer ring — ethereal orbital ring */
-.realm-glow::before {
-	content: '';
-	position: absolute;
-	inset: -8px;
-	border-radius: 50%;
-	border: 1px solid var(--realm-color, #888);
-	opacity: 0.25;
-	animation: ring-rotate 12s linear infinite;
-}
-
-/* Inner flare — hot center point */
-.realm-glow::after {
-	content: '';
-	position: absolute;
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: var(--realm-color, #fff);
-	opacity: 0;
-	transition: opacity 0.3s;
-}
-
-.realm-node:hover .realm-glow::after {
-	opacity: 0.6;
-}
-
-@keyframes realm-breathe {
-	0%, 100% { opacity: 0.75; transform: scale(1); }
-	50% { opacity: 1; transform: scale(1.04); }
-}
-
-@keyframes ring-rotate {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
+	animation: realm-pulse 3s ease-in-out infinite;
+	transition: box-shadow 0.3s;
 }
 
 .realm-node:hover .realm-glow {
 	box-shadow:
-		0 0 24px var(--realm-glow, rgba(136, 136, 136, 0.5)),
-		0 0 48px var(--realm-glow, rgba(136, 136, 136, 0.3)),
-		0 0 72px var(--realm-glow, rgba(136, 136, 136, 0.15)),
-		inset 0 0 16px var(--realm-glow, rgba(136, 136, 136, 0.2));
+		0 0 16px var(--realm-glow, rgba(136, 136, 136, 0.5)),
+		0 0 32px var(--realm-glow, rgba(136, 136, 136, 0.25)),
+		inset 0 0 12px var(--realm-glow, rgba(136, 136, 136, 0.15));
 }
 
 .realm-node-selected .realm-glow {
 	border-width: 3px;
 	box-shadow:
-		0 0 28px var(--realm-glow, rgba(136, 136, 136, 0.6)),
-		0 0 56px var(--realm-glow, rgba(136, 136, 136, 0.35)),
-		0 0 84px var(--realm-glow, rgba(136, 136, 136, 0.2)),
-		inset 0 0 20px var(--realm-glow, rgba(136, 136, 136, 0.25));
+		0 0 20px var(--realm-glow, rgba(136, 136, 136, 0.6)),
+		0 0 40px var(--realm-glow, rgba(136, 136, 136, 0.3)),
+		inset 0 0 16px var(--realm-glow, rgba(136, 136, 136, 0.2));
 }
 
-/* Available — pulsing beacon */
-.realm-node-available .realm-glow {
-	animation: realm-beacon 2s ease-in-out infinite;
+@keyframes realm-pulse {
+	0%, 100% { opacity: 0.7; }
+	50% { opacity: 1; }
 }
 
-.realm-node-available .realm-glow::before {
-	animation: ring-beacon 2s ease-in-out infinite;
-}
-
-@keyframes realm-beacon {
-	0%, 100% { opacity: 0.8; transform: scale(1); }
-	50% { opacity: 1; transform: scale(1.08); }
-}
-
-@keyframes ring-beacon {
-	0%, 100% { opacity: 0.2; transform: rotate(0deg) scale(1); }
-	50% { opacity: 0.5; transform: rotate(180deg) scale(1.15); }
-}
-
-/* ── Rune symbol ── */
-
+/* Rune character inside glow */
 .realm-rune {
-	font-size: 26px;
+	font-size: 22px;
 	color: var(--realm-color, #888);
-	text-shadow:
-		0 0 10px var(--realm-glow, rgba(136, 136, 136, 0.6)),
-		0 0 20px var(--realm-glow, rgba(136, 136, 136, 0.3));
+	text-shadow: 0 0 8px var(--realm-glow, rgba(136, 136, 136, 0.5));
 	line-height: 1;
-	filter: brightness(1.3);
 }
 
-/* ── Realm name label ── */
-
+/* Realm name label */
 .realm-name {
 	font-size: 11px;
-	font-weight: 700;
+	font-weight: 600;
 	text-transform: uppercase;
-	letter-spacing: 2.5px;
+	letter-spacing: 1.5px;
 	color: var(--realm-color, #888);
-	text-shadow:
-		0 0 12px rgba(0, 0, 0, 0.9),
-		0 0 4px var(--realm-glow, rgba(136, 136, 136, 0.4));
+	text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
 	white-space: nowrap;
-	opacity: 0.85;
 }
 
-.realm-node:hover .realm-name {
-	opacity: 1;
-}
-
-/* ── Progress badge ── */
-
+/* Progress indicator */
 .realm-progress {
 	position: absolute;
-	top: -16px;
+	top: -18px;
 	left: 50%;
 	transform: translateX(-50%);
-	font-size: 9px;
-	font-weight: 700;
+	font-size: 10px;
+	font-weight: 600;
 	color: rgba(255, 255, 255, 0.7);
-	background: rgba(0, 0, 0, 0.7);
+	background: rgba(0, 0, 0, 0.6);
 	padding: 1px 6px;
 	border-radius: 8px;
 	white-space: nowrap;
 	font-variant-numeric: tabular-nums;
-	border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* ── "Start Here" beacon hint — above progress ── */
+/* "Start Here" hint on available realm nodes */
+.realm-node-available .realm-glow {
+	animation: realm-available-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes realm-available-pulse {
+	0%, 100% { opacity: 0.8; transform: scale(1); }
+	50% { opacity: 1; transform: scale(1.12); }
+}
 
 .realm-start-hint {
 	position: absolute;
-	top: -36px;
+	top: -30px;
 	left: 50%;
 	transform: translateX(-50%);
-	font-size: 9px;
-	font-weight: 800;
+	font-size: 10px;
+	font-weight: 700;
 	color: #fbbf24;
-	background: rgba(251, 191, 36, 0.12);
-	border: 1px solid rgba(251, 191, 36, 0.35);
+	background: rgba(251, 191, 36, 0.15);
+	border: 1px solid rgba(251, 191, 36, 0.3);
 	padding: 2px 8px;
 	border-radius: 10px;
 	white-space: nowrap;
-	animation: hint-float 3s ease-in-out infinite;
+	animation: hint-bounce 2s ease-in-out infinite;
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
-	box-shadow: 0 0 10px rgba(251, 191, 36, 0.12);
 }
 
-@keyframes hint-float {
-	0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.9; }
-	50% { transform: translateX(-50%) translateY(-6px); opacity: 1; }
+@keyframes hint-bounce {
+	0%, 100% { transform: translateX(-50%) translateY(0); }
+	50% { transform: translateX(-50%) translateY(-4px); }
 }
 
-/* ── Lore text — bottom-left corner, clear of all nodes ── */
-
-.campaign-lore-center {
-	position: absolute;
-	left: 24px;
-	bottom: 24px;
-	text-align: left;
-	max-width: 260px;
-	pointer-events: none;
-	z-index: 5;
-	opacity: 0.5;
-	transition: opacity 0.4s;
-}
-
-.campaign-lore-title {
-	font-size: 0.95rem;
-	font-weight: 700;
-	letter-spacing: 2px;
-	text-transform: uppercase;
-	margin-bottom: 6px;
-	text-shadow: 0 0 16px currentColor;
-}
-
-.campaign-lore-text {
-	font-size: 11px;
-	color: #6b7280;
+/* Locked hint in mission panel */
+.realm-panel-locked-hint {
+	font-size: 13px;
+	color: #f59e0b;
+	background: rgba(245, 158, 11, 0.08);
+	border: 1px solid rgba(245, 158, 11, 0.2);
+	border-radius: 8px;
+	padding: 10px 14px;
+	margin-bottom: 12px;
 	line-height: 1.5;
-	font-style: italic;
 }
 
-.campaign-lore-hint {
-	font-size: 9px;
-	color: #4b5563;
-	margin-top: 8px;
-	letter-spacing: 1px;
-	text-transform: uppercase;
+/* Corner rune decorations */
+.rune-border-decoration {
+	position: fixed;
+	font-size: 28px;
+	color: rgba(255, 255, 255, 0.04);
+	pointer-events: none;
+	z-index: 0;
+	letter-spacing: 8px;
+	user-select: none;
 }
 
-/* ── Locked realm overlay ── */
-
-.realm-locked-label {
-	font-size: 9px;
-	text-transform: uppercase;
-	letter-spacing: 1.5px;
-	color: rgba(255, 255, 255, 0.25);
-	margin-top: 2px;
+.rune-border-top-left {
+	top: 20px;
+	left: 20px;
 }
 
-/* ── Navigation ── */
+.rune-border-top-right {
+	top: 20px;
+	right: 20px;
+}
 
+.rune-border-bottom-left {
+	bottom: 20px;
+	left: 20px;
+}
+
+.rune-border-bottom-right {
+	bottom: 20px;
+	right: 20px;
+}
+
+/* Top navigation bar */
 .constellation-nav {
 	position: relative;
 	z-index: 20;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 10px 24px;
+	padding: 16px 24px;
 }
 
 .constellation-title {
 	font-size: 1.75rem;
-	font-weight: 800;
-	background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+	font-weight: 700;
+	background: linear-gradient(135deg, #fbbf24, #d97706, #b45309);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
-	letter-spacing: 2px;
-	text-transform: uppercase;
+	letter-spacing: 1px;
 }
 
-/* ── Tabs ── */
-
+/* Tab toggle: Nine Realms / Beyond */
 .constellation-tabs {
 	position: relative;
 	z-index: 20;
 	display: flex;
-	gap: 6px;
-	padding: 0 24px 6px;
+	gap: 8px;
+	padding: 0 24px 12px;
 }
 
 .constellation-tab {
-	padding: 7px 18px;
-	border-radius: 8px;
+	padding: 6px 16px;
+	border-radius: 6px;
 	font-size: 13px;
-	font-weight: 600;
+	font-weight: 500;
 	cursor: pointer;
-	transition: all 0.25s;
-	color: #6b7280;
+	transition: background 0.2s, color 0.2s;
+	color: #9ca3af;
 	background: transparent;
 	border: 1px solid transparent;
-	letter-spacing: 0.5px;
 }
 
 .constellation-tab:hover {
-	color: #d1d5db;
+	color: #e5e7eb;
 	background: rgba(255, 255, 255, 0.04);
 }
 
 .constellation-tab-active {
 	color: #fbbf24;
-	background: rgba(251, 191, 36, 0.08);
-	border-color: rgba(251, 191, 36, 0.2);
-	box-shadow: 0 0 12px rgba(251, 191, 36, 0.08);
+	background: rgba(251, 191, 36, 0.1);
+	border-color: rgba(251, 191, 36, 0.25);
 }
 
-/* ── Map area ── */
-
+/* Map area */
 .constellation-map-area {
 	position: relative;
 	width: 100%;
@@ -369,25 +287,24 @@
 	padding-bottom: 20px;
 }
 
-/* ── Realm mission panel — slide from right ── */
+.constellation-intro-copy {
+	transition: opacity 0.25s ease, transform 0.25s ease;
+}
 
+/* Realm mission panel - slides in from right */
 .realm-mission-panel {
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 380px;
+	width: 360px;
 	max-width: 90vw;
 	height: 100%;
-	background: linear-gradient(180deg,
-		rgba(8, 10, 16, 0.97) 0%,
-		rgba(4, 6, 12, 0.98) 100%
-	);
-	border-left: 1px solid rgba(255, 255, 255, 0.06);
+	background: linear-gradient(180deg, rgba(10, 12, 18, 0.97) 0%, rgba(6, 8, 14, 0.98) 100%);
+	border-left: 1px solid rgba(255, 255, 255, 0.08);
 	z-index: 30;
 	overflow-y: auto;
 	padding: 24px;
-	animation: panel-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-	box-shadow: -20px 0 60px rgba(0, 0, 0, 0.5);
+	animation: panel-slide-in 0.3s ease-out;
 }
 
 @keyframes panel-slide-in {
@@ -402,12 +319,10 @@
 }
 
 .realm-panel-name {
-	font-size: 1.3rem;
-	font-weight: 800;
+	font-size: 1.25rem;
+	font-weight: 700;
 	color: var(--realm-color, #fbbf24);
-	margin-bottom: 6px;
-	letter-spacing: 1px;
-	text-shadow: 0 0 16px var(--realm-color, rgba(251, 191, 36, 0.3));
+	margin-bottom: 4px;
 }
 
 .realm-panel-description {
@@ -424,8 +339,8 @@
 	font-size: 12px;
 	padding: 4px 10px;
 	border-radius: 6px;
-	background: rgba(255, 255, 255, 0.03);
-	border: 1px solid rgba(255, 255, 255, 0.06);
+	background: rgba(255, 255, 255, 0.04);
+	border: 1px solid rgba(255, 255, 255, 0.08);
 	color: #d1d5db;
 }
 
@@ -444,36 +359,16 @@
 	color: #d1d5db;
 }
 
-.realm-panel-locked-hint {
-	font-size: 13px;
-	color: #f59e0b;
-	background: rgba(245, 158, 11, 0.06);
-	border: 1px solid rgba(245, 158, 11, 0.15);
-	border-radius: 8px;
-	padding: 10px 14px;
-	margin-bottom: 12px;
-	line-height: 1.5;
+/* Locked realm overlay text */
+.realm-locked-label {
+	font-size: 9px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: rgba(255, 255, 255, 0.3);
+	margin-top: 2px;
 }
 
-/* ── Corner rune decorations ── */
-
-.rune-border-decoration {
-	position: fixed;
-	font-size: 28px;
-	color: rgba(255, 255, 255, 0.03);
-	pointer-events: none;
-	z-index: 0;
-	letter-spacing: 8px;
-	user-select: none;
-}
-
-.rune-border-top-left { top: 20px; left: 20px; }
-.rune-border-top-right { top: 20px; right: 20px; }
-.rune-border-bottom-left { bottom: 20px; left: 20px; }
-.rune-border-bottom-right { bottom: 20px; right: 20px; }
-
-/* ── Beyond the Realms grid ── */
-
+/* Beyond the Realms grid (non-Norse factions) */
 .beyond-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -482,57 +377,156 @@
 	max-width: 900px;
 }
 
-/* ── Yggdrasil trunk — subtle vertical line through center ── */
-
-.yggdrasil-trunk {
-	position: absolute;
-	left: 50%;
-	top: 5%;
-	bottom: 8%;
-	width: 1px;
-	background: linear-gradient(
-		to bottom,
-		transparent 0%,
-		rgba(251, 191, 36, 0.04) 20%,
-		rgba(251, 191, 36, 0.07) 45%,
-		rgba(251, 191, 36, 0.04) 75%,
-		transparent 100%
-	);
-	pointer-events: none;
-	z-index: 1;
-}
-
-/* ═══ Responsive ═══ */
-
+/* ── Tablet ── */
 @media (max-width: 768px) {
-	.constellation-nav { padding: 12px 16px; }
-	.constellation-title { font-size: 1.4rem; }
-	.constellation-tabs { padding: 0 16px 10px; }
-	.constellation-map-area { min-height: 420px; }
-	.realm-glow { width: 56px; height: 56px; }
-	.realm-glow::before { inset: -6px; }
-	.realm-rune { font-size: 20px; }
-	.realm-name { font-size: 10px; letter-spacing: 1.5px; }
-	.realm-mission-panel { width: 320px; padding: 16px; }
-	.rune-border-decoration { font-size: 20px; }
-	.beyond-grid { padding: 0 16px 16px; }
+	.constellation-nav {
+		padding: 12px 16px;
+	}
+
+	.constellation-title {
+		font-size: 1.4rem;
+	}
+
+	.constellation-tabs {
+		padding: 0 16px 10px;
+	}
+
+	.constellation-map-area {
+		min-height: 420px;
+	}
+
+	.realm-glow {
+		width: 48px;
+		height: 48px;
+	}
+
+	.realm-rune {
+		font-size: 18px;
+	}
+
+	.realm-name {
+		font-size: 10px;
+		letter-spacing: 1px;
+	}
+
+	.realm-mission-panel {
+		width: 320px;
+		padding: 16px;
+	}
+
+	.rune-border-decoration {
+		font-size: 20px;
+	}
+
+	.beyond-grid {
+		padding: 0 16px 16px;
+	}
 }
 
+/* ── Mobile ── */
 @media (max-width: 480px) {
-	.constellation-nav { padding: 10px 12px; }
-	.constellation-title { font-size: 1.15rem; }
-	.constellation-tabs { padding: 0 12px 8px; }
-	.constellation-tab { padding: 5px 10px; font-size: 12px; }
-	.constellation-map-area { height: calc(100vh - 100px); min-height: 360px; }
-	.realm-glow { width: 44px; height: 44px; }
-	.realm-glow::before { inset: -5px; }
-	.realm-rune { font-size: 17px; }
-	.realm-name { font-size: 9px; letter-spacing: 0.5px; }
-	.realm-progress { font-size: 8px; top: -14px; padding: 1px 4px; }
-	.realm-mission-panel { width: 100%; max-width: 100vw; border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; }
-	.realm-panel-name { font-size: 1.1rem; }
-	.rune-border-decoration { display: none; }
-	.beyond-grid { grid-template-columns: 1fr; padding: 0 12px 12px; }
-	.campaign-lore-center { max-width: 240px; }
-	.yggdrasil-trunk { display: none; }
+	.constellation-nav {
+		padding: 10px 12px;
+	}
+
+	.constellation-title {
+		font-size: 1.15rem;
+	}
+
+	.constellation-tabs {
+		padding: 0 12px 8px;
+	}
+
+	.constellation-tab {
+		padding: 5px 10px;
+		font-size: 12px;
+	}
+
+	.constellation-map-area {
+		height: auto;
+		min-height: 720px;
+		margin-top: 24px;
+		padding-top: 72px;
+		padding-bottom: 176px;
+	}
+
+	.realm-glow {
+		width: 40px;
+		height: 40px;
+	}
+
+	.realm-rune {
+		font-size: 16px;
+	}
+
+	.realm-name {
+		font-size: 9px;
+		letter-spacing: 0.5px;
+	}
+
+	.realm-progress {
+		font-size: 8px;
+		top: -14px;
+		padding: 1px 4px;
+	}
+
+	.realm-start-hint {
+		top: -22px;
+		font-size: 8px;
+		padding: 2px 6px;
+		letter-spacing: 0.4px;
+	}
+
+		.realm-node,
+		.realm-node-locked:hover {
+			gap: 4px;
+			transform: translate(-50%, calc(-50% + 28px));
+		}
+
+	.realm-node:hover {
+		transform: translate(-50%, calc(-50% + 28px)) scale(1.08);
+	}
+
+	.realm-node-selected {
+		transform: translate(-50%, calc(-50% + 28px)) scale(1.12);
+	}
+
+	.constellation-intro {
+		inset: auto 0 20px;
+		align-items: flex-end;
+		justify-content: center;
+		padding: 0 12px;
+	}
+
+	.constellation-intro-copy {
+		max-width: none;
+		padding: 12px 14px;
+		border-radius: 16px;
+		background: rgba(6, 8, 14, 0.78);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(14px);
+		opacity: 0.92;
+		box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+	}
+
+	.realm-mission-panel {
+		width: 100%;
+		max-width: 100vw;
+		border-left: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		padding: 14px;
+	}
+
+	.realm-panel-name {
+		font-size: 1.1rem;
+	}
+
+	.rune-border-decoration {
+		display: none;
+	}
+
+	.beyond-grid {
+		grid-template-columns: 1fr;
+		padding: 0 12px 12px;
+	}
 }
