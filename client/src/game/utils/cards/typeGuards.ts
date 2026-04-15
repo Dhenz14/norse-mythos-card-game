@@ -29,6 +29,7 @@ import { Card } from '../../types/CardTypes';
 
 // Combined type that accepts both CardData and Card
 type AnyCard = CardData | Card | null | undefined;
+type OverloadCard = Exclude<AnyCard, null | undefined> & { overload?: { amount: number } };
 
 // =============================================================================
 // PRIMARY CARD TYPE GUARDS (Discriminated Union Narrowing)
@@ -157,9 +158,9 @@ export function hasAura(card: AnyCard): boolean {
 /**
  * Check if a card has overload
  */
-export function hasOverload(card: AnyCard): boolean {
+export function hasOverload(card: AnyCard): card is OverloadCard {
   if (card == null) return false;
-  return 'overload' in card && (card as any).overload != null;
+  return 'overload' in card && card.overload != null;
 }
 
 // =============================================================================
