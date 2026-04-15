@@ -476,14 +476,11 @@
 		letter-spacing: 0.4px;
 	}
 
-	.realm-node {
-		gap: 4px;
-	}
-
-	.realm-node,
-	.realm-node-locked:hover {
-		transform: translate(-50%, calc(-50% + 28px));
-	}
+		.realm-node,
+		.realm-node-locked:hover {
+			gap: 4px;
+			transform: translate(-50%, calc(-50% + 28px));
+		}
 
 	.realm-node:hover {
 		transform: translate(-50%, calc(-50% + 28px)) scale(1.08);
