@@ -12,29 +12,20 @@
 }
 
 /* Ensure no invisible containers limit interaction */
-.premium-card-container,
-.premium-card-container * {
+:is(.premium-card-container, .premium-card-container *) {
   pointer-events: auto;
 }
 
-/* Ensure proper clipping of card elements */
 .premium-card-container {
+  /* Ensure proper clipping and stacking of card elements */
   overflow: hidden;
-}
-
-/* Fix for weird z-index issues */
-.premium-card-container {
   z-index: 1;
   isolation: isolate;
+  transform: translateZ(0);
 }
 
 /* Ensure proper stacking context for all card elements */
 .premium-card-container * {
   position: relative;
   z-index: auto;
-}
-
-/* Fix for 3D transform perspective issues */
-.premium-card-container {
-  transform: translateZ(0);
 }

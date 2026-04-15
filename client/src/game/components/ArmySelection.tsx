@@ -203,6 +203,8 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
     const status = getDeckStatus(piece);
     return status.isComplete;
   });
+  const selectedHeroCount = PIECE_ORDER.filter(pieceType => !!army[pieceType as keyof ArmySelectionType]).length;
+  const completedDeckCount = MAJOR_PIECES.filter(piece => getDeckStatus(piece).isComplete).length;
   
   const canProceedToBattle = isArmyComplete && allDecksComplete;
   
@@ -222,13 +224,23 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
   // Render the entire ArmySelection as a PORTAL to document.body
   // Uses CSS Grid layout - no inline style overrides needed
   return ReactDOM.createPortal(
-    <div className="norse-army-selection" style={{ position: 'fixed', inset: 0, width: '100vw', height: '100dvh', display: 'grid', gridTemplateColumns: '212px 1fr 276px', gridTemplateRows: '56px 1fr 64px' }}>
+    <div className="norse-army-selection">
       <div className="norse-army-bg" />
       <div className="norse-lightning-overlay" />
       
       {/* TOP BAR */}
       <div className="norse-top-bar">
-        <h1 className="norse-top-title">ASSEMBLE YOUR ARMY</h1>
+        <div className="norse-top-title-group">
+          <h1 className="norse-top-title">Assemble Your Army</h1>
+          <div className="norse-top-status">
+            <span className={`norse-status-pill ${selectedHeroCount === PIECE_ORDER.length ? 'complete' : ''}`}>
+              {selectedHeroCount}/{PIECE_ORDER.length} heroes
+            </span>
+            <span className={`norse-status-pill ${completedDeckCount === MAJOR_PIECES.length ? 'complete' : ''}`}>
+              {completedDeckCount}/{MAJOR_PIECES.length} decks ready
+            </span>
+          </div>
+        </div>
         
         <div className="norse-top-bar-actions">
           {validDecks.length > 0 && onQuickStart && !isMultiplayer && (
@@ -249,15 +261,14 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
             </div>
           )}
           
-          {/* DEV TOOL: START BATTLE (Solo AI) - Only show in non-multiplayer mode */}
           {!isMultiplayer && (
             <button
               onClick={handleConfirm}
               disabled={!canProceedToBattle}
               className="norse-dev-tool-btn"
-              title="[DEV] Start solo game with AI"
+              title="Start a solo battle"
             >
-              {canProceedToBattle ? '⚔ START BATTLE' : 'Complete All Decks'}
+              {canProceedToBattle ? '⚔ Begin Solo Battle' : 'Complete All Decks'}
             </button>
           )}
         </div>

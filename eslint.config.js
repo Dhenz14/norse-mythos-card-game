@@ -17,6 +17,19 @@ function trimGlobals(...sources) {
 export default [
 	js.configs.recommended,
 	{
+		ignores: [
+			'node_modules/**',
+			'dist/**',
+			'assembly/**',
+			'client/public/**',
+			'mcp-server/**',
+			'.vscode/**',
+			'scripts/**',
+			'**/*.d.ts',
+			'**/*.{js,cjs,mjs}',
+		],
+	},
+	{
 		files: ['**/*.{ts,tsx}'],
 		languageOptions: {
 			parser: tsParser,
@@ -54,8 +67,5 @@ export default [
 		settings: {
 			react: { version: 'detect' },
 		},
-	},
-	{
-		ignores: ['node_modules/**', 'dist/**', 'assembly/**', '*.js', '*.cjs', '*.mjs'],
 	},
 ];

@@ -28,6 +28,10 @@ export function setCardDataProvider(p: ICardDataProvider): void {
 	provider = p;
 }
 
+export function hasCardDataProvider(): boolean {
+	return provider !== null;
+}
+
 export function getCardDataProvider(): ICardDataProvider {
 	if (!provider) {
 		throw new Error(

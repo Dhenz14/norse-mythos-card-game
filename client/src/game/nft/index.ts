@@ -25,7 +25,6 @@ export async function initializeNFTBridge(): Promise<INFTBridge> {
 		const { HiveNFTBridge } = await import('./HiveNFTBridge');
 		bridge = new HiveNFTBridge();
 	} else {
-		const { LocalNFTBridge } = await import('./LocalNFTBridge');
 		bridge = new LocalNFTBridge();
 	}
 

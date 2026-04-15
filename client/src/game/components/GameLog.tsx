@@ -48,7 +48,9 @@ export const GameLog: React.FC = () => {
 	const entries = useGameLogStore(state => state.entries);
 	const isOpen = useGameLogStore(state => state.isOpen);
 	const toggleLog = useGameLogStore(state => state.toggleLog);
+	const clearLog = useGameLogStore(state => state.clearLog);
 	const scrollRef = useRef<HTMLDivElement>(null);
+	const latestEntry = entries[entries.length - 1];
 
 	useEffect(() => {
 		if (scrollRef.current && isOpen) {
@@ -58,13 +60,26 @@ export const GameLog: React.FC = () => {
 
 	return (
 		<div className="game-log-container">
+			{latestEntry && !isOpen && (
+				<button
+					type="button"
+					className="game-log-preview"
+					onClick={toggleLog}
+					title="Open battle log"
+				>
+					<span className="game-log-preview-turn">T{latestEntry.turn}</span>
+					<span className="game-log-preview-text">{latestEntry.message}</span>
+				</button>
+			)}
+
 			<button
 				type="button"
 				className={`game-log-toggle ${isOpen ? 'open' : ''}`}
 				onClick={toggleLog}
-				title="Game Log"
+				title="Battle Log"
 			>
 				<span className="log-toggle-icon">{'\uD83D\uDCDC'}</span>
+				<span className="log-toggle-label">{isOpen ? 'Hide Log' : 'Battle Log'}</span>
 				{entries.length > 0 && !isOpen && (
 					<span className="log-badge">{Math.min(entries.length, 99)}</span>
 				)}
@@ -80,8 +95,18 @@ export const GameLog: React.FC = () => {
 						transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 					>
 						<div className="game-log-header">
-							<span>Battle Log</span>
-							<button type="button" className="game-log-close" onClick={toggleLog}>{'\u2715'}</button>
+							<div className="game-log-header-copy">
+								<span>Battle Log</span>
+								<span className="game-log-count">{entries.length} events</span>
+							</div>
+							<div className="game-log-header-actions">
+								{entries.length > 0 && (
+									<button type="button" className="game-log-clear" onClick={clearLog}>
+										Clear
+									</button>
+								)}
+								<button type="button" className="game-log-close" onClick={toggleLog}>{'\u2715'}</button>
+							</div>
 						</div>
 						<div className="game-log-entries" ref={scrollRef}>
 							{entries.length === 0 ? (

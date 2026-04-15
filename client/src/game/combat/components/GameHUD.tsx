@@ -7,6 +7,11 @@ interface GameHUDProps {
 	playerDeckCount: number;
 	opponentDeckCount: number;
 	opponentHandCount: number;
+	phaseLabel?: string;
+	pot?: number;
+	playerCommitted?: number;
+	opponentCommitted?: number;
+	isPlayerTurn?: boolean;
 	playerElement?: ElementType;
 	opponentElement?: ElementType;
 	playerHasAdvantage?: boolean;
@@ -18,15 +23,33 @@ export const GameHUD: React.FC<GameHUDProps> = ({
 	playerDeckCount,
 	opponentDeckCount,
 	opponentHandCount,
+	phaseLabel = 'Battle Ready',
+	pot = 0,
+	playerCommitted = 0,
+	opponentCommitted = 0,
+	isPlayerTurn = false,
 	playerElement,
 	opponentElement,
 	playerHasAdvantage = false,
 	opponentHasAdvantage = false,
 }) => {
 	const showMatchup = playerElement && opponentElement && playerElement !== 'neutral' && opponentElement !== 'neutral';
+	const showCommitment = playerCommitted > 0 || opponentCommitted > 0;
 
 	return (
 		<div className="game-hud">
+			<div className={`hud-status-ribbon ${isPlayerTurn ? 'player-active' : 'opponent-active'}`}>
+				<span className="hud-status-chip hud-status-turn">Turn {turnNumber}</span>
+				<span className="hud-status-chip hud-status-phase">{phaseLabel}</span>
+				<span className="hud-status-chip hud-status-initiative">{isPlayerTurn ? 'Your Move' : 'Enemy Move'}</span>
+				<span className="hud-status-chip hud-status-pot">Pot {pot} HP</span>
+				{showCommitment && (
+					<span className="hud-status-breakdown">
+						You {playerCommitted} · Them {opponentCommitted}
+					</span>
+				)}
+			</div>
+
 			{showMatchup && (
 				<div
 					className={`hud-matchup-badge ${playerHasAdvantage ? 'advantage' : opponentHasAdvantage ? 'disadvantage' : 'neutral-matchup'}`}

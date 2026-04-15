@@ -11,7 +11,7 @@ import type {
 	ProtocolOp, OpResult, ReplayContext, StateAdapter,
 	CardDataProvider, RewardProvider, SignatureVerifier,
 	CardAsset, GenesisRecord, EloRecord, PackAsset,
-	MarketListing, MarketOffer,
+	MarketListing, MarketOffer, ProtocolAction, RewardDefinition,
 } from './types';
 import {
 	RAGNAROK_ADMIN_ACCOUNT, TRANSFER_COOLDOWN_BLOCKS, MAX_CARD_LEVEL,
@@ -36,6 +36,84 @@ export interface ProtocolCoreDeps {
 	sigs: SignatureVerifier;
 }
 
+type OpHandler = (op: ProtocolOp, ctx: ReplayContext, deps: ProtocolCoreDeps) => Promise<OpResult>;
+
+type MintBatchCardPayload = {
+	uid?: string;
+	nft_id?: string;
+	card_id: number | string;
+	rarity: string;
+};
+
+type MatchParticipants = {
+	p1: string;
+	p2: string;
+};
+
+type MatchResultDetails = MatchParticipants & {
+	isCompact: boolean;
+	winner: string;
+	loser: string | null;
+	nonce: number;
+	matchType: string;
+	matchId: string;
+	counterparty: string;
+	cardHex?: string;
+	compactHash?: string;
+	seed: string;
+	version: number;
+};
+
+type SignaturePair = {
+	broadcasterSig: string;
+	counterpartySig: string;
+};
+
+type MarketNftAsset =
+	| { nftType: 'card'; asset: CardAsset }
+	| { nftType: 'pack'; asset: PackAsset };
+
+const IGNORE_RESULT: OpResult = { status: 'ignored' };
+const GAME_ACTIONS_REQUIRING_SLASH_CHECK = new Set<ProtocolAction>(['match_anchor', 'match_result', 'queue_join']);
+const RARITY_CARD_CAPS: Record<string, number> = {
+	common: 2000,
+	rare: 1000,
+	epic: 500,
+	mythic: 250,
+};
+
+const OP_HANDLERS: Record<ProtocolAction, OpHandler> = {
+	genesis: (op, _ctx, deps) => applyGenesis(op, deps),
+	seal: (op, _ctx, deps) => applySeal(op, deps),
+	mint_batch: (op, _ctx, deps) => applyMintBatch(op, deps),
+	card_transfer: (op, _ctx, deps) => applyCardTransfer(op, deps),
+	burn: (op, _ctx, deps) => applyBurn(op, deps),
+	level_up: (op, _ctx, deps) => applyLevelUp(op, deps),
+	match_anchor: (op, _ctx, deps) => applyMatchAnchor(op, deps),
+	match_result: (op, ctx, deps) => applyMatchResult(op, ctx, deps),
+	queue_join: (op, _ctx, deps) => applyQueueJoin(op, deps),
+	queue_leave: (op, _ctx, deps) => applyQueueLeave(op, deps),
+	reward_claim: (op, _ctx, deps) => applyRewardClaim(op, deps),
+	slash_evidence: async () => IGNORE_RESULT,
+	pack_commit: (op, _ctx, deps) => applyPackCommit(op, deps),
+	pack_reveal: (op, ctx, deps) => applyPackReveal(op, ctx, deps),
+	legacy_pack_open: (op, _ctx, deps) => applyLegacyPackOpen(op, deps),
+	pack_mint: (op, ctx, deps) => applyPackMint(op, ctx, deps),
+	pack_distribute: (op, _ctx, deps) => applyPackDistribute(op, deps),
+	pack_transfer: (op, _ctx, deps) => applyPackTransfer(op, deps),
+	pack_burn: (op, ctx, deps) => applyPackBurn(op, ctx, deps),
+	card_replicate: (op, _ctx, deps) => applyCardReplicate(op, deps),
+	card_merge: (op, _ctx, deps) => applyCardMerge(op, deps),
+	duat_airdrop_claim: (op, _ctx, deps) => applyDuatAirdropClaim(op, deps),
+	duat_airdrop_finalize: (op, _ctx, deps) => applyDuatAirdropFinalize(op, deps),
+	market_list: (op, _ctx, deps) => applyMarketList(op, deps),
+	market_unlist: (op, _ctx, deps) => applyMarketUnlist(op, deps),
+	market_buy: (op, _ctx, deps) => applyMarketBuy(op, deps),
+	market_offer: (op, _ctx, deps) => applyMarketOffer(op, deps),
+	market_accept: (op, _ctx, deps) => applyMarketAccept(op, deps),
+	market_reject: (op, _ctx, deps) => applyMarketReject(op, deps),
+};
+
 // ============================================================
 // Main dispatch
 // ============================================================
@@ -47,55 +125,38 @@ export async function applyOp(
 ): Promise<OpResult> {
 	// Finality gate: reject ops from blocks beyond LIB
 	if (op.blockNum > ctx.lastIrreversibleBlock) {
-		return { status: 'ignored' }; // not yet irreversible
+		return IGNORE_RESULT; // not yet irreversible
 	}
 
-	// Slashed accounts cannot perform game actions
-	const GAME_ACTIONS = new Set(['match_anchor', 'match_result', 'queue_join']);
-	if (GAME_ACTIONS.has(op.action) && await deps.state.isSlashed(op.broadcaster)) {
-		return reject('account is slashed');
+	const slashResult = await validateSlashedAction(op, deps);
+	if (slashResult) {
+		return slashResult;
 	}
 
-	switch (op.action) {
-		case 'genesis': return applyGenesis(op, deps);
-		case 'seal': return applySeal(op, deps);
-		case 'mint_batch': return applyMintBatch(op, deps);
-		case 'card_transfer': return applyCardTransfer(op, deps);
-		case 'burn': return applyBurn(op, deps);
-		case 'level_up': return applyLevelUp(op, deps);
-		case 'match_anchor': return applyMatchAnchor(op, deps);
-		case 'match_result': return applyMatchResult(op, ctx, deps);
-		case 'queue_join': return applyQueueJoin(op, deps);
-		case 'queue_leave': return applyQueueLeave(op, deps);
-		case 'reward_claim': return applyRewardClaim(op, deps);
-		case 'slash_evidence': return { status: 'ignored' }; // requires RPC verification, handled outside pure core
-		case 'pack_commit': return applyPackCommit(op, deps);
-		case 'pack_reveal': return applyPackReveal(op, ctx, deps);
-		case 'legacy_pack_open': return applyLegacyPackOpen(op, deps);
-		// v1.1: Pack NFTs
-		case 'pack_mint': return applyPackMint(op, ctx, deps);
-		case 'pack_distribute': return applyPackDistribute(op, deps);
-		case 'pack_transfer': return applyPackTransfer(op, deps);
-		case 'pack_burn': return applyPackBurn(op, ctx, deps);
-		// v1.1: DNA Lineage
-		case 'card_replicate': return applyCardReplicate(op, deps);
-		case 'card_merge': return applyCardMerge(op, deps);
-		// v1.2: DUAT Airdrop
-		case 'duat_airdrop_claim': return applyDuatAirdropClaim(op, deps);
-		case 'duat_airdrop_finalize': return applyDuatAirdropFinalize(op, deps);
-		// v1.2: Marketplace
-		case 'market_list': return applyMarketList(op, deps);
-		case 'market_unlist': return applyMarketUnlist(op, deps);
-		case 'market_buy': return applyMarketBuy(op, deps);
-		case 'market_offer': return applyMarketOffer(op, deps);
-		case 'market_accept': return applyMarketAccept(op, deps);
-		case 'market_reject': return applyMarketReject(op, deps);
-		default: return { status: 'ignored' };
-	}
+	return OP_HANDLERS[op.action]?.(op, ctx, deps) ?? IGNORE_RESULT;
 }
 
 function reject(reason: string): OpResult {
 	return { status: 'rejected', reason };
+}
+
+async function validateSlashedAction(
+	op: ProtocolOp,
+	deps: ProtocolCoreDeps,
+): Promise<OpResult | null> {
+	if (!GAME_ACTIONS_REQUIRING_SLASH_CHECK.has(op.action)) {
+		return null;
+	}
+
+	return await deps.state.isSlashed(op.broadcaster)
+		? reject('account is slashed')
+		: null;
+}
+
+function isOpResult(value: OpResult | unknown): value is OpResult {
+	return typeof value === 'object'
+		&& value !== null
+		&& 'status' in value;
 }
 
 // ============================================================
@@ -167,67 +228,102 @@ async function applyMintBatch(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	if (genesis.sealed) return reject('minting sealed');
 
 	const to = op.payload.to as string;
-	const cards = op.payload.cards as Array<{ uid?: string; nft_id?: string; card_id: number | string; rarity: string }> | undefined;
+	const cards = op.payload.cards as MintBatchCardPayload[] | undefined;
 	if (!to || !Array.isArray(cards)) return reject('missing to or cards');
 
 	let applied = false;
 	for (let i = 0; i < cards.length; i++) {
-		const card = cards[i];
-		const cardId = typeof card.card_id === 'number' ? card.card_id : parseInt(String(card.card_id), 10) || 0;
-		if (!cardId) continue;
-		// Deterministic UID fallback: if payload omits uid, derive from trxId + index
-		const uid = (card.uid ?? card.nft_id ?? `card_${fnv1a(`ragnarok:card:${op.trxId}:${cardId}:${i}`)}`) as string;
-		if (!uid) continue;
-
-		// Card definition must exist
-		const cardDef = deps.cards.getCardById(cardId);
-		if (!cardDef) continue;
-
-		// Idempotent: skip if already exists
-		const existing = await deps.state.getCard(uid);
-		if (existing) continue;
-
-		// Supply cap: check pack pool for the card's rarity
-		const rarity = card.rarity || cardDef.rarity || 'common';
-		const supplyRecord = await deps.state.getSupply(rarity, 'pack');
-		if (supplyRecord && supplyRecord.minted >= supplyRecord.cap) continue;
-
-		// Per-card cap: each card has its own supply limit based on rarity
-		// Common: 2000, Rare: 1000, Epic: 500, Mythic: 250
-		const RARITY_CARD_CAPS: Record<string, number> = {
-			common: 2000, rare: 1000, epic: 500, mythic: 250,
-		};
-		const cardKey = `card:${cardId}`;
-		const cardSupply = await deps.state.getSupply(cardKey, 'pack');
-		const cardMinted = cardSupply?.minted ?? 0;
-		const perCardCap = RARITY_CARD_CAPS[rarity.toLowerCase()] ?? 2000;
-		if (cardMinted >= perCardCap) continue;
-
-		const asset: CardAsset = {
-			uid,
-			cardId,
-			owner: to,
-			rarity,
-			level: 1,
-			xp: 0,
-			edition: 'alpha',
-			mintSource: 'genesis',
-			mintTrxId: op.trxId,
-			mintBlockNum: op.blockNum,
-			lastTransferBlock: op.blockNum,
-		};
-
-		await deps.state.putCard(asset);
-
-		// Increment supply counters
-		if (supplyRecord) {
-			await deps.state.putSupply({ ...supplyRecord, minted: supplyRecord.minted + 1 });
-		}
-		await deps.state.putSupply({ key: cardKey, pool: 'pack', cap: perCardCap, minted: cardMinted + 1 });
-		applied = true;
+		applied = await mintBatchCard(op, to, cards[i], i, deps) || applied;
 	}
 
 	return applied ? { status: 'applied' } : { status: 'ignored' };
+}
+
+async function mintBatchCard(
+	op: ProtocolOp,
+	to: string,
+	card: MintBatchCardPayload,
+	index: number,
+	deps: ProtocolCoreDeps,
+): Promise<boolean> {
+	const mintContext = await getMintBatchContext(op, card, index, deps);
+	if (!mintContext) return false;
+
+	await deps.state.putCard({
+		uid: mintContext.uid,
+		cardId: mintContext.cardId,
+		owner: to,
+		rarity: mintContext.rarity,
+		level: 1,
+		xp: 0,
+		edition: 'alpha',
+		mintSource: 'genesis',
+		mintTrxId: op.trxId,
+		mintBlockNum: op.blockNum,
+		lastTransferBlock: op.blockNum,
+	});
+
+	if (mintContext.supplyRecord) {
+		await deps.state.putSupply({ ...mintContext.supplyRecord, minted: mintContext.supplyRecord.minted + 1 });
+	}
+
+	await deps.state.putSupply({
+		key: mintContext.cardKey,
+		pool: 'pack',
+		cap: mintContext.perCardCap,
+		minted: mintContext.cardMinted + 1,
+	});
+	return true;
+}
+
+async function getMintBatchContext(
+	op: ProtocolOp,
+	card: MintBatchCardPayload,
+	index: number,
+	deps: ProtocolCoreDeps,
+): Promise<{
+	uid: string;
+	cardId: number;
+	rarity: string;
+	cardKey: string;
+	cardMinted: number;
+	perCardCap: number;
+	supplyRecord: Awaited<ReturnType<StateAdapter['getSupply']>>;
+} | null> {
+	const cardId = getMintBatchCardId(card);
+	if (!cardId) return null;
+
+	const uid = card.uid ?? card.nft_id ?? `card_${fnv1a(`ragnarok:card:${op.trxId}:${cardId}:${index}`)}`;
+	if (!uid) return null;
+
+	const cardDef = deps.cards.getCardById(cardId);
+	if (!cardDef || await deps.state.getCard(uid)) return null;
+
+	const rarity = card.rarity || cardDef.rarity || 'common';
+	const supplyRecord = await deps.state.getSupply(rarity, 'pack');
+	if (supplyRecord && supplyRecord.minted >= supplyRecord.cap) return null;
+
+	const cardKey = `card:${cardId}`;
+	const cardSupply = await deps.state.getSupply(cardKey, 'pack');
+	const cardMinted = cardSupply?.minted ?? 0;
+	const perCardCap = RARITY_CARD_CAPS[rarity.toLowerCase()] ?? 2000;
+	if (cardMinted >= perCardCap) return null;
+
+	return {
+		uid,
+		cardId,
+		rarity,
+		cardKey,
+		cardMinted,
+		perCardCap,
+		supplyRecord,
+	};
+}
+
+function getMintBatchCardId(card: MintBatchCardPayload): number {
+	return typeof card.card_id === 'number'
+		? card.card_id
+		: parseInt(String(card.card_id), 10) || 0;
 }
 
 // ============================================================
@@ -410,148 +506,241 @@ async function applyMatchResult(
 	const genesis = await deps.state.getGenesis();
 	if (!genesis) return reject('no genesis');
 
-	const isCompact = typeof op.payload.m === 'string';
-	const winner = (isCompact ? op.payload.w : op.payload.winnerId) as string;
-	const loser = (isCompact ? op.payload.l : null) as string | null;
-	const nonce = Number(isCompact ? op.payload.n : op.payload.result_nonce ?? 0);
+	const details = parseMatchResultDetails(op);
+	if (isOpResult(details)) return details;
 
-	if (!winner) return reject('missing winner');
+	const participantResult = validateMatchResultParticipants(op, details);
+	if (participantResult) return participantResult;
 
-	let p1: string, p2: string;
-	if (isCompact) {
-		p1 = winner;
-		p2 = loser ?? '';
-	} else {
-		const pl1 = op.payload.player1 as Record<string, unknown> | undefined;
-		const pl2 = op.payload.player2 as Record<string, unknown> | undefined;
-		if (!pl1 || !pl2) return reject('missing player data');
-		p1 = pl1.hiveUsername as string;
-		p2 = pl2.hiveUsername as string;
-	}
+	const nonceAndPowResult = await validateMatchResultNonceAndPow(op, details.nonce, deps);
+	if (nonceAndPowResult) return nonceAndPowResult;
 
-	if (!p1 || !p2 || p1 === p2) return reject('self-play or empty username');
-	if (op.broadcaster !== p1 && op.broadcaster !== p2) return reject('broadcaster not a participant');
+	const compactHashResult = await validateCompactMatchHash(op, details);
+	if (compactHashResult) return compactHashResult;
 
-	// Winner must be one of the two participants — prevent third-party injection
-	if (winner !== p1 && winner !== p2) return reject('winner must be a match participant');
+	const signatureResult = await validateRankedMatchSignatures(op, details, genesis, deps);
+	if (signatureResult) return signatureResult;
 
-	// Nonce
-	const nonceOk = await deps.state.advanceNonce(op.broadcaster, nonce);
-	if (!nonceOk) return reject(`nonce ${nonce} not higher than last seen`);
-
-	// PoW required
-	const powResult = await verifyPowField(op, POW_CONFIG.MATCH_RESULT);
-	if (powResult) return powResult;
-
-	// Compact hash verification
-	const cardHex = (isCompact ? op.payload.c : undefined) as string | undefined;
-	const compactHash = (isCompact ? op.payload.ch : undefined) as string | undefined;
-	const seed = (isCompact ? op.payload.s : op.payload.seed) as string ?? '';
-	const version = Number(isCompact ? op.payload.v : 0);
-
-	if (isCompact && compactHash && cardHex) {
-		const chInput = { m: op.payload.m, w: winner, l: loser ?? '', n: nonce, s: seed, v: version, c: cardHex };
-		const expectedCh = await sha256Hash(canonicalStringify(chInput));
-		if (expectedCh !== compactHash) {
-			return reject(`compact hash mismatch: expected=${expectedCh}, got=${compactHash}`);
-		}
-	}
-
-	// Dual-signature verification for ranked
-	const matchType = isCompact ? 'ranked' : ((op.payload.matchType as string) ?? 'casual');
-	const counterparty = op.broadcaster === p1 ? p2 : p1;
-
-	if (matchType === 'ranked') {
-		// Check for anchored pubkeys first (v1 spec)
-		const mId = (isCompact ? op.payload.m : op.payload.matchId) as string;
-		const anchor = mId ? await deps.state.getMatchAnchor(mId) : null;
-
-		const sigMessage = isCompact
-			? `${mId}:${winner}:${loser ?? ''}:${nonce}`
-			: `${mId}:${winner}`;
-
-		let broadcasterSig: string | undefined;
-		let counterpartySig: string | undefined;
-
-		if (isCompact) {
-			const sig = op.payload.sig as { b?: string; c?: string } | undefined;
-			broadcasterSig = sig?.b;
-			counterpartySig = sig?.c;
-		} else {
-			const sigs = op.payload.signatures as { broadcaster?: string; counterparty?: string } | undefined;
-			broadcasterSig = sigs?.broadcaster;
-			counterpartySig = sigs?.counterparty;
-		}
-
-		if (!broadcasterSig || !counterpartySig) {
-			return reject('ranked match missing dual signatures');
-		}
-
-		// Signature verification strategy depends on whether an anchor exists
-		let bValid: boolean, cValid: boolean;
-
-		if (anchor?.pubkeyA && anchor?.pubkeyB) {
-			// Canonical path: verify against anchored keys (no fallback)
-			const bKey = op.broadcaster === anchor.playerA ? anchor.pubkeyA : anchor.pubkeyB;
-			const cKey = op.broadcaster === anchor.playerA ? anchor.pubkeyB : anchor.pubkeyA;
-			[bValid, cValid] = await Promise.all([
-				deps.sigs.verifyAnchored(bKey, sigMessage, broadcasterSig),
-				deps.sigs.verifyAnchored(cKey, sigMessage, counterpartySig),
-			]);
-		} else if (!genesis.sealed) {
-			// Legacy pre-seal path ONLY: no anchor exists, verify against current keys
-			// This is acceptable because pre-seal matches predate the anchor requirement
-			[bValid, cValid] = await Promise.all([
-				deps.sigs.verifyCurrentKey(op.broadcaster, sigMessage, broadcasterSig),
-				deps.sigs.verifyCurrentKey(counterparty, sigMessage, counterpartySig),
-			]);
-		} else {
-			// Post-seal match with no anchor: reject. The spec requires match_anchor
-			// with pinned pubkeys for all canonical (post-seal) ranked matches.
-			return reject('post-seal ranked match requires match_anchor with pinned pubkeys');
-		}
-
-		if (!bValid) return reject(`broadcaster signature failed for ${op.broadcaster}`);
-		if (!cValid) return reject(`counterparty signature failed for ${counterparty}`);
-	}
-
-	// All validation passed — derive ELO, RUNE, XP
-
-	if (matchType === 'ranked' && p2) {
-		// ELO derivation (K=32)
-		const winnerElo = await deps.state.getElo(winner);
-		const loserAccount = winner === p1 ? p2 : p1;
-		const loserElo = await deps.state.getElo(loserAccount);
-
-		const expected = 1 / (1 + Math.pow(10, (loserElo.elo - winnerElo.elo) / 400));
-		const newWinnerElo = Math.round(winnerElo.elo + ELO_K_FACTOR * (1 - expected));
-		const newLoserElo = Math.max(Math.round(loserElo.elo + ELO_K_FACTOR * (0 - (1 - expected))), ELO_FLOOR);
-
-		await deps.state.putElo({ ...winnerElo, elo: newWinnerElo, wins: winnerElo.wins + 1 });
-		await deps.state.putElo({ ...loserElo, elo: newLoserElo, losses: loserElo.losses + 1 });
-
-		// RUNE rewards
-		const winnerBal = await deps.state.getTokenBalance(winner);
-		await deps.state.putTokenBalance({ ...winnerBal, RUNE: winnerBal.RUNE + RUNE_WIN_RANKED });
-
-		const loserBal = await deps.state.getTokenBalance(loserAccount);
-		await deps.state.putTokenBalance({ ...loserBal, RUNE: loserBal.RUNE + RUNE_LOSS_RANKED });
-	}
-
-	// XP accumulation from card hex
-	if (cardHex && winner) {
-		const winnerCardIds = new Set(decodeCardIds(cardHex));
-		const winnerNFTs = await deps.state.getCardsByOwner(winner);
-
-		for (const nft of winnerNFTs) {
-			if (!winnerCardIds.has(nft.cardId)) continue;
-			const xpGain = XP_PER_WIN[nft.rarity] ?? XP_PER_WIN.common;
-			if (xpGain <= 0) continue;
-			await deps.state.putCard({ ...nft, xp: nft.xp + xpGain });
-		}
-	}
+	await applyRankedMatchSettlement(details, deps);
+	await applyWinnerCardXp(details, deps);
 
 	return { status: 'applied' };
+}
+
+function parseMatchResultDetails(op: ProtocolOp): MatchResultDetails | OpResult {
+	const isCompact = typeof op.payload.m === 'string';
+	const payloadFields = extractMatchResultPayloadFields(op, isCompact);
+	if (!payloadFields.winner) return reject('missing winner');
+	const participants = getMatchParticipants(op, isCompact, payloadFields.winner, payloadFields.loser);
+	if (isOpResult(participants)) return participants;
+	return {
+		...participants,
+		...payloadFields,
+		counterparty: op.broadcaster === participants.p1 ? participants.p2 : participants.p1,
+	};
+}
+
+function extractMatchResultPayloadFields(
+	op: ProtocolOp,
+	isCompact: boolean,
+): Omit<MatchResultDetails, keyof MatchParticipants | 'counterparty'> {
+	const matchIdValue = isCompact ? op.payload.m : op.payload.matchId;
+	return {
+		isCompact,
+		winner: (isCompact ? op.payload.w : op.payload.winnerId) as string,
+		loser: (isCompact ? op.payload.l : null) as string | null,
+		nonce: Number(isCompact ? op.payload.n : op.payload.result_nonce ?? 0),
+		matchType: isCompact ? 'ranked' : ((op.payload.matchType as string) ?? 'casual'),
+		matchId: typeof matchIdValue === 'string' ? matchIdValue : '',
+		cardHex: isCompact ? op.payload.c as string | undefined : undefined,
+		compactHash: isCompact ? op.payload.ch as string | undefined : undefined,
+		seed: ((isCompact ? op.payload.s : op.payload.seed) as string | undefined) ?? '',
+		version: Number(isCompact ? op.payload.v : 0),
+	};
+}
+
+function getMatchParticipants(
+	op: ProtocolOp,
+	isCompact: boolean,
+	winner: string,
+	loser: string | null,
+): MatchParticipants | OpResult {
+	if (isCompact) {
+		return { p1: winner, p2: loser ?? '' };
+	}
+
+	const pl1 = op.payload.player1 as Record<string, unknown> | undefined;
+	const pl2 = op.payload.player2 as Record<string, unknown> | undefined;
+	if (!pl1 || !pl2) return reject('missing player data');
+
+	return {
+		p1: pl1.hiveUsername as string,
+		p2: pl2.hiveUsername as string,
+	};
+}
+
+function validateMatchResultParticipants(
+	op: ProtocolOp,
+	details: MatchResultDetails,
+): OpResult | null {
+	if (!details.p1 || !details.p2 || details.p1 === details.p2) {
+		return reject('self-play or empty username');
+	}
+
+	if (op.broadcaster !== details.p1 && op.broadcaster !== details.p2) {
+		return reject('broadcaster not a participant');
+	}
+
+	return details.winner !== details.p1 && details.winner !== details.p2
+		? reject('winner must be a match participant')
+		: null;
+}
+
+async function validateMatchResultNonceAndPow(
+	op: ProtocolOp,
+	nonce: number,
+	deps: ProtocolCoreDeps,
+): Promise<OpResult | null> {
+	const nonceOk = await deps.state.advanceNonce(op.broadcaster, nonce);
+	if (!nonceOk) {
+		return reject(`nonce ${nonce} not higher than last seen`);
+	}
+
+	return verifyPowField(op, POW_CONFIG.MATCH_RESULT);
+}
+
+async function validateCompactMatchHash(
+	op: ProtocolOp,
+	details: MatchResultDetails,
+): Promise<OpResult | null> {
+	if (!details.isCompact || !details.compactHash || !details.cardHex) {
+		return null;
+	}
+
+	const chInput = {
+		m: op.payload.m,
+		w: details.winner,
+		l: details.loser ?? '',
+		n: details.nonce,
+		s: details.seed,
+		v: details.version,
+		c: details.cardHex,
+	};
+	const expectedCh = await sha256Hash(canonicalStringify(chInput));
+	return expectedCh !== details.compactHash
+		? reject(`compact hash mismatch: expected=${expectedCh}, got=${details.compactHash}`)
+		: null;
+}
+
+async function validateRankedMatchSignatures(
+	op: ProtocolOp,
+	details: MatchResultDetails,
+	genesis: GenesisRecord,
+	deps: ProtocolCoreDeps,
+): Promise<OpResult | null> {
+	if (details.matchType !== 'ranked') {
+		return null;
+	}
+
+	const signatures = extractMatchResultSignatures(op, details.isCompact);
+	if (isOpResult(signatures)) return signatures;
+
+	const anchor = details.matchId
+		? await deps.state.getMatchAnchor(details.matchId)
+		: null;
+	const sigMessage = details.isCompact
+		? `${details.matchId}:${details.winner}:${details.loser ?? ''}:${details.nonce}`
+		: `${details.matchId}:${details.winner}`;
+
+	let bValid: boolean;
+	let cValid: boolean;
+	if (anchor?.pubkeyA && anchor?.pubkeyB) {
+		const bKey = op.broadcaster === anchor.playerA ? anchor.pubkeyA : anchor.pubkeyB;
+		const cKey = op.broadcaster === anchor.playerA ? anchor.pubkeyB : anchor.pubkeyA;
+		[bValid, cValid] = await Promise.all([
+			deps.sigs.verifyAnchored(bKey, sigMessage, signatures.broadcasterSig),
+			deps.sigs.verifyAnchored(cKey, sigMessage, signatures.counterpartySig),
+		]);
+	} else if (!genesis.sealed) {
+		[bValid, cValid] = await Promise.all([
+			deps.sigs.verifyCurrentKey(op.broadcaster, sigMessage, signatures.broadcasterSig),
+			deps.sigs.verifyCurrentKey(details.counterparty, sigMessage, signatures.counterpartySig),
+		]);
+	} else {
+		return reject('post-seal ranked match requires match_anchor with pinned pubkeys');
+	}
+
+	if (!bValid) return reject(`broadcaster signature failed for ${op.broadcaster}`);
+	return !cValid
+		? reject(`counterparty signature failed for ${details.counterparty}`)
+		: null;
+}
+
+function extractMatchResultSignatures(
+	op: ProtocolOp,
+	isCompact: boolean,
+): SignaturePair | OpResult {
+	if (isCompact) {
+		const sig = op.payload.sig as { b?: string; c?: string } | undefined;
+		if (!sig?.b || !sig?.c) return reject('ranked match missing dual signatures');
+		return { broadcasterSig: sig.b, counterpartySig: sig.c };
+	}
+
+	const sigs = op.payload.signatures as { broadcaster?: string; counterparty?: string } | undefined;
+	if (!sigs?.broadcaster || !sigs?.counterparty) {
+		return reject('ranked match missing dual signatures');
+	}
+
+	return {
+		broadcasterSig: sigs.broadcaster,
+		counterpartySig: sigs.counterparty,
+	};
+}
+
+async function applyRankedMatchSettlement(
+	details: MatchResultDetails,
+	deps: ProtocolCoreDeps,
+): Promise<void> {
+	if (details.matchType !== 'ranked' || !details.p2) {
+		return;
+	}
+
+	const loserAccount = details.winner === details.p1 ? details.p2 : details.p1;
+	const winnerElo = await deps.state.getElo(details.winner);
+	const loserElo = await deps.state.getElo(loserAccount);
+	const expected = 1 / (1 + Math.pow(10, (loserElo.elo - winnerElo.elo) / 400));
+	const newWinnerElo = Math.round(winnerElo.elo + ELO_K_FACTOR * (1 - expected));
+	const newLoserElo = Math.max(
+		Math.round(loserElo.elo + ELO_K_FACTOR * (0 - (1 - expected))),
+		ELO_FLOOR,
+	);
+
+	await deps.state.putElo({ ...winnerElo, elo: newWinnerElo, wins: winnerElo.wins + 1 });
+	await deps.state.putElo({ ...loserElo, elo: newLoserElo, losses: loserElo.losses + 1 });
+
+	const winnerBal = await deps.state.getTokenBalance(details.winner);
+	await deps.state.putTokenBalance({ ...winnerBal, RUNE: winnerBal.RUNE + RUNE_WIN_RANKED });
+
+	const loserBal = await deps.state.getTokenBalance(loserAccount);
+	await deps.state.putTokenBalance({ ...loserBal, RUNE: loserBal.RUNE + RUNE_LOSS_RANKED });
+}
+
+async function applyWinnerCardXp(
+	details: MatchResultDetails,
+	deps: ProtocolCoreDeps,
+): Promise<void> {
+	if (!details.cardHex || !details.winner) {
+		return;
+	}
+
+	const winnerCardIds = new Set(decodeCardIds(details.cardHex));
+	const winnerNFTs = await deps.state.getCardsByOwner(details.winner);
+	for (const nft of winnerNFTs) {
+		if (!winnerCardIds.has(nft.cardId)) continue;
+		const xpGain = XP_PER_WIN[nft.rarity] ?? XP_PER_WIN.common;
+		if (xpGain <= 0) continue;
+		await deps.state.putCard({ ...nft, xp: nft.xp + xpGain });
+	}
 }
 
 function decodeCardIds(hex: string): number[] {
@@ -623,13 +812,23 @@ async function applyRewardClaim(op: ProtocolOp, deps: ProtocolCoreDeps): Promise
 		return reject(`condition not met for ${rewardId}`);
 	}
 
-	// Mint reward cards from reward_supply (NOT pack_supply)
+	await mintRewardCards(op, rewardId, reward, deps);
+	await applyRewardRuneBonus(op.broadcaster, reward.runeBonus, deps);
+
+	await deps.state.putRewardClaim(op.broadcaster, rewardId, op.blockNum);
+	return { status: 'applied' };
+}
+
+async function mintRewardCards(
+	op: ProtocolOp,
+	rewardId: string,
+	reward: RewardDefinition,
+	deps: ProtocolCoreDeps,
+): Promise<void> {
 	for (let i = 0; i < reward.cards.length; i++) {
 		const rc = reward.cards[i];
 		const uid = `reward-${rewardId}-${op.broadcaster}-${i}`;
-
-		const existing = await deps.state.getCard(uid);
-		if (existing) continue;
+		if (await deps.state.getCard(uid)) continue;
 
 		const supply = await deps.state.getSupply(rc.rarity, 'reward');
 		if (supply && supply.minted >= supply.cap) continue;
@@ -657,17 +856,22 @@ async function applyRewardClaim(op: ProtocolOp, deps: ProtocolCoreDeps): Promise
 		if (supply) {
 			await deps.state.putSupply({ ...supply, minted: supply.minted + 1 });
 		}
+
 		await deps.state.putSupply({ key: cardKey, pool: 'reward', cap, minted: cardMinted + 1 });
 	}
+}
 
-	// RUNE bonus
-	if (reward.runeBonus > 0) {
-		const bal = await deps.state.getTokenBalance(op.broadcaster);
-		await deps.state.putTokenBalance({ ...bal, RUNE: bal.RUNE + reward.runeBonus });
+async function applyRewardRuneBonus(
+	account: string,
+	runeBonus: number,
+	deps: ProtocolCoreDeps,
+): Promise<void> {
+	if (runeBonus <= 0) {
+		return;
 	}
 
-	await deps.state.putRewardClaim(op.broadcaster, rewardId, op.blockNum);
-	return { status: 'applied' };
+	const bal = await deps.state.getTokenBalance(account);
+	await deps.state.putTokenBalance({ ...bal, RUNE: bal.RUNE + runeBonus });
 }
 
 function checkRewardCondition(
@@ -896,38 +1100,58 @@ async function applyLegacyPackOpen(op: ProtocolOp, deps: ProtocolCoreDeps): Prom
 	// Legacy pack_open is only valid BEFORE seal (v1 activation boundary)
 	if (genesis.sealed) return reject('legacy pack_open rejected after seal');
 
-	// Use legacy txid-seeded LCG (exact reproduction of current behavior)
-	// This preserves pre-seal pack history during replay
-	let seedHex = op.trxId.replace(/[^0-9a-f]/gi, '').slice(0, 8);
-	if (seedHex.length < 4) {
-		let hash = 0;
-		for (let i = 0; i < op.trxId.length; i++) {
-			hash = ((hash << 5) - hash + op.trxId.charCodeAt(i)) | 0;
-		}
-		seedHex = (Math.abs(hash) >>> 0).toString(16).slice(0, 8);
-	}
-	const seed = parseInt(seedHex || 'a7f3', 16);
-
 	const packType = (op.payload.pack_type as string) ?? 'standard';
 	const quantity = Math.min(Number(op.payload.quantity ?? 1), 10);
-	const cardCount = (PACK_SIZES[packType] ?? 5) * quantity;
+	const seed = deriveLegacyPackSeed(op.trxId);
+	const cardIds = getLegacyPackCardIds(packType, quantity, seed, deps.cards);
+	if (isOpResult(cardIds)) return cardIds;
 
-	const ranges = PACK_ID_RANGES[packType] ?? PACK_ID_RANGES.standard;
-	const mintableIds = deps.cards.getCollectibleIdsInRanges(ranges);
-	if (mintableIds.length === 0) return reject('no mintable cards for pack type');
+	const applied = await mintLegacyPackCards(op, cardIds, deps);
+	return applied ? { status: 'applied' } : { status: 'ignored' };
+}
 
-	let s = Math.max(seed, 1);
-	const cardIds: number[] = [];
-	for (let i = 0; i < cardCount; i++) {
-		s = lcgNext(s);
-		cardIds.push(mintableIds[s % mintableIds.length]);
+function deriveLegacyPackSeed(trxId: string): number {
+	let seedHex = trxId.replace(/[^0-9a-f]/gi, '').slice(0, 8);
+	if (seedHex.length >= 4) {
+		return parseInt(seedHex, 16);
 	}
 
+	let hash = 0;
+	for (let i = 0; i < trxId.length; i++) {
+		hash = ((hash << 5) - hash + trxId.charCodeAt(i)) | 0;
+	}
+
+	seedHex = (Math.abs(hash) >>> 0).toString(16).slice(0, 8);
+	return parseInt(seedHex || 'a7f3', 16);
+}
+
+function getLegacyPackCardIds(
+	packType: string,
+	quantity: number,
+	seed: number,
+	cardProvider: CardDataProvider,
+): number[] | OpResult {
+	const ranges = PACK_ID_RANGES[packType] ?? PACK_ID_RANGES.standard;
+	const mintableIds = cardProvider.getCollectibleIdsInRanges(ranges);
+	if (mintableIds.length === 0) return reject('no mintable cards for pack type');
+
+	const cardCount = (PACK_SIZES[packType] ?? 5) * quantity;
+	let s = Math.max(seed, 1);
+	return Array.from({ length: cardCount }, () => {
+		s = lcgNext(s);
+		return mintableIds[s % mintableIds.length];
+	});
+}
+
+async function mintLegacyPackCards(
+	op: ProtocolOp,
+	cardIds: number[],
+	deps: ProtocolCoreDeps,
+): Promise<boolean> {
 	let applied = false;
 	for (let i = 0; i < cardIds.length; i++) {
 		const uid = `${op.trxId}-${i}`;
-		const existing = await deps.state.getCard(uid);
-		if (existing) continue;
+		if (await deps.state.getCard(uid)) continue;
 
 		const cardDef = deps.cards.getCardById(cardIds[i]);
 		if (!cardDef) continue;
@@ -953,10 +1177,11 @@ async function applyLegacyPackOpen(op: ProtocolOp, deps: ProtocolCoreDeps): Prom
 		if (supply) {
 			await deps.state.putSupply({ ...supply, minted: supply.minted + 1 });
 		}
+
 		applied = true;
 	}
 
-	return applied ? { status: 'applied' } : { status: 'ignored' };
+	return applied;
 }
 
 function lcgNext(seed: number): number {
@@ -1183,31 +1408,12 @@ async function applyCardReplicate(op: ProtocolOp, deps: ProtocolCoreDeps): Promi
 
 async function applyCardMerge(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {
 	const sourceUids = op.payload.source_uids as [string, string];
-	if (!Array.isArray(sourceUids) || sourceUids.length !== 2) return reject('source_uids must be array of exactly 2');
+	const mergeCards = await loadMergeCards(sourceUids, op.broadcaster, deps);
+	if (isOpResult(mergeCards)) return mergeCards;
 
-	const [cardA, cardB] = await Promise.all([
-		deps.state.getCard(sourceUids[0]),
-		deps.state.getCard(sourceUids[1]),
-	]);
-
-	if (!cardA) return reject(`card ${sourceUids[0]} not found`);
-	if (!cardB) return reject(`card ${sourceUids[1]} not found`);
-	if (cardA.owner !== op.broadcaster) return reject(`card ${sourceUids[0]} not owned by broadcaster`);
-	if (cardB.owner !== op.broadcaster) return reject(`card ${sourceUids[1]} not owned by broadcaster`);
-	if (cardA.cardId !== cardB.cardId) return reject('cards must be same template (cardId)');
-
-	if ((cardA.replicaCount ?? 0) > 0) return reject(`card ${sourceUids[0]} has active replicas`);
-	if ((cardB.replicaCount ?? 0) > 0) return reject(`card ${sourceUids[1]} has active replicas`);
-
-	// Both cards must share the same genetic origin (same originDna lineage)
-	const originA = cardA.originDna ?? await sha256Hash(`${cardA.cardId}|${cardA.edition}|${cardA.rarity}|genesis`);
-	const originB = cardB.originDna ?? await sha256Hash(`${cardB.cardId}|${cardB.edition}|${cardB.rarity}|genesis`);
-	if (originA !== originB) return reject('cards must share the same originDna to merge');
-
-	const originDna = originA;
-	const dnaA = cardA.instanceDna ?? await sha256Hash(`${originDna}|genesis|${cardA.mintTrxId}|0`);
-	const dnaB = cardB.instanceDna ?? await sha256Hash(`${originDna}|genesis|${cardB.mintTrxId}|0`);
-	const mergedDna = await sha256Hash(`${dnaA}|${dnaB}|merge|${op.trxId}`);
+	const [cardA, cardB] = mergeCards;
+	const lineage = await resolveMergeLineage(cardA, cardB, op.trxId);
+	if (isOpResult(lineage)) return lineage;
 
 	const mergedLevel = Math.min(MAX_CARD_LEVEL, Math.max(cardA.level, cardB.level) + 1);
 
@@ -1224,9 +1430,9 @@ async function applyCardMerge(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 		mintTrxId: op.trxId,
 		mintBlockNum: op.blockNum,
 		lastTransferBlock: 0,
-		originDna,
-		instanceDna: mergedDna,
-		parentInstanceDna: dnaA,
+		originDna: lineage.originDna,
+		instanceDna: lineage.mergedDna,
+		parentInstanceDna: lineage.dnaA,
 		generation: 0,
 		replicaCount: 0,
 		mergedFrom: [cardA.uid, cardB.uid],
@@ -1238,6 +1444,62 @@ async function applyCardMerge(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	await deps.state.putCard(merged);
 
 	return { status: 'applied' };
+}
+
+async function loadMergeCards(
+	sourceUids: [string, string],
+	owner: string,
+	deps: ProtocolCoreDeps,
+): Promise<[CardAsset, CardAsset] | OpResult> {
+	if (!Array.isArray(sourceUids) || sourceUids.length !== 2) {
+		return reject('source_uids must be array of exactly 2');
+	}
+
+	const [cardA, cardB] = await Promise.all([
+		deps.state.getCard(sourceUids[0]),
+		deps.state.getCard(sourceUids[1]),
+	]);
+	if (!cardA) return reject(`card ${sourceUids[0]} not found`);
+	if (!cardB) return reject(`card ${sourceUids[1]} not found`);
+	if (cardA.owner !== owner) return reject(`card ${sourceUids[0]} not owned by broadcaster`);
+	if (cardB.owner !== owner) return reject(`card ${sourceUids[1]} not owned by broadcaster`);
+	if (cardA.cardId !== cardB.cardId) return reject('cards must be same template (cardId)');
+	if ((cardA.replicaCount ?? 0) > 0) return reject(`card ${sourceUids[0]} has active replicas`);
+	if ((cardB.replicaCount ?? 0) > 0) return reject(`card ${sourceUids[1]} has active replicas`);
+
+	return [cardA, cardB];
+}
+
+async function resolveMergeLineage(
+	cardA: CardAsset,
+	cardB: CardAsset,
+	trxId: string,
+): Promise<{ originDna: string; dnaA: string; mergedDna: string } | OpResult> {
+	const originA = await getCardOriginDna(cardA);
+	const originB = await getCardOriginDna(cardB);
+	if (originA !== originB) {
+		return reject('cards must share the same originDna to merge');
+	}
+
+	const dnaA = await getCardInstanceDna(cardA, originA);
+	const dnaB = await getCardInstanceDna(cardB, originA);
+	return {
+		originDna: originA,
+		dnaA,
+		mergedDna: await sha256Hash(`${dnaA}|${dnaB}|merge|${trxId}`),
+	};
+}
+
+function getCardOriginDna(card: CardAsset): Promise<string> {
+	return card.originDna
+		? Promise.resolve(card.originDna)
+		: sha256Hash(`${card.cardId}|${card.edition}|${card.rarity}|genesis`);
+}
+
+function getCardInstanceDna(card: CardAsset, originDna: string): Promise<string> {
+	return card.instanceDna
+		? Promise.resolve(card.instanceDna)
+		: sha256Hash(`${originDna}|genesis|${card.mintTrxId}|0`);
 }
 
 // ============================================================
@@ -1383,45 +1645,18 @@ async function applyMarketBuy(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	if (!listing.active) return reject('listing not active');
 	if (listing.seller === op.broadcaster) return reject('cannot buy own listing');
 
-	// Verify companion HIVE transfer (payment proof)
-	if (paymentTrxId) {
-		const companion = await deps.state.getCompanionTransfer(op.trxId);
-		if (companion) {
-			if (companion.to !== listing.seller) return reject('payment recipient mismatch');
-			const amount = parseFloat(companion.amount);
-			if (amount < listing.price) return reject(`payment insufficient: ${amount} < ${listing.price}`);
-		}
-	}
+	const paymentResult = await verifyCompanionPayment(op, paymentTrxId, listing.seller, listing.price, deps);
+	if (paymentResult) return paymentResult;
 
-	// Transfer NFT ownership
-	if (listing.nftType === 'card') {
-		const card = await deps.state.getCard(listing.nftUid);
-		if (!card) return reject('listed card no longer exists');
-		if (card.owner !== listing.seller) return reject('seller no longer owns card');
-		card.owner = op.broadcaster;
-		card.lastTransferBlock = op.blockNum;
-		await deps.state.putCard(card);
-	} else {
-		const pack = await deps.state.getPack(listing.nftUid);
-		if (!pack) return reject('listed pack no longer exists');
-		if (pack.owner !== listing.seller) return reject('seller no longer owns pack');
-		pack.owner = op.broadcaster;
-		pack.lastTransferBlock = op.blockNum;
-		await deps.state.putPack(pack);
-	}
+	const nft = await loadOwnedMarketNft(listing.nftUid, listing.nftType, listing.seller, 'seller no longer owns', deps);
+	if (isOpResult(nft)) return nft;
+	await transferMarketNft(nft, op.broadcaster, op.blockNum, deps);
 
 	// Deactivate listing
 	listing.active = false;
 	await deps.state.putListing(listing);
 
-	// Auto-reject all pending offers on this NFT
-	const pendingOffers = await deps.state.getOffersByNft(listing.nftUid);
-	for (const offer of pendingOffers) {
-		if (offer.status === 'pending') {
-			offer.status = 'rejected';
-			await deps.state.putOffer(offer);
-		}
-	}
+	await rejectPendingOffers(listing.nftUid, deps);
 
 	return { status: 'applied' };
 }
@@ -1467,34 +1702,14 @@ async function applyMarketAccept(op: ProtocolOp, deps: ProtocolCoreDeps): Promis
 	if (!offer) return reject('offer not found');
 	if (offer.status !== 'pending') return reject('offer not pending');
 
-	// Verify the accepter owns the NFT
-	const card = await deps.state.getCard(offer.nftUid);
-	const pack = card ? null : await deps.state.getPack(offer.nftUid);
-	if (!card && !pack) return reject('NFT no longer exists');
+	const nft = await loadAnyMarketNft(offer.nftUid, deps);
+	if (isOpResult(nft)) return nft;
+	if (nft.asset.owner !== op.broadcaster) return reject('not NFT owner');
 
-	const owner = card ? card.owner : pack!.owner;
-	if (owner !== op.broadcaster) return reject('not NFT owner');
+	const paymentResult = await verifyCompanionPayment(op, paymentTrxId, op.broadcaster, offer.price, deps);
+	if (paymentResult) return paymentResult;
 
-	// Verify companion HIVE transfer (payment proof from buyer)
-	if (paymentTrxId) {
-		const companion = await deps.state.getCompanionTransfer(op.trxId);
-		if (companion) {
-			if (companion.to !== op.broadcaster) return reject('payment recipient mismatch');
-			const amount = parseFloat(companion.amount);
-			if (amount < offer.price) return reject(`payment insufficient: ${amount} < ${offer.price}`);
-		}
-	}
-
-	// Transfer ownership
-	if (card) {
-		card.owner = offer.buyer;
-		card.lastTransferBlock = op.blockNum;
-		await deps.state.putCard(card);
-	} else {
-		pack!.owner = offer.buyer;
-		pack!.lastTransferBlock = op.blockNum;
-		await deps.state.putPack(pack!);
-	}
+	await transferMarketNft(nft, offer.buyer, op.blockNum, deps);
 
 	// Mark offer accepted
 	offer.status = 'accepted';
@@ -1508,16 +1723,106 @@ async function applyMarketAccept(op: ProtocolOp, deps: ProtocolCoreDeps): Promis
 		await deps.state.putListing(listing);
 	}
 
-	// Auto-reject other pending offers
-	const otherOffers = await deps.state.getOffersByNft(offer.nftUid);
-	for (const other of otherOffers) {
-		if (other.offerId !== offerId && other.status === 'pending') {
-			other.status = 'rejected';
-			await deps.state.putOffer(other);
-		}
-	}
+	await rejectPendingOffers(offer.nftUid, deps, offerId);
 
 	return { status: 'applied' };
+}
+
+async function verifyCompanionPayment(
+	op: ProtocolOp,
+	paymentTrxId: string,
+	expectedRecipient: string,
+	expectedAmount: number,
+	deps: ProtocolCoreDeps,
+): Promise<OpResult | null> {
+	if (!paymentTrxId) {
+		return null;
+	}
+
+	const companion = await deps.state.getCompanionTransfer(op.trxId);
+	if (!companion) {
+		return null;
+	}
+
+	if (companion.to !== expectedRecipient) {
+		return reject('payment recipient mismatch');
+	}
+
+	const amount = parseFloat(companion.amount);
+	return amount < expectedAmount
+		? reject(`payment insufficient: ${amount} < ${expectedAmount}`)
+		: null;
+}
+
+async function loadOwnedMarketNft(
+	nftUid: string,
+	nftType: 'card' | 'pack',
+	owner: string,
+	missingOwnerPrefix: string,
+	deps: ProtocolCoreDeps,
+): Promise<MarketNftAsset | OpResult> {
+	if (nftType === 'card') {
+		const card = await deps.state.getCard(nftUid);
+		if (!card) return reject('listed card no longer exists');
+		return card.owner !== owner
+			? reject(`${missingOwnerPrefix} card`)
+			: { nftType: 'card', asset: card };
+	}
+
+	const pack = await deps.state.getPack(nftUid);
+	if (!pack) return reject('listed pack no longer exists');
+	return pack.owner !== owner
+		? reject(`${missingOwnerPrefix} pack`)
+		: { nftType: 'pack', asset: pack };
+}
+
+async function loadAnyMarketNft(
+	nftUid: string,
+	deps: ProtocolCoreDeps,
+): Promise<MarketNftAsset | OpResult> {
+	const card = await deps.state.getCard(nftUid);
+	if (card) {
+		return { nftType: 'card', asset: card };
+	}
+
+	const pack = await deps.state.getPack(nftUid);
+	return pack
+		? { nftType: 'pack', asset: pack }
+		: reject('NFT no longer exists');
+}
+
+async function transferMarketNft(
+	nft: MarketNftAsset,
+	newOwner: string,
+	blockNum: number,
+	deps: ProtocolCoreDeps,
+): Promise<void> {
+	if (nft.nftType === 'card') {
+		await deps.state.putCard({
+			...nft.asset,
+			owner: newOwner,
+			lastTransferBlock: blockNum,
+		});
+		return;
+	}
+
+	await deps.state.putPack({
+		...nft.asset,
+		owner: newOwner,
+		lastTransferBlock: blockNum,
+	});
+}
+
+async function rejectPendingOffers(
+	nftUid: string,
+	deps: ProtocolCoreDeps,
+	excludedOfferId?: string,
+): Promise<void> {
+	const pendingOffers = await deps.state.getOffersByNft(nftUid);
+	for (const offer of pendingOffers) {
+		if (offer.status !== 'pending' || offer.offerId === excludedOfferId) continue;
+		await deps.state.putOffer({ ...offer, status: 'rejected' });
+	}
 }
 
 async function applyMarketReject(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpResult> {

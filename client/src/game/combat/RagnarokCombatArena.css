@@ -1040,6 +1040,9 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 8px;
+  max-width: 100%;
+  overflow: hidden;
   z-index: 90;
   pointer-events: auto;
 }
@@ -1285,11 +1288,13 @@
   width: var(--hero-card-width, 160px);
   aspect-ratio: 3/4;
   max-width: 192px;
+  pointer-events: auto;
   cursor: pointer;
   transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
   margin: 0;
   padding: 0;
   position: relative;
+  z-index: 50;
 }
 
 /* Visual overlay for hero square - pointer-events: none so clicks pass through to portrait */
@@ -1379,6 +1384,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .hero-card-frame {
@@ -1398,6 +1405,8 @@
   position: relative;
   transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
   isolation: isolate;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 /* Ornate metallic border using pseudo-element */
@@ -1470,6 +1479,8 @@
   position: relative;
   width: 100%;
   overflow: hidden;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .hero-portrait img {
@@ -2308,10 +2319,12 @@
 }
 
 .fold-message {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #94a3b8;
   text-align: center;
+  text-shadow: 0 0 10px rgba(148, 163, 184, 0.4);
 }
 
 .final-health {
@@ -2624,6 +2637,147 @@
     background: rgba(251, 191, 36, 0.9);
     box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
   }
+}
+
+/* ========================================
+   Battle Intel
+   ======================================== */
+.battle-intel {
+  position: absolute;
+  top: 108px;
+  left: 16px;
+  z-index: 520;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.battle-intel-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: rgba(8, 12, 22, 0.84);
+  color: #f8d483;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.26);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.battle-intel-toggle:hover {
+  transform: translateY(-1px);
+  border-color: rgba(245, 158, 11, 0.42);
+  background: rgba(15, 23, 42, 0.92);
+}
+
+.battle-intel-toggle-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fde68a;
+}
+
+.battle-intel-panel {
+  width: 290px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: linear-gradient(180deg, rgba(8, 12, 22, 0.96) 0%, rgba(15, 23, 42, 0.94) 100%);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.4);
+}
+
+.battle-intel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.battle-intel-section + .battle-intel-section {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.battle-intel-section-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #f8d483;
+}
+
+.battle-intel-emphasis {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.battle-intel-copy {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.battle-intel-row {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.55);
+  color: rgba(226, 232, 240, 0.86);
+  font-size: 12px;
+}
+
+.battle-intel-row-icon {
+  text-align: center;
+}
+
+.battle-intel-row-text {
+  line-height: 1.45;
+  text-transform: capitalize;
+}
+
+.battle-intel-row.friendly,
+.battle-intel-row.player {
+  border: 1px solid rgba(34, 197, 94, 0.14);
+}
+
+.battle-intel-row.enemy,
+.battle-intel-row.opponent {
+  border: 1px solid rgba(239, 68, 68, 0.16);
+}
+
+.battle-intel-row.imminent {
+  border: 1px solid rgba(168, 85, 247, 0.28);
+}
+
+.battle-intel-timer,
+.battle-intel-source {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(248, 200, 120, 0.75);
 }
 
 /* ========================================
@@ -3142,6 +3296,7 @@
   position: absolute;
   border-radius: 50%;
   opacity: 0;
+  pointer-events: none;
 }
 
 /* ========================================
@@ -3594,14 +3749,6 @@
   letter-spacing: 1px;
 }
 
-.fold-message {
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #94a3b8;
-  text-shadow: 0 0 10px rgba(148, 163, 184, 0.4);
-}
-
 .damage-text {
   font-family: 'Inter', sans-serif;
   font-size: 1.1rem;
@@ -3704,29 +3851,6 @@
 /* Dead .player-battlefield-zone, .opponent-battlefield-zone, .player-hero-zone, .opponent-hero-zone
    pointer-events removed — these classes are not in JSX */
 
-/* Hero squares - fully clickable with explicit z-index above overlays */
-.battlefield-hero-square {
-  pointer-events: auto;
-  cursor: pointer;
-  position: relative;
-  z-index: 50;
-}
-
-/* Hero card elements - clickable */
-.hero-card-wrapper,
-.hero-card-frame,
-.hero-portrait {
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-/* Decorative elements - never block clicks */
-.hero-elemental-aura,
-.hero-particles,
-.hero-particles .particle {
-  pointer-events: none;
-}
-
 /* Hand cards - always clickable */
 .hand-container .card-with-drag,
 .player-hand .card-with-drag {
@@ -3761,6 +3885,8 @@
   aspect-ratio: 3 / 4;
   max-width: none;
   max-height: none;
+  position: relative;
+  z-index: 10;
 }
 
 /* ========================================
@@ -3770,7 +3896,6 @@
    ======================================== */
 
 /* Ensure hero portrait is above the hole cards */
-.poker-hero-container .battlefield-hero-square,
 .poker-hero-container .battlefield-hero {
   position: relative;
   z-index: 10;
@@ -3891,16 +4016,6 @@
 
 /* Dead grid-area player-area removed */
 
-/* Activity Logs Zone */
-.activity-logs-dock {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px;
-  max-width: 100%;
-  overflow: hidden;
-}
-
 /* Dead duplicate .unified-betting-actions-container removed (canonical is later in file) */
 
 /* .zone-community is the inner container for community card slots */
@@ -3926,17 +4041,6 @@
   background: transparent;
   border: none;
   padding: 0;
-}
-
-.unified-betting-actions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  /* NO background/border - mana crystals must remain visible */
-  background: transparent;
-  border: none;
 }
 
 .action-buttons-group {
@@ -4118,20 +4222,6 @@
   margin-top: 8px;
 }
 
-.unified-betting-actions .bet-slider {
-  flex: 1;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-}
-
-.unified-betting-actions .action-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  width: 100%;
-}
-
 .unified-betting-actions .action-btn {
   background: #2a2d3e;
   border: 2px solid #4a4d5e;
@@ -4207,6 +4297,7 @@
   gap: 8px;
   justify-content: flex-start;
   flex-wrap: nowrap;
+  width: 100%;
 }
 
 /* New simplified button styles */

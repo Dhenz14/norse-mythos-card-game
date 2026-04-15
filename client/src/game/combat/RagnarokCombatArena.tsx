@@ -7,7 +7,8 @@ import {
   CombatAction,
   PokerCard,
   PokerHandRank,
-  getCombinedHandName
+  type PetData,
+  type ElementType,
 } from '../types/PokerCombatTypes';
 import { evaluatePokerHand } from '../stores/combat/pokerCombatSlice';
 import SimpleBattlefield from '../components/SimpleBattlefield';
@@ -18,7 +19,6 @@ import { adaptCardInstance } from '../utils/cards/cardInstanceAdapter';
 import { Position } from '../types/Position';
 import { TargetingOverlay } from '../components/TargetingOverlay';
 import { CardBurnOverlay } from '../components/CardBurnOverlay';
-import { useUnifiedUIStore } from '../stores/unifiedUIStore';
 import { ActionAnnouncement } from '../components/ActionAnnouncement';
 import './RagnarokCombatArena.css';
 import './GameViewport.css';
@@ -26,7 +26,6 @@ import AIAttackAnimationProcessor from '../components/AIAttackAnimationProcessor
 import { PixiParticleCanvas } from '../animations/PixiParticleCanvas';
 
 import { AnimationOverlay } from '../components/AnimationOverlay';
-import { ALL_NORSE_HEROES } from '../data/norseHeroes';
 import { ShowdownCelebration } from './components/ShowdownCelebration';
 import { TargetingPrompt } from './components/TargetingPrompt';
 import { HeroPowerPrompt } from './components/HeroPowerPrompt';
@@ -43,10 +42,7 @@ import { ElementBuffPopup } from './components/ElementBuffPopup';
 import { ElementMatchupBanner } from './components/ElementMatchupBanner';
 import { FirstStrikeAnimation } from './components/FirstStrikeAnimation';
 import { PhaseBanner } from './components/PhaseBanner';
-import { RiskDisplay } from './components/PotDisplay';
-import { WagerEffectsHUD } from './components/WagerEffectsHUD';
 import { useElementalBuff } from './hooks/useElementalBuff';
-import { canCardAttack as canCardAttackCheck } from './attackUtils';
 import { GameViewport } from './GameViewport';
 import { useSettingsStore } from '../stores/settingsStore';
 import CardRenderer from '../components/CardRendering/CardRenderer';
@@ -56,7 +52,6 @@ import { KingPassivePopup } from './components/KingPassivePopup';
 import type { ShowdownCelebration as ShowdownCelebrationState } from './hooks/useCombatEvents';
 import { isCardInWinningHand } from './utils/combatArenaUtils';
 import { debug } from '../config/debugConfig';
-import { playSound } from '../utils/soundUtils';
 import { GameLog } from '../components/GameLog';
 import { useGameLogIntegration } from '../hooks/useGameLogIntegration';
 import { usePokerDrama } from './hooks/usePokerDrama';
@@ -79,6 +74,7 @@ import { useBossPhases } from './hooks/useBossPhases';
 import { useCampaignStore, getMission } from '../campaign';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { getHeroFeud } from '../pvp/pvpData';
+import type { CardInstance } from '../types';
 
 const SwordIcon = () => (
 	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -107,6 +103,75 @@ const HelmIcon = () => (
 	</svg>
 );
 
+const PHASE_LABELS: Partial<Record<CombatPhase, string>> = {
+	[CombatPhase.MULLIGAN]: 'Mulligan',
+	[CombatPhase.SPELL_PET]: 'Spellcraft',
+	[CombatPhase.PRE_FLOP]: 'First Blood',
+	[CombatPhase.FAITH]: 'Faith',
+	[CombatPhase.FORESIGHT]: 'Foresight',
+	[CombatPhase.DESTINY]: 'Destiny',
+	[CombatPhase.RESOLUTION]: 'Showdown',
+	[CombatPhase.FIRST_STRIKE]: 'First Strike',
+};
+
+const WAGER_DESCRIPTIONS: Record<string, string> = {
+	double_blinds: 'Blinds doubled',
+	reduce_fold_penalty: 'Fold penalty reduced',
+	showdown_coin_flip: 'Bonus showdown coin flip',
+	increase_min_bet: 'Minimum bet increased',
+	hide_actions: 'Betting actions obscured',
+	peek_next_card: 'Peek next community card',
+	all_in_bonus: 'All-in damage bonus',
+	showdown_armor: 'Showdown win grants armor',
+	strong_hand_draw: 'Strong hands draw cards',
+	showdown_aoe: 'Showdown hits the whole board',
+	fold_heal: 'Enemy folds heal you',
+	all_in_buff: 'All-in buffs minions',
+	hand_rank_up: 'Hand rank increased',
+	showdown_rank_damage: 'Showdown damage scales with rank',
+	see_hole_cards: 'See enemy hole cards',
+	double_showdown: 'Showdown stakes doubled',
+};
+
+type WagerEffectCard = {
+	wagerEffect?: {
+		type?: string;
+	};
+};
+
+type CombatZonePosition = {
+	row?: number;
+	col?: number;
+};
+
+type ExtendedCardData = CardInstance['card'] & {
+	health?: number;
+	attack?: number;
+	petStage?: string;
+	evolvesFrom?: number;
+	petFamily?: string;
+};
+
+function asExtendedCardData(card: CardInstance['card']): ExtendedCardData {
+	return card as ExtendedCardData;
+}
+
+function getCombatUnitHealth(card: CardInstance): number {
+	return asExtendedCardData(card.card).health ?? card.currentHealth ?? 0;
+}
+
+function getCombatHeroClass(combatant: unknown): string | undefined {
+	if (!combatant || typeof combatant !== 'object') {
+		return undefined;
+	}
+
+	return (combatant as { heroClass?: string }).heroClass;
+}
+
+function getCombatElement(element?: ElementType | string): ElementType {
+	return (element as ElementType | undefined) ?? 'neutral';
+}
+
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
 }
@@ -134,13 +199,13 @@ interface UnifiedCombatArenaProps {
   opponentMana: number;
   opponentMaxMana: number;
   // Hero props
-  playerPet?: any; // eslint-disable-line @typescript-eslint/no-explicit-any -- PetData | CardInstance union
-  opponentPet?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  playerPet?: PetData;
+  opponentPet?: PetData;
   playerHpCommitted?: number;
   opponentHpCommitted?: number;
   playerLevel?: number;
   opponentLevel?: number;
-  playerSecrets?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  playerSecrets?: CardInstance[];
   playerHeroClass?: string;
   // Hero power
   onHeroPowerClick?: () => void;
@@ -157,13 +222,13 @@ interface UnifiedCombatArenaProps {
     heroName: string;
     manaCost: number;
   } | null;
-  executeHeroPowerEffect?: (norseHero: any, heroPower: any, target: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+  executeHeroPowerEffect?: (norseHero: unknown, heroPower: unknown, target: unknown) => void;
   // Hand props
-  handCards?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  handCards?: CardInstance[];
   handCurrentMana?: number;
   handIsPlayerTurn?: boolean;
-  onCardPlay?: (card: any, target?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
-  registerCardPosition?: (card: any, position: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+  onCardPlay?: (card: CardInstance, position?: CombatZonePosition) => void;
+  registerCardPosition?: (card: CardInstance, position: Position) => void;
   battlefieldRef?: React.RefObject<HTMLDivElement | null>;
   // Boss dialogue (campaign mode only) — owned by parent RagnarokCombatArena
   bossQuipText?: string | null;
@@ -172,7 +237,7 @@ interface UnifiedCombatArenaProps {
 }
 
 const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
-  onAction, onEndTurn, betAmount, setBetAmount, showdownCelebration,
+  onAction, betAmount, setBetAmount, showdownCelebration,
   onOpponentHeroClick, onPlayerHeroClick, isOpponentTargetable = false, isPlayerTargetable = false,
   playerMana, playerMaxMana, opponentMana, opponentMaxMana,
   playerPet, opponentPet, playerHpCommitted = 0, opponentHpCommitted = 0,
@@ -186,7 +251,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const noopRegisterCardPosition = useCallback(() => {}, []);
 
   // Subscribe directly to adapter for reactive updates
-  const { combatState, applyDirectDamage } = usePokerCombatAdapter();
+  const { combatState } = usePokerCombatAdapter();
   
   // Game state for battlefield — use individual selectors to avoid unnecessary re-renders
   const gameState = useGameStore(s => s.gameState);
@@ -216,16 +281,12 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   // Refs for battlefield
   const internalBattlefieldRef = useRef<HTMLDivElement>(null);
   const battlefieldRef = externalBattlefieldRef || internalBattlefieldRef;
-  const minionPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
-  const prevMinionPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
 
   // Extracted hooks
   const {
     damageAnimations,
     shakingTargets,
-    screenShakeClass,
     prevHealthRef,
-    triggerScreenShake,
     triggerDamageAnimation,
     removeDamageAnimation,
     addShakingTarget,
@@ -235,27 +296,30 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   
   // Battlefield card data
   const playerBattlefield = useMemo(() => {
-    const cards = gameState?.players?.player?.battlefield || [];
-    return cards.map((card: any) => adaptCardInstance(card));
+    const cards = (gameState?.players?.player?.battlefield ?? []) as CardInstance[];
+    return cards.map(card => adaptCardInstance(card));
   }, [gameState?.players?.player?.battlefield]);
   
   const opponentBattlefield = useMemo(() => {
-    const cards = gameState?.players?.opponent?.battlefield || [];
-    return cards.map((card: any) => adaptCardInstance(card));
+    const cards = (gameState?.players?.opponent?.battlefield ?? []) as CardInstance[];
+    return cards.map(card => adaptCardInstance(card));
   }, [gameState?.players?.opponent?.battlefield]);
   
   const evolveReadyIds = useMemo(() => {
     const ids = new Set<string>();
-    const bf = gameState?.players?.player?.battlefield;
-    if (!bf || !handCards) return ids;
-    const readyPets = bf.filter((m: any) => m.petEvolutionMet === true);
+    const bf = (gameState?.players?.player?.battlefield ?? []) as CardInstance[];
+    if (bf.length === 0 || handCards.length === 0) return ids;
+    const readyPets = bf.filter(card => card.petEvolutionMet === true);
     if (readyPets.length === 0) return ids;
     for (const hc of handCards) {
-      const cd = (hc as any).card || hc;
+      const cd = asExtendedCardData(hc.card);
       if (cd?.petStage === 'adept' && cd.evolvesFrom) {
-        if (readyPets.some((m: any) => m.card?.id === cd.evolvesFrom)) ids.add((hc as any).instanceId);
+        if (readyPets.some(card => card.card?.id === cd.evolvesFrom)) ids.add(hc.instanceId);
       } else if (cd?.petStage === 'master' && cd.petFamily) {
-        if (readyPets.some((m: any) => (m.card as any)?.petFamily === cd.petFamily && (m.card as any)?.petStage === 'adept')) ids.add((hc as any).instanceId);
+        if (readyPets.some(card => {
+          const readyCardData = asExtendedCardData(card.card);
+          return readyCardData.petFamily === cd.petFamily && readyCardData.petStage === 'adept';
+        })) ids.add(hc.instanceId);
       }
     }
     return ids;
@@ -288,7 +352,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
 
   const rawAttackingCard = useGameStore(s => s.attackingCard);
   const attackingCard = useMemo(() => {
-    return rawAttackingCard ? adaptCardInstance(rawAttackingCard as any) : null;
+    return rawAttackingCard ? adaptCardInstance(rawAttackingCard as CardInstance) : null;
   }, [rawAttackingCard]);
 
   // Turn transition flash
@@ -310,13 +374,13 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     const player = gameState.players.player;
     const opponent = gameState.players.opponent;
 
-    const currentSnapshot: HealthSnapshot = {
+      const currentSnapshot: HealthSnapshot = {
       playerHeroHealth: player.heroHealth ?? player.health,
       playerHeroArmor: player.heroArmor ?? 0,
       opponentHeroHealth: opponent.heroHealth ?? opponent.health,
       opponentHeroArmor: opponent.heroArmor ?? 0,
-      playerMinions: new Map(player.battlefield.map(m => [m.instanceId, (m.card as any)?.health ?? (m as any).currentHealth ?? 0])),
-      opponentMinions: new Map(opponent.battlefield.map(m => [m.instanceId, (m.card as any)?.health ?? (m as any).currentHealth ?? 0]))
+      playerMinions: new Map(player.battlefield.map(m => [m.instanceId, getCombatUnitHealth(m)])),
+      opponentMinions: new Map(opponent.battlefield.map(m => [m.instanceId, getCombatUnitHealth(m)]))
     };
 
     const prev = prevHealthRef.current;
@@ -413,8 +477,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const showFaith = phaseAllowsFaith && communityCardsRevealed;
   const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
   const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
-
-  const disabled = isMulligan || !basePermissions?.isMyTurnToAct;
 
   const playerHandEval = useMemo(() => {
     if (!combatState || isMulligan) return null;
@@ -565,7 +627,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Opponent Hand Display */}
       <div className="unified-opponent-hand">
         <div className="opponent-hand-display">
-          {(gameState?.players?.opponent?.hand || []).slice(0, 10).map((card: any, index: number) => (
+          {((gameState?.players?.opponent?.hand ?? []) as CardInstance[]).slice(0, 10).map((card, index: number) => (
             card.isRevealed ? (
               <div key={card.instanceId || `opp-revealed-${index}`} className="opponent-revealed-card scale-[0.4] -mx-8">
                 <CardRenderer card={card} isInHand={true} size="small" />
@@ -581,17 +643,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           )}
         </div>
       </div>
-      
-      {/* Risk Display - total HP at stake */}
-      <RiskDisplay
-        risk={combatState.pot}
-        hidden={isMulligan}
-        playerCommitted={combatState.player.hpCommitted}
-        opponentCommitted={combatState.opponent.hpCommitted}
-      />
-
-      {/* Wager Effects HUD — shows active wager keyword effects from battlefield */}
-      <WagerEffectsHUD />
       
       {/* Opponent Field */}
       <div className="unified-opponent-field">
@@ -671,7 +722,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                   isWeaponUpgraded={isWeaponUpgraded}
                   artifact={gameState?.players?.player?.artifact ? {
                     name: gameState.players.player.artifact.card.name,
-                    attack: (gameState.players.player.artifact.card as any).attack || 0
+                    attack: asExtendedCardData(gameState.players.player.artifact.card).attack || 0
                   } : undefined}
                 />
                 <div className="player-mana-display">
@@ -889,7 +940,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   const combatMusicTrack = useMemo(() => {
     if (!combatMusicMissionId) return 'battle_theme' as const;
     const found = getMission(combatMusicMissionId);
-    return (found?.mission?.combatMusicId ?? 'battle_theme') as any;
+    return found?.mission?.combatMusicId ?? 'battle_theme';
   }, [combatMusicMissionId]);
   useEffect(() => {
     playBackgroundMusic(combatMusicTrack);
@@ -1090,6 +1141,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
   // Realm effects
   const activeRealmEffects = useGameStore(state => state.gameState?.activeRealm?.effects);
   const activeRealmDescription = useGameStore(state => state.gameState?.activeRealm?.description);
+  const gamePlayers = useGameStore(state => state.gameState?.players);
 
   // HUD selectors
   const gamePhase = useGameStore(state => state.gameState?.gamePhase);
@@ -1110,6 +1162,42 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
     const p = state.gameState?.players?.opponent;
     return p ? (p.heroHealth ?? p.health) : 0;
   });
+  const [battleIntelOpen, setBattleIntelOpen] = useState(false);
+
+  const wagerIntel = useMemo(() => {
+    const result: { player: Array<{ cardName: string; description: string }>; opponent: Array<{ cardName: string; description: string }> } = {
+      player: [],
+      opponent: [],
+    };
+    if (!gamePlayers) return result;
+
+    for (const side of ['player', 'opponent'] as const) {
+      const battlefield = gamePlayers[side]?.battlefield || [];
+      for (const minion of battlefield) {
+        const wager = (minion.card as WagerEffectCard | undefined)?.wagerEffect;
+        if (!wager?.type) continue;
+        result[side].push({
+          cardName: minion.card?.name || 'Unknown',
+          description: WAGER_DESCRIPTIONS[wager.type] || wager.type.replace(/_/g, ' '),
+        });
+      }
+    }
+    return result;
+  }, [gamePlayers]);
+
+  const activeProphecies = prophecies ?? [];
+  const activeRealmModifiers = activeRealmEffects ?? [];
+  const totalBattleIntelItems = activeRealmModifiers.length + activeProphecies.length + wagerIntel.player.length + wagerIntel.opponent.length;
+  const hasBattleIntel = totalBattleIntelItems > 0;
+  const currentPhaseLabel = combatState?.phase
+    ? PHASE_LABELS[combatState.phase] || combatState.phase.replace(/_/g, ' ')
+    : 'Battle Ready';
+
+  useEffect(() => {
+    if (!hasBattleIntel) {
+      setBattleIntelOpen(false);
+    }
+  }, [hasBattleIntel]);
 
   // Screen shake in the outer component (extracted to hook)
   const { outerShakeClass } = useHeroHealthEffects({ playerHeroHealth, opponentHeroHealth });
@@ -1310,41 +1398,87 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           </div>
         )}
 
-        {/* Realm effects breakdown */}
-        {activeRealmId && activeRealmEffects && activeRealmEffects.length > 0 && (
-          <div className="realm-effects-panel">
-            <div className="realm-effects-title">{activeRealmName || activeRealmId}</div>
-            {activeRealmDescription && <div className="realm-effects-desc">{activeRealmDescription}</div>}
-            {activeRealmEffects.map((eff, i) => (
-              <div key={i} className={`realm-effect-row ${eff.target}`}>
-                <span className="realm-effect-icon">
-                  {eff.type === 'buff_all_attack' ? '⚔️' :
-                   eff.type === 'debuff_all_attack' ? '⬇️' :
-                   eff.type === 'damage_all_end_turn' ? '🔥' :
-                   eff.type === 'heal_all_start_turn' ? '💚' :
-                   eff.type === 'cost_increase' ? '💎' :
-                   eff.type === 'keyword_grant' ? '✨' :
-                   eff.type === 'return_to_hand_on_death' ? '🔄' :
-                   eff.type === 'stealth_on_play' ? '👤' : '⚡'}
-                </span>
-                <span className="realm-effect-text">
-                  {eff.type.replace(/_/g, ' ')} {eff.value > 0 ? `+${eff.value}` : ''} ({eff.target})
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+        {hasBattleIntel && (
+          <div className={`battle-intel ${battleIntelOpen ? 'open' : ''}`}>
+            <button
+              type="button"
+              className="battle-intel-toggle"
+              onClick={() => setBattleIntelOpen((prev) => !prev)}
+            >
+              <span className="battle-intel-toggle-label">Battle Intel</span>
+              <span className="battle-intel-toggle-count">{totalBattleIntelItems}</span>
+            </button>
 
-        {/* Prophecy tracker */}
-        {prophecies && prophecies.length > 0 && (
-          <div className="prophecy-tracker">
-            <div className="prophecy-tracker-title">Active Prophecies</div>
-            {prophecies.map(p => (
-              <div key={p.id} className={`prophecy-entry ${p.turnsRemaining <= 1 ? 'prophecy-imminent' : ''}`}>
-                <span className="prophecy-name">{p.name}</span>
-                <span className="prophecy-countdown">{p.turnsRemaining}</span>
-              </div>
-            ))}
+            <AnimatePresence>
+              {battleIntelOpen && (
+                <motion.div
+                  className="battle-intel-panel"
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                >
+                  {activeRealmId && (
+                    <section className="battle-intel-section">
+                      <div className="battle-intel-section-title">Realm</div>
+                      <div className="battle-intel-emphasis">{activeRealmName || activeRealmId}</div>
+                      {activeRealmDescription && (
+                        <div className="battle-intel-copy">{activeRealmDescription}</div>
+                      )}
+                      {activeRealmModifiers.map((eff, index) => (
+                        <div key={`${eff.type}-${index}`} className={`battle-intel-row ${eff.target}`}>
+                          <span className="battle-intel-row-icon">
+                            {eff.type === 'buff_all_attack' ? '⚔️' :
+                             eff.type === 'debuff_all_attack' ? '⬇️' :
+                             eff.type === 'damage_all_end_turn' ? '🔥' :
+                             eff.type === 'heal_all_start_turn' ? '💚' :
+                             eff.type === 'cost_increase' ? '💎' :
+                             eff.type === 'keyword_grant' ? '✨' :
+                             eff.type === 'return_to_hand_on_death' ? '🔄' :
+                             eff.type === 'stealth_on_play' ? '👤' : '⚡'}
+                          </span>
+                          <span className="battle-intel-row-text">
+                            {eff.type.replace(/_/g, ' ')}{eff.value > 0 ? ` +${eff.value}` : ''} ({eff.target})
+                          </span>
+                        </div>
+                      ))}
+                    </section>
+                  )}
+
+                  {activeProphecies.length > 0 && (
+                    <section className="battle-intel-section">
+                      <div className="battle-intel-section-title">Prophecies</div>
+                      {activeProphecies.map((prophecy) => (
+                        <div key={prophecy.id} className={`battle-intel-row ${prophecy.turnsRemaining <= 1 ? 'imminent' : ''}`}>
+                          <span className="battle-intel-row-text">{prophecy.name}</span>
+                          <span className="battle-intel-timer">{prophecy.turnsRemaining}</span>
+                        </div>
+                      ))}
+                    </section>
+                  )}
+
+                  {(wagerIntel.player.length > 0 || wagerIntel.opponent.length > 0) && (
+                    <section className="battle-intel-section">
+                      <div className="battle-intel-section-title">Wagers</div>
+                      {wagerIntel.player.map((effect) => (
+                        <div key={`player-${effect.cardName}-${effect.description}`} className="battle-intel-row player">
+                          <span className="battle-intel-row-icon">🎲</span>
+                          <span className="battle-intel-row-text">{effect.description}</span>
+                          <span className="battle-intel-source">{effect.cardName}</span>
+                        </div>
+                      ))}
+                      {wagerIntel.opponent.map((effect) => (
+                        <div key={`opponent-${effect.cardName}-${effect.description}`} className="battle-intel-row opponent">
+                          <span className="battle-intel-row-icon">🎲</span>
+                          <span className="battle-intel-row-text">{effect.description}</span>
+                          <span className="battle-intel-source">{effect.cardName}</span>
+                        </div>
+                      ))}
+                    </section>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
@@ -1386,7 +1520,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
             playerLevel={combatState.player.pet?.stats?.level ?? 1}
             opponentLevel={combatState.opponent.pet?.stats?.level ?? 1}
             playerSecrets={[]}
-            playerHeroClass={(combatState.player as any).heroClass ?? 'neutral'}
+            playerHeroClass={getCombatHeroClass(combatState.player) ?? 'neutral'}
             onHeroPowerClick={handleHeroPower}
             onWeaponUpgradeClick={handleWeaponUpgrade}
             isWeaponUpgraded={weaponUpgraded}
@@ -1438,7 +1572,7 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
           show={!!elementalBuff.pendingMinionBuff}
           attackBonus={elementalBuff.pendingMinionBuff.attackBonus}
           healthBonus={elementalBuff.pendingMinionBuff.healthBonus}
-          element={elementalBuff.pendingMinionBuff.element as any}
+          element={getCombatElement(elementalBuff.pendingMinionBuff.element)}
           position={elementalBuff.pendingMinionBuff.owner === 'player' ? 'left' : 'right'}
           onComplete={elementalBuff.clearMinionBuffNotification}
         />
@@ -1447,8 +1581,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
       {/* Element Matchup Banner - shows at combat start */}
       {showMatchupBanner && combatState && (
         <ElementMatchupBanner
-          playerElement={(combatState.player?.pet?.stats?.element || 'neutral') as any}
-          opponentElement={(combatState.opponent?.pet?.stats?.element || 'neutral') as any}
+          playerElement={getCombatElement(combatState.player?.pet?.stats?.element)}
+          opponentElement={getCombatElement(combatState.opponent?.pet?.stats?.element)}
           playerHasAdvantage={elementalBuff.playerHasAdvantage}
           opponentHasAdvantage={elementalBuff.opponentHasAdvantage}
           attackBonus={elementalBuff.playerBuff?.attackBonus ?? elementalBuff.opponentBuff?.attackBonus ?? 2}
@@ -1521,8 +1655,13 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         playerDeckCount={playerDeckCount}
         opponentDeckCount={opponentDeckCount}
         opponentHandCount={opponentHandCount}
-        playerElement={combatState ? (combatState.player?.pet?.stats?.element as any) : undefined}
-        opponentElement={combatState ? (combatState.opponent?.pet?.stats?.element as any) : undefined}
+        phaseLabel={currentPhaseLabel}
+        pot={combatState?.pot ?? 0}
+        playerCommitted={combatState?.player.hpCommitted ?? 0}
+        opponentCommitted={combatState?.opponent.hpCommitted ?? 0}
+        isPlayerTurn={currentTurnForBanner === 'player'}
+        playerElement={combatState ? getCombatElement(combatState.player?.pet?.stats?.element) : undefined}
+        opponentElement={combatState ? getCombatElement(combatState.opponent?.pet?.stats?.element) : undefined}
         playerHasAdvantage={elementalBuff.playerHasAdvantage}
         opponentHasAdvantage={elementalBuff.opponentHasAdvantage}
       />
@@ -1532,8 +1671,14 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
         isVisible={gamePhase === 'game_over'}
         winner={gameWinner === 'player' ? 'player' : gameWinner === 'opponent' ? 'opponent' : 'draw'}
         turnNumber={turnNumber}
+        playerHeroName={combatState?.player?.pet?.name ?? 'You'}
+        opponentHeroName={combatState?.opponent?.pet?.name ?? 'Opponent'}
+        playerHeroClass={getCombatHeroClass(combatState?.player)}
+        opponentHeroClass={getCombatHeroClass(combatState?.opponent)}
+        playerHeroPortrait={combatState?.player?.pet?.norseHeroId ? resolveHeroPortrait(combatState.player.pet.norseHeroId) : undefined}
+        opponentHeroPortrait={combatState?.opponent?.pet?.norseHeroId ? resolveHeroPortrait(combatState.opponent.pet.norseHeroId) : undefined}
         onPlayAgain={onCombatEnd ? () => onCombatEnd(gameWinner === 'player' ? 'player' : 'opponent') : undefined}
-        onMainMenu={() => { window.location.href = '/'; }}
+        onMainMenu={() => { window.location.hash = '/'; }}
       />
 
       <GameLog />

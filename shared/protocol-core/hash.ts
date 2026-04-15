@@ -1,7 +1,7 @@
 /**
  * Ragnarok Protocol Core — Canonical Hashing
  *
- * Isomorphic: works in both browser (crypto.subtle) and Node.js (node:crypto).
+ * Uses Web Crypto, which is available in modern browsers and Node 20+.
  * Matches the spec's canonical serialization rules exactly.
  */
 
@@ -23,17 +23,14 @@ export function canonicalStringify(obj: unknown): string {
 }
 
 export async function sha256Hash(data: string): Promise<string> {
-	if (typeof globalThis.crypto?.subtle?.digest === 'function') {
-		// Browser or Node 20+ with Web Crypto
-		const encoder = new TextEncoder();
-		const buffer = encoder.encode(data);
-		const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256', buffer);
-		return Array.from(new Uint8Array(hashBuffer))
-			.map(b => b.toString(16).padStart(2, '0'))
-			.join('');
+	if (typeof globalThis.crypto?.subtle?.digest !== 'function') {
+		throw new Error('Web Crypto SHA-256 is unavailable in this environment.');
 	}
 
-	// Node.js fallback
-	const { createHash } = await import('node:crypto');
-	return createHash('sha256').update(data, 'utf8').digest('hex');
+	const encoder = new TextEncoder();
+	const buffer = encoder.encode(data);
+	const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256', buffer);
+	return Array.from(new Uint8Array(hashBuffer))
+		.map(b => b.toString(16).padStart(2, '0'))
+		.join('');
 }

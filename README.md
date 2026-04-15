@@ -432,7 +432,17 @@ Opens at `http://localhost:5000`. No database required for single-player — Pos
 | `npm run dev` | Development server (Vite + Express) |
 | `npm run build` | Production build |
 | `npm run check` | TypeScript type checking |
+| `npm run lint` | ESLint |
 | `npm run build:wasm` | Build WASM anti-cheat engine |
+
+---
+
+## Current Engineering Focus
+
+- **Systems cleanup over surface polish** — the current tranche is focused on reducing repo-wide TypeScript and ESLint debt in the highest-complexity gameplay and protocol modules first.
+- **Combat stability** — `AttackSystem.tsx` and `RagnarokCombatArena.tsx` have been refactored toward smaller resolution paths and clearer action hierarchy so live play feels less flaky under repeated attack / betting sequences.
+- **Shared replay maintenance** — `shared/protocol-core/apply.ts` is being kept as the single deterministic protocol path for browser and server, with settlement, minting, merge, and marketplace flows split into more explicit helpers.
+- **Browser QA** — responsive campaign layout received a mobile spacing pass to stop constellation lore overlays from colliding with realm nodes; a broader live-play spacing and motion QA pass is still part of the long-term polish work.
 
 ---
 
@@ -475,7 +485,7 @@ client/src/
 shared/protocol-core/      # Isomorphic replay engine (browser + Node)
 ├── types.ts               # StateAdapter, CardAsset, GenesisRecord, etc.
 ├── normalize.ts           # Legacy mapping, authority checking
-├── apply.ts               # 14 canonical op handlers + legacy pack_open
+├── apply.ts               # Deterministic protocol handlers for settlement, minting, packs, lineage, marketplace
 ├── hash.ts                # Canonical serialization + SHA-256
 └── pow.ts                 # PoW verification
 

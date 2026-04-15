@@ -26,18 +26,5 @@ export {
   createCard
 } from './cardBuilder';
 
-// Export from cardImporter
-export {
-  importCards,
-  importCardsFromJson
-} from './cardImporter';
-
-// Export from effectGenerator
-export {
-  generateEffectHandlerCode,
-  generateEffectIndexCode,
-  parseEffectNameFromFileName
-} from './effectGenerator';
-
 // Export initialization function
 export { initializeCardDatabase } from './initializeCards';

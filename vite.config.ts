@@ -56,7 +56,13 @@ export default defineConfig(({ command }) => ({
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
     target: 'esnext',
-    chunkSizeWarningLimit: 300,
+    /*
+      After vendor/data splitting, the remaining heavy chunks are intentional:
+      Pixi, the chess surface, and the main game store graph. A 500 kB warning
+      threshold keeps the build focused on real regressions instead of
+      re-flagging known large gameplay chunks on every build.
+    */
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         manualChunks(id: string) {
@@ -71,7 +77,7 @@ export default defineConfig(({ command }) => ({
             if (id.includes('peerjs') || id.includes('uuid')) return 'network-vendor';
             if (id.includes('drizzle') || id.includes('idb')) return 'db-vendor';
           }
-          // Card data splits — 84K lines split by category
+          // Card data splits — large static registries benefit from stable chunks.
           if (id.includes('/game/data/cardRegistry/sets/core/pets/')) return 'card-data-pets';
           if (id.includes('/game/data/cardRegistry/sets/core/neutrals/')) return 'card-data-neutrals';
           if (id.includes('/game/data/cardRegistry/sets/core/classes/')) return 'card-data-classes';
@@ -79,18 +85,12 @@ export default defineConfig(({ command }) => ({
           if (id.includes('/game/data/norseHeroes/')) return 'card-data-heroes';
           if (id.includes('/game/data/allCards') || id.includes('/game/data/cardSets/')) return 'card-data';
           if (id.includes('/game/data/')) return 'card-data';
-          // Shared leaf chunks — imported by multiple game chunks, must not create cycles
-          if (id.includes('/game/nft/')) return 'game-types';
-          if (id.includes('/game/types') || id.includes('/game/flow/') || id.includes('/game/utils/elements') || id.includes('/game/utils/assetPath') || id.includes('/game/audio/')) return 'game-types';
-          if (id.includes('/lib/stores/')) return 'game-types';
-          // Game logic — single chunk for all tightly-coupled utils + effects (avoids intra-engine circular deps)
-          if (id.includes('/game/effects/') || id.includes('/game/utils/')) return 'game-engine';
-          if (id.includes('/game/stores/combat/')) return 'combat-stores';
-          if (id.includes('/game/stores/gameStore')) return 'game-store';
-          if (id.includes('/game/campaign/')) return 'campaign';
-          // Hive data layer — shared by many chunks, must be in its own chunk to avoid circulars
-          if (id.includes('/data/HiveSync') || id.includes('/data/HiveEvents') || id.includes('/data/HiveDataLayer') || id.includes('/data/schemas/')) return 'hive-data';
-          if (id.includes('/data/blockchain/')) return 'blockchain';
+          /*
+            Let Rollup decide how to split the local app graph.
+            Earlier source-level buckets for combat/game/blockchain code created
+            circular chunk assignments because those modules are tightly coupled
+            and imported across multiple routes.
+          */
           return undefined;
         },
       },

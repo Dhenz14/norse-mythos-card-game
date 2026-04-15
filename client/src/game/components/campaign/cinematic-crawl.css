@@ -40,8 +40,7 @@
 }
 
 /* ── Letterbox bars ── */
-.cinematic-letterbox-top,
-.cinematic-letterbox-bottom {
+:is(.cinematic-letterbox-top, .cinematic-letterbox-bottom) {
 	position: fixed;
 	left: 0;
 	right: 0;

@@ -125,8 +125,7 @@
   border-radius: inherit;
 }
 
-.chess-board-particles::before,
-.chess-board-particles::after {
+.chess-board-particles::before {
   content: '';
   position: absolute;
   width: 3px;
@@ -135,9 +134,6 @@
   background: radial-gradient(circle, rgba(251, 191, 36, 0.9) 0%, rgba(251, 191, 36, 0.3) 50%, transparent 100%);
   opacity: 0;
   animation: chess-particle-drift-1 8s ease-in-out infinite;
-}
-
-.chess-board-particles::before {
   left: 25%;
   bottom: 0;
   animation-delay: 0s;
@@ -147,6 +143,14 @@
 }
 
 .chess-board-particles::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.9) 0%, rgba(251, 191, 36, 0.3) 50%, transparent 100%);
+  opacity: 0;
+  animation: chess-particle-drift-1 8s ease-in-out infinite;
   left: 65%;
   bottom: 0;
   width: 2px;

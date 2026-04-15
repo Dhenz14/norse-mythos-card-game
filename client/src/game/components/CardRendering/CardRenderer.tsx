@@ -90,7 +90,6 @@ const CardRenderer: React.FC<CardRendererProps> = React.memo(({
       evolutionCondition: cardAny.evolutionCondition,
       hasStage3Variants: !!(cardAny.stage3Variants && cardAny.stage3Variants.length > 0),
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [processedCard, evolutionLevel]);
 
   const scaleStyle: React.CSSProperties = useMemo(() => scale !== 1 ? {

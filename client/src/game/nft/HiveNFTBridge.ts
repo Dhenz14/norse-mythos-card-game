@@ -193,7 +193,11 @@ export class HiveNFTBridge implements INFTBridge {
 	}
 
 	startSync(username: string): void {
-		import('@/data/blockchain/replayEngine').then(({ startSync }) => {
+		Promise.all([
+			import('@/game/runtime/cardDataRuntime'),
+			import('@/data/blockchain/replayEngine'),
+		]).then(async ([{ ensureCardDataRuntime }, { startSync }]) => {
+			await ensureCardDataRuntime();
 			startSync(username);
 		});
 	}

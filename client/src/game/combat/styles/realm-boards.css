@@ -36,7 +36,7 @@
    MIDGARD — Mortal Realm (Viking longhouse, torchlit stone)
    Warm amber torchlight, carved stone, leather and iron
    ============================================================ */
-.game-viewport.realm-midgard {
+:where(.game-viewport.realm-midgard) {
 	--realm-bg-top: #0c0806;
 	--realm-bg-mid: #1e1610;
 	--realm-bg-lower: #221a12;
@@ -81,7 +81,7 @@
    ASGARD — Realm of the Gods (radiant gold, celestial)
    Brilliant golden marble, heavenly light pouring from above
    ============================================================ */
-.game-viewport.realm-asgard {
+:where(.game-viewport.realm-asgard) {
 	--realm-bg-top: #1a1505;
 	--realm-bg-mid: #2a2008;
 	--realm-bg-lower: #1e180a;
@@ -115,7 +115,7 @@
    NIFLHEIM — Frozen Wastes (deep blue ice, blizzard)
    Blue-black with frost crystals, cold mist
    ============================================================ */
-.game-viewport.realm-niflheim {
+:where(.game-viewport.realm-niflheim) {
 	--realm-bg-top: #040810;
 	--realm-bg-mid: #081020;
 	--realm-bg-lower: #0a1428;
@@ -157,7 +157,7 @@
    MUSPELHEIM — Eternal Flame (volcanic, lava cracks)
    Dark obsidian with glowing red/orange fissures
    ============================================================ */
-.game-viewport.realm-muspelheim {
+:where(.game-viewport.realm-muspelheim) {
 	--realm-bg-top: #120404;
 	--realm-bg-mid: #1a0808;
 	--realm-bg-lower: #200a04;
@@ -195,7 +195,7 @@
    HELHEIM — Death's Embrace (sickly green-purple, spectral)
    Deep violet with eerie green mist and ghostly wisps
    ============================================================ */
-.game-viewport.realm-helheim {
+:where(.game-viewport.realm-helheim) {
 	--realm-bg-top: #08040e;
 	--realm-bg-mid: #0e0618;
 	--realm-bg-lower: #0a0812;
@@ -233,7 +233,7 @@
    JOTUNHEIM — Giant's Fury (pale glacier blue, cracked ice)
    Massive icy expanse, pale blue-white, severe
    ============================================================ */
-.game-viewport.realm-jotunheim {
+:where(.game-viewport.realm-jotunheim) {
 	--realm-bg-top: #060a12;
 	--realm-bg-mid: #0c1220;
 	--realm-bg-lower: #101828;
@@ -258,7 +258,7 @@
    ALFHEIM — Elven Arcana (ethereal lavender, soft bloom)
    Magical purple-pink twilight, dreamy particles
    ============================================================ */
-.game-viewport.realm-alfheim {
+:where(.game-viewport.realm-alfheim) {
 	--realm-bg-top: #0a0610;
 	--realm-bg-mid: #14101e;
 	--realm-bg-lower: #100c18;
@@ -283,7 +283,7 @@
    VANAHEIM — Nature's Grace (deep forest green, dappled light)
    Rich emerald, life energy, organic warmth
    ============================================================ */
-.game-viewport.realm-vanaheim {
+:where(.game-viewport.realm-vanaheim) {
 	--realm-bg-top: #040a04;
 	--realm-bg-mid: #081408;
 	--realm-bg-lower: #0a160a;
@@ -325,7 +325,7 @@
    SVARTALFHEIM — Dwarven Craft (dark bronze, forge sparks)
    Deep amber-orange, metallic sheen, industrial warmth
    ============================================================ */
-.game-viewport.realm-svartalfheim {
+:where(.game-viewport.realm-svartalfheim) {
 	--realm-bg-top: #0c0804;
 	--realm-bg-mid: #181006;
 	--realm-bg-lower: #1a1208;
@@ -354,7 +354,7 @@
    GINNUNGAGAP — Primordial Void (cosmic black, stars)
    Pure darkness with distant starlight and cosmic dust
    ============================================================ */
-.game-viewport.realm-ginnungagap {
+:where(.game-viewport.realm-ginnungagap) {
 	--realm-bg-top: #020204;
 	--realm-bg-mid: #040408;
 	--realm-bg-lower: #030306;
@@ -577,17 +577,13 @@
 }
 
 /* Corner rune flourishes */
-.board-border-ornament::before,
-.board-border-ornament::after {
+.board-border-ornament::before {
 	content: '';
 	position: absolute;
 	width: 80px;
 	height: 80px;
 	pointer-events: none;
 	opacity: 0.5;
-}
-
-.board-border-ornament::before {
 	top: 4px;
 	left: 4px;
 	border-top: 2px solid rgba(212, 175, 55, 0.4);
@@ -599,6 +595,12 @@
 }
 
 .board-border-ornament::after {
+	content: '';
+	position: absolute;
+	width: 80px;
+	height: 80px;
+	pointer-events: none;
+	opacity: 0.5;
 	bottom: 4px;
 	right: 4px;
 	border-bottom: 2px solid rgba(212, 175, 55, 0.4);

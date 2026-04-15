@@ -10,6 +10,8 @@ interface GameOverScreenProps {
 	opponentHeroName?: string;
 	playerHeroClass?: string;
 	opponentHeroClass?: string;
+	playerHeroPortrait?: string;
+	opponentHeroPortrait?: string;
 	onPlayAgain?: () => void;
 	onMainMenu?: () => void;
 	onRematch?: () => void;
@@ -36,6 +38,8 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 	opponentHeroName = 'Opponent',
 	playerHeroClass,
 	opponentHeroClass,
+	playerHeroPortrait,
+	opponentHeroPortrait,
 	onPlayAgain,
 	onMainMenu,
 	onRematch,
@@ -120,23 +124,27 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 							initial={{ opacity: 0, scale: 0.9 }}
 							animate={{ opacity: 1, scale: 1 }}
 							transition={{ delay: 0.65, duration: 0.35 }}
-						>
-							<div className="game-over-hero">
-								<div className={`game-over-hero-portrait ${isVictory ? 'winner' : 'loser'}`}>
-									<div
-										className="game-over-hero-avatar"
-										style={{
-											background: `radial-gradient(circle at 35% 35%, ${playerColor}dd, ${playerColor}44)`,
-											boxShadow: isVictory
-												? `0 0 0 2px ${playerColor}, 0 0 16px ${playerColor}88`
-												: `0 0 0 2px ${playerColor}55`,
-										}}
-									>
-										{playerHeroName.charAt(0).toUpperCase()}
+							>
+								<div className="game-over-hero">
+									<div className={`game-over-hero-portrait ${isVictory ? 'winner' : 'loser'}`}>
+										{playerHeroPortrait ? (
+											<img src={playerHeroPortrait} alt={playerHeroName} className="game-over-hero-image" />
+										) : (
+											<div
+												className="game-over-hero-avatar"
+												style={{
+													background: `radial-gradient(circle at 35% 35%, ${playerColor}dd, ${playerColor}44)`,
+													boxShadow: isVictory
+														? `0 0 0 2px ${playerColor}, 0 0 16px ${playerColor}88`
+														: `0 0 0 2px ${playerColor}55`,
+												}}
+											>
+												{playerHeroName.charAt(0).toUpperCase()}
+											</div>
+										)}
 									</div>
-								</div>
-								<span className={`game-over-hero-name ${isVictory ? 'winner-name' : ''}`}>
-									{playerHeroName}
+									<span className={`game-over-hero-name ${isVictory ? 'winner-name' : ''}`}>
+										{playerHeroName}
 								</span>
 								{isVictory && <span className="game-over-crown">★ Winner</span>}
 							</div>
@@ -145,22 +153,26 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 								<span className="game-over-vs">VS</span>
 							</div>
 
-							<div className="game-over-hero">
-								<div className={`game-over-hero-portrait ${!isVictory && !isDraw ? 'winner' : 'loser'}`}>
-									<div
-										className="game-over-hero-avatar"
-										style={{
-											background: `radial-gradient(circle at 35% 35%, ${opponentColor}dd, ${opponentColor}44)`,
-											boxShadow: !isVictory && !isDraw
-												? `0 0 0 2px ${opponentColor}, 0 0 16px ${opponentColor}88`
-												: `0 0 0 2px ${opponentColor}55`,
-										}}
-									>
-										{opponentHeroName.charAt(0).toUpperCase()}
+								<div className="game-over-hero">
+									<div className={`game-over-hero-portrait ${!isVictory && !isDraw ? 'winner' : 'loser'}`}>
+										{opponentHeroPortrait ? (
+											<img src={opponentHeroPortrait} alt={opponentHeroName} className="game-over-hero-image" />
+										) : (
+											<div
+												className="game-over-hero-avatar"
+												style={{
+													background: `radial-gradient(circle at 35% 35%, ${opponentColor}dd, ${opponentColor}44)`,
+													boxShadow: !isVictory && !isDraw
+														? `0 0 0 2px ${opponentColor}, 0 0 16px ${opponentColor}88`
+														: `0 0 0 2px ${opponentColor}55`,
+												}}
+											>
+												{opponentHeroName.charAt(0).toUpperCase()}
+											</div>
+										)}
 									</div>
-								</div>
-								<span className={`game-over-hero-name ${!isVictory && !isDraw ? 'winner-name' : ''}`}>
-									{opponentHeroName}
+									<span className={`game-over-hero-name ${!isVictory && !isDraw ? 'winner-name' : ''}`}>
+										{opponentHeroName}
 								</span>
 								{!isVictory && !isDraw && <span className="game-over-crown">★ Winner</span>}
 							</div>

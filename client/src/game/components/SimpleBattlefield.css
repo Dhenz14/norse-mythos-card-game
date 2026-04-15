@@ -137,6 +137,7 @@
   box-sizing: border-box;
   overflow: visible;
   pointer-events: none;
+  animation: summonFlash 0.6s ease-out;
 }
 
 .bf-card-wrapper > * {
@@ -214,7 +215,7 @@
   z-index: 25;
 }
 
-.bf-attack, .bf-health {
+:is(.bf-attack, .bf-health) {
   width: 30px;
   height: 30px;
   display: flex;
@@ -295,7 +296,10 @@
 
 /* Shake — invalid action or damage hit feedback */
 .bf-card-wrapper.shake {
-  animation: invalidShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation:
+    invalidShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both,
+    damageShake 0.4s ease-in-out,
+    damageFlash 0.4s ease-out;
 }
 
 @keyframes invalidShake {
@@ -689,11 +693,6 @@
   border-color: transparent;
 }
 
-/* Summon flash - plays once on mount */
-.bf-card-wrapper {
-  animation: summonFlash 0.6s ease-out;
-}
-
 @keyframes summonFlash {
   0% {
     box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.6), 0 0 40px 16px rgba(255, 255, 255, 0.2);
@@ -701,11 +700,6 @@
   100% {
     box-shadow: none;
   }
-}
-
-/* Damage shake + red flash animation */
-.bf-card-wrapper.shake {
-  animation: damageShake 0.4s ease-in-out, damageFlash 0.4s ease-out;
 }
 
 @keyframes damageShake {

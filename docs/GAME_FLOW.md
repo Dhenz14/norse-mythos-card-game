@@ -78,6 +78,13 @@ Hero Death            ▼             │
 | **settingsStore** | `settingsStore.ts` | Audio, visual, gameplay preferences |
 | **starterStore** | `starterStore.ts` | New player starter pack claim tracking |
 
+### Current Implementation Notes
+
+- **Home shell**: `App.tsx` is the current funnel entry. Daily quests, friends, wallet, primary mode cards, and utility links all mount there, so browser QA should validate that the primary "continue playing" action stays dominant on both desktop and mobile.
+- **Campaign navigation**: `CampaignPage.tsx` now uses an intro overlay that collapses into a bottom lore card on smaller screens. The mobile spacing pass added top clearance and moved realm nodes down so the copy no longer collides with the constellation path.
+- **Combat feel**: `AttackSystem.tsx` and `RagnarokCombatArena.tsx` are the main user-facing interaction stack. Recent cleanup split attack resolution and betting/action decisions into smaller helpers, but final polish still depends on live browser QA for spacing, timing, and motion during real matches.
+- **Protocol-backed sync**: `shared/protocol-core/apply.ts` remains the deterministic replay path for both browser and server. Gameplay/UI changes that depend on rewards, packs, match results, or marketplace state should be validated against shared replay behavior rather than client-only assumptions.
+
 ---
 
 ## Mode 1: Ragnarok Chess Flow

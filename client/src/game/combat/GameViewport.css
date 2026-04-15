@@ -508,7 +508,7 @@
 /* Hand cards have slight overlap and tilt for natural fan */
 .viewport-mode .poker-hand-container .hand-card-wrapper {
   transition:
-    transform 0.2s ease,
+    transform 0.18s ease,
     z-index 0.1s;
 }
 
@@ -555,7 +555,7 @@
 
 /* Betting button glow effects */
 .viewport-mode .poker-btn {
-  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -624,21 +624,6 @@
   .viewport-mode .unified-player-field .battlefield-card:hover {
     transform: none;
   }
-}
-
-/* ========================================
-   TRANSITION HIERARCHY
-   Larger elements use slower transitions
-   ======================================== */
-
-.viewport-mode .poker-hand-container .hand-card-wrapper {
-  transition:
-    transform 0.18s ease,
-    z-index 0.1s;
-}
-
-.viewport-mode .poker-btn {
-  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
 }
 
 /* ========================================

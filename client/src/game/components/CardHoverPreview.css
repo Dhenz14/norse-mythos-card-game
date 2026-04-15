@@ -70,7 +70,7 @@
   flex-shrink: 0;
 }
 
-.stat-atk, .stat-hp {
+:is(.stat-atk, .stat-hp) {
   display: flex;
   align-items: center;
   justify-content: center;
