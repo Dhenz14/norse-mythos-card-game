@@ -1,7 +1,8 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { HashRouter, Routes, Route, Link, Outlet, useLocation } from 'react-router-dom';
 import { routes } from './lib/routes';
 import { Button } from './components/ui/button';
+import { ArrowRight, Castle, ScrollText, Shield, Swords, Trophy } from 'lucide-react';
 import UnifiedCardSystem from "./game/components/UnifiedCardSystem";
 import "./index.css";
 import "./styles/homepage.css";
@@ -11,6 +12,7 @@ import ragnarokLogo from "./assets/images/ragnarok-logo.jpg";
 import LoadingScreen from "./game/components/ui/LoadingScreen";
 import AssetDownloadButton from "./game/components/ui/AssetDownloadButton";
 import GoldenCardFilter from "./game/animations/GoldenCardFilter";
+import { ALL_CHAPTERS, getMission, useCampaignStore } from "./game/campaign";
 import { useStarterStore } from "./game/stores/starterStore";
 import {
   BridgeRuntimeBoundary,
@@ -83,8 +85,74 @@ function OnlineOnly({ children, label }: { children: React.ReactNode; label: str
 function HomePage() {
   const bgOverlayRef = useRef<HTMLDivElement>(null);
   const starterClaimed = useStarterStore(s => s.claimed);
+  const completedMissions = useCampaignStore(s => s.completedMissions);
+  const currentMissionId = useCampaignStore(s => s.currentMission);
   const [showCeremony, setShowCeremony] = useState(false);
   const [canInstall, setCanInstall] = useState(!!deferredInstallPrompt);
+  const completedMissionCount = Object.keys(completedMissions).length;
+  const totalMissionCount = useMemo(
+    () => ALL_CHAPTERS.reduce((sum, chapter) => sum + chapter.missions.length, 0),
+    [],
+  );
+  const activeMission = useMemo(
+    () => (currentMissionId ? getMission(currentMissionId) : null),
+    [currentMissionId],
+  );
+  const nextMission = useMemo(() => {
+    if (activeMission) {
+      return activeMission;
+    }
+
+    for (const chapter of ALL_CHAPTERS) {
+      const mission = chapter.missions.find(candidate =>
+        !completedMissions[candidate.id] &&
+        (candidate.prerequisiteIds.length === 0 ||
+          candidate.prerequisiteIds.every(id => Boolean(completedMissions[id]))),
+      );
+      if (mission) {
+        return { chapter, mission };
+      }
+    }
+
+    return null;
+  }, [activeMission, completedMissions]);
+  const primaryLabel = !starterClaimed
+    ? 'Claim Starter Deck'
+    : activeMission
+      ? 'Return to Active Mission'
+      : completedMissionCount > 0
+        ? 'Continue Campaign'
+        : 'Start Campaign';
+  const primarySummary = !starterClaimed
+    ? 'Secure the starter line, then move straight into the campaign map for your first authored battle.'
+    : activeMission
+      ? `${activeMission.chapter.name} is already staged. Re-enter ${activeMission.mission.name} from the campaign map.`
+      : nextMission
+        ? `Open ${nextMission.chapter.name} and stage ${nextMission.mission.name} for the cleanest path into live play.`
+        : 'Open the campaign map and step into the next battle.';
+  const warPathTitle = !starterClaimed
+    ? 'Starter Ceremony'
+    : activeMission
+      ? activeMission.mission.name
+      : nextMission?.mission.name ?? 'Campaign Ready';
+  const warPathSubtitle = !starterClaimed
+    ? 'Starter line pending'
+    : activeMission
+      ? `${activeMission.chapter.name} · Mission ${activeMission.mission.missionNumber}`
+      : nextMission
+        ? `${nextMission.chapter.name} · Mission ${nextMission.mission.missionNumber}`
+        : `${completedMissionCount}/${totalMissionCount} missions cleared`;
+  const journeySteps = !starterClaimed
+    ? [
+        { icon: Shield, label: 'Claim', detail: 'Starter deck and default line', complete: false },
+        { icon: ScrollText, label: 'Stage', detail: 'Open the campaign map', complete: false },
+        { icon: Swords, label: 'Battle', detail: 'Enter the first authored run', complete: false },
+      ]
+    : [
+        { icon: Castle, label: 'Campaign', detail: 'Choose the next mission', complete: true },
+        { icon: ScrollText, label: 'Briefing', detail: 'Lock difficulty and pacing', complete: Boolean(activeMission || nextMission) },
+        { icon: Swords, label: 'Battle', detail: 'Move from staging into live play', complete: Boolean(activeMission) || completedMissionCount > 0 },
+      ];
   const modeCards = [
     {
       title: 'Ranked PvP',
@@ -170,8 +238,8 @@ function HomePage() {
             <div className="homepage-kicker">Norse Mythos Card Game</div>
             <h1 className="homepage-title">Choose the lane. Enter with intent.</h1>
             <p className="homepage-copy">
-              Solo battles, ranked PvP, and long-form campaign now read as distinct paths instead of one wall of buttons.
-              Start where you want to play, then move into the rest of the ecosystem.
+              The shell now needs to feel like one authored war table, not a cluster of systems.
+              Start on the campaign route, then peel into skirmish, ranked, and collection from a cleaner hierarchy.
             </p>
 
             {!starterClaimed ? (
@@ -182,18 +250,61 @@ function HomePage() {
                 Claim Starter Deck
               </Button>
             ) : (
-              <Link to={routes.game} className="homepage-cta-link">
+              <Link to={routes.campaign} className="homepage-cta-link">
                 <Button className="homepage-hero-cta">
-                  Enter Solo Arena
+                  {primaryLabel}
                 </Button>
               </Link>
             )}
+            <p className="homepage-cta-note">{primarySummary}</p>
 
             <div className="homepage-hero-meta">
-              <span>Solo AI battles</span>
-              <span>Army builder</span>
+              <span>Campaign-first funnel</span>
+              <span>Army staging</span>
               <span>Poker combat</span>
             </div>
+
+            <div className="homepage-journey-card">
+              <div className="homepage-journey-header">
+                <span className="homepage-journey-kicker">War Path</span>
+                <span className="homepage-journey-progress">{completedMissionCount}/{totalMissionCount} cleared</span>
+              </div>
+              <div className="homepage-journey-title">{warPathTitle}</div>
+              <p className="homepage-journey-copy">{warPathSubtitle}</p>
+              <div className="homepage-journey-steps">
+                {journeySteps.map(({ icon: Icon, label, detail, complete }) => (
+                  <div key={label} className={`homepage-journey-step ${complete ? 'is-complete' : ''}`}>
+                    <span className="homepage-journey-step-icon">
+                      <Icon size={15} strokeWidth={2} />
+                    </span>
+                    <span className="homepage-journey-step-copy">
+                      <strong>{label}</strong>
+                      <span>{detail}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {starterClaimed && (
+              <div className="homepage-secondary-actions">
+                <Link to={routes.game} className="homepage-secondary-link">
+                  <Swords size={16} strokeWidth={2} />
+                  <span>Solo Skirmish</span>
+                  <ArrowRight size={15} strokeWidth={2} />
+                </Link>
+                <Link to={routes.multiplayer} className="homepage-secondary-link">
+                  <Trophy size={16} strokeWidth={2} />
+                  <span>Ranked Queue</span>
+                  <ArrowRight size={15} strokeWidth={2} />
+                </Link>
+                <Link to={routes.collection} className="homepage-secondary-link">
+                  <ScrollText size={16} strokeWidth={2} />
+                  <span>Tune Collection</span>
+                  <ArrowRight size={15} strokeWidth={2} />
+                </Link>
+              </div>
+            )}
 
             <div className="homepage-support-actions">
               <AssetDownloadButton />
@@ -228,7 +339,7 @@ function HomePage() {
                   <span className="homepage-mode-eyebrow">{mode.eyebrow}</span>
                   <span className="homepage-mode-title">{mode.title}</span>
                   <span className="homepage-mode-copy">{mode.description}</span>
-                  <span className="homepage-mode-arrow">Open</span>
+                  <span className="homepage-mode-arrow">Enter</span>
                 </Link>
               ))}
             </div>

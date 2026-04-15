@@ -72,6 +72,7 @@ import { PhasePipIndicator } from './components/PhasePipIndicator';
 import type { BossPhaseFlash as BossPhaseFlashKind } from '../campaign/campaignTypes';
 import { useBossPhases } from './hooks/useBossPhases';
 import { useCampaignStore, getMission } from '../campaign';
+import { isBettingPhase } from './modules/PhaseManager';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { getHeroFeud } from '../pvp/pvpData';
 import type { CardInstance } from '../types';
@@ -100,6 +101,22 @@ const HelmIcon = () => (
 	<svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
 		<path d="M10 2C6.5 2 3.5 4.5 3 8v3c0 .6.4 1 1 1h1v2.5c0 .8.7 1.5 1.5 1.5h1c.6 0 1-.3 1.2-.8L10 13l1.3 2.2c.2.5.6.8 1.2.8h1c.8 0 1.5-.7 1.5-1.5V12h1c.6 0 1-.4 1-1V8c-.5-3.5-3.5-6-7-6zM5 8.5c.3-2.5 2.5-4.5 5-4.5s4.7 2 5 4.5V10H5V8.5z"/>
 		<path d="M9.2 7h1.6v3H9.2V7z" opacity="0.5"/>
+	</svg>
+);
+
+const CardFanIcon = () => (
+	<svg className="btn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+		<path d="M5.2 4.6 10.1 3a1.7 1.7 0 0 1 2.1 1.1l2.2 6.8a1.7 1.7 0 0 1-1.1 2.1l-4.9 1.6a1.7 1.7 0 0 1-2.1-1.1L4 6.7a1.7 1.7 0 0 1 1.2-2.1Z"/>
+		<path d="m8.3 6.5 3.8-1.2"/>
+		<path d="m9.1 9 3.7-1.2"/>
+		<path d="M12.7 6.6 14.2 6a1.7 1.7 0 0 1 2.1 1.1l1.1 3.6a1.7 1.7 0 0 1-1.1 2.1l-1.7.6"/>
+	</svg>
+);
+
+const CloseIcon = () => (
+	<svg className="btn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+		<path d="M5 5l10 10" />
+		<path d="M15 5 5 15" />
 	</svg>
 );
 
@@ -132,6 +149,22 @@ const WAGER_DESCRIPTIONS: Record<string, string> = {
 	see_hole_cards: 'See enemy hole cards',
 	double_showdown: 'Showdown stakes doubled',
 };
+
+const BATTLE_INTEL_GLYPHS: Record<string, string> = {
+	buff_all_attack: 'ATK',
+	debuff_all_attack: 'WEAK',
+	buff_all_health: 'VIT',
+	damage_all_end_turn: 'BURN',
+	heal_all_start_turn: 'HEAL',
+	cost_increase: 'COST',
+	keyword_grant: 'KEY',
+	return_to_hand_on_death: 'RETURN',
+	stealth_on_play: 'SHADE',
+};
+
+function getBattleIntelGlyph(effectType: string): string {
+	return BATTLE_INTEL_GLYPHS[effectType] ?? 'AURA';
+}
 
 type WagerEffectCard = {
 	wagerEffect?: {
@@ -473,10 +506,27 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   }
 
   const isMulligan = combatState.phase === CombatPhase.MULLIGAN;
+  const isBettingRound = isBettingPhase(combatState.phase);
+  const showBettingControls = !isMulligan && isBettingRound && !combatState.isAllInShowdown;
+  const showSetupCadence = !isMulligan && !isBettingRound && combatState.phase !== CombatPhase.RESOLUTION && !combatState.isAllInShowdown;
   const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
   const showFaith = phaseAllowsFaith && communityCardsRevealed;
   const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
   const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
+  const currentPhaseLabel = PHASE_LABELS[combatState.phase] || combatState.phase.replace(/_/g, ' ');
+  const setupCadenceTitle = combatState.phase === CombatPhase.SPELL_PET
+    ? 'Shape the board before the wager opens'
+    : 'Opening effects are resolving';
+  const setupCadenceCopy = combatState.phase === CombatPhase.SPELL_PET
+    ? (isPlayerTurn
+        ? 'Play cards, use hero powers, and establish the frontline. Betting will open automatically when the spellcraft window closes.'
+        : 'The opponent is completing their spellcraft window. Watch the board settle before the next wager.')
+    : 'The arena is resolving the opening cadence before regular betting begins.';
+  const bettingCadenceCopy = basePermissions?.waitingForOpponent
+    ? 'The opponent is deciding how much life to commit.'
+    : basePermissions?.hasBetToCall
+      ? 'Answer the current wager or raise the stakes.'
+      : 'Open the hand by choosing how much health to commit.';
 
   const playerHandEval = useMemo(() => {
     if (!combatState || isMulligan) return null;
@@ -680,7 +730,9 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
       {/* Attack mode banner — shown while a minion is selected as attacker */}
       {attackingCard && (
         <div className="attack-mode-banner">
-          <span className="attack-mode-icon">⚔</span>
+          <span className="attack-mode-icon" aria-hidden="true">
+            <CrossedSwordsIcon />
+          </span>
           <span className="attack-mode-text">
             <strong>{attackingCard.card?.name}</strong> is attacking — click a target
           </span>
@@ -689,7 +741,8 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
             className="attack-mode-cancel"
             onClick={() => selectAttacker(null)}
           >
-            ✕ Cancel
+            <CloseIcon />
+            <span>Clear Target</span>
           </button>
         </div>
       )}
@@ -743,7 +796,9 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                 />
                 {playerHandEval && playerHandEval.rank > PokerHandRank.HIGH_CARD && (
                   <div className="hand-strength-compact">
-                    <span className="strength-icon">🃏</span>
+                    <span className="strength-icon" aria-hidden="true">
+                      <CardFanIcon />
+                    </span>
                     <span className={`strength-name ${handStrengthClass}`}>{playerHandEval.displayName}</span>
                     <div className="hand-strength-bar">
                       <div className={`hand-strength-fill ${handStrengthClass}`} style={{ transform: `scaleX(${handStrengthPercent / 100})` }} />
@@ -776,10 +831,28 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       </div>
       
+      {showSetupCadence && (
+        <div className={`phase-command-card ${isPlayerTurn ? 'player' : 'opponent'}`}>
+          <div className="phase-command-copy">
+            <span className="phase-command-kicker">{currentPhaseLabel}</span>
+            <span className="phase-command-title">{setupCadenceTitle}</span>
+            <span className="phase-command-text">{setupCadenceCopy}</span>
+          </div>
+          <div className="phase-command-pills">
+            <span className="phase-command-pill">{handCards.length} cards ready</span>
+            <span className="phase-command-pill">{playerBattlefield.length} allies deployed</span>
+            <span className="phase-command-pill">{playerMana}/{playerMaxMana} mana</span>
+          </div>
+        </div>
+      )}
+
       {/* Betting Actions Row - BELOW hand cards per user request */}
-      {/* Always render during active betting phases (not mulligan/resolution) */}
-      {!isMulligan && combatState.phase !== CombatPhase.RESOLUTION && !combatState.isAllInShowdown && (
+      {showBettingControls && (
         <div className="unified-betting-actions-container">
+          <div className="betting-phase-brief">
+            <span className="betting-phase-kicker">{currentPhaseLabel}</span>
+            <span className="betting-phase-text">{bettingCadenceCopy}</span>
+          </div>
           {/* HP Slider + Quick-bet presets */}
           <div className="poker-hp-slider-container">
             <div className="poker-quick-bets">
@@ -879,15 +952,15 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
                      <span className="btn-label">FOLD</span>
                    </button>
 
-                   {!isMulligan && isPlayerTurn && playerBattlefield.length > 0 && (
+                   {isPlayerTurn && playerBattlefield.length > 0 && (
                      <button
                        type="button"
                        className="poker-btn auto-attack-btn"
                        onClick={() => autoAttackAll('minion')}
-                       title="Auto-attack all minions into enemy minions"
+                       title="Order the frontline to attack enemy minions automatically"
                      >
                        <CrossedSwordsIcon />
-                       <span className="btn-text">Auto</span>
+                       <span className="btn-text">Frontline</span>
                      </button>
                    )}
                  </div>
@@ -1426,17 +1499,8 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
                         <div className="battle-intel-copy">{activeRealmDescription}</div>
                       )}
                       {activeRealmModifiers.map((eff, index) => (
-                        <div key={`${eff.type}-${index}`} className={`battle-intel-row ${eff.target}`}>
-                          <span className="battle-intel-row-icon">
-                            {eff.type === 'buff_all_attack' ? '⚔️' :
-                             eff.type === 'debuff_all_attack' ? '⬇️' :
-                             eff.type === 'damage_all_end_turn' ? '🔥' :
-                             eff.type === 'heal_all_start_turn' ? '💚' :
-                             eff.type === 'cost_increase' ? '💎' :
-                             eff.type === 'keyword_grant' ? '✨' :
-                             eff.type === 'return_to_hand_on_death' ? '🔄' :
-                             eff.type === 'stealth_on_play' ? '👤' : '⚡'}
-                          </span>
+                        <div key={`${eff.type}-${index}`} className={`battle-intel-row with-icon ${eff.target}`}>
+                          <span className="battle-intel-row-icon">{getBattleIntelGlyph(eff.type)}</span>
                           <span className="battle-intel-row-text">
                             {eff.type.replace(/_/g, ' ')}{eff.value > 0 ? ` +${eff.value}` : ''} ({eff.target})
                           </span>
@@ -1461,15 +1525,15 @@ export const RagnarokCombatArena: React.FC<RagnarokCombatArenaProps> = ({ onComb
                     <section className="battle-intel-section">
                       <div className="battle-intel-section-title">Wagers</div>
                       {wagerIntel.player.map((effect) => (
-                        <div key={`player-${effect.cardName}-${effect.description}`} className="battle-intel-row player">
-                          <span className="battle-intel-row-icon">🎲</span>
+                        <div key={`player-${effect.cardName}-${effect.description}`} className="battle-intel-row with-icon player">
+                          <span className="battle-intel-row-icon">WGR</span>
                           <span className="battle-intel-row-text">{effect.description}</span>
                           <span className="battle-intel-source">{effect.cardName}</span>
                         </div>
                       ))}
                       {wagerIntel.opponent.map((effect) => (
-                        <div key={`opponent-${effect.cardName}-${effect.description}`} className="battle-intel-row opponent">
-                          <span className="battle-intel-row-icon">🎲</span>
+                        <div key={`opponent-${effect.cardName}-${effect.description}`} className="battle-intel-row with-icon opponent">
+                          <span className="battle-intel-row-icon">WGR</span>
                           <span className="battle-intel-row-text">{effect.description}</span>
                           <span className="battle-intel-source">{effect.cardName}</span>
                         </div>

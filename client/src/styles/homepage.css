@@ -250,6 +250,13 @@
   display: inline-flex;
 }
 
+.homepage-cta-note {
+  max-width: 52ch;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: rgba(226, 232, 240, 0.68);
+}
+
 .homepage-hero-meta {
   display: flex;
   flex-wrap: wrap;
@@ -265,6 +272,146 @@
   font-size: 0.82rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.homepage-journey-card {
+  width: 100%;
+  padding: 18px 18px 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background:
+    linear-gradient(180deg, rgba(18, 24, 41, 0.94) 0%, rgba(9, 13, 24, 0.96) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 34px rgba(0, 0, 0, 0.18);
+}
+
+.homepage-journey-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.homepage-journey-kicker,
+.homepage-journey-progress {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.homepage-journey-kicker {
+  color: rgba(248, 200, 120, 0.84);
+}
+
+.homepage-journey-progress {
+  color: rgba(148, 163, 184, 0.72);
+}
+
+.homepage-journey-title {
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.homepage-journey-copy {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(203, 213, 225, 0.78);
+}
+
+.homepage-journey-steps {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.homepage-journey-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.homepage-journey-step.is-complete {
+  border-color: rgba(74, 222, 128, 0.22);
+  background: rgba(15, 23, 42, 0.88);
+}
+
+.homepage-journey-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(240, 187, 87, 0.12);
+  color: #f3d18a;
+  flex-shrink: 0;
+}
+
+.homepage-journey-step.is-complete .homepage-journey-step-icon {
+  background: rgba(34, 197, 94, 0.14);
+  color: #86efac;
+}
+
+.homepage-journey-step-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.homepage-journey-step-copy strong {
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f8fafc;
+}
+
+.homepage-journey-step-copy span {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(148, 163, 184, 0.82);
+}
+
+.homepage-secondary-actions {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.homepage-secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(10, 14, 28, 0.72);
+  color: rgba(226, 232, 240, 0.9);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.homepage-secondary-link:hover,
+.homepage-secondary-link:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(17, 24, 39, 0.92);
+  border-color: rgba(240, 187, 87, 0.18);
+  outline: none;
 }
 
 .homepage-support-actions {
@@ -533,6 +680,10 @@
   .homepage-title {
     max-width: none;
   }
+
+  .homepage-secondary-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 860px) {
@@ -559,5 +710,10 @@
 
   .homepage-mode-card {
     min-height: 0;
+  }
+
+  .homepage-journey-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

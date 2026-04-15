@@ -79,10 +79,11 @@ Hero Death            ▼             │
 | **starterStore** | `starterStore.ts` | New player starter pack claim tracking |
 
 ### Current Implementation Notes
-
+	
 - **Home shell**: `App.tsx` is the current funnel entry. Daily quests, friends, wallet, primary mode cards, and utility links all mount there, so browser QA should validate that the primary "continue playing" action stays dominant on both desktop and mobile.
-- **Campaign navigation**: `CampaignPage.tsx` now uses an intro overlay that collapses into a bottom lore card on smaller screens. The mobile spacing pass added top clearance and moved realm nodes down so the copy no longer collides with the constellation path.
-- **Combat feel**: `AttackSystem.tsx` and `RagnarokCombatArena.tsx` are the main user-facing interaction stack. Recent cleanup split attack resolution and betting/action decisions into smaller helpers, but final polish still depends on live browser QA for spacing, timing, and motion during real matches.
+- **Starter handoff**: `StarterPackCeremony.tsx` now returns first-time players to `routes.campaign` after the reveal instead of dropping them back on the home shell. The intended first-run path is home → starter ceremony → campaign briefing → battle.
+- **Campaign navigation**: `CampaignPage.tsx` now exposes a persistent "Next Battle / Active Mission" lead card plus a stronger mission briefing card. The mobile spacing pass added top clearance and moved realm nodes down so the copy no longer collides with the constellation path.
+- **Combat feel**: `RagnarokCombatArena.tsx` now deliberately swaps the lower command zone by phase. `SPELL_PET`/setup phases show authored guidance only, while true wagering controls render only during betting rounds (`PRE_FLOP`, `FAITH`, `FORESIGHT`, `DESTINY`). Final polish still depends on live browser QA for spacing, timing, and motion during real matches.
 - **Protocol-backed sync**: `shared/protocol-core/apply.ts` remains the deterministic replay path for both browser and server. Gameplay/UI changes that depend on rewards, packs, match results, or marketplace state should be validated against shared replay behavior rather than client-only assumptions.
 
 ---
@@ -167,7 +168,12 @@ interface ChessCollision {
 └─────┬──────┘
       ▼
 ┌────────────┐
-│ Spell/Pet  │ ← Cast spells, use abilities
+│ Spell/Pet  │ ← Cast spells, use abilities, stage board state
+└─────┬──────┘
+      ▼
+┌────────────┐
+│ First Blood│ ← Pre-flop wager opens
+│ (Pre-Flop) │   Betting round
 └─────┬──────┘
       ▼
 ┌────────────┐

@@ -53,12 +53,13 @@ export default function StarterPackCeremony({ onComplete }: StarterPackCeremonyP
 
 	const handlePackClose = useCallback(() => {
 		onComplete();
-	}, [onComplete]);
+		navigate(routes.campaign);
+	}, [navigate, onComplete]);
 
 	const handlePlayFirstGame = useCallback(() => {
 		onComplete();
-		navigate(routes.game);
-	}, [onComplete, navigate]);
+		navigate(routes.campaign);
+	}, [navigate, onComplete]);
 
 	if (phase === 'opening') {
 		return (
