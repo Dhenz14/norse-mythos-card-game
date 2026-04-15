@@ -1109,11 +1109,11 @@ vercel --prod                 # Deploy to Vercel
 
 ### Completed (New Player Starter Experience & Combat Polish)
 
-- New player first-login ceremony: welcome screen → "Claim Your Birthright" → pack-opening animation → 45 class-matched base cards + 4 auto-built starter decks → "Play Your First Game" button
+- New player first-login ceremony: welcome screen → "Claim Your Birthright" → pack-opening animation → 45 class-matched base cards + 4 auto-built starter decks → handoff into campaign
 - `starterSet.ts`: 45 class-matched base cards (10 per hero class + 5 neutrals), `baseCards.ts` has 135 base edition cards total (IDs 100-234)
 - `starterStore.ts`: Zustand + persist tracks whether starter pack claimed (`ragnarok-starter-claimed` localStorage key)
 - `StarterPackCeremony.tsx`: two-phase flow (welcome → pack opening), reuses `PackOpeningAnimation`, adds cards to HiveDataStore
-- HomePage: "Start Game" button for new players (triggers ceremony), switches to "Play Game" after claiming, "Dev Test" button always visible
+- HomePage: "Claim Starter Deck" CTA for new players (triggers ceremony), then campaign-first primary CTA after claiming
 - Fixed card playability glow: minion cards no longer glow green when battlefield is full (5 max)
 - Fixed damage popup positioning: `data-hero-role` attributes + multi-selector fallback chain for hero element lookup
 - Fixed battlefield card hover popup clipping: CSS `:has(.bf-card-wrapper:hover)` promotes parent z-index to escape stacking context

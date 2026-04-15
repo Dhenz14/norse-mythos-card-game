@@ -486,7 +486,7 @@ TreasuryPage.tsx
 First Visit → HomePage
   │
   ▼ (starterStore.claimed === false)
-"Start Game" button shown
+"Claim Starter Deck" button shown
   │
   ▼ Click
 StarterPackCeremony.tsx
@@ -503,8 +503,8 @@ StarterPackCeremony.tsx
   │   starterStore.markClaimed()
   │
   ▼ Animation complete
-  "Play Your First Game" → /game (heroes pre-selected, cards optional)
-  "Close Pack" → HomePage
+  ceremony closes → /campaign
+  player lands on the campaign lead card / mission briefing path
 ```
 
 ### Starter Set

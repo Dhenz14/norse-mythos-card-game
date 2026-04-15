@@ -127,9 +127,9 @@ Certain attacks result in instant elimination - no poker combat required.
 
 Major pieces (Queen, Rook, Bishop, Knight) trigger full poker combat when attacking:
 
-When two characters engage in combat, the battle comprises two phases:
-1. **Spell & Pet Phase**
-2. **Attack Phase (Poker-Inspired)**
+When two characters engage in combat, the battle comprises two major layers:
+1. **Spell & Pet Phase** — board setup, hero powers, opening tempo
+2. **Attack Phase (Poker-Inspired)** — wagering cadence from pre-flop through showdown
 
 #### Poker Combat Mechanics
 
@@ -146,7 +146,13 @@ The attack phase uses No-Limit Hold 'em poker analogy. **HP is your betting curr
 
 ### 5.2. Community Cards: Faith / Foresight / Destiny
 
-Like Texas Hold 'em's Flop/Turn/River, combat reveals information in stages:
+Like Texas Hold 'em, combat now has an explicit **pre-flop** wager before community cards appear, then reveals information in stages:
+
+#### First Blood (Pre-Flop)
+- **No community cards revealed yet**
+- Opening wager after Spell & Pet setup resolves
+- Sets the initial life commitment for the hand
+- Establishes cadence before the board starts revealing public information
 
 #### Faith (The Flop)
 - **3 cards revealed**
@@ -577,6 +583,7 @@ Based on the Ragnarok poker combat UI (HP = dual stat design):
 
 | Term | Definition |
 |------|------------|
+| **First Blood** | Pre-flop betting round before community cards reveal |
 | **Ragnarok** | The mythological end of the world; best poker hand |
 | **Faith** | First 3 community cards revealed |
 | **Foresight** | 4th community card |
