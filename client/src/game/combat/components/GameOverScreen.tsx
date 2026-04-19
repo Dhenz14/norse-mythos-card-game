@@ -30,6 +30,39 @@ const CLASS_COLORS: Record<string, string> = {
 const getClassColor = (cls?: string) =>
 	CLASS_COLORS[cls?.toLowerCase() ?? ''] ?? CLASS_COLORS.neutral;
 
+const iconStrokeProps = {
+	fill: 'none',
+	stroke: 'currentColor',
+	strokeWidth: 1.8,
+	strokeLinecap: 'round' as const,
+	strokeLinejoin: 'round' as const,
+};
+
+const VictoryOutcomeIcon = () => (
+	<svg viewBox="0 0 24 24" aria-hidden="true">
+		<path d="m6 18 6-12 6 12" {...iconStrokeProps} />
+		<path d="M9.2 13.5h5.6" {...iconStrokeProps} />
+		<path d="M12 6v12" {...iconStrokeProps} opacity="0.7" />
+	</svg>
+);
+
+const DrawOutcomeIcon = () => (
+	<svg viewBox="0 0 24 24" aria-hidden="true">
+		<path d="M7 8.5 4 12l3 3.5" {...iconStrokeProps} />
+		<path d="M17 8.5 20 12l-3 3.5" {...iconStrokeProps} />
+		<path d="M9 12h6" {...iconStrokeProps} />
+		<path d="M10.5 8.5 9 12l1.5 3.5M13.5 8.5 15 12l-1.5 3.5" {...iconStrokeProps} opacity="0.7" />
+	</svg>
+);
+
+const DefeatOutcomeIcon = () => (
+	<svg viewBox="0 0 24 24" aria-hidden="true">
+		<path d="M12 4.5 6 7.2v4.2c0 3.8 2.5 7.1 6 8.1 3.5-1 6-4.3 6-8.1V7.2l-6-2.7Z" {...iconStrokeProps} />
+		<path d="M9.2 12.2 12 15l2.8-2.8" {...iconStrokeProps} />
+		<path d="M12 9.3v5.5" {...iconStrokeProps} opacity="0.75" />
+	</svg>
+);
+
 export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 	isVisible,
 	winner,
@@ -61,6 +94,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 
 	const playerColor = getClassColor(playerHeroClass);
 	const opponentColor = getClassColor(opponentHeroClass);
+	const outcomeRole = isVictory ? 'Breaker' : isDraw ? 'Deadlock' : 'Last Stand';
 
 	return (
 		<AnimatePresence>
@@ -113,10 +147,10 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 							transition={{ delay: 0.55, duration: 0.35 }}
 						>
 							{isDraw
-								? 'The battle ends in a stalemate'
+								? 'Neither line breaks. The field holds in deadlock.'
 								: isVictory
-									? 'Glory to the victor — Valhalla awaits'
-									: 'The enemy prevails — your saga ends here'}
+									? 'You break the enemy line and claim the field.'
+									: 'The enemy breaks through before your line recovers.'}
 						</motion.div>
 
 						<motion.div
@@ -146,7 +180,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 									<span className={`game-over-hero-name ${isVictory ? 'winner-name' : ''}`}>
 										{playerHeroName}
 								</span>
-								{isVictory && <span className="game-over-crown">★ Winner</span>}
+								{isVictory && <span className="game-over-crown">Field Taken</span>}
 							</div>
 
 							<div className="game-over-vs-block">
@@ -174,7 +208,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 									<span className={`game-over-hero-name ${!isVictory && !isDraw ? 'winner-name' : ''}`}>
 										{opponentHeroName}
 								</span>
-								{!isVictory && !isDraw && <span className="game-over-crown">★ Winner</span>}
+								{!isVictory && !isDraw && <span className="game-over-crown">Field Taken</span>}
 							</div>
 						</motion.div>
 
@@ -190,17 +224,15 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 							</div>
 							<div className="game-over-stat">
 								<span className={`game-over-stat-value result-badge ${isVictory ? 'victory' : isDraw ? 'draw' : 'defeat'}`}>
-									{isDraw ? 'TIE' : isVictory ? 'WIN' : 'LOSS'}
+									{isDraw ? 'DRAW' : isVictory ? 'WIN' : 'LOSS'}
 								</span>
 								<span className="game-over-stat-label">Outcome</span>
 							</div>
 							<div className="game-over-stat">
-								<span className="game-over-stat-value">
-									{isVictory ? '⚔' : isDraw ? '🤝' : '🛡'}
+								<span className={`game-over-stat-value game-over-stat-icon-badge ${isVictory ? 'victory' : isDraw ? 'draw' : 'defeat'}`}>
+									{isVictory ? <VictoryOutcomeIcon /> : isDraw ? <DrawOutcomeIcon /> : <DefeatOutcomeIcon />}
 								</span>
-								<span className="game-over-stat-label">
-									{isVictory ? 'Slayer' : isDraw ? 'Equals' : 'Fallen'}
-								</span>
+								<span className="game-over-stat-label">{outcomeRole}</span>
 							</div>
 						</motion.div>
 

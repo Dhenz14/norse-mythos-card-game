@@ -14,7 +14,6 @@
  */
 import React, { useEffect, useRef, useCallback } from 'react';
 import { Application, Container, Graphics } from 'pixi.js';
-import type { Realm } from '../../campaign/nineRealms';
 
 /* ── Star layer config ── */
 
@@ -57,8 +56,13 @@ interface FlowParticle {
 
 /* ── Component ── */
 
+interface CosmicCanvasRealm {
+	position: { x: number; y: number };
+	color: string;
+}
+
 interface CosmicCanvasProps {
-	realms: Realm[];
+	realms: CosmicCanvasRealm[];
 	connections: { x1: number; y1: number; x2: number; y2: number; color1: string; color2: string; active: boolean }[];
 	className?: string;
 }

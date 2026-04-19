@@ -1002,25 +1002,44 @@ async function drawPackCards(
 
 	let minted = 0;
 	for (let i = 0; i < cardCount; i++) {
-		s = lcgNext(s);
-		const cardId = mintableIds[s % mintableIds.length];
 		const uid = `${trxId}:${i}`;
-
 		const existing = await deps.state.getCard(uid);
 		if (existing) continue;
+		let mintContext: {
+			cardId: number;
+			rarity: string;
+			supply: Awaited<ReturnType<StateAdapter['getSupply']>>;
+			cardKey: string;
+			cardMinted: number;
+			perCardCap: number;
+		} | null = null;
 
-		const cardDef = deps.cards.getCardById(cardId);
-		if (!cardDef) continue;
+		for (let attempts = 0; attempts < mintableIds.length; attempts++) {
+			s = lcgNext(s);
+			const cardId = mintableIds[s % mintableIds.length];
+			const cardDef = deps.cards.getCardById(cardId);
+			if (!cardDef) continue;
 
-		const rarity = cardDef.rarity || 'common';
-		const supply = await deps.state.getSupply(rarity, 'pack');
-		if (supply && supply.minted >= supply.cap) continue;
+			const rarity = cardDef.rarity || 'common';
+			const supply = await deps.state.getSupply(rarity, 'pack');
+			if (supply && supply.minted >= supply.cap) continue;
+
+			const cardKey = `card:${cardId}`;
+			const cardSupply = await deps.state.getSupply(cardKey, 'pack');
+			const cardMinted = cardSupply?.minted ?? 0;
+			const perCardCap = cardSupply?.cap ?? (RARITY_CARD_CAPS[rarity.toLowerCase()] ?? 2000);
+			if (cardMinted >= perCardCap) continue;
+
+			mintContext = { cardId, rarity, supply, cardKey, cardMinted, perCardCap };
+			break;
+		}
+		if (!mintContext) break;
 
 		await deps.state.putCard({
 			uid,
-			cardId,
+			cardId: mintContext.cardId,
 			owner,
-			rarity,
+			rarity: mintContext.rarity,
 			level: 1,
 			xp: 0,
 			edition: 'alpha',
@@ -1030,9 +1049,15 @@ async function drawPackCards(
 			lastTransferBlock: blockNum,
 		});
 
-		if (supply) {
-			await deps.state.putSupply({ ...supply, minted: supply.minted + 1 });
+		if (mintContext.supply) {
+			await deps.state.putSupply({ ...mintContext.supply, minted: mintContext.supply.minted + 1 });
 		}
+		await deps.state.putSupply({
+			key: mintContext.cardKey,
+			pool: 'pack',
+			cap: mintContext.perCardCap,
+			minted: mintContext.cardMinted + 1,
+		});
 		minted++;
 	}
 
@@ -1645,7 +1670,15 @@ async function applyMarketBuy(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	if (!listing.active) return reject('listing not active');
 	if (listing.seller === op.broadcaster) return reject('cannot buy own listing');
 
-	const paymentResult = await verifyCompanionPayment(op, paymentTrxId, listing.seller, listing.price, deps);
+	const paymentResult = await verifyCompanionPayment(
+		op,
+		paymentTrxId,
+		op.broadcaster,
+		listing.seller,
+		listing.price,
+		listing.currency,
+		deps,
+	);
 	if (paymentResult) return paymentResult;
 
 	const nft = await loadOwnedMarketNft(listing.nftUid, listing.nftType, listing.seller, 'seller no longer owns', deps);
@@ -1706,7 +1739,15 @@ async function applyMarketAccept(op: ProtocolOp, deps: ProtocolCoreDeps): Promis
 	if (isOpResult(nft)) return nft;
 	if (nft.asset.owner !== op.broadcaster) return reject('not NFT owner');
 
-	const paymentResult = await verifyCompanionPayment(op, paymentTrxId, op.broadcaster, offer.price, deps);
+	const paymentResult = await verifyCompanionPayment(
+		op,
+		paymentTrxId,
+		offer.buyer,
+		op.broadcaster,
+		offer.price,
+		offer.currency,
+		deps,
+	);
 	if (paymentResult) return paymentResult;
 
 	await transferMarketNft(nft, offer.buyer, op.blockNum, deps);
@@ -1731,24 +1772,34 @@ async function applyMarketAccept(op: ProtocolOp, deps: ProtocolCoreDeps): Promis
 async function verifyCompanionPayment(
 	op: ProtocolOp,
 	paymentTrxId: string,
+	expectedSender: string,
 	expectedRecipient: string,
 	expectedAmount: number,
+	expectedCurrency: 'HIVE' | 'HBD',
 	deps: ProtocolCoreDeps,
 ): Promise<OpResult | null> {
-	if (!paymentTrxId) {
-		return null;
+	const lookupTrxId = paymentTrxId || op.trxId;
+	const companion = await deps.state.getCompanionTransfer(lookupTrxId);
+	if (!companion) {
+		return reject(paymentTrxId ? 'payment transfer not found' : 'missing payment transfer');
 	}
 
-	const companion = await deps.state.getCompanionTransfer(op.trxId);
-	if (!companion) {
-		return null;
+	if (companion.from !== expectedSender) {
+		return reject('payment sender mismatch');
 	}
 
 	if (companion.to !== expectedRecipient) {
 		return reject('payment recipient mismatch');
 	}
 
-	const amount = parseFloat(companion.amount);
+	const [amountText = '', currency = ''] = companion.amount.trim().split(/\s+/);
+	const amount = parseFloat(amountText);
+	if (!Number.isFinite(amount)) {
+		return reject('payment amount invalid');
+	}
+	if (currency.toUpperCase() !== expectedCurrency) {
+		return reject('payment currency mismatch');
+	}
 	return amount < expectedAmount
 		? reject(`payment insufficient: ${amount} < ${expectedAmount}`)
 		: null;

@@ -93,7 +93,7 @@ export const HeroPowerButton: React.FC<HeroPowerButtonProps> = ({
       <div className="hero-power-portal-tooltip-content">
         <div className="tooltip-section tooltip-section--power">
           <div className="tooltip-header">
-            <span className="tooltip-name">⚡ {heroPower.name}</span>
+            <span className="tooltip-name">{heroPower.name}</span>
             <span className="tooltip-cost">{heroPower.cost} Mana</span>
           </div>
           <div className="tooltip-description">{heroPower.description}</div>
@@ -103,7 +103,7 @@ export const HeroPowerButton: React.FC<HeroPowerButtonProps> = ({
         {weaponUpgrade && (
           <div className="tooltip-section tooltip-section--upgrade">
             <div className={`tooltip-upgrade-header ${isWeaponUpgraded ? 'upgraded' : 'available'}`}>
-              <span>⚔ {isWeaponUpgraded ? 'UPGRADED!' : 'Upgrade Available'}</span>
+              <span>{isWeaponUpgraded ? 'Upgraded' : 'Upgrade Available'}</span>
               {!isWeaponUpgraded && (
                 <span className={`tooltip-upgrade-cost ${!canAffordUpgrade ? 'disabled' : ''}`}>
                   {WEAPON_COST} Mana
@@ -117,7 +117,7 @@ export const HeroPowerButton: React.FC<HeroPowerButtonProps> = ({
                   {weaponUpgrade.immediateEffect.description}
                 </div>
                 <div className="tooltip-upgrade-note">
-                  ✨ Permanently upgrades Hero Power for this match
+                  Permanently upgrades Hero Power for this match
                 </div>
                 <button
                   className="tooltip-upgrade-button"
@@ -125,7 +125,7 @@ export const HeroPowerButton: React.FC<HeroPowerButtonProps> = ({
                   disabled={!canUpgrade}
                 >
                   {canUpgrade
-                    ? `⚔ UPGRADE NOW (${WEAPON_COST} Mana)`
+                    ? `Upgrade Now (${WEAPON_COST} Mana)`
                     : `Need ${WEAPON_COST - mana} more mana`}
                 </button>
               </>

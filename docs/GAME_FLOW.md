@@ -81,10 +81,13 @@ Hero Death            ▼             │
 ### Current Implementation Notes
 	
 - **Home shell**: `App.tsx` is the current funnel entry. Daily quests, friends, wallet, primary mode cards, and utility links all mount there, so browser QA should validate that the primary "continue playing" action stays dominant on both desktop and mobile.
-- **Starter handoff**: `StarterPackCeremony.tsx` now returns first-time players to `routes.campaign` after the reveal instead of dropping them back on the home shell. The intended first-run path is home → starter ceremony → campaign briefing → battle.
-- **Campaign navigation**: `CampaignPage.tsx` now exposes a persistent "Next Battle / Active Mission" lead card plus a stronger mission briefing card. The mobile spacing pass added top clearance and moved realm nodes down so the copy no longer collides with the constellation path.
-- **Combat feel**: `RagnarokCombatArena.tsx` now deliberately swaps the lower command zone by phase. `SPELL_PET`/setup phases show authored guidance only, while true wagering controls render only during betting rounds (`PRE_FLOP`, `FAITH`, `FORESIGHT`, `DESTINY`). Final polish still depends on live browser QA for spacing, timing, and motion during real matches.
+- **Starter handoff**: `StarterPackCeremony.tsx` now returns first-time players to `routes.campaign` after the reveal instead of dropping them back on the home shell. The intended first-run path is home → starter ceremony → campaign theater → mission briefing → army staging → battle.
+- **Campaign navigation**: `CampaignPage.tsx` now stages the campaign as a chapter-theater funnel instead of a flat mission picker. Chapter prologues can autoplay from the campaign shell, Norse/Greek maps now sit over a live cosmic canvas, realm panels surface the next authored route, and the mission briefing is structured as a launch sequence rather than a loose settings card.
+- **Army staging**: `ArmySelection.tsx` now reads as a launch surface instead of a raw picker: command, loadout, and launch states are surfaced explicitly, and the footer CTA language follows the same route that starts on the campaign shell.
+- **Combat feel**: `RagnarokCombatArena.tsx` now uses a shared phase director for setup and wagering instead of separate loose cards. Disabled wagering controls are hidden when the opponent owns the decision window, so each phase exposes fewer active controls at once and the cadence reads more deliberately during live play.
 - **Protocol-backed sync**: `shared/protocol-core/apply.ts` remains the deterministic replay path for both browser and server. Gameplay/UI changes that depend on rewards, packs, match results, or marketplace state should be validated against shared replay behavior rather than client-only assumptions.
+- **Marketplace settlement**: Marketplace buy/accept replay now validates the actual payment sender, recipient, currency, and amount instead of trusting a loose transfer lookup. The current UI handoff still uses a manual payment transaction ID prompt until bundled wallet settlement is implemented.
+- **Legacy pack endpoint**: `server/routes/packRoutes.ts` now requires a signed pack-open request, chooses cards deterministically per opening record, and stores pack history as richer card records rather than raw card IDs.
 
 ---
 

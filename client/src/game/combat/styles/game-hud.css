@@ -38,6 +38,7 @@
 :is(.hud-status-chip, .hud-status-breakdown) {
 	display: inline-flex;
 	align-items: center;
+	gap: 8px;
 	min-height: 30px;
 	padding: 0 10px;
 	border-radius: 999px;
@@ -56,6 +57,20 @@
 
 .hud-status-pot {
 	color: #fde68a;
+}
+
+.hud-chip-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 14px;
+	height: 14px;
+	flex-shrink: 0;
+}
+
+.hud-chip-icon svg {
+	width: 100%;
+	height: 100%;
 }
 
 .hud-status-initiative {
@@ -87,10 +102,27 @@
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
+.hud-badge-label {
+	font-size: 10px;
+	font-weight: 900;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: rgba(226, 232, 240, 0.76);
+}
+
 .hud-deck-badge .hud-icon {
-	font-size: 22px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
 	opacity: 0.92;
 	color: var(--ui-gold-bright);
+}
+
+.hud-deck-badge .hud-icon svg {
+	width: 100%;
+	height: 100%;
 }
 
 .hud-deck-badge .hud-count {
@@ -105,18 +137,6 @@
 	border-color: rgba(91, 140, 184, 0.55);
 }
 
-.hud-player-deck::before {
-	content: 'YOU';
-	font-family: var(--font-display);
-	font-size: 12px;
-	font-weight: 900;
-	letter-spacing: 2px;
-	opacity: 0.95;
-	margin-right: 5px;
-	color: var(--ui-rune-pale);
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-}
-
 /* Opponent deck — top right, anchored to opponent hero zone */
 .hud-opponent-deck {
 	right: 18px;
@@ -124,22 +144,10 @@
 	border-color: rgba(200, 49, 42, 0.55);
 }
 
-.hud-opponent-deck::before {
-	content: 'OPP';
-	font-family: var(--font-display);
-	font-size: 12px;
-	font-weight: 900;
-	letter-spacing: 2px;
-	opacity: 0.95;
-	margin-right: 5px;
-	color: #ffd5d2;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-}
-
 /* Opponent hand count badge — hidden; shown via .opponent-hand-count on the hand display */
 .hud-opponent-hand {
 	right: 18px;
-	top: 66px;
+	top: 70px;
 	border-color: rgba(148, 163, 184, 0.4);
 }
 
@@ -149,7 +157,8 @@
 	color: #fca5a5;
 }
 
-.hud-deck-badge.low-deck .hud-icon {
+.hud-deck-badge.low-deck .hud-icon,
+.hud-deck-badge.low-deck .hud-badge-label {
 	opacity: 1;
 }
 

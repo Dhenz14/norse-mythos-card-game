@@ -37,7 +37,7 @@ export const TargetingPrompt: React.FC<TargetingPromptProps> = ({ card, onCancel
   return (
     <div className="targeting-prompt">
       <div className="targeting-prompt-title">
-        {card.card.type === 'spell' ? '✨ Select a Target ✨' : '⚔️ Select a Target ⚔️'}
+        {card.card.type === 'spell' ? 'Spell Targeting' : 'Select Target'}
       </div>
       <div className="targeting-prompt-message">
         {getTargetingMessage()}

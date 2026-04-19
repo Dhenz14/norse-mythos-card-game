@@ -4076,15 +4076,196 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   /* NO background/border - mana crystals must remain visible */
   background: transparent;
   border: none;
   padding: 0;
 }
 
-.betting-phase-brief,
-.phase-command-card {
+.combat-phase-director {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(720px, calc(100vw - 280px));
+  max-width: 100%;
+  padding: 14px 18px 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: linear-gradient(180deg, rgba(8, 12, 22, 0.96) 0%, rgba(15, 23, 42, 0.92) 100%);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+}
+
+.combat-phase-director.player-window {
+  border-color: rgba(96, 165, 250, 0.24);
+}
+
+.combat-phase-director.opponent-window {
+  border-color: rgba(248, 113, 113, 0.22);
+}
+
+.combat-phase-director.mode-wager {
+  box-shadow:
+    0 22px 46px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(245, 158, 11, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.combat-phase-director.is-waiting {
+  background: linear-gradient(180deg, rgba(8, 12, 22, 0.92) 0%, rgba(18, 24, 39, 0.9) 100%);
+}
+
+.combat-phase-director-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+:is(.combat-phase-director-kicker, .combat-phase-director-cue, .combat-phase-director-phase) {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.combat-phase-director-kicker,
+.combat-phase-director-phase {
+  color: #f8d483;
+}
+
+.combat-phase-director-cue {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.72);
+  color: rgba(226, 232, 240, 0.82);
+}
+
+.combat-phase-rail {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.combat-phase-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(10, 14, 28, 0.72);
+  color: rgba(148, 163, 184, 0.78);
+}
+
+.combat-phase-step.complete {
+  border-color: rgba(74, 222, 128, 0.24);
+  background: rgba(21, 128, 61, 0.16);
+  color: #bbf7d0;
+}
+
+.combat-phase-step.current {
+  border-color: rgba(245, 158, 11, 0.32);
+  background: rgba(120, 53, 15, 0.18);
+  color: #fde68a;
+}
+
+.combat-phase-step-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.14);
+  color: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.combat-phase-step-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.combat-phase-director-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.combat-phase-director-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #f8fafc;
+  letter-spacing: 0.02em;
+}
+
+.combat-phase-director-text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.58;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.combat-phase-director-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.combat-phase-director-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(30, 41, 59, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: rgba(241, 245, 249, 0.86);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1180px) {
+  .combat-phase-director {
+    width: min(560px, calc(100vw - 220px));
+  }
+
+  .combat-phase-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .combat-phase-director {
+    width: min(100%, calc(100vw - 40px));
+  }
+
+  .combat-phase-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+:is(.betting-phase-brief, .phase-command-card) {
   display: flex;
   flex-direction: column;
   gap: 8px;

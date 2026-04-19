@@ -170,12 +170,21 @@ export default function MarketplacePage() {
 
 	const handleBuy = async (listing: ListingWithCard) => {
 		if (!confirm(`Buy ${listing.cardName || listing.nftUid} for ${listing.price} ${listing.currency}?`)) return;
+		const paymentPrompt = `Send ${listing.price} ${listing.currency} to @${listing.seller} with your Hive wallet, then paste the payment transaction ID to settle this purchase.`;
+		const paymentTrxId = window.prompt(paymentPrompt, '');
+		if (!paymentTrxId?.trim()) {
+			setActionResult({
+				success: false,
+				message: 'A valid payment transaction ID is required to complete a marketplace buy.',
+			});
+			return;
+		}
+
 		setLoading(true);
 		setActionResult(null);
 		try {
 			const sync = await getHiveSync();
-			// In production, the buy op bundles a HIVE transfer — the paymentTrxId is from that transfer
-			const res = await sync.marketBuy(listing.listingId, '');
+			const res = await sync.marketBuy(listing.listingId, paymentTrxId.trim());
 			setActionResult({
 				success: res.success,
 				message: res.success ? `Purchased ${listing.cardName || listing.nftUid}!` : (res.error || 'Failed'),

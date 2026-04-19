@@ -201,30 +201,50 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
   const canProceedToBattle = isArmyComplete && allDecksComplete;
   const deploymentStatus = !isArmyComplete
     ? {
-        title: 'Choose every commander',
-        body: 'Lock a hero into each battlefield role before you deploy the line.',
+        title: 'Lock the command line',
+        body: 'Assign a hero to every battlefield role before you move into loadout prep.',
       }
     : !allDecksComplete
       ? {
-          title: 'Finish the loadouts',
-          body: 'Each major piece needs a complete 30-card deck before the battle can begin.',
+          title: 'Complete the spell loadouts',
+          body: 'Every major piece needs a finished 30-card deck before the warband can launch.',
         }
       : {
-          title: 'Army is battle ready',
-          body: 'The line and all four spell packages are locked. Deploy when ready.',
+          title: 'Warband ready for launch',
+          body: 'Commanders are locked, spell decks are tuned, and the line can move straight into battle.',
         };
+  const launchSteps = [
+    {
+      label: 'Command',
+      detail: `${selectedHeroCount}/${PIECE_ORDER.length} locked`,
+      complete: isArmyComplete,
+      active: !isArmyComplete,
+    },
+    {
+      label: 'Loadouts',
+      detail: `${completedDeckCount}/${MAJOR_PIECES.length} decks ready`,
+      complete: allDecksComplete,
+      active: isArmyComplete && !allDecksComplete,
+    },
+    {
+      label: 'Launch',
+      detail: isMultiplayer ? 'enter queue' : 'enter battle',
+      complete: canProceedToBattle,
+      active: canProceedToBattle,
+    },
+  ];
   const soloActionLabel = canProceedToBattle
-    ? 'Deploy Army'
+    ? 'Launch Battle'
     : isArmyComplete
-      ? 'Finish Deck Loadouts'
-      : 'Complete the Line';
+      ? 'Complete Loadouts'
+      : 'Lock the Line';
   const multiplayerActionLabel = matchmakingStatus === 'queued'
     ? 'Cancel Search'
     : canProceedToBattle
-      ? 'Enter Matchmaking'
+      ? 'Find Opponent'
       : isArmyComplete
-        ? 'Finish Deck Loadouts'
-        : 'Complete the Line';
+        ? 'Complete Loadouts'
+        : 'Lock the Line';
   
   const handleOpenDeckBuilder = (pieceType: PieceType) => {
     setDeckBuilderOpen(pieceType);
@@ -249,7 +269,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
       {/* TOP BAR */}
       <div className="norse-top-bar">
         <div className="norse-top-title-group">
-          <h1 className="norse-top-title">Assemble Your Army</h1>
+          <h1 className="norse-top-title">Muster the Warband</h1>
           <div className="norse-top-status">
             <span className={`norse-status-pill ${selectedHeroCount === PIECE_ORDER.length ? 'complete' : ''}`}>
               {selectedHeroCount}/{PIECE_ORDER.length} heroes locked
@@ -257,6 +277,22 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
             <span className={`norse-status-pill ${completedDeckCount === MAJOR_PIECES.length ? 'complete' : ''}`}>
               {completedDeckCount}/{MAJOR_PIECES.length} decks battle ready
             </span>
+          </div>
+          <div className="norse-launch-rail">
+            {launchSteps.map((step) => (
+              <div
+                key={step.label}
+                className={`norse-launch-step ${step.complete ? 'complete' : ''} ${step.active ? 'active' : ''}`}
+              >
+                <span className="norse-launch-step-marker">
+                  {step.complete ? <CheckCircle2 size={13} strokeWidth={2.4} /> : step.label.slice(0, 1)}
+                </span>
+                <span className="norse-launch-step-copy">
+                  <strong>{step.label}</strong>
+                  <span>{step.detail}</span>
+                </span>
+              </div>
+            ))}
           </div>
           <p className="norse-top-guidance">{deploymentStatus.body}</p>
         </div>
@@ -435,7 +471,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
       {/* RIGHT SIDEBAR - YOUR ARMY & DECKS */}
       <div className="norse-army-sidebar norse-stone-panel norse-rune-border">
         <div className="norse-army-header">
-          <div className="norse-army-title">Your Army & Decks</div>
+          <div className="norse-army-title">Battle Line & Loadouts</div>
         </div>
         
         <div className="norse-army-list">
@@ -465,7 +501,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                       {hero?.name || <span className="norse-empty-text">Awaiting hero</span>}
                     </div>
                     <div className="norse-army-item-deck">
-                      {pieceType === 'king' ? 'Command slot' : `${info.name} deck`}
+                      {pieceType === 'king' ? 'Command seat' : `${info.name} deck`}
                     </div>
                   </div>
                   {isMajorPiece && deckStatus && (
@@ -536,7 +572,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
           <div className="norse-matchmaking-status">
             <div className="norse-matchmaking-status-line">
               <Search size={15} strokeWidth={2.1} />
-              <span>Seeking an opponent</span>
+              <span>Searching for an opponent</span>
             </div>
             {queuePosition !== null && (
               <div className="norse-queue-position">

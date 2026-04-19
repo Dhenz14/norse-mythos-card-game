@@ -124,7 +124,7 @@ function HomePage() {
         ? 'Continue Campaign'
         : 'Start Campaign';
   const primarySummary = !starterClaimed
-    ? 'Secure the starter line, then move straight into the campaign map for your first authored battle.'
+    ? 'Claim the starter line, then move straight into the campaign map for the first authored battle.'
     : activeMission
       ? `${activeMission.chapter.name} is already staged. Re-enter ${activeMission.mission.name} from the campaign map.`
       : nextMission
@@ -236,10 +236,10 @@ function HomePage() {
             </div>
 
             <div className="homepage-kicker">Norse Mythos Card Game</div>
-            <h1 className="homepage-title">Choose the lane. Enter with intent.</h1>
+            <h1 className="homepage-title">Claim the line. March into battle.</h1>
             <p className="homepage-copy">
-              The shell now needs to feel like one authored war table, not a cluster of systems.
-              Start on the campaign route, then peel into skirmish, ranked, and collection from a cleaner hierarchy.
+              Campaign is now the clean front door: claim the starter line, stage a mission briefing,
+              muster the warband, and break straight into live combat without bouncing through disconnected screens.
             </p>
 
             {!starterClaimed ? (
@@ -259,9 +259,9 @@ function HomePage() {
             <p className="homepage-cta-note">{primarySummary}</p>
 
             <div className="homepage-hero-meta">
-              <span>Campaign-first funnel</span>
-              <span>Army staging</span>
-              <span>Poker combat</span>
+              <span>Campaign route</span>
+              <span>Army forge</span>
+              <span>Live combat</span>
             </div>
 
             <div className="homepage-journey-card">
@@ -290,17 +290,17 @@ function HomePage() {
               <div className="homepage-secondary-actions">
                 <Link to={routes.game} className="homepage-secondary-link">
                   <Swords size={16} strokeWidth={2} />
-                  <span>Solo Skirmish</span>
+                  <span>Solo Battle</span>
                   <ArrowRight size={15} strokeWidth={2} />
                 </Link>
                 <Link to={routes.multiplayer} className="homepage-secondary-link">
                   <Trophy size={16} strokeWidth={2} />
-                  <span>Ranked Queue</span>
+                  <span>Ranked Arena</span>
                   <ArrowRight size={15} strokeWidth={2} />
                 </Link>
                 <Link to={routes.collection} className="homepage-secondary-link">
                   <ScrollText size={16} strokeWidth={2} />
-                  <span>Tune Collection</span>
+                  <span>Tune Decks</span>
                   <ArrowRight size={15} strokeWidth={2} />
                 </Link>
               </div>
@@ -326,8 +326,8 @@ function HomePage() {
 
           <section className="homepage-destination-panel">
             <div className="homepage-section-header">
-              <span className="homepage-section-kicker">Core Modes</span>
-              <span className="homepage-section-note">The fastest way into a clean play flow.</span>
+              <span className="homepage-section-kicker">Primary Routes</span>
+              <span className="homepage-section-note">Choose the front you want to enter from.</span>
             </div>
             <div className="homepage-mode-grid">
               {modeCards.map((mode) => (
@@ -345,8 +345,8 @@ function HomePage() {
             </div>
 
             <div className="homepage-section-header homepage-section-header-utility">
-              <span className="homepage-section-kicker">Utility Dock</span>
-              <span className="homepage-section-note">Collection, progression, and system surfaces.</span>
+              <span className="homepage-section-kicker">War Table</span>
+              <span className="homepage-section-note">Collection, progression, and support systems.</span>
             </div>
             <div className="homepage-utility-grid">
               {utilityLinks.map((link) => (

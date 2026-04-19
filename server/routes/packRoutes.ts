@@ -13,6 +13,37 @@ const directDb = _directDb!;
 
 const router = express.Router();
 
+interface PackTypeRow {
+	id: number;
+	name: string;
+	common_slots: number;
+	rare_slots: number;
+	epic_slots: number;
+	wildcard_slots: number;
+	legendary_chance: number | null;
+	mythic_chance: number | null;
+}
+
+interface CardSupplyRow {
+	id: number;
+	card_id: number;
+	card_name: string;
+	nft_rarity: string;
+	max_supply: number;
+	remaining_supply: number;
+	reward_reserve: number;
+	card_type: string;
+	hero_class: string;
+}
+
+interface PackHistoryCardRecord {
+	cardId: number;
+	mintNumber: number;
+	nftRarity: string;
+	cardType: string;
+	heroClass: string;
+}
+
 // In-memory TTL cache for read-heavy endpoints
 const cache = new Map<string, { data: any; expiry: number }>();
 
@@ -118,6 +149,37 @@ const COMMON_TYPES = ['minion', 'spell'];
 const RARE_TYPES = ['minion', 'spell'];
 const WILDCARD_TYPES = ['hero', 'spell', 'minion'];
 
+function seedToUint32(seed: string): number {
+	let hash = 2166136261;
+	for (let i = 0; i < seed.length; i++) {
+		hash ^= seed.charCodeAt(i);
+		hash = Math.imul(hash, 16777619);
+	}
+	return (hash >>> 0) || 1;
+}
+
+function createDeterministicRng(seed: string): () => number {
+	let state = seedToUint32(seed);
+	return () => {
+		state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+		return state / 0x100000000;
+	};
+}
+
+function getMintNumber(card: CardSupplyRow): number {
+	return card.max_supply - card.remaining_supply;
+}
+
+function buildHistoryRecord(card: CardSupplyRow): PackHistoryCardRecord {
+	return {
+		cardId: card.card_id,
+		mintNumber: getMintNumber(card),
+		nftRarity: card.nft_rarity,
+		cardType: card.card_type,
+		heroClass: card.hero_class,
+	};
+}
+
 /**
  * POST /api/packs/open
  * Opens a pack and returns the cards pulled
@@ -136,15 +198,16 @@ router.post('/open', async (req: Request, res: Response) => {
 		return res.status(400).json({ success: false, error: 'Invalid username format' });
 	}
 
-	if (signature && timestamp) {
-		if (!isTimestampFresh(timestamp)) {
-			return res.status(401).json({ success: false, error: 'Stale timestamp' });
-		}
-		const message = `ragnarok-pack-open:${userId}:${packTypeId}:${timestamp}`;
-		const authResult = await verifyHiveAuth(userId, message, signature);
-		if (!authResult.valid) {
-			return res.status(401).json({ success: false, error: 'Invalid signature' });
-		}
+	if (!signature || !timestamp) {
+		return res.status(401).json({ success: false, error: 'Signature and timestamp are required' });
+	}
+	if (!isTimestampFresh(timestamp)) {
+		return res.status(401).json({ success: false, error: 'Stale timestamp' });
+	}
+	const message = `ragnarok-pack-open:${userId}:${packTypeId}:${timestamp}`;
+	const authResult = await verifyHiveAuth(userId, message, signature);
+	if (!authResult.valid) {
+		return res.status(401).json({ success: false, error: 'Invalid signature' });
 	}
 
 	const client = await directDb.connect();
@@ -161,8 +224,18 @@ router.post('/open', async (req: Request, res: Response) => {
 			return res.status(404).json({ success: false, error: 'Pack type not found or inactive' });
 		}
 
-		const pack = packResult.rows[0];
-		const pulledCards: any[] = [];
+		const pack = packResult.rows[0] as PackTypeRow;
+		const pulledCards: CardSupplyRow[] = [];
+		const historyInsert = await client.query(`
+			INSERT INTO pack_history (user_id, pack_type_id, cards_received)
+			VALUES ($1, $2, $3)
+			RETURNING id
+		`, [userId, packTypeId, '[]']);
+		const historyId = historyInsert.rows[0]?.id as number | undefined;
+		if (!historyId) {
+			throw new Error('Failed to allocate pack history row');
+		}
+		const openingSeed = `${userId}:${packTypeId}:${historyId}`;
 
 		const rarityFallback: Record<string, string[]> = {
 			common: ['common', 'rare', 'epic', 'mythic'],
@@ -171,98 +244,98 @@ router.post('/open', async (req: Request, res: Response) => {
 			mythic: ['mythic', 'epic'],
 		};
 
-		async function pullCard(nftRarity: string, preferredType?: string): Promise<any | null> {
+		async function claimDeterministicCard(
+			rarity: string,
+			slotSeed: string,
+			preferredType?: string,
+		): Promise<CardSupplyRow | null> {
+			const result = preferredType
+				? await client.query(`
+					SELECT * FROM card_supply
+					WHERE nft_rarity = $1 AND card_type = $2 AND remaining_supply > reward_reserve
+					ORDER BY md5($3 || ':' || card_id::text), card_id ASC
+					LIMIT 1
+					FOR UPDATE SKIP LOCKED
+				`, [rarity, preferredType, slotSeed])
+				: await client.query(`
+					SELECT * FROM card_supply
+					WHERE nft_rarity = $1 AND remaining_supply > reward_reserve
+					ORDER BY md5($2 || ':' || card_id::text), card_id ASC
+					LIMIT 1
+					FOR UPDATE SKIP LOCKED
+				`, [rarity, slotSeed]);
+
+			const card = result.rows[0] as CardSupplyRow | undefined;
+			if (!card) return null;
+
+			const updated = await client.query(`
+				UPDATE card_supply
+				SET remaining_supply = remaining_supply - 1
+				WHERE id = $1 AND remaining_supply > reward_reserve
+				RETURNING *
+			`, [card.id]);
+			return (updated.rows[0] as CardSupplyRow | undefined) ?? null;
+		}
+
+		async function pullCard(nftRarity: string, slotSeed: string, preferredType?: string): Promise<CardSupplyRow | null> {
 			const fallbackOrder = rarityFallback[nftRarity] || [nftRarity];
 
 			for (const rarity of fallbackOrder) {
-				// Try preferred type first
 				if (preferredType) {
-					const typedResult = await client.query(`
-						SELECT * FROM card_supply
-						WHERE nft_rarity = $1 AND card_type = $2 AND remaining_supply > reward_reserve
-						ORDER BY RANDOM()
-						LIMIT 1
-						FOR UPDATE
-					`, [rarity, preferredType]);
-
-					if (typedResult.rows.length > 0) {
-						const card = typedResult.rows[0];
-						await client.query(`
-							UPDATE card_supply
-							SET remaining_supply = remaining_supply - 1
-							WHERE id = $1
-						`, [card.id]);
-						return card;
-					}
+					const typedCard = await claimDeterministicCard(rarity, `${slotSeed}:preferred`, preferredType);
+					if (typedCard) return typedCard;
 				}
 
-				// Fallback: any type of this rarity
-				const cardResult = await client.query(`
-					SELECT * FROM card_supply
-					WHERE nft_rarity = $1 AND remaining_supply > reward_reserve
-					ORDER BY RANDOM()
-					LIMIT 1
-					FOR UPDATE
-				`, [rarity]);
-
-				if (cardResult.rows.length > 0) {
-					const card = cardResult.rows[0];
-					await client.query(`
-						UPDATE card_supply
-						SET remaining_supply = remaining_supply - 1
-						WHERE id = $1
-					`, [card.id]);
-					return card;
-				}
+				const card = await claimDeterministicCard(rarity, `${slotSeed}:any`);
+				if (card) return card;
 			}
 
 			return null;
 		}
 
-		function determineWildcardRarity(mythicChance: number): string {
-			const roll = Math.random() * 100;
-
-			if (roll < mythicChance) {
-				return 'mythic';
-			} else if (roll < mythicChance + 20) {
-				return 'epic';
-			} else {
-				return 'rare';
-			}
+		function determineWildcardRarity(slotSeed: string, mythicChance: number): string {
+			const roll = createDeterministicRng(`wildcard:${slotSeed}`)() * 100;
+			if (roll < mythicChance) return 'mythic';
+			if (roll < mythicChance + 20) return 'epic';
+			return 'rare';
 		}
 
-		// Pull common slots — cycle minion/spell for diversity
 		for (let i = 0; i < pack.common_slots; i++) {
 			const preferredType = COMMON_TYPES[i % COMMON_TYPES.length];
-			const card = await pullCard('common', preferredType);
-			if (card) pulledCards.push(card);
+			const card = await pullCard('common', `${openingSeed}:common:${i}`, preferredType);
+			if (!card) throw new Error(`Insufficient supply for common slot ${i + 1}`);
+			pulledCards.push(card);
 		}
 
-		// Pull rare slots — cycle minion/spell
 		for (let i = 0; i < pack.rare_slots; i++) {
 			const preferredType = RARE_TYPES[i % RARE_TYPES.length];
-			const card = await pullCard('rare', preferredType);
-			if (card) pulledCards.push(card);
+			const card = await pullCard('rare', `${openingSeed}:rare:${i}`, preferredType);
+			if (!card) throw new Error(`Insufficient supply for rare slot ${i + 1}`);
+			pulledCards.push(card);
 		}
 
-		// Pull epic slots — prefer spells
 		for (let i = 0; i < pack.epic_slots; i++) {
-			const card = await pullCard('epic', 'spell');
-			if (card) pulledCards.push(card);
+			const card = await pullCard('epic', `${openingSeed}:epic:${i}`, 'spell');
+			if (!card) throw new Error(`Insufficient supply for epic slot ${i + 1}`);
+			pulledCards.push(card);
 		}
 
-		// Pull wildcard slots — first prefers hero, rest cycle spell/minion
 		for (let i = 0; i < pack.wildcard_slots; i++) {
-			const rarity = determineWildcardRarity((pack.legendary_chance ?? 0) + (pack.mythic_chance ?? 0));
+			const slotSeed = `${openingSeed}:wildcard:${i}`;
+			const rarity = determineWildcardRarity(slotSeed, (pack.legendary_chance ?? 0) + (pack.mythic_chance ?? 0));
 			const preferredType = WILDCARD_TYPES[i % WILDCARD_TYPES.length];
-			const card = await pullCard(rarity, preferredType);
-			if (card) pulledCards.push(card);
+			const card = await pullCard(rarity, slotSeed, preferredType);
+			if (!card) throw new Error(`Insufficient supply for wildcard slot ${i + 1}`);
+			pulledCards.push(card);
 		}
 
-		// Add cards to user inventory with mint numbers
+		const expectedCards = pack.common_slots + pack.rare_slots + pack.epic_slots + pack.wildcard_slots;
+		if (pulledCards.length !== expectedCards) {
+			throw new Error(`Pack open incomplete: expected ${expectedCards}, got ${pulledCards.length}`);
+		}
+
 		for (const card of pulledCards) {
-			// Mint number = how many of this card have been pulled (including this one)
-			const mintNumber = card.max_supply - card.remaining_supply + 1;
+			const mintNumber = getMintNumber(card);
 
 			const existingResult = await client.query(`
 				SELECT * FROM user_inventory
@@ -271,14 +344,12 @@ router.post('/open', async (req: Request, res: Response) => {
 			`, [userId, card.card_id]);
 
 			if (existingResult.rows.length > 0) {
-				// Duplicate — keep first copy's mint number, just increment quantity
 				await client.query(`
 					UPDATE user_inventory
 					SET quantity = quantity + 1
 					WHERE user_id = $1 AND card_id = $2
 				`, [userId, card.card_id]);
 			} else {
-				// New card — record the mint serial number
 				await client.query(`
 					INSERT INTO user_inventory (user_id, card_id, quantity, mint_number)
 					VALUES ($1, $2, 1, $3)
@@ -286,11 +357,12 @@ router.post('/open', async (req: Request, res: Response) => {
 			}
 		}
 
-		const cardIds = pulledCards.map(c => c.card_id);
+		const historyCards = pulledCards.map(buildHistoryRecord);
 		await client.query(`
-			INSERT INTO pack_history (user_id, pack_type_id, cards_received)
-			VALUES ($1, $2, $3)
-		`, [userId, packTypeId, JSON.stringify(cardIds)]);
+			UPDATE pack_history
+			SET cards_received = $2
+			WHERE id = $1
+		`, [historyId, JSON.stringify(historyCards)]);
 
 		await client.query('COMMIT');
 
@@ -306,9 +378,9 @@ router.post('/open', async (req: Request, res: Response) => {
 				nftRarity: c.nft_rarity,
 				cardType: c.card_type,
 				heroClass: c.hero_class,
-				remainingSupply: c.remaining_supply - 1,
+				remainingSupply: c.remaining_supply,
 				maxSupply: c.max_supply,
-				mintNumber: c.max_supply - c.remaining_supply + 1,
+				mintNumber: getMintNumber(c),
 			})),
 			totalPulled: pulledCards.length,
 		});

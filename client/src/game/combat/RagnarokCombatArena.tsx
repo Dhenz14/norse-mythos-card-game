@@ -69,6 +69,7 @@ import { useAudio } from '../../lib/stores/useAudio';
 import { BossQuipBubble } from './components/BossQuipBubble';
 import { BossPhaseFlash } from './components/BossPhaseFlash';
 import { PhasePipIndicator } from './components/PhasePipIndicator';
+import { CombatPhaseDirector } from './components/CombatPhaseDirector';
 import type { BossPhaseFlash as BossPhaseFlashKind } from '../campaign/campaignTypes';
 import { useBossPhases } from './hooks/useBossPhases';
 import { useCampaignStore, getMission } from '../campaign';
@@ -508,25 +509,57 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
   const isMulligan = combatState.phase === CombatPhase.MULLIGAN;
   const isBettingRound = isBettingPhase(combatState.phase);
   const showBettingControls = !isMulligan && isBettingRound && !combatState.isAllInShowdown;
-  const showSetupCadence = !isMulligan && !isBettingRound && combatState.phase !== CombatPhase.RESOLUTION && !combatState.isAllInShowdown;
+  const showBettingInteraction = showBettingControls && Boolean(basePermissions?.isMyTurnToAct);
+  const showCombatDirector = !isMulligan && !combatState.isAllInShowdown && combatState.phase !== CombatPhase.RESOLUTION;
   const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
   const showFaith = phaseAllowsFaith && communityCardsRevealed;
   const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
   const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
   const currentPhaseLabel = PHASE_LABELS[combatState.phase] || combatState.phase.replace(/_/g, ' ');
-  const setupCadenceTitle = combatState.phase === CombatPhase.SPELL_PET
-    ? 'Shape the board before the wager opens'
-    : 'Opening effects are resolving';
-  const setupCadenceCopy = combatState.phase === CombatPhase.SPELL_PET
-    ? (isPlayerTurn
-        ? 'Play cards, use hero powers, and establish the frontline. Betting will open automatically when the spellcraft window closes.'
-        : 'The opponent is completing their spellcraft window. Watch the board settle before the next wager.')
-    : 'The arena is resolving the opening cadence before regular betting begins.';
-  const bettingCadenceCopy = basePermissions?.waitingForOpponent
-    ? 'The opponent is deciding how much life to commit.'
-    : basePermissions?.hasBetToCall
-      ? 'Answer the current wager or raise the stakes.'
-      : 'Open the hand by choosing how much health to commit.';
+  const phaseDirectorMode = isBettingRound ? 'wager' : 'setup';
+  const phaseDirectorCue = isBettingRound
+    ? basePermissions?.waitingForOpponent
+      ? 'Enemy wager window'
+      : basePermissions?.hasBetToCall
+        ? 'Answer the wager'
+        : 'Open the wager'
+    : isPlayerTurn
+      ? 'Your setup window'
+      : 'Enemy setup window';
+  const phaseDirectorHeadline = combatState.phase === CombatPhase.SPELL_PET
+    ? isPlayerTurn
+      ? 'Shape the board before the wager opens'
+      : 'The enemy is shaping the board'
+    : isBettingRound
+      ? basePermissions?.waitingForOpponent
+        ? 'Hold the line while the stake is set'
+        : basePermissions?.hasBetToCall
+          ? 'Match the stake or seize initiative'
+          : 'Name the opening stake'
+      : 'Opening effects are resolving';
+  const phaseDirectorBody = combatState.phase === CombatPhase.SPELL_PET
+    ? isPlayerTurn
+      ? 'Deploy cards, trigger powers, and establish the frontline. When spellcraft closes, the first wager opens automatically.'
+      : 'The board is still being formed. Watch the opening pressure before the first wager decides the pace of the fight.'
+    : isBettingRound
+      ? basePermissions?.waitingForOpponent
+        ? 'The opponent has initiative. Wager controls stay quiet until they commit health and hand the decision back to you.'
+        : basePermissions?.hasBetToCall
+          ? 'You can match the current stake to stay in the hand or raise to force the next decision at a higher price.'
+          : 'Choose the opening amount of health to commit. Bigger pots are only worth it if you can hold the board through showdown.'
+      : 'Passive effects and opening reveals are resolving before the next live wager window begins.';
+  const phaseDirectorPills = isBettingRound
+    ? [
+        `Stakes ${combatState.pot} HP`,
+        basePermissions?.hasBetToCall ? `To call ${basePermissions.toCall ?? 0} HP` : `Next stake ${betAmount} HP`,
+        `${playerBattlefield.length} allies on board`,
+        `${playerMana}/${playerMaxMana} mana`,
+      ]
+    : [
+        `${handCards.length} cards ready`,
+        `${playerBattlefield.length} allies on board`,
+        `${playerMana}/${playerMaxMana} mana`,
+      ];
 
   const playerHandEval = useMemo(() => {
     if (!combatState || isMulligan) return null;
@@ -831,28 +864,23 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         </div>
       </div>
       
-      {showSetupCadence && (
-        <div className={`phase-command-card ${isPlayerTurn ? 'player' : 'opponent'}`}>
-          <div className="phase-command-copy">
-            <span className="phase-command-kicker">{currentPhaseLabel}</span>
-            <span className="phase-command-title">{setupCadenceTitle}</span>
-            <span className="phase-command-text">{setupCadenceCopy}</span>
-          </div>
-          <div className="phase-command-pills">
-            <span className="phase-command-pill">{handCards.length} cards ready</span>
-            <span className="phase-command-pill">{playerBattlefield.length} allies deployed</span>
-            <span className="phase-command-pill">{playerMana}/{playerMaxMana} mana</span>
-          </div>
-        </div>
+      {showCombatDirector && (
+        <CombatPhaseDirector
+          phase={combatState.phase}
+          phaseLabel={currentPhaseLabel}
+          headline={phaseDirectorHeadline}
+          body={phaseDirectorBody}
+          cue={phaseDirectorCue}
+          mode={phaseDirectorMode}
+          isPlayerTurn={isPlayerTurn}
+          isWaiting={Boolean(basePermissions?.waitingForOpponent)}
+          pills={phaseDirectorPills}
+        />
       )}
 
       {/* Betting Actions Row - BELOW hand cards per user request */}
-      {showBettingControls && (
+      {showBettingInteraction && (
         <div className="unified-betting-actions-container">
-          <div className="betting-phase-brief">
-            <span className="betting-phase-kicker">{currentPhaseLabel}</span>
-            <span className="betting-phase-text">{bettingCadenceCopy}</span>
-          </div>
           {/* HP Slider + Quick-bet presets */}
           <div className="poker-hp-slider-container">
             <div className="poker-quick-bets">

@@ -119,20 +119,33 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
   const [resolvedPortrait, setResolvedPortrait] = useState(portraitPaths.local);
 
   useEffect(() => {
+    let isActive = true;
     const tryLoad = (src: string, fallback: () => void) => {
-      if (src.startsWith('data:')) { setResolvedPortrait(src); return; }
+      if (src.startsWith('data:')) {
+        if (isActive) setResolvedPortrait(src);
+        return;
+      }
       const img = new Image();
-      img.onload = () => setResolvedPortrait(src);
-      img.onerror = fallback;
+      img.onload = () => {
+        if (isActive) setResolvedPortrait(src);
+      };
+      img.onerror = () => {
+        if (isActive) fallback();
+      };
       img.src = src;
     };
     tryLoad(portraitPaths.local, () => {
       if (portraitPaths.cdn) {
-        tryLoad(portraitPaths.cdn, () => setResolvedPortrait(DEFAULT_PORTRAIT));
+        tryLoad(portraitPaths.cdn, () => {
+          if (isActive) setResolvedPortrait(DEFAULT_PORTRAIT);
+        });
       } else {
-        setResolvedPortrait(DEFAULT_PORTRAIT);
+        if (isActive) setResolvedPortrait(DEFAULT_PORTRAIT);
       }
     });
+    return () => {
+      isActive = false;
+    };
   }, [portraitPaths]);
 
   const portraitBgStyle = useMemo((): React.CSSProperties => ({
@@ -328,7 +341,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
             )}
             {artifact && (
               <div className="artifact-badge">
-                🔱 {artifact.name.split(' ')[0]} {artifact.attack > 0 ? `+${artifact.attack}` : ''}
+                Artifact {artifact.name.split(' ')[0]} {artifact.attack > 0 ? `+${artifact.attack}` : ''}
               </div>
             )}
           </div>
@@ -348,7 +361,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
             >
               <div className="portrait-tooltip-content">
                 <div className="tooltip-power-header">
-                  <span className="power-name">⚡ {heroPower.name}</span>
+                  <span className="power-name">{heroPower.name}</span>
                   <span className="power-cost-display">{heroPower.cost} Mana</span>
                 </div>
                 <div className="tooltip-power-desc">{heroPower.description}</div>
@@ -356,7 +369,7 @@ export const BattlefieldHero: React.FC<BattlefieldHeroProps> = React.memo(({
                 {weaponUpgrade && !isOpponent && (
                   <div className={`tooltip-upgrade-section ${canUpgrade ? 'can-upgrade' : ''} ${isWeaponUpgraded ? 'is-upgraded' : ''}`}>
                     <div className="upgrade-header">
-                      {isWeaponUpgraded ? '✓ WEAPON UPGRADED' : `⚔ UPGRADE: ${weaponUpgrade.name} (${WEAPON_COST} Mana)`}
+                      {isWeaponUpgraded ? 'Weapon Upgraded' : `Weapon Upgrade: ${weaponUpgrade.name} (${WEAPON_COST} Mana)`}
                     </div>
                     <div className="upgrade-effect">
                       {isWeaponUpgraded 

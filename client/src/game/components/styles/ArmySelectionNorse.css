@@ -60,7 +60,7 @@
   
   /* CSS Grid: Full page layout */
   display: grid;
-  grid-template-rows: 74px 1fr 84px;
+  grid-template-rows: 104px 1fr 96px;
   grid-template-columns: 212px 1fr 276px;
   grid-template-areas:
     "header  header  header"
@@ -108,7 +108,7 @@
    ============================================ */
 .norse-army-selection .norse-top-bar {
   grid-area: header;
-  height: 74px;
+  height: 104px;
   background: linear-gradient(180deg, 
     rgba(10, 10, 31, 0.98) 0%, 
     rgba(15, 23, 42, 0.95) 100%
@@ -116,7 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 24px 12px;
+  padding: 14px 24px 16px;
   position: relative;
   z-index: 100;
   border-bottom: 1px solid rgba(139, 115, 85, 0.3);
@@ -125,11 +125,11 @@
 .norse-army-selection .norse-top-title-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .norse-army-selection .norse-top-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: #f1f5f9;
   letter-spacing: 4px;
@@ -152,21 +152,21 @@
   margin: 0;
   max-width: 46rem;
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.55;
   color: rgba(203, 213, 225, 0.72);
 }
 
 .norse-army-selection .norse-status-pill {
   display: inline-flex;
   align-items: center;
-  min-height: 22px;
-  padding: 0 10px;
+  min-height: 24px;
+  padding: 0 11px;
   border-radius: 999px;
   background: rgba(30, 41, 59, 0.7);
   border: 1px solid rgba(100, 116, 139, 0.35);
   color: #cbd5e1;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 1.1px;
   text-transform: uppercase;
@@ -176,6 +176,79 @@
   background: rgba(21, 128, 61, 0.18);
   border-color: rgba(74, 222, 128, 0.45);
   color: #bbf7d0;
+}
+
+.norse-army-selection .norse-launch-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.norse-army-selection .norse-launch-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 0 12px 0 10px;
+  border-radius: 999px;
+  background: rgba(9, 14, 28, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.norse-army-selection .norse-launch-step.complete {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(21, 128, 61, 0.16);
+}
+
+.norse-army-selection .norse-launch-step.active {
+  border-color: rgba(245, 158, 11, 0.36);
+  background: rgba(120, 53, 15, 0.16);
+}
+
+.norse-army-selection .norse-launch-step-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  color: #e2e8f0;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.norse-army-selection .norse-launch-step.complete .norse-launch-step-marker {
+  background: rgba(74, 222, 128, 0.2);
+  color: #bbf7d0;
+}
+
+.norse-army-selection .norse-launch-step.active .norse-launch-step-marker {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fde68a;
+}
+
+.norse-army-selection .norse-launch-step-copy {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.norse-army-selection .norse-launch-step-copy strong {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f8fafc;
+}
+
+.norse-army-selection .norse-launch-step-copy span {
+  font-size: 11px;
+  color: rgba(203, 213, 225, 0.7);
 }
 
 .norse-army-selection .norse-quick-decks {
@@ -327,14 +400,14 @@
 }
 
 .norse-army-selection .norse-piece-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #f1f5f9;
   letter-spacing: 0.5px;
 }
 
 .norse-army-selection .norse-piece-hero {
-  font-size: 12px;
+  font-size: 13px;
   color: #94a3b8;
   margin-top: 2px;
 }
@@ -385,7 +458,7 @@
 }
 
 .norse-army-selection .norse-panel-title {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
   color: #f1f5f9;
   letter-spacing: 1px;
@@ -395,7 +468,7 @@
 }
 
 .norse-army-selection .norse-panel-subtitle {
-  font-size: 12px;
+  font-size: 13px;
   color: #94a3b8;
   font-style: italic;
 }
@@ -825,8 +898,8 @@
 }
 
 .norse-army-selection .norse-edit-deck-btn {
-  padding: 4px 10px;
-  font-size: 10px;
+  padding: 6px 10px;
+  font-size: 11px;
   font-weight: 600;
   background: #00ffcc;
   border: none;
@@ -848,7 +921,7 @@
    ============================================ */
 .norse-army-selection .norse-bottom-bar {
   grid-area: footer;
-  height: 84px;
+  height: 96px;
   background: linear-gradient(0deg, 
     rgba(10, 10, 31, 0.98) 0%, 
     rgba(15, 23, 42, 0.95) 100%
@@ -867,7 +940,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 13px 20px;
   font-size: 14px;
   font-weight: 600;
   background: transparent;
@@ -973,6 +1046,10 @@
   }
 
   .norse-army-selection .norse-top-guidance {
+    display: none;
+  }
+
+  .norse-army-selection .norse-launch-rail {
     display: none;
   }
 
@@ -1096,7 +1173,7 @@
 }
 
 .norse-army-selection .norse-hero-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #f1f5f9;
   text-align: center;
@@ -1164,8 +1241,8 @@
 
 .norse-army-selection .norse-select-btn {
   width: 100%;
-  padding: 6px 12px;
-  font-size: 11px;
+  padding: 8px 12px;
+  font-size: 12px;
   font-weight: 600;
   background: linear-gradient(135deg, #475569 0%, #334155 100%);
   border: 1px solid #64748b;
@@ -1305,10 +1382,11 @@
 }
 
 .norse-army-selection .norse-battle-btn {
-  min-height: 52px;
-  padding: 12px 32px;
+  min-height: 58px;
+  min-width: 236px;
+  padding: 0 28px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   border: 2px solid #22c55e;
   border-radius: 8px;
@@ -1317,7 +1395,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   font-family: inherit;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.14em;
   box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
   position: relative;
   overflow: visible;
@@ -1703,7 +1781,7 @@
 }
 
 .norse-army-selection .norse-battle-status-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1712,8 +1790,8 @@
 
 .norse-army-selection .norse-battle-status-text {
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.5;
   color: rgba(203, 213, 225, 0.72);
 }
 
