@@ -541,14 +541,19 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   }, [flowState, boardState.currentTurn, boardState.gameStatus, incrementPlayerTurn]);
 
   useEffect(() => {
-    if (flowState?.tag === 'chess' && boardState.currentTurn === 'opponent' && boardState.gameStatus === 'playing') {
+    if (
+      flowState?.tag === 'chess'
+      && boardState.currentTurn === 'opponent'
+      && boardState.gameStatus === 'playing'
+      && !isP2PConnected
+    ) {
       const aiDelay = setTimeout(() => {
         executeAITurn();
       }, 1000);
       return () => clearTimeout(aiDelay);
     }
     return undefined;
-  }, [flowState, boardState.currentTurn, boardState.gameStatus, executeAITurn]);
+  }, [flowState, boardState.currentTurn, boardState.gameStatus, executeAITurn, isP2PConnected]);
 
   useEffect(() => {
     if (pendingCombat && boardState.gameStatus === 'combat' && flowState?.tag === 'chess') {
