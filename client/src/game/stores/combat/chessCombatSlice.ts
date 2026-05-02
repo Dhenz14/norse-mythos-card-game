@@ -5,7 +5,6 @@
  */
 
 import { StateCreator } from 'zustand';
-import { v4 as uuidv4 } from 'uuid';
 import { 
   ChessPiece, 
   ChessBoardPosition, 
@@ -92,9 +91,9 @@ export const createChessCombatSlice: StateCreator<
     });
   },
 
-  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => {
+  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => {
     const pieces: ChessPiece[] = [];
-    
+
     const createPiece = (
       type: ChessPieceType,
       owner: ChessPlayerSide,
@@ -102,17 +101,17 @@ export const createChessCombatSlice: StateCreator<
       army: ArmySelection
     ): ChessPiece => {
       const stats = PIECE_BASE_STATS[type];
-      let hero = type === 'pawn' 
+      let hero = type === 'pawn'
         ? CHESS_PIECE_HEROES.pawn[0]
         : army[type as keyof ArmySelection];
-      
+
       const heroElement = hero.element as NorseElement | undefined;
-      const gameElement: ElementType = heroElement 
-        ? NORSE_TO_GAME_ELEMENT[heroElement] 
+      const gameElement: ElementType = heroElement
+        ? NORSE_TO_GAME_ELEMENT[heroElement]
         : 'neutral';
-      
+
       return {
-        id: uuidv4(),
+        id: idGen(),
         type,
         owner,
         position,

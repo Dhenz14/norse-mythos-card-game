@@ -5,6 +5,7 @@ import type { InitialFlowInput, PostCinematicPlan, RoundFlowState } from '../../
 import type { ArmySelection } from '../../types/ChessTypes';
 import type { RealmId } from '../../types/NorseTypes';
 import { useGameStore } from '../../stores/gameStore';
+import { cryptoIdGen } from '../../utils/seededRng';
 import type { SoundEffectType } from '../../../lib/stores/useAudio';
 
 type CampaignData = {
@@ -36,7 +37,7 @@ type BoardBootstrapInput = {
   readonly playerArmy: ArmySelection | null;
   readonly opponentArmy: ArmySelection;
   readonly setPlayerArmy: Dispatch<SetStateAction<ArmySelection | null>>;
-  readonly initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => void;
+  readonly initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => void;
   readonly resetBossRulesApplied: () => void;
   readonly playSoundEffect: (sound: SoundEffectType) => void;
 };
@@ -128,7 +129,7 @@ export function useCampaignGameBootstrap(input: CampaignGameBootstrapInput): voi
 
     const defaultArmy = getDefaultArmySelection();
     input.setPlayerArmy(defaultArmy);
-    input.initializeBoard(defaultArmy, input.opponentArmy);
+    input.initializeBoard(defaultArmy, input.opponentArmy, cryptoIdGen);
     input.resetBossRulesApplied();
 
     if (!input.hasCinematic && !input.campaignData?.mission.narrativeBefore) {

@@ -35,7 +35,7 @@ export interface ChessCombatAdapter {
   lastInstantKill: InstantKillEvent | null;
   pendingAttackAnimation: PendingAttackAnimation | null;
   
-  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => void;
+  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => void;
   selectPiece: (piece: ChessPiece | null) => void;
   movePiece: (to: ChessBoardPosition) => ChessCollision | null;
   getPieceAt: (position: ChessBoardPosition) => ChessPiece | null;
@@ -63,8 +63,8 @@ export function useChessCombatAdapter(): ChessCombatAdapter {
     lastInstantKill: unified.lastInstantKill,
     pendingAttackAnimation: unified.pendingAttackAnimation,
 
-    initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => {
-      unified.initializeBoard(playerArmy, opponentArmy);
+    initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => {
+      unified.initializeBoard(playerArmy, opponentArmy, idGen);
       unified.initializeKingAbilities(playerArmy.king.id, opponentArmy.king.id);
     },
 
@@ -134,8 +134,8 @@ export function getChessCombatStoreActions() {
   const unified = useUnifiedCombatStore.getState();
 
   return {
-    initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => {
-      unified.initializeBoard(playerArmy, opponentArmy);
+    initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => {
+      unified.initializeBoard(playerArmy, opponentArmy, idGen);
       unified.initializeKingAbilities(playerArmy.king.id, opponentArmy.king.id);
     },
 

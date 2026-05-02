@@ -19,6 +19,7 @@ import { debug } from '../config/debugConfig';
 import { useWarbandStore, selectArmy, selectDeckCardIds } from '../../lib/stores/useWarbandStore';
 import { usePeerStore } from '../stores/peerStore';
 import { useGameStore } from '../stores/gameStore';
+import { cryptoIdGen, createSeededIdGen } from '../utils/seededRng';
 import { useCraftingStore } from '../crafting/craftingStore';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { useCampaignGameBootstrap } from './hooks/useCampaignGameBootstrap';
@@ -183,7 +184,8 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   }, [isP2PConnected]);
 
   // Initialize board if initialArmy is provided.
-  // P2P mode: skip — the host's authoritative `init` message owns the state.
+  // P2P mode: skip — the P2P-specific effect below populates the board
+  // with seeded piece ids so both peers converge.
   useEffect(() => {
     if (isP2PConnected) {
       if (initialArmy && !playerArmy) setPlayerArmy(initialArmy);
@@ -191,7 +193,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     }
     if (initialArmy && !playerArmy) {
       setPlayerArmy(initialArmy);
-      initializeBoard(initialArmy, opponentArmy);
+      initializeBoard(initialArmy, opponentArmy, cryptoIdGen);
     }
   }, [initialArmy, opponentArmy, initializeBoard, playerArmy, isP2PConnected]);
 
@@ -204,12 +206,31 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     if (!warbandArmy) return;
     if (isP2PConnected) return;
     bootstrappedFromWarbandRef.current = true;
-    initializeBoard(warbandArmy, opponentArmy);
+    initializeBoard(warbandArmy, opponentArmy, cryptoIdGen);
     if (warbandDeck.length > 0) {
       setSharedDeck([...warbandDeck]);
     }
     playSoundEffect('game_start');
   }, [warbandArmy, warbandDeck, isCampaign, initialArmy, opponentArmy, initializeBoard, setSharedDeck, playSoundEffect, isP2PConnected]);
+
+  // P2P chess board bootstrap. Both peers compute identical piece ids
+  // from `matchSeed + 'chess-pieces'`, so any future move reference (by
+  // piece id) resolves to the same piece on each side. Runs once after
+  // the host's `init` envelope is applied (`p2pInitApplied`) and the
+  // opponent's army announcement has arrived.
+  const matchSeed = useGameStore(s => s.matchSeed);
+  const p2pInitApplied = usePeerStore(s => s.p2pInitApplied);
+  const p2pBoardInitRef = useRef(false);
+  useEffect(() => {
+    if (p2pBoardInitRef.current) return;
+    if (!isP2PConnected) return;
+    if (!p2pInitApplied) return;
+    if (!matchSeed) return;
+    if (!initialArmy || !opponentArmy) return;
+    p2pBoardInitRef.current = true;
+    const idGen = createSeededIdGen(matchSeed, 'chess-pieces');
+    initializeBoard(initialArmy, opponentArmy, idGen);
+  }, [isP2PConnected, p2pInitApplied, matchSeed, initialArmy, opponentArmy, initializeBoard]);
 
   useCampaignGameBootstrap({
     isCampaign,
@@ -609,7 +630,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     gameEndProcessedRef.current = false;
     const defaultArmy = getDefaultArmySelection();
     setPlayerArmy(defaultArmy);
-    initializeBoard(defaultArmy, opponentArmy);
+    initializeBoard(defaultArmy, opponentArmy, cryptoIdGen);
     clearFlow();
     startFlow({ kind: 'chess' });
     playSoundEffect('game_start');

@@ -195,7 +195,7 @@ export interface ChessCombatSliceActions {
   initializeCombat: (playerPieces: ChessPieceState[], opponentPieces: ChessPieceState[]) => void;
   movePiece: (pieceIdOrPosition: string | ChessBoardPosition, newPosition?: { row: number; col: number }) => ChessCollision | null | void;
   capturePiece: (attackerId: string, targetId: string) => void;
-  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => void;
+  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => void;
   selectPiece: (piece: ChessPiece | null) => void;
   executeMove: (from: ChessBoardPosition, to: ChessBoardPosition) => void;
   executeInstantKill: (attacker: ChessPiece, defender: ChessPiece, targetPosition: ChessBoardPosition) => void;
