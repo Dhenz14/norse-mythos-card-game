@@ -54,6 +54,7 @@ export const createChessCombatSlice: StateCreator<
   playerTurnCount: 0,
   _chessRng: null,
   _chessIdGen: null,
+  _logCounter: 0,
 
   incrementPlayerTurn: () => set((s) => ({ playerTurnCount: s.playerTurnCount + 1 })),
   resetPlayerTurnCount: () => set({ playerTurnCount: 0 }),
@@ -64,6 +65,12 @@ export const createChessCombatSlice: StateCreator<
       _chessIdGen: createSeededIdGen(matchSeed, 'chess'),
     });
     debug.chess('[Chess] Seeded RNG/idGen initialized from matchSeed');
+  },
+
+  _nextLogTick: (): number => {
+    const next = get()._logCounter + 1;
+    set({ _logCounter: next });
+    return next;
   },
 
   initializeCombat: (playerPieces, opponentPieces) => {
@@ -288,7 +295,7 @@ export const createChessCombatSlice: StateCreator<
       lastInstantKill: {
         position: targetPosition,
         attackerType: attacker.type,
-        timestamp: Date.now()
+        timestamp: get()._nextLogTick()
       },
       boardState: {
         ...get().boardState,
@@ -333,9 +340,10 @@ export const createChessCombatSlice: StateCreator<
       state.nextTurn();
     }
     
+    const instantKillTick = get()._nextLogTick();
     get().addLogEntry({
-      id: `instant_kill_${Date.now()}`,
-      timestamp: Date.now(),
+      id: `instant_kill_${instantKillTick}`,
+      timestamp: instantKillTick,
       type: 'attack',
       message: `${attacker.heroName} instantly killed ${defender.heroName}`
     });
@@ -719,9 +727,10 @@ export const createChessCombatSlice: StateCreator<
         piece.id === targetId ? { ...piece, isAlive: false } : piece
       ),
     });
+    const captureTick = get()._nextLogTick();
     get().addLogEntry({
-      id: `capture_${Date.now()}`,
-      timestamp: Date.now(),
+      id: `capture_${captureTick}`,
+      timestamp: captureTick,
       type: 'attack',
       message: `Piece ${attackerId} captured ${targetId}`,
     });
@@ -835,7 +844,7 @@ export const createChessCombatSlice: StateCreator<
         attackerPosition: { ...attacker.position },
         defenderPosition: { ...defender.position },
         isInstantKill,
-        timestamp: Date.now()
+        timestamp: get()._nextLogTick()
       }
     });
   },

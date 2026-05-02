@@ -162,9 +162,10 @@ export const createKingAbilitySlice: StateCreator<
       remaining: updatedKingState.minesRemaining
     });
 
+    const placedTick = get()._nextLogTick();
     state.addLogEntry({
-      id: `mine_placed_${Date.now()}`,
-      timestamp: Date.now(),
+      id: `mine_placed_${placedTick}`,
+      timestamp: placedTick,
       type: 'ability',
       message: `${owner === 'player' ? 'Player' : 'Opponent'} king placed a Divine Command trap`
     });
@@ -237,9 +238,10 @@ export const createKingAbilitySlice: StateCreator<
       position: landingPosition
     });
 
+    const triggeredTick = get()._nextLogTick();
     state.addLogEntry({
-      id: `mine_triggered_${Date.now()}`,
-      timestamp: Date.now(),
+      id: `mine_triggered_${triggeredTick}`,
+      timestamp: triggeredTick,
       type: 'ability',
       message: `Divine Command trap triggered! ${movingPieceOwner === 'player' ? 'Player' : 'Opponent'} loses ${staPenalty} STA. ${triggeredMine.owner === 'player' ? 'Player' : 'Opponent'} gains +${manaBoost} mana next PvP!`
     });

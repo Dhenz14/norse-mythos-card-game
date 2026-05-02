@@ -196,6 +196,15 @@ export interface ChessCombatSliceState {
   // (CSPRNG-grade, non-deterministic, fine for SP).
   _chessRng: SeededRng | null;
   _chessIdGen: SeededIdGen | null;
+  // Monotonic tick used as both a deterministic id suffix for log entries
+  // and as the `timestamp` field on UI freshness markers (lastInstantKill,
+  // pendingAttackAnimation). The actual wall-clock time was never read by
+  // any consumer — only object identity / increasing-order semantics matter
+  // — so a counter preserves behavior without breaking determinism. P2P
+  // peers converge once chess actions flow through the symmetric pipeline
+  // (C-Chess.4+); pre-pipeline divergence is harmless because these fields
+  // do not enter `computeStateHash`.
+  _logCounter: number;
 }
 
 export interface ChessCombatSliceActions {
@@ -222,6 +231,11 @@ export interface ChessCombatSliceActions {
   // commit-reveal handshake resolves the seed. Single-player never calls
   // this — consumers fall back to crypto-grade ambient sources.
   initChessWithSeed: (matchSeed: string) => void;
+  // Increments and returns the next monotonic tick. Used as id suffix /
+  // freshness timestamp by chess + king-ability log entries. Replaces
+  // ad-hoc `Date.now()` calls so log ids and UI markers are deterministic
+  // by construction.
+  _nextLogTick: () => number;
   clearPendingCombat: () => void;
   startAttackAnimation: (attacker: ChessPiece, defender: ChessPiece, isInstantKill: boolean) => void;
   completeAttackAnimation: () => void;
